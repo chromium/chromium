@@ -105,6 +105,24 @@ class UkmDatabaseBackendTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.Delete());
   }
 
+  void ExpectQueryResult(const UkmDatabase::QueryList& queries,
+                         bool expect_success,
+                         const processing::IndexedTensors& expected_values) {
+    base::RunLoop wait_for_query3;
+    backend_->RunReadonlyQueries(
+        queries,
+        base::BindOnce(
+            [](base::OnceClosure quit, bool expect_success,
+               const processing::IndexedTensors& expected_values, bool success,
+               processing::IndexedTensors tensors) {
+              EXPECT_EQ(expect_success, success);
+              EXPECT_EQ(expected_values, tensors);
+              std::move(quit).Run();
+            },
+            wait_for_query3.QuitClosure(), expect_success, expected_values));
+    wait_for_query3.Run();
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -353,6 +371,77 @@ TEST_F(UkmDatabaseBackendTest, DeleteOldEntries) {
   test_util::AssertUrlsInTable(backend_->db(), {});
 }
 
+TEST_F(UkmDatabaseBackendTest, ReadOnlyQueries) {
+  const GURL kUrl1("https://www.url1.com");
+  const GURL kUrl2("https://www.url2.com");
+  const GURL kUrl3("https://www.url3.com");
+  const UrlId kUrlId2 = UkmUrlTable::GenerateUrlId(kUrl2);
+  const ukm::SourceId kSourceId1 = 10;
+  const ukm::SourceId kSourceId2 = 20;
+  const ukm::SourceId kSourceId3 = 30;
+  const ukm::SourceId kSourceId4 = 40;
+
+  ukm::mojom::UkmEntryPtr entry1 = GetSampleUkmEntry(kSourceId1);
+  ukm::mojom::UkmEntryPtr entry2 = GetSampleUkmEntry(kSourceId2);
+  ukm::mojom::UkmEntryPtr entry3 = GetSampleUkmEntry(kSourceId3);
+  ukm::mojom::UkmEntryPtr entry4 = GetSampleUkmEntry(kSourceId4);
+
+  backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, true);
+  base::Time after1 = base::Time::Now();
+  backend_->UpdateUrlForUkmSource(kSourceId2, kUrl2, true);
+  backend_->UpdateUrlForUkmSource(kSourceId3, kUrl3, true);
+  backend_->UpdateUrlForUkmSource(kSourceId4, kUrl1, true);
+  backend_->StoreUkmEntry(std::move(entry1));
+  backend_->StoreUkmEntry(std::move(entry2));
+  backend_->StoreUkmEntry(std::move(entry3));
+  backend_->StoreUkmEntry(std::move(entry4));
+
+  UkmDatabase::QueryList queries;
+  queries.emplace(0, UkmDatabase::CustomSqlQuery(
+                         "SELECT AVG(metric_value) FROM metrics",
+                         std::vector<processing::ProcessedValue>()));
+  ExpectQueryResult(queries, true,
+                    {{0, {processing::ProcessedValue(101.00f)}}});
+
+  constexpr char kBindValuesQuery[] =
+      // clang-format off
+      "SELECT CASE WHEN ? THEN SUM(metric_value) ELSE AVG(metric_value) END "
+      "FROM metrics m "
+      "LEFT JOIN urls u "
+        "ON m.url_id = u.url_id "
+      "WHERE "
+        "ukm_source_id/2=? "
+        "AND metric_hash=? "
+        "AND url=? "
+        "AND u.url_id=? "
+        "AND event_timestamp>=?";
+  // clang-format on
+  std::vector<processing::ProcessedValue> bind_values{
+      processing::ProcessedValue(true),
+      processing::ProcessedValue(10.00),
+      processing::ProcessedValue(std::string("1E")),
+      processing::ProcessedValue(std::string("https://www.url2.com/")),
+      processing::ProcessedValue(
+          static_cast<int64_t>(kUrlId2.GetUnsafeValue())),
+      processing::ProcessedValue(after1)};
+  queries.emplace(
+      1, UkmDatabase::CustomSqlQuery(kBindValuesQuery, std::move(bind_values)));
+
+  ExpectQueryResult(queries, true,
+                    {{0, {processing::ProcessedValue(101.00f)}},
+                     {1, {processing::ProcessedValue(100.00f)}}});
+
+  queries.clear();
+  queries.emplace(0, UkmDatabase::CustomSqlQuery("SELECT bad query", {}));
+  ExpectQueryResult(queries, false, {});
+
+  queries.clear();
+  queries.emplace(
+      0, UkmDatabase::CustomSqlQuery(
+             "SELECT metric_value FROM metrics WHERE metric_hash=?", {}));
+  ExpectQueryResult(queries, false, {});
+}
+
 class FailedUkmDatabaseTest : public UkmDatabaseBackendTest {
  public:
   void SetUp() override {
@@ -382,6 +471,10 @@ TEST_F(FailedUkmDatabaseTest, QueriesAreNoop) {
   backend_->StoreUkmEntry(GetSampleUkmEntry());
   backend_->UpdateUrlForUkmSource(10, kUrl1, true);
   backend_->RemoveUrls({kUrl1});
+
+  UkmDatabase::QueryList queries;
+  queries.emplace(0, UkmDatabase::CustomSqlQuery("SELECT bad query", {}));
+  ExpectQueryResult(queries, false, {});
 }
 
 }  // namespace segmentation_platform

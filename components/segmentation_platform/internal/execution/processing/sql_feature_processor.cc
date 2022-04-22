@@ -129,7 +129,11 @@ void SqlFeatureProcessor::OnCustomInputProcessed(
 
 void SqlFeatureProcessor::OnQueriesRun(
     std::unique_ptr<FeatureProcessorState> feature_processor_state,
+    bool success,
     IndexedTensors result) {
+  if (!success) {
+    feature_processor_state->SetError();
+  }
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback_), std::move(feature_processor_state),

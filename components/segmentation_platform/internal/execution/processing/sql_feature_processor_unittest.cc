@@ -83,7 +83,7 @@ class SqlFeatureProcessorTest : public testing::Test {
                                      CustomSqlQuery>& queries,
                 MockUkmDatabase::QueryCallback callback) {
               EXPECT_EQ(processed_queries, queries);
-              std::move(callback).Run(result);
+              std::move(callback).Run(true, result);
             }));
 
     // Process the sql query.

@@ -52,6 +52,7 @@ static_library("internal") {
     "database/ukm_database_impl.h",
     "database/ukm_metrics_table.cc",
     "database/ukm_metrics_table.h",
+    "database/ukm_types.cc",
     "database/ukm_types.h",
     "database/ukm_url_table.cc",
     "database/ukm_url_table.h",

@@ -79,7 +79,8 @@ class UkmDatabase {
   };
 
   using QueryList = base::flat_map<processing::FeatureIndex, CustomSqlQuery>;
-  using QueryCallback = base::OnceCallback<void(processing::IndexedTensors)>;
+  using QueryCallback =
+      base::OnceCallback<void(bool success, processing::IndexedTensors)>;
 
   // Called to query data from the ukm database. The result is returned in the
   // |callback| as a mapping of indexed vectors of processing::ProcessedValue.

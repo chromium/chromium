@@ -7,8 +7,10 @@
 #include "base/files/file_util.h"
 #include "base/rand_util.h"
 #include "components/segmentation_platform/internal/database/ukm_metrics_table.h"
+#include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/database/ukm_url_table.h"
 #include "sql/database.h"
+#include "sql/statement.h"
 
 namespace segmentation_platform {
 
@@ -16,6 +18,55 @@ namespace {
 
 bool SanityCheckUrl(const GURL& url, UrlId url_id) {
   return url.is_valid() && !url.is_empty() && !url_id.is_null();
+}
+
+void BindValuesToStatement(
+    const std::vector<processing::ProcessedValue>& bind_values,
+    sql::Statement& statement) {
+  for (unsigned i = 0; i < bind_values.size(); ++i) {
+    const processing::ProcessedValue& value = bind_values[i];
+    switch (value.type) {
+      case processing::ProcessedValue::Type::BOOL:
+        statement.BindBool(i, value.bool_val);
+        break;
+      case processing::ProcessedValue::Type::INT:
+        statement.BindInt(i, value.int_val);
+        break;
+      case processing::ProcessedValue::Type::FLOAT:
+        statement.BindDouble(i, value.float_val);
+        break;
+      case processing::ProcessedValue::Type::DOUBLE:
+        statement.BindDouble(i, value.double_val);
+        break;
+      case processing::ProcessedValue::Type::STRING:
+        statement.BindString(i, value.str_val);
+        break;
+      case processing::ProcessedValue::Type::TIME:
+        statement.BindTime(i, value.time_val);
+        break;
+      case processing::ProcessedValue::Type::INT64:
+        statement.BindInt64(i, value.int64_val);
+        break;
+      case processing::ProcessedValue::Type::UNKNOWN:
+        NOTREACHED();
+    }
+  }
+}
+
+float GetSingleFloatOutput(sql::Statement& statement) {
+  sql::ColumnType output_type = statement.GetColumnType(0);
+  switch (output_type) {
+    case sql::ColumnType::kBlob:
+    case sql::ColumnType::kText:
+      NOTREACHED();
+      return 0;
+    case sql::ColumnType::kFloat:
+      return statement.ColumnDouble(0);
+    case sql::ColumnType::kInteger:
+      return statement.ColumnInt64(0);
+    case sql::ColumnType::kNull:
+      return 0;
+  }
 }
 
 }  // namespace
@@ -144,7 +195,35 @@ void UkmDatabaseBackend::RemoveUrls(const std::vector<GURL>& urls) {
 
 void UkmDatabaseBackend::RunReadonlyQueries(const QueryList& queries,
                                             QueryCallback callback) {
-  // TODO: implement.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (status_ != Status::INIT_SUCCESS) {
+    callback_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false,
+                                  processing::IndexedTensors()));
+    return;
+  }
+
+  bool success = true;
+  processing::IndexedTensors result;
+  for (const auto& index_and_query : queries) {
+    const processing::FeatureIndex index = index_and_query.first;
+    const UkmDatabase::CustomSqlQuery& query = index_and_query.second;
+
+    // TODO(ssid): Make the queries readonly.
+    sql::Statement statement(db_.GetUniqueStatement(query.query.c_str()));
+    BindValuesToStatement(query.bind_values, statement);
+
+    if (!statement.is_valid() || !statement.Step()) {
+      success = false;
+      break;
+    }
+
+    float output = GetSingleFloatOutput(statement);
+    result[index].push_back(processing::ProcessedValue(output));
+  }
+  callback_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), success, std::move(result)));
 }
 
 void UkmDatabaseBackend::DeleteEntriesOlderThan(base::Time time) {

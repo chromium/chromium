@@ -48,6 +48,7 @@ class SqlFeatureProcessor : public QueryProcessor {
   // database.
   void OnQueriesRun(
       std::unique_ptr<FeatureProcessorState> feature_processor_state,
+      bool success,
       IndexedTensors result);
 
   // List of sql features to process into input tensors.
