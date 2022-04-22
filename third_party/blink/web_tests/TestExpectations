@@ -7718,6 +7718,7 @@ crbug.com/1288839 virtual/feature-policy-permissions/external/wpt/mediacapture-s
 crbug.com/1318695 http/tests/devtools/elements/highlight/highlight-multiple-css-grid.js [ Failure Pass ]
 crbug.com/1318929 http/tests/devtools/console/console-uncaught-promise.js [ Failure Pass ]
 crbug.com/1282966 http/tests/security/mixedContent/insecure-plugin-in-iframe.html [ Failure Pass ]
+crbug.com/1318952 http/tests/inspector-protocol/fetch/fetch-samesite-cookies.js [ Failure Pass ]
 
 # Imported WPT crashes on desktop platforms
 crbug.com/1318456 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/opt-out.html [ Crash Skip Timeout ]
