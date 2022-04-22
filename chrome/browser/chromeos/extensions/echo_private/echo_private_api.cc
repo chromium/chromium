@@ -16,10 +16,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/echo_private_ash.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,7 +25,6 @@
 #include "chrome/common/extensions/api/echo_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "chromeos/system/statistics_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -39,8 +34,15 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/echo_private_ash.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/ui/lacros/window_utility.h"
+#include "chromeos/crosapi/mojom/echo_private.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
@@ -97,7 +99,7 @@ EchoPrivateGetRegistrationCodeFunction::Run() {
   if (lacros_service->IsAvailable<crosapi::mojom::EchoPrivate>() &&
       static_cast<uint32_t>(lacros_service->GetInterfaceVersion(
           crosapi::mojom::EchoPrivate::Uuid_)) >=
-          crosapi::mojom::EchoPrivate::kRegistrationCodeMinVersion) {
+          crosapi::mojom::EchoPrivate::kGetRegistrationCodeMinVersion) {
     lacros_service->GetRemote<crosapi::mojom::EchoPrivate>()
         ->GetRegistrationCode(type.value(), std::move(callback));
   } else {

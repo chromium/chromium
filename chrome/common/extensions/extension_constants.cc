@@ -74,6 +74,7 @@ const char* const kBuiltInFirstPartyExtensionIds[] = {
 #if BUILDFLAG(IS_CHROMEOS)
 const char kAssessmentAssistantExtensionId[] =
     "gndmhdcefbhlchkhipcnnbkcmicncehk";
+const char kEchoExtensionId[] = "kddnkjkcjddckihglkfcickdhbmaodcn";
 const char kGnubbyAppId[] = "beknehfpfkghjoafdifaflglpjkojoco";
 const char kGnubbyV3ExtensionId[] = "lfboplenmmjcmpbkeemecobbadnmpfhi";
 const char kGCSEExtensionId[] = "cfmgaohenjcikllcgjpepfadgbflcjof";
@@ -120,7 +121,6 @@ const char kGoogleSpeechSynthesisExtensionId[] =
     "gjjabgpgjpampikjhjpfhneeoapjbjaf";
 const char kWallpaperManagerId[] = "obklkkbkpaoaejdabbfldmcfplpdgolj";
 const char kHelpAppExtensionId[] = "honijodknafkokifofgiaalefdiedpko";
-const char kEchoExtensionId[] = "kddnkjkcjddckihglkfcickdhbmaodcn";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
 // The extension id of the Hangout Service extnsion.

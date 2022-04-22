@@ -664,7 +664,7 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
     "location": "component",
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   },
   "pageCapture": {
     "channel": "stable",

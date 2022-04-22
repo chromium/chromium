@@ -266,6 +266,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/intent_helper/supported_links_infobar_prefs_service.h"
+#include "chrome/browser/chromeos/extensions/echo_private/echo_private_api.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_impl.h"
 #include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api.h"
 #include "chrome/browser/policy/networking/policy_cert_service.h"
@@ -370,7 +371,6 @@
 #include "chrome/browser/ash/system/automatic_reboot_manager.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_notification_controller.h"
-#include "chrome/browser/chromeos/extensions/echo_private/echo_private_api.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/prefs.h"
 #include "chrome/browser/device_identity/chromeos/device_oauth2_token_store_chromeos.h"
 #include "chrome/browser/extensions/extension_assets_manager_chromeos.h"
@@ -1116,7 +1116,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   chromeos::DeviceOAuth2TokenStoreChromeOS::RegisterPrefs(registry);
   ash::device_settings_cache::RegisterPrefs(registry);
   ash::EasyUnlockService::RegisterPrefs(registry);
-  chromeos::echo_offer::RegisterPrefs(registry);
   ash::EnableAdbSideloadingScreen::RegisterPrefs(registry);
   ash::device_activity::DeviceActivityController::RegisterPrefs(registry);
   chromeos::EnableDebuggingScreenHandler::RegisterPrefs(registry);
@@ -1177,6 +1176,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
+  chromeos::echo_offer::RegisterPrefs(registry);
   policy::SystemFeaturesDisableListPolicyHandler::RegisterPrefs(registry);
   policy::DlpRulesManagerImpl::RegisterPrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS)

@@ -2448,10 +2448,6 @@ const char kDeviceDMToken[] = "device_dm_token";
 // versions.
 const char kUsersLastInputMethod[] = "UsersLRUInputMethod";
 
-// A dictionary pref of the echo offer check flag. It sets offer info when
-// an offer is checked.
-const char kEchoCheckedOffers[] = "EchoCheckedOffers";
-
 // Key name of a dictionary in local state to store cached multiprofle user
 // behavior policy value.
 const char kCachedMultiProfileUserBehavior[] = "CachedMultiProfileUserBehavior";
@@ -2888,6 +2884,10 @@ const char kSigninAllowedOnNextStartup[] = "signin.allowed_on_next_startup";
 const char kSigninInterceptionEnabled[] = "signin.interception_enabled";
 
 #if BUILDFLAG(IS_CHROMEOS)
+// A dictionary pref of the echo offer check flag. It sets offer info when
+// an offer is checked.
+const char kEchoCheckedOffers[] = "EchoCheckedOffers";
+
 // Boolean pref indicating whether the user is allowed to create secondary
 // profiles in Lacros browser. This is set by a policy, and the default value
 // for managed users is false.

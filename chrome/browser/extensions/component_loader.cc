@@ -515,6 +515,11 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
           l10n_util::GetStringUTF8(IDS_FEEDBACK_REPORT_PAGE_TITLE));
     }
 
+#if BUILDFLAG(IS_CHROMEOS)
+    Add(IDR_ECHO_MANIFEST,
+        base::FilePath(FILE_PATH_LITERAL("/usr/share/chromeos-assets/echo")));
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (command_line->HasSwitch(switches::kLoadGuestModeTestExtension)) {
       base::FilePath path = base::FilePath(command_line->GetSwitchValueASCII(
@@ -538,9 +543,6 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
     if (!IsNormalSession())
       ExtensionsBrowserClient::Get()->GetOffTheRecordContext(profile_);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-    Add(IDR_ECHO_MANIFEST,
-        base::FilePath(FILE_PATH_LITERAL("/usr/share/chromeos-assets/echo")));
 
     if (!command_line->HasSwitch(ash::switches::kGuestSession)) {
       Add(IDR_WALLPAPERMANAGER_MANIFEST,

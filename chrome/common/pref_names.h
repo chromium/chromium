@@ -769,7 +769,6 @@ extern const char kDeviceEnrollmentAutoStart[];
 extern const char kDeviceEnrollmentCanExit[];
 extern const char kDeviceDMToken[];
 extern const char kUsersLastInputMethod[];
-extern const char kEchoCheckedOffers[];
 extern const char kCachedMultiProfileUserBehavior[];
 extern const char kInitialLocale[];
 extern const char kDeviceRegistered[];
@@ -961,6 +960,7 @@ extern const char kBrowserShowProfilePickerOnStartup[];
 extern const char kSigninAllowedOnNextStartup[];
 extern const char kSigninInterceptionEnabled[];
 #if BUILDFLAG(IS_CHROMEOS)
+extern const char kEchoCheckedOffers[];
 extern const char kLacrosSecondaryProfilesAllowed[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

@@ -81,7 +81,6 @@ bool IsComponentExtensionAllowlisted(int manifest_resource_id) {
     case IDR_ARC_SUPPORT_MANIFEST:
     case IDR_AUDIO_PLAYER_MANIFEST:
     case IDR_CHROME_APP_MANIFEST:
-    case IDR_ECHO_MANIFEST:
     case IDR_FILEMANAGER_MANIFEST:
     case IDR_IMAGE_LOADER_MANIFEST:
     case IDR_KEYBOARD_MANIFEST:
@@ -94,6 +93,7 @@ bool IsComponentExtensionAllowlisted(int manifest_resource_id) {
 
 #if BUILDFLAG(IS_CHROMEOS)
     case IDR_CONTACT_CENTER_INSIGHTS_MANIFEST:
+    case IDR_ECHO_MANIFEST:
 #endif
       return true;
   }
