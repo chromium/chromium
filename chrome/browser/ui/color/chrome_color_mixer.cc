@@ -239,8 +239,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::SelectBasedOnDarkInput(kColorToolbar, gfx::kGoogleGreen300,
                                  gfx::kGoogleGreen700),
       kColorToolbar, color_utils::kMinimumReadableContrastRatio);
-  mixer[kColorDownloadItemProgressRingBackground] = {
-      ui::kColorThrobberPreconnect};
+  mixer[kColorDownloadItemProgressRingBackground] = ui::SetAlpha(
+      kColorDownloadItemProgressRingForeground, gfx::kGoogleGreyAlpha400);
   mixer[kColorDownloadItemProgressRingForeground] = {ui::kColorThrobber};
   mixer[kColorDownloadShelfBackground] = {kColorToolbar};
   mixer[kColorDownloadShelfButtonBackground] = {kColorDownloadShelfBackground};
@@ -619,7 +619,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorWebAuthnBackArrowButtonIcon] = {ui::kColorIcon};
   mixer[kColorWebAuthnBackArrowButtonIconDisabled] = {ui::kColorIconDisabled};
   mixer[kColorWebAuthnPinTextfieldBottomBorder] = {ui::kColorAccent};
-  mixer[kColorWebAuthnProgressRingBackground] = {ui::kColorThrobberPreconnect};
+  mixer[kColorWebAuthnProgressRingBackground] = ui::SetAlpha(
+      kColorWebAuthnProgressRingForeground, gfx::kGoogleGreyAlpha400);
   mixer[kColorWebAuthnProgressRingForeground] = {ui::kColorThrobber};
   mixer[kColorWebContentsBackground] = {kColorNewTabPageBackground};
   mixer[kColorWebContentsBackgroundLetterboxing] =
