@@ -484,7 +484,11 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysNonExistingBufferId) {
 }
 
 TEST_P(WaylandBufferManagerTest, CommitOverlaysWithSameBufferId) {
-  EXPECT_CALL(*server_.zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(2);
+  const size_t expected_number_of_buffers =
+      connection_->linux_explicit_synchronization_v1() ? 1 : 2;
+
+  EXPECT_CALL(*server_.zwp_linux_dmabuf_v1(), CreateParams(_, _, _))
+      .Times(expected_number_of_buffers);
   CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, 1u);
 
   // Re-using the same buffer id across multiple surfaces is allowed.
@@ -506,8 +510,8 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysWithSameBufferId) {
                                       std::move(overlay_configs));
 
   Sync();
-  ProcessCreatedBufferResourcesWithExpectation(2u /* expected size */,
-                                               false /* fail */);
+  ProcessCreatedBufferResourcesWithExpectation(
+      expected_number_of_buffers /* expected size */, false /* fail */);
 
   // Destroying the buffer causes all wl_buffer objects to be destroyed.
   DestroyBufferAndSetTerminateExpectation(1u, false /*fail*/);
@@ -1805,6 +1809,9 @@ TEST_P(WaylandBufferManagerTest, RootSurfaceIsCommittedLast) {
 }
 
 TEST_P(WaylandBufferManagerTest, FencedRelease) {
+  if (!connection_->linux_explicit_synchronization_v1())
+    GTEST_SKIP();
+
   constexpr uint32_t kBufferId1 = 1;
   constexpr uint32_t kBufferId2 = 2;
   constexpr uint32_t kBufferId3 = 3;
@@ -2564,5 +2571,20 @@ INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
                          WaylandBufferManagerViewportTest,
                          Values(wl::ServerConfig{
                              .shell_version = wl::ShellVersion::kV6}));
+
+INSTANTIATE_TEST_SUITE_P(
+    XdgVersionStableTestWithoutExplicitSync,
+    WaylandBufferManagerTest,
+    Values(wl::ServerConfig{
+        .shell_version = wl::ShellVersion::kStable,
+        .use_explicit_synchronization =
+            wl::ShouldUseExplicitSynchronizationProtocol::kNone}));
+INSTANTIATE_TEST_SUITE_P(
+    XdgVersionStableTestWithExplicitSync,
+    WaylandBufferManagerTest,
+    Values(wl::ServerConfig{
+        .shell_version = wl::ShellVersion::kStable,
+        .use_explicit_synchronization =
+            wl::ShouldUseExplicitSynchronizationProtocol::kUse}));
 
 }  // namespace ui

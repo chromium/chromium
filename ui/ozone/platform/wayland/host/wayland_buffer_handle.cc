@@ -10,8 +10,8 @@ WaylandBufferHandle::WaylandBufferHandle(WaylandBufferBacking* backing)
     : backing_(backing), weak_factory_(this) {}
 
 WaylandBufferHandle::~WaylandBufferHandle() {
-  if (!released_callback_.is_null())
-    std::move(released_callback_).Run(wl_buffer());
+  for (auto& cb : released_callbacks_)
+    std::move(cb.second).Run(wl_buffer());
 }
 
 void WaylandBufferHandle::OnWlBufferCreated(
@@ -31,16 +31,20 @@ void WaylandBufferHandle::OnWlBufferCreated(
     std::move(created_callback_).Run();
 }
 
-void WaylandBufferHandle::OnExplicitRelease() {
-  DCHECK(!released_callback_.is_null());
-  released_callback_.Reset();
+void WaylandBufferHandle::OnExplicitRelease(WaylandSurface* requestor) {
+  auto it = released_callbacks_.find(requestor);
+  DCHECK(it != released_callbacks_.end());
+  released_callbacks_.erase(it);
 }
 
 void WaylandBufferHandle::OnWlBufferRelease(struct wl_buffer* wl_buff) {
   DCHECK_EQ(wl_buff, wl_buffer_.get());
   DCHECK(!backing_->UseExplicitSyncRelease());
-  if (!released_callback_.is_null())
-    std::move(released_callback_).Run(wl_buff);
+  DCHECK_LE(released_callbacks_.size(), 1u);
+
+  if (!released_callbacks_.empty())
+    std::move(released_callbacks_.begin()->second).Run(wl_buff);
+  released_callbacks_.clear();
 }
 
 base::WeakPtr<WaylandBufferHandle> WaylandBufferHandle::AsWeakPtr() {

@@ -47,12 +47,15 @@ struct DisplayDeleter {
 enum class ShellVersion { kV6, kStable };
 enum class PrimarySelectionProtocol { kNone, kGtk, kZwp };
 enum class CompositorVersion { kV3, kV4 };
+enum class ShouldUseExplicitSynchronizationProtocol { kNone, kUse };
 
 struct ServerConfig {
   ShellVersion shell_version = ShellVersion::kStable;
   CompositorVersion compositor_version = CompositorVersion::kV4;
   PrimarySelectionProtocol primary_selection_protocol =
       PrimarySelectionProtocol::kNone;
+  ShouldUseExplicitSynchronizationProtocol use_explicit_synchronization =
+      ShouldUseExplicitSynchronizationProtocol::kUse;
 };
 
 class TestSelectionDeviceManager;
@@ -137,6 +140,8 @@ class TestWaylandServerThread : public base::Thread,
  private:
   void SetupOutputs();
   bool SetupPrimarySelectionManager(PrimarySelectionProtocol protocol);
+  bool SetupExplicitSynchronizationProtocol(
+      ShouldUseExplicitSynchronizationProtocol usage);
   void DoPause();
 
   std::unique_ptr<base::MessagePump> CreateMessagePump();

@@ -170,7 +170,7 @@ bool WaylandSurface::AttachBuffer(WaylandBufferHandle* buffer_handle) {
   pending_state_.buffer_id = buffer_handle->id();
 
   if (state_.buffer_id == pending_state_.buffer_id &&
-      buffer_handle->released()) {
+      buffer_handle->released(this)) {
     state_.buffer = nullptr;
     state_.buffer_id = 0;
   }

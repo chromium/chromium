@@ -26,6 +26,9 @@ bool WaylandBufferBacking::UseExplicitSyncRelease() const {
 
 WaylandBufferHandle* WaylandBufferBacking::EnsureBufferHandle(
     WaylandSurface* requestor) {
+  if (UseExplicitSyncRelease())
+    requestor = nullptr;
+
   auto& buffer_handle = buffer_handles_[requestor];
 
   if (buffer_handle)
@@ -51,6 +54,10 @@ WaylandBufferHandle* WaylandBufferBacking::EnsureBufferHandle(
 WaylandBufferHandle* WaylandBufferBacking::GetBufferHandle(
     WaylandSurface* requestor) {
   DCHECK(requestor);
+  if (UseExplicitSyncRelease()) {
+    requestor = nullptr;
+    DCHECK_LE(buffer_handles_.size(), 1u);
+  }
   return buffer_handles_[requestor].get();
 }
 
