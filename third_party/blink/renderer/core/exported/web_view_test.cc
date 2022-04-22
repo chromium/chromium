@@ -312,23 +312,6 @@ static Color OutlineColor(Element* element) {
       GetCSSPropertyOutlineColor());
 }
 
-TEST_F(WebViewTest, HitTestVideo) {
-  // Test that hit tests on parts of a video element result in hits on the video
-  // element itself as opposed to its child elements.
-  std::string url = RegisterMockedHttpURLLoad("video_200x200.html");
-  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(url);
-  web_view->MainFrameViewWidget()->Resize(gfx::Size(200, 200));
-
-  // Center of video.
-  EXPECT_EQ("video", HitTestElementId(web_view, 100, 100));
-
-  // Play button.
-  EXPECT_EQ("video", HitTestElementId(web_view, 10, 195));
-
-  // Timeline bar.
-  EXPECT_EQ("video", HitTestElementId(web_view, 100, 195));
-}
-
 TEST_F(WebViewTest, HitTestContentEditableImageMaps) {
   std::string url =
       RegisterMockedHttpURLLoad("content-editable-image-maps.html");
