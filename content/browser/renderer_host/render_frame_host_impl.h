@@ -71,7 +71,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/extra_mojo_js_features.mojom-forward.h"
@@ -255,7 +254,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       public mojom::FrameHost,
       public mojom::DomAutomationControllerHost,
       public BrowserAccessibilityDelegate,
-      public RenderProcessHostObserver,
       public SiteInstanceGroup::Observer,
       public blink::mojom::BackForwardCacheControllerHost,
       public blink::mojom::LocalFrameHost,
@@ -542,10 +540,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
                               int hit_node_id)> opt_callback) override;
   bool AccessibilityIsMainFrame() override;
   WebContentsAccessibility* AccessibilityGetWebContentsAccessibility() override;
-
-  // RenderProcessHostObserver implementation.
-  void RenderProcessExited(RenderProcessHost* host,
-                           const ChildProcessTerminationInfo& info) override;
 
   // SiteInstanceGroup::Observer
   void RenderProcessGone(SiteInstanceGroup* site_instance_group,

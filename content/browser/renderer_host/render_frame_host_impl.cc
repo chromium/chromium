@@ -2835,9 +2835,38 @@ void RenderFrameHostImpl::InitializePrivateNetworkRequestPolicy() {
       DerivePrivateNetworkRequestPolicy(policy_container_host_->policies());
 }
 
-void RenderFrameHostImpl::RenderProcessExited(
-    RenderProcessHost* host,
+void RenderFrameHostImpl::RenderProcessGone(
+    SiteInstanceGroup* site_instance_group,
     const ChildProcessTerminationInfo& info) {
+  DCHECK_EQ(site_instance_->group(), site_instance_group);
+
+  if (IsInBackForwardCache()) {
+    EvictFromBackForwardCacheWithReason(
+        info.status == base::TERMINATION_STATUS_PROCESS_CRASHED
+            ? BackForwardCacheMetrics::NotRestoredReason::
+                  kRendererProcessCrashed
+            : BackForwardCacheMetrics::NotRestoredReason::
+                  kRendererProcessKilled);
+  }
+
+  CancelPrerendering(info.status == base::TERMINATION_STATUS_PROCESS_CRASHED
+                         ? PrerenderHost::FinalStatus::kRendererProcessCrashed
+                         : PrerenderHost::FinalStatus::kRendererProcessKilled);
+
+  if (owned_render_widget_host_)
+    owned_render_widget_host_->RendererExited();
+
+  // The renderer process is gone, so this frame can no longer be loading.
+  ResetNavigationRequests();
+  ResetLoadingState();
+
+  // Any future UpdateState or UpdateTitle messages from this or a recreated
+  // process should be ignored until the next commit.
+  set_nav_entry_id(0);
+
+  if (is_audible_)
+    OnAudibleStateChanged(false);
+
   ++renderer_exit_count_;
 
   if (base::FeatureList::IsEnabled(features::kCrashReporting))
@@ -2911,41 +2940,6 @@ void RenderFrameHostImpl::RenderProcessExited(
   // Note: don't add any more code at this point in the function because
   // |this| may be deleted. Any additional cleanup should happen before
   // the last block of code here.
-}
-
-void RenderFrameHostImpl::RenderProcessGone(
-    SiteInstanceGroup* site_instance_group,
-    const ChildProcessTerminationInfo& info) {
-  DCHECK_EQ(site_instance_->group(), site_instance_group);
-
-  if (IsInBackForwardCache()) {
-    EvictFromBackForwardCacheWithReason(
-        info.status == base::TERMINATION_STATUS_PROCESS_CRASHED
-            ? BackForwardCacheMetrics::NotRestoredReason::
-                  kRendererProcessCrashed
-            : BackForwardCacheMetrics::NotRestoredReason::
-                  kRendererProcessKilled);
-  }
-
-  CancelPrerendering(info.status == base::TERMINATION_STATUS_PROCESS_CRASHED
-                         ? PrerenderHost::FinalStatus::kRendererProcessCrashed
-                         : PrerenderHost::FinalStatus::kRendererProcessKilled);
-
-  if (owned_render_widget_host_)
-    owned_render_widget_host_->RendererExited();
-
-  // The renderer process is gone, so this frame can no longer be loading.
-  ResetNavigationRequests();
-  ResetLoadingState();
-
-  // Any future UpdateState or UpdateTitle messages from this or a recreated
-  // process should be ignored until the next commit.
-  set_nav_entry_id(0);
-
-  if (is_audible_)
-    OnAudibleStateChanged(false);
-
-  RenderProcessExited(site_instance_group->process(), info);
 }
 
 void RenderFrameHostImpl::PerformAction(const ui::AXActionData& data) {
