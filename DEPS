@@ -788,17 +788,6 @@ deps = {
       'condition': 'checkout_ios',
   },
 
-  'src/ios/third_party/native_closure_compiler': {
-      'packages': [
-      {
-        'package': 'chromium/third_party/native_closure_compiler_macos',
-        'version': 'version:2@20210505.0.0',
-      },
-    ],
-    'condition': 'checkout_ios',
-    'dep_type': 'cipd',
-  },
-
   'src/ios/third_party/ochamcrest/src': {
       'url': Var('chromium_git') + '/external/github.com/hamcrest/OCHamcrest.git' + '@' + '92d9c14d13bb864255e65c09383564653896916b',
       'condition': 'checkout_ios',
