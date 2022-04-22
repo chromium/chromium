@@ -332,7 +332,7 @@ struct ShapeResult::RunInfo final
     }
 
     void CopyFromRange(const GlyphDataRange& range) {
-      DCHECK_EQ(range.size(), size());
+      CHECK_EQ(range.size(), size());
       if (!range.offsets || range.size() == 0) {
         storage_.reset();
         return;
@@ -354,7 +354,7 @@ struct ShapeResult::RunInfo final
       // Note: To follow Vector<T>::Shrink(), we accept |new_size == size()|
       if (new_size == size())
         return;
-      DCHECK_LT(new_size, size());
+      CHECK_LT(new_size, size());
       size_ = new_size;
       if (!storage_)
         return;
@@ -365,7 +365,7 @@ struct ShapeResult::RunInfo final
 
     // Functions to change one element.
     void AddHeightAt(unsigned index, float delta) {
-      DCHECK_LT(index, size());
+      CHECK_LT(index, size());
       DCHECK_NE(delta, 0.0f);
       if (!storage_)
         AllocateStorage();
@@ -373,7 +373,7 @@ struct ShapeResult::RunInfo final
     }
 
     void AddWidthAt(unsigned index, float delta) {
-      DCHECK_LT(index, size());
+      CHECK_LT(index, size());
       DCHECK_NE(delta, 0.0f);
       if (!storage_)
         AllocateStorage();
@@ -381,7 +381,7 @@ struct ShapeResult::RunInfo final
     }
 
     void SetAt(unsigned index, GlyphOffset offset) {
-      DCHECK_LT(index, size());
+      CHECK_LT(index, size());
       if (!storage_) {
         if (offset.IsZero())
           return;
@@ -419,12 +419,12 @@ struct ShapeResult::RunInfo final
     }
 
     HarfBuzzRunGlyphData& operator[](unsigned index) {
-      DCHECK_LT(index, size());
+      CHECK_LT(index, size());
       return data_[index];
     }
 
     const HarfBuzzRunGlyphData& operator[](unsigned index) const {
-      DCHECK_LT(index, size());
+      CHECK_LT(index, size());
       return data_[index];
     }
 
@@ -457,7 +457,7 @@ struct ShapeResult::RunInfo final
 
     // Note: Caller should be adjust |HarfBuzzRunGlyphData.character_index|.
     void CopyFromRange(const GlyphDataRange& range) {
-      DCHECK_EQ(static_cast<size_t>(range.end - range.begin), size());
+      CHECK_EQ(static_cast<size_t>(range.end - range.begin), size());
       static_assert(base::is_trivially_copyable<HarfBuzzRunGlyphData>::value,
                     "HarfBuzzRunGlyphData should be trivially copyable");
       std::copy(range.begin, range.end, data_.get());
