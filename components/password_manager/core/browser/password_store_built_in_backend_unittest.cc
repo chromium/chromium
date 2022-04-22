@@ -596,7 +596,8 @@ TEST_F(PasswordStoreBuiltInBackendTest, RemoveLoginAsyncMetrics) {
   histogram_tester.ExpectBucketCount(kSuccessMetric, true, 1);
 }
 
-TEST_F(PasswordStoreBuiltInBackendTest, RemoveLoginAsyncFailsMetrics) {
+// crbug/1317092: The test is flaky on all the platforms.
+TEST_F(PasswordStoreBuiltInBackendTest, DISABLED_RemoveLoginAsyncFailsMetrics) {
   const char kDurationMetric[] =
       "PasswordManager.PasswordStoreBuiltInBackend.RemoveLoginAsync.Latency";
   const char kSuccessMetric[] =
