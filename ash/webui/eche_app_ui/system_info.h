@@ -22,10 +22,12 @@ class SystemInfo {
     std::unique_ptr<SystemInfo> Build();
     Builder& SetBoardName(const std::string& board_name);
     Builder& SetDeviceName(const std::string& device_name);
+    Builder& SetGaiaId(const std::string& gaia_id);
 
    private:
     std::string board_name_;
     std::string device_name_;
+    std::string gaia_id_;
   };
 
   SystemInfo(const SystemInfo& other);
@@ -33,13 +35,17 @@ class SystemInfo {
 
   std::string GetDeviceName() const { return device_name_; }
   std::string GetBoardName() const { return board_name_; }
+  std::string GetGaiaId() const { return gaia_id_; }
 
  protected:
-  SystemInfo(const std::string& device_name, const std::string& board_name);
+  SystemInfo(const std::string& device_name,
+             const std::string& board_name,
+             const std::string& gaia_id);
 
  private:
   std::string device_name_;
   std::string board_name_;
+  std::string gaia_id_;
 };
 
 }  // namespace eche_app

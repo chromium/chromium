@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/services/secure_channel/presence_monitor_impl.h"
@@ -36,6 +37,7 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/account_id/account_id.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/user_manager/user_manager.h"
@@ -286,21 +288,27 @@ KeyedService* EcheAppManagerFactory::BuildServiceInstanceFor(
 
 std::unique_ptr<SystemInfo> EcheAppManagerFactory::GetSystemInfo(
     Profile* profile) const {
-  std::string device_name = "";
+  std::string device_name;
   const std::string board_name = base::SysInfo::GetLsbReleaseBoard();
   const std::u16string device_type = ui::GetChromeOSDeviceName();
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile);
+  std::string gaia_id;
   if (user) {
     std::u16string given_name = user->GetGivenName();
     if (!given_name.empty()) {
       device_name = l10n_util::GetStringFUTF8(
           IDS_ECHE_APP_DEFAULT_DEVICE_NAME, user->GetGivenName(), device_type);
     }
+    if (user->HasGaiaAccount()) {
+      const AccountId& account_id = user->GetAccountId();
+      gaia_id = account_id.GetGaiaId();
+    }
   }
   return SystemInfo::Builder()
       .SetDeviceName(device_name)
       .SetBoardName(board_name)
+      .SetGaiaId(gaia_id)
       .Build();
 }
 

@@ -23,6 +23,7 @@ const char kJsonBoardNameKey[] = "board_name";
 const char kJsonTabletModeKey[] = "tablet_mode";
 const char kJsonWifiConnectionStateKey[] = "wifi_connection_state";
 const char kJsonDebugModeKey[] = "debug_mode";
+const char kJsonGaiaIdKey[] = "gaia_id";
 
 using chromeos::network_config::mojom::ConnectionStateType;
 // TODO(https://crbug.com/1164001): remove when it moved to ash.
@@ -69,6 +70,7 @@ void SystemInfoProvider::GetSystemInfo(
   json_dictionary.SetStringKey(kJsonBoardNameKey, system_info_->GetBoardName());
   json_dictionary.SetBoolKey(kJsonTabletModeKey,
                              TabletMode::Get()->InTabletMode());
+  json_dictionary.SetStringKey(kJsonGaiaIdKey, system_info_->GetGaiaId());
   auto found_type = CONNECTION_STATE_TYPE.find(wifi_connection_state_);
   std::string connecton_state_string =
       found_type == CONNECTION_STATE_TYPE.end() ? "" : found_type->second;

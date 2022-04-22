@@ -66,6 +66,7 @@ class FakePresenceMonitorClient : public secure_channel::PresenceMonitorClient {
 
 const char kFakeDeviceName[] = "Someone's Chromebook";
 const char kFakeBoardName[] = "atlas";
+const char kFakeGaiaId[] = "123";
 const size_t kNumTestDevices = 3;
 
 class EcheAppManagerTest : public testing::Test {
@@ -111,6 +112,7 @@ class EcheAppManagerTest : public testing::Test {
         SystemInfo::Builder()
             .SetDeviceName(kFakeDeviceName)
             .SetBoardName(kFakeBoardName)
+            .SetGaiaId(kFakeGaiaId)
             .Build(),
         fake_phone_hub_manager_.get(), fake_device_sync_client_.get(),
         fake_multidevice_setup_client_.get(), fake_secure_channel_client_.get(),
