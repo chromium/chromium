@@ -707,9 +707,7 @@ void HangWatcher::WatchStateSnapShot::Init(
 
   // Copy hung thread information.
   for (const auto& watch_state : watch_states) {
-    uint64_t flags;
-    TimeTicks deadline;
-    std::tie(flags, deadline) = watch_state->GetFlagsAndDeadline();
+    auto [flags, deadline] = watch_state->GetFlagsAndDeadline();
 
     if (deadline <= deadline_ignore_threshold) {
       found_deadline_before_ignore_threshold = true;
@@ -736,16 +734,6 @@ void HangWatcher::WatchStateSnapShot::Init(
       if (ThreadTypeLoggingLevelGreaterOrEqual(watch_state.get()->thread_type(),
                                                LoggingLevel::kUmaAndCrash)) {
         any_hung_thread_has_dumping_enabled = true;
-      }
-
-      // Emit trace events for monitored threads.
-      if (ThreadTypeLoggingLevelGreaterOrEqual(watch_state.get()->thread_type(),
-                                               LoggingLevel::kUmaOnly)) {
-        const uint64_t thread_id = watch_state.get()->GetThreadID();
-        const auto track = perfetto::Track::FromPointer(
-            this, perfetto::ThreadTrack::ForThread(thread_id));
-        TRACE_EVENT_BEGIN("base", "HangWatcher::ThreadHung", track, deadline);
-        TRACE_EVENT_END("base", track, now);
       }
 
       // Attempt to mark the thread as needing to stay within its current
