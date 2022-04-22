@@ -120,6 +120,8 @@ export class ChromeCartModuleElement extends I18nMixin
   private firstThreeCartItems_: MerchantCart[];
   private eventTracker_: EventTracker = new EventTracker();
 
+  private consentStatus_: ConsentStatus;
+
   override connectedCallback() {
     super.connectedCallback();
     const leftProbe = this.$.cartCarousel.querySelector('#leftProbe');
@@ -160,18 +162,9 @@ export class ChromeCartModuleElement extends I18nMixin
         this, 'discount-consent-continued',
         () => this.onDiscountConsentContinued_());
 
-    this.eventTracker_.add(this.$.consentContainer, 'transitionend', () => {
-      if (this.showDiscountConsent && !this.discountConsentVisible_) {
-        this.showDiscountConsent = false;
-        // TODO(meiliang): Show the confirmation toast here instead.
-        const firstCartLink =
-            this.$.cartCarousel.querySelector<HTMLElement>('.cart-item');
-        if (firstCartLink !== null &&
-            !this.$.confirmDiscountConsentToast.open) {
-          firstCartLink.focus();
-        }
-      }
-    });
+    this.eventTracker_.add(
+        this.$.consentContainer, 'transitionend',
+        () => this.onDiscountConsentHidden_());
   }
 
   override disconnectedCallback() {
@@ -427,29 +420,54 @@ export class ChromeCartModuleElement extends I18nMixin
     chrome.metricsPrivate.recordSmallCount('NewTabPage.Carts.ClickCart', index);
   }
 
+  private onDiscountConsentHidden_() {
+    if (this.showDiscountConsent && !this.discountConsentVisible_ &&
+        this.consentStatus_ !== undefined) {
+      this.showDiscountConsent = false;
+      switch (this.consentStatus_) {
+        case ConsentStatus.DISMISSED:
+          const firstCartLink =
+              this.$.cartCarousel.querySelector<HTMLElement>('.cart-item');
+          if (firstCartLink !== null &&
+              !this.$.confirmDiscountConsentToast.open) {
+            firstCartLink.focus();
+          }
+          return;
+        case ConsentStatus.ACCEPTED:
+          this.confirmDiscountConsentString_ = loadTimeData.getString(
+              'modulesCartDiscountConsentAcceptConfirmation');
+          break;
+        case ConsentStatus.REJECTED:
+          this.confirmDiscountConsentString_ = loadTimeData.getString(
+              'modulesCartDiscountConsentRejectConfirmation');
+          break;
+        default:
+          assertNotReached();
+      }
+
+      this.$.confirmDiscountConsentToast.show();
+      this.$.confirmDiscountConsentToast.focus();
+    }
+  }
+
   private onDiscountConsentRejected_() {
+    this.consentStatus_ = ConsentStatus.REJECTED;
     this.discountConsentVisible_ = false;
-    this.confirmDiscountConsentString_ =
-        loadTimeData.getString('modulesCartDiscountConsentRejectConfirmation');
-    this.$.confirmDiscountConsentToast.show();
-    this.$.confirmDiscountConsentToast.focus();
     ChromeCartProxy.getHandler().onDiscountConsentAcknowledged(false);
     chrome.metricsPrivate.recordUserAction(
         'NewTabPage.Carts.RejectDiscountConsent');
   }
 
   private onDiscountConsentAccepted_() {
+    this.consentStatus_ = ConsentStatus.ACCEPTED;
     this.discountConsentVisible_ = false;
-    this.confirmDiscountConsentString_ =
-        loadTimeData.getString('modulesCartDiscountConsentAcceptConfirmation');
-    this.$.confirmDiscountConsentToast.show();
-    this.$.confirmDiscountConsentToast.focus();
     ChromeCartProxy.getHandler().onDiscountConsentAcknowledged(true);
     chrome.metricsPrivate.recordUserAction(
         'NewTabPage.Carts.AcceptDiscountConsent');
   }
 
   private onDiscountConsentDismissed_() {
+    this.consentStatus_ = ConsentStatus.DISMISSED;
     this.discountConsentVisible_ = false;
     ChromeCartProxy.getHandler().onDiscountConsentDismissed();
     chrome.metricsPrivate.recordUserAction(
