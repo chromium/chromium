@@ -8,16 +8,12 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 using ukm::builders::PageLoad;
 
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_FirstInputDelay DISABLED_FirstInputDelay
-#else
-#define MAYBE_FirstInputDelay FirstInputDelay
-#endif
-IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, MAYBE_FirstInputDelay) {
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, FirstInputDelay) {
   LoadHTML(R"HTML(
     <p>Sample website</p>
     <script>
@@ -42,6 +38,13 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, MAYBE_FirstInputDelay) {
       content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   StartTracing({"loading"});
+
+  // We should wait for the main frame's hit-test data to be ready before
+  // sending the click event below to avoid flakiness.
+  content::WaitForHitTestData(web_contents()->GetMainFrame());
+  // Ensure the compositor thread is ready for mouse events.
+  content::MainThreadFrameObserver frame_observer(GetRenderWidgetHost());
+  frame_observer.Wait();
 
   content::SimulateMouseClick(web_contents(), 0,
                               blink::WebMouseEvent::Button::kLeft);
