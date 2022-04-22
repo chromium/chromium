@@ -52,11 +52,9 @@ class AutofillField : public FormFieldData {
   static std::unique_ptr<AutofillField> CreateForPasswordManagerUpload(
       FieldSignature field_signature);
 
-  ServerFieldType heuristic_type() const;
+  ServerFieldType heuristic_type(
+      PredictionSource s = PredictionSource::kDefaultHeuristics) const;
   ServerFieldType server_type() const;
-  ServerFieldType get_prediction(PredictionSource s) const {
-    return local_type_predictions_[static_cast<size_t>(s)];
-  }
   bool server_type_prediction_is_override() const;
   const std::vector<
       AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>&
@@ -79,15 +77,12 @@ class AutofillField : public FormFieldData {
   bool only_fill_when_focused() const { return only_fill_when_focused_; }
 
   // Setters for the detected types.
-  void set_heuristic_type(ServerFieldType type);
+  void set_heuristic_type(PredictionSource s, ServerFieldType t);
   void add_possible_types_validities(
       const ServerFieldTypeValidityStateMap& possible_types_validities);
   void set_server_predictions(
       std::vector<AutofillQueryResponse::FormSuggestion::FieldSuggestion::
                       FieldPrediction> predictions);
-  void set_prediction(PredictionSource s, ServerFieldType t) {
-    local_type_predictions_[static_cast<size_t>(s)] = t;
-  }
 
   void set_may_use_prefilled_placeholder(bool may_use_prefilled_placeholder) {
     may_use_prefilled_placeholder_ = may_use_prefilled_placeholder;

@@ -1182,7 +1182,8 @@ void FormStructure::RetrieveFromCache(
       if (!only_server_and_autofill_state) {
         // Transfer attributes of the cached AutofillField to the newly created
         // AutofillField.
-        field->set_heuristic_type(cached_field->heuristic_type());
+        field->set_heuristic_type(PredictionSource::kDefaultHeuristics,
+                                  cached_field->heuristic_type());
         field->SetHtmlType(cached_field->html_type(),
                            cached_field->html_mode());
         field->section = cached_field->section;
@@ -1665,7 +1666,8 @@ void FormStructure::ParseFieldTypesWithPatterns(LogManager* log_manager) {
       auto iter = field_type_map.find(field->global_id());
       if (iter != field_type_map.end()) {
         const FieldCandidates& candidates = iter->second;
-        field->set_heuristic_type(candidates.BestHeuristicType());
+        field->set_heuristic_type(PredictionSource::kDefaultHeuristics,
+                                  candidates.BestHeuristicType());
 
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
         auto set_hypothetical_type =
@@ -1673,7 +1675,7 @@ void FormStructure::ParseFieldTypesWithPatterns(LogManager* log_manager) {
           absl::optional<ServerFieldType> type =
               candidates.GetHypotheticalType(source);
           if (type)
-            field->set_prediction(source, *type);
+            field->set_heuristic_type(source, *type);
         };
         set_hypothetical_type(PredictionSource::kExperimentalHeuristics);
         set_hypothetical_type(PredictionSource::kNextGenHeuristics);

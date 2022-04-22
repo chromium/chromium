@@ -22,7 +22,8 @@ void TestFormStructure::SetFieldTypes(
   for (size_t i = 0; i < field_count(); ++i) {
     AutofillField* form_field = field(i);
     ASSERT_TRUE(form_field);
-    form_field->set_heuristic_type(heuristic_types[i]);
+    form_field->set_heuristic_type(PredictionSource::kDefaultHeuristics,
+                                   heuristic_types[i]);
     AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
         prediction;
     prediction.set_type(server_types[i]);
