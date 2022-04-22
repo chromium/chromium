@@ -350,7 +350,6 @@
 -EnterpriseStartupDialogViewBrowserTest.InvokeUi_Error
 -EnterpriseStartupDialogViewBrowserTest.InvokeUi_Information
 -EnterpriseStartupDialogViewBrowserTest.InvokeUi_Switch
--ExtensionApiTest.ChromeRuntimeGetPlatformInfo
 -ExtensionApiTest.FontSettingsIncognito
 -ExtensionApiTest.Storage
 -ExtensionApiTest.TemporaryAddressSpoof
@@ -550,7 +549,6 @@
 -PaymentRequestCvcUnmaskViewControllerVisualTest.InvokeUi_default
 -PaymentsRequestVisualTest.InvokeUi_NoShipping
 -PaymentsRequestVisualWithBasicCardDisabledTest.InvokeUi_NoShipping
--PersistentBackground/RuntimeApiTest.GetPlatformInfo/0
 -PolicyPrefsTestCoverageTest.AllPoliciesHaveATestCase
 -PrerenderSiteDetailsBrowserTest.MemoryDetailsForPrerender
 -PrivacyBudgetFieldtrialConfigTest.LoadsSettingsFromFieldTrialConfig
@@ -684,7 +682,6 @@
 -ScriptingAPITest.NestedWebContents
 -SecurePaymentConfirmationDialogViewTest.InvokeUi_default
 -SendTabToSelfBubbleTest.InvokeUi_default
--ServiceWorker/RuntimeApiTest.GetPlatformInfo/0
 -ServiceWorkerTest.MimeHandlerView
 -SessionCrashedBubbleViewTest.InvokeUi_SessionCrashedBubbleOfferUma
 -SessionRestoreTest.RestoreAfterClosingTabbedBrowserWithAppAndLaunching

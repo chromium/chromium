@@ -78,7 +78,15 @@
         "id": "PlatformOs",
         "type": "string",
         "description": "The operating system Chrome is running on.",
-        "enum": ["mac", "win", "android", "cros", "linux", "openbsd"]
+        "enum": [
+          "mac",
+          "win",
+          "android",
+          "cros",
+          "linux",
+          "openbsd",
+          "fuchsia"
+        ]
       },
       {
         "id": "PlatformArch",
