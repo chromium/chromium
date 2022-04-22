@@ -82,6 +82,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
+#include "ios/chrome/browser/ui/util/features.h"
 #include "ios/chrome/browser/web/features.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"
@@ -851,6 +852,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"download-calendar", flag_descriptions::kDownloadCalendarName,
      flag_descriptions::kDownloadCalendarDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDownloadCalendar)},
+    {"uiview-window-observing", flag_descriptions::kUIViewWindowObservingName,
+     flag_descriptions::kUIViewWindowObservingDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kUIViewWindowObserving)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
