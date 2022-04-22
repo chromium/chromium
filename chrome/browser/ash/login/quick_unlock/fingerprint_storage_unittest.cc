@@ -129,11 +129,10 @@ TEST_F(FingerprintStorageUnitTest, TestScanResultIsSentToUma) {
       QuickUnlockFactory::GetForProfile(profile_.get())->fingerprint_storage();
   base::HistogramTester histogram_tester;
   base::flat_map<std::string, std::vector<std::string>> empty_matches;
-  device::mojom::FingerprintMessagePtr msg =
-      device::mojom::FingerprintMessage::New();
-
-  msg->set_scan_result(device::mojom::ScanResult::SUCCESS);
-  fingerprint_storage->OnAuthScanDone(std::move(msg), empty_matches);
+  fingerprint_storage->OnAuthScanDone(
+      device::mojom::FingerprintMessage::NewScanResult(
+          device::mojom::ScanResult::SUCCESS),
+      empty_matches);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kUmaAuthScanResult),
@@ -148,12 +147,10 @@ TEST_F(FingerprintStorageUnitTest, TestFingerprintErrorIsSentToUma) {
       QuickUnlockFactory::GetForProfile(profile_.get())->fingerprint_storage();
   base::HistogramTester histogram_tester;
   base::flat_map<std::string, std::vector<std::string>> empty_matches;
-  device::mojom::FingerprintMessagePtr msg =
-      device::mojom::FingerprintMessage::New();
-
-  msg->set_fingerprint_error(
-      device::mojom::FingerprintError::UNABLE_TO_PROCESS);
-  fingerprint_storage->OnAuthScanDone(std::move(msg), empty_matches);
+  fingerprint_storage->OnAuthScanDone(
+      device::mojom::FingerprintMessage::NewFingerprintError(
+          device::mojom::FingerprintError::UNABLE_TO_PROCESS),
+      empty_matches);
 
   EXPECT_TRUE(histogram_tester.GetAllSamples(kUmaAuthScanResult).empty());
 
