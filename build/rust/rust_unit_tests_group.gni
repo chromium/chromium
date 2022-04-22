@@ -65,6 +65,7 @@ template("rust_unit_tests_group") {
 
     testonly = true
     script = "//testing/scripts/rust/generate_bash_script.py"
+    inputs = [ _metadata_filepath ]
     outputs = [ _script_filepath ]
 
     data = [ _script_filepath ]

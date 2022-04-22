@@ -5,7 +5,7 @@
     "additional_compile_targets": [
       "mojo_rust",
       "rust_build_tests",
-      "autocxx_tests"
+      "rust_autocxx_tests"
     ],
     "gtest_tests": [
       {
@@ -84,7 +84,7 @@
     "additional_compile_targets": [
       "mojo_rust",
       "rust_build_tests",
-      "autocxx_tests"
+      "rust_autocxx_tests"
     ],
     "gtest_tests": [
       {
@@ -164,7 +164,7 @@
       "mojo_rust",
       "mojo_rust_tests",
       "rust_build_tests",
-      "autocxx_tests"
+      "rust_autocxx_tests"
     ],
     "gtest_tests": [
       {
@@ -268,7 +268,7 @@
       "mojo_rust",
       "mojo_rust_tests",
       "rust_build_tests",
-      "autocxx_tests"
+      "rust_autocxx_tests"
     ],
     "gtest_tests": [
       {
@@ -372,7 +372,7 @@
       "mojo_rust",
       "mojo_rust_tests",
       "rust_build_tests",
-      "autocxx_tests"
+      "rust_autocxx_tests"
     ],
     "gtest_tests": [
       {
