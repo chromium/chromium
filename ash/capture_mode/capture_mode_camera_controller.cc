@@ -974,8 +974,11 @@ void CaptureModeCameraController::FadeOutCameraPreview() {
           [](base::WeakPtr<CaptureModeCameraController> controller) {
             if (!controller || !controller->camera_preview_widget_)
               return;
-            controller->camera_preview_widget_->GetLayer()->SetOpacity(1.f);
+            // Please notice, the order matters here. If we set the layer's
+            // opacity back to 1.f before calling `Hide`, flickering can be
+            // seen.
             controller->camera_preview_widget_->Hide();
+            controller->camera_preview_widget_->GetLayer()->SetOpacity(1.f);
           },
           weak_ptr_factory_.GetWeakPtr()))
       .SetPreemptionStrategy(
