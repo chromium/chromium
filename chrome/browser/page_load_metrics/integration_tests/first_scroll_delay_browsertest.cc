@@ -6,22 +6,30 @@
 
 #include "build/build_config.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 using ukm::builders::PageLoad;
 
-// http://crbug.com/1098148
-IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_FirstScrollDelay) {
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, FirstScrollDelay) {
   LoadHTML(R"HTML(
-<div id="content">
-  <p>This is some text</p>
-</div>
-<script>
-  // Stretch the content tall enough to be able to scroll the page.
-  content.style.height = window.innerHeight * 2;
-</script>
+    <div id="content">
+      <p>This is some text</p>
+    </div>
+    <script>
+      // Stretch the content tall enough to be able to scroll the page.
+      content.style.height = window.innerHeight * 2;
+    </script>
   )HTML");
+
+  // We should wait for the main frame's hit-test data to be ready before
+  // sending the click event below to avoid flakiness.
+  content::WaitForHitTestData(web_contents()->GetMainFrame());
+  // Ensure the compositor thread is ready for wheel events.
+  content::MainThreadFrameObserver main_thread(GetRenderWidgetHost());
+  main_thread.Wait();
 
   // With a |RenderFrameSubmissionObsever| we can block until the scroll
   // completes.
@@ -40,7 +48,10 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_FirstScrollDelay) {
                                    blink::WebMouseWheelEvent::kPhaseEnded);
 
   // Wait for the scroll to complete and the display to be updated.
-  frame_observer.WaitForScrollOffset(gfx::PointF(0, scroll_distance));
+  const float device_scale_factor =
+      web_contents()->GetRenderWidgetHostView()->GetDeviceScaleFactor();
+  frame_observer.WaitForScrollOffset(
+      gfx::PointF(0, scroll_distance * device_scale_factor));
 
   // Navigate away.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
