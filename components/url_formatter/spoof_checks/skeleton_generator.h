@@ -93,6 +93,10 @@ class SkeletonGenerator {
                           int32_t mapped_char,
                           Skeletons* skeletons);
   void MaybeRemoveDiacritics(icu::UnicodeString& hostname);
+  // Returns true if supplemental hostnames of `input_hostname` should be
+  // generated without removing its diacritics.
+  bool ShouldComputeSupplementalHostnamesWithDiacritics(
+      base::StringPiece16 input_hostname) const;
 
   icu::UnicodeSet lgc_letters_n_ascii_;
 
@@ -101,6 +105,10 @@ class SkeletonGenerator {
 
   // Map of characters to their skeletons. This map is manually curated.
   std::map<char16_t, Skeletons> character_map_;
+  // Contains the characters from character_map_ that have diacritics. This is
+  // used to determine if we should compute supplemental hostnames for a
+  // hostname without removing its diacritics.
+  base::flat_set<char16_t> characters_with_multiple_skeletons_with_diacritics_;
 
   raw_ptr<const USpoofChecker> checker_;
 };

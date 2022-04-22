@@ -150,6 +150,14 @@ SkeletonGenerator::SkeletonGenerator(const USpoofChecker* checker)
   character_map_[u'œ'] = {"ce", "oe"};
   // https://crbug.com/1250993:
   character_map_[u'ł'] = {"l", "t"};
+
+  // Find the characters with diacritics that have multiple skeletons.
+  for (const auto& it : character_map_) {
+    std::u16string char_str(1, it.first);
+    if (char_str != MaybeRemoveDiacritics(char_str)) {
+      characters_with_multiple_skeletons_with_diacritics_.insert(it.first);
+    }
+  }
 }
 
 SkeletonGenerator::~SkeletonGenerator() = default;
@@ -170,6 +178,16 @@ std::u16string SkeletonGenerator::MaybeRemoveDiacritics(
   return base::i18n::UnicodeStringToString16(host);
 }
 
+bool SkeletonGenerator::ShouldComputeSupplementalHostnamesWithDiacritics(
+    base::StringPiece16 input_hostname) const {
+  for (const char16_t c : characters_with_multiple_skeletons_with_diacritics_) {
+    if (input_hostname.find(c) != base::StringPiece16::npos) {
+      return true;
+    }
+  }
+  return false;
+}
+
 Skeletons SkeletonGenerator::GetSkeletons(base::StringPiece16 input_hostname) {
   // Generate supplemental hostnames for the input hostname with and without
   // diacritics. We do this to cover characters whose diacritic versions can
@@ -182,18 +200,15 @@ Skeletons SkeletonGenerator::GetSkeletons(base::StringPiece16 input_hostname) {
   // is the number of characters in the hostname with diacritics, which is too
   // expensive. Currently, there is only one character with a diacritic that has
   // multiple skeletons (ł), so this isn't needed.
-  //
-  // TODO(crbug.com/1250993): Don't run GenerateSupplementalHostnames() when
-  // there is no character in the hostname with a diacritic that has a multiple
-  // skeleton.
-  base::flat_set<std::u16string> all_variants = GenerateSupplementalHostnames(
-      input_hostname, kMaxSupplementalHostnames, character_map_);
   std::u16string hostname_no_diacritics = MaybeRemoveDiacritics(input_hostname);
-  base::flat_set<std::u16string> no_diacritic_variants =
-      GenerateSupplementalHostnames(hostname_no_diacritics,
-                                    kMaxSupplementalHostnames, character_map_);
-  all_variants.insert(no_diacritic_variants.begin(),
-                      no_diacritic_variants.end());
+  base::flat_set<std::u16string> all_variants = GenerateSupplementalHostnames(
+      hostname_no_diacritics, kMaxSupplementalHostnames, character_map_);
+  if (ShouldComputeSupplementalHostnamesWithDiacritics(input_hostname)) {
+    base::flat_set<std::u16string> diacritic_variants =
+        GenerateSupplementalHostnames(input_hostname, kMaxSupplementalHostnames,
+                                      character_map_);
+    all_variants.insert(diacritic_variants.begin(), diacritic_variants.end());
+  }
 
   // Extract skeletons of all hostname variants.
   Skeletons skeletons;
