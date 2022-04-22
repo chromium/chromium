@@ -25,10 +25,14 @@ void UserNoteService::OnFrameNavigated(content::RenderFrameHost* rfh) {
   DCHECK(IsUserNotesEnabled());
 
   // For now, Notes are only supported in the main frame.
+  // TODO(crbug.com/1313967): This will need to be changed when User Notes are
+  // supported in subframes and / or AMP viewers.
   if (!rfh->IsInPrimaryMainFrame()) {
     return;
   }
 
+  // TODO(crbug.com/1313967): Should non-web URLs such as chrome:// and
+  // file:/// also be ignored here?
   if (rfh->GetPage().GetMainDocument().IsErrorDocument()) {
     return;
   }

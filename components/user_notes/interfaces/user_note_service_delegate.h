@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace content {
-class WebContents;
+class RenderFrameHost;
 }  // namespace content
 
 namespace user_notes {
@@ -24,18 +24,15 @@ class UserNoteServiceDelegate {
   UserNoteServiceDelegate& operator=(const UserNoteServiceDelegate&) = delete;
   virtual ~UserNoteServiceDelegate() = default;
 
-  // Finds the list of all |WebContents| currently open for the profile
-  // associated with the UserNoteService. The service will use this information
-  // to fetch the relevant notes from storage and add highlights to the
-  // webpages.
-  virtual std::vector<content::WebContents*> GetAllWebContents() = 0;
+  // Called by the `UserNoteService` to get the list of all frames for which
+  // notes should be updated.
+  virtual std::vector<content::RenderFrameHost*> GetAllFramesForUserNotes() = 0;
 
-  // Finds and returns the UI coordinator associated with the given
-  // |WebContents|. The service will use this to post commands to the UI, such
-  // as bringing a note into focus, or starting the UX flow to create a new
-  // note.
-  virtual UserNotesUI* GetUICoordinatorForWebContents(
-      const content::WebContents* wc) = 0;
+  // Called by the `UserNoteService` to get a handle to the UI coordinator
+  // associated with the given frame so it can post commands to the UI, for
+  // example to bring a note into focus or start the note creation flow.
+  virtual UserNotesUI* GetUICoordinatorForFrame(
+      const content::RenderFrameHost* rfh) = 0;
 };
 
 }  // namespace user_notes

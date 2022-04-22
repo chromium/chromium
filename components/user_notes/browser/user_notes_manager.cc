@@ -59,6 +59,12 @@ void UserNotesManager::RemoveNote(const base::UnguessableToken id) {
 }
 
 void UserNotesManager::AddNoteInstance(std::unique_ptr<UserNoteInstance> note) {
+  // TODO(crbug.com/1313967): This DCHECK is only applicable if notes are only
+  // supported in the top-level frame. If notes are ever supported in subframes,
+  // it is possible for the same note ID to be added to the same page more than
+  // once. For example, if website A has notes and website B embeds website A
+  // multiple times via iframes, then notes in website A will be added to this
+  // manager once for each frame.
   DCHECK(instance_map_.find(note->model().id()) == instance_map_.end())
       << "Attempted to add a note instance for the same note to the same page "
          "more than once";

@@ -7,7 +7,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/user_notes/interfaces/user_notes_ui.h"
-#include "content/public/browser/web_contents.h"
+#include "content/public/browser/render_frame_host.h"
 
 namespace user_notes {
 
@@ -16,15 +16,19 @@ UserNoteServiceDelegateImpl::UserNoteServiceDelegateImpl(Profile* profile)
 
 UserNoteServiceDelegateImpl::~UserNoteServiceDelegateImpl() = default;
 
-std::vector<content::WebContents*>
-UserNoteServiceDelegateImpl::GetAllWebContents() {
+std::vector<content::RenderFrameHost*>
+UserNoteServiceDelegateImpl::GetAllFramesForUserNotes() {
+  // TODO(crbug.com/1313967): For now, this only looks at the primary main frame
+  // of open tabs, since notes will initially only be supported there. When / if
+  // User Notes are supported in AMP viewers and subframes in general, this will
+  // need to walk the full frame tree of every open tab for the profile.
   // TODO(gujen): finish implementation.
   NOTIMPLEMENTED();
-  return std::vector<content::WebContents*>();
+  return std::vector<content::RenderFrameHost*>();
 }
 
-UserNotesUI* UserNoteServiceDelegateImpl::GetUICoordinatorForWebContents(
-    const content::WebContents* wc) {
+UserNotesUI* UserNoteServiceDelegateImpl::GetUICoordinatorForFrame(
+    const content::RenderFrameHost* rfh) {
   // TODO(gujen): finish implementation.
   NOTIMPLEMENTED();
   return nullptr;

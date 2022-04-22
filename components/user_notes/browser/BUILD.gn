@@ -4,12 +4,12 @@
 
 static_library("browser") {
   sources = [
+    "frame_user_note_changes.cc",
+    "frame_user_note_changes.h",
     "user_note_instance.cc",
     "user_note_instance.h",
     "user_note_service.cc",
     "user_note_service.h",
-    "user_notes_change.cc",
-    "user_notes_change.h",
     "user_notes_manager.cc",
     "user_notes_manager.h",
   ]

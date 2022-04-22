@@ -4,6 +4,8 @@
 
 source_set("interfaces") {
   sources = [
+    "user_note_metadata_snapshot.cc",
+    "user_note_metadata_snapshot.h",
     "user_note_service_delegate.h",
     "user_note_storage.h",
     "user_notes_ui.h",

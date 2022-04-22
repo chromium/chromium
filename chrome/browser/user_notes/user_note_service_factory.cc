@@ -46,6 +46,8 @@ KeyedService* UserNoteServiceFactory::BuildServiceInstanceFor(
 content::BrowserContext* UserNoteServiceFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   // For now, the feature is not supported in Incognito mode.
+  // TODO(crbug.com/1313967): This will need to be changed if User Notes are to
+  // be available in Incognito.
   if (context->IsOffTheRecord()) {
     return nullptr;
   }

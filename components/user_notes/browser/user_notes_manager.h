@@ -70,6 +70,13 @@ class UserNotesManager : public content::PageUserData<UserNotesManager> {
   base::SafeRef<UserNoteService> service_;
 
   // The list of note instances displayed in this page, mapped by their note ID.
+  // TODO(crbug.com/1313967): Holding the instances in an ID -> Instance map
+  // works while only top-level frames are supported, but won't always work if
+  // subframes are supported. For example, if website A has notes and website B
+  // embeds website A multiple times via iframes, then there will be multiple
+  // note instances in this manager for the same note ID, which this data
+  // structure can't handle. In that case the data structure will probably need
+  // to be something like ID -> Frame -> Instance.
   std::unordered_map<base::UnguessableToken,
                      std::unique_ptr<UserNoteInstance>,
                      base::UnguessableTokenHash>

@@ -31,18 +31,6 @@ content::Page& NullPage() {
   return CreatePageNullRef(nullptr);
 }
 
-class UserNoteServiceDelegateMockImpl : public UserNoteServiceDelegate {
- public:
-  std::vector<content::WebContents*> GetAllWebContents() override {
-    return std::vector<content::WebContents*>();
-  }
-
-  UserNotesUI* GetUICoordinatorForWebContents(
-      const content::WebContents* wc) override {
-    return nullptr;
-  }
-};
-
 }  // namespace
 
 class UserNoteServiceTest : public testing::Test {
@@ -54,7 +42,7 @@ class UserNoteServiceTest : public testing::Test {
 
     scoped_feature_list_.InitAndEnableFeature(user_notes::kUserNotes);
     note_service_ = std::make_unique<UserNoteService>(
-        std::make_unique<UserNoteServiceDelegateMockImpl>());
+        std::unique_ptr<UserNoteServiceDelegate>());
     auto note1 = std::make_unique<UserNote>(
         note_ids_[0], GetTestUserNoteMetadata(), GetTestUserNoteBody(),
         GetTestUserNotePageTarget());

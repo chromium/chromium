@@ -13,7 +13,7 @@
 class Profile;
 
 namespace content {
-class WebContents;
+class RenderFrameHost;
 }  // namespace content
 
 namespace user_notes {
@@ -31,10 +31,10 @@ class UserNoteServiceDelegateImpl : public UserNoteServiceDelegate {
   ~UserNoteServiceDelegateImpl() override;
 
   // UserNoteServiceDelegate implementation.
-  std::vector<content::WebContents*> GetAllWebContents() override;
+  std::vector<content::RenderFrameHost*> GetAllFramesForUserNotes() override;
 
-  UserNotesUI* GetUICoordinatorForWebContents(
-      const content::WebContents* wc) override;
+  UserNotesUI* GetUICoordinatorForFrame(
+      const content::RenderFrameHost* rfh) override;
 
  private:
   raw_ptr<Profile> profile_;
