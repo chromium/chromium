@@ -73,7 +73,7 @@ def _split(args: argparse.Namespace, build_filepaths: List[str],
             for filepath in build_filepaths
         }
         for idx, filepath in enumerate(tasks.keys()):
-            logging.debug('[%d/%d] Checking %s', idx, num_total, filepath)
+            logging.info('[%d/%d] Checking %s', idx, num_total, filepath)
             operation_result = tasks[filepath].get()
             if operation_result:
                 logging.info(operation_result)
@@ -113,10 +113,18 @@ def _remove(args: argparse.Namespace, build_filepaths: List[str],
         # Since removal can take a long time, provide an easy way to resume the
         # command if something fails.
         try:
+            # When resuming, the first build file is the one that is being
+            # resumed. Avoid inline mode skipping it since it's already started
+            # to be processed and the first dep may already have been removed.
+            if args.resume_from and idx == 0 and args.inline_mode:
+                logging.info(f'Resuming: skipping inline mode for {filepath}.')
+                should_inline = False
+            else:
+                should_inline = args.inline_mode
             logging.info('[%d/%d] Checking %s', idx, num_total, filepath)
             operation_result = _remove_deps(args.dep, out_dir, root, filepath,
                                             args.dryrun, args.targets,
-                                            args.inline_mode)
+                                            should_inline)
             if operation_result:
                 logging.info(operation_result)
                 results.append(operation_result)

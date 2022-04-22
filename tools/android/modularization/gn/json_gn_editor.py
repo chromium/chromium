@@ -12,10 +12,11 @@ import json
 import logging
 import os
 import pathlib
+import shutil
 import subprocess
 import sys
 
-from typing import List
+from typing import List, Optional
 
 _TOOLS_ANDROID_PATH = pathlib.Path(__file__).parents[2].resolve()
 if str(_TOOLS_ANDROID_PATH) not in sys.path:
@@ -45,13 +46,49 @@ def _restore_original_file_contents(path):
             f.write(original_content)
 
 
-def _build_targets(out_dir: str,
-                   targets: List[str]) -> subprocess.CompletedProcess:
-    logging.debug('Running build...')
-    return subprocess.run(['autoninja', '-C', out_dir] + targets,
-                          capture_output=True,
-                          check=True,
-                          text=True)
+def _build_targets_output(out_dir: str,
+                          targets: List[str],
+                          should_print: bool = False) -> Optional[str]:
+    env = os.environ.copy()
+    # This is needed for detecting based on autoninja output whether just the
+    # about_credits.html target was built.
+    env['NINJA_SUMMARIZE_BUILD'] = '1'
+    proc = subprocess.Popen(['autoninja', '-C', out_dir] + targets,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT,
+                            env=env,
+                            text=True)
+    lines = []
+    prev_line = ''
+    width = shutil.get_terminal_size().columns
+    while proc.poll() is None:
+        line = proc.stdout.readline()
+        lines.append(line)
+        if should_print:
+            if prev_line.startswith('[') and line.startswith('['):
+                # Shrink the line according to terminal size.
+                msg = line.rstrip()
+                if len(msg) > width:
+                    # 5 = 3 (Ellipsis) + 2 (header)
+                    length_to_show = width - 5
+                    msg = f'{msg[:2]}...{msg[-length_to_show:]}'
+                # \r to return the carriage to the beginning of line, \033[K to
+                # replace the normal \n to erase until the end of the line. This
+                # allows ninja output for successful targets to overwrite each
+                # other.
+                msg = f'\r{msg}\033[K'
+            elif prev_line.startswith('['):
+                # Since the previous line likely did not include a newline, an
+                # extra newline is needed to avoid the current line being
+                # appended to the previous line.
+                msg = f'\n{line}'
+            else:
+                msg = line
+            print(msg, end='')
+        prev_line = line
+    if proc.returncode != 0:
+        return None
+    return ''.join(lines)
 
 
 class BuildFile:
@@ -238,7 +275,7 @@ class BuildFile:
                     targets: List[str]) -> bool:
         """Remove |dep_name| if the target can still be built in |out_dir|.
 
-        Supports deps only since public_dep affects other dependent deps.
+        Supports deps, public_deps, and other variables named *_deps.
 
         Works for explicitly assigning a list to deps:
         deps = [ ..., "original_dep", ...]
@@ -254,7 +291,8 @@ class BuildFile:
 
         name_list_tuples = self._find_all_list_assignments()
         all_deps_lists = [
-            node_list for name, node_list in name_list_tuples if name == 'deps'
+            node_list for name, node_list in name_list_tuples
+            if name == 'deps' or name.endswith('_deps')
         ]
 
         removed_dep = False
@@ -274,15 +312,6 @@ class BuildFile:
                 child_to_remove = deps_list[idx_to_remove]
                 can_remove_dep = False
                 with _restore_original_file_contents(self._full_path):
-                    logging.debug('Ensuring clean build...')
-                    # In order to properly detect whether the current build
-                    # change resulted in work for ninja or not, we need to start
-                    # from a clean, successful build. Otherwise prior changes to
-                    # build files may make the build dirty and a target would
-                    # get incorrectly removed.
-                    _build_targets(out_dir, targets)
-                    # This removal must come after the previous build so that if
-                    # the build is interrupted, deps_list is in a correct state.
                     deps_list.remove(child_to_remove)
                     self.write_content_to_file()
                     # Immediately restore deps_list's original value in case the
@@ -310,19 +339,25 @@ class BuildFile:
 
     def _can_still_build_everything(self, out_dir: str,
                                     targets: List[str]) -> bool:
-        try:
-            completed_process = _build_targets(out_dir, targets)
-        except subprocess.CalledProcessError as e:
-            logging.debug(e.stdout)
-            logging.debug(e.stderr)
+
+        should_print = logging.getLogger().isEnabledFor(logging.DEBUG)
+        output = _build_targets_output(out_dir,
+                                       targets,
+                                       should_print=should_print)
+        if output is None:
             logging.info('Ninja failed to build all targets')
             return False
         # If ninja did not re-build anything, then the target changed is not
         # among the targets being built. Avoid this change as it's not been
-        # tested/used.
-        if 'ninja: no work to do.' in completed_process.stdout:
-            logging.debug(completed_process.stdout)
-            logging.debug(completed_process.stderr)
+        # tested/used. about_credits.html is special in that it has build.ninja
+        # in its depfile so it is rebuilt every time build.ninja is updated, so
+        # in practice, every time a BUILD.gn file is updated. If that is the
+        # only target that changed, then it is the same as no real targets were
+        # built.
+        if 'ninja: no work to do.' in output or (
+                '    1 build steps completed' in output
+                and 'to build gen/components/resources/about_credits.html' in
+                output):
             logging.info('Ninja did not find any targets to build')
             return False
         return True
