@@ -5,13 +5,10 @@
 #import "ios/chrome/browser/ui/follow/first_follow_view_controller.h"
 
 #include "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/favicon/favicon_loader.h"
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/ui/follow/first_follow_favicon_data_source.h"
 #import "ios/chrome/browser/ui/follow/first_follow_view_delegate.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
-#import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/common/ui/favicon/favicon_container_view.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -137,11 +134,13 @@ constexpr CGFloat kButtonCornerRadius = 8;
   FaviconContainerView* faviconContainerView =
       [[FaviconContainerView alloc] init];
   faviconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.faviconLoader->FaviconForIconUrl(
-      self.followedWebChannel.faviconURL.gurl, kDesiredSmallFaviconSizePt,
-      kMinFaviconSizePt, ^(FaviconAttributes* attributes) {
-        [faviconContainerView.faviconView configureWithAttributes:attributes];
-      });
+
+  [self.faviconDataSource faviconForURL:self.followedWebChannel.faviconURL
+                             completion:^(FaviconAttributes* attributes) {
+                               DCHECK(attributes);
+                               [faviconContainerView.faviconView
+                                   configureWithAttributes:attributes];
+                             }];
 
   UIImageView* faviconBadgeView = [[UIImageView alloc] init];
   faviconBadgeView.translatesAutoresizingMaskIntoConstraints = NO;

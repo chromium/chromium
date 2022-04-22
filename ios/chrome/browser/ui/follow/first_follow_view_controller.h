@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-class FaviconLoader;
 @protocol FirstFollowViewDelegate;
+@protocol FirstFollowFaviconDataSource;
 @class FollowedWebChannel;
 
 // The UI that informs the user about the feed and following channels the
@@ -21,8 +21,8 @@ class FaviconLoader;
 // Delegate to execute actions triggered in this UI.
 @property(nonatomic, weak) id<FirstFollowViewDelegate> delegate;
 
-// FaviconLoader retrieves favicons for a given page URL.
-@property(nonatomic, assign) FaviconLoader* faviconLoader;
+// Data source for favicons.
+@property(nonatomic, weak) id<FirstFollowFaviconDataSource> faviconDataSource;
 
 @end
 

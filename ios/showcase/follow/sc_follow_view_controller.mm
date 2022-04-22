@@ -5,6 +5,7 @@
 #import "ios/showcase/follow/sc_follow_view_controller.h"
 
 #import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/ui/follow/first_follow_favicon_data_source.h"
 #import "ios/chrome/browser/ui/follow/first_follow_view_controller.h"
 #import "ios/chrome/browser/ui/follow/first_follow_view_delegate.h"
 #import "ios/chrome/browser/ui/follow/follow_block_types.h"
@@ -35,7 +36,8 @@ static NSString* const kExampleFaviconURL =
 
 }  // namespace
 
-@interface SCFollowViewController () <FollowedWebChannelsDataSource,
+@interface SCFollowViewController () <FirstFollowFaviconDataSource,
+                                      FollowedWebChannelsDataSource,
                                       TableViewFaviconDataSource>
 // Shows alerts of protocol method calls.
 @property(nonatomic, strong) ProtocolAlerter* alerter;
@@ -137,6 +139,7 @@ static NSString* const kExampleFaviconURL =
   self.alerter.baseViewController = firstFollowViewController;
   firstFollowViewController.delegate =
       static_cast<id<FirstFollowViewDelegate>>(self.alerter);
+  firstFollowViewController.faviconDataSource = self;
 
   if (@available(iOS 15, *)) {
     firstFollowViewController.modalPresentationStyle =
@@ -197,7 +200,7 @@ static NSString* const kExampleFaviconURL =
   return channel;
 }
 
-#pragma mark - TableViewFaviconDataSource
+#pragma mark - TableViewFaviconDataSource & FirstFollowFaviconDataSource
 
 - (void)faviconForURL:(CrURL*)URL
            completion:(void (^)(FaviconAttributes*))completion {

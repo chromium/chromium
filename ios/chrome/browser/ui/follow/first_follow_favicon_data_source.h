@@ -1,0 +1,24 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_UI_FOLLOW_FIRST_FOLLOW_FAVICON_DATA_SOURCE_H_
+#define IOS_CHROME_BROWSER_UI_FOLLOW_FIRST_FOLLOW_FAVICON_DATA_SOURCE_H_
+
+@class CrURL;
+@class FaviconAttributes;
+
+// Protocol that First Follow UI uses to retrieve favicons for its cells.
+@protocol FirstFollowFaviconDataSource
+// Requests the receiver to provide a favicon image for |URL|. A
+// FaviconAttributes instance with non-nil properties is synchronously returned
+// for immediate use. |completion| is called asynchronously with a
+// FaviconAttributes instance if appropriate. For example, a default image may be
+// returned synchronously and the actual favicon returned asynchronously. In
+// another example, the image returned synchronously may be the actual favicon,
+// so there is no need to call the completion block.
+- (void)faviconForURL:(CrURL*)URL
+           completion:(void (^)(FaviconAttributes*))completion;
+@end
+
+#endif  // IOS_CHROME_BROWSER_UI_FOLLOW_FIRST_FOLLOW_FAVICON_DATA_SOURCE_H_
