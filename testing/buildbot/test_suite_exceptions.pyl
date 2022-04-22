@@ -580,6 +580,16 @@
           'shards': 50,
         },
       },
+      'Linux ChromiumOS MSan Focal': {
+        # These are very slow on the Chrome OS MSAN trybot for some reason.
+        # crbug.com/865455
+        'swarming': {
+          'shards': 40,
+        },
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.msan.browser_tests.oobe_negative.filter',
+        ],
+      },
       'Linux ChromiumOS MSan Tests': {
         # These are very slow on the Chrome OS MSAN trybot for some reason.
         # crbug.com/865455
@@ -1687,6 +1697,7 @@
       # Can't run on MSAN because gl_tests uses the hardware driver,
       # which isn't instrumented.
       'Linux MSan Tests',
+      'Linux MSan Focal',
     ],
     'modifications': {
       # TODO(kbr): figure out a better way to specify blocks of
@@ -1793,6 +1804,7 @@
       # Can't run on MSAN because gl_unittests uses the hardware driver,
       # which isn't instrumented.
       'Linux MSan Tests',
+      'Linux MSan Focal',
     ],
     'modifications': {
       'android-12-x64-rel': {
@@ -1807,6 +1819,7 @@
       # Can't run on MSAN because gl_unittests_ozone uses the hardware driver,
       # which isn't instrumented.
       'Linux ChromiumOS MSan Tests',
+      'Linux ChromiumOS MSan Focal',
     ],
   },
   'gpu_process_launch_tests': {
@@ -1963,6 +1976,13 @@
         'swarming': {
           'shards': 6,
           'quickrun_shards': 12,
+        },
+      },
+      'Linux ChromiumOS MSan Focal': {
+        # These are very slow on the Chrome OS MSAN trybot for some reason.
+        # crbug.com/865455
+        'swarming': {
+          'shards': 5,
         },
       },
       'Linux ChromiumOS MSan Tests': {
@@ -2769,7 +2789,9 @@
       # The face and barcode detection tests fail on the Mac Pros.
       'Mac Pro FYI Release (AMD)',
       'Linux ChromiumOS MSan Tests',  # https://crbug.com/831676
+      'Linux ChromiumOS MSan Focal',
       'Linux MSan Tests',  # https://crbug.com/831676
+      'Linux MSan Focal',  # https://crbug.com/831676
     ],
     'replacements': {
       # TODO(crbug.com/1078982): Remove once the test is fixed on 10.15.4.

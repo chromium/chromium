@@ -2734,6 +2734,10 @@
           'linux-focal',
           'x86-64',
         ],
+        'swarming': {
+          'expiration': 10800,
+          'hard_timeout': 7200,
+        },
         'test_suites': {
           'gtest_tests': 'linux_chromeos_gtests_oobe',
         },
@@ -2746,6 +2750,10 @@
           'linux-focal',
           'x86-64',
         ],
+        'swarming': {
+          'expiration': 10800,
+          'hard_timeout': 7200,
+        },
         'test_suites': {
           'gtest_tests': 'chromium_linux_and_gl_gtests',
         },

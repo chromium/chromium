@@ -1570,6 +1570,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "absl_hardening_tests",
@@ -1591,6 +1593,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "accessibility_unittests",
@@ -1613,6 +1617,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -1635,6 +1641,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "app_shell_unittests",
@@ -1656,6 +1664,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ash_components_unittests",
@@ -1677,6 +1687,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 5
         },
@@ -1699,6 +1711,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ash_webui_unittests",
@@ -1720,6 +1734,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "aura_unittests",
@@ -1743,6 +1759,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "aura_unittests",
@@ -1764,6 +1782,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "base_unittests",
@@ -1785,6 +1805,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_common_unittests",
@@ -1806,6 +1828,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_fuzzer_unittests",
@@ -1827,6 +1851,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_heap_unittests",
@@ -1848,6 +1874,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_platform_unittests",
@@ -1870,6 +1898,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_unittests",
@@ -1891,6 +1921,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "boringssl_crypto_tests",
@@ -1912,6 +1944,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "boringssl_ssl_tests",
@@ -1919,7 +1953,8 @@
       },
       {
         "args": [
-          "--test-launcher-print-test-stdio=always"
+          "--test-launcher-print-test-stdio=always",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.msan.browser_tests.oobe_negative.filter"
         ],
         "merge": {
           "args": [],
@@ -1933,8 +1968,10 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
+          "shards": 40
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -1958,6 +1995,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -1981,6 +2020,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "capture_unittests",
@@ -2002,6 +2043,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "cast_unittests",
@@ -2023,6 +2066,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "cc_unittests",
@@ -2044,6 +2089,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_app_unittests",
@@ -2065,6 +2112,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chromedriver_unittests",
@@ -2086,6 +2135,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chromeos_components_unittests",
@@ -2107,6 +2158,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chromeos_unittests",
@@ -2128,6 +2181,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "color_unittests",
@@ -2149,6 +2204,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_browsertests",
@@ -2170,6 +2227,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_unittests",
@@ -2191,6 +2250,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "compositor_unittests",
@@ -2212,6 +2273,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
@@ -2234,6 +2297,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_unittests",
@@ -2255,6 +2320,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "crashpad_tests",
@@ -2276,6 +2343,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "crypto_unittests",
@@ -2297,6 +2366,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "dbus_unittests",
@@ -2318,6 +2389,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "device_unittests",
@@ -2339,6 +2412,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "display_unittests",
@@ -2360,6 +2435,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "events_unittests",
@@ -2381,6 +2458,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "exo_unittests",
@@ -2402,6 +2481,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "extensions_browsertests",
@@ -2423,6 +2504,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "extensions_unittests",
@@ -2444,6 +2527,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "filesystem_service_unittests",
@@ -2465,6 +2550,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gcm_unit_tests",
@@ -2486,6 +2573,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gfx_unittests",
@@ -2507,6 +2596,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gin_unittests",
@@ -2528,27 +2619,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "gl_unittests_ozone",
-        "test_id_prefix": "ninja://ui/gl:gl_unittests_ozone/"
-      },
-      {
-        "args": [
-          "--test-launcher-print-test-stdio=always"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Ubuntu-20.04"
-            }
-          ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "google_apis_unittests",
@@ -2570,6 +2642,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -2591,6 +2665,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gwp_asan_unittests",
@@ -2612,8 +2688,10 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 3
+          "shards": 5
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -2634,6 +2712,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ipc_tests",
@@ -2655,6 +2735,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "keyboard_unittests",
@@ -2676,6 +2758,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "latency_unittests",
@@ -2697,6 +2781,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "libjingle_xmpp_unittests",
@@ -2718,6 +2804,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "liburlpattern_unittests",
@@ -2739,6 +2827,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "media_unittests",
@@ -2760,6 +2850,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "message_center_unittests",
@@ -2781,6 +2873,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "midi_unittests",
@@ -2802,6 +2896,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_core_unittests",
@@ -2823,6 +2919,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_unittests",
@@ -2844,6 +2942,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "nacl_loader_unittests",
@@ -2865,6 +2965,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "native_theme_unittests",
@@ -2886,6 +2988,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "net_unittests",
@@ -2908,6 +3012,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ozone_gl_unittests",
@@ -2929,6 +3035,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ozone_unittests",
@@ -2950,6 +3058,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ozone_x11_unittests",
@@ -2971,6 +3081,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "pdf_unittests",
@@ -2992,6 +3104,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "perfetto_unittests",
@@ -3013,6 +3127,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ppapi_unittests",
@@ -3034,6 +3150,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "printing_unittests",
@@ -3055,6 +3173,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "remoting_unittests",
@@ -3076,6 +3196,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "sandbox_linux_unittests",
@@ -3097,6 +3219,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "service_manager_unittests",
@@ -3118,27 +3242,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "services_unittests",
-        "test_id_prefix": "ninja://services:services_unittests/"
-      },
-      {
-        "args": [
-          "--test-launcher-print-test-stdio=always"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Ubuntu-20.04"
-            }
-          ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "shell_dialogs_unittests",
@@ -3160,6 +3265,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "shell_encryption_unittests",
@@ -3181,6 +3288,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "skia_unittests",
@@ -3202,6 +3311,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "snapshot_unittests",
@@ -3223,6 +3334,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "sql_unittests",
@@ -3244,6 +3357,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "storage_unittests",
@@ -3265,6 +3380,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "sync_integration_tests",
@@ -3286,6 +3403,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ui_base_unittests",
@@ -3307,6 +3426,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ui_chromeos_unittests",
@@ -3328,6 +3449,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ui_touch_selection_unittests",
@@ -3349,6 +3472,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "unit_tests",
@@ -3370,6 +3495,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "url_unittests",
@@ -3392,6 +3519,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "usage_time_limit_unittests",
@@ -3413,6 +3542,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "views_unittests",
@@ -3434,6 +3565,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "viz_unittests",
@@ -3455,6 +3588,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "wayland_client_perftests",
@@ -3476,6 +3611,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "wayland_client_tests",
@@ -3497,6 +3634,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "wm_unittests",
@@ -3518,6 +3657,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "wtf_unittests",
@@ -3539,6 +3680,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "zlib_unittests",
@@ -3564,6 +3707,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "absl_hardening_tests",
@@ -3585,6 +3730,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "accessibility_unittests",
@@ -3607,6 +3754,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -3629,6 +3778,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "app_shell_unittests",
@@ -3650,6 +3801,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "aura_unittests",
@@ -3671,6 +3824,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "base_unittests",
@@ -3692,6 +3847,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_common_unittests",
@@ -3713,6 +3870,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_fuzzer_unittests",
@@ -3734,6 +3893,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_heap_unittests",
@@ -3755,6 +3916,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_platform_unittests",
@@ -3777,6 +3940,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_unittests",
@@ -3798,6 +3963,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "boringssl_crypto_tests",
@@ -3819,6 +3986,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "boringssl_ssl_tests",
@@ -3840,6 +4009,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 10
         },
@@ -3863,6 +4034,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "capture_unittests",
@@ -3884,6 +4057,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "cast_unittests",
@@ -3905,6 +4080,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "cc_unittests",
@@ -3926,6 +4103,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_app_unittests",
@@ -3947,6 +4126,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chromedriver_unittests",
@@ -3968,6 +4149,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "color_unittests",
@@ -3989,6 +4172,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_browsertests",
@@ -4010,6 +4195,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_unittests",
@@ -4031,6 +4218,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "compositor_unittests",
@@ -4052,6 +4241,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
@@ -4074,6 +4265,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_unittests",
@@ -4095,6 +4288,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "crashpad_tests",
@@ -4116,6 +4311,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "cronet_tests",
@@ -4137,6 +4334,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "cronet_unittests",
@@ -4158,6 +4357,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "crypto_unittests",
@@ -4179,6 +4380,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "dbus_unittests",
@@ -4200,6 +4403,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "device_unittests",
@@ -4221,6 +4426,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "display_unittests",
@@ -4242,6 +4449,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "events_unittests",
@@ -4263,6 +4472,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "extensions_browsertests",
@@ -4284,6 +4495,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "extensions_unittests",
@@ -4305,6 +4518,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "filesystem_service_unittests",
@@ -4326,6 +4541,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gcm_unit_tests",
@@ -4347,6 +4564,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gfx_unittests",
@@ -4368,6 +4587,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gin_unittests",
@@ -4375,30 +4596,6 @@
       },
       {
         "args": [
-          "--use-cmd-decoder=passthrough",
-          "--test-launcher-print-test-stdio=always"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "gl_tests_passthrough",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Ubuntu-20.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test": "gl_tests",
-        "test_id_prefix": "ninja://gpu:gl_tests/"
-      },
-      {
-        "args": [
           "--test-launcher-print-test-stdio=always"
         ],
         "merge": {
@@ -4413,27 +4610,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "gl_unittests",
-        "test_id_prefix": "ninja://ui/gl:gl_unittests/"
-      },
-      {
-        "args": [
-          "--test-launcher-print-test-stdio=always"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Ubuntu-20.04"
-            }
-          ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "google_apis_unittests",
@@ -4455,6 +4633,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -4476,6 +4656,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gwp_asan_unittests",
@@ -4497,6 +4679,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "headless_browsertests",
@@ -4518,6 +4702,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "headless_unittests",
@@ -4539,6 +4725,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
@@ -4561,6 +4749,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ipc_tests",
@@ -4582,6 +4772,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "latency_unittests",
@@ -4603,6 +4795,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "libjingle_xmpp_unittests",
@@ -4624,6 +4818,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "liburlpattern_unittests",
@@ -4645,6 +4841,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "media_unittests",
@@ -4666,6 +4864,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "message_center_unittests",
@@ -4687,6 +4887,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "midi_unittests",
@@ -4708,6 +4910,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_core_unittests",
@@ -4729,6 +4933,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_unittests",
@@ -4750,6 +4956,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "nacl_loader_unittests",
@@ -4771,6 +4979,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "native_theme_unittests",
@@ -4792,6 +5002,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "net_unittests",
@@ -4813,6 +5025,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "openscreen_unittests",
@@ -4834,6 +5048,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ozone_x11_unittests",
@@ -4855,6 +5071,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "pdf_unittests",
@@ -4876,6 +5094,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "perfetto_unittests",
@@ -4897,6 +5117,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ppapi_unittests",
@@ -4918,6 +5140,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "printing_unittests",
@@ -4939,6 +5163,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "remoting_unittests",
@@ -4960,6 +5186,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "sandbox_linux_unittests",
@@ -4981,6 +5209,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "service_manager_unittests",
@@ -5002,27 +5232,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "services_unittests",
-        "test_id_prefix": "ninja://services:services_unittests/"
-      },
-      {
-        "args": [
-          "--test-launcher-print-test-stdio=always"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Ubuntu-20.04"
-            }
-          ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "shell_dialogs_unittests",
@@ -5044,6 +5255,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "skia_unittests",
@@ -5065,6 +5278,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "snapshot_unittests",
@@ -5086,6 +5301,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "sql_unittests",
@@ -5107,6 +5324,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "storage_unittests",
@@ -5128,6 +5347,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "sync_integration_tests",
@@ -5149,6 +5370,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ui_base_unittests",
@@ -5170,6 +5393,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ui_touch_selection_unittests",
@@ -5191,6 +5416,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "unit_tests",
@@ -5212,6 +5439,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "url_unittests",
@@ -5233,6 +5462,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "views_unittests",
@@ -5254,6 +5485,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "viz_unittests",
@@ -5275,6 +5508,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "vr_common_unittests",
@@ -5296,6 +5531,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "vr_pixeltests",
@@ -5317,6 +5554,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "weblayer_browsertests",
@@ -5338,6 +5577,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "weblayer_unittests",
@@ -5359,6 +5600,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "wm_unittests",
@@ -5380,6 +5623,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "wtf_unittests",
@@ -5402,6 +5647,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "xr_browser_tests",
@@ -5423,6 +5670,8 @@
               "os": "Ubuntu-20.04"
             }
           ],
+          "expiration": 10800,
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "zlib_unittests",
