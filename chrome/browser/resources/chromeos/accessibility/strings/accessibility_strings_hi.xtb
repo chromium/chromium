@@ -851,7 +851,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="6910211073230771657">हटाया गया</translation>
 <translation id="6910969481785184048">चालू करें, बंद करें और रोकें</translation>
 <translation id="6919104639734799681">तालिकाओं की सूची दिखाएं</translation>
-<translation id="692135145298539227">हटाएं</translation>
+<translation id="692135145298539227">मिटाएं</translation>
 <translation id="6945221475159498467">चुनें</translation>
 <translation id="6949846980769640811">मध्यम समुद्री हरा</translation>
 <translation id="6951482098621102657">आगे कोई लेवल 5 शीर्षक नहीं है</translation>
@@ -1148,7 +1148,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="9077305471618729969">हल्का समुद्री हरा</translation>
 <translation id="9080299285199342830">सीधे आखिरी हिस्से पर जाएं</translation>
 <translation id="9089864840575085222">टाइपिंग इको को चक्रित करें</translation>
-<translation id="9099429023611373837">चुने गए टेक्स्ट को कट करें</translation>
+<translation id="9099429023611373837">कट करें</translation>
 <translation id="9108370397979208512">गणित</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{प्रतिशत}one{# प्रतिशत चिह्न}other{# प्रतिशत चिह्न}}</translation>
