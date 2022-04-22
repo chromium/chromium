@@ -201,6 +201,7 @@
 <translation id="2107914222138020205">আপনার USB-C কেবল Thunderbolt-এ কাজ করে না। ডিভাইসের পারফর্ম্যান্স সীমিত হতে পারে।</translation>
 <translation id="2108303511227308752">Alt + Backspace কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। Delete কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> + Backspace কী প্রেস করুন।</translation>
 <translation id="211328683600082144">মাইক্রোফোন চালু করুন</translation>
+<translation id="2123115117533398272">ChromeOS নতুন কন্টেন্ট দেখার সাজেশন দেয়। আপনি ব্যবহারের ডেটা শেয়ার করার বিকল্প বেছে নিলে তবেই এটি সাজেশন আরও উন্নত করার উদ্দেশ্যে পরিসংখ্যান পাঠায়। <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">নতুন ডেস্ক</translation>
 <translation id="2127372758936585790">নিম্ন শক্তির চার্জার</translation>
 <translation id="2132302418721800944">ফুল স্ক্রিন রেকর্ড করুন</translation>
@@ -271,6 +272,7 @@
 <translation id="2620436844016719705">সিস্টেম</translation>
 <translation id="2621713457727696555">সুরক্ষিত</translation>
 <translation id="263399434338050016">"সবকটি বেছে নিন"</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">উইন্ডো ক্যাপচার</translation>
 <translation id="2653659639078652383">জমা দিন</translation>
 <translation id="2658778018866295321">ক্লিক করে ড্র্যাগ করুন</translation>
@@ -396,6 +398,7 @@
 <translation id="3375634426936648815">কানেক্ট করা আছে</translation>
 <translation id="3378442621503952303">প্রোফাইলের সাথে কানেক্ট করা হচ্ছে। কয়েক মিনিট অপেক্ষা করুন।</translation>
 <translation id="3386978599540877378">ফুল-স্ক্রিন ম্যাগনিফায়ার</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">আরও সেটিংস</translation>
 <translation id="3410336247007142655">'ডার্ক থিম' সেটিংস দেখুন</translation>
 <translation id="3413817803639110246">এখনও পর্যন্ত কিছু দেখার নেই</translation>

@@ -201,6 +201,7 @@
 <translation id="2107914222138020205">Вашиот USB-C не поддржува Thunderbolt. Изведбата на уредот може да биде ограничена.</translation>
 <translation id="2108303511227308752">Кратенката од тастатура Alt + Backspace се промени. За да го користите копчето Delete, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
 <translation id="211328683600082144">ВКЛУЧИ ГО МИКРОФОНОТ</translation>
+<translation id="2123115117533398272">Chrome OS прикажува предлози за нови содржини за разгледување. Статистикa за подобрување на квалитетот се испраќа само ако сте одбрале споделување на податоците за користење. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">Нов работен простор</translation>
 <translation id="2127372758936585790">Полнач со ниско напојување</translation>
 <translation id="2132302418721800944">Снимање цел екран</translation>
@@ -271,6 +272,7 @@
 <translation id="2620436844016719705">Систем</translation>
 <translation id="2621713457727696555">Заштитена</translation>
 <translation id="263399434338050016">„Избери сѐ“</translation>
+<translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2653019840645008922">Снимање прозорец</translation>
 <translation id="2653659639078652383">Испрати</translation>
 <translation id="2658778018866295321">Кликни и повлечи</translation>
@@ -396,6 +398,7 @@
 <translation id="3375634426936648815">Поврзано</translation>
 <translation id="3378442621503952303">Се поврзува со профилот. Почекајте неколку минути.</translation>
 <translation id="3386978599540877378">лупа за цел екран</translation>
+<translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">Дополнителни поставки</translation>
 <translation id="3410336247007142655">Прикажи ги поставките за темната тема</translation>
 <translation id="3413817803639110246">Сѐ уште нема што да се види</translation>

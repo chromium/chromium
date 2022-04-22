@@ -9,6 +9,7 @@
 <translation id="110877069173485804">Ваш персональный Chrome</translation>
 <translation id="1125124144982679672">Кто использует Chrome?</translation>
 <translation id="1142745911746664600">Не удалось обновить Chrome</translation>
+<translation id="1152920704813762236">Подробнее о Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Открыть в Chrome</translation>
 <translation id="1178374936842835197">Если нужного параметра нет на этой странице, откройте <ph name="LINK_BEGIN" />
         настройки Chrome OS Flex<ph name="LINK_END" />.</translation>
@@ -16,12 +17,14 @@
 <translation id="1278833599417554002">Перезапустить для обновления &amp;Chrome</translation>
 <translation id="1302523850133262269">Подождите, пока Chrome устанавливает последние обновления системы</translation>
 <translation id="1335640173511558774">Согласно действующим правилам (источник правил: <ph name="MANAGER" />) до начала работы с устройством необходимо ознакомиться с приведенными ниже Условиями использования и принять их. Они не дополняют, не заменяют и не ограничивают Условия использования Google Chrome OS Flex.</translation>
+<translation id="1363996462118479832">Не удалось синхронизировать данные из-за ошибки входа в аккаунт.</translation>
 <translation id="137466361146087520">Google Chrome (бета)</translation>
 <translation id="1399397803214730675">На компьютере уже установлена последняя версия браузера Google Chrome. Если он не работает, удалите его и установите снова.</translation>
 <translation id="139993653570221430">Вы можете в любое время изменить свое решение в настройках Chrome. Экспериментальные функции действуют одновременно с текущими настройками показа рекламы, поэтому вы не сразу заметите изменения.</translation>
 <translation id="1434626383986940139">Приложения Chrome Canary</translation>
 <translation id="1507198376417198979">Настройте новый профиль Chrome</translation>
 <translation id="1516530951338665275">Чтобы продолжить подключение, предоставьте браузеру Google Chrome доступ к Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1547295885616600893">Chrome OS работает благодаря дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Обновить Chrome</translation>
 <translation id="1583073672411044740">Пользователь <ph name="EXISTING_USER" /> уже вошел в профиль Chrome. Вы можете создать новый профиль Chrome для <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">Google Chrome использует камеру.</translation>
@@ -55,6 +58,7 @@
 <translation id="2121284319307530122">Перезапустить для обновления &amp;Chrome</translation>
 <translation id="2123055963409958220">Отправьте отчет о <ph name="BEGIN_LINK" />текущих настройках Chrome<ph name="END_LINK" />, чтобы помочь нам улучшить браузер</translation>
 <translation id="2131230230468101642">Для защиты вашей конфиденциальности интересы автоматически удаляются через 4 недели с момента создания. Если после этого вы продолжите использовать браузер, то удаленные интересы могут вновь появиться в списке. Чтобы Chrome не учитывал конкретные интересы, вы можете их удалить.</translation>
+<translation id="2139300032719313227">Перезапустите Chrome OS</translation>
 <translation id="2151406531797534936">Перезапустите Chrome</translation>
 <translation id="2258103955319320201">Чтобы получить доступ к данным в браузере Chrome на всех своих устройствах, войдите в аккаунт и включите синхронизацию.</translation>
 <translation id="2290014774651636340">Отсутствуют ключи API Google. Некоторые функции Google Chrome могут не работать.</translation>
@@ -65,6 +69,7 @@
 <translation id="234869673307233423">Не удается запустить проверку паролей в Chrome. Повторите попытку позже.</translation>
 <translation id="235650106824528204">Администратор рабочего профиля может удалять любые данные, сохраненные в браузере Chrome при использовании этого профиля (например, добавленные закладки, историю, пароли и настройки). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Продолжить</translation>
+<translation id="2401189691232800402">Chrome OS</translation>
 <translation id="2429317896000329049">Google Chrome не удалось синхронизировать данные, поскольку служба Sync недоступна для вашего домена.</translation>
 <translation id="2467438592969358367">Чтобы экспортировать пароли из Google Chrome, введите пароль своего аккаунта Windows.</translation>
 <translation id="2485422356828889247">Удалить</translation>
@@ -75,6 +80,7 @@
 <translation id="2580411288591421699">Не удается установить версию Google Chrome, аналогичную уже выполняемой. Закройте Google Chrome и повторите попытку.</translation>
 <translation id="2586406160782125153">Данные о работе в браузере будут удалены с устройства. Чтобы восстановить данные позже, войдите в Chrome как <ph name="USER_EMAIL" />.</translation>
 <translation id="2622559029861875898">Не удалось проверить наличие обновлений в Chrome. Проверьте подключение к Интернету.</translation>
+<translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2652691236519827073">Открыть ссылку в новой вкладке браузера Chrome</translation>
 <translation id="2665296953892887393">Отправлять в Google такие данные, как отчеты о сбоях и <ph name="UMA_LINK" />, чтобы помочь улучшить Google Chrome</translation>
 <translation id="2689103672227170538">Расширение изменило стартовую страницу Chrome.</translation>
@@ -116,6 +122,7 @@
 <translation id="3434246496373299699">Chrome сможет проверить ваши пароли, когда вы войдете в аккаунт Google.</translation>
 <translation id="3451115285585441894">Установка...</translation>
 <translation id="345171907106878721">Добавить пользователя Chrome</translation>
+<translation id="3453763134178591239">Условия использования Chrome OS</translation>
 <translation id="34857402635545079">Также удалить данные из Chrome (<ph name="URL" />)</translation>
 <translation id="3503306920980160878">Для этого сайта Chrome запрашивает доступ к данным о вашем местоположении.</translation>
 <translation id="3533694711092285624">Сохраненных паролей нет. Чтобы браузер Chrome мог проверять пароли, сохраните их.</translation>
@@ -125,16 +132,20 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{Администратор требует перезапустить Chrome для установки обновления.}=1{Администратор требует перезапустить Chrome для установки обновления. Окно в режиме инкогнито не будет открыто повторно.}one{Администратор требует перезапустить Chrome для установки обновления. # окно в режиме инкогнито не будет открыто повторно.}few{Администратор требует перезапустить Chrome для установки обновления. # окна в режиме инкогнито не будут открыты повторно.}many{Администратор требует перезапустить Chrome для установки обновления. # окон в режиме инкогнито не будут открыты повторно.}other{Администратор требует перезапустить Chrome для установки обновления. # окна в режиме инкогнито не будут открыты повторно.}}</translation>
 <translation id="3622797965165704966">Теперь с Chrome ещё удобнее работать в аккаунте Google, в том числе на общих компьютерах.</translation>
 <translation id="3673813398384385993">Браузер Chrome обнаружил, что расширение "<ph name="EXTENSION_NAME" />" содержит вредоносное ПО.</translation>
+<translation id="3703994572283698466">Chrome OS, как и <ph name="BEGIN_LINK_LINUX_OSS" />среда разработки Linux<ph name="END_LINK_LINUX_OSS" />, работает благодаря дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="3716540481907974026">Версия Chrome OS Flex</translation>
 <translation id="3718181793972440140">С устройства будет удален 1 объект. Чтобы восстановить данные позже, войдите в Chrome как <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">Расширение "<ph name="EXTENSION_NAME" />" изменило стартовую страницу Chrome.</translation>
+<translation id="3744202345691150878">Подробнее о Chrome OS</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex не удалось синхронизировать данные, так как при входе в аккаунт произошла ошибка.</translation>
+<translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3835168907083856002">Будет создан новый профиль Chrome для <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="386202838227397562">Закройте все окна Chrome и повторите попытку снова.</translation>
 <translation id="3865754807470779944">Установлен браузер Chrome версии <ph name="PRODUCT_VERSION" />.</translation>
 <translation id="3873044882194371212">Открыть ссылку в режиме инкогнито браузера Chrome</translation>
 <translation id="3889417619312448367">Удалить Google Chrome</translation>
+<translation id="4035053306113201399">Чтобы установить обновление, перезапустите Chrome OS.</translation>
 <translation id="4050175100176540509">В последней версии улучшена защита и добавлены новые функции.</translation>
 <translation id="4053720452172726777">Настройка и управление Google Chrome</translation>
 <translation id="4106587138345390261">Chrome представляет новый взгляд на просмотр веб-страниц: сайты функционируют в обычном режиме, собирая меньше информации о вас.</translation>
@@ -178,15 +189,19 @@
 <translation id="495931528404527476">В Chrome</translation>
 <translation id="4969674060580488087">Chrome OS Flex не удалось выполнить синхронизацию, так как учетные данные устарели.</translation>
 <translation id="4970761609246024540">Представляем профили Chrome</translation>
+<translation id="4970880042055371251">Версия Chrome OS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">На вашем компьютере используется OS X 10.11. Чтобы получать обновления Google Chrome, установите на устройство macOS 10.13 или более поздней версии.</translation>
+<translation id="5112116809696021727">Чтобы посмотреть, обновлена ли операционная система устройства, перейдите в <ph name="LINK_BEGIN" />настройки Chrome OS<ph name="LINK_END" />.</translation>
 <translation id="5132929315877954718">Широкий выбор приложений, игр, расширений и тем для Google Chrome.</translation>
 <translation id="5139423532931106058">Настроить профиль Chrome</translation>
 <translation id="5163087008893166964">Добро пожаловать в Chrome! Открыто новое окно браузера.</translation>
 <translation id="5170938038195470297">Использовать этот профиль невозможно, так как он был создан в более новой версии Google Chrome. Некоторые функции могут быть недоступны. Укажите другой каталог профиля или установите более новую версию Chrome.</translation>
 <translation id="521447420733633466">Если кроме вас устройством пользуется кто-то ещё, например родные или друзья, они тоже смогут настроить Chrome на свой вкус.</translation>
 <translation id="5251420635869119124">Используйте Chrome в гостевом режиме, если не хотите сохранять данные о посещенных сайтах.</translation>
+<translation id="5334309298019785904">Не удалось синхронизировать данные, так как эта функция недоступна для вашего домена.</translation>
 <translation id="5334487786912937552">Для скачивания файлов браузеру Chrome требуется доступ к хранилищу.</translation>
+<translation id="5337648990166757586">Автоматически отправлять данные об использовании и диагностике в Google, чтобы помогать нам повышать производительность и улучшать функции Chrome OS (необязательно)</translation>
 <translation id="5357889879764279201">Справка Chrome OS Flex</translation>
 <translation id="5386244825306882791">Кроме того, расширение изменило стартовую страницу Chrome и поисковую систему, используемую по умолчанию при вводе запроса в омнибокс.</translation>
 <translation id="5394833366792865639">Откройте доступ к вкладке Chrome</translation>
@@ -212,6 +227,8 @@
 <translation id="5903106910045431592">"<ph name="PAGE_TITLE" />" – вход в сеть</translation>
 <translation id="5940385492829620908">Все веб-страницы, закладки и другие данные Chrome можно найти здесь.</translation>
 <translation id="5941830788786076944">Назначить Google Chrome браузером по умолчанию</translation>
+<translation id="5959292945051687759">Если нужного параметра нет на этой странице, откройте <ph name="LINK_BEGIN" />
+        настройки Chrome OS<ph name="LINK_END" />.</translation>
 <translation id="6070348360322141662">В целях повышения безопасности Google Chrome шифрует ваши данные</translation>
 <translation id="608006075545470555">Добавление рабочего профиля в браузер</translation>
 <translation id="6113794647360055231">Chrome становится все лучше</translation>
@@ -238,6 +255,7 @@
 <translation id="683440813066116847">Разрешить в Google Chrome Canary передачу входящего трафика по протоколу mDNS</translation>
 <translation id="6881299373831449287">Обновление Chrome</translation>
 <translation id="6885412569789873916">Приложения Chrome (бета)</translation>
+<translation id="6933858244219479645">Chrome OS</translation>
 <translation id="6943584222992551122">Данные о работе этого пользователя в браузере будут удалены с устройства. Чтобы восстановить их, войдите в Chrome как <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Разрешить в Google Chrome (бета) передачу входящего трафика по протоколу mDNS</translation>
 <translation id="6989339256997917931">Google Chrome был обновлен, однако вы не использовали его в течение последних 30 дней.</translation>
@@ -249,6 +267,7 @@
 <translation id="7085332316435785646">Укажите, нужно ли использовать историю Chrome для персонализации сервисов Google.</translation>
 <translation id="7088681679121566888">У вас установлена последняя версия Chrome.</translation>
 <translation id="7098166902387133879">Google Chrome использует микрофон.</translation>
+<translation id="7099479769133613710">Чтобы установить обновление, перезапустите Chrome OS.</translation>
 <translation id="7106741999175697885">Диспетчер задач - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Для Chrome доступно обновление. Оно будет установлено при перезапуске браузера.}=1{Для Chrome доступно обновление. Оно будет установлено при перезапуске браузера. Окно в режиме инкогнито не будет открыто повторно.}one{Для Chrome доступно обновление. Оно будет установлено при перезапуске браузера. # окно в режиме инкогнито не будет открыто повторно.}few{Для Chrome доступно обновление. Оно будет установлено при перезапуске браузера. # окна в режиме инкогнито не будут открыты повторно.}many{Для Chrome доступно обновление. Оно будет установлено при перезапуске браузера. # окон в режиме инкогнито не будут открыты повторно.}other{Для Chrome доступно обновление. Оно будет установлено при перезапуске браузера. # окна в режиме инкогнито не будут открыты повторно.}}</translation>
 <translation id="7155997830309522122">Если да, то вам нужно сменить пароль, сохраненный в Chrome, на новый.</translation>
@@ -270,6 +289,7 @@
 <translation id="7592736734348559088">Google Chrome не удалось синхронизировать данные, поскольку ваши учетные данные устарели.</translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7626032353295482388">Добро пожаловать в Chrome!</translation>
+<translation id="7626072681686626474">Согласно действующим правилам <ph name="MANAGER" />, до начала работы с устройством необходимо ознакомиться с приведенными ниже Условиями использования и принять их. Они не дополняют, не заменяют и не ограничивают Условия использования Google Chrome OS.</translation>
 <translation id="7629695634924605473">Chrome сообщит вам, если возникнет проблема с безопасностью ваших паролей.</translation>
 <translation id="7641148173327520642">Ваш системный администратор задал настройки, согласно которым Google Chrome должен запускать <ph name="ALTERNATIVE_BROWSER_NAME" /> для доступа к сайту <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7651907282515937834">Логотип Chrome Enterprise</translation>
@@ -306,6 +326,7 @@
 <translation id="8394720698884623075">Сверяет URL со списком небезопасных сайтов в Chrome.</translation>
 <translation id="840084489713044809">Вы собираетесь экспортировать пароли из Google Chrome.</translation>
 <translation id="8416347857511542594">О персонализации рекламы в Chrome</translation>
+<translation id="8418845734693287262">Не удалось выполнить синхронизацию, так как учетные данные устарели.</translation>
 <translation id="8421734018304082652">Браузер Chrome заблокировал файл, так как он зашифрован. Попросите владельца расшифровать файл.</translation>
 <translation id="8433638294851456451">Чтобы отправить номер на телефон Android, войдите в Chrome на обоих устройствах.</translation>
 <translation id="8498858610309223613">Установлено специальное обновление системы безопасности. Перезапустите Google Chrome (все вкладки будут восстановлены).</translation>

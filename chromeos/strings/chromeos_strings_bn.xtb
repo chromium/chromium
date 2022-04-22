@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">ডিভাইসের ধরন অজানা।</translation>
 <translation id="3966286471246132217">আরও উন্নত ফলাফল পেতে পরীক্ষা সম্পূর্ণ না হওয়া পর্যন্ত সব অ্যাপ বন্ধ করে দিন।</translation>
 <translation id="3967822245660637423">ডাউনলোড সম্পূর্ণ</translation>
+<translation id="3969602104473960991">ChromeOS-এর পাসওয়ার্ড আপডেট করা হয়েছে</translation>
 <translation id="397105322502079400">গণনা করা হচ্ছে...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> দিনের বেশি পুরনো প্রিন্ট জব সরিয়ে দেওয়া হবে</translation>
 <translation id="3993704782688964914">আপনার <ph name="DEVICE_NAME" /> ডিভাইস এখন আপ-টু-ডেট আছে</translation>
@@ -461,6 +462,7 @@
 <translation id="6113701710518389813">উপরের তীরচিহ্ন</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, + আরও <ph name="NUMBER" />টি অ্যালবাম</translation>
 <translation id="6122191549521593678">অনলাইন</translation>
+<translation id="6122277663991249694">ChromeOS ইনপুট পদ্ধতি পরিষেবা</translation>
 <translation id="6137767437444130246">ব্যবহারকারীর সার্টিফিকেট</translation>
 <translation id="6146993107019042706">সম্পূর্ণ করতে, আপনার নতুন পাসওয়ার্ড লিখুন</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -659,6 +661,7 @@
 <translation id="8398927464629426868">বর্তমানে যে হারে ডিভাইসটি চার্জ হচ্ছে বা এটির চার্জ শেষ হচ্ছে</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">ইন্টার্নাল কীবোর্ড</translation>
+<translation id="8431300646573772016">ChromeOS-এ নতুন কী আছে</translation>
 <translation id="843568408673868420">ইন্টারনেট কানেক্টিভিটি</translation>
 <translation id="844521431886043384">DNS সেট আপ করা হয়নি</translation>
 <translation id="8461329675984532579">হোম পরিষেবা প্রদানকারীর নাম</translation>

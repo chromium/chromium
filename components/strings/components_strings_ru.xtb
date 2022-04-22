@@ -508,6 +508,7 @@
 <translation id="2298855485018661510">Кнопка "Открыть настройки файлов cookie". Нажмите Ввод, чтобы задать параметры файлов cookie в настройках Chrome.</translation>
 <translation id="2300306941146563769">Не загружен</translation>
 <translation id="2310021320168182093">Chou2 (конверт)</translation>
+<translation id="2316159751672436664">Персонализировать инструменты специальных возможностей в настройках Chrome OS</translation>
 <translation id="2316887270356262533">Освободится менее 1 МБ пространства. После этого некоторые веб-страницы могут загружаться дольше обычного.</translation>
 <translation id="2317259163369394535">Для доступа к домену <ph name="DOMAIN" /> необходимо указать имя пользователя и пароль.</translation>
 <translation id="2318594867107319532">Последняя временная метка правила:</translation>
@@ -1659,6 +1660,7 @@
 <translation id="5518670652865028077">Искусство и развлечения</translation>
 <translation id="5519516356611866228">С вашими изменениями</translation>
 <translation id="5523118979700054094">Название правила</translation>
+<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы персонализировать инструменты специальных возможностей в настройках Chrome OS.</translation>
 <translation id="5528532273234423708">Автоматизация дома</translation>
 <translation id="55293785478302737">Скобы по краю</translation>
 <translation id="553484882784876924">Prc6 (конверт)</translation>
@@ -2237,6 +2239,7 @@
 <translation id="722454870747268814">Новая вкладка инкогнито</translation>
 <translation id="7233592378249864828">Распечатать лист для подтверждения</translation>
 <translation id="7234638337680728591">Цены на газ и топливо для транспортных средств</translation>
+<translation id="7237492777898608035">Больше не показывать такое сообщение для этого сайта</translation>
 <translation id="7238585580608191973">Отпечаток SHA-256</translation>
 <translation id="7240120331469437312">Альтернативное имя субъекта сертификата</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -2619,6 +2622,7 @@
 <translation id="8242426110754782860">Продолжить</translation>
 <translation id="8249296373107784235">Отмена</translation>
 <translation id="8249463483885748674">Стандартные и вступительные экзамены</translation>
+<translation id="8252991034201168845">Кнопка "Открыть настройки специальных возможностей". Нажмите Ввод, чтобы войти в эти настройки.</translation>
 <translation id="8253091569723639551">Необходимо указать платежный адрес</translation>
 <translation id="8257387598443225809">Это приложение для мобильных устройств</translation>
 <translation id="825929999321470778">Показать все сохраненные пароли</translation>
