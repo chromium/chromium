@@ -87,9 +87,6 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
   // Returns the maximum file size permitted in this backend.
   int64_t MaxFileSize() const override;
 
-  // Flush our SequencedWorkerPool.
-  static void FlushWorkerPoolForTesting();
-
   // The entry for |entry_hash| is being doomed; the backend will not attempt
   // run new operations for this |entry_hash| until the Doom is completed.
   //

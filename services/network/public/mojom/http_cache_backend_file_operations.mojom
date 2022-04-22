@@ -19,6 +19,7 @@ enum HttpCacheBackendOpenFileFlags {
   kOpenReadWriteWinShareDelete = 0x8061,
   kCreateReadWriteWinShareDelete = 0x8062,
   kCreateAlwaysWriteWinShareDelete = 0x8048,
+  kOpenReadWinShareDeleteWinSequentialScan = 0x88021,
 };
 
 // An enum representing the mode for DeleteFile function.

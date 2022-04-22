@@ -271,6 +271,9 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   // Ensures that the private cache thread completes work.
   static void FlushForTesting();
 
+  // Ensures that the private cache thread completes work.
+  static void FlushAsynchronouslyForTesting(base::OnceClosure callback);
+
   // Backend implementation.
   int32_t GetEntryCount() const override;
   EntryResult OpenOrCreateEntry(const std::string& key,

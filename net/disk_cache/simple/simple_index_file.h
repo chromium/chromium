@@ -137,7 +137,8 @@ class NET_EXPORT_PRIVATE SimpleIndexFile {
       SimpleIndexLoadResult* out_result);
 
   // Load the index file from disk returning an EntrySet.
-  static void SyncLoadFromDisk(net::CacheType cache_type,
+  static void SyncLoadFromDisk(BackendFileOperations* file_operations,
+                               net::CacheType cache_type,
                                const base::FilePath& index_filename,
                                base::Time* out_last_cache_seen_by_index,
                                SimpleIndexLoadResult* out_result);

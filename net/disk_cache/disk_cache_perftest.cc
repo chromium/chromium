@@ -485,7 +485,7 @@ void DiskCachePerfTest::CacheBackendPerformance(const std::string& story) {
   InitCache();
   EXPECT_TRUE(TimeWrites(story));
 
-  disk_cache::SimpleBackendImpl::FlushWorkerPoolForTesting();
+  disk_cache::FlushCacheThreadForTesting();
   base::RunLoop().RunUntilIdle();
 
   ResetAndEvictSystemDiskCache();
@@ -494,7 +494,7 @@ void DiskCachePerfTest::CacheBackendPerformance(const std::string& story) {
   EXPECT_TRUE(TimeReads(WhatToRead::HEADERS_ONLY,
                         kMetricCacheHeadersReadTimeWarmMs, story));
 
-  disk_cache::SimpleBackendImpl::FlushWorkerPoolForTesting();
+  disk_cache::FlushCacheThreadForTesting();
   base::RunLoop().RunUntilIdle();
 
   ResetAndEvictSystemDiskCache();
@@ -503,7 +503,7 @@ void DiskCachePerfTest::CacheBackendPerformance(const std::string& story) {
   EXPECT_TRUE(TimeReads(WhatToRead::HEADERS_AND_BODY,
                         kMetricCacheEntriesReadTimeWarmMs, story));
 
-  disk_cache::SimpleBackendImpl::FlushWorkerPoolForTesting();
+  disk_cache::FlushCacheThreadForTesting();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -648,7 +648,7 @@ TEST_F(DiskCachePerfTest, SimpleCacheInitialReadPortion) {
   for (int i = 0; i < kBatchSize; ++i)
     cache_entry[i]->Close();
 
-  disk_cache::SimpleBackendImpl::FlushWorkerPoolForTesting();
+  disk_cache::FlushCacheThreadForTesting();
   base::RunLoop().RunUntilIdle();
   auto reporter = SetUpDiskCacheReporter("early_portion");
   reporter.AddResult(kMetricSimpleCacheInitTotalTimeMs, elapsed_early);

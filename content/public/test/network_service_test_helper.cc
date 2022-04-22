@@ -211,6 +211,61 @@ class SimpleCacheEntry : public network::mojom::SimpleCacheEntry {
   base::WeakPtrFactory<SimpleCacheEntry> weak_factory_{this};
 };
 
+class SimpleCacheEntryEnumerator final
+    : public network::mojom::SimpleCacheEntryEnumerator {
+ public:
+  using GetNextCallbackHolder = base::RefCountedData<GetNextCallback>;
+  explicit SimpleCacheEntryEnumerator(
+      std::unique_ptr<disk_cache::Backend::Iterator> iter)
+      : iter_(std::move(iter)) {}
+  ~SimpleCacheEntryEnumerator() override = default;
+
+  void GetNext(GetNextCallback callback) override {
+    DCHECK(!processing_);
+    processing_ = true;
+    auto callback_holder =
+        base::MakeRefCounted<GetNextCallbackHolder>(std::move(callback));
+    disk_cache::EntryResult result = iter_->OpenNextEntry(
+        base::BindOnce(&SimpleCacheEntryEnumerator::OnEntryOpened,
+                       weak_factory_.GetWeakPtr(), callback_holder));
+    if (result.net_error() == net::ERR_IO_PENDING) {
+      return;
+    }
+
+    OnEntryOpened(std::move(callback_holder), std::move(result));
+  }
+
+ private:
+  void OnEntryOpened(scoped_refptr<GetNextCallbackHolder> callback_holder,
+                     disk_cache::EntryResult result) {
+    DCHECK(processing_);
+    processing_ = false;
+    auto result_to_pass = network::mojom::SimpleCacheOpenEntryResult::New();
+    result_to_pass->error = result.net_error();
+
+    auto callback = std::move(callback_holder->data);
+    DCHECK(callback);
+    if (result.net_error() != net::OK) {
+      std::move(callback).Run(std::move(result_to_pass));
+      return;
+    }
+
+    disk_cache::ScopedEntryPtr entry(result.ReleaseEntry());
+    result_to_pass->key = entry->GetKey();
+
+    mojo::PendingRemote<network::mojom::SimpleCacheEntry> remote;
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<SimpleCacheEntry>(std::move(entry)),
+        result_to_pass->entry.InitWithNewPipeAndPassReceiver());
+    std::move(callback).Run(std::move(result_to_pass));
+  }
+
+  std::unique_ptr<disk_cache::Backend::Iterator> iter_;
+  bool processing_ = false;
+
+  base::WeakPtrFactory<SimpleCacheEntryEnumerator> weak_factory_{this};
+};
+
 class SimpleCache : public network::mojom::SimpleCache {
  public:
   explicit SimpleCache(std::unique_ptr<disk_cache::Backend> backend)
@@ -263,6 +318,19 @@ class SimpleCache : public network::mojom::SimpleCache {
       return;
     }
     OnEntryDoomed(std::move(callback_holder), rv);
+  }
+
+  void EnumerateEntries(
+      mojo::PendingReceiver<network::mojom::SimpleCacheEntryEnumerator>
+          pending_receiver) override {
+    mojo::MakeSelfOwnedReceiver(std::make_unique<SimpleCacheEntryEnumerator>(
+                                    backend_->CreateIterator()),
+                                std::move(pending_receiver));
+  }
+
+  void Detach(DetachCallback callback) override {
+    backend_ = nullptr;
+    disk_cache::FlushCacheThreadAsynchronouslyForTesting(std::move(callback));
   }
 
  private:

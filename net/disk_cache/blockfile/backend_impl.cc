@@ -2130,7 +2130,22 @@ int BackendImpl::MaxBuffersSize() {
 }
 
 void BackendImpl::FlushForTesting() {
+  if (!g_internal_cache_thread.IsCreated()) {
+    return;
+  }
+
   g_internal_cache_thread.Get().FlushForTesting();
+}
+
+void BackendImpl::FlushAsynchronouslyForTesting(base::OnceClosure callback) {
+  if (!g_internal_cache_thread.IsCreated()) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                     std::move(callback));
+    return;
+  }
+
+  InternalCacheThread()->PostTaskAndReply(FROM_HERE, base::BindOnce([]() {}),
+                                          std::move(callback));
 }
 
 }  // namespace disk_cache

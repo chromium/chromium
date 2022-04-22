@@ -4931,7 +4931,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheReadWithoutKeySHA256) {
   entry->Close();
 
   base::RunLoop().RunUntilIdle();
-  disk_cache::SimpleBackendImpl::FlushWorkerPoolForTesting();
+  disk_cache::FlushCacheThreadForTesting();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(
@@ -4971,7 +4971,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheDoubleOpenWithoutKeySHA256) {
   entry->Close();
 
   base::RunLoop().RunUntilIdle();
-  disk_cache::SimpleBackendImpl::FlushWorkerPoolForTesting();
+  disk_cache::FlushCacheThreadForTesting();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(
@@ -4980,7 +4980,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheDoubleOpenWithoutKeySHA256) {
   entry->Close();
 
   base::RunLoop().RunUntilIdle();
-  disk_cache::SimpleBackendImpl::FlushWorkerPoolForTesting();
+  disk_cache::FlushCacheThreadForTesting();
   base::RunLoop().RunUntilIdle();
 
   ASSERT_THAT(OpenEntry(key, &entry), IsOk());
@@ -4998,7 +4998,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheReadCorruptKeySHA256) {
   entry->Close();
 
   base::RunLoop().RunUntilIdle();
-  disk_cache::SimpleBackendImpl::FlushWorkerPoolForTesting();
+  disk_cache::FlushCacheThreadForTesting();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(
@@ -5016,7 +5016,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheReadCorruptLength) {
   entry->Close();
 
   base::RunLoop().RunUntilIdle();
-  disk_cache::SimpleBackendImpl::FlushWorkerPoolForTesting();
+  disk_cache::FlushCacheThreadForTesting();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(
@@ -5073,7 +5073,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheSparseErrorHandling) {
   EXPECT_EQ(kSize, WriteSparseData(entry, 0, buffer.get(), kSize));
   entry->Close();
 
-  disk_cache::SimpleBackendImpl::FlushWorkerPoolForTesting();
+  disk_cache::FlushCacheThreadForTesting();
   EXPECT_TRUE(base::PathExists(path_0));
   EXPECT_TRUE(base::PathExists(path_s));
 
@@ -5513,7 +5513,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheCloseResurrection) {
 
   // Let optimistic create finish.
   base::RunLoop().RunUntilIdle();
-  disk_cache::SimpleBackendImpl::FlushWorkerPoolForTesting();
+  disk_cache::FlushCacheThreadForTesting();
   base::RunLoop().RunUntilIdle();
 
   int rv = entry->WriteData(1, 0, buffer.get(), kSize,
@@ -5540,7 +5540,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheCloseResurrection) {
 
   // Get first close a chance to finish.
   base::RunLoop().RunUntilIdle();
-  disk_cache::SimpleBackendImpl::FlushWorkerPoolForTesting();
+  disk_cache::FlushCacheThreadForTesting();
   base::RunLoop().RunUntilIdle();
 
   // Make sure |entry2| is still usable.

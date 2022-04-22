@@ -912,12 +912,6 @@ void SimpleBackendImpl::DoomEntriesComplete(
   std::move(callback).Run(result);
 }
 
-// static
-void SimpleBackendImpl::FlushWorkerPoolForTesting() {
-  // TODO(morlovich): Remove this, move everything over to disk_cache:: use.
-  base::ThreadPoolInstance::Get()->FlushForTesting();
-}
-
 uint32_t SimpleBackendImpl::GetNewEntryPriority(
     net::RequestPriority request_priority) {
   // Lower priority is better, so give high network priority the least bump.

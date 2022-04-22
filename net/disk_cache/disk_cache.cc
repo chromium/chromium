@@ -4,12 +4,14 @@
 
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -368,11 +370,22 @@ net::Error CreateCacheBackend(
 
 void FlushCacheThreadForTesting() {
   // For simple backend.
-  SimpleBackendImpl::FlushWorkerPoolForTesting();
   base::ThreadPoolInstance::Get()->FlushForTesting();
 
   // Block backend.
   BackendImpl::FlushForTesting();
+}
+
+void FlushCacheThreadAsynchronouslyForTesting(base::OnceClosure callback) {
+  auto repeating_callback = base::BarrierClosure(2, std::move(callback));
+
+  // For simple backend.
+  base::ThreadPoolInstance::Get()->FlushAsyncForTesting(  // IN-TEST
+      base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                         repeating_callback));
+
+  // Block backend.
+  BackendImpl::FlushAsynchronouslyForTesting(repeating_callback);
 }
 
 int64_t Backend::CalculateSizeOfEntriesBetween(

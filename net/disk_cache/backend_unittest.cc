@@ -254,7 +254,7 @@ void DiskCacheBackendTest::WaitForSimpleCacheIndexAndCheck(
 void DiskCacheBackendTest::RunUntilIdle() {
   DiskCacheTestWithCache::RunUntilIdle();
   base::RunLoop().RunUntilIdle();
-  disk_cache::SimpleBackendImpl::FlushWorkerPoolForTesting();
+  disk_cache::FlushCacheThreadForTesting();
 }
 
 int DiskCacheBackendTest::GeneratePendingIO(net::TestCompletionCallback* cb) {
@@ -4102,7 +4102,7 @@ TEST_F(DiskCacheBackendTest, SimpleCacheOpenBadFile) {
   entry = nullptr;
 
   // The entry is being closed on the Simple Cache worker pool
-  disk_cache::SimpleBackendImpl::FlushWorkerPoolForTesting();
+  disk_cache::FlushCacheThreadForTesting();
   base::RunLoop().RunUntilIdle();
 
   // Write an invalid header for stream 0 and stream 1.
@@ -4508,13 +4508,13 @@ TEST_F(DiskCacheBackendTest, SimpleLastModified) {
   // Make the Create complete --- SimpleCache can handle it optimistically,
   // and if we let it go fully async then trying to flush the Close might just
   // flush the Create.
-  disk_cache::SimpleBackendImpl::FlushWorkerPoolForTesting();
+  disk_cache::FlushCacheThreadForTesting();
   base::RunLoop().RunUntilIdle();
 
   entry1->Close();
 
   // Make the ::Close actually complete, since it is asynchronous.
-  disk_cache::SimpleBackendImpl::FlushWorkerPoolForTesting();
+  disk_cache::FlushCacheThreadForTesting();
   base::RunLoop().RunUntilIdle();
 
   Time entry1_timestamp = Time::NowFromSystemTime();
@@ -4529,7 +4529,7 @@ TEST_F(DiskCacheBackendTest, SimpleLastModified) {
   disk_cache::Entry* entry2;
   ASSERT_THAT(CreateEntry(key2, &entry2), IsOk());
   entry2->Close();
-  disk_cache::SimpleBackendImpl::FlushWorkerPoolForTesting();
+  disk_cache::FlushCacheThreadForTesting();
   base::RunLoop().RunUntilIdle();
 
   disk_cache::Entry* reopen_entry1;

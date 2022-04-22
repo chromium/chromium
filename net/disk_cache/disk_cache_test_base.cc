@@ -238,7 +238,7 @@ void DiskCacheTestWithCache::FlushQueueForTest() {
     return;
 
   if (simple_cache_impl_) {
-    simple_cache_impl_->FlushWorkerPoolForTesting();
+    disk_cache::FlushCacheThreadForTesting();
     return;
   }
 

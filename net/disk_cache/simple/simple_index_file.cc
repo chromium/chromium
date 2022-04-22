@@ -118,14 +118,17 @@ bool WritePickleFile(BackendFileOperations* file_operations,
   int bytes_written =
       file.Write(0, static_cast<const char*>(pickle->data()), pickle->size());
   if (bytes_written != base::checked_cast<int>(pickle->size())) {
-    simple_util::SimpleCacheDeleteFile(file_name);
+    file_operations->DeleteFile(
+        file_name,
+        BackendFileOperations::DeleteFileMode::kEnsureImmediateAvailability);
     return false;
   }
   return true;
 }
 
 // Called for each cache directory traversal iteration.
-void ProcessEntryFile(net::CacheType cache_type,
+void ProcessEntryFile(BackendFileOperations* file_operations,
+                      net::CacheType cache_type,
                       SimpleIndex::EntrySet* entries,
                       const base::FilePath& file_path,
                       base::Time last_accessed,
@@ -140,7 +143,7 @@ void ProcessEntryFile(net::CacheType cache_type,
 
   // Cleanup any left over doomed entries.
   if (base::StartsWith(file_name, "todelete_", base::CompareCase::SENSITIVE)) {
-    base::DeleteFile(file_path);
+    file_operations->DeleteFile(file_path);
     return;
   }
 
@@ -403,11 +406,11 @@ void SimpleIndexFile::SyncLoadIndexEntries(
     SimpleIndexLoadResult* out_result) {
   // Load the index and find its age.
   base::Time last_cache_seen_by_index;
-  SyncLoadFromDisk(cache_type, index_file_path, &last_cache_seen_by_index,
-                   out_result);
+  SyncLoadFromDisk(file_operations.get(), cache_type, index_file_path,
+                   &last_cache_seen_by_index, out_result);
 
   // Consider the index loaded if it is fresh.
-  const bool index_file_existed = base::PathExists(index_file_path);
+  const bool index_file_existed = file_operations->PathExists(index_file_path);
   if (!out_result->did_load) {
     if (index_file_existed)
       UmaRecordIndexFileState(INDEX_STATE_CORRUPT, cache_type);
@@ -464,16 +467,17 @@ void SimpleIndexFile::SyncLoadIndexEntries(
 }
 
 // static
-void SimpleIndexFile::SyncLoadFromDisk(net::CacheType cache_type,
+void SimpleIndexFile::SyncLoadFromDisk(BackendFileOperations* file_operations,
+                                       net::CacheType cache_type,
                                        const base::FilePath& index_filename,
                                        base::Time* out_last_cache_seen_by_index,
                                        SimpleIndexLoadResult* out_result) {
   out_result->Reset();
 
-  base::File file(index_filename, base::File::FLAG_OPEN |
-                                      base::File::FLAG_READ |
-                                      base::File::FLAG_WIN_SHARE_DELETE |
-                                      base::File::FLAG_WIN_SEQUENTIAL_SCAN);
+  base::File file = file_operations->OpenFile(
+      index_filename, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                          base::File::FLAG_WIN_SHARE_DELETE |
+                          base::File::FLAG_WIN_SEQUENTIAL_SCAN);
   if (!file.IsValid())
     return;
 
@@ -481,7 +485,9 @@ void SimpleIndexFile::SyncLoadFromDisk(net::CacheType cache_type,
   // 10GiB file or such.
   int64_t file_length = file.GetLength();
   if (file_length < 0 || file_length > kMaxIndexFileSizeBytes) {
-    simple_util::SimpleCacheDeleteFile(index_filename);
+    file_operations->DeleteFile(
+        index_filename,
+        BackendFileOperations::DeleteFileMode::kEnsureImmediateAvailability);
     return;
   }
 
@@ -491,15 +497,20 @@ void SimpleIndexFile::SyncLoadFromDisk(net::CacheType cache_type,
 
   int read = file.Read(0, buffer.get(), file_length);
   if (read < file_length) {
-    simple_util::SimpleCacheDeleteFile(index_filename);
+    file_operations->DeleteFile(
+        index_filename,
+        BackendFileOperations::DeleteFileMode::kEnsureImmediateAvailability);
     return;
   }
 
   SimpleIndexFile::Deserialize(cache_type, buffer.get(), read,
                                out_last_cache_seen_by_index, out_result);
 
-  if (!out_result->did_load)
-    simple_util::SimpleCacheDeleteFile(index_filename);
+  if (!out_result->did_load) {
+    file_operations->DeleteFile(
+        index_filename,
+        BackendFileOperations::DeleteFileMode::kEnsureImmediateAvailability);
+  }
 }
 
 // static
@@ -590,15 +601,17 @@ void SimpleIndexFile::SyncRestoreFromDisk(
     const base::FilePath& index_file_path,
     SimpleIndexLoadResult* out_result) {
   VLOG(1) << "Simple Cache Index is being restored from disk.";
-  simple_util::SimpleCacheDeleteFile(index_file_path);
+  file_operations->DeleteFile(
+      index_file_path,
+      BackendFileOperations::DeleteFileMode::kEnsureImmediateAvailability);
   out_result->Reset();
   SimpleIndex::EntrySet* entries = &out_result->entries;
 
   auto enumerator = file_operations->EnumerateFiles(cache_directory);
   while (absl::optional<SimpleFileEnumerator::Entry> entry =
              enumerator->Next()) {
-    ProcessEntryFile(cache_type, entries, entry->path, entry->last_accessed,
-                     entry->last_modified, entry->size);
+    ProcessEntryFile(file_operations, cache_type, entries, entry->path,
+                     entry->last_accessed, entry->last_modified, entry->size);
   }
   if (enumerator->HasError()) {
     LOG(ERROR) << "Could not reconstruct index from disk";

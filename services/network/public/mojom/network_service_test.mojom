@@ -62,6 +62,26 @@ interface SimpleCacheEntry {
   Close() => ();
 };
 
+// Represents the result of opening an entry.
+struct SimpleCacheOpenEntryResult {
+  // Represents the status of the open operation.
+  int32 error;
+
+  // The key of the entry. This is set if and only if `error` is net::OK.
+  string key;
+
+  // An remote pointer to the opened entry. Non-null if and only if `error` is
+  // net::OK.
+  pending_remote<SimpleCacheEntry>? entry;
+};
+
+// An interface to enumerate entries in a SimpleCache.
+interface SimpleCacheEntryEnumerator {
+  // Returns the next entry. `result.error` is net::ERR_FAILED at the end of
+  // the enumeration.
+  GetNext() => (SimpleCacheOpenEntryResult result);
+};
+
 // The "simple" backend of an HTTP cache.
 interface SimpleCache {
   // Creates a new entry.
@@ -74,6 +94,16 @@ interface SimpleCache {
 
   // Marks the entry for deletion.
   DoomEntry(string key) => (int32 result);
+
+  // Enumerate entries in the backend.
+  EnumerateEntries(pending_receiver<SimpleCacheEntryEnumerator> receiver);
+
+  // Detaches the cache backend. Once this is called, no methods can be
+  // called in the future. This also flushes tasks in the worker pool.
+  // You do NOT need to call this - the cache backend is automatically detached
+  // when the remote endpoint is detached. This is to ensure that all the tasks
+  // (e.g., writing to the index) are done.
+  Detach() => ();
 };
 
 // Testing interface to the network service.

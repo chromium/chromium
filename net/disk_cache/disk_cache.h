@@ -131,6 +131,11 @@ NET_EXPORT net::Error CreateCacheBackend(
 // has finished before inspecting the world.
 NET_EXPORT void FlushCacheThreadForTesting();
 
+// Async version of FlushCacheThreadForTesting. `callback` will be called on
+// the calling sequence.
+NET_EXPORT void FlushCacheThreadAsynchronouslyForTesting(
+    base::OnceClosure cllback);
+
 // The root interface for a disk cache instance.
 class NET_EXPORT Backend {
  public:
