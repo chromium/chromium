@@ -42,7 +42,7 @@ enum DevicePreference {
   kGpu = 2,
 };
 
-[Stable, Extensible]
+[Stable]
 struct CreateModelLoaderOptions {
   // #Threads used in model inference.
   // 0 means the backend can decide it automatically (e.g. equals the number of
@@ -81,7 +81,7 @@ enum DataType {
 
 // Represents the information of a tensor. The tensor infos of input and output
 // tensors are sent from ml-service to the client as a result of model loading.
-[Stable, Extensible]
+[Stable]
 struct TensorInfo {
   // The total size of the tensor buffer in bytes. This is the most important
   // information. Ml-service will use it to check whether the input tensor is
@@ -95,7 +95,7 @@ struct TensorInfo {
 
 // Represents the model information. Currently it contains the tensor info of
 // input and output tensors.
-[Stable, Extensible]
+[Stable]
 struct ModelInfo {
   map<string, TensorInfo> input_tensor_info@0;
   map<string, TensorInfo> output_tensor_info@1;

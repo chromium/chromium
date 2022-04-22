@@ -5,7 +5,7 @@
 module crosapi.mojom;
 
 // Information about Ash's field trial group to be propagated to lacros.
-[Stable, Extensible]
+[Stable]
 struct FieldTrialGroupInfo {
   string trial_name;
   string group_name;

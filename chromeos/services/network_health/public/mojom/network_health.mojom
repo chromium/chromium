@@ -119,7 +119,7 @@ interface NetworkEventsObserver {
 // Interface for retrieving aggregated information about the current network
 // state and health from the browser process.
 // Next Method ID: 4
-[Stable, Extensible]
+[Stable]
 interface NetworkHealthService {
   // Adds an observer to be notified on network events. The caller can remove
   // the observer created by this call by closing their end of the message

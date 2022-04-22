@@ -87,10 +87,10 @@ union TextSuggestionCandidate {
 [Stable]
 struct TextSuggesterResult {
   // Status of the response
-  [Stable, Extensible, Default=ERROR]
+  [Stable, Extensible]
   enum Status {
     // Text suggestions generated successfully
-    OK = 0,
+    [Default] OK = 0,
     // There was an error while generating candidates, no candidates will be
     // returned with this result.
     ERROR = 1,

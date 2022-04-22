@@ -438,7 +438,10 @@ interesting attributes supported today.
 * **`[MinVersion=N]`**:
   The `MinVersion` attribute is used to specify the version at which a given
   field, enum value, interface method, or method parameter was introduced.
-  See [Versioning](#Versioning) for more details.
+  See [Versioning](#Versioning) for more details. `MinVersion` does not apply
+  to interfaces, structs or enums, but to the fields of those types.
+  `MinVersion` is not a module-global value, but it is ok to pretend it is by
+  skipping versions when adding fields or parameters.
 
 * **`[Stable]`**:
   The `Stable` attribute specifies that a given mojom type or interface

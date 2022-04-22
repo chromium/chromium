@@ -18,14 +18,14 @@ enum DlpRestrictionLevel {
 };
 
 // Corresponds to RestrictionLevelAndUrl struct.
-[Stable, Extensible]
+[Stable]
 struct DlpRestrictionLevelAndUrl {
   DlpRestrictionLevel level@0;
   url.mojom.Url url@1;
 };
 
 // Corresponds to DlpContentRestrictionSet class.
-[Stable, Extensible]
+[Stable]
 struct DlpRestrictionSet {
   DlpRestrictionLevelAndUrl screenshot@0;
   DlpRestrictionLevelAndUrl privacy_screen@1;
@@ -34,7 +34,7 @@ struct DlpRestrictionSet {
 };
 
 // Captured area.
-[Stable, Extensible]
+[Stable]
 struct ScreenShareArea {
   // All root windows if |window_id| is null.
   string? window_id@0;

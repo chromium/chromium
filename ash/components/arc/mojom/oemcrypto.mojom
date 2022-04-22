@@ -108,13 +108,13 @@ enum OemCryptoCipherMode {
   CIPHER_MODE_CBC = 1,
 };
 
-[Stable, Extensible, MinVersion=2]
+[Stable, Extensible]
 enum OemCryptoLicenseType {
   CONTENT_LICENSE = 0,
   ENTITLEMENT_LICENSE = 1,
 };
 
-[Stable, MinVersion=3]
+[Stable]
 struct OemCryptoSubstring {
   uint32 offset;
   uint32 length;
@@ -132,7 +132,7 @@ struct OemCryptoKeyObjectV14 {
   OemCryptoCipherMode cipher_mode;
 };
 
-[Stable, MinVersion=3]
+[Stable]
 struct OemCryptoKeyObject {
   OemCryptoSubstring key_id;
   OemCryptoSubstring key_data_iv;
@@ -141,7 +141,7 @@ struct OemCryptoKeyObject {
   OemCryptoSubstring key_control;
 };
 
-[Stable, MinVersion=2]
+[Stable]
 struct OemCryptoEntitledContentKeyObjectV14 {
   array<uint8> entitlement_key_id;
   array<uint8> content_key_id;
@@ -149,7 +149,7 @@ struct OemCryptoEntitledContentKeyObjectV14 {
   array<uint8> content_key_data;
 };
 
-[Stable, MinVersion=3]
+[Stable]
 struct OemCryptoEntitledContentKeyObject {
   OemCryptoSubstring entitlement_key_id;
   OemCryptoSubstring content_key_id;
@@ -166,7 +166,7 @@ struct OemCryptoKeyRefreshObjectV14 {
   uint32 key_control_offset;
 };
 
-[Stable, MinVersion=3]
+[Stable]
 struct OemCryptoKeyRefreshObject {
   OemCryptoSubstring key_id;
   OemCryptoSubstring key_control_iv;
@@ -186,7 +186,7 @@ struct OemCryptoCencEncryptPatternDesc {
   uint32 offset;
 };
 
-[Stable, Extensible, MinVersion=2]
+[Stable, Extensible]
 enum OemCryptoUsageEntryStatus {
   UNUSED = 0,
   ACTIVE = 1,
@@ -222,7 +222,7 @@ enum OemCryptoHdcpCapability {
   HDCP_NO_DIGITAL_OUTPUT = 0xFF,
 };
 
-[Stable, Extensible, MinVersion=2]
+[Stable, Extensible]
 enum OemCryptoProvisioningMethod {
   PROVISIONING_ERROR = 0,
   DRM_CERTIFICATE = 1,
@@ -230,13 +230,13 @@ enum OemCryptoProvisioningMethod {
   OEM_CERTIFICATE = 3,
 };
 
-[Stable, Extensible, MinVersion=4]
+[Stable, Extensible]
 enum OemCryptoPrivateKey {
   RSA_PRIVATE_KEY = 0,
   ECC_PRIVATE_KEY = 1,
 };
 
-[Stable, MinVersion=4]
+[Stable]
 struct SubSampleDescription {
   uint32 num_bytes_clear;
   uint32 num_bytes_encrypted;

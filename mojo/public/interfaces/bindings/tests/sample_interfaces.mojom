@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 [JavaPackage="org.chromium.mojo.bindings.test.mojom.sample",
- JavaConstantsClassName="InterfaceConstants",
- Foo = "hello world"]
+ JavaConstantsClassName="InterfaceConstants"]
 module sample;
 
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";

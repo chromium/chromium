@@ -14,7 +14,7 @@ union LoginScreenStorageRetrieveResult {
 };
 
 // Copy of LoginScreenStorageMetadata from login_screen_storage.proto.
-[Stable, Extensible]
+[Stable]
 struct LoginScreenStorageMetadata {
   // Whether the saved key/value pair should be deleted on session exit.
   bool clear_on_session_exit@0;

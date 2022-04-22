@@ -93,9 +93,9 @@ enum PrefPath {
 // Note that with respect to LevelOfControl, we do not consider extensions in
 // ash as extensions. They are treated as a prefstore of higher precedence.
 // However, no extensions in ash are expected to set these prefs.
-[Stable, Extensible, Default=kDefaultUnknown]
+[Stable, Extensible]
 enum PrefControlState {
-  kDefaultUnknown = 0,
+  [Default] kDefaultUnknown = 0,
   // Controlled by an extension in lacros. Ash does not have enough information
   // to know which extension in Lacros is controlling this pref.
   kLacrosExtensionControlled = 1,

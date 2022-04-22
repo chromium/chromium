@@ -7,13 +7,13 @@ module crosapi.mojom;
 import "mojo/public/mojom/base/values.mojom";
 
 // Copy of UsbDetachableAllowlistProto from chrome_device_policy.proto.
-[Stable, Extensible]
+[Stable]
 struct UsbDetachableAllowlist {
   array<UsbDeviceId> usb_device_ids@0;
 };
 
 // Copy of UsbDeviceIdInclusiveProto from chrome_device_policy.proto.
-[Stable, Extensible]
+[Stable]
 struct UsbDeviceId {
   // USB Vendor Identifier (aka idVendor).
   bool has_vendor_id@0;
@@ -24,7 +24,7 @@ struct UsbDeviceId {
 };
 
 // All the device settings data that are needed in Lacros should be here.
-[Stable, Extensible]
+[Stable]
 struct DeviceSettings {
   // The value of AttestationForContentProtectionEnabled device setting.
   OptionalBool attestation_for_content_protection_enabled@0;

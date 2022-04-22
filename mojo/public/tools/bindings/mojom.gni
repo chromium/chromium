@@ -97,6 +97,7 @@ mojom_generator_script = "$mojom_generator_root/mojom_bindings_generator.py"
 mojom_generator_sources =
     mojom_parser_sources + [
       "$mojom_generator_root/checks/__init__.py",
+      "$mojom_generator_root/checks/mojom_attributes_check.py",
       "$mojom_generator_root/checks/mojom_restrictions_check.py",
       "$mojom_generator_root/generators/__init__.py",
       "$mojom_generator_root/generators/cpp_util.py",

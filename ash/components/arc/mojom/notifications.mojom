@@ -57,21 +57,21 @@ struct DeprecatedArcNotificationButton {
   string label;
 };
 
-[Extensible, MinVersion=10]
+[Extensible]
 enum ArcNotificationExpandState {
   FIXED_SIZE = 0,
   COLLAPSED = 1,
   EXPANDED = 2,
 };
 
-[Extensible, MinVersion=12]
+[Extensible]
 enum ArcNotificationRemoteInputState {
   CLOSED = 0,
   OPENED = 1,
 };
 
 // These values represent what shows in an ARC custom notification.
-[Extensible, MinVersion=11]
+[Extensible]
 enum ArcNotificationShownContents {
   // The normal notification contents are shown.
   CONTENTS_SHOWN = 0,
@@ -83,7 +83,6 @@ enum ArcNotificationShownContents {
 };
 
 // Flag for various feature of ARC notifications.
-[MinVersion=17]
 struct ArcNotificationFlags {
   // Bits for features.
   const uint32 SUPPORT_SNOOZE = 1;  // 1 << 0
@@ -167,12 +166,10 @@ struct ArcNotificationData {
   bool is_media_notification;
 };
 
-[MinVersion=18]
 struct ArcDoNotDisturbStatus {
   bool enabled;
 };
 
-[MinVersion=21]
 struct ArcNotificationUserActionData {
   // Unique action id for this user action.
   uint32 action_id;
@@ -186,7 +183,6 @@ struct ArcNotificationUserActionData {
   bool to_be_focused_after_unlock;
 };
 
-[MinVersion=21]
 struct ArcLockScreenNotificationSetting {
   // Flag whether to show the notifications on the lock screen.
   bool show_notification;
@@ -194,7 +190,6 @@ struct ArcLockScreenNotificationSetting {
   bool show_private_notification;
 };
 
-[MinVersion=22]
 struct NotificationConfiguration {
   // Flag to enable notification expansion animations on arc.
   // See b/35786193.
@@ -202,7 +197,7 @@ struct NotificationConfiguration {
 };
 
 // These values represent an visibility of MessageCenter on Chrome OS.
-[Extensible, MinVersion=25]
+[Extensible]
 enum MessageCenterVisibility {
   // When nothing or just toast popups are being displayed.
   VISIBILITY_TRANSIENT = 0,

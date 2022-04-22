@@ -27,7 +27,6 @@ struct ImeInfo {
 };
 
 // Represents the information of the text field.
-[MinVersion=2]
 struct TextInputState {
   // The current cursor position in 16-bit code units in the overall text
   // of the text field.
@@ -64,7 +63,6 @@ struct TextInputState {
 // This interface will be closed when the focus moves to another text field.
 //
 // Next method ID: 8
-[MinVersion=2]
 interface InputConnection {
   // Commits text to the focused text field and set the new cursor position.
   CommitText@0(mojo_base.mojom.String16 text, int32 new_cursor_pos);

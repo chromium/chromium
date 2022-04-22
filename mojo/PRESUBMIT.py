@@ -30,6 +30,7 @@ def CheckChangeOnUpload(input_api, output_api):
   files_to_skip = input_api.DEFAULT_FILES_TO_SKIP + \
       (r".*\bpublic[\\\/]tools[\\\/]bindings[\\\/]pylib[\\\/]mojom[\\\/]"
            r"generate[\\\/].+\.py$",
+       r".*\bpublic[\\\/]tools[\\\/]bindings[\\\/]checks[\\\/].+\.py$",
        r".*\bpublic[\\\/]tools[\\\/]bindings[\\\/]generators[\\\/].+\.py$",
        r".*\bspy[\\\/]ui[\\\/].+\.py$",
        r".*\btools[\\\/]pylib[\\\/]transitive_hash\.py$",

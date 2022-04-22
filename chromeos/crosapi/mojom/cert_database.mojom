@@ -4,7 +4,7 @@
 
 module crosapi.mojom;
 
-[Stable, Extensible]
+[Stable]
 struct GetCertDatabaseInfoResult {
   // Deprecated on 10/2021. Use `user_nss_database` from
   // crosapi.BrowserInitParams instead.

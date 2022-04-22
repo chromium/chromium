@@ -348,7 +348,7 @@ struct PinyinSettings {
 };
 
 // Next ordinal: 3
-[Stable, Extensible, MinVersion=7, RenamedFrom="chromeos.ime.mojom.ZhuyinLayout"]
+[Stable, Extensible,RenamedFrom="chromeos.ime.mojom.ZhuyinLayout"]
 enum ZhuyinLayout {
   [Default] kStandard = 0,
   kIbm = 1,
@@ -363,7 +363,7 @@ enum ZhuyinLayout {
 // See the default enum value for an example.
 //
 // Next ordinal: 5
-[Stable, Extensible, MinVersion=7, RenamedFrom="chromeos.ime.mojom.ZhuyinSelectionKeys"]
+[Stable, Extensible, RenamedFrom="chromeos.ime.mojom.ZhuyinSelectionKeys"]
 enum ZhuyinSelectionKeys {
   // Corresponds to '1234567890'.
   // '1' selects the 1st candidate, '2' selects the 2nd, and so on, and '0'

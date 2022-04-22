@@ -11,7 +11,7 @@ import "ui/base/mojom/ui_base_types.mojom";
 // written to logs. New enum values can be added, but existing enums must
 // never be renumbered, deleted, or reused. If adding an enum, add it at the
 // bottom.
-[Stable, Extensible, Default=kUnknown]
+[Stable, Extensible]
 enum ClipboardHistoryControllerShowSource {
   // Shown by the accelerator(search + v).
   kAccelerator,
@@ -22,7 +22,7 @@ enum ClipboardHistoryControllerShowSource {
   // Shown by the virtual keyboard.
   kVirtualKeyboard,
   // Used as a default value in case of version skew.
-  kUnknown
+  [Default] kUnknown
 };
 
 // This interface is implemented by Ash-Chrome.

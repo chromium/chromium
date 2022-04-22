@@ -593,7 +593,7 @@ struct DefaultPaths {
 // Next version: 2
 // Next id: 2
 // TODO(igorcov): Include DeviceAttributes here.
-[Stable, Extensible]
+[Stable]
 struct DeviceProperties {
   // The value of device DM token. It is the raw data from the policy, not
   // encrypted.
@@ -658,7 +658,7 @@ enum InitialBrowserAction {
 
 // Whether / how mlservice on-device handwriting is supported.
 [Stable, Extensible]
-enum OndeviceHandwritingSupport{
+enum OndeviceHandwritingSupport {
   kUnsupported = 0,
   kUseRootfs = 1,
   kUseDlc = 2,
