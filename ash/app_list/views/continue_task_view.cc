@@ -301,13 +301,17 @@ ui::SimpleMenuModel* ContinueTaskView::BuildMenuModel() {
           IDS_ASH_LAUNCHER_CONTINUE_SECTION_CONTEXT_MENU_REMOVE),
       ui::ImageModel::FromVectorIcon(kRemoveOutlineIcon,
                                      ui::kColorAshSystemUIMenuIcon));
-  context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
-  // TODO(crbug.com/1317428): Custom icon.
-  context_menu_model_->AddItemWithIcon(
-      ContinueTaskCommandId::kHideContinueSection,
-      l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_HIDE_CONTINUE_SECTION),
-      ui::ImageModel::FromVectorIcon(kLockScreenPasswordInvisibleIcon,
-                                     ui::kColorAshSystemUIMenuIcon));
+  // TODO(crbug.com/1317428): Add "hide continue section" item in tablet mode
+  // when the "show continue section" button works in tablet mode.
+  if (!is_tablet_mode_) {
+    context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
+    // TODO(crbug.com/1317428): Custom icon.
+    context_menu_model_->AddItemWithIcon(
+        ContinueTaskCommandId::kHideContinueSection,
+        l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_HIDE_CONTINUE_SECTION),
+        ui::ImageModel::FromVectorIcon(kLockScreenPasswordInvisibleIcon,
+                                       ui::kColorAshSystemUIMenuIcon));
+  }
   return context_menu_model_.get();
 }
 

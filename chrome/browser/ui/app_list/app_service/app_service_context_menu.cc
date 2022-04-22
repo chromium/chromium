@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ui/base/tablet_state.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -429,7 +430,12 @@ void AppServiceContextMenu::OnGetMenuModel(
             color_id));
   }
 
-  if (item_context_ == ash::AppListItemContext::kRecentApps) {
+  // chromeos::TabletState::Get() may be null in tests.
+  const bool tablet_mode = chromeos::TabletState::Get() &&
+                           chromeos::TabletState::Get()->InTabletMode();
+  // TODO(crbug.com/1317428): Add "hide continue section" item in tablet mode
+  // when the "show continue section" button works in tablet mode.
+  if (item_context_ == ash::AppListItemContext::kRecentApps && !tablet_mode) {
     menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
     menu_model->AddItemWithIcon(
         ash::HIDE_CONTINUE_SECTION,
