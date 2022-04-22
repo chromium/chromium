@@ -370,10 +370,10 @@ Also see the [Google Polymer Style Guide](http://go/polymer-style).
 * Elements with UI should have their HTML in a .html file and logic in a TS file
   with the same name. The HTML template can be imported into the final JS file
   at runtime from a generated JS wrapper file via the getTemplate() function.
-  THe wrapper file is generated using the html_to_wrapper gn rule:
+  The wrapper file is generated using the html_to_wrapper gn rule:
 ```
-  html_to_wrapper('html_wrapper_files') {
-    in_files = [ 'my_app.html' ]
+  html_to_wrapper("html_wrapper_files") {
+    in_files = [ "my_app.html" ]
   }
 ```
 
@@ -455,7 +455,7 @@ https://www.polymer-project.org/2.0/docs/devguide/templates#dom-if):
   default. Also consider using [`cr-lazy-render`](
   https://cs.chromium.org/chromium/src/ui/webui/resources/cr_elements/cr_lazy_render/cr_lazy_render.js)
   instead.
-  * **Only use`dom-if`** if the DOM subtree is non-trivial, defined as:
+  * **Only use `dom-if`** if the DOM subtree is non-trivial, defined as:
       * Contains more than 10 native elements, OR
       * Contain **any** custom elements, OR
       * Has many data bindings, OR
