@@ -36,6 +36,7 @@ group("features") {
     "//ios/showcase/default_browser",
     "//ios/showcase/discover_feed_preview",
     "//ios/showcase/first_run",
+    "//ios/showcase/follow",
     "//ios/showcase/incognito_reauth",
     "//ios/showcase/infobars",
     "//ios/showcase/omnibox_popup",
