@@ -250,7 +250,8 @@ class MediaStreamAudioTest : public ::testing::Test {
         String::FromUTF8("audio_track"), false /* remote */,
         std::make_unique<FakeMediaStreamAudioSource>());
     audio_component_ = MakeGarbageCollected<MediaStreamComponent>(
-        audio_source_->Id(), audio_source_);
+        audio_source_->Id(), audio_source_,
+        std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */));
   }
 
   void TearDown() override {
@@ -283,8 +284,7 @@ TEST_F(MediaStreamAudioTest, BasicUsage) {
   EXPECT_FALSE(source()->was_stopped());
 
   // Connect a track to the source. This should auto-start the source.
-  ASSERT_FALSE(track());
-  EXPECT_TRUE(source()->ConnectToTrack(audio_component_));
+  EXPECT_TRUE(source()->ConnectToInitializedTrack(audio_component_));
   ASSERT_TRUE(track());
   EXPECT_TRUE(source()->was_started());
   EXPECT_FALSE(source()->was_stopped());
@@ -322,19 +322,16 @@ TEST_F(MediaStreamAudioTest, ConnectTrackAfterSourceStopped) {
   // Create the source, connect one track, and stop it. This should
   // automatically stop the source.
   ASSERT_TRUE(source());
-  EXPECT_TRUE(source()->ConnectToTrack(audio_component_));
+  EXPECT_TRUE(source()->ConnectToInitializedTrack(audio_component_));
   track()->Stop();
   EXPECT_TRUE(source()->was_started());
   EXPECT_TRUE(source()->was_stopped());
 
-  // Now, connect another track. ConnectToTrack() will return false, but there
-  // should be a MediaStreamAudioTrack instance created and owned by the
-  // MediaStreamComponent.
+  // Now, connect another track. ConnectToInitializedTrack() will return false.
   auto* another_component = MakeGarbageCollected<MediaStreamComponent>(
-      audio_source_->Id(), audio_source_);
-  EXPECT_FALSE(MediaStreamAudioTrack::From(another_component));
-  EXPECT_FALSE(source()->ConnectToTrack(another_component));
-  EXPECT_TRUE(MediaStreamAudioTrack::From(another_component));
+      audio_source_->Id(), audio_source_,
+      std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */));
+  EXPECT_FALSE(source()->ConnectToInitializedTrack(another_component));
 }
 
 // Tests that a sink is immediately "ended" when connected to a stopped track.
@@ -357,7 +354,7 @@ TEST_F(MediaStreamAudioTest, FormatChangesPropagate) {
   // Create a source, connect it to track, and connect the track to a
   // sink.
   ASSERT_TRUE(source());
-  EXPECT_TRUE(source()->ConnectToTrack(audio_component_));
+  EXPECT_TRUE(source()->ConnectToInitializedTrack(audio_component_));
   ASSERT_TRUE(track());
   FakeMediaStreamAudioSink sink;
   ASSERT_TRUE(!sink.params().IsValid());
@@ -391,7 +388,7 @@ TEST_F(MediaStreamAudioTest, FormatChangesPropagate) {
 TEST_F(MediaStreamAudioTest, EnableAndDisableTracks) {
   // Create a source and connect it to track.
   ASSERT_TRUE(source());
-  EXPECT_TRUE(source()->ConnectToTrack(audio_component_));
+  EXPECT_TRUE(source()->ConnectToInitializedTrack(audio_component_));
   ASSERT_TRUE(track());
 
   // Connect the track to a sink and expect the sink to be notified that the
@@ -419,8 +416,9 @@ TEST_F(MediaStreamAudioTest, EnableAndDisableTracks) {
   // disabled. Expect the sink to be notified at the start that the track is
   // disabled.
   auto* another_component = MakeGarbageCollected<MediaStreamComponent>(
-      audio_source_->Id(), audio_source_);
-  EXPECT_TRUE(source()->ConnectToTrack(another_component));
+      audio_source_->Id(), audio_source_,
+      std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */));
+  EXPECT_TRUE(source()->ConnectToInitializedTrack(another_component));
   MediaStreamAudioTrack::From(another_component)->SetEnabled(false);
   FakeMediaStreamAudioSink another_sink;
   MediaStreamAudioTrack::From(another_component)->AddSink(&another_sink);
