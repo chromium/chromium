@@ -22,6 +22,7 @@ import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeClassQualifiedName;
@@ -123,10 +124,12 @@ public class ProxyChangeListener {
 
     @CalledByNative
     public void start(long nativePtr) {
-        assertOnThread();
-        assert mNativePtr == 0;
-        mNativePtr = nativePtr;
-        registerReceiver();
+        try (TraceEvent e = TraceEvent.scoped("ProxyChangeListener.start")) {
+            assertOnThread();
+            assert mNativePtr == 0;
+            mNativePtr = nativePtr;
+            registerReceiver();
+        }
     }
 
     @CalledByNative

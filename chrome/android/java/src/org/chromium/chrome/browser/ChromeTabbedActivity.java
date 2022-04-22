@@ -1861,13 +1861,17 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 if (!navigation.hasCommitted() || !navigation.isInPrimaryMainFrame()) {
                     return;
                 }
-                if (SyncErrorPromptUtils.isMessageUiEnabled()) {
-                    SyncErrorMessage.maybeShowMessageUi(
-                            getWindowAndroid(), ChromeTabbedActivity.this);
-                } else {
-                    SyncErrorInfoBar.maybeLaunchSyncErrorInfoBar(tab.getWebContents());
+                try (TraceEvent e = TraceEvent.scoped("CheckSyncErrorOnDidFinishNavigation")) {
+                    if (SyncErrorPromptUtils.isMessageUiEnabled()) {
+                        SyncErrorMessage.maybeShowMessageUi(
+                                getWindowAndroid(), ChromeTabbedActivity.this);
+                    } else {
+                        SyncErrorInfoBar.maybeLaunchSyncErrorInfoBar(tab.getWebContents());
+                    }
                 }
-                SendTabToSelfAndroidBridge.updateActiveWebContents(tab.getWebContents());
+                try (TraceEvent te = TraceEvent.scoped("updateActiveWebContents")) {
+                    SendTabToSelfAndroidBridge.updateActiveWebContents(tab.getWebContents());
+                }
             }
         };
         mAppIndexingUtil = new AppIndexingUtil(mTabModelSelector);

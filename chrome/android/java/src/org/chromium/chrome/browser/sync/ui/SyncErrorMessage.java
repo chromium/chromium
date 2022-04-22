@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
@@ -59,23 +60,26 @@ public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserDa
      * @param context The {@link Context} to get string and drawable resources.
      */
     public static void maybeShowMessageUi(WindowAndroid windowAndroid, Context context) {
-        if (!SyncErrorPromptUtils.shouldShowPrompt(
-                    SyncErrorPromptUtils.getSyncErrorUiType(SyncSettingsUtils.getSyncError()))) {
-            return;
-        }
+        try (TraceEvent t = TraceEvent.scoped("SyncErrorMessage.maybeShowMessageUi")) {
+            if (!SyncErrorPromptUtils.shouldShowPrompt(SyncErrorPromptUtils.getSyncErrorUiType(
+                        SyncSettingsUtils.getSyncError()))) {
+                return;
+            }
 
-        MessageDispatcher dispatcher = MessageDispatcherProvider.from(windowAndroid);
-        if (dispatcher == null) {
-            // Show prompt UI next time when there is a valid dispatcher attached to this window.
-            return;
-        }
+            MessageDispatcher dispatcher = MessageDispatcherProvider.from(windowAndroid);
+            if (dispatcher == null) {
+                // Show prompt UI next time when there is a valid dispatcher attached to this
+                // window.
+                return;
+            }
 
-        UnownedUserDataHost host = windowAndroid.getUnownedUserDataHost();
-        if (SYNC_ERROR_MESSAGE_KEY.retrieveDataFromHost(host) != null) {
-            // Show prompt UI next time when the previous message has disappeared.
-            return;
+            UnownedUserDataHost host = windowAndroid.getUnownedUserDataHost();
+            if (SYNC_ERROR_MESSAGE_KEY.retrieveDataFromHost(host) != null) {
+                // Show prompt UI next time when the previous message has disappeared.
+                return;
+            }
+            SYNC_ERROR_MESSAGE_KEY.attachToHost(host, new SyncErrorMessage(dispatcher, context));
         }
-        SYNC_ERROR_MESSAGE_KEY.attachToHost(host, new SyncErrorMessage(dispatcher, context));
     }
 
     private SyncErrorMessage(MessageDispatcher dispatcher, Context context) {

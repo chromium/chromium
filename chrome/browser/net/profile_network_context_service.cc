@@ -19,6 +19,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
@@ -233,6 +234,7 @@ void UpdateStorageAccessSettings(Profile* profile) {
 
 ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
     : profile_(profile), proxy_config_monitor_(profile) {
+  TRACE_EVENT0("startup", "ProfileNetworkContextService::ctor");
   PrefService* profile_prefs = profile->GetPrefs();
   quic_allowed_.Init(prefs::kQuicAllowed, profile_prefs,
                      base::BindRepeating(
