@@ -275,15 +275,15 @@
 <translation id="1327466551276625742">Aktifkan permintaan konfigurasi jaringan saat offline</translation>
 <translation id="1330145147221172764">Aktifkan keyboard di layar</translation>
 <translation id="13356285923490863">Nama Kebijakan</translation>
-<translation id="1338603603553894503">Menentukan apakah alat pilih profil akan diaktifkan, dinonaktifkan, atau dipaksa saat browser dimulai.
+<translation id="1338603603553894503">Menentukan apakah pemilih profil akan diaktifkan, dinonaktifkan, atau dipaksa saat browser dimulai.
 
-      Secara default, alat pilih profil tidak akan ditampilkan jika browser dimulai dalam mode tamu atau Samaran, direktori dan/atau URL profil ditentukan oleh command line, aplikasi secara eksplisit diminta terbuka, browser diluncurkan oleh notifikasi native, hanya tersedia satu profil, atau kebijakan ForceBrowserSignin disetel ke benar (true).
+      Secara default, pemilih profil tidak akan ditampilkan jika browser dimulai dalam mode tamu atau Samaran, direktori dan/atau URL profil ditentukan oleh command line, aplikasi secara eksplisit diminta terbuka, browser diluncurkan oleh notifikasi native, hanya tersedia satu profil, atau kebijakan ForceBrowserSignin disetel ke benar (true).
 
-      Jika 'Enabled' (0) dipilih atau kebijakan tidak disetel, secara default alat pilih profil akan ditampilkan saat browser dimulai, tetapi pengguna dapat mengaktifkan/menonaktifkannya.
+      Jika 'Enabled' (0) dipilih atau kebijakan tidak disetel, secara default pemilih profil akan ditampilkan saat browser dimulai, tetapi pengguna dapat mengaktifkan/menonaktifkannya.
 
-      Jika 'Disabled' (1) dipilih, alat pilih profil tidak akan pernah ditampilkan dan pengguna tidak dapat mengubah setelan.
+      Jika 'Disabled' (1) dipilih, pemilih profil tidak akan pernah ditampilkan dan pengguna tidak dapat mengubah setelan.
 
-      Jika 'Forced' (2) dipilih, alat pilih profil tidak dapat disembunyikan oleh pengguna. Alat pilih profil akan ditampilkan meski hanya tersedia satu profil.</translation>
+      Jika 'Forced' (2) dipilih, pemilih profil tidak dapat disembunyikan oleh pengguna. Pemilih profil akan ditampilkan meski hanya tersedia satu profil.</translation>
 <translation id="1339174690935954950">Cegah pengguna mengirim masukan</translation>
 <translation id="1347198119056266798">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> dan <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Kebijakan ini diabaikan jika salah satu dari kebijakan <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> atau <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (tidak digunakan lagi) ditetapkan.
 
@@ -1457,7 +1457,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2509748672176727116">Pengguna akan dapat melakukan rekaman paket jaringan</translation>
 <translation id="2509919237512982967">Menggunakan Kontrol Formulir Lama hingga M84.</translation>
 <translation id="2512972020817284317">Aktifkan penggabungan kebijakan cloud tingkat pengguna.</translation>
-<translation id="2515699738406900920">Ketersediaan alat pilih profil saat browser dimulai</translation>
+<translation id="2515699738406900920">Ketersediaan pemilih profil saat browser dimulai</translation>
 <translation id="251594860034549963">Jika kebijakan disetel ke Aktif, jendela browser dari perangkat yang terakhir digunakan oleh pengguna saat ini akan otomatis diluncurkan saat login.
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, setelan pemulihan penuh akan menentukan jendela browser mana yang diluncurkan saat login.</translation>
 <translation id="2517466659416174529">Izinkan pembekuan tab di latar belakang</translation>
@@ -2454,7 +2454,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Untuk mengetahui detail <ph name="CORS" />, buka: <ph name="CORS_HELP_URL" />.
 
       Perlu diketahui bahwa kebijakan ini sebelumnya diumumkan akan dihapus di <ph name="PRODUCT_NAME" /> versi 82, tetapi saat ini telah dihapus di versi 84.</translation>
-<translation id="3606571057705314194">Alat pilih profil dinonaktifkan saat browser dimulai</translation>
+<translation id="3606571057705314194">Pemilih profil dinonaktifkan saat browser dimulai</translation>
 <translation id="3608206578291537084">Aktifkan Pipeline Pelaporan Terenkripsi</translation>
 <translation id="3612809274815536412">Setelan Penempatan Jendela</translation>
 <translation id="3627678165642179114">Mengaktifkan atau menonaktifkan layanan web memeriksa ejaan</translation>
@@ -2594,7 +2594,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 
       Kolom <ph name="RUN_ON_OS_LOGIN_FIELD" /> menentukan apakah aplikasi web dapat dijalankan selama login OS. Jika kolom ini disetel ke <ph name="BLOCKED" />, aplikasi web tidak akan dijalankan selama login OS dan pengguna tidak akan dapat mengaktifkannya nanti. Jika kolom ini disetel ke <ph name="RUN_WINDOWED" />, aplikasi web akan dijalankan selama login OS dan pengguna tidak akan dapat menonaktifkannya nanti. Jika kolom ini disetel ke <ph name="ALLOWED" />, pengguna akan dapat mengonfigurasi aplikasi web untuk dijalankan saat login OS. Konfigurasi default hanya mengizinkan nilai <ph name="ALLOWED" /> dan <ph name="BLOCKED" />.
       </translation>
-<translation id="3796527892245558832">Alat pilih profil tersedia saat browser dimulai</translation>
+<translation id="3796527892245558832">Pemilih profil tersedia saat browser dimulai</translation>
 <translation id="3798922329287609568">Jika kebijakan disetel, mode dupleks pencetakan akan dibatasi.
 
       Jika kebijakan tidak disetel atau dikosongkan, batasan tidak akan berlaku.</translation>
@@ -4650,7 +4650,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Catatan: Sandi mungkin menjadi lebih lama dari jumlah hari yang ditentukan jika klien offline selama jangka waktu yang lebih lama.</translation>
 <translation id="628084107912717806">Menentukan apakah modul WebAssembly dapat dikirim lintas asal</translation>
-<translation id="6280973140313576289">Alat pilih profil dipaksa saat browser dimulai</translation>
+<translation id="6280973140313576289">Pemilih profil dipaksa saat browser dimulai</translation>
 <translation id="6282524907402492171">Tampilkan peringatan <ph name="CLOUD_PRINT_NAME" /> tidak digunakan lagi</translation>
 <translation id="6282799760374509080">Izinkan atau tolak penangkapan audio</translation>
 <translation id="6284362063448764300">TLS 1.1</translation>
