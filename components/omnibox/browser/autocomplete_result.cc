@@ -285,7 +285,22 @@ void AutocompleteResult::SortAndCull(
   // OmniboxMaxZeroSuggestMatches, and OmniboxDynamicMaxAutocomplete.
   const size_t num_matches =
       CalculateNumMatches(is_zero_suggest, matches_, comparing_object);
-  matches_.resize(num_matches);
+
+  if (base::FeatureList::IsEnabled(omnibox::kRetainSuggestionsWithHeaders)) {
+    size_t num_regular_suggestions = 0;
+    base::EraseIf(matches_,
+                  [&num_regular_suggestions, num_matches](const auto& match) {
+                    // Trim suggestions without headers to the specified limit.
+                    if (!match.suggestion_group_id.has_value()) {
+                      num_regular_suggestions++;
+                      return num_regular_suggestions > num_matches;
+                    }
+                    // Do not trim suggestions with headers.
+                    return false;
+                  });
+  } else {
+    matches_.resize(num_matches);
+  }
 
   // Group search suggestions above URL suggestions.
 #if BUILDFLAG(IS_ANDROID)

@@ -1020,6 +1020,9 @@ extern const char kOmniboxSiteSearchStarterPackDescription[];
 extern const char kOmniboxSpareRendererName[];
 extern const char kOmniboxSpareRendererDescription[];
 
+extern const char kOmniboxRetainSuggestionsWithHeadersName[];
+extern const char kOmniboxRetainSuggestionsWithHeadersDescription[];
+
 extern const char kOmniboxTabSwitchSuggestionsName[];
 extern const char kOmniboxTabSwitchSuggestionsDescription[];
 
