@@ -67,9 +67,8 @@ void QueryClustersState::LoadNextBatchOfClusters(ResultCallback callback) {
     return;
 
   base::TimeTicks query_start_time = base::TimeTicks::Now();
-  base::Time end_time = continuation_end_time_.value_or(base::Time());
   service_->QueryClusters(ClusteringRequestSource::kJourneysPage,
-                          /*begin_time=*/base::Time(), end_time,
+                          /*begin_time=*/base::Time(), continuation_params_,
                           base::BindOnce(&QueryClustersState::OnGotRawClusters,
                                          weak_factory_.GetWeakPtr(),
                                          query_start_time, std::move(callback)),
@@ -80,7 +79,7 @@ void QueryClustersState::OnGotRawClusters(
     base::TimeTicks query_start_time,
     ResultCallback callback,
     std::vector<history::Cluster> clusters,
-    base::Time continuation_end_time) const {
+    QueryClustersContinuationParams continuation_params) const {
   // Post-process the clusters (expensive task) on an anonymous thread to
   // prevent janks.
   base::ElapsedTimer post_processing_timer;  // Create here to time the task.
@@ -93,15 +92,16 @@ void QueryClustersState::OnGotRawClusters(
       base::BindOnce(
           &QueryClustersState::OnGotClusters, weak_factory_.GetWeakPtr(),
           std::move(post_processing_timer), clusters_from_backend_count,
-          query_start_time, std::move(callback), continuation_end_time));
+          query_start_time, std::move(callback), continuation_params));
 }
 
-void QueryClustersState::OnGotClusters(base::ElapsedTimer post_processing_timer,
-                                       size_t clusters_from_backend_count,
-                                       base::TimeTicks query_start_time,
-                                       ResultCallback callback,
-                                       base::Time continuation_end_time,
-                                       std::vector<history::Cluster> clusters) {
+void QueryClustersState::OnGotClusters(
+    base::ElapsedTimer post_processing_timer,
+    size_t clusters_from_backend_count,
+    base::TimeTicks query_start_time,
+    ResultCallback callback,
+    QueryClustersContinuationParams continuation_params,
+    std::vector<history::Cluster> clusters) {
   base::UmaHistogramTimes("History.Clusters.ProcessClustersDuration",
                           post_processing_timer.Elapsed());
 
@@ -114,9 +114,7 @@ void QueryClustersState::OnGotClusters(base::ElapsedTimer post_processing_timer,
                                 (1.0 * clusters_from_backend_count) * 100)));
   }
 
-  continuation_end_time_.reset();
-  if (!continuation_end_time.is_null())
-    continuation_end_time_ = continuation_end_time;
+  continuation_params_ = continuation_params;
 
   // In case no clusters came back, recursively ask for more here. We do this
   // to fulfill the mojom contract where we always return at least one cluster,
@@ -128,16 +126,13 @@ void QueryClustersState::OnGotClusters(base::ElapsedTimer post_processing_timer,
   // This is distinct from the "tall monitor" case because the page may already
   // be full of clusters. In that case, the WebUI would not know to make another
   // request for clusters.
-  if (clusters.empty() && continuation_end_time_.has_value()) {
+  if (clusters.empty() && !continuation_params.is_done) {
     LoadNextBatchOfClusters(std::move(callback));
     return;
   }
 
-  bool can_load_more = continuation_end_time_.has_value();
-  std::move(callback).Run(query_, std::move(clusters), can_load_more,
-                          is_continuation_);
-
-  // Further responses should be consider continuations.
+  std::move(callback).Run(query_, std::move(clusters),
+                          !continuation_params.is_done, is_continuation_);
   is_continuation_ = true;
 
   // Log metrics after delivering the results to the page.

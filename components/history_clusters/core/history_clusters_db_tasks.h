@@ -26,7 +26,7 @@ namespace history_clusters {
 class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
  public:
   using Callback = base::OnceCallback<void(std::vector<history::AnnotatedVisit>,
-                                           base::Time)>;
+                                           QueryClustersContinuationParams)>;
 
   // For a given `end_time`, this returns an appropriate beginning time
   // designed to avoid breaking up internet browsing sessions. In the morning,
@@ -36,7 +36,7 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
   GetAnnotatedVisitsToCluster(
       HistoryClustersService::IncompleteVisitMap incomplete_visit_map,
       base::Time begin_time,
-      base::Time end_time,
+      QueryClustersContinuationParams continuation_params,
       Callback callback);
   ~GetAnnotatedVisitsToCluster() override;
 
@@ -76,20 +76,23 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
   // returned for clustering. It's used in the DB thread as each filtered visit
   // will need to fetch its `referring_visit_of_redirect_chain_start`.
   HistoryClustersService::IncompleteVisitMap incomplete_visit_map_;
+
   // The lower bound of the begin times used in the history requests for
   // completed visits. This is a lower bound time of all the visits fetched,
   // though the visit count cap may be reached before we've queried all the way
   // to `begin_time_limit_`.
   base::Time begin_time_limit_;
-  // The end time used to continue the query onto the "next page".
-  // This is the lower bound time of all the visits fetched.
-  base::Time continuation_end_time_;
-  // True if we have exhausted history up to `begin_time_limit_` or all of
-  // History; i.e., we didn't hit the visit count cap.
-  bool exhausted_history_ = false;
+
+  // The current continuation state representing what's already been queried and
+  // where the next query should pick up. Initially set in the constructor and
+  // updated after each history request. The final state will be returned to
+  // `callback_` to be used in the next query task.
+  QueryClustersContinuationParams continuation_params_;
+
   // Persisted visits retrieved from the history DB thread and returned through
   // the callback on the main thread.
   std::vector<history::AnnotatedVisit> annotated_visits_;
+
   // The callback called on the main thread on completion.
   Callback callback_;
 };

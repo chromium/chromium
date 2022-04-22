@@ -60,17 +60,18 @@ class QueryClustersState {
   class PostProcessor;
 
   // Callback to `LoadNextBatchOfClusters()`.
-  void OnGotRawClusters(base::TimeTicks query_start_time,
-                        ResultCallback callback,
-                        std::vector<history::Cluster> clusters,
-                        base::Time continuation_end_time) const;
+  void OnGotRawClusters(
+      base::TimeTicks query_start_time,
+      ResultCallback callback,
+      std::vector<history::Cluster> clusters,
+      QueryClustersContinuationParams continuation_params) const;
 
   // Callback to `OnGotRawClusters()`.
   void OnGotClusters(base::ElapsedTimer post_processing_timer,
                      size_t clusters_from_backend_count,
                      base::TimeTicks query_start_time,
                      ResultCallback callback,
-                     base::Time continuation_end_time,
+                     QueryClustersContinuationParams continuation_params,
                      std::vector<history::Cluster> clusters);
 
   // A weak pointer to the service in case we outlive the service.
@@ -80,11 +81,9 @@ class QueryClustersState {
   // The string query the user entered into the searchbox.
   const std::string query_;
 
-  // A nullopt `continuation_end_time` means we have exhausted History.
-  // Note that this differs from History itself, which uses base::Time() as the
-  // value to indicate we've exhausted history. I've found that to be not
-  // explicit enough in practice. This value will never be base::Time().
-  absl::optional<base::Time> continuation_end_time_;
+  // The continuation params used to track where the last query left off and
+  // query for the "next page".
+  QueryClustersContinuationParams continuation_params_;
 
   // True for all 'next-page' responses, but false for the first page.
   bool is_continuation_ = false;

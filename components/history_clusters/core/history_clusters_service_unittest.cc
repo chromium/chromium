@@ -286,7 +286,7 @@ TEST_F(HistoryClustersServiceTest, HardCapOnVisitsFetchedFromHistory) {
 
   history_clusters_service_->QueryClusters(
       ClusteringRequestSource::kKeywordCacheGeneration,
-      /*begin_time=*/base::Time(), /*end_time=*/base::Time::Now(),
+      /*begin_time=*/base::Time(), /*continuation_params=*/{},
       base::DoNothing(),  // Only need to verify the correct request is sent.
       &task_tracker_);
 
@@ -302,14 +302,14 @@ TEST_F(HistoryClustersServiceTest, QueryClustersIncompleteAndPersistedVisits) {
 
   auto days_ago = [](int days) { return base::Time::Now() - base::Days(days); };
 
-  // Create incomplete visits; only 3 & 4 should be returned by the query.
+  // Create incomplete visits; only 6 & 7 should be returned by the query.
   AddIncompleteVisit(6, 6, days_ago(1));
   AddIncompleteVisit(0, 0, days_ago(1));  // Missing history rows.
   AddIncompleteVisit(7, 7, days_ago(90));
   AddIncompleteVisit(8, 8, days_ago(0));   // Too recent.
   AddIncompleteVisit(9, 9, days_ago(93));  // Too old.
   AddIncompleteVisit(3, 3, days_ago(90));  // Visit 3 was added to the history
-                                           // database with source synced.
+  // database with source synced.
   AddIncompleteVisit(
       10, 10, days_ago(1),
       ui::PageTransitionFromInt(805306372));  // Non-visible page transition.
@@ -317,15 +317,17 @@ TEST_F(HistoryClustersServiceTest, QueryClustersIncompleteAndPersistedVisits) {
   // Helper to repeatedly call `QueryClusters()`, with the continuation time
   // returned from the previous call, and return the visits sent to the
   // clustering backend.
-  base::Time continuation_end_time = base::Time::Now();
+  QueryClustersContinuationParams continuation_params = {};
+  continuation_params.continuation_time = base::Time::Now();
   const auto next_query_clusters = [&]() {
     history_clusters_service_->QueryClusters(
         ClusteringRequestSource::kJourneysPage,
-        /*begin_time=*/base::Time(), continuation_end_time,
-        base::BindLambdaForTesting([&](std::vector<history::Cluster> clusters,
-                                       base::Time continuation_end_time_temp) {
-          continuation_end_time = continuation_end_time_temp;
-        }),
+        /*begin_time=*/base::Time(), continuation_params,
+        base::BindLambdaForTesting(
+            [&](std::vector<history::Cluster> clusters,
+                QueryClustersContinuationParams continuation_params_temp) {
+              continuation_params = continuation_params_temp;
+            }),
         &task_tracker_);
 
     test_clustering_backend_->WaitForGetClustersCall();
@@ -375,11 +377,12 @@ TEST_F(HistoryClustersServiceTest, EndToEndWithBackend) {
   history_clusters_service_->QueryClusters(
       ClusteringRequestSource::kJourneysPage,
       /*begin_time=*/base::Time(),
-      /*end_time=*/base::Time(),
+      /*continuation_params=*/{},
       // This "expect" block is not run until after the fake response is sent
       // further down in this method.
       base::BindLambdaForTesting(
-          [&](std::vector<history::Cluster> clusters, base::Time) {
+          [&](std::vector<history::Cluster> clusters,
+              QueryClustersContinuationParams) {
             ASSERT_EQ(clusters.size(), 2U);
 
             auto& cluster = clusters[0];
