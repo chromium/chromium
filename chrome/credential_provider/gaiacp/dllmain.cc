@@ -64,6 +64,8 @@ STDAPI DllCanUnloadNow(void) {
 
 // Returns a class factory to create an object of the requested type.
 STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppv) {
+  LOGFN(VERBOSE);
+
   // This is performed in here to avoid from doing substantial work in DLLMain.
   _AtlModule.LogProcessDetails();
 
@@ -221,6 +223,10 @@ void CALLBACK PerformPostSigninActionsW(HWND /*hwnd*/,
 
   credential_provider::SecurelyClearDictionaryValue(&properties);
 
+  // Clear the sentinel when it's clear that the user has successfully logged
+  // in. This is done to catch edge cases where existing sentinel deletion might
+  // not be called.
+  credential_provider::DeleteStartupSentinel();
   LOGFN(VERBOSE) << "Done";
 }
 
