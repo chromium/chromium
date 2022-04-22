@@ -31,7 +31,6 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "gin/public/v8_idle_task_runner.h"
-#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"

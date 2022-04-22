@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_AUTO_DARK_MODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_AUTO_DARK_MODE_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 
