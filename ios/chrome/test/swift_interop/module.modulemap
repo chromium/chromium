@@ -5,6 +5,7 @@
 module Classes {
   header "classes/inlined_class.h"
   header "classes/outlined_class.h"
+  header "classes/polymorphism.h"
   requires cplusplus
 }
 
