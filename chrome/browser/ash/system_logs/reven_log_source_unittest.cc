@@ -8,9 +8,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-shared.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
@@ -302,13 +300,13 @@ void SetGraphicsInfo(healthd::TelemetryInfoPtr& telemetry_info,
 class RevenLogSourceTest : public ::testing::Test {
  public:
   RevenLogSourceTest() {
-    ash::cros_healthd::CrosHealthdClient::InitializeFake();
+    ash::cros_healthd::FakeCrosHealthd::Initialize();
     source_ = std::make_unique<RevenLogSource>();
   }
 
   ~RevenLogSourceTest() override {
     source_.reset();
-    ash::cros_healthd::CrosHealthdClient::Shutdown();
+    ash::cros_healthd::FakeCrosHealthd::Shutdown();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -342,7 +340,7 @@ class RevenLogSourceTest : public ::testing::Test {
     auto os_info = CreateOsInfo(boot_mode);
     auto dmi_info = CreateDmiInfo();
     SetSystemInfoV2(info, std::move(os_info), std::move(dmi_info));
-    ash::cros_healthd::FakeCrosHealthdClient::Get()
+    ash::cros_healthd::FakeCrosHealthd::Get()
         ->SetProbeTelemetryInfoResponseForTesting(info);
 
     VerifyOutputContains(Fetch(), expected);
@@ -356,7 +354,7 @@ class RevenLogSourceTest : public ::testing::Test {
                      bool is_allowed) {
     auto info = healthd::TelemetryInfo::New();
     SetTpmInfo(info, did_vid, version, is_owned, is_allowed);
-    ash::cros_healthd::FakeCrosHealthdClient::Get()
+    ash::cros_healthd::FakeCrosHealthd::Get()
         ->SetProbeTelemetryInfoResponseForTesting(info);
 
     std::unique_ptr<SystemLogsResponse> response = Fetch();
@@ -386,7 +384,7 @@ class RevenLogSourceTest : public ::testing::Test {
 TEST_F(RevenLogSourceTest, FetchCpuInfoSuccess) {
   auto info = healthd::TelemetryInfo::New();
   SetCpuInfo(info);
-  ash::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(info);
 
   std::unique_ptr<SystemLogsResponse> response = Fetch();
@@ -403,7 +401,7 @@ TEST_F(RevenLogSourceTest, FetchCpuInfoSuccess) {
 TEST_F(RevenLogSourceTest, FetchCpuInfoFailure) {
   auto info = healthd::TelemetryInfo::New();
   SetCpuInfoWithProbeError(info);
-  ash::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(info);
 
   std::unique_ptr<SystemLogsResponse> response = Fetch();
@@ -417,7 +415,7 @@ TEST_F(RevenLogSourceTest, FetchCpuInfoFailure) {
 TEST_F(RevenLogSourceTest, FetchMemoryInfoSuccess) {
   auto info = healthd::TelemetryInfo::New();
   SetMemoryInfo(info);
-  ash::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(info);
 
   std::string expected_output = R"(meminfo:
@@ -430,7 +428,7 @@ TEST_F(RevenLogSourceTest, FetchMemoryInfoSuccess) {
 TEST_F(RevenLogSourceTest, FetchMemoryInfoFailure) {
   auto info = healthd::TelemetryInfo::New();
   SetMemoryInfoWithProbeError(info);
-  ash::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(info);
 
   std::unique_ptr<SystemLogsResponse> response = Fetch();
@@ -448,7 +446,7 @@ TEST_F(RevenLogSourceTest, FetchDmiInfoWithValues) {
   auto os_info = CreateOsInfo(healthd::BootMode::kUnknown);
   auto dmi_info = CreateDmiInfo();
   SetSystemInfoV2(info, std::move(os_info), std::move(dmi_info));
-  ash::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(info);
 
   std::unique_ptr<SystemLogsResponse> response = Fetch();
@@ -471,7 +469,7 @@ TEST_F(RevenLogSourceTest, FetchDmiInfoWithoutValues) {
   auto os_info = CreateOsInfo(healthd::BootMode::kCrosEfi);
   auto dmi_info = healthd::DmiInfo::New();
   SetSystemInfoV2(info, std::move(os_info), std::move(dmi_info));
-  ash::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(info);
 
   std::unique_ptr<SystemLogsResponse> response = Fetch();
@@ -522,7 +520,7 @@ TEST_F(RevenLogSourceTest, BiosBootMode_SecureBoot_False_Uefi_False) {
 TEST_F(RevenLogSourceTest, PciEthernetDevices) {
   auto info = healthd::TelemetryInfo::New();
   SetPciEthernetDevices(info);
-  ash::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(info);
 
   std::string expected_output = R"(ethernet_adapter_info:
@@ -541,7 +539,7 @@ TEST_F(RevenLogSourceTest, PciEthernetDevices) {
 TEST_F(RevenLogSourceTest, PciBluetoothDevices) {
   auto info = healthd::TelemetryInfo::New();
   SetPciBluetoothDevices(info);
-  ash::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(info);
 
   std::string expected_output = R"(bluetooth_adapter_info:
@@ -560,7 +558,7 @@ TEST_F(RevenLogSourceTest, PciBluetoothDevices) {
 TEST_F(RevenLogSourceTest, PciWirelessDevices) {
   auto info = healthd::TelemetryInfo::New();
   SetPciWirelessDevices(info);
-  ash::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(info);
 
   std::string expected_output = R"(wireless_adapter_info:
@@ -579,7 +577,7 @@ TEST_F(RevenLogSourceTest, PciWirelessDevices) {
 TEST_F(RevenLogSourceTest, PciGpuInfo) {
   auto info = healthd::TelemetryInfo::New();
   SetPciDisplayDevices(info);
-  ash::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(info);
 
   std::string expected_output = R"(gpu_info:
@@ -593,7 +591,7 @@ TEST_F(RevenLogSourceTest, PciGpuInfo) {
 TEST_F(RevenLogSourceTest, UsbEthernetDevices) {
   auto info = healthd::TelemetryInfo::New();
   SetUsbEthernetDevices(info);
-  ash::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(info);
 
   std::string expected_output = R"(ethernet_adapter_info:
@@ -612,7 +610,7 @@ TEST_F(RevenLogSourceTest, UsbEthernetDevices) {
 TEST_F(RevenLogSourceTest, UsbWirelessDevices) {
   auto info = healthd::TelemetryInfo::New();
   SetUsbWirelessDevices(info);
-  ash::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(info);
 
   std::string expected_output = R"(wireless_adapter_info:
@@ -631,7 +629,7 @@ TEST_F(RevenLogSourceTest, UsbWirelessDevices) {
 TEST_F(RevenLogSourceTest, UsbBluetoothDevices) {
   auto info = healthd::TelemetryInfo::New();
   SetUsbBluetoothDevices(info);
-  ash::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(info);
 
   std::string expected_output = R"(bluetooth_adapter_info:
@@ -650,7 +648,7 @@ TEST_F(RevenLogSourceTest, UsbBluetoothDevices) {
 TEST_F(RevenLogSourceTest, UsbGpuInfo) {
   auto info = healthd::TelemetryInfo::New();
   SetUsbDisplayDevices(info);
-  ash::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(info);
 
   std::string expected_output = R"(gpu_info:
@@ -687,7 +685,7 @@ TEST_F(RevenLogSourceTest, GraphicsInfoNoExtensions) {
   auto info = healthd::TelemetryInfo::New();
   std::vector<std::string> extensions;
   SetGraphicsInfo(info, extensions);
-  ash::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(info);
 
   std::string expected_output = R"(graphics_info:
@@ -703,7 +701,7 @@ TEST_F(RevenLogSourceTest, GraphicsInfoOneExtension) {
   auto info = healthd::TelemetryInfo::New();
   std::vector<std::string> extensions{"ext1"};
   SetGraphicsInfo(info, extensions);
-  ash::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(info);
 
   std::string expected_output = R"(graphics_info:
@@ -719,7 +717,7 @@ TEST_F(RevenLogSourceTest, GraphicsInfoTwoExtensions) {
   auto info = healthd::TelemetryInfo::New();
   std::vector<std::string> extensions{"ext1", "ext2"};
   SetGraphicsInfo(info, extensions);
-  ash::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(info);
 
   std::string expected_output = R"(graphics_info:
@@ -733,7 +731,7 @@ TEST_F(RevenLogSourceTest, GraphicsInfoTwoExtensions) {
 
 TEST_F(RevenLogSourceTest, TouchpadStack) {
   auto info = healthd::TelemetryInfo::New();
-  ash::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(info);
 
   std::unique_ptr<SystemLogsResponse> response = Fetch();
