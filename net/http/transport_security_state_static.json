@@ -215,9 +215,7 @@
         "DigiCertTrustedRootG4",
         "DigiCertEVRoot",
         "GlobalSignRootCA",
-        "GlobalSignRootCA_R3",
-        "YahooBackup1",
-        "YahooBackup2"
+        "GlobalSignRootCA_R3"
       ],
       "report_uri": "http://csp.yahoo.com/beacon/csp?src=yahoocom-hpkp-report-only"
     },
