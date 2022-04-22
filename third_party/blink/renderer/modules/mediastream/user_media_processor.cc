@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
@@ -480,7 +481,7 @@ void UserMediaProcessor::RequestInfo::StartAudioTrack(
   sources_waiting_for_callback_.push_back(native_source);
 
   sources_.push_back(component->Source());
-  bool connected = native_source->ConnectToTrack(component);
+  bool connected = native_source->ConnectToInitializedTrack(component);
   if (!is_pending) {
     OnTrackStarted(native_source,
                    connected
@@ -1604,7 +1605,9 @@ void UserMediaProcessor::CreateAudioTracks(
     bool is_pending = false;
     MediaStreamSource* source =
         InitializeAudioSourceObject(overridden_audio_devices[i], &is_pending);
-    (*components)[i] = MakeGarbageCollected<MediaStreamComponent>(source);
+    (*components)[i] = MakeGarbageCollected<MediaStreamComponent>(
+        source,
+        std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */));
     current_request_info_->StartAudioTrack((*components)[i], is_pending);
     // At this point the source has started, and its audio parameters have been
     // set. Thus, all audio processing properties are known and can be surfaced
