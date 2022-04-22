@@ -4093,14 +4093,6 @@ void Element::setEditContext(EditContext* edit_context) {
     edit_context->AttachElement(this);
 
   EnsureElementRareData().SetEditContext(edit_context);
-
-  // An element is ready to receive text input if there is an EditContext
-  // associated with the element.
-  MutableCSSPropertyValueSet& style = EnsureMutableInlineStyle();
-  AddPropertyToPresentationAttributeStyle(
-      &style, CSSPropertyID::kWebkitUserModify,
-      edit_context ? CSSValueID::kReadWrite : CSSValueID::kReadOnly);
-  InlineStyleChanged();
 }
 
 struct Element::AffectedByPseudoStateChange {

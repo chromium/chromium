@@ -354,6 +354,12 @@ static bool HasEditableLevel(const Node& node, EditableLevel editable_level) {
   for (const Node& ancestor : NodeTraversal::InclusiveAncestorsOf(node)) {
     if (!(ancestor.IsHTMLElement() || ancestor.IsDocumentNode()))
       continue;
+
+    if (auto* element = DynamicTo<Element>(&ancestor)) {
+      if (element->editContext())
+          return true;
+    }
+
     const ComputedStyle* style = ancestor.GetComputedStyle();
     if (!style)
       continue;

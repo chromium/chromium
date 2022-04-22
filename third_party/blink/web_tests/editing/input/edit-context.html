@@ -7,6 +7,7 @@
 <body>
 <div id="test"></div>
 <div id="test2"></div>
+<div id="contenteditableDiv" contenteditable></div>
 <script>
 
 test(function() {
@@ -28,6 +29,13 @@ test(function() {
   assert_equals(editContext.inputPanelPolicy, "auto");
   assert_equals(editContext.enterKeyHint, "enter");
 }, 'Testing EditContext Dictionary Init');
+
+test(function() {
+  contenteditableDiv.editContext = new EditContext();
+  contenteditableDiv.editContext = null;
+  contenteditableDiv.focus();
+  assert_equals(document.activeElement, contenteditableDiv);
+}, 'A contenteditable element should remain editable after attaching and detaching EditContext.');
 
 test(function() {
   const editContext = new EditContext();
