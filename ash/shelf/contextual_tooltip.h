@@ -96,11 +96,6 @@ ASH_EXPORT void SetDragHandleNudgeDisabledForHiddenShelf(bool nudge_disabled);
 // visible before HandleNudgeShown gets called).
 ASH_EXPORT void SetBackGestureNudgeShowing(bool showing);
 
-//  Handles metrics tracking the nudge being dismissed. Metrics are only
-//  recorded once each time the tooltip is been shown.
-ASH_EXPORT void MaybeLogNudgeDismissedMetrics(TooltipType type,
-                                              DismissNudgeReason reason);
-
 // Resets all user prefs related to contextual tooltips.
 ASH_EXPORT void ClearPrefs();
 
@@ -110,12 +105,6 @@ ASH_EXPORT void ClearClockOverrideForTesting();
 
 // Reset the dictionary tracking metrics for each TooltipType.
 ASH_EXPORT void ClearStatusTrackerTableForTesting();
-
-// Checks whether the tracker for |type| is tracking user gestures.
-ASH_EXPORT bool CanRecordGesturePerformedMetricForTesting(TooltipType type);
-
-// Checks whether the tracker for |type| is tracking tooltip visibility.
-ASH_EXPORT bool CanRecordNudgeHiddenMetricForTesting(TooltipType type);
 
 }  // namespace contextual_tooltip
 

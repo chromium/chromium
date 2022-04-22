@@ -196,11 +196,6 @@ void DragHandle::HideDragHandleNudge(
     contextual_tooltip::HandleGesturePerformed(
         Shell::Get()->session_controller()->GetLastActiveUserPrefService(),
         contextual_tooltip::TooltipType::kInAppToHome);
-  } else {
-    // HandleGesturePerformed will also call MaybeLogNudgeDismissedMetrics so we
-    // do not need to call it separately for kPerformedGesture.
-    contextual_tooltip::MaybeLogNudgeDismissedMetrics(
-        contextual_tooltip::TooltipType::kInAppToHome, reason);
   }
 
   HideDragHandleNudgeHelper(/*hidden_by_tap=*/reason ==

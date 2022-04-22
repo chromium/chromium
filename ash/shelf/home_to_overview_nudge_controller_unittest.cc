@@ -296,9 +296,6 @@ TEST_F(HomeToOverviewNudgeControllerTest, ShownOnHomeScreen) {
   EXPECT_FALSE(GetNudgeController()->nudge_for_testing());
   EXPECT_EQ(gfx::Transform(),
             GetHotseatWidget()->GetLayerForNudgeAnimation()->transform());
-  histogram_tester.ExpectBucketCount(
-      "Ash.ContextualNudgeDismissContext.HomeToOverview",
-      contextual_tooltip::DismissNudgeReason::kTimeout, 1);
 }
 
 // Tests that the nudge eventually stops showing.
@@ -348,10 +345,6 @@ TEST_F(HomeToOverviewNudgeControllerTest, HiddenOnTabletModeExit) {
   EXPECT_EQ(
       gfx::Transform(),
       GetHotseatWidget()->GetLayerForNudgeAnimation()->GetTargetTransform());
-
-  histogram_tester.ExpectBucketCount(
-      "Ash.ContextualNudgeDismissContext.HomeToOverview",
-      contextual_tooltip::DismissNudgeReason::kOther, 1);
 }
 
 // Tests that the nudge show is canceled when tablet mode exits.
@@ -547,10 +540,6 @@ TEST_F(HomeToOverviewNudgeControllerTest, TapOnTheNudgeClosesTheNudge) {
   EXPECT_EQ(
       gfx::Transform(),
       GetHotseatWidget()->GetLayerForNudgeAnimation()->GetTargetTransform());
-
-  histogram_tester.ExpectBucketCount(
-      "Ash.ContextualNudgeDismissContext.HomeToOverview",
-      contextual_tooltip::DismissNudgeReason::kTap, 1);
 }
 
 TEST_F(HomeToOverviewNudgeControllerTest, TapOnTheNudgeDuringShowAnimation) {

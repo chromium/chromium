@@ -827,8 +827,6 @@ component("ash") {
     "shelf/back_button.h",
     "shelf/contextual_nudge.cc",
     "shelf/contextual_nudge.h",
-    "shelf/contextual_nudge_status_tracker.cc",
-    "shelf/contextual_nudge_status_tracker.h",
     "shelf/contextual_tooltip.cc",
     "shelf/contextual_tooltip.h",
     "shelf/drag_handle.cc",

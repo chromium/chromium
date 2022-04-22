@@ -22,15 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="ContextualNudgesCategories">
-  <variant name=".BackGesture"
-      summary="Metrics related to back gesture's nudes and usage."/>
-  <variant name=".HomeToOverview"
-      summary="Metrics related to home to overview gesture's nudes and usage."/>
-  <variant name=".InAppToHome"
-      summary="Metrics related to in app to home gesture's nudes and usage."/>
-</variants>
-
 <variants name="DeviceActiveClientState">
   <variant name="CheckingIn"
       summary="The device active reporting client is in Checking In State"/>
@@ -1350,35 +1341,6 @@ chromium-metrics-reviews@google.com.
     or write is debounced in ClipboardHistory. Warning: This histogram was
     expired from 2022-01-02 to 2022-01-05; data may be missing.
   </summary>
-</histogram>
-
-<histogram name="Ash.ContextualNudgeDismissContext{ContextualNudgesCategories}"
-    enum="ContextualNudgeDismissContext" expires_after="2022-10-01">
-  <owner>yulunwu@chromium.org</owner>
-  <owner>tbarzic@chromium.org</owner>
-  <summary>
-    Tracks the reason contextual nudges for user gesture education are
-    dismissed. Metrics are recorded when the user performs an action that
-    renders the shown contextual nudge irrelevant. Metrics are recorded when the
-    user performs the gesture suggested by the nudge as well as when the user
-    exits the relevant state some other way. {ContextualNudgesCategories}
-  </summary>
-  <token key="ContextualNudgesCategories"
-      variants="ContextualNudgesCategories"/>
-</histogram>
-
-<histogram name="Ash.ContextualNudgeDismissTime{ContextualNudgesCategories}"
-    units="ms" expires_after="2022-10-01">
-  <owner>yulunwu@chromium.org</owner>
-  <owner>tbarzic@chromium.org</owner>
-  <summary>
-    Tracks time between showing contextual nudge and gesture being performed.
-    Metrics are only recorded when the user performs the action suggested by the
-    contextual nudge. No metrics are recorded if the user exits the relevant
-    state some other way. {ContextualNudgesCategories}
-  </summary>
-  <token key="ContextualNudgesCategories"
-      variants="ContextualNudgesCategories"/>
 </histogram>
 
 <histogram name="Ash.DarkTheme.Settings.IsDarkModeEnabled" enum="Boolean"

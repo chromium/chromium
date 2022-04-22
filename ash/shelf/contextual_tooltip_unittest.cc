@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
-#include "ash/shelf/contextual_nudge_status_tracker.h"
 #include "ash/shelf/contextual_tooltip.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -50,7 +49,6 @@ class ContextualTooltipTest : public AshTestBase,
     test_clock_.Advance(base::Seconds(360));
   }
   void TearDown() override {
-    contextual_tooltip::ClearStatusTrackerTableForTesting();
     contextual_tooltip::ClearClockOverrideForTesting();
     AshTestBase::TearDown();
   }
@@ -267,39 +265,6 @@ TEST_P(ContextualTooltipTest,
   clock()->Advance(recheck_delay);
   EXPECT_TRUE(contextual_tooltip::ShouldShowNudge(
       GetPrefService(), TooltipType::kInAppToHome, nullptr));
-}
-
-// Tests that status tracker is activated on nudge shown and deactivated after
-// a gesture is performed or the nudge state is exited.
-TEST_P(ContextualTooltipTest, DragHandleNudgeMetrics) {
-  // Showing the nudge activates the status tracker.
-  contextual_tooltip::HandleNudgeShown(GetPrefService(),
-                                       TooltipType::kInAppToHome);
-  EXPECT_TRUE(CanRecordNudgeHiddenMetricForTesting(TooltipType::kInAppToHome));
-
-  // Performing the gesture should deactivate the status tracker.
-  contextual_tooltip::HandleGesturePerformed(GetPrefService(),
-                                             TooltipType::kInAppToHome);
-  EXPECT_FALSE(CanRecordNudgeHiddenMetricForTesting(TooltipType::kInAppToHome));
-
-  // Showing the nudge should reactivate the tracker.
-  contextual_tooltip::HandleNudgeShown(GetPrefService(),
-                                       TooltipType::kInAppToHome);
-  EXPECT_TRUE(
-      CanRecordGesturePerformedMetricForTesting(TooltipType::kInAppToHome));
-
-  // Tracker should remain active when exiting the nudge state via kOther
-  // but should reset visibility. Tracker should be deactivated after gesture is
-  // performed.
-  contextual_tooltip::MaybeLogNudgeDismissedMetrics(TooltipType::kInAppToHome,
-                                                    DismissNudgeReason::kOther);
-  EXPECT_TRUE(
-      CanRecordGesturePerformedMetricForTesting(TooltipType::kInAppToHome));
-  EXPECT_FALSE(CanRecordNudgeHiddenMetricForTesting(TooltipType::kInAppToHome));
-  contextual_tooltip::HandleGesturePerformed(GetPrefService(),
-                                             TooltipType::kInAppToHome);
-  EXPECT_FALSE(
-      CanRecordGesturePerformedMetricForTesting(TooltipType::kInAppToHome));
 }
 
 }  // namespace contextual_tooltip
