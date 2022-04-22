@@ -105,8 +105,6 @@ component("cast_browser") {
 group("internal_android_deps") {
   testonly = true
   public_deps = [
-    # TODO(crbug.com/1315379): Remove this dep when inlined in internal code.
-    "//third_party/android_deps:android_support_v4_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/android_deps:com_android_support_design_java",
     "//third_party/android_deps:com_android_support_support_annotations_java",
