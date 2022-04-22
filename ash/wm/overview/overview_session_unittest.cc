@@ -34,6 +34,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/drag_window_resizer.h"
 #include "ash/wm/gestures/back_gesture/back_gesture_event_handler.h"
@@ -177,6 +178,7 @@ class TestDestroyedWidgetObserver : public views::WidgetObserver {
   void OnWidgetDestroyed(views::Widget* widget) override {
     DCHECK(!widget_destroyed_);
     widget_destroyed_ = true;
+    observation_.Reset();
   }
 
   bool widget_destroyed() const { return widget_destroyed_; }
@@ -3202,16 +3204,34 @@ TEST_P(OverviewSessionTest, RemoveTransientNoCrash) {
 // that closing does not destroy transient children which are ShellSurfaceBase,
 // but this test covers the regular case.
 TEST_P(OverviewSessionTest, ClosingTransientTree) {
-  auto widget = CreateTestWidget();
-  aura::Window* window = widget->GetNativeWindow();
-  auto child_widget = CreateTestWidget();
-  ::wm::AddTransientChild(window, child_widget->GetNativeWindow());
+  // Release ownership as it will get deleted by the transient window manager,
+  // when the associated overview item is closed later.
+  auto* window = CreateAppWindow().release();
 
-  TestDestroyedWidgetObserver widget_observer(widget.get());
-  TestDestroyedWidgetObserver child_widget_observer(child_widget.get());
+  auto* child_window1 = CreateAppWindow().release();
+  wm::AddTransientChild(window, child_window1);
+
+  // Add a second child that is not backed by a widget.
+  auto* child_window2 = CreateTestWindow().release();
+  wm::AddTransientChild(window, child_window2);
+
+  TestDestroyedWidgetObserver widget_observer(
+      views::Widget::GetWidgetForNativeWindow(window));
+  TestDestroyedWidgetObserver child_widget_observer(
+      views::Widget::GetWidgetForNativeWindow(child_window1));
 
   ToggleOverview();
+
+  // There is a uaf that happens after adding a new desk and removing a desk,
+  // which transfers all windows to the new desk, removes the OverviewItem for
+  // the window and then adds a new `OverviewItem` for the window. We replicate
+  // that over here. See crbug.com/1317875.
+  auto* controller = DesksController::Get();
+  controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
+  RemoveDesk(controller->active_desk(), /*close_windows=*/false);
+
   OverviewItem* item = GetOverviewItemForWindow(window);
+  ASSERT_TRUE(item);
   item->CloseWindow();
 
   // `NativeWidgetAura::Close()` fires a post task.

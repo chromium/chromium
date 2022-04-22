@@ -153,6 +153,7 @@ class ASH_EXPORT ScopedOverviewTransformWindow
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
+  void OnWindowDestroying(aura::Window* window) override;
 
   aura::Window* window() const { return window_; }
 

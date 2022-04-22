@@ -623,6 +623,11 @@ void ScopedOverviewTransformWindow::OnWindowBoundsChanged(
                             OVERVIEW_ANIMATION_NONE);
 }
 
+void ScopedOverviewTransformWindow::OnWindowDestroying(aura::Window* window) {
+  DCHECK(window_observations_.IsObservingSource(window));
+  window_observations_.RemoveObservation(window);
+}
+
 // static
 void ScopedOverviewTransformWindow::SetImmediateCloseForTests(bool immediate) {
   immediate_close_for_tests = immediate;
