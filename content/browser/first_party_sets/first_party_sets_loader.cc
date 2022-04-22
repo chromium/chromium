@@ -100,7 +100,7 @@ void FirstPartySetsLoader::SetManuallySpecifiedSet(
   manually_specified_set_ = {CanonicalizeSet(base::SplitString(
       flag_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY))};
   UmaHistogramTimes(
-      "Cookie.FirstPartySets.InitializationDuration.ReadCommandLineSet",
+      "Cookie.FirstPartySets.InitializationDuration.ReadCommandLineSet2",
       construction_timer_.Elapsed());
 
   MaybeFinishLoading();
@@ -138,7 +138,7 @@ void FirstPartySetsLoader::OnReadSetsFile(const std::string& raw_sets) {
 
   component_sets_parse_progress_ = Progress::kFinished;
   UmaHistogramTimes(
-      "Cookie.FirstPartySets.InitializationDuration.ReadComponentSets",
+      "Cookie.FirstPartySets.InitializationDuration.ReadComponentSets2",
       construction_timer_.Elapsed());
   MaybeFinishLoading();
 }

@@ -331,7 +331,7 @@ void FirstPartySetsManager::InvokePendingQueries() {
   DCHECK(sets_.has_value());
 
   UmaHistogramTimes(
-      "Cookie.FirstPartySets.InitializationDuration.ReadyToServeQueries",
+      "Cookie.FirstPartySets.InitializationDuration.ReadyToServeQueries2",
       construction_timer_.Elapsed());
 
   if (!pending_queries_)
@@ -340,7 +340,7 @@ void FirstPartySetsManager::InvokePendingQueries() {
   base::UmaHistogramCounts10000("Cookie.FirstPartySets.DelayedQueriesCount",
                                 pending_queries_->size());
   base::UmaHistogramTimes(
-      "Cookie.FirstPartySets.MostDelayedQueryDelta",
+      "Cookie.FirstPartySets.MostDelayedQueryDelta2",
       first_async_query_time_.has_value()
           ? base::TimeTicks::Now() - first_async_query_time_.value()
           : base::TimeDelta());

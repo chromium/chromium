@@ -180,7 +180,7 @@ void FirstPartySetsHandlerImpl::OnReadPersistedSetsFile(
   DCHECK(!persisted_sets_path_.empty());
   raw_persisted_sets_ = raw_persisted_sets;
   UmaHistogramTimes(
-      "Cookie.FirstPartySets.InitializationDuration.ReadPersistedSets",
+      "Cookie.FirstPartySets.InitializationDuration.ReadPersistedSets2",
       construction_timer_.Elapsed());
   ClearSiteDataOnChangedSetsIfReady();
 }
