@@ -2271,10 +2271,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             } else {
                 // Otherwise, clicking the back button should close the tab and go back to the
                 // previous overview mode.
-                showOverview(StartSurfaceState.SHOWING_PREVIOUS);
                 if (!currentTab.isClosing()) {
                     getCurrentTabModel().closeTab(currentTab);
+                    if (currentTab.isIncognito()) {
+                        mTabModelSelector.selectModel(/*incognito=*/false);
+                    }
                 }
+                showOverview(StartSurfaceState.SHOWING_PREVIOUS);
             }
             return true;
         }
