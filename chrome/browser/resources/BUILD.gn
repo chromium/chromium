@@ -47,6 +47,7 @@ group("resources") {
       "signin:resources",
       "support_tool:resources",
       "tab_search:resources",
+      "webui_gallery:resources",
       "whats_new:resources",
     ]
     if (is_chrome_branded) {

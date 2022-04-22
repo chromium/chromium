@@ -210,6 +210,7 @@ extern const char kChromeUIWelcomeHost[];
 extern const char kChromeUIWelcomeURL[];
 extern const char kChromeUIWhatsNewHost[];
 extern const char kChromeUIWhatsNewURL[];
+extern const char kChromeUIWebuiGalleryHost[];
 
 #if BUILDFLAG(IS_WIN)
 // TODO(crbug.com/1003960): Remove when issue is resolved.

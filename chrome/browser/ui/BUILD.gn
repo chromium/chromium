@@ -1713,6 +1713,8 @@ static_library("ui") {
       "webui/util/image_util.h",
       "webui/web_app_internals/web_app_internals_source.cc",
       "webui/web_app_internals/web_app_internals_source.h",
+      "webui/webui_gallery/webui_gallery_ui.cc",
+      "webui/webui_gallery/webui_gallery_ui.h",
       "webui/whats_new/whats_new_handler.cc",
       "webui/whats_new/whats_new_handler.h",
       "webui/whats_new/whats_new_ui.cc",
