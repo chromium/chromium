@@ -963,6 +963,25 @@ TEST_F(MobileFriendlinessCheckerTest, YVisibleXClipBadTapTargets) {
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 100);
 }
 
+TEST_F(MobileFriendlinessCheckerTest, BodyOnClickBadTapTargets) {
+  MobileFriendliness actual_mf =
+      CalculateMetricsForHTMLString(base::StringPrintf(R"(
+<html>
+  <head>
+    <meta name="viewport" content="width=viewport-width">
+  </head>
+  <body style="font-size: 12pt;" onclick="javascript:alert(0);">
+    <div>
+      <a href="about:blank">a</a><br>
+      <a href="about:blank">b</a>
+    </div>
+  </body>
+</html>
+)"));
+  // Two too closed links are bad.
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 100);
+}
+
 TEST_F(MobileFriendlinessCheckerTest, TwoImageTapTargetsFar) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(
       base::StringPrintf(R"(

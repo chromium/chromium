@@ -193,13 +193,18 @@ bool AddElement(const LayoutObject* object,
   if (!node || !IsTapTargetCandidate(node))
     return true;
 
-  if (Element* element = DynamicTo<Element>(object->GetNode())) {
-    // Expand each corner by the size of fingertips.
-    const gfx::RectF rect = element->GetBoundingClientRectNoLifecycleUpdate();
+  if (auto* element = DynamicTo<HTMLElement>(object->GetNode())) {
+    // Ignore body tag even if it is a tappable element because majority of such
+    // case does not mean "bad" tap target.
+    if (element->IsHTMLBodyElement())
+      return true;
+
     if (!tap_targets->insert(object).is_new_entry)
       return false;
 
+    const gfx::RectF rect = element->GetBoundingClientRectNoLifecycleUpdate();
     if (!rect.IsEmpty()) {
+      // Expand each corner by the size of fingertips.
       const int top = ClampTo<int>(rect.y() - finger_radius);
       const int bottom = ClampTo<int>(rect.bottom() + finger_radius);
       const int left = ClampTo<int>(rect.x() - finger_radius);
