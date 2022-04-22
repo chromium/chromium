@@ -4,8 +4,6 @@
 
 #include "ash/capture_mode/capture_mode_camera_preview_view.h"
 
-#include "ash/capture_mode/capture_mode_button.h"
-#include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -55,6 +53,36 @@ bool IsArrowKeyEvent(const ui::KeyEvent* event) {
 
 }  // namespace
 
+// -----------------------------------------------------------------------------
+// CameraPreviewResizeButton:
+
+CameraPreviewResizeButton::CameraPreviewResizeButton(
+    CameraPreviewView* camera_preview_view,
+    views::Button::PressedCallback callback,
+    const gfx::VectorIcon& icon)
+    : CaptureModeButton(std::move(callback), icon),
+      camera_preview_view_(camera_preview_view) {}
+
+CameraPreviewResizeButton::~CameraPreviewResizeButton() = default;
+
+void CameraPreviewResizeButton::PseudoFocus() {
+  DCHECK(camera_preview_view_->is_collapsible());
+
+  CaptureModeSessionFocusCycler::HighlightableView::PseudoFocus();
+  camera_preview_view_->RefreshResizeButtonVisibility();
+}
+
+void CameraPreviewResizeButton::PseudoBlur() {
+  CaptureModeSessionFocusCycler::HighlightableView::PseudoBlur();
+  camera_preview_view_->ScheduleRefreshResizeButtonVisibility();
+}
+
+BEGIN_METADATA(CameraPreviewResizeButton, CaptureModeButton)
+END_METADATA
+
+// -----------------------------------------------------------------------------
+// CameraPreviewView:
+
 CameraPreviewView::CameraPreviewView(
     CaptureModeCameraController* camera_controller,
     const CameraId& camera_id,
@@ -68,7 +96,8 @@ CameraPreviewView::CameraPreviewView(
                              should_flip_frames_horizontally),
       camera_video_host_view_(
           AddChildView(std::make_unique<views::NativeViewHost>())),
-      resize_button_(AddChildView(std::make_unique<CaptureModeButton>(
+      resize_button_(AddChildView(std::make_unique<CameraPreviewResizeButton>(
+          this,
           base::BindRepeating(&CameraPreviewView::OnResizeButtonPressed,
                               base::Unretained(this)),
           GetIconOfResizeButton(
@@ -328,8 +357,10 @@ float CameraPreviewView::CalculateResizeButtonTargetOpacity() {
   if (!is_collapsible_ || camera_controller_->is_drag_in_progress())
     return 0.f;
 
-  if (IsMouseHovered() || resize_button_->IsMouseHovered() || has_been_tapped_)
+  if (IsMouseHovered() || resize_button_->IsMouseHovered() ||
+      resize_button_->has_focus() || has_been_tapped_) {
     return 1.f;
+  }
 
   return 0.f;
 }

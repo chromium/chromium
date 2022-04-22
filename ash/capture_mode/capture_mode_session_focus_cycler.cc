@@ -128,7 +128,7 @@ void CaptureModeSessionFocusCycler::HighlightableView::ClickView() {
 }
 
 // -----------------------------------------------------------------------------
-// HighlightableWindow:
+// CaptureModeSessionFocusCycler::HighlightableWindow:
 
 CaptureModeSessionFocusCycler::HighlightableWindow::HighlightableWindow(
     aura::Window* window,
@@ -536,8 +536,13 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
     }
     case FocusGroup::kCameraPreview: {
       auto* camera_preview_view = GetCameraPreviewView();
-      if (camera_preview_view)
-        items = {camera_preview_view, camera_preview_view->resize_button()};
+      if (camera_preview_view) {
+        items.push_back(camera_preview_view);
+        // The resize button is forced to be hidden if the camera preview is not
+        // collapsible. Do not advance the focus to it in this case.
+        if (camera_preview_view->is_collapsible())
+          items.push_back(camera_preview_view->resize_button());
+      }
       break;
     }
   }

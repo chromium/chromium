@@ -1632,6 +1632,7 @@ TEST_F(CaptureModeCameraTest,
 }
 
 TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInFullscreen) {
+  UpdateDisplay("800x700");
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kVideo);
   AddDefaultCamera();
@@ -1649,9 +1650,15 @@ TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInFullscreen) {
   EXPECT_EQ(FocusGroup::kCameraPreview, test_api.GetCurrentFocusGroup());
   EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
   EXPECT_TRUE(camera_preview_view->has_focus());
+
+  // Press tab again should advance the focus on the resize button. And the
+  // resize button should be invisible before and visible after being focused.
+  EXPECT_FALSE(resize_button->GetVisible());
   SendKey(ui::VKEY_TAB, event_generator);
   EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
   EXPECT_TRUE(resize_button->has_focus());
+  EXPECT_TRUE(resize_button->GetVisible());
+
   // Press space when the resize button is focused should collapse the camera
   // preview.
   EXPECT_TRUE(resize_button->has_focus());
@@ -1668,17 +1675,57 @@ TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInFullscreen) {
   EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
   EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
 
+  // The resize button should fade out and become invisible in
+  // `kResizeButtonShowDuration` after removing focus from it.
+  base::OneShotTimer* hide_timer =
+      camera_preview_view->resize_button_hide_timer_for_test();
+  EXPECT_FALSE(resize_button->has_focus());
+  EXPECT_TRUE(hide_timer->IsRunning());
+  EXPECT_EQ(hide_timer->GetCurrentDelay(),
+            capture_mode::kResizeButtonShowDuration);
+  {
+    ViewVisibilityChangeWaiter waiter(resize_button);
+    EXPECT_TRUE(resize_button->GetVisible());
+    hide_timer->FireNow();
+    waiter.Wait();
+    EXPECT_FALSE(resize_button->GetVisible());
+  }
+
   // Shift tab should advance the focus from the settings button back to the
   // resize button inside the camera preview.
   SendKey(ui::VKEY_TAB, event_generator, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(FocusGroup::kCameraPreview, test_api.GetCurrentFocusGroup());
   EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
   EXPECT_TRUE(resize_button->has_focus());
+
+  // The resize button should keep visible when it is focused, even trigger
+  // `resize_button_hide_timer_` to refresh its visibility.
+  hide_timer = camera_preview_view->resize_button_hide_timer_for_test();
+  EXPECT_TRUE(hide_timer->IsRunning());
+  EXPECT_TRUE(resize_button->GetVisible());
+  hide_timer->FireNow();
+  EXPECT_TRUE(resize_button->GetVisible());
+
   // Continue shift tab should move the focus from the resize button to the
   // camera preview.
   SendKey(ui::VKEY_TAB, event_generator, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
   EXPECT_TRUE(camera_preview_view->has_focus());
+
+  // The resize button should fade out and become invisible again in
+  // `kResizeButtonShowDuration` after removing focus from it.
+  hide_timer = camera_preview_view->resize_button_hide_timer_for_test();
+  EXPECT_FALSE(resize_button->has_focus());
+  EXPECT_TRUE(hide_timer->IsRunning());
+  EXPECT_EQ(hide_timer->GetCurrentDelay(),
+            capture_mode::kResizeButtonShowDuration);
+  {
+    ViewVisibilityChangeWaiter waiter(resize_button);
+    EXPECT_TRUE(resize_button->GetVisible());
+    hide_timer->FireNow();
+    waiter.Wait();
+    EXPECT_FALSE(resize_button->GetVisible());
+  }
 
   // Tests moving the camera preview through the keyboard when it is focused.
   EXPECT_TRUE(camera_controller->camera_preview_view()->has_focus());
@@ -1718,8 +1765,9 @@ TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInFullscreen) {
 }
 
 TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInRegion) {
+  UpdateDisplay("1366x768");
   auto* controller = CaptureModeController::Get();
-  controller->SetUserCaptureRegion(gfx::Rect(10, 10, 400, 550),
+  controller->SetUserCaptureRegion(gfx::Rect(10, 10, 800, 700),
                                    /*by_user=*/true);
 
   StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
@@ -1775,12 +1823,30 @@ TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInRegion) {
   SendKey(ui::VKEY_TAB, event_generator, ui::EF_SHIFT_DOWN, /*count=*/10);
   EXPECT_EQ(FocusGroup::kTypeSource, test_api.GetCurrentFocusGroup());
   EXPECT_EQ(4u, test_api.GetCurrentFocusIndex());
+
+  // Update the capture region to test when the resize button is not focusable.
+  controller->SetUserCaptureRegion(gfx::Rect(10, 10, 400, 550),
+                                   /*by_user=*/true);
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/10);
+  EXPECT_EQ(FocusGroup::kCameraPreview, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(camera_preview_view->has_focus());
+  // Press tab should advance the focus on the capture button instead of the
+  // resize button. As the resize button is forced to be hidden, which is not
+  // focusable in this case.
+  EXPECT_FALSE(camera_preview_view->is_collapsible());
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kCaptureButton, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
 }
 
 TEST_F(CaptureModeCameraTest, FocusableCameraPreviewInWindow) {
+  UpdateDisplay("1366x768");
   // Create one more window besides `window_`.
   std::unique_ptr<aura::Window> window2(
-      CreateTestWindow(gfx::Rect(150, 150, 420, 450)));
+      CreateTestWindow(gfx::Rect(150, 50, 800, 700)));
+  window()->SetBounds(gfx::Rect(30, 40, 800, 700));
+
   auto* controller =
       StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
   AddDefaultCamera();
@@ -1936,7 +2002,7 @@ TEST_F(CaptureModeCameraTest, CaptureBarOpacityChangeOnKeyboardNavigation) {
   // Update display size and update window with customized size to make sure
   // camera preview overlap with capture bar with capture source `kWindow`.
   UpdateDisplay("1366x768");
-  window()->SetBounds({0, 195, 903, 492});
+  window()->SetBounds({0, 0, 903, 700});
 
   auto* controller =
       StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
@@ -2034,13 +2100,12 @@ TEST_F(CaptureModeCameraTest, CaptureLabelOpacityChangeOnKeyboardNavigation) {
   // `kOverlapOpacity`.
   SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/2);
   EXPECT_EQ(FocusGroup::kSelection, test_api.GetCurrentFocusGroup());
-  LOG(ERROR) << test_api.GetCurrentFocusIndex();
   EXPECT_EQ(capture_label_layer->GetTargetOpacity(), kOverlapOpacity);
 
   // Tab eleven times to focus on cpature label, verify capture label is updated
   // to fully opaque.
-  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/11);
-  LOG(ERROR) << test_api.GetCurrentFocusIndex();
+  EXPECT_FALSE(camera_controller->camera_preview_view()->is_collapsible());
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/10);
   EXPECT_EQ(FocusGroup::kCaptureButton, test_api.GetCurrentFocusGroup());
   EXPECT_EQ(capture_label_layer->GetTargetOpacity(), 1.0f);
 

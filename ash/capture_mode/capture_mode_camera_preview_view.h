@@ -6,6 +6,7 @@
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_CAMERA_PREVIEW_VIEW_H_
 
 #include "ash/capture_mode/camera_video_frame_renderer.h"
+#include "ash/capture_mode/capture_mode_button.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "base/memory/weak_ptr.h"
@@ -29,7 +30,27 @@ class NativeViewHost;
 namespace ash {
 
 class CaptureModeCameraController;
-class CaptureModeButton;
+
+// Resize button inside the camera preview view.
+class CameraPreviewResizeButton : public CaptureModeButton {
+ public:
+  METADATA_HEADER(CameraPreviewResizeButton);
+
+  CameraPreviewResizeButton(CameraPreviewView* camera_preview_view,
+                            views::Button::PressedCallback callback,
+                            const gfx::VectorIcon& icon);
+  CameraPreviewResizeButton(const CameraPreviewResizeButton&) = delete;
+  CameraPreviewResizeButton& operator=(const CameraPreviewResizeButton&) =
+      delete;
+  ~CameraPreviewResizeButton() override;
+
+  // CaptureModeSessionFocusCycler::HighlightableView:
+  void PseudoFocus() override;
+  void PseudoBlur() override;
+
+ private:
+  CameraPreviewView* const camera_preview_view_;  // not owned.
+};
 
 // A view that acts as the contents view of the camera preview widget. It will
 // be responsible for painting the latest camera video frame inside its bounds.
@@ -50,7 +71,7 @@ class CameraPreviewView
   ~CameraPreviewView() override;
 
   const CameraId& camera_id() const { return camera_id_; }
-  CaptureModeButton* resize_button() const { return resize_button_; }
+  CameraPreviewResizeButton* resize_button() const { return resize_button_; }
   bool is_collapsible() const { return is_collapsible_; }
   bool should_flip_frames_horizontally() const {
     return camera_video_renderer_.should_flip_frames_horizontally();
@@ -88,6 +109,7 @@ class CameraPreviewView
   }
 
  private:
+  friend class CameraPreviewResizeButton;
   friend class CaptureModeTestApi;
 
   // Called when the resize button is clicked or touched.
@@ -113,8 +135,9 @@ class CameraPreviewView
   void FadeInResizeButton();
   void FadeOutResizeButton();
 
-  // Called when the mouse exits the camera preview or after the latest tap
-  // inside the camera preview to start the `resize_button_hide_timer_`.
+  // Called when the mouse exits the camera preview, after the latest tap inside
+  // the camera preview or when focus being removed from the resize button to
+  // start the `resize_button_hide_timer_`.
   void ScheduleRefreshResizeButtonVisibility();
 
   // Returns the target opacity for resize button.
@@ -132,7 +155,7 @@ class CameraPreviewView
   // `camera_video_renderer_` into this view's hierarchy.
   views::NativeViewHost* const camera_video_host_view_;
 
-  CaptureModeButton* const resize_button_;
+  CameraPreviewResizeButton* const resize_button_;
 
   // Started when the mouse exits the camera preview or after the latest tap
   // inside the camera preview. Runs RefreshResizeButtonVisibility() to fade out
