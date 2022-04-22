@@ -106,10 +106,8 @@ void FontAccess::DidGetEnumerationResponse(
   if (RejectPromiseIfNecessary(status, resolver))
     return;
 
-  // Return an empty font list if user has denied the permission request,
-  // or it is not implemented for this platform.
-  if (status == FontEnumerationStatus::kUnimplemented ||
-      status == FontEnumerationStatus::kPermissionDenied) {
+  // Return an empty font list if user has denied the permission request.
+  if (status == FontEnumerationStatus::kPermissionDenied) {
     HeapVector<Member<FontMetadata>> entries;
     resolver->Resolve(std::move(entries));
     return;
@@ -164,9 +162,14 @@ bool FontAccess::RejectPromiseIfNecessary(const FontEnumerationStatus& status,
                                           ScriptPromiseResolver* resolver) {
   switch (status) {
     case FontEnumerationStatus::kOk:
-    case FontEnumerationStatus::kUnimplemented:
     case FontEnumerationStatus::kPermissionDenied:
       break;
+    case FontEnumerationStatus::kUnimplemented:
+      resolver->Reject(V8ThrowDOMException::CreateOrDie(
+          resolver->GetScriptState()->GetIsolate(),
+          DOMExceptionCode::kNotSupportedError,
+          "Not yet supported on this platform."));
+      return true;
     case FontEnumerationStatus::kNeedsUserActivation:
       resolver->Reject(V8ThrowDOMException::CreateOrDie(
           resolver->GetScriptState()->GetIsolate(),
