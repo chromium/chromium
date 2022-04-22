@@ -287,32 +287,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Security.SafetyTips.DownloadStarted" enum="SafetyTipStatus"
-    expires_after="2022-04-24">
-  <owner>jdeblasio@chromium.org</owner>
-  <owner>estark@chromium.org</owner>
-  <summary>
-    Records the Safety Tip status on a page that initiated a download (*not* the
-    Safety Tip status of the download URL itself). This is recorded regardless
-    of whether the Safety Tip UI is enabled or disabled. This histogram is not
-    recorded for downloads that are initiated in a new tab or window, as the
-    Safety Tip status of the initiating page cannot be tracked.
-  </summary>
-</histogram>
-
-<histogram name="Security.SafetyTips.FormSubmission" enum="SafetyTipStatus"
-    expires_after="2022-04-24">
-  <owner>jdeblasio@chromium.org</owner>
-  <owner>estark@chromium.org</owner>
-  <summary>
-    Records the Safety Tip status of a page when submitting a form. This
-    histogram is recorded whenever a form submission navigation begins. The
-    recorded safety tip status is the status of the page the form was submitted
-    from, not the one that the form targets. Recorded regardless of whether the
-    Safety Tip UI is enabled or disabled.
-  </summary>
-</histogram>
-
 <histogram name="Security.SafetyTips.GetDomainInfoTime" units="ms"
     expires_after="2022-09-11">
   <owner>jdeblasio@chromium.org</owner>

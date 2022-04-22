@@ -28,7 +28,6 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile_window.h"
-#include "chrome/browser/reputation/reputation_web_contents_observer.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ui/browser.h"
@@ -44,7 +43,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/prefs/pref_service.h"
-#include "components/reputation/core/safety_tip_test_utils.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_test_util.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
@@ -1409,66 +1407,6 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, FormSecurityLevelHistogram) {
   // Check that the histogram count logs the security level of the page
   // containing the form, not of the form target page.
   histograms.ExpectUniqueSample(kHistogramName, security_state::SECURE, 1);
-}
-
-// Tests that the Safety Tip form submission histogram is logged correctly.
-IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, SafetyTipFormHistogram) {
-  const char kHistogramName[] = "Security.SafetyTips.FormSubmission";
-  net::EmbeddedTestServer server;
-  server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-  ASSERT_TRUE(server.Start());
-
-  // Create a server for the form to target.
-  net::EmbeddedTestServer form_server;
-  form_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-  ASSERT_TRUE(form_server.Start());
-
-  for (bool flag_page : {false, true}) {
-    base::HistogramTester histograms;
-    if (flag_page) {
-      // Set up a bad reputation Safety Tip on the page containing the form.
-      reputation::SetSafetyTipBadRepPatterns({server.GetURL("/").host() + "/"});
-    }
-
-    // Use a different host for targeting the form so that a Safety Tip doesn't
-    // trigger on the form submission navigation.
-    net::HostPortPair host_port_pair = net::HostPortPair::FromURL(
-        form_server.GetURL("example.test", "/ssl/google.html"));
-    std::string replacement_path = GetFilePathWithHostAndPortReplacement(
-        "/ssl/page_with_form_targeting_http_url.html", host_port_pair);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                             server.GetURL(replacement_path)));
-
-    ReputationWebContentsObserver* rep_observer =
-        ReputationWebContentsObserver::FromWebContents(
-            browser()->tab_strip_model()->GetActiveWebContents());
-    ASSERT_TRUE(rep_observer);
-    base::RunLoop run_loop;
-    rep_observer->RegisterReputationCheckCallbackForTesting(
-        run_loop.QuitClosure());
-
-    ASSERT_TRUE(content::ExecuteScript(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        "document.getElementById('submit').click();"));
-    // Wait for the reputation check to finish.
-    run_loop.Run();
-
-    const security_state::SafetyTipInfo safety_tip_info =
-        SecurityStateTabHelper::FromWebContents(
-            browser()->tab_strip_model()->GetActiveWebContents())
-            ->GetVisibleSecurityState()
-            ->safety_tip_info;
-    ASSERT_EQ(security_state::SafetyTipStatus::kNone, safety_tip_info.status);
-    ASSERT_EQ(GURL(), safety_tip_info.safe_url);
-
-    // Check that the histogram count logs the safety tip status of the page
-    // containing the form, not of the form target page.
-    histograms.ExpectUniqueSample(
-        kHistogramName,
-        flag_page ? security_state::SafetyTipStatus::kBadReputation
-                  : security_state::SafetyTipStatus::kNone,
-        1);
-  }
 }
 
 IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest,

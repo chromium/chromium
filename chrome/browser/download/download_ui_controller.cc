@@ -220,10 +220,6 @@ void DownloadUIController::OnDownloadCreated(content::DownloadManager* manager,
       UMA_HISTOGRAM_ENUMERATION("Security.SecurityLevel.DownloadStarted",
                                 security_state_tab_helper->GetSecurityLevel(),
                                 security_state::SECURITY_LEVEL_COUNT);
-      UMA_HISTOGRAM_ENUMERATION(
-          "Security.SafetyTips.DownloadStarted",
-          security_state_tab_helper->GetVisibleSecurityState()
-              ->safety_tip_info.status);
     }
   }
 
