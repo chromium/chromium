@@ -29,6 +29,7 @@
 #include "extensions/browser/service_worker_task_queue.h"
 #include "extensions/browser/task_queue_util.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/permissions/permissions_data.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -500,10 +501,10 @@ void ExtensionRegistrar::ActivateExtension(const Extension* extension,
 
   delegate_->PostActivateExtension(extension);
 
-  // When an existing extension is re-enabled, it may be necessary to spin up
-  // its lazy background page.
-  if (!is_newly_added)
-    MaybeSpinUpLazyBackgroundPage(extension);
+  // When an extension is activated, and it is either event page-based or
+  // service worker-based, it may be necessary to spin up its context.
+  if (BackgroundInfo::HasLazyContext(extension))
+    MaybeSpinUpLazyContext(extension, is_newly_added);
 }
 
 void ExtensionRegistrar::DeactivateExtension(const Extension* extension,
@@ -549,10 +550,9 @@ void ExtensionRegistrar::OnExtensionRegisteredWithRequestContexts(
     registry_->TriggerOnReady(extension.get());
 }
 
-void ExtensionRegistrar::MaybeSpinUpLazyBackgroundPage(
-    const Extension* extension) {
-  if (!BackgroundInfo::HasLazyBackgroundPage(extension))
-    return;
+void ExtensionRegistrar::MaybeSpinUpLazyContext(const Extension* extension,
+                                                bool is_newly_added) {
+  DCHECK(BackgroundInfo::HasLazyContext(extension));
 
   // For orphaned devtools, we will reconnect devtools to it later in
   // DidCreateMainFrameForBackgroundPage().
@@ -565,11 +565,35 @@ void ExtensionRegistrar::MaybeSpinUpLazyBackgroundPage(
   bool is_component_extension =
       Manifest::IsComponentLocation(extension->location());
 
-  if (!has_orphaned_dev_tools && !is_component_extension)
+  // TODO(crbug.com/1024211): This is either a workaround or something
+  // that will be part of the permanent solution for service worker-
+  // based extensions.
+  // We spin up extensions with the webRequest permission so their
+  // listeners are reconstructed on load.
+  bool has_web_request_permission =
+      extension->permissions_data()->HasAPIPermission(
+          mojom::APIPermissionID::kWebRequest);
+  // Event page-based extension cannot have the webRequest permission.
+  DCHECK(!has_web_request_permission ||
+         BackgroundInfo::IsServiceWorkerBased(extension));
+
+  // If there aren't any special cases, we're done.
+  if (!has_orphaned_dev_tools && !is_component_extension &&
+      !has_web_request_permission) {
+    return;
+  }
+
+  // If the extension's not being reloaded (|is_newly_added| = true),
+  // only wake it up if it has the webRequest permission.
+  if (is_newly_added && !has_web_request_permission)
     return;
 
-  // Wake up the event page by posting a dummy task.
-  const LazyContextId context_id(browser_context_, extension->id());
+  // Wake up the extension by posting a dummy task. In the case of a service
+  // worker-based extension with the webRequest permission that's being newly
+  // installed, this will result in a no-op task that's not necessary, since
+  // this is really only needed for a previously-installed extension. However,
+  // that cost is minimal, since the worker is already active.
+  const LazyContextId context_id(browser_context_, extension);
   context_id.GetTaskQueue()->AddPendingTask(context_id, base::DoNothing());
 }
 

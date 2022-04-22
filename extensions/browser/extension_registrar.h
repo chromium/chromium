@@ -172,9 +172,8 @@ class ExtensionRegistrar : public ProcessManagerObserver {
   void OnExtensionRegisteredWithRequestContexts(
       scoped_refptr<const Extension> extension);
 
-  // Upon reloading an extension, spins up its lazy background page if
-  // necessary.
-  void MaybeSpinUpLazyBackgroundPage(const Extension* extension);
+  // Upon reloading an extension, spins up its context if necessary.
+  void MaybeSpinUpLazyContext(const Extension* extension, bool is_newly_added);
 
   // ProcessManagerObserver overrides
   void OnServiceWorkerRegistered(const WorkerId& worker_id) override;

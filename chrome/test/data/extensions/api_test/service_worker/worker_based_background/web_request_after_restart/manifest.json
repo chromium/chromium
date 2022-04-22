@@ -1,0 +1,11 @@
+{
+  "name": "Service Worker-based background script",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "Test sending an event to an extension that's stopped.",
+  "permissions": ["webRequest"],
+  "background": {
+    "service_worker": "service_worker_background.js"
+  },
+  "host_permissions": ["<all_urls>"]
+}
