@@ -4,6 +4,8 @@
 
 #include "net/der/input.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
 
 namespace net {
@@ -25,6 +27,16 @@ base::StringPiece Input::AsStringPiece() const {
 
 base::span<const uint8_t> Input::AsSpan() const {
   return base::make_span(data_, len_);
+}
+
+bool operator==(const Input& lhs, const Input& rhs) {
+  return lhs.Length() == rhs.Length() &&
+         std::equal(lhs.UnsafeData(), lhs.UnsafeData() + lhs.Length(),
+                    rhs.UnsafeData());
+}
+
+bool operator!=(const Input& lhs, const Input& rhs) {
+  return !(lhs == rhs);
 }
 
 ByteReader::ByteReader(const Input& in)

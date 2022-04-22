@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
@@ -85,24 +84,29 @@ class NET_EXPORT_PRIVATE Input {
 };
 
 // Return true if |lhs|'s data and |rhs|'s data are byte-wise equal.
-NET_EXPORT_PRIVATE constexpr bool operator==(const Input& lhs,
-                                             const Input& rhs) {
-  return base::ranges::equal(lhs.UnsafeData(), lhs.UnsafeData() + lhs.Length(),
-                             rhs.UnsafeData(), rhs.UnsafeData() + rhs.Length());
-}
+NET_EXPORT_PRIVATE bool operator==(const Input& lhs, const Input& rhs);
 
 // Return true if |lhs|'s data and |rhs|'s data are not byte-wise equal.
-NET_EXPORT_PRIVATE constexpr bool operator!=(const Input& lhs,
-                                             const Input& rhs) {
-  return !(lhs == rhs);
-}
+NET_EXPORT_PRIVATE bool operator!=(const Input& lhs, const Input& rhs);
 
 // Returns true if |lhs|'s data is lexicographically less than |rhs|'s data.
 NET_EXPORT_PRIVATE constexpr bool operator<(const Input& lhs,
                                             const Input& rhs) {
-  return base::ranges::lexicographical_compare(
-      lhs.UnsafeData(), lhs.UnsafeData() + lhs.Length(), rhs.UnsafeData(),
-      rhs.UnsafeData() + rhs.Length());
+  // This is `std::lexicographical_compare`, but that's not `constexpr` until
+  // C++-20.
+  auto* it1 = lhs.UnsafeData();
+  auto* it2 = rhs.UnsafeData();
+  const auto* end1 = lhs.UnsafeData() + lhs.Length();
+  const auto* end2 = rhs.UnsafeData() + rhs.Length();
+  for (; it1 != end1 && it2 != end2; ++it1, ++it2) {
+    if (*it1 < *it2) {
+      return true;
+    } else if (*it2 < *it1) {
+      return false;
+    }
+  }
+
+  return it2 != end2;
 }
 
 // This class provides ways to read data from an Input in a bounds-checked way.

@@ -7,6 +7,7 @@
 #include "base/base_paths.h"
 #include "base/callback_forward.h"
 #include "base/containers/adapters.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
@@ -32,7 +33,6 @@
 #include "third_party/boringssl/src/include/openssl/pool.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/ranges/algorithm.h"
 #include "base/win/wincrypt_shim.h"
 #include "crypto/scoped_capi_types.h"
 #include "net/cert/internal/trust_store_win.h"
@@ -817,9 +817,7 @@ void AddToStoreWithEKURestriction(HCERTSTORE store,
 
 bool AreCertsEq(const scoped_refptr<ParsedCertificate> cert_1,
                 const scoped_refptr<ParsedCertificate> cert_2) {
-  return cert_1 && cert_2 &&
-         base::ranges::equal(cert_1->der_cert().AsSpan(),
-                             cert_2->der_cert().AsSpan());
+  return cert_1 && cert_2 && cert_1->der_cert() == cert_2->der_cert();
 }
 
 // Test to ensure that path building stops when an intermediate cert is

@@ -64,14 +64,11 @@ TEST(InputTest, ConstExpr) {
   constexpr Input const_array_input(kInput);
   static_assert(const_array_input.Length() == 4);
   static_assert(const_array_input.UnsafeData() == kInput);
-  static_assert(default_input != const_array_input);
-  static_assert(!(default_input == const_array_input));
   static_assert(default_input < const_array_input);
 
   constexpr Input ptr_len_input(kInput, 2);
   static_assert(ptr_len_input.Length() == 2);
   static_assert(ptr_len_input.UnsafeData() == kInput);
-  static_assert(ptr_len_input != const_array_input);
   static_assert(ptr_len_input < const_array_input);
 
   Input runtime_input(kInput2, 2);
