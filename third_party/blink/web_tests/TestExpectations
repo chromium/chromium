@@ -3407,7 +3407,7 @@ crbug.com/626703 [ Mac10.15 ] virtual/document-transition/wpt_internal/document-
 crbug.com/626703 [ Mac10.12 ] external/wpt/scroll-to-text-fragment/scroll-to-text-fragment.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/service-workers/service-worker/same-site-cookies.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/signed-exchange/subresource/sxg-subresource-header-integrity-mismatch.tentative.html [ Timeout ]
-crbug.com/626703 [ Mac10.12 ] virtual/shared-storage-fenced-frame-shadow-dom/wpt_internal/shared_storage/run-url-selection-operation.https.html [ Timeout ]
+crbug.com/626703 virtual/shared-storage-fenced-frame-shadow-dom/wpt_internal/shared_storage/run-url-selection-operation.https.html [ Skip ]
 crbug.com/626703 [ Mac11 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.12 ] virtual/prerender/external/wpt/speculation-rules/prerender/opt-out.html [ Skip Timeout ]
 crbug.com/626703 virtual/prerender/wpt_internal/prerender/unload-on-prerender-cross-origin-subframe-navigation.html [ Skip ]
@@ -7743,3 +7743,7 @@ crbug.com/1147859 virtual/css-highlight-overlay-painting/wpt_internal/css/css-ps
 
 crbug.com/1295980 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/script-focus.https.html [ Pass Timeout ]
 crbug.com/1295980 [ Mac ] virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/script-focus.https.html [ Pass Timeout ]
+
+# Branch Sheriff 2022-04-21
+crbug.com/1316804 virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/urn.https.html [ Skip ]
+crbug.com/1316805 virtual/shared-storage-fenced-frame-shadow-dom/wpt_internal/shared_storage/combined-setters-and-operations.https.html [ Skip ]
