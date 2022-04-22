@@ -537,13 +537,11 @@
         }
         /* Shadow realm global objects are _ordinary_ objects (i.e. their prototype is
          * Object) so we don't have a nice `instanceof` test to use; instead, we
-         * can look for the presence of web APIs that wouldn't be available in
-         * environments not listed above:
-         *
-         * As long as, within the shadow realm, we load the testharness before
-         * other libraries, this won't have any false positives, even in e.g. node
+         * check if the there is a GLOBAL.isShadowRealm() property
+         * on the global object. that was set by the test harness when it
+         * created the ShadowRealm.
          */
-        if ('AbortController' in global_scope) {
+        if (global_scope.GLOBAL && global_scope.GLOBAL.isShadowRealm()) {
             return new ShadowRealmTestEnvironment();
         }
 
