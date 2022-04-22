@@ -235,8 +235,12 @@ void StyleCascade::Apply(CascadeFilter filter) {
 
   // TODO(crbug.com/1024156): spec issue: user origin?
   // TODO(crbug.com/1024156): https://github.com/w3c/csswg-drafts/issues/6386
-  if (resolver.AuthorFlags() & CSSProperty::kHighlightColors)
+  if ((state_.Style()->InsideLink() != EInsideLink::kInsideVisitedLink &&
+       (resolver.AuthorFlags() & CSSProperty::kHighlightColors)) ||
+      (state_.Style()->InsideLink() == EInsideLink::kInsideVisitedLink &&
+       (resolver.AuthorFlags() & CSSProperty::kVisitedHighlightColors))) {
     state_.Style()->SetHasAuthorHighlightColors();
+  }
 
   if (resolver.Flags() & CSSProperty::kAnimation)
     state_.SetCanAffectAnimations();

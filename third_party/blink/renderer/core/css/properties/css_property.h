@@ -174,15 +174,16 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     // to initial, rather than the UA default.
     // https://drafts.csswg.org/css-pseudo-4/#highlight-cascade
     kHighlightColors = 1 << 22,
+    kVisitedHighlightColors = 1 << 23,
     // See supports_incremental_style in css_properties.json5.
-    kSupportsIncrementalStyle = 1 << 23,
+    kSupportsIncrementalStyle = 1 << 24,
     // See idempotent in css_properties.json5.
-    kIdempotent = 1 << 24,
+    kIdempotent = 1 << 25,
     // Set if the css property can apply to the experiemental canvas
     // formatted text API to render multiline text in canvas.
     // https://github.com/WICG/canvas-formatted-text
-    kValidForCanvasFormattedText = 1 << 25,
-    kValidForCanvasFormattedTextRun = 1 << 26,
+    kValidForCanvasFormattedText = 1 << 26,
+    kValidForCanvasFormattedTextRun = 1 << 27,
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,
