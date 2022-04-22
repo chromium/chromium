@@ -18,7 +18,6 @@ struct PopupMatchImageView: View {
   let highlightColor: Color?
 
   var body: some View {
-
     ZStack {
       image.backgroundImage?.foregroundColor(image.backgroundImageTintColor)
       switch image.icon.iconType {

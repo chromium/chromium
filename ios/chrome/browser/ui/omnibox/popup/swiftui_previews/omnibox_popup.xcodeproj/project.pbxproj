@@ -33,8 +33,6 @@
 		879F658627CD1BDB005B650F /* Color+Chrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = 879F656627CD14E5005B650F /* Color+Chrome.swift */; };
 		879F659727CD273B005B650F /* Colors in Resources */ = {isa = PBXBuildFile; fileRef = 879F659627CD273B005B650F /* Colors */; };
 		879F659D27CD2BDC005B650F /* popup_match_row_action_button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 879F659C27CD2BDC005B650F /* popup_match_row_action_button.swift */; };
-		87EC610C2805F05E00F70AC2 /* popup_ui_variation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87EC610B2805F05E00F70AC2 /* popup_ui_variation.swift */; };
-		87EC610E2805F08300F70AC2 /* omnibox_text.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87EC610D2805F08300F70AC2 /* omnibox_text.swift */; };
 		9329C14527D2662F0032C244 /* popup_image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9329C14427D2662F0032C244 /* popup_image.swift */; };
 		9329C16027D26FE30032C244 /* crurl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9329C15F27D26FE30032C244 /* crurl.swift */; };
 		9329C3CF27D29F100032C244 /* OmniboxResources in Resources */ = {isa = PBXBuildFile; fileRef = 9329C3CE27D29F100032C244 /* OmniboxResources */; };
@@ -123,8 +121,6 @@
 		879F659827CD2985005B650F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		879F659A27CD299E005B650F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../../shared/README.md; sourceTree = "<group>"; };
 		879F659C27CD2BDC005B650F /* popup_match_row_action_button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = popup_match_row_action_button.swift; path = ../../shared/popup_match_row_action_button.swift; sourceTree = "<group>"; };
-		87EC610B2805F05E00F70AC2 /* popup_ui_variation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = popup_ui_variation.swift; path = ../../shared/popup_ui_variation.swift; sourceTree = "<group>"; };
-		87EC610D2805F08300F70AC2 /* omnibox_text.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = omnibox_text.swift; path = ../../shared/omnibox_text.swift; sourceTree = "<group>"; };
 		9329C14427D2662F0032C244 /* popup_image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = popup_image.swift; path = ../../shared/popup_image.swift; sourceTree = "<group>"; };
 		9329C15F27D26FE30032C244 /* crurl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = crurl.swift; sourceTree = "<group>"; };
 		9329C3CE27D29F100032C244 /* OmniboxResources */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = OmniboxResources; path = ../../../resources; sourceTree = "<group>"; };
@@ -178,8 +174,6 @@
 		59C4A9B927BFF0450080C045 /* shared */ = {
 			isa = PBXGroup;
 			children = (
-				87EC610D2805F08300F70AC2 /* omnibox_text.swift */,
-				87EC610B2805F05E00F70AC2 /* popup_ui_variation.swift */,
 				93DA936027EA4C7F007C704F /* omnibox_pedal.h */,
 				876011E927D26E28004EB60B /* omnibox_suggestion_commands.h */,
 				593C4C1027C5638000FBE617 /* autocomplete_result_consumer.h */,
@@ -460,7 +454,6 @@
 				593C4C1327C5639000FBE617 /* autocomplete_result_consumer.h in Sources */,
 				593C4C1427C5639000FBE617 /* autocomplete_suggestion.h in Sources */,
 				593C4C1527C5639000FBE617 /* omnibox_icon.h in Sources */,
-				87EC610C2805F05E00F70AC2 /* popup_ui_variation.swift in Sources */,
 				93B3BBBA27B1C3900034ADF1 /* view_controller.swift in Sources */,
 				93BCA07127D2D4C300CE8602 /* fake_omnibox_icon.swift in Sources */,
 				59C4A9C227BFF04F0080C045 /* popup_match.swift in Sources */,
@@ -478,7 +471,6 @@
 				93B3BBB627B1C3900034ADF1 /* app_delegate.swift in Sources */,
 				93B3BBB827B1C3900034ADF1 /* scene_delegate.swift in Sources */,
 				93838A4827FE30950043F511 /* gradient_view_modifier.swift in Sources */,
-				87EC610E2805F08300F70AC2 /* omnibox_text.swift in Sources */,
 				8701451C27D24A8800C2D66F /* pressed_preference_key_button_style.swift in Sources */,
 				59C4A9C027BFF04F0080C045 /* popup_match_row_view.swift in Sources */,
 				879F659D27CD2BDC005B650F /* popup_match_row_action_button.swift in Sources */,
