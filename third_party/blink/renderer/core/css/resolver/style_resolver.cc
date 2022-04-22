@@ -964,6 +964,7 @@ void StyleResolver::ApplyInheritance(Element& element,
     // the element has rules but no matched properties, we currently clone.
 
     state.SetStyle(ComputedStyle::Clone(*state.ParentStyle()));
+    state.Style()->SetInsideLink(state.ElementLinkState());
   } else {
     scoped_refptr<ComputedStyle> style = CreateComputedStyle();
     style->InheritFrom(
