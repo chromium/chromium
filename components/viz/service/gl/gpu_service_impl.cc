@@ -99,6 +99,8 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN)
+#include "components/viz/common/overlay_state/win/overlay_state_service.h"
+#include "media/base/win/mf_feature_checks.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gl/dcomp_surface_registry.h"
 #include "ui/gl/direct_composition_surface_win.h"
@@ -435,6 +437,13 @@ GpuServiceImpl::GpuServiceImpl(
       &GpuServiceImpl::UpdateOverlayAndHDRInfo, weak_ptr_factory_.GetWeakPtr());
   gl::DirectCompositionSurfaceWin::SetOverlayHDRGpuInfoUpdateCallback(
       info_callback);
+
+  if (media::SupportMediaFoundationClearPlayback()) {
+    // Initialize the OverlayStateService using the GPUServiceImpl task
+    // sequence.
+    auto* overlay_state_service = OverlayStateService::GetInstance();
+    overlay_state_service->Initialize(base::SequencedTaskRunnerHandle::Get());
+  }
 #endif
 
   gpu_memory_buffer_factory_ =
@@ -806,7 +815,7 @@ void GpuServiceImpl::CreateJpegEncodeAccelerator(
 void GpuServiceImpl::RegisterDCOMPSurfaceHandle(
     mojo::PlatformHandle surface_handle,
     RegisterDCOMPSurfaceHandleCallback callback) {
-  auto token =
+  base::UnguessableToken token =
       gl::DCOMPSurfaceRegistry::GetInstance()->RegisterDCOMPSurfaceHandle(
           surface_handle.TakeHandle());
   std::move(callback).Run(token);
@@ -1260,7 +1269,7 @@ void GpuServiceImpl::OnForegroundedOnMainThread() {
 
 #if !BUILDFLAG(IS_ANDROID)
 void GpuServiceImpl::OnMemoryPressure(
-    ::base::MemoryPressureListener::MemoryPressureLevel level) {
+    base::MemoryPressureListener::MemoryPressureLevel level) {
   // Forward the notification to the registry of MemoryPressureListeners.
   base::MemoryPressureListener::NotifyMemoryPressure(level);
 }

@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/display/renderer_settings.h"
+#include "components/viz/common/overlay_state/win/overlay_state_service.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
@@ -23,6 +24,7 @@
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "media/base/win/mf_feature_checks.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -436,6 +438,7 @@ DCLayerOverlayProcessor::DCLayerOverlayProcessor(
     UpdateHasHwOverlaySupport();
     ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
   }
+  allow_promotion_hinting_ = media::SupportMediaFoundationClearPlayback();
 }
 
 DCLayerOverlayProcessor::~DCLayerOverlayProcessor() {
@@ -675,6 +678,7 @@ void DCLayerOverlayProcessor::Process(
       continue;
     }
 
+    gpu::Mailbox promotion_hint_mailbox;
     DCLayerResult result;
     switch (it->material) {
       case DrawQuad::Material::kYuvVideoContent:
@@ -686,17 +690,48 @@ void DCLayerOverlayProcessor::Process(
         if (result == DC_LAYER_SUCCESS)
           processed_yuv_overlay_count_++;
         break;
-      case DrawQuad::Material::kStreamVideoContent:
+      case DrawQuad::Material::kStreamVideoContent: {
+        if (allow_promotion_hinting_) {
+          // If this quad has marked itself as wanting promotion hints then get
+          // the associated mailbox.
+          const StreamVideoDrawQuad* sv_quad =
+              StreamVideoDrawQuad::MaterialCast(*it);
+          ResourceId id = sv_quad->resource_id();
+          if (resource_provider->DoesResourceWantPromotionHint(id)) {
+            promotion_hint_mailbox = resource_provider->GetMailbox(id);
+          }
+        }
         // Stream video quads contain Media Foundation dcomp surface which is
         // always presented as overlay.
         result = DC_LAYER_SUCCESS;
-        break;
-      case DrawQuad::Material::kTextureContent:
+      } break;
+      case DrawQuad::Material::kTextureContent: {
         result = ValidateTextureQuad(TextureDrawQuad::MaterialCast(*it),
                                      backdrop_filter_rects, resource_provider);
-        break;
+
+        if (allow_promotion_hinting_) {
+          // If this quad has marked itself as wanting promotion hints then get
+          // the associated mailbox.
+          const TextureDrawQuad* tex_quad = TextureDrawQuad::MaterialCast(*it);
+          ResourceId id = tex_quad->resource_id();
+          if (resource_provider->DoesResourceWantPromotionHint(id)) {
+            promotion_hint_mailbox = resource_provider->GetMailbox(id);
+          }
+        }
+      } break;
       default:
         result = DC_LAYER_FAILED_UNSUPPORTED_QUAD;
+    }
+
+    if (!promotion_hint_mailbox.IsZero()) {
+      DCHECK(allow_promotion_hinting_);
+      bool promoted = result == DC_LAYER_SUCCESS;
+      auto* overlay_state_service = OverlayStateService::GetInstance();
+      // The OverlayStateService should always be initialized by GpuServiceImpl
+      // at creation - DCHECK here just to assert there aren't any corner cases
+      // where this isn't true.
+      DCHECK(overlay_state_service->IsInitialized());
+      overlay_state_service->SetPromotionHint(promotion_hint_mailbox, promoted);
     }
 
     if (result != DC_LAYER_SUCCESS) {

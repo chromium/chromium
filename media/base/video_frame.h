@@ -610,8 +610,8 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // This method is thread safe. Both blink and compositor threads can call it.
   gpu::SyncToken UpdateReleaseSyncToken(SyncTokenClient* client);
 
-  // Similar to UpdateReleaseSyncToken() but operates on the gpu::SyncToken for
-  // each plane. This should only be called when a VideoFrame has a single
+  // Similar to UpdateReleaseSyncToken() but operates on the gpu::SyncToken
+  // for each plane. This should only be called when a VideoFrame has a single
   // owner. I.e., before it has been vended after creation.
   gpu::SyncToken UpdateMailboxHolderSyncToken(size_t plane,
                                               SyncTokenClient* client);

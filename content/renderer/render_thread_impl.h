@@ -108,6 +108,8 @@ class StreamTextureFactory;
 
 #if BUILDFLAG(IS_WIN)
 class DCOMPTextureFactory;
+class OverlayStateServiceProvider;
+class OverlayStateServiceProviderImpl;
 #endif
 
 // The RenderThreadImpl class represents the main thread, where RenderView
@@ -269,6 +271,10 @@ class CONTENT_EXPORT RenderThreadImpl
 
 #if BUILDFLAG(IS_WIN)
   scoped_refptr<DCOMPTextureFactory> GetDCOMPTextureFactory();
+  // The OverlayStateService is only available where Media Foundation for
+  // clear is supported, otherwise GetOverlayStateServiceProvider will return
+  // nullptr.
+  OverlayStateServiceProvider* GetOverlayStateServiceProvider();
 #endif
 
   blink::WebVideoCaptureImplManager* video_capture_impl_manager() const {
@@ -553,6 +559,8 @@ class CONTENT_EXPORT RenderThreadImpl
 
 #if BUILDFLAG(IS_WIN)
   scoped_refptr<DCOMPTextureFactory> dcomp_texture_factory_;
+  std::unique_ptr<OverlayStateServiceProviderImpl>
+      overlay_state_service_provider_;
 #endif
 
   scoped_refptr<viz::ContextProviderCommandBuffer> shared_main_thread_contexts_;

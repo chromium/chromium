@@ -176,6 +176,8 @@
 #include <objbase.h>
 #include <windows.h>
 #include "content/renderer/media/win/dcomp_texture_factory.h"
+#include "content/renderer/media/win/overlay_state_service_provider.h"
+#include "media/base/win/mf_feature_checks.h"
 #endif
 
 #ifdef ENABLE_VTUNE_JIT_INTERFACE
@@ -1265,6 +1267,27 @@ scoped_refptr<DCOMPTextureFactory> RenderThreadImpl::GetDCOMPTextureFactory() {
         std::move(channel), GetMediaThreadTaskRunner());
   }
   return dcomp_texture_factory_;
+}
+
+OverlayStateServiceProvider*
+RenderThreadImpl::GetOverlayStateServiceProvider() {
+  DCHECK(IsMainThread());
+  // Only set 'overlay_state_service_provider_' if Media Foundation for clear
+  // is enabled.
+  if (media::SupportMediaFoundationClearPlayback()) {
+    if (!overlay_state_service_provider_ ||
+        overlay_state_service_provider_->IsLost()) {
+      scoped_refptr<gpu::GpuChannelHost> channel = EstablishGpuChannelSync();
+      if (!channel) {
+        overlay_state_service_provider_ = nullptr;
+        return nullptr;
+      }
+      overlay_state_service_provider_ =
+          std::make_unique<OverlayStateServiceProviderImpl>(std::move(channel));
+    }
+  }
+
+  return overlay_state_service_provider_.get();
 }
 #endif  // BUILDFLAG(IS_WIN)
 

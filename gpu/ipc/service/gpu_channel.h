@@ -30,6 +30,7 @@
 #include "gpu/ipc/service/shared_image_stub.h"
 #include "ipc/ipc_sync_channel.h"
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/gl_share_group.h"
@@ -191,6 +192,11 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
   // Called by DCOMPTexture to remove the GpuChannel's reference to the
   // DCOMPTexture.
   void DestroyDCOMPTexture(int32_t route_id);
+
+  bool RegisterOverlayStateObserver(
+      mojo::PendingRemote<gpu::mojom::OverlayStateObserver>
+          promotion_hint_observer,
+      const gpu::Mailbox& mailbox);
 #endif  // BUILDFLAG(IS_WIN)
 
   SharedImageStub* shared_image_stub() const {

@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/task/bind_post_task.h"
 #include "media/base/media_log.h"
+#include "media/base/win/mf_feature_checks.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/renderers/win/media_foundation_renderer.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -22,12 +23,14 @@ MediaFoundationRendererClient::MediaFoundationRendererClient(
     mojo::PendingRemote<RendererExtension> pending_renderer_extension,
     mojo::PendingReceiver<ClientExtension> client_extension_receiver,
     std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper,
+    ObserveOverlayStateCB observe_overlay_state_cb,
     VideoRendererSink* sink)
     : media_task_runner_(std::move(media_task_runner)),
       media_log_(std::move(media_log)),
       mojo_renderer_(std::move(mojo_renderer)),
       pending_renderer_extension_(std::move(pending_renderer_extension)),
       dcomp_texture_wrapper_(std::move(dcomp_texture_wrapper)),
+      observe_overlay_state_cb_(std::move(observe_overlay_state_cb)),
       sink_(sink),
       pending_client_extension_receiver_(std::move(client_extension_receiver)),
       client_extension_receiver_(this) {
@@ -490,7 +493,8 @@ void MediaFoundationRendererClient::OnDCOMPSurfaceHandleSet(bool success) {
 }
 
 void MediaFoundationRendererClient::OnVideoFrameCreated(
-    scoped_refptr<VideoFrame> video_frame) {
+    scoped_refptr<VideoFrame> video_frame,
+    const gpu::Mailbox& mailbox) {
   DVLOG_FUNC(1);
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(has_video_);
@@ -501,6 +505,12 @@ void MediaFoundationRendererClient::OnVideoFrameCreated(
     video_frame->metadata().protected_video = true;
   } else {
     video_frame->metadata().wants_promotion_hint = true;
+  }
+
+  // If Media Foundation for Clear is enabled then setup observation of the
+  // mailbox for overlay state changes.
+  if (media::SupportMediaFoundationClearPlayback()) {
+    ObserveMailboxForOverlayState(mailbox);
   }
 
   dcomp_video_frame_ = video_frame;
@@ -537,6 +547,29 @@ void MediaFoundationRendererClient::SignalMediaPlayingStateChange(
     }
   }
   is_playing_ = is_playing;
+}
+
+void MediaFoundationRendererClient::OnOverlayStateChanged(
+    const gpu::Mailbox& mailbox,
+    bool promoted) {
+  NOTIMPLEMENTED() << "Use signal to change modes appropriately";
+}
+
+void MediaFoundationRendererClient::ObserveMailboxForOverlayState(
+    const gpu::Mailbox& mailbox) {
+  mailbox_ = mailbox;
+  // 'observe_overlay_state_cb_' creates a content::OverlayStateObserver to
+  // subscribe to overlay state information for the given 'mailbox' from the
+  // Viz layer in the GPU process. We hold an OverlayStateObserverSubscription
+  // since a direct dependency on a content object is not allowed. Once the
+  // OverlayStateObserverSubscription is destroyed the OnOverlayStateChanged
+  // callback will no longer be invoked, so base::Unretained(this) is safe to
+  // use.
+  observer_subscription_ = observe_overlay_state_cb_.Run(
+      mailbox,
+      base::BindRepeating(&MediaFoundationRendererClient::OnOverlayStateChanged,
+                          base::Unretained(this), mailbox));
+  DCHECK(observer_subscription_);
 }
 
 }  // namespace media

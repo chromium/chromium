@@ -1,0 +1,8 @@
+# Please consult components/viz/README.md about allowable dependencies.
+
+include_rules = [
+  "+components/viz/test",
+  "+gpu/command_buffer",
+  "+gpu/ipc/common",
+  "+mojo/public/cpp/bindings",
+]

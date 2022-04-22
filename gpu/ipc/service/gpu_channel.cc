@@ -68,6 +68,7 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
+#include "components/viz/common/overlay_state/win/overlay_state_service.h"
 #include "gpu/ipc/service/dcomp_texture_win.h"
 #endif
 
@@ -94,6 +95,17 @@ bool TryCreateDCOMPTexture(
   if (!channel)
     return false;
   return channel->CreateDCOMPTexture(route_id, std::move(receiver));
+}
+
+bool TryRegisterOverlayStateObserver(
+    base::WeakPtr<GpuChannel> channel,
+    mojo::PendingRemote<gpu::mojom::OverlayStateObserver>
+        promotion_hint_observer,
+    const gpu::Mailbox& mailbox) {
+  if (!channel)
+    return false;
+  return channel->RegisterOverlayStateObserver(
+      std::move(promotion_hint_observer), std::move(mailbox));
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -170,6 +182,11 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
       int32_t route_id,
       mojo::PendingAssociatedReceiver<mojom::DCOMPTexture> receiver,
       CreateDCOMPTextureCallback callback) override;
+  void RegisterOverlayStateObserver(
+      mojo::PendingRemote<gpu::mojom::OverlayStateObserver>
+          promotion_hint_observer,
+      const gpu::Mailbox& mailbox,
+      RegisterOverlayStateObserverCallback callback) override;
 #endif  // BUILDFLAG(IS_WIN)
   void WaitForTokenInRange(int32_t routing_id,
                            int32_t start,
@@ -449,6 +466,24 @@ void GpuChannelMessageFilter::CreateDCOMPTexture(
       FROM_HERE,
       base::BindOnce(&TryCreateDCOMPTexture, gpu_channel_->AsWeakPtr(),
                      route_id, std::move(receiver)),
+      std::move(callback));
+}
+
+void GpuChannelMessageFilter::RegisterOverlayStateObserver(
+    mojo::PendingRemote<gpu::mojom::OverlayStateObserver>
+        promotion_hint_observer,
+    const gpu::Mailbox& mailbox,
+    RegisterOverlayStateObserverCallback callback) {
+  base::AutoLock auto_lock(gpu_channel_lock_);
+  if (!gpu_channel_) {
+    receiver_.reset();
+    return;
+  }
+  main_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&TryRegisterOverlayStateObserver,
+                     gpu_channel_->AsWeakPtr(),
+                     std::move(promotion_hint_observer), std::move(mailbox)),
       std::move(callback));
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -960,6 +995,19 @@ bool GpuChannel::CreateDCOMPTexture(
     return false;
   }
   dcomp_textures_.emplace(route_id, std::move(dcomp_texture));
+  return true;
+}
+
+bool GpuChannel::RegisterOverlayStateObserver(
+    mojo::PendingRemote<gpu::mojom::OverlayStateObserver>
+        promotion_hint_observer,
+    const gpu::Mailbox& mailbox) {
+  viz::OverlayStateService* overlay_state_service =
+      viz::OverlayStateService::GetInstance();
+  if (!overlay_state_service)
+    return false;
+  overlay_state_service->RegisterObserver(std::move(promotion_hint_observer),
+                                          std::move(mailbox));
   return true;
 }
 #endif  // BUILDFLAG(IS_WIN)

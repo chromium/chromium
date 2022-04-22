@@ -118,6 +118,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "content/renderer/media/win/dcomp_texture_wrapper_impl.h"
+#include "content/renderer/media/win/overlay_state_observer_impl.h"
+#include "content/renderer/media/win/overlay_state_service_provider.h"
 #include "media/base/win/mf_feature_checks.h"
 #include "media/cdm/win/media_foundation_cdm.h"
 #include "media/mojo/clients/win/media_foundation_renderer_client_factory.h"
@@ -686,11 +688,16 @@ MediaFactory::CreateRendererFactorySelector(
         media_foundation_renderer_notifier;
     interface_broker_->GetInterface(
         media_foundation_renderer_notifier.BindNewPipeAndPassReceiver());
+
+    media::ObserveOverlayStateCB observe_overlay_state_cb =
+        base::BindRepeating(&OverlayStateObserverImpl::Create,
+                            render_thread->GetOverlayStateServiceProvider());
+
     factory_selector->AddFactory(
         RendererType::kMediaFoundation,
         std::make_unique<media::MediaFoundationRendererClientFactory>(
             media_log, std::move(dcomp_texture_creation_cb),
-            CreateMojoRendererFactory(),
+            std::move(observe_overlay_state_cb), CreateMojoRendererFactory(),
             std::move(media_foundation_renderer_notifier)));
 
     if (use_mf_for_clear) {

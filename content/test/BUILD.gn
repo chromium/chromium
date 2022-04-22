@@ -2470,6 +2470,11 @@ test("content_unittests") {
     ]
   }
 
+  if (is_win) {
+    sources +=
+        [ "../renderer/media/win/overlay_state_observer_impl_unittest.cc" ]
+  }
+
   if (is_linux || is_chromeos) {
     sources += [
       "../browser/compute_pressure/cpu_probe_linux_unittest.cc",

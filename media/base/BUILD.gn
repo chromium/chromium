@@ -440,6 +440,7 @@ source_set("base") {
     public_deps += [
       "//media/base/win:dcomp_texture_wrapper",
       "//media/base/win:mf_cdm_proxy",
+      "//media/base/win:overlay_state_observer_subscription",
     ]
     sources += [
       "win/mf_feature_checks.cc",

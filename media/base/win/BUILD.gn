@@ -54,6 +54,11 @@ source_set("dcomp_texture_wrapper") {
   ]
 }
 
+source_set("overlay_state_observer_subscription") {
+  sources = [ "overlay_state_observer_subscription.h" ]
+  deps = [ "//base" ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [

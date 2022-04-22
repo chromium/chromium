@@ -59,18 +59,15 @@ class GpuMemoryBufferFactory;
 class GpuWatchdogThread;
 class ImageDecodeAcceleratorWorker;
 class Scheduler;
-class SyncPointManager;
+class SharedContextState;
 class SharedImageManager;
+class SyncPointManager;
 class VulkanImplementation;
 }  // namespace gpu
 
 namespace media {
 class MediaGpuChannelManager;
-}
-
-namespace gpu {
-class SharedContextState;
-}  // namespace gpu
+}  // namespace media
 
 namespace viz {
 

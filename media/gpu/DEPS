@@ -26,5 +26,11 @@ include_rules = [
   "+components/chromeos_camera/mjpeg_decode_accelerator.h",
 
   # video_decode_accelerator_perf_tests uses it.
-  "+sandbox/linux/services/resource_limits.h"
+  "+sandbox/linux/services/resource_limits.h",
+
+  # Mojo bindings
+  "+mojo/public/cpp/bindings/pending_remote.h",
+  "+mojo/public/cpp/bindings/receiver.h",
+  "+mojo/public/cpp/bindings/receiver_set.h",
+  "+mojo/public/cpp/bindings/remote.h"
 ]

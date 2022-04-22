@@ -55,6 +55,10 @@ class MockGpuChannel : public mojom::GpuChannel {
                void(int32_t,
                     mojo::PendingAssociatedReceiver<mojom::DCOMPTexture>,
                     CreateDCOMPTextureCallback));
+  MOCK_METHOD3(RegisterOverlayStateObserver,
+               void(mojo::PendingRemote<gpu::mojom::OverlayStateObserver>,
+                    const gpu::Mailbox&,
+                    RegisterOverlayStateObserverCallback));
 #endif  // BUILDFLAG(IS_WIN)
   MOCK_METHOD4(WaitForTokenInRange,
                void(int32_t, int32_t, int32_t, WaitForTokenInRangeCallback));

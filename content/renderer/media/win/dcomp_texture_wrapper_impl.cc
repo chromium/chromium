@@ -183,7 +183,7 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
   // Sets `dcomp_surface` to use StreamTexture. See `VideoResourceUpdater`.
   frame->metadata().dcomp_surface = true;
 
-  std::move(create_video_frame_cb).Run(frame);
+  std::move(create_video_frame_cb).Run(frame, mailbox_);
 }
 
 void DCOMPTextureWrapperImpl::CreateVideoFrame(
