@@ -2089,8 +2089,12 @@ void SplitViewController::UpdateBlackScrim(
     black_scrim_layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
     black_scrim_layer_->SetColor(
         DeprecatedGetBackgroundColor(kSplitviewBlackScrimLayerColor));
-    root_window_->layer()->Add(black_scrim_layer_.get());
-    root_window_->layer()->StackAtTop(black_scrim_layer_.get());
+    // Set the black scrim layer underneath split view divider.
+    auto* divider_layer =
+        split_view_divider_->divider_widget()->GetNativeWindow()->layer();
+    auto* divider_parent_layer = divider_layer->parent();
+    divider_parent_layer->Add(black_scrim_layer_.get());
+    divider_parent_layer->StackBelow(black_scrim_layer_.get(), divider_layer);
   }
 
   // Decide where the black scrim should show and update its bounds.
