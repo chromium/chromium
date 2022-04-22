@@ -8,7 +8,6 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -46,7 +45,6 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/bindings_policy.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_frame_navigation_observer.h"
@@ -1922,50 +1920,5 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SubFrameNavigationUIData) {
             observer.last_navigation_ui_data()->window_open_disposition());
 }
 #endif
-
-// Helper class to enable picture in picture V2 for those tests that need it.
-// Once the feature is enabled permanently, these can be merged back to
-// BrowserNavigatorTest instead.
-class BrowserNavigatorWithPictureInPictureTest : public BrowserNavigatorTest {
- public:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kPictureInPictureV2};
-};
-
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorWithPictureInPictureTest,
-                       Disposition_PictureInPicture_Open) {
-  // Opening a picture in picture window should create a new browser.
-  NavigateParams params(MakeNavigateParams(browser()));
-  params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
-  Navigate(&params);
-
-  // Should not re-use the browser.
-  EXPECT_NE(browser(), params.browser);
-  EXPECT_TRUE(params.browser->is_type_picture_in_picture());
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorWithPictureInPictureTest,
-                       Disposition_PictureInPicture_CantFromAnotherPip) {
-  // Make sure that attempting to open a picture in picture window from a
-  // picture in picture window fails.
-  Browser* pip = CreateEmptyBrowserForType(Browser::TYPE_PICTURE_IN_PICTURE,
-                                           browser()->profile());
-  NavigateParams params(MakeNavigateParams(pip));
-  params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
-  Navigate(&params);
-
-  EXPECT_EQ(params.browser, nullptr);
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
-                       Disposition_PictureInPicture_FeatureMustBeEnabled) {
-  // Creating a picture in picture window should not work if the feature is off.
-  ASSERT_FALSE(base::FeatureList::IsEnabled(features::kPictureInPictureV2));
-  NavigateParams params(MakeNavigateParams(browser()));
-  params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
-  Navigate(&params);
-
-  EXPECT_EQ(params.browser, nullptr);
-}
 
 }  // namespace

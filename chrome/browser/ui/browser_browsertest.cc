@@ -1523,10 +1523,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMaximized) {
                                           browser()->profile(), true),
       Browser::CreateParams::CreateForDevTools(browser()->profile()),
       Browser::CreateParams::CreateForAppPopup("app_name", true, gfx::Rect(),
-                                               browser()->profile(), true),
-      Browser::CreateParams(Browser::TYPE_PICTURE_IN_PICTURE,
-                            browser()->profile(), true),
-  };
+                                               browser()->profile(), true)};
   for (size_t i = 0; i < std::size(params); ++i) {
     params[i].initial_show_state = ui::SHOW_STATE_MAXIMIZED;
     AddBlankTabAndShow(Browser::Create(params[i]));
@@ -1543,10 +1540,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMinimized) {
                                           browser()->profile(), true),
       Browser::CreateParams::CreateForDevTools(browser()->profile()),
       Browser::CreateParams::CreateForAppPopup("app_name", true, gfx::Rect(),
-                                               browser()->profile(), true),
-      Browser::CreateParams(Browser::TYPE_PICTURE_IN_PICTURE,
-                            browser()->profile(), true),
-  };
+                                               browser()->profile(), true)};
   for (size_t i = 0; i < std::size(params); ++i) {
     params[i].initial_show_state = ui::SHOW_STATE_MINIMIZED;
     AddBlankTabAndShow(Browser::Create(params[i]));
@@ -2952,10 +2946,4 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(WaitForLoadStop(wc));
   EXPECT_TRUE(back_observer.has_committed());
   EXPECT_FALSE(back_observer.was_same_document());
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserTest, CreatePictureInPicture) {
-  Browser* popup_browser = Browser::Create(Browser::CreateParams(
-      Browser::TYPE_PICTURE_IN_PICTURE, browser()->profile(), true));
-  ASSERT_TRUE(popup_browser->is_type_picture_in_picture());
 }

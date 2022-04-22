@@ -258,21 +258,8 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
       // always-on-top window.  This helps protect against a compromised
       // renderer. TODO(https://crbug.com/1285144): Remove this check once
       // the feature is no longer experimental.
-      if (!base::FeatureList::IsEnabled(features::kPictureInPictureV2))
-        return {nullptr, -1};
-
-      // Picture in picture windows may not be opened by other picture in
-      // picture windows.
-      if (params.browser->is_type_picture_in_picture())
-        return {nullptr, -1};
-
-      {
-        Browser::CreateParams browser_params(Browser::TYPE_PICTURE_IN_PICTURE,
-                                             profile, params.user_gesture);
-        browser_params.trusted_source = params.trusted_source;
-        browser_params.initial_bounds = params.window_bounds;
-        return {Browser::Create(browser_params), -1};
-      }
+      CHECK(base::FeatureList::IsEnabled(features::kPictureInPictureV2));
+      return {params.browser, -1};
     case WindowOpenDisposition::NEW_POPUP: {
       // Make a new popup window.
       // Coerce app-style if |source| represents an app.
@@ -351,10 +338,10 @@ void NormalizeDisposition(NavigateParams* params) {
       break;
 
     case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
-      // Always show a new picture in picture window.
-      params->window_action = NavigateParams::SHOW_WINDOW;
+      // Do nothing for a document PiP popup, it's handled via
+      // PictureInPictureController.
+      params->window_action = NavigateParams::NO_ACTION;
       break;
-
     case WindowOpenDisposition::NEW_WINDOW:
     case WindowOpenDisposition::NEW_POPUP: {
       // Code that wants to open a new window typically expects it to be shown
@@ -449,7 +436,10 @@ class ScopedBrowserShower {
 
   ~ScopedBrowserShower() {
     BrowserWindow* window = params_->browser->window();
-    if (params_->window_action == NavigateParams::SHOW_WINDOW_INACTIVE) {
+    if (params_->disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
+      // Don't activate or focus the window, PictureInPictureManager
+      // takes care of that for a DocumentPictureInPictureWindowControllerImpl.
+    } else if (params_->window_action == NavigateParams::SHOW_WINDOW_INACTIVE) {
       window->ShowInactive();
     } else if (params_->window_action == NavigateParams::SHOW_WINDOW) {
       window->Show();
@@ -751,7 +741,11 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
       (params->tabstrip_add_types & TabStripModel::ADD_INHERIT_OPENER))
     params->source_contents->Focus();
 
-  if (params->source_contents == contents_to_navigate_or_insert) {
+  if (params->disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
+    auto* mgr = PictureInPictureWindowManager::GetInstance();
+    mgr->EnterDocumentPictureInPicture(params->source_contents,
+                                       std::move(contents_to_insert));
+  } else if (params->source_contents == contents_to_navigate_or_insert) {
     // The navigation occurred in the source tab.
     params->browser->UpdateUIForNavigationInTab(
         contents_to_navigate_or_insert, params->transition,
