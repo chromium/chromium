@@ -128,9 +128,9 @@ absl::optional<syncer::ModelError> ParseDeskTemplatesOnBackendSequence(
   return absl::nullopt;
 }
 
-// Fill |out_gurls| using tabs' URL in |browser_app_window|.
-void FillUrlList(std::vector<GURL>* out_gurls,
-                 const BrowserAppWindow& browser_app_window) {
+// Fill `out_gurls` using tabs' URL in `browser_app_window`.
+void FillUrlList(const BrowserAppWindow& browser_app_window,
+                 std::vector<GURL>* out_gurls) {
   for (auto tab : browser_app_window.tabs()) {
     if (tab.has_url())
       out_gurls->emplace_back(tab.url());
@@ -218,8 +218,8 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
       }
 
       app_launch_info->urls.emplace();
-      FillUrlList(&app_launch_info->urls.value(),
-                  app.app().browser_app_window());
+      FillUrlList(app.app().browser_app_window(),
+                  &app_launch_info->urls.value());
 
       if (app.app().browser_app_window().has_show_as_app())
         app_launch_info->app_type_browser =
@@ -323,9 +323,9 @@ WindowState FromUiWindowState(ui::WindowShowState state) {
   }
 }
 
-// Fill |out_browser_app_window| with the given GURLs as BrowserAppTabs.
-void FillBrowserAppTabs(BrowserAppWindow* out_browser_app_window,
-                        const std::vector<GURL>& gurls) {
+// Fill `out_browser_app_window` with the given GURLs as BrowserAppTabs.
+void FillBrowserAppTabs(const std::vector<GURL>& gurls,
+                        BrowserAppWindow* out_browser_app_window) {
   for (const auto& gurl : gurls) {
     const std::string& url = gurl.spec();
     if (url.empty()) {
@@ -337,12 +337,12 @@ void FillBrowserAppTabs(BrowserAppWindow* out_browser_app_window,
   }
 }
 
-// Fill |out_browser_app_window| with urls and tab information from
-// |app_restore_data|.
-void FillBrowserAppWindow(BrowserAppWindow* out_browser_app_window,
-                          const app_restore::AppRestoreData* app_restore_data) {
+// Fill `out_browser_app_window` with urls and tab information from
+// `app_restore_data`.
+void FillBrowserAppWindow(const app_restore::AppRestoreData* app_restore_data,
+                          BrowserAppWindow* out_browser_app_window) {
   if (app_restore_data->urls.has_value())
-    FillBrowserAppTabs(out_browser_app_window, app_restore_data->urls.value());
+    FillBrowserAppTabs(app_restore_data->urls.value(), out_browser_app_window);
 
   if (app_restore_data->active_tab_index.has_value()) {
     out_browser_app_window->set_active_tab_index(
@@ -355,26 +355,23 @@ void FillBrowserAppWindow(BrowserAppWindow* out_browser_app_window,
   }
 }
 
-// Fill |out_window_bound| with information from |bound|.
-//
-// TOOD(crbug/1295051): here and elsewhere move out_* args to end of parameter
-// lists.
-void FillWindowBound(WindowBound* out_window_bound, const gfx::Rect& bound) {
-  out_window_bound->set_left(bound.x());
-  out_window_bound->set_top(bound.y());
-  out_window_bound->set_width(bound.width());
-  out_window_bound->set_height(bound.height());
+// Fill `out_window_bounds` with information from `bounds`.
+void FillWindowBound(const gfx::Rect& bounds, WindowBound* out_window_bounds) {
+  out_window_bounds->set_left(bounds.x());
+  out_window_bounds->set_top(bounds.y());
+  out_window_bounds->set_width(bounds.width());
+  out_window_bounds->set_height(bounds.height());
 }
 
-// Fill |out_app| with information from |window_info|.
-void FillAppWithWindowInfo(WorkspaceDeskSpecifics_App* out_app,
-                           const app_restore::WindowInfo* window_info) {
+// Fill `out_app` with information from `window_info`.
+void FillAppWithWindowInfo(const app_restore::WindowInfo* window_info,
+                           WorkspaceDeskSpecifics_App* out_app) {
   if (window_info->activation_index.has_value())
     out_app->set_z_index(window_info->activation_index.value());
 
   if (window_info->current_bounds.has_value()) {
-    FillWindowBound(out_app->mutable_window_bound(),
-                    window_info->current_bounds.value());
+    FillWindowBound(window_info->current_bounds.value(),
+                    out_app->mutable_window_bound());
   }
 
   if (window_info->window_state_type.has_value()) {
@@ -397,9 +394,9 @@ void FillAppWithWindowInfo(WorkspaceDeskSpecifics_App* out_app,
   // WindowInfo. Therefore, we are not filling |display_id| here.
 }
 
-//  Fill |out_app| with |display_id| from |app_restore_data|.
-void FillAppWithDisplayId(WorkspaceDeskSpecifics_App* out_app,
-                          const app_restore::AppRestoreData* app_restore_data) {
+//  Fill `out_app` with the `display_id` from `app_restore_data`.
+void FillAppWithDisplayId(const app_restore::AppRestoreData* app_restore_data,
+                          WorkspaceDeskSpecifics_App* out_app) {
   if (app_restore_data->display_id.has_value())
     out_app->set_display_id(app_restore_data->display_id.value());
 }
@@ -442,31 +439,31 @@ void FillAppWithAppNameAndTitle(
   }
 }
 
-void FillArcAppSize(ArcAppWindowSize* out_window_size, const gfx::Size& size) {
+void FillArcAppSize(const gfx::Size& size, ArcAppWindowSize* out_window_size) {
   out_window_size->set_width(size.width());
   out_window_size->set_height(size.height());
 }
 
-void FillArcBoundsInRoot(WindowBound* out_rect, const gfx::Rect& data_rect) {
+void FillArcBoundsInRoot(const gfx::Rect& data_rect, WindowBound* out_rect) {
   out_rect->set_left(data_rect.x());
   out_rect->set_top(data_rect.y());
   out_rect->set_width(data_rect.width());
   out_rect->set_height(data_rect.height());
 }
 
-void FillArcApp(ArcApp* out_app,
-                const app_restore::AppRestoreData* app_restore_data) {
+void FillArcApp(const app_restore::AppRestoreData* app_restore_data,
+                ArcApp* out_app) {
   if (app_restore_data->minimum_size.has_value()) {
-    FillArcAppSize(out_app->mutable_minimum_size(),
-                   app_restore_data->minimum_size.value());
+    FillArcAppSize(app_restore_data->minimum_size.value(),
+                   out_app->mutable_minimum_size());
   }
   if (app_restore_data->maximum_size.has_value()) {
-    FillArcAppSize(out_app->mutable_maximum_size(),
-                   app_restore_data->maximum_size.value());
+    FillArcAppSize(app_restore_data->maximum_size.value(),
+                   out_app->mutable_maximum_size());
   }
   if (app_restore_data->bounds_in_root.has_value()) {
-    FillArcBoundsInRoot(out_app->mutable_bounds_in_root(),
-                        app_restore_data->bounds_in_root.value());
+    FillArcBoundsInRoot(app_restore_data->bounds_in_root.value(),
+                        out_app->mutable_bounds_in_root());
   }
 }
 
@@ -484,16 +481,16 @@ void FillAppWithLaunchContainerAndOpenDisposition(
   FillAppWithWindowOpenDisposition(app_restore_data, out_app);
 }
 
-// Fill |out_app| with |app_restore_data|.
-void FillApp(WorkspaceDeskSpecifics_App* out_app,
-             const std::string& app_id,
+// Fill `out_app` with `app_restore_data`.
+void FillApp(const std::string& app_id,
              const apps::AppType app_type,
-             const app_restore::AppRestoreData* app_restore_data) {
-  FillAppWithWindowInfo(out_app, app_restore_data->GetWindowInfo().get());
+             const app_restore::AppRestoreData* app_restore_data,
+             WorkspaceDeskSpecifics_App* out_app) {
+  FillAppWithWindowInfo(app_restore_data->GetWindowInfo().get(), out_app);
 
-  // AppRestoreData.GetWindowInfo does not include |display_id| in the returned
-  // WindowInfo. We need to fill the |display_id| from AppRestoreData.
-  FillAppWithDisplayId(out_app, app_restore_data);
+  // AppRestoreData.GetWindowInfo does not include `display_id` in the returned
+  // WindowInfo. We need to fill the `display_id` from AppRestoreData.
+  FillAppWithDisplayId(app_restore_data, out_app);
 
   // If present, fills the proto's `app_name` and `title` fields with the
   // information stored in the `app_restore_data`'s `app_name` and `title`
@@ -509,7 +506,7 @@ void FillApp(WorkspaceDeskSpecifics_App* out_app,
         // Chrome or Lacros Browser Window.
         BrowserAppWindow* browser_app_window =
             out_app->mutable_app()->mutable_browser_app_window();
-        FillBrowserAppWindow(browser_app_window, app_restore_data);
+        FillBrowserAppWindow(app_restore_data, browser_app_window);
       } else {
         // PWA app.
         ProgressiveWebApp* pwa_window =
@@ -530,7 +527,7 @@ void FillApp(WorkspaceDeskSpecifics_App* out_app,
     case apps::AppType::kArc: {
       ArcApp* arc_app = out_app->mutable_app()->mutable_arc_app();
       arc_app->set_app_id(app_id);
-      FillArcApp(arc_app, app_restore_data);
+      FillArcApp(app_restore_data, arc_app);
       break;
     }
     default: {
@@ -540,8 +537,8 @@ void FillApp(WorkspaceDeskSpecifics_App* out_app,
   }
 }
 
-void FillArcExtraInfoFromProto(app_restore::WindowInfo* out_window_info,
-                               const ArcApp& app) {
+void FillArcExtraInfoFromProto(const ArcApp& app,
+                               app_restore::WindowInfo* out_window_info) {
   out_window_info->arc_extra_info.emplace();
   app_restore::WindowInfo::ArcExtraInfo& arc_info =
       out_window_info->arc_extra_info.value();
@@ -561,9 +558,9 @@ void FillArcExtraInfoFromProto(app_restore::WindowInfo* out_window_info,
   }
 }
 
-// Fill |out_window_info| with information from Sync proto |app|.
-void FillWindowInfoFromProto(app_restore::WindowInfo* out_window_info,
-                             sync_pb::WorkspaceDeskSpecifics_App& app) {
+// Fill `out_window_info` with information from Sync proto `app`.
+void FillWindowInfoFromProto(sync_pb::WorkspaceDeskSpecifics_App& app,
+                             app_restore::WindowInfo* out_window_info) {
   if (app.has_window_state() &&
       sync_pb::WorkspaceDeskSpecifics_WindowState_IsValid(app.window_state())) {
     out_window_info->window_state_type.emplace(
@@ -602,7 +599,7 @@ void FillWindowInfoFromProto(app_restore::WindowInfo* out_window_info,
 
   if (app.app().app_case() ==
       sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kArcApp) {
-    FillArcExtraInfoFromProto(out_window_info, app.app().arc_app());
+    FillArcExtraInfoFromProto(app.app().arc_app(), out_window_info);
   }
 }
 
@@ -623,7 +620,7 @@ std::unique_ptr<app_restore::RestoreData> ConvertToRestoreData(
     restore_data->AddAppLaunchInfo(std::move(app_launch_info));
 
     app_restore::WindowInfo app_window_info;
-    FillWindowInfoFromProto(&app_window_info, app_proto);
+    FillWindowInfoFromProto(app_proto, &app_window_info);
 
     restore_data->ModifyWindowInfo(app_id, app_proto.window_id(),
                                    app_window_info);
@@ -632,12 +629,12 @@ std::unique_ptr<app_restore::RestoreData> ConvertToRestoreData(
   return restore_data;
 }
 
-// Fill a desk template |out_entry_proto| with information from
-// |restore_data|.
+// Fill a desk template `out_entry_proto` with information from
+// `restore_data`.
 void FillWorkspaceDeskSpecifics(
-    sync_pb::WorkspaceDeskSpecifics* out_entry_proto,
     apps::AppRegistryCache* apps_cache,
-    const app_restore::RestoreData* restore_data) {
+    const app_restore::RestoreData* restore_data,
+    sync_pb::WorkspaceDeskSpecifics* out_entry_proto) {
   DCHECK(apps_cache);
 
   for (auto const& app_id_to_launch_list :
@@ -657,15 +654,15 @@ void FillWorkspaceDeskSpecifics(
       WorkspaceDeskSpecifics_App* app =
           out_entry_proto->mutable_desk()->add_apps();
       app->set_window_id(window_id);
-      FillApp(app, app_id, app_type, app_restore_data);
+      FillApp(app_id, app_type, app_restore_data, app);
     }
   }
 }
 
 // Fill a desk template `out_entry_proto` with the type of desk based on the
 // desk's type field.
-void FillDeskType(sync_pb::WorkspaceDeskSpecifics* out_entry_proto,
-                  const DeskTemplate* desk_template) {
+void FillDeskType(const DeskTemplate* desk_template,
+                  sync_pb::WorkspaceDeskSpecifics* out_entry_proto) {
   switch (desk_template->type()) {
     case DeskTemplateType::kTemplate:
       out_entry_proto->set_desk_type(
@@ -1056,8 +1053,7 @@ sync_pb::WorkspaceDeskSpecifics DeskSyncBridge::ToSyncProto(
   DCHECK(cache);
 
   sync_pb::WorkspaceDeskSpecifics pb_entry;
-
-  FillDeskType(&pb_entry, desk_template);
+  FillDeskType(desk_template, &pb_entry);
 
   pb_entry.set_uuid(desk_template->uuid().AsLowercaseString());
   pb_entry.set_name(base::UTF16ToUTF8(desk_template->template_name()));
@@ -1070,8 +1066,8 @@ sync_pb::WorkspaceDeskSpecifics DeskSyncBridge::ToSyncProto(
   }
 
   if (desk_template->desk_restore_data()) {
-    FillWorkspaceDeskSpecifics(&pb_entry, cache,
-                               desk_template->desk_restore_data());
+    FillWorkspaceDeskSpecifics(cache, desk_template->desk_restore_data(),
+                               &pb_entry);
   }
   return pb_entry;
 }
