@@ -50,6 +50,7 @@ if (!is_win) {
       ":demuxer_stream_data_provider",
       ":network_context",
       ":receiver_session_public",
+      ":streaming_initialization_info",
       ":streaming_session",
       "//base",
       "//media",
@@ -73,6 +74,7 @@ if (!is_win) {
       ":core",
       ":receiver_session_public",
       ":renderer_controls",
+      ":streaming_initialization_info",
       "//base",
       "//components/cast_streaming/public",
       "//components/cast_streaming/public:config_conversions",
@@ -103,6 +105,7 @@ if (!is_win) {
     testonly = true
     deps = [
       ":core",
+      ":streaming_initialization_info",
       "//components/cast_streaming/public",
       "//components/cast_streaming/public:config_conversions",
       "//media/mojo/common",
@@ -194,8 +197,22 @@ source_set("network_context") {
   sources = [ "network_context_getter.cc" ]
 }
 
+source_set("streaming_initialization_info") {
+  public_deps = [
+    ":demuxer_stream_data_provider",
+    "//media",
+    "//third_party/openscreen/src/cast/streaming:receiver",
+  ]
+  visibility = [ ":*" ]
+  sources = [
+    "streaming_initialization_info.cc",
+    "streaming_initialization_info.h",
+  ]
+}
+
 source_set("renderer_controls") {
   public_deps = [
+    ":streaming_initialization_info",
     "//base",
     "//components/cast_streaming/public:remoting_utils",
     "//components/cast_streaming/public/mojom",

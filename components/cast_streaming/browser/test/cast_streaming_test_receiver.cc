@@ -122,21 +122,22 @@ void CastStreamingTestReceiver::OnVideoBufferRead(
 }
 
 void CastStreamingTestReceiver::OnSessionInitialization(
-    absl::optional<CastStreamingSession::AudioStreamInfo> audio_stream_info,
-    absl::optional<CastStreamingSession::VideoStreamInfo> video_stream_info) {
+    StreamingInitializationInfo initialization_info,
+    absl::optional<mojo::ScopedDataPipeConsumerHandle> audio_pipe_consumer,
+    absl::optional<mojo::ScopedDataPipeConsumerHandle> video_pipe_consumer) {
   VLOG(1) << __func__;
-  if (audio_stream_info) {
+  if (initialization_info.audio_stream_info) {
     audio_decoder_buffer_reader_ =
         std::make_unique<media::MojoDecoderBufferReader>(
-            std::move(audio_stream_info->data_pipe));
-    audio_config_ = audio_stream_info->decoder_config;
+            std::move(audio_pipe_consumer.value()));
+    audio_config_ = initialization_info.audio_stream_info->config;
   }
 
-  if (video_stream_info) {
+  if (initialization_info.video_stream_info) {
     video_decoder_buffer_reader_ =
         std::make_unique<media::MojoDecoderBufferReader>(
-            std::move(video_stream_info->data_pipe));
-    video_config_ = video_stream_info->decoder_config;
+            std::move(video_pipe_consumer.value()));
+    video_config_ = initialization_info.video_stream_info->config;
   }
 
   is_active_ = true;
@@ -164,8 +165,9 @@ void CastStreamingTestReceiver::OnVideoBufferReceived(
 }
 
 void CastStreamingTestReceiver::OnSessionReinitialization(
-    absl::optional<CastStreamingSession::AudioStreamInfo> audio_stream_info,
-    absl::optional<CastStreamingSession::VideoStreamInfo> video_stream_info) {
+    StreamingInitializationInfo initialization_info,
+    absl::optional<mojo::ScopedDataPipeConsumerHandle> audio_pipe_consumer,
+    absl::optional<mojo::ScopedDataPipeConsumerHandle> video_pipe_consumer) {
   VLOG(1) << __func__;
 
   // TODO(crbug.com/1110490): Add tests handling the session reinitialization

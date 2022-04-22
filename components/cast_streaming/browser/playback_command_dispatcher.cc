@@ -85,12 +85,41 @@ void PlaybackCommandDispatcher::OnRemotingSessionNegotiated(
           base::Unretained(this)));
 }
 
+void PlaybackCommandDispatcher::ConfigureRemotingAsync(
+    Dispatcher* dispatcher,
+    const openscreen::cast::ReceiverSession* session,
+    openscreen::cast::ReceiverSession::ConfiguredReceivers receivers) {
+  DCHECK(dispatcher);
+  DCHECK(session);
+  DCHECK(!streaming_init_info_);
+
+  streaming_dispatcher_ = dispatcher;
+  receiver_session_ = session;
+
+  absl::optional<StreamingInitializationInfo::AudioStreamInfo>
+      audio_stream_info;
+  if (receivers.audio_receiver) {
+    audio_stream_info = {media::AudioDecoderConfig(), receivers.audio_receiver};
+  }
+
+  absl::optional<StreamingInitializationInfo::VideoStreamInfo>
+      video_stream_info;
+  if (receivers.video_receiver) {
+    video_stream_info = {media::VideoDecoderConfig(), receivers.video_receiver};
+  }
+
+  streaming_init_info_ = StreamingInitializationInfo{
+      receiver_session_, std::move(audio_stream_info),
+      std::move(video_stream_info)};
+}
+
 void PlaybackCommandDispatcher::OnRemotingSessionEnded() {
   demuxer_stream_handler_.reset();
   if (messenger_) {
     messenger_->UnregisterMessageReceiverCallback(handle_);
     messenger_ = nullptr;
   }
+  streaming_init_info_ = absl::nullopt;
 }
 
 void PlaybackCommandDispatcher::SendRemotingRpcMessageToRemote(
@@ -163,14 +192,40 @@ void PlaybackCommandDispatcher::OnRpcAcquireDemuxer(
 
 void PlaybackCommandDispatcher::OnNewAudioConfig(
     media::AudioDecoderConfig config) {
-  // TODO(rwkeane): Handle new configs.
-  NOTIMPLEMENTED();
+  DCHECK(streaming_init_info_);
+  DCHECK(streaming_dispatcher_);
+  if (!streaming_init_info_->audio_stream_info) {
+    LOG(ERROR) << "Received Audio config for a remoting session where audio is "
+                  "not supported";
+    return;
+  }
+
+  streaming_init_info_->audio_stream_info->config = std::move(config);
+  if (!streaming_init_info_->video_stream_info ||
+      !streaming_init_info_->video_stream_info->config.Matches(
+          media::VideoDecoderConfig())) {
+    // |streaming_init_info_| is intentionally copied here.
+    streaming_dispatcher_->StartStreamingSession(streaming_init_info_.value());
+  }
 }
 
 void PlaybackCommandDispatcher::OnNewVideoConfig(
     media::VideoDecoderConfig config) {
-  // TODO(rwkeane): Handle new configs.
-  NOTIMPLEMENTED();
+  DCHECK(streaming_init_info_);
+  DCHECK(streaming_dispatcher_);
+  if (!streaming_init_info_->video_stream_info) {
+    LOG(ERROR) << "Received Video config for a remoting session where video is "
+                  "not supported";
+    return;
+  }
+
+  streaming_init_info_->video_stream_info->config = std::move(config);
+  if (!streaming_init_info_->audio_stream_info ||
+      !streaming_init_info_->audio_stream_info->config.Matches(
+          media::AudioDecoderConfig())) {
+    // |streaming_init_info_| is intentionally copied here.
+    streaming_dispatcher_->StartStreamingSession(streaming_init_info_.value());
+  }
 }
 
 }  // namespace cast_streaming

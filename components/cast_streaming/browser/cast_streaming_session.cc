@@ -5,13 +5,16 @@
 #include "components/cast_streaming/browser/cast_streaming_session.h"
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/time/time.h"
 #include "components/cast_streaming/browser/stream_consumer.h"
 #include "components/cast_streaming/public/config_conversions.h"
+#include "media/base/demuxer_stream.h"
 #include "media/base/timestamp_constants.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 
+namespace cast_streaming {
 namespace {
 
 // Timeout to stop the Session when no data is received.
@@ -32,9 +35,27 @@ bool CreateDataPipeForStreamType(media::DemuxerStream::Type type,
 // Timeout to end the Session when no offer message is sent.
 constexpr base::TimeDelta kInitTimeout = base::Seconds(5);
 
-}  // namespace
+StreamingInitializationInfo CreateMirroringInitializationInfo(
+    const openscreen::cast::ReceiverSession* session,
+    openscreen::cast::ReceiverSession::ConfiguredReceivers receivers) {
+  absl::optional<StreamingInitializationInfo::AudioStreamInfo>
+      audio_stream_info;
+  if (receivers.audio_receiver) {
+    audio_stream_info = {ToAudioDecoderConfig(receivers.audio_config),
+                         receivers.audio_receiver};
+  }
 
-namespace cast_streaming {
+  absl::optional<StreamingInitializationInfo::VideoStreamInfo>
+      video_stream_info;
+  if (receivers.video_receiver) {
+    video_stream_info = {ToVideoDecoderConfig(receivers.video_config),
+                         receivers.video_receiver};
+  }
+
+  return {session, std::move(audio_stream_info), std::move(video_stream_info)};
+}
+
+}  // namespace
 
 CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
     CastStreamingSession::Client* client,
@@ -95,11 +116,12 @@ void CastStreamingSession::ReceiverSessionClient::OnInitializationTimeout() {
   is_initialized_ = true;
 }
 
-absl::optional<CastStreamingSession::AudioStreamInfo>
+absl::optional<mojo::ScopedDataPipeConsumerHandle>
 CastStreamingSession::ReceiverSessionClient::InitializeAudioConsumer(
-    openscreen::cast::Receiver* audio_receiver,
-    const openscreen::cast::AudioCaptureConfig& audio_capture_config) {
-  DCHECK(audio_receiver);
+    const StreamingInitializationInfo& initialization_info) {
+  if (!initialization_info.audio_stream_info) {
+    return absl::nullopt;
+  }
 
   // Create the audio data pipe.
   mojo::ScopedDataPipeProducerHandle data_pipe_producer;
@@ -114,21 +136,22 @@ CastStreamingSession::ReceiverSessionClient::InitializeAudioConsumer(
   // the duration is set to kNoTimestamp so the audio renderer does not block.
   // Audio frames duration is not known ahead of time in mirroring.
   audio_consumer_ = std::make_unique<StreamConsumer>(
-      audio_receiver, media::kNoTimestamp, std::move(data_pipe_producer),
+      initialization_info.audio_stream_info->receiver, media::kNoTimestamp,
+      std::move(data_pipe_producer),
       base::BindRepeating(&CastStreamingSession::Client::OnAudioBufferReceived,
                           base::Unretained(client_)),
       base::BindRepeating(&base::OneShotTimer::Reset,
                           base::Unretained(&data_timeout_timer_)));
 
-  return AudioStreamInfo{ToAudioDecoderConfig(audio_capture_config),
-                         std::move(data_pipe_consumer)};
+  return data_pipe_consumer;
 }
 
-absl::optional<CastStreamingSession::VideoStreamInfo>
+absl::optional<mojo::ScopedDataPipeConsumerHandle>
 CastStreamingSession::ReceiverSessionClient::InitializeVideoConsumer(
-    openscreen::cast::Receiver* video_receiver,
-    const openscreen::cast::VideoCaptureConfig& video_capture_config) {
-  DCHECK(video_receiver);
+    const StreamingInitializationInfo& initialization_info) {
+  if (!initialization_info.video_stream_info) {
+    return absl::nullopt;
+  }
 
   // Create the video data pipe.
   mojo::ScopedDataPipeProducerHandle data_pipe_producer;
@@ -147,38 +170,47 @@ CastStreamingSession::ReceiverSessionClient::InitializeVideoConsumer(
   // overlapping video frames but this is fine since the media pipeline mostly
   // considers the playout time when deciding which frame to present or play
   video_consumer_ = std::make_unique<StreamConsumer>(
-      video_receiver, base::Minutes(10), std::move(data_pipe_producer),
+      initialization_info.video_stream_info->receiver, base::Minutes(10),
+      std::move(data_pipe_producer),
       base::BindRepeating(&CastStreamingSession::Client::OnVideoBufferReceived,
                           base::Unretained(client_)),
       base::BindRepeating(&base::OneShotTimer::Reset,
                           base::Unretained(&data_timeout_timer_)));
 
-  return VideoStreamInfo{ToVideoDecoderConfig(video_capture_config),
-                         std::move(data_pipe_consumer)};
+  return data_pipe_consumer;
 }
 
-void CastStreamingSession::ReceiverSessionClient::OnNegotiated(
-    const openscreen::cast::ReceiverSession* session,
-    openscreen::cast::ReceiverSession::ConfiguredReceivers receivers) {
+void CastStreamingSession::ReceiverSessionClient::StartStreamingSession(
+    StreamingInitializationInfo initialization_info) {
   DVLOG(1) << __func__;
-  DCHECK_EQ(session, receiver_session_.get());
+  DCHECK_EQ(initialization_info.session, receiver_session_.get());
+
+  // This is necessary in case the offer message had no audio and no video
+  // stream.
+  if (!initialization_info.audio_stream_info &&
+      !initialization_info.video_stream_info) {
+    client_->OnSessionEnded();
+    return;
+  }
+
   init_timeout_timer_.Stop();
 
   bool is_new_offer = is_initialized_;
   if (is_new_offer) {
     // This is a second offer message, reinitialize the streams.
-    bool existing_session_has_audio = audio_consumer_ != nullptr;
-    bool existing_session_has_video = video_consumer_ != nullptr;
+    const bool existing_session_has_audio = !!audio_consumer_;
+    const bool existing_session_has_video = !!video_consumer_;
     audio_consumer_.reset();
     video_consumer_.reset();
 
-    bool new_offer_has_audio = receivers.audio_receiver != nullptr;
-    bool new_offer_has_video = receivers.video_receiver != nullptr;
+    const bool new_offer_has_audio = !!initialization_info.audio_stream_info;
+    const bool new_offer_has_video = !!initialization_info.video_stream_info;
 
     if (new_offer_has_audio != existing_session_has_audio ||
         new_offer_has_video != existing_session_has_video) {
-      // Different audio/video configuration than in the first offer message.
-      // Return early here.
+      // This call to StartStreamingSession() has support for audio and/or video
+      // streaming which does not match the ones provided during a prior call to
+      // this method. Return early here.
       client_->OnSessionEnded();
       return;
     }
@@ -187,47 +219,41 @@ void CastStreamingSession::ReceiverSessionClient::OnNegotiated(
   // Set |is_initialized_| now so we can return early on failure.
   is_initialized_ = true;
 
-  absl::optional<AudioStreamInfo> audio_stream_info;
-  if (receivers.audio_receiver) {
-    audio_stream_info = InitializeAudioConsumer(receivers.audio_receiver,
-                                                receivers.audio_config);
-    if (audio_stream_info) {
+  absl::optional<mojo::ScopedDataPipeConsumerHandle> audio_pipe_consumer_handle;
+  if (initialization_info.audio_stream_info) {
+    audio_pipe_consumer_handle = InitializeAudioConsumer(initialization_info);
+    if (audio_pipe_consumer_handle) {
       DVLOG(1) << "Initialized audio stream. "
-               << audio_stream_info->decoder_config.AsHumanReadableString();
+               << initialization_info.audio_stream_info->config
+                      .AsHumanReadableString();
     } else {
       client_->OnSessionEnded();
       return;
     }
   }
 
-  absl::optional<VideoStreamInfo> video_stream_info;
-  if (receivers.video_receiver) {
-    video_stream_info = InitializeVideoConsumer(receivers.video_receiver,
-                                                receivers.video_config);
-    if (video_stream_info) {
+  absl::optional<mojo::ScopedDataPipeConsumerHandle> video_pipe_consumer_handle;
+  if (initialization_info.video_stream_info) {
+    video_pipe_consumer_handle = InitializeVideoConsumer(initialization_info);
+    if (video_pipe_consumer_handle) {
       DVLOG(1) << "Initialized video stream. "
-               << video_stream_info->decoder_config.AsHumanReadableString();
+               << initialization_info.video_stream_info->config
+                      .AsHumanReadableString();
     } else {
       audio_consumer_.reset();
-      audio_stream_info.reset();
       client_->OnSessionEnded();
       return;
     }
-  }
-
-  // This is necessary in case the offer message had no audio and no video
-  // stream.
-  if (!audio_stream_info && !video_stream_info) {
-    client_->OnSessionEnded();
-    return;
   }
 
   if (is_new_offer) {
-    client_->OnSessionReinitialization(std::move(audio_stream_info),
-                                       std::move(video_stream_info));
+    client_->OnSessionReinitialization(std::move(initialization_info),
+                                       std::move(audio_pipe_consumer_handle),
+                                       std::move(video_pipe_consumer_handle));
   } else {
-    client_->OnSessionInitialization(std::move(audio_stream_info),
-                                     std::move(video_stream_info));
+    client_->OnSessionInitialization(std::move(initialization_info),
+                                     std::move(audio_pipe_consumer_handle),
+                                     std::move(video_pipe_consumer_handle));
     data_timeout_timer_.Start(
         FROM_HERE, kNoDataTimeout,
         base::BindOnce(
@@ -236,13 +262,21 @@ void CastStreamingSession::ReceiverSessionClient::OnNegotiated(
   }
 }
 
+void CastStreamingSession::ReceiverSessionClient::OnNegotiated(
+    const openscreen::cast::ReceiverSession* session,
+    openscreen::cast::ReceiverSession::ConfiguredReceivers receivers) {
+  StartStreamingSession(
+      CreateMirroringInitializationInfo(session, std::move(receivers)));
+}
+
 void CastStreamingSession::ReceiverSessionClient::OnRemotingNegotiated(
     const openscreen::cast::ReceiverSession* session,
     openscreen::cast::ReceiverSession::RemotingNegotiation negotiation) {
   DCHECK(playback_command_dispatcher_);
-  OnNegotiated(session, std::move(negotiation.receivers));
   playback_command_dispatcher_->OnRemotingSessionNegotiated(
       negotiation.messenger);
+  playback_command_dispatcher_->ConfigureRemotingAsync(
+      this, session, std::move(negotiation.receivers));
 }
 
 void CastStreamingSession::ReceiverSessionClient::OnReceiversDestroying(

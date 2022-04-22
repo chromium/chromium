@@ -14,11 +14,13 @@
 #include "components/cast_streaming/browser/renderer_control_multiplexer.h"
 #include "components/cast_streaming/browser/rpc_demuxer_stream_handler.h"
 #include "components/cast_streaming/browser/rpc_initialization_call_handler_base.h"
+#include "components/cast_streaming/browser/streaming_initialization_info.h"
 #include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 #include "media/mojo/mojom/renderer.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/openscreen/src/cast/streaming/receiver_session.h"
 #include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
 
 namespace openscreen {
@@ -56,6 +58,11 @@ class PlaybackCommandDispatcher
   // remoting::RemotingSessionClient overrides.
   void OnRemotingSessionNegotiated(
       openscreen::cast::RpcMessenger* messenger) override;
+  void ConfigureRemotingAsync(
+      Dispatcher* dispatcher,
+      const openscreen::cast::ReceiverSession* session,
+      openscreen::cast::ReceiverSession::ConfiguredReceivers receivers)
+      override;
   void OnRemotingSessionEnded() override;
 
  private:
@@ -94,6 +101,12 @@ class PlaybackCommandDispatcher
 
   // Handles DemuxerStream interactions.
   std::unique_ptr<remoting::RpcDemuxerStreamHandler> demuxer_stream_handler_;
+
+  // Handles for the demuxer stream data providers, to be used for dispatching
+  // demuxer stream RPC commands.
+  absl::optional<StreamingInitializationInfo> streaming_init_info_;
+  Dispatcher* streaming_dispatcher_ = nullptr;
+  const openscreen::cast::ReceiverSession* receiver_session_ = nullptr;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<PlaybackCommandDispatcher> weak_factory_{this};

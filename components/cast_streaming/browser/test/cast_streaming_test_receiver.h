@@ -88,14 +88,16 @@ class CastStreamingTestReceiver final : public CastStreamingSession::Client {
 
   // CastStreamingSession::Client implementation.
   void OnSessionInitialization(
-      absl::optional<CastStreamingSession::AudioStreamInfo> audio_stream_info,
-      absl::optional<CastStreamingSession::VideoStreamInfo> video_stream_info)
+      StreamingInitializationInfo initialization_info,
+      absl::optional<mojo::ScopedDataPipeConsumerHandle> audio_pipe_consumer,
+      absl::optional<mojo::ScopedDataPipeConsumerHandle> video_pipe_consumer)
       override;
   void OnAudioBufferReceived(media::mojom::DecoderBufferPtr buffer) override;
   void OnVideoBufferReceived(media::mojom::DecoderBufferPtr buffer) override;
   void OnSessionReinitialization(
-      absl::optional<CastStreamingSession::AudioStreamInfo> audio_stream_info,
-      absl::optional<CastStreamingSession::VideoStreamInfo> video_stream_info)
+      StreamingInitializationInfo initialization_info,
+      absl::optional<mojo::ScopedDataPipeConsumerHandle> audio_pipe_consumer,
+      absl::optional<mojo::ScopedDataPipeConsumerHandle> video_pipe_consumer)
       override;
   void OnSessionEnded() override;
 

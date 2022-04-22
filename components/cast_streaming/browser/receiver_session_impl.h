@@ -77,17 +77,17 @@ class ReceiverSessionImpl final
 
   // cast_streaming::CastStreamingSession::Client implementation.
   void OnSessionInitialization(
-      absl::optional<cast_streaming::CastStreamingSession::AudioStreamInfo>
-          audio_stream_info,
-      absl::optional<cast_streaming::CastStreamingSession::VideoStreamInfo>
-          video_stream_info) override;
+      StreamingInitializationInfo initialization_info,
+      absl::optional<mojo::ScopedDataPipeConsumerHandle> audio_pipe_consumer,
+      absl::optional<mojo::ScopedDataPipeConsumerHandle> video_pipe_consumer)
+      override;
   void OnAudioBufferReceived(media::mojom::DecoderBufferPtr buffer) override;
   void OnVideoBufferReceived(media::mojom::DecoderBufferPtr buffer) override;
   void OnSessionReinitialization(
-      absl::optional<cast_streaming::CastStreamingSession::AudioStreamInfo>
-          audio_stream_info,
-      absl::optional<cast_streaming::CastStreamingSession::VideoStreamInfo>
-          video_stream_info) override;
+      StreamingInitializationInfo initialization_info,
+      absl::optional<mojo::ScopedDataPipeConsumerHandle> audio_pipe_consumer,
+      absl::optional<mojo::ScopedDataPipeConsumerHandle> video_pipe_consumer)
+      override;
   void OnSessionEnded() override;
 
   // Populated in the ctor, and empty following a call to either
