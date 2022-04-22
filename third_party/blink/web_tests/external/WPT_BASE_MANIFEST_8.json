@@ -149542,6 +149542,45 @@
        {}
       ]
      ],
+     "selection-link-001.html": [
+      "08bc5e7323992b8563b298a76ad63ef7beb7c3fd",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/selection-link-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "selection-link-002.html": [
+      "52c2ae1ec2a36ae18cd81a133b77ffe0a0a9d1f3",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/selection-link-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "selection-link-003.html": [
+      "e935531997f076de2dce050350c4b47fce7f3194",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/selection-link-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "selection-originating-decoration-color.html": [
       "7f03c19b6d0cb2562eba246c3c4282168573a7b2",
       [
@@ -279340,6 +279379,18 @@
       "120324d3f418f5fad52e9809d7cc2953a773ddd1",
       []
      ],
+     "selection-link-001-ref.html": [
+      "b51f889d11ebf5f33def42011f37e798f54a37a1",
+      []
+     ],
+     "selection-link-002-ref.html": [
+      "e634c3a3dfdc769946dcaa436ad37604c3b2dadf",
+      []
+     ],
+     "selection-link-003-ref.html": [
+      "9b09f064663b1b92a9c28655f5adb7607c4fc0f8",
+      []
+     ],
      "selection-originating-decoration-color-ref.html": [
       "d6d9382303b958f72baa307d85965bd7f8d1052c",
       []
@@ -307236,7 +307287,7 @@
        []
       ],
       "common.js": [
-       "42b901f25ed27c6a6c82b41ca44ec9e008922151",
+       "39794f76af5c45169db9573aa02852493e744b85",
        []
       ],
       "coop-coep.py": [
@@ -307261,6 +307312,10 @@
       ],
       "javascript-url-same-origin.https.html": [
        "be2e59312b71ba72bb4636867b90b9557f6b5165",
+       []
+      ],
+      "popup-test.js": [
+       "4bf38a3abfd7088c50708479919df5a7a2039021",
        []
       ],
       "postback.html": [
@@ -307697,7 +307752,7 @@
       []
      ],
      "idlharness.worker-expected.txt": [
-      "2b064a4040ad7704846681040c501da738fd062c",
+      "10bb02bc614c01248fc4f06b9eced9b2175e8644",
       []
      ],
      "new-harness.js": [
@@ -320006,7 +320061,7 @@
      []
     ],
     "html.idl": [
-     "0642428d4d5c27b2e4a548a3c5d5a8b55cfd015e",
+     "fd7a4dfc3d8219e4bca7f5b1a245bc336ddda28e",
      []
     ],
     "idle-detection.idl": [
@@ -320595,6 +320650,10 @@
     ],
     "window-controls-overlay.idl": [
      "051978d693e3aa5213096e571be66d10cc8d8199",
+     []
+    ],
+    "window-placement.idl": [
+     "ac86c1d502aa816ecd87fa205133910a67f28537",
      []
     ],
     "xhr.idl": [
@@ -377822,7 +377881,7 @@
        ]
       ],
       "deep-nested-inline-size-containers.html": [
-       "48e8157b46155dc00d14328e2c2b51ee3fccfa9f",
+       "00bc8b0a6b2deae05e980a6c8cd7ddbab286906f",
        [
         null,
         {}
@@ -463585,7 +463644,7 @@
       ]
      ],
      "popup-same-origin-allow-popups-with-cross-origin.https.html": [
-      "74ded50d6677abeb0e7308ebd17f402e2e6438ca",
+      "c776f4450ff221ce286af9eeeb3ba9f1edba0db1",
       [
        null,
        {
@@ -463594,7 +463653,7 @@
       ]
      ],
      "popup-same-origin-allow-popups-with-same-origin.https.html": [
-      "b67db7e70666c7d30b7299cd2947bf1baa4a5915",
+      "7e14d072774c3a1536449287f92985056bbd249b",
       [
        null,
        {
@@ -463603,7 +463662,7 @@
       ]
      ],
      "popup-same-origin-allow-popups-with-same-site.https.html": [
-      "af7836f77ee888d4856419a3ad4f37765a81c864",
+      "7d734fa27f2603f6c4a1cdeefa1d29623f3d5d24",
       [
        null,
        {
@@ -463619,7 +463678,7 @@
       ]
      ],
      "popup-same-origin-with-cross-origin.https.html": [
-      "f72f8a59be20955475ab484c281b771c04a8ec13",
+      "a01ab56d173137aa25abba811ffceddae393c300",
       [
        null,
        {
@@ -463628,7 +463687,7 @@
       ]
      ],
      "popup-same-origin-with-same-origin.https.html": [
-      "5798851f686584ba6cae36d84bb04019d2967880",
+      "b103bb7308a6ec6c6200ae795b55a7eeaba18927",
       [
        null,
        {
@@ -463637,7 +463696,7 @@
       ]
      ],
      "popup-same-origin-with-same-site.https.html": [
-      "1af0f7ca3ac35aa318f35df089a2497d747617a3",
+      "3ed8b1cd014344f16d468f65c5500aeb300a95f3",
       [
        null,
        {
@@ -463646,7 +463705,7 @@
       ]
      ],
      "popup-unsafe-none-with-cross-origin.https.html": [
-      "6b6397c48691c3ae099e4563bf6e5c391fe2087b",
+      "26a273a6de5b411a3553e8a0e3d6366e2aa8c034",
       [
        null,
        {
@@ -463655,7 +463714,7 @@
       ]
      ],
      "popup-unsafe-none-with-same-origin.https.html": [
-      "66d720f7e92abb387e4cc39fd6a90767615b7a38",
+      "7b3f4d94718e79bf6f748c99aa3075640a57ee67",
       [
        null,
        {
@@ -463664,7 +463723,7 @@
       ]
      ],
      "popup-unsafe-none-with-same-site.https.html": [
-      "58ea328f0cffdd185efa5a0891db8397ac828d32",
+      "7d734fa27f2603f6c4a1cdeefa1d29623f3d5d24",
       [
        null,
        {
@@ -463673,7 +463732,7 @@
       ]
      ],
      "popup-unspecified-with-cross-origin.https.html": [
-      "6b5bf18bf43495c3a9b7fe04c82ec5c3ea2efbd8",
+      "26a273a6de5b411a3553e8a0e3d6366e2aa8c034",
       [
        null,
        {
@@ -463682,7 +463741,7 @@
       ]
      ],
      "popup-unspecified-with-same-origin.https.html": [
-      "6000ec600f8b41368f8bf2cf7822cd90ae0e825f",
+      "ca69369c8496d6a9f4613c7cea48f21678b7a0e2",
       [
        null,
        {
@@ -463691,7 +463750,7 @@
       ]
      ],
      "popup-unspecified-with-same-site.https.html": [
-      "2f9d6f15e23dbf46910b56cde7e7c59dd0040607",
+      "7360674c975bee1e37c5ae6ca29b637ece85af93",
       [
        null,
        {
@@ -503885,14 +503944,14 @@
      ]
     ],
     "img-attr-named-constructor.tentative.html": [
-     "6460cd9cd861af45f1dea4d9291a926df84b92a4",
+     "a6a629059eeb9ead2b5bbafc5a8f738b3939054a",
      [
       null,
       {}
      ]
     ],
     "link-attr.tentative.html": [
-     "1d9838309f0e3cdf36c1334a615952784001adfd",
+     "0190a611f1337788fa0acce144e1e64eba4ce8e7",
      [
       null,
       {}

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 753 tests; 744 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 751 tests; 742 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -54,8 +54,6 @@ PASS Partial interface HTMLOListElement: original interface defined
 PASS Partial interface HTMLOListElement: member names are unique
 PASS Partial interface HTMLParagraphElement: original interface defined
 PASS Partial interface HTMLParagraphElement: member names are unique
-PASS Partial interface HTMLParamElement: original interface defined
-PASS Partial interface HTMLParamElement: member names are unique
 PASS Partial interface HTMLPreElement: original interface defined
 PASS Partial interface HTMLPreElement: member names are unique
 PASS Partial interface HTMLStyleElement: original interface defined
@@ -206,7 +204,6 @@ PASS HTMLImageElement interface: existence and properties of interface object
 PASS HTMLIFrameElement interface: existence and properties of interface object
 PASS HTMLEmbedElement interface: existence and properties of interface object
 PASS HTMLObjectElement interface: existence and properties of interface object
-PASS HTMLParamElement interface: existence and properties of interface object
 PASS HTMLVideoElement interface: existence and properties of interface object
 PASS HTMLAudioElement interface: existence and properties of interface object
 PASS HTMLTrackElement interface: existence and properties of interface object
@@ -752,6 +749,7 @@ PASS HTMLFrameSetElement interface: existence and properties of interface object
 PASS HTMLFrameElement interface: existence and properties of interface object
 PASS HTMLDirectoryElement interface: existence and properties of interface object
 PASS HTMLFontElement interface: existence and properties of interface object
+PASS HTMLParamElement interface: existence and properties of interface object
 PASS External interface: existence and properties of interface object
 Harness: the test ran to completion.
 
