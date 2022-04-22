@@ -128,7 +128,7 @@ class VPNListProviderEntry : public views::View {
         AshColorProvider::ContentLayerType::kTextColorPrimary));
     TrayPopupUtils::SetLabelFontList(label,
                                      TrayPopupUtils::FontStyle::kSubHeader);
-    label->SetText(base::ASCIIToUTF16(name));
+    label->SetText(base::UTF8ToUTF16(name));
     tri_view->AddView(TriView::Container::CENTER, label);
 
     // Add the VPN policy indicator if using this |vpn_provider| is disabled.
