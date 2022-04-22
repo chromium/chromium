@@ -489,8 +489,8 @@ void ExtensionMessagePort::SendToPort(IPCBuilderCallback ipc_builder) {
     // unlikely they will see the same one every time and if they do, when they
     // fix that one, they will see the others.
     if (target.render_frame_host &&
-        target.render_frame_host->GetLifecycleState() ==
-            content::RenderFrameHost::LifecycleState::kInBackForwardCache) {
+        target.render_frame_host->IsInLifecycleState(
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache)) {
       content::BackForwardCache::DisableForRenderFrameHost(
           target.render_frame_host, back_forward_cache::DisabledReason(
                                         back_forward_cache::DisabledReasonId::
