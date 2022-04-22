@@ -28,6 +28,8 @@
 #include "ash/controls/scroll_view_gradient_helper.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -35,6 +37,7 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
@@ -161,15 +164,16 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
     auto* layout = container->SetLayoutManager(
         std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
     layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kCenter);
-    // TODO(crbug.com/1317428): Add expander icon to button.
-    // TODO(crbug.com/1317428): Localized label.
+    // TODO(crbug.com/1317428): Switch to custom double-chevron icon.
     show_continue_section_button_ =
         container->AddChildView(std::make_unique<PillButton>(
             base::BindRepeating(
                 &AppListBubbleAppsPage::OnPressShowContinueSection,
                 base::Unretained(this)),
-            u"Show continue section", PillButton::Type::kIconless,
-            /*icon=*/nullptr));
+            l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_SHOW_CONTINUE_SECTION),
+            PillButton::Type::kIcon, &kChevronRightIcon));
+    // Put the icon on the right.
+    show_continue_section_button_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   }
 
   // Continue section row.

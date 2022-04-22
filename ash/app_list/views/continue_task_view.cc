@@ -302,9 +302,10 @@ ui::SimpleMenuModel* ContinueTaskView::BuildMenuModel() {
       ui::ImageModel::FromVectorIcon(kRemoveOutlineIcon,
                                      ui::kColorAshSystemUIMenuIcon));
   context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
-  // TODO(crbug.com/1317428): Localized string and custom icon.
+  // TODO(crbug.com/1317428): Custom icon.
   context_menu_model_->AddItemWithIcon(
-      ContinueTaskCommandId::kHideContinueSection, u"Hide Continue Section",
+      ContinueTaskCommandId::kHideContinueSection,
+      l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_HIDE_CONTINUE_SECTION),
       ui::ImageModel::FromVectorIcon(kLockScreenPasswordInvisibleIcon,
                                      ui::kColorAshSystemUIMenuIcon));
   return context_menu_model_.get();

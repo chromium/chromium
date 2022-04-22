@@ -9,6 +9,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -430,9 +431,9 @@ void AppServiceContextMenu::OnGetMenuModel(
 
   if (item_context_ == ash::AppListItemContext::kRecentApps) {
     menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
-    // TODO(crbug.com/1317428): Localized string.
     menu_model->AddItemWithIcon(
-        ash::HIDE_CONTINUE_SECTION, u"Hide Continue Section",
+        ash::HIDE_CONTINUE_SECTION,
+        l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_HIDE_CONTINUE_SECTION),
         ui::ImageModel::FromVectorIcon(
             GetMenuItemVectorIcon(ash::HIDE_CONTINUE_SECTION, /*string_id=*/-1),
             color_id));
