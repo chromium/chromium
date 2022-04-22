@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "remoting/protocol/client_video_stats_dispatcher.h"
 #include "remoting/protocol/video_stats_stub.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
