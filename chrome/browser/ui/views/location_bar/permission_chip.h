@@ -140,6 +140,8 @@ class PermissionChip : public views::AccessiblePaneView,
   bool should_start_open_ = false;
   bool should_expand_ = true;
   bool should_dismiss_ = false;
+
+  base::WeakPtrFactory<PermissionChip> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_CHIP_H_
