@@ -6,10 +6,12 @@ package org.chromium.weblayer_private.autofill_assistant;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.RemoteException;
 
 import androidx.annotation.DimenRes;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.autofill_assistant.AssistantAccessTokenUtil;
@@ -27,7 +29,9 @@ import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.AccessibilityUtil;
+import org.chromium.weblayer_private.ProfileImpl;
 import org.chromium.weblayer_private.WebLayerAccessibilityUtil;
+import org.chromium.weblayer_private.interfaces.IUserIdentityCallbackClient;
 
 /**
  * Provides default implementations of {@link AssistantStaticDependencies} for WebLayer.
@@ -103,6 +107,15 @@ public class WebLayerAssistantStaticDependencies implements AssistantStaticDepen
     public LargeIconBridge createIconBridge() {
         // TODO(b/222671580): Implement
         return null;
+    }
+
+    @Nullable
+    @CalledByNative
+    private String getEmailOrNull(ProfileImpl profile) throws RemoteException {
+        IUserIdentityCallbackClient userIdentityCallback = profile.getUserIdentityCallbackClient();
+        if (userIdentityCallback == null) return null;
+
+        return userIdentityCallback.getEmail();
     }
 
     @Override

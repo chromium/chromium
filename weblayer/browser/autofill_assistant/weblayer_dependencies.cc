@@ -4,12 +4,17 @@
 
 #include "weblayer/browser/autofill_assistant/weblayer_dependencies.h"
 
+#include "base/android/jni_string.h"
 #include "weblayer/browser/autofill_assistant/weblayer_assistant_field_trial_util.h"
 #include "weblayer/browser/feature_list_creator.h"
 #include "weblayer/browser/java/jni/WebLayerAssistantStaticDependencies_jni.h"
+#include "weblayer/browser/profile_impl.h"
 
 using ::autofill_assistant::Dependencies;
+using ::base::android::AttachCurrentThread;
+using ::base::android::ConvertJavaStringToUTF8;
 using ::base::android::JavaParamRef;
+using ::base::android::ScopedJavaLocalRef;
 
 namespace weblayer {
 
@@ -47,8 +52,13 @@ WebLayerDependencies::GetPasswordManagerClient(
 
 std::string WebLayerDependencies::GetSignedInEmail(
     content::WebContents* web_contents) const {
-  return "";
-  // TODO(b/222671580): Implement
+  ProfileImpl* profile =
+      ProfileImpl::FromBrowserContext(web_contents->GetBrowserContext());
+  const ScopedJavaLocalRef<jstring> email =
+      Java_WebLayerAssistantStaticDependencies_getEmailOrNull(
+          AttachCurrentThread(), jstatic_dependencies_,
+          profile->GetJavaProfile());
+  return email.is_null() ? "" : ConvertJavaStringToUTF8(email);
 }
 
 variations::VariationsService* WebLayerDependencies::GetVariationsService()

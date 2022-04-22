@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
  * Used to provide details about the current user's identity.
  *
  * If this callback is implemented and set on {@link Profile}, the information is used to better
- * organize contact details in the navigator.contacts UI.
+ * organize contact details in the navigator.contacts UI as well as by Autofill Assistant.
  */
 public abstract class UserIdentityCallback {
     /**
