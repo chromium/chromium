@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -14,10 +15,12 @@ import android.view.Display;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.MathUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -156,5 +159,21 @@ public class TabUtils {
         return WebsitePreferenceBridge.getContentSetting(
                        profile, ContentSettingsType.REQUEST_DESKTOP_SITE, url, url)
                 == ContentSettingValues.ALLOW;
+    }
+
+    /**
+     * Return aspect ratio for grid tab card based on form factor and orientation.
+     * @param context - Context of the application.
+     * @return Aspect ratio for the grid tab card.
+     */
+    public static float getTabThumbnailAspectRatio(Context context) {
+        if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(context)
+                && context.getResources().getConfiguration().orientation
+                        == Configuration.ORIENTATION_LANDSCAPE) {
+            return (context.getResources().getConfiguration().screenWidthDp * 1.f)
+                    / (context.getResources().getConfiguration().screenHeightDp * 1.f);
+        }
+        float value = (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue();
+        return MathUtils.clamp(value, 0.5f, 2.0f);
     }
 }

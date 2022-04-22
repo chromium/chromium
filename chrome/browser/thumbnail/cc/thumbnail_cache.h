@@ -61,7 +61,10 @@ class ThumbnailCache : ThumbnailDelegate {
   void AddThumbnailCacheObserver(ThumbnailCacheObserver* observer);
   void RemoveThumbnailCacheObserver(ThumbnailCacheObserver* observer);
 
-  void Put(TabId tab_id, const SkBitmap& bitmap, float thumbnail_scale);
+  void Put(TabId tab_id,
+           const SkBitmap& bitmap,
+           float thumbnail_scale,
+           double jpeg_aspect_ratio);
   void Remove(TabId tab_id);
   Thumbnail* Get(TabId tab_id, bool force_disk_read, bool allow_approximation);
 
@@ -70,6 +73,7 @@ class ThumbnailCache : ThumbnailDelegate {
   void UpdateVisibleIds(const TabIdList& priority, TabId primary_tab_id);
   void DecompressThumbnailFromFile(
       TabId tab_id,
+      double jpeg_aspect_ratio,
       base::OnceCallback<void(bool, const SkBitmap&)> post_decompress_callback);
 
   // Called when resident textures were evicted, which requires paging
@@ -107,17 +111,21 @@ class ThumbnailCache : ThumbnailDelegate {
                                  const gfx::Size& content_size);
   void WriteJpegThumbnailIfNecessary(TabId tab_id,
                                      std::vector<uint8_t> compressed_data);
-  void SaveAsJpeg(TabId tab_id, const SkBitmap& bitmap);
+  void SaveAsJpeg(TabId tab_id,
+                  const SkBitmap& bitmap,
+                  double jpeg_aspect_ratio);
   void ForkToSaveAsJpeg(
       base::OnceCallback<void(bool, const SkBitmap&)> callback,
       int tab_id,
+      double jpeg_aspect_ratio,
       bool result,
       const SkBitmap& bitmap);
 
   void CompressThumbnailIfNecessary(TabId tab_id,
                                     const base::Time& time_stamp,
                                     const SkBitmap& bitmap,
-                                    float scale);
+                                    float scale,
+                                    double jpeg_aspect_ratio);
   void ReadNextThumbnail();
   void MakeSpaceForNewItemIfNecessary(TabId tab_id);
   void RemoveFromReadQueue(TabId tab_id);
@@ -167,8 +175,6 @@ class ThumbnailCache : ThumbnailDelegate {
       base::MemoryPressureListener::MemoryPressureLevel level);
 
   const scoped_refptr<base::SequencedTaskRunner> file_sequenced_task_runner_;
-
-  const double jpeg_aspect_ratio_;
 
   const size_t compression_queue_max_size_;
   const size_t write_queue_max_size_;
