@@ -483,9 +483,23 @@ Response EmulationHandler::SetUserAgentOverride(
 
   if (!ValidateClientHintString(ua_metadata->GetModel()))
     return Response::InvalidParams("Invalid model string");
-  new_ua_metadata.model = ua_metadata->GetModel();
 
+  new_ua_metadata.model = ua_metadata->GetModel();
   new_ua_metadata.mobile = ua_metadata->GetMobile();
+
+  if (ua_metadata->HasBitness()) {
+    String bitness = ua_metadata->GetBitness("");
+    if (!ValidateClientHintString(bitness))
+      return Response::InvalidParams("Invalid bitness string");
+    new_ua_metadata.bitness = std::move(bitness);
+  } else {
+    new_ua_metadata.bitness = std::move(default_ua_metadata.bitness);
+  }
+  if (ua_metadata->HasWow64()) {
+    new_ua_metadata.wow64 = ua_metadata->GetWow64(false);
+  } else {
+    new_ua_metadata.wow64 = default_ua_metadata.wow64;
+  }
 
   // All checks OK, can update user_agent_metadata_.
   user_agent_metadata_.emplace(std::move(new_ua_metadata));

@@ -675,6 +675,18 @@ Response InspectorEmulationAgent::setUserAgentOverride(
         ua_metadata->getArchitecture().Ascii();
     ua_metadata_override_->model = ua_metadata->getModel().Ascii();
     ua_metadata_override_->mobile = ua_metadata->getMobile();
+
+    if (ua_metadata->hasBitness()) {
+      ua_metadata_override_->bitness = ua_metadata->getBitness("").Ascii();
+    } else {
+      ua_metadata_override_->bitness = std::move(default_ua_metadata.bitness);
+    }
+    if (ua_metadata->hasWow64()) {
+      ua_metadata_override_->wow64 = ua_metadata->getWow64(false);
+    } else {
+      ua_metadata_override_->wow64 = default_ua_metadata.wow64;
+    }
+
   } else {
     ua_metadata_override_ = absl::nullopt;
   }
