@@ -134,7 +134,6 @@ class CONTENT_EXPORT RenderViewHostImpl
   RenderProcessHost* GetProcess() const override;
   int GetRoutingID() const override;
   void EnablePreferredSizeMode() override;
-  bool IsRenderViewLiveForTesting() const override;
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) const override;
 
   void SendWebPreferencesToRenderer();

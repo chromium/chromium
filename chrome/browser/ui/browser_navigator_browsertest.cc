@@ -1800,56 +1800,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   EXPECT_EQ(base::UTF8ToUTF16(expected_url), omnibox_view->GetText());
 }
 
-// Test that there's no crash when a navigation to a WebUI page reuses an
-// inactive RenderViewHost. Previously, this led to a browser process crash in
-// WebUI pages that use MojoWebUIController, which tried to use the
-// RenderViewHost's GetMainFrame() when it was invalid in RenderViewCreated().
-// See https://crbug.com/627027.
-// Flaky on Mac. See https://crbug.com/1044335.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ReuseRVHWithWebUI DISABLED_ReuseRVHWithWebUI
-#else
-#define MAYBE_ReuseRVHWithWebUI ReuseRVHWithWebUI
-#endif
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_ReuseRVHWithWebUI) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // Visit a WebUI page with bindings.
-  GURL webui_url(chrome::kChromeUIOmniboxURL);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), webui_url));
-
-  // window.open a new tab.  This will keep the chrome://omnibox process alive
-  // once we navigate away from it.
-  content::TestNavigationObserver nav_observer(webui_url);
-  nav_observer.StartWatchingNewWebContents();
-  ASSERT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      content::JsReplace("window.open($1);", webui_url)));
-  nav_observer.Wait();
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
-  WebContents* new_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
-  content::RenderFrameHost* webui_rfh = new_contents->GetMainFrame();
-  EXPECT_EQ(webui_rfh->GetLastCommittedURL(), webui_url);
-  EXPECT_TRUE(content::BINDINGS_POLICY_MOJO_WEB_UI &
-              webui_rfh->GetEnabledBindings());
-  content::RenderViewHost* webui_rvh = webui_rfh->GetRenderViewHost();
-
-  // Navigate to another page in the opened tab.
-  GURL nonwebui_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), nonwebui_url));
-  EXPECT_NE(webui_rvh, new_contents->GetMainFrame()->GetRenderViewHost());
-
-  // Go back in the opened tab.  This should finish without crashing and should
-  // reuse the old RenderViewHost.
-  content::TestNavigationObserver back_load_observer(new_contents);
-  new_contents->GetController().GoBack();
-  back_load_observer.Wait();
-  EXPECT_EQ(webui_rvh, new_contents->GetMainFrame()->GetRenderViewHost());
-  EXPECT_TRUE(webui_rvh->IsRenderViewLiveForTesting());
-  EXPECT_TRUE(content::BINDINGS_POLICY_MOJO_WEB_UI &
-              new_contents->GetMainFrame()->GetEnabledBindings());
-}
-
 // Test that main frame navigations generate a NavigationUIData with the
 // correct disposition.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MainFrameNavigationUIData) {

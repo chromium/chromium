@@ -72,9 +72,6 @@ class CONTENT_EXPORT RenderViewHost {
   // Instructs the RenderView to send back updates to the preferred size.
   virtual void EnablePreferredSizeMode() = 0;
 
-  // Returns true if the RenderView is active and has not crashed.
-  virtual bool IsRenderViewLiveForTesting() const = 0;
-
   using TraceProto = perfetto::protos::pbzero::RenderViewHost;
   // Write a representation of this object into a trace.
   virtual void WriteIntoTrace(

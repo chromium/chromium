@@ -657,10 +657,6 @@ bool RenderViewHostImpl::IsRenderViewLive() const {
   return GetProcess()->IsInitializedAndNotDead() && renderer_view_created_;
 }
 
-bool RenderViewHostImpl::IsRenderViewLiveForTesting() const {
-  return IsRenderViewLive();
-}
-
 void RenderViewHostImpl::SetBackgroundOpaque(bool opaque) {
   GetWidget()->GetAssociatedFrameWidget()->SetBackgroundOpaque(opaque);
 }

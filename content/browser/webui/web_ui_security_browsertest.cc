@@ -892,6 +892,56 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
                                chrome_url.spec().c_str()));
 }
 
+// Test that there's no crash when a navigation to a WebUI page reuses an
+// inactive RenderViewHost. Previously, this led to a browser process crash in
+// WebUI pages that use MojoWebUIController, which tried to use the
+// RenderViewHost's GetMainFrame() when it was invalid in RenderViewCreated().
+// See https://crbug.com/627027.
+// Flaky on Mac. See https://crbug.com/1044335.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ReuseRVHWithWebUI DISABLED_ReuseRVHWithWebUI
+#else
+#define MAYBE_ReuseRVHWithWebUI ReuseRVHWithWebUI
+#endif
+IN_PROC_BROWSER_TEST_F(WebUISecurityTest, MAYBE_ReuseRVHWithWebUI) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Visit a WebUI page with bindings.
+  const GURL webui_url(
+      GetWebUIURL("web-ui/title1.html?bindings=" +
+                  base::NumberToString(BINDINGS_POLICY_MOJO_WEB_UI)));
+  ASSERT_TRUE(NavigateToURL(shell(), webui_url));
+
+  // window.open a new tab.  This will keep the WebUI page's process alive
+  // once we navigate away from it.
+  ShellAddedObserver new_shell_observer;
+  ASSERT_TRUE(ExecuteScript(shell()->web_contents(),
+                            JsReplace("window.open($1);", webui_url)));
+  Shell* new_shell = new_shell_observer.GetShell();
+  WebContents* new_contents = new_shell->web_contents();
+  EXPECT_TRUE(WaitForLoadStop(new_contents));
+  RenderFrameHost* webui_rfh = new_contents->GetMainFrame();
+  EXPECT_EQ(webui_rfh->GetLastCommittedURL(), webui_url);
+  EXPECT_TRUE(BINDINGS_POLICY_MOJO_WEB_UI & webui_rfh->GetEnabledBindings());
+  RenderViewHostImpl* webui_rvh =
+      static_cast<RenderViewHostImpl*>(webui_rfh->GetRenderViewHost());
+
+  // Navigate to another page in the opened tab.
+  const GURL nonwebui_url(embedded_test_server()->GetURL("/title2.html"));
+  ASSERT_TRUE(NavigateToURL(new_shell, nonwebui_url));
+  EXPECT_NE(webui_rvh, new_contents->GetMainFrame()->GetRenderViewHost());
+
+  // Go back in the opened tab.  This should finish without crashing and should
+  // reuse the old RenderViewHost.
+  TestNavigationObserver back_load_observer(new_contents);
+  new_contents->GetController().GoBack();
+  back_load_observer.Wait();
+  EXPECT_EQ(webui_rvh, new_contents->GetMainFrame()->GetRenderViewHost());
+  EXPECT_TRUE(webui_rvh->IsRenderViewLive());
+  EXPECT_TRUE(BINDINGS_POLICY_MOJO_WEB_UI &
+              new_contents->GetMainFrame()->GetEnabledBindings());
+}
+
 class WebUIBrowserSideSecurityTest : public WebUISecurityTest {
  public:
   WebUIBrowserSideSecurityTest() = default;
