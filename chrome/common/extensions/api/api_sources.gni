@@ -140,11 +140,12 @@ uncompiled_sources_ = [
   "top_sites.json",
 ]
 
+if (is_chromeos) {
+  uncompiled_sources_ += [ "chromeos_info_private.json" ]
+}
+
 if (is_chromeos_ash) {
-  uncompiled_sources_ += [
-    "chromeos_info_private.json",
-    "media_player_private.json",
-  ]
+  uncompiled_sources_ += [ "media_player_private.json" ]
 }
 
 chrome_extensions_api_schema_sources = get_path_info(schema_sources_, "abspath")

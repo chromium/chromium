@@ -33,6 +33,7 @@
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/echo_private.mojom.h"
+#include "chromeos/crosapi/mojom/extension_info_private.mojom.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "chromeos/crosapi/mojom/field_trial.mojom.h"
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
@@ -264,6 +265,10 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::EchoPrivate,
                   &crosapi::mojom::Crosapi::BindEchoPrivate,
                   Crosapi::MethodMinVersions::kBindEchoPrivateMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::ExtensionInfoPrivate,
+      &crosapi::mojom::Crosapi::BindExtensionInfoPrivate,
+      Crosapi::MethodMinVersions::kBindExtensionInfoPrivateMinVersion>();
   ConstructRemote<crosapi::mojom::Feedback,
                   &crosapi::mojom::Crosapi::BindFeedback,
                   Crosapi::MethodMinVersions::kBindFeedbackMinVersion>();
