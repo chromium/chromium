@@ -353,7 +353,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
                 }
             });
         } catch (ExecutionException e) {
-            Assert.fail("Failed to create new tab");
+            throw new AssertionError("Failed to create new tab", e);
         }
         ChromeTabUtils.waitForTabPageLoaded(tab, url);
         ChromeTabUtils.waitForInteractable(tab);

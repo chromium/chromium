@@ -57,7 +57,6 @@ android_library("weblayer_java_tests") {
     "//content/public/test/android:content_java_test_support",
     "//net/android:net_java_test_support",
     "//third_party/android_deps:espresso_java",
-    "//third_party/android_sdk:android_support_chromium_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_activity_activity_java",

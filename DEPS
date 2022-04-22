@@ -971,10 +971,6 @@ deps = {
               'version': Var('android_sdk_emulator_version'),
           },
           {
-              'package': 'chromium/third_party/android_sdk/public/extras',
-              'version': Var('android_sdk_extras_version'),
-          },
-          {
               'package': 'chromium/third_party/android_sdk/public/patcher',
               'version': Var('android_sdk_patcher_version'),
           },

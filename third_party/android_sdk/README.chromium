@@ -16,10 +16,6 @@ Description:
 The Android SDK provide API libraries and developer tools necessary to
 build, test and debug for Android.
 
-Local Modifications:
-- public/
-  - Added extras/chromium/.
-
 Update Instructions:
 * What to update:
   * public/cmdline-tools/latest/bin/sdkmanager --list

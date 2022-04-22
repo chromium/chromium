@@ -58,9 +58,4 @@ if (enable_java_templates) {
     library_name = "runner"
     jar_name = "android.test.runner.jar"
   }
-
-  android_library("android_support_chromium_java") {
-    testonly = true
-    sources = [ "//third_party/android_sdk/public/extras/chromium/support/src/org/chromium/android/support/PackageManagerWrapper.java" ]
-  }
 }

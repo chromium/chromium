@@ -125,8 +125,11 @@ public class CustomTabFromChromeExternalNavigationTest {
         }, "Navigation delegate never initialized.");
 
         CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    navigationDelegate.get().getLastOverrideUrlLoadingResultTypeForTests(),
+            Criteria.checkThat(navigationDelegate.get().getLastOverrideUrlLoadingResultForTests(),
+                    Matchers.notNullValue());
+            Criteria.checkThat(navigationDelegate.get()
+                                       .getLastOverrideUrlLoadingResultForTests()
+                                       .getResultType(),
                     Matchers.is(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT));
         });
 

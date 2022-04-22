@@ -35,8 +35,7 @@ import org.chromium.url.Origin;
 public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate {
     private final AuthenticatorNavigationInterceptor mAuthenticatorHelper;
     private InterceptNavigationDelegateClient mClient;
-    private @OverrideUrlLoadingResultType int mLastOverrideUrlLoadingResultType =
-            OverrideUrlLoadingResultType.NO_OVERRIDE;
+    private OverrideUrlLoadingResult mLastOverrideUrlLoadingResultForTesting;
     private WebContents mWebContents;
     private ExternalNavigationHandler mExternalNavHandler;
 
@@ -91,15 +90,20 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                                                   .setInitiatorOrigin(initiatorOrigin)
                                                   .setIsMainFrame(true)
                                                   .build();
-        mLastOverrideUrlLoadingResultType =
-                mExternalNavHandler.shouldOverrideUrlLoading(params).getResultType();
-        return mLastOverrideUrlLoadingResultType
+        OverrideUrlLoadingResult result = mExternalNavHandler.shouldOverrideUrlLoading(params);
+        mLastOverrideUrlLoadingResultForTesting = result;
+        return result.getResultType()
                 != ExternalNavigationHandler.OverrideUrlLoadingResultType.NO_OVERRIDE;
     }
 
     @VisibleForTesting
-    public @OverrideUrlLoadingResultType int getLastOverrideUrlLoadingResultTypeForTests() {
-        return mLastOverrideUrlLoadingResultType;
+    public void clearLastOverrideUrlLoadingResultForTests() {
+        mLastOverrideUrlLoadingResultForTesting = null;
+    }
+
+    @VisibleForTesting
+    public OverrideUrlLoadingResult getLastOverrideUrlLoadingResultForTests() {
+        return mLastOverrideUrlLoadingResultForTesting;
     }
 
     @Override
@@ -142,7 +146,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 navigationHandle, redirectHandler, shouldCloseTab, escapedUrl)
                                                   .build();
         OverrideUrlLoadingResult result = mExternalNavHandler.shouldOverrideUrlLoading(params);
-        mLastOverrideUrlLoadingResultType = result.getResultType();
+        mLastOverrideUrlLoadingResultForTesting = result;
 
         mClient.onDecisionReachedForNavigation(navigationHandle, result);
 
@@ -151,7 +155,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.TabNavigationInterceptResult.For" + protocolType, result.getResultType(),
                 OverrideUrlLoadingResultType.NUM_ENTRIES);
-        switch (mLastOverrideUrlLoadingResultType) {
+        switch (result.getResultType()) {
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
                 assert mExternalNavHandler.canExternalAppHandleUrl(url);
                 if (navigationHandle.isInPrimaryMainFrame()) {
