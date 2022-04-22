@@ -277,10 +277,9 @@ message AutoUpdateSettingsProto {
 
   // Enumerates network connection types.
   enum ConnectionType {
-    reserved 2;
-
     CONNECTION_TYPE_ETHERNET = 0;
     CONNECTION_TYPE_WIFI = 1;
+    CONNECTION_TYPE_WIMAX = 2;
     CONNECTION_TYPE_BLUETOOTH = 3;
     CONNECTION_TYPE_CELLULAR = 4;
   }
