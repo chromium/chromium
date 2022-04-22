@@ -223,6 +223,13 @@
      },
      "linebox": {
       "crashtests": {
+       "dir-change-simplifed-crash.html": [
+        "4e05bc8cb9d7b671605a7bda5154b455ff3c6519",
+        [
+         null,
+         {}
+        ]
+       ],
        "inline-block-baseline-crash.html": [
         "8c88583c55bb4c07f571355edbff57f024c51c6a",
         [
@@ -720,6 +727,13 @@
        ],
        "columns-in-table-001-crash.html": [
         "fe421500dade86b6fedbbf6289a668dcc5174f45",
+        [
+         null,
+         {}
+        ]
+       ],
+       "columns-in-table-002-crash.html": [
+        "8062c91d5c80dd1f7325b0e3761934e3b39d4391",
         [
          null,
          {}
@@ -295345,7 +295359,7 @@
       []
      ],
      "from-local-system.md": [
-      "1cc1e75eea396797e1818593a4ff9ff4dd9e96ba",
+      "77f4799fb247d39fd291222d1164bc7548ccbcb2",
       []
      ],
      "from-web.md": [
@@ -295358,6 +295372,10 @@
      ],
      "safari.md": [
       "eed52254718922b000abd30273a50d56ce84d35a",
+      []
+     ],
+     "testing-polyfills.md": [
+      "468bfa2e0332e773c07b09a395a83faba5392496",
       []
      ],
      "webkitgtk_minibrowser.md": [
