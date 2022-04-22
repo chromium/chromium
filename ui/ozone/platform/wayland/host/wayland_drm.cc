@@ -122,6 +122,11 @@ void WaylandDrm::Authenticate(const char* drm_device_path) {
     return;
   }
 
+  if (drmGetNodeTypeFromFd(drm_fd.get()) != DRM_NODE_PRIMARY) {
+    DrmDeviceAuthenticated(wl_drm_.get());
+    return;
+  }
+
   drm_magic_t magic;
   memset(&magic, 0, sizeof(magic));
   if (drmGetMagic(drm_fd.get(), &magic)) {
