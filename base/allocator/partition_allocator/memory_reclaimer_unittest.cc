@@ -10,8 +10,8 @@
 #include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
-#include "base/logging.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,7 +29,7 @@ namespace partition_alloc {
 namespace {
 
 void HandleOOM(size_t unused_size) {
-  LOG(FATAL) << "Out of memory";
+  PA_LOG(FATAL) << "Out of memory";
 }
 
 }  // namespace

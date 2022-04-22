@@ -79,7 +79,10 @@ target(partition_alloc_target_type, "partition_alloc") {
     "partition_alloc_base/cpu.h",
     "partition_alloc_base/debug/alias.cc",
     "partition_alloc_base/debug/alias.h",
+    "partition_alloc_base/logging.cc",
+    "partition_alloc_base/logging.h",
     "partition_alloc_base/migration_adapter.h",
+    "partition_alloc_base/scoped_clear_last_error.h",
     "partition_alloc_base/sys_byteorder.h",
     "partition_alloc_check.h",
     "partition_alloc_config.h",
@@ -145,15 +148,22 @@ target(partition_alloc_target_type, "partition_alloc") {
   if (is_win) {
     sources += [
       "page_allocator_internals_win.h",
+      "partition_alloc_base/scoped_clear_last_error_win.cc",
       "partition_tls_win.cc",
     ]
   } else if (is_posix) {
     sources += [
       "page_allocator_internals_posix.cc",
       "page_allocator_internals_posix.h",
+      "partition_alloc_base/posix/safe_strerror.cc",
+      "partition_alloc_base/posix/safe_strerror.h",
     ]
   } else if (is_fuchsia) {
-    sources += [ "page_allocator_internals_fuchsia.h" ]
+    sources += [
+      "page_allocator_internals_fuchsia.h",
+      "partition_alloc_base/posix/safe_strerror.cc",
+      "partition_alloc_base/posix/safe_strerror.h",
+    ]
   }
   if (current_cpu == "x64") {
     defines += [ "PA_PCSCAN_STACK_SUPPORTED" ]

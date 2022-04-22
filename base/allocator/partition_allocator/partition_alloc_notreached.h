@@ -16,9 +16,9 @@
 // So PA_NOTREACHED() uses PA_DCHECK() instead of DCHECK().
 
 #if BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
-#define PA_NOTREACHED()                                                      \
-  true ? logging::RawError(__FILE__                                          \
-                           "(" PA_STRINGIFY(__LINE__) ") NOTREACHED() hit.") \
+#define PA_NOTREACHED()                                                        \
+  true ? ::logging::RawError(__FILE__                                          \
+                             "(" PA_STRINGIFY(__LINE__) ") NOTREACHED() hit.") \
        : EAT_CHECK_STREAM_PARAMS()
 
 #elif BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OFFICIAL_BUILD) && \
@@ -37,10 +37,10 @@
 //     case Y:
 //     ...
 // So define PA_NOTREACHED() by using async-signal-safe RawCheck().
-#define PA_NOTREACHED()                                                 \
-  UNLIKELY(true)                                                        \
-  ? logging::RawCheck(__FILE__                                          \
-                      "(" PA_STRINGIFY(__LINE__) ") NOTREACHED() hit.") \
+#define PA_NOTREACHED()                                                   \
+  UNLIKELY(true)                                                          \
+  ? ::logging::RawCheck(__FILE__                                          \
+                        "(" PA_STRINGIFY(__LINE__) ") NOTREACHED() hit.") \
   : EAT_CHECK_STREAM_PARAMS()
 
 #else
