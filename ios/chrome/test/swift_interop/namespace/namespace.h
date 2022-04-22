@@ -40,4 +40,16 @@ class NestedGoat {
 
 }  // namespace outer
 
+// Swift interop will compile -- yet crash the test -- if there is a
+// enum class with the same name both in and out of a namespace and the
+// namespaced enum is referenced by XCTest methods.
+
+enum class SameNameEnum { watermelon, apple, orange };
+
+namespace sameName {
+
+enum class SameNameEnum { watermelon, apple, orange };
+
+}  // namespace sameName
+
 #endif  // IOS_CHROME_TEST_SWIFT_INTEROP_NAMESPACE_NAMESPACE_H_
