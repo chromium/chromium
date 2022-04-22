@@ -186,11 +186,6 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   // Virtual for testing.
   virtual NetworkChangeNotifier::NetworkHandle GetTargetNetwork() const;
 
-  // Helper method to know whether this ResolveContext must be registered to
-  // receive cache and per-session data invalidations (i.e., receive
-  // InvalidateCachesAndPerSessionData type of calls) to function properly.
-  bool MustRegisterForInvalidations() const;
-
   base::SafeRef<ResolveContext> AsSafeRef() {
     return weak_ptr_factory_.GetSafeRef();
   }

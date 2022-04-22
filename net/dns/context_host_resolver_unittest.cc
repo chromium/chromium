@@ -48,6 +48,11 @@
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#include "net/android/network_change_notifier_factory_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace net {
 
 namespace {
@@ -916,25 +921,44 @@ TEST_F(ContextHostResolverTest, NotExistingNetworkBoundLookup) {
 }
 
 // Test that the underlying HostCache does not receive invalidations when its
-// ResolveContext is bound to a network.
-TEST_F(ContextHostResolverTest, BoundResolveContextHostCacheInvalidation) {
+// ResolveContext/HostResolverManager is bound to a network.
+TEST_F(ContextHostResolverTest, NetworkBoundResolverCacheInvalidation) {
+#if BUILDFLAG(IS_ANDROID)
+  auto scoped_mock_network_change_notifier =
+      std::make_unique<test::ScopedMockNetworkChangeNotifier>();
+  test::MockNetworkChangeNotifier* mock_ncn =
+      scoped_mock_network_change_notifier->mock_network_change_notifier();
+  mock_ncn->ForceNetworkHandlesSupported();
+
+  // The actual network handle doesn't really matter, this test just wants to
+  // check that all the pieces are in place and configured correctly.
+  constexpr NetworkChangeNotifier::NetworkHandle network = 2;
+  manager_ = HostResolverManager::CreateNetworkBoundHostResolverManager(
+      HostResolver::ManagerOptions(), network, nullptr /* net_log */);
+  manager_->SetLastIPv6ProbeResultForTesting(true);
   // Set empty MockDnsClient rules to ensure DnsClient is mocked out.
   MockDnsClientRuleList rules;
   SetMockDnsRules(std::move(rules));
 
-  auto context = CreateTestURLRequestContextBuilder()->Build();
   auto resolve_context = std::make_unique<NetworkBoundResolveContext>(
-      context.get(), true /* enable_caching */,
-      2 /* != kInvalidNetworkHandle */);
+      nullptr /* url_request_context */, true /* enable_caching */, network);
   ResolveContext* resolve_context_ptr = resolve_context.get();
   auto resolver = std::make_unique<ContextHostResolver>(
       manager_.get(), std::move(resolve_context));
 
-  // There should be no invalidations before and after the call to
-  // InvalidateCachesForTesting.
-  ASSERT_EQ(resolve_context_ptr->host_cache()->network_changes(), 0);
-  manager_->InvalidateCachesForTesting();
-  EXPECT_EQ(resolve_context_ptr->host_cache()->network_changes(), 0);
+  // Network events should not trigger cache invalidations
+  auto network_changes_before_events =
+      resolve_context_ptr->host_cache()->network_changes();
+  NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
+  NetworkChangeNotifier::NotifyObserversOfConnectionTypeChangeForTests(
+      NetworkChangeNotifier::CONNECTION_NONE);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(network_changes_before_events,
+            resolve_context_ptr->host_cache()->network_changes());
+#else   // !BUILDFLAG(IS_ANDROID)
+  GTEST_SKIP()
+      << "Network-bound HostResolverManagers are supported only on Android";
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace net

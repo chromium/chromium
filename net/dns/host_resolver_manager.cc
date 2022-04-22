@@ -3226,12 +3226,9 @@ HostResolverManager::CreateRequest(
   DCHECK(!invalidation_in_progress_);
 
   DCHECK_EQ(resolve_context->GetTargetNetwork(), target_network_);
-
-  // If required, ResolveContexts must register (via RegisterResolveContext())
-  // before use to ensure cached data is invalidated on network and
-  // configuration changes.
-  DCHECK(!resolve_context->MustRegisterForInvalidations() ||
-         registered_contexts_.HasObserver(resolve_context));
+  // ResolveContexts must register (via RegisterResolveContext()) before use to
+  // ensure cached data is invalidated on network and configuration changes.
+  DCHECK(registered_contexts_.HasObserver(resolve_context));
 
   return std::make_unique<RequestImpl>(
       std::move(net_log), std::move(host), std::move(network_isolation_key),
@@ -3330,14 +3327,6 @@ void HostResolverManager::SetDnsConfigOverrides(DnsConfigOverrides overrides) {
 }
 
 void HostResolverManager::RegisterResolveContext(ResolveContext* context) {
-  // MustRegisterForInvalidations() == false for ResolveContext which have been
-  // bound to a network. This is currently implemented only for Android, where
-  // we receive DNS config changes only after a network change.
-  // If network binding is implemented for another platform where this is not
-  // the case, this will need to be revised.
-  if (!context->MustRegisterForInvalidations())
-    return;
-
   registered_contexts_.AddObserver(context);
   context->InvalidateCachesAndPerSessionData(
       dns_client_ ? dns_client_->GetCurrentSession() : nullptr,
@@ -3346,25 +3335,10 @@ void HostResolverManager::RegisterResolveContext(ResolveContext* context) {
 
 void HostResolverManager::DeregisterResolveContext(
     const ResolveContext* context) {
-  if (context->MustRegisterForInvalidations())
-    registered_contexts_.RemoveObserver(context);
+  registered_contexts_.RemoveObserver(context);
 
   // Destroy Jobs when their context is closed.
   RemoveAllJobs(context);
-}
-
-void HostResolverManager::RemoveResolveContextRegistrationIfNeeded(
-    const ResolveContext* context) {
-  // Whether ResolveContext should register for notifications or not depends on
-  // ResolveContext::MustRegisterForNotifications. Ideally that would be an
-  // invariant for the entire lifetime of `context`, unfortunately it is not
-  // due to the current ResolveContexts creation procedure (their
-  // URLRequestContext is initially set to nullptr and only later it is
-  // updated).
-  if (!context->MustRegisterForInvalidations() &&
-      registered_contexts_.HasObserver(context)) {
-    registered_contexts_.RemoveObserver(context);
-  }
 }
 
 void HostResolverManager::SetTickClockForTesting(
