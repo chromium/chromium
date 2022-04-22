@@ -43,7 +43,7 @@ const char kDecodedMessageCatalogsFilename[] = "DECODED_MESSAGE_CATALOGS";
 const char kGeneratedBackgroundPageFilename[] =
     "_generated_background_page.html";
 
-const char kFaviconSourcePath[] = "_favicon/";
+const char kFaviconSourcePath[] = "_favicon";
 
 const char kModulesDir[] = "_modules";
 

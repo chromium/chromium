@@ -4,9 +4,11 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension_features.h"
+#include "net/dns/mock_host_resolver.h"
 
 namespace extensions {
 
@@ -17,20 +19,32 @@ class FaviconApiTest : public ExtensionApiTest {
         extensions_features::kNewExtensionFaviconHandling);
   }
 
+ protected:
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(StartEmbeddedTestServer());
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   ScopedCurrentChannel current_cnannel_{version_info::Channel::CANARY};
 };
 
+// Fetch favicon from an extension with the correct permission.
 IN_PROC_BROWSER_TEST_F(FaviconApiTest, Extension) {
-  ASSERT_TRUE(StartEmbeddedTestServer());
+  // Cache the favicon by loading a test page, then fetch the favicon.
+  GURL page_url = embedded_test_server()->GetURL(
+      "www.example.com", "/extensions/favicon/test_file.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+
   ASSERT_TRUE(
       RunExtensionTest("favicon/extension", {.extension_url = "test.html"}))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(FaviconApiTest, PermissionMissing) {
-  ASSERT_TRUE(StartEmbeddedTestServer());
+IN_PROC_BROWSER_TEST_F(FaviconApiTest, Permission) {
+  // Fetch favicon when an extension doesn't have the necessary permission.
   ASSERT_TRUE(RunExtensionTest("favicon/permission_missing",
                                {.extension_url = "test.html"}))
       << message_;

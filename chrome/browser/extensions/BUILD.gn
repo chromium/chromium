@@ -147,6 +147,8 @@ static_library("extensions") {
     "api/extension_action/extension_action_api.h",
     "api/extension_action/extension_page_actions_api_constants.cc",
     "api/extension_action/extension_page_actions_api_constants.h",
+    "api/favicon/favicon_util.cc",
+    "api/favicon/favicon_util.h",
     "api/feedback_private/chrome_feedback_private_delegate.cc",
     "api/feedback_private/chrome_feedback_private_delegate.h",
     "api/file_system/chrome_file_system_delegate.cc",

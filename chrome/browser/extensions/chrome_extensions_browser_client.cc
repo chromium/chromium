@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
+#include "chrome/browser/extensions/api/favicon/favicon_util.h"
 #include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
 #include "chrome/browser/extensions/chrome_component_extension_resource_manager.h"
 #include "chrome/browser/extensions/chrome_extension_host_delegate.h"
@@ -681,6 +683,17 @@ bool ChromeExtensionsBrowserClient::IsUsbDeviceAllowedByPolicy(
   // Check against WebUsbAllowDevicesForUrls.
   return usb_chooser_context->usb_policy_allowed_devices().IsDeviceAllowed(
       origin, {vendor_id, product_id});
+}
+
+void ChromeExtensionsBrowserClient::GetFavicon(
+    content::BrowserContext* browser_context,
+    const Extension* extension,
+    const GURL& url,
+    base::CancelableTaskTracker* tracker,
+    base::OnceCallback<void(scoped_refptr<base::RefCountedMemory> bitmap_data)>
+        callback) const {
+  favicon_util::GetFaviconForExtensionRequest(browser_context, extension, url,
+                                              tracker, std::move(callback));
 }
 
 }  // namespace extensions

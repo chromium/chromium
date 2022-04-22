@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted_memory.h"
 #include "components/update_client/update_client.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_error.h"
@@ -157,5 +158,13 @@ bool ExtensionsBrowserClient::IsUsbDeviceAllowedByPolicy(
     int product_id) const {
   return false;
 }
+
+void ExtensionsBrowserClient::GetFavicon(
+    content::BrowserContext* browser_context,
+    const Extension* extension,
+    const GURL& url,
+    base::CancelableTaskTracker* tracker,
+    base::OnceCallback<void(scoped_refptr<base::RefCountedMemory> bitmap_data)>
+        callback) const {}
 
 }  // namespace extensions

@@ -9,7 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_memory.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/bluetooth_chooser.h"
@@ -60,6 +62,10 @@ class UpdateClient;
 namespace url {
 class Origin;
 }  // namespace url
+
+namespace base {
+class CancelableTaskTracker;
+}  // namespace base
 
 namespace extensions {
 
@@ -412,6 +418,15 @@ class ExtensionsBrowserClient {
                                           const ExtensionId& extension_id,
                                           int vendor_id,
                                           int product_id) const;
+
+  // Populate callback with the asynchronously retrieved cached favicon image.
+  virtual void GetFavicon(
+      content::BrowserContext* browser_context,
+      const Extension* extension,
+      const GURL& url,
+      base::CancelableTaskTracker* tracker,
+      base::OnceCallback<void(
+          scoped_refptr<base::RefCountedMemory> bitmap_data)> callback) const;
 
  private:
   std::vector<std::unique_ptr<ExtensionsBrowserAPIProvider>> providers_;

@@ -180,6 +180,13 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
                                   const ExtensionId& extension_id,
                                   int vendor_id,
                                   int product_id) const override;
+  void GetFavicon(content::BrowserContext* browser_context,
+                  const Extension* extension,
+                  const GURL& url,
+                  base::CancelableTaskTracker* tracker,
+                  base::OnceCallback<
+                      void(scoped_refptr<base::RefCountedMemory> bitmap_data)>
+                      callback) const override;
 
  private:
   friend struct base::LazyInstanceTraitsBase<ChromeExtensionsBrowserClient>;

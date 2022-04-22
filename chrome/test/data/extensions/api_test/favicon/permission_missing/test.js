@@ -7,18 +7,12 @@ window.onload = function() {
     const config = await chrome.test.getConfig();
     const port = config.testServer.port;
     const id = chrome.runtime.id;
-    const pageUrl = `http://chromium.org:{port}/extensions/favicon/test.html`;
+    const pageUrl =
+        `http://www.example.com:${port}extensions/favicon/test_file.html`;
     const url = `chrome-extension://${id}/_favicon/?page_url=${pageUrl}`;
-    fetch(url)
-        .then(res => {
-          // TODO(solomonkinard): A 404 is expected when the favicon permission
-          // is missing.
-          chrome.test.assertEq(200, res.status);
-          return res.text();
-        })
-        .then(text => {
-          chrome.test.assertEq('', text);
-          chrome.test.succeed();
-        });
+    fetch(url).then(() => chrome.test.fail()).catch(error => {
+      chrome.test.assertEq('Failed to fetch', error.message);
+      chrome.test.succeed();
+    });
   }]);
 };
