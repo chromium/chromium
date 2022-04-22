@@ -171,6 +171,7 @@ source_set("observing_app_state_agent") {
   public_deps = [
     ":app_state_header",
     "//ios/chrome/browser/ui/main:scene_state_header",
+    "//ios/chrome/browser/ui/main:scene_state_observer",
   ]
 }
 

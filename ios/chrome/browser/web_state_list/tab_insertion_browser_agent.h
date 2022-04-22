@@ -37,7 +37,8 @@ class TabInsertionBrowserAgent
       bool opened_by_dom,
       int index,
       bool in_background,
-      bool inherit_opener);
+      bool inherit_opener,
+      bool should_show_start_surface);
 
   web::WebState* InsertWebStateOpenedByDOM(web::WebState* parent);
 

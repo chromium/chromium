@@ -36,13 +36,18 @@ source_set("observing_scene_agent") {
 source_set("scene_state_header") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "connection_information.h",
+    "scene_controller.h",
     "scene_state.h",
     "scene_state_browser_agent.h",
   ]
   public_deps = [
     ":scene_state_observer",
+    "//ios/chrome/app/application_delegate:tab_opening",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/scoped_ui_blocker",
+    "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/window_activities",
   ]
 }
@@ -82,8 +87,6 @@ source_set("incognito_blocker_scene_agent") {
 source_set("scene") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "connection_information.h",
-    "scene_controller.h",
     "scene_controller.mm",
     "scene_delegate.h",
     "scene_delegate.mm",
@@ -99,6 +102,7 @@ source_set("scene") {
     ":incognito_blocker_scene_agent",
     ":main",
     ":observing_scene_agent",
+    ":scene_state_header",
     ":scene_testing",
     "//base",
     "//base/ios",
@@ -167,6 +171,7 @@ source_set("scene") {
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/sync",
     "//ios/chrome/browser/ui/start_surface",
+    "//ios/chrome/browser/ui/start_surface:feature_flags",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid",
     "//ios/chrome/browser/ui/thumb_strip:feature_flags",
     "//ios/chrome/browser/ui/toolbar/public",

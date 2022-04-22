@@ -76,7 +76,7 @@ source_set("test_support") {
     "//ios/chrome/browser/ui/browser_view",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/main",
-    "//ios/chrome/browser/ui/main:scene",
+    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/main:scene_testing",
     "//ios/chrome/browser/ui/settings",
     "//ios/chrome/browser/ui/settings:settings_root",

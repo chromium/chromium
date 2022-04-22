@@ -102,6 +102,7 @@
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
 #import "ios/chrome/browser/ui/side_swipe/swipe_view.h"
+#import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
 #import "ios/chrome/browser/ui/tabs/background_tab_animation_view.h"
 #import "ios/chrome/browser/ui/tabs/foreground_tab_animation_view.h"
@@ -4043,8 +4044,14 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                       self /* id<SyncPresenter> */);
   }
 
+  BOOL inBackground = !activating;
+  if (IsStartSurfaceSplashStartupEnabled()) {
+    inBackground =
+        inBackground ||
+        NewTabPageTabHelper::FromWebState(webState)->ShouldShowStartSurface();
+  }
   [self initiateNewTabAnimationForWebState:webState
-                      willOpenInBackground:!activating];
+                      willOpenInBackground:inBackground];
 }
 
 #pragma mark - WebStateListObserver helpers (new tab animations)
@@ -4381,7 +4388,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       web_navigation_util::CreateWebLoadParams(
           landingURL, ui::PAGE_TRANSITION_TYPED, nullptr),
       nil, false, self.browser->GetWebStateList()->count(),
-      /*in_background=*/false, /*inherit_opener=*/false);
+      /*in_background=*/false, /*inherit_opener=*/false,
+      /*should_show_start_surface=*/false);
 }
 
 #pragma mark - PageInfoPresentation

@@ -33,6 +33,10 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   // Sets the delegate. The delegate is not owned by the tab helper.
   void SetDelegate(id<NewTabPageTabHelperDelegate> delegate);
 
+  // Setter/Getter for whether to show the Start Surface.
+  bool ShouldShowStartSurface() const;
+  void SetShowStartSurface(bool show_start_surface);
+
   // Returns true when the current web_state is an NTP and the underlying
   // controllers have been created.
   bool IsActive() const;
@@ -105,6 +109,10 @@ class NewTabPageTabHelper : public web::WebStateObserver,
 
   // |YES| if the current tab helper is active.
   BOOL active_ = NO;
+
+  // |YES| if the NTP for this WebState should be configured to show the Start
+  // Surface.
+  BOOL show_start_surface_ = false;
 
   // |YES| if the NTP's underlying ios/web page is still loading.
   BOOL ignore_load_requests_ = NO;

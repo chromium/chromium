@@ -9,6 +9,7 @@
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #include "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #include "ios/chrome/browser/ntp_snippets/ios_chrome_content_suggestions_service_factory.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -72,6 +73,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
       scene_state_ = OCMClassMock([SceneState class]);
       SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
     }
+    NewTabPageTabHelper::CreateForWebState(&web_state_);
     coordinator_ = [[NewTabPageCoordinator alloc]
         initWithBaseViewController:base_view_controller_
                            browser:browser_.get()];

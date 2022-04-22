@@ -70,6 +70,14 @@ void NewTabPageTabHelper::SetDelegate(
   }
 }
 
+bool NewTabPageTabHelper::ShouldShowStartSurface() const {
+  return show_start_surface_;
+}
+
+void NewTabPageTabHelper::SetShowStartSurface(bool show_start_surface) {
+  show_start_surface_ = show_start_surface;
+}
+
 bool NewTabPageTabHelper::IsActive() const {
   return active_;
 }

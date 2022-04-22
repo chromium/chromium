@@ -24,6 +24,7 @@
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #include "ios/chrome/browser/favicon/large_icon_cache.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #include "ios/chrome/browser/ntp_tiles/ios_most_visited_sites_factory.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
@@ -340,7 +341,6 @@
   DiscoverFeedServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState())
       ->SetIsShownOnStartSurface(false);
-  // Update DiscoverFeedService to NO
   if (ShouldShowReturnToMostRecentTabForStartSurface()) {
     [self.contentSuggestionsMediator hideRecentTabTile];
   }
@@ -510,8 +510,14 @@
 - (void)configureStartSurfaceIfNeeded {
   SceneState* scene =
       SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
-  if (!scene.modifytVisibleNTPForStartSurface)
+  if (IsStartSurfaceSplashStartupEnabled()) {
+    if (!NewTabPageTabHelper::FromWebState(self.webState)
+             ->ShouldShowStartSurface()) {
+      return;
+    }
+  } else if (!scene.modifytVisibleNTPForStartSurface) {
     return;
+  }
 
   // Update Mediator property to signal the NTP is currently showing Start.
   self.contentSuggestionsMediator.showingStartSurface = YES;
@@ -544,7 +550,12 @@
     base::RecordAction(
         base::UserMetricsAction("IOS.StartSurface.HideShortcuts"));
   }
-  scene.modifytVisibleNTPForStartSurface = NO;
+  if (IsStartSurfaceSplashStartupEnabled()) {
+    NewTabPageTabHelper::FromWebState(self.webState)
+        ->SetShowStartSurface(false);
+  } else {
+    scene.modifytVisibleNTPForStartSurface = NO;
+  }
 }
 
 // Triggers the URL sharing flow for the given |URL| and |title|, with the

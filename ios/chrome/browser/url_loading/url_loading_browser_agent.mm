@@ -397,7 +397,8 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTabImpl(const UrlLoadParams& params,
 
   web::WebState* web_state = insertion_agent->InsertWebState(
       params.web_params, parent_web_state, /*opened_by_dom=*/false,
-      insertion_index, params.in_background(), params.inherit_opener);
+      insertion_index, params.in_background(), params.inherit_opener,
+      /*should_show_start_surface=*/false);
   web_state->GetNavigationManager()->LoadIfNecessary();
   notifier_->NewTabDidLoadUrl(params.web_params.url, params.user_initiated);
 }
