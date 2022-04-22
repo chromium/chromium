@@ -32,6 +32,13 @@ std::string FilePathToString(const base::FilePath& file_path);
 // Returns the base file name to use for storing all prediction models.
 base::FilePath GetBaseFileNameForModels();
 
+// Returns the file path string and metadata for the model provided via
+// command-line for |optimization_target|, if applicable.
+absl::optional<
+    std::pair<std::string, absl::optional<optimization_guide::proto::Any>>>
+GetModelOverrideForOptimizationTarget(
+    optimization_guide::proto::OptimizationTarget optimization_target);
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_UTIL_H_

@@ -342,6 +342,7 @@ source_set("unit_tests") {
     "insertion_ordered_set_unittest.cc",
     "local_page_entities_metadata_provider_unittest.cc",
     "model_handler_unittest.cc",
+    "model_util_unittest.cc",
     "noisy_metrics_recorder_unittest.cc",
     "optimization_filter_unittest.cc",
     "optimization_guide_features_unittest.cc",

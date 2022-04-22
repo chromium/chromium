@@ -10,8 +10,8 @@
 namespace optimization_guide {
 
 #if BUILDFLAG(IS_WIN)
-const char kTestAbsoluteFilePath[] = "C:\\absolute/file/path";
-const char kTestRelativeFilePath[] = "relative/file/path";
+const char kTestAbsoluteFilePath[] = "C:\\absolute\\file\\path";
+const char kTestRelativeFilePath[] = "relative\\file\\path";
 #else
 const char kTestAbsoluteFilePath[] = "/absolutefilepath";
 const char kTestRelativeFilePath[] = "relativefilepath";

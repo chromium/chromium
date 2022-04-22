@@ -72,13 +72,6 @@ absl::optional<T> ParsedAnyMetadata(const proto::Any& any_metadata) {
 std::string GetStringForOptimizationGuideDecision(
     OptimizationGuideDecision decision);
 
-// Returns the file path string and metadata for the model provided via
-// command-line for |optimization_target|, if applicable.
-absl::optional<
-    std::pair<std::string, absl::optional<optimization_guide::proto::Any>>>
-GetModelOverrideForOptimizationTarget(
-    optimization_guide::proto::OptimizationTarget optimization_target);
-
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_UTIL_H_

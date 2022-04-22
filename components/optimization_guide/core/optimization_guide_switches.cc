@@ -188,19 +188,10 @@ bool ShouldValidateModel() {
 }
 
 absl::optional<std::string> GetModelOverride() {
-#if BUILDFLAG(IS_WIN)
-  // TODO(crbug/1227996): The parsing below is not supported on Windows because
-  // ':' is used as a delimiter, but this must be used in the absolute file path
-  // on Windows.
-  DLOG(ERROR)
-      << "--optimization-guide-model-override is not available on Windows";
-  return absl::nullopt;
-#else
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(kModelOverride))
     return absl::nullopt;
   return command_line->GetSwitchValueASCII(kModelOverride);
-#endif
 }
 
 bool StopHistoryVisitBatchAnnotateForTesting() {
