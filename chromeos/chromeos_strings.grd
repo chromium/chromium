@@ -2332,6 +2332,12 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE" desc="Text for search result item which, when clicked, navigates the user to personalization app.">
         Personalization
       </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE_ALT1" desc="Text for search result item which, when clicked, navigates the user to personalization app. Alternate phrase for: 'Personalization'">
+        Customization
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE_ALT2" desc="Text for search result item which, when clicked, navigates the user to personalization settings. Alternate phrase for: 'Personalization'">
+        Personal
+      </message>
 
       <!-- Traffic Counters UI -->
       <message name="IDS_TRAFFIC_COUNTERS_UNKNOWN" desc="Traffic counters related to an unknown source">

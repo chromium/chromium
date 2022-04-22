@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_PERSONALIZATION_APP_SEARCH_SEARCH_CONCEPT_H_
 #define ASH_WEBUI_PERSONALIZATION_APP_SEARCH_SEARCH_CONCEPT_H_
 
+#include <array>
 #include <string>
 
 namespace ash {
@@ -13,6 +14,10 @@ namespace personalization_app {
 struct SearchConcept {
   // The identifier for the string displayed to the user.
   int message_id;
+  // Alternate message ids that map to this concept. There is a maximum of 5
+  // alternate message ids, but there may be fewer. Stop reading alternate
+  // message ids upon encountering a default-initialized (ie 0) value.
+  std::array<int, 5> alternate_message_ids;
   // The relative url, including query parameters, to open in Personalization
   // App.
   std::string relative_url;

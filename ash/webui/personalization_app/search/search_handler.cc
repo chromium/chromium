@@ -13,6 +13,8 @@
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/personalization_app/search/search_concept.h"
 #include "ash/webui/personalization_app/search/search_tag_registry.h"
+#include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/components/local_search_service/shared_structs.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -101,10 +103,17 @@ void SearchHandler::OnLocalSearchDone(
       continue;
     }
 
+    int matching_content_id;
+    if (!base::StringToInt(local_result.positions.front().content_id,
+                           &matching_content_id)) {
+      NOTREACHED() << "All content ids are expected to be a valid integer: "
+                   << local_result.positions.front().content_id;
+      continue;
+    }
+
     search_results.push_back(
         mojom::SearchResult::New(/*text=*/
-                                 l10n_util::GetStringUTF16(
-                                     search_concept->message_id),
+                                 l10n_util::GetStringUTF16(matching_content_id),
                                  /*relative_url=*/search_concept->relative_url,
                                  /*relevance_score=*/local_result.score));
   }

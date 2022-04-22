@@ -30,14 +30,30 @@ std::string SearchConceptToId(const SearchConcept& search_concept) {
   return base::NumberToString(search_concept.message_id);
 }
 
+std::vector<int> GetMessageIds(const SearchConcept& search_concept) {
+  std::vector<int> message_ids = {search_concept.message_id};
+  for (auto alt_message_id : search_concept.alternate_message_ids) {
+    if (alt_message_id == 0) {
+      // |alternate_message_ids| defaults to 0 when out of message ids, stop
+      // searching here.
+      break;
+    }
+    message_ids.push_back(alt_message_id);
+  }
+  return message_ids;
+}
+
 ::chromeos::local_search_service::Data SearchConceptToData(
     const SearchConcept& search_concept) {
-  std::vector<::chromeos::local_search_service::Content> content_vector = {
-      {SearchConceptToId(search_concept),
-       l10n_util::GetStringUTF16(search_concept.message_id)}};
+  std::vector<::chromeos::local_search_service::Content> content_vector;
+
+  for (auto message_id : GetMessageIds(search_concept)) {
+    content_vector.emplace_back(base::NumberToString(message_id),
+                                l10n_util::GetStringUTF16(message_id));
+  }
 
   return ::chromeos::local_search_service::Data(
-      /*id=*/content_vector.front().id, std::move(content_vector));
+      /*id=*/SearchConceptToId(search_concept), std::move(content_vector));
 }
 
 std::vector<::chromeos::local_search_service::Data>
@@ -54,6 +70,9 @@ const std::vector<const SearchConcept>& GetPersonalizationSearchConcepts() {
   static const base::NoDestructor<std::vector<const SearchConcept>>
       search_concepts(
           {{.message_id = IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE,
+            .alternate_message_ids =
+                {IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE_ALT1,
+                 IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE_ALT2},
             .relative_url = ""}});
   return *search_concepts;
 }

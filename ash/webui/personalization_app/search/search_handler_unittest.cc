@@ -125,5 +125,19 @@ TEST_F(PersonalizationAppSearchHandlerTest, ObserverFiresWhenResultsUpdated) {
   test_observer.WaitForSearchResultsChanged();
 }
 
+TEST_F(PersonalizationAppSearchHandlerTest, RespondsToAltQuery) {
+  std::vector<mojom::SearchResultPtr> search_results;
+  std::u16string search_query = l10n_util::GetStringUTF16(
+      IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE_ALT1);
+
+  mojom::SearchHandlerAsyncWaiter(search_handler_remote()->get())
+      .Search(search_query, /*max_num_results=*/kMaxNumResults,
+              &search_results);
+
+  EXPECT_EQ(search_results.size(), 1u);
+  EXPECT_EQ(search_results.front()->text, search_query);
+  EXPECT_GT(search_results.front()->relevance_score, 0.9);
+}
+
 }  // namespace personalization_app
 }  // namespace ash
