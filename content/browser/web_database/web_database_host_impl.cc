@@ -146,7 +146,11 @@ void WebDatabaseHostImpl::OpenFileWithBucketCreated(
     int32_t desired_flags,
     OpenFileCallback callback,
     storage::QuotaErrorOr<storage::BucketInfo> bucket) {
-  DCHECK(bucket.ok());
+  // Return invalid file path on GetOrCreateBucket error.
+  if (!bucket.ok()) {
+    std::move(callback).Run(base::File());
+    return;
+  }
 
   base::File file;
   const base::File* tracked_file = nullptr;

@@ -648,6 +648,30 @@ TEST_F(ServiceWorkerRegistryTest, CreateNewRegistration) {
   EXPECT_GT(result->id.value(), 0);
 }
 
+TEST_F(ServiceWorkerRegistryTest, GetOrCreateBucketError) {
+  const GURL kScope("http://www.test.not/scope/");
+  const blink::StorageKey kKey(url::Origin::Create(kScope));
+
+  scoped_refptr<ServiceWorkerRegistration> registration;
+
+  blink::mojom::ServiceWorkerRegistrationOptions options;
+  options.scope = kScope;
+
+  helper()->quota_manager()->SetDisableDatabase(true);
+  storage::QuotaManagerProxySync quota_manager_proxy_sync(
+      quota_manager_proxy());
+
+  base::RunLoop loop;
+  registry()->CreateNewRegistration(
+      std::move(options), kKey,
+      base::BindLambdaForTesting(
+          [&](scoped_refptr<ServiceWorkerRegistration> new_registration) {
+            EXPECT_EQ(new_registration, nullptr);
+            loop.Quit();
+          }));
+  loop.Run();
+}
+
 TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
   const GURL kScope("http://www.test.not/scope/");
   const blink::StorageKey kKey(url::Origin::Create(kScope));

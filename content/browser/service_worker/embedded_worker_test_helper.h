@@ -110,6 +110,8 @@ class EmbeddedWorkerTestHelper {
   // Only used for tests that force creating a new render process.
   int new_render_process_id() const { return new_mock_render_process_id_; }
 
+  storage::MockQuotaManager* quota_manager() { return quota_manager_.get(); }
+
   storage::MockQuotaManagerProxy* quota_manager_proxy() {
     return quota_manager_proxy_.get();
   }

@@ -451,6 +451,11 @@ void FileSystemContext::OnGetOrCreateBucket(
     OpenFileSystemMode mode,
     OpenFileSystemCallback callback,
     QuotaErrorOr<BucketInfo> result) {
+  if (!result.ok()) {
+    std::move(callback).Run(GURL(), std::string(),
+                            base::File::FILE_ERROR_FAILED);
+    return;
+  }
   ResolveURLOnOpenFileSystem(storage_key, type, mode, std::move(callback));
 }
 

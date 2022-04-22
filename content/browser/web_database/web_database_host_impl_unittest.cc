@@ -141,6 +141,8 @@ class WebDatabaseHostImplTest : public ::testing::Test {
         process_id(), url);
   }
 
+  storage::MockQuotaManager* quota_manager() { return quota_manager_.get(); }
+
   storage::QuotaManagerProxy* quota_manager_proxy() {
     return quota_manager_proxy_.get();
   }
@@ -197,6 +199,37 @@ TEST_F(WebDatabaseHostImplTest, OpenFileCreatesBucket) {
   EXPECT_EQ(result->storage_key,
             blink::StorageKey::CreateFromStringForTesting(example_url));
   EXPECT_GT(result->id.value(), 0);
+}
+
+TEST_F(WebDatabaseHostImplTest, GetOrCreateBucketError) {
+  const char* example_url = "http://example.com";
+  const GURL example_gurl(example_url);
+  const url::Origin example_origin = url::Origin::Create(example_gurl);
+  const std::u16string db_name = u"db_name";
+  const std::u16string suffix(u"suffix");
+  const std::u16string vfs_file_name =
+      ConstructVfsFileName(example_origin, db_name, suffix);
+
+  auto* security_policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  security_policy->AddFutureIsolatedOrigins(
+      {example_origin}, ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
+  LockProcessToURL(example_gurl);
+
+  quota_manager()->SetDisableDatabase(true);
+  storage::QuotaManagerProxySync quota_manager_proxy_sync(
+      quota_manager_proxy());
+
+  base::RunLoop run_loop;
+  task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        mojo::FakeMessageDispatchContext fake_dispatch_context;
+        host()->OpenFile(vfs_file_name, /*desired_flags=*/0,
+                         base::BindLambdaForTesting([&](base::File file) {
+                           EXPECT_FALSE(file.IsValid());
+                           run_loop.Quit();
+                         }));
+      }));
+  run_loop.Run();
 }
 
 TEST_F(WebDatabaseHostImplTest, BadMessagesUnauthorized) {
