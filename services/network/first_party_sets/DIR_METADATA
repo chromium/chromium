@@ -1,0 +1,5 @@
+team_email: "chrome-first-party-sets@chromium.org"
+monorail {
+        project: "chromium"
+        component: "Internals>Network>First-Party-Sets"
+}
