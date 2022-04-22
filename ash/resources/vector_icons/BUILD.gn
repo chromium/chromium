@@ -87,6 +87,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "eche_close.icon",
     "eche_minimize.icon",
     "eight_files.icon",
+    "expand_all.icon",
     "files_app.icon",
     "five_files.icon",
     "folder.icon",

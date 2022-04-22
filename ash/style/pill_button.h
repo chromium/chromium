@@ -69,6 +69,10 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   void SetButtonTextColor(const SkColor text_color);
   void SetIconColor(const SkColor icon_color);
 
+  // Sets the button's label to use the default label font, which is smaller
+  // and less heavily weighted.
+  void SetUseDefaultLabelFont();
+
  private:
   // Get text's color depending on the type used.
   SkColor GetPillButtonTextColor(Type type);

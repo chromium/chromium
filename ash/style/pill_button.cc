@@ -206,6 +206,10 @@ void PillButton::SetIconColor(const SkColor icon_color) {
   OnThemeChanged();
 }
 
+void PillButton::SetUseDefaultLabelFont() {
+  label()->SetFontList(views::Label::GetDefaultFontList());
+}
+
 BEGIN_METADATA(PillButton, views::LabelButton)
 END_METADATA
 

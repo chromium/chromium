@@ -164,14 +164,14 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
     auto* layout = container->SetLayoutManager(
         std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
     layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kCenter);
-    // TODO(crbug.com/1317428): Switch to custom double-chevron icon.
     show_continue_section_button_ =
         container->AddChildView(std::make_unique<PillButton>(
             base::BindRepeating(
                 &AppListBubbleAppsPage::OnPressShowContinueSection,
                 base::Unretained(this)),
             l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_SHOW_CONTINUE_SECTION),
-            PillButton::Type::kIcon, &kChevronRightIcon));
+            PillButton::Type::kIcon, &kExpandAllIcon));
+    show_continue_section_button_->SetUseDefaultLabelFont();
     // Put the icon on the right.
     show_continue_section_button_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   }
