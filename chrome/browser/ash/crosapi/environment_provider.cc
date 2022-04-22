@@ -191,4 +191,13 @@ void EnvironmentProvider::SetDeviceAccountComponentPolicy(
   component_policy_ = std::move(component_policy);
 }
 
+base::Time EnvironmentProvider::GetLastPolicyFetchAttemptTimestamp() {
+  return last_policy_fetch_attempt_;
+}
+
+void EnvironmentProvider::SetLastPolicyFetchAttemptTimestamp(
+    const base::Time& timestamp) {
+  last_policy_fetch_attempt_ = timestamp;
+}
+
 }  // namespace crosapi

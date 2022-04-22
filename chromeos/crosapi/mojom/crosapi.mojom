@@ -715,8 +715,8 @@ enum OpenUrlFrom {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 42
-// Next id: 42
+// Next version: 43
+// Next id: 43
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -793,6 +793,11 @@ struct BrowserInitParams {
   // details.
   [MinVersion=11]
   array<uint8>? device_account_policy@11;
+
+  // Timestamp (seconds since epoch in UTC) at which last device account policy
+  // fetch was attempted.
+  [MinVersion=42]
+  uint64 last_policy_fetch_attempt_timestamp@42;
 
   // System idle info to initialize SystemIdleCache.
   [MinVersion=12]
@@ -891,7 +896,7 @@ struct BrowserInitParams {
   [MinVersion=28]
   bool publish_chrome_apps@28;
 
-// When this flag is set, lacros will publish hosted apps to the app service.
+  // When this flag is set, lacros will publish hosted apps to the app service.
   [MinVersion=39]
   bool publish_hosted_apps@39;
 
@@ -1014,8 +1019,8 @@ struct OpenUrlParams {
 // has accidentally become a kitchen sink for different features. This was not
 // intentional.
 //
-// Next MinVersion: 66.
-// Next ID: 17
+// Next MinVersion: 67.
+// Next ID: 18
 //
 [Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
  RenamedFrom="crosapi.mojom.LacrosChromeService"]
@@ -1114,6 +1119,10 @@ interface BrowserService {
   // object.
   [MinVersion=9]
   UpdateDeviceAccountPolicy@6(array<uint8> policy);
+
+  // Notifies Lacros about an attempt to update device account policy.
+  [MinVersion=66]
+  NotifyPolicyFetchAttempt@17();
 
   // Updates keep-alive instance to maintain the browser lifetime.
   // Note: there is always timing issue. If the browser is in the process of

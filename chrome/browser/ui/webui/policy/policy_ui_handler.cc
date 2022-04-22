@@ -485,7 +485,10 @@ void UserPolicyStatusProviderLacros::GetStatus(base::DictionaryValue* dict) {
           : base::Time();
   dict->SetStringKey("timeSinceLastRefresh",
                      GetTimeSinceLastActionString(last_refresh_time));
-  // TODO(crbug.com/1217542): Add timeSinceLastFetchAttempt for LaCrOS.
+
+  const base::Time last_refresh_attempt_time = loader_->last_fetch_timestamp();
+  dict->SetStringKey("timeSinceLastFetchAttempt",
+                     GetTimeSinceLastActionString(last_refresh_attempt_time));
 
   // TODO(https://crbug.com/1243869): Pass this information from Ash through
   // Mojo. Assume no error for now.

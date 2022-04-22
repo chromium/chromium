@@ -353,6 +353,8 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
   params->cros_user_id_hash = ash::ProfileHelper::GetUserIdHashFromProfile(
       ProfileManager::GetPrimaryUserProfile());
   params->device_account_policy = GetDeviceAccountPolicy(environment_provider);
+  params->last_policy_fetch_attempt_timestamp =
+      environment_provider->GetLastPolicyFetchAttemptTimestamp().ToTimeT();
   params->idle_info = IdleServiceAsh::ReadIdleInfoFromSystem();
   params->native_theme_info = NativeThemeServiceAsh::GetNativeThemeInfo();
 

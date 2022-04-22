@@ -60,6 +60,10 @@ class EnvironmentProvider {
   // file after is was validated.
   void SetDeviceAccountComponentPolicy(MojoPolicyMap serialized_policy);
 
+  // Getter and setter for last device policy fetch attempt timestamp.
+  virtual base::Time GetLastPolicyFetchAttemptTimestamp();
+  virtual void SetLastPolicyFetchAttemptTimestamp(const base::Time& timestamp);
+
  private:
   // The serialized PolicyFetchResponse object corresponding to the policy of
   // device account. Used to pass the data from Ash to Lacros.
@@ -68,6 +72,9 @@ class EnvironmentProvider {
   // The component policy to be passed to Lacros. The map value is the
   // serialized policy blob.
   MojoPolicyMap component_policy_;
+
+  // The last timestamp at which device account policy fetch was attempted.
+  base::Time last_policy_fetch_attempt_;
 };
 
 }  // namespace crosapi

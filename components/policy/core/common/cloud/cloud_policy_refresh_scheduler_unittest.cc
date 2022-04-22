@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_clock.h"
@@ -20,6 +21,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler_observer.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_service.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
@@ -29,8 +31,9 @@
 
 namespace em = enterprise_management;
 
-using testing::Mock;
 using testing::_;
+using testing::Invoke;
+using testing::Mock;
 
 namespace policy {
 
@@ -39,6 +42,18 @@ namespace {
 const int64_t kPolicyRefreshRate = 4 * 60 * 60 * 1000;
 
 const int64_t kInitialCacheAgeMinutes = 1;
+
+class MockObserver : public CloudPolicyRefreshSchedulerObserver {
+ public:
+  MOCK_METHOD(void,
+              OnFetchAttempt,
+              (CloudPolicyRefreshScheduler * scheduler),
+              (override));
+  MOCK_METHOD(void,
+              OnRefreshSchedulerDestruction,
+              (CloudPolicyRefreshScheduler * scheduler),
+              (override));
+};
 
 }  // namespace
 
@@ -63,6 +78,12 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
     last_update_ = base::Time::FromJavaTime(store_.policy()->timestamp());
     last_update_ticks_ = base::TimeTicks::Now() +
                          (last_update_ - base::Time::NowFromSystemTime());
+
+    // Remove mock observer from any scheduler that is being destroyed.
+    ON_CALL(mock_observer_, OnRefreshSchedulerDestruction)
+        .WillByDefault(Invoke([&](CloudPolicyRefreshScheduler* scheduler) {
+          scheduler->RemoveObserver(&mock_observer_);
+        }));
   }
 
   CloudPolicyRefreshScheduler* CreateRefreshScheduler() {
@@ -73,6 +94,7 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
     // Make sure the NetworkConnectionTracker has been set up.
     base::RunLoop().RunUntilIdle();
     scheduler->SetDesiredRefreshDelay(kPolicyRefreshRate);
+    scheduler->AddObserver(&mock_observer_);
     return scheduler;
   }
 
@@ -191,6 +213,7 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
   em::PolicyData policy_data_;
   std::unique_ptr<MockCloudPolicyService> service_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
+  MockObserver mock_observer_;
 
   // Base time for the refresh that the scheduler should be using.
   base::Time last_update_;
@@ -201,8 +224,7 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
 
 TEST_F(CloudPolicyRefreshSchedulerTest, InitialRefreshNoPolicy) {
   store_.set_policy_data_for_testing(std::make_unique<em::PolicyData>());
-  std::unique_ptr<CloudPolicyRefreshScheduler> scheduler(
-      CreateRefreshScheduler());
+  auto scheduler = base::WrapUnique(CreateRefreshScheduler());
   EXPECT_TRUE(task_runner_->HasPendingTask());
   EXPECT_EQ(GetLastDelay(), base::TimeDelta());
   EXPECT_CALL(*service_.get(), RefreshPolicy(_)).Times(1);
@@ -214,8 +236,7 @@ TEST_F(CloudPolicyRefreshSchedulerTest, InitialRefreshUnmanaged) {
   policy_data_.set_state(em::PolicyData::UNMANAGED);
   store_.set_policy_data_for_testing(
       std::make_unique<em::PolicyData>(policy_data_));
-  std::unique_ptr<CloudPolicyRefreshScheduler> scheduler(
-      CreateRefreshScheduler());
+  auto scheduler = base::WrapUnique(CreateRefreshScheduler());
   CheckTiming(scheduler.get(),
               CloudPolicyRefreshScheduler::kUnmanagedRefreshDelayMs);
   EXPECT_CALL(*service_.get(), RefreshPolicy(_)).Times(1);
@@ -224,8 +245,7 @@ TEST_F(CloudPolicyRefreshSchedulerTest, InitialRefreshUnmanaged) {
 }
 
 TEST_F(CloudPolicyRefreshSchedulerTest, InitialRefreshManagedNotYetFetched) {
-  std::unique_ptr<CloudPolicyRefreshScheduler> scheduler(
-      CreateRefreshScheduler());
+  auto scheduler = base::WrapUnique(CreateRefreshScheduler());
   EXPECT_TRUE(task_runner_->HasPendingTask());
   CheckInitialRefresh(scheduler.get(), false);
   EXPECT_CALL(*service_.get(), RefreshPolicy(_)).Times(1);
@@ -237,8 +257,7 @@ TEST_F(CloudPolicyRefreshSchedulerTest, InitialRefreshManagedAlreadyFetched) {
   SetLastUpdateToNow();
   client_.SetPolicy(dm_protocol::kChromeUserPolicyType, std::string(),
                     em::PolicyFetchResponse());
-  std::unique_ptr<CloudPolicyRefreshScheduler> scheduler(
-      CreateRefreshScheduler());
+  auto scheduler = base::WrapUnique(CreateRefreshScheduler());
   CheckTiming(scheduler.get(), kPolicyRefreshRate);
   EXPECT_CALL(*service_.get(), RefreshPolicy(_)).Times(1);
   EXPECT_CALL(client_, FetchPolicy()).Times(1);
@@ -247,8 +266,7 @@ TEST_F(CloudPolicyRefreshSchedulerTest, InitialRefreshManagedAlreadyFetched) {
 
 TEST_F(CloudPolicyRefreshSchedulerTest, Unregistered) {
   client_.SetDMToken(std::string());
-  std::unique_ptr<CloudPolicyRefreshScheduler> scheduler(
-      CreateRefreshScheduler());
+  auto scheduler = base::WrapUnique(CreateRefreshScheduler());
   client_.NotifyPolicyFetched();
   client_.NotifyRegistrationStateChanged();
   client_.NotifyClientError();
@@ -259,8 +277,7 @@ TEST_F(CloudPolicyRefreshSchedulerTest, Unregistered) {
 }
 
 TEST_F(CloudPolicyRefreshSchedulerTest, RefreshSoon) {
-  std::unique_ptr<CloudPolicyRefreshScheduler> scheduler(
-      CreateRefreshScheduler());
+  auto scheduler = base::WrapUnique(CreateRefreshScheduler());
   EXPECT_CALL(*service_.get(), RefreshPolicy(_)).Times(1);
   EXPECT_CALL(client_, FetchPolicy()).Times(1);
   scheduler->RefreshSoon();
@@ -269,8 +286,7 @@ TEST_F(CloudPolicyRefreshSchedulerTest, RefreshSoon) {
 }
 
 TEST_F(CloudPolicyRefreshSchedulerTest, RefreshSoonOverriding) {
-  std::unique_ptr<CloudPolicyRefreshScheduler> scheduler(
-      CreateRefreshScheduler());
+  auto scheduler = base::WrapUnique(CreateRefreshScheduler());
 
   // The refresh scheduled for soon overrides the previously scheduled refresh.
   scheduler->RefreshSoon();
@@ -430,8 +446,7 @@ TEST_F(CloudPolicyRefreshSchedulerTest, InvalidationsDisconnected) {
 
 TEST_F(CloudPolicyRefreshSchedulerTest, OnConnectionChangedUnregistered) {
   client_.SetDMToken(std::string());
-  std::unique_ptr<CloudPolicyRefreshScheduler> scheduler(
-      CreateRefreshScheduler());
+  auto scheduler = base::WrapUnique(CreateRefreshScheduler());
 
   client_.NotifyClientError();
   EXPECT_FALSE(task_runner_->HasPendingTask());
@@ -447,8 +462,7 @@ TEST_F(CloudPolicyRefreshSchedulerTest, OnConnectionChangedUnregistered) {
 // pending task and queue a new task to run earlier. It is desirable to
 // simulate that flow here.
 TEST_F(CloudPolicyRefreshSchedulerTest, OnConnectionChangedAfterSleep) {
-  std::unique_ptr<CloudPolicyRefreshScheduler> scheduler(
-      CreateRefreshScheduler());
+  auto scheduler = base::WrapUnique(CreateRefreshScheduler());
 
   client_.SetPolicy(dm_protocol::kChromeUserPolicyType, std::string(),
                     em::PolicyFetchResponse());
@@ -460,6 +474,39 @@ TEST_F(CloudPolicyRefreshSchedulerTest, OnConnectionChangedAfterSleep) {
       network::mojom::ConnectionType::CONNECTION_WIFI);
   EXPECT_TRUE(task_runner_->HasPendingTask());
   task_runner_->ClearPendingTasks();
+}
+
+TEST_F(CloudPolicyRefreshSchedulerTest, FetchAttemptCallback) {
+  EXPECT_CALL(mock_observer_, OnFetchAttempt).Times(0);
+  auto scheduler = base::WrapUnique(CreateRefreshScheduler());
+  Mock::VerifyAndClearExpectations(&mock_observer_);
+
+  EXPECT_CALL(mock_observer_, OnFetchAttempt).Times(1);
+  task_runner_->RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_observer_);
+}
+
+TEST_F(CloudPolicyRefreshSchedulerTest, DestructionCallback) {
+  EXPECT_CALL(mock_observer_, OnRefreshSchedulerDestruction).Times(0);
+  auto scheduler = base::WrapUnique(CreateRefreshScheduler());
+  task_runner_->RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_observer_);
+
+  EXPECT_CALL(mock_observer_, OnRefreshSchedulerDestruction).Times(1);
+  scheduler.reset();
+  Mock::VerifyAndClearExpectations(&mock_observer_);
+}
+
+TEST_F(CloudPolicyRefreshSchedulerTest, DestructionCallbackBeforeFetchAttempt) {
+  EXPECT_CALL(mock_observer_, OnRefreshSchedulerDestruction).Times(0);
+  EXPECT_CALL(mock_observer_, OnFetchAttempt).Times(0);
+  auto scheduler = base::WrapUnique(CreateRefreshScheduler());
+  Mock::VerifyAndClearExpectations(&mock_observer_);
+
+  EXPECT_CALL(mock_observer_, OnRefreshSchedulerDestruction(scheduler.get()))
+      .Times(1);
+  scheduler.reset();
+  Mock::VerifyAndClearExpectations(&mock_observer_);
 }
 
 class CloudPolicyRefreshSchedulerSteadyStateTest

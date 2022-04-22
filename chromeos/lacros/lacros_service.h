@@ -64,6 +64,9 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
     virtual void OnPolicyUpdated(
         const std::vector<uint8_t>& policy_fetch_response) {}
 
+    // Called when policy fetch attempt is made in Ash.
+    virtual void OnPolicyFetchAttempt() {}
+
    protected:
     virtual ~Observer() = default;
   };
@@ -118,6 +121,9 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   // object.
   // This must be called on the affined sequence.
   void NotifyPolicyUpdated(const std::vector<uint8_t>& policy);
+
+  // Notifies that an attempt to update the device account policy has been made.
+  void NotifyPolicyFetchAttempt();
 
   // Returns whether this interface uses the automatic registration system to be
   // available for immediate use at startup. Any crosapi interface can be

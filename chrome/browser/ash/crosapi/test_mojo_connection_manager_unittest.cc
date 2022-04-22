@@ -87,6 +87,7 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
   void GetHistograms(GetHistogramsCallback callback) override {}
   void GetActiveTabUrl(GetActiveTabUrlCallback callback) override {}
   void UpdateDeviceAccountPolicy(const std::vector<uint8_t>& policy) override {}
+  void NotifyPolicyFetchAttempt() override {}
   void UpdateKeepAlive(bool enabled) override {}
   void OpenForFullRestore() override {}
   void UpdateComponentPolicy(
@@ -224,6 +225,7 @@ TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
                     })));
   std::unique_ptr<EnvironmentProvider> environment_provider =
       std::make_unique<EnvironmentProvider>();
+  environment_provider->SetLastPolicyFetchAttemptTimestamp(base::Time::Now());
   TestMojoConnectionManager test_mojo_connection_manager{
       base::FilePath(socket_path), environment_provider.get()};
   run_loop1.Run();

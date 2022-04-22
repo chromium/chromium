@@ -689,4 +689,8 @@ void LacrosService::NotifyPolicyUpdated(
                          policy_fetch_response);
 }
 
+void LacrosService::NotifyPolicyFetchAttempt() {
+  observer_list_->Notify(FROM_HERE, &Observer::OnPolicyFetchAttempt);
+}
+
 }  // namespace chromeos

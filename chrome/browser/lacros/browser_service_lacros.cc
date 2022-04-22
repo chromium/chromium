@@ -299,6 +299,10 @@ void BrowserServiceLacros::UpdateDeviceAccountPolicy(
   chromeos::LacrosService::Get()->NotifyPolicyUpdated(policy);
 }
 
+void BrowserServiceLacros::NotifyPolicyFetchAttempt() {
+  chromeos::LacrosService::Get()->NotifyPolicyFetchAttempt();
+}
+
 void BrowserServiceLacros::UpdateKeepAlive(bool enabled) {
   if (enabled == static_cast<bool>(keep_alive_))
     return;

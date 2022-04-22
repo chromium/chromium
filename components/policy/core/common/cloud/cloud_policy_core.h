@@ -56,6 +56,9 @@ class POLICY_EXPORT CloudPolicyCore {
     // Called after the remote commands service is started. Defaults to be
     // empty.
     virtual void OnRemoteCommandsServiceStarted(CloudPolicyCore* core);
+
+    // Called upon core destruction. Defaults to be empty.
+    virtual void OnCoreDestruction(CloudPolicyCore* core);
   };
 
   // |task_runner| is the runner for policy refresh tasks.

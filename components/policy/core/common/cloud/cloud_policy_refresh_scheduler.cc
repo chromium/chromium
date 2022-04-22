@@ -117,6 +117,8 @@ CloudPolicyRefreshScheduler::~CloudPolicyRefreshScheduler() {
   client_->RemoveObserver(this);
   if (network_connection_tracker_)
     network_connection_tracker_->RemoveNetworkConnectionObserver(this);
+  for (auto& observer : observers_)
+    observer.OnRefreshSchedulerDestruction(this);
 }
 
 void CloudPolicyRefreshScheduler::SetDesiredRefreshDelay(
@@ -417,6 +419,8 @@ void CloudPolicyRefreshScheduler::CancelRefresh() {
 void CloudPolicyRefreshScheduler::UpdateLastRefresh() {
   last_refresh_ = GetClock()->Now();
   last_refresh_ticks_ = GetTickClock()->NowTicks();
+  for (auto& observer : observers_)
+    observer.OnFetchAttempt(this);
 }
 
 void CloudPolicyRefreshScheduler::OnPolicyRefreshed(bool success) {
@@ -442,6 +446,16 @@ CloudPolicyRefreshScheduler::OverrideTickClockForTesting(
   tick_clock_for_testing_ = tick_clock_for_testing;
   return base::ScopedClosureRunner(
       base::BindOnce([]() { tick_clock_for_testing_ = nullptr; }));
+}
+
+void CloudPolicyRefreshScheduler::AddObserver(
+    CloudPolicyRefreshSchedulerObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void CloudPolicyRefreshScheduler::RemoveObserver(
+    CloudPolicyRefreshSchedulerObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 }  // namespace policy

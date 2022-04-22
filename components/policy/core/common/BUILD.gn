@@ -60,6 +60,7 @@ source_set("internal") {
     "cloud/cloud_policy_manager.h",
     "cloud/cloud_policy_refresh_scheduler.cc",
     "cloud/cloud_policy_refresh_scheduler.h",
+    "cloud/cloud_policy_refresh_scheduler_observer.h",
     "cloud/cloud_policy_service.cc",
     "cloud/cloud_policy_service.h",
     "cloud/cloud_policy_store.cc",

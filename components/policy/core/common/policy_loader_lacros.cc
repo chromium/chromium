@@ -71,6 +71,8 @@ PolicyLoaderLacros::PolicyLoaderLacros(
     return;
   }
   policy_fetch_response_ = init_params->device_account_policy.value();
+  last_fetch_timestamp_ =
+      base::Time::FromTimeT(init_params->last_policy_fetch_attempt_timestamp);
 }
 
 PolicyLoaderLacros::~PolicyLoaderLacros() {
@@ -153,6 +155,10 @@ void PolicyLoaderLacros::OnPolicyUpdated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   policy_fetch_response_ = policy_fetch_response;
   Reload(true);
+}
+
+void PolicyLoaderLacros::OnPolicyFetchAttempt() {
+  last_fetch_timestamp_ = base::Time::Now();
 }
 
 enterprise_management::PolicyData* PolicyLoaderLacros::GetPolicyData() {

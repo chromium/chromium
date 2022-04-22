@@ -15,6 +15,7 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
+#include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler_observer.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/policy_export.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -106,6 +107,12 @@ class POLICY_EXPORT CloudPolicyRefreshScheduler
   static base::ScopedClosureRunner OverrideTickClockForTesting(
       base::TickClock* tick_clock_for_testing);
 
+  // Registers an observer to be notified.
+  void AddObserver(CloudPolicyRefreshSchedulerObserver* observer);
+
+  // Removes the specified observer.
+  void RemoveObserver(CloudPolicyRefreshSchedulerObserver* observer);
+
  private:
   // Initializes |last_refresh_| to the policy timestamp from |store_| in case
   // there is policy present that indicates this client is not managed. This
@@ -180,6 +187,8 @@ class POLICY_EXPORT CloudPolicyRefreshScheduler
   // Used to measure how long it took for the invalidations service to report
   // its initial status.
   base::Time creation_time_;
+
+  base::ObserverList<CloudPolicyRefreshSchedulerObserver, true> observers_;
 
   base::WeakPtrFactory<CloudPolicyRefreshScheduler> weak_factory_{this};
 };
