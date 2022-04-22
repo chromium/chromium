@@ -3363,7 +3363,8 @@ TEST_F(DesksTemplatesTest, VisibleOnAllDesksWindowShownProperly) {
 
 // Test save same desk as template won't create name with number on the template
 // view for the second template.
-TEST_F(DesksTemplatesTest, NoDuplicateDisplayedName) {
+// crbug/1318777: the test is flaky.
+TEST_F(DesksTemplatesTest, DISABLED_NoDuplicateDisplayedName) {
   // There are no saved template entries and one test window initially.
   auto test_window = CreateAppWindow();
   ToggleOverview();
