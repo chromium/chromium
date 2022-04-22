@@ -250,7 +250,7 @@ void WebTestPermissionManager::SetPermission(
     const GURL& url,
     const GURL& embedding_url,
     blink::test::mojom::PermissionAutomation::SetPermissionCallback callback) {
-  auto type = PermissionDescriptorToPermissionType(descriptor);
+  auto type = blink::PermissionDescriptorToPermissionType(descriptor);
   if (!type) {
     std::move(callback).Run(false);
     return;

@@ -704,6 +704,7 @@ void PermissionManager::OnPermissionChanged(
     content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
         subscription->render_process_id, subscription->render_frame_id);
     GURL embedding_origin;
+    GURL requesting_origin = subscription->requesting_origin;
     if (rfh) {
       embedding_origin =
           GetEmbeddingOrigin(rfh, subscription->requesting_origin);
@@ -711,7 +712,7 @@ void PermissionManager::OnPermissionChanged(
       embedding_origin = subscription->requesting_origin;
     }
 
-    if (!primary_pattern.Matches(subscription->requesting_origin) ||
+    if (!primary_pattern.Matches(requesting_origin) ||
         !secondary_pattern.Matches(embedding_origin)) {
       continue;
     }

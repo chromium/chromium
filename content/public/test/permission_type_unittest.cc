@@ -12,7 +12,7 @@ namespace {
 using testing::Contains;
 
 TEST(PermissionTypeHelpersTest, AllPermissionTypesSmokeTest) {
-  const auto all_permission_types = GetAllPermissionTypes();
+  const auto all_permission_types = blink::GetAllPermissionTypes();
 
   // All but PermissionType::NUM should be added.
   EXPECT_EQ(all_permission_types.size(),

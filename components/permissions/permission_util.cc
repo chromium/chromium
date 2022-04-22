@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/permissions/features.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"

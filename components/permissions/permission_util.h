@@ -11,9 +11,9 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request.h"
+#include "content/public/browser/permission_type.h"
 
 namespace content {
-enum class PermissionType;
 class RenderFrameHost;
 }  // namespace content
 

@@ -72,7 +72,7 @@ void DevToolsPermissionOverrides::GrantPermissions(
     const absl::optional<url::Origin>& origin,
     const std::vector<PermissionType>& permissions) {
   const std::vector<PermissionType>& kAllPermissionTypes =
-      GetAllPermissionTypes();
+      blink::GetAllPermissionTypes();
   PermissionOverrides granted_overrides;
   for (const auto& permission : kAllPermissionTypes)
     granted_overrides[permission] = PermissionStatus::DENIED;

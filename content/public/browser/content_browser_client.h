@@ -32,6 +32,7 @@
 #include "content/public/browser/generated_code_cache_settings.h"
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/mojo_binder_policy_map.h"
+#include "content/public/browser/permission_type.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
 #include "content/public/common/main_function_params.h"
@@ -193,7 +194,6 @@ class FileSystemBackend;
 }  // namespace storage
 
 namespace content {
-enum class PermissionType;
 enum class SiteIsolationMode;
 enum class SmsFetchFailureType;
 class AuthenticatorRequestClientDelegate;

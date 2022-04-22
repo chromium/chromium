@@ -13,7 +13,6 @@
 class GURL;
 
 namespace content {
-enum class PermissionType;
 class RenderFrameHost;
 class RenderProcessHost;
 

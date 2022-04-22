@@ -282,6 +282,10 @@ source_set("common") {
     sources += [ "dwrite_rasterizer_support/dwrite_rasterizer_support.cc" ]
     deps += [ "//ui/gfx/" ]
   }
+
+  if (is_chromeos || is_android || is_win || is_chromecast || is_fuchsia) {
+    defines = [ "ENABLE_PROTECTED_MEDIA_IDENTIFIER_PERMISSION" ]
+  }
 }
 
 test("blink_common_unittests") {

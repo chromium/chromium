@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_TEST_PERMISSIONS_TEST_UTILS_H_
 #define CONTENT_PUBLIC_TEST_PERMISSIONS_TEST_UTILS_H_
 
+#include "content/public/browser/permission_type.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 namespace url {
@@ -14,7 +15,6 @@ class Origin;
 namespace content {
 
 class PermissionController;
-enum class PermissionType;
 
 void SetPermissionControllerOverrideForDevTools(
     PermissionController* permission_controller,

@@ -284,7 +284,6 @@ source_set("browser_sources") {
     "permission_controller.h",
     "permission_controller_delegate.cc",
     "permission_controller_delegate.h",
-    "permission_type.cc",
     "permission_type.h",
     "picture_in_picture_window_controller.h",
     "platform_notification_context.h",
@@ -525,10 +524,6 @@ source_set("browser_sources") {
       "plugin_service_filter.h",
     ]
     deps += [ "//ppapi/c" ]
-  }
-
-  if (is_chromeos || is_android || is_win || is_chromecast || is_fuchsia) {
-    defines = [ "ENABLE_PROTECTED_MEDIA_IDENTIFIER_PERMISSION" ]
   }
 
   if (is_posix || is_fuchsia) {

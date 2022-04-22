@@ -119,7 +119,7 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
 
   // For now, all requests are denied. As features are added, their permission
   // contexts can be added here instead of DeniedPermissionContext.
-  for (content::PermissionType type : content::GetAllPermissionTypes()) {
+  for (content::PermissionType type : blink::GetAllPermissionTypes()) {
 #if !BUILDFLAG(IS_ANDROID)
     // PROTECTED_MEDIA_IDENTIFIER is only supported on Android.
     if (type == content::PermissionType::PROTECTED_MEDIA_IDENTIFIER)

@@ -8,6 +8,8 @@ blink_modules_sources("permissions") {
   sources = [
     "permission_status.cc",
     "permission_status.h",
+    "permission_status_listener.cc",
+    "permission_status_listener.h",
     "permission_utils.cc",
     "permission_utils.h",
     "permissions.cc",

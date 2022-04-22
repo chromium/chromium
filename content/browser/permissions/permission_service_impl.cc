@@ -104,7 +104,7 @@ void PermissionServiceImpl::RequestPermissions(
   std::vector<PermissionType> types(permissions.size());
   std::set<PermissionType> duplicates_check;
   for (size_t i = 0; i < types.size(); ++i) {
-    auto type = PermissionDescriptorToPermissionType(permissions[i]);
+    auto type = blink::PermissionDescriptorToPermissionType(permissions[i]);
     if (!type) {
       ReceivedBadMessage();
       return;
@@ -147,7 +147,8 @@ void PermissionServiceImpl::HasPermission(PermissionDescriptorPtr permission,
 void PermissionServiceImpl::RevokePermission(
     PermissionDescriptorPtr permission,
     PermissionStatusCallback callback) {
-  auto permission_type = PermissionDescriptorToPermissionType(permission);
+  auto permission_type =
+      blink::PermissionDescriptorToPermissionType(permission);
   if (!permission_type) {
     ReceivedBadMessage();
     return;
@@ -170,7 +171,7 @@ void PermissionServiceImpl::AddPermissionObserver(
     PermissionDescriptorPtr permission,
     PermissionStatus last_known_status,
     mojo::PendingRemote<blink::mojom::PermissionObserver> observer) {
-  auto type = PermissionDescriptorToPermissionType(permission);
+  auto type = blink::PermissionDescriptorToPermissionType(permission);
   if (!type) {
     ReceivedBadMessage();
     return;
@@ -182,7 +183,7 @@ void PermissionServiceImpl::AddPermissionObserver(
 
 PermissionStatus PermissionServiceImpl::GetPermissionStatus(
     const PermissionDescriptorPtr& permission) {
-  auto type = PermissionDescriptorToPermissionType(permission);
+  auto type = blink::PermissionDescriptorToPermissionType(permission);
   if (!type) {
     ReceivedBadMessage();
     return PermissionStatus::DENIED;

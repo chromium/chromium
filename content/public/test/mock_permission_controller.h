@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_TEST_MOCK_PERMISSION_CONTROLLER_H_
 
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class GURL;
@@ -15,8 +16,6 @@ class Origin;
 }
 
 namespace content {
-
-enum class PermissionType;
 
 // Mock of the permission controller for unit tests.
 class MockPermissionController : public PermissionController {
