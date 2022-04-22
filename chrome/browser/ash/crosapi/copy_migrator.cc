@@ -83,7 +83,7 @@ BrowserDataMigratorImpl::MigrationResult CopyMigrator::MigrateInternal(
   browser_data_migrator_util::TargetItems need_copy_items =
       browser_data_migrator_util::GetTargetItems(
           original_profile_dir,
-          browser_data_migrator_util::ItemType::kNeedCopy);
+          browser_data_migrator_util::ItemType::kNeedCopyForCopy);
   browser_data_migrator_util::TargetItems lacros_items =
       browser_data_migrator_util::GetTargetItems(
           original_profile_dir, browser_data_migrator_util::ItemType::kLacros);

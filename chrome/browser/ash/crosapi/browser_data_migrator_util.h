@@ -183,8 +183,13 @@ constexpr const char* const kLacrosDataPaths[]{
 // The base names of files/dirs that are required by both ash and lacros and
 // thus should be copied to lacros while keeping the original files/dirs in ash
 // data dir.
-constexpr const char* const kNeedCopyDataPaths[]{
+constexpr const char* const kNeedCopyForMoveDataPaths[]{
     "DNR Extension Rules", "Extension Cookies", "Policy", "shared_proto_db"};
+
+// The same as `kNeedCopyDataPathsForMove` + "Preferences".
+constexpr const char* const kNeedCopyForCopyDataPaths[]{
+    "DNR Extension Rules", "Extension Cookies", "Policy", "Preferences",
+    "shared_proto_db"};
 
 // List of extension ids to be kept in Ash.
 // TODO(crbug.com/1302613): make sure this is the complete list.
@@ -337,8 +342,11 @@ struct TargetItems {
 enum class ItemType {
   kLacros = 0,       // Item that should be moved to lacros profile directory.
   kRemainInAsh = 1,  // Item that should remain in ash.
-  kNeedCopy = 2,     // Item that should be copied to lacros.
-  kDeletable = 3,    // Item that can be deleted to free up space i.e. cache.
+  kNeedCopyForMove =
+      2,  // Item that should be copied to lacros during move migration.
+  kNeedCopyForCopy = 3,  // Item that should be copied to lacros during copy
+                         // migration. This is kNeedCopyForMove + "Preferences".
+  kDeletable = 4,  // Item that can be deleted to free up space i.e. cache.
 };
 
 // It enumerates the file/dirs in the given directory and returns items of

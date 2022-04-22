@@ -236,8 +236,11 @@ TargetItems GetTargetItems(const base::FilePath& original_profile_dir,
     case ItemType::kDeletable:
       target_paths = base::span<const char* const>(kDeletablePaths);
       break;
-    case ItemType::kNeedCopy:
-      target_paths = base::span<const char* const>(kNeedCopyDataPaths);
+    case ItemType::kNeedCopyForMove:
+      target_paths = base::span<const char* const>(kNeedCopyForMoveDataPaths);
+      break;
+    case ItemType::kNeedCopyForCopy:
+      target_paths = base::span<const char* const>(kNeedCopyForCopyDataPaths);
       break;
     default:
       NOTREACHED();
@@ -501,7 +504,7 @@ void DryRunToCollectUMA(const base::FilePath& profile_data_dir) {
   TargetItems lacros_items =
       GetTargetItems(profile_data_dir, ItemType::kLacros);
   TargetItems need_copy_items =
-      GetTargetItems(profile_data_dir, ItemType::kNeedCopy);
+      GetTargetItems(profile_data_dir, ItemType::kNeedCopyForMove);
   TargetItems remain_in_ash_items =
       GetTargetItems(profile_data_dir, ItemType::kRemainInAsh);
   TargetItems deletable_items =

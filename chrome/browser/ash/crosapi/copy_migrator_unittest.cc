@@ -101,7 +101,7 @@ TEST_F(CopyMigratorTest, SetupTmpDir) {
           from_dir_, browser_data_migrator_util::ItemType::kLacros);
   browser_data_migrator_util::TargetItems need_copy_items =
       browser_data_migrator_util::GetTargetItems(
-          from_dir_, browser_data_migrator_util::ItemType::kNeedCopy);
+          from_dir_, browser_data_migrator_util::ItemType::kNeedCopyForCopy);
   FakeMigrationProgressTracker progress_tracker;
   EXPECT_TRUE(CopyMigrator::SetupTmpDir(lacros_items, need_copy_items, tmp_dir,
                                         cancel_flag.get(), &progress_tracker));
@@ -141,7 +141,7 @@ TEST_F(CopyMigratorTest, CancelSetupTmpDir) {
           from_dir_, browser_data_migrator_util::ItemType::kLacros);
   browser_data_migrator_util::TargetItems need_copy_items =
       browser_data_migrator_util::GetTargetItems(
-          from_dir_, browser_data_migrator_util::ItemType::kNeedCopy);
+          from_dir_, browser_data_migrator_util::ItemType::kNeedCopyForCopy);
 
   // Set cancel_flag to cancel migrationl.
   cancel_flag->Set();
