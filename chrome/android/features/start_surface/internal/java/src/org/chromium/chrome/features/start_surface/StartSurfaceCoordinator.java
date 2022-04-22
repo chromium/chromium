@@ -399,7 +399,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         mStartSurfaceMediator.initWithNative(
                 mIsStartSurfaceEnabled ? mOmniboxStubSupplier.get() : null,
                 mExploreSurfaceCoordinatorFactory,
-                UserPrefs.get(Profile.getLastUsedRegularProfile()));
+                UserPrefs.get(Profile.getLastUsedRegularProfile()), mSnackbarManager);
 
         if (mTabSwitcher != null) {
             mTabSwitcher.initWithNative(mActivity, mTabContentManager,
