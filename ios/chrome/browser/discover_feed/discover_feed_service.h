@@ -70,10 +70,10 @@ class DiscoverFeedService : public KeyedService {
   virtual void RefreshFeed() = 0;
 
   // Returns whether the Following feed model has unseen content.
-  virtual BOOL GetFollowingFeedHasUnseenContent();
+  virtual BOOL GetFollowingFeedHasUnseenContent() = 0;
 
   // Informs the service that the Following content has been seen.
-  virtual void SetFollowingFeedContentSeen();
+  virtual void SetFollowingFeedContentSeen() = 0;
 
   // Methods to register or remove observers.
   void AddObserver(DiscoverFeedObserver* observer);

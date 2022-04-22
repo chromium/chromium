@@ -3919,7 +3919,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent {
-  // TODO(crbug.com/1277974): Implement this when downstream lands.
+  [[self ntpCoordinatorForWebState:self.currentWebState]
+      updateFollowingFeedHasUnseenContent:hasUnseenContent];
 }
 
 #pragma mark - WebStateListObserving methods

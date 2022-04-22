@@ -564,6 +564,12 @@ namespace {
   menuButtonGuide.constrainedView = self.feedHeaderViewController.menuButton;
 }
 
+- (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent {
+  DCHECK(IsWebChannelsEnabled());
+  [self.feedHeaderViewController
+      updateFollowingSegmentDotForUnseenContent:hasUnseenContent];
+}
+
 - (void)ntpDidChangeVisibility:(BOOL)visible {
   if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
     if (visible && self.started) {
@@ -593,7 +599,8 @@ namespace {
   if (feedType == FeedTypeFollowing) {
     // Clears dot and notifies service that the Following feed content has been
     // seen.
-    self.feedHeaderViewController.followingSegmentDotVisible = NO;
+    [self.feedHeaderViewController
+        updateFollowingSegmentDotForUnseenContent:NO];
     self.discoverFeedService->SetFollowingFeedContentSeen();
   }
   self.selectedFeed = feedType;
@@ -1159,13 +1166,12 @@ namespace {
   DCHECK(!self.browser->GetBrowserState()->IsOffTheRecord());
   if (!_feedHeaderViewController) {
     _feedHeaderViewController = [[FeedHeaderViewController alloc]
-               initWithSelectedFeed:self.selectedFeed
-              followingFeedSortType:(FollowingFeedSortType)
-                                        self.prefService->GetInteger(
-                                            prefs::kNTPFollowingFeedSortType)
-         followingSegmentDotVisible:self.discoverFeedService
-                                        ->GetFollowingFeedHasUnseenContent()
-        isGoogleDefaultSearchEngine:[self isGoogleDefaultSearchEngine]];
+        initWithFollowingFeedSortType:(FollowingFeedSortType)
+                                          self.prefService->GetInteger(
+                                              prefs::kNTPFollowingFeedSortType)
+           followingSegmentDotVisible:self.discoverFeedService
+                                          ->GetFollowingFeedHasUnseenContent()
+          isGoogleDefaultSearchEngine:[self isGoogleDefaultSearchEngine]];
     _feedHeaderViewController.feedControlDelegate = self;
     [_feedHeaderViewController.menuButton
                addTarget:self

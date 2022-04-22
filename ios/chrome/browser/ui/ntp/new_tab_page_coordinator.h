@@ -79,6 +79,10 @@ class WebState;
 // Constrains the named layout guide for the Discover header menu button.
 - (void)constrainDiscoverHeaderMenuButtonNamedGuide;
 
+// Updates the new tab page based on if there is unseen content in the Following
+// feed.
+- (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_COORDINATOR_H_

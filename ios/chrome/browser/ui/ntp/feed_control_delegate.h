@@ -10,6 +10,9 @@
 // Delegate for controlling the presented feed.
 @protocol FeedControlDelegate
 
+// Returns the currently selected feed.
+- (FeedType)selectedFeed;
+
 // Handles operations after a new feed has been selected. e.g. Displays the
 // feed, updates states, etc.
 - (void)handleFeedSelected:(FeedType)feedType;

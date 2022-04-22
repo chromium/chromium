@@ -85,9 +85,6 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
 // feed.
 @property(nonatomic, strong) UIView* followingSegmentDot;
 
-// Currently selected feed.
-@property(nonatomic, assign) FeedType selectedFeed;
-
 // The blurred background of the feed header.
 @property(nonatomic, strong) UIVisualEffectView* blurBackgroundView;
 
@@ -99,18 +96,19 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
 @property(nonatomic, strong)
     NSMutableArray<NSLayoutConstraint*>* feedHeaderConstraints;
 
+// Whether the Following segment dot should currently be visible.
+@property(nonatomic, assign) BOOL followingSegmentDotVisible;
+
 @end
 
 @implementation FeedHeaderViewController
 
-- (instancetype)initWithSelectedFeed:(FeedType)selectedFeed
-               followingFeedSortType:
-                   (FollowingFeedSortType)followingFeedSortType
-          followingSegmentDotVisible:(BOOL)followingSegmentDotVisible
-         isGoogleDefaultSearchEngine:(BOOL)isGoogleDefaultSearchEngine {
+- (instancetype)
+    initWithFollowingFeedSortType:(FollowingFeedSortType)followingFeedSortType
+       followingSegmentDotVisible:(BOOL)followingSegmentDotVisible
+      isGoogleDefaultSearchEngine:(BOOL)isGoogleDefaultSearchEngine {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
-    _selectedFeed = selectedFeed;
     _followingFeedSortType = followingFeedSortType;
     _followingSegmentDotVisible = followingSegmentDotVisible;
     _isGoogleDefaultSearchEngine = isGoogleDefaultSearchEngine;
@@ -146,7 +144,7 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
     [self.container addSubview:self.sortButton];
 
     self.followingSegmentDot = [self createFollowingSegmentDot];
-    self.followingSegmentDot.hidden = !self.followingSegmentDotVisible;
+    self.followingSegmentDot.alpha = self.followingSegmentDotVisible ? 1 : 0;
     [self.segmentedControl addSubview:self.followingSegmentDot];
 
     if (!UIAccessibilityIsReduceTransparencyEnabled()) {
@@ -170,6 +168,8 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
   [self.view addSubview:self.container];
   [self applyHeaderConstraints];
 }
+
+#pragma mark - Public
 
 - (void)toggleBackgroundBlur:(BOOL)blurred animated:(BOOL)animated {
   if (UIAccessibilityIsReduceTransparencyEnabled() || !IsWebChannelsEnabled()) {
@@ -210,6 +210,23 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
              : kCustomSearchEngineLabelHeight;
 }
 
+- (void)updateFollowingSegmentDotForUnseenContent:(BOOL)hasUnseenContent {
+  DCHECK(IsWebChannelsEnabled());
+
+  // Don't show the dot if the user is already on the Following feed.
+  if ([self.feedControlDelegate selectedFeed] == FeedTypeFollowing) {
+    self.followingSegmentDotVisible = NO;
+    return;
+  }
+
+  self.followingSegmentDotVisible = hasUnseenContent;
+
+  [UIView animateWithDuration:kSegmentAnimationDuration
+                   animations:^{
+                     self.followingSegmentDot.alpha = hasUnseenContent ? 1 : 0;
+                   }];
+}
+
 #pragma mark - Setters
 
 // Sets |titleText| and updates header label if it exists.
@@ -228,18 +245,6 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
   if (self.sortButton) {
     self.sortButton.menu = [self createSortMenu];
   }
-}
-
-// Sets |followingSegmentDotVisible| and animates |followingSegmentDot|'s
-// visibility accordingly.
-- (void)setFollowingSegmentDotVisible:(BOOL)followingSegmentDotVisible {
-  DCHECK(IsWebChannelsEnabled());
-  _followingSegmentDotVisible = followingSegmentDotVisible;
-  [UIView animateWithDuration:kSegmentAnimationDuration
-                   animations:^{
-                     self.followingSegmentDot.alpha =
-                         followingSegmentDotVisible ? 1 : 0;
-                   }];
 }
 
 // Sets whether Google is the default search engine and adds a view to inform
@@ -335,7 +340,8 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
   // The sort button is only visible if the Following feed is selected.
   // TODO(crbug.com/1277974): Determine if the button should show when the feed
   // is hidden.
-  sortButton.alpha = self.selectedFeed == FeedTypeFollowing ? 1 : 0;
+  sortButton.alpha =
+      [self.feedControlDelegate selectedFeed] == FeedTypeFollowing ? 1 : 0;
 
   return sortButton;
 }
@@ -377,7 +383,7 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
 
   // Set selected feed and tap action.
   segmentedControl.selectedSegmentIndex =
-      static_cast<NSInteger>(self.selectedFeed);
+      static_cast<NSInteger>([self.feedControlDelegate selectedFeed]);
   [segmentedControl addTarget:self
                        action:@selector(onSegmentSelected:)
              forControlEvents:UIControlEventValueChanged];
