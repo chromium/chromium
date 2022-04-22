@@ -5696,7 +5696,6 @@ crbug.com/1299834 external/wpt/html/browsers/the-window-object/open-close/open-f
 crbug.com/1299834 external/wpt/html/browsers/windows/noreferrer-window-name.html [ Skip Timeout ]
 
 # The wpt/html tests that are failing in some way
-crbug.com/1317073 [ Win7 ] external/wpt/html/dom/documents/resource-metadata-management/document-lastModified-01.html [ Failure ]
 crbug.com/1317074 [ Linux ] external/wpt/html/syntax/charset/without-inheritance.html [ Failure ]
 crbug.com/1317074 external/wpt/html/syntax/charset/after-head-after-1kb-crlf.html [ Failure ]
 crbug.com/1317076 external/wpt/html/syntax/speculative-charset/speculative-script.tentative.html [ Failure ]
