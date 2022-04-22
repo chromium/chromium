@@ -179,8 +179,10 @@ void WindowEventFilterLinux::MaybeDispatchHostWindowDragMovement(
     ui::LocatedEvent* event) {
   if (!event->IsMouseEvent() && !event->IsTouchEvent())
     return;
+
   if (event->IsMouseEvent() && !event->AsMouseEvent()->IsLeftMouseButton())
     return;
+
   if (!handler_ || !ui::CanPerformDragOrResize(hittest))
     return;
 
@@ -192,7 +194,13 @@ void WindowEventFilterLinux::MaybeDispatchHostWindowDragMovement(
   auto screen_point_in_px = event->location();
   screen_point_in_px.Offset(bounds_in_px.x(), bounds_in_px.y());
   handler_->DispatchHostWindowDragMovement(hittest, screen_point_in_px);
-  event->StopPropagation();
+
+  // Stop the event propagation for mouse events only (not touch), given that
+  // it'd prevent the Gesture{Provider,Detector} machirery to get triggered,
+  // breaking gestures including tapping, double tapping, show press and
+  // long press.
+  if (event->IsMouseEvent())
+    event->StopPropagation();
 }
 
 }  // namespace views
