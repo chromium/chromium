@@ -274,6 +274,22 @@ public class LocaleUtilsTest {
         Assert.assertEquals("fil", LocaleUtils.toLanguage("fil"));
     }
 
+    // Test for isBaseLanguageEqual
+    @Test
+    @SmallTest
+    public void testIsBaseLanguageEqual() {
+        Assert.assertTrue(LocaleUtils.isBaseLanguageEqual("pt-PT", "pt-PT"));
+        Assert.assertTrue(LocaleUtils.isBaseLanguageEqual("pt-PT", "pt"));
+        Assert.assertTrue(LocaleUtils.isBaseLanguageEqual("pt", "pt-PT-xx"));
+        Assert.assertTrue(LocaleUtils.isBaseLanguageEqual("zh-Hans-CN", "zh-HK"));
+        Assert.assertTrue(LocaleUtils.isBaseLanguageEqual("", ""));
+
+        Assert.assertFalse(LocaleUtils.isBaseLanguageEqual("en-US", "es-US"));
+        Assert.assertFalse(LocaleUtils.isBaseLanguageEqual("af", "zu"));
+        Assert.assertFalse(LocaleUtils.isBaseLanguageEqual("af", ""));
+        Assert.assertFalse(LocaleUtils.isBaseLanguageEqual("", "zu"));
+    }
+
     // Test for getConfigurationLocale < N
     @Test
     @SmallTest
