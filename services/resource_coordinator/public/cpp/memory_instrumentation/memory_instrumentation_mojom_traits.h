@@ -108,14 +108,14 @@ struct COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MOJOM) UnionTraits<
     switch (args.entry_type) {
       case base::trace_event::MemoryAllocatorDump::Entry::EntryType::kUint64:
         return memory_instrumentation::mojom::
-            RawAllocatorDumpEntryValueDataView::Tag::VALUE_UINT64;
+            RawAllocatorDumpEntryValueDataView::Tag::kValueUint64;
       case base::trace_event::MemoryAllocatorDump::Entry::EntryType::kString:
         return memory_instrumentation::mojom::
-            RawAllocatorDumpEntryValueDataView::Tag::VALUE_STRING;
+            RawAllocatorDumpEntryValueDataView::Tag::kValueString;
     }
     NOTREACHED();
     return memory_instrumentation::mojom::RawAllocatorDumpEntryValueDataView::
-        Tag::VALUE_UINT64;
+        Tag::kValueUint64;
   }
 
   static uint64_t value_uint64(

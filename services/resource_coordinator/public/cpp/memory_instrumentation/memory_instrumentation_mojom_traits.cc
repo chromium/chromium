@@ -163,7 +163,7 @@ bool UnionTraits<
         base::trace_event::MemoryAllocatorDump::Entry* out) {
   using memory_instrumentation::mojom::RawAllocatorDumpEntryValue;
   switch (input.tag()) {
-    case RawAllocatorDumpEntryValue::Tag::VALUE_STRING: {
+    case RawAllocatorDumpEntryValue::Tag::kValueString: {
       std::string value_string;
       if (!input.ReadValueString(&value_string))
         return false;
@@ -171,7 +171,7 @@ bool UnionTraits<
       out->entry_type = base::trace_event::MemoryAllocatorDump::Entry::kString;
       break;
     }
-    case RawAllocatorDumpEntryValue::Tag::VALUE_UINT64: {
+    case RawAllocatorDumpEntryValue::Tag::kValueUint64: {
       out->value_uint64 = input.value_uint64();
       out->entry_type = base::trace_event::MemoryAllocatorDump::Entry::kUint64;
       break;
