@@ -105,7 +105,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // |main_client_task_runner_|.
   void NotifyError(VideoEncodeAccelerator::Error error);
 
-  // Encoding task to be run on |encoder_thread_|.
+  // Encoding task to be run on |encoder_thread_task_runner_|.
   void EncodeTask(scoped_refptr<VideoFrame> frame, bool force_keyframe);
 
   // Processes the input video frame for the encoder.
@@ -126,10 +126,10 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   bool temporalScalableCoding() { return num_temporal_layers_ > 1; }
 
-  // Checks for and copies encoded output on |encoder_thread_|.
+  // Checks for and copies encoded output on |encoder_thread_task_runner_|.
   void ProcessOutput();
 
-  // Drains pending output samples on |encoder_thread_|.
+  // Drains pending output samples on |encoder_thread_task_runner_|.
   void DrainPendingOutputs();
 
   // Tries to deliver the input frame to the encoder.
@@ -139,15 +139,15 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Tries to return a bitstream buffer to the client.
   void TryToReturnBitstreamBuffer();
 
-  // Inserts the output buffers for reuse on |encoder_thread_|.
+  // Inserts the output buffers for reuse on |encoder_thread_task_runner_|.
   void UseOutputBitstreamBufferTask(
       std::unique_ptr<BitstreamBufferRef> buffer_ref);
 
-  // Changes encode parameters on |encoder_thread_|.
+  // Changes encode parameters on |encoder_thread_task_runner_|.
   void RequestEncodingParametersChangeTask(const Bitrate& bitrate,
                                            uint32_t framerate);
 
-  // Destroys encode session on |encoder_thread_|.
+  // Destroys encode session on |encoder_thread_task_runner_|.
   void DestroyTask();
 
   // Releases resources encoder holds.
