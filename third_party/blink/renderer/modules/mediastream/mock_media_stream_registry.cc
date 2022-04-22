@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter_settings.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 
@@ -94,8 +95,10 @@ void MockMediaStreamRegistry::AddAudioTrack(const String& track_id) {
       "mock audio source id", MediaStreamSource::kTypeAudio,
       "mock audio source name", false /* remote */, std::move(audio_source));
 
-  auto* component = MakeGarbageCollected<MediaStreamComponent>(source);
-  CHECK(audio_source_ptr->ConnectToTrack(component));
+  auto* component = MakeGarbageCollected<MediaStreamComponent>(
+      source,
+      std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */));
+  CHECK(audio_source_ptr->ConnectToInitializedTrack(component));
 
   descriptor_->AddRemoteTrack(component);
 }

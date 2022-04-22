@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/modules/peerconnection/fake_rtc_rtp_transceiver_impl.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_dtmf_sender_handler.h"
 
@@ -20,9 +21,10 @@ MediaStreamComponent* CreateMediaStreamComponent(
       String::FromUTF8(id), MediaStreamSource::kTypeAudio,
       String::FromUTF8("audio_track"), false, std::move(audio_source));
 
-  auto* component =
-      MakeGarbageCollected<MediaStreamComponent>(source->Id(), source);
-  audio_source_ptr->ConnectToTrack(component);
+  auto* component = MakeGarbageCollected<MediaStreamComponent>(
+      source->Id(), source,
+      std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */));
+  audio_source_ptr->ConnectToInitializedTrack(component);
   return component;
 }
 
