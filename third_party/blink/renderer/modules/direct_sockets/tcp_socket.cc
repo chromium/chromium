@@ -187,6 +187,8 @@ void TCPSocket::Init(int32_t result,
     }
     connection_resolver_->Reject(CreateDOMExceptionFromNetErrorCode(result));
     CloseServiceAndResetFeatureHandle();
+
+    closed_resolver_->Reject();
   }
 
   connection_resolver_ = nullptr;

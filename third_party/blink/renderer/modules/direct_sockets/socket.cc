@@ -88,6 +88,11 @@ Socket::Socket(ScriptState* script_state)
       closed_(script_state->GetIsolate(),
               closed_resolver_->Promise().V8Promise()) {
   UpdateStateIfNeeded();
+
+  // |closed| promise is just one of the ways to learn that the socket state has
+  // changed. Therefore it's not necessary to force developers to handle
+  // rejections.
+  closed_resolver_->Promise().MarkAsHandled();
 }
 
 Socket::~Socket() = default;
