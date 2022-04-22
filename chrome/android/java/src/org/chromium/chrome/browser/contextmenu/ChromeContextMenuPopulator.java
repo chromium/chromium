@@ -762,10 +762,12 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             recordContextMenuSelection(ContextMenuUma.Action.DIRECT_SHARE_LINK);
             final ShareParams shareParams =
                     new ShareParams
-                            .Builder(getWindow(), mParams.getUrl().getSpec(),
+                            .Builder(getWindow(), ContextMenuUtils.getTitle(mParams),
                                     mParams.getUrl().getSpec())
                             .build();
-            ShareHelper.shareWithLastUsedComponent(shareParams);
+            mShareDelegateSupplier.get().share(shareParams,
+                    new ChromeShareExtras.Builder().setShareDirectly(true).build(),
+                    ShareOrigin.CONTEXT_MENU);
         } else if (itemId == R.id.contextmenu_search_with_google_lens) {
             recordContextMenuSelection(ContextMenuUma.Action.SEARCH_WITH_GOOGLE_LENS);
             searchWithGoogleLens(LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM);
