@@ -31,7 +31,6 @@
 #include "components/safe_browsing/content/browser/password_protection/password_protection_test_util.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/cert_test_util.h"
@@ -504,8 +503,11 @@ class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
     } else if (name == "AboutThisSiteSubpage") {
       auto* service =
           AboutThisSiteServiceFactory::GetForProfile(browser()->profile());
-      auto source_id = ukm::GetSourceIdForWebContentsDocument(
-          browser()->tab_strip_model()->GetActiveWebContents());
+      auto source_id = browser()
+                           ->tab_strip_model()
+                           ->GetActiveWebContents()
+                           ->GetMainFrame()
+                           ->GetPageUkmSourceId();
       bubble_view->OpenAboutThisSitePage(
           service->GetAboutThisSiteInfo(GetUrl(kAboutThisSiteUrl), source_id)
               .value());

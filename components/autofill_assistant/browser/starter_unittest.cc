@@ -188,13 +188,13 @@ class StarterTest : public testing::Test {
     }
     simulator->Commit();
     navigation_ids_.emplace_back(
-        ukm::GetSourceIdForWebContentsDocument(web_contents()));
+        web_contents()->GetMainFrame()->GetPageUkmSourceId());
   }
 
   void SimulateNavigateToUrl(const GURL& url) {
     content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
     navigation_ids_.emplace_back(
-        ukm::GetSourceIdForWebContentsDocument(web_contents()));
+        web_contents()->GetMainFrame()->GetPageUkmSourceId());
   }
 
   // Each request sender is only good for one trigger script. This call will
@@ -1350,7 +1350,7 @@ TEST_F(StarterTest, RedirectFailsDuringPendingTriggerScriptStart) {
   simulator->Fail(net::ERR_BLOCKED_BY_CLIENT);
   simulator->CommitErrorPage();
   navigation_ids_.emplace_back(
-      ukm::GetSourceIdForWebContentsDocument(web_contents()));
+      web_contents()->GetMainFrame()->GetPageUkmSourceId());
 
   // Note that this impression is recorded for the last URL that a navigation-
   // start event occurred for. We never reached the target domain, so this is
@@ -1398,7 +1398,7 @@ TEST_F(StarterTest, StartTriggerScriptDuringRedirectRecordsUkmForTargetUrl) {
   simulator->Redirect(GURL(kExampleDeeplink));
   simulator->Commit();
   navigation_ids_.emplace_back(
-      ukm::GetSourceIdForWebContentsDocument(web_contents()));
+      web_contents()->GetMainFrame()->GetPageUkmSourceId());
 
   EXPECT_THAT(GetUkmTriggerScriptStarted(ukm_recorder_),
               ElementsAreArray(ToHumanReadableMetrics(

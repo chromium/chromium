@@ -105,7 +105,7 @@ class TriggerScriptCoordinatorTest : public testing::Test {
         std::move(mock_web_controller), std::move(mock_request_sender),
         GURL(kFakeServerUrl), std::move(mock_static_trigger_conditions),
         std::move(mock_dynamic_trigger_conditions), &ukm_recorder_,
-        ukm::GetSourceIdForWebContentsDocument(web_contents()));
+        web_contents()->GetMainFrame()->GetPageUkmSourceId());
   }
 
   void TearDown() override { coordinator_.reset(); }
@@ -130,7 +130,7 @@ class TriggerScriptCoordinatorTest : public testing::Test {
         url, web_contents()->GetMainFrame());
     content::WebContentsTester::For(web_contents())->TestSetIsLoading(false);
     navigation_ids_.emplace_back(
-        ukm::GetSourceIdForWebContentsDocument(web_contents()));
+        web_contents()->GetMainFrame()->GetPageUkmSourceId());
   }
 
  protected:
@@ -1360,7 +1360,7 @@ TEST_F(TriggerScriptCoordinatorTest, UiTimeoutWhileShown) {
   EXPECT_CALL(*mock_ui_delegate_, ShowTriggerScript).Times(1);
   content::NavigationSimulator::Reload(web_contents());
   navigation_ids_.emplace_back(
-      ukm::GetSourceIdForWebContentsDocument(web_contents()));
+      web_contents()->GetMainFrame()->GetPageUkmSourceId());
 
   EXPECT_CALL(*mock_ui_delegate_, HideTriggerScript).Times(0);
   task_environment()->FastForwardBy(base::Seconds(1));

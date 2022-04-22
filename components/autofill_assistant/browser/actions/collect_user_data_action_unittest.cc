@@ -151,7 +151,7 @@ class CollectUserDataActionTest : public testing::Test {
     content::WebContentsTester::For(web_contents_.get())
         ->SetLastCommittedURL(GURL(kFakeUrl));
     ukm::InitializeSourceUrlRecorderForWebContents(web_contents_.get());
-    source_id_ = ukm::GetSourceIdForWebContentsDocument(web_contents_.get());
+    source_id_ = web_contents_->GetMainFrame()->GetPageUkmSourceId();
 
     ON_CALL(mock_action_delegate_, GetPersonalDataManager)
         .WillByDefault(Return(&mock_personal_data_manager_));

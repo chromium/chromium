@@ -958,8 +958,10 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, LogsPreviousSourceId) {
       opener, content::JsReplace("window.open($1)", new_tab_url)));
   waiter.Wait();
   EXPECT_NE(opener, sync_browser->tab_strip_model()->GetActiveWebContents());
-  ukm::SourceId new_id = ukm::GetSourceIdForWebContentsDocument(
-      sync_browser->tab_strip_model()->GetActiveWebContents());
+  ukm::SourceId new_id = sync_browser->tab_strip_model()
+                             ->GetActiveWebContents()
+                             ->GetMainFrame()
+                             ->GetPageUkmSourceId();
   ukm::UkmSource* new_tab_source = ukm_test_helper.GetSource(new_id);
   EXPECT_NE(nullptr, new_tab_source);
   EXPECT_EQ(ukm::kInvalidSourceId,
@@ -1003,8 +1005,10 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, LogsOpenerSource) {
       opener, content::JsReplace("window.open($1)", new_tab_url)));
   waiter.Wait();
   EXPECT_NE(opener, sync_browser->tab_strip_model()->GetActiveWebContents());
-  ukm::SourceId new_id = ukm::GetSourceIdForWebContentsDocument(
-      sync_browser->tab_strip_model()->GetActiveWebContents());
+  ukm::SourceId new_id = sync_browser->tab_strip_model()
+                             ->GetActiveWebContents()
+                             ->GetMainFrame()
+                             ->GetPageUkmSourceId();
   ukm::UkmSource* new_tab_source = ukm_test_helper.GetSource(new_id);
   EXPECT_NE(nullptr, new_tab_source);
   EXPECT_EQ(first_source->id(),

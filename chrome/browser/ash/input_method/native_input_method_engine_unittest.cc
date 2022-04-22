@@ -987,8 +987,7 @@ TEST_F(NativeInputMethodEngineWithRenderViewHostTest,
   engine.FlushForTesting();
 
   ui::FakeTextInputClient fake_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
-  fake_text_input_client.set_source_id(
-      ukm::GetSourceIdForWebContentsDocument(web_contents()));
+  fake_text_input_client.set_source_id(main_rfh()->GetPageUkmSourceId());
 
   ui::InputMethodAsh ime(nullptr);
   ime.SetFocusedTextInputClient(&fake_text_input_client);
@@ -1031,8 +1030,7 @@ TEST_F(NativeInputMethodEngineWithRenderViewHostTest,
                     /*extension_id=*/"", testing_profile);
 
   ui::FakeTextInputClient fake_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
-  fake_text_input_client.set_source_id(
-      ukm::GetSourceIdForWebContentsDocument(web_contents()));
+  fake_text_input_client.set_source_id(main_rfh()->GetPageUkmSourceId());
 
   ui::InputMethodAsh ime(nullptr);
   ime.SetFocusedTextInputClient(&fake_text_input_client);

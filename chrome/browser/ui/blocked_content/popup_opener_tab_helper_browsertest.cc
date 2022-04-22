@@ -10,7 +10,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -72,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(PopupOpenerTabHelperBrowserTest,
 
   // Open and close two pop-ups, the opener id does not change.
   const ukm::SourceId opener_source_id =
-      ukm::GetSourceIdForWebContentsDocument(GetActiveWebContents());
+      GetActiveWebContents()->GetMainFrame()->GetPageUkmSourceId();
   OpenAndClosePopup();
   OpenAndClosePopup();
 
@@ -102,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(PopupOpenerTabHelperBrowserTest,
 
   // Open and close two pop-ups, the opener id does not change.
   const ukm::SourceId opener_source_id =
-      ukm::GetSourceIdForWebContentsDocument(GetActiveWebContents());
+      GetActiveWebContents()->GetMainFrame()->GetPageUkmSourceId();
   OpenAndClosePopup();
   OpenAndClosePopup();
 

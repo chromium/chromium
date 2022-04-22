@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -115,8 +114,11 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchorTest) {
               )"));
   WaitForPreresolveCountForURL(1);
   EXPECT_EQ(1, preresolve_count_);
-  ukm::SourceId ukm_source_id = ukm::GetSourceIdForWebContentsDocument(
-      browser()->tab_strip_model()->GetActiveWebContents());
+  ukm::SourceId ukm_source_id = browser()
+                                    ->tab_strip_model()
+                                    ->GetActiveWebContents()
+                                    ->GetMainFrame()
+                                    ->GetPageUkmSourceId();
 
   histogram_tester()->ExpectTotalCount(
       kPreloadingAnchorElementPreloaderPreloadingTriggered, 1);
@@ -184,8 +186,11 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, IframeTest) {
       kPreloadingAnchorElementPreloaderPreloadingTriggered,
       AnchorElementPreloaderType::kPreconnect, 1);
 
-  ukm::SourceId ukm_source_id = ukm::GetSourceIdForWebContentsDocument(
-      browser()->tab_strip_model()->GetActiveWebContents());
+  ukm::SourceId ukm_source_id = browser()
+                                    ->tab_strip_model()
+                                    ->GetActiveWebContents()
+                                    ->GetMainFrame()
+                                    ->GetPageUkmSourceId();
 
   auto ukm_entries = test_ukm_recorder()->GetEntries(
       ukm::builders::Preloading_AnchorInteraction::kEntryName,
@@ -261,8 +266,11 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderHoldbackBrowserTest,
       kPreloadingAnchorElementPreloaderPreloadingTriggered,
       AnchorElementPreloaderType::kPreconnect, 1);
 
-  ukm::SourceId ukm_source_id = ukm::GetSourceIdForWebContentsDocument(
-      browser()->tab_strip_model()->GetActiveWebContents());
+  ukm::SourceId ukm_source_id = browser()
+                                    ->tab_strip_model()
+                                    ->GetActiveWebContents()
+                                    ->GetMainFrame()
+                                    ->GetPageUkmSourceId();
 
   auto ukm_entries = test_ukm_recorder()->GetEntries(
       ukm::builders::Preloading_AnchorInteraction::kEntryName,

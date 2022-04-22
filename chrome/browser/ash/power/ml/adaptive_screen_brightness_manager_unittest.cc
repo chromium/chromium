@@ -24,7 +24,6 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -220,7 +219,7 @@ class AdaptiveScreenBrightnessManagerTest
       tab_strip_model->ActivateTabAt(tab_strip_model->count() - 1);
     }
     content::WebContentsTester::For(contents)->TestSetIsLoading(false);
-    return ukm::GetSourceIdForWebContentsDocument(contents);
+    return contents->GetMainFrame()->GetPageUkmSourceId();
   }
 
   const gfx::Point kEventLocation = gfx::Point(90, 90);
