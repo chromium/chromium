@@ -1307,23 +1307,28 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.OptInResult" enum="ArcOptInResult"
-    expires_after="2022-11-01">
-  <owner>elijahtaylor@google.com</owner>
+    expires_after="2023-01-10">
+  <owner>mhasank@google.com</owner>
   <owner>khmel@google.com</owner>
+  <owner>arc-core@google.com</owner>
   <summary>Arc OptIn flow result.</summary>
 </histogram>
 
 <histogram name="Arc.OptInSilentAuthCode" enum="ArcOptInSilentAuthCode"
-    expires_after="2022-05-01">
-  <owner>elijahtaylor@google.com</owner>
+    expires_after="2023-01-10">
+  <owner>mhasank@google.com</owner>
+  <owner>khmel@google.com</owner>
+  <owner>arc-core@google.com</owner>
   <summary>
     Arc Silent Auth Code status. This status is set during the ARC OptIn flow.
   </summary>
 </histogram>
 
 <histogram name="Arc.OptInSilentAuthCode.Reauthorization"
-    enum="ArcOptInSilentAuthCode" expires_after="2021-03-15">
+    enum="ArcOptInSilentAuthCode" expires_after="2023-01-10">
+  <owner>mhasank@google.com</owner>
   <owner>khmel@google.com</owner>
+  <owner>arc-core@google.com</owner>
   <summary>
     Arc Silent Auth Code status. This status is set during the ARC
     Device/Primary Account reauthorization flow.
@@ -1331,8 +1336,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.OptInSilentAuthCode.SecondaryAccount"
-    enum="ArcOptInSilentAuthCode" expires_after="2022-05-01">
+    enum="ArcOptInSilentAuthCode" expires_after="2023-01-10">
+  <owner>mhasank@google.com</owner>
   <owner>khmel@google.com</owner>
+  <owner>arc-core@google.com</owner>
   <summary>
     Arc Silent Auth Code status. This status is set during the minting of an
     auth code for a Secondary Account. It can be set for Secondary Account

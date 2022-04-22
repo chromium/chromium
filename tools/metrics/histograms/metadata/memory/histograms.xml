@@ -1505,9 +1505,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.LowMemoryKiller.Count" units="low-memory kills"
-    expires_after="2022-10-10">
+    expires_after="2023-01-10">
+  <owner>khmel@google.com</owner>
   <owner>vovoy@google.com</owner>
-  <owner>wvk@google.com</owner>
   <summary>
     Cumulative count of low memory kills in one user session. This is recorded
     by MemoryKillsMonitor every time a low memory kill occurs.
@@ -1515,9 +1515,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.LowMemoryKiller.FirstKillLatency" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2023-01-10">
+  <owner>khmel@google.com</owner>
   <owner>vovoy@google.com</owner>
-  <owner>wvk@google.com</owner>
   <summary>
     When Chrome OS is in low memory state, TabManager kills some victims to free
     memory. This value is the elapsed time between TabManager receiving the low
@@ -1527,15 +1527,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Memory.LowMemoryKiller.FreedSize" units="KB"
     expires_after="2023-01-10">
+  <owner>khmel@google.com</owner>
   <owner>vovoy@google.com</owner>
-  <owner>wvk@google.com</owner>
   <summary>The memory size freed by each low memory kill event.</summary>
 </histogram>
 
 <histogram name="Memory.LowMemoryKiller.TimeDelta" units="ms"
-    expires_after="2021-10-21">
+    expires_after="2023-01-10">
+  <owner>khmel@google.com</owner>
   <owner>vovoy@google.com</owner>
-  <owner>wvk@google.com</owner>
   <summary>
     The elapsed time between the last low memory kill event and the current low
     memory kill event.
