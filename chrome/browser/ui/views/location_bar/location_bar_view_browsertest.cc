@@ -11,8 +11,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -24,15 +22,11 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/permissions/permission_request_manager.h"
-#include "components/policy/core/common/policy_map.h"
-#include "components/policy/policy_constants.h"
 #include "components/security_state/core/security_state.h"
-#include "components/vector_icons/vector_icons.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
@@ -41,7 +35,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/ssl/ssl_info.h"
 #include "net/test/cert_test_util.h"
-#include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
@@ -51,8 +44,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/pointer/touch_ui_controller.h"
-#include "ui/gfx/favicon_size.h"
-#include "ui/gfx/paint_vector_icon.h"
 
 class LocationBarViewBrowserTest : public InProcessBrowserTest {
  public:
@@ -362,95 +353,4 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewGeolocationBackForwardCacheBrowserTest,
 
   // Geolocation icon should be off.
   EXPECT_FALSE(geolocation_icon.GetVisible());
-}
-
-// Tests LockIconInAddressBarEnabled policy which controls whether the omnibox
-// should show a lock icon for secure HTTPS URLs.
-template <bool enable>
-class LockIconPolicyTest : public policy::PolicyTest {
- public:
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        omnibox::kUpdatedConnectionSecurityIndicators);
-    InProcessBrowserTest::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    https_server_ = std::make_unique<net::EmbeddedTestServer>(
-        net::EmbeddedTestServer::TYPE_HTTPS);
-    https_server_->SetSSLConfig(
-        net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
-    https_server_->AddDefaultHandlers(GetChromeTestDataDir());
-    ASSERT_TRUE(https_server_->Start());
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    PolicyTest::SetUpInProcessBrowserTestFixture();
-    policy::PolicyMap policies;
-    policies.Set(policy::key::kLockIconInAddressBarEnabled,
-                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD, base::Value(enable), nullptr);
-    provider_.UpdateChromePolicy(policies);
-  }
-
-  net::EmbeddedTestServer* https_server() { return https_server_.get(); }
-
-  LocationBarView* GetLocationBarView() {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view->GetLocationBarView();
-  }
-
-  void NavigateAndExpectIcon(const GURL& url,
-                             const gfx::VectorIcon& expected_vector_icon) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
-        expected_vector_icon, gfx::kFaviconSize, gfx::kPlaceholderColor);
-    gfx::ImageSkia icon =
-        gfx::CreateVectorIcon(GetLocationBarView()
-                                  ->delegate()
-                                  ->GetLocationBarModel()
-                                  ->GetVectorIcon(),
-                              gfx::kFaviconSize, gfx::kPlaceholderColor);
-    EXPECT_EQ(icon.bitmap(), expected_icon.bitmap());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<net::EmbeddedTestServer> https_server_;
-};
-
-using LockIconEnabledPolicyTest = LockIconPolicyTest<true>;
-using LockIconDisabledPolicyTest = LockIconPolicyTest<false>;
-
-IN_PROC_BROWSER_TEST_F(LockIconEnabledPolicyTest, LockIconPolicyEnabled) {
-  NavigateAndExpectIcon(https_server()->GetURL("a.test", "/title1.html"),
-                        vector_icons::kHttpsValidIcon);
-  // Dynamically disable the policy. It should take effect without a restart.
-  policy::PolicyMap policies;
-  policies.Set(policy::key::kLockIconInAddressBarEnabled,
-               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-               policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
-  provider_.UpdateChromePolicy(policies);
-  NavigateAndExpectIcon(https_server()->GetURL("a.test", "/title1.html"),
-                        vector_icons::kHttpsValidArrowIcon);
-}
-
-IN_PROC_BROWSER_TEST_F(LockIconDisabledPolicyTest, LockIconPolicyDisabled) {
-  NavigateAndExpectIcon(https_server()->GetURL("a.test", "/title1.html"),
-                        vector_icons::kHttpsValidArrowIcon);
-
-  // Dynamically enable the policy. It should take effect without a restart.
-  policy::PolicyMap policies;
-  policies.Set(policy::key::kLockIconInAddressBarEnabled,
-               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
-  provider_.UpdateChromePolicy(policies);
-  NavigateAndExpectIcon(https_server()->GetURL("a.test", "/title1.html"),
-                        vector_icons::kHttpsValidIcon);
 }

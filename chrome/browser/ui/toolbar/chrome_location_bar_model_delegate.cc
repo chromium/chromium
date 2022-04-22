@@ -132,13 +132,6 @@ bool ChromeLocationBarModelDelegate::ShouldDisplayURL() const {
 
 bool ChromeLocationBarModelDelegate::
     ShouldUseUpdatedConnectionSecurityIndicators() const {
-  Profile* profile = GetProfile();
-  if (!profile) {
-    return false;
-  }
-  if (profile->GetPrefs()->GetBoolean(omnibox::kLockIconInAddressBarEnabled)) {
-    return false;
-  }
   return base::FeatureList::IsEnabled(
       omnibox::kUpdatedConnectionSecurityIndicators);
 }
@@ -313,5 +306,4 @@ TemplateURLService* ChromeLocationBarModelDelegate::GetTemplateURLService() {
 void ChromeLocationBarModelDelegate::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(omnibox::kPreventUrlElisionsInOmnibox, false);
-  registry->RegisterBooleanPref(omnibox::kLockIconInAddressBarEnabled, false);
 }

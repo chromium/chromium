@@ -15848,24 +15848,7 @@
     ]
   },
   "LockIconInAddressBarEnabled": {
-    "os": [
-      "win",
-      "linux",
-      "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
-      "android"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "LockIconInAddressBarEnabled": true
-        },
-        "prefs": {
-          "omnibox.lock_icon_in_address_bar_enabled": {}
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "DesktopSharingHubEnabled": {
     "os": [

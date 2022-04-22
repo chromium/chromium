@@ -34,11 +34,6 @@ const char kIntranetRedirectBehavior[] = "browser.intranet_redirect_behavior";
 const char kKeywordSpaceTriggeringEnabled[] =
     "omnibox.keyword_space_triggering_enabled";
 
-// Boolean that specifies whether the omnibox should display a lock icon for
-// secure connections.
-const char kLockIconInAddressBarEnabled[] =
-    "omnibox.lock_icon_in_address_bar_enabled";
-
 // A dictionary of visibility preferences for suggestion groups. The key is the
 // suggestion group ID serialized as a string, and the value is
 // SuggestionGroupVisibility serialized as an integer.
