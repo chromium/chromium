@@ -12,9 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,7 +38,7 @@ constexpr auto kUmaPurpose =
 class CrosHealthdMetricsProviderTest : public testing::Test {
  public:
   CrosHealthdMetricsProviderTest() {
-    ash::cros_healthd::CrosHealthdClient::InitializeFake();
+    ash::cros_healthd::FakeCrosHealthd::Initialize();
 
     chromeos::cros_healthd::mojom::NonRemovableBlockDeviceInfo storage_info;
     storage_info.vendor_id = chromeos::cros_healthd::mojom::BlockDeviceVendor::
@@ -64,15 +62,12 @@ class CrosHealthdMetricsProviderTest : public testing::Test {
     auto info = chromeos::cros_healthd::mojom::TelemetryInfo::New();
     info->block_device_result = chromeos::cros_healthd::mojom::
         NonRemovableBlockDeviceResult::NewBlockDeviceInfo(std::move(devs));
-    ash::cros_healthd::FakeCrosHealthdClient::Get()
+    ash::cros_healthd::FakeCrosHealthd::Get()
         ->SetProbeTelemetryInfoResponseForTesting(info);
   }
 
   ~CrosHealthdMetricsProviderTest() override {
-    ash::cros_healthd::CrosHealthdClient::Shutdown();
-
-    // Wait for ServiceConnection to observe the destruction of the client.
-    chromeos::cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
+    ash::cros_healthd::FakeCrosHealthd::Shutdown();
   }
 
  protected:
@@ -108,7 +103,7 @@ TEST_F(CrosHealthdMetricsProviderTest, EndToEnd) {
 }
 
 TEST_F(CrosHealthdMetricsProviderTest, EndToEndTimeout) {
-  ash::cros_healthd::FakeCrosHealthdClient::Get()->SetCallbackDelay(
+  ash::cros_healthd::FakeCrosHealthd::Get()->SetCallbackDelay(
       CrosHealthdMetricsProvider::GetTimeout() + base::Seconds(5));
 
   base::RunLoop run_loop;
