@@ -78,6 +78,7 @@ class NetworkConditionService {
   friend class NetworkConditionServiceTest;
   FRIEND_TEST_ALL_PREFIXES(NetworkConditionServiceTest,
                            SuccessfulInitializationAndUpdateAndDestroy);
+  friend class TestingNetworkConditionService;
 
   // Convert kbps (kilobits per second) to bytes per second.
   static uint64_t ConvertKbpsToBytesPerSec(int32_t kbps);
