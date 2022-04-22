@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL animation-timeline: scroll(nearest) assert_equals: expected "50px" but got "none"
+FAIL animation-timeline: scroll(root) assert_equals: expected "50px" but got "none"
+FAIL animation-timeline: scroll(inline) assert_equals: expected "100px" but got "none"
+FAIL animation-timeline: scroll(horizontal) assert_equals: expected "100px" but got "none"
+FAIL animation-timeline: scroll(vertical) assert_equals: expected "100px" but got "none"
+Harness: the test ran to completion.
+

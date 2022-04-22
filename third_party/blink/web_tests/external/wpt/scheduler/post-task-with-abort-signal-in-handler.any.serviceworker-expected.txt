@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS Posting a task with a signal and abort the signal when running the sync callback
+FAIL Posting a task with a signal and abort the signal when running the async callback assert_unreached: Should have rejected: undefined Reached unreachable code
+Harness: the test ran to completion.
+
