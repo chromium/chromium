@@ -323,14 +323,11 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
     case DownloadCommands::DISCARD:
       ProcessDownloadWarningButtonPress(model, command);
       break;
-    case DownloadCommands::BYPASS_DEEP_SCANNING:
-      model->CompleteSafeBrowsingScan();
-      model->SetOpenWhenComplete(true);
-      break;
     case DownloadCommands::CANCEL:
       RemoveContentIdFromPartialView(model->GetContentId());
       [[fallthrough]];
     case DownloadCommands::DEEP_SCAN:
+    case DownloadCommands::BYPASS_DEEP_SCANNING:
       commands.ExecuteCommand(command);
       break;
     default:

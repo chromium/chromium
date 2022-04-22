@@ -718,6 +718,7 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
     case DownloadCommands::BYPASS_DEEP_SCANNING:
 #if BUILDFLAG(FULL_SAFE_BROWSING)
       CompleteSafeBrowsingScan();
+      SetOpenWhenComplete(true);
 #endif
       [[fallthrough]];
     case DownloadCommands::KEEP:
@@ -729,6 +730,9 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
       }
       if (IsMixedContent()) {
         download_->ValidateMixedContentDownload();
+        break;
+      }
+      if (GetDangerType() == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
         break;
       }
       DCHECK(IsDangerous());
