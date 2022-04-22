@@ -43,7 +43,9 @@
 
 module ash.health.mojom;
 
-// Interface for getting device telemetry information.
+// Interface for getting device telemetry information. Implemented in
+// ash-chrome.
+[Stable, Uuid="f3dbbe3b-a810-43a9-889e-b130b4f94869"]
 interface ProbeService {
   // Returns telemetry information for the desired categories.
   //
@@ -55,130 +57,147 @@ interface ProbeService {
   // * |telemetry_info| - information for each of the requested categories. Only
   //                      the fields corresponding to the requested categories
   //                      will be non-null.
-  ProbeTelemetryInfo(array<ProbeCategoryEnum> categories)
+  ProbeTelemetryInfo@0(array<ProbeCategoryEnum> categories)
       => (TelemetryInfo telemetry_info);
 
   // Returns OEM data.
   //
   // The response:
   // * |oem_data| - OEM data.
-  GetOemData() => (OemData oem_data);
+  GetOemData@1() => (OemData oem_data);
 };
 
 // An enumeration of each category of information that cros_healthd can report.
-[Extensible]
+//
+// Next ID: 12
+[Stable, Extensible]
 enum ProbeCategoryEnum {
-  kBattery,
-  kNonRemovableBlockDevices,
-  kCachedVpdData,
-  kCpu,
-  kTimezone,
-  kMemory,
-  kBacklight,
-  kFan,
-  kStatefulPartition,
-  kBluetooth,
-  kSystem,
+  [Default] kUnknown = 11,
+  kBattery = 0,
+  kNonRemovableBlockDevices = 1,
+  kCachedVpdData = 2,
+  kCpu = 3,
+  kTimezone = 4,
+  kMemory = 5,
+  kBacklight = 6,
+  kFan = 7,
+  kStatefulPartition = 8,
+  kBluetooth = 9,
+  kSystem = 10,
 };
 
 // An enumeration of the different categories of errors that can occur when
 // probing telemetry information.
-[Extensible]
+//
+// Next ID: 5
+[Stable, Extensible]
 enum ErrorType {
   // Default value.
-  kUnknown,
+  [Default] kUnknown = 4,
   // An error reading a system file.
-  kFileReadError,
+  kFileReadError = 0,
   // An error parsing data into a consumable form.
-  kParseError,
+  kParseError = 1,
   // An error using a system utility.
-  kSystemUtilityError,
+  kSystemUtilityError = 2,
   // The external service used to probe the information is not available.
-  kServiceUnavailable,
+  kServiceUnavailable = 3,
 };
 
 // Structure that contains error information for a telemetry probe.
+//
+// Next ID: 2
+[Stable]
 struct ProbeError {
   // The type of error that occurred.
-  ErrorType type;
+  ErrorType type@0;
   // A debug message with more information about the error. This string is not
   // intended to be shown to the user.
-  string msg;
+  string msg@1;
 };
 
 // Optional double field. Since primitives numeric types cannot be optional,
 // wrap double in a struct that can be nulled.
+[Stable]
 struct DoubleValue {
   // The value of the double.
-  double value;
+  double value@0;
 };
 
 // Optional int64 field. Since primitives numeric types cannot be optional,
 // wrap int64 in a struct that can be nulled.
+[Stable]
 struct Int64Value {
   // The value of the int64.
-  int64 value;
+  int64 value@0;
 };
 
 // Optional uint32 field. Since primitives numeric types cannot be optional,
 // wrap uint32 in a struct that can be nulled.
+[Stable]
 struct UInt32Value {
   // The value of the uint32.
-  uint32 value;
+  uint32 value@0;
 };
 
 // Optional uint64 field. Since primitives numeric types cannot be optional,
 // wrap uint64 in a struct that can be nulled.
+[Stable]
 struct UInt64Value {
   // The value of the uint64.
-  uint64 value;
+  uint64 value@0;
 };
 
 // Optional bool field. Since primitives numeric types cannot be optional,
 // wrap bool in a struct that can be nulled.
+[Stable]
 struct BoolValue {
   // The value of the bool.
-  bool value;
+  bool value@0;
 };
 
 // Information related to the main battery.
+//
+// Next ID: 14
+[Stable]
 struct BatteryInfo {
   // Cycle count.
-  Int64Value? cycle_count;
+  Int64Value? cycle_count@0;
   // Current battery voltage (V)
-  DoubleValue? voltage_now;
+  DoubleValue? voltage_now@1;
   // Manufacturer of the battery
-  string? vendor;
+  string? vendor@2;
   // Serial number of the battery
-  string? serial_number;
+  string? serial_number@3;
   // Design capacity (Ah)
-  DoubleValue? charge_full_design;
+  DoubleValue? charge_full_design@4;
   // Full capacity (Ah)
-  DoubleValue? charge_full;
+  DoubleValue? charge_full@5;
   // Desired minimum output voltage (V)
-  DoubleValue? voltage_min_design;
+  DoubleValue? voltage_min_design@6;
   // Model name.
-  string? model_name;
+  string? model_name@7;
   // Current battery charge (Ah)
-  DoubleValue? charge_now;
+  DoubleValue? charge_now@8;
   // Current battery current (A)
-  DoubleValue? current_now;
+  DoubleValue? current_now@9;
   // Technology of the battery
-  string? technology;
+  string? technology@10;
   // Status of the battery
-  string? status;
+  string? status@11;
 
   // The fields below are optionally included if the main battery is a Smart
   // Battery as defined in http://sbs-forum.org/specs/sbdat110.pdf.
 
   // Manufacture date converted to yyyy-mm-dd format.
-  string? manufacture_date;
+  string? manufacture_date@12;
   // Temperature in 0.1K. Included when the main battery is a Smart Battery.
-  UInt64Value? temperature;
+  UInt64Value? temperature@13;
 };
 
 // Battery probe result. Can either be populated with the BatteryInfo or an
 // error retrieving the information.
+[Stable]
 union BatteryResult {
   // Valid BatteryInfo. Null value if a battery is not present.
   BatteryInfo? battery_info;
@@ -187,40 +206,44 @@ union BatteryResult {
 };
 
 // Information related to a specific non-removable block device.
+//
+// Next ID: 12
+[Stable]
 struct NonRemovableBlockDeviceInfo {
   // The path of this storage on the system. It is useful if caller needs to
   // correlate with other information.
-  string? path;
+  string? path@0;
   // Exact size of this storage, reported in bytes.
-  UInt64Value? size;
+  UInt64Value? size@1;
   // Storage type, could be MMC / NVMe / ATA, based on udev subsystem.
-  string? type;
+  string? type@2;
   // Manufacturer ID, 8 bits.
-  UInt32Value? manufacturer_id;
+  UInt32Value? manufacturer_id@3;
   // PNM: Product name, ASCII characters for 6 bytes.
-  string? name;
+  string? name@4;
   // PSN: Product serial number, encoded unsigned integer in decimal numeral
   // system.
-  string? serial;
+  string? serial@5;
   // Bytes read since last boot.
-  UInt64Value? bytes_read_since_last_boot;
+  UInt64Value? bytes_read_since_last_boot@6;
   // Bytes written since last boot.
-  UInt64Value? bytes_written_since_last_boot;
+  UInt64Value? bytes_written_since_last_boot@7;
   // Time spent reading since last boot.
-  UInt64Value? read_time_seconds_since_last_boot;
+  UInt64Value? read_time_seconds_since_last_boot@8;
   // Time spent writing since last boot.
-  UInt64Value? write_time_seconds_since_last_boot;
+  UInt64Value? write_time_seconds_since_last_boot@9;
   // Time spent doing I/O since last boot. Counts the time the disk and queue
   // were busy, so unlike the fields above, parallel requests are not counted
   // multiple times.
-  UInt64Value? io_time_seconds_since_last_boot;
+  UInt64Value? io_time_seconds_since_last_boot@10;
   // Time spent discarding since last boot. Discarding is writing to clear
   // blocks which are no longer in use. Supported on kernels 4.18+.
-  UInt64Value? discard_time_seconds_since_last_boot;
+  UInt64Value? discard_time_seconds_since_last_boot@11;
 };
 
 // Non-removable block device probe result. Can either be populated with the
 // NonRemovableBlockDeviceInfo or an error retrieving the information.
+[Stable]
 union NonRemovableBlockDeviceResult {
   // Valid NonRemovableBlockDeviceInfo.
   array<NonRemovableBlockDeviceInfo> block_device_info;
@@ -230,19 +253,23 @@ union NonRemovableBlockDeviceResult {
 };
 
 // Cached VPD read from sysfs.
+//
+// Next ID: 4
+[Stable]
 struct CachedVpdInfo {
   // Contents of /sys/firmware/vpd/rw/ActivateDate, if the device supports it.
-  string? first_power_date;
+  string? first_power_date@0;
   // Contents of /sys/firmware/vpd/ro/sku_number, if the device supports it.
-  string? sku_number;
+  string? sku_number@1;
   // Contents of /sys/firmware/vpd/ro/serial_number, if the device supports it.
-  string? serial_number;
+  string? serial_number@2;
   // Contents of /sys/firmware/vpd/ro/model_name, if the device supports it.
-  string? model_name;
+  string? model_name@3;
 };
 
 // Cached VPD probe result. Can either be populated with the CachedVpdInfo or an
 // error retrieving the information.
+[Stable]
 union CachedVpdResult {
   // Valid CachedVpdInfo.
   CachedVpdInfo vpd_info;
@@ -251,57 +278,72 @@ union CachedVpdResult {
 };
 
 // Information about a CPU's C-states.
+//
+// Next ID: 2
+[Stable]
 struct CpuCStateInfo {
   // Name of the state.
-  string? name;
+  string? name@0;
   // Time spent in the state since the last reboot, in microseconds.
-  UInt64Value? time_in_state_since_last_boot_us;
+  UInt64Value? time_in_state_since_last_boot_us@1;
 };
 
 // Information related to a particular logical CPU.
+//
+// Next ID: 5
+[Stable]
 struct LogicalCpuInfo {
   // The max CPU clock speed in kHz.
-  UInt32Value? max_clock_speed_khz;
+  UInt32Value? max_clock_speed_khz@0;
   // Maximum frequency the CPU is allowed to run at, by policy.
-  UInt32Value? scaling_max_frequency_khz;
+  UInt32Value? scaling_max_frequency_khz@1;
   // Current frequency the CPU is running at.
-  UInt32Value? scaling_current_frequency_khz;
+  UInt32Value? scaling_current_frequency_khz@2;
   // Idle time since last boot, in milliseconds.
-  UInt64Value? idle_time_ms;
+  UInt64Value? idle_time_ms@3;
   // Information about the logical CPU's time in various C-states.
-  array<CpuCStateInfo> c_states;
+  array<CpuCStateInfo> c_states@4;
 };
 
 // Information related to a particular physical CPU.
+//
+// Next ID: 2
+[Stable]
 struct PhysicalCpuInfo {
   // The CPU model name.
-  string? model_name;
+  string? model_name@0;
   // Logical CPUs corresponding to this physical CPU.
-  array<LogicalCpuInfo> logical_cpus;
+  array<LogicalCpuInfo> logical_cpus@1;
 };
 
 // An enumeration of CPU architectures.
-[Extensible]
+//
+// Next ID: 4
+[Stable, Extensible]
 enum CpuArchitectureEnum {
-  kUnknown,
-  kX86_64,
-  kAArch64,
-  kArmv7l,
+  [Default] kUnknown = 3,
+  kX86_64 = 0,
+  kAArch64 = 1,
+  kArmv7l = 2,
 };
 
 // Information about the device's CPUs.
+//
+// Next ID: 3
+[Stable]
 struct CpuInfo {
   // Number of total threads available.
-  UInt32Value? num_total_threads;
+  UInt32Value? num_total_threads@0;
   // The CPU architecture - it's assumed all of a device's CPUs share an
   // architecture.
-  CpuArchitectureEnum architecture;
+  CpuArchitectureEnum architecture@1;
   // Information about the device's physical CPUs.
-  array<PhysicalCpuInfo> physical_cpus;
+  array<PhysicalCpuInfo> physical_cpus@2;
 };
 
 // CPU probe result. Can either be populated with the CpuInfo or an error
 // retrieving the information.
+[Stable]
 union CpuResult {
   // Valid CpuInfo.
   CpuInfo cpu_info;
@@ -310,15 +352,19 @@ union CpuResult {
 };
 
 // Timezone information.
+//
+// Next ID: 2
+[Stable]
 struct TimezoneInfo {
   // The timezone of the device in POSIX standard.
-  string? posix;
+  string? posix@0;
   // The timezone region of the device.
-  string? region;
+  string? region@1;
 };
 
 // Timezone probe result. Can either be populated with the TimezoneInfo or an
 // error retrieving the information.
+[Stable]
 union TimezoneResult {
   // Valid TimezoneInfo.
   TimezoneInfo timezone_info;
@@ -327,19 +373,23 @@ union TimezoneResult {
 };
 
 // Memory information.
+//
+// Next ID: 4
+[Stable]
 struct MemoryInfo {
   // Total memory, in KiB.
-  UInt32Value? total_memory_kib;
+  UInt32Value? total_memory_kib@0;
   // Free memory, in KiB.
-  UInt32Value? free_memory_kib;
+  UInt32Value? free_memory_kib@1;
   // Available memory, in KiB.
-  UInt32Value? available_memory_kib;
+  UInt32Value? available_memory_kib@2;
   // Number of page faults since the last boot.
-  UInt64Value? page_faults_since_last_boot;
+  UInt64Value? page_faults_since_last_boot@3;
 };
 
 // Memory probe result. Can either be populated with the MemoryInfo or an
 // error retrieving the information.
+[Stable]
 union MemoryResult {
   // Valid MemoryInfo.
   MemoryInfo memory_info;
@@ -348,18 +398,22 @@ union MemoryResult {
 };
 
 // Backlight information.
+//
+// Next ID: 3
+[Stable]
 struct BacklightInfo {
   // Path to this backlight on the system. Useful if the caller needs to
   // correlate with other information.
-  string? path;
+  string? path@0;
   // Maximum brightness for the backlight.
-  UInt32Value? max_brightness;
+  UInt32Value? max_brightness@1;
   // Current brightness of the backlight, between 0 and max_brightness.
-  UInt32Value? brightness;
+  UInt32Value? brightness@2;
 };
 
 // Backlight probe result. Can either be populated with the BacklightInfo or an
 // error retrieving the information.
+[Stable]
 union BacklightResult {
   // Valid BacklightInfo.
   array<BacklightInfo> backlight_info;
@@ -368,13 +422,15 @@ union BacklightResult {
 };
 
 // Fan information.
+[Stable]
 struct FanInfo {
   // Fan speed in RPM.
-  UInt32Value? speed_rpm;
+  UInt32Value? speed_rpm@0;
 };
 
 // Fan probe result. Can either be populated with the FanInfo or an error
 // retrieving the information.
+[Stable]
 union FanResult {
   // A list of valid FanInfo.
   array<FanInfo> fan_info;
@@ -383,16 +439,20 @@ union FanResult {
 };
 
 // Stateful partition info
+//
+// Next ID: 2
+[Stable]
 struct StatefulPartitionInfo {
   // Available space for user data storage in the device in bytes. Rounded down
   // to multiples of 100MiB (100 * 1024 * 1024 bytes).
-  UInt64Value? available_space;
+  UInt64Value? available_space@0;
   // Total space for user data storage in the device in bytes.
-  UInt64Value? total_space;
+  UInt64Value? total_space@1;
 };
 
 // Stateful partition probe result. Can either be populated with a valid
 // StatefulPartitionInfo or an error retrieving the information.
+[Stable]
 union StatefulPartitionResult {
   // A valid StatefulPartitionInfo.
   StatefulPartitionInfo partition_info;
@@ -401,19 +461,23 @@ union StatefulPartitionResult {
 };
 
 // Information related to one of a device's Bluetooth adapters.
+//
+// Next ID: 4
+[Stable]
 struct BluetoothAdapterInfo {
   // The name of the adapter.
-  string? name;
+  string? name@0;
   // The MAC address of the adapter.
-  string? address;
+  string? address@1;
   // Indicates whether the adapter is on or off.
-  BoolValue? powered;
+  BoolValue? powered@2;
   // The number of devices connected to this adapter.
-  UInt32Value? num_connected_devices;
+  UInt32Value? num_connected_devices@3;
 };
 
 // Bluetooth probe result. Can either be populated with the BluetoothAdapterInfo
 // or an error retrieving the information.
+[Stable]
 union BluetoothResult {
   // Valid BluetoothAdapterInfo.
   array<BluetoothAdapterInfo> bluetooth_adapter_info;
@@ -422,19 +486,22 @@ union BluetoothResult {
 };
 
 // The OS information.
+[Stable]
 struct OsInfo {
   // Contents of CrosConfig in /branding/oem-name.
-  string? oem_name;
+  string? oem_name@0;
 };
 
 // System Information.
+[Stable]
 struct SystemInfo {
   // The info related to the OS.
-  OsInfo os_info;
+  OsInfo os_info@0;
 };
 
 // System probe result. Can either be populated with the SystemInfo or an
 // error retrieving the information.
+[Stable]
 union SystemResult {
   // Valid SystemInfo.
   SystemInfo system_info;
@@ -449,45 +516,49 @@ union SystemResult {
 // request. All optional array members will be null if cros_healthd did not
 // attempt to fetch that information, and size zero if cros_healthd did attempt
 // to fetch that information, but was unable to.
+//
+// Next ID: 11
+[Stable]
 struct TelemetryInfo {
   // Information about the device's main battery. Only present when kBattery was
   // included in the categories input to ProbeTelemetryInfo.
-  BatteryResult? battery_result;
+  BatteryResult? battery_result@0;
   // Information about all of the device's non-removable block devices. Only
   // present when kNonRemovableBlockDevices was included in the categories input
   // to ProbeTelemetryInfo.
-  NonRemovableBlockDeviceResult? block_device_result;
+  NonRemovableBlockDeviceResult? block_device_result@1;
   // Only present when kCachedVpdData was included in the categories input to
   // ProbeTelemetryInfo.
-  CachedVpdResult? vpd_result;
+  CachedVpdResult? vpd_result@2;
   // Information about each of the device's CPUs. Only present when kCpu was
   // included in the categories input to ProbeTelemetryInfo.
-  CpuResult? cpu_result;
+  CpuResult? cpu_result@3;
   // Information about the device's timezone. Only present when kTimezone was
   // included in the categories input to ProbeTelemetryInfo.
-  TimezoneResult? timezone_result;
+  TimezoneResult? timezone_result@4;
   // Information about the system's memory. Only present when kMemory was
   // included in the categories input to ProbeTelemetryInfo.
-  MemoryResult? memory_result;
+  MemoryResult? memory_result@5;
   // Information about all of the device's backlights. Only present when
   // kBacklight was included in the categories input to ProbeTelemetryInfo.
-  BacklightResult? backlight_result;
+  BacklightResult? backlight_result@6;
   // Information about each of the device's fans. Only present when kFan was
   // included in the categories input to ProbeTelemetryInfo.
-  FanResult? fan_result;
+  FanResult? fan_result@7;
   // Information about the stateful partition. Only present when
   // kStatefulPartition was included in the categories input to
   // ProbeTelemetryInfo.
-  StatefulPartitionResult? stateful_partition_result;
+  StatefulPartitionResult? stateful_partition_result@8;
   // Information about the device's Bluetooth adapters and devices. Only present
   // when kBluetooth was included in the categories input to ProbeTelemetryInfo.
-  BluetoothResult? bluetooth_result;
+  BluetoothResult? bluetooth_result@9;
   // Information about the system. Only present when kSystem was included in
   // the categories input to ProbeTelemetryInfo.
-  SystemResult? system_result;
+  SystemResult? system_result@10;
 };
 
 // Result of running /usr/share/cros/oemdata.sh script.
+[Stable]
 struct OemData {
-  string? oem_data;
+  string? oem_data@0;
 };

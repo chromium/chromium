@@ -32,6 +32,7 @@ namespace converters {
 
 TEST(ProbeServiceConverters, ConvertCategoryVector) {
   const std::vector<health::mojom::ProbeCategoryEnum> kInput{
+      health::mojom::ProbeCategoryEnum::kUnknown,
       health::mojom::ProbeCategoryEnum::kBattery,
       health::mojom::ProbeCategoryEnum::kNonRemovableBlockDevices,
       health::mojom::ProbeCategoryEnum::kCachedVpdData,
@@ -46,6 +47,7 @@ TEST(ProbeServiceConverters, ConvertCategoryVector) {
   EXPECT_THAT(
       ConvertCategoryVector(kInput),
       ElementsAre(
+          cros_healthd::mojom::ProbeCategoryEnum::kUnknown,
           cros_healthd::mojom::ProbeCategoryEnum::kBattery,
           cros_healthd::mojom::ProbeCategoryEnum::kNonRemovableBlockDevices,
           cros_healthd::mojom::ProbeCategoryEnum::kSystem,
@@ -60,6 +62,9 @@ TEST(ProbeServiceConverters, ConvertCategoryVector) {
 }
 
 TEST(ProbeServiceConverters, ErrorType) {
+  EXPECT_EQ(Convert(cros_healthd::mojom::ErrorType::kUnknown),
+            health::mojom::ErrorType::kUnknown);
+
   EXPECT_EQ(Convert(cros_healthd::mojom::ErrorType::kFileReadError),
             health::mojom::ErrorType::kFileReadError);
 

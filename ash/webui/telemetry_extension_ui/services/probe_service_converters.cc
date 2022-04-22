@@ -21,6 +21,8 @@ namespace {
 cros_healthd::mojom::ProbeCategoryEnum Convert(
     health::mojom::ProbeCategoryEnum input) {
   switch (input) {
+    case health::mojom::ProbeCategoryEnum::kUnknown:
+      return cros_healthd::mojom::ProbeCategoryEnum::kUnknown;
     case health::mojom::ProbeCategoryEnum::kBattery:
       return cros_healthd::mojom::ProbeCategoryEnum::kBattery;
     case health::mojom::ProbeCategoryEnum::kNonRemovableBlockDevices:
