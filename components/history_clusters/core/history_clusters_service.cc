@@ -5,169 +5,39 @@
 #include "components/history_clusters/core/history_clusters_service.h"
 
 #include <algorithm>
-#include <iterator>
 #include <memory>
-#include <numeric>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
-#include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
-#include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/observer_list.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/time/time_to_iso8601.h"
 #include "base/timer/elapsed_timer.h"
-#include "base/values.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/config.h"
-#include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_buildflags.h"
 #include "components/history_clusters/core/history_clusters_db_tasks.h"
+#include "components/history_clusters/core/history_clusters_debug_jsons.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/l10n/time_format.h"
 
 #if BUILDFLAG(BUILD_WITH_ON_DEVICE_CLUSTERING_BACKEND)
 #include "components/history_clusters/core/on_device_clustering_backend.h"
 #endif
 
 namespace history_clusters {
-
-namespace {
-
-// Gets a loggable JSON representation of `visits`.
-std::string GetDebugJSONForVisits(
-    const std::vector<history::AnnotatedVisit>& visits) {
-  base::ListValue debug_visits_list;
-  for (auto& visit : visits) {
-    base::DictionaryValue debug_visit;
-    debug_visit.SetIntKey("visitId", visit.visit_row.visit_id);
-    debug_visit.SetStringKey("url", visit.url_row.url().spec());
-    debug_visit.SetStringKey("title", visit.url_row.title());
-    debug_visit.SetIntKey("foreground_time_secs",
-                          visit.visit_row.visit_duration.InSeconds());
-    debug_visit.SetIntKey(
-        "navigationTimeMs",
-        visit.visit_row.visit_time.ToDeltaSinceWindowsEpoch().InMilliseconds());
-    debug_visit.SetIntKey("pageEndReason",
-                          visit.context_annotations.page_end_reason);
-    debug_visit.SetIntKey("pageTransition",
-                          static_cast<int>(visit.visit_row.transition));
-    debug_visit.SetIntKey("referringVisitId",
-                          visit.referring_visit_of_redirect_chain_start);
-    debug_visit.SetIntKey("openerVisitId",
-                          visit.opener_visit_of_redirect_chain_start);
-    debug_visits_list.Append(std::move(debug_visit));
-  }
-
-  base::DictionaryValue debug_value;
-  debug_value.SetKey("visits", std::move(debug_visits_list));
-  std::string debug_string;
-  if (!base::JSONWriter::WriteWithOptions(
-          debug_value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &debug_string)) {
-    debug_string = "Error: Could not write visits to JSON.";
-  }
-  return debug_string;
-}
-
-// Gets a loggable JSON representation of `clusters`.
-std::string GetDebugJSONForClusters(
-    const std::vector<history::Cluster>& clusters) {
-  // TODO(manukh): `ListValue` is deprecated; replace with `std::vector`.
-  base::ListValue debug_clusters_list;
-  for (const auto& cluster : clusters) {
-    base::DictionaryValue debug_cluster;
-
-    debug_cluster.SetStringKey("label", cluster.label.value_or(u""));
-    base::ListValue debug_keywords;
-    for (const auto& keyword : cluster.keywords) {
-      debug_keywords.Append(keyword);
-    }
-    debug_cluster.SetKey("keywords", std::move(debug_keywords));
-    debug_cluster.SetBoolKey("should_show_on_prominent_ui_surfaces",
-                             cluster.should_show_on_prominent_ui_surfaces);
-
-    base::ListValue debug_visits;
-    for (const auto& visit : cluster.visits) {
-      base::DictionaryValue debug_visit;
-      debug_visit.SetIntKey("visit_id",
-                            visit.annotated_visit.visit_row.visit_id);
-      debug_visit.SetDoubleKey("score", visit.score);
-      base::ListValue debug_categories;
-      for (const auto& category : visit.annotated_visit.content_annotations
-                                      .model_annotations.categories) {
-        base::DictionaryValue debug_category;
-        debug_category.SetStringKey("name", category.id);
-        debug_category.SetIntKey("value", category.weight);
-        debug_categories.Append(std::move(debug_category));
-      }
-      debug_visit.SetKey("categories", std::move(debug_categories));
-      base::ListValue debug_entities;
-      for (const auto& entity : visit.annotated_visit.content_annotations
-                                    .model_annotations.entities) {
-        base::DictionaryValue debug_entity;
-        debug_entity.SetStringKey("name", entity.id);
-        debug_entity.SetIntKey("value", entity.weight);
-        debug_entities.Append(std::move(debug_entity));
-      }
-      debug_visit.SetKey("entities", std::move(debug_entities));
-      debug_visit.SetDoubleKey("site_engagement_score", visit.engagement_score);
-
-      base::ListValue debug_duplicate_visits;
-      for (const auto& duplicate_visit : visit.duplicate_visits) {
-        debug_duplicate_visits.Append(static_cast<int>(
-            duplicate_visit.annotated_visit.visit_row.visit_id));
-      }
-      debug_visit.SetKey("duplicate_visits", std::move(debug_duplicate_visits));
-
-      debug_visits.Append(std::move(debug_visit));
-    }
-    debug_cluster.SetKey("visits", std::move(debug_visits));
-
-    debug_clusters_list.Append(std::move(debug_cluster));
-  }
-
-  std::string debug_string;
-  if (!base::JSONWriter::WriteWithOptions(
-          debug_clusters_list, base::JSONWriter::OPTIONS_PRETTY_PRINT,
-          &debug_string)) {
-    debug_string = "Error: Could not write clusters to JSON.";
-  }
-  return debug_string;
-}
-
-std::string GetDebugJSONForKeywordSet(
-    const HistoryClustersService::KeywordSet& keyword_set) {
-  std::vector<base::Value> keyword_list;
-  for (const auto& keyword : keyword_set) {
-    keyword_list.emplace_back(keyword);
-  }
-
-  std::string debug_string;
-  if (!base::JSONWriter::WriteWithOptions(
-          base::Value(keyword_list), base::JSONWriter::OPTIONS_PRETTY_PRINT,
-          &debug_string)) {
-    debug_string = "Error: Could not write keywords list to JSON.";
-  }
-  return debug_string;
-}
-
-}  // namespace
 
 VisitDeletionObserver::VisitDeletionObserver(
     HistoryClustersService* history_clusters_service)
@@ -418,8 +288,8 @@ void HistoryClustersService::StartKeywordCacheRefresh() {
     NotifyDebugMessage("Starting short_keywords_cache_ generation.");
     QueryClusters(
         ClusteringRequestSource::kKeywordCacheGeneration,
-        /*begin_time=*/all_keywords_cache_timestamp_, /*continuation_params=*/
-        {},
+        /*begin_time=*/all_keywords_cache_timestamp_,
+        /*continuation_params=*/{},
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
                        weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(),
                        all_keywords_cache_timestamp_,
@@ -504,8 +374,10 @@ void HistoryClustersService::PopulateClusterKeywordCache(
   *cache = std::move(*keyword_accumulator);
   *url_cache = std::move(*url_keyword_accumulator);
   if (ShouldNotifyDebugMessage()) {
-    NotifyDebugMessage("Cache construction complete:");
+    NotifyDebugMessage("Cache construction complete; keyword cache:");
     NotifyDebugMessage(GetDebugJSONForKeywordSet(*cache));
+    NotifyDebugMessage("Url cache:");
+    NotifyDebugMessage(GetDebugJSONForKeywordSet(*url_cache));
   }
 
   // Record keyword phrase & keyword counts for the appropriate cache.
