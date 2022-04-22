@@ -10,6 +10,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/test/v8_test.h"
 #include "v8/include/v8-initialization.h"
@@ -187,7 +188,13 @@ TEST_F(V8MemoryDumpProviderTest, DumpCodeStatistics) {
 }
 
 // Tests that a deterministic memory dump request performs a GC.
-TEST_F(V8MemoryDumpProviderTest, Deterministic) {
+// TODO(crbug.com/1318974): Fix the flakiness on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_Deterministic DISABLED_Deterministic
+#else
+#define MAYBE_Deterministic Deterministic
+#endif
+TEST_F(V8MemoryDumpProviderTest, MAYBE_Deterministic) {
   base::trace_event::MemoryDumpArgs dump_args = {
       base::trace_event::MemoryDumpLevelOfDetail::LIGHT,
       base::trace_event::MemoryDumpDeterminism::FORCE_GC};
