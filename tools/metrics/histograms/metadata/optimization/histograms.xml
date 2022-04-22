@@ -1246,8 +1246,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OptimizationGuide.RemoteFetchingEnabled"
-    units="BooleanEnabled" expires_after="2022-10-09">
+<histogram name="OptimizationGuide.RemoteFetchingEnabled" enum="BooleanEnabled"
+    expires_after="2022-10-09">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
