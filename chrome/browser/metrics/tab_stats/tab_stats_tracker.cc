@@ -308,22 +308,12 @@ class TabStatsTracker::WebContentsUsageObserver
         tab_stats_observer.OnTabInteraction(web_contents());
       }
     }
-  }
-
-  // TODO(crbug.com/1245014): Change this to PrimaryPageChanged and use
-  // RFH::GetUkmPageSourceId instead of navigation_handle->GetNavigationId() for
-  // the Ukm source id.
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override {
-    if (!navigation_handle->HasCommitted() ||
-        !navigation_handle->IsInPrimaryMainFrame() ||
-        navigation_handle->IsSameDocument()) {
-      return;
-    }
     // Update navigation time for UKM reporting.
     navigation_time_ = navigation_handle->NavigationStart();
-    ukm_source_id_ = ukm::ConvertToSourceId(
-        navigation_handle->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
+  }
+
+  void PrimaryPageChanged(content::Page& page) override {
+    ukm_source_id_ = page.GetMainDocument().GetPageUkmSourceId();
 
     // Update observers.
     for (TabStatsObserver& tab_stats_observer :

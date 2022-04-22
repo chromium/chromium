@@ -23,7 +23,7 @@ std::pair<ukm::SourceId, url::Origin> GetNavigationInfoForContents(
   if (!main_frame || main_frame->GetLastCommittedURL().is_empty())
     return std::make_pair(ukm::kInvalidSourceId, url::Origin());
 
-  return std::make_pair(ukm::GetSourceIdForWebContentsDocument(contents),
+  return std::make_pair(main_frame->GetPageUkmSourceId(),
                         main_frame->GetLastCommittedOrigin());
 }
 
