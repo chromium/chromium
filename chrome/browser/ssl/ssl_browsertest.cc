@@ -6374,6 +6374,50 @@ IN_PROC_BROWSER_TEST_F(
             security_interstitials::InsecureFormBlockingPage::kTypeForTesting);
 }
 
+// Checks navigating back and forward from the interstitial is not treated as
+// proceeding on a GET form.
+IN_PROC_BROWSER_TEST_F(
+    SSLUITest,
+    TestBackForwardOnInsecureFormSubmissionWarningIsNotProceedGetForm) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(https_server_.Start());
+
+  std::string replacement_path = GetFilePathWithHostAndPortReplacement(
+      "/ssl/page_displays_insecure_form_get.html",
+      embedded_test_server()->host_port_pair());
+
+  // Navigate to an insecure form that uses the GET method, make sure we get a
+  // warning.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL(replacement_path)));
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver nav_observer(tab, 1);
+  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  nav_observer.Wait();
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          tab);
+  EXPECT_TRUE(helper->IsDisplayingInterstitial());
+  EXPECT_EQ(helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting()
+                ->GetTypeForTesting(),
+            security_interstitials::InsecureFormBlockingPage::kTypeForTesting);
+  // Navigate back, then forward.
+  content::TestNavigationObserver back_observer(tab, 1);
+  tab->GetController().GoBack();
+  back_observer.Wait();
+  content::TestNavigationObserver forward_observer(tab, 1);
+  tab->GetController().GoForward();
+  forward_observer.Wait();
+  // Check we get another interstitial.
+  helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          tab);
+  EXPECT_TRUE(helper->IsDisplayingInterstitial());
+  EXPECT_EQ(helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting()
+                ->GetTypeForTesting(),
+            security_interstitials::InsecureFormBlockingPage::kTypeForTesting);
+}
+
 // Check proceed works correctly on insecure form warning.
 IN_PROC_BROWSER_TEST_F(SSLUITest, ProceedThroughInsecureFormWarning) {
   ASSERT_TRUE(embedded_test_server()->Start());
