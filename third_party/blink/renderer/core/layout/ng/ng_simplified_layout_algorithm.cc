@@ -272,7 +272,10 @@ const NGLayoutResult* NGSimplifiedLayoutAlgorithm::Layout() {
     auto* items_builder = container_builder_.ItemsBuilder();
     DCHECK(items_builder);
     DCHECK_EQ(items_builder->GetWritingDirection(), writing_direction_);
-    items_builder->AddPreviousItems(previous_fragment, *previous_items);
+    const auto result =
+        items_builder->AddPreviousItems(previous_fragment, *previous_items);
+    if (!result.succeeded)
+      return nullptr;
   }
 
   // Some layout types (grid) manually calculate their inflow-bounds rather

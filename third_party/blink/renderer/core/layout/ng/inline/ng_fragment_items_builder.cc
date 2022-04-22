@@ -297,7 +297,15 @@ NGFragmentItemsBuilder::AddPreviousItems(
       for (NGInlineCursor line = cursor.CursorForDescendants(); line;
            line.MoveToNext()) {
         const NGFragmentItem& line_child = *line.Current().Item();
-        DCHECK(line_child.CanReuse());
+        if (end_item) {
+          // If |end_item| is given, the caller has computed the range safe to
+          // reuse by calling |EndOfReusableItems|. All children should be safe
+          // to reuse.
+          DCHECK(line_child.CanReuse());
+        } else if (!line_child.CanReuse()) {
+          // Abort and report the failure if any child is not reusable.
+          return AddPreviousItemsResult();
+        }
 #if DCHECK_IS_ON()
         // |RebuildFragmentTreeSpine| does not rebuild spine if |NeedsLayout|.
         // Such block needs to copy PostLayout fragment while running simplified
