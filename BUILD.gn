@@ -262,6 +262,7 @@ group("gn_all") {
   if (is_fuchsia && !is_chromecast) {
     deps += [
       ":d8_fuchsia",
+      "//fuchsia/cipd",
       "//fuchsia/engine:web_engine",
       "//fuchsia/release:fuchsia_sizes",
       "//fuchsia/runners:cast_runner",
@@ -274,10 +275,6 @@ group("gn_all") {
       # Ensure this target continues to build.
       "//chromecast/bindings:bindings_manager_fuchsia",
     ]
-
-    if (is_official_build) {
-      deps += [ "//fuchsia/cipd" ]
-    }
   }
 
   deps += root_extra_deps
