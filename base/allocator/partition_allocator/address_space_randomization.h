@@ -92,7 +92,14 @@ AslrMask(uintptr_t bits) {
     }
     PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE uintptr_t
     ASLROffset() {
-      return AslrAddress(0x1000000000ULL);
+      // Be careful, there is a zone where macOS will not map memory, at least
+      // on ARM64. From an ARM64 machine running 12.3, the range seems to be
+      // [0x1000000000, 0x7000000000). Make sure that the range we use is
+      // outside these bounds. In 12.3, there is a reserved area between
+      // MACH_VM_MIN_GPU_CARVEOUT_ADDRESS and MACH_VM_MAX_GPU_CARVEOUT_ADDRESS,
+      // which is reserved on ARM64. See these constants in XNU's source code
+      // for details (xnu-8019.80.24/osfmk/mach/arm/vm_param.h).
+      return AslrAddress(0x10000000000ULL);
     }
 
   #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
