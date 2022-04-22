@@ -216,47 +216,35 @@ class DesksBarBoundsAnimation : public ui::ImplicitAnimationObserver {
 }  // namespace
 
 void PerformNewDeskMiniViewAnimation(
-    DesksBarView* bar_view,
-    const std::vector<DeskMiniView*>& new_mini_views,
+    std::vector<DeskMiniView*> new_mini_views,
+    std::vector<DeskMiniView*> mini_views_left,
+    std::vector<DeskMiniView*> mini_views_right,
+    ExpandedDesksBarButton* expanded_state_new_desk_button,
+    ExpandedDesksBarButton* expanded_state_desks_templates_button,
     int shift_x) {
-  gfx::Transform begin_transform;
-  begin_transform.Translate(shift_x, 0);
+  DCHECK(expanded_state_new_desk_button);
+  gfx::Transform mini_views_left_begin_transform;
+  mini_views_left_begin_transform.Translate(shift_x, 0);
+  gfx::Transform mini_views_right_begin_transform;
+  mini_views_right_begin_transform.Translate(-shift_x, 0);
 
-  for (auto* mini_view : bar_view->mini_views()) {
-    const bool is_new = base::Contains(new_mini_views, mini_view);
-
+  for (auto* mini_view : new_mini_views) {
     ui::Layer* layer = mini_view->layer();
-    if (is_new)
-      layer->SetOpacity(0.f);
-    layer->SetTransform(begin_transform);
-
+    layer->SetOpacity(0);
     ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
     InitScopedAnimationSettings(&settings, kExistingMiniViewsAnimationDuration);
-
-    // Fade in new desk mini_views and shift all of them (new & old) to the
-    // left.
-    if (is_new)
-      layer->SetOpacity(1);
-    layer->SetTransform(kEndTransform);
+    layer->SetOpacity(1);
   }
 
-  // The new desk button and the desk templates button in the expanded desks bar
-  // moves at the opposite direction of the existing mini views while creating a
-  // new mini view. The existing mini views will move from right to left while
-  // the new desk button and the desk templates button will move from left to
-  // right. Since the newly added mini view will be added between the last mini
-  // view and the new desk button.
-  gfx::Transform new_desk_button_begin_transform;
-  new_desk_button_begin_transform.Translate(-shift_x, 0);
-  AnimateView(bar_view->expanded_state_new_desk_button(),
-              new_desk_button_begin_transform);
+  AnimateMiniViews(mini_views_left, mini_views_left_begin_transform);
+  AnimateMiniViews(mini_views_right, mini_views_right_begin_transform);
 
-  if (auto* expanded_state_desks_templates_button =
-          bar_view->expanded_state_desks_templates_button()) {
-    gfx::Transform desks_templates_begin_transform;
-    desks_templates_begin_transform.Translate(-shift_x, 0);
+  // The new desk button and the desk templates button in the expanded desks bar
+  // always move to the right when a new desk is added.
+  AnimateView(expanded_state_new_desk_button, mini_views_right_begin_transform);
+  if (expanded_state_desks_templates_button) {
     AnimateView(expanded_state_desks_templates_button,
-                desks_templates_begin_transform);
+                mini_views_right_begin_transform);
   }
 }
 

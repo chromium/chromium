@@ -881,13 +881,20 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
 
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
   DCHECK(root_window);
+
+  // New mini views can be added at any index, so we need to iterate through and
+  // insert new mini views in a position in `mini_views_` that corresponds to
+  // their index in the `DeskController`'s list of desks.
+  int mini_view_index = 0;
   for (const auto& desk : desks) {
     if (!FindMiniViewForDesk(desk.get())) {
-      DeskMiniView* mini_view = scroll_view_contents_->AddChildView(
-          std::make_unique<DeskMiniView>(this, root_window, desk.get()));
-      mini_views_.push_back(mini_view);
+      DeskMiniView* mini_view = scroll_view_contents_->AddChildViewAt(
+          std::make_unique<DeskMiniView>(this, root_window, desk.get()),
+          mini_view_index);
+      mini_views_.insert(mini_views_.begin() + mini_view_index, mini_view);
       new_mini_views.push_back(mini_view);
     }
+    ++mini_view_index;
   }
 
   if (expanding_bar_view) {
@@ -901,8 +908,31 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
   if (initializing_bar_view)
     return;
 
-  PerformNewDeskMiniViewAnimation(this, new_mini_views,
-                                  begin_x - GetFirstMiniViewXOffset());
+  // We need to compile lists of the mini views on either side of the new mini
+  // views so that they can be moved to make room for the new mini views in the
+  // desks bar.
+  auto left_partition_iter =
+      std::find_if(mini_views_.begin(), mini_views_.end(),
+                   [new_mini_views](DeskMiniView* mini_view) {
+                     return mini_view == new_mini_views.front();
+                   });
+  auto right_partition_iter =
+      std::next(std::find_if(mini_views_.begin(), mini_views_.end(),
+                             [new_mini_views](DeskMiniView* mini_view) {
+                               return mini_view == new_mini_views.back();
+                             }));
+
+  // A vector between `left_partition_iter` and `right_partition_iter` should be
+  // the same as `new_mini_views` if they were added correctly.
+  DCHECK(std::vector<DeskMiniView*>(left_partition_iter,
+                                    right_partition_iter) == new_mini_views);
+
+  PerformNewDeskMiniViewAnimation(
+      new_mini_views,
+      std::vector<DeskMiniView*>(mini_views_.begin(), left_partition_iter),
+      std::vector<DeskMiniView*>(right_partition_iter, mini_views_.end()),
+      expanded_state_new_desk_button_, expanded_state_desks_templates_button_,
+      begin_x - GetFirstMiniViewXOffset());
 }
 
 void DesksBarView::ScrollToShowMiniViewIfNecessary(

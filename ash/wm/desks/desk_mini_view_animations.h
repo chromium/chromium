@@ -18,22 +18,27 @@ class DesksBarView;
 class DeskMiniView;
 class ExpandedDesksBarButton;
 
-// Animates new desk mini_views, fading them in and moving them from right to
-// left into their final positions in the desk bar view. It will also animate
-// existing desks to show them moving as a result of creating the new
-// mini_views.
-// |bar_view| is the desk bar view on which the new mini_views are being
-// added. |new_mini_views| contains a list of the newly-created mini_views.
-// |shift_x| is the amount by which the mini_views (new and existing) will be
-// moved horizontally as a result of creating the new mini_views.
+// Animates new desk mini_views, fading them into their final positions in the
+// desk bar view. It will also animate existing desks to show them moving as a
+// result of creating the new mini_views. `new_mini_views` contains a list of
+// the newly-created mini_views. `mini_views_left` are the mini views on the
+// left of the new mini views in the desks bar, while `mini_views_right` are the
+// mini views on the right side of the new mini views.
+// `expanded_state_new_desk_button` and `expanded_state_desks_templates_button`
+// (if it exists) will be moved to the right. `shift_x` is the amount by which
+// the mini_views (new and existing) will be moved horizontally as a result of
+// creating the new mini_views.
 //
 // * Notes:
 // - It assumes that the new mini_views have already been created, and all
 //   mini_views (new and existing) have already been laid out in their final
 //   positions.
 void PerformNewDeskMiniViewAnimation(
-    DesksBarView* bar_view,
-    const std::vector<DeskMiniView*>& new_mini_views,
+    std::vector<DeskMiniView*> new_mini_views,
+    std::vector<DeskMiniView*> mini_views_left,
+    std::vector<DeskMiniView*> mini_views_right,
+    ExpandedDesksBarButton* expanded_state_new_desk_button,
+    ExpandedDesksBarButton* expanded_state_desks_templates_button,
     int shift_x);
 
 // Performs the mini_view removal animation. It is in charge of removing the

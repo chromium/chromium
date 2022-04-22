@@ -46,7 +46,8 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   class Observer {
    public:
     // Called when |desk| has been created and added to
-    // `DesksController::desks_`.
+    // `DesksController::desks_`. It's important to note that `desk` can be
+    // added at any position in `DesksController::desks_`.
     virtual void OnDeskAdded(const Desk* desk) = 0;
 
     // Called when |desk| has been removed from `DesksController::desks_`.
