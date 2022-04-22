@@ -18,24 +18,44 @@ PrimaryAccountAccessTokenFetcher::PrimaryAccountAccessTokenFetcher(
     const std::string& oauth_consumer_name,
     IdentityManager* identity_manager,
     const ScopeSet& scopes,
-    AccessTokenFetcher::TokenCallback callback,
     Mode mode,
     ConsentLevel consent)
     : oauth_consumer_name_(oauth_consumer_name),
       identity_manager_(identity_manager),
       scopes_(scopes),
-      callback_(std::move(callback)),
       mode_(mode),
       consent_(consent) {
   identity_manager_observation_.Observe(identity_manager_.get());
+}
+
+PrimaryAccountAccessTokenFetcher::PrimaryAccountAccessTokenFetcher(
+    const std::string& oauth_consumer_name,
+    IdentityManager* identity_manager,
+    const ScopeSet& scopes,
+    AccessTokenFetcher::TokenCallback callback,
+    Mode mode,
+    ConsentLevel consent)
+    : PrimaryAccountAccessTokenFetcher(oauth_consumer_name,
+                                       identity_manager,
+                                       scopes,
+                                       mode,
+                                       consent) {
+  Start(std::move(callback));
+}
+
+PrimaryAccountAccessTokenFetcher::~PrimaryAccountAccessTokenFetcher() = default;
+
+void PrimaryAccountAccessTokenFetcher::Start(
+    AccessTokenFetcher::TokenCallback callback) {
+  DCHECK(callback);
+  DCHECK(!callback_);
+  callback_ = std::move(callback);
   if (mode_ == Mode::kImmediate || AreCredentialsAvailable()) {
     StartAccessTokenRequest();
     return;
   }
   waiting_for_account_available_ = true;
 }
-
-PrimaryAccountAccessTokenFetcher::~PrimaryAccountAccessTokenFetcher() = default;
 
 CoreAccountId PrimaryAccountAccessTokenFetcher::GetAccountId() const {
   return identity_manager_->GetPrimaryAccountId(consent_);

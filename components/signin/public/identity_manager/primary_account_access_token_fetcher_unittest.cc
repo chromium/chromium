@@ -75,6 +75,17 @@ class PrimaryAccountAccessTokenFetcherTest
     return CreateFetcher(std::move(callback), mode, consent);
   }
 
+  std::unique_ptr<PrimaryAccountAccessTokenFetcher> CreateDelayedStartFetcher(
+      PrimaryAccountAccessTokenFetcher::Mode mode) {
+    // API scope that does not require consent.
+    std::set<std::string> scopes = {
+        GaiaConstants::kChromeSafeBrowsingOAuth2Scope};
+    ConsentLevel consent = GetParam();
+    return std::make_unique<PrimaryAccountAccessTokenFetcher>(
+        "test_consumer", identity_test_env_->identity_manager(), scopes, mode,
+        consent);
+  }
+
   IdentityTestEnvironment* identity_test_env() {
     return identity_test_env_.get();
   }
@@ -121,6 +132,27 @@ TEST_P(PrimaryAccountAccessTokenFetcherTest, OneShotShouldReturnAccessToken) {
 }
 
 TEST_P(PrimaryAccountAccessTokenFetcherTest,
+       DelayedOneShotShouldReturnAccessToken) {
+  TestTokenCallback callback;
+
+  CoreAccountId account_id = SignIn();
+
+  // Signed in and refresh token already exists, so this should result in a
+  // request for an access token.
+  auto fetcher = CreateDelayedStartFetcher(
+      PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
+
+  // Once the access token request is fulfilled, we should get called back with
+  // the access token.
+  EXPECT_CALL(callback, Run(GoogleServiceAuthError::AuthErrorNone(),
+                            access_token_info()));
+  fetcher->Start(callback.Get());
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      access_token_info().token, access_token_info().expiration_time,
+      access_token_info().id_token);
+}
+
+TEST_P(PrimaryAccountAccessTokenFetcherTest,
        WaitAndRetryShouldReturnAccessToken) {
   TestTokenCallback callback;
 
@@ -141,6 +173,27 @@ TEST_P(PrimaryAccountAccessTokenFetcherTest,
       access_token_info().id_token);
 }
 
+TEST_P(PrimaryAccountAccessTokenFetcherTest,
+       DelayedWaitAndRetryShouldReturnAccessToken) {
+  TestTokenCallback callback;
+
+  CoreAccountId account_id = SignIn();
+
+  // Signed in and refresh token already exists, so this should result in a
+  // request for an access token.
+  auto fetcher = CreateDelayedStartFetcher(
+      PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
+
+  // Once the access token request is fulfilled, we should get called back with
+  // the access token.
+  EXPECT_CALL(callback, Run(GoogleServiceAuthError::AuthErrorNone(),
+                            access_token_info()));
+  fetcher->Start(callback.Get());
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      access_token_info().token, access_token_info().expiration_time,
+      access_token_info().id_token);
+}
+
 TEST_P(PrimaryAccountAccessTokenFetcherTest, ShouldNotReplyIfDestroyed) {
   TestTokenCallback callback;
 
@@ -151,6 +204,8 @@ TEST_P(PrimaryAccountAccessTokenFetcherTest, ShouldNotReplyIfDestroyed) {
   auto fetcher = CreateFetcher(
       callback.Get(), PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
 
+  EXPECT_CALL(callback, Run).Times(0);
+
   // Destroy the fetcher before the access token request is fulfilled.
   fetcher.reset();
 
@@ -158,6 +213,20 @@ TEST_P(PrimaryAccountAccessTokenFetcherTest, ShouldNotReplyIfDestroyed) {
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       access_token_info().token, access_token_info().expiration_time,
       access_token_info().id_token);
+}
+
+TEST_P(PrimaryAccountAccessTokenFetcherTest, ShouldNotReplyIfNotStarted) {
+  TestTokenCallback callback;
+
+  CoreAccountId account_id = SignIn();
+
+  // Signed in and refresh token already exists, so this would result in a
+  // request for an access token if the fetcher were started.
+  auto fetcher = CreateDelayedStartFetcher(
+      PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
+
+  // No token request generated because the fetcher has not been started.
+  EXPECT_FALSE(identity_test_env()->IsAccessTokenRequestPending());
 }
 
 TEST_P(PrimaryAccountAccessTokenFetcherTest, OneShotCallsBackWhenSignedOut) {
@@ -201,6 +270,8 @@ TEST_P(PrimaryAccountAccessTokenFetcherTest,
   auto fetcher = CreateFetcher(
       callback.Get(),
       PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
+
+  EXPECT_CALL(callback, Run).Times(0);
 }
 
 TEST_P(PrimaryAccountAccessTokenFetcherTest, ShouldWaitForSignIn) {
