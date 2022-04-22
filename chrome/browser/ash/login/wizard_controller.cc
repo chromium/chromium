@@ -272,14 +272,6 @@ bool IsResumableOobeScreen(OobeScreenId screen_id) {
   return false;
 }
 
-bool IsResumablePostLoginScreen(OobeScreenId screen_id) {
-  for (const auto& resumable_screen : kResumablePostLoginScreens) {
-    if (screen_id == resumable_screen)
-      return true;
-  }
-  return false;
-}
-
 bool ShouldHideStatusArea(OobeScreenId screen_id) {
   for (const auto& s : kScreensWithHiddenStatusArea) {
     if (screen_id == s)
@@ -2341,6 +2333,15 @@ void WizardController::SkipPostLoginScreensForTesting() {
     LOG(WARNING) << "SkipPostLoginScreensForTesting(): Ignore screen "
                  << current_screen_id.name;
   }
+}
+
+// statis
+bool WizardController::IsResumablePostLoginScreen(OobeScreenId screen_id) {
+  for (const auto& resumable_screen : kResumablePostLoginScreens) {
+    if (screen_id == resumable_screen)
+      return true;
+  }
+  return false;
 }
 
 // static

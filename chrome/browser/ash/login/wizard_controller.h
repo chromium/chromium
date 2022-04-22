@@ -135,6 +135,9 @@ class WizardController : public OobeUI::Observer {
   // Enrollment flow.
   static bool IsZeroTouchHandsOffOobeFlow();
 
+  // Returns true if the onboarding flow can be resumed from `screen_id`.
+  static bool IsResumablePostLoginScreen(OobeScreenId screen_id);
+
   bool is_initialized() { return is_initialized_; }
 
   // Shows the first screen defined by `first_screen` or by default if the

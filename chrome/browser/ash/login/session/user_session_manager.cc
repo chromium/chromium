@@ -1765,6 +1765,13 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
         ProfileHelper::Get()->GetUserByProfile(profile);
     std::string pending_screen =
         known_user.GetPendingOnboardingScreen(user->GetAccountId());
+    if (!pending_screen.empty() &&
+        !WizardController::IsResumablePostLoginScreen(
+            OobeScreenId(pending_screen))) {
+      pending_screen.clear();
+      known_user.RemovePendingOnboardingScreen(user->GetAccountId());
+    }
+
     absl::optional<base::Version> onboarding_completed_version =
         known_user.GetOnboardingCompletedVersion(user->GetAccountId());
 
