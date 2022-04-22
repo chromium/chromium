@@ -33,8 +33,12 @@ class AutofillAssistantModelExecutor
   using ExecutionTask = optimization_guide::GenericModelExecutionTask<
       std::pair<int, int>,
       const blink::AutofillAssistantNodeSignals&>;
+  using SparseVector = std::vector<std::pair<std::pair<int, int>, int>>;
+  using SparseMap = base::flat_map<std::pair<int, int>, int>;
+  using OverridesMap = base::flat_map<SparseVector, std::pair<int, int>>;
 
-  AutofillAssistantModelExecutor();
+  explicit AutofillAssistantModelExecutor(
+      absl::optional<OverridesMap> policy = absl::nullopt);
   ~AutofillAssistantModelExecutor() override;
 
   AutofillAssistantModelExecutor(const AutofillAssistantModelExecutor&) =
@@ -70,11 +74,15 @@ class AutofillAssistantModelExecutor
   void BuildExecutionTask(
       std::unique_ptr<tflite::task::core::TfLiteEngine> tflite_engine);
 
-  // Tokenize the |input| and count words into the |output| vector. The |output|
-  // can be reused for all relevant inputs for a signal.
+  // Tokenize the |input| and count words into the |output_map|. The same
+  // |output_map| should be reused for all relevant inputs for a signal.
   void Tokenize(const std::u16string& input,
                 tflite::support::text::tokenizer::RegexTokenizer* tokenizer,
-                std::vector<float>* output);
+                const int feature_index,
+                SparseMap& output_map);
+
+  SparseVector TokenizeSignalsToSparseVector(
+      const blink::AutofillAssistantNodeSignals& node_signals);
 
   // Helper functions for post processing based on |model_metadata_|.
   bool GetIndexOfBestRole(const std::vector<float>& output_role,
@@ -102,6 +110,11 @@ class AutofillAssistantModelExecutor
   base::MemoryMappedFile model_file_;
   // Model Metadata for handling input/output.
   ModelMetadata model_metadata_;
+  // Data regarding business logic for model execution.
+  // Set if there is an override for this model execution.
+  // Sparse encoding of a feature vector table.
+  absl::optional<OverridesMap> overrides_;
+  absl::optional<std::pair<int, int>> overrides_result_;
 };
 
 }  // namespace autofill_assistant

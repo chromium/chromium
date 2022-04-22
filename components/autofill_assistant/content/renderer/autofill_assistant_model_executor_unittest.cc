@@ -24,6 +24,12 @@
 namespace autofill_assistant {
 namespace {
 
+using OverridesMap = AutofillAssistantModelExecutor::OverridesMap;
+using SparseVector = AutofillAssistantModelExecutor::SparseVector;
+
+constexpr int kDummyObjective = 9999;
+constexpr int kDummySemanticRole = 1111;
+
 class AutofillAssistantModelExecutorTest : public testing::Test {
  public:
   AutofillAssistantModelExecutorTest() {
@@ -36,6 +42,20 @@ class AutofillAssistantModelExecutorTest : public testing::Test {
   ~AutofillAssistantModelExecutorTest() override = default;
 
  protected:
+  OverridesMap CreateOverrides() {
+    OverridesMap map;
+    SparseVector vector;
+    // First, create a feature vector of the feature "street" that is found
+    // twice on the website for the "second" feature index.
+    vector.push_back(std::make_pair(
+        std::make_pair(/* feature_index = */ 2, /* feature= */ 862),
+        /* count= */ 2));
+    // Add an override with a dummy objetive and semantic role for that feature
+    // vector.
+    map[vector] = std::make_pair(kDummyObjective, kDummySemanticRole);
+    return map;
+  }
+
   base::File model_file_;
   AutofillAssistantModelExecutor model_executor_;
 
@@ -84,6 +104,40 @@ TEST_F(AutofillAssistantModelExecutorTest, ExecuteWithLoadedModel) {
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->first, 47 /* ADDRESS_LINE1 */);
   EXPECT_EQ(result->second, 7 /* FILL_DELIVERY_ADDRESS */);
+}
+
+TEST_F(AutofillAssistantModelExecutorTest, OverridesMatch) {
+  AutofillAssistantModelExecutor model_executor =
+      AutofillAssistantModelExecutor(CreateOverrides());
+
+  ASSERT_TRUE(model_executor.InitializeModelFromFile(model_file_.Duplicate()));
+
+  blink::AutofillAssistantNodeSignals node_signals;
+  node_signals.node_features.invisible_attributes =
+      blink::WebString::FromUTF8("street");
+  node_signals.node_features.text.push_back(
+      blink::WebString::FromUTF8("street"));
+
+  auto result = model_executor.ExecuteModelWithInput(node_signals);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->first, 9999);
+  EXPECT_EQ(result->second, 1111);
+}
+
+TEST_F(AutofillAssistantModelExecutorTest, OverridesNoMatch) {
+  AutofillAssistantModelExecutor model_executor =
+      AutofillAssistantModelExecutor(CreateOverrides());
+
+  ASSERT_TRUE(model_executor.InitializeModelFromFile(model_file_.Duplicate()));
+
+  blink::AutofillAssistantNodeSignals node_signals;
+  node_signals.node_features.text.push_back(
+      blink::WebString::FromUTF8("street"));
+
+  auto result = model_executor.ExecuteModelWithInput(node_signals);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_NE(result->first, 9999);
+  EXPECT_NE(result->second, 1111);
 }
 
 }  // namespace

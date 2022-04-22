@@ -17,8 +17,32 @@
 #include "third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_extractor.h"
 
 namespace autofill_assistant {
+namespace {
 
-AutofillAssistantModelExecutor::AutofillAssistantModelExecutor() = default;
+void DenseEncode(
+    const AutofillAssistantModelExecutor::SparseVector& sparse_vector,
+    std::vector<std::vector<float>>& inputs) {
+  for (const auto& entry : sparse_vector) {
+    const auto& coordinates = entry.first;
+    if (static_cast<size_t>(coordinates.first) >= inputs.size()) {
+      NOTREACHED();
+      continue;
+    }
+    if (static_cast<size_t>(coordinates.second) >=
+        inputs[coordinates.first].size()) {
+      NOTREACHED();
+      continue;
+    }
+    inputs[coordinates.first][coordinates.second] = entry.second;
+  }
+}
+
+}  // namespace
+
+AutofillAssistantModelExecutor::AutofillAssistantModelExecutor(
+    absl::optional<OverridesMap> overrides)
+    : overrides_(std::move(overrides)) {}
+
 AutofillAssistantModelExecutor::~AutofillAssistantModelExecutor() = default;
 
 bool AutofillAssistantModelExecutor::InitializeModelFromFile(
@@ -121,6 +145,14 @@ bool AutofillAssistantModelExecutor::Preprocess(
     NOTREACHED() << "Input tensors mismatch.";
     return false;
   }
+
+  SparseVector sparse_vector = TokenizeSignalsToSparseVector(node_signals);
+
+  if (overrides_ && overrides_->contains(sparse_vector)) {
+    overrides_result_ = (*overrides_)[sparse_vector];
+    return true;
+  }
+
   std::vector<std::vector<float>> inputs;
   for (const auto* input_tensor : input_tensors) {
     tflite::RuntimeShape shape = tflite::GetTensorShape(input_tensor);
@@ -129,27 +161,7 @@ bool AutofillAssistantModelExecutor::Preprocess(
     }
     inputs.emplace_back(std::vector(shape.Dims(1), 0.0f));
   }
-
-  DCHECK(tags_tokenizer_);
-  Tokenize(node_signals.node_features.html_tag.Utf16(), tags_tokenizer_.get(),
-           &inputs[0]);
-  DCHECK(types_tokenizer_);
-  Tokenize(node_signals.node_features.type.Utf16(), types_tokenizer_.get(),
-           &inputs[1]);
-  DCHECK(text_tokenizer_);
-  Tokenize(node_signals.node_features.invisible_attributes.Utf16(),
-           text_tokenizer_.get(), &inputs[2]);
-  for (const auto& text : node_signals.node_features.text) {
-    Tokenize(text.Utf16(), text_tokenizer_.get(), &inputs[2]);
-  }
-  for (const auto& text : node_signals.label_features.text) {
-    Tokenize(text.Utf16(), text_tokenizer_.get(), &inputs[3]);
-  }
-  for (const auto& text : node_signals.context_features.header_text) {
-    Tokenize(text.Utf16(), text_tokenizer_.get(), &inputs[4]);
-  }
-  Tokenize(node_signals.context_features.form_type.Utf16(),
-           text_tokenizer_.get(), &inputs[4]);
+  DenseEncode(sparse_vector, inputs);
 
   for (size_t i = 0; i < inputs.size(); ++i) {
     absl::Status tensor_status =
@@ -223,6 +235,10 @@ bool AutofillAssistantModelExecutor::GetObjective(
 
 absl::optional<std::pair<int, int>> AutofillAssistantModelExecutor::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors) {
+  // Check if we have an override for this execution and return that instead.
+  if (overrides_result_) {
+    return overrides_result_;
+  }
   if (output_tensors.size() < 2u) {
     NOTREACHED() << "Output Tensors mismatch.";
     return absl::nullopt;
@@ -265,19 +281,52 @@ absl::optional<std::pair<int, int>> AutofillAssistantModelExecutor::Postprocess(
 void AutofillAssistantModelExecutor::Tokenize(
     const std::u16string& input,
     tflite::support::text::tokenizer::RegexTokenizer* tokenizer,
-    std::vector<float>* output) {
+    const int feature_index,
+    SparseMap& output_map) {
   auto result =
       tokenizer->Tokenize(base::UTF16ToUTF8(base::i18n::ToUpper(input)));
   for (const auto& token : result.subwords) {
     int index;
     if (tokenizer->LookupId(token, &index)) {
-      if (static_cast<size_t>(index) >= output->size()) {
-        NOTREACHED();
-        continue;
-      }
-      ++output->at(index);
+      output_map[std::make_pair(feature_index, index)]++;
     }
   }
+}
+
+AutofillAssistantModelExecutor::SparseVector
+AutofillAssistantModelExecutor::TokenizeSignalsToSparseVector(
+    const blink::AutofillAssistantNodeSignals& node_signals) {
+  SparseMap sparse_map;
+
+  DCHECK(tags_tokenizer_);
+  Tokenize(node_signals.node_features.html_tag.Utf16(), tags_tokenizer_.get(),
+           /* feature_index= */ 0, sparse_map);
+  DCHECK(types_tokenizer_);
+  Tokenize(node_signals.node_features.type.Utf16(), types_tokenizer_.get(),
+           /* feature_index= */ 1, sparse_map);
+  DCHECK(text_tokenizer_);
+  Tokenize(node_signals.node_features.invisible_attributes.Utf16(),
+           text_tokenizer_.get(), /* feature_index= */ 2, sparse_map);
+  for (const auto& text : node_signals.node_features.text) {
+    Tokenize(text.Utf16(), text_tokenizer_.get(), /* feature_index= */ 2,
+             sparse_map);
+  }
+  for (const auto& text : node_signals.label_features.text) {
+    Tokenize(text.Utf16(), text_tokenizer_.get(), /* feature_index= */ 3,
+             sparse_map);
+  }
+  for (const auto& text : node_signals.context_features.header_text) {
+    Tokenize(text.Utf16(), text_tokenizer_.get(), /* feature_index= */ 4,
+             sparse_map);
+  }
+  Tokenize(node_signals.context_features.form_type.Utf16(),
+           text_tokenizer_.get(), /* feature_index= */ 4, sparse_map);
+
+  SparseVector sparse_vector;
+  for (const auto& entry : sparse_map) {
+    sparse_vector.emplace_back(entry);
+  }
+  return sparse_vector;
 }
 
 }  // namespace autofill_assistant
