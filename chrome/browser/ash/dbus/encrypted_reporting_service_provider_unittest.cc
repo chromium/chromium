@@ -11,7 +11,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "chrome/browser/policy/messaging_layer/upload/fake_upload_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
@@ -21,6 +20,7 @@
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/proto/interface.pb.h"
+#include "content/public/test/browser_task_environment.h"
 #include "dbus/exported_object.h"
 #include "dbus/message.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -161,7 +161,7 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
   }
 
   // Must be initialized before any other class member.
-  base::test::TaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
 
   policy::MockCloudPolicyClient cloud_policy_client_;
   reporting::EncryptedRecord record_;
