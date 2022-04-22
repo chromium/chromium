@@ -1429,6 +1429,19 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestHTTPSExpiredCertAndProceed) {
             tab->GetVisibleURL());
 }
 
+// Visits a page with https error and checks favicon is not displayed:
+IN_PROC_BROWSER_TEST_F(SSLUITest, TestNoFaviconOnInterstitial) {
+  ASSERT_TRUE(https_server_expired_.Start());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_expired_.GetURL("/ssl/google.html")));
+
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(tab));
+  EXPECT_FALSE(
+      browser()->tab_strip_model()->delegate()->ShouldDisplayFavicon(tab));
+}
+
 // Visits a page in an app window with https error and proceed:
 // Disabled due to flaky failures; see https://crbug.com/1156046.
 IN_PROC_BROWSER_TEST_F(SSLUITest,

@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/reading_list/core/reading_list_model.h"
+#include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -216,6 +217,14 @@ bool BrowserTabStripModelDelegate::ShouldRunUnloadListenerBeforeClosing(
 
 bool BrowserTabStripModelDelegate::ShouldDisplayFavicon(
     content::WebContents* contents) const {
+  // Don't show favicon when on an interstitial.
+  security_interstitials::SecurityInterstitialTabHelper*
+      security_interstitial_tab_helper = security_interstitials::
+          SecurityInterstitialTabHelper::FromWebContents(contents);
+  if (security_interstitial_tab_helper &&
+      security_interstitial_tab_helper->IsDisplayingInterstitial())
+    return false;
+
   return browser_->ShouldDisplayFavicon(contents);
 }
 
