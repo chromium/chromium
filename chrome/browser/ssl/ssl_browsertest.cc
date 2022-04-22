@@ -244,6 +244,42 @@ enum ProceedDecision {
   SSL_INTERSTITIAL_DO_NOT_PROCEED
 };
 
+// A WebContentsObserver that allows observing when the page has set a
+// particular SSL content status flag. Assumes that the flag is not set when the
+// observer is created.
+class SSLContentStatusObserver : public content::WebContentsObserver {
+ public:
+  explicit SSLContentStatusObserver(content::WebContents* web_contents,
+                                    content::SSLStatus::ContentStatusFlags flag)
+      : content::WebContentsObserver(web_contents), flag_(flag) {
+    content::NavigationEntry* entry =
+        web_contents->GetController().GetVisibleEntry();
+    if (entry) {
+      DCHECK(!(entry->GetSSL().content_status & flag_));
+    }
+  }
+
+  SSLContentStatusObserver(const SSLContentStatusObserver&) = delete;
+  SSLContentStatusObserver& operator=(const SSLContentStatusObserver&) = delete;
+
+  ~SSLContentStatusObserver() override = default;
+
+  void DidChangeVisibleSecurityState() override {
+    content::NavigationEntry* entry =
+        web_contents()->GetController().GetVisibleEntry();
+    if (entry && (entry->GetSSL().content_status & flag_)) {
+      run_loop_.Quit();
+    }
+  }
+
+  void WaitForSSLContentStatusFlag() { run_loop_.Run(); }
+
+ private:
+  // The content status flag of interest
+  content::SSLStatus::ContentStatusFlags flag_;
+  base::RunLoop run_loop_;
+};
+
 // This observer waits for the SSLErrorHandler to start an interstitial timer
 // for the given web contents.
 class SSLInterstitialTimerObserver {
@@ -1089,17 +1125,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestBrokenHTTPSWithInsecureContent) {
 // Tests that the NavigationEntry gets marked as active mixed content,
 // even if there is a certificate error. Regression test for
 // https://crbug.com/593950.
-// TODO(crbug.com/1239347): Flaky on Mac, Linux, Lacros, and ChromeOs.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TestBrokenHTTPSWithActiveInsecureContent \
-  DISABLED_TestBrokenHTTPSWithActiveInsecureContent
-#else
-#define MAYBE_TestBrokenHTTPSWithActiveInsecureContent \
-  TestBrokenHTTPSWithActiveInsecureContent
-#endif
-IN_PROC_BROWSER_TEST_F(SSLUITest,
-                       MAYBE_TestBrokenHTTPSWithActiveInsecureContent) {
+IN_PROC_BROWSER_TEST_F(SSLUITest, TestBrokenHTTPSWithActiveInsecureContent) {
   ASSERT_TRUE(https_server_expired_.Start());
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -1108,13 +1134,24 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
   // Navigate to a page with a certificate error and click through the
   // interstitial.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      https_server_expired_.GetURL("/ssl/page_runs_insecure_content.html")));
+      browser(), https_server_expired_.GetURL("/title1.html")));
   ssl_test_util::CheckAuthenticationBrokenState(
       tab, net::CERT_STATUS_DATE_INVALID, AuthState::SHOWING_INTERSTITIAL);
   ProceedThroughInterstitial(tab);
 
-  // Now check that the page is marked as having run insecure content.
+  // Load an insecure (http://) script. When it is loaded, check that the page
+  // is marked as having run insecure content.
+  SSLContentStatusObserver observer(tab,
+                                    content::SSLStatus::RAN_INSECURE_CONTENT);
+  ASSERT_NE(false,
+            content::EvalJs(tab,
+                            "var s = document.createElement('script');"
+                            "s.src = 'http://does-not-exist.test/foo.js';"
+                            "document.body.appendChild(s)"));
+  observer.WaitForSSLContentStatusFlag();
+
+  // Now check that the page is marked as both having a cert error and having
+  // run insecure content.
   ssl_test_util::CheckAuthenticationBrokenState(
       tab, net::CERT_STATUS_DATE_INVALID, AuthState::RAN_INSECURE_CONTENT);
 }
@@ -1240,41 +1277,6 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, MixedContentWithSameDocumentNavigation) {
                                     AuthState::DISPLAYED_INSECURE_CONTENT);
 }
 
-namespace {
-
-// A WebContentsObserver that allows observing when the page has displayed a
-// resource loaded with certificate errors.
-class DisplayedContentWithCertErrorsObserver
-    : public content::WebContentsObserver {
- public:
-  explicit DisplayedContentWithCertErrorsObserver(
-      content::WebContents* web_contents)
-      : content::WebContentsObserver(web_contents) {}
-
-  DisplayedContentWithCertErrorsObserver(
-      const DisplayedContentWithCertErrorsObserver&) = delete;
-  DisplayedContentWithCertErrorsObserver& operator=(
-      const DisplayedContentWithCertErrorsObserver&) = delete;
-
-  ~DisplayedContentWithCertErrorsObserver() override = default;
-
-  void DidChangeVisibleSecurityState() override {
-    content::NavigationEntry* entry =
-        web_contents()->GetController().GetVisibleEntry();
-    if (entry && (entry->GetSSL().content_status &
-                  content::SSLStatus::DISPLAYED_CONTENT_WITH_CERT_ERRORS)) {
-      run_loop_.Quit();
-    }
-  }
-
-  void WaitForDisplayedContentWithCertErrors() { run_loop_.Run(); }
-
- private:
-  base::RunLoop run_loop_;
-};
-
-}  // namespace
-
 // Tests that the WebContents's flag for displaying content with cert
 // errors get cleared upon navigation.
 IN_PROC_BROWSER_TEST_F(SSLUITest,
@@ -1299,12 +1301,13 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
   // page's favicon is loaded as active content and the notification about that
   // can interfere with the visible security state change that we're observing
   // here.
-  DisplayedContentWithCertErrorsObserver observer(tab);
+  SSLContentStatusObserver observer(
+      tab, content::SSLStatus::DISPLAYED_CONTENT_WITH_CERT_ERRORS);
   ASSERT_NE(false, content::EvalJs(tab,
                                    "var i = document.createElement('img');"
                                    "i.src = 'ssl/google_files/logo.gif';"
                                    "document.body.appendChild(i)"));
-  observer.WaitForDisplayedContentWithCertErrors();
+  observer.WaitForSSLContentStatusFlag();
 
   // Navigate away to a different page, and check that the flag gets cleared.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
