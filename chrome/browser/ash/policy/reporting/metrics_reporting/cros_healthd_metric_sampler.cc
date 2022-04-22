@@ -85,7 +85,7 @@ void HandleBusResult(MetricCallback callback,
               auto* const thunderbolt_info_out =
                   metric_data.mutable_info_data()
                       ->mutable_bus_device_info()
-                      ->mutable_thunderbolt_info();
+                      ->add_thunderbolt_info();
               anything_reported = true;
               thunderbolt_info_out->set_security_level(
                   TranslateThunderboltSecurityLevel(

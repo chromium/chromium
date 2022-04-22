@@ -150,7 +150,7 @@ message ThunderboltInfo {
 // currently we are only reporting bus device info for thunderbolt, though we
 // will certainly add more in the future.
 message BusDeviceInfo {
-  optional ThunderboltInfo thunderbolt_info = 1;
+  repeated ThunderboltInfo thunderbolt_info = 1;
 }
 
 enum MemoryEncryptionState {
