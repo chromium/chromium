@@ -458,6 +458,11 @@ void AdsPageLoadMetricsObserver::ReadyToCommitNextNavigation(
   // ignore any such messages when a navigation is about to commit.
   if (!navigation_handle->IsInMainFrame())
     return;
+  // Prerendering navigation doesn't get here since this observer in
+  // prerendering is removed from PageLoadTracker.
+  // TODO(https://crbug.com/1317494): Consider enabling this observer for
+  // prerendering.
+  DCHECK(!navigation_handle->IsInPrerenderedMainFrame());
   process_display_state_updates_ = false;
 }
 
@@ -731,6 +736,10 @@ void AdsPageLoadMetricsObserver::OnPageActivationComputed(
       navigation_handle->GetNavigationId() == navigation_id_ &&
       activation_state.activation_level ==
           subresource_filter::mojom::ActivationLevel::kEnabled) {
+    // Prerendering navigation is filtered out by checking `navigation_id_`.
+    // TODO(https://crbug.com/1317494): Consider enabling this observer for
+    // prerendering.
+    DCHECK(!navigation_handle->IsInPrerenderedMainFrame());
     DCHECK(!subresource_filter_is_enabled_);
     subresource_filter_is_enabled_ = true;
   }
