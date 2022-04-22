@@ -51,6 +51,22 @@ def _ProcessManifest(manifest_path, min_sdk_version, target_sdk_version,
     yield patched_manifest.name, manifest_utils.GetPackage(manifest)
 
 
+@contextlib.contextmanager
+def _SetTargetApi(manifest_path, target_sdk_version):
+  """Patches an Android manifest's TargetApi if not set.
+
+  We do this to avoid the manifest merger assuming we have a targetSdkVersion
+  of 1 and inserting unnecessary permission requests into our merged manifests.
+  See b/222331337 for more details.
+  """
+  doc, manifest, _ = manifest_utils.ParseManifest(manifest_path)
+  manifest_utils.SetTargetApiIfUnset(manifest, target_sdk_version)
+  tmp_prefix = os.path.basename(manifest_path)
+  with tempfile.NamedTemporaryFile(prefix=tmp_prefix) as patched_manifest:
+    manifest_utils.SaveManifest(doc, patched_manifest.name)
+    yield patched_manifest.name
+
+
 def _BuildManifestMergerClasspath(android_sdk_cmdline_tools):
   return ':'.join([
       os.path.join(android_sdk_cmdline_tools, 'lib', jar)
@@ -112,13 +128,18 @@ def main(argv):
       ]
 
     extras = build_utils.ParseGnList(args.extras)
-    if extras:
-      cmd += ['--libs', ':'.join(extras)]
 
-    with _ProcessManifest(args.root_manifest, args.min_sdk_version,
-                          args.target_sdk_version, args.max_sdk_version,
-                          args.manifest_package) as tup:
-      root_manifest, package = tup
+    with contextlib.ExitStack() as stack:
+      root_manifest, package = stack.enter_context(
+          _ProcessManifest(args.root_manifest, args.min_sdk_version,
+                           args.target_sdk_version, args.max_sdk_version,
+                           args.manifest_package))
+      if extras:
+        extras_processed = [
+            stack.enter_context(_SetTargetApi(e, args.target_sdk_version))
+            for e in extras
+        ]
+        cmd += ['--libs', ':'.join(extras_processed)]
       cmd += [
           '--main',
           root_manifest,

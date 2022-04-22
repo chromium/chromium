@@ -91,7 +91,7 @@ def AssertUsesSdk(manifest_node,
   is not None and the value of attribute exist. If |fail_if_not_exist| is true
   will fail if passed value is not None but attribute does not exist.
   """
-  uses_sdk_node = manifest_node.find('./uses-sdk')
+  uses_sdk_node = _FindUsesSdkNode(manifest_node)
   if uses_sdk_node is None:
     return
   for prefix, sdk_version in (('min', min_sdk_version), ('target',
@@ -107,6 +107,20 @@ def AssertUsesSdk(manifest_node,
     assert value == sdk_version, (
         '%sSdkVersion in Android manifest is %s but we expect %s' %
         (prefix, value, sdk_version))
+
+
+def SetTargetApiIfUnset(manifest_node, target_sdk_version):
+  uses_sdk_node = _FindUsesSdkNode(manifest_node)
+  if uses_sdk_node is None:
+    # Right now it seems like only some random test-only manifests don't have
+    # any uses-sdk. If we start seeing some libraries which need their target
+    # api to be set, but don't have a uses-sdk node, we may have to insert the
+    # node here.
+    return
+  target_sdk_attribute_name = '{%s}targetSdkVersion' % ANDROID_NAMESPACE
+  curr_target_sdk_version = uses_sdk_node.get(target_sdk_attribute_name)
+  if curr_target_sdk_version is None:
+    uses_sdk_node.set(target_sdk_attribute_name, target_sdk_version)
 
 
 def AssertPackage(manifest_node, package):
@@ -177,6 +191,10 @@ def _SplitElement(line):
   attrs = parts[1:]
 
   return start_tag, [restore_quotes(x) for x in attrs], end_tag
+
+
+def _FindUsesSdkNode(manifest_node):
+  return manifest_node.find('./uses-sdk')
 
 
 def _CreateNodeHash(lines):
