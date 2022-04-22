@@ -1,0 +1,57 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "third_party/blink/renderer/core/annotation/text_annotation_selector.h"
+
+namespace blink {
+
+TextAnnotationSelector::TextAnnotationSelector(
+    const TextFragmentSelector& params)
+    : params_(params) {}
+
+void TextAnnotationSelector::Trace(Visitor* visitor) const {
+  visitor->Trace(finder_);
+  AnnotationSelector::Trace(visitor);
+}
+
+String TextAnnotationSelector::Serialize() const {
+  return params_.ToString();
+}
+
+void TextAnnotationSelector::FindRange(Document& document,
+                                       SearchType type,
+                                       FinishedCallback finished_cb) {
+  TextFragmentFinder::FindBufferRunnerType find_buffer_type;
+  switch (type) {
+    case kSynchronous:
+      find_buffer_type = TextFragmentFinder::kSynchronous;
+      break;
+    case kAsynchronous:
+      find_buffer_type = TextFragmentFinder::kAsynchronous;
+      break;
+  }
+
+  finder_ = MakeGarbageCollected<TextFragmentFinder>(*this, params_, &document,
+                                                     find_buffer_type);
+  finished_callback_ = std::move(finished_cb);
+  finder_->FindMatch();
+}
+
+void TextAnnotationSelector::DidFindMatch(
+    const RangeInFlatTree& range,
+    const TextFragmentAnchorMetrics::Match match_metrics,
+    bool is_unique) {
+  DCHECK(finished_callback_);
+  std::move(finished_callback_).Run(&range);
+
+  finder_.Clear();
+}
+
+void TextAnnotationSelector::NoMatchFound() {
+  DCHECK(finished_callback_);
+  std::move(finished_callback_).Run(nullptr);
+  finder_.Clear();
+}
+
+}  // namespace blink

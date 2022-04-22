@@ -7,6 +7,12 @@
 
 namespace blink {
 
+RangeInFlatTree::RangeInFlatTree()
+    : start_(MakeGarbageCollected<RelocatablePosition>(Position())),
+      end_(MakeGarbageCollected<RelocatablePosition>(Position())) {
+  DCHECK(IsNull());
+}
+
 RangeInFlatTree::RangeInFlatTree(const PositionInFlatTree& start,
                                  const PositionInFlatTree& end)
     : start_(MakeGarbageCollected<RelocatablePosition>(

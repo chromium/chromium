@@ -17,6 +17,7 @@ import("//third_party/blink/renderer/config.gni")
 import("//third_party/blink/renderer/core/accessibility/build.gni")
 import("//third_party/blink/renderer/core/animation/build.gni")
 import("//third_party/blink/renderer/core/animation_frame/build.gni")
+import("//third_party/blink/renderer/core/annotation/build.gni")
 import("//third_party/blink/renderer/core/aom/build.gni")
 import("//third_party/blink/renderer/core/clipboard/build.gni")
 import("//third_party/blink/renderer/core/content_capture/build.gni")
@@ -201,6 +202,7 @@ component("core") {
   sources += rebase_path(blink_core_sources_accessibility, "", "accessibility")
   sources +=
       rebase_path(blink_core_sources_animation_frame, "", "animation_frame")
+  sources += rebase_path(blink_core_sources_annotation, "", "annotation")
   sources += rebase_path(blink_core_sources_aom, "", "aom")
   sources += rebase_path(blink_core_sources_clipboard, "", "clipboard")
   sources +=
@@ -1215,6 +1217,9 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "accessibility/ax_context_test.cc",
+    "annotation/annotation_agent_container_impl_test.cc",
+    "annotation/annotation_agent_impl_test.cc",
+    "annotation/annotation_test_utils.h",
     "clipboard/clipboard_utilities_test.cc",
     "content_capture/content_capture_test.cc",
     "css/css_revert_layer_value_test.cc",

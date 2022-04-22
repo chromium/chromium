@@ -23,6 +23,7 @@ mojom("mojom_platform") {
   generate_java = true
   sources = [
     "ad_tagging/ad_evidence.mojom",
+    "annotation/annotation.mojom",
     "app_banner/app_banner.mojom",
     "array_buffer/array_buffer_contents.mojom",
     "associated_interfaces/associated_interfaces.mojom",

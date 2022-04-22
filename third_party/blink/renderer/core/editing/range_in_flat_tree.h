@@ -16,6 +16,7 @@ namespace blink {
 class CORE_EXPORT RangeInFlatTree final
     : public GarbageCollected<RangeInFlatTree> {
  public:
+  RangeInFlatTree();
   RangeInFlatTree(const PositionInFlatTree& start,
                   const PositionInFlatTree& end);
 

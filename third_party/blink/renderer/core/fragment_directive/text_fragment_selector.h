@@ -12,8 +12,14 @@ namespace blink {
 
 // TextFragmentSelector represents a single text=... selector of a
 // TextFragmentAnchor, parsed into its components.
+// TODO(bokan): This should be renamed to TextSelectorParams:
+// https://docs.google.com/document/d/1yE75LfQn9GsooOyWWH---obsV46gT4JAUr9uWIYXp28/edit?usp=sharing.
 class CORE_EXPORT TextFragmentSelector final {
  public:
+  // Parses the serialized form into a TextFragmentSelector object. The
+  // serialized argument is of the form: "prefix-,start,end,-suffix", where
+  // prefix, end, and suffix are optional. If end is specified, the selector is
+  // a range; otherwise, it is an exact match.
   static TextFragmentSelector FromTextDirective(const String& directive);
 
   enum SelectorType {

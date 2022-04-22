@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/controller/performance_manager/renderer_resource_coordinator_impl.h"
 #include "third_party/blink/renderer/controller/performance_manager/v8_detailed_memory_reporter_impl.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
+#include "third_party/blink/renderer/core/annotation/annotation_agent_container_impl.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/display_cutout_client_impl.h"
@@ -257,6 +258,9 @@ void BlinkInitializer::InitLocalFrame(LocalFrame& frame) const {
 
   frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
       &LocalFrame::PauseSubresourceLoading, WrapWeakPersistent(&frame)));
+
+  frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+      &AnnotationAgentContainerImpl::BindReceiver, WrapWeakPersistent(&frame)));
   ModulesInitializer::InitLocalFrame(frame);
 }
 
