@@ -5,7 +5,6 @@
 #include "extensions/browser/api/web_request/web_request_proxying_webtransport.h"
 
 #include "base/memory/raw_ptr.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -13,6 +12,7 @@
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -273,11 +273,9 @@ void StartWebRequestProxyingWebTransport(
   const int process_id = render_process_host.GetID();
   content::RenderFrameHost* frame =
       content::RenderFrameHost::FromID(process_id, frame_routing_id);
-  const auto* web_contents = content::WebContents::FromRenderFrameHost(frame);
   const ukm::SourceIdObj& ukm_source_id =
-      web_contents ? ukm::SourceIdObj::FromInt64(
-                         ukm::GetSourceIdForWebContentsDocument(web_contents))
-                   : ukm::kInvalidSourceIdObj;
+      frame ? ukm::SourceIdObj::FromInt64(frame->GetPageUkmSourceId())
+            : ukm::kInvalidSourceIdObj;
 
   WebRequestInfoInitParams params =
       WebRequestInfoInitParams(request_id, process_id, frame_routing_id,

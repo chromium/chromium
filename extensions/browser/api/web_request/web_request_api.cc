@@ -28,7 +28,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -821,11 +820,9 @@ void WebRequestAPI::ProxyWebSocket(
       ExtensionWebRequestEventRouter::GetInstance()->HasAnyExtraHeadersListener(
           frame->GetProcess()->GetBrowserContext());
 
-  auto* web_contents = content::WebContents::FromRenderFrameHost(frame);
-  const ukm::SourceIdObj ukm_source_id =
-      web_contents ? ukm::SourceIdObj::FromInt64(
-                         ukm::GetSourceIdForWebContentsDocument(web_contents))
-                   : ukm::kInvalidSourceIdObj;
+  const ukm::SourceIdObj& ukm_source_id =
+      ukm::SourceIdObj::FromInt64(frame->GetPageUkmSourceId());
+
   WebRequestProxyingWebSocket::StartProxying(
       std::move(factory), url, site_for_cookies, user_agent,
       std::move(handshake_client), has_extra_headers,
