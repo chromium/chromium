@@ -95,7 +95,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/hibernate/buildflags.h"
+#include "chromeos/ash/components/hibernate/buildflags.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"

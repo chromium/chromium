@@ -5,8 +5,8 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
+import("//chromeos/ash/components/hibernate/buildflags.gni")
 import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
-import("//chromeos/components/hibernate/buildflags.gni")
 import("//chromeos/components/sensors/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
@@ -255,11 +255,11 @@ source_set("chromeos") {
     "//chromeos/ash/components/dbus/spaced",
     "//chromeos/ash/components/dbus/typecd",
     "//chromeos/ash/components/dbus/upstart",
+    "//chromeos/ash/components/hibernate:buildflags",
     "//chromeos/assistant:buildflags",
     "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
     "//chromeos/components/chromebox_for_meetings/buildflags",
     "//chromeos/components/feature_usage",
-    "//chromeos/components/hibernate:buildflags",
     "//chromeos/components/local_search_service/public/cpp:cpp",
     "//chromeos/components/mojo_bootstrap",
     "//chromeos/components/onc",

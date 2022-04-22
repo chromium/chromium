@@ -29,8 +29,8 @@
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/dbus/typecd/typecd_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
+#include "chromeos/ash/components/hibernate/buildflags.h"  // ENABLE_HIBERNATE
 #include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"  // PLATFORM_CFM
-#include "chromeos/components/hibernate/buildflags.h"  // ENABLE_HIBERNATE
 #include "chromeos/dbus/arc/arc_camera_client.h"
 #include "chromeos/dbus/arc/arc_sensor_service_client.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
