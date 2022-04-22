@@ -27,6 +27,10 @@ class FollowProvider {
   // followed.
   virtual bool GetFollowStatus(FollowWebPageURLs* follow_web_page_urls);
 
+  // Returns true if the web channel with |follow_web_page_urls| has been
+  // recommended.
+  virtual bool GetRecommendedStatus(FollowWebPageURLs* follow_web_page_urls);
+
   // Returns a list of followed web channels.
   virtual NSArray<FollowedWebChannel*>* GetFollowedWebChannels();
 
