@@ -20,6 +20,8 @@ const base::Feature kExplicitLanguageAsk{"ExplicitLanguageAsk",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kAppLanguagePrompt{"AppLanguagePrompt",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kAppLanguagePromptULP{"AppLanguagePromptULP",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kForceAppLanguagePrompt{"ForceAppLanguagePrompt",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kNotifySyncOnLanguageDetermined{

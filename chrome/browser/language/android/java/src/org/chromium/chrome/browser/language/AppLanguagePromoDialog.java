@@ -519,9 +519,14 @@ public class AppLanguagePromoDialog {
     private static boolean shouldShowPrompt() {
         // Skip feature and preference checks if forced on for testing.
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_APP_LANGUAGE_PROMPT)) {
-            // Don't show the prompt if not enabled.
+            // Don't show if not enabled.
             if (!ChromeFeatureList.isEnabled(ChromeFeatureList.APP_LANGUAGE_PROMPT)) return false;
-            // Don't show the prompt if it has already been shown.
+            // Don't show if ULP match is enabled and the UI language matches the top ULP language.
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.APP_LANGUAGE_PROMPT_ULP)
+                    && LanguageBridge.isTopULPBaseLanguage(Locale.getDefault().toLanguageTag())) {
+                return false;
+            }
+            // Don't show if it has already been shown.
             if (TranslateBridge.getAppLanguagePromptShown()) return false;
         }
 

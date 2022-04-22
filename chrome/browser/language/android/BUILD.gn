@@ -116,7 +116,9 @@ android_library("javatests") {
   sources = [
     "java/src/org/chromium/chrome/browser/language/AppLanguagePromoDialogTest.java",
     "java/src/org/chromium/chrome/browser/language/AppLocaleUtilsTest.java",
+    "java/src/org/chromium/chrome/browser/language/FakeLanguageBridgeJni.java",
     "java/src/org/chromium/chrome/browser/language/GlobalAppLocaleControllerTest.java",
+    "java/src/org/chromium/chrome/browser/language/LanguageBridgeTest.java",
     "java/src/org/chromium/chrome/browser/language/settings/LanguageSettingsTest.java",
     "java/src/org/chromium/chrome/browser/language/settings/LanguagesManagerTest.java",
     "java/src/org/chromium/chrome/browser/translate/FakeTranslateBridgeJni.java",
