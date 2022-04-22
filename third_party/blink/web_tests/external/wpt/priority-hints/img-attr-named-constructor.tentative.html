@@ -12,15 +12,15 @@
 
 <script>
   test(() => {
-    assert_equals(img1.fetchpriority, "high", "high fetchpriority is a valid IDL value on the image element");
-    assert_equals(img2.fetchpriority, "low", "high fetchpriority is a valid IDL value on the image element");
-    assert_equals(img3.fetchpriority, "auto", "auto fetchpriority is a valid IDL value on the image element");
-    assert_equals(img4.fetchpriority, "auto", "invalid fetchpriority reflects as 'auto' IDL attribute on the image element");
-    assert_equals(img5.fetchpriority, "auto", "missing fetchpriority reflects as 'auto' IDL attribute on the image element");
+    assert_equals(img1.fetchPriority, "high", "high fetchPriority is a valid IDL value on the image element");
+    assert_equals(img2.fetchPriority, "low", "high fetchPriority is a valid IDL value on the image element");
+    assert_equals(img3.fetchPriority, "auto", "auto fetchPriority is a valid IDL value on the image element");
+    assert_equals(img4.fetchPriority, "auto", "invalid fetchPriority reflects as 'auto' IDL attribute on the image element");
+    assert_equals(img5.fetchPriority, "auto", "missing fetchPriority reflects as 'auto' IDL attribute on the image element");
   }, "fetchpriority attribute on <img> elements should reflect valid IDL values");
 
   test(() => {
     const img = new Image();
-    assert_equals(img.fetchpriority, "auto");
-  }, "fetchpriority of new Image() is 'auto'");
+    assert_equals(img.fetchPriority, "auto");
+  }, "fetchPriority of new Image() is 'auto'");
 </script>

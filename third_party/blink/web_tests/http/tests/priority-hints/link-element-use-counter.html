@@ -7,14 +7,14 @@
     t.add_cleanup(clearUseCounter);
     assert_false(internals.isUseCounted(document, kPriorityHints),
                  'Priority Hints is not use-counted before the ' +
-                 'fetchpriority IDL attribute is set');
+                 'fetchPriority IDL attribute is set');
     const link = document.createElement('link');
-    link.fetchpriority = 'high';
+    link.fetchPriority = 'high';
     assert_true(internals.isUseCounted(document, kPriorityHints),
-                'Priority Hints is use-counted once the fetchpriority ' +
+                'Priority Hints is use-counted once the fetchPriority ' +
                 'IDL attribute is set');
   }, 'Priority Hints use-counter works properly with the <link> ' +
-     'fetchpriority IDL attribute');
+     'fetchPriority IDL attribute');
 
   test(t => {
     t.add_cleanup(clearUseCounter);

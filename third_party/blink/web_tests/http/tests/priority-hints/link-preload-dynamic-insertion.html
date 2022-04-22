@@ -6,85 +6,85 @@
   const tests = [
     // rel=style
     {
-      description: 'low fetchpriority on <link rel=preload as=style> not loaded by the preload scanner must be fetched with kHigh resource load priority',
+      description: 'low fetchPriority on <link rel=preload as=style> not loaded by the preload scanner must be fetched with kHigh resource load priority',
       as: 'style',
-      fetchpriority: 'low',
+      fetchPriority: 'low',
       resource: 'dummy.css',
       expected_priority: kHigh
     },
     {
-      description: 'missing fetchpriority on <link rel=preload as=style> not loaded by the preload scanner must be fetched with kVeryHigh resource load priority',
+      description: 'missing fetchPriority on <link rel=preload as=style> not loaded by the preload scanner must be fetched with kVeryHigh resource load priority',
       as: 'style',
       resource: 'dummy.css',
       expected_priority: kVeryHigh
     },
     {
-      description: 'high fetchpriority on <link rel=preload as=style> not loaded by the preload scanner must be fetched with kVeryHigh resource load priority',
+      description: 'high fetchPriority on <link rel=preload as=style> not loaded by the preload scanner must be fetched with kVeryHigh resource load priority',
       as: 'style',
-      fetchpriority: 'high',
+      fetchPriority: 'high',
       resource: 'dummy.css',
       expected_priority: kVeryHigh
     },
     // rel=script
     {
-      description: 'low fetchpriority on <link rel=preload as=script> not loaded by the preload scanner must be fetched with kLow resource load priority',
+      description: 'low fetchPriority on <link rel=preload as=script> not loaded by the preload scanner must be fetched with kLow resource load priority',
       as: 'script',
-      fetchpriority: 'low',
+      fetchPriority: 'low',
       resource: 'dummy.js',
       expected_priority: kLow
     },
     {
-      description: 'missing fetchpriority on <link rel=preload as=script> not loaded by the preload scanner must be fetched with kHigh resource load priority',
+      description: 'missing fetchPriority on <link rel=preload as=script> not loaded by the preload scanner must be fetched with kHigh resource load priority',
       as: 'script',
       resource: 'dummy.js',
       expected_priority: kHigh
     },
     {
-      description: 'high fetchpriority on <link rel=preload as=script> not loaded by the preload scanner must be fetched with kHigh resource load priority',
+      description: 'high fetchPriority on <link rel=preload as=script> not loaded by the preload scanner must be fetched with kHigh resource load priority',
       as: 'script',
-      fetchpriority: 'high',
+      fetchPriority: 'high',
       resource: 'dummy.js',
       expected_priority: kHigh
     },
     // rel=fetch
     {
-      description: 'low fetchpriority on <link rel=preload as=fetch> not loaded by the preload scanner must be fetched with kLow resource load priority',
+      description: 'low fetchPriority on <link rel=preload as=fetch> not loaded by the preload scanner must be fetched with kLow resource load priority',
       as: 'fetch',
-      fetchpriority: 'low',
+      fetchPriority: 'low',
       resource: 'dummy.txt',
       expected_priority: kLow
     },
     {
-      description: 'missing fetchpriority on <link rel=preload as=fetch> not loaded by the preload scanner must be fetched with kHigh resource load priority',
+      description: 'missing fetchPriority on <link rel=preload as=fetch> not loaded by the preload scanner must be fetched with kHigh resource load priority',
       as: 'fetch',
       resource: 'dummy.txt',
       expected_priority: kHigh
     },
     {
-      description: 'high fetchpriority on <link rel=preload as=fetch> not loaded by the preload scanner must be fetched with kHigh resource load priority',
+      description: 'high fetchPriority on <link rel=preload as=fetch> not loaded by the preload scanner must be fetched with kHigh resource load priority',
       as: 'fetch',
-      fetchpriority: 'high',
+      fetchPriority: 'high',
       resource: 'dummy.txt',
       expected_priority: kHigh
     },
     // rel=image
     {
-      description: 'low fetchpriority on <link rel=preload as=image> not loaded by the preload scanner must be fetched with kLow resource load priority',
+      description: 'low fetchPriority on <link rel=preload as=image> not loaded by the preload scanner must be fetched with kLow resource load priority',
       as: 'image',
-      fetchpriority: 'low',
+      fetchPriority: 'low',
       resource: 'square.png',
       expected_priority: kLow
     },
     {
-      description: 'missing fetchpriority on <link rel=preload as=image> not loaded by the preload scanner must be fetched with kLow resource load priority',
+      description: 'missing fetchPriority on <link rel=preload as=image> not loaded by the preload scanner must be fetched with kLow resource load priority',
       as: 'image',
       resource: 'square.png',
       expected_priority: kLow
     },
     {
-      description: 'high fetchpriority on <link rel=preload as=image> not loaded by the preload scanner must be fetched with kHigh resource load priority',
+      description: 'high fetchPriority on <link rel=preload as=image> not loaded by the preload scanner must be fetched with kHigh resource load priority',
       as: 'image',
-      fetchpriority: 'high',
+      fetchPriority: 'high',
       resource: 'square.png',
       expected_priority: kHigh
     }
@@ -96,7 +96,7 @@
       const link = document.createElement('link');
       link.rel = 'preload';
       link.as = test.as;
-      if (test.fetchpriority) link.fetchpriority = test.fetchpriority;
+      if (test.fetchPriority) link.fetchPriority = test.fetchPriority;
 
       const url = new URL(`../resources/${test.resource}?${iteration++}`, location);
       const priorityPromise = internals.getInitialResourcePriority(url, document);
