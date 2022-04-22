@@ -236,8 +236,12 @@ class Singleton {
       internal::AssertSingletonAllowed();
 #endif
 
-    return subtle::GetOrCreateLazyPointer(
-        &instance_, &CreatorFunc, nullptr, Traits::kRegisterAtExit ? OnExit : nullptr, nullptr);
+    return subtle::GetOrCreateLazyPointer(&instance_,
+                                          &CreatorFunc,
+                                          nullptr,
+                                          Traits::kRegisterAtExit
+                                            ? OnExit
+                                            : nullptr, nullptr);
   }
 
   // Returns the same result as get() if the instance exists but doesn't

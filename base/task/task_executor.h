@@ -23,6 +23,9 @@ class TaskTraits;
 // A TaskExecutor can execute Tasks with a specific TaskTraits extension id. To
 // handle Tasks posted via the //base/task/post_task.h API, the TaskExecutor
 // should be registered by calling RegisterTaskExecutor().
+// TaskExecutor 可以执行具有特定 TaskTraits 扩展 ID 的任务。
+// 要处理通过 //base/task/post_task.h API 发布的任务，
+// 应通过调用 RegisterTaskExecutor() 注册 TaskExecutor。
 class BASE_EXPORT TaskExecutor {
  public:
   virtual ~TaskExecutor() = default;
