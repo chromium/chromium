@@ -69,25 +69,43 @@ constexpr char kCorsPath[] = "/set-header?Access-Control-Allow-Origin: *";
 
 // Path to a response that passes Private Network Access checks.
 constexpr char kPnaPath[] =
-    "/set-header?"
-    "Access-Control-Allow-Origin: *&"
-    "Access-Control-Allow-Private-Network: true";
+    "/set-header"
+    "?Access-Control-Allow-Origin: *"
+    "&Access-Control-Allow-Private-Network: true";
 
 // Path to a cacheable response.
 constexpr char kCacheablePath[] = "/cachetime";
 
 // Path to a cacheable variant of `kCorsPath`.
 constexpr char kCacheableCorsPath[] =
-    "/set-header?"
-    "Cache-Control: max-age%3D60&"
-    "Access-Control-Allow-Origin: *";
+    "/set-header"
+    "?Cache-Control: max-age%3D60"
+    "&Access-Control-Allow-Origin: *";
 
 // Path to a cacheable variant of `kPnaPath`.
 constexpr char kCacheablePnaPath[] =
-    "/set-header?"
-    "Cache-Control: max-age%3D60&"
-    "Access-Control-Allow-Origin: *&"
-    "Access-Control-Allow-Private-Network: true";
+    "/set-header"
+    "?Cache-Control: max-age%3D60"
+    "&Access-Control-Allow-Origin: *"
+    "&Access-Control-Allow-Private-Network: true";
+
+// Returns a path to a response that passes Private Network Access checks.
+//
+// This can be used to construct the `src` URL for an iframe.
+std::string MakePnaPathForIframe(const url::Origin& initiator_origin) {
+  return base::StrCat({
+      "/set-header"
+      // Apparently a wildcard `*` is not sufficient in this case, so we need
+      // to explicitly allow the initiator origin instead.
+      "?Access-Control-Allow-Origin: ",
+      initiator_origin.Serialize(),
+      "&Access-Control-Allow-Private-Network: true"
+      // It seems navigation requests carry credentials...
+      "&Access-Control-Allow-Credentials: true"
+      // And the following couple headers.
+      "&Access-Control-Allow-Headers: upgrade-insecure-requests,accept",
+  });
+}
 
 // Returns a snippet of Javascript that fetch()es the given URL.
 //
@@ -611,6 +629,7 @@ class PrivateNetworkAccessBrowserTestBlockNavigations
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
                 features::kBlockInsecurePrivateNetworkRequestsForNavigations,
+                features::kPrivateNetworkAccessRespectPreflightResults,
             },
             {}) {}
 };
@@ -3803,6 +3822,87 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
   RenderFrameHostImpl* child_frame =
       root_frame_host()->child_at(0)->current_frame_host();
   EXPECT_EQ(url, EvalJs(child_frame, "document.location.href"));
+}
+
+// This test verifies that when the right feature is enabled, iframe requests:
+//  - from a secure page with the "treat-as-public-address" CSP directive
+//  - to a local IP address
+// are preceded by a preflight request which must succeed.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestBlockNavigations,
+                       IframeFromSecureTreatAsPublicToLocalIsBlocked) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLocalURL(kTreatAsPublicAddressPath)));
+
+  GURL url = SecureLocalURL("/empty.html");
+
+  TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
+
+  EXPECT_TRUE(ExecJs(root_frame_host(), R"(
+    const iframe = document.createElement("iframe");
+    iframe.src = "/empty.html";
+    document.body.appendChild(iframe);
+  )"));
+
+  child_navigation_manager.WaitForNavigationFinished();
+
+  // Check that the child iframe failed to fetch.
+  EXPECT_FALSE(child_navigation_manager.was_successful());
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
+  EXPECT_EQ(GURL(kUnreachableWebDataURL),
+            EvalJs(child_frame, "document.location.href"));
+
+  // The frame committed an error page but retains the original URL so that
+  // reloading the page does the right thing. The committed origin on the other
+  // hand is opaque, which it would not be if the navigation had succeeded.
+  EXPECT_EQ(url, child_frame->GetLastCommittedURL());
+  EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
+
+  // A preflight request only.
+  EXPECT_THAT(SecureLocalServer().request_observer().RequestMethodsForUrl(url),
+              ElementsAre(METHOD_OPTIONS));
+}
+
+// This test verifies that when the right feature is enabled, iframe requests:
+//  - from a secure page with the "treat-as-public-address" CSP directive
+//  - to a local IP address
+// are preceded by a preflight request, to which the server must respond
+// correctly.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestBlockNavigations,
+                       IframeFromSecureTreatAsPublicToLocalIsNotBlocked) {
+  GURL initiator_url = SecureLocalURL(kTreatAsPublicAddressPath);
+  EXPECT_TRUE(NavigateToURL(shell(), initiator_url));
+
+  GURL url =
+      SecureLocalURL(MakePnaPathForIframe(url::Origin::Create(initiator_url)));
+
+  TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
+
+  constexpr base::StringPiece kIframeScript = R"(
+    const iframe = document.createElement("iframe");
+    iframe.src = $1;
+    console.log("Navigating child to", iframe.src);
+    document.body.appendChild(iframe);
+  )";
+
+  EXPECT_TRUE(ExecJs(root_frame_host(), JsReplace(kIframeScript, url)));
+
+  child_navigation_manager.WaitForNavigationFinished();
+
+  // Check that the child iframe navigated successfully.
+  EXPECT_TRUE(child_navigation_manager.was_successful());
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
+  EXPECT_EQ(url, EvalJs(child_frame, "document.location.href"));
+  EXPECT_EQ(url, child_frame->GetLastCommittedURL());
+
+  // A preflight request first, then the GET request.
+  EXPECT_THAT(SecureLocalServer().request_observer().RequestMethodsForUrl(url),
+              ElementsAre(METHOD_OPTIONS, METHOD_GET));
 }
 
 // Similar to IframeFromInsecureTreatAsPublicToLocalIsBlocked, but in
