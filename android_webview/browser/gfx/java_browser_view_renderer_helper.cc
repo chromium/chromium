@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/utils/SkCanvasStateUtils.h"
 
