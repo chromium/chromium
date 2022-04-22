@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_HAMMERD_HAMMERD_CLIENT_H_
-#define CHROMEOS_DBUS_HAMMERD_HAMMERD_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_HAMMERD_HAMMERD_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_HAMMERD_HAMMERD_CLIENT_H_
 
 #include <stdint.h>
 
@@ -16,7 +16,7 @@ namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Client for hammerd service - the service that manages pairing and updates for
 // physically connected bases of detachable devices (hammers). The client
@@ -75,6 +75,6 @@ class COMPONENT_EXPORT(HAMMERD) HammerdClient {
   virtual void RemoveObserver(Observer* observer) = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_HAMMERD_HAMMERD_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_HAMMERD_HAMMERD_CLIENT_H_

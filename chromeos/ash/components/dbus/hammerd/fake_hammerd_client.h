@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_HAMMERD_FAKE_HAMMERD_CLIENT_H_
-#define CHROMEOS_DBUS_HAMMERD_FAKE_HAMMERD_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_HAMMERD_FAKE_HAMMERD_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_HAMMERD_FAKE_HAMMERD_CLIENT_H_
 
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/hammerd/hammerd_client.h"
+#include "chromeos/ash/components/dbus/hammerd/hammerd_client.h"
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(HAMMERD) FakeHammerdClient : public HammerdClient {
  public:
@@ -42,6 +42,6 @@ class COMPONENT_EXPORT(HAMMERD) FakeHammerdClient : public HammerdClient {
   base::ObserverList<Observer>::Unchecked observers_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_HAMMERD_FAKE_HAMMERD_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_HAMMERD_FAKE_HAMMERD_CLIENT_H_

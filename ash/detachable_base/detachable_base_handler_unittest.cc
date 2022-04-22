@@ -13,7 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/hammerd/fake_hammerd_client.h"
+#include "chromeos/ash/components/dbus/hammerd/fake_hammerd_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
@@ -91,8 +91,8 @@ class DetachableBaseHandlerTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    chromeos::HammerdClient::InitializeFake();
-    hammerd_client_ = chromeos::FakeHammerdClient::Get();
+    HammerdClient::InitializeFake();
+    hammerd_client_ = FakeHammerdClient::Get();
 
     chromeos::PowerManagerClient::InitializeFake();
     chromeos::FakePowerManagerClient::Get()->SetTabletMode(
@@ -110,7 +110,7 @@ class DetachableBaseHandlerTest : public testing::Test {
     handler_.reset();
     hammerd_client_ = nullptr;
     chromeos::PowerManagerClient::Shutdown();
-    chromeos::HammerdClient::Shutdown();
+    HammerdClient::Shutdown();
   }
 
  protected:
@@ -131,7 +131,7 @@ class DetachableBaseHandlerTest : public testing::Test {
     handler_->AddObserver(&detachable_base_observer_);
   }
 
-  chromeos::FakeHammerdClient* hammerd_client_ = nullptr;
+  FakeHammerdClient* hammerd_client_ = nullptr;
 
   TestBaseObserver detachable_base_observer_;
 

@@ -51,8 +51,8 @@ DetachableBaseHandler::DetachableBaseHandler(PrefService* local_state)
     : local_state_(local_state),
       hammerd_observation_(this),
       power_manager_observation_(this) {
-  if (chromeos::HammerdClient::Get())  // May be null in tests
-    hammerd_observation_.Observe(chromeos::HammerdClient::Get());
+  if (HammerdClient::Get())  // May be null in tests
+    hammerd_observation_.Observe(HammerdClient::Get());
   chromeos::PowerManagerClient* power_manager_client =
       chromeos::PowerManagerClient::Get();
   power_manager_observation_.Observe(power_manager_client);

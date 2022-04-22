@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_USB_USBGUARD_OBSERVER_H_
-#define CHROMEOS_DBUS_USB_USBGUARD_OBSERVER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_USB_USBGUARD_OBSERVER_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_USB_USBGUARD_OBSERVER_H_
 
 #include <unistd.h>
 
@@ -13,9 +13,9 @@
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
 
-namespace chromeos {
+namespace ash {
 
-class COMPONENT_EXPORT(CHROMEOS_DBUS) UsbguardObserver
+class COMPONENT_EXPORT(USB_CLIENT) UsbguardObserver
     : public base::CheckedObserver {
  public:
   // Based on usbguard src/Library/public/usbguard/Rule.hpp "enum class Target".
@@ -64,6 +64,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) UsbguardObserver
       const std::map<std::string, std::string>& attributes) = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_USB_USBGUARD_OBSERVER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_USB_USBGUARD_OBSERVER_H_

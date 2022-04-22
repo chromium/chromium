@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/hammerd/hammerd_client.h"
+#include "chromeos/ash/components/dbus/hammerd/hammerd_client.h"
 
 #include <string>
 
@@ -10,14 +10,14 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/hammerd/fake_hammerd_client.h"
+#include "chromeos/ash/components/dbus/hammerd/fake_hammerd_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/hammerd/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -192,4 +192,4 @@ HammerdClient* HammerdClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

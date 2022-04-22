@@ -192,9 +192,9 @@
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
+#include "chromeos/ash/components/dbus/usb/usbguard_client.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
-#include "chromeos/dbus/usb/usbguard_client.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/system/devicemode.h"
 #include "chromeos/ui/wm/features.h"
@@ -949,10 +949,10 @@ Shell::~Shell() {
 
   shell_delegate_.reset();
 
-  chromeos::UsbguardClient::Shutdown();
+  UsbguardClient::Shutdown();
 
   // Must be shut down after detachable_base_handler_.
-  chromeos::HammerdClient::Shutdown();
+  HammerdClient::Shutdown();
 
   for (auto& observer : shell_observers_)
     observer.OnShellDestroyed();
@@ -970,9 +970,9 @@ void Shell::Init(
       std::make_unique<LoginUnlockThroughputRecorder>();
 
   // Required by DetachableBaseHandler.
-  chromeos::InitializeDBusClient<chromeos::HammerdClient>(dbus_bus.get());
+  chromeos::InitializeDBusClient<HammerdClient>(dbus_bus.get());
 
-  chromeos::InitializeDBusClient<chromeos::UsbguardClient>(dbus_bus.get());
+  chromeos::InitializeDBusClient<UsbguardClient>(dbus_bus.get());
 
   local_state_ = local_state;
 

@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_USB_USBGUARD_CLIENT_H_
-#define CHROMEOS_DBUS_USB_USBGUARD_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_USB_USBGUARD_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_USB_USBGUARD_CLIENT_H_
 
 #include "base/component_export.h"
-#include "chromeos/dbus/usb/usbguard_observer.h"
+#include "chromeos/ash/components/dbus/usb/usbguard_observer.h"
 
 namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
-class COMPONENT_EXPORT(CHROMEOS_DBUS) UsbguardClient {
+class COMPONENT_EXPORT(USB_CLIENT) UsbguardClient {
  public:
   UsbguardClient(const UsbguardClient&) = delete;
   UsbguardClient& operator=(const UsbguardClient&) = delete;
@@ -45,6 +45,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) UsbguardClient {
   UsbguardClient();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_USB_USBGUARD_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_USB_USBGUARD_CLIENT_H_

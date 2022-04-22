@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/hammerd/fake_hammerd_client.h"
+#include "chromeos/ash/components/dbus/hammerd/fake_hammerd_client.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 FakeHammerdClient* g_instance = nullptr;
@@ -70,4 +70,4 @@ void FakeHammerdClient::FireInvalidBaseConnectedSignal() {
     observer.InvalidBaseConnected();
 }
 
-}  // namespace chromeos
+}  // namespace ash

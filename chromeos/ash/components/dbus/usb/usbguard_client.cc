@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/usb/usbguard_client.h"
+#include "chromeos/ash/components/dbus/usb/usbguard_client.h"
 
 #include <map>
 
@@ -10,14 +10,14 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/usb/fake_usbguard_client.h"
-#include "chromeos/dbus/usb/usbguard_observer.h"
+#include "chromeos/ash/components/dbus/usb/fake_usbguard_client.h"
+#include "chromeos/ash/components/dbus/usb/usbguard_observer.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/usbguard/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 UsbguardClient* g_instance = nullptr;
@@ -156,4 +156,4 @@ UsbguardClient* UsbguardClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash
