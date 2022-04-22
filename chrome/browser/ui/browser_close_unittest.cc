@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -89,7 +91,9 @@ static std::unique_ptr<KeyedService> CreateTestingDownloadCoreService(
 class BrowserCloseTest : public testing::Test {
  public:
   BrowserCloseTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()), name_index_(0) {}
+      : profile_manager_(TestingBrowserProcess::GetGlobal()), name_index_(0) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
+  }
 
   ~BrowserCloseTest() override {}
 

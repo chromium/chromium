@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -223,8 +224,9 @@ class TabDesktopMediaListTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
         std::make_unique<FakeProfileManager>(temp_dir_.GetPath()));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
+    cl->AppendSwitch(switches::kNoFirstRun);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     cl->AppendSwitch(switches::kTestType);
 #endif
 

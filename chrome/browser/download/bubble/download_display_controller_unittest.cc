@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/download/bubble/download_display_controller.h"
+
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
 #include "chrome/browser/download/bubble/download_display.h"
@@ -12,6 +14,7 @@
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -106,7 +109,9 @@ class DownloadDisplayControllerTest : public testing::Test {
  public:
   DownloadDisplayControllerTest()
       : manager_(std::make_unique<NiceMock<content::MockDownloadManager>>()),
-        testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+        testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
+  }
   DownloadDisplayControllerTest(const DownloadDisplayControllerTest&) = delete;
   DownloadDisplayControllerTest& operator=(
       const DownloadDisplayControllerTest&) = delete;

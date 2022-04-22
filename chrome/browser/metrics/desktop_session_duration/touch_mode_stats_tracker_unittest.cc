@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -65,7 +67,9 @@ class SessionEndWaiter
 class TouchModeStatsTrackerTest : public ::testing::Test {
  public:
   TouchModeStatsTrackerTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
+  }
   ~TouchModeStatsTrackerTest() override = default;
 
   void SetUp() override {

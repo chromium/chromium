@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/metrics/user_metrics.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/profiles/profile_activity_metrics_recorder.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -33,6 +35,7 @@ class ProfileActivityMetricsRecorderTest : public testing::Test {
   ProfileActivityMetricsRecorderTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
     base::SetRecordActionTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
   }

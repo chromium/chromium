@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
+
+#include "base/command_line.h"
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
@@ -13,6 +15,7 @@
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -78,6 +81,7 @@ class DownloadBubbleUIControllerTest : public testing::Test {
       const DownloadBubbleUIControllerTest&) = delete;
 
   void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
     ASSERT_TRUE(testing_profile_manager_.SetUp());
 
     profile_ = testing_profile_manager_.CreateTestingProfile("testing_profile");

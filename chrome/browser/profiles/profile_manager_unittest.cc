@@ -139,6 +139,7 @@ class ProfileManagerTest : public testing::Test {
 
   void SetUp() override {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
     lacros_service_test_helper_ =
         std::make_unique<chromeos::ScopedLacrosServiceTestHelper>();
 
