@@ -13,6 +13,7 @@
   // Using data url because about:blank does not trigger onload.
   await TestRunner.addIframe('data:,', { id: 'test-iframe' });
 
+  Host.Platform.setPlatformForTests('linux');
   await testFileName('resources/bar.js');
   await testFileName('resources/a space/bar.js');
   await testFileName('resources/bar.js?#hello');
@@ -23,8 +24,18 @@
   await testFileName('resources/foo&with%20some*bad%5EC!h%7Ba...r,acter%%s/file&with?s%20t^rang@e~character%27S');
   await testFileName('resources/'); // Should be index.html
 
-  TestRunner.completeTest();
+  Host.Platform.setPlatformForTests('windows');
+  await testFileName('windows/bar.js');
+  await testFileName('windows/a space/bar.js');
+  await testFileName('windows/bar.js?#hello');
+  await testFileName('windows/bar.js?params');
+  await testFileName('windows/bar.js?params&and=more&pa&ra?ms');
+  await testFileName('windows/bar2.js?params&and=more&pa&ra?ms#hello?with&params');
+  await testFileName('windows/no-extension');
+  await testFileName('windows/foo&with%20some*bad%5EC!h%7Ba...r,acter%%s/file&with?s%20t^rang@e~character%27S');
+  await testFileName('windows/'); // Should be index.html
 
+  TestRunner.completeTest();
 
   async function testFileName(url) {
     TestRunner.addResult('Creating UISourcecode for url: ' + url);
