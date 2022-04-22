@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_METRICS_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_METRICS_H_
 
+#include "ash/constants/ambient_animation_theme.h"
+
 namespace ash {
 namespace personalization_app {
 
@@ -22,6 +24,8 @@ enum class ColorMode {
   kMaxValue = kAuto,
 };
 
+constexpr char kAmbientModeAnimationThemeHistogramName[] =
+    "Ash.Personalization.AmbientMode.AnimationTheme";
 constexpr char kPersonalizationThemeColorModeHistogramName[] =
     "Ash.Personalization.Theme.ColorMode";
 
@@ -30,6 +34,8 @@ constexpr char kPersonalizationThemeColorModeHistogramName[] =
 // -----------------------------------------------------------------------------
 
 void LogPersonalizationTheme(ColorMode color_mode);
+
+void LogAmbientModeAnimationTheme(ash::AmbientAnimationTheme animation_theme);
 
 }  // namespace personalization_app
 }  // namespace ash

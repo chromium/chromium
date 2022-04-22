@@ -26,6 +26,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager_factory.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -143,6 +144,7 @@ void PersonalizationAppAmbientProviderImpl::SetAnimationTheme(
     ash::AmbientAnimationTheme animation_theme) {
   PrefService* pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
+  LogAmbientModeAnimationTheme(animation_theme);
   pref_service->SetInteger(ash::ambient::prefs::kAmbientAnimationTheme,
                            static_cast<int>(animation_theme));
 }

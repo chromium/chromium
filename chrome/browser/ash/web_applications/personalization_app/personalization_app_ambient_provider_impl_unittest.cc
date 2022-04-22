@@ -19,6 +19,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -378,10 +379,16 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   ambient_provider_remote().FlushForTesting();
   SetAnimationTheme(ash::AmbientAnimationTheme::kSlideshow);
   EXPECT_EQ(ash::AmbientAnimationTheme::kSlideshow, ObservedAnimationTheme());
+  histogram_tester().ExpectBucketCount(kAmbientModeAnimationThemeHistogramName,
+                                       ash::AmbientAnimationTheme::kSlideshow,
+                                       1);
 
   SetAnimationTheme(ash::AmbientAnimationTheme::kFeelTheBreeze);
   EXPECT_EQ(ash::AmbientAnimationTheme::kFeelTheBreeze,
             ObservedAnimationTheme());
+  histogram_tester().ExpectBucketCount(
+      kAmbientModeAnimationThemeHistogramName,
+      ash::AmbientAnimationTheme::kFeelTheBreeze, 1);
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest,

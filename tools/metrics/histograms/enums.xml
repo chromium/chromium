@@ -1682,6 +1682,12 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="Keyboard"/>
 </enum>
 
+<enum name="AmbientModeAnimationTheme">
+  <int value="0" label="Slide Show"/>
+  <int value="1" label="Feel The Breeze"/>
+  <int value="2" label="Float On By"/>
+</enum>
+
 <enum name="AmbientModePhotoSource">
   <int value="0" label="Default">
     This is when user clicked on the top level Screen Saver toggle but did not

@@ -14,8 +14,8 @@ namespace ash {
 // Each corresponds to an animation design for ambient mode that UX created and
 // has its own Lottie file.
 //
-// These values are persisted in user pref storage, so they should never be
-// renumbered or reused.
+// These values are persisted in user pref storage and logs, so they should
+// never be renumbered or reused.
 enum class AmbientAnimationTheme {
   // This is the one exception in the list, and it describes the mode where
   // IMAX photos are displayed at full screen in a slideshow fashion. This is
