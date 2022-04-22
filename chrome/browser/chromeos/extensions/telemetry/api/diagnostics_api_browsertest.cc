@@ -73,9 +73,9 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady;
   nonInteractiveRoutineUpdate->status_message = "Routine ran by Google.";
 
-  auto routineUpdateUnion = cros_healthd::mojom::RoutineUpdateUnion::New();
-  routineUpdateUnion->set_noninteractive_update(
-      std::move(nonInteractiveRoutineUpdate));
+  auto routineUpdateUnion =
+      cros_healthd::mojom::RoutineUpdateUnion::NewNoninteractiveUpdate(
+          std::move(nonInteractiveRoutineUpdate));
 
   auto response = cros_healthd::mojom::RoutineUpdate::New();
   response->progress_percent = 87;
@@ -126,9 +126,9 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
   interactiveRoutineUpdate->user_message =
       cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::kUnplugACPower;
 
-  auto routineUpdateUnion = cros_healthd::mojom::RoutineUpdateUnion::New();
-  routineUpdateUnion->set_interactive_update(
-      std::move(interactiveRoutineUpdate));
+  auto routineUpdateUnion =
+      cros_healthd::mojom::RoutineUpdateUnion::NewInteractiveUpdate(
+          std::move(interactiveRoutineUpdate));
 
   auto response = cros_healthd::mojom::RoutineUpdate::New();
   response->progress_percent = 50;
