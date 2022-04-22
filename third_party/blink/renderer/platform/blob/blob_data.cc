@@ -241,16 +241,16 @@ uint64_t BlobData::length() const {
 
   for (const auto& element : elements_) {
     switch (element->which()) {
-      case DataElement::Tag::BYTES:
+      case DataElement::Tag::kBytes:
         length += element->get_bytes()->length;
         break;
-      case DataElement::Tag::FILE:
+      case DataElement::Tag::kFile:
         length += element->get_file()->length;
         break;
-      case DataElement::Tag::FILE_FILESYSTEM:
+      case DataElement::Tag::kFileFilesystem:
         length += element->get_file_filesystem()->length;
         break;
-      case DataElement::Tag::BLOB:
+      case DataElement::Tag::kBlob:
         length += element->get_blob()->length;
         break;
     }
