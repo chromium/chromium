@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/download/bubble/download_display_controller.h"
+#include "base/files/file_path.h"
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
@@ -26,6 +27,7 @@
 using testing::_;
 using testing::NiceMock;
 using testing::Return;
+using testing::ReturnRefOfCopy;
 using testing::SetArgPointee;
 
 namespace {
@@ -129,6 +131,7 @@ class DownloadDisplayControllerTest : public testing::Test {
     browser_ = std::unique_ptr<Browser>(Browser::Create(params));
     bubble_controller_ =
         std::make_unique<FakeDownloadBubbleUIController>(browser_.get());
+    bubble_controller_->set_manager_for_testing(manager_.get());
     controller_ = std::make_unique<DownloadDisplayController>(
         display_.get(), profile_, bubble_controller_.get());
     controller_->set_manager_for_testing(manager_.get());
@@ -156,12 +159,16 @@ class DownloadDisplayControllerTest : public testing::Test {
 
   void InitDownloadItem(const base::FilePath::CharType* path,
                         DownloadState state,
-                        bool show_details = true) {
+                        bool show_details = true,
+                        base::FilePath target_file_path =
+                            base::FilePath(FILE_PATH_LITERAL("foo"))) {
     size_t index = items_.size();
     items_.push_back(std::make_unique<StrictMockDownloadItem>());
     EXPECT_CALL(item(index), GetId())
         .WillRepeatedly(Return(static_cast<uint32_t>(items_.size() + 1)));
     EXPECT_CALL(item(index), GetState()).WillRepeatedly(Return(state));
+    EXPECT_CALL(item(index), GetStartTime())
+        .WillRepeatedly(Return(base::Time::Now()));
     EXPECT_CALL(item(index), GetDangerType())
         .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
     int received_bytes =
@@ -169,7 +176,18 @@ class DownloadDisplayControllerTest : public testing::Test {
     EXPECT_CALL(item(index), GetReceivedBytes())
         .WillRepeatedly(Return(received_bytes));
     EXPECT_CALL(item(index), GetTotalBytes()).WillRepeatedly(Return(100));
+    EXPECT_CALL(item(index), AllDataSaved())
+        .WillRepeatedly(Return(
+            state == download::DownloadItem::IN_PROGRESS ? false : true));
     EXPECT_CALL(item(index), IsDone()).WillRepeatedly(Return(false));
+    EXPECT_CALL(item(index), IsTransient()).WillRepeatedly(Return(false));
+    EXPECT_CALL(item(index), GetTargetFilePath())
+        .WillRepeatedly(ReturnRefOfCopy(target_file_path));
+    EXPECT_CALL(item(index), GetLastReason())
+        .WillRepeatedly(Return(download::DOWNLOAD_INTERRUPT_REASON_NONE));
+    EXPECT_CALL(item(index), GetMixedContentStatus())
+        .WillRepeatedly(
+            Return(download::DownloadItem::MixedContentStatus::SAFE));
     if (state == DownloadState::IN_PROGRESS) {
       in_progress_count_++;
     }
@@ -456,6 +474,28 @@ TEST_F(DownloadDisplayControllerTest, UpdateToolbarButtonState_DeepScanning) {
   UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE);
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
                                  /*icon_state=*/DownloadIconState::kComplete,
+                                 /*is_active=*/true));
+}
+
+TEST_F(DownloadDisplayControllerTest, UpdateToolbarButtonState_EmptyFilePath) {
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kComplete,
+                                 /*is_active=*/false));
+
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
+                   download::DownloadItem::IN_PROGRESS, /*show_details=*/false,
+                   /*target_file_path=*/base::FilePath(FILE_PATH_LITERAL("")));
+  // Empty file path should not be reflected in the UI.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kComplete,
+                                 /*is_active=*/false));
+
+  EXPECT_CALL(item(0), GetTargetFilePath())
+      .WillRepeatedly(
+          ReturnRefOfCopy(base::FilePath(FILE_PATH_LITERAL("bar.pdf"))));
+  controller().OnNewItem(/*show_details=*/true);
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+                                 /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
 }
 

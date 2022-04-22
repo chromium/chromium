@@ -29,6 +29,7 @@
 using testing::_;
 using testing::NiceMock;
 using testing::Return;
+using testing::ReturnRefOfCopy;
 using testing::SetArgPointee;
 
 namespace {
@@ -139,6 +140,14 @@ class DownloadBubbleUIControllerTest : public testing::Test {
     EXPECT_CALL(item(index), GetGuid()).WillRepeatedly(testing::ReturnRef(id));
     EXPECT_CALL(item(index), GetState()).WillRepeatedly(Return(state));
     EXPECT_CALL(item(index), GetStartTime()).WillRepeatedly(Return(start_time));
+    EXPECT_CALL(item(index), GetTargetFilePath())
+        .WillRepeatedly(
+            ReturnRefOfCopy(base::FilePath(FILE_PATH_LITERAL("foo"))));
+    EXPECT_CALL(item(index), GetLastReason())
+        .WillRepeatedly(Return(download::DOWNLOAD_INTERRUPT_REASON_NONE));
+    EXPECT_CALL(item(index), GetMixedContentStatus())
+        .WillRepeatedly(
+            Return(download::DownloadItem::MixedContentStatus::SAFE));
     int received_bytes =
         state == download::DownloadItem::IN_PROGRESS ? 50 : 100;
     EXPECT_CALL(item(index), GetReceivedBytes())

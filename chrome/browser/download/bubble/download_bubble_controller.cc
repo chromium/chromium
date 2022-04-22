@@ -245,39 +245,52 @@ void DownloadBubbleUIController::PruneOfflineItems() {
   }
 }
 
+std::vector<DownloadUIModelPtr>
+DownloadBubbleUIController::GetAllItemsToDisplay() {
+  base::Time cutoff_time =
+      base::Time::Now() - base::Days(kShowDownloadsInBubbleForNumDays);
+  std::vector<DownloadUIModelPtr> models_aggregate;
+  for (const OfflineItem& item : GetOfflineItems()) {
+    DownloadUIModelPtr model = OfflineItemModel::Wrap(
+        offline_manager_, item,
+        std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>());
+    if (model->ShouldShowInBubble() &&
+        DownloadUIModelIsRecent(model, cutoff_time)) {
+      models_aggregate.push_back(std::move(model));
+    }
+  }
+  std::vector<download::DownloadItem*> download_items;
+  download_manager_->GetAllDownloads(&download_items);
+  for (download::DownloadItem* item : download_items) {
+    DownloadUIModelPtr model = DownloadItemModel::Wrap(
+        item, std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>());
+    if (model->ShouldShowInBubble() &&
+        DownloadUIModelIsRecent(model, cutoff_time)) {
+      models_aggregate.push_back(std::move(model));
+    }
+  }
+
+  return models_aggregate;
+}
+
 std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetDownloadUIModels(
     bool is_main_view) {
   // Prune just to keep the list of offline entries small.
   PruneOfflineItems();
 
   // Aggregate downloads and offline items
-  std::vector<DownloadUIModelPtr> models_aggregate;
-  for (const OfflineItem& item : offline_items_) {
-    models_aggregate.push_back(OfflineItemModel::Wrap(
-        offline_manager_, item,
-        std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>()));
-  }
-  std::vector<download::DownloadItem*> download_items;
-  download_manager_->GetAllDownloads(&download_items);
-  for (download::DownloadItem* item : download_items) {
-    models_aggregate.push_back(DownloadItemModel::Wrap(
-        item, std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>()));
-  }
+  std::vector<DownloadUIModelPtr> models_aggregate = GetAllItemsToDisplay();
 
   // Store list of DownloadUIModelPtrs. Sort list iterators in a set, as a set
   // does not allow move semantics over unique_ptr, preventing us from putting
   // DownloadUIModelPtr directly in the set.
   DownloadUIModelPtrList filtered_models_list;
   SortedDownloadUIModelSet sorted_ui_model_iters;
-  base::Time cutoff_time =
-      base::Time::Now() - base::Days(kShowDownloadsInBubbleForNumDays);
   for (auto& model : models_aggregate) {
     // Partial view consists of only the entries in partial_view_ids_, which are
     // also removed if viewed on the main view.
-    if (model->ShouldShowInBubble() &&
-        DownloadUIModelIsRecent(model, cutoff_time) &&
-        (is_main_view || partial_view_ids_.find(model->GetContentId()) !=
-                             partial_view_ids_.end())) {
+    if (is_main_view || partial_view_ids_.find(model->GetContentId()) !=
+                            partial_view_ids_.end()) {
       if (is_main_view) {
         partial_view_ids_.erase(model->GetContentId());
       }

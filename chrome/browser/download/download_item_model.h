@@ -58,6 +58,7 @@ class DownloadItemModel : public DownloadUIModel,
   bool ShouldRemoveFromShelfWhenComplete() const override;
   bool ShouldShowDownloadStartedAnimation() const override;
   bool ShouldShowInShelf() const override;
+  bool ShouldShowInBubble() const override;
   void SetShouldShowInShelf(bool should_show) override;
   bool ShouldNotifyUI() const override;
   bool WasUINotified() const override;
