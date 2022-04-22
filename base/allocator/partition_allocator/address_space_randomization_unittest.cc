@@ -244,30 +244,4 @@ TEST_RANDOM_BIT(48)
 
 #undef TEST_RANDOM_BIT
 
-// Checks that we can actually map memory in the requested range.
-// TODO(crbug.com/1318466): Fails on Fuchsia.
-#if !BUILDFLAG(IS_FUCHSIA)
-TEST(PartitionAllocAddressSpaceRandomizationTest, CanMapInAslrRange) {
-  int tries = 0;
-  // This is overly generous, but we really don't want to make the test flaky.
-  constexpr int kMaxTries = 1000;
-
-  for (tries = 0; tries < kMaxTries; tries++) {
-    uintptr_t requested_address = GetRandomPageBase();
-    size_t size = internal::PageAllocationGranularity();
-
-    uintptr_t address = AllocPages(
-        requested_address, size, internal::PageAllocationGranularity(),
-        PageAccessibilityConfiguration::kReadWrite, PageTag::kPartitionAlloc);
-    ASSERT_NE(address, 0u);
-    FreePages(address, size);
-
-    if (address == requested_address)
-      break;
-  }
-
-  EXPECT_LT(tries, kMaxTries);
-}
-#endif  // !BUILDFLAG(IS_FUCHSIA)
-
 }  // namespace partition_alloc
