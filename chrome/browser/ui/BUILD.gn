@@ -4704,6 +4704,8 @@ static_library("ui") {
       "views/shopping_bubble/shopping_prompt_impl.h",
       "views/side_panel/bookmarks/bookmarks_side_panel_coordinator.cc",
       "views/side_panel/bookmarks/bookmarks_side_panel_coordinator.h",
+      "views/side_panel/feed/feed_side_panel_coordinator.cc",
+      "views/side_panel/feed/feed_side_panel_coordinator.h",
       "views/side_panel/read_anything/read_anything_constants.h",
       "views/side_panel/read_anything/read_anything_container_view.cc",
       "views/side_panel/read_anything/read_anything_container_view.h",

@@ -256,6 +256,7 @@ const char kChromeUIReadAnythingSidePanelURL[] =
     "chrome://read-anything-side-panel.top-chrome/";
 const char kChromeUIReadLaterHost[] = "read-later.top-chrome";
 const char kChromeUIReadLaterURL[] = "chrome://read-later.top-chrome/";
+const char kChromeUIUntrustedFeedURL[] = "chrome-untrusted://feed/";
 const char kChromeUIWebAppInternalsHost[] = "web-app-internals";
 const char kChromeUIWebUITestHost[] = "webui-test";
 #endif

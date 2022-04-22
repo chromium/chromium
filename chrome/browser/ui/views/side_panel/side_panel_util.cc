@@ -6,10 +6,12 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/side_panel/bookmarks/bookmarks_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/feed/feed_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/reading_list/reading_list_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/user_note/user_note_ui_coordinator.h"
+#include "components/feed/feed_feature_list.h"
 #include "components/user_notes/user_notes_features.h"
 #include "ui/accessibility/accessibility_features.h"
 
@@ -33,6 +35,12 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
   // Add user notes.
   if (user_notes::IsUserNotesEnabled()) {
     UserNoteUICoordinator::GetOrCreateForBrowser(browser)
+        ->CreateAndRegisterEntry(global_registry);
+  }
+
+  // Add feed.
+  if (base::FeatureList::IsEnabled(feed::kWebUiFeed)) {
+    feed::FeedSidePanelCoordinator::GetOrCreateForBrowser(browser)
         ->CreateAndRegisterEntry(global_registry);
   }
 

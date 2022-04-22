@@ -6880,6 +6880,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Add note...
       </message>
 
+      <!-- Feed button and menu -->
+      <message name="IDS_FEED_TITLE" desc="Title of the feed menu">
+        Feed
+      </message>
+
       <!--Tooltip strings -->
       <message name="IDS_TOOLTIP_BACK" desc="The tooltip for back button">
         Click to go back, hold to see history

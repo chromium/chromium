@@ -26,6 +26,7 @@ class SidePanelEntry final {
     kBookmarks,
     kReadAnything,
     kUserNote,
+    kFeed,
     // Contextual Entries
     kSideSearch,
     kLens
