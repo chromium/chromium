@@ -80,11 +80,6 @@ void DeviceActivityController::RegisterPrefs(PrefRegistrySimple* registry) {
 // static
 base::TimeDelta DeviceActivityController::DetermineStartUpDelay(
     base::Time chrome_first_run_ts) {
-  // |random_delay| picks a random minute between [0, 29] inclusive (30 buckets)
-  // to delay start. This will distribute the high qps during certain times,
-  // across 30 equally probable buckets.
-  base::TimeDelta random_delay = base::Minutes(base::RandInt(0, 29));
-
   // Wait at least 10 minutes from the first chrome run sentinel file creation
   // time. This creation time is used as an indicator of when the device last
   // reset (powerwashed/recovery/RMA). PSM servers take 10 minutes from CheckIn
@@ -100,7 +95,7 @@ base::TimeDelta DeviceActivityController::DetermineStartUpDelay(
         chrome_first_run_ts + base::Minutes(10) - current_ts;
   }
 
-  return delay_on_first_chrome_run + random_delay;
+  return delay_on_first_chrome_run;
 }
 
 DeviceActivityController::DeviceActivityController(
