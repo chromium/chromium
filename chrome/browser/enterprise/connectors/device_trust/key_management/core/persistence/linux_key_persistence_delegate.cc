@@ -42,9 +42,10 @@ constexpr int kMaxBufferSize = 2048;
 constexpr char kSigningKeyName[] = "signingKey";
 constexpr char kSigningKeyTrustLevel[] = "trustLevel";
 
-// The path to the policy file should be the same as the
-// chrome::DIR_POLICY_FILES. This code runs in the chrome-management-service
-// and thus cannot directly use chrome::DIR_POLICY_FILES
+// The path to the policy directory should be the same as
+// `chrome::DIR_POLICY_FILES`. This file duplicates those constants, as it runs
+// in the chrome-management-service binary and thus cannot directly use
+// `chrome::DIR_POLICY_FILES`.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 base::FilePath::CharType kDirPolicyPath[] =
     FILE_PATH_LITERAL("/etc/opt/chrome/policies");

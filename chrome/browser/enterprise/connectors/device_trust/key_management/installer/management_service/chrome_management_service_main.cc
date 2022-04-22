@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
   if (!command_line ||
       !command_line->HasSwitch(enterprise_connectors::switches::kPipeName)) {
     SYSLOG(ERROR) << "The chrome-management-service failed. Invalid command, "
-                     "missing details to connect to the browser process.";
+                  << "missing details to connect to the browser process.";
     return enterprise_connectors::kFailure;
   }
 
@@ -32,8 +32,8 @@ int main(int argc, char** argv) {
                                 enterprise_connectors::switches::kPipeName),
                             &pipe_name)) {
     SYSLOG(ERROR) << "The chrome-management-service failed. Could not "
-                     "correctly retrieve the "
-                     "details to connect to the browser process.";
+                  << "correctly retrieve the details to connect to the browser "
+                  << "process.";
     return enterprise_connectors::kFailure;
   }
 

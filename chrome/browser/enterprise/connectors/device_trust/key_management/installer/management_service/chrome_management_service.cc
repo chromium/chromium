@@ -34,9 +34,8 @@ namespace {
 bool CheckBinaryPermissions() {
   base::FilePath exe_path;
   if (!base::PathService::Get(base::DIR_EXE, &exe_path)) {
-    SYSLOG(ERROR)
-        << "The chrome-management-service failed. Could not get the path "
-           "to the chrome-management-service.";
+    SYSLOG(ERROR) << "The chrome-management-service failed. Could not get the "
+                  << "path to the chrome-management-service.";
     return false;
   }
   exe_path = exe_path.Append(constants::kBinaryFileName);
@@ -44,9 +43,8 @@ bool CheckBinaryPermissions() {
   // Gets the chromemgmt group gid stored on the device.
   struct group* chrome_mgmt_group = getgrnam(constants::kGroupName);
   if (!chrome_mgmt_group) {
-    SYSLOG(ERROR)
-        << "The chrome-management-service failed. Device missing the necessary"
-           "group permissions to run the command.";
+    SYSLOG(ERROR) << "The chrome-management-service failed. Device missing the "
+                  << "necessary group permissions to run the command.";
     return false;
   }
   gid_t chrome_mgmt_gid = chrome_mgmt_group->gr_gid;
@@ -57,9 +55,8 @@ bool CheckBinaryPermissions() {
   gid_t binary_gid = st.st_gid;
 
   if (getegid() != chrome_mgmt_gid || binary_gid != chrome_mgmt_gid) {
-    SYSLOG(ERROR)
-        << "The chrome-management-service failed. Incorrect permissions "
-           "for the chrome-management-service.";
+    SYSLOG(ERROR) << "The chrome-management-service failed. Incorrect "
+                  << "permissions for the chrome-management-service.";
     return false;
   }
   return true;
