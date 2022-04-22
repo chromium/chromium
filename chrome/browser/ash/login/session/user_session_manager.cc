@@ -457,6 +457,11 @@ bool IsHwDataUsageDeviceSettingSet() {
 // Returns value of the kOobeRevenUpdatedToFlex pref.
 bool IsRevenUpdatedToFlex() {
   CHECK(switches::IsRevenBranding());
+  // This flow breaks tast tests for the reven board, as an essential screen
+  // that should be shown for the device owner is skipped in tests.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kEnableOobeTestAPI))
+    return false;
   PrefService* local_state = g_browser_process->local_state();
   if (local_state->GetBoolean(prefs::kOobeRevenUpdatedToFlex))
     return true;
