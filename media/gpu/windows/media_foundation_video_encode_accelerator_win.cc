@@ -839,9 +839,11 @@ bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
     RETURN_ON_HR_FAILURE(hr, "Couldn't set CommonRateControlMode", false);
   }
 
-  // Intel drivers want the layer count to be set explicitly, even if it's one.
+  // Intel drivers want the layer count to be set explicitly for H.264, even if
+  // it's one.
   const bool set_svc_layer_count =
-      (num_temporal_layers_ > 1) || (vendor_ == DriverVendor::kIntel);
+      (num_temporal_layers_ > 1) ||
+      (vendor_ == DriverVendor::kIntel && codec_ == VideoCodec::kH264);
   if (set_svc_layer_count) {
     var.ulVal = num_temporal_layers_;
     hr = codec_api_->SetValue(&CODECAPI_AVEncVideoTemporalLayerCount, &var);
