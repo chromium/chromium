@@ -351,6 +351,8 @@ ExtensionBridge = class {
   }
 };
 
+// Keep these constants in sync with injected/extension_bridge.js.
+
 /**
  * The name of the port between the content script and background page.
  * @const {string}
