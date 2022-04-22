@@ -1477,5 +1477,13 @@
     // toggle-root
     "group",
     "self",
+
+    // color-contrast()
+    "color-contrast",
+    "vs",
+    "AA",
+    "AA-large",
+    "AAA",
+    "AAA-large",
   ],
 }

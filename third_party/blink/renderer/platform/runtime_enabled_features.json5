@@ -528,6 +528,10 @@
       status: "test",
     },
     {
+      name: "CSSColorContrast",
+      status: "experimental",
+    },
+    {
       // Support the 'only' keyword for the color-scheme property.
       name: "CSSColorSchemeOnly",
       origin_trial_feature_name: "AutoDarkMode",

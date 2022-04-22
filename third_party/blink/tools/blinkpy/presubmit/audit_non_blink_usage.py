@@ -953,6 +953,14 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/core/css/properties/css_parsing_utils.cc',
+        ],
+        'allowed': [
+            'color_utils::GetContrastRatio',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/core/inspector/inspector_contrast.cc',
             'third_party/blink/renderer/core/inspector/inspector_contrast.h'
         ],

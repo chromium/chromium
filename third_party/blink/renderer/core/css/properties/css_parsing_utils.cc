@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "ui/gfx/color_utils.h"
 
 namespace blink {
 
@@ -1544,10 +1545,125 @@ static bool ParseColorFunction(CSSParserTokenRange& range,
   return true;
 }
 
+namespace {
+
+// TODO(crbug.com/1111385): Remove this when we move color-contrast()
+// representation to ComputedStyle. This method does not handle currentColor
+// correctly.
+Color ResolveColor(CSSValue* value) {
+  if (auto* color = DynamicTo<cssvalue::CSSColor>(value)) {
+    return color->Value();
+  }
+
+  if (auto* color = DynamicTo<CSSIdentifierValue>(value)) {
+    CSSValueID color_id = color->GetValueID();
+    DCHECK(StyleColor::IsColorKeyword(color_id));
+    return StyleColor::ColorFromKeyword(color_id,
+                                        mojom::blink::ColorScheme::kLight);
+  }
+
+  NOTREACHED();
+  return Color();
+}
+
+}  // namespace
+
+CSSValue* ConsumeColorContrast(CSSParserTokenRange& range,
+                               const CSSParserContext& context,
+                               bool accept_quirky_colors) {
+  DCHECK_EQ(range.Peek().FunctionId(), CSSValueID::kColorContrast);
+  CSSParserTokenRange args = ConsumeFunction(range);
+
+  CSSValue* background_color =
+      ConsumeColor(args, context, accept_quirky_colors);
+  if (!background_color)
+    return nullptr;
+
+  if (!ConsumeIdent<CSSValueID::kVs>(args))
+    return nullptr;
+
+  VectorOf<CSSValue> colors_to_compare_against;
+  do {
+    CSSValue* color = ConsumeColor(args, context, accept_quirky_colors);
+    if (!color)
+      return nullptr;
+    colors_to_compare_against.push_back(color);
+  } while (ConsumeCommaIncludingWhitespace(args));
+
+  if (colors_to_compare_against.size() < 2)
+    return nullptr;
+
+  absl::optional<double> target_contrast;
+  if (ConsumeIdent<CSSValueID::kTo>(args)) {
+    double target_contrast_temp;
+    if (ConsumeIdent<CSSValueID::kAA>(args)) {
+      target_contrast = 4.5;
+    } else if (ConsumeIdent<CSSValueID::kAALarge>(args)) {
+      target_contrast = 3;
+    } else if (ConsumeIdent<CSSValueID::kAAA>(args)) {
+      target_contrast = 7;
+    } else if (ConsumeIdent<CSSValueID::kAAALarge>(args)) {
+      target_contrast = 4.5;
+    } else if (ConsumeNumberRaw(args, context, target_contrast_temp)) {
+      target_contrast = target_contrast_temp;
+    } else {
+      return nullptr;
+    }
+  }
+
+  // Bail out if there is any trailing stuff after we parse everything
+  if (!args.AtEnd())
+    return nullptr;
+
+  // TODO(crbug.com/1111385): Represent |background_color| and
+  // |colors_to_compare_against| in ComputedStyle and evaluate with currentColor
+  // and other variables at used-value time instead of doing it at parse time
+  // below.
+
+  SkColor resolved_background_color =
+      static_cast<SkColor>(ResolveColor(background_color));
+  int highest_contrast_index = -1;
+  float highest_contrast_ratio = 0;
+  for (unsigned i = 0; i < colors_to_compare_against.size(); i++) {
+    float contrast_ratio = color_utils::GetContrastRatio(
+        resolved_background_color,
+        static_cast<SkColor>(ResolveColor(colors_to_compare_against[i])));
+    if (target_contrast.has_value()) {
+      if (contrast_ratio >= target_contrast.value()) {
+        highest_contrast_ratio = contrast_ratio;
+        highest_contrast_index = i;
+        break;
+      }
+    } else if (contrast_ratio > highest_contrast_ratio) {
+      highest_contrast_ratio = contrast_ratio;
+      highest_contrast_index = i;
+    }
+  }
+
+  if (highest_contrast_index < 0) {
+    // If an explicit target contrast was set and no provided colors have enough
+    // contrast, then return white or black depending on which has the most
+    // contrast.
+    return color_utils::GetContrastRatio(resolved_background_color,
+                                         SK_ColorWHITE) >
+                   color_utils::GetContrastRatio(resolved_background_color,
+                                                 SK_ColorBLACK)
+               ? MakeGarbageCollected<cssvalue::CSSColor>(SK_ColorWHITE)
+               : MakeGarbageCollected<cssvalue::CSSColor>(SK_ColorBLACK);
+  }
+
+  return MakeGarbageCollected<cssvalue::CSSColor>(
+      ResolveColor(colors_to_compare_against[highest_contrast_index]));
+}
+
 CSSValue* ConsumeColor(CSSParserTokenRange& range,
                        const CSSParserContext& context,
                        bool accept_quirky_colors,
                        AllowedColorKeywords allowed_keywords) {
+  if (RuntimeEnabledFeatures::CSSColorContrastEnabled() &&
+      range.Peek().FunctionId() == CSSValueID::kColorContrast) {
+    return ConsumeColorContrast(range, context, accept_quirky_colors);
+  }
   CSSValueID id = range.Peek().Id();
   if (StyleColor::IsColorKeyword(id)) {
     if (!isValueAllowedInMode(id, context.Mode()))
