@@ -8,6 +8,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_util.h"
+#include "ash/capture_mode/stop_recording_button_tray.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -21,6 +22,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
@@ -55,13 +57,20 @@ constexpr base::TimeDelta kCounterFadeInDuration = base::Milliseconds(250);
 // above duration.
 constexpr base::TimeDelta kCounterFadeOutDuration = base::Milliseconds(150);
 
-// The duration of the counter fade out animation. The counter also scales up as
-// it fades in with the same duration.
-constexpr base::TimeDelta kCounterFadeOutDelay = base::Milliseconds(900);
+// The duration of the fade out and scale up animation of the counter when its
+// value is `kCountDownStartSeconds`.
+constexpr base::TimeDelta kStartCounterFadeOutDelay = base::Milliseconds(900);
+
+// Same as above but for all other counters (i.e. "2" and "1").
+constexpr base::TimeDelta kAllCountersFadeOutDelay = base::Milliseconds(850);
 
 // The duration of the fade out animation applied on the label widget once the
 // count down value reaches 1.
 constexpr base::TimeDelta kWidgetFadeOutDuration = base::Milliseconds(333);
+
+// The duration of drop to stop recording button position animation.
+constexpr base::TimeDelta kDropToStopRecordingButtonDuration =
+    base::Milliseconds(500);
 
 // The counter starts at 80% scale as it fades in, and animates to a scale of
 // 100%.
@@ -75,6 +84,65 @@ constexpr float kCounterFinalFadeOutScale = 1.2f;
 constexpr float kWidgetFinalFadeOutScale = 0.8f;
 
 }  // namespace
+
+// -----------------------------------------------------------------------------
+// DropToStopRecordingButtonAnimation:
+
+// Defines an animation that calculates the transform of the label widget at
+// each step of the drop towards the stop recording button position animation.
+class DropToStopRecordingButtonAnimation : public gfx::LinearAnimation {
+ public:
+  DropToStopRecordingButtonAnimation(gfx::AnimationDelegate* delegate,
+                                     const gfx::Point& start_position,
+                                     const gfx::Point& target_position)
+      : LinearAnimation(kDropToStopRecordingButtonDuration,
+                        gfx::LinearAnimation::kDefaultFrameRate,
+                        delegate),
+        start_position_(start_position),
+        target_position_(target_position) {}
+  DropToStopRecordingButtonAnimation(
+      const DropToStopRecordingButtonAnimation&) = delete;
+  DropToStopRecordingButtonAnimation& operator=(
+      const DropToStopRecordingButtonAnimation&) = delete;
+  ~DropToStopRecordingButtonAnimation() override = default;
+
+  const gfx::Transform& current_transform() const { return current_transform_; }
+
+  // gfx::LinearAnimation:
+  void AnimateToState(double state) override {
+    // Note that this animation moves the widget at different speeds in X and Y.
+    // This results in motion on a curve.
+    const int new_x = gfx::Tween::IntValueBetween(
+        gfx::Tween::CalculateValue(gfx::Tween::FAST_OUT_LINEAR_IN, state),
+        start_position_.x(), target_position_.x());
+    const int new_y = gfx::Tween::IntValueBetween(
+        gfx::Tween::CalculateValue(gfx::Tween::ACCEL_30_DECEL_20_85, state),
+        start_position_.y(), target_position_.y());
+
+    current_transform_.MakeIdentity();
+    current_transform_.Translate(gfx::Point(new_x, new_y) - start_position_);
+  }
+
+ private:
+  // Note that the coordinate system of both `start_position_` and
+  // `target_position_` must be the same. They can be both in screen, or both in
+  // root. They're used to calculate and offset for a translation transform, so
+  // it doesn't matter which coordinate system as long as they has the same.
+
+  // The origin of the label widget at the start of this animation.
+  const gfx::Point start_position_;
+
+  // The origin of the stop recording button, which is the target position of
+  // this animation.
+  const gfx::Point target_position_;
+
+  // The current value of the transform at each step of this animation which
+  // will be applied on the label widget's layer.
+  gfx::Transform current_transform_;
+};
+
+// -----------------------------------------------------------------------------
+// CaptureLabelView:
 
 CaptureLabelView::CaptureLabelView(
     CaptureModeSession* capture_mode_session,
@@ -278,9 +346,22 @@ CaptureLabelView::CreatePathGenerator() {
       kCaptureLabelRadius);
 }
 
+void CaptureLabelView::AnimationEnded(const gfx::Animation* animation) {
+  DCHECK_EQ(drop_to_stop_button_animation_.get(), animation);
+  OnCountDownAnimationFinished();
+}
+
+void CaptureLabelView::AnimationProgressed(const gfx::Animation* animation) {
+  DCHECK_EQ(drop_to_stop_button_animation_.get(), animation);
+  GetWidget()->GetLayer()->SetTransform(
+      drop_to_stop_button_animation_->current_transform());
+}
+
 void CaptureLabelView::FadeInAndOutCounter(int counter_value) {
-  if (counter_value == 0)
+  if (counter_value == 0) {
+    DropWidgetToStopRecordingButton();
     return;
+  }
 
   label_->SetVisible(true);
   label_->SetText(base::FormatNumber(counter_value));
@@ -292,45 +373,52 @@ void CaptureLabelView::FadeInAndOutCounter(int counter_value) {
   layer->SetTransform(capture_mode_util::GetScaleTransformAboutCenter(
       layer, kCounterInitialFadeInScale));
 
-  auto weak_ptr = weak_factory_.GetWeakPtr();
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(base::BindOnce(&CaptureLabelView::FadeInAndOutCounter,
+                              weak_factory_.GetWeakPtr(), counter_value - 1))
+      .Once()
+      .SetDuration(kCounterFadeInDuration)
+      .SetOpacity(layer, 1.f)
+      .SetTransform(layer, gfx::Transform(), gfx::Tween::LINEAR_OUT_SLOW_IN)
+      .At(counter_value == kCountDownStartSeconds ? kStartCounterFadeOutDelay
+                                                  : kAllCountersFadeOutDelay)
+      .SetDuration(kCounterFadeOutDuration)
+      .SetOpacity(layer, 0.f)
+      .SetTransform(layer,
+                    capture_mode_util::GetScaleTransformAboutCenter(
+                        layer, kCounterFinalFadeOutScale),
+                    gfx::Tween::FAST_OUT_LINEAR_IN);
+}
 
-  // Once we reach a counter value of `1`, we fade out the widget itself as the
-  // last step of the animation.
-  if (counter_value == 1)
+void CaptureLabelView::DropWidgetToStopRecordingButton() {
+  auto* widget_window = GetWidget()->GetNativeWindow();
+  StopRecordingButtonTray* stop_recording_button =
+      capture_mode_util::GetStopRecordingButtonForRoot(
+          widget_window->GetRootWindow());
+
+  // Fall back to the fade out animation of the widget in case the button is not
+  // available.
+  if (!stop_recording_button) {
     FadeOutWidget();
-
-  // Note that in tests, fading out the widget can happen instantly resulting in
-  // ending the count down and starting the recording, which will destroy this
-  // view. In this case we don't need to continue with the rest of the
-  // animation.
-  if (!weak_ptr)
     return;
-
-  views::AnimationBuilder builder;
-  auto& animation_sequence_block =
-      builder
-          .SetPreemptionStrategy(
-              ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-          .OnEnded(base::BindOnce(&CaptureLabelView::FadeInAndOutCounter,
-                                  weak_factory_.GetWeakPtr(),
-                                  counter_value - 1))
-          .Once()
-          .SetDuration(kCounterFadeInDuration)
-          .SetOpacity(layer, 1.f)
-          .SetTransform(layer, gfx::Transform(),
-                        gfx::Tween::LINEAR_OUT_SLOW_IN);
-
-  // For all counter values other than `1`, we fade the label out and scale it
-  // up in preparation for moving to the next counter.
-  if (counter_value != 1) {
-    animation_sequence_block.At(kCounterFadeOutDelay)
-        .SetDuration(kCounterFadeOutDuration)
-        .SetOpacity(layer, 0.f)
-        .SetTransform(layer,
-                      capture_mode_util::GetScaleTransformAboutCenter(
-                          layer, kCounterFinalFadeOutScale),
-                      gfx::Tween::FAST_OUT_LINEAR_IN);
   }
+
+  // Temporarily show the button (without animation, i.e. don't use
+  // `SetVisiblePreferred()`) in order to layout and get the position in which
+  // it will be placed when we actually show it. `ShelfLayoutManager` will take
+  // care of updating the layout when the visibility changes.
+  stop_recording_button->SetVisible(true);
+  stop_recording_button->UpdateLayout();
+  const auto target_position =
+      stop_recording_button->GetBoundsInScreen().origin();
+  stop_recording_button->SetVisible(false);
+
+  drop_to_stop_button_animation_ =
+      std::make_unique<DropToStopRecordingButtonAnimation>(
+          this, widget_window->GetBoundsInScreen().origin(), target_position);
+  drop_to_stop_button_animation_->Start();
 }
 
 void CaptureLabelView::FadeOutWidget() {
@@ -343,7 +431,7 @@ void CaptureLabelView::FadeOutWidget() {
       .OnEnded(base::BindOnce(&CaptureLabelView::OnCountDownAnimationFinished,
                               weak_factory_.GetWeakPtr()))
       .Once()
-      .At(kCounterFadeInDuration + kCounterFadeOutDelay)
+      .At(kCounterFadeInDuration + kAllCountersFadeOutDelay)
       .SetDuration(kWidgetFadeOutDuration)
       .SetOpacity(widget_layer, 0.f, tween)
       .SetTransform(widget_layer,

@@ -11,6 +11,7 @@
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -21,13 +22,15 @@ class Label;
 namespace ash {
 
 class CaptureModeSession;
+class DropToStopRecordingButtonAnimation;
 
 // A view that displays (optional) icon and text message to the user depending
 // on current capture source and type. In video capture mode, it will later
 // transform into a 3 second countdown timer.
 class ASH_EXPORT CaptureLabelView
     : public views::View,
-      public CaptureModeSessionFocusCycler::HighlightableView {
+      public CaptureModeSessionFocusCycler::HighlightableView,
+      public gfx::AnimationDelegate {
  public:
   METADATA_HEADER(CaptureLabelView);
 
@@ -61,13 +64,23 @@ class ASH_EXPORT CaptureLabelView
   views::View* GetView() override;
   std::unique_ptr<views::HighlightPathGenerator> CreatePathGenerator() override;
 
+  // gfx::AnimationDelegate:
+  void AnimationEnded(const gfx::Animation* animation) override;
+  void AnimationProgressed(const gfx::Animation* animation) override;
+
  private:
   // Fades in and out the given `counter_value` (e.g. "3", "2", or "1") as it
   // performs a step in the count down animation.
   void FadeInAndOutCounter(int counter_value);
 
-  // When the count down reaches a value of `1`, we fade out the widget of this
-  // view as the last step in the count down animation.
+  // At the end of the count down animation, we drop the widget of this view to
+  // the position where the stop button will be shown.
+  void DropWidgetToStopRecordingButton();
+
+  // This is a fallback animation in case the stop recording button is not
+  // available (e.g. during shutdown or root window removal). In this case, we
+  // fade out the widget of this view as the last step in the count down
+  // animation.
   void FadeOutWidget();
 
   // Called once the entire count down animation finishes.
@@ -87,6 +100,11 @@ class ASH_EXPORT CaptureLabelView
   // Pointer to the current capture mode session. Not nullptr during this
   // lifecycle.
   CaptureModeSession* capture_mode_session_;
+
+  // Animates the widget of this view towards the position of the stop recording
+  // button at the end of the count down.
+  std::unique_ptr<DropToStopRecordingButtonAnimation>
+      drop_to_stop_button_animation_;
 
   base::WeakPtrFactory<CaptureLabelView> weak_factory_{this};
 };

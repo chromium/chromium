@@ -109,26 +109,29 @@ bool IsCornerFineTunePosition(FineTunePosition position) {
   return false;
 }
 
-void SetStopRecordingButtonVisibility(aura::Window* root, bool visible) {
+StopRecordingButtonTray* GetStopRecordingButtonForRoot(aura::Window* root) {
   DCHECK(root);
   DCHECK(root->IsRootWindow());
 
   // Recording can end when a display being fullscreen-captured gets removed, in
   // this case, we don't need to hide the button.
-  if (root->is_destroying()) {
-    DCHECK(!visible);
-    return;
-  }
+  if (root->is_destroying())
+    return nullptr;
 
   // Can be null while shutting down.
   auto* root_window_controller = RootWindowController::ForWindow(root);
   if (!root_window_controller)
-    return;
+    return nullptr;
 
   auto* stop_recording_button = root_window_controller->GetStatusAreaWidget()
                                     ->stop_recording_button_tray();
   DCHECK(stop_recording_button);
-  stop_recording_button->SetVisiblePreferred(visible);
+  return stop_recording_button;
+}
+
+void SetStopRecordingButtonVisibility(aura::Window* root, bool visible) {
+  if (auto* stop_recording_button = GetStopRecordingButtonForRoot(root))
+    stop_recording_button->SetVisiblePreferred(visible);
 }
 
 void TriggerAccessibilityAlert(const std::string& message) {

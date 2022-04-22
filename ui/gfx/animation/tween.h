@@ -81,6 +81,7 @@ class ANIMATION_EXPORT Tween {
     ACCEL_LIN_DECEL_100_3,
     ACCEL_20_DECEL_60,  // Moving a small, low emphasis or responsive elements.
     ACCEL_20_DECEL_100,
+    ACCEL_30_DECEL_20_85,
     ACCEL_40_DECEL_20,
     // Moderate acceleration and soft deceleration. Used for elements that are
     // visible at the beginning and end of a transition.

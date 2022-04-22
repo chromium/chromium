@@ -29,7 +29,11 @@ namespace views {
 class View;
 }  // namespace views
 
-namespace ash::capture_mode_util {
+namespace ash {
+
+class StopRecordingButtonTray;
+
+namespace capture_mode_util {
 
 // Returns true if the capture mode feature is enabled and capture mode is
 // active. This method allows callers to avoid including the full header for
@@ -42,6 +46,10 @@ ASH_EXPORT gfx::Point GetLocationForFineTunePosition(const gfx::Rect& rect,
 
 // Return whether |position| is a corner.
 bool IsCornerFineTunePosition(FineTunePosition position);
+
+// Returns the stop recording tray button on the given `root`. It may return
+// `nullptr` during shutdown or if `root` is destroying.
+StopRecordingButtonTray* GetStopRecordingButtonForRoot(aura::Window* root);
 
 // Sets the visibility of the stop-recording button in the Shelf's status area
 // widget of the given |root| window.
@@ -120,6 +128,8 @@ CalculateCameraPreviewSizeSpecs(const gfx::Size& confine_bounds_size,
 // since the snapshot code tries to snap a deleted window.
 aura::Window* GetTopMostCapturableWindowAtPoint(const gfx::Point& screen_point);
 
-}  // namespace ash::capture_mode_util
+}  // namespace capture_mode_util
+
+}  // namespace ash
 
 #endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_UTIL_H_
