@@ -2807,6 +2807,8 @@ TEST_F(DisplayManagerTest, UnifiedDesktopVerticalLayout2x1) {
     display::test::ScopedSetInternalDisplayId set_internal(display_manager(),
                                                            list[1]);
     display_manager()->OnNativeDisplaysChanged(display_info_list);
+    // Run loop to create mirroring displays.
+    base::RunLoop().RunUntilIdle();
     EXPECT_EQ(gfx::Size(300, 574), screen->GetPrimaryDisplay().size());
     // Display in bottom-left cell is considered primary.
     EXPECT_EQ(list[1], Shell::Get()
@@ -4179,9 +4181,10 @@ TEST_F(DisplayManagerTest, SourceAndDestinationInSoftwareMirrorMode) {
 
   // Set the second display as internal display.
   SetSoftwareMirrorMode(false);
-
   display::test::ScopedSetInternalDisplayId set_internal(display_manager(),
                                                          second_display_id);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+
   SetSoftwareMirrorMode(true);
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
   EXPECT_EQ(second_display_id, display_manager()->mirroring_source_id());
