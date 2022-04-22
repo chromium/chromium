@@ -294,6 +294,8 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   void HitTest(const gfx::Point& frame_point, int request_id) const;
   void Increment(const BrowserAccessibility& node);
   void LoadInlineTextBoxes(const BrowserAccessibility& node);
+  void Scroll(const BrowserAccessibility& node,
+              ax::mojom::Action scroll_action);
   void ScrollToMakeVisible(
       const BrowserAccessibility& node,
       gfx::Rect subfocus,

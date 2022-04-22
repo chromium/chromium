@@ -918,6 +918,29 @@ void BrowserAccessibilityManager::SignalEndOfTest() {
   delegate_->AccessibilityPerformAction(action_data);
 }
 
+void BrowserAccessibilityManager::Scroll(const BrowserAccessibility& node,
+                                         ax::mojom::Action scroll_action) {
+  if (!delegate_)
+    return;
+
+  switch (scroll_action) {
+    case ax::mojom::Action::kScrollBackward:
+    case ax::mojom::Action::kScrollForward:
+    case ax::mojom::Action::kScrollUp:
+    case ax::mojom::Action::kScrollDown:
+    case ax::mojom::Action::kScrollLeft:
+    case ax::mojom::Action::kScrollRight:
+      break;
+    default:
+      NOTREACHED() << "Cannot call Scroll with action=" << scroll_action;
+  }
+  ui::AXActionData action_data;
+  action_data.action = scroll_action;
+  action_data.target_node_id = node.GetId();
+  delegate_->AccessibilityPerformAction(action_data);
+  BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
+}
+
 void BrowserAccessibilityManager::ScrollToMakeVisible(
     const BrowserAccessibility& node,
     gfx::Rect subfocus,
