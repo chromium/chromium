@@ -4,14 +4,15 @@
 
 package org.chromium.chrome.browser.safety_check;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper;
-import org.chromium.chrome.browser.password_manager.PasswordScriptsFetcherBridge;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -38,12 +39,13 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
     public static void create(SafetyCheckSettingsFragment settingsFragment,
             SafetyCheckUpdatesDelegate updatesClient, SettingsLauncher settingsLauncher,
             SyncConsentActivityLauncher signinLauncher,
-            PasswordCheckupClientHelper passwordCheckupHelper) {
+            @Nullable PasswordCheckupClientHelper passwordCheckupHelper) {
         new SafetyCheckCoordinator(settingsFragment, updatesClient, settingsLauncher,
                 signinLauncher, passwordCheckupHelper);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_SCRIPTS_FETCHING)) {
+        if (passwordCheckupHelper == null
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_SCRIPTS_FETCHING)) {
             // Triggers pre-fetching the list of password change scripts.
-            PasswordScriptsFetcherBridge.prewarmCache();
+            PasswordCheckFactory.getOrCreate(settingsLauncher).fetchScripts();
         }
     }
 
