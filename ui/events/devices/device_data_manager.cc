@@ -28,7 +28,8 @@ namespace ui {
 namespace {
 
 bool InputDeviceEquals(const ui::InputDevice& a, const ui::InputDevice& b) {
-  return a.id == b.id && a.enabled == b.enabled;
+  return a.id == b.id && a.enabled == b.enabled &&
+         a.suspected_imposter == b.suspected_imposter;
 }
 
 }  // namespace

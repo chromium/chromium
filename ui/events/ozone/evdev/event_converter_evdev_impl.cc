@@ -234,6 +234,20 @@ void EventConverterEvdevImpl::OnKeyChange(unsigned int key,
 
   GenerateKeyMetrics(key, down);
 
+  // Checks for a key press that could only have occurred from a non-imposter
+  // keyboard. Disables Imposter flag and triggers a callback which will update
+  // the dispatched list of keyboards with this new information.
+  if (key_state_.count() == 1 && ((key >= KEY_1 && key <= KEY_EQUAL) ||
+                                  (key >= KEY_Q && key <= KEY_RIGHTBRACE) ||
+                                  (key <= KEY_A && key >= KEY_APOSTROPHE) ||
+                                  (key >= KEY_BACKSLASH && key <= KEY_SLASH))) {
+    bool was_suspected = IsSuspectedImposter();
+    SetSuspectedImposter(false);
+    if (was_suspected && received_valid_input_callback_) {
+      received_valid_input_callback_.Run(this);
+    }
+  }
+
   dispatcher_->DispatchKeyEvent(
       KeyEventParams(input_device_.id, ui::EF_NONE, key, last_scan_code_, down,
                      false /* suppress_auto_repeat */, timestamp));
@@ -293,6 +307,11 @@ void EventConverterEvdevImpl::OnButtonChange(int code,
       input_device_.id, EF_NONE, cursor_->GetLocation(), code, down,
       MouseButtonMapType::kMouse, PointerDetails(EventPointerType::kMouse),
       timestamp));
+}
+
+void EventConverterEvdevImpl::SetReceivedValidInputCallback(
+    ReceivedValidInputCallback callback) {
+  received_valid_input_callback_ = callback;
 }
 
 void EventConverterEvdevImpl::FlushEvents(const input_event& input) {

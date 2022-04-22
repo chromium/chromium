@@ -38,6 +38,9 @@ const base::Feature kEnablePalmSuppression{"EnablePalmSuppression",
 const base::Feature kLibinputHandleTouchpad{"LibinputHandleTouchpad",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kEnableFakeKeyboardHeuristic{
+    "EnableFakeKeyboardHeuristic", base::FEATURE_DISABLED_BY_DEFAULT};
+
 extern const base::FeatureParam<std::string> kNeuralPalmRadiusPolynomial{
     &kEnableNeuralPalmDetectionFilter, "neural_palm_radius_polynomial", ""};
 

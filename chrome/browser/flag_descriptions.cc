@@ -4425,6 +4425,13 @@ const char kEnableLibinputToHandleTouchpadDescription[] =
     "devices. Use libinput if an input device doesn't work or is not working"
     "well.";
 
+const char kEnableFakeKeyboardHeuristicName[] =
+    "Enable Fake Keyboard Heuristic";
+const char kEnableFakeKeyboardHeuristicDescription[] =
+    "Enable heuristic to prevent non-keyboard devices from pretending "
+    "to be keyboards. Primarily assists in preventing the virtual keyboard "
+    "from being disabled unintentionally.";
+
 const char kFastPairName[] = "Enable Fast Pair";
 const char kFastPairDescription[] =
     "Enables Google Fast Pair service which uses BLE to discover supported "

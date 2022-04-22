@@ -56,6 +56,9 @@ COMPONENT_EXPORT(EVENTS_OZONE)
 extern const base::Feature kLibinputHandleTouchpad;
 
 COMPONENT_EXPORT(EVENTS_OZONE)
+extern const base::Feature kEnableFakeKeyboardHeuristic;
+
+COMPONENT_EXPORT(EVENTS_OZONE)
 extern const char kOzoneNNPalmSwitchName[];
 
 COMPONENT_EXPORT(EVENTS_OZONE)

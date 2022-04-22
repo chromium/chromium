@@ -83,6 +83,14 @@ bool EventConverterEvdev::IsEnabled() const {
   return input_device_.enabled;
 }
 
+void EventConverterEvdev::SetSuspectedImposter(bool is_suspected) {
+  input_device_.suspected_imposter = is_suspected;
+}
+
+bool EventConverterEvdev::IsSuspectedImposter() const {
+  return input_device_.suspected_imposter;
+}
+
 void EventConverterEvdev::OnStopped() {}
 
 void EventConverterEvdev::OnEnabled() {}
@@ -224,6 +232,9 @@ void EventConverterEvdev::SetReportStylusStateCallback(
 
 void EventConverterEvdev::SetGetLatestStylusStateCallback(
     const GetLatestStylusStateCallback& callback) {}
+
+void EventConverterEvdev::SetReceivedValidInputCallback(
+    ReceivedValidInputCallback callback) {}
 
 base::TimeTicks EventConverterEvdev::TimeTicksFromInputEvent(
     const input_event& event) {

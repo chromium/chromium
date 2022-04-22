@@ -41,6 +41,9 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
   using GetLatestStylusStateCallback =
       base::RepeatingCallback<void(const InProgressStylusState**)>;
 
+  using ReceivedValidInputCallback =
+      base::RepeatingCallback<void(const EventConverterEvdev* converter)>;
+
   EventConverterEvdev(int fd,
                       const base::FilePath& path,
                       int id,
@@ -79,6 +82,12 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
   void SetEnabled(bool enabled);
 
   bool IsEnabled() const;
+
+  // Flag this device as being suspected for identifying as a device that it is
+  // not.
+  void SetSuspectedImposter(bool is_suspected);
+
+  bool IsSuspectedImposter() const;
 
   // Cleanup after we stop reading events (release buttons, etc).
   virtual void OnStopped();
@@ -168,6 +177,10 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
   // Sets callback to get the latest stylus state.
   virtual void SetGetLatestStylusStateCallback(
       const GetLatestStylusStateCallback& callback);
+
+  // Set callback to trigger keyboard device update.
+  virtual void SetReceivedValidInputCallback(
+      ReceivedValidInputCallback callback);
 
   // Helper to generate a base::TimeTicks from an input_event's time
   static base::TimeTicks TimeTicksFromInputEvent(const input_event& event);

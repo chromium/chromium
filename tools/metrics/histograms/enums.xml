@@ -54490,6 +54490,7 @@ from previous Chrome versions.
   <int value="-649956990" label="enable-harfbuzz-rendertext"/>
   <int value="-648925189" label="ExploreSites:enabled"/>
   <int value="-648593261" label="Memories:enabled"/>
+  <int value="-645772961" label="EnableFakeKeyboardHeuristic:enabled"/>
   <int value="-645455405" label="MacViewsNativeDialogs:enabled"/>
   <int value="-643217597" label="EduCoexistenceConsentLog:enabled"/>
   <int value="-642346675" label="DesktopPWAsAttentionBadgingCrOS:enabled"/>
@@ -55067,6 +55068,7 @@ from previous Chrome versions.
   <int value="-245813749"
       label="AutofillHighlightOnlyChangedValuesInPreviewMode:enabled"/>
   <int value="-245342115" label="PermissionChip:enabled"/>
+  <int value="-242836432" label="EnableFakeKeyboardHeuristic:disabled"/>
   <int value="-241353344" label="MidiManagerWinrt:disabled"/>
   <int value="-240531943" label="ContextualSearchRankerQuery:disabled"/>
   <int value="-239616243" label="HighDynamicRange:enabled"/>

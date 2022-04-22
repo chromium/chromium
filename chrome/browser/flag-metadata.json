@@ -2083,6 +2083,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "enable-fake-keyboard-heuristic",
+    "owners": ["wmahon", "chromeos-tango@google.com"],
+    "expiry_milestone": 104
+  },
+  {
       "name": "enable-favicon-passwords",
       "owners": [ "veronguyen", "gambard" ],
       "expiry_milestone": 105

@@ -122,9 +122,10 @@ void VirtualKeyboardController::UpdateDevices() {
     ui::InputDeviceType type = device.type;
     if (type == ui::InputDeviceType::INPUT_DEVICE_INTERNAL)
       has_internal_keyboard_ = true;
-    if (type == ui::InputDeviceType::INPUT_DEVICE_USB ||
-        (type == ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH &&
-         bluetooth_devices_observer_->IsConnectedBluetoothDevice(device))) {
+    if ((type == ui::InputDeviceType::INPUT_DEVICE_USB ||
+         (type == ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH &&
+          bluetooth_devices_observer_->IsConnectedBluetoothDevice(device))) &&
+        !device.suspected_imposter) {
       has_external_keyboard_ = true;
     }
   }

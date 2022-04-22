@@ -75,6 +75,11 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
   // non-axis-aligned movement properly.
   void FlushEvents(const input_event& input);
 
+  // Sets Callback to enable refreshing keyboard list after
+  // a valid input is initially received
+  void SetReceivedValidInputCallback(
+      ReceivedValidInputCallback callback) override;
+
   // Input device file descriptor.
   const base::ScopedFD input_device_fd_;
 
@@ -116,6 +121,9 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
 
   // Callbacks for dispatching events.
   DeviceEventDispatcherEvdev* const dispatcher_;
+
+  // Callback to update keyboard devices when valid input is received.
+  ReceivedValidInputCallback received_valid_input_callback_;
 };
 
 }  // namespace ui

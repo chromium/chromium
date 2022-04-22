@@ -8226,6 +8226,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"edit-context", flag_descriptions::kEditContextName,
      flag_descriptions::kEditContextDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kEditContext)},
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-fake-keyboard-heuristic",
+     flag_descriptions::kEnableFakeKeyboardHeuristicName,
+     flag_descriptions::kEnableFakeKeyboardHeuristicDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ui::kEnableFakeKeyboardHeuristic)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"initial-navigation-entry", flag_descriptions::kInitialNavigationEntryName,
      flag_descriptions::kInitialNavigationEntryDescription, kOsAll,
