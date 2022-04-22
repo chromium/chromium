@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "net/base/mock_network_change_notifier.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/request_priority.h"
 #include "net/base/test_completion_callback.h"
@@ -19,6 +20,7 @@
 #include "net/http/http_auth_handler_factory.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
+#include "net/socket/client_socket_factory.h"
 #include "net/ssl/ssl_info.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/gtest_util.h"
@@ -36,6 +38,10 @@
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_REPORTING)
 #include "base/files/scoped_temp_dir.h"
@@ -272,6 +278,51 @@ TEST_F(URLRequestContextBuilderTest, CustomHostResolver) {
   std::unique_ptr<URLRequestContext> context = builder_.Build();
 
   EXPECT_EQ(context.get(), context->host_resolver()->GetContextForTesting());
+}
+
+TEST_F(URLRequestContextBuilderTest, BindToNetworkFinalConfiguration) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_MARSHMALLOW) {
+    GTEST_SKIP()
+        << "BindToNetwork is supported starting from Android Marshmallow";
+  }
+
+  // The actual network handle doesn't really matter, this test just wants to
+  // check that all the pieces are in place and configured correctly.
+  constexpr NetworkChangeNotifier::NetworkHandle network = 2;
+  auto scoped_mock_network_change_notifier =
+      std::make_unique<test::ScopedMockNetworkChangeNotifier>();
+  test::MockNetworkChangeNotifier* mock_ncn =
+      scoped_mock_network_change_notifier->mock_network_change_notifier();
+  mock_ncn->ForceNetworkHandlesSupported();
+
+  builder_.BindToNetwork(network);
+  std::unique_ptr<URLRequestContext> context = builder_.Build();
+
+  EXPECT_EQ(context->bound_network(), network);
+  EXPECT_EQ(context->host_resolver()->GetTargetNetworkForTesting(), network);
+  EXPECT_EQ(context->host_resolver()
+                ->GetManagerForTesting()
+                ->target_network_for_testing(),
+            network);
+  ASSERT_TRUE(context->GetNetworkSessionContext());
+  // A special factory that bind sockets to `network` is needed. We don't need
+  // to check exactly for that, the fact that we are not using the default one
+  // should be good enough.
+  EXPECT_NE(context->GetNetworkSessionContext()->client_socket_factory,
+            ClientSocketFactory::GetDefaultFactory());
+
+  const auto* quic_params = context->quic_context()->params();
+  EXPECT_FALSE(quic_params->close_sessions_on_ip_change);
+  EXPECT_FALSE(quic_params->goaway_sessions_on_ip_change);
+  EXPECT_FALSE(quic_params->migrate_sessions_on_network_change_v2);
+
+  const auto* network_session_params = context->GetNetworkSessionParams();
+  EXPECT_TRUE(network_session_params->ignore_ip_address_changes);
+#else   // !BUILDFLAG(IS_ANDROID)
+  GTEST_SKIP() << "BindToNetwork is supported only on Android";
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace

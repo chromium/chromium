@@ -393,6 +393,8 @@ class NET_EXPORT HostResolver {
 
   virtual HostResolverManager* GetManagerForTesting();
   virtual const URLRequestContext* GetContextForTesting() const;
+  virtual NetworkChangeNotifier::NetworkHandle GetTargetNetworkForTesting()
+      const;
 
   // Creates a new HostResolver. |manager| must outlive the returned resolver.
   //

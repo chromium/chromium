@@ -243,6 +243,10 @@ class NET_EXPORT HostResolverManager
 
   bool check_ipv6_on_wifi_for_testing() const { return check_ipv6_on_wifi_; }
 
+  NetworkChangeNotifier::NetworkHandle target_network_for_testing() const {
+    return target_network_;
+  }
+
   // Public to be called from std::make_unique. Not to be called directly.
   HostResolverManager(base::PassKey<HostResolverManager>,
                       const HostResolver::ManagerOptions& options,

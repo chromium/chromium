@@ -19,7 +19,6 @@
 #include "base/values.h"
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_change_notifier.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/dns_client.h"
 #include "net/dns/dns_util.h"
@@ -171,6 +170,11 @@ const URLRequestContext* HostResolver::GetContextForTesting() const {
   // may be called.
   NOTREACHED();
   return nullptr;
+}
+
+NetworkChangeNotifier::NetworkHandle HostResolver::GetTargetNetworkForTesting()
+    const {
+  return NetworkChangeNotifier::kInvalidNetworkHandle;
 }
 
 // static

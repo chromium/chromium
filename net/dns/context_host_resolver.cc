@@ -141,6 +141,12 @@ const URLRequestContext* ContextHostResolver::GetContextForTesting() const {
   return resolve_context_ ? resolve_context_->url_request_context() : nullptr;
 }
 
+NetworkChangeNotifier::NetworkHandle
+ContextHostResolver::GetTargetNetworkForTesting() const {
+  return resolve_context_ ? resolve_context_->GetTargetNetwork()
+                          : NetworkChangeNotifier::kInvalidNetworkHandle;
+}
+
 size_t ContextHostResolver::LastRestoredCacheSize() const {
   return resolve_context_->host_cache()
              ? resolve_context_->host_cache()->last_restore_size()
