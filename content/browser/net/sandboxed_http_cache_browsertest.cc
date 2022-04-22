@@ -50,10 +50,9 @@ using network::mojom::SimpleCacheEntry;
 using FileEnumerationEntry =
     disk_cache::BackendFileOperations::FileEnumerationEntry;
 
-// TODO(crbug.com/1317799): Test is disabled due to flakiness.
-class DISABLED_SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
+class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
  public:
-  DISABLED_SandboxedHttpCacheBrowserTest() {
+  SandboxedHttpCacheBrowserTest() {
     std::vector<base::Feature> enabled_features = {
       net::features::kSandboxHttpCache,
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
@@ -188,8 +187,7 @@ class DISABLED_SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
       file_operations_factories_;
 };
 
-IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest,
-                       OpeningFileIsProhibited) {
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, OpeningFileIsProhibited) {
   base::RunLoop run_loop;
 
   absl::optional<bool> result;
@@ -206,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest,
   EXPECT_EQ(result, absl::make_optional(false));
 }
 
-IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest,
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
                        EnumerateFilesOnNonExistingDirectory) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::RunLoop run_loop;
@@ -238,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest,
   EXPECT_TRUE(entries.empty());
 }
 
-IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest, EnumerateFiles) {
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, EnumerateFiles) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::RunLoop run_loop;
 
@@ -273,8 +271,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest, EnumerateFiles) {
   EXPECT_EQ(entry.size, 13);
 }
 
-IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest,
-                       CreateSimpleCache) {
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, CreateSimpleCache) {
   base::RunLoop run_loop;
 
   network_service_test().set_disconnect_handler(run_loop.QuitClosure());
@@ -299,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest,
   ASSERT_TRUE(simple_cache.is_bound());
 }
 
-IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest,
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
                        CreateSimpleCacheOnParentDirectory) {
   base::RunLoop run_loop;
 
@@ -321,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest,
   IgnoreNetworkServiceCrashes();
 }
 
-IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest,
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
                        CreateSimpleCacheWithParentDirectoryTraversal) {
   base::RunLoop run_loop;
 
@@ -345,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest,
   IgnoreNetworkServiceCrashes();
 }
 
-IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest, CreateEntry) {
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, CreateEntry) {
   mojo::Remote<SimpleCache> simple_cache = CreateSimpleCache();
 
   ASSERT_TRUE(simple_cache.is_bound());
@@ -355,8 +352,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest, CreateEntry) {
   ASSERT_TRUE(entry.is_bound());
 }
 
-IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest,
-                       OpenNonExistingEntry) {
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, OpenNonExistingEntry) {
   mojo::Remote<SimpleCache> simple_cache = CreateSimpleCache();
 
   ASSERT_TRUE(simple_cache.is_bound());
@@ -366,8 +362,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest,
   ASSERT_FALSE(entry.is_bound());
 }
 
-IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest,
-                       CreateAndOpenEntry) {
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, CreateAndOpenEntry) {
   mojo::Remote<SimpleCache> simple_cache = CreateSimpleCache();
 
   ASSERT_TRUE(simple_cache.is_bound());
@@ -385,8 +380,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest,
   ASSERT_TRUE(entry.is_bound());
 }
 
-IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest,
-                       WriteAndReadData) {
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, WriteAndReadData) {
   mojo::Remote<SimpleCache> simple_cache = CreateSimpleCache();
   const std::vector<uint8_t> kData = {'A', 'B', 'C', 'D', 'E'};
   const std::string kKey = "key";
@@ -439,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest,
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
                        WriteTruncateAndReadData) {
   mojo::Remote<SimpleCache> simple_cache = CreateSimpleCache();
   const std::vector<uint8_t> kData = {'A', 'B', 'C', 'D', 'E'};
@@ -507,8 +501,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest,
-                       WriteAndReadSparseData) {
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, WriteAndReadSparseData) {
   const std::string kKey = "key";
   constexpr int kOffset = 1024;
   std::vector<uint8_t> original_data;
@@ -566,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest, DoomEntry) {
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, DoomEntry) {
   const std::vector<uint8_t> kData = {'A', 'B', 'C'};
   const std::vector<uint8_t> kSparseData(1024, 'A');
   mojo::Remote<SimpleCache> simple_cache = CreateSimpleCache();
@@ -627,8 +620,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest, DoomEntry) {
   ASSERT_FALSE(entry.is_bound());
 }
 
-IN_PROC_BROWSER_TEST_F(DISABLED_SandboxedHttpCacheBrowserTest,
-                       DoomEntryWithoutOpening) {
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, DoomEntryWithoutOpening) {
   mojo::Remote<SimpleCache> simple_cache = CreateSimpleCache();
 
   ASSERT_TRUE(simple_cache.is_bound());
