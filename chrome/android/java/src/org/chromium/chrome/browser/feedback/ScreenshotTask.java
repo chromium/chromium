@@ -18,7 +18,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -163,7 +163,7 @@ public final class ScreenshotTask implements ScreenshotSource {
         // If the start surface or the grid tab switcher are in use, do not use the compositor, it
         // will snapshot the last active tab instead of the current screen if we try to use it.
         if (chromeActivity.isInOverviewMode()
-                && (ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(chromeActivity)
+                && (ReturnToChromeUtil.isStartSurfaceEnabled(chromeActivity)
                         || TabUiFeatureUtilities.isGridTabSwitcherEnabled(chromeActivity))) {
             return false;
         }

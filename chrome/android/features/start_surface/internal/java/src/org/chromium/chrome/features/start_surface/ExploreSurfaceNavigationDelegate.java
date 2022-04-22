@@ -10,7 +10,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 
@@ -32,7 +32,7 @@ class ExploreSurfaceNavigationDelegate implements NativePageNavigationDelegate {
     @Override
     @Nullable
     public Tab openUrl(int windowOpenDisposition, LoadUrlParams loadUrlParams) {
-        Tab newTab = ReturnToChromeExperimentsUtil.handleLoadUrlFromStartSurface(loadUrlParams,
+        Tab newTab = ReturnToChromeUtil.handleLoadUrlFromStartSurface(loadUrlParams,
                 windowOpenDisposition == WindowOpenDisposition.NEW_BACKGROUND_TAB,
                 windowOpenDisposition == WindowOpenDisposition.OFF_THE_RECORD,
                 mParentTabSupplier.get());

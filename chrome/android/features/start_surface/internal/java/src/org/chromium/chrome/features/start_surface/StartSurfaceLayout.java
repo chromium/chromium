@@ -43,7 +43,7 @@ import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.TasksSurface;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabListDelegate;
@@ -717,7 +717,7 @@ public class StartSurfaceLayout extends Layout {
     }
 
     private void postHiding() {
-        if (ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(getContext())) {
+        if (ReturnToChromeUtil.isStartSurfaceEnabled(getContext())) {
             mStartSurface.onHide();
         } else {
             getGridTabListDelegate().postHiding();

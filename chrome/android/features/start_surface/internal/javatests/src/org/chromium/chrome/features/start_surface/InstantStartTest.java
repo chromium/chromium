@@ -65,7 +65,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSitesMetadataUtils;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
-import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -106,7 +106,7 @@ import java.util.concurrent.CountDownLatch;
 public class InstantStartTest {
     // clang-format on
     private static final String IMMEDIATE_RETURN_PARAMS = "force-fieldtrial-params=Study.Group:"
-            + ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0";
+            + ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0";
     private static final String START_PARAMS =
             "force-fieldtrial-params=Study.Group:start_surface_variation/single";
     private Bitmap mBitmap;
@@ -191,7 +191,7 @@ public class InstantStartTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Assert.assertFalse(cta.isTablet());
         Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
-        Assert.assertTrue(ReturnToChromeExperimentsUtil.shouldShowTabSwitcher(-1));
+        Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
 
         StartSurfaceTestUtils.waitForOverviewVisible(cta);
 
@@ -218,7 +218,7 @@ public class InstantStartTest {
         Assert.assertFalse(cta.isTablet());
         Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
         Assert.assertEquals("single", StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue());
-        Assert.assertTrue(ReturnToChromeExperimentsUtil.shouldShowTabSwitcher(-1));
+        Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
 
         StartSurfaceTestUtils.waitForOverviewVisible(cta);
 
@@ -275,7 +275,7 @@ public class InstantStartTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 (Runnable) ()
-                        -> ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage(
+                        -> ReturnToChromeUtil.shouldShowStartSurfaceAsTheHomePage(
                                 mActivityTestRule.getActivity()));
     }
 
@@ -331,7 +331,7 @@ public class InstantStartTest {
         Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        Assert.assertFalse(ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(cta));
+        Assert.assertFalse(ReturnToChromeUtil.isStartSurfaceEnabled(cta));
 
         Assert.assertEquals(1, cta.getTabModelSelector().getCurrentModel().getCount());
         Layout activeLayout = cta.getLayoutManager().getActiveLayout();
@@ -360,7 +360,7 @@ public class InstantStartTest {
         Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        Assert.assertFalse(ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(cta));
+        Assert.assertFalse(ReturnToChromeUtil.isStartSurfaceEnabled(cta));
         Assert.assertEquals(1, cta.getTabModelSelector().getCurrentModel().getCount());
         Layout activeLayout = cta.getLayoutManager().getActiveLayout();
         Assert.assertTrue(activeLayout instanceof StaticLayout);
@@ -401,9 +401,8 @@ public class InstantStartTest {
         collector.checkThat(TextUtils.isEmpty(HomepageManager.getHomepageUri()), is(false));
         Assert.assertFalse(
                 NativeLibraryLoadedStatus.getProviderForTesting().areMainDexNativeMethodsReady());
-        ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage(
-                mActivityTestRule.getActivity());
-        ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mActivityTestRule.getActivity());
+        ReturnToChromeUtil.shouldShowStartSurfaceAsTheHomePage(mActivityTestRule.getActivity());
+        ReturnToChromeUtil.isStartSurfaceEnabled(mActivityTestRule.getActivity());
         PseudoTab.getAllPseudoTabsFromStateFile(mActivityTestRule.getActivity());
 
         Assert.assertFalse("There should be no GURL usages triggering native library loading",
@@ -489,7 +488,7 @@ public class InstantStartTest {
     public void testShowLastTabWhenHomepageDisabledNoImmediateReturn() throws IOException {
         // clang-format on
         Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
-        Assert.assertEquals(-1, ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
+        Assert.assertEquals(-1, ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> HomepageManager.getInstance().setPrefHomepageEnabled(false));
@@ -509,7 +508,7 @@ public class InstantStartTest {
           throws IOException {
         // clang-format on
         Assert.assertFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
-        Assert.assertEquals(-1, ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
+        Assert.assertEquals(-1, ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> HomepageManager.getInstance().setPrefHomepageEnabled(false));

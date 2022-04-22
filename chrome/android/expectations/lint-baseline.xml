@@ -7289,8 +7289,8 @@
         errorLine1="                    false, url, params.getTransitionType());"
         errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/tasks/ReturnToChromeExperimentsUtil.java"
-            line="375"
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/tasks/ReturnToChromeUtil.java"
+            line="376"
             column="33"/>
     </issue>
 
@@ -7300,8 +7300,8 @@
         errorLine1="                ShowChromeStartSegmentationResult.NUM_ENTRIES);"
         errorLine2="                                                  ~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/tasks/ReturnToChromeExperimentsUtil.java"
-            line="769"
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/tasks/ReturnToChromeUtil.java"
+            line="772"
             column="51"/>
     </issue>
 
@@ -7311,8 +7311,8 @@
         errorLine1="                ShowChromeStartSegmentationResultComparison.NUM_ENTRIES);"
         errorLine2="                                                            ~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/tasks/ReturnToChromeExperimentsUtil.java"
-            line="829"
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/tasks/ReturnToChromeUtil.java"
+            line="832"
             column="61"/>
     </issue>
 

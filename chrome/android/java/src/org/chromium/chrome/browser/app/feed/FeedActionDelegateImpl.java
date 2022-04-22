@@ -20,7 +20,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
@@ -74,7 +74,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                 onVisitComplete.onResult(result);
             });
         }
-        ReturnToChromeExperimentsUtil.onFeedCardOpened();
+        ReturnToChromeUtil.onFeedCardOpened();
     }
 
     @Override

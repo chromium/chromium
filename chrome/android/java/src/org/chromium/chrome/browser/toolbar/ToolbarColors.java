@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.toolbar;
 import android.content.Context;
 
 import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 
 /**
@@ -22,8 +22,7 @@ public class ToolbarColors {
         final boolean isAccessibilityEnabled =
                 DeviceClassManager.enableAccessibilityLayout(context);
         final boolean isTabGridEnabled = TabUiFeatureUtilities.isGridTabSwitcherEnabled(context);
-        final boolean isStartSurfaceEnabled =
-                ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(context);
+        final boolean isStartSurfaceEnabled = ReturnToChromeUtil.isStartSurfaceEnabled(context);
         return (isAccessibilityEnabled || isTabGridEnabled || isStartSurfaceEnabled);
     }
 }

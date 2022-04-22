@@ -1145,7 +1145,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/tasks/ConditionalTabStripUtils.java",
   "java/src/org/chromium/chrome/browser/tasks/EngagementTimeUtil.java",
   "java/src/org/chromium/chrome/browser/tasks/JourneyManager.java",
-  "java/src/org/chromium/chrome/browser/tasks/ReturnToChromeExperimentsUtil.java",
+  "java/src/org/chromium/chrome/browser/tasks/ReturnToChromeUtil.java",
   "java/src/org/chromium/chrome/browser/tasks/TasksUma.java",
   "java/src/org/chromium/chrome/browser/toolbar/AppThemeColorProvider.java",
   "java/src/org/chromium/chrome/browser/toolbar/ToolbarButtonInProductHelpController.java",

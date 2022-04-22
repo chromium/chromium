@@ -52,7 +52,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
@@ -140,7 +140,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             long elapsed = SystemClock.elapsedRealtime() - mActivityCreationTimeMs;
             PostTask.postTask(UiThreadTaskTraits.BEST_EFFORT,
                     ()
-                            -> ReturnToChromeExperimentsUtil.recordTimeToGTSFirstMeaningfulPaint(
+                            -> ReturnToChromeUtil.recordTimeToGTSFirstMeaningfulPaint(
                                     elapsed, numOfThumbnails));
         }
     }
@@ -499,7 +499,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     private void updateTopControlsProperties() {
         // If the Start surface is enabled, it will handle the margins and positioning of the tab
         // switcher. So, we shouldn't do it here.
-        if (ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mContext)) {
+        if (ReturnToChromeUtil.isStartSurfaceEnabled(mContext)) {
             mContainerViewModel.set(TOP_MARGIN, 0);
             mContainerViewModel.set(SHADOW_TOP_OFFSET, 0);
             return;
@@ -788,7 +788,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     @Override
     public void onOverviewShownAtLaunch(long activityCreationTimeMs) {
         if (mMode == TabListMode.CAROUSEL) {
-            ReturnToChromeExperimentsUtil.recordLastVisitedTabIsSRPWhenOverviewIsShownAtLaunch();
+            ReturnToChromeUtil.recordLastVisitedTabIsSRPWhenOverviewIsShownAtLaunch();
         }
     }
 

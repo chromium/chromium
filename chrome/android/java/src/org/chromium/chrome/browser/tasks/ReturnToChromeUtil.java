@@ -59,9 +59,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * This is a utility class for managing experiments related to returning to Chrome.
+ * This is a utility class for managing features related to returning to Chrome after haven't used
+ * Chrome for a while.
  */
-public final class ReturnToChromeExperimentsUtil {
+public final class ReturnToChromeUtil {
     private static final String TAG = "TabSwitcherOnReturn";
 
     @VisibleForTesting
@@ -148,7 +149,7 @@ public final class ReturnToChromeExperimentsUtil {
 
     private static boolean sGTSFirstMeaningfulPaintRecorded;
 
-    private ReturnToChromeExperimentsUtil() {}
+    private ReturnToChromeUtil() {}
 
     /**
      * Determine if we should show the tab switcher on returning to Chrome.
@@ -405,7 +406,7 @@ public final class ReturnToChromeExperimentsUtil {
     /**
      * Check whether we should show Start Surface as the home page. This is used for all cases
      * except initial tab creation, which uses {@link
-     * ReturnToChromeExperimentsUtil#isStartSurfaceEnabled(Context)}.
+     * ReturnToChromeUtil#isStartSurfaceEnabled(Context)}.
      *
      * @return Whether Start Surface should be shown as the home page.
      * @param context The activity context
@@ -503,17 +504,16 @@ public final class ReturnToChromeExperimentsUtil {
         // If user taps the "New Incognito Tab" item from the app icon, skip here and continue the
         // following checks.
         if (UrlUtilities.isCanonicalizedNTPUrl(intentUrl)
-                && ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage(context)
+                && ReturnToChromeUtil.shouldShowStartSurfaceAsTheHomePage(context)
                 && !intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)) {
             return true;
         }
 
-        boolean isStartSurfaceEnabled =
-                ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(context);
+        boolean isStartSurfaceEnabled = ReturnToChromeUtil.isStartSurfaceEnabled(context);
 
         // If Start surface is enabled and there's no tab existing, handle the initial tab creation.
         if (isStartSurfaceEnabled && IntentUtils.isMainIntentFromLauncher(intent)
-                && ReturnToChromeExperimentsUtil.getTotalTabCount(tabModelSelector) <= 0) {
+                && ReturnToChromeUtil.getTotalTabCount(tabModelSelector) <= 0) {
             return true;
         }
 
@@ -524,7 +524,7 @@ public final class ReturnToChromeExperimentsUtil {
         // TAB_SWITCHER_ON_RETURN_MS.
         long lastBackgroundedTimeMillis = inactivityTracker.getLastBackgroundedTimeMs();
         boolean tabSwitcherOnReturn = IntentUtils.isMainIntentFromLauncher(intent)
-                && ReturnToChromeExperimentsUtil.shouldShowTabSwitcher(lastBackgroundedTimeMillis);
+                && ReturnToChromeUtil.shouldShowTabSwitcher(lastBackgroundedTimeMillis);
 
         // If the overview page won't be shown on startup, stops here.
         if (!tabSwitcherOnReturn) return false;
@@ -533,10 +533,10 @@ public final class ReturnToChromeExperimentsUtil {
             if (StartSurfaceConfiguration.CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP.getValue()) {
                 // We only check the sync status when flag CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP
                 // and the Start surface are both enabled.
-                return ReturnToChromeExperimentsUtil.isPrimaryAccountSync();
+                return ReturnToChromeUtil.isPrimaryAccountSync();
             } else if (!TextUtils.isEmpty(
                                StartSurfaceConfiguration.BEHAVIOURAL_TARGETING.getValue())) {
-                return ReturnToChromeExperimentsUtil.userBehaviourSupported();
+                return ReturnToChromeUtil.userBehaviourSupported();
             }
         }
 

@@ -9,7 +9,7 @@ import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
-import static org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS_PARAM;
+import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS_PARAM;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createTabStateFile;
 
 import android.app.Activity;
@@ -71,8 +71,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Tests the functionality of return to chrome features that open overview mode if the timeout
- * has passed.
+ * Tests for {@link ReturnToChromeUtil}. Tests the functionality of return to chrome features that
+ * open overview mode if the timeout has passed.
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
@@ -82,7 +82,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "force-fieldtrials=Study/Group"})
-public class ReturnToChromeTest {
+public class ReturnToChromeUtilTest {
     // clang-format on
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
@@ -120,7 +120,7 @@ public class ReturnToChromeTest {
 
     private final boolean mUseInstantStart;
 
-    public ReturnToChromeTest(boolean useInstantStart) {
+    public ReturnToChromeUtilTest(boolean useInstantStart) {
         mUseInstantStart = useInstantStart;
         CachedFeatureFlags.setForTesting(ChromeFeatureList.INSTANT_START, useInstantStart);
         if (mUseInstantStart) {
@@ -153,7 +153,7 @@ public class ReturnToChromeTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> Assert.assertFalse(
-                                ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage(
+                                ReturnToChromeUtil.shouldShowStartSurfaceAsTheHomePage(
                                         mActivityTestRule.getActivity())));
 
         Assert.assertFalse(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
@@ -161,7 +161,7 @@ public class ReturnToChromeTest {
         waitTabModelRestoration();
         assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
-                        ReturnToChromeExperimentsUtil.UMA_TIME_TO_GTS_FIRST_MEANINGFUL_PAINT));
+                        ReturnToChromeUtil.UMA_TIME_TO_GTS_FIRST_MEANINGFUL_PAINT));
         assertEquals(2, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
         Assert.assertFalse(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
     }
@@ -189,7 +189,7 @@ public class ReturnToChromeTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> Assert.assertFalse(
-                                ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage(
+                                ReturnToChromeUtil.shouldShowStartSurfaceAsTheHomePage(
                                         mActivityTestRule.getActivity())));
 
         if (!mActivityTestRule.getActivity().isTablet()) {
@@ -226,7 +226,7 @@ public class ReturnToChromeTest {
         Assert.assertEquals("single", StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue());
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> Assert.assertTrue(ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(
+                        -> Assert.assertTrue(ReturnToChromeUtil.isStartSurfaceEnabled(
                                 mActivityTestRule.getActivity())));
 
         if (!mActivityTestRule.getActivity().isTablet()) {
@@ -263,9 +263,8 @@ public class ReturnToChromeTest {
         Assert.assertEquals("single", StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue());
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> Assert.assertTrue(
-                                ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage(
-                                        mActivityTestRule.getActivity())));
+                        -> Assert.assertTrue(ReturnToChromeUtil.shouldShowStartSurfaceAsTheHomePage(
+                                mActivityTestRule.getActivity())));
 
         if (!mActivityTestRule.getActivity().isTablet()) {
             Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());

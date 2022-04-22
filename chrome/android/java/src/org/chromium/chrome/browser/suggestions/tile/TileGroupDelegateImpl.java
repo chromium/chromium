@@ -16,7 +16,7 @@ import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
-import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
@@ -145,7 +145,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
     private void recordOpenedTile(Tile tile) {
         NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_MOST_VISITED_TILE);
         RecordUserAction.record("MobileNTPMostVisited");
-        ReturnToChromeExperimentsUtil.onMVTileOpened();
+        ReturnToChromeUtil.onMVTileOpened();
         mMostVisitedSites.recordOpenedMostVisitedItem(tile);
     }
 }

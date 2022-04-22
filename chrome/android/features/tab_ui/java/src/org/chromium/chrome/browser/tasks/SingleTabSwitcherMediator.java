@@ -253,7 +253,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
         StartSurfaceConfiguration.recordHistogram(SINGLE_TAB_TITLE_AVAILABLE_TIME_UMA,
                 mTabTitleAvailableTime - activityCreationTimeMs,
                 TabUiFeatureUtilities.supportInstantStart(false, mContext));
-        ReturnToChromeExperimentsUtil.recordLastVisitedTabIsSRPWhenOverviewIsShownAtLaunch();
+        ReturnToChromeUtil.recordLastVisitedTabIsSRPWhenOverviewIsShownAtLaunch();
     }
 
     @Override

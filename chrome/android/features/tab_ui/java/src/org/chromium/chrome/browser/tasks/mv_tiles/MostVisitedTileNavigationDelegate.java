@@ -15,7 +15,7 @@ import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
-import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -58,7 +58,7 @@ public class MostVisitedTileNavigationDelegate extends SuggestionsNavigationDele
         switch (windowOpenDisposition) {
             case WindowOpenDisposition.CURRENT_TAB:
             case WindowOpenDisposition.NEW_BACKGROUND_TAB:
-                ReturnToChromeExperimentsUtil.handleLoadUrlFromStartSurface(
+                ReturnToChromeUtil.handleLoadUrlFromStartSurface(
                         new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK),
                         windowOpenDisposition
                                 == org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB,
@@ -66,7 +66,7 @@ public class MostVisitedTileNavigationDelegate extends SuggestionsNavigationDele
                 SuggestionsMetrics.recordTileTapped();
                 break;
             case WindowOpenDisposition.OFF_THE_RECORD:
-                ReturnToChromeExperimentsUtil.handleLoadUrlFromStartSurface(
+                ReturnToChromeUtil.handleLoadUrlFromStartSurface(
                         new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK), true /*incognito*/,
                         mParentTabSupplier.get());
                 break;
