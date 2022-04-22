@@ -33,6 +33,18 @@ const double kBoundingBoxX = 10.0;
 const double kBoundingBoxY = 20.0;
 const double kBoundingBoxWidth = 50.0;
 const double kBoundingBoxHeight = 200.0;
+
+// Returns true if the |params| contain enough information to present a context
+// menu. (A valid url for either link_url or src_url must exist in the params.)
+bool CanShowContextMenuForParams(const web::ContextMenuParams& params) {
+  if (params.link_url.is_valid()) {
+    return true;
+  }
+  if (params.src_url.is_valid()) {
+    return true;
+  }
+  return false;
+}
 }
 
 namespace web {
@@ -49,7 +61,7 @@ TEST_F(ContextMenuParamsUtilsTest, EmptyParams) {
   EXPECT_EQ(params.referrer_policy, ReferrerPolicyDefault);
   EXPECT_EQ(params.view, nil);
   EXPECT_TRUE(CGPointEqualToPoint(params.location, CGPointZero));
-  EXPECT_NSEQ(params.link_text, nil);
+  EXPECT_NSEQ(params.text, nil);
   EXPECT_NSEQ(params.title_attribute, nil);
   EXPECT_NSEQ(params.alt_text, nil);
   EXPECT_NEAR(params.natural_width, 0.0, DBL_EPSILON);
@@ -86,7 +98,7 @@ TEST_F(ContextMenuParamsUtilsTest, DictionaryConstructorTest) {
   EXPECT_TRUE(params.is_main_frame);
   EXPECT_EQ(params.link_url, GURL(kLinkUrl));
   EXPECT_EQ(params.src_url, GURL(kSrcUrl));
-  EXPECT_NSEQ(params.link_text, @(kLinkText));
+  EXPECT_NSEQ(params.text, @(kLinkText));
   EXPECT_EQ(params.referrer_policy, ReferrerPolicyFromString(kReferrerPolicy));
 
   EXPECT_EQ(params.view, nil);
@@ -114,7 +126,7 @@ TEST_F(ContextMenuParamsUtilsTest, CanShowContextMenuTestEmptyDictionary) {
 TEST_F(ContextMenuParamsUtilsTest, CanShowContextMenuTestHyperlink) {
   ContextMenuParams params;
   params.link_url = GURL("http://example.com");
-  params.link_text = @"Click me.";
+  params.text = @"Click me.";
   EXPECT_TRUE(CanShowContextMenuForParams(params));
 }
 

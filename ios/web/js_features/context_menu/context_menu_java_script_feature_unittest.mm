@@ -43,7 +43,7 @@ TEST_F(ContextMenuJavaScriptFeatureTest, FetchLinkElement) {
                            const web::ContextMenuParams& params) {
             EXPECT_EQ(request_id, callback_request_id);
             EXPECT_EQ(true, params.is_main_frame);
-            EXPECT_NSEQ(@"link", params.link_text);
+            EXPECT_NSEQ(@"link", params.text);
             EXPECT_NSEQ(nil, params.title_attribute);
             EXPECT_NSEQ(nil, params.alt_text);
             EXPECT_EQ("http://destination/", params.link_url.spec());
@@ -77,7 +77,7 @@ TEST_F(ContextMenuJavaScriptFeatureTest, FetchImageElement) {
                            const web::ContextMenuParams& params) {
             EXPECT_EQ(request_id, callback_request_id);
             EXPECT_EQ(true, params.is_main_frame);
-            EXPECT_NSEQ(nil, params.link_text);
+            EXPECT_NSEQ(nil, params.text);
             EXPECT_NSEQ(@"MyTitle", params.title_attribute);
             EXPECT_NSEQ(@"alt text", params.alt_text);
             EXPECT_EQ("http://destination/", params.link_url.spec());

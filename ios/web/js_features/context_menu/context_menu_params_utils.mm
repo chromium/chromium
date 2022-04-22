@@ -17,16 +17,6 @@
 
 namespace web {
 
-bool CanShowContextMenuForParams(const ContextMenuParams& params) {
-  if (params.link_url.is_valid()) {
-    return true;
-  }
-  if (params.src_url.is_valid()) {
-    return true;
-  }
-  return false;
-}
-
 CGRect BoundingBoxFromBoundingBoxDictionary(const base::Value* boundingBox) {
   absl::optional<double> x =
       boundingBox->FindDoubleKey(kContextMenuElementBoundingBoxX);
@@ -53,6 +43,11 @@ ContextMenuParams ContextMenuParamsFromElementDictionary(base::Value* element) {
     return params;
   }
 
+  std::string* tag_name = element->FindStringKey(kContextMenuElementTagName);
+  if (tag_name) {
+    params.tag_name = base::SysUTF8ToNSString(*tag_name);
+  }
+
   std::string* href = element->FindStringKey(kContextMenuElementHyperlink);
   if (href) {
     params.link_url = GURL(*href);
@@ -72,7 +67,7 @@ ContextMenuParams ContextMenuParamsFromElementDictionary(base::Value* element) {
   std::string* inner_text =
       element->FindStringKey(kContextMenuElementInnerText);
   if (inner_text && !inner_text->empty()) {
-    params.link_text = base::SysUTF8ToNSString(*inner_text);
+    params.text = base::SysUTF8ToNSString(*inner_text);
   }
 
   std::string* title_attribute =
@@ -84,6 +79,12 @@ ContextMenuParams ContextMenuParamsFromElementDictionary(base::Value* element) {
   std::string* alt_text = element->FindStringKey(web::kContextMenuElementAlt);
   if (alt_text) {
     params.alt_text = base::SysUTF8ToNSString(*alt_text);
+  }
+
+  absl::optional<double> text_offset =
+      element->FindDoubleKey(web::kContextMenuElementTextOffset);
+  if (text_offset.has_value()) {
+    params.text_offset = *text_offset;
   }
 
   absl::optional<double> natural_width =

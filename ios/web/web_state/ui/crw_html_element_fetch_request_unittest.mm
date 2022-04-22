@@ -43,10 +43,10 @@ TEST_F(CRWHTMLElementFetchRequestTest, RunHandler) {
   CRWHTMLElementFetchRequest* request =
       [[CRWHTMLElementFetchRequest alloc] initWithFoundElementHandler:handler];
   web::ContextMenuParams params = web::ContextMenuParams();
-  params.link_text = @"text";
+  params.text = @"text";
   [request runHandlerWithResponse:params];
   EXPECT_TRUE(handler_called);
-  EXPECT_NSEQ(params.link_text, received_params.link_text);
+  EXPECT_NSEQ(params.text, received_params.text);
 }
 
 // Tests that |runHandlerWithResponse:| does not run the handler from the

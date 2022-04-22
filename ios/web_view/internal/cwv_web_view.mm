@@ -554,7 +554,7 @@ BOOL gChromeContextMenuEnabled = NO;
     CWVHTMLElement* HTMLElement =
         [[CWVHTMLElement alloc] initWithHyperlink:hyperlink
                                       mediaSource:mediaSource
-                                             text:params.link_text];
+                                             text:params.text];
 
     [_UIDelegate webView:self
         contextMenuConfigurationForElement:HTMLElement

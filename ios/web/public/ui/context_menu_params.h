@@ -28,6 +28,9 @@ struct ContextMenuParams {
   // Whether or not the context menu was triggered from the main frame.
   bool is_main_frame;
 
+  // The tagName of the element, is also defined when the element is not a link.
+  NSString* tag_name;
+
   // The URL of the link that encloses the node the context menu was invoked on.
   GURL link_url;
 
@@ -44,9 +47,9 @@ struct ContextMenuParams {
   // The location in |view| to present the menu.
   CGPoint location;
 
-  // The text associated with the link. It is either nil or nonempty (it can not
-  // be empty).
-  NSString* link_text;
+  // The text associated with the link or text element. It is either nil or
+  // nonempty (it can not be empty).
+  NSString* text;
 
   // The text for the "title" attribute of the HTML element. Can be null.
   NSString* title_attribute;
@@ -65,6 +68,9 @@ struct ContextMenuParams {
 
   // The screenshot of the HTML element. Can be null = nil.
   UIImage* screenshot;
+
+  // The offset in text where the tap occurs. Can be null = 0.
+  double text_offset;
 };
 
 }  // namespace web

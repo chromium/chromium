@@ -23,6 +23,7 @@ var MAX_SEARCH_DEPTH = 8;
  * Returns an object representing the details of a given link element.
  * @param {HTMLElement} element The element whose details will be returned.
  * @return {!Object} An object of the form {
+ *                     {@code tagName} 'a'
  *                     {@code href} The URL of the link.
  *                     {@code referrerPolicy} The referrer policy to use for
  *                         navigations away from the current page.
@@ -32,6 +33,7 @@ var MAX_SEARCH_DEPTH = 8;
  */
 var getResponseForLinkElement = function(element) {
   return {
+    tagName: 'a',
     href: getElementHref_(element),
     referrerPolicy: getReferrerPolicy_(element),
     innerText: element.innerText,
@@ -44,6 +46,7 @@ var getResponseForLinkElement = function(element) {
  * @param {HTMLElement} element The element whose details will be returned.
  * @param {string} src The source of the image or image-like element.
  * @return {!Object} An object of the form {
+ *                     {@code tagName} 'img'
  *                     {@code src} The src of the image.
  *                     {@code referrerPolicy} The referrer policy to use for
  *                         navigations away from the current page.
@@ -60,6 +63,7 @@ var getResponseForLinkElement = function(element) {
  */
 var getResponseForImageElement = function(element, src) {
   var result = {
+    tagName: 'img',
     src: src,
     referrerPolicy: getReferrerPolicy_(),
     boundingBox: getElementBoundingBox_(element)
@@ -103,6 +107,39 @@ var getResponseForImageElement = function(element, src) {
 };
 
 /**
+ * Returns an object representing the details of a given text element.
+ * @param {HTMLElement} element The element whose details will be returned.
+ * @param {number} x Horizontal center of the selected point in page
+ *                 coordinates.
+ * @param {number} y Vertical center of the selected point in page
+ *                 coordinates.
+ * @return {!Object} An object of the form {
+ *                     {@code tagName} tag name of the text element.
+ *                     {@code innerText} The inner text of the link.
+ *                     {@code textOffset} The tap character offset in
+ *                         innertText.
+ *                   }.
+ */
+var getResponseForTextElement = function(element, x, y) {
+  var result = {
+    tagName: element.tagName,
+    boundingBox: getElementBoundingBox_(element),
+  };
+  // caretRangeFromPoint is custom WebKit method.
+  if (document.caretRangeFromPoint) {
+    var range = document.caretRangeFromPoint(x, y);
+    if (range && range.startContainer) {
+      var textNode = range.startContainer;
+      if (textNode.nodeType == 3) {
+        result.textOffset = range.startOffset;
+        result.innerText = textNode.nodeValue;
+      }
+    }
+  }
+  return result;
+}
+
+/**
  * Finds the url of the image or link under the selected point. Sends details
  * about the found element (or an empty object if no links or images are found)
  * back to the application by posting a 'FindElementResultHandler' message.
@@ -118,6 +155,7 @@ var getResponseForImageElement = function(element, src) {
 __gCrWeb['findElementAtPointInPageCoordinates'] = function(requestId, x, y) {
   var hitCoordinates = spiralCoordinates_(x, y);
   var processedElements = new Set();
+  var firstDefaultElement = [];
   for (var index = 0; index < hitCoordinates.length; index++) {
     var coordinates = hitCoordinates[index];
 
@@ -134,12 +172,18 @@ __gCrWeb['findElementAtPointInPageCoordinates'] = function(requestId, x, y) {
         coordinateDetails.y;
     var elementWasFound = findElementAtPoint(
         requestId, window.document, processedElements, coordinateX, coordinateY,
-        x, y);
+        x, y, firstDefaultElement);
 
     // Exit early if an element was found.
     if (elementWasFound) {
       return;
     }
+  }
+
+  if (firstDefaultElement.length > 0) {
+    sendFindElementAtPointResponse(requestId, getResponseForTextElement(
+      firstDefaultElement[0], x - window.pageXOffset, y - window.pageYOffset));
+    return;
   }
 
   // If no element was found, send an empty response.
@@ -160,7 +204,8 @@ __gCrWeb['findElementAtPointInPageCoordinates'] = function(requestId, x, y) {
  *                   the touch.
  */
 var findElementAtPoint = function(
-    requestId, root, processedElements, pointX, pointY, centerX, centerY) {
+    requestId, root, processedElements, pointX, pointY, centerX, centerY,
+    firstDefaultElement) {
   var elements = root.elementsFromPoint(pointX, pointY);
   var foundLinkElement;
   for (var elementIndex = 0;
@@ -195,7 +240,7 @@ var findElementAtPoint = function(
         // keep iterating.
         if (findElementAtPoint(
                 requestId, element.shadowRoot, processedElements, pointX,
-                pointY, centerX, centerY)) {
+                pointY, centerX, centerY, firstDefaultElement)) {
           return true;
         }
       }
@@ -203,6 +248,13 @@ var findElementAtPoint = function(
       if (processElementForFindElementAtPoint(
               requestId, centerX, centerY, element)) {
         return true;
+      }
+
+      if (element.tagName != 'HTML' &&
+          element.tagName != 'IMG' &&
+          element.tagName != 'svg' &&
+          firstDefaultElement.length == 0) {
+        firstDefaultElement.push(element);
       }
     }
 

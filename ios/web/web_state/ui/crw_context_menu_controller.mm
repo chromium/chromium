@@ -106,15 +106,6 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
   absl::optional<web::ContextMenuParams> params =
       [self fetchContextMenuParamsAtLocation:locationInWebView];
 
-  if (!params.has_value() ||
-      !web::CanShowContextMenuForParams(params.value())) {
-    return nil;
-  }
-
-  // User long pressed on a link or an image. Cancelling all touches will
-  // intentionally suppress system context menu UI. See crbug.com/1250352.
-  [self cancelAllTouches];
-
   // Converts javascript bounding box to webView bounding box.
   CGRect screenshotBoundingBox = params.value().bounding_box;
   if (!CGRectIsEmpty(screenshotBoundingBox)) {
@@ -138,6 +129,9 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
   } else {
     self.screenshotView.center = location;
   }
+
+  // Adding the screenshotView here so they can be used in the
+  // delegate's methods. Will be removed if no menu is presented.
   [interaction.view addSubview:self.screenshotView];
 
   params.value().location = [self.webView convertPoint:location
@@ -148,6 +142,14 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
       self.webState, params.value(), ^(UIContextMenuConfiguration* conf) {
         configuration = conf;
       });
+
+  if (configuration) {
+    // User long pressed on a link or an image. Cancelling all touches will
+    // intentionally suppress system context menu UI. See crbug.com/1250352.
+    [self cancelAllTouches];
+  } else {
+    [self.screenshotView removeFromSuperview];
+  }
 
   return configuration;
 }

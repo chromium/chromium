@@ -11,11 +11,13 @@
 namespace web {
 
 const char kContextMenuElementRequestId[] = "requestId";
+const char kContextMenuElementTagName[] = "tagName";
 const char kContextMenuElementHyperlink[] = "href";
 const char kContextMenuElementSource[] = "src";
 const char kContextMenuElementTitle[] = "title";
 const char kContextMenuElementReferrerPolicy[] = "referrerPolicy";
 const char kContextMenuElementInnerText[] = "innerText";
+const char kContextMenuElementTextOffset[] = "textOffset";
 const char kContextMenuElementAlt[] = "alt";
 const char kContextMenuElementNaturalWidth[] = "naturalWidth";
 const char kContextMenuElementNaturalHeight[] = "naturalHeight";

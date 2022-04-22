@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
+#include "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
 #include "ios/public/provider/chrome/browser/lens/lens_api.h"
 #include "ios/web/common/features.h"
 #import "ios/web/common/url_scheme_util.h"
@@ -94,6 +95,7 @@ NSString* const kContextMenuEllipsis = @"…";
   return self;
 }
 
+// TODO(crbug.com/1318432): rafactor long method.
 - (UIContextMenuConfiguration*)
     contextMenuConfigurationForWebState:(web::WebState*)webState
                                  params:(web::ContextMenuParams)params {
@@ -111,21 +113,14 @@ NSString* const kContextMenuEllipsis = @"…";
   const GURL imageURL = params.src_url;
   const bool isImage = imageURL.is_valid();
 
-  BOOL isOffTheRecord = self.browser->GetBrowserState()->IsOffTheRecord();
-  __weak UIViewController* weakBaseViewController = self.baseViewController;
-
-  // Presents a custom menu only if there is a valid url or a valid image.
-  if (!isLink && !isImage)
-    return nil;
-
   DCHECK(self.browser->GetBrowserState());
-
-  __weak __typeof(self) weakSelf = self;
+  const bool isOffTheRecord = self.browser->GetBrowserState()->IsOffTheRecord();
 
   const GURL& lastCommittedURL = webState->GetLastCommittedURL();
   web::Referrer referrer(lastCommittedURL, web::ReferrerPolicyDefault);
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
+  // TODO(crbug.com/1299758) add scenario for not a link and not an image.
   MenuScenario menuScenario = isImage && isLink
                                   ? MenuScenario::kContextMenuImageLink
                                   : isImage ? MenuScenario::kContextMenuImage
@@ -134,6 +129,8 @@ NSString* const kContextMenuEllipsis = @"…";
   BrowserActionFactory* actionFactory =
       [[BrowserActionFactory alloc] initWithBrowser:self.browser
                                            scenario:menuScenario];
+
+  __weak __typeof(self) weakSelf = self;
 
   if (isLink) {
     _URLToLoad = linkURL;
@@ -177,7 +174,7 @@ NSString* const kContextMenuEllipsis = @"…";
       }
 
       if (linkURL.SchemeIsHTTPOrHTTPS()) {
-        NSString* innerText = params.link_text;
+        NSString* innerText = params.text;
         if ([innerText length] > 0) {
           // Add to reading list.
           UIAction* addToReadingList =
@@ -205,6 +202,9 @@ NSString* const kContextMenuEllipsis = @"…";
   if (isImage) {
     base::RecordAction(
         base::UserMetricsAction("MobileWebContextMenuImageImpression"));
+
+    __weak UIViewController* weakBaseViewController = self.baseViewController;
+
     // Save Image.
     UIAction* saveImage = [actionFactory actionSaveImageWithBlock:^{
       if (!weakSelf || !weakBaseViewController)
@@ -287,20 +287,31 @@ NSString* const kContextMenuEllipsis = @"…";
     }
   }
 
-  NSString* menuTitle = nil;
-  if (!base::FeatureList::IsEnabled(
-          web::features::kWebViewNativeContextMenuPhase2)) {
-    menuTitle = GetContextMenuTitle(params);
+  // Insert any provided menu items. Do after Link and/or Image to allow
+  // inserting at beginning or adding to end.
+  ios::provider::AddContextMenuElements(
+      menuElements, self.browser->GetBrowserState(), webState, params);
 
-    // Truncate context meny titles that originate from URLs, leaving text
-    // titles untruncated.
-    if (!IsImageTitle(params) &&
-        menuTitle.length > kContextMenuMaxURLTitleLength + 1) {
-      menuTitle = [[menuTitle substringToIndex:kContextMenuMaxURLTitleLength]
-          stringByAppendingString:kContextMenuEllipsis];
+  if (menuElements.count == 0) {
+    return nil;
+  }
+
+  NSString* menuTitle = nil;
+  if (isLink || isImage) {
+    if (!base::FeatureList::IsEnabled(
+            web::features::kWebViewNativeContextMenuPhase2)) {
+      menuTitle = GetContextMenuTitle(params);
+
+      // Truncate context meny titles that originate from URLs, leaving text
+      // titles untruncated.
+      if (!IsImageTitle(params) &&
+          menuTitle.length > kContextMenuMaxURLTitleLength + 1) {
+        menuTitle = [[menuTitle substringToIndex:kContextMenuMaxURLTitleLength]
+            stringByAppendingString:kContextMenuEllipsis];
+      }
+    } else if (!isLink) {
+      menuTitle = GetContextMenuTitle(params);
     }
-  } else if (!isLink) {
-    menuTitle = GetContextMenuTitle(params);
   }
 
   UIMenu* menu = [UIMenu menuWithTitle:menuTitle children:menuElements];
@@ -311,48 +322,52 @@ NSString* const kContextMenuEllipsis = @"…";
         return menu;
       };
 
-  UIContextMenuContentPreviewProvider previewProvider = ^UIViewController* {
-    if (!base::FeatureList::IsEnabled(
-            web::features::kWebViewNativeContextMenuPhase2)) {
-      return nil;
-    }
-    if (isLink) {
-      NSString* title = GetContextMenuTitle(params);
-      NSString* subtitle = GetContextMenuSubtitle(params);
-      LinkNoPreviewViewController* previewViewController =
-          [[LinkNoPreviewViewController alloc] initWithTitle:title
-                                                    subtitle:subtitle];
+  UIContextMenuContentPreviewProvider previewProvider = nil;
+  if (isLink || isImage) {
+    previewProvider = ^UIViewController* {
+      if (!weakSelf || !base::FeatureList::IsEnabled(
+                           web::features::kWebViewNativeContextMenuPhase2)) {
+        return nil;
+      }
+      if (isLink) {
+        NSString* title = GetContextMenuTitle(params);
+        NSString* subtitle = GetContextMenuSubtitle(params);
+        LinkNoPreviewViewController* previewViewController =
+            [[LinkNoPreviewViewController alloc] initWithTitle:title
+                                                      subtitle:subtitle];
 
-      __weak LinkNoPreviewViewController* weakPreview = previewViewController;
-      FaviconLoader* faviconLoader =
-          IOSChromeFaviconLoaderFactory::GetForBrowserState(
-              self.browser->GetBrowserState());
-      faviconLoader->FaviconForPageUrl(
-          linkURL, kDesiredSmallFaviconSizePt, kDesiredSmallFaviconSizePt,
-          /*fallback_to_google_server=*/false,
-          ^(FaviconAttributes* attributes) {
-            [weakPreview configureFaviconWithAttributes:attributes];
-          });
-      return previewViewController;
-    }
-    DCHECK(isImage);
-    ImagePreviewViewController* preview = [[ImagePreviewViewController alloc]
-        initWithPreferredContentSize:CGSizeMake(params.natural_width,
-                                                params.natural_height)];
-    if (params.screenshot) {
-      [preview updateImage:params.screenshot];
-    }
-    __weak ImagePreviewViewController* weakPreview = preview;
+        __weak LinkNoPreviewViewController* weakPreview = previewViewController;
+        FaviconLoader* faviconLoader =
+            IOSChromeFaviconLoaderFactory::GetForBrowserState(
+                weakSelf.browser->GetBrowserState());
+        faviconLoader->FaviconForPageUrl(
+            linkURL, kDesiredSmallFaviconSizePt, kDesiredSmallFaviconSizePt,
+            /*fallback_to_google_server=*/false,
+            ^(FaviconAttributes* attributes) {
+              [weakPreview configureFaviconWithAttributes:attributes];
+            });
+        return previewViewController;
+      }
+      DCHECK(isImage);
+      ImagePreviewViewController* preview = [[ImagePreviewViewController alloc]
+          initWithPreferredContentSize:CGSizeMake(params.natural_width,
+                                                  params.natural_height)];
+      if (params.screenshot) {
+        [preview updateImage:params.screenshot];
+      }
+      __weak ImagePreviewViewController* weakPreview = preview;
 
-    ImageFetchTabHelper* imageFetcher =
-        ImageFetchTabHelper::FromWebState(self.currentWebState);
-    DCHECK(imageFetcher);
-    imageFetcher->GetImageData(imageURL, referrer, ^(NSData* data) {
-      [weakPreview updateImageData:data];
-    });
+      ImageFetchTabHelper* imageFetcher =
+          ImageFetchTabHelper::FromWebState(weakSelf.currentWebState);
+      DCHECK(imageFetcher);
+      imageFetcher->GetImageData(imageURL, referrer, ^(NSData* data) {
+        [weakPreview updateImageData:data];
+      });
 
-    return preview;
-  };
+      return preview;
+    };
+  }
+
   return
       [UIContextMenuConfiguration configurationWithIdentifier:nil
                                               previewProvider:previewProvider
