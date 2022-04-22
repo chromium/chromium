@@ -6,6 +6,7 @@ INPUT:Filter Styles
 BUTTON:Toggle Element State
 BUTTON:Element Classes
 BUTTON:New Style Rule
+BUTTON:Toggle common rendering emulations
 BUTTON:Show Computed Styles sidebar
 BUTTON:Select an element in the page to inspect it
 DIV#tab-elements:Elements
@@ -26,6 +27,7 @@ DIV:More tabs
 DIV#tab-elements:Elements
 BUTTON:Select an element in the page to inspect it
 BUTTON:Show Computed Styles sidebar
+BUTTON:Toggle common rendering emulations
 BUTTON:New Style Rule
 BUTTON:Element Classes
 BUTTON:Toggle Element State
