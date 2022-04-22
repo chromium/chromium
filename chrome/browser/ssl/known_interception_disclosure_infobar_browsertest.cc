@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(KnownInterceptionDisclosureInfobarTest,
   EXPECT_EQ(0u, GetInfobarCount(tab));
 }
 
-#if defined(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_CooldownResetsOnBrowserRestartDesktop \
   DISABLED_CooldownResetsOnBrowserRestartDesktop
 #else

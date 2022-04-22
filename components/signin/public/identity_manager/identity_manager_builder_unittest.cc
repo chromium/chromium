@@ -111,9 +111,8 @@ TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
   EXPECT_EQ(init_params.device_accounts_synchronizer, nullptr);
   EXPECT_NE(init_params.accounts_mutator, nullptr);
 #endif
-#if defined(IS_CHROMEOS)
-  EXPECT_NE(init_params.ash_account_manager_facade, nullptr);
-  EXPECT_TRUE(init_params.is_regular_profile);
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_NE(init_params.account_manager_facade, nullptr);
 #endif
 }
 

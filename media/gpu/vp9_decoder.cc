@@ -33,7 +33,7 @@ bool GetSpatialLayerFrameSize(const DecoderBuffer& decoder_buffer,
 // due to we want keep returning false to MediaCapability.
 #if BUILDFLAG(IS_WIN)
       base::FeatureList::IsEnabled(media::kD3D11Vp9kSVCHWDecoding);
-#elif defined(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
+#elif BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
       // V4L2 stateless API decoder is not capable of decoding VP9 k-SVC stream.
       false;
 #else

@@ -242,7 +242,7 @@ bool IsImprovedKeyboardShortcutsEnabled() {
       return instance->IsI18nShortcutPrefEnabled();
     }
   }
-#endif  // defined(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return base::FeatureList::IsEnabled(kImprovedKeyboardShortcuts);
 }
