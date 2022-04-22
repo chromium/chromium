@@ -150,17 +150,6 @@ void NavigateToURL(Browser* browser,
   }
 }
 
-// Stall execution by at least |delay|. Used for ensuring durations measured for
-// metrics are approximately correctly. DO NOT use for synchronization.
-void DelayAtLeast(const base::TimeDelta delay) {
-  // PostDelayedTask guarantees a delay of at least the amount provided, so it's
-  // sufficient to just wait for the run loop to make its way through the queue.
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), delay);
-  run_loop.Run();
-}
-
 void PerformMouseClickOnView(views::View* view) {
   ui::AXActionData data;
   data.action = ax::mojom::Action::kDoDefault;
@@ -1261,89 +1250,6 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
   histogram_tester.ExpectBucketCount(
       GetInteractionHistogram("SafetyTip_BadReputation"),
       SafetyTipInteraction::kChangePrimaryPage, 1);
-}
-
-// Tests that the histograms recording how long the Safety Tip is open are
-// recorded properly.
-// Flaky on Mac: https://crbug.com/1139955
-// Flaky in general, test depends on subtle timing, https://crbug.com/1142769
-IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
-                       DISABLED_TimeOpenHistogram) {
-  if (!IsSuspiciousSiteWarningEnabled()) {
-    return;
-  }
-  const base::TimeDelta kMinWarningTime = base::Milliseconds(10);
-
-  // Test the histogram for no user action taken.
-  {
-    base::HistogramTester histograms;
-    auto kNavigatedUrl = GetURL("site1.com");
-    TriggerWarningFromBlocklist(browser(), kNavigatedUrl,
-                                WindowOpenDisposition::CURRENT_TAB);
-    // Ensure that the tab is open for more than 0 ms, even in the face of bots
-    // with bad clocks.
-    DelayAtLeast(kMinWarningTime);
-    NavigateToURL(browser(), GURL("about:blank"),
-                  WindowOpenDisposition::CURRENT_TAB);
-    auto samples = histograms.GetAllSamples(
-        "Security.SafetyTips.OpenTime.ChangePrimaryPage.SafetyTip_"
-        "BadReputation");
-    ASSERT_EQ(1u, samples.size());
-    EXPECT_LE(kMinWarningTime.InMilliseconds(), samples.front().min);
-  }
-
-  // Test the histogram for when the user adheres to the warning.
-  {
-    base::HistogramTester histograms;
-    auto kNavigatedUrl = GetURL("site1.com");
-    TriggerWarningFromBlocklist(browser(), kNavigatedUrl,
-                                WindowOpenDisposition::CURRENT_TAB);
-    DelayAtLeast(kMinWarningTime);
-    CloseWarningLeaveSite(browser());
-    auto samples = histograms.GetAllSamples(
-        "Security.SafetyTips.OpenTime.LeaveSite.SafetyTip_BadReputation");
-    ASSERT_EQ(1u, samples.size());
-    EXPECT_LE(kMinWarningTime.InMilliseconds(), samples.front().min);
-  }
-
-  // Test the histogram for when the user dismisses the warning.
-  {
-    base::HistogramTester histograms;
-    auto kNavigatedUrl = GetURL("site1.com");
-    TriggerWarningFromBlocklist(browser(), kNavigatedUrl,
-                                WindowOpenDisposition::CURRENT_TAB);
-    DelayAtLeast(kMinWarningTime);
-    CloseWarningIgnore(views::Widget::ClosedReason::kCloseButtonClicked);
-    auto base_samples = histograms.GetAllSamples(
-        "Security.SafetyTips.OpenTime.Dismiss.SafetyTip_"
-        "BadReputation");
-    ASSERT_EQ(1u, base_samples.size());
-    EXPECT_LE(kMinWarningTime.InMilliseconds(), base_samples.front().min);
-    auto samples = histograms.GetAllSamples(
-        "Security.SafetyTips.OpenTime.DismissWithClose.SafetyTip_"
-        "BadReputation");
-    ASSERT_EQ(1u, samples.size());
-    EXPECT_LE(kMinWarningTime.InMilliseconds(), samples.front().min);
-  }
-
-  {
-    base::HistogramTester histograms;
-    auto kNavigatedUrl = GetURL("site2.com");
-    TriggerWarningFromBlocklist(browser(), kNavigatedUrl,
-                                WindowOpenDisposition::CURRENT_TAB);
-    DelayAtLeast(kMinWarningTime);
-    CloseWarningIgnore(views::Widget::ClosedReason::kEscKeyPressed);
-    auto base_samples = histograms.GetAllSamples(
-        "Security.SafetyTips.OpenTime.Dismiss.SafetyTip_"
-        "BadReputation");
-    ASSERT_EQ(1u, base_samples.size());
-    EXPECT_LE(kMinWarningTime.InMilliseconds(), base_samples.front().min);
-    auto samples = histograms.GetAllSamples(
-        "Security.SafetyTips.OpenTime.DismissWithEsc.SafetyTip_"
-        "BadReputation");
-    ASSERT_EQ(1u, samples.size());
-    EXPECT_LE(kMinWarningTime.InMilliseconds(), samples.front().min);
-  }
 }
 
 // Tests that Safety Tips aren't triggered on 'unknown' flag types from the

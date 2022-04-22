@@ -65,91 +65,30 @@ void RecordHeuristicsUKMData(ReputationCheckResult result,
 }
 
 void OnSafetyTipClosed(ReputationCheckResult result,
-                       base::Time start_time,
                        ukm::SourceId navigation_source_id,
                        Profile* profile,
                        const GURL& url,
                        security_state::SafetyTipStatus status,
                        base::OnceClosure safety_tip_close_callback_for_testing,
                        SafetyTipInteraction action) {
-  std::string action_suffix;
-  bool warning_dismissed = false;
-  switch (action) {
-    case SafetyTipInteraction::kNoAction:
-      action_suffix = "NoAction";
-      break;
-    case SafetyTipInteraction::kLeaveSite:
-      action_suffix = "LeaveSite";
-      break;
-    case SafetyTipInteraction::kDismiss:
-      NOTREACHED();
-      // Do nothing because the dismissal action passed to this method should
-      // be the more specific version (esc, close, or ignore).
-      break;
-    case SafetyTipInteraction::kDismissWithEsc:
-      action_suffix = "DismissWithEsc";
-      warning_dismissed = true;
-      break;
-    case SafetyTipInteraction::kDismissWithClose:
-      action_suffix = "DismissWithClose";
-      warning_dismissed = true;
-      break;
-    case SafetyTipInteraction::kDismissWithIgnore:
-      action_suffix = "DismissWithIgnore";
-      warning_dismissed = true;
-      break;
-    case SafetyTipInteraction::kLearnMore:
-      action_suffix = "LearnMore";
-      break;
-    case SafetyTipInteraction::kNotShown:
-      NOTREACHED();
-      // Do nothing because the OnSafetyTipClosed should never be called if the
-      // safety tip is not shown.
-      break;
-    case SafetyTipInteraction::kCloseTab:
-      action_suffix = "CloseTab";
-      break;
-    case SafetyTipInteraction::kSwitchTab:
-      action_suffix = "SwitchTab";
-      break;
-    case SafetyTipInteraction::kStartNewNavigation:
-      NOTREACHED();
-      // Do nothing because the safety tip is no longer listening directly
-      // with navigation start.
-      break;
-    case SafetyTipInteraction::kChangePrimaryPage:
-      action_suffix = "ChangePrimaryPage";
-      break;
-  }
-  if (warning_dismissed) {
+  if (action == SafetyTipInteraction::kDismissWithEsc ||
+      action == SafetyTipInteraction::kDismissWithClose ||
+      action == SafetyTipInteraction::kDismissWithIgnore) {
     ReputationService::Get(profile)->SetUserIgnore(url);
 
     // Record that the user dismissed the safety tip. kDismiss is recorded in
     // all dismiss-like cases, which makes it easier to track overall dismissals
     // without having to re-constitute from each bucket on how the user
-    // dismissed the safety tip. We additionally record a more specific action
+    // dismissed the safety tip. We  also record a more specific action
     // below (e.g. kDismissWithEsc).
     base::UmaHistogramEnumeration(
         security_state::GetSafetyTipHistogramName(
             "Security.SafetyTips.Interaction", status),
         SafetyTipInteraction::kDismiss);
-    base::UmaHistogramCustomTimes(
-        security_state::GetSafetyTipHistogramName(
-            std::string("Security.SafetyTips.OpenTime.Dismiss"),
-            result.safety_tip_status),
-        base::Time::Now() - start_time, base::Milliseconds(1), base::Hours(1),
-        100);
   }
   base::UmaHistogramEnumeration(security_state::GetSafetyTipHistogramName(
                                     "Security.SafetyTips.Interaction", status),
                                 action);
-  base::UmaHistogramCustomTimes(
-      security_state::GetSafetyTipHistogramName(
-          std::string("Security.SafetyTips.OpenTime.") + action_suffix,
-          result.safety_tip_status),
-      base::Time::Now() - start_time, base::Milliseconds(1), base::Hours(1),
-      100);
-
   RecordHeuristicsUKMData(result, navigation_source_id, action);
 
   if (!safety_tip_close_callback_for_testing.is_null()) {
@@ -429,9 +368,8 @@ void ReputationWebContentsObserver::HandleReputationCheckResult(
 
     bool should_call_safety_tip_dialog = true;
     base::OnceCallback<void(SafetyTipInteraction)> close_callback =
-        base::BindOnce(OnSafetyTipClosed, result, base::Time::Now(),
-                       navigation_source_id, profile_, result.url,
-                       result.safety_tip_status,
+        base::BindOnce(OnSafetyTipClosed, result, navigation_source_id,
+                       profile_, result.url, result.safety_tip_status,
                        std::move(safety_tip_close_callback_for_testing_));
 #if BUILDFLAG(IS_ANDROID)
     if (messages::IsSafetyTipMessagesUiEnabled()) {
@@ -483,9 +421,8 @@ void ReputationWebContentsObserver::OnDigitalAssetLinkValidationResult(
 
   bool should_call_safety_tip_dialog = true;
   base::OnceCallback<void(SafetyTipInteraction)> close_callback =
-      base::BindOnce(OnSafetyTipClosed, result, base::Time::Now(),
-                     navigation_source_id, profile_, result.url,
-                     result.safety_tip_status,
+      base::BindOnce(OnSafetyTipClosed, result, navigation_source_id, profile_,
+                     result.url, result.safety_tip_status,
                      std::move(safety_tip_close_callback_for_testing_));
 #if BUILDFLAG(IS_ANDROID)
   if (messages::IsSafetyTipMessagesUiEnabled()) {
