@@ -112,14 +112,12 @@ constexpr char kPedalsIconResourceName[] =
     "chrome://theme/current-channel-logo";
 constexpr char kTrendingUpIconResourceName[] = "realbox/icons/trending_up.svg";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kCrosShareIconResourceName[] = "realbox/icons/cros_share.svg";
-#elif BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
 constexpr char kMacShareIconResourceName[] = "realbox/icons/mac_share.svg";
 #elif BUILDFLAG(IS_WIN)
 constexpr char kWinShareIconResourceName[] = "realbox/icons/win_share.svg";
 #else
-constexpr char kLinuxShareIconResourceName[] = "realbox/icons/linux_share.svg";
+constexpr char kShareIconResourceName[] = "realbox/icons/share.svg";
 #endif
 
 base::flat_map<int32_t, realbox::mojom::SuggestionGroupPtr>
@@ -437,11 +435,7 @@ std::string RealboxHandler::PedalVectorIconToResourceName(
   if (icon.name == omnibox::kPedalIcon.name) {
     return kPedalsIconResourceName;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (icon.name == omnibox::kShareIcon.name) {
-    return kCrosShareIconResourceName;
-  }
-#elif BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (icon.name == omnibox::kShareMacIcon.name) {
     return kMacShareIconResourceName;
   }
@@ -450,8 +444,8 @@ std::string RealboxHandler::PedalVectorIconToResourceName(
     return kWinShareIconResourceName;
   }
 #else
-  if (icon.name == omnibox::kSendIcon.name) {
-    return kLinuxShareIconResourceName;
+  if (icon.name == omnibox::kShareIcon.name) {
+    return kShareIconResourceName;
   }
 #endif
   NOTREACHED() << "Every vector icon returned by OmniboxAction::GetVectorIcon "

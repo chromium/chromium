@@ -1610,14 +1610,12 @@ class OmniboxPedalCustomizeSearchEngines : public OmniboxPedal {
 // =============================================================================
 
 const gfx::VectorIcon& GetSharingHubVectorIcon() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return omnibox::kShareIcon;
-#elif BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
   return omnibox::kShareMacIcon;
 #elif BUILDFLAG(IS_WIN)
   return omnibox::kShareWinIcon;
 #else
-  return omnibox::kSendIcon;
+  return omnibox::kShareIcon;
 #endif
 }
 
