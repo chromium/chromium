@@ -227,7 +227,13 @@ bool SearchingForNodeTool::HandleMouseMove(const WebMouseEvent& event) {
   if (node && node->IsShadowRoot())
     node = node->ParentOrShadowHostNode();
 
-  if (!node)
+  // Keep last behavior if Ctrl + Alt(Gr) key is being pressed.
+  bool hold_selected_node =
+      (event.GetModifiers() &
+       (WebInputEvent::kAltKey | WebInputEvent::kAltGrKey)) &&
+      (event.GetModifiers() &
+       (WebInputEvent::kControlKey | WebInputEvent::kMetaKey));
+  if (!node || hold_selected_node)
     return true;
 
   std::tie(node, content_visibility_state_) =
