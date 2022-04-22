@@ -525,7 +525,12 @@ void XRInputSource::ProcessOverlayHitTest(
     if (hit_document) {
       Frame* hit_frame = hit_document->GetFrame();
       DCHECK(hit_frame);
-      if (hit_frame->IsCrossOriginToMainFrame()) {
+      // TODO(crbug.com/1318055): With MPArch there may be multiple main frames
+      // so we should use IsCrossOriginToOutermostMainFrame when we intend to
+      // check if any embedded frame (eg, iframe or fenced frame) is
+      // cross-origin with respect to the outermost main frame. Follow up to
+      // confirm correctness.
+      if (hit_frame->IsCrossOriginToOutermostMainFrame()) {
         // Mark the input source as invisible until the primary button is
         // released.
         state_.is_visible = false;

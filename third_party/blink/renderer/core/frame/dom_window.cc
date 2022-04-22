@@ -571,7 +571,11 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
 
   // Iframes are allowed to trigger reports, only when they are same-origin with
   // their top-level document.
-  if (accessing_frame->IsCrossOriginToMainFrame())
+  // TODO(crbug.com/1318055): With MPArch there may be multiple main frames
+  // so we should use IsCrossOriginToOutermostMainFrame when we intend to check
+  // if any embedded frame (eg, iframe or fenced frame) is cross-origin with
+  // respect to the outermost main frame. Follow up to confirm correctness.
+  if (accessing_frame->IsCrossOriginToOutermostMainFrame())
     return;
 
   // See https://crbug.com/1183571

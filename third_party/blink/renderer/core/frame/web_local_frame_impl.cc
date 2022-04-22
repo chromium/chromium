@@ -2691,8 +2691,8 @@ bool WebLocalFrameImpl::IsAllowedToDownload() const {
          network::mojom::blink::WebSandboxFlags::kNone;
 }
 
-bool WebLocalFrameImpl::IsCrossOriginToMainFrame() const {
-  return GetFrame()->IsCrossOriginToMainFrame();
+bool WebLocalFrameImpl::IsCrossOriginToOutermostMainFrame() const {
+  return GetFrame()->IsCrossOriginToOutermostMainFrame();
 }
 
 void WebLocalFrameImpl::UsageCountChromeLoadTimes(const WebString& metric) {
