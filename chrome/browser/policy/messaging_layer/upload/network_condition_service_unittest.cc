@@ -44,42 +44,57 @@ class NetworkConditionServiceTest : public ::testing::Test {
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
 };
 
-TEST_F(NetworkConditionServiceTest, SuccessfulInitializationAndUpdate) {
-  auto* network_condition_service = NetworkConditionService::GetInstance();
-  // The UI thread task to subscribe to
-  // g_browser_process->network_quality_tracker() should have been posted by the
-  // constructor, but hasn't been executed. The current upload_rate_ should be
-  // max.
-  ASSERT_EQ(network_condition_service->GetUploadRate(),
-            std::numeric_limits<uint64_t>::max())
-      << "network_condition_service->GetUploadRate() must be "
-         "std::numeric_limits<uint64_t>::max() before the UI thread has "
-         "executed the subscription task.";
+TEST_F(NetworkConditionServiceTest,
+       SuccessfulInitializationAndUpdateAndDestroy) {
+  {
+    NetworkConditionService network_condition_service;
+    // The UI thread task to subscribe to
+    // g_browser_process->network_quality_tracker() should have been posted by
+    // the constructor, but hasn't been executed. The current upload_rate_
+    // should be max.
+    ASSERT_EQ(network_condition_service.GetUploadRate(),
+              std::numeric_limits<uint64_t>::max())
+        << "network_condition_service->GetUploadRate() must be "
+           "std::numeric_limits<uint64_t>::max() before the UI thread has "
+           "executed the subscription task.";
 
-  // Execute the subscription task (queued by the constructor of
-  // NetworkConditionService) on the UI thread.
+    // Execute the subscription task (queued by the constructor of
+    // NetworkConditionService) on the UI thread.
+    task_environment_.RunUntilIdle();
+    // After subscription, we should be on the initial download throughput
+    // because the current download throughput is assigned to upload_rate_ right
+    // before subscription.
+    ASSERT_EQ(network_condition_service.GetUploadRate(),
+              NetworkConditionService::ConvertKbpsToBytesPerSec(
+                  kInitDownstreamThroughput))
+        << "network_condition_service->GetUploadRate() must be set to the "
+           "initial downstream throughput after the UI thread has executed the "
+           "subscription task.";
+
+    // g_browser_process->network_quality_tracker() notifies
+    // network_condition_service about a change in download speed. We should
+    // have the new estimated upload rate.
+    static constexpr int32_t new_downstream_throughput = 200;
+    UpdateDownstreamThroughputKbps(new_downstream_throughput);
+    ASSERT_EQ(network_condition_service.GetUploadRate(),
+              NetworkConditionService::ConvertKbpsToBytesPerSec(
+                  new_downstream_throughput))
+        << "network_condition_service->GetUploadRate() must be set to the new "
+           "downstream throughput after "
+           "g_browser_process->network_quality_tracker() notifies.";
+
+    // Clear the queue in case there are leftovers
+    task_environment_.RunUntilIdle();
+    ASSERT_EQ(task_environment_.GetPendingMainThreadTaskCount(),
+              static_cast<size_t>(0));
+  }  // network_condition_service destructs here
+
+  // THe task to destroy the observer should be enqueued by the destructor of
+  // network_condition_service
+  ASSERT_EQ(task_environment_.GetPendingMainThreadTaskCount(),
+            static_cast<size_t>(1));
+  // Execute the unsubscription task.
   task_environment_.RunUntilIdle();
-  // After subscription, we should be on the initial download throughput because
-  // the current download throughput is assigned to upload_rate_ right before
-  // subscription.
-  ASSERT_EQ(network_condition_service->GetUploadRate(),
-            NetworkConditionService::ConvertKbpsToBytesPerSec(
-                kInitDownstreamThroughput))
-      << "network_condition_service->GetUploadRate() must be set to the "
-         "initial downstream throughput after the UI thread has executed the "
-         "subscription task.";
-
-  // g_browser_process->network_quality_tracker() notifies
-  // network_condition_service about a change in download speed. We should have
-  // the new estimated upload rate.
-  static constexpr int32_t new_downstream_throughput = 200;
-  UpdateDownstreamThroughputKbps(new_downstream_throughput);
-  ASSERT_EQ(network_condition_service->GetUploadRate(),
-            NetworkConditionService::ConvertKbpsToBytesPerSec(
-                new_downstream_throughput))
-      << "network_condition_service->GetUploadRate() must be set to the new "
-         "downstream throughput after "
-         "g_browser_process->network_quality_tracker() notifies.";
 }
 
 }  // namespace reporting
