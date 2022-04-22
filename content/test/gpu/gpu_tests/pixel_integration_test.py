@@ -101,8 +101,18 @@ class PixelIntegrationTest(
     # This property actually comes off the class, not 'self'.
     tab = self.tab
     tab.Navigate(url, script_to_evaluate_on_commit=test_harness_script)
-    tab.action_runner.WaitForJavaScriptCondition(
-        'domAutomationController._proceed', timeout=300)
+
+    try:
+      tab.action_runner.WaitForJavaScriptCondition(
+          'domAutomationController._proceed', timeout=300)
+    except:
+      # Only log messages during exceptions here, they'll otherwise be logged
+      # below if the test progresses to the first domAutomationController.send.
+      test_messages = _TestHarnessMessages(tab)
+      if test_messages:
+        logging.info('Logging messages from the test:\n%s', test_messages)
+      raise
+
     do_page_action = tab.EvaluateJavaScript(
         'domAutomationController._readyForActions')
     try:

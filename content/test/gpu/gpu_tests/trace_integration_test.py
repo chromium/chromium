@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import logging
 import os
 import posixpath
 import sys
@@ -26,6 +27,13 @@ webgl_test_harness_script = r"""
   var domAutomationController = {};
 
   domAutomationController._finished = false;
+  domAutomationController._originalLog = window.console.log;
+  domAutomationController._messages = '';
+
+  domAutomationController.log = function(msg) {
+    domAutomationController._messages += msg + "\n";
+    domAutomationController._originalLog.apply(window.console, [msg]);
+  }
 
   domAutomationController.send = function(msg) {
     // Issue a read pixel to synchronize the gpu process to ensure
@@ -57,6 +65,13 @@ basic_test_harness_script = r"""
   domAutomationController._readyForActions = false;
   domAutomationController._succeeded = false;
   domAutomationController._finished = false;
+  domAutomationController._originalLog = window.console.log;
+  domAutomationController._messages = '';
+
+  domAutomationController.log = function(msg) {
+    domAutomationController._messages += msg + "\n";
+    domAutomationController._originalLog.apply(window.console, [msg]);
+  }
 
   domAutomationController.send = function(msg) {
     domAutomationController._proceed = true;
@@ -188,8 +203,15 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     url = self.UrlOfStaticFilePath(test_path)
     tab.Navigate(url,
                  script_to_evaluate_on_commit=test_params.test_harness_script)
-    tab.action_runner.WaitForJavaScriptCondition(
-        test_params.finish_js_condition, timeout=30)
+
+    try:
+      tab.action_runner.WaitForJavaScriptCondition(
+          test_params.finish_js_condition, timeout=30)
+    finally:
+      test_messages = tab.EvaluateJavaScript(
+          'domAutomationController._messages')
+      if test_messages:
+        logging.info('Logging messages from the test:\n%s', test_messages)
 
     # Stop tracing.
     timeline_data = tab.browser.platform.tracing_controller.StopTracing()
