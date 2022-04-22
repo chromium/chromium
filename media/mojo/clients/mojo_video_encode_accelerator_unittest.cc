@@ -341,8 +341,23 @@ TEST_F(MojoVideoEncodeAcceleratorTest, InitializeFailure) {
   base::RunLoop().RunUntilIdle();
 }
 
-// Test that mojo disconnect is surfaced as a platform error
-TEST_F(MojoVideoEncodeAcceleratorTest, MojoDisconnect) {
+// Test that mojo disconnect before initialize is surfaced as a platform error.
+TEST_F(MojoVideoEncodeAcceleratorTest, MojoDisconnectBeforeInitialize) {
+  std::unique_ptr<MockVideoEncodeAcceleratorClient> mock_vea_client =
+      std::make_unique<MockVideoEncodeAcceleratorClient>();
+
+  constexpr Bitrate kInitialBitrate = Bitrate::ConstantBitrate(100000u);
+  const VideoEncodeAccelerator::Config config(
+      PIXEL_FORMAT_I420, kInputVisibleSize, VIDEO_CODEC_PROFILE_UNKNOWN,
+      kInitialBitrate);
+  mojo_vea_receiver_->Close();
+  EXPECT_FALSE(mojo_vea()->Initialize(config, mock_vea_client.get(),
+                                      std::make_unique<media::NullMediaLog>()));
+  base::RunLoop().RunUntilIdle();
+}
+
+// Test that mojo disconnect after initialize is surfaced as a platform error.
+TEST_F(MojoVideoEncodeAcceleratorTest, MojoDisconnectAfterInitialize) {
   std::unique_ptr<MockVideoEncodeAcceleratorClient> mock_vea_client =
       std::make_unique<MockVideoEncodeAcceleratorClient>();
 

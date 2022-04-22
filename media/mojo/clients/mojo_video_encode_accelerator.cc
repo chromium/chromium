@@ -107,6 +107,10 @@ MojoVideoEncodeAccelerator::MojoVideoEncodeAccelerator(
     : vea_(std::move(vea)) {
   DVLOG(1) << __func__;
   DCHECK(vea_);
+
+  vea_.set_disconnect_handler(
+      base::BindOnce(&MojoVideoEncodeAccelerator::MojoDisconnectionHandler,
+                     base::Unretained(this)));
 }
 
 VideoEncodeAccelerator::SupportedProfiles
@@ -133,10 +137,6 @@ bool MojoVideoEncodeAccelerator::Initialize(
       vea_client_remote;
   vea_client_ = std::make_unique<VideoEncodeAcceleratorClient>(
       client, vea_client_remote.InitWithNewEndpointAndPassReceiver());
-
-  vea_.set_disconnect_handler(
-      base::BindOnce(&MojoVideoEncodeAccelerator::MojoDisconnectionHandler,
-                     base::Unretained(this)));
 
   // Use `mojo::MakeSelfOwnedReceiver` for MediaLog so logs may go through even
   // after `MojoVideoEncodeAccelerator` is destructed.
