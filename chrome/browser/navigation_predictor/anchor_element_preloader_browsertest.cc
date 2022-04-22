@@ -164,7 +164,8 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, InvalidHref) {
   EXPECT_EQ(ukm_entries.size(), 0u);
 }
 
-IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, IframeTest) {
+// TODO(crbug.com/1318937): Re-enable this test
+IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, DISABLED_IframeTest) {
   const GURL& url = GetTestURL("/iframe_anchor.html");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(content::ExecuteScript(
