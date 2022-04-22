@@ -15,32 +15,29 @@ assert(!is_android)
 
 preprocess_folder = "preprocessed"
 
-group("web_components") {
-  public_deps = [
-    ":web_components_local",
-    "sync_confirmation:web_components",
-  ]
-  if (!is_chromeos_ash) {
-    public_deps += [
-      "enterprise_profile_welcome:web_components",
-      "profile_customization:web_components",
-      "signin_email_confirmation:web_components",
-      "signin_error:web_components",
-    ]
-  }
-  if (enable_dice_support) {
-    public_deps += [
-      "dice_web_signin_intercept:web_components",
-      "signin_reauth:web_components",
-    ]
-  }
-}
-
-html_to_js("web_components_local") {
+html_to_js("web_components") {
   js_files = [
     "signin_shared_css.ts",
     "signin_vars_css.ts",
+    "sync_confirmation/sync_confirmation_app.ts",
+    "sync_confirmation/sync_disabled_confirmation_app.ts",
   ]
+
+  if (!is_chromeos_ash) {
+    js_files += [
+      "enterprise_profile_welcome/enterprise_profile_welcome_app.ts",
+      "profile_customization/profile_customization_app.ts",
+      "signin_email_confirmation/signin_email_confirmation_app.ts",
+      "signin_error/signin_error_app.ts",
+    ]
+  }
+
+  if (enable_dice_support) {
+    js_files += [
+      "dice_web_signin_intercept/dice_web_signin_intercept_app.ts",
+      "signin_reauth/signin_reauth_app.ts",
+    ]
+  }
 }
 
 grit("resources") {
