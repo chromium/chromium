@@ -1240,19 +1240,45 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, MixedContentWithSameDocumentNavigation) {
                                     AuthState::DISPLAYED_INSECURE_CONTENT);
 }
 
+namespace {
+
+// A WebContentsObserver that allows observing when the page has displayed a
+// resource loaded with certificate errors.
+class DisplayedContentWithCertErrorsObserver
+    : public content::WebContentsObserver {
+ public:
+  explicit DisplayedContentWithCertErrorsObserver(
+      content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+
+  DisplayedContentWithCertErrorsObserver(
+      const DisplayedContentWithCertErrorsObserver&) = delete;
+  DisplayedContentWithCertErrorsObserver& operator=(
+      const DisplayedContentWithCertErrorsObserver&) = delete;
+
+  ~DisplayedContentWithCertErrorsObserver() override = default;
+
+  void DidChangeVisibleSecurityState() override {
+    content::NavigationEntry* entry =
+        web_contents()->GetController().GetVisibleEntry();
+    if (entry && (entry->GetSSL().content_status &
+                  content::SSLStatus::DISPLAYED_CONTENT_WITH_CERT_ERRORS)) {
+      run_loop_.Quit();
+    }
+  }
+
+  void WaitForDisplayedContentWithCertErrors() { run_loop_.Run(); }
+
+ private:
+  base::RunLoop run_loop_;
+};
+
+}  // namespace
+
 // Tests that the WebContents's flag for displaying content with cert
 // errors get cleared upon navigation.
-// Flaky on Mac, Linux, ChromeOS. https://crbug.com/1242369.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DisplayedContentWithCertErrorsClearedOnNavigation \
-  DISABLED_DisplayedContentWithCertErrorsClearedOnNavigation
-#else
-#define MAYBE_DisplayedContentWithCertErrorsClearedOnNavigation \
-  DisplayedContentWithCertErrorsClearedOnNavigation
-#endif
-IN_PROC_BROWSER_TEST_F(
-    SSLUITest,
-    MAYBE_DisplayedContentWithCertErrorsClearedOnNavigation) {
+IN_PROC_BROWSER_TEST_F(SSLUITest,
+                       DisplayedContentWithCertErrorsClearedOnNavigation) {
   ASSERT_TRUE(https_server_.Start());
   ASSERT_TRUE(https_server_expired_.Start());
 
@@ -1262,21 +1288,28 @@ IN_PROC_BROWSER_TEST_F(
   // Navigate to a page with a certificate error and click through the
   // interstitial.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      https_server_expired_.GetURL("/ssl/page_with_subresource.html")));
+      browser(), https_server_expired_.GetURL("/title1.html")));
   ssl_test_util::CheckAuthenticationBrokenState(
       tab, net::CERT_STATUS_DATE_INVALID, AuthState::SHOWING_INTERSTITIAL);
   ProceedThroughInterstitial(tab);
 
-  content::NavigationEntry* entry = tab->GetController().GetVisibleEntry();
-  ASSERT_TRUE(entry);
-  EXPECT_TRUE(entry->GetSSL().content_status &
-              content::SSLStatus::DISPLAYED_CONTENT_WITH_CERT_ERRORS);
+  // Add a subresource with a certificate error and check that it's recorded
+  // correctly. We wait specifically for the DidDisplayContentWithCertErrors
+  // event (rather than a DidChangeVisibleSecurityState event) because the
+  // page's favicon is loaded as active content and the notification about that
+  // can interfere with the visible security state change that we're observing
+  // here.
+  DisplayedContentWithCertErrorsObserver observer(tab);
+  ASSERT_NE(false, content::EvalJs(tab,
+                                   "var i = document.createElement('img');"
+                                   "i.src = 'ssl/google_files/logo.gif';"
+                                   "document.body.appendChild(i)"));
+  observer.WaitForDisplayedContentWithCertErrors();
 
   // Navigate away to a different page, and check that the flag gets cleared.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("/ssl/google.html")));
-  entry = tab->GetController().GetVisibleEntry();
+  content::NavigationEntry* entry = tab->GetController().GetVisibleEntry();
   ASSERT_TRUE(entry);
   EXPECT_FALSE(entry->GetSSL().content_status &
                content::SSLStatus::DISPLAYED_CONTENT_WITH_CERT_ERRORS);
