@@ -140,10 +140,18 @@ void BuiltInBackendToAndroidBackendMigrator::UpdateMigrationVersionInPref() {
 }
 
 void BuiltInBackendToAndroidBackendMigrator::PrepareForMigration() {
-  metrics_reporter_ = std::make_unique<MigrationMetricsReporter>(
-      IsMigrationNeeded(prefs_) ? "InitialMigration" : "RollingMigration");
   prefs_->SetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt,
                     base::Time::Now().ToDoubleT());
+  if (ShouldMigrateNonSyncableData() &&
+      non_syncable_data_migration_in_progress_) {
+    // Non-syncable data migration already running. By the time it ends, the
+    // two backends will be identical, therefore the second migration is not
+    // needed.
+    return;
+  }
+
+  metrics_reporter_ = std::make_unique<MigrationMetricsReporter>(
+      IsMigrationNeeded(prefs_) ? "InitialMigration" : "RollingMigration");
 
   // Migrate local-only data, the synced passwords should otherwise be
   // identical. Update calls don't fail because they would add a password in
@@ -193,6 +201,7 @@ void BuiltInBackendToAndroidBackendMigrator::PrepareForMigration() {
 void BuiltInBackendToAndroidBackendMigrator::MigrateNonSyncableData(
     PasswordStoreBackend* target_backend,
     LoginsResultOrError logins_or_error) {
+  non_syncable_data_migration_in_progress_ = true;
   if (absl::holds_alternative<PasswordStoreBackendError>(logins_or_error)) {
     MigrationFinished(/*is_success=*/false);
     return;
@@ -458,6 +467,7 @@ void BuiltInBackendToAndroidBackendMigrator::MigrationFinished(
   metrics_reporter_->ReportMetrics(is_success);
   metrics_reporter_.reset();
   prefs_->SetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange, false);
+  non_syncable_data_migration_in_progress_ = false;
 }
 
 bool BuiltInBackendToAndroidBackendMigrator::ShouldMigrateNonSyncableData() {
