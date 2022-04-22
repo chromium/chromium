@@ -1046,6 +1046,44 @@ const TestScenario kScenarios[] = {
         1,                          // verdict_packet
     },
     {
+        // Test based on wpt/.../corb/.../css-with-json-parser-breaker.css
+        "Blocked: Cross-site CSS with parser breaker and text/css mime type",
+        __LINE__,
+        "http://a.com/resource.css",            // target_url
+        "http://c.com/",                        // initiator_origin
+        "HTTP/1.1 200 OK",                      // response_headers
+        "text/css",                             // response_content_type
+        MimeType::kOthers,                      // canonical_mime_type
+        MimeTypeBucket::kPublic,                // mime_type_bucket
+        {R"()]}'
+            {}
+            #header { color: red; } )"},        // packets
+        false,                                  // resource_is_sensitive
+        CrossOriginProtectionDecision::kAllow,  // protection_decision
+        Verdict::kAllow,                        // verdict
+        kVerdictPacketForHeadersBasedVerdict,   // verdict_packet
+    },
+    {
+        // Test based on http/tests/security/resources/xorigincss1.css
+        "Blocked: Cross-site HTML/CSS polyglot with text/css mime type",
+        __LINE__,
+        "http://a.com/resource.css",            // target_url
+        "http://c.com/",                        // initiator_origin
+        "HTTP/1.1 200 OK",                      // response_headers
+        "text/css",                             // response_content_type
+        MimeType::kOthers,                      // canonical_mime_type
+        MimeTypeBucket::kPublic,                // mime_type_bucket
+        {R"(  <html>{}\n"
+              .id3 {
+                background-color: yellow;
+              }
+              </html> )"},                      // packets
+        false,                                  // resource_is_sensitive
+        CrossOriginProtectionDecision::kAllow,  // protection_decision
+        Verdict::kAllow,                        // verdict
+        kVerdictPacketForHeadersBasedVerdict,   // verdict_packet
+    },
+    {
         "Blocked: Cross-site XHR to a filesystem URI",
         __LINE__,
         "filesystem:http://www.b.com/file.html",    // target_url
@@ -2019,7 +2057,7 @@ class ResponseAnalyzerTest : public testing::Test,
     if (decision == ResponseAnalyzer::Decision::kSniffMore) {
       std::string data_buffer;
       size_t data_offset = 0;
-      for (int packet_index = 0; packet_index <= scenario.verdict_packet;
+      for (size_t packet_index = 0; packet_index < packets_vector.size();
            packet_index++) {
         SCOPED_TRACE(testing::Message()
                      << "While delivering packet #" << packet_index);
