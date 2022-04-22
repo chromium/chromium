@@ -14,7 +14,9 @@
 #include "base/metrics/histogram_base.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
@@ -47,12 +49,14 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
       base::HistogramBase::Sample output_metric_sample,
       std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segments);
 
-  void OnGetInputTensor(float output_value,
-                        int output_index,
-                        OptimizationTarget segment_id,
-                        int64_t model_version,
-                        bool success,
-                        const std::vector<float>& inputs);
+  void OnGetInputTensor(
+      float output_value,
+      int output_index,
+      OptimizationTarget segment_id,
+      int64_t model_version,
+      const absl::optional<proto::PredictionResult>& prediction_result,
+      bool success,
+      const std::vector<float>& inputs);
 
   bool CanReportImmediateTrainingData(const proto::SegmentInfo& segment_info);
 

@@ -12,7 +12,6 @@
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
-#include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
 #include "components/segmentation_platform/internal/stats.h"
 
@@ -138,6 +137,11 @@ void TrainingDataCollectorImpl::ReportForSegmentsInfoList(
     if (!CanReportImmediateTrainingData(segment.second))
       continue;
 
+    absl::optional<proto::PredictionResult> result;
+    if (segment_info.has_prediction_result()) {
+      result = segment_info.prediction_result();
+    }
+
     // Generate training data input.
     // TODO(ssid): Validate immediate output is not included in the input
     // features and update the comment in model_metadata.proto.
@@ -147,8 +151,8 @@ void TrainingDataCollectorImpl::ReportForSegmentsInfoList(
                        weak_ptr_factory_.GetWeakPtr(),
                        static_cast<float>(output_metric_sample),
                        hash_index_map[output_metric_hash],
-                       segment_info.segment_id(),
-                       segment_info.model_version()));
+                       segment_info.segment_id(), segment_info.model_version(),
+                       result));
   }
 }
 
@@ -197,6 +201,7 @@ void TrainingDataCollectorImpl::OnGetInputTensor(
     int output_index,
     OptimizationTarget segment_id,
     int64_t model_version,
+    const absl::optional<proto::PredictionResult>& prediction_result,
     bool success,
     const std::vector<float>& inputs) {
   if (!success) {
@@ -206,7 +211,8 @@ void TrainingDataCollectorImpl::OnGetInputTensor(
   }
 
   auto ukm_source_id = SegmentationUkmHelper::GetInstance()->RecordTrainingData(
-      segment_id, model_version, inputs, {output_value}, {output_index});
+      segment_id, model_version, inputs, {output_value}, {output_index},
+      prediction_result);
   if (ukm_source_id == ukm::kInvalidSourceId) {
     VLOG(1) << "Failed to collect training data for segment:" << segment_id;
     RecordTrainingDataCollectionEvent(

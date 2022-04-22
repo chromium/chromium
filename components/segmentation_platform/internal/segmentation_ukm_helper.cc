@@ -125,7 +125,8 @@ ukm::SourceId SegmentationUkmHelper::RecordTrainingData(
     int64_t model_version,
     const std::vector<float>& input_tensor,
     const std::vector<float>& outputs,
-    const std::vector<int>& output_indexes) {
+    const std::vector<int>& output_indexes,
+    const absl::optional<proto::PredictionResult>& prediction_result) {
   ukm::SourceId source_id = ukm::NoURLSourceId();
   ukm::builders::Segmentation_ModelExecution execution_result(source_id);
   if (!AddInputsToUkm(&execution_result, segment_id, model_version,
@@ -137,6 +138,14 @@ ukm::SourceId SegmentationUkmHelper::RecordTrainingData(
     return ukm::kInvalidSourceId;
   }
 
+  if (prediction_result.has_value()) {
+    execution_result.SetPredictionResult(
+        FloatToInt64(prediction_result->result()));
+    base::Time execution_time = base::Time::FromDeltaSinceWindowsEpoch(
+        base::Microseconds(prediction_result->timestamp_us()));
+    execution_result.SetOutputDelaySec(
+        (base::Time::Now() - execution_time).InSeconds());
+  }
   execution_result.Record(ukm::UkmRecorder::Get());
   return source_id;
 }
