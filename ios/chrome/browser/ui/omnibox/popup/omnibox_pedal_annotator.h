@@ -22,7 +22,8 @@ struct AutocompleteMatch;
 @property(nonatomic, weak) id<OmniboxCommands> omniboxCommandHandler;
 
 // Creates a new pedal for the provided match.
-- (OmniboxPedalData*)pedalForMatch:(const AutocompleteMatch&)match;
+- (OmniboxPedalData*)pedalForMatch:(const AutocompleteMatch&)match
+                         incognito:(BOOL)incognito;
 
 @end
 

@@ -8,7 +8,7 @@ import SwiftUI
 struct PopupMatchTrailingButton: View {
   enum Dimensions {
     static let extendedTouchTargetDiameter: CGFloat = 44
-    static let trailingButtonSize: CGFloat = 24
+    static let trailingButtonSize: CGFloat = 17
   }
 
   let match: PopupMatch
@@ -16,7 +16,8 @@ struct PopupMatchTrailingButton: View {
 
   var body: some View {
     Button(action: action) {
-      Image(systemName: match.isTabMatch ? "arrow.right.square" : "arrow.up.backward")
+      Image(systemName: match.isTabMatch ? "arrow.right.circle" : "arrow.up.backward")
+        .font(.system(size: Dimensions.trailingButtonSize, weight: .medium))
         .aspectRatio(contentMode: .fit)
         .frame(
           width: Dimensions.trailingButtonSize, height: Dimensions.trailingButtonSize,
