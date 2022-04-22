@@ -52,6 +52,7 @@ enum class Verdict {
 };
 
 constexpr int kVerdictPacketForHeadersBasedVerdict = -1;
+constexpr int kVerdictPacketForInconclusiveSniffing = 99999;
 
 // This struct is used to describe each test case in this file.  It's passed as
 // a test parameter to each TEST_P test.
@@ -443,9 +444,9 @@ const TestScenario kScenarios[] = {
         {},                                // packets
         false,                             // resource_is_sensitive
         CrossOriginProtectionDecision::
-            kAllowedAfterSniffing,        // protection_decision
-        Verdict::kAllowBecauseOutOfData,  // verdict
-        0,                                // verdict_packet
+            kAllowedAfterSniffing,              // protection_decision
+        Verdict::kAllowBecauseOutOfData,        // verdict
+        kVerdictPacketForInconclusiveSniffing,  // verdict_packet
     },
     {
         "Allowed: Empty response with PNG mime type and nosniff header",
@@ -460,9 +461,9 @@ const TestScenario kScenarios[] = {
         {},                                 // packets
         false,                              // resource_is_sensitive
         CrossOriginProtectionDecision::
-            kAllowedAfterSniffing,        // protection_decision
-        Verdict::kAllowBecauseOutOfData,  // verdict
-        0,                                // verdict_packet
+            kAllowedAfterSniffing,              // protection_decision
+        Verdict::kAllowBecauseOutOfData,        // verdict
+        kVerdictPacketForInconclusiveSniffing,  // verdict_packet
     },
 
     // Allowed responses due to sniffing:
@@ -608,9 +609,9 @@ const TestScenario kScenarios[] = {
         {"<htm"},                          // packets
         false,                             // resource_is_sensitive
         CrossOriginProtectionDecision::
-            kAllowedAfterSniffing,        // protection_decision
-        Verdict::kAllowBecauseOutOfData,  // verdict
-        1,                                // verdict_packet
+            kAllowedAfterSniffing,              // protection_decision
+        Verdict::kAllowBecauseOutOfData,        // verdict
+        kVerdictPacketForInconclusiveSniffing,  // verdict_packet
     },
     {
         "Allowed: HTML tag appears only after net::kMaxBytesToSniff",
@@ -624,9 +625,9 @@ const TestScenario kScenarios[] = {
         {kHTMLWithTooLongComment},         // packets
         false,                             // resource_is_sensitive
         CrossOriginProtectionDecision::
-            kAllowedAfterSniffing,        // protection_decision
-        Verdict::kAllowBecauseOutOfData,  // verdict
-        0,                                // verdict_packet
+            kAllowedAfterSniffing,              // protection_decision
+        Verdict::kAllowBecauseOutOfData,        // verdict
+        kVerdictPacketForInconclusiveSniffing,  // verdict_packet
     },
     {
         "Allowed: Empty response with html mime type",
@@ -640,9 +641,9 @@ const TestScenario kScenarios[] = {
         {},                                // packets
         false,                             // resource_is_sensitive
         CrossOriginProtectionDecision::
-            kAllowedAfterSniffing,        // protection_decision
-        Verdict::kAllowBecauseOutOfData,  // verdict
-        0,                                // verdict_packet
+            kAllowedAfterSniffing,              // protection_decision
+        Verdict::kAllowBecauseOutOfData,        // verdict
+        kVerdictPacketForInconclusiveSniffing,  // verdict_packet
     },
     {
         "Allowed: Same-origin XHR to a filesystem URI",
@@ -1285,9 +1286,9 @@ const TestScenario kScenarios[] = {
         {/* empty body doesn't sniff as html */},  // packets
         false,                                     // resource_is_sensitive
         CrossOriginProtectionDecision::
-            kAllowedAfterSniffing,        // protection_decision
-        Verdict::kAllowBecauseOutOfData,  // verdict
-        0,                                // verdict_packet
+            kAllowedAfterSniffing,              // protection_decision
+        Verdict::kAllowBecauseOutOfData,        // verdict
+        kVerdictPacketForInconclusiveSniffing,  // verdict_packet
     },
 
     // Testing the CORB protection logging.
@@ -1848,9 +1849,9 @@ const TestScenario kScenarios[] = {
         {/* empty body doesn't sniff as html */},  // packets
         true,                                      // resource_is_sensitive
         CrossOriginProtectionDecision::
-            kAllowedAfterSniffing,        // protection_decision
-        Verdict::kAllowBecauseOutOfData,  // verdict
-        0,                                // verdict_packet
+            kAllowedAfterSniffing,              // protection_decision
+        Verdict::kAllowBecauseOutOfData,        // verdict
+        kVerdictPacketForInconclusiveSniffing,  // verdict_packet
     },
 
     // These responses confirm we are correctly reporting when a nosniff header
@@ -2031,7 +2032,11 @@ class ResponseAnalyzerTest : public testing::Test,
 
     // If the |verdict_packet| == kVerdictPacketForHeadersBasedVerdict = -1,
     // then the sniffing loop below will be skipped.
-    EXPECT_LT(scenario.verdict_packet, static_cast<int>(packets_vector.size()));
+    if (scenario.verdict_packet != kVerdictPacketForInconclusiveSniffing &&
+        scenario.verdict_packet != kVerdictPacketForHeadersBasedVerdict) {
+      EXPECT_LT(scenario.verdict_packet,
+                static_cast<int>(packets_vector.size()));
+    }
 
     // Verify that the ResponseAnalyzer asks for sniffing if this is what the
     // testcase expects.
@@ -2054,6 +2059,7 @@ class ResponseAnalyzerTest : public testing::Test,
     // Simulate the behaviour of the URLLoader by appending the packets into
     // |data_buffer| and feeding this to |analyzer|.
     bool run_out_of_data_to_sniff = false;
+    int actual_verdict_packet = kVerdictPacketForHeadersBasedVerdict;
     if (decision == ResponseAnalyzer::Decision::kSniffMore) {
       std::string data_buffer;
       size_t data_offset = 0;
@@ -2063,9 +2069,9 @@ class ResponseAnalyzerTest : public testing::Test,
                      << "While delivering packet #" << packet_index);
 
         // At each iteration of the loop we feed a new packet to |analyzer|,
-        // breaking at the |verdict_packet|. Since we haven't given the next
-        // packet to |analyzer| yet at this point in the loop, it shouldn't have
-        // made a decision yet.
+        // expecting to get a decision at the |verdict_packet|. Since we haven't
+        // given the next packet to |analyzer| yet at this point in the loop, it
+        // shouldn't have made a decision yet.
         EXPECT_EQ(decision, ResponseAnalyzer::Decision::kSniffMore);
 
         // Append the next packet of the response body. If appending the entire
@@ -2078,14 +2084,17 @@ class ResponseAnalyzerTest : public testing::Test,
         // Hand |analyzer_| the data to sniff.
         decision = analyzer->Sniff(data_buffer);
         data_offset += bytes_to_append;
-        if (decision != ResponseAnalyzer::Decision::kSniffMore)
+        if (decision != ResponseAnalyzer::Decision::kSniffMore) {
+          actual_verdict_packet = packet_index;
           break;
+        }
       }
     }
 
     // Handle scenarios where no decision can be made before running out of data
     // to sniff.
     if (decision == ResponseAnalyzer::Decision::kSniffMore) {
+      actual_verdict_packet = kVerdictPacketForInconclusiveSniffing;
       run_out_of_data_to_sniff = true;
       decision = analyzer->HandleEndOfSniffableResponseBody();
 
@@ -2095,6 +2104,9 @@ class ResponseAnalyzerTest : public testing::Test,
 
     // Confirm the analyzer is blocking or allowing correctly (now that we have
     // performed any needed sniffing).
+    if (verify_when_decision_is_made) {
+      EXPECT_EQ(scenario.verdict_packet, actual_verdict_packet);
+    }
     if (scenario.verdict == Verdict::kBlock) {
       EXPECT_EQ(decision, ResponseAnalyzer::Decision::kBlock);
     } else {
