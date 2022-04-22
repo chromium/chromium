@@ -6,6 +6,13 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+config("quiche_internal_config") {
+  cflags = []
+  if (is_clang) {
+    cflags += [ "-Wno-unused-private-field" ]
+  }
+}
+
 config("quiche_config") {
   include_dirs = [
     # The ordering here is important, since headers in overrides/ replace
@@ -543,6 +550,8 @@ component("quiche") {
     "src/quiche/quic/core/quic_packets.h",
     "src/quiche/quic/core/quic_path_validator.cc",
     "src/quiche/quic/core/quic_path_validator.h",
+    "src/quiche/quic/core/quic_ping_manager.cc",
+    "src/quiche/quic/core/quic_ping_manager.h",
     "src/quiche/quic/core/quic_protocol_flags_list.h",
     "src/quiche/quic/core/quic_received_packet_manager.cc",
     "src/quiche/quic/core/quic_received_packet_manager.h",
@@ -660,6 +669,7 @@ component("quiche") {
     "src/quiche/spdy/core/zero_copy_output_buffer.h",
   ]
 
+  configs += [ ":quiche_internal_config" ]
   public_configs = [ ":quiche_config" ]
 
   deps = [
@@ -719,17 +729,11 @@ if (is_linux || is_chromeos) {
   source_set("epoll_server") {
     sources = [
       "overrides/quiche_platform_impl/epoll_bug_impl.h",
-      "overrides/quiche_platform_impl/epoll_export_impl.h",
       "overrides/quiche_platform_impl/epoll_logging_impl.h",
-      "overrides/quiche_platform_impl/epoll_ptr_util_impl.h",
       "overrides/quiche_platform_impl/epoll_thread_impl.h",
-      "overrides/quiche_platform_impl/epoll_time_impl.h",
       "src/quiche/epoll_server/platform/api/epoll_bug.h",
-      "src/quiche/epoll_server/platform/api/epoll_export.h",
       "src/quiche/epoll_server/platform/api/epoll_logging.h",
-      "src/quiche/epoll_server/platform/api/epoll_ptr_util.h",
       "src/quiche/epoll_server/platform/api/epoll_thread.h",
-      "src/quiche/epoll_server/platform/api/epoll_time.h",
       "src/quiche/epoll_server/simple_epoll_server.cc",
       "src/quiche/epoll_server/simple_epoll_server.h",
     ]
@@ -835,8 +839,6 @@ if (is_linux || is_chromeos) {
       "src/quiche/quic/masque/masque_client_session.h",
       "src/quiche/quic/masque/masque_client_tools.cc",
       "src/quiche/quic/masque/masque_client_tools.h",
-      "src/quiche/quic/masque/masque_compression_engine.cc",
-      "src/quiche/quic/masque/masque_compression_engine.h",
       "src/quiche/quic/masque/masque_dispatcher.cc",
       "src/quiche/quic/masque/masque_dispatcher.h",
       "src/quiche/quic/masque/masque_encapsulated_client_session.cc",
@@ -861,6 +863,7 @@ if (is_linux || is_chromeos) {
       "//third_party/boringssl",
       "//third_party/protobuf:protobuf_lite",
     ]
+    configs += [ ":quiche_internal_config" ]
   }
 
   executable("masque_client") {
@@ -1328,6 +1331,7 @@ source_set("quiche_tests") {
     "src/quiche/http2/decoder/payload_decoders/window_update_payload_decoder_test.cc",
     "src/quiche/http2/hpack/decoder/hpack_block_collector.cc",
     "src/quiche/http2/hpack/decoder/hpack_block_collector.h",
+    "src/quiche/http2/hpack/decoder/hpack_block_collector_test.cc",
     "src/quiche/http2/hpack/decoder/hpack_block_decoder_test.cc",
     "src/quiche/http2/hpack/decoder/hpack_decoder_state_test.cc",
     "src/quiche/http2/hpack/decoder/hpack_decoder_string_buffer_test.cc",
@@ -1335,6 +1339,7 @@ source_set("quiche_tests") {
     "src/quiche/http2/hpack/decoder/hpack_decoder_test.cc",
     "src/quiche/http2/hpack/decoder/hpack_entry_collector.cc",
     "src/quiche/http2/hpack/decoder/hpack_entry_collector.h",
+    "src/quiche/http2/hpack/decoder/hpack_entry_collector_test.cc",
     "src/quiche/http2/hpack/decoder/hpack_entry_decoder_test.cc",
     "src/quiche/http2/hpack/decoder/hpack_entry_type_decoder_test.cc",
     "src/quiche/http2/hpack/decoder/hpack_string_collector.cc",
@@ -1553,6 +1558,8 @@ source_set("quiche_tests") {
     "src/quiche/spdy/core/spdy_test_utils.cc",
     "src/quiche/spdy/core/spdy_test_utils.h",
   ]
+
+  configs += [ ":quiche_internal_config" ]
 
   deps = [
     ":quiche_file_utils",
