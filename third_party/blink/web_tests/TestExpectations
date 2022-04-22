@@ -7582,7 +7582,7 @@ crbug.com/1309975 http/tests/devtools/console/console-viewport-indices.js [ Fail
 crbug.com/1309975 http/tests/devtools/console/viewport-testing/console-stick-to-bottom-expand-object.js [ Failure ]
 
 # Sheriff 2022-03-23: More flaky tests.
-crbug.com/1309483 [ Win7 ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
+crbug.com/1309483 [ Win ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
 crbug.com/1309633 [ Mac ] external/wpt/FileAPI/url/url-lifetime.html [ Failure ]
 
 # Sheriff 2022-03-24
