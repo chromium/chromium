@@ -4455,9 +4455,14 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   delay = run_time - Time::Now();
 
   base::TimeDelta one_hour = base::Hours(1);
-  // Leave a little wiggle room.
-  EXPECT_GE(delay, one_hour - base::Minutes(1));
-  EXPECT_LE(delay, one_hour + base::Minutes(1));
+
+  // The cache check does not happen when the feature is disabled, since the
+  // local `WallpaperInfo` is rejected.
+  if (GooglePhotosEnabled()) {
+    // Leave a little wiggle room.
+    EXPECT_GE(delay, one_hour - base::Minutes(1));
+    EXPECT_LE(delay, one_hour + base::Minutes(1));
+  }
 }
 
 TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
@@ -4784,9 +4789,13 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   RunAllTasksUntilIdle();
 
   WallpaperInfo expected_info;
-  EXPECT_TRUE(controller_->GetUserWallpaperInfo(account_id_1, &expected_info));
-  EXPECT_EQ(expected_photo_id, expected_info.location);
-  EXPECT_EQ(kFakeGooglePhotosAlbumId, expected_info.collection_id);
+  bool success =
+      controller_->GetUserWallpaperInfo(account_id_1, &expected_info);
+  EXPECT_EQ(success, GooglePhotosEnabled());
+  if (success) {
+    EXPECT_EQ(expected_photo_id, expected_info.location);
+    EXPECT_EQ(kFakeGooglePhotosAlbumId, expected_info.collection_id);
+  }
 }
 
 TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
@@ -4802,16 +4811,19 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
 
   controller_->UpdateDailyRefreshWallpaperForTesting();
   RunAllTasksUntilIdle();
-
-  base::TimeDelta run_time = controller_->GetUpdateWallpaperTimerForTesting()
-                                 .desired_run_time()
-                                 .ToDeltaSinceWindowsEpoch();
+  auto& timer = controller_->GetUpdateWallpaperTimerForTesting();
+  base::TimeDelta run_time =
+      timer.desired_run_time().ToDeltaSinceWindowsEpoch();
 
   base::TimeDelta update_time =
       (base::Time::Now() + base::Days(1)).ToDeltaSinceWindowsEpoch();
 
-  ASSERT_GE(run_time, update_time - base::Minutes(1));
-  ASSERT_LE(run_time, update_time + base::Minutes(61));
+  if (GooglePhotosEnabled()) {
+    EXPECT_GE(run_time, update_time - base::Minutes(1));
+    EXPECT_LE(run_time, update_time + base::Minutes(61));
+  } else {
+    EXPECT_FALSE(timer.IsRunning());
+  }
 }
 
 TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
@@ -4836,8 +4848,12 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   base::TimeDelta update_time =
       (base::Time::Now() + base::Hours(1)).ToDeltaSinceWindowsEpoch();
 
-  ASSERT_GE(run_time, update_time - base::Minutes(1));
-  ASSERT_LE(run_time, update_time + base::Minutes(1));
+  if (GooglePhotosEnabled()) {
+    EXPECT_GE(run_time, update_time - base::Minutes(1));
+    EXPECT_LE(run_time, update_time + base::Minutes(1));
+  } else {
+    EXPECT_FALSE(controller_->GetUpdateWallpaperTimerForTesting().IsRunning());
+  }
 }
 
 TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
@@ -4923,6 +4939,23 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
                                        .Append(account_id_1.GetAccountIdKey())
                                        .Append(expected_photo_id);
   ASSERT_EQ(GooglePhotosEnabled(), base::PathExists(saved_wallpaper));
+}
+
+TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+       ResetToDefaultWhenLoadingInvalidWallpaper) {
+  SimulateUserLogin(account_id_1);
+
+  const WallpaperType type = GooglePhotosEnabled()
+                                 ? WallpaperType::kCount
+                                 : WallpaperType::kGooglePhotos;
+
+  WallpaperInfo info = {kFakeGooglePhotosPhotoId, WALLPAPER_LAYOUT_CENTER, type,
+                        base::Time::Now()};
+  controller_->SetUserWallpaperInfo(account_id_1, info);
+  controller_->ShowUserWallpaper(account_id_1);
+  RunAllTasksUntilIdle();
+
+  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kDefault);
 }
 
 }  // namespace ash
