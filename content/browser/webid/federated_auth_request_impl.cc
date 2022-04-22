@@ -305,7 +305,7 @@ void FederatedAuthRequestImpl::RequestIdToken(
   }
 
   if (GetApiPermissionContext() &&
-      !GetApiPermissionContext()->HasApiPermission()) {
+      !GetApiPermissionContext()->HasApiPermission(origin_)) {
     RecordRequestIdTokenStatus(IdTokenStatus::kDisabledInSettings,
                                render_frame_host_->GetPageUkmSourceId());
     CompleteRequest(FederatedAuthRequestResult::kErrorDisabledInSettings, "",
@@ -330,7 +330,7 @@ void FederatedAuthRequestImpl::CancelTokenRequest() {
   }
 
   if (GetApiPermissionContext() &&
-      !GetApiPermissionContext()->HasApiPermission()) {
+      !GetApiPermissionContext()->HasApiPermission(origin_)) {
     RecordRequestIdTokenStatus(IdTokenStatus::kDisabledInSettings,
                                render_frame_host_->GetPageUkmSourceId());
     CompleteRequest(FederatedAuthRequestResult::kErrorDisabledInSettings, "",
@@ -382,7 +382,7 @@ void FederatedAuthRequestImpl::Revoke(
   }
 
   if (GetApiPermissionContext() &&
-      !GetApiPermissionContext()->HasApiPermission()) {
+      !GetApiPermissionContext()->HasApiPermission(origin_)) {
     RecordRevokeStatus(RevokeStatusForMetrics::kDisabledInSettings,
                        render_frame_host_->GetPageUkmSourceId());
     CompleteRevokeRequest(RevokeStatus::kError, /*should_call_callback=*/false);
@@ -446,7 +446,7 @@ void FederatedAuthRequestImpl::LogoutRps(
   logout_callback_ = std::move(callback);
 
   if (GetApiPermissionContext() &&
-      !GetApiPermissionContext()->HasApiPermission()) {
+      !GetApiPermissionContext()->HasApiPermission(origin_)) {
     CompleteLogoutRequest(LogoutRpsStatus::kError);
     return;
   }
@@ -1076,7 +1076,8 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
 }
 
 void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
-                                                 bool is_sign_in) {
+                                                 bool is_sign_in,
+                                                 bool should_embargo) {
   // This could happen if user didn't select any accounts.
   if (account_id.empty()) {
     base::TimeTicks dismiss_dialog_time = base::TimeTicks::Now();
@@ -1084,6 +1085,11 @@ void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
                              render_frame_host_->GetPageUkmSourceId());
     RecordRequestIdTokenStatus(IdTokenStatus::kNotSelectAccount,
                                render_frame_host_->GetPageUkmSourceId());
+
+    if (should_embargo && GetApiPermissionContext()) {
+      GetApiPermissionContext()->RecordDismissAndEmbargo(origin_);
+    }
+
     CompleteRequest(FederatedAuthRequestResult::kError, "",
                     /*should_call_callback=*/false);
     return;
@@ -1096,6 +1102,10 @@ void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
   if (GetRequestPermissionContext()) {
     GetRequestPermissionContext()->GrantRequestPermission(
         origin_, url::Origin::Create(provider_));
+  }
+
+  if (GetApiPermissionContext()) {
+    GetApiPermissionContext()->RemoveEmbargoAndResetCounts(origin_);
   }
 
   account_id_ = account_id;

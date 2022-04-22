@@ -33,7 +33,7 @@ public interface AccountSelectionComponent {
          * Called when the user dismisses the AccountSelectionComponent. Not called if a suggestion
          * was selected.
          */
-        void onDismissed();
+        void onDismissed(boolean shouldEmbargo);
 
         /**
          * Called when the user cancels auto sign in.

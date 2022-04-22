@@ -137,7 +137,7 @@ public class AccountSelectionIntegrationTest {
 
         Espresso.pressBack();
 
-        waitForEvent(mMockBridge).onDismissed();
+        waitForEvent(mMockBridge).onDismissed(/*shouldEmbargo=*/false);
         verify(mMockBridge, never()).onAccountSelected(any());
     }
 
@@ -192,7 +192,7 @@ public class AccountSelectionIntegrationTest {
             mAccountSelection.showAccounts(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
                     Arrays.asList(ANA, BOB), IDP_METADATA, CLIENT_ID_METADATA, false);
         });
-        waitForEvent(mMockBridge).onDismissed();
+        waitForEvent(mMockBridge).onDismissed(/*shouldEmbargo=*/false);
         verify(mMockBridge, never()).onAccountSelected(any());
         Espresso.onView(withText("Another bottom sheet content")).check(matches(isDisplayed()));
 

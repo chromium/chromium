@@ -297,7 +297,7 @@ public class AccountSelectionControllerTest {
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
                 IDP_METADATA, CLIENT_ID_METADATA, false);
         pressBack();
-        verify(mMockDelegate).onDismissed();
+        verify(mMockDelegate).onDismissed(/*shouldEmbargo=*/false);
         assertEquals(false, mMediator.isVisible());
     }
 
@@ -307,7 +307,7 @@ public class AccountSelectionControllerTest {
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA, BOB),
                 IDP_METADATA, CLIENT_ID_METADATA, false);
         pressBack();
-        verify(mMockDelegate).onDismissed();
+        verify(mMockDelegate).onDismissed(/*shouldEmbargo=*/false);
         assertEquals("Incorrectly visible", false, mMediator.isVisible());
     }
 
@@ -400,7 +400,7 @@ public class AccountSelectionControllerTest {
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
                 IDP_METADATA, CLIENT_ID_METADATA, true);
         pressBack();
-        verify(mMockDelegate).onDismissed();
+        verify(mMockDelegate).onDismissed(/*shouldEmbargo=*/false);
         verifyNoMoreInteractions(mMockDelegate);
         assertEquals("Incorrectly visible", false, mMediator.isVisible());
         // The delayed task should not call delegate after user dismissing.
@@ -442,7 +442,7 @@ public class AccountSelectionControllerTest {
     private void pressBack() {
         if (mBottomSheetContent.handleBackPress()) return;
 
-        mMediator.onDismissed(BottomSheetController.StateChangeReason.BACK_PRESS);
+        mMediator.onDismissed(/*shouldEmbargo=*/false);
     }
 
     private int countAllItems() {

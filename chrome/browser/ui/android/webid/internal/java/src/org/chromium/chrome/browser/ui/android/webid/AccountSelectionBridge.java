@@ -85,9 +85,9 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     }
 
     @Override
-    public void onDismissed() {
+    public void onDismissed(boolean shouldEmbargo) {
         if (mNativeView != 0) {
-            AccountSelectionBridgeJni.get().onDismiss(mNativeView);
+            AccountSelectionBridgeJni.get().onDismiss(mNativeView, shouldEmbargo);
         }
     }
 
@@ -116,7 +116,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     interface Natives {
         void onAccountSelected(long nativeAccountSelectionViewAndroid, String[] accountFields,
                 GURL accountPictureUrl, boolean isSignedIn);
-        void onDismiss(long nativeAccountSelectionViewAndroid);
+        void onDismiss(long nativeAccountSelectionViewAndroid, boolean shouldEmbargo);
         void onAutoSignInCancelled(long nativeAccountSelectionViewAndroid);
     }
 }

@@ -8,6 +8,10 @@
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace url {
+class Origin;
+}
+
 namespace content {
 
 class MockApiPermissionDelegate
@@ -21,8 +25,10 @@ class MockApiPermissionDelegate
   MockApiPermissionDelegate& operator=(const MockApiPermissionDelegate&) =
       delete;
 
-  MOCK_METHOD(bool, HasApiPermission, (), (override));
-  MOCK_METHOD(bool, AreThirdPartyCookiesBlocked, (), (override));
+  MOCK_METHOD1(HasApiPermission, bool(const url::Origin&));
+  MOCK_METHOD0(AreThirdPartyCookiesBlocked, bool());
+  MOCK_METHOD1(RecordDismissAndEmbargo, void(const url::Origin&));
+  MOCK_METHOD1(RemoveEmbargoAndResetCounts, void(const url::Origin&));
 };
 
 }  // namespace content

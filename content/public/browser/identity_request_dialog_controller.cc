@@ -66,7 +66,8 @@ void IdentityRequestDialogController::ShowAccountsDialog(
     const ClientIdData& client_id_data,
     IdentityRequestAccount::SignInMode sign_in_mode,
     AccountSelectionCallback on_selected) {
-  std::move(on_selected).Run(/*account_id=*/"", /*is_sign_in=*/false);
+  std::move(on_selected)
+      .Run(/*account_id=*/"", /*is_sign_in=*/false, /*should_embargo=*/false);
 }
 
 }  // namespace content

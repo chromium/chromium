@@ -804,4 +804,84 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest, TestDismissEmbargoUsingQuietUi) {
   EXPECT_EQ(PermissionStatusSource::MULTIPLE_DISMISSALS, result.source);
 }
 
+namespace {
+
+// Checks that embargo on federated identity permission is lifted only after the
+// passed-in |time_delta| has elapsed.
+void CheckFederatedIdentityApiEmbargoLiftedAfterTimeElapsing(
+    PermissionDecisionAutoBlocker* autoblocker,
+    base::SimpleTestClock* clock,
+    const GURL& url,
+    base::TimeDelta time_delta) {
+  ASSERT_LT(base::Minutes(1), time_delta);
+
+  clock->Advance(time_delta - base::Minutes(1));
+  PermissionResult result = autoblocker->GetEmbargoResult(
+      url, ContentSettingsType::FEDERATED_IDENTITY_API);
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, result.content_setting);
+  EXPECT_EQ(PermissionStatusSource::MULTIPLE_DISMISSALS, result.source);
+
+  clock->Advance(base::Minutes(2));
+  result = autoblocker->GetEmbargoResult(
+      url, ContentSettingsType::FEDERATED_IDENTITY_API);
+  EXPECT_EQ(CONTENT_SETTING_ASK, result.content_setting);
+  EXPECT_EQ(PermissionStatusSource::UNSPECIFIED, result.source);
+}
+
+}  // namespace
+
+TEST_F(PermissionDecisionAutoBlockerUnitTest,
+       TestDismissFederatedIdentityApiBackoff) {
+  GURL url("https://www.google.com");
+  clock()->SetNow(base::Time::Now());
+
+  PermissionResult result = autoblocker()->GetEmbargoResult(
+      url, ContentSettingsType::FEDERATED_IDENTITY_API);
+  EXPECT_EQ(CONTENT_SETTING_ASK, result.content_setting);
+  EXPECT_EQ(PermissionStatusSource::UNSPECIFIED, result.source);
+
+  // 2 hour embargo for 1st dismissal
+  EXPECT_TRUE(autoblocker()->RecordDismissAndEmbargo(
+      url, ContentSettingsType::FEDERATED_IDENTITY_API, false));
+  CheckFederatedIdentityApiEmbargoLiftedAfterTimeElapsing(
+      autoblocker(), clock(), url, base::Hours(2));
+
+  // 1 day embargo for 2nd dismissal
+  EXPECT_TRUE(autoblocker()->RecordDismissAndEmbargo(
+      url, ContentSettingsType::FEDERATED_IDENTITY_API, false));
+  CheckFederatedIdentityApiEmbargoLiftedAfterTimeElapsing(
+      autoblocker(), clock(), url, base::Days(1));
+
+  // 7 day embargo for 3rd dismissal
+  EXPECT_TRUE(autoblocker()->RecordDismissAndEmbargo(
+      url, ContentSettingsType::FEDERATED_IDENTITY_API, false));
+  CheckFederatedIdentityApiEmbargoLiftedAfterTimeElapsing(
+      autoblocker(), clock(), url, base::Days(7));
+
+  // 28 day embargo for 4th dismissal (and all additional dismissals)
+  EXPECT_TRUE(autoblocker()->RecordDismissAndEmbargo(
+      url, ContentSettingsType::FEDERATED_IDENTITY_API, false));
+  CheckFederatedIdentityApiEmbargoLiftedAfterTimeElapsing(
+      autoblocker(), clock(), url, base::Days(28));
+
+  EXPECT_TRUE(autoblocker()->RecordDismissAndEmbargo(
+      url, ContentSettingsType::FEDERATED_IDENTITY_API, false));
+  CheckFederatedIdentityApiEmbargoLiftedAfterTimeElapsing(
+      autoblocker(), clock(), url, base::Days(28));
+
+  // Return to 2 hour embargo after
+  // PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts()
+  autoblocker()->RemoveEmbargoAndResetCounts(
+      url, ContentSettingsType::FEDERATED_IDENTITY_API);
+  result = autoblocker()->GetEmbargoResult(
+      url, ContentSettingsType::FEDERATED_IDENTITY_API);
+  EXPECT_EQ(CONTENT_SETTING_ASK, result.content_setting);
+  EXPECT_EQ(PermissionStatusSource::UNSPECIFIED, result.source);
+
+  EXPECT_TRUE(autoblocker()->RecordDismissAndEmbargo(
+      url, ContentSettingsType::FEDERATED_IDENTITY_API, false));
+  CheckFederatedIdentityApiEmbargoLiftedAfterTimeElapsing(
+      autoblocker(), clock(), url, base::Hours(2));
+}
+
 }  // namespace permissions

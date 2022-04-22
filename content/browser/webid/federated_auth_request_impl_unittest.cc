@@ -59,6 +59,7 @@ using ::testing::_;
 using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
+using ::testing::StrictMock;
 
 namespace content {
 
@@ -715,7 +716,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                       AccountList(accounts.begin(), accounts.end());
                   std::move(on_selected)
                       .Run(accounts[0].id,
-                           accounts[0].login_state == LoginState::kSignIn);
+                           accounts[0].login_state == LoginState::kSignIn,
+                           /*should_embargo=*/false);
                 }));
       }
     } else {
@@ -1262,7 +1264,9 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForReturningUser) {
                   on_selected) {
             EXPECT_EQ(sign_in_mode, SignInMode::kAuto);
             displayed_accounts = AccountList(accounts.begin(), accounts.end());
-            std::move(on_selected).Run(accounts[0].id, /*is_sign_in=*/true);
+            std::move(on_selected)
+                .Run(accounts[0].id, /*is_sign_in=*/true,
+                     /*should_embargo=*/false);
           }));
 
   ASSERT_EQ(kConfigurationValid.accounts.size(), 1u);
@@ -1292,7 +1296,9 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForFirstTimeUser) {
                   on_selected) {
             EXPECT_EQ(sign_in_mode, SignInMode::kExplicit);
             displayed_accounts = AccountList(accounts.begin(), accounts.end());
-            std::move(on_selected).Run(accounts[0].id, /*is_sign_in=*/true);
+            std::move(on_selected)
+                .Run(accounts[0].id, /*is_sign_in=*/true,
+                     /*should_embargo=*/false);
           }));
 
   RequestParameters request_parameters = kDefaultRequestParameters;
@@ -1336,7 +1342,9 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
             // Auto sign in replaced by explicit sign in if screen reader is on.
             EXPECT_EQ(sign_in_mode, SignInMode::kExplicit);
             displayed_accounts = AccountList(accounts.begin(), accounts.end());
-            std::move(on_selected).Run(accounts[0].id, /*is_sign_in=*/true);
+            std::move(on_selected)
+                .Run(accounts[0].id, /*is_sign_in=*/true,
+                     /*should_embargo=*/false);
           }));
 
   EXPECT_EQ(kConfigurationValid.accounts.size(), 1u);
@@ -1501,7 +1509,8 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForNotSelectingAccount) {
                   on_selected) {
             displayed_accounts = AccountList(accounts.begin(), accounts.end());
             // Pretends that the user did not select any account.
-            std::move(on_selected).Run("", /*is_sign_in=*/false);
+            std::move(on_selected)
+                .Run("", /*is_sign_in=*/false, /*should_embargo=*/false);
           }));
 
   base::RunLoop ukm_loop;
@@ -1614,6 +1623,59 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForFeatureIsDisabled) {
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
                                        IdTokenStatus::kDisabledInFlags, 1);
   ExpectRequestIdTokenStatusUKM(IdTokenStatus::kDisabledInFlags);
+}
+
+// Test that embargo is requested if the
+// IdentityRequestDialogController::ShowAccountsDialog() callback requests it.
+TEST_F(BasicFederatedAuthRequestImplTest, RequestEmbargo) {
+  StrictMock<MockApiPermissionDelegate> mock_api_permission_delegate;
+  federated_auth_request_impl()->SetApiPermissionDelegateForTests(
+      &mock_api_permission_delegate);
+  EXPECT_CALL(mock_api_permission_delegate, RecordDismissAndEmbargo(_));
+  EXPECT_CALL(mock_api_permission_delegate, HasApiPermission(_))
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_api_permission_delegate, AreThirdPartyCookiesBlocked())
+      .WillOnce(Return(false));
+
+  RequestExpectations expectations = {
+      RequestIdTokenStatus::kError, FederatedAuthRequestResult::kError,
+      FETCH_ENDPOINT_ALL_REQUEST_ID_TOKEN & ~FetchedEndpoint::TOKEN};
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.customized_dialog = true;
+
+  EXPECT_CALL(*mock_dialog_controller(),
+              ShowAccountsDialog(_, _, _, _, _, _, _))
+      .WillOnce(Invoke(
+          [&](content::WebContents* rp_web_contents, const GURL& idp_signin_url,
+              base::span<const content::IdentityRequestAccount> accounts,
+              const IdentityProviderMetadata& idp_metadata,
+              const ClientIdData& client_id_data, SignInMode sign_in_mode,
+              IdentityRequestDialogController::AccountSelectionCallback
+                  on_selected) {
+            displayed_accounts_ = AccountList(accounts.begin(), accounts.end());
+            std::move(on_selected)
+                .Run("", /*is_sign_in=*/false,
+                     /*should_embargo=*/true);
+          }));
+
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+}
+
+// Test that the embargo dismiss count is reset when the user grants consent via
+// the FedCM dialog.
+TEST_F(BasicFederatedAuthRequestImplTest, RemoveEmbargoOnUserConsent) {
+  StrictMock<MockApiPermissionDelegate> mock_api_permission_delegate;
+  federated_auth_request_impl()->SetApiPermissionDelegateForTests(
+      &mock_api_permission_delegate);
+  EXPECT_CALL(mock_api_permission_delegate, RemoveEmbargoAndResetCounts(_));
+  EXPECT_CALL(mock_api_permission_delegate, HasApiPermission(_))
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_api_permission_delegate, AreThirdPartyCookiesBlocked())
+      .WillOnce(Return(false));
+
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
 }
 
 }  // namespace content

@@ -29,7 +29,9 @@ class AccountSelectionView {
     // Informs the controller that the user has made a selection.
     virtual void OnAccountSelected(const Account& account) = 0;
     // Informs the controller that the user has dismissed the sheet.
-    virtual void OnDismiss() = 0;
+    // |should_embargo| indicates whether the FedCM API should be embargoed due
+    // to the user explicitly dismissing the FedCM account picker.
+    virtual void OnDismiss(bool should_embargo) = 0;
     // The web page view containing the focused field.
     virtual gfx::NativeView GetNativeView() = 0;
     // The WebContents for the page.

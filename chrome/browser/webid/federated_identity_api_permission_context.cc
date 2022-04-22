@@ -6,25 +6,54 @@
 
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_decision_auto_blocker.h"
+#include "components/permissions/permission_result.h"
+#include "url/origin.h"
 
 FederatedIdentityApiPermissionContext::FederatedIdentityApiPermissionContext(
     content::BrowserContext* browser_context)
     : host_content_settings_map_(
           HostContentSettingsMapFactory::GetForProfile(browser_context)),
       cookie_settings_(CookieSettingsFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context))) {}
+          Profile::FromBrowserContext(browser_context))),
+      permission_autoblocker_(
+          PermissionDecisionAutoBlockerFactory::GetForProfile(
+              Profile::FromBrowserContext(browser_context))) {}
 
 FederatedIdentityApiPermissionContext::
     ~FederatedIdentityApiPermissionContext() = default;
 
-bool FederatedIdentityApiPermissionContext::HasApiPermission() {
-  return host_content_settings_map_->GetDefaultContentSetting(
-             ContentSettingsType::FEDERATED_IDENTITY_API, nullptr) !=
-         ContentSetting::CONTENT_SETTING_BLOCK;
+bool FederatedIdentityApiPermissionContext::HasApiPermission(
+    const url::Origin& rp_origin) {
+  if (host_content_settings_map_->GetDefaultContentSetting(
+          ContentSettingsType::FEDERATED_IDENTITY_API, nullptr) ==
+      ContentSetting::CONTENT_SETTING_BLOCK) {
+    return false;
+  }
+
+  permissions::PermissionResult permission_result =
+      permission_autoblocker_->GetEmbargoResult(
+          rp_origin.GetURL(), ContentSettingsType::FEDERATED_IDENTITY_API);
+  return (permission_result.content_setting !=
+          ContentSetting::CONTENT_SETTING_BLOCK);
 }
 
 bool FederatedIdentityApiPermissionContext::AreThirdPartyCookiesBlocked() {
   return cookie_settings_->ShouldBlockThirdPartyCookies();
+}
+
+void FederatedIdentityApiPermissionContext::RecordDismissAndEmbargo(
+    const url::Origin& rp_origin) {
+  permission_autoblocker_->RecordDismissAndEmbargo(
+      rp_origin.GetURL(), ContentSettingsType::FEDERATED_IDENTITY_API,
+      false /* dismissed_prompt_was_quiet */);
+}
+
+void FederatedIdentityApiPermissionContext::RemoveEmbargoAndResetCounts(
+    const url::Origin& rp_origin) {
+  permission_autoblocker_->RemoveEmbargoAndResetCounts(
+      rp_origin.GetURL(), ContentSettingsType::FEDERATED_IDENTITY_API);
 }

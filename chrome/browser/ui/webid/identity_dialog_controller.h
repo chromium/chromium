@@ -50,7 +50,7 @@ class IdentityDialogController
 
   // AccountSelectionView::Delegate:
   void OnAccountSelected(const Account& account) override;
-  void OnDismiss() override;
+  void OnDismiss(bool should_embargo) override;
   gfx::NativeView GetNativeView() override;
   content::WebContents* GetWebContents() override;
 

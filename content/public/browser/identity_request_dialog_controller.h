@@ -104,7 +104,9 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   using IdProviderWindowClosedCallback = base::OnceCallback<void()>;
   using TokenExchangeApprovalCallback = base::OnceCallback<void(UserApproval)>;
   using AccountSelectionCallback =
-      base::OnceCallback<void(const std::string&, bool)>;
+      base::OnceCallback<void(const std::string& /*account_id*/,
+                              bool /*is_sign_in*/,
+                              bool /*should_embargo*/)>;
 
   IdentityRequestDialogController() = default;
 

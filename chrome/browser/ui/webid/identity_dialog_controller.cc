@@ -58,14 +58,15 @@ void IdentityDialogController::OnAccountSelected(const Account& account) {
   std::move(on_account_selection_)
       .Run(account.id,
            account.login_state ==
-               content::IdentityRequestAccount::LoginState::kSignIn);
+               content::IdentityRequestAccount::LoginState::kSignIn,
+           /* should_embargo=*/false);
 }
 
-void IdentityDialogController::OnDismiss() {
+void IdentityDialogController::OnDismiss(bool should_embargo) {
   // |OnDismiss| can be called after |OnAccountSelected| which sets the callback
   // to null.
   if (on_account_selection_)
-    std::move(on_account_selection_).Run(std::string(), false);
+    std::move(on_account_selection_).Run(std::string(), false, should_embargo);
 }
 
 gfx::NativeView IdentityDialogController::GetNativeView() {

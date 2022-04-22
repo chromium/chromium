@@ -50,7 +50,7 @@ class FakeDelegate : public AccountSelectionView::Delegate {
 
   void OnAccountSelected(const Account& account) override {}
 
-  void OnDismiss() override {}
+  void OnDismiss(bool should_embargo) override {}
 
   gfx::NativeView GetNativeView() override { return gfx::kNullNativeView; }
 

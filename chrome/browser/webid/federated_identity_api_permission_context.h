@@ -14,6 +14,14 @@ namespace content {
 class BrowserContext;
 }
 
+namespace permissions {
+class PermissionDecisionAutoBlocker;
+}
+
+namespace url {
+class Origin;
+}
+
 // Context for storing user permission to use the browser FedCM API.
 class FederatedIdentityApiPermissionContext
     : public content::FederatedIdentityApiPermissionContextDelegate,
@@ -30,12 +38,16 @@ class FederatedIdentityApiPermissionContext
       const FederatedIdentityApiPermissionContext&) = delete;
 
   // content::FederatedIdentityApiPermissionContextDelegate:
-  bool HasApiPermission() override;
+  bool HasApiPermission(const url::Origin& rp_origin) override;
   bool AreThirdPartyCookiesBlocked() override;
+  void RecordDismissAndEmbargo(const url::Origin& rp_origin) override;
+  void RemoveEmbargoAndResetCounts(const url::Origin& rp_origin) override;
 
  private:
   const raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
+  const raw_ptr<permissions::PermissionDecisionAutoBlocker>
+      permission_autoblocker_;
 };
 
 #endif  // CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_API_PERMISSION_CONTEXT_H_

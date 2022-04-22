@@ -123,7 +123,7 @@ void AccountSelectionViewAndroid::Show(
     // It's possible that the constructor cannot access the bottom sheet clank
     // component. That case may be temporary but we can't let users in a
     // waiting state so report that AccountSelectionView is dismissed instead.
-    delegate_->OnDismiss();
+    delegate_->OnDismiss(/* should_embargo=*/false);
     return;
   }
 
@@ -153,13 +153,13 @@ void AccountSelectionViewAndroid::OnAccountSelected(
       env, account_string_fields, account_picture_url, is_sign_in));
 }
 
-void AccountSelectionViewAndroid::OnDismiss(JNIEnv* env) {
-  delegate_->OnDismiss();
+void AccountSelectionViewAndroid::OnDismiss(JNIEnv* env, bool should_embargo) {
+  delegate_->OnDismiss(should_embargo);
 }
 
 void AccountSelectionViewAndroid::OnAutoSignInCancelled(JNIEnv* env) {
   // TODO(yigu): Alternatively we could fall back to manual sign in flow.
-  delegate_->OnDismiss();
+  delegate_->OnDismiss(/*should_embargo=*/false);
 }
 
 bool AccountSelectionViewAndroid::RecreateJavaObject() {
