@@ -182,33 +182,7 @@ class PLATFORM_EXPORT GeometryMapper {
       const TransformPaintPropertyNode& source,
       const TransformPaintPropertyNode& destination,
       Rect& mapping_rect) {
-    if (&source == &destination)
-      return;
-
-    // Fast-path optimization for mapping through just |source| when |source| is
-    // a 2d translation.
-    if (&destination == source.Parent() && source.IsIdentityOr2DTranslation()) {
-      MoveRect(mapping_rect, source.Translation2D());
-      return;
-    }
-
-    // Fast-path optimization for mapping through just |destination| when
-    // |destination| is a 2d translation.
-    if (&source == destination.Parent() &&
-        destination.IsIdentityOr2DTranslation()) {
-      MoveRect(mapping_rect, -destination.Translation2D());
-      return;
-    }
-
-    bool has_animation = false;
-    bool has_fixed = false;
-    bool success = false;
-    const auto& source_to_destination = SourceToDestinationProjectionInternal(
-        source, destination, has_animation, has_fixed, success);
-    if (!success)
-      mapping_rect = Rect();
-    else
-      source_to_destination.MapRect(mapping_rect);
+    SourceToDestinationProjection(source, destination).MapRect(mapping_rect);
   }
 
   // Returns the clip rect between |local_state| and |ancestor_state|. The clip
