@@ -42,9 +42,6 @@ export class LearnMode {
 
     ChromeVoxKbHandler.handlerKeyMap = KeyMap.get();
 
-    /** @type {LibLouis.Translator} */
-    LearnMode.currentBrailleTranslator_ =
-        await BackgroundBridge.BrailleBackground.getDefaultTranslator();
     ChromeVoxKbHandler.commandHandler = LearnMode.onCommand;
 
     $('instruction').textContent = Msgs.getMsg('learn_mode_intro');
@@ -200,9 +197,11 @@ export class LearnMode {
         const cells = new ArrayBuffer(1);
         const view = new Uint8Array(cells);
         view[0] = dots;
-        LearnMode.currentBrailleTranslator_.backTranslate(cells, function(res) {
-          LearnMode.output(res);
-        }.bind(this));
+        BackgroundBridge.BrailleBackground.backTranslate(cells).then((res) => {
+          if (res !== null) {
+            LearnMode.output(res);
+          }
+        });
       }
         return;
       case BrailleKeyCommand.STANDARD_KEY:

@@ -10,11 +10,14 @@
 goog.provide('BackgroundBridge');
 
 BackgroundBridge.BrailleBackground = {
-  /** @return {!Promise<?LibLouis.Translator>} */
-  async getDefaultTranslator() {
-    return BackgroundBridge
-        .sendMessage_('BrailleBackground', 'getDefaultTranslator')
-        .then(BackgroundBridge.castTo(LibLouis.Translator));
+  /**
+   * Translate braille cells into text.
+   * @param {!ArrayBuffer} cells Cells to be translated.
+   * @return {!Promise<?string>}
+   */
+  async backTranslate(cells) {
+    return BackgroundBridge.sendMessage_(
+        'BrailleBackground', 'backTranslate', cells);
   },
 
   /** @param {string} brailleTable The table for this translator to use. */

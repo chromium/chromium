@@ -173,15 +173,17 @@ export class BrailleBackground {
 /** @type {?BrailleBackground} */
 BrailleBackground.instance_ = null;
 
-const target = 'BrailleBackground';
 BackgroundBridge.registerHandler(
-    target, 'getDefaultTranslator',
-    () => BrailleBackground.getInstance()
-              .getTranslatorManager()
-              .getDefaultTranslator());
+    /*target=*/ 'BrailleBackground', 'backTranslate',
+    (cells) => new Promise(resolve => {
+      BrailleBackground.getInstance()
+          .getTranslatorManager()
+          .getDefaultTranslator()
+          .backTranslate(cells, resolve);
+    }));
 
 BackgroundBridge.registerHandler(
-    target, 'refreshBrailleTable',
+    /*target=*/ 'BrailleBackground', 'refreshBrailleTable',
     (brailleTable) =>
         BrailleBackground.getInstance().getTranslatorManager().refresh(
             brailleTable));
