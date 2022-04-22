@@ -136,7 +136,10 @@ class WebSigninHelperLacrosTest : public testing::Test {
         profile_path_,
         testing_profile_manager_.profile_manager()->GetAccountProfileMapper(),
         identity_test_env_.identity_manager(),
-        reconcilor_.GetConsistencyCookieManager(), std::move(callback));
+        reconcilor_.GetConsistencyCookieManager(),
+        account_manager::AccountManagerFacade::AccountAdditionSource::
+            kOgbAddAccount,
+        std::move(callback));
   }
 
   void ExpectCookieSet(const std::string& value) {

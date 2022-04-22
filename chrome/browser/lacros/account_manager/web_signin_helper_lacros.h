@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #include "components/signin/core/browser/consistency_cookie_manager.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -19,8 +20,7 @@
 class AccountProfileMapper;
 struct CoreAccountId;
 
-// Handles the signin flow starting from the web (when receiving the
-// `GAIA_SERVICE_TYPE_ADDSESSION` parameter). Maintains a `ScopedAccountUpdate`
+// Handles the Lacros signin flow. Maintains a `ScopedAccountUpdate`
 // for the whole duration of the flow. The steps are:
 // 1) Call `GetAccountsAvailableAsSecondary()` to check whether there are
 //    available accounts in the OS that the user could pick.
@@ -37,6 +37,7 @@ class WebSigninHelperLacros : public signin::IdentityManager::Observer {
       AccountProfileMapper* account_profile_mapper,
       signin::IdentityManager* identity_manager,
       signin::ConsistencyCookieManager* consistency_cookie_manager,
+      account_manager::AccountManagerFacade::AccountAdditionSource source,
       base::OnceCallback<void(const CoreAccountId&)> callback);
 
   ~WebSigninHelperLacros() override;
@@ -72,6 +73,7 @@ class WebSigninHelperLacros : public signin::IdentityManager::Observer {
   base::OnceCallback<void(const CoreAccountId&)> callback_;
   base::FilePath profile_path_;
   AccountProfileMapper* const account_profile_mapper_;
+  account_manager::AccountManagerFacade::AccountAdditionSource source_;
 
   signin::IdentityManager* const identity_manager_;
   base::ScopedObservation<signin::IdentityManager,

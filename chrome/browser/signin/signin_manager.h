@@ -17,6 +17,10 @@
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/account_manager_core/account_manager_facade.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace base {
 class FilePath;
 }
@@ -46,10 +50,11 @@ class SigninManager : public KeyedService,
   SigninManager& operator=(const SigninManager&) = delete;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void StartWebSigninFlow(
+  void StartLacrosSigninFlow(
       const base::FilePath& profile_path,
       AccountProfileMapper* account_profile_mapper,
       signin::ConsistencyCookieManager* consistency_cookie_manager,
+      account_manager::AccountManagerFacade::AccountAdditionSource source,
       base::OnceCallback<void(const CoreAccountId&)> on_completion_callback =
           base::DoNothing());
 #endif

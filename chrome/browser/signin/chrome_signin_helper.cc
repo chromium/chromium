@@ -324,9 +324,11 @@ void ProcessMirrorHeader(
 
     AccountProfileMapper* mapper =
         g_browser_process->profile_manager()->GetAccountProfileMapper();
-    SigninManagerFactory::GetForProfile(profile)->StartWebSigninFlow(
+    SigninManagerFactory::GetForProfile(profile)->StartLacrosSigninFlow(
         profile->GetPath(), mapper,
-        account_reconcilor->GetConsistencyCookieManager());
+        account_reconcilor->GetConsistencyCookieManager(),
+        account_manager::AccountManagerFacade::AccountAdditionSource::
+            kOgbAddAccount);
 #else
     ::GetAccountManagerFacade(profile->GetPath().value())
         ->ShowAddAccountDialog(account_manager::AccountManagerFacade::

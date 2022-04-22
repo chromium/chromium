@@ -51,9 +51,9 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
   // Note: Please update |AccountManagerAccountAdditionSource| in enums.xml
   // after adding new values.
   enum class AccountAdditionSource : int {
-    // Settings > Add account button.
+    // OS Settings > Add account button.
     kSettingsAddAccountButton = 0,
-    // Settings > Sign in again button.
+    // OS Settings > Sign in again button.
     kSettingsReauthAccountButton = 1,
     // Launched from an ARC application.
     kArc = 2,
@@ -70,14 +70,24 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
     kChromeProfileCreation = 7,
     // Account addition flow launched by the user from One Google Bar.
     kOgbAddAccount = 8,
-    // Avatar bubble -> Signin again button.
+    // Avatar bubble -> Sign in again button.
     kAvatarBubbleReauthAccountButton = 9,
     // A Chrome extension required account re-authentication.
     kChromeExtensionReauth = 10,
     // Sync promo with an account that requires re-authentication.
     kChromeSyncPromoReauth = 11,
+    // Chrome Settings > Sign in again button.
+    kChromeSettingsReauthAccountButton = 12,
+    // Avatar bubble -> Turn on sync button.
+    kAvatarBubbleTurnOnSyncAddAccount = 13,
+    // A Chrome extension required a new account.
+    kChromeExtensionAddAccount = 14,
+    // Sync promo with a new account.
+    kChromeSyncPromoAddAccount = 15,
+    // Chrome Settings > Turn on Sync.
+    kChromeSettingsTurnOnSyncButton = 16,
 
-    kMaxValue = kChromeSyncPromoReauth
+    kMaxValue = kChromeSettingsTurnOnSyncButton
   };
 
   AccountManagerFacade();

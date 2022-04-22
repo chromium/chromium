@@ -20,17 +20,15 @@
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/account_manager_core/account_manager_facade.h"
+#endif
+
 struct AccountInfo;
 class Browser;
 class Profile;
 class ProfileAttributesEntry;
 class ProfileAttributesStorage;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-namespace account_manager {
-class AccountManagerFacade;
-}
-#endif
 
 // Utility functions to gather status information from the various signed in
 // services and construct messages suitable for showing in UI.
@@ -91,6 +89,12 @@ using CreateTurnSyncOnHelperCallback = base::OnceCallback<void(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 using OnAccountAddedCallback = base::OnceCallback<void(const CoreAccountId&)>;
+// The callback triggering the add account flow.
+// `AccountAdditionSource` specifies a source of the account addition.
+// `OnAccountAddedCallback` is invoked when the add account flow is complete.
+using AddAccountCallback = base::OnceCallback<void(
+    account_manager::AccountManagerFacade::AccountAdditionSource,
+    OnAccountAddedCallback)>;
 
 // Same as `ShowReauthForPrimaryAccountWithAuthError` but with a getter function
 // for AccountManagerFacade so that it can be unit tested.
@@ -103,16 +107,14 @@ void ShowReauthForPrimaryAccountWithAuthErrorLacros(
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Same as `ShowExtensionSigninPrompt()` but with an additional parameters that
 // can be injected for unit testing.
-// `add_account_callback` encapsulates the logic to add a new account. It
-// accepts a callback parameter that is invoked when the add account flow is
-// complete.
+// `add_account_callback` encapsulates the logic to add a new account.
 // `create_turn_sync_on_helper_callback` creates a TurnSyncOnHelper when Sync
 // needs to be enabled.
 void ShowExtensionSigninPrompt(
     Profile* profile,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     account_manager::AccountManagerFacade* account_manager_facade,
-    base::OnceCallback<void(OnAccountAddedCallback)> add_account_callback,
+    AddAccountCallback add_account_callback,
     CreateTurnSyncOnHelperCallback create_turn_sync_on_helper_callback,
 #endif
     bool enable_sync,
@@ -122,15 +124,13 @@ void ShowExtensionSigninPrompt(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Same as `ShowSigninPromptAndMaybeEnableSync()` but with an additional
 // parameters that can be injected for unit testing.
-// `add_account_callback` encapsulates the logic to add a new account. It
-// accepts a callback parameter that is invoked when the add account flow is
-// complete.
+// `add_account_callback` encapsulates the logic to add a new account.
 // `create_turn_sync_on_helper_callback` creates a TurnSyncOnHelper when Sync
 // needs to be enabled.
 void ShowSigninPromptAndMaybeEnableSync(
     Browser* browser,
     Profile* profile,
-    base::OnceCallback<void(OnAccountAddedCallback)> add_account_callback,
+    AddAccountCallback add_account_callback,
     CreateTurnSyncOnHelperCallback create_turn_sync_on_helper_callback,
     bool enable_sync,
     signin_metrics::AccessPoint access_point,
@@ -194,9 +194,7 @@ std::string GetAllowedDomain(std::string signin_pattern);
 namespace internal {
 // Same as `EnableSyncFromPromo()` but with extra parameters that can be
 // injected for unit testing.
-// `add_account_callback` encapsulates the logic to add a new account. It
-// accepts a callback parameter that is invoked when the add account flow is
-// complete.
+// `add_account_callback` encapsulates the logic to add a new account.
 // `create_turn_sync_on_helper_callback` creates a TurnSyncOnHelper when Sync
 // needs to be enabled.
 void EnableSyncFromPromo(
@@ -206,7 +204,7 @@ void EnableSyncFromPromo(
     bool is_default_promo_account,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     account_manager::AccountManagerFacade* account_manager_facade,
-    base::OnceCallback<void(OnAccountAddedCallback)> add_account_callback,
+    AddAccountCallback add_account_callback,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     CreateTurnSyncOnHelperCallback create_turn_sync_on_helper_callback);
 }  // namespace internal

@@ -18,10 +18,12 @@ WebSigninHelperLacros::WebSigninHelperLacros(
     AccountProfileMapper* account_profile_mapper,
     signin::IdentityManager* identity_manager,
     signin::ConsistencyCookieManager* consistency_cookie_manager,
+    account_manager::AccountManagerFacade::AccountAdditionSource source,
     base::OnceCallback<void(const CoreAccountId&)> callback)
     : callback_(std::move(callback)),
       profile_path_(profile_path),
       account_profile_mapper_(account_profile_mapper),
+      source_(source),
       identity_manager_(identity_manager) {
   if (base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles)) {
     DCHECK(consistency_cookie_manager);
@@ -53,9 +55,7 @@ void WebSigninHelperLacros::OnAccountsAvailableAsSecondaryFetched(
   }
 
   account_profile_mapper_->ShowAddAccountDialog(
-      profile_path_,
-      account_manager::AccountManagerFacade::AccountAdditionSource::
-          kOgbAddAccount,
+      profile_path_, source_,
       base::BindOnce(&WebSigninHelperLacros::OnAccountAdded,
                      weak_factory_.GetWeakPtr()));
 }

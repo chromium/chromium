@@ -37,10 +37,11 @@ SigninManager::SigninManager(PrefService* prefs,
 SigninManager::~SigninManager() = default;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-void SigninManager::StartWebSigninFlow(
+void SigninManager::StartLacrosSigninFlow(
     const base::FilePath& profile_path,
     AccountProfileMapper* account_profile_mapper,
     signin::ConsistencyCookieManager* consistency_cookie_manager,
+    account_manager::AccountManagerFacade::AccountAdditionSource source,
     base::OnceCallback<void(const CoreAccountId&)> on_completion_callback) {
   if (web_signin_helper_lacros_) {
     // There is already a signin flow in progress.
@@ -52,7 +53,7 @@ void SigninManager::StartWebSigninFlow(
 
   web_signin_helper_lacros_ = std::make_unique<WebSigninHelperLacros>(
       profile_path, account_profile_mapper, identity_manager_,
-      consistency_cookie_manager,
+      consistency_cookie_manager, source,
       // Using `base::Unretained()` is fine because this owns the helper.
       base::BindOnce(&SigninManager::OnWebSigninHelperLacrosComplete,
                      base::Unretained(this),

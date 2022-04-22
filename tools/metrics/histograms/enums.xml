@@ -1170,8 +1170,8 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="AccountManagerAccountAdditionSource">
-  <int value="0" label="Add account button in Settings"/>
-  <int value="1" label="Re-auth account button in Settings"/>
+  <int value="0" label="Add account button in OS Settings"/>
+  <int value="1" label="Re-auth account button in OS Settings"/>
   <int value="2" label="ARC"/>
   <int value="3"
       label="Re-authentication flow automatically triggered from content area"/>
@@ -1185,6 +1185,12 @@ Unknown properties are collapsed to zero. -->
   <int value="10"
       label="Re-authentication flow triggered from a Chrome extension"/>
   <int value="11" label="Re-authentication flow triggered from a Sync promo"/>
+  <int value="12" label="Re-auth account button in Chrome Settings"/>
+  <int value="13" label="Turn sync on button in Avatar bubble"/>
+  <int value="14"
+      label="Account addition flow triggered from a Chrome extension"/>
+  <int value="15" label="Account addition flow triggered from a Sync promo"/>
+  <int value="16" label="Turn sync on button in Chrome Settings"/>
 </enum>
 
 <enum name="AccountManagerFacadeMojoStatus">

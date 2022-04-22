@@ -160,15 +160,43 @@ std::string GetReauthAccessPointHistogramSuffix(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 account_manager::AccountManagerFacade::AccountAdditionSource
+GetAddAccountSourceFromAccessPoint(signin_metrics::AccessPoint access_point) {
+  switch (access_point) {
+    case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
+      return account_manager::AccountManagerFacade::AccountAdditionSource::
+          kChromeSettingsTurnOnSyncButton;
+    case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
+      return account_manager::AccountManagerFacade::AccountAdditionSource::
+          kAvatarBubbleTurnOnSyncAddAccount;
+    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
+      return account_manager::AccountManagerFacade::AccountAdditionSource::
+          kChromeExtensionAddAccount;
+    case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
+      return account_manager::AccountManagerFacade::AccountAdditionSource::
+          kChromeSyncPromoAddAccount;
+    default:
+      NOTREACHED() << "Add account is requested from an unknown access point "
+                   << static_cast<int>(access_point);
+      return account_manager::AccountManagerFacade::AccountAdditionSource::
+          kMaxValue;
+  }
+}
+
+account_manager::AccountManagerFacade::AccountAdditionSource
 GetAccountReauthSourceFromAccessPoint(
     signin_metrics::AccessPoint access_point) {
   switch (access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
-          kSettingsReauthAccountButton;
+          kChromeSettingsReauthAccountButton;
     case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kAvatarBubbleReauthAccountButton;
+    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
+      return account_manager::AccountManagerFacade::AccountAdditionSource::
+          kChromeExtensionReauth;
     case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
     case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
@@ -182,10 +210,10 @@ GetAccountReauthSourceFromAccessPoint(
   }
 }
 
-base::OnceCallback<void(signin_ui_util::internal::OnAccountAddedCallback)>
-GetAddAccountCallback(Profile* profile) {
+signin_ui_util::internal::AddAccountCallback GetAddAccountCallback(
+    Profile* profile) {
   return base::BindOnce(
-      &SigninManager::StartWebSigninFlow,
+      &SigninManager::StartLacrosSigninFlow,
       // base::Unretained() is fine because this callback is called
       // synchronously
       base::Unretained(SigninManagerFactory::GetForProfile(profile)),
@@ -343,7 +371,7 @@ void ShowExtensionSigninPrompt(
     Profile* profile,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     account_manager::AccountManagerFacade* account_manager_facade,
-    base::OnceCallback<void(OnAccountAddedCallback)> add_account_callback,
+    AddAccountCallback add_account_callback,
     CreateTurnSyncOnHelperCallback create_turn_sync_on_helper_callback,
 #endif
     bool enable_sync,
@@ -409,7 +437,7 @@ void ShowExtensionSigninPrompt(
 void ShowSigninPromptAndMaybeEnableSync(
     Browser* browser,
     Profile* profile,
-    base::OnceCallback<void(OnAccountAddedCallback)> add_account_callback,
+    AddAccountCallback add_account_callback,
     CreateTurnSyncOnHelperCallback create_turn_sync_on_helper_callback,
     bool enable_sync,
     signin_metrics::AccessPoint access_point,
@@ -417,7 +445,8 @@ void ShowSigninPromptAndMaybeEnableSync(
   DCHECK(!browser || browser->profile() == profile);
   DCHECK(profile);
   std::move(add_account_callback)
-      .Run(base::BindOnce(&OnAccountAdded, enable_sync,
+      .Run(GetAddAccountSourceFromAccessPoint(access_point),
+           base::BindOnce(&OnAccountAdded, enable_sync,
                           std::move(create_turn_sync_on_helper_callback),
                           browser ? browser->AsWeakPtr() : nullptr,
                           profile->GetPath(), access_point, promo_action));
@@ -491,7 +520,7 @@ void EnableSyncFromPromo(
     bool is_default_promo_account,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     account_manager::AccountManagerFacade* account_manager_facade,
-    base::OnceCallback<void(OnAccountAddedCallback)> add_account_callback,
+    AddAccountCallback add_account_callback,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     CreateTurnSyncOnHelperCallback create_turn_sync_on_helper_callback) {
   DCHECK(browser);

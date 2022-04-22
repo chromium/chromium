@@ -697,9 +697,10 @@ class MirrorSigninUiUtilTest : public BrowserWithTestWindowTest {
                 ShowReauthAccountDialog(source, email));
   }
 
-  void ExpectAddAccount() {
-    EXPECT_CALL(mock_add_account_callback_, Run(testing::_))
-        .WillOnce(MoveArg<0>(&on_account_added_callback_));
+  void ExpectAddAccount(
+      account_manager::AccountManagerFacade::AccountAdditionSource source) {
+    EXPECT_CALL(mock_add_account_callback_, Run(source, testing::_))
+        .WillOnce(MoveArg<1>(&on_account_added_callback_));
   }
 
   void CompleteAddAccount(const CoreAccountId& account_id) {
@@ -709,8 +710,7 @@ class MirrorSigninUiUtilTest : public BrowserWithTestWindowTest {
  protected:
   testing::StrictMock<account_manager::MockAccountManagerFacade>
       mock_account_manager_facade_;
-  testing::StrictMock<
-      base::MockOnceCallback<void(internal::OnAccountAddedCallback)>>
+  testing::StrictMock<base::MockCallback<internal::AddAccountCallback>>
       mock_add_account_callback_;
   MockCreateTurnSyncOnHelper mock_create_turn_sync_on_helper_;
   internal::OnAccountAddedCallback on_account_added_callback_;
@@ -773,7 +773,9 @@ TEST_F(MirrorSigninUiUtilTest, EnableSyncWithAccountThatNeedsReauth) {
 }
 
 TEST_F(MirrorSigninUiUtilTest, EnableSyncForNewAccount) {
-  ExpectAddAccount();
+  ExpectAddAccount(
+      account_manager::AccountManagerFacade::AccountAdditionSource::
+          kAvatarBubbleTurnOnSyncAddAccount);
   EnableSync(AccountInfo(),
              signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
              /*is_default_promo_account=*/false);
@@ -790,7 +792,9 @@ TEST_F(MirrorSigninUiUtilTest, EnableSyncForNewAccountExisting) {
   AccountInfo account_info = signin::MakePrimaryAccountAvailable(
       identity_manager, kMainEmail, signin::ConsentLevel::kSignin);
 
-  ExpectAddAccount();
+  ExpectAddAccount(
+      account_manager::AccountManagerFacade::AccountAdditionSource::
+          kAvatarBubbleTurnOnSyncAddAccount);
   EnableSync(AccountInfo(),
              signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
              /*is_default_promo_account=*/false);
@@ -823,7 +827,8 @@ TEST_F(MirrorSigninUiUtilTest, ShowReauthDialog) {
 }
 
 TEST_F(MirrorSigninUiUtilTest, ShowExtensionSigninPrompt_Signin) {
-  ExpectAddAccount();
+  ExpectAddAccount(account_manager::AccountManagerFacade::
+                       AccountAdditionSource::kChromeExtensionAddAccount);
   ShowExtensionSigninPrompt(/*enable_sync=*/false,
                             /*email_hint=*/std::string());
   // No tabs should be opened.
@@ -836,7 +841,8 @@ TEST_F(MirrorSigninUiUtilTest, ShowExtensionSigninPrompt_Signin) {
 }
 
 TEST_F(MirrorSigninUiUtilTest, ShowExtensionSigninPrompt_SigninCanceled) {
-  ExpectAddAccount();
+  ExpectAddAccount(account_manager::AccountManagerFacade::
+                       AccountAdditionSource::kChromeExtensionAddAccount);
   ShowExtensionSigninPrompt(/*enable_sync=*/true, /*email_hint=*/std::string());
   // No tabs should be opened.
   EXPECT_EQ(0, browser()->tab_strip_model()->count());
@@ -848,7 +854,8 @@ TEST_F(MirrorSigninUiUtilTest, ShowExtensionSigninPrompt_SigninCanceled) {
 }
 
 TEST_F(MirrorSigninUiUtilTest, ShowExtensionSigninPrompt_Signin_EnableSync) {
-  ExpectAddAccount();
+  ExpectAddAccount(account_manager::AccountManagerFacade::
+                       AccountAdditionSource::kChromeExtensionAddAccount);
   ShowExtensionSigninPrompt(/*enable_sync=*/true, /*email_hint=*/std::string());
   // No tabs should be opened.
   EXPECT_EQ(0, browser()->tab_strip_model()->count());
@@ -902,10 +909,13 @@ TEST_F(MirrorSigninUiUtilTest,
 }
 
 TEST_F(MirrorSigninUiUtilTest, ShowSigninPromptAndMaybeEnableSync_Signin) {
-  auto access_point = signin_metrics::AccessPoint::ACCESS_POINT_MENU;
+  auto access_point =
+      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN;
   auto promo_action = signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
 
-  ExpectAddAccount();
+  ExpectAddAccount(
+      account_manager::AccountManagerFacade::AccountAdditionSource::
+          kAvatarBubbleTurnOnSyncAddAccount);
   ShowSigninPromptAndMaybeEnableSync(
       /*enable_sync=*/false, access_point, promo_action);
   // No tabs should be opened.
@@ -919,10 +929,13 @@ TEST_F(MirrorSigninUiUtilTest, ShowSigninPromptAndMaybeEnableSync_Signin) {
 
 TEST_F(MirrorSigninUiUtilTest,
        ShowSigninPromptAndMaybeEnableSync_SigninFailed) {
-  auto access_point = signin_metrics::AccessPoint::ACCESS_POINT_MENU;
+  auto access_point =
+      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN;
   auto promo_action = signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
 
-  ExpectAddAccount();
+  ExpectAddAccount(
+      account_manager::AccountManagerFacade::AccountAdditionSource::
+          kAvatarBubbleTurnOnSyncAddAccount);
   ShowSigninPromptAndMaybeEnableSync(
       /*enable_sync=*/false, access_point, promo_action);
   // No tabs should be opened.
@@ -935,10 +948,13 @@ TEST_F(MirrorSigninUiUtilTest,
 }
 
 TEST_F(MirrorSigninUiUtilTest, ShowSigninPromptAndMaybeEnableSync_Sync) {
-  auto access_point = signin_metrics::AccessPoint::ACCESS_POINT_MENU;
+  auto access_point =
+      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN;
   auto promo_action = signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
 
-  ExpectAddAccount();
+  ExpectAddAccount(
+      account_manager::AccountManagerFacade::AccountAdditionSource::
+          kAvatarBubbleTurnOnSyncAddAccount);
   ShowSigninPromptAndMaybeEnableSync(
       /*enable_sync=*/true, access_point, promo_action);
   // No tabs should be opened.
