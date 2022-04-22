@@ -112,7 +112,14 @@ This command will produce a file at `./output/idle_on_wiki_cpu_profile.pb`.
 The script can produce a pprof profile that can be used with
 [pprof](https://github.com/google/pprof) or a collapsed profile that can be used
 with tools such as [FlameGraph](https://github.com/brendangregg/FlameGraph) and
-[SpeedScope](https://www.speedscope.app/)
+[SpeedScope](https://www.speedscope.app/).
+
+Known signatures are added to the pprof profile as labels. These can be
+appended to the flamegraph with
+
+```
+pprof -proto -tagroot signature <profile>
+```
 
 ## Usage scenario scripts
 

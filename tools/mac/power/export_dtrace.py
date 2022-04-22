@@ -35,6 +35,7 @@ class ProfileBuilder:
     self._locations = {}
     self._profile.string_table.append("")
     self._strings = {"": 0}
+    self._signature_id = self.GetStringId('signature')
 
   def GetStringId(self, string: str) -> int:
     """Returns the id for `string` into the string_table, creating new entry if
@@ -84,7 +85,8 @@ class ProfileBuilder:
     sample_type.type = self.GetStringId(type)
     sample_type.unit = self.GetStringId(unit)
 
-  def AddSample(self, locations: typing.List[int], values: typing.List[int]):
+  def AddSample(self, locations: typing.List[int], values: typing.List[int],
+                signature: str):
     """
     Adds a sample in the profile, constructed from a list of locations
     representing the stack, and a list of values for that stack (as many values
@@ -96,6 +98,9 @@ class ProfileBuilder:
       sample.value.append(value)
     for location in locations:
       sample.location_id.append(location)
+    label = sample.label.add()
+    label.key = self._signature_id
+    label.str = self.GetStringId(signature)
 
   def SerializeToString(self) -> str:
     return self._profile.SerializeToString()
@@ -117,9 +122,11 @@ class DTraceParser:
       output_filename: The path of the file in which results are written.
     """
     self._stack_weights = defaultdict(int)
+    self._signatures = defaultdict(str)
     self._stack_frames = {}
     self._sample_type = sample_type
     self._post_processing_applied = False
+    self._shorten_stack_samples = False
 
   def ParseFile(self, stack_file: typing.TextIO):
     """Parses dtrace `stack_file` and adds the data to this profile.
@@ -185,11 +192,12 @@ class DTraceParser:
     for key in self._stack_frames:
       frames = self._stack_frames[key]
       weight = self._stack_weights[key]
+      signature = self._signatures[key]
       sample_locations = []
       for (module, function) in frames:
         sample_locations.append(
             profile_builder.GetSymbolLocation(function, module))
-      profile_builder.AddSample(sample_locations, [weight])
+      profile_builder.AddSample(sample_locations, [weight], signature)
 
   def ConvertToCollapse(self, output_filename: str):
     """Converts this profile to the "collapsed stack" format. In contrast to the
@@ -231,12 +239,6 @@ class DTraceParser:
       self._stack_frames[stack_string] = stack_frames
       self._stack_weights[stack_string] += sample['weight']
 
-  def MaybeFlagOverflowedStack(self, stack: typing.List[typing.Tuple[str, str]],
-                               max_len: int):
-    if len(stack) >= max_len:
-      return stack + [('_', '_OVERFLOWED_')]
-    return stack
-
   def ShortenStack(self, stack: typing.List[typing.Tuple[str, str]]):
     """Drop some frames that don't offer any valuable information. The part
     above/before the frame is trimmed. This means that the base of the stack
@@ -276,7 +278,26 @@ class DTraceParser:
     else:
       return stack
 
-  def ShortenStackSamples(self):
+  def ApplySignatures(self, stack: typing.List[typing.Tuple[str, str]]):
+    """Matches and return known signatures to given stackframe.
+    """
+    if len(stack) >= 512:
+      return '_OVERFLOWED_'
+    for module, function in stack:
+      if function.startswith(
+          'safe_browsing::(anonymous namespace)::PlaybackOnBackgroundThread'):
+        return 'safe_browsing:VisualSignatures'
+      if function.startswith(
+          'safe_browsing::(anonymous namespace)::OnModelInputCreated'):
+        return 'safe_browsing:VisualSignatures'
+      if function.startswith('ParkableStringImpl::CompressInBackground'):
+        return 'ParkableString'
+    return 'unknown'
+
+  def EnableShortenStackSamples(self):
+    self._shorten_stack_samples = True
+
+  def PostProcessStackSamples(self):
     """Applies filtering and enhancing to self.samples().  This function can
     only be called once.
 
@@ -291,9 +312,10 @@ class DTraceParser:
 
     for key in self._stack_frames:
       # Filter out the frames we don't care about and all those under it.
-      self._stack_frames[key] = self.MaybeFlagOverflowedStack(
-          self._stack_frames[key], 64)
-      self._stack_frames[key] = self.ShortenStack(self._stack_frames[key])
+      if self._shorten_stack_samples:
+        self._stack_frames[key] = self.ShortenStack(self._stack_frames[key])
+      # Signatures are always added since they are non destructive.
+      self._signatures[key] = self.ApplySignatures(self._stack_frames[key])
 
 
 if __name__ == "__main__":
@@ -322,7 +344,8 @@ if __name__ == "__main__":
   parser = DTraceParser(profile_mode)
   parser.ParseDir(args.stack_dir)
   if args.shorten:
-    parser.ShortenStackSamples()
+    parser.EnableShortenStackSamples()
+  parser.PostProcessStackSamples()
 
   data_dir = os.path.abspath(os.path.join(args.stack_dir, os.pardir))
   metadata_path = os.path.join(data_dir, "metadata.json")
