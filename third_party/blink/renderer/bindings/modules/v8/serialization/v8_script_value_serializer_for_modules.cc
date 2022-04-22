@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_serializer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_read_only.h"
+#include "third_party/blink/renderer/bindings/modules/v8/serialization/serialized_track_params.h"
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/web_crypto_sub_tags.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crypto_key.h"
@@ -518,6 +519,14 @@ bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
 
   WriteTag(kMediaStreamTrack);
   WriteUnguessableToken(*track->serializable_session_id());
+  WriteUTF8String(track->kind());
+  WriteUTF8String(track->id());
+  WriteUTF8String(track->label());
+  WriteOneByte(track->enabled());
+  WriteOneByte(track->muted());
+  WriteUint32Enum(SerializeContentHint(track->Component()->ContentHint()));
+  WriteUint32Enum(
+      SerializeReadyState(track->Component()->Source()->GetReadyState()));
   return true;
 }
 

@@ -75,7 +75,10 @@ enum SerializationTag {
   kReadableStreamTransferTag = 'r',   // index:uint32_t
   kTransformStreamTransferTag = 'm',  // index:uint32_t
   kWritableStreamTransferTag = 'w',   // index:uint32_t
-  kMediaStreamTrack = 's',  // session_id.high:uint64_t, session_id.low:uint64_t
+  kMediaStreamTrack = 's',  // session_id.high:uint64_t, session_id.low:uint64_t,
+                            // kind:WebCoreString, id:WebCoreString,
+                            // label:WebCoreString, enabled:byte, muted:byte,
+                            // contentHint:Uint32Enum, readyState:Uint32Enum
   kDOMPointTag = 'Q',       // x:Double, y:Double, z:Double, w:Double
   kDOMPointReadOnlyTag = 'W',  // x:Double, y:Double, z:Double, w:Double
   kDOMRectTag = 'E',          // x:Double, y:Double, width:Double, height:Double

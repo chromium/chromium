@@ -11,6 +11,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_crypto.h"
 #include "third_party/blink/public/platform/web_crypto_key_algorithm.h"
+#include "third_party/blink/renderer/bindings/modules/v8/serialization/serialized_track_params.h"
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/web_crypto_sub_tags.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -533,9 +534,23 @@ MediaStreamTrack* V8ScriptValueDeserializerForModules::ReadMediaStreamTrack() {
   }
 
   base::UnguessableToken session_id;
-  if (!ReadUnguessableToken(&session_id))
-    return nullptr;
+  String kind, id, label;
+  uint8_t enabled, muted;
+  SerializedContentHintType contentHint;
+  SerializedReadyState readyState;
 
+  if (!ReadUnguessableToken(&session_id) || !ReadUTF8String(&kind) ||
+      (kind != "audio" && kind != "video") || !ReadUTF8String(&id) ||
+      !ReadUTF8String(&label) || !ReadOneByte(&enabled) || enabled > 1 ||
+      !ReadOneByte(&muted) || muted > 1 || !ReadUint32Enum(&contentHint) ||
+      contentHint > SerializedContentHintType::kLast ||
+      !ReadUint32Enum(&readyState) ||
+      readyState > SerializedReadyState::kLast) {
+    return nullptr;
+  }
+
+  // TODO(https://crbug.com/1288839): Pass these variables into
+  // MediaStreamTrack::Create using a struct.
   return MediaStreamTrack::Create(GetScriptState(), session_id);
 }
 

@@ -189,6 +189,8 @@ blink_modules_sources_bindings = get_path_info(
           "modules/v8/serialization/v8_script_value_deserializer_for_modules.h",
           "modules/v8/serialization/v8_script_value_serializer_for_modules.cc",
           "modules/v8/serialization/v8_script_value_serializer_for_modules.h",
+          "modules/v8/serialization/serialized_track_params.cc",
+          "modules/v8/serialization/serialized_track_params.h",
           "modules/v8/to_v8_for_modules.h",
           "modules/v8/v8_binding_for_modules.cc",
           "modules/v8/v8_binding_for_modules.h",
