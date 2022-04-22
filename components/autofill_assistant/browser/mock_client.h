@@ -38,7 +38,7 @@ class MockClient : public Client {
   MOCK_CONST_METHOD0(IsAccessibilityEnabled, bool());
   MOCK_CONST_METHOD0(IsSpokenFeedbackAccessibilityServiceEnabled, bool());
   MOCK_CONST_METHOD0(GetEmailAddressForAccessTokenAccount, std::string());
-  MOCK_CONST_METHOD0(GetChromeSignedInEmailAddress, std::string());
+  MOCK_CONST_METHOD0(GetSignedInEmail, std::string());
   MOCK_CONST_METHOD0(GetWebContents, content::WebContents*());
   MOCK_CONST_METHOD0(GetPersonalDataManager, autofill::PersonalDataManager*());
   MOCK_CONST_METHOD0(GetWebsiteLoginManager, WebsiteLoginManager*());

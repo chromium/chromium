@@ -126,7 +126,7 @@ class ClientAndroid : public Client,
   void DestroyUI() override;
   version_info::Channel GetChannel() const override;
   std::string GetEmailAddressForAccessTokenAccount() const override;
-  std::string GetChromeSignedInEmailAddress() const override;
+  std::string GetSignedInEmail() const override;
   absl::optional<std::pair<int, int>> GetWindowSize() const override;
   ClientContextProto::ScreenOrientation GetScreenOrientation() const override;
   void FetchPaymentsClientToken(

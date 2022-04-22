@@ -107,13 +107,6 @@ public class WebLayerAssistantStaticDependencies implements AssistantStaticDepen
 
     @Override
     @Nullable
-    public String getSignedInAccountEmailOrNull() {
-        // TODO(b/222671580): Implement
-        return null;
-    }
-
-    @Override
-    @Nullable
     public AssistantProfileImageUtil createProfileImageUtilOrNull(
             Context context, @DimenRes int imageSizeRedId) {
         // TODO(b/222671580): Implement

@@ -66,9 +66,6 @@ public interface AssistantStaticDependencies {
     LargeIconBridge createIconBridge();
 
     @Nullable
-    String getSignedInAccountEmailOrNull();
-
-    @Nullable
     AssistantProfileImageUtil createProfileImageUtilOrNull(
             Context context, @DimenRes int imageSizeRedId);
 

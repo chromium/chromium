@@ -36,7 +36,7 @@ class WebLayerDependencies : public ::autofill_assistant::Dependencies {
 
   variations::VariationsService* GetVariationsService() const override;
 
-  std::string GetChromeSignedInEmailAddress(
+  std::string GetSignedInEmail(
       content::WebContents* web_contents) const override;
 
   ::autofill_assistant::AnnotateDomModelService*

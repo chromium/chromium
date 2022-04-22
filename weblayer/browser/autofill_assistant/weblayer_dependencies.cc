@@ -45,7 +45,7 @@ WebLayerDependencies::GetPasswordManagerClient(
   return nullptr;
 }
 
-std::string WebLayerDependencies::GetChromeSignedInEmailAddress(
+std::string WebLayerDependencies::GetSignedInEmail(
     content::WebContents* web_contents) const {
   return "";
   // TODO(b/222671580): Implement

@@ -127,7 +127,6 @@ public class AssistantStaticDependenciesChrome implements AssistantStaticDepende
         return new LargeIconBridge(getProfile());
     }
 
-    @Override
     @Nullable
     public String getSignedInAccountEmailOrNull() {
         IdentityManager identityManager =

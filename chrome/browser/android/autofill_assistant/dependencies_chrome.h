@@ -36,7 +36,7 @@ class DependenciesChrome : public Dependencies {
   password_manager::PasswordManagerClient* GetPasswordManagerClient(
       content::WebContents* web_contents) const override;
 
-  std::string GetChromeSignedInEmailAddress(
+  std::string GetSignedInEmail(
       content::WebContents* web_contents) const override;
 
   // The AnnotateDomModelService is a KeyedService. There is only one per

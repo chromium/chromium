@@ -64,7 +64,7 @@ PasswordManagerClient* DependenciesChrome::GetPasswordManagerClient(
   return ChromePasswordManagerClient::FromWebContents(web_contents);
 }
 
-std::string DependenciesChrome::GetChromeSignedInEmailAddress(
+std::string DependenciesChrome::GetSignedInEmail(
     WebContents* web_contents) const {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(

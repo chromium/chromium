@@ -48,7 +48,7 @@ class Dependencies {
 
   virtual variations::VariationsService* GetVariationsService() const = 0;
 
-  virtual std::string GetChromeSignedInEmailAddress(
+  virtual std::string GetSignedInEmail(
       content::WebContents* web_contents) const = 0;
 
   virtual AnnotateDomModelService* GetOrCreateAnnotateDomModelService(
@@ -63,7 +63,6 @@ class Dependencies {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jstatic_dependencies);
 
- private:
   const base::android::ScopedJavaGlobalRef<jobject> jstatic_dependencies_;
 };
 

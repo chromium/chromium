@@ -30,9 +30,8 @@ ClientContextImpl::ClientContextImpl(const Client* client) : client_(client) {
 
 void ClientContextImpl::Update(const TriggerContext& trigger_context) {
   proto_.set_accessibility_enabled(client_->IsAccessibilityEnabled());
-  std::string chrome_signed_in_email_address =
-      client_->GetChromeSignedInEmailAddress();
-  proto_.set_signed_into_chrome_status(chrome_signed_in_email_address.empty()
+  const std::string signed_in_email = client_->GetSignedInEmail();
+  proto_.set_signed_into_chrome_status(signed_in_email.empty()
                                            ? ClientContextProto::NOT_SIGNED_IN
                                            : ClientContextProto::SIGNED_IN);
 
@@ -58,7 +57,7 @@ void ClientContextImpl::Update(const TriggerContext& trigger_context) {
   if (!caller_email.has_value()) {
     proto_.set_accounts_matching_status(ClientContextProto::UNKNOWN);
   } else {
-    if (chrome_signed_in_email_address == caller_email) {
+    if (signed_in_email == caller_email) {
       proto_.set_accounts_matching_status(
           ClientContextProto::ACCOUNTS_MATCHING);
     } else {

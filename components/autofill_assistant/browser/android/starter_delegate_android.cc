@@ -248,8 +248,7 @@ bool StarterDelegateAndroid::GetMakeSearchesAndBrowsingBetterEnabled() const {
 }
 
 bool StarterDelegateAndroid::GetIsLoggedIn() {
-  return !dependencies_->GetChromeSignedInEmailAddress(&GetWebContents())
-              .empty();
+  return !dependencies_->GetSignedInEmail(&GetWebContents()).empty();
 }
 
 bool StarterDelegateAndroid::GetIsCustomTab() const {

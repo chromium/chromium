@@ -42,11 +42,13 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
 
-using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
-using base::android::JavaRef;
-using base::android::ScopedJavaGlobalRef;
-using base::android::ScopedJavaLocalRef;
+using ::base::android::AttachCurrentThread;
+using ::base::android::ConvertJavaStringToUTF8;
+using ::base::android::ConvertUTF8ToJavaString;
+using ::base::android::JavaParamRef;
+using ::base::android::JavaRef;
+using ::base::android::ScopedJavaGlobalRef;
+using ::base::android::ScopedJavaLocalRef;
 
 namespace autofill_assistant {
 namespace {
@@ -211,8 +213,7 @@ void ClientAndroid::TransferUITo(
 base::android::ScopedJavaLocalRef<jstring> ClientAndroid::GetPrimaryAccountName(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller) {
-  return base::android::ConvertUTF8ToJavaString(
-      env, GetChromeSignedInEmailAddress());
+  return ConvertUTF8ToJavaString(env, GetSignedInEmail());
 }
 
 void ClientAndroid::OnAccessToken(JNIEnv* env,
@@ -484,8 +485,8 @@ std::string ClientAndroid::GetEmailAddressForAccessTokenAccount() const {
           env, java_object_));
 }
 
-std::string ClientAndroid::GetChromeSignedInEmailAddress() const {
-  return dependencies_->GetChromeSignedInEmailAddress(GetWebContents());
+std::string ClientAndroid::GetSignedInEmail() const {
+  return dependencies_->GetSignedInEmail(GetWebContents());
 }
 
 absl::optional<std::pair<int, int>> ClientAndroid::GetWindowSize() const {

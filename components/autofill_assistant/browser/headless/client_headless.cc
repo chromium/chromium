@@ -74,7 +74,7 @@ std::string ClientHeadless::GetEmailAddressForAccessTokenAccount() const {
   return "";
 }
 
-std::string ClientHeadless::GetChromeSignedInEmailAddress() const {
+std::string ClientHeadless::GetSignedInEmail() const {
   // TODO(b/201964911): return the Chrome signed in user.
   return "";
 }
