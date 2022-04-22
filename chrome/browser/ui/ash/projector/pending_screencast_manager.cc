@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "ash/projector/projector_metrics.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -267,7 +268,8 @@ void PendingScreencastManager::OnSyncingStatusUpdate(
                      drivefs_integration->GetMountPointPath()),
       base::BindOnce(
           &PendingScreencastManager::OnProcessAndGenerateNewScreencastsFinished,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(),
+          /*task_start_tick=*/base::TimeTicks::Now()));
 }
 
 // Observes the Drive OnError event and add the related files to
@@ -293,7 +295,11 @@ PendingScreencastManager::GetPendingScreencasts() const {
 }
 
 void PendingScreencastManager::OnProcessAndGenerateNewScreencastsFinished(
+    const base::TimeTicks task_start_tick,
     const ash::PendingScreencastSet& screencasts) {
+  ash::RecordPendingScreencastBatchIOTaskDuration(base::TimeTicks::Now() -
+                                                  task_start_tick);
+
   // Returns if pending screencasts didn't change.
   if (screencasts == pending_screencast_cache_)
     return;

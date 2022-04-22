@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
@@ -38,6 +39,10 @@ constexpr char kTestScreencastPath[] = "/root/test_screencast";
 constexpr char kTestScreencastName[] = "test_screencast";
 constexpr char kTestMediaFile[] = "test_screencast.webm";
 constexpr char kTestMetadataFile[] = "test_screencast.projector";
+
+constexpr char kProjectorPendingScreencastBatchIOTaskDurationHistogramName[] =
+    "Ash.Projector.PendingScreencastBatchIOTaskDuration";
+
 // constexpr char kTestDataToWrite[] = "Data size of 16.";
 // The test media file is 0.7 mb.
 constexpr int64_t kTestMediaFileBytes = 700 * 1024;
@@ -173,6 +178,8 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
     return pending_screencast_manager_.get();
   }
 
+  base::HistogramTester histogram_tester_;
+
  private:
   drive::DriveIntegrationServiceFactory::FactoryCallback
       create_drive_integration_service_;
@@ -223,6 +230,10 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, ValidScreencast) {
   syncing_status.item_events.clear();
   pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
   content::RunAllTasksUntilIdle();
+
+  histogram_tester_.ExpectTotalCount(
+      kProjectorPendingScreencastBatchIOTaskDurationHistogramName,
+      /*count=*/3);
 }
 
 IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, InvalidScreencasts) {
@@ -260,6 +271,9 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, InvalidScreencasts) {
   content::RunAllTasksUntilIdle();
 
   EXPECT_TRUE(pending_screencast_manager()->GetPendingScreencasts().empty());
+  histogram_tester_.ExpectTotalCount(
+      kProjectorPendingScreencastBatchIOTaskDurationHistogramName,
+      /*count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
@@ -285,6 +299,11 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
   content::RunAllTasksUntilIdle();
 
   EXPECT_TRUE(pending_screencast_manager()->GetPendingScreencasts().empty());
+
+  // There is no IO task for complete events.
+  histogram_tester_.ExpectTotalCount(
+      kProjectorPendingScreencastBatchIOTaskDurationHistogramName,
+      /*count=*/0);
 }
 
 IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
@@ -343,6 +362,10 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
                               0};
     EXPECT_TRUE(pending_screencasts.find(ps) != pending_screencasts.end());
   }
+
+  histogram_tester_.ExpectTotalCount(
+      kProjectorPendingScreencastBatchIOTaskDurationHistogramName,
+      /*count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, UploadProgress) {
@@ -434,6 +457,9 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, UploadProgress) {
   pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
   content::RunAllTasksUntilIdle();
   EXPECT_TRUE(pending_screencast_manager()->GetPendingScreencasts().empty());
+  histogram_tester_.ExpectTotalCount(
+      kProjectorPendingScreencastBatchIOTaskDurationHistogramName,
+      /*count=*/4);
 }
 
 // Test the comparison of pending screencast in a std::set.
@@ -541,6 +567,10 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
 
   // Expect the screencast get removed from pending screencasts set .
   EXPECT_TRUE(pending_screencast_manager()->GetPendingScreencasts().empty());
+
+  histogram_tester_.ExpectTotalCount(
+      kProjectorPendingScreencastBatchIOTaskDurationHistogramName,
+      /*count=*/2);
 }
 
 class PendingScreencastMangerMultiProfileTest : public LoginManagerTest {

@@ -26,6 +26,7 @@ class DriveError;
 
 namespace base {
 class FilePath;
+class TimeTicks;
 }
 
 // A callback to notify the change of pending screencasts to
@@ -61,6 +62,7 @@ class PendingScreencastManager
  private:
   // Updates `pending_screencast_cache_` and notifies pending screencast change.
   void OnProcessAndGenerateNewScreencastsFinished(
+      const base::TimeTicks task_start_tick,
       const ash::PendingScreencastSet& screencasts);
 
   // session_manager::SessionManagerObserver:

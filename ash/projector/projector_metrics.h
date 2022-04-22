@@ -7,6 +7,10 @@
 
 #include <cstddef>
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace ash {
 
 // These enum values represent buttons on the Projector toolbar and log to UMA.
@@ -104,6 +108,9 @@ void RecordTranscriptsCount(size_t count);
 
 // Records errors encountered during the creation flow.
 void RecordCreationFlowError(int message_id);
+
+// Records the IO task processing Time for screencast validation.
+void RecordPendingScreencastBatchIOTaskDuration(const base::TimeDelta duration);
 
 }  // namespace ash
 

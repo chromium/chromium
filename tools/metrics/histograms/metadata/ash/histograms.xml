@@ -3189,6 +3189,16 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
+<histogram name="Ash.Projector.PendingScreencastBatchIOTaskDuration" units="ms"
+    expires_after="2023-04-15">
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>cros-projector@google.com</owner>
+  <summary>
+    Tracks the processing time of batch pending screencast files validation on
+    IO thread. Recorded each time when IO task finishes.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Projector.Toolbar.{TabletOrClamshell}"
     enum="ProjectorToolbar" expires_after="2022-12-01">
   <owner>tobyhuang@chromium.org</owner>
