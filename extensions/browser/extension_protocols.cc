@@ -619,6 +619,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
   void Start() {
     if (browser_context_->ShutdownStarted()) {
       client_->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
+      DeleteThis();
       return;
     }
 
@@ -675,24 +676,24 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
         /* allow_directory_listing */ false, std::move(response_headers));
   }
 
-  static void OnFilePathAndLastModifiedTimeRead(
-      network::ResourceRequest request,
-      mojo::PendingReceiver<network::mojom::URLLoader> loader,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-      scoped_refptr<ContentVerifier> content_verifier,
+  void OnFilePathAndLastModifiedTimeRead(
       const extensions::ExtensionResource& resource,
       scoped_refptr<net::HttpResponseHeaders> headers,
       std::pair<base::FilePath, base::Time> file_path_and_time) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     const auto& read_file_path = file_path_and_time.first;
     const auto& last_modified_time = file_path_and_time.second;
-    request.url = net::FilePathToFileURL(read_file_path);
+    request_.url = net::FilePathToFileURL(read_file_path);
+    scoped_refptr<ContentVerifier> content_verifier =
+        extension_info_map_->content_verifier();
 
     AddCacheHeaders(*headers, last_modified_time);
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&StartVerifyJob, std::move(request), std::move(loader),
-                       std::move(client), std::move(content_verifier), resource,
+        base::BindOnce(&StartVerifyJob, std::move(request_), loader_.Unbind(),
+                       client_.Unbind(), std::move(content_verifier), resource,
                        std::move(headers)));
+    DeleteThis();
   }
 
   void OnFaviconRetrieved(mojo::StructPtr<network::mojom::URLResponseHead> head,
@@ -876,17 +877,13 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
     if (follow_symlinks_anywhere)
       resource.set_follow_symlinks_anywhere();
 
-    scoped_refptr<ContentVerifier> content_verifier =
-        extension_info_map_->content_verifier();
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(&ReadResourceFilePathAndLastModifiedTime, resource,
                        directory_path),
-        base::BindOnce(&OnFilePathAndLastModifiedTimeRead, request_,
-                       loader_.Unbind(), client_.Unbind(),
-                       std::move(content_verifier), resource,
+        base::BindOnce(&ExtensionURLLoader::OnFilePathAndLastModifiedTimeRead,
+                       weak_ptr_factory_.GetWeakPtr(), resource,
                        std::move(headers)));
-    DeleteThis();
   }
 
   void OnMojoDisconnect() { DeleteThis(); }
