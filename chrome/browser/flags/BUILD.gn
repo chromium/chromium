@@ -53,6 +53,8 @@ static_library("flags_android") {
   deps = [
     ":jni_headers",
     "//base",
+    "//chrome/browser:browser_process",
+    "//components/prefs:prefs",
     "//content/public/common",
   ]
 }

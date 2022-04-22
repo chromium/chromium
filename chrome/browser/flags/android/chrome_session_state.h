@@ -9,6 +9,9 @@
 
 #include "base/feature_list.h"
 
+class PrefRegistrySimple;
+class PrefService;
+
 namespace chrome {
 namespace android {
 
@@ -29,8 +32,8 @@ enum class ActivityType {
   kTrustedWebActivity,
   kWebapp,
   kWebApk,
-  kUnknown,
-  kMaxValue = kUnknown,
+  kUndeclared,
+  kMaxValue = kUndeclared,
 };
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.flags
@@ -47,14 +50,16 @@ enum class DarkModeState {
   kMaxValue = kLightModeApp,
 };
 
+// Returns the CustomTabs.Visible histogram value that corresponde to |type|.
 CustomTabsVisibilityHistogram GetCustomTabsVisibleValue(ActivityType type);
 
-// Sets the raw underlying activity type without triggering any of the usual
-// response.  Used for testing.
+// Gets/sets the raw underlying activity type without triggering any additional
+// side-effects.
+ActivityType GetInitialActivityTypeForTesting();
 void SetInitialActivityTypeForTesting(ActivityType type);
 
 // Sets the activity type and emits associated metrics as needed.
-void SetActivityType(ActivityType type);
+void SetActivityType(PrefService* local_state, ActivityType type);
 
 // Returns the current activity type.
 ActivityType GetActivityType();
@@ -63,8 +68,19 @@ DarkModeState GetDarkModeState();
 
 bool GetIsInMultiWindowModeValue();
 
-// Helper to emit Browser/CCT activity type.
+// Helper to emit Browser/CCT activity type histograms.
 void EmitActivityTypeHistograms(ActivityType type);
+
+// Registers prefs to store the most recent activity type in Local State.
+void RegisterActivityTypePrefs(PrefRegistrySimple* registry);
+
+// Retrieves the activity type from |local_state|.
+absl::optional<chrome::android::ActivityType> GetActivityTypeFromLocalState(
+    PrefService* local_state);
+
+// Saves the activity type |value| to |local_state|.
+void SaveActivityTypeToLocalState(PrefService* local_state,
+                                  chrome::android::ActivityType value);
 
 }  // namespace android
 }  // namespace chrome
