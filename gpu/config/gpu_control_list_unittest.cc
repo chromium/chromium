@@ -24,7 +24,8 @@ const uint32_t kNvidiaVendorId = 0x10de;
 
 namespace gpu {
 
-class GpuControlListTest : public testing::Test {
+class GpuControlListTest : public testing::Test,
+                           public testing::WithParamInterface<bool> {
  public:
   typedef GpuControlList::Entry Entry;
 
@@ -45,6 +46,8 @@ class GpuControlListTest : public testing::Test {
     return rt;
   }
 
+  bool is_angle() const { return GetParam(); }
+
  protected:
   void SetUp() override {
     gpu_info_.gpu.vendor_id = kNvidiaVendorId;
@@ -53,8 +56,15 @@ class GpuControlListTest : public testing::Test {
     gpu_info_.gpu.driver_version = "1.6.18";
     gpu_info_.machine_model_name = "MacBookPro";
     gpu_info_.machine_model_version = "7.1";
-    gpu_info_.gl_vendor = "NVIDIA Corporation";
-    gpu_info_.gl_renderer = "NVIDIA GeForce GT 120 OpenGL Engine";
+    if (is_angle()) {
+      gpu_info_.gl_vendor = "Google Inc. (NVIDIA Corporation)";
+      gpu_info_.gl_renderer =
+          "ANGLE (NVIDIA Corporation, NVIDIA GeForce GT 120 OpenGL Engine,)";
+      gpu_info_.gl_renderer = "";
+    } else {
+      gpu_info_.gl_vendor = "NVIDIA Corporation";
+      gpu_info_.gl_renderer = "NVIDIA GeForce GT 120 OpenGL Engine";
+    }
   }
 
   void TearDown() override {}
@@ -63,7 +73,12 @@ class GpuControlListTest : public testing::Test {
   GPUInfo gpu_info_;
 };
 
-TEST_F(GpuControlListTest, NeedsMoreInfo) {
+INSTANTIATE_TEST_SUITE_P(,
+                         GpuControlListTest,
+                         testing::Values(false, true),
+                         testing::PrintToStringParamName());
+
+TEST_P(GpuControlListTest, NeedsMoreInfo) {
   const Entry kEntries[1] = {
       kGpuControlListTestingEntries[kGpuControlListTest_NeedsMoreInfo]};
   std::unique_ptr<GpuControlList> control_list = Create(1, kEntries);
@@ -93,7 +108,7 @@ TEST_F(GpuControlListTest, NeedsMoreInfo) {
             entry_ids[0]);
 }
 
-TEST_F(GpuControlListTest, NeedsMoreInfoForExceptions) {
+TEST_P(GpuControlListTest, NeedsMoreInfoForExceptions) {
   const Entry kEntries[1] = {
       kGpuControlListTestingEntries
           [kGpuControlListTest_NeedsMoreInfoForExceptions]};
@@ -117,21 +132,22 @@ TEST_F(GpuControlListTest, NeedsMoreInfoForExceptions) {
 
   // The case we have full info, and the exception applies (so the entry
   // does not apply).
-  gpu_info.gl_renderer = "mesa";
+  gpu_info.gl_renderer = is_angle() ? "ANGLE (vendor, mesa, version)" : "mesa";
   features = control_list->MakeDecision(
       GpuControlList::kOsLinux, kOsVersion, gpu_info);
   EXPECT_EMPTY_SET(features);
   EXPECT_FALSE(control_list->needs_more_info());
 
   // The case we have full info, and this entry applies.
-  gpu_info.gl_renderer = "my renderer";
+  gpu_info.gl_renderer =
+      is_angle() ? "ANGLE (vendor, my renderer, version)" : "my renderer";
   features = control_list->MakeDecision(GpuControlList::kOsLinux, kOsVersion,
       gpu_info);
   EXPECT_SINGLE_FEATURE(features, TEST_FEATURE_0);
   EXPECT_FALSE(control_list->needs_more_info());
 }
 
-TEST_F(GpuControlListTest, IgnorableEntries) {
+TEST_P(GpuControlListTest, IgnorableEntries) {
   // If an entry will not change the control_list decisions, then it should not
   // trigger the needs_more_info flag.
   const Entry kEntries[2] = {
@@ -148,7 +164,7 @@ TEST_F(GpuControlListTest, IgnorableEntries) {
   EXPECT_FALSE(control_list->needs_more_info());
 }
 
-TEST_F(GpuControlListTest, DisabledExtensionTest) {
+TEST_P(GpuControlListTest, DisabledExtensionTest) {
   // exact setting.
   const Entry kEntries[2] = {kGpuControlListTestingEntries
                                  [kGpuControlListTest_DisabledExtensionTest_0],
@@ -168,7 +184,7 @@ TEST_F(GpuControlListTest, DisabledExtensionTest) {
   ASSERT_STREQ("test_extension3", disabled_extensions[2].c_str());
 }
 
-TEST_F(GpuControlListTest, LinuxKernelVersion) {
+TEST_P(GpuControlListTest, LinuxKernelVersion) {
   const Entry kEntries[1] = {
       kGpuControlListTestingEntries[kGpuControlListTest_LinuxKernelVersion]};
   std::unique_ptr<GpuControlList> control_list = Create(1, kEntries);
@@ -185,7 +201,7 @@ TEST_F(GpuControlListTest, LinuxKernelVersion) {
   EXPECT_EMPTY_SET(features);
 }
 
-TEST_F(GpuControlListTest, TestGroup) {
+TEST_P(GpuControlListTest, TestGroup) {
   const Entry kEntries[3] = {
       kGpuControlListTestingEntries[kGpuControlListTest_LinuxKernelVersion],
       kGpuControlListTestingEntries[kGpuControlListTest_TestGroup_0],
