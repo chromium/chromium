@@ -569,8 +569,7 @@ class ChromeChromiumBase(Browser):
         #     but instead is where it branched from. Chromium revisions are just counting
         #     commits on the master branch, there are no Chromium revisions for branches.
 
-        # Remove channel suffixes (e.g. " dev").
-        version = version.split(' ')[0]
+        version = self._remove_version_suffix(version)
 
         # Try to find the Chromium build with the same revision.
         try:
@@ -593,6 +592,10 @@ class ChromeChromiumBase(Browser):
             self.logger.info(f"Removing existing ChromeDriver binary: {existing_chromedriver_path}")
             os.chmod(existing_chromedriver_path, stat.S_IWUSR)
             os.remove(existing_chromedriver_path)
+
+    def _remove_version_suffix(self, version):
+        """Removes channel suffixes from Chrome/Chromium version string (e.g. " dev")."""
+        return version.split(' ')[0]
 
     @property
     def _chromedriver_platform_string(self):
@@ -624,6 +627,10 @@ class ChromeChromiumBase(Browser):
         # MojoJS is platform agnostic, but the version number must be an
         # exact match of the Chrome/Chromium version to be compatible.
         chrome_version = self.version(binary=browser_binary)
+        if not chrome_version:
+            return None
+        chrome_version = self._remove_version_suffix(chrome_version)
+
         try:
             # MojoJS version url must match the browser binary version exactly.
             url = ("https://storage.googleapis.com/chrome-wpt-mojom/"
@@ -855,8 +862,7 @@ class Chrome(ChromeChromiumBase):
         https://chromedriver.chromium.org/downloads/version-selection"""
         filename = f"chromedriver_{self._chromedriver_platform_string}.zip"
 
-        # Remove channel suffixes (e.g. " dev").
-        version = version.split(' ')[0]
+        version = self._remove_version_suffix(version)
 
         parts = version.split(".")
         assert len(parts) == 4

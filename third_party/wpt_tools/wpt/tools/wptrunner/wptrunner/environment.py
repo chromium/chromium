@@ -281,7 +281,7 @@ class TestEnvironment:
             for scheme, servers in self.servers.items():
                 for port, server in servers:
                     if scheme == "webtransport-h3":
-                        if not webtranport_h3_server_is_running(host, port, timeout=1.0):
+                        if not webtranport_h3_server_is_running(host, port, timeout=5.0):
                             # TODO(bashi): Consider supporting retry.
                             failed.append((host, port))
                         continue

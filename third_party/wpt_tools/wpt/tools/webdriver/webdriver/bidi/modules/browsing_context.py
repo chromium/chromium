@@ -16,13 +16,13 @@ class BrowsingContext(BidiModule):
     @command
     def get_tree(self,
                  max_depth: Optional[int] = None,
-                 parent: Optional[str] = None) -> Mapping[str, Any]:
+                 root: Optional[str] = None) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {}
 
         if max_depth is not None:
             params["maxDepth"] = max_depth
-        if parent is not None:
-            params["parent"] = parent
+        if root is not None:
+            params["root"] = root
 
         return params
 
