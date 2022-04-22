@@ -211,7 +211,10 @@ class SandboxWinTest : public ::testing::Test {
 }  // namespace
 
 TEST_F(SandboxWinTest, IsGpuAppContainerEnabled) {
-  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
+  // Unlike the other tests below that merely test App Container behavior, and
+  // can rely on RS1 version check, the GPU App Container feature is gated on
+  // RS5. See sandbox::features::IsAppContainerSandboxSupported.
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS5)
     return;
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   EXPECT_FALSE(SandboxWin::IsAppContainerEnabledForSandbox(
