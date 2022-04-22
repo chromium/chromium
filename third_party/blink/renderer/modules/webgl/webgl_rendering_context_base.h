@@ -1802,8 +1802,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   void TexImageViaGPU(TexImageParams,
                       WebGLTexture*,
                       AcceleratedStaticBitmapImage*,
-                      WebGLRenderingContextBase*,
-                      const gfx::Rect& source_sub_rectangle);
+                      WebGLRenderingContextBase*);
   bool CanUseTexImageViaGPU(const TexImageParams&);
 
   const Platform::ContextType context_type_;

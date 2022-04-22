@@ -5589,27 +5589,31 @@ void WebGLRenderingContextBase::TexImageViaGPU(
     TexImageParams params,
     WebGLTexture* texture,
     AcceleratedStaticBitmapImage* source_image,
-    WebGLRenderingContextBase* source_canvas_webgl_context,
-    const gfx::Rect& source_sub_rectangle) {
-  DCHECK(source_image->IsTextureBacked());
-  bool have_source_image = source_image;
-  bool have_source_canvas_webgl_context = source_canvas_webgl_context;
-  DCHECK(have_source_image ^ have_source_canvas_webgl_context);
-
-  const int width = source_sub_rectangle.width();
-  const int height = source_sub_rectangle.height();
+    WebGLRenderingContextBase* source_canvas_webgl_context) {
+  // Only one of `source_image` and `source_canvas_webgl_context` may be
+  // specified.
+  gfx::Size source_size;
+  if (source_image) {
+    DCHECK(source_image->IsTextureBacked());
+    DCHECK(!source_canvas_webgl_context);
+    source_size = source_image->Size();
+  }
+  if (source_canvas_webgl_context) {
+    DCHECK(!source_image);
+    if (source_canvas_webgl_context->isContextLost()) {
+      SynthesizeGLError(GL_INVALID_OPERATION,
+                        GetTexImageFunctionName(params.function_id),
+                        "Can't upload a texture from a lost WebGL context.");
+      return;
+    }
+    source_size = source_canvas_webgl_context->GetDrawingBuffer()->Size();
+  }
+  const int width = params.width.value_or(source_size.width());
+  const int height = params.height.value_or(source_size.height());
 
   if (params.function_id == kTexImage2D) {
     TexImage2DBase(params.target, params.level, params.internalformat, width,
                    height, params.border, params.format, params.type, nullptr);
-  }
-
-  if (source_canvas_webgl_context &&
-      source_canvas_webgl_context->isContextLost()) {
-    SynthesizeGLError(GL_INVALID_OPERATION,
-                      GetTexImageFunctionName(params.function_id),
-                      "Can't upload a texture from a lost WebGL context.");
-    return;
   }
 
   ScopedTexture2DRestorer restorer(this);
@@ -5640,6 +5644,17 @@ void WebGLRenderingContextBase::TexImageViaGPU(
   }
 
   {
+    // The GPU-GPU copy path uses the Y-up coordinate system.
+    gfx::Rect source_sub_rectangle(params.unpack_skip_pixels,
+                                   params.unpack_skip_rows, width, height);
+    bool should_adjust_source_sub_rectangle = !params.unpack_flip_y;
+    if (is_origin_top_left_ && source_canvas_webgl_context)
+      should_adjust_source_sub_rectangle = !should_adjust_source_sub_rectangle;
+    if (should_adjust_source_sub_rectangle) {
+      source_sub_rectangle.set_y(source_size.height() -
+                                 source_sub_rectangle.bottom());
+    }
+
     // glCopyTextureCHROMIUM has a DRAW_AND_READBACK path which will call
     // texImage2D. So, reset unpack buffer parameters before that.
     ScopedUnpackParametersResetRestore temporaryResetUnpack(this);
@@ -5764,23 +5779,7 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
       accel_image =
           static_cast<AcceleratedStaticBitmapImage*>(static_bitmap_image);
     }
-
-    // The GPU-GPU copy path uses the Y-up coordinate system.
-    gfx::Rect adjusted_source_sub_rectangle(params.unpack_skip_pixels,
-                                            params.unpack_skip_rows,
-                                            *params.width, *params.height);
-    bool should_adjust_source_sub_rectangle = !unpack_flip_y_;
-    if (is_origin_top_left_ && source_canvas_webgl_context)
-      should_adjust_source_sub_rectangle = !should_adjust_source_sub_rectangle;
-
-    if (should_adjust_source_sub_rectangle) {
-      adjusted_source_sub_rectangle.set_y(
-          context_host->Size().height() -
-          adjusted_source_sub_rectangle.bottom());
-    }
-
-    TexImageViaGPU(params, texture, accel_image, source_canvas_webgl_context,
-                   adjusted_source_sub_rectangle);
+    TexImageViaGPU(params, texture, accel_image, source_canvas_webgl_context);
   } else {
     DCHECK(image);
     // TODO(crbug.com/612542): Implement GPU-to-GPU copy path for more
@@ -6096,12 +6095,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
 
   if (can_upload_via_gpu && image->IsTextureBacked()) {
     auto* accel_image = static_cast<AcceleratedStaticBitmapImage*>(image.get());
-    const gfx::Rect adjusted_source_image_rect(
-        params.unpack_skip_pixels, params.unpack_skip_rows,
-        params.width.value_or(image->width()),
-        params.height.value_or(image->height()));
-    TexImageViaGPU(params, texture, accel_image, nullptr,
-                   adjusted_source_image_rect);
+    TexImageViaGPU(params, texture, accel_image, nullptr);
   } else {
     params.internalformat = adjusted_internalformat;
     // Note: kHtmlDomVideo means alpha won't be unmultiplied.
@@ -6209,10 +6203,7 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
         static_cast<AcceleratedStaticBitmapImage*>(image.get());
     // All AcceleratedStaticBitmapImages have premultiplied alpha.
     DCHECK_NE(accel_image->GetSkColorInfo().alphaType(), kUnpremul_SkAlphaType);
-    const gfx::Rect source_sub_rect(params.unpack_skip_pixels,
-                                    params.unpack_skip_rows, *params.width,
-                                    *params.height);
-    TexImageViaGPU(params, texture, accel_image, nullptr, source_sub_rect);
+    TexImageViaGPU(params, texture, accel_image, nullptr);
   } else {
     TexImageImpl(params, image.get(), /*image_has_flip_y=*/false);
   }
