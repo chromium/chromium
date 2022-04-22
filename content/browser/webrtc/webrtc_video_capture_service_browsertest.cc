@@ -538,9 +538,17 @@ class WebRtcVideoCaptureServiceBrowserTest : public ContentBrowserTest {
       this};
 };
 
+// TODO(https://crbug.com/1318247): Fix and enable on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage \
+  DISABLED_FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage
+#else
+#define MAYBE_FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage \
+  FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebRtcVideoCaptureServiceBrowserTest,
-    FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage) {
+    MAYBE_FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage) {
   Initialize();
   auto device_exerciser = std::make_unique<TextureDeviceExerciser>();
   device_exerciser->Initialize();
