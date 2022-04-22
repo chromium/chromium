@@ -708,34 +708,70 @@ TEST(ProbeServiceConverters, SystemResultPtrError) {
 TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
   auto input = cros_healthd::mojom::TelemetryInfo::New();
   {
-    input->battery_result = cros_healthd::mojom::BatteryResult::New();
+    input->battery_result = cros_healthd::mojom::BatteryResult::NewBatteryInfo(
+        cros_healthd::mojom::BatteryInfo::New());
     input->block_device_result =
-        cros_healthd::mojom::NonRemovableBlockDeviceResult::New();
-    input->system_result = cros_healthd::mojom::SystemResult::New();
-    input->cpu_result = cros_healthd::mojom::CpuResult::New();
-    input->timezone_result = cros_healthd::mojom::TimezoneResult::New();
-    input->memory_result = cros_healthd::mojom::MemoryResult::New();
-    input->backlight_result = cros_healthd::mojom::BacklightResult::New();
-    input->fan_result = cros_healthd::mojom::FanResult::New();
+        cros_healthd::mojom::NonRemovableBlockDeviceResult::NewBlockDeviceInfo(
+            {});
+    input->system_result = cros_healthd::mojom::SystemResult::NewSystemInfo(
+        cros_healthd::mojom::SystemInfo::New());
+    input->cpu_result = cros_healthd::mojom::CpuResult::NewCpuInfo(
+        cros_healthd::mojom::CpuInfo::New());
+    input->timezone_result =
+        cros_healthd::mojom::TimezoneResult::NewTimezoneInfo(
+            cros_healthd::mojom::TimezoneInfo::New());
+    input->memory_result = cros_healthd::mojom::MemoryResult::NewMemoryInfo(
+        cros_healthd::mojom::MemoryInfo::New());
+    input->backlight_result =
+        cros_healthd::mojom::BacklightResult::NewBacklightInfo({});
+    input->fan_result = cros_healthd::mojom::FanResult::NewFanInfo({});
     input->stateful_partition_result =
-        cros_healthd::mojom::StatefulPartitionResult::New();
-    input->bluetooth_result = cros_healthd::mojom::BluetoothResult::New();
-    input->system_result_v2 = cros_healthd::mojom::SystemResultV2::New();
+        cros_healthd::mojom::StatefulPartitionResult::NewPartitionInfo(
+            cros_healthd::mojom::StatefulPartitionInfo::New());
+    input->bluetooth_result =
+        cros_healthd::mojom::BluetoothResult::NewBluetoothAdapterInfo({});
+    input->system_result_v2 =
+        cros_healthd::mojom::SystemResultV2::NewSystemInfoV2(
+            cros_healthd::mojom::SystemInfoV2::New());
   }
 
   EXPECT_EQ(
       ConvertPtr(std::move(input)),
       health::mojom::TelemetryInfo::New(
-          health::mojom::BatteryResult::New(),
-          health::mojom::NonRemovableBlockDeviceResult::New(),
-          health::mojom::CachedVpdResult::New(),
-          health::mojom::CpuResult::New(), health::mojom::TimezoneResult::New(),
-          health::mojom::MemoryResult::New(),
-          health::mojom::BacklightResult::New(),
-          health::mojom::FanResult::New(),
-          health::mojom::StatefulPartitionResult::New(),
-          health::mojom::BluetoothResult::New(),
-          health::mojom::SystemResult::New()));
+          health::mojom::BatteryResult::NewBatteryInfo(
+              health::mojom::BatteryInfo::New(
+                  health::mojom::Int64Value::New(0),
+                  health::mojom::DoubleValue::New(0.), "", "",
+                  health::mojom::DoubleValue::New(0.),
+                  health::mojom::DoubleValue::New(0.),
+                  health::mojom::DoubleValue::New(0.), "",
+                  health::mojom::DoubleValue::New(0.),
+                  health::mojom::DoubleValue::New(0.), "", "", absl::nullopt,
+                  nullptr)),
+          health::mojom::NonRemovableBlockDeviceResult::NewBlockDeviceInfo({}),
+          health::mojom::CachedVpdResult::NewVpdInfo(
+              health::mojom::CachedVpdInfo::New()),
+          health::mojom::CpuResult::NewCpuInfo(health::mojom::CpuInfo::New(
+              health::mojom::UInt32Value::New(0),
+              health::mojom::CpuArchitectureEnum::kUnknown,
+              std::vector<health::mojom::PhysicalCpuInfoPtr>())),
+          health::mojom::TimezoneResult::NewTimezoneInfo(
+              health::mojom::TimezoneInfo::New("", "")),
+          health::mojom::MemoryResult::NewMemoryInfo(
+              health::mojom::MemoryInfo::New(
+                  health::mojom::UInt32Value::New(0),
+                  health::mojom::UInt32Value::New(0),
+                  health::mojom::UInt32Value::New(0),
+                  health::mojom::UInt64Value::New(0))),
+          health::mojom::BacklightResult::NewBacklightInfo({}),
+          health::mojom::FanResult::NewFanInfo({}),
+          health::mojom::StatefulPartitionResult::NewPartitionInfo(
+              health::mojom::StatefulPartitionInfo::New(
+                  health::mojom::UInt64Value::New(0),
+                  health::mojom::UInt64Value::New(0))),
+          health::mojom::BluetoothResult::NewBluetoothAdapterInfo({}),
+          health::mojom::SystemResult::NewSystemInfo(
+              health::mojom::SystemInfo::New())));
 }
 
 TEST(ProbeServiceConverters, TelemetryInfoPtrWithNullFields) {
