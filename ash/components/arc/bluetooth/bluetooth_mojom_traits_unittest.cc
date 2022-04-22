@@ -74,33 +74,26 @@ TEST(BluetoothStructTraitsTest, DeserializeBluetoothAdvertisement) {
   std::vector<arc::mojom::BluetoothAdvertisingDataPtr> adv_data;
 
   // Create 16bit service UUIDs.
-  arc::mojom::BluetoothAdvertisingDataPtr data =
-      arc::mojom::BluetoothAdvertisingData::New();
-  data->set_service_uuids_16({kUuid16});
-  adv_data.push_back(std::move(data));
+  adv_data.push_back(
+      arc::mojom::BluetoothAdvertisingData::NewServiceUuids16({kUuid16}));
 
   // Create service UUIDs.
-  data = arc::mojom::BluetoothAdvertisingData::New();
-  std::vector<device::BluetoothUUID> service_uuids;
-  service_uuids.push_back((device::BluetoothUUID(kUuidStr)));
-  data->set_service_uuids(service_uuids);
-  adv_data.push_back(std::move(data));
+  adv_data.push_back(arc::mojom::BluetoothAdvertisingData::NewServiceUuids(
+      {device::BluetoothUUID(kUuidStr)}));
 
   // Create service data.
-  data = arc::mojom::BluetoothAdvertisingData::New();
   arc::mojom::BluetoothServiceDataPtr service_data =
       arc::mojom::BluetoothServiceData::New();
   service_data->uuid_16bit = kUuid16;
   service_data->data =
       std::vector<uint8_t>(std::begin(kServiceData), std::end(kServiceData));
-  data->set_service_data(std::move(service_data));
-  adv_data.push_back(std::move(data));
+  adv_data.push_back(arc::mojom::BluetoothAdvertisingData::NewServiceData(
+      std::move(service_data)));
 
   // Create manufacturer data.
-  data = arc::mojom::BluetoothAdvertisingData::New();
-  data->set_manufacturer_data(std::vector<uint8_t>(
-      std::begin(kManufacturerData), std::end(kManufacturerData)));
-  adv_data.push_back(std::move(data));
+  adv_data.push_back(arc::mojom::BluetoothAdvertisingData::NewManufacturerData(
+      std::vector<uint8_t>(std::begin(kManufacturerData),
+                           std::end(kManufacturerData))));
 
   advertisement_mojo->type =
       arc::mojom::BluetoothAdvertisementType::ADV_TYPE_CONNECTABLE;
@@ -143,10 +136,8 @@ TEST(BluetoothStructTraitsTest, DeserializeBluetoothAdvertisementFailure) {
 
   // Create empty manufacturer data. Manufacturer data must include the CIC
   // which is 2 bytes long.
-  arc::mojom::BluetoothAdvertisingDataPtr data =
-      arc::mojom::BluetoothAdvertisingData::New();
-  data->set_manufacturer_data(std::vector<uint8_t>());
-  adv_data.push_back(std::move(data));
+  adv_data.push_back(
+      arc::mojom::BluetoothAdvertisingData::NewManufacturerData({}));
 
   advertisement_mojo->type =
       arc::mojom::BluetoothAdvertisementType::ADV_TYPE_CONNECTABLE;
