@@ -351,8 +351,6 @@ class PinSetupForManagedUsers : public PinForLoginSetupScreenTest {
 
  protected:
   PinSetupForManagedUsers() : PinForLoginSetupScreenTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kPinSetupForManagedUsers);
     policy_server_ =
         std::make_unique<EmbeddedPolicyTestServerMixin>(&mixin_host_);
     fake_gaia_ = std::make_unique<FakeGaiaMixin>(&mixin_host_);

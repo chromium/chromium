@@ -1120,9 +1120,6 @@ const base::Feature kPhoneHubCallNotification{
 const base::Feature kPhoneHubMonochromeNotificationIcons{
     "PhoneHubMonochromeNotificationIcons", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kPinSetupForManagedUsers{"PinSetupForManagedUsers",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables rounded corners for the Picture-in-picture window.
 const base::Feature kPipRoundedCorners{"PipRoundedCorners",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
@@ -2008,10 +2005,6 @@ bool IsPinAutosubmitBackfillFeatureEnabled() {
 
 bool IsPinAutosubmitFeatureEnabled() {
   return base::FeatureList::IsEnabled(kQuickUnlockPinAutosubmit);
-}
-
-bool IsPinSetupForManagedUsersEnabled() {
-  return base::FeatureList::IsEnabled(kPinSetupForManagedUsers);
 }
 
 bool IsPipRoundedCornersEnabled() {

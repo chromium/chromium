@@ -148,8 +148,7 @@ bool PinSetupScreen::MaybeSkip(WizardContext* context) {
       active_user_profile->GetProfilePolicyConnector()->IsManaged() &&
       !active_user_profile->IsChild();
   const bool show_for_managed_users =
-      features::IsPinSetupForManagedUsersEnabled() && is_managed_user &&
-      has_login_support_.value_or(false);
+      is_managed_user && has_login_support_.value_or(false);
   if (show_for_managed_users)
     return false;
 
