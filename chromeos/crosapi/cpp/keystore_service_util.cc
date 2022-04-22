@@ -52,9 +52,6 @@ absl::optional<base::DictionaryValue> DictionaryFromSigningAlgorithm(
 
 absl::optional<crosapi::mojom::KeystoreSigningAlgorithmPtr>
 SigningAlgorithmFromDictionary(const base::DictionaryValue& dictionary) {
-  crosapi::mojom::KeystoreSigningAlgorithmPtr algorithm =
-      crosapi::mojom::KeystoreSigningAlgorithm::New();
-
   const std::string* name = dictionary.FindStringKey("name");
   if (!name)
     return absl::nullopt;
@@ -72,8 +69,8 @@ SigningAlgorithmFromDictionary(const base::DictionaryValue& dictionary) {
     params->modulus_length =
         base::checked_cast<uint32_t>(modulus_length.value());
     params->public_exponent = *public_exponent;
-    algorithm->set_pkcs115(std::move(params));
-    return algorithm;
+    return crosapi::mojom::KeystoreSigningAlgorithm::NewPkcs115(
+        std::move(params));
   }
 
   if (*name == kWebCryptoEcdsa) {
@@ -83,8 +80,8 @@ SigningAlgorithmFromDictionary(const base::DictionaryValue& dictionary) {
     crosapi::mojom::KeystoreECDSAParamsPtr params =
         crosapi::mojom::KeystoreECDSAParams::New();
     params->named_curve = *named_curve;
-    algorithm->set_ecdsa(std::move(params));
-    return algorithm;
+    return crosapi::mojom::KeystoreSigningAlgorithm::NewEcdsa(
+        std::move(params));
   }
 
   return absl::nullopt;
@@ -93,23 +90,17 @@ SigningAlgorithmFromDictionary(const base::DictionaryValue& dictionary) {
 mojom::KeystoreSigningAlgorithmPtr MakeRsaKeystoreSigningAlgorithm(
     unsigned int modulus_length,
     bool sw_backed) {
-  mojom::KeystoreSigningAlgorithmPtr algorithm =
-      mojom::KeystoreSigningAlgorithm::New();
   mojom::KeystorePKCS115ParamsPtr params = mojom::KeystorePKCS115Params::New();
   params->modulus_length = modulus_length;
   params->sw_backed = sw_backed;
-  algorithm->set_pkcs115(std::move(params));
-  return algorithm;
+  return mojom::KeystoreSigningAlgorithm::NewPkcs115(std::move(params));
 }
 
 mojom::KeystoreSigningAlgorithmPtr MakeEcKeystoreSigningAlgorithm(
     const std::string& named_curve) {
-  mojom::KeystoreSigningAlgorithmPtr algorithm =
-      mojom::KeystoreSigningAlgorithm::New();
   mojom::KeystoreECDSAParamsPtr params = mojom::KeystoreECDSAParams::New();
   params->named_curve = named_curve;
-  algorithm->set_ecdsa(std::move(params));
-  return algorithm;
+  return mojom::KeystoreSigningAlgorithm::NewEcdsa(std::move(params));
 }
 
 }  // namespace keystore_service_util
