@@ -6177,7 +6177,7 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   </message>
 
   <message name="IDS_PROJECTOR_APP_NAME" desc="Name for the Projector app in the launcher">
-    Projector
+    Screencast
   </message>
 
   <!-- Dictation accessibility feature confirmation dialog -->
