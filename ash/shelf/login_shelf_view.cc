@@ -731,9 +731,6 @@ void LoginShelfView::SetKioskApps(
     const std::vector<KioskAppMenuEntry>& kiosk_apps) {
   kiosk_apps_button_->SetApps(kiosk_apps);
   UpdateUi();
-  if (LockScreen::HasInstance())
-    LockScreen::Get()->SetKioskAppsButtonPresence(
-        kiosk_apps_button_->GetVisible());
 }
 
 void LoginShelfView::ConfigureKioskCallbacks(
