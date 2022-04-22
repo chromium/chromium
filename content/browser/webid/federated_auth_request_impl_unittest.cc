@@ -29,6 +29,7 @@
 #include "content/public/common/content_features.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
+#include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -36,6 +37,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -67,6 +69,7 @@ namespace {
 
 constexpr char kIdpTestOrigin[] = "https://idp.example";
 constexpr char kProviderUrl[] = "https://idp.example/";
+constexpr char kRpUrl[] = "https://rp.example/";
 constexpr char kAccountsEndpoint[] = "https://idp.example/accounts";
 constexpr char kCrossOriginAccountsEndpoint[] = "https://idp2.example/accounts";
 constexpr char kTokenEndpoint[] = "https://idp.example/token";
@@ -514,6 +517,29 @@ class IdpNetworkRequestManagerParamChecker
   std::string expected_revocation_hint_;
 };
 
+class TestApiPermissionDelegate : public MockApiPermissionDelegate {
+ public:
+  url::Origin blocked_origin_;
+  std::set<url::Origin> embargoed_origins_;
+  bool third_party_cookies_blocked_{false};
+
+  bool HasApiPermission(const url::Origin& origin) override {
+    return !embargoed_origins_.count(origin) && origin != blocked_origin_;
+  }
+
+  bool AreThirdPartyCookiesBlocked() override {
+    return third_party_cookies_blocked_;
+  }
+
+  void RecordDismissAndEmbargo(const url::Origin& origin) override {
+    embargoed_origins_.insert(origin);
+  }
+
+  void RemoveEmbargoAndResetCounts(const url::Origin& origin) override {
+    embargoed_origins_.erase(origin);
+  }
+};
+
 }  // namespace
 
 class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
@@ -525,12 +551,17 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
+    test_api_permission_delegate_ =
+        std::make_unique<TestApiPermissionDelegate>();
     mock_sharing_permission_delegate_ =
         std::make_unique<NiceMock<MockSharingPermissionDelegate>>();
     mock_request_permission_delegate_ =
         std::make_unique<NiceMock<MockRequestPermissionDelegate>>();
     mock_active_session_permission_delegate_ =
         std::make_unique<NiceMock<MockActiveSessionPermissionDelegate>>();
+
+    static_cast<TestWebContents*>(web_contents())
+        ->NavigateAndCommit(GURL(kRpUrl), ui::PAGE_TRANSITION_LINK);
 
     // `FederatedAuthRequestService` derives from `DocumentService` and
     // controls its own lifetime.
@@ -544,6 +575,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     federated_auth_request_impl_->SetDialogControllerForTests(
         std::move(mock_dialog_controller));
 
+    federated_auth_request_impl_->SetApiPermissionDelegateForTests(
+        test_api_permission_delegate_.get());
     federated_auth_request_impl_->SetSharingPermissionDelegateForTests(
         mock_sharing_permission_delegate_.get());
 
@@ -597,6 +630,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
             {FederatedAuthRequestResult::kSuccess, absl::nullopt},
             {FederatedAuthRequestResult::kApprovalDeclined,
              "User declined the sign-in attempt."},
+            {FederatedAuthRequestResult::kErrorDisabledInSettings,
+             "Third-party sign in was disabled in browser Site Settings."},
             {FederatedAuthRequestResult::kErrorFetchingManifestListHttpNotFound,
              "The provider's FedCM manifest list file cannot be found."},
             {FederatedAuthRequestResult::kErrorFetchingManifestListNoResponse,
@@ -813,6 +848,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   raw_ptr<NiceMock<MockIdentityRequestDialogController>>
       mock_dialog_controller_;
 
+  std::unique_ptr<TestApiPermissionDelegate> test_api_permission_delegate_;
   std::unique_ptr<NiceMock<MockRequestPermissionDelegate>>
       mock_request_permission_delegate_;
   std::unique_ptr<NiceMock<MockActiveSessionPermissionDelegate>>
@@ -1594,11 +1630,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForWebContentsInvisible) {
 
 TEST_F(BasicFederatedAuthRequestImplTest,
        DisabledWhenThirdPartyCookiesBlocked) {
-  NiceMock<MockApiPermissionDelegate> mock_api_permission_delegate;
-  federated_auth_request_impl()->SetApiPermissionDelegateForTests(
-      &mock_api_permission_delegate);
-  EXPECT_CALL(mock_api_permission_delegate, AreThirdPartyCookiesBlocked())
-      .WillOnce(Return(true));
+  test_api_permission_delegate_->third_party_cookies_blocked_ = true;
 
   RequestExpectations expectations = {RequestIdTokenStatus::kError,
                                       FederatedAuthRequestResult::kError,
@@ -1628,15 +1660,6 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForFeatureIsDisabled) {
 // Test that embargo is requested if the
 // IdentityRequestDialogController::ShowAccountsDialog() callback requests it.
 TEST_F(BasicFederatedAuthRequestImplTest, RequestEmbargo) {
-  StrictMock<MockApiPermissionDelegate> mock_api_permission_delegate;
-  federated_auth_request_impl()->SetApiPermissionDelegateForTests(
-      &mock_api_permission_delegate);
-  EXPECT_CALL(mock_api_permission_delegate, RecordDismissAndEmbargo(_));
-  EXPECT_CALL(mock_api_permission_delegate, HasApiPermission(_))
-      .WillOnce(Return(true));
-  EXPECT_CALL(mock_api_permission_delegate, AreThirdPartyCookiesBlocked())
-      .WillOnce(Return(false));
-
   RequestExpectations expectations = {
       RequestIdTokenStatus::kError, FederatedAuthRequestResult::kError,
       FETCH_ENDPOINT_ALL_REQUEST_ID_TOKEN & ~FetchedEndpoint::TOKEN};
@@ -1660,20 +1683,38 @@ TEST_F(BasicFederatedAuthRequestImplTest, RequestEmbargo) {
           }));
 
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+  EXPECT_TRUE(test_api_permission_delegate_->embargoed_origins_.count(
+      main_test_rfh()->GetLastCommittedOrigin()));
 }
 
 // Test that the embargo dismiss count is reset when the user grants consent via
 // the FedCM dialog.
 TEST_F(BasicFederatedAuthRequestImplTest, RemoveEmbargoOnUserConsent) {
-  StrictMock<MockApiPermissionDelegate> mock_api_permission_delegate;
-  federated_auth_request_impl()->SetApiPermissionDelegateForTests(
-      &mock_api_permission_delegate);
-  EXPECT_CALL(mock_api_permission_delegate, RemoveEmbargoAndResetCounts(_));
-  EXPECT_CALL(mock_api_permission_delegate, HasApiPermission(_))
-      .WillOnce(Return(true));
-  EXPECT_CALL(mock_api_permission_delegate, AreThirdPartyCookiesBlocked())
-      .WillOnce(Return(false));
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
+  EXPECT_TRUE(test_api_permission_delegate_->embargoed_origins_.empty());
+}
 
+// Test that token request fails if FEDERATED_IDENTITY_API content setting is
+// disabled for the RP origin.
+TEST_F(BasicFederatedAuthRequestImplTest, ApiBlockedForOrigin) {
+  test_api_permission_delegate_->blocked_origin_ =
+      main_test_rfh()->GetLastCommittedOrigin();
+  RequestExpectations expectations = {
+      RequestIdTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorDisabledInSettings,
+      /*fetched_endpoints=*/0};
+  RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
+}
+
+// Test that token request succeeds if FEDERATED_IDENTITY_API content setting is
+// enabled for RP origin but disabled for an unrelated origin.
+TEST_F(BasicFederatedAuthRequestImplTest, ApiBlockedForUnrelatedOrigin) {
+  const url::Origin kUnrelatedOrigin =
+      url::Origin::Create(GURL("https://rp2.example/"));
+
+  test_api_permission_delegate_->blocked_origin_ = kUnrelatedOrigin;
+  ASSERT_NE(main_test_rfh()->GetLastCommittedOrigin(), kUnrelatedOrigin);
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
 }

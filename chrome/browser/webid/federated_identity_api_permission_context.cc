@@ -28,15 +28,22 @@ FederatedIdentityApiPermissionContext::
 
 bool FederatedIdentityApiPermissionContext::HasApiPermission(
     const url::Origin& rp_origin) {
-  if (host_content_settings_map_->GetDefaultContentSetting(
-          ContentSettingsType::FEDERATED_IDENTITY_API, nullptr) ==
-      ContentSetting::CONTENT_SETTING_BLOCK) {
-    return false;
+  const GURL rp_url = rp_origin.GetURL();
+  const ContentSetting setting = host_content_settings_map_->GetContentSetting(
+      rp_url, rp_url, ContentSettingsType::FEDERATED_IDENTITY_API);
+  switch (setting) {
+    case CONTENT_SETTING_ALLOW:
+      break;
+    case CONTENT_SETTING_BLOCK:
+      return false;
+    default:
+      NOTREACHED();
+      return false;
   }
 
   permissions::PermissionResult permission_result =
       permission_autoblocker_->GetEmbargoResult(
-          rp_origin.GetURL(), ContentSettingsType::FEDERATED_IDENTITY_API);
+          rp_url, ContentSettingsType::FEDERATED_IDENTITY_API);
   return (permission_result.content_setting !=
           ContentSetting::CONTENT_SETTING_BLOCK);
 }
