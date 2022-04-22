@@ -1298,6 +1298,11 @@
       status: "stable",
     },
     {
+      // If a painting bug no longer reproduces with this feature enabled, then
+      // the bug is caused by incorrect cull rects.
+      name: "InfiniteCullRect",
+    },
+    {
       name: "InputMultipleFieldsUI",
       // No plan to support complex UI for date/time INPUT types on Android.
       status: {"Android": "test", "default": "stable"},

@@ -140,6 +140,9 @@ static bool IsUnclippedLayoutView(const PaintLayer& layer) {
 }
 
 bool PaintLayerPainter::ShouldUseInfiniteCullRect() {
+  if (RuntimeEnabledFeatures::InfiniteCullRectEnabled())
+    return true;
+
   bool is_printing = paint_layer_.GetLayoutObject().GetDocument().Printing();
   if (IsUnclippedLayoutView(paint_layer_) && !is_printing)
     return true;
