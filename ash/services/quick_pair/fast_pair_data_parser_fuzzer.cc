@@ -11,15 +11,21 @@
 #include "ash/quick_pair/common/logging.h"
 #include "ash/services/quick_pair/public/mojom/fast_pair_data_parser.mojom.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace {
 
 struct Environment {
-  Environment() {
+  Environment()
+      : task_environment(
+            (base::CommandLine::Init(0, nullptr),
+             TestTimeouts::Initialize(),
+             base::test::TaskEnvironment::MainThreadType::DEFAULT)) {
     mojo::core::Init();
     // Disable noisy logging for fuzzing.
     logging::SetMinLogLevel(logging::LOGGING_FATAL);
@@ -55,7 +61,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   env->parser->ParseDecryptedPasskey(first_vec, second_vec, base::DoNothing());
 
-  env->parser->ParseNotDiscoverableAdvertisement(first_vec, base::DoNothing());
+  std::string second_vec_str =
+      std::string(second_vec.begin(), second_vec.end());
+  env->parser->ParseNotDiscoverableAdvertisement(first_vec, second_vec_str,
+                                                 base::DoNothing());
 
   env->parser->ParseMessageStreamMessages(first_vec, base::DoNothing());
 
