@@ -4,6 +4,10 @@
 
 #include "components/autofill_assistant/content/renderer/autofill_assistant_agent.h"
 
+#include <ostream>
+
+#include "base/command_line.h"
+#include "components/autofill_assistant/content/common/switches.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -16,6 +20,40 @@
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 namespace autofill_assistant {
+namespace {
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+std::string NodeSignalsToDebugString(
+    const blink::AutofillAssistantNodeSignals& node_signals) {
+  std::ostringstream out;
+
+  out << "AutofillAssistantNodeSignals {\n"
+      << "\tbackend_node_id: " << node_signals.backend_node_id
+      << "\n\tnode_features {";
+  for (const auto& text : node_signals.node_features.text) {
+    out << "\n\t\ttext: " << text.Utf16();
+  }
+  out << "\n\t\taria: " << node_signals.node_features.aria.Utf16()
+      << "\n\t\thtml_tag: " << node_signals.node_features.html_tag.Utf16()
+      << "\n\t\ttype: " << node_signals.node_features.type.Utf16()
+      << "\n\t\tinvisible_attributes: "
+      << node_signals.node_features.invisible_attributes.Utf16()
+      << "\n\t}\n\tlabel_features {";
+  for (const auto& text : node_signals.label_features.text) {
+    out << "\n\t\ttext: " << text.Utf16();
+  }
+  out << "\n\t}\n\tcontext_features {";
+  for (const auto& header_text : node_signals.context_features.header_text) {
+    out << "\n\t\theader_text: " << header_text.Utf16();
+  }
+  out << "\n\t\tform_type: " << node_signals.context_features.form_type.Utf16()
+      << "\n\t}\n}";
+
+  return out.str();
+}
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
+}  // namespace
 
 AutofillAssistantAgent::AutofillAssistantAgent(
     content::RenderFrame* render_frame,
@@ -123,9 +161,16 @@ void AutofillAssistantAgent::OnGetModelFile(base::Time start_time,
 
   for (const auto& node_signal : node_signals) {
     auto result = model_executor.ExecuteModelWithInput(node_signal);
-    DVLOG(3) << "Annotated node with result: role: " << result->first
-             << " and objective: " << result->second
-             << " (or ignore: " << ignore_objective << ")";
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kAutofillAssistantDebugAnnotateDom)) {
+      VLOG(3) << NodeSignalsToDebugString(node_signal);
+      if (result) {
+        VLOG(3) << "Result { role: " << result->first
+                << ", objective: " << result->second
+                << (ignore_objective ? " (ignored)" : "") << " }";
+      }
+    }
+
     if (result && result->first == role &&
         (result->second == objective || ignore_objective)) {
       NodeData node_data;
