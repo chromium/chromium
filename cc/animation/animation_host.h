@@ -136,28 +136,14 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   bool ScrollOffsetAnimationWasInterrupted(ElementId element_id) const override;
 
-  bool IsAnimatingFilterProperty(ElementId element_id,
-                                 ElementListType list_type) const override;
-  bool IsAnimatingBackdropFilterProperty(
-      ElementId element_id,
-      ElementListType list_type) const override;
-  bool IsAnimatingOpacityProperty(ElementId element_id,
-                                  ElementListType list_type) const override;
-  bool IsAnimatingTransformProperty(ElementId element_id,
-                                    ElementListType list_type) const override;
+  bool IsAnimatingProperty(ElementId element_id,
+                           ElementListType list_type,
+                           TargetProperty::Type property) const override;
 
-  bool HasPotentiallyRunningFilterAnimation(
+  bool HasPotentiallyRunningAnimationForProperty(
       ElementId element_id,
-      ElementListType list_type) const override;
-  bool HasPotentiallyRunningBackdropFilterAnimation(
-      ElementId element_id,
-      ElementListType list_type) const override;
-  bool HasPotentiallyRunningOpacityAnimation(
-      ElementId element_id,
-      ElementListType list_type) const override;
-  bool HasPotentiallyRunningTransformAnimation(
-      ElementId element_id,
-      ElementListType list_type) const override;
+      ElementListType list_type,
+      TargetProperty::Type property) const override;
 
   bool HasAnyAnimationTargetingProperty(
       ElementId element_id,

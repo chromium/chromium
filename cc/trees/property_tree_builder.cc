@@ -112,14 +112,16 @@ class PropertyTreeBuilderContext {
 
 // Methods to query state from the AnimationHost ----------------------
 bool OpacityIsAnimating(const MutatorHost& host, Layer* layer) {
-  return host.IsAnimatingOpacityProperty(layer->element_id(),
-                                         layer->GetElementTypeForAnimation());
+  return host.IsAnimatingProperty(layer->element_id(),
+                                  layer->GetElementTypeForAnimation(),
+                                  TargetProperty::OPACITY);
 }
 
 bool HasPotentiallyRunningOpacityAnimation(const MutatorHost& host,
                                            Layer* layer) {
-  return host.HasPotentiallyRunningOpacityAnimation(
-      layer->element_id(), layer->GetElementTypeForAnimation());
+  return host.HasPotentiallyRunningAnimationForProperty(
+      layer->element_id(), layer->GetElementTypeForAnimation(),
+      TargetProperty::OPACITY);
 }
 
 bool HasPotentialOpacityAnimation(const MutatorHost& host, Layer* layer) {
@@ -128,25 +130,29 @@ bool HasPotentialOpacityAnimation(const MutatorHost& host, Layer* layer) {
 }
 
 bool FilterIsAnimating(const MutatorHost& host, Layer* layer) {
-  return host.IsAnimatingFilterProperty(layer->element_id(),
-                                        layer->GetElementTypeForAnimation());
+  return host.IsAnimatingProperty(layer->element_id(),
+                                  layer->GetElementTypeForAnimation(),
+                                  TargetProperty::FILTER);
 }
 
 bool HasPotentiallyRunningFilterAnimation(const MutatorHost& host,
                                           Layer* layer) {
-  return host.HasPotentiallyRunningFilterAnimation(
-      layer->element_id(), layer->GetElementTypeForAnimation());
+  return host.HasPotentiallyRunningAnimationForProperty(
+      layer->element_id(), layer->GetElementTypeForAnimation(),
+      TargetProperty::FILTER);
 }
 
 bool TransformIsAnimating(const MutatorHost& host, Layer* layer) {
-  return host.IsAnimatingTransformProperty(layer->element_id(),
-                                           layer->GetElementTypeForAnimation());
+  return host.IsAnimatingProperty(layer->element_id(),
+                                  layer->GetElementTypeForAnimation(),
+                                  TargetProperty::TRANSFORM);
 }
 
 bool HasPotentiallyRunningTransformAnimation(const MutatorHost& host,
                                              Layer* layer) {
-  return host.HasPotentiallyRunningTransformAnimation(
-      layer->element_id(), layer->GetElementTypeForAnimation());
+  return host.HasPotentiallyRunningAnimationForProperty(
+      layer->element_id(), layer->GetElementTypeForAnimation(),
+      TargetProperty::TRANSFORM);
 }
 
 float MaximumAnimationScale(const MutatorHost& host, Layer* layer) {

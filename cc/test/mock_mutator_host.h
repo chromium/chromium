@@ -47,22 +47,14 @@ class MockMutatorHost : public MutatorHost {
   MOCK_METHOD1(SetAnimationEvents, void(std::unique_ptr<MutatorEvents> events));
   MOCK_CONST_METHOD1(ScrollOffsetAnimationWasInterrupted,
                      bool(ElementId element_id));
-  MOCK_CONST_METHOD2(IsAnimatingFilterProperty,
-                     bool(ElementId element_id, ElementListType list_type));
-  MOCK_CONST_METHOD2(IsAnimatingBackdropFilterProperty,
-                     bool(ElementId element_id, ElementListType list_type));
-  MOCK_CONST_METHOD2(IsAnimatingOpacityProperty,
-                     bool(ElementId element_id, ElementListType list_type));
-  MOCK_CONST_METHOD2(IsAnimatingTransformProperty,
-                     bool(ElementId element_id, ElementListType list_type));
-  MOCK_CONST_METHOD2(HasPotentiallyRunningFilterAnimation,
-                     bool(ElementId element_id, ElementListType list_type));
-  MOCK_CONST_METHOD2(HasPotentiallyRunningBackdropFilterAnimation,
-                     bool(ElementId element_id, ElementListType list_type));
-  MOCK_CONST_METHOD2(HasPotentiallyRunningOpacityAnimation,
-                     bool(ElementId element_id, ElementListType list_type));
-  MOCK_CONST_METHOD2(HasPotentiallyRunningTransformAnimation,
-                     bool(ElementId element_id, ElementListType list_type));
+  MOCK_CONST_METHOD3(IsAnimatingProperty,
+                     bool(ElementId element_id,
+                          ElementListType list_type,
+                          TargetProperty::Type property));
+  MOCK_CONST_METHOD3(HasPotentiallyRunningAnimationForProperty,
+                     bool(ElementId element_id,
+                          ElementListType list_type,
+                          TargetProperty::Type property));
   MOCK_CONST_METHOD2(HasAnyAnimationTargetingProperty,
                      bool(ElementId element_id, TargetProperty::Type property));
   MOCK_CONST_METHOD1(AnimationsPreserveAxisAlignment,

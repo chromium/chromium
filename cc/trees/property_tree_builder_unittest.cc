@@ -489,8 +489,9 @@ TEST_F(PropertyTreeBuilderTest, AnimatedOpacityCreatesRenderSurface) {
 
 static bool FilterIsAnimating(LayerImpl* layer) {
   MutatorHost* host = layer->layer_tree_impl()->mutator_host();
-  return host->IsAnimatingFilterProperty(layer->element_id(),
-                                         layer->GetElementTypeForAnimation());
+  return host->IsAnimatingProperty(layer->element_id(),
+                                   layer->GetElementTypeForAnimation(),
+                                   TargetProperty::FILTER);
 }
 
 // Verify that having an animated filter (but no current filter, as these
@@ -526,8 +527,9 @@ TEST_F(PropertyTreeBuilderTest, AnimatedFilterCreatesRenderSurface) {
 
 bool HasPotentiallyRunningFilterAnimation(const LayerImpl& layer) {
   MutatorHost* host = layer.layer_tree_impl()->mutator_host();
-  return host->HasPotentiallyRunningFilterAnimation(
-      layer.element_id(), layer.GetElementTypeForAnimation());
+  return host->HasPotentiallyRunningAnimationForProperty(
+      layer.element_id(), layer.GetElementTypeForAnimation(),
+      TargetProperty::FILTER);
 }
 
 // Verify that having a filter animation with a delayed start time creates a

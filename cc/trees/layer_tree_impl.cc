@@ -1159,8 +1159,8 @@ void LayerTreeImpl::UpdateTransformAnimation(ElementId element_id,
     if (TransformNode* node = transform_tree.Node(transform_node_index)) {
       ElementListType list_type = GetElementTypeForAnimation();
       bool has_potential_animation =
-          mutator_host()->HasPotentiallyRunningTransformAnimation(element_id,
-                                                                  list_type);
+          mutator_host()->HasPotentiallyRunningAnimationForProperty(
+              element_id, list_type, TargetProperty::TRANSFORM);
       if (node->has_potential_animation != has_potential_animation) {
         node->has_potential_animation = has_potential_animation;
         node->maximum_animation_scale =

@@ -1680,14 +1680,16 @@ TEST_F(DrawPropertiesTest, LargeTransforms) {
 
 static bool TransformIsAnimating(LayerImpl* layer) {
   MutatorHost* host = layer->layer_tree_impl()->mutator_host();
-  return host->IsAnimatingTransformProperty(
-      layer->element_id(), layer->GetElementTypeForAnimation());
+  return host->IsAnimatingProperty(layer->element_id(),
+                                   layer->GetElementTypeForAnimation(),
+                                   TargetProperty::TRANSFORM);
 }
 
 static bool HasPotentiallyRunningTransformAnimation(LayerImpl* layer) {
   MutatorHost* host = layer->layer_tree_impl()->mutator_host();
-  return host->HasPotentiallyRunningTransformAnimation(
-      layer->element_id(), layer->GetElementTypeForAnimation());
+  return host->HasPotentiallyRunningAnimationForProperty(
+      layer->element_id(), layer->GetElementTypeForAnimation(),
+      TargetProperty::TRANSFORM);
 }
 
 TEST_F(DrawPropertiesTest,

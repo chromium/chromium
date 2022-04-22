@@ -609,81 +609,23 @@ bool AnimationHost::ScrollOffsetAnimationWasInterrupted(
              : false;
 }
 
-bool AnimationHost::IsAnimatingFilterProperty(ElementId element_id,
-                                              ElementListType list_type) const {
-  auto element_animations = GetElementAnimationsForElementId(element_id);
-  return element_animations
-             ? element_animations->IsCurrentlyAnimatingProperty(
-                   TargetProperty::FILTER, list_type)
-             : false;
-}
-
-bool AnimationHost::IsAnimatingBackdropFilterProperty(
-    ElementId element_id,
-    ElementListType list_type) const {
+bool AnimationHost::IsAnimatingProperty(ElementId element_id,
+                                        ElementListType list_type,
+                                        TargetProperty::Type property) const {
   auto element_animations = GetElementAnimationsForElementId(element_id);
   return element_animations ? element_animations->IsCurrentlyAnimatingProperty(
-                                  TargetProperty::BACKDROP_FILTER, list_type)
+                                  property, list_type)
                             : false;
 }
 
-bool AnimationHost::IsAnimatingOpacityProperty(
+bool AnimationHost::HasPotentiallyRunningAnimationForProperty(
     ElementId element_id,
-    ElementListType list_type) const {
+    ElementListType list_type,
+    TargetProperty::Type property) const {
   auto element_animations = GetElementAnimationsForElementId(element_id);
   return element_animations
-             ? element_animations->IsCurrentlyAnimatingProperty(
-                   TargetProperty::OPACITY, list_type)
-             : false;
-}
-
-bool AnimationHost::IsAnimatingTransformProperty(
-    ElementId element_id,
-    ElementListType list_type) const {
-  auto element_animations = GetElementAnimationsForElementId(element_id);
-  return element_animations
-             ? element_animations->IsCurrentlyAnimatingProperty(
-                   TargetProperty::TRANSFORM, list_type)
-             : false;
-}
-
-bool AnimationHost::HasPotentiallyRunningFilterAnimation(
-    ElementId element_id,
-    ElementListType list_type) const {
-  auto element_animations = GetElementAnimationsForElementId(element_id);
-  return element_animations
-             ? element_animations->IsPotentiallyAnimatingProperty(
-                   TargetProperty::FILTER, list_type)
-             : false;
-}
-
-bool AnimationHost::HasPotentiallyRunningBackdropFilterAnimation(
-    ElementId element_id,
-    ElementListType list_type) const {
-  auto element_animations = GetElementAnimationsForElementId(element_id);
-  return element_animations
-             ? element_animations->IsPotentiallyAnimatingProperty(
-                   TargetProperty::BACKDROP_FILTER, list_type)
-             : false;
-}
-
-bool AnimationHost::HasPotentiallyRunningOpacityAnimation(
-    ElementId element_id,
-    ElementListType list_type) const {
-  auto element_animations = GetElementAnimationsForElementId(element_id);
-  return element_animations
-             ? element_animations->IsPotentiallyAnimatingProperty(
-                   TargetProperty::OPACITY, list_type)
-             : false;
-}
-
-bool AnimationHost::HasPotentiallyRunningTransformAnimation(
-    ElementId element_id,
-    ElementListType list_type) const {
-  auto element_animations = GetElementAnimationsForElementId(element_id);
-  return element_animations
-             ? element_animations->IsPotentiallyAnimatingProperty(
-                   TargetProperty::TRANSFORM, list_type)
+             ? element_animations->IsPotentiallyAnimatingProperty(property,
+                                                                  list_type)
              : false;
 }
 

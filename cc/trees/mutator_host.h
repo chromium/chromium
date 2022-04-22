@@ -82,29 +82,14 @@ class MutatorHost {
   virtual bool ScrollOffsetAnimationWasInterrupted(
       ElementId element_id) const = 0;
 
-  virtual bool IsAnimatingFilterProperty(ElementId element_id,
-                                         ElementListType list_type) const = 0;
-  virtual bool IsAnimatingBackdropFilterProperty(
-      ElementId element_id,
-      ElementListType list_type) const = 0;
-  virtual bool IsAnimatingOpacityProperty(ElementId element_id,
-                                          ElementListType list_type) const = 0;
-  virtual bool IsAnimatingTransformProperty(
-      ElementId element_id,
-      ElementListType list_type) const = 0;
+  virtual bool IsAnimatingProperty(ElementId element_id,
+                                   ElementListType list_type,
+                                   TargetProperty::Type property) const = 0;
 
-  virtual bool HasPotentiallyRunningFilterAnimation(
+  virtual bool HasPotentiallyRunningAnimationForProperty(
       ElementId element_id,
-      ElementListType list_type) const = 0;
-  virtual bool HasPotentiallyRunningBackdropFilterAnimation(
-      ElementId element_id,
-      ElementListType list_type) const = 0;
-  virtual bool HasPotentiallyRunningOpacityAnimation(
-      ElementId element_id,
-      ElementListType list_type) const = 0;
-  virtual bool HasPotentiallyRunningTransformAnimation(
-      ElementId element_id,
-      ElementListType list_type) const = 0;
+      ElementListType list_type,
+      TargetProperty::Type property) const = 0;
 
   virtual bool HasAnyAnimationTargetingProperty(
       ElementId element_id,
