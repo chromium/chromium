@@ -12,6 +12,7 @@ class ChromeBrowserMainExtraPartsSegmentationPlatform
  public:
   ChromeBrowserMainExtraPartsSegmentationPlatform() = default;
 
+  void PreCreateThreads() override;
   void PreProfileInit() override;
   void PostProfileInit(Profile* profile, bool is_initial_profile) override;
   void PostMainMessageLoopRun() override;

@@ -198,7 +198,8 @@ enum class TrainingDataCollectionEvent {
   kGetInputTensorsFailed = 4,
   kNotEnoughCollectionTime = 5,
   kUkmReportingFailed = 6,
-  kMaxValue = kUkmReportingFailed,
+  kPartialDataNotAllowed = 7,
+  kMaxValue = kPartialDataNotAllowed,
 };
 
 // Records analytics for training data collection.

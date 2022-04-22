@@ -12,8 +12,6 @@
 #include "base/time/time.h"
 #include "components/ukm/ukm_recorder_observer.h"
 
-class PrefService;
-
 namespace ukm {
 class UkmRecorderImpl;
 }
@@ -27,9 +25,7 @@ class UkmDataManagerImpl;
 // entries or on source URL changes.
 class UkmObserver : public ukm::UkmRecorderObserver {
  public:
-  UkmObserver(ukm::UkmRecorderImpl* ukm_recorder,
-              PrefService* pref_service,
-              bool is_ukm_allowed);
+  UkmObserver(ukm::UkmRecorderImpl* ukm_recorder, bool is_ukm_allowed);
   ~UkmObserver() override;
 
   UkmObserver(UkmObserver&) = delete;
@@ -47,9 +43,6 @@ class UkmObserver : public ukm::UkmRecorderObserver {
   // Stop observing |ukm_recorder_|.
   void StopObserving();
 
-  // Gets the most recent time when UKM is allowed.
-  base::Time GetUkmMostRecentAllowedTime() const;
-
   // UkmRecorderObserver implementation:
   void OnEntryAdded(ukm::mojom::UkmEntryPtr entry) override;
   void OnUpdateSourceURL(ukm::SourceId source_id,
@@ -64,8 +57,6 @@ class UkmObserver : public ukm::UkmRecorderObserver {
   // UkmDataManagerImpl destroys this observer before the UKM service is
   // destroyed.
   raw_ptr<ukm::UkmRecorderImpl> const ukm_recorder_;
-
-  raw_ptr<PrefService> pref_service_;
 
   // Currently observed config.
   std::unique_ptr<UkmConfig> config_;

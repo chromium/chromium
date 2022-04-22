@@ -12,6 +12,7 @@
 #include "components/segmentation_platform/internal/signals/ukm_config.h"
 #include "components/segmentation_platform/internal/signals/url_signal_handler.h"
 #include "components/segmentation_platform/internal/ukm_data_manager_impl.h"
+#include "components/segmentation_platform/public/local_state_helper.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -68,6 +69,7 @@ class UkmObserverTest : public testing::Test {
 
   void SetUp() override {
     SegmentationPlatformService::RegisterLocalStatePrefs(prefs_.registry());
+    LocalStateHelper::GetInstance().Initialize(&prefs_);
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     InitializeUkmObserver(true /*is_ukm_allowed*/);
   }
@@ -91,8 +93,8 @@ class UkmObserverTest : public testing::Test {
   }
 
   void InitializeUkmObserver(bool is_ukm_allowed) {
-    ukm_observer_ = std::make_unique<UkmObserver>(ukm_recorder_.get(), &prefs_,
-                                                  is_ukm_allowed);
+    ukm_observer_ =
+        std::make_unique<UkmObserver>(ukm_recorder_.get(), is_ukm_allowed);
     auto ukm_database = std::make_unique<MockUkmDatabase>();
     ukm_database_ = ukm_database.get();
     ukm_data_manager_ = std::make_unique<UkmDataManagerImpl>();
@@ -248,29 +250,34 @@ TEST_F(UkmObserverTest, ObservationFromRecorder) {
 // Tests that the most recent time for UKM allowed state is correctly set and
 // read.
 TEST_F(UkmObserverTest, GetUkmMostRecentAllowedTime) {
+  LocalStateHelper& local_state_helper = LocalStateHelper::GetInstance();
   // Without pref entry, the |is_ukm_allowed| param passed to UkmObserver ctor
   // will determine the value to be returned.
-  EXPECT_LE(ukm_observer().GetUkmMostRecentAllowedTime(), base::Time::Now());
+  EXPECT_LE(local_state_helper.GetUkmMostRecentAllowedTime(),
+            base::Time::Now());
   InitializeUkmObserver(false /*is_ukm_allowed*/);
-  UkmObserver& observer = ukm_observer();
-  EXPECT_EQ(base::Time::Max(), observer.GetUkmMostRecentAllowedTime());
+  EXPECT_EQ(base::Time::Max(),
+            local_state_helper.GetUkmMostRecentAllowedTime());
 
-  observer.OnUkmAllowedStateChanged(true);
-  EXPECT_LE(ukm_observer().GetUkmMostRecentAllowedTime(), base::Time::Now());
+  ukm_observer().OnUkmAllowedStateChanged(true);
+  EXPECT_LE(local_state_helper.GetUkmMostRecentAllowedTime(),
+            base::Time::Now());
 
   // Change the allowed state to false, the start time should now be set to
   // Time::Max().
   ukm_recorder().OnUkmAllowedStateChanged(false);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(base::Time::Max(), observer.GetUkmMostRecentAllowedTime());
+  EXPECT_EQ(base::Time::Max(),
+            local_state_helper.GetUkmMostRecentAllowedTime());
 
   // Change the allowed state to true, the new start time should be close to
   // now.
   base::Time now = base::Time::Now();
   ukm_recorder().OnUkmAllowedStateChanged(true);
   base::RunLoop().RunUntilIdle();
-  EXPECT_LE(now, observer.GetUkmMostRecentAllowedTime());
-  EXPECT_LE(observer.GetUkmMostRecentAllowedTime(), base::Time::Now());
+  EXPECT_LE(now, local_state_helper.GetUkmMostRecentAllowedTime());
+  EXPECT_LE(local_state_helper.GetUkmMostRecentAllowedTime(),
+            base::Time::Now());
 }
 
 }  // namespace segmentation_platform

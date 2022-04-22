@@ -6,22 +6,17 @@
 
 #include <cstdint>
 
-#include "base/rand_util.h"
-#include "components/prefs/pref_service.h"
-#include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/signals/ukm_config.h"
 #include "components/segmentation_platform/internal/ukm_data_manager_impl.h"
+#include "components/segmentation_platform/public/local_state_helper.h"
 #include "components/ukm/ukm_recorder_impl.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 
 namespace segmentation_platform {
 
 UkmObserver::UkmObserver(ukm::UkmRecorderImpl* ukm_recorder,
-                         PrefService* pref_service,
                          bool is_ukm_allowed)
-    : ukm_recorder_(ukm_recorder),
-      pref_service_(pref_service),
-      ukm_data_manager_(nullptr) {
+    : ukm_recorder_(ukm_recorder), ukm_data_manager_(nullptr) {
   // Listen to |OnUkmAllowedStateChanged| event.
   OnUkmAllowedStateChanged(is_ukm_allowed);
   ukm_recorder_->AddUkmRecorderObserver(base::flat_set<uint64_t>(), this);
@@ -87,24 +82,21 @@ void UkmObserver::PauseOrResumeObservation(bool pause) {
 }
 
 void UkmObserver::OnUkmAllowedStateChanged(bool allowed) {
-  base::Time most_recent_allowed = GetUkmMostRecentAllowedTime();
+  base::Time most_recent_allowed =
+      LocalStateHelper::GetInstance().GetUkmMostRecentAllowedTime();
   if (!allowed) {
     if (most_recent_allowed != base::Time::Max()) {
-      pref_service_->SetTime(kSegmentationUkmMostRecentAllowedTimeKey,
-                             base::Time::Max());
+      LocalStateHelper::GetInstance().SetUkmMostRecentAllowedTime(
+          base::Time::Max());
     }
     return;
   }
   // Update the most recent allowed time if needed.
   if (most_recent_allowed.is_null() ||
       most_recent_allowed == base::Time::Max()) {
-    pref_service_->SetTime(kSegmentationUkmMostRecentAllowedTimeKey,
-                           base::Time::Now());
+    LocalStateHelper::GetInstance().SetUkmMostRecentAllowedTime(
+        base::Time::Now());
   }
-}
-
-base::Time UkmObserver::GetUkmMostRecentAllowedTime() const {
-  return pref_service_->GetTime(kSegmentationUkmMostRecentAllowedTimeKey);
 }
 
 }  // namespace segmentation_platform

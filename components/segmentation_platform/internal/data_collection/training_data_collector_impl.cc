@@ -14,6 +14,7 @@
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
 #include "components/segmentation_platform/internal/stats.h"
+#include "components/segmentation_platform/public/local_state_helper.h"
 
 using optimization_guide::proto::OptimizationTarget;
 
@@ -167,9 +168,27 @@ bool TrainingDataCollectorImpl::CanReportImmediateTrainingData(
     return false;
   }
 
+  const proto::SegmentationModelMetadata& model_metadata =
+      segment_info.model_metadata();
+
+  // If UKM is allowed recently, don't upload the metrics.
+  DCHECK_LE(model_metadata.min_signal_collection_length(),
+            model_metadata.signal_storage_length());
+  base::TimeDelta signal_storage_length =
+      model_metadata.signal_storage_length() *
+      metadata_utils::GetTimeUnit(model_metadata);
+  if (LocalStateHelper::GetInstance().GetUkmMostRecentAllowedTime() +
+          signal_storage_length >=
+      clock_->Now()) {
+    RecordTrainingDataCollectionEvent(
+        segment_info.segment_id(),
+        stats::TrainingDataCollectionEvent::kPartialDataNotAllowed);
+    return false;
+  }
+
   base::TimeDelta min_signal_collection_length =
-      segment_info.model_metadata().min_signal_collection_length() *
-      metadata_utils::GetTimeUnit(segment_info.model_metadata());
+      model_metadata.min_signal_collection_length() *
+      metadata_utils::GetTimeUnit(model_metadata);
   base::Time model_update_time = base::Time::FromDeltaSinceWindowsEpoch(
       base::Seconds(segment_info.model_update_time_s()));
 
@@ -186,7 +205,7 @@ bool TrainingDataCollectorImpl::CanReportImmediateTrainingData(
 
   // Each input must be collected for enough time.
   if (!signal_storage_config_->MeetsSignalCollectionRequirement(
-          segment_info.model_metadata())) {
+          model_metadata)) {
     RecordTrainingDataCollectionEvent(
         segment_info.segment_id(),
         stats::TrainingDataCollectionEvent::kNotEnoughCollectionTime);

@@ -29,7 +29,6 @@ UkmDatabaseClient& UkmDatabaseClient::GetInstance() {
 UkmDatabaseClient::UkmDatabaseClient()
     : ukm_observer_(std::make_unique<UkmObserver>(
           g_browser_process->GetMetricsServicesManager()->GetUkmService(),
-          g_browser_process->local_state(),
           g_browser_process->GetMetricsServicesManager()
               ->IsUkmAllowedForAllProfiles())) {
   if (base::FeatureList::IsEnabled(

@@ -24,6 +24,7 @@
 #include "components/segmentation_platform/internal/signals/ukm_observer.h"
 #include "components/segmentation_platform/internal/ukm_data_manager_impl.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/local_state_helper.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -63,10 +64,10 @@ class SegmentationPlatformServiceImplTest
       return;
     }
     SegmentationPlatformService::RegisterLocalStatePrefs(prefs_.registry());
+    LocalStateHelper::GetInstance().Initialize(&prefs_);
     ukm_data_manager_ = std::make_unique<UkmDataManagerImpl>();
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    ukm_observer_ =
-        std::make_unique<UkmObserver>(ukm_recorder_.get(), &prefs_, true);
+    ukm_observer_ = std::make_unique<UkmObserver>(ukm_recorder_.get(), true);
     auto ukm_database = std::make_unique<MockUkmDatabase>();
     static_cast<UkmDataManagerImpl*>(ukm_data_manager_.get())
         ->InitializeForTesting(std::move(ukm_database), ukm_observer_.get());

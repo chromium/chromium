@@ -11,7 +11,13 @@
 #include "chrome/browser/segmentation_platform/ukm_database_client.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/features.h"
+#include "components/segmentation_platform/public/local_state_helper.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
+
+void ChromeBrowserMainExtraPartsSegmentationPlatform::PreCreateThreads() {
+  segmentation_platform::LocalStateHelper::GetInstance().Initialize(
+      g_browser_process->local_state());
+}
 
 void ChromeBrowserMainExtraPartsSegmentationPlatform::PreProfileInit() {
   segmentation_platform::UkmDatabaseClient::GetInstance().PreProfileInit();

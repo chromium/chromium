@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/mock_signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
@@ -21,6 +22,8 @@
 #include "components/segmentation_platform/internal/signals/mock_histogram_signal_handler.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/features.h"
+#include "components/segmentation_platform/public/local_state_helper.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,6 +53,9 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
   ~TrainingDataCollectorImplTest() override = default;
 
   void SetUp() override {
+    SegmentationPlatformService::RegisterLocalStatePrefs(prefs_.registry());
+    LocalStateHelper::GetInstance().Initialize(&prefs_);
+    clock_.SetNow(base::Time::Now());
     test_recorder_.Purge();
 
     // Allow two models to collect training data.
@@ -98,7 +104,9 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
   proto::SegmentInfo* CreateSegment(OptimizationTarget optimization_target) {
     auto* segment_info =
         test_segment_db()->FindOrCreateSegment(optimization_target);
-    segment_info->mutable_model_metadata()->set_time_unit(proto::TimeUnit::DAY);
+    auto* model_metadata = segment_info->mutable_model_metadata();
+    model_metadata->set_time_unit(proto::TimeUnit::DAY);
+    model_metadata->set_signal_storage_length(7);
     segment_info->set_model_version(kModelVersion);
     auto model_update_time = clock()->Now() - base::Days(365);
     segment_info->set_model_update_time_s(
@@ -160,6 +168,7 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
   NiceMock<MockSignalStorageConfig> signal_storage_config_;
   std::unique_ptr<test::TestSegmentInfoDatabase> test_segment_info_db_;
   std::unique_ptr<TrainingDataCollectorImpl> collector_;
+  TestingPrefServiceSimple prefs_;
 };
 
 // No segment info in database. Do nothing.
@@ -228,13 +237,24 @@ TEST_F(TrainingDataCollectorImplTest, ModelUpdatedRecently) {
   base::TimeDelta min_signal_collection_length =
       segment_info->model_metadata().min_signal_collection_length() *
       metadata_utils::GetTimeUnit(segment_info->model_metadata());
-
   // Set the model update timestamp to be closer to Now().
   segment_info->set_model_update_time_s(
       (clock()->Now() - min_signal_collection_length + base::Seconds(30))
           .ToDeltaSinceWindowsEpoch()
           .InSeconds());
 
+  Init();
+  collector()->OnHistogramSignalUpdated(kHistogramName0, kSample);
+  task_environment()->RunUntilIdle();
+  ExpectUkmCount(0u);
+}
+
+// No report if UKM is enabled recently.
+TEST_F(TrainingDataCollectorImplTest, PartialOutputNotAllowed) {
+  // Simulate that UKM is allowed 300 seconds ago.
+  LocalStateHelper::GetInstance().SetUkmMostRecentAllowedTime(
+      clock()->Now() - base::Seconds(300));
+  CreateSegmentInfo();
   Init();
   collector()->OnHistogramSignalUpdated(kHistogramName0, kSample);
   task_environment()->RunUntilIdle();
