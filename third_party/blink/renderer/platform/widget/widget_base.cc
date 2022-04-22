@@ -224,7 +224,7 @@ void WidgetBase::InitializeCompositing(
   widget_input_handler_manager_ = WidgetInputHandlerManager::Create(
       weak_ptr_factory_.GetWeakPtr(), std::move(frame_widget_input_handler),
       never_composited_, compositor_thread_scheduler, main_thread_scheduler,
-      uses_input_handler);
+      uses_input_handler, client_->AllowsScrollResampling());
 
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();

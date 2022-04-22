@@ -73,6 +73,7 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
   void ScheduleAnimation() override;
   void WillBeginMainFrame() override;
   void ScheduleAnimationForWebTests() override;
+  bool AllowsScrollResampling() override { return false; }
 
   content::TestRunner* GetTestRunner();
 

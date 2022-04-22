@@ -234,6 +234,7 @@ class MockInputHandlerProxyClient : public InputHandlerProxyClient {
                void(cc::TouchAction touch_action,
                     uint32_t unique_touch_event_id,
                     InputHandlerProxy::EventDisposition event_disposition));
+  bool AllowsScrollResampling() override { return true; }
 };
 
 class MockInputHandlerProxyClientWithDidAnimateForInput

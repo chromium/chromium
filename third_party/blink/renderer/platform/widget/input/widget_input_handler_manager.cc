@@ -187,11 +187,13 @@ scoped_refptr<WidgetInputHandlerManager> WidgetInputHandlerManager::Create(
     bool never_composited,
     scheduler::WebThreadScheduler* compositor_thread_scheduler,
     scheduler::WebThreadScheduler* main_thread_scheduler,
-    bool uses_input_handler) {
+    bool uses_input_handler,
+    bool allow_scroll_resampling) {
   scoped_refptr<WidgetInputHandlerManager> manager =
       new WidgetInputHandlerManager(
           std::move(widget), std::move(frame_widget_input_handler),
-          never_composited, compositor_thread_scheduler, main_thread_scheduler);
+          never_composited, compositor_thread_scheduler, main_thread_scheduler,
+          allow_scroll_resampling);
   if (uses_input_handler)
     manager->InitInputHandler();
 
@@ -212,7 +214,8 @@ WidgetInputHandlerManager::WidgetInputHandlerManager(
         frame_widget_input_handler,
     bool never_composited,
     scheduler::WebThreadScheduler* compositor_thread_scheduler,
-    scheduler::WebThreadScheduler* main_thread_scheduler)
+    scheduler::WebThreadScheduler* main_thread_scheduler,
+    bool allow_scroll_resampling)
     : widget_(std::move(widget)),
       frame_widget_input_handler_(std::move(frame_widget_input_handler)),
 
@@ -234,7 +237,8 @@ WidgetInputHandlerManager::WidgetInputHandlerManager(
               : nullptr),
       response_power_mode_voter_(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
-              "PowerModeVoter.Response")) {
+              "PowerModeVoter.Response")),
+      allow_scroll_resampling_(allow_scroll_resampling) {
 #if BUILDFLAG(IS_ANDROID)
   if (compositor_thread_default_task_runner_) {
     synchronous_compositor_registry_ =

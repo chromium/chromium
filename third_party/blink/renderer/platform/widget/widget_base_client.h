@@ -229,6 +229,10 @@ class WidgetBaseClient {
   // touchstart. But we still want to count those touchstart, pointerdown and
   // touchend.
   virtual void CountDroppedPointerDownForEventTiming(unsigned count) {}
+
+  // Whether to use ScrollPredictor to resample scroll events. This is false for
+  // web_tests to ensure that scroll deltas are not timing-dependent.
+  virtual bool AllowsScrollResampling() { return true; }
 };
 
 }  // namespace blink

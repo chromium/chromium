@@ -218,6 +218,9 @@ class ChromeDriver(object):
       chrome_switches = []
     chrome_switches.append('force-color-profile=srgb')
 
+    # Resampling can change the distance of a synthetic scroll.
+    chrome_switches.append('disable-features=ResamplingScrollEvents')
+
     if chrome_switches:
       assert type(chrome_switches) is list
       options['args'] = chrome_switches

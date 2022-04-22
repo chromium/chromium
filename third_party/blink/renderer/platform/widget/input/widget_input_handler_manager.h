@@ -79,7 +79,8 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       bool never_composited,
       scheduler::WebThreadScheduler* compositor_thread_scheduler,
       scheduler::WebThreadScheduler* main_thread_scheduler,
-      bool needs_input_handler);
+      bool needs_input_handler,
+      bool allow_scroll_resampling);
 
   WidgetInputHandlerManager(const WidgetInputHandlerManager&) = delete;
   WidgetInputHandlerManager& operator=(const WidgetInputHandlerManager&) =
@@ -113,6 +114,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       cc::TouchAction touch_action,
       uint32_t unique_touch_event_id,
       InputHandlerProxy::EventDisposition event_disposition) override;
+  bool AllowsScrollResampling() override { return allow_scroll_resampling_; }
 
   void ObserveGestureEventOnMainThread(
       const WebGestureEvent& gesture_event,
@@ -184,7 +186,8 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
           frame_widget_input_handler,
       bool never_composited,
       scheduler::WebThreadScheduler* compositor_thread_scheduler,
-      scheduler::WebThreadScheduler* main_thread_scheduler);
+      scheduler::WebThreadScheduler* main_thread_scheduler,
+      bool allow_scroll_resampling);
   void InitInputHandler();
   void InitOnInputHandlingThread(
       const base::WeakPtr<cc::CompositorDelegateForInput>& compositor_delegate,
@@ -351,6 +354,10 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   std::unique_ptr<SynchronousCompositorProxyRegistry>
       synchronous_compositor_registry_;
 #endif
+
+  // Whether to use ScrollPredictor to resample scroll events. This is false for
+  // web_tests to ensure that scroll deltas are not timing-dependent.
+  const bool allow_scroll_resampling_ = true;
 };
 
 }  // namespace blink
