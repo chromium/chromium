@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
@@ -57,8 +58,9 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
 
   void CreateTrackAndConnectToSource() {
     media_stream_component_ = MakeGarbageCollected<MediaStreamComponent>(
-        media_stream_source_->Id(), media_stream_source_);
-    pushable_audio_source_->ConnectToTrack(media_stream_component_);
+        media_stream_source_->Id(), media_stream_source_,
+        std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */));
+    pushable_audio_source_->ConnectToInitializedTrack(media_stream_component_);
   }
 
   ScriptValue CreateAudioData(ScriptState* script_state,

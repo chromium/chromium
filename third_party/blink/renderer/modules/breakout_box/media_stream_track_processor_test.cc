@@ -77,10 +77,11 @@ MediaStreamTrack* CreateAudioMediaStreamTrack(
           "source_id", MediaStreamSource::kTypeAudio, "source_name",
           /*remote=*/false, std::move(source));
 
-  MediaStreamComponent* component =
-      MakeGarbageCollected<MediaStreamComponent>(media_stream_source);
+  MediaStreamComponent* component = MakeGarbageCollected<MediaStreamComponent>(
+      media_stream_source,
+      std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */));
 
-  source_ptr->ConnectToTrack(component);
+  source_ptr->ConnectToInitializedTrack(component);
 
   return MakeGarbageCollected<MediaStreamTrackImpl>(context, component);
 }

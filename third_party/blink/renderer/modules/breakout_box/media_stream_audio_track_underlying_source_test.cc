@@ -53,8 +53,9 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
             std::move(pushable_audio_source));
     MediaStreamComponent* component =
         MakeGarbageCollected<MediaStreamComponent>(
-            String::FromUTF8("audio_track"), media_stream_source);
-    pushable_audio_source_ptr->ConnectToTrack(component);
+            String::FromUTF8("audio_track"), media_stream_source,
+            std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */));
+    pushable_audio_source_ptr->ConnectToInitializedTrack(component);
 
     return MakeGarbageCollected<MediaStreamTrackImpl>(execution_context,
                                                       component);

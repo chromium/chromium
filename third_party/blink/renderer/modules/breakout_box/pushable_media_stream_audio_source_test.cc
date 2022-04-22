@@ -142,7 +142,8 @@ class PushableMediaStreamAudioSourceTest : public testing::Test {
         "dummy_source_id", MediaStreamSource::kTypeAudio, "dummy_source_name",
         false /* remote */, std::move(pushable_audio_source));
     stream_component_ = MakeGarbageCollected<MediaStreamComponent>(
-        stream_source_->Id(), stream_source_);
+        stream_source_->Id(), stream_source_,
+        std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */));
   }
 
   void TearDown() override {
@@ -152,7 +153,7 @@ class PushableMediaStreamAudioSourceTest : public testing::Test {
   }
 
   bool ConnectSourceToTrack() {
-    return pushable_audio_source_->ConnectToTrack(stream_component_);
+    return pushable_audio_source_->ConnectToInitializedTrack(stream_component_);
   }
 
   void SendEmptyBufferAndVerifyParams(FakeMediaStreamAudioSink* fake_sink,
