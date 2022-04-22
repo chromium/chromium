@@ -881,7 +881,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest, ReloadTracedExtension) {
   base::Value tracing_complete = WaitForNotification("Tracing.tracingComplete");
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest, ReloadServiceWorkerExtension) {
+IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest,
+                       DISABLED_ReloadServiceWorkerExtension) {
   base::FilePath extension_path =
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
           .AppendASCII("devtools")
