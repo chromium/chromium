@@ -772,6 +772,29 @@ TEST_F(PasswordStoreAndroidBackendTest,
   EXPECT_TRUE(sync_service.HasObserver(sync_controller_delegate()));
 }
 
+TEST_F(PasswordStoreAndroidBackendTest, RecordClearedZombieTaskWithoutLatency) {
+  constexpr JobId kJobId{1337};
+  base::HistogramTester histogram_tester;
+  backend().InitBackend(/*stored_passwords_changed=*/base::DoNothing(),
+                        /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
+                        /*completion=*/base::DoNothing());
+
+  base::MockCallback<PasswordStoreChangeListReply> mock_reply;
+  EXPECT_CALL(*bridge(), AddLogin).WillOnce(Return(kJobId));
+
+  backend().AddLoginAsync(
+      CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated),
+      mock_reply.Get());
+  // Don't wait for completion. The task could succeed but Chrome won't know.
+  lifecycle_helper()->OnForegroundSessionStart();
+
+  // Since tasks are cleaned up now, the reply should never be called.
+  EXPECT_CALL(mock_reply, Run).Times(0);
+  task_environment_.FastForwardUntilNoTasksRemain();  // For backend work.
+  consumer().OnLoginsChanged(kJobId, {});  // Can be delayed or never happen.
+  task_environment_.FastForwardUntilNoTasksRemain();  // For would-be response.
+}
+
 class PasswordStoreAndroidBackendTestForMetrics
     : public PasswordStoreAndroidBackendTest,
       public testing::WithParamInterface<bool> {

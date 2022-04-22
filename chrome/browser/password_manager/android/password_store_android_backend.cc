@@ -508,12 +508,14 @@ void PasswordStoreAndroidBackend::OnCompleteWithLogins(
     JobId job_id,
     std::vector<PasswordForm> passwords) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  JobReturnHandler reply = GetAndEraseJob(job_id);
-  reply.RecordMetrics(/*error=*/absl::nullopt);
-  DCHECK(reply.Holds<LoginsOrErrorReply>());
+  absl::optional<JobReturnHandler> reply = GetAndEraseJob(job_id);
+  if (!reply.has_value())
+    return;  // Task cleaned up after returning from background.
+  reply->RecordMetrics(/*error=*/absl::nullopt);
+  DCHECK(reply->Holds<LoginsOrErrorReply>());
   main_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(reply).Get<LoginsOrErrorReply>(),
+      base::BindOnce(std::move(*reply).Get<LoginsOrErrorReply>(),
                      WrapPasswordsIntoPointers(std::move(passwords))));
 }
 
@@ -521,30 +523,34 @@ void PasswordStoreAndroidBackend::OnLoginsChanged(
     JobId job_id,
     absl::optional<PasswordStoreChangeList> changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  JobReturnHandler reply = GetAndEraseJob(job_id);
-  reply.RecordMetrics(/*error=*/absl::nullopt);
-  DCHECK(reply.Holds<PasswordStoreChangeListReply>());
+  absl::optional<JobReturnHandler> reply = GetAndEraseJob(job_id);
+  if (!reply.has_value())
+    return;  // Task cleaned up after returning from background.
+  reply->RecordMetrics(/*error=*/absl::nullopt);
+  DCHECK(reply->Holds<PasswordStoreChangeListReply>());
 
   main_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(reply).Get<PasswordStoreChangeListReply>(),
+      base::BindOnce(std::move(*reply).Get<PasswordStoreChangeListReply>(),
                      changes));
 }
 
 void PasswordStoreAndroidBackend::OnError(JobId job_id,
                                           AndroidBackendError error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  JobReturnHandler reply = GetAndEraseJob(job_id);
-  reply.RecordMetrics(std::move(error));
-  if (reply.Holds<LoginsOrErrorReply>()) {
+  absl::optional<JobReturnHandler> reply = GetAndEraseJob(job_id);
+  if (!reply.has_value())
+    return;  // Task cleaned up after returning from background.
+  reply->RecordMetrics(std::move(error));
+  if (reply->Holds<LoginsOrErrorReply>()) {
     main_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(reply).Get<LoginsOrErrorReply>(),
+        FROM_HERE, base::BindOnce(std::move(*reply).Get<LoginsOrErrorReply>(),
                                   PasswordStoreBackendError::kUnspecified));
-  } else if (reply.Holds<PasswordStoreChangeListReply>()) {
+  } else if (reply->Holds<PasswordStoreChangeListReply>()) {
     // Run callback with empty resulting changelist.
     main_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(reply).Get<PasswordStoreChangeListReply>(),
+        base::BindOnce(std::move(*reply).Get<PasswordStoreChangeListReply>(),
                        PasswordStoreChangeList()));
   }
 }
@@ -561,11 +567,12 @@ void PasswordStoreAndroidBackend::QueueNewJob(JobId job_id,
                                                 std::move(metric_infix))));
 }
 
-PasswordStoreAndroidBackend::JobReturnHandler
+absl::optional<PasswordStoreAndroidBackend::JobReturnHandler>
 PasswordStoreAndroidBackend::GetAndEraseJob(JobId job_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   auto iter = request_for_job_.find(job_id);
-  DCHECK(iter != request_for_job_.end());
+  if (iter == request_for_job_.end())
+    return absl::nullopt;
   JobReturnHandler reply = std::move(iter->second);
   request_for_job_.erase(iter);
   return reply;
@@ -682,10 +689,19 @@ void PasswordStoreAndroidBackend::OnForegroundSessionStart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(stored_passwords_changed_);
 
+  // Clear outdated pending tasks before the store queues a new request.
+  ClearZombieTasks();
+
   // Calling the remote form changes with a nullopt means that changes are not
   // available and the store should request all logins asynchronously to
   // invoke `PasswordStoreInterface::Observer::OnLoginsRetained`.
   stored_passwords_changed_.Run(absl::nullopt);
+}
+
+void PasswordStoreAndroidBackend::ClearZombieTasks() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  // TODO(crbug.com/1298459): Record terminations.
+  request_for_job_.clear();
 }
 
 }  // namespace password_manager

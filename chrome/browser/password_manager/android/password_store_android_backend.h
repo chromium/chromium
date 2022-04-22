@@ -148,7 +148,7 @@ class PasswordStoreAndroidBackend
 
   template <typename Callback>
   void QueueNewJob(JobId job_id, Callback callback, MetricInfix metric_infix);
-  JobReturnHandler GetAndEraseJob(JobId job_id);
+  absl::optional<JobReturnHandler> GetAndEraseJob(JobId job_id);
 
   // Gets logins matching |form|.
   void GetLoginsAsync(const PasswordFormDigest& form,
@@ -202,6 +202,11 @@ class PasswordStoreAndroidBackend
   // event happens afterwads and is not repeated. A "foreground session" starts
   // when a Chrome activity resumes for the first time.
   void OnForegroundSessionStart();
+
+  // Clears all `request_for_job_`s that haven't been completed yet at a moment
+  // when it's unlikely that they will still finish. It records an error for
+  // each task cleared this way that it could have failed.
+  void ClearZombieTasks();
 
   // Observer to propagate potential password changes to.
   RemoteChangesReceived stored_passwords_changed_;
