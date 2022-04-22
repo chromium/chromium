@@ -15,10 +15,12 @@
  *
  *      <img is="cr-auto-img" auto-src="https://foo.com/bar.png">
  *
- *      If your image needs to be fetched using cookies, you can use the
- *      with-cookies attribute as follows:
+ *      If your image URL points to Google Photos storage, meaning it needs an
+ *      auth token to be downloaded, you can use the is-google-photos attribute
+ *      as follows:
  *
- *      <img is="cr-auto-img" auto-src="https://foo.com/bar.png" with-cookies>
+ *      <img is="cr-auto-img" auto-src="https://foo.com/bar.png"
+ *          is-google-photos>
  *
  *      If you want the image to reset to an empty state when auto-src changes
  *      and the new image is still loading, set the clear-src attribute:
@@ -33,22 +35,22 @@ const AUTO_SRC: string = 'auto-src';
 
 const CLEAR_SRC: string = 'clear-src';
 
-const WITH_COOKIES: string = 'with-cookies';
+const IS_GOOGLE_PHOTOS: string = 'is-google-photos';
 
 export class CrAutoImgElement extends HTMLImageElement {
   static get observedAttributes() {
-    return [AUTO_SRC, WITH_COOKIES];
+    return [AUTO_SRC, IS_GOOGLE_PHOTOS];
   }
 
   attributeChangedCallback(
       name: string, oldValue: string|null, newValue: string|null) {
-    if (name !== AUTO_SRC && name !== WITH_COOKIES) {
+    if (name !== AUTO_SRC && name !== IS_GOOGLE_PHOTOS) {
       return;
     }
 
-    // Changes to |WITH_COOKIES| are only interesting when the attribute is
+    // Changes to |IS_GOOGLE_PHOTOS| are only interesting when the attribute is
     // being added or removed.
-    if (name === WITH_COOKIES &&
+    if (name === IS_GOOGLE_PHOTOS &&
         ((oldValue === null) === (newValue === null))) {
       return;
     }
@@ -72,9 +74,9 @@ export class CrAutoImgElement extends HTMLImageElement {
       this.removeAttribute('src');
     } else if (url.protocol === 'data:' || url.protocol === 'chrome:') {
       this.src = url.href;
-    } else if (this.hasAttribute(WITH_COOKIES)) {
-      this.src =
-          `chrome://image?url=${encodeURIComponent(url.href)}&withCookies=true`;
+    } else if (this.hasAttribute(IS_GOOGLE_PHOTOS)) {
+      this.src = `chrome://image?url=${
+          encodeURIComponent(url.href)}&isGooglePhotos=true`;
     } else {
       this.src = 'chrome://image?' + url.href;
     }
@@ -96,16 +98,16 @@ export class CrAutoImgElement extends HTMLImageElement {
     return this.getAttribute(CLEAR_SRC)!;
   }
 
-  set withCookies(enabled: boolean) {
+  set isGooglePhotos(enabled: boolean) {
     if (enabled) {
-      this.setAttribute(WITH_COOKIES, '');
+      this.setAttribute(IS_GOOGLE_PHOTOS, '');
     } else {
-      this.removeAttribute(WITH_COOKIES);
+      this.removeAttribute(IS_GOOGLE_PHOTOS);
     }
   }
 
-  get withCookies(): boolean {
-    return this.hasAttribute(WITH_COOKIES);
+  get isGooglePhotos(): boolean {
+    return this.hasAttribute(IS_GOOGLE_PHOTOS);
   }
 }
 

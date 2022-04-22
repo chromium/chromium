@@ -11,6 +11,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/image_fetcher/core/image_decoder.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -168,19 +169,26 @@ TEST_F(SanitizedImageSourceTest, WrongUrl) {
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 }
 
-// Verifies that the image source sends cookies with its data request if and
-// only if asked to by URL specification.
-TEST_F(SanitizedImageSourceTest, CookiesInclusion) {
+// Verifies that the image source sends a Google Photos auth token with its data
+// request if and only if asked to by URL specification.
+TEST_F(SanitizedImageSourceTest, GooglePhotosImage) {
   constexpr char kImageUrl[] = "https://foo.com/img.png";
   base::MockCallback<content::URLDataSource::GotDataCallback> callback;
+  signin::IdentityTestEnvironment identity_test_env;
+  identity_test_env.MakePrimaryAccountAvailable("test@gmail.com",
+                                                signin::ConsentLevel::kSync);
+  sanitized_image_source_->set_identity_manager_for_test(
+      identity_test_env.identity_manager());
 
-  // Verify that by default, requests are sent without cookies.
+  // Verify that by default, requests are sent with no auth token.
   sanitized_image_source_->StartDataRequest(
       GURL(base::StrCat({chrome::kChromeUIImageURL, "?", kImageUrl})),
       content::WebContents::Getter(), callback.Get());
+  EXPECT_FALSE(identity_test_env.IsAccessTokenRequestPending());
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
   EXPECT_FALSE(
-      test_url_loader_factory_.GetPendingRequest(0)->request.SendsCookies());
+      test_url_loader_factory_.GetPendingRequest(0)->request.headers.HasHeader(
+          net::HttpRequestHeaders::kAuthorization));
 
   // Encode a URL so that it can be used as a param value.
   url::RawCanonOutputT<char> encoded_url;
@@ -189,28 +197,51 @@ TEST_F(SanitizedImageSourceTest, CookiesInclusion) {
   auto encoded_url_str =
       base::StringPiece(encoded_url.data(), encoded_url.length());
 
-  // Verify that param-formatted requests can be sent with cookies.
+  // Verify that param-formatted requests can be sent with auth tokens.
   sanitized_image_source_->StartDataRequest(
       GURL(base::StrCat({chrome::kChromeUIImageURL, "?url=", encoded_url_str,
-                         "&withCookies=true"})),
+                         "&isGooglePhotos=true"})),
       content::WebContents::Getter(), callback.Get());
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  EXPECT_TRUE(identity_test_env.IsAccessTokenRequestPending());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "token", base::Time::Max());
+  EXPECT_FALSE(identity_test_env.IsAccessTokenRequestPending());
   ASSERT_EQ(2, test_url_loader_factory_.NumPending());
   EXPECT_TRUE(
-      test_url_loader_factory_.GetPendingRequest(1)->request.SendsCookies());
+      test_url_loader_factory_.GetPendingRequest(1)->request.headers.HasHeader(
+          net::HttpRequestHeaders::kAuthorization));
 
-  // Verify that param-formatted requests can be sent without cookies.
+  // Verify that param-formatted requests can be sent without auth tokens.
   sanitized_image_source_->StartDataRequest(
       GURL(base::StrCat({chrome::kChromeUIImageURL, "?url=", encoded_url_str,
-                         "&withCookies=false"})),
+                         "&isGooglePhotos=false"})),
       content::WebContents::Getter(), callback.Get());
+  EXPECT_FALSE(identity_test_env.IsAccessTokenRequestPending());
   ASSERT_EQ(3, test_url_loader_factory_.NumPending());
   EXPECT_FALSE(
-      test_url_loader_factory_.GetPendingRequest(2)->request.SendsCookies());
+      test_url_loader_factory_.GetPendingRequest(2)->request.headers.HasHeader(
+          net::HttpRequestHeaders::kAuthorization));
 
   sanitized_image_source_->StartDataRequest(
       GURL(base::StrCat({chrome::kChromeUIImageURL, "?url=", encoded_url_str})),
       content::WebContents::Getter(), callback.Get());
+  EXPECT_FALSE(identity_test_env.IsAccessTokenRequestPending());
+
   ASSERT_EQ(4, test_url_loader_factory_.NumPending());
   EXPECT_FALSE(
-      test_url_loader_factory_.GetPendingRequest(3)->request.SendsCookies());
+      test_url_loader_factory_.GetPendingRequest(3)->request.headers.HasHeader(
+          net::HttpRequestHeaders::kAuthorization));
+
+  // Verify that no download is attempted when authentication fails.
+  sanitized_image_source_->StartDataRequest(
+      GURL(base::StrCat({chrome::kChromeUIImageURL, "?url=", encoded_url_str,
+                         "&isGooglePhotos=true"})),
+      content::WebContents::Getter(), callback.Get());
+  ASSERT_EQ(4, test_url_loader_factory_.NumPending());
+  EXPECT_TRUE(identity_test_env.IsAccessTokenRequestPending());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
+  EXPECT_FALSE(identity_test_env.IsAccessTokenRequestPending());
+  ASSERT_EQ(4, test_url_loader_factory_.NumPending());
 }

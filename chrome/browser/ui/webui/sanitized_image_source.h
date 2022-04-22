@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SANITIZED_IMAGE_SOURCE_H_
 #define CHROME_BROWSER_UI_WEBUI_SANITIZED_IMAGE_SOURCE_H_
 
-#include <list>
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
@@ -28,6 +27,11 @@ class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network
 
+namespace signin {
+struct AccessTokenInfo;
+class IdentityManager;
+}  // namespace signin
+
 // The sanitized image source provides a convenient mean to embed images into
 // WebUIs. For security reasons WebUIs are not allowed to download and decode
 // external images in their renderer process. The sanitized image source allows
@@ -38,9 +42,10 @@ class SimpleURLLoader;
 //
 //   chrome://image?<external image URL>
 //
-// If the image source needs to be requested with cookies, you can instead reach
-// it via:
-//   chrome://image?url=<external image URL>&withCookies=true
+// If the image source points to Google Photos storage, meaning it needs an auth
+// token to be downloaded, you can use the is-google-photos attribute as
+// follows:
+//   chrome://image?url=<external image URL>&isGooglePhotos=true
 class SanitizedImageSource : public content::URLDataSource {
  public:
   explicit SanitizedImageSource(Profile* profile);
@@ -62,15 +67,27 @@ class SanitizedImageSource : public content::URLDataSource {
   std::string GetMimeType(const std::string& path) override;
   bool ShouldReplaceExistingSource() override;
 
+  void set_identity_manager_for_test(
+      signin::IdentityManager* identity_manager) {
+    identity_manager_ = identity_manager;
+  }
+
  private:
-  void OnImageLoaded(network::SimpleURLLoader* loader,
+  void StartImageDownload(
+      GURL image_url,
+      content::URLDataSource::GotDataCallback callback,
+      absl::optional<signin::AccessTokenInfo> access_token_info);
+  void OnImageLoaded(std::unique_ptr<network::SimpleURLLoader> loader,
                      content::URLDataSource::GotDataCallback callback,
                      std::unique_ptr<std::string> body);
   void OnImageDecoded(content::URLDataSource::GotDataCallback callback,
                       const gfx::Image& image);
 
+  // Owned by `IdentityManagerFactory` or `IdentityTestEnvironment`.
+  raw_ptr<signin::IdentityManager> identity_manager_;
+
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::list<std::unique_ptr<network::SimpleURLLoader>> loaders_;
+
   std::unique_ptr<image_fetcher::ImageDecoder> image_decoder_;
 
   SEQUENCE_CHECKER(sequence_checker_);

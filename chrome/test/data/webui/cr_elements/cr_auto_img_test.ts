@@ -67,44 +67,44 @@ suite('CrAutoImgElementTest', () => {
       });
 
   test(
-      'setting withCookies creates a URL with autoSrc and withCookies as params',
+      'setting isGooglePhotos creates a URL with autoSrc and isGooglePhotos as params',
       () => {
         const autoSrc = 'https://foo.com/img.png';
 
         // Act.
-        img.withCookies = true;
+        img.isGooglePhotos = true;
         img.autoSrc = autoSrc;
 
         // Assert.
         assertEquals(
             `chrome://image/?url=${
-                encodeURIComponent(autoSrc)}&withCookies=true`,
+                encodeURIComponent(autoSrc)}&isGooglePhotos=true`,
             img.src);
 
         // Act.
-        img.withCookies = false;
+        img.isGooglePhotos = false;
 
         // Assert.
         assertEquals(`chrome://image/?${autoSrc}`, img.src);
       });
 
   test(
-      'setting with-cookies creates a URL with autoSrc and withCookies as params',
+      'setting is-google-photos creates a URL with autoSrc and isGooglePhotos as params',
       () => {
         const autoSrc = 'https://foo.com/img.png';
 
         // Act.
-        img.setAttribute('with-cookies', '');
+        img.setAttribute('is-google-photos', '');
         img.autoSrc = autoSrc;
 
         // Assert.
         assertEquals(
             `chrome://image/?url=${
-                encodeURIComponent(autoSrc)}&withCookies=true`,
+                encodeURIComponent(autoSrc)}&isGooglePhotos=true`,
             img.src);
 
         // Act.
-        img.removeAttribute('with-cookies');
+        img.removeAttribute('is-google-photos');
 
         // Assert.
         assertEquals(`chrome://image/?${autoSrc}`, img.src);

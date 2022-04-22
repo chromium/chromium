@@ -50,7 +50,7 @@ suite('WallpaperGridItemTest', function() {
     // Verify state.
     assertEquals(querySelector('img')?.getAttribute('auto-src'), imageSrc);
     assertEquals(querySelector('img')?.hasAttribute('clear-src'), true);
-    assertEquals(querySelector('img')?.hasAttribute('with-cookies'), true);
+    assertEquals(querySelector('img')?.hasAttribute('is-google-photos'), true);
     assertEquals(querySelector('.text'), null);
     assertEquals(querySelector('.primary-text'), null);
     assertEquals(querySelector('.secondary-text'), null);

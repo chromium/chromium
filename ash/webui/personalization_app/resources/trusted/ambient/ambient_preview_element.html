@@ -205,11 +205,13 @@
             <img class="preview-image clickable" is="cr-auto-img"
                 on-click="onClickAmbientModeButton_"
                 on-keypress="onClickAmbientModeButton_"
-                auto-src="[[getPreviewImage_(firstPreviewAlbum_)]]" with-cookies>
+                auto-src="[[getPreviewImage_(firstPreviewAlbum_)]]"
+                is-google-photos>
           </template>
           <template is="dom-if" if="[[!clickable]]">
             <img class="preview-image" is="cr-auto-img"
-                auto-src="[[getPreviewImage_(firstPreviewAlbum_)]]" with-cookies>
+                auto-src="[[getPreviewImage_(firstPreviewAlbum_)]]"
+                is-google-photos>
           </template>
         </div>
         <h2 id="textContainer" class="preview-text-container album-info-mainpage album-info-subpage">
@@ -229,7 +231,7 @@
         <div id="collageContainer" class$="[[getContainerClass_(previewAlbums_)]]">
           <template is="dom-repeat" items="[[getCollageItems_(previewAlbums_)]]">
             <img class="collage-item" is="cr-auto-img"
-                auto-src="[[getPreviewImage_(item)]]" with-cookies>
+                auto-src="[[getPreviewImage_(item)]]" is-google-photos>
           </template>
         </div>
       </template>
