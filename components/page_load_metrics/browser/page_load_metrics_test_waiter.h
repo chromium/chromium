@@ -211,10 +211,9 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
                         const gfx::Size& frame_size);
 
-  void OnFrameIntersectionUpdate(
+  void OnMainFrameIntersectionRectChanged(
       content::RenderFrameHost* rfh,
-      const page_load_metrics::mojom::FrameIntersectionUpdate&
-          frame_intersection_update);
+      const gfx::Rect& main_frame_intersection_rect);
 
   void OnDidFinishSubFrameNavigation(
       content::NavigationHandle* navigation_handle);

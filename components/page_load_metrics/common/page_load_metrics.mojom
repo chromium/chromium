@@ -188,23 +188,16 @@ struct PageLoadTiming {
   // If you add additional members, also be sure to update page_load_timing.h.
 };
 
-// FrameIntersectionUpdate contains a frame's intersections with other elements
-// in a page load.
-struct FrameIntersectionUpdate {
-  // The frame's current intersection rect with the main frame in the main
-  // frame's coordinate system.. The intersection rect is
-  // an empty rect when there is no intersection with the main frame and
-  // returns the document size of the root document for the main frame. This
-  // is only set the first time an intersection changes and is null otherwise.
-  gfx.mojom.Rect? main_frame_intersection_rect;
-};
-
 struct FrameMetadata {
   // These are packed blink::LoadingBehaviorFlag enums.
   int32 behavior_flags = 0;
 
-  // The frame's intersection with page elements.
-  FrameIntersectionUpdate? intersection_update;
+  // For the main frame, the rect is the main frame document size (at (0,0));
+  // for a subframe, the rect is frame's intersection rect with the main frame
+  // in the main frame's coordinate system, and is an empty rect when there is
+  // no intersection with the main frame. This is only set the first time an
+  // intersection is computed or changes, and is null otherwise.
+  gfx.mojom.Rect? main_frame_intersection_rect;
 };
 
 // Enumeration of distinct cache types.

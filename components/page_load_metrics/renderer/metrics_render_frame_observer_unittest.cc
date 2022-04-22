@@ -52,10 +52,10 @@ class TestMetricsRenderFrameObserver : public MetricsRenderFrameObserver,
     fake_timing_ = timing.Clone();
   }
 
-  void ExpectFrameIntersectionUpdate(
-      const mojom::FrameIntersectionUpdate& intersection) {
-    validator_.UpdateExpectFrameIntersectionUpdate(intersection);
-    validator_.VerifyExpectedFrameIntersectionUpdate();
+  void ExpectMainFrameIntersectionRect(
+      const gfx::Rect& main_frame_intersection_rect) {
+    validator_.UpdateExpectedMainFrameIntersectionRect(
+        main_frame_intersection_rect);
   }
 
   Timing GetTiming() const override {
@@ -119,10 +119,10 @@ TEST_F(MetricsRenderFrameObserverTest,
   observer.DidStartNavigation(GURL(), absl::nullopt);
   observer.ReadyToCommitNavigation(nullptr);
   observer.DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
-  observer.GetMockTimer()->Fire();
 
-  observer.ExpectFrameIntersectionUpdate(
-      mojom::FrameIntersectionUpdate(gfx::Rect(1, 2, 3, 4)));
+  observer.ExpectMainFrameIntersectionRect(gfx::Rect(1, 2, 3, 4));
+
+  observer.GetMockTimer()->Fire();
 }
 
 // Verify that when two CpuTimings come in, they're grouped into a single

@@ -498,14 +498,13 @@ class PageLoadMetricsObserver {
       const content::WebContentsObserver::MediaPlayerInfo& video_type,
       content::RenderFrameHost* render_frame_host) {}
 
-  // Invoked when a frame's intersections with page elements changes and an
-  // update is received. The main_frame_document_intersection_rect
-  // returns an empty rect for out of view subframes and the root document size
-  // for the main frame.
+  // Invoked when a frame's intersections with the main frame changes and an
+  // update is received. The `main_frame_intersection_rect` is an empty rect for
+  // out of view subframes and is the root document size for the main frame.
   // TODO(crbug/1048175): Expose intersections to observers via shared delegate.
-  virtual void OnFrameIntersectionUpdate(
+  virtual void OnMainFrameIntersectionRectChanged(
       content::RenderFrameHost* rfh,
-      const mojom::FrameIntersectionUpdate& intersection_update) {}
+      const gfx::Rect& main_frame_intersection_rect) {}
 
   // Invoked when the UMA metrics subsystem is persisting metrics as the
   // application goes into the background, on platforms where the browser

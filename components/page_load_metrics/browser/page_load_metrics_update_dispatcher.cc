@@ -612,7 +612,7 @@ void PageLoadMetricsUpdateDispatcher::UpdateSubFrameMetadata(
   subframe_metadata_->behavior_flags |= subframe_metadata->behavior_flags;
   client_->OnSubframeMetadataChanged(render_frame_host, *subframe_metadata);
 
-  MaybeUpdateFrameIntersection(render_frame_host, subframe_metadata);
+  MaybeUpdateMainFrameIntersectionRect(render_frame_host, subframe_metadata);
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdateMainFrameMobileFriendliness(
@@ -625,11 +625,11 @@ void PageLoadMetricsUpdateDispatcher::UpdateSubFrameMobileFriendliness(
   client_->OnSubFrameMobileFriendlinessChanged(mobile_friendliness);
 }
 
-void PageLoadMetricsUpdateDispatcher::MaybeUpdateFrameIntersection(
+void PageLoadMetricsUpdateDispatcher::MaybeUpdateMainFrameIntersectionRect(
     content::RenderFrameHost* render_frame_host,
     const mojom::FrameMetadataPtr& frame_metadata) {
   // Handle intersection updates if included in the metadata.
-  if (frame_metadata->intersection_update.is_null())
+  if (!frame_metadata->main_frame_intersection_rect)
     return;
 
   // Do not notify intersections for untracked loads,
@@ -645,18 +645,18 @@ void PageLoadMetricsUpdateDispatcher::MaybeUpdateFrameIntersection(
   }
 
   auto existing_intersection_it =
-      frame_intersection_updates_.find(frame_tree_node_id);
+      main_frame_intersection_rects_.find(frame_tree_node_id);
 
-  // Check if we already have a frame intersection update for the frame,
-  // dispatch updates for the first frame intersection update or if
-  // the intersection has changed.
-  if (existing_intersection_it == frame_intersection_updates_.end() ||
-      !existing_intersection_it->second.Equals(
-          *frame_metadata->intersection_update)) {
-    frame_intersection_updates_[frame_tree_node_id] =
-        *frame_metadata->intersection_update;
-    client_->OnFrameIntersectionUpdate(render_frame_host,
-                                       *frame_metadata->intersection_update);
+  // Check if we already have a frame intersection rect for the frame, dispatch
+  // updates for the first frame intersection rect or if the intersection has
+  // changed.
+  if (existing_intersection_it == main_frame_intersection_rects_.end() ||
+      existing_intersection_it->second !=
+          *frame_metadata->main_frame_intersection_rect) {
+    main_frame_intersection_rects_[frame_tree_node_id] =
+        *frame_metadata->main_frame_intersection_rect;
+    client_->OnMainFrameIntersectionRectChanged(
+        render_frame_host, *frame_metadata->main_frame_intersection_rect);
   }
 }
 
@@ -721,7 +721,8 @@ void PageLoadMetricsUpdateDispatcher::UpdateMainFrameMetadata(
   client_->OnMainFrameMetadataChanged();
 
   if (!main_frame_metadata_.is_null())
-    MaybeUpdateFrameIntersection(render_frame_host, main_frame_metadata_);
+    MaybeUpdateMainFrameIntersectionRect(render_frame_host,
+                                         main_frame_metadata_);
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdatePageInputTiming(

@@ -318,7 +318,7 @@ TEST_F(PageTimingMetricsSenderTest, SendPageRenderData) {
   validator_.VerifyExpectedRenderData();
 }
 
-TEST_F(PageTimingMetricsSenderTest, SendFrameIntersectionUpdate) {
+TEST_F(PageTimingMetricsSenderTest, SendMainFrameIntersectionRect) {
   mojom::PageLoadTiming timing;
   InitPageLoadTimingForTest(&timing);
   metrics_sender_->Update(timing.Clone(),
@@ -326,12 +326,10 @@ TEST_F(PageTimingMetricsSenderTest, SendFrameIntersectionUpdate) {
   validator_.ExpectPageLoadTiming(timing);
 
   metrics_sender_->OnMainFrameIntersectionChanged(gfx::Rect(0, 0, 1, 1));
-  mojom::FrameIntersectionUpdate frame_intersection_update(
-      gfx::Rect(0, 0, 1, 1));
-  validator_.UpdateExpectFrameIntersectionUpdate(frame_intersection_update);
+  validator_.UpdateExpectedMainFrameIntersectionRect(gfx::Rect(0, 0, 1, 1));
 
   metrics_sender_->mock_timer()->Fire();
-  validator_.VerifyExpectedFrameIntersectionUpdate();
+  validator_.VerifyExpectedMainFrameIntersectionRect();
 }
 
 TEST_F(PageTimingMetricsSenderTest, FirstContentfulPaintForcesSend) {

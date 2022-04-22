@@ -110,9 +110,9 @@ class PageLoadMetricsForwardObserver final : public PageLoadMetricsObserver {
   void MediaStartedPlaying(
       const content::WebContentsObserver::MediaPlayerInfo& video_type,
       content::RenderFrameHost* render_frame_host) override;
-  void OnFrameIntersectionUpdate(
+  void OnMainFrameIntersectionRectChanged(
       content::RenderFrameHost* rfh,
-      const mojom::FrameIntersectionUpdate& intersection_update) override;
+      const gfx::Rect& main_frame_intersection_rect) override;
   ObservePolicy FlushMetricsOnAppEnterBackground(
       const mojom::PageLoadTiming& timing) override;
   void OnComplete(const mojom::PageLoadTiming& timing) override;

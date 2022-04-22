@@ -254,12 +254,13 @@ void PageLoadMetricsForwardObserver::MediaStartedPlaying(
   parent_observer_->MediaStartedPlaying(video_type, render_frame_host);
 }
 
-void PageLoadMetricsForwardObserver::OnFrameIntersectionUpdate(
+void PageLoadMetricsForwardObserver::OnMainFrameIntersectionRectChanged(
     content::RenderFrameHost* rfh,
-    const mojom::FrameIntersectionUpdate& intersection_update) {
+    const gfx::Rect& main_frame_intersection_rect) {
   if (!parent_observer_)
     return;
-  parent_observer_->OnFrameIntersectionUpdate(rfh, intersection_update);
+  parent_observer_->OnMainFrameIntersectionRectChanged(
+      rfh, main_frame_intersection_rect);
 }
 
 // Don't need to forward FlushMetricsOnAppEnterBackground and OnComplete as they

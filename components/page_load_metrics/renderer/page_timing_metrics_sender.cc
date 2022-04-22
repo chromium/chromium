@@ -206,8 +206,7 @@ void PageTimingMetricsSender::DidLoadResourceFromMemoryCache(
 
 void PageTimingMetricsSender::OnMainFrameIntersectionChanged(
     const gfx::Rect& main_frame_intersection) {
-  metadata_->intersection_update =
-      mojom::FrameIntersectionUpdate::New(main_frame_intersection);
+  metadata_->main_frame_intersection_rect = main_frame_intersection;
   EnsureSendTimer();
 }
 
@@ -319,7 +318,7 @@ void PageTimingMetricsSender::SendNow() {
   mobile_friendliness_ = absl::nullopt;
   InitiateUserInteractionTiming();
   new_features_.clear();
-  metadata_->intersection_update.reset();
+  metadata_->main_frame_intersection_rect.reset();
   last_cpu_timing_->task_time = base::TimeDelta();
   modified_resources_.clear();
   render_data_.new_layout_shifts.clear();

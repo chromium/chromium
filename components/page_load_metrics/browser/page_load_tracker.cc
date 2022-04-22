@@ -876,11 +876,12 @@ void PageLoadTracker::UpdateFrameCpuTiming(content::RenderFrameHost* rfh,
   }
 }
 
-void PageLoadTracker::OnFrameIntersectionUpdate(
+void PageLoadTracker::OnMainFrameIntersectionRectChanged(
     content::RenderFrameHost* rfh,
-    const mojom::FrameIntersectionUpdate& frame_intersection_update) {
+    const gfx::Rect& main_frame_intersection_rect) {
   for (const auto& observer : observers_) {
-    observer->OnFrameIntersectionUpdate(rfh, frame_intersection_update);
+    observer->OnMainFrameIntersectionRectChanged(rfh,
+                                                 main_frame_intersection_rect);
   }
 }
 

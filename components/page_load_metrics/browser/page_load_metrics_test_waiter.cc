@@ -61,9 +61,9 @@ class WaiterMetricsObserver : public PageLoadMetricsObserver {
       content::NavigationHandle* navigation_handle) override;
   void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
                         const gfx::Size& frame_size) override;
-  void OnFrameIntersectionUpdate(
+  void OnMainFrameIntersectionRectChanged(
       content::RenderFrameHost* rfh,
-      const mojom::FrameIntersectionUpdate& frame_intersection_update) override;
+      const gfx::Rect& main_frame_intersection_rect) override;
 
   void OnV8MemoryChanged(
       const std::vector<MemoryUpdate>& memory_updates) override;
@@ -267,15 +267,12 @@ void PageLoadMetricsTestWaiter::OnFeaturesUsageObserved(
     run_loop_->Quit();
 }
 
-void PageLoadMetricsTestWaiter::OnFrameIntersectionUpdate(
+void PageLoadMetricsTestWaiter::OnMainFrameIntersectionRectChanged(
     content::RenderFrameHost* rfh,
-    const page_load_metrics::mojom::FrameIntersectionUpdate&
-        frame_intersection_update) {
-  if (frame_intersection_update.main_frame_intersection_rect) {
-    observed_.did_set_main_frame_intersection_ = true;
-    observed_.main_frame_intersections_.push_back(
-        *frame_intersection_update.main_frame_intersection_rect);
-  }
+    const gfx::Rect& main_frame_intersection_rect) {
+  observed_.did_set_main_frame_intersection_ = true;
+  observed_.main_frame_intersections_.push_back(main_frame_intersection_rect);
+
   if (ExpectationsSatisfied() && run_loop_)
     run_loop_->Quit();
 }
@@ -517,12 +514,12 @@ void WaiterMetricsObserver::OnFeaturesUsageObserved(
     waiter_->OnFeaturesUsageObserved(nullptr, features);
 }
 
-void WaiterMetricsObserver::OnFrameIntersectionUpdate(
+void WaiterMetricsObserver::OnMainFrameIntersectionRectChanged(
     content::RenderFrameHost* rfh,
-    const page_load_metrics::mojom::FrameIntersectionUpdate&
-        frame_intersection_update) {
+    const gfx::Rect& main_frame_intersection_rect) {
   if (waiter_)
-    waiter_->OnFrameIntersectionUpdate(rfh, frame_intersection_update);
+    waiter_->OnMainFrameIntersectionRectChanged(rfh,
+                                                main_frame_intersection_rect);
 }
 
 void WaiterMetricsObserver::OnDidFinishSubFrameNavigation(

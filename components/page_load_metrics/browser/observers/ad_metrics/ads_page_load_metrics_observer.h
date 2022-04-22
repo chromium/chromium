@@ -132,9 +132,9 @@ class AdsPageLoadMetricsObserver
   void MediaStartedPlaying(
       const content::WebContentsObserver::MediaPlayerInfo& video_type,
       content::RenderFrameHost* render_frame_host) override;
-  void OnFrameIntersectionUpdate(
+  void OnMainFrameIntersectionRectChanged(
       content::RenderFrameHost* render_frame_host,
-      const mojom::FrameIntersectionUpdate& intersection_update) override;
+      const gfx::Rect& main_frame_intersection_rect) override;
   void OnSubFrameDeleted(int frame_tree_node_id) override;
 
   void SetHeavyAdThresholdNoiseProviderForTesting(

@@ -124,12 +124,9 @@ void FakePageTimingSender::PageTimingValidator::VerifyExpectedRenderData()
 }
 
 void FakePageTimingSender::PageTimingValidator::
-    VerifyExpectedFrameIntersectionUpdate() const {
-  if (!expected_frame_intersection_update_.is_null()) {
-    EXPECT_FALSE(actual_frame_intersection_update_.is_null());
-    EXPECT_TRUE(expected_frame_intersection_update_->Equals(
-        *actual_frame_intersection_update_));
-  }
+    VerifyExpectedMainFrameIntersectionRect() const {
+  EXPECT_EQ(expected_main_frame_intersection_rect_,
+            actual_main_frame_intersection_rect_);
 }
 
 void FakePageTimingSender::PageTimingValidator::UpdateTiming(
@@ -153,7 +150,7 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
   }
 
   actual_render_data_.layout_shift_delta = render_data.layout_shift_delta;
-  actual_frame_intersection_update_ = metadata->intersection_update.Clone();
+  actual_main_frame_intersection_rect_ = metadata->main_frame_intersection_rect;
 
   actual_input_timing->num_input_events += new_input_timing->num_input_events;
   actual_input_timing->total_input_delay += new_input_timing->total_input_delay;
@@ -166,7 +163,7 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
   VerifyExpectedCpuTimings();
   VerifyExpectedFeatures();
   VerifyExpectedRenderData();
-  VerifyExpectedFrameIntersectionUpdate();
+  VerifyExpectedMainFrameIntersectionRect();
   VerifyExpectedMobileFriendliness();
 }
 

@@ -609,16 +609,12 @@ void AdsPageLoadMetricsObserver::MediaStartedPlaying(
     ancestor_data->set_media_status(MediaStatus::kPlayed);
 }
 
-void AdsPageLoadMetricsObserver::OnFrameIntersectionUpdate(
+void AdsPageLoadMetricsObserver::OnMainFrameIntersectionRectChanged(
     content::RenderFrameHost* render_frame_host,
-    const mojom::FrameIntersectionUpdate& intersection_update) {
-  if (!intersection_update.main_frame_intersection_rect)
-    return;
-
+    const gfx::Rect& main_frame_intersection_rect) {
   int frame_tree_node_id = render_frame_host->GetFrameTreeNodeId();
   if (render_frame_host == GetDelegate().GetWebContents()->GetMainFrame()) {
-    page_ad_density_tracker_.UpdateMainFrameRect(
-        *intersection_update.main_frame_intersection_rect);
+    page_ad_density_tracker_.UpdateMainFrameRect(main_frame_intersection_rect);
     return;
   }
 
@@ -630,9 +626,8 @@ void AdsPageLoadMetricsObserver::OnFrameIntersectionUpdate(
     page_ad_density_tracker_.RemoveRect(frame_tree_node_id);
     // Only add frames if they are visible.
     if (!ancestor_data->is_display_none()) {
-      page_ad_density_tracker_.AddRect(
-          frame_tree_node_id,
-          *intersection_update.main_frame_intersection_rect);
+      page_ad_density_tracker_.AddRect(frame_tree_node_id,
+                                       main_frame_intersection_rect);
     }
   }
 
