@@ -281,12 +281,6 @@ AttributeMap::AttributeMap(base::span<Item> sorted_items)
       std::is_sorted(items_.begin(), items_.end(), AttributeMapComparator()));
 }
 
-AttributeMap::~AttributeMap() = default;
-AttributeMap::AttributeMap(const AttributeMap&) = default;
-AttributeMap::AttributeMap(AttributeMap&&) = default;
-AttributeMap& AttributeMap::operator=(const AttributeMap&) = default;
-AttributeMap& AttributeMap::operator=(AttributeMap&&) = default;
-
 ParseStatus::Or<AttributeListIterator::Item> AttributeMap::Fill(
     AttributeListIterator* iter) {
   while (true) {

@@ -76,13 +76,6 @@ struct MEDIA_EXPORT AttributeMap {
   // values. The keys present must be unique and sorted in alphabetical order.
   explicit AttributeMap(base::span<Item> sorted_items);
 
-  // TODO(crbug.com/1275317): These constructors should be removed
-  ~AttributeMap();
-  AttributeMap(const AttributeMap&);
-  AttributeMap(AttributeMap&&);
-  AttributeMap& operator=(const AttributeMap&);
-  AttributeMap& operator=(AttributeMap&&);
-
   // Fills this map with the given iterator until one of the following occurs:
   // - iter->Next() returns a error. The error will be forwarded to the caller.
   // - iter->Next() returns an Item with an unrecognized name. The item will be
