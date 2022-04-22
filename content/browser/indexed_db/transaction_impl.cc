@@ -192,7 +192,7 @@ void TransactionImpl::CreateExternalObjects(
   for (size_t i = 0; i < value->external_objects.size(); ++i) {
     auto& object = value->external_objects[i];
     switch (object->which()) {
-      case blink::mojom::IDBExternalObject::Tag::BLOB_OR_FILE: {
+      case blink::mojom::IDBExternalObject::Tag::kBlobOrFile: {
         blink::mojom::IDBBlobInfoPtr& info = object->get_blob_or_file();
         uint64_t size = info->size;
         total_blob_size += size;
@@ -208,7 +208,7 @@ void TransactionImpl::CreateExternalObjects(
         }
         break;
       }
-      case blink::mojom::IDBExternalObject::Tag::FILE_SYSTEM_ACCESS_TOKEN:
+      case blink::mojom::IDBExternalObject::Tag::kFileSystemAccessToken:
         (*external_objects)[i] = IndexedDBExternalObject(
             std::move(object->get_file_system_access_token()));
         break;
