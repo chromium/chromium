@@ -12,12 +12,11 @@
 #include "base/callback_forward.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/test/test_future.h"
 #include "base/token.h"
-#include "content/public/browser/notification_observer.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -172,7 +171,7 @@ class MockNetworkContext : public network::TestNetworkContext {
 // Make sure to pass async functions to RunScript(...) (see WrapAsync(...)
 // below).
 
-class AsyncJsRunner : public NotificationObserver {
+class AsyncJsRunner : public WebContentsObserver {
  public:
   explicit AsyncJsRunner(content::WebContents* web_contents);
   ~AsyncJsRunner() override;
@@ -180,20 +179,15 @@ class AsyncJsRunner : public NotificationObserver {
   std::unique_ptr<base::test::TestFuture<std::string>> RunScript(
       const std::string& script);
 
-  // NotificationObserver:
-  void Observe(int type,
-               const NotificationSource& source,
-               const NotificationDetails& details) override;
+  // WebContentsObserver:
+  void DomOperationResponse(RenderFrameHost* render_frame_host,
+                            const std::string& json_string) override;
 
  private:
   std::string MakeScriptSendResultToDomQueue(const std::string& script) const;
 
-  NotificationRegistrar registrar_;
-
   base::OnceCallback<void(std::string)> future_callback_;
   base::Token token_;
-
-  base::WeakPtr<content::WebContents> web_contents_;
 };
 
 std::string WrapAsync(const std::string& script);
