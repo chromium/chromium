@@ -975,7 +975,6 @@ external/wpt/quirks/text-decoration-doesnt-propagate-into-tables/standards.html 
 external/wpt/quirks/unitless-length/excluded-properties-001.html [ Pass ]
 external/wpt/reporting/same-origin-report-credentials.https.sub.html [ Pass ]
 external/wpt/requestidlecallback/basic.html [ Pass ]
-external/wpt/resource-timing/object-not-found-after-TAO-cross-origin-redirect.html [ Pass ]
 external/wpt/sanitizer-api/element-set-sanitized-html.https.tentative.html [ Pass ]
 external/wpt/scheduler/post-task-with-signal-from-detached-iframe.html [ Pass ]
 external/wpt/scroll-animations/css/progress-based-animation-timeline.html [ Pass ]
@@ -1849,3 +1848,5 @@ crbug.com/1315309 external/wpt/resize-observer/scrollbars-2.html [ Failure ]
 crbug.com/1196414 compositing/gestures/gesture-tapHighlight-imagemap.html [ Failure ]
 
 crbug.com/1310040 virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/color-profile-layer.html [ Failure Pass ]
+
+crbug.com/1318592 external/wpt/resource-timing/object-not-found-after-TAO-cross-origin-redirect.html [ Pass ]
