@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/syslog_logging.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -232,6 +233,11 @@ void ServiceWorkerTaskQueue::DidInitializeServiceWorkerContext(
   DCHECK(registry);
   const Extension* extension =
       registry->enabled_extensions().GetByID(extension_id);
+
+  // Temporary log to investigate b/229745779.
+  if (!extension)
+    SYSLOG(WARNING) << "Extension " << extension_id << " is not enabled.";
+
   DCHECK(extension);
 
   RendererStartupHelperFactory::GetForBrowserContext(browser_context_)
