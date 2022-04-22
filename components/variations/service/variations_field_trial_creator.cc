@@ -301,7 +301,8 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
     // We log a recognizable token for the crash condition, to allow tests to
     // recognize the crash location in the test output. See:
     // TEST_P(FieldTrialTest, ExtendedSafeModeEndToEnd)
-    LOG(FATAL) << "crash_for_testing";
+    LOG(ERROR) << "crash_for_testing";
+    abort();
   }
 
   // This must be called after |local_state_| is initialized.

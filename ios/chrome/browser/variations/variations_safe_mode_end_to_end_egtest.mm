@@ -135,11 +135,9 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
 // Corresponds to FieldTrialTest.SafeModeEndToEndTest in
 // variations_safe_mode_browsertest.cc.
 //
-// TODO(crbug.com/1298274): Re-enabled with new mechanism to catch crashes.
-// TODO(crbug.com/1298256): Re-enabled with new mechanism to catch crashes.
-// Sheriffs, feel free to immediately re-disable if needed.
 // TODO(crbug.com/1316325): Test not run or not finished.
-- (void)DISABLED_testVariationsSafeModeEndToEnd {
+// Sheriffs, feel free to immediately re-disable if needed.
+- (void)testVariationsSafeModeEndToEnd {
 #if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
     // TODO(crbug.com/1297123): Disabled on iPad device
@@ -164,10 +162,12 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
   [self checkCrashStreakValue:penultimateCrash];
 
   // The next restart should crash, hitting the crash streak threshold.
+  NSLog(@"Next start should crash on startup...");
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   XCTAssertFalse([[AppLaunchManager sharedManager] appIsLaunched],
-                 @"App should fail on launch");
+                 @"App should have crashed on startup");
 
+  NSLog(@"Next start should enter safe mode...");
   // Subsequent restarts should succeed. Verify that Chrome fell back to
   // variations safe mode by checking that there is a field trial for the test
   // safe seed's study.
