@@ -118,36 +118,37 @@ void PrintJobManager::StopJobs(bool wait_for_finish) {
   }
 }
 
-void PrintJobManager::OnPrintJobEvent(
-    PrintJob* print_job,
-    const JobEventDetails& event_details) {
-  if (is_shutdown_) {
+void PrintJobManager::OnStarted(PrintJob* print_job) {
+  if (is_shutdown_)
     return;
-  }
 
-  switch (event_details.type()) {
-    case JobEventDetails::NEW_DOC: {
-      // Causes a AddRef().
-      bool inserted = current_jobs_.insert(print_job).second;
-      DCHECK(inserted);
-      break;
-    }
-    case JobEventDetails::DOC_DONE: {
-      callback_list_.Notify(print_job, event_details.document(),
-                            event_details.job_id());
-      break;
-    }
-    case JobEventDetails::JOB_DONE: {
-      size_t erased = current_jobs_.erase(print_job);
-      DCHECK_EQ(1U, erased);
-      break;
-    }
-    case JobEventDetails::FAILED:
-      current_jobs_.erase(print_job);
-      break;
-    default:
-      break;
-  }
+  // Causes a AddRef().
+  bool inserted = current_jobs_.insert(print_job).second;
+  DCHECK(inserted);
+}
+
+void PrintJobManager::OnDocDone(PrintJob* print_job,
+                                PrintedDocument* document,
+                                int job_id) {
+  if (is_shutdown_)
+    return;
+
+  callback_list_.Notify(print_job, document, job_id);
+}
+
+void PrintJobManager::OnJobDone(PrintJob* print_job) {
+  if (is_shutdown_)
+    return;
+
+  size_t erased = current_jobs_.erase(print_job);
+  DCHECK_EQ(1U, erased);
+}
+
+void PrintJobManager::OnFailed(PrintJob* print_job) {
+  if (is_shutdown_)
+    return;
+
+  current_jobs_.erase(print_job);
 }
 
 }  // namespace printing

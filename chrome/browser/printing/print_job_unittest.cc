@@ -122,28 +122,6 @@ TEST(PrintJobTest, SimplePrintLateInit) {
   scoped_refptr<PrintJob> job(new TestPrintJob(&check));
   job = nullptr;
   EXPECT_TRUE(check);
-  /* TODO(maruel): Test these.
-  job->Initialize()
-  job->Observe();
-  job->GetSettingsDone();
-  job->DetachWorker();
-  job->settings();
-  job->cookie();
-  job->GetSettings(DEFAULTS, ASK_USER, nullptr);
-  job->StartPrinting();
-  job->Stop();
-  job->Cancel();
-  job->RequestMissingPages();
-  job->FlushJob(timeout);
-  job->is_job_pending();
-  job->document();
-  // Private
-  job->UpdatePrintedDocument(nullptr);
-  scoped_refptr<JobEventDetails> event_details;
-  job->OnNotifyPrintJobEvent(event_details);
-  job->OnDocumentDone();
-  job->ControlledWorkerShutdown();
-  */
 }
 
 #if BUILDFLAG(IS_WIN)

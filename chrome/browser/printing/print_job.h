@@ -28,7 +28,6 @@ class RefCountedMemory;
 
 namespace printing {
 
-class JobEventDetails;
 class MetafilePlayer;
 class PrintJobManager;
 class PrintJobWorker;
@@ -264,50 +263,6 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
 
   // Holds the quit closure while running a nested RunLoop to flush tasks.
   base::OnceClosure quit_closure_;
-};
-
-// Details for a NOTIFY_PRINT_JOB_EVENT notification. The members may be NULL.
-// TODO(crbug.com/796051): Simplify/rename once instances of this struct are
-// passed only to PrintJobManager.
-class JobEventDetails : public base::RefCountedThreadSafe<JobEventDetails> {
- public:
-  // Event type.
-  enum Type {
-    // A new document started printing.
-    NEW_DOC,
-
-    // A document is done printing. The worker thread is still alive. Warning:
-    // not a good moment to release the handle to PrintJob.
-    DOC_DONE,
-
-    // The worker thread is finished. A good moment to release the handle to
-    // PrintJob.
-    JOB_DONE,
-
-    // An error occured. Printing is canceled.
-    FAILED
-  };
-
-  JobEventDetails(Type type, int job_id, PrintedDocument* document);
-
-  JobEventDetails(const JobEventDetails&) = delete;
-  JobEventDetails& operator=(const JobEventDetails&) = delete;
-
-  // Getters.
-  PrintedDocument* document() const;
-  Type type() const {
-    return type_;
-  }
-  int job_id() const { return job_id_; }
-
- private:
-  friend class base::RefCountedThreadSafe<JobEventDetails>;
-
-  ~JobEventDetails();
-
-  scoped_refptr<PrintedDocument> document_;
-  const Type type_;
-  int job_id_;
 };
 
 }  // namespace printing

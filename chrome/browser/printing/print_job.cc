@@ -211,10 +211,7 @@ void PrintJob::StartPrinting() {
   // Set the flag right now.
   is_job_pending_ = true;
 
-  // Tell everyone!
-  auto details = base::MakeRefCounted<JobEventDetails>(JobEventDetails::NEW_DOC,
-                                                       0, document_.get());
-  print_job_manager_->OnPrintJobEvent(this, *details.get());
+  print_job_manager_->OnStarted(this);
 }
 
 void PrintJob::Stop() {
@@ -511,10 +508,7 @@ void PrintJob::OnFailed() {
 
   Stop();
 
-  // Make sure a `Cancel()` is broadcast.
-  auto details = base::MakeRefCounted<JobEventDetails>(JobEventDetails::FAILED,
-                                                       0, nullptr);
-  print_job_manager_->OnPrintJobEvent(this, *details.get());
+  print_job_manager_->OnFailed(this);
 
   for (auto& observer : observers_) {
     observer.OnFailed();
@@ -524,9 +518,7 @@ void PrintJob::OnFailed() {
 void PrintJob::OnDocDone(int job_id, PrintedDocument* document) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto details = base::MakeRefCounted<JobEventDetails>(
-      JobEventDetails::DOC_DONE, job_id, document);
-  print_job_manager_->OnPrintJobEvent(this, *details.get());
+  print_job_manager_->OnDocDone(this, document, job_id);
 
   for (auto& observer : observers_) {
     observer.OnDocDone(job_id, document);
@@ -547,9 +539,7 @@ void PrintJob::OnDocumentDone() {
   // Stop the worker thread.
   Stop();
 
-  auto details = base::MakeRefCounted<JobEventDetails>(
-      JobEventDetails::JOB_DONE, 0, document_.get());
-  print_job_manager_->OnPrintJobEvent(this, *details.get());
+  print_job_manager_->OnJobDone(this);
 
   for (auto& observer : observers_) {
     observer.OnJobDone();
@@ -617,15 +607,5 @@ void PrintJob::AddObserver(Observer& observer) {
 void PrintJob::RemoveObserver(Observer& observer) {
   observers_.RemoveObserver(&observer);
 }
-
-JobEventDetails::JobEventDetails(Type type,
-                                 int job_id,
-                                 PrintedDocument* document)
-    : document_(document), type_(type), job_id_(job_id) {}
-
-JobEventDetails::~JobEventDetails() {
-}
-
-PrintedDocument* JobEventDetails::document() const { return document_.get(); }
 
 }  // namespace printing
