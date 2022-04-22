@@ -1222,8 +1222,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "external/wpt/webauthn/remote-desktop-client-override.tentative.https.html" ],
     "args": [
-      "--webauthn-remote-desktop-support",
-      "--enable-blink-features=WebAuthenticationRemoteDesktopSupport"
+      "--webauthn-remote-desktop-support"
     ]
   }
 ]
