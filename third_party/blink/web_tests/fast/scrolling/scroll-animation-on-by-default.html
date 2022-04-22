@@ -28,8 +28,8 @@ window.onload = () => {
   }
 
   promise_test (async () => {
-    await waitForCompositorCommit();
     resetScrollOffset(document.scrollingElement);
+    await waitForCompositorCommit();
 
     // Click on the track part just above the down arrow.
     const x = window.innerWidth - BUTTON_WIDTH / 2;
@@ -51,8 +51,8 @@ window.onload = () => {
     if(navigator.userAgent.includes("Mac OS X"))
       return;
 
-    await waitForCompositorCommit();
     resetScrollOffset(document.scrollingElement);
+    await waitForCompositorCommit();
 
     // Start at 0, perform a mousewheel tick and check that scrollY animates at
     // least once. This test is relevant only when running in threaded mode
