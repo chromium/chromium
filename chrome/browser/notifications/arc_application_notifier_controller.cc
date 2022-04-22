@@ -100,8 +100,7 @@ void ArcApplicationNotifierController::SetNotifierEnabled(
   last_used_profile_ = profile;
   auto permission = apps::mojom::Permission::New();
   permission->permission_type = apps::mojom::PermissionType::kNotifications;
-  permission->value = apps::mojom::PermissionValue::New();
-  permission->value->set_bool_value(enabled);
+  permission->value = apps::mojom::PermissionValue::NewBoolValue(enabled);
   permission->is_managed = false;
   apps::AppServiceProxy* service =
       apps::AppServiceProxyFactory::GetForProfile(profile);

@@ -93,8 +93,7 @@ void PwaNotifierController::SetNotifierEnabled(
   DCHECK(observed_profile_->IsSameOrParent(profile));
   auto permission = apps::mojom::Permission::New();
   permission->permission_type = apps::mojom::PermissionType::kNotifications;
-  permission->value = apps::mojom::PermissionValue::New();
-  permission->value->set_tristate_value(
+  permission->value = apps::mojom::PermissionValue::NewTristateValue(
       enabled ? apps::mojom::TriState::kAllow : apps::mojom::TriState::kBlock);
   permission->is_managed = false;
   apps::AppServiceProxy* service =
