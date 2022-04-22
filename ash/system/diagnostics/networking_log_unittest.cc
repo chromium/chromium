@@ -28,10 +28,10 @@ mojom::NetworkPtr CreateWiFiNetworkPtr(uint32_t signal_strength,
                                        const std::string& name,
                                        const std::string& mac_address,
                                        mojom::SecurityType security) {
-  auto type_props = mojom::NetworkTypeProperties::New();
   auto wifi_props = mojom::WiFiStateProperties::New(signal_strength, frequency,
                                                     ssid, bssid, security);
-  type_props->set_wifi(std::move(wifi_props));
+  auto type_props =
+      mojom::NetworkTypeProperties::NewWifi(std::move(wifi_props));
   auto ip_config = mojom::IPConfigProperties::New(
       std::move(name_servers), routing_prefix, gateway, ip_address);
   return mojom::Network::New(mojom::NetworkState::kOnline,
@@ -44,9 +44,9 @@ mojom::NetworkPtr CreateEthernetNetworkPtr(
     const std::string& name,
     const std::string& mac_address,
     const mojom::AuthenticationType& authentication) {
-  auto type_props = mojom::NetworkTypeProperties::New();
   auto ethernet_props = mojom::EthernetStateProperties::New(authentication);
-  type_props->set_ethernet(std::move(ethernet_props));
+  auto type_props =
+      mojom::NetworkTypeProperties::NewEthernet(std::move(ethernet_props));
   return mojom::Network::New(mojom::NetworkState::kOnline,
                              mojom::NetworkType::kEthernet,
                              std::move(type_props), guid, name, mac_address,
@@ -65,11 +65,11 @@ mojom::NetworkPtr CreateCellularNetworkPtr(
     const uint32_t signal_strength,
     bool sim_locked,
     mojom::LockType lock_type) {
-  auto type_props = mojom::NetworkTypeProperties::New();
   auto cellular_props = mojom::CellularStateProperties::New(
       iccid, eid, network_technology, roaming, roaming_state, signal_strength,
       sim_locked, lock_type);
-  type_props->set_cellular(std::move(cellular_props));
+  auto type_props =
+      mojom::NetworkTypeProperties::NewCellular(std::move(cellular_props));
   return mojom::Network::New(mojom::NetworkState::kOnline,
                              mojom::NetworkType::kCellular,
                              std::move(type_props), guid, name, mac_address,
