@@ -2629,31 +2629,7 @@ void Document::EnsurePaintLocationDataValidForNode(
   if (!node->InActiveDocument())
     return;
 
-  if (RuntimeEnabledFeatures::DeferredShapingEnabled()) {
-    if (GetDisplayLockDocumentState().LockedDisplayLockCount() !=
-        GetDisplayLockDocumentState().DisplayLockBlockingAllActivationCount()) {
-      // Unlock all prior deferred elements.
-      for (const Node* previous = node; previous;
-           previous = FlatTreeTraversal::Previous(*previous)) {
-        const Element* prior_element = DynamicTo<Element>(previous);
-        if (!prior_element || !prior_element->GetLayoutObject() ||
-            !prior_element->GetLayoutObject()->IsShapingDeferred())
-          continue;
-        prior_element->GetDisplayLockContext()->SetRequestedState(
-            EContentVisibility::kVisible);
-      }
-      // Unlock all descendant deferred elements too.
-      for (const Node* next = FlatTreeTraversal::Next(*node, node); next;
-           next = FlatTreeTraversal::Next(*next, node)) {
-        const auto* element = DynamicTo<Element>(next);
-        if (!element || !element->GetLayoutObject() ||
-            !element->GetLayoutObject()->IsShapingDeferred())
-          continue;
-        element->GetDisplayLockContext()->SetRequestedState(
-            EContentVisibility::kVisible);
-      }
-    }
-  }
+  GetDisplayLockDocumentState().UnlockShapingDeferredElements();
 
   DisplayLockUtilities::ScopedForcedUpdate scoped_update_forced(
       node, DisplayLockContext::ForcedPhase::kLayout);

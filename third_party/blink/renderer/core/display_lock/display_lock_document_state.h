@@ -168,6 +168,7 @@ class CORE_EXPORT DisplayLockDocumentState final
   };
 
   void NotifyPrintingOrPreviewChanged();
+  void UnlockShapingDeferredElements();
 
   base::TimeTicks GetLockUpdateTimestamp();
 

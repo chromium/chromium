@@ -5194,30 +5194,23 @@ bool Element::IsAutofocusable() const {
 }
 
 bool Element::ActivateDisplayLockIfNeeded(DisplayLockActivationReason reason) {
-  if (GetDocument().GetDisplayLockDocumentState().LockedDisplayLockCount() ==
-      GetDocument()
-          .GetDisplayLockDocumentState()
-          .DisplayLockBlockingAllActivationCount())
+  auto& state = GetDocument().GetDisplayLockDocumentState();
+  state.UnlockShapingDeferredElements();
+  if (state.LockedDisplayLockCount() ==
+      state.DisplayLockBlockingAllActivationCount())
     return false;
 
   HeapVector<Member<Element>> activatable_targets;
-  for (Node* previous = this; previous;
-       previous = FlatTreeTraversal::Previous(*previous)) {
-    Element* prior_element = DynamicTo<Element>(previous);
-    if (!prior_element)
+  for (Node& ancestor : FlatTreeTraversal::InclusiveAncestorsOf(*this)) {
+    auto* ancestor_element = DynamicTo<Element>(ancestor);
+    if (!ancestor_element)
       continue;
-    if (auto* context = prior_element->GetDisplayLockContext()) {
-      // Collect display-locked ancestors and shaping-deferred prior elements.
-      if (prior_element->GetLayoutObject() &&
-          prior_element->GetLayoutObject()->IsShapingDeferred()) {
-        activatable_targets.push_back(prior_element);
-      } else if (FlatTreeTraversal::Contains(*prior_element, *this)) {
-        // If any of the ancestors is not activatable for the given reason, we
-        // can't activate.
-        if (context->IsLocked() && !context->IsActivatable(reason))
-          return false;
-        activatable_targets.push_back(prior_element);
-      }
+    if (auto* context = ancestor_element->GetDisplayLockContext()) {
+      // If any of the ancestors is not activatable for the given reason, we
+      // can't activate.
+      if (context->IsLocked() && !context->IsActivatable(reason))
+        return false;
+      activatable_targets.push_back(ancestor_element);
     }
   }
 
@@ -5226,13 +5219,7 @@ bool Element::ActivateDisplayLockIfNeeded(DisplayLockActivationReason reason) {
     if (auto* context = target->GetDisplayLockContext()) {
       if (context->ShouldCommitForActivation(reason)) {
         activated = true;
-        if (target->GetLayoutObject() &&
-            target->GetLayoutObject()->IsShapingDeferred()) {
-          // Unlock shaping-deferred IFCs permanently.
-          context->SetRequestedState(EContentVisibility::kVisible);
-        } else {
-          context->CommitForActivation(reason);
-        }
+        context->CommitForActivation(reason);
       }
     }
   }

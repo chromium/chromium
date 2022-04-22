@@ -908,6 +908,12 @@ void DisplayLockContext::ScheduleTopLayerCheck() {
   ScheduleAnimation();
 }
 
+bool DisplayLockContext::IsShapingDeferred() const {
+  if (const auto* layout_object = element_->GetLayoutObject())
+    return layout_object->IsShapingDeferred();
+  return false;
+}
+
 void DisplayLockContext::ScheduleAnimation() {
   DCHECK(element_);
   if (!ConnectedToView() || !document_ || !document_->GetPage())
