@@ -2135,9 +2135,12 @@ def main(argv):
         jar_to_target[jar] = target
 
     # Used by bytecode_processor to give better error message when missing
-    # deps are found.
-    config['deps_info']['javac_full_classpath_targets'] = sorted(
-        jar_to_target[x] for x in deps_info['javac_full_classpath'])
+    # deps are found. Both javac_full_classpath_targets and javac_full_classpath
+    # must be in identical orders, as they get passed as separate arrays and
+    # then paired up based on index.
+    config['deps_info']['javac_full_classpath_targets'] = [
+        jar_to_target[x] for x in deps_info['javac_full_classpath']
+    ]
 
   build_utils.WriteJson(config, options.build_config, only_if_changed=True)
 
