@@ -460,7 +460,13 @@ TEST_F(PrefetchManagerTest, Stop) {
               UnorderedElementsAreArray({test_server.GetURL(path2)}));
 }
 
-TEST_F(PrefetchManagerTest, StopAndStart) {
+// Flaky on Mac/Linux/CrOS only. http://crbug.com/1239235
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_StopAndStart DISABLED_StopAndStart
+#else
+#define MAYBE_StopAndStart StopAndStart
+#endif
+TEST_F(PrefetchManagerTest, MAYBE_StopAndStart) {
   net::test_server::EmbeddedTestServer test_server;
 
   // Set up prefetches (limit + 1).
