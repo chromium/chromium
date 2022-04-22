@@ -17,10 +17,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/ref_counted.h"
 
-namespace base {
-class Value;
-}  // namespace base
-
 namespace extensions {
 
 // Factory class that stores a cache of the last |N| created objects of each
@@ -36,7 +32,7 @@ namespace extensions {
 // };
 //
 // The unit test shows an example.
-template<typename BaseClassT>
+template <typename BaseClassT, typename ValueT>
 class DedupingFactory {
  public:
   // Factory methods for BaseClass instances. |value| contains e.g. the json
@@ -44,11 +40,11 @@ class DedupingFactory {
   // to return error messages in case the extension passed an action that was
   // syntactically correct but semantically incorrect. |bad_message| is set to
   // true in case |dict| does not confirm to the validated JSON specification.
-  typedef scoped_refptr<const BaseClassT>
-      (* FactoryMethod)(const std::string& instance_type,
-                        const base::Value* /* value */ ,
-                        std::string* /* error */,
-                        bool* /* bad_message */);
+  typedef scoped_refptr<const BaseClassT> (*FactoryMethod)(
+      const std::string& instance_type,
+      ValueT /* value */,
+      std::string* /* error */,
+      bool* /* bad_message */);
 
   enum Parameterized {
     // Two instantiated objects may be different and we need to check for
@@ -75,7 +71,7 @@ class DedupingFactory {
                              FactoryMethod factory_method);
 
   scoped_refptr<const BaseClassT> Instantiate(const std::string& instance_type,
-                                              const base::Value* value,
+                                              ValueT value,
                                               std::string* error,
                                               bool* bad_message);
 
@@ -96,17 +92,18 @@ class DedupingFactory {
   ParameterizedTypes parameterized_types_;
 };
 
-template<typename BaseClassT>
-DedupingFactory<BaseClassT>::DedupingFactory(size_t max_number_prototypes)
+template <typename BaseClassT, typename ValueT>
+DedupingFactory<BaseClassT, ValueT>::DedupingFactory(
+    size_t max_number_prototypes)
     : max_number_prototypes_(max_number_prototypes) {}
 
-template<typename BaseClassT>
-DedupingFactory<BaseClassT>::~DedupingFactory() {}
+template <typename BaseClassT, typename ValueT>
+DedupingFactory<BaseClassT, ValueT>::~DedupingFactory() {}
 
-template<typename BaseClassT>
-void DedupingFactory<BaseClassT>::RegisterFactoryMethod(
+template <typename BaseClassT, typename ValueT>
+void DedupingFactory<BaseClassT, ValueT>::RegisterFactoryMethod(
     const std::string& instance_type,
-    typename DedupingFactory<BaseClassT>::Parameterized parameterized,
+    typename DedupingFactory<BaseClassT, ValueT>::Parameterized parameterized,
     FactoryMethod factory_method) {
   DCHECK(!base::Contains(factory_methods_, instance_type));
   factory_methods_[instance_type] = factory_method;
@@ -114,10 +111,11 @@ void DedupingFactory<BaseClassT>::RegisterFactoryMethod(
     parameterized_types_.insert(instance_type);
 }
 
-template<typename BaseClassT>
-scoped_refptr<const BaseClassT> DedupingFactory<BaseClassT>::Instantiate(
+template <typename BaseClassT, typename ValueT>
+scoped_refptr<const BaseClassT>
+DedupingFactory<BaseClassT, ValueT>::Instantiate(
     const std::string& instance_type,
-    const base::Value* value,
+    ValueT value,
     std::string* error,
     bool* bad_message) {
   typename FactoryMethods::const_iterator factory_method_iter =
@@ -174,8 +172,8 @@ scoped_refptr<const BaseClassT> DedupingFactory<BaseClassT>::Instantiate(
   return new_object;
 }
 
-template<typename BaseClassT>
-void DedupingFactory<BaseClassT>::ClearPrototypes() {
+template <typename BaseClassT, typename ValueT>
+void DedupingFactory<BaseClassT, ValueT>::ClearPrototypes() {
   prototypes_.clear();
 }
 

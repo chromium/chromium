@@ -45,45 +45,38 @@ namespace {
 const char kInvalidValue[] = "Condition '*' has an invalid value";
 
 struct WebRequestConditionAttributeFactory {
-  DedupingFactory<WebRequestConditionAttribute> factory;
+  using FactoryT =
+      DedupingFactory<WebRequestConditionAttribute, const base::Value*>;
+  FactoryT factory;
 
   WebRequestConditionAttributeFactory() : factory(5) {
     factory.RegisterFactoryMethod(
-        keys::kResourceTypeKey,
-        DedupingFactory<WebRequestConditionAttribute>::IS_PARAMETERIZED,
+        keys::kResourceTypeKey, FactoryT::IS_PARAMETERIZED,
         &WebRequestConditionAttributeResourceType::Create);
 
     factory.RegisterFactoryMethod(
-        keys::kContentTypeKey,
-        DedupingFactory<WebRequestConditionAttribute>::IS_PARAMETERIZED,
+        keys::kContentTypeKey, FactoryT::IS_PARAMETERIZED,
         &WebRequestConditionAttributeContentType::Create);
     factory.RegisterFactoryMethod(
-        keys::kExcludeContentTypeKey,
-        DedupingFactory<WebRequestConditionAttribute>::IS_PARAMETERIZED,
+        keys::kExcludeContentTypeKey, FactoryT::IS_PARAMETERIZED,
         &WebRequestConditionAttributeContentType::Create);
 
     factory.RegisterFactoryMethod(
-        keys::kRequestHeadersKey,
-        DedupingFactory<WebRequestConditionAttribute>::IS_PARAMETERIZED,
+        keys::kRequestHeadersKey, FactoryT::IS_PARAMETERIZED,
         &WebRequestConditionAttributeRequestHeaders::Create);
     factory.RegisterFactoryMethod(
-        keys::kExcludeRequestHeadersKey,
-        DedupingFactory<WebRequestConditionAttribute>::IS_PARAMETERIZED,
+        keys::kExcludeRequestHeadersKey, FactoryT::IS_PARAMETERIZED,
         &WebRequestConditionAttributeRequestHeaders::Create);
 
     factory.RegisterFactoryMethod(
-        keys::kResponseHeadersKey,
-        DedupingFactory<WebRequestConditionAttribute>::IS_PARAMETERIZED,
+        keys::kResponseHeadersKey, FactoryT::IS_PARAMETERIZED,
         &WebRequestConditionAttributeResponseHeaders::Create);
     factory.RegisterFactoryMethod(
-        keys::kExcludeResponseHeadersKey,
-        DedupingFactory<WebRequestConditionAttribute>::IS_PARAMETERIZED,
+        keys::kExcludeResponseHeadersKey, FactoryT::IS_PARAMETERIZED,
         &WebRequestConditionAttributeResponseHeaders::Create);
 
-    factory.RegisterFactoryMethod(
-        keys::kStagesKey,
-        DedupingFactory<WebRequestConditionAttribute>::IS_PARAMETERIZED,
-        &WebRequestConditionAttributeStages::Create);
+    factory.RegisterFactoryMethod(keys::kStagesKey, FactoryT::IS_PARAMETERIZED,
+                                  &WebRequestConditionAttributeStages::Create);
   }
 };
 
