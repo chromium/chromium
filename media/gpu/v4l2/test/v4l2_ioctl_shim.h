@@ -142,6 +142,9 @@ class V4L2IoctlShim {
   V4L2IoctlShim& operator=(const V4L2IoctlShim&) = delete;
   ~V4L2IoctlShim();
 
+  // Queries whether the given |ctrl_id| is supported on current platform.
+  [[nodiscard]] bool QueryCtrl(const uint32_t ctrl_id) const;
+
   // Enumerates all frame sizes that the device supports
   // via VIDIOC_ENUM_FRAMESIZES.
   [[nodiscard]] bool EnumFrameSizes(uint32_t fourcc) const;

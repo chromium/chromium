@@ -207,7 +207,24 @@ Vp9Decoder::Vp9Decoder(std::unique_ptr<IvfParser> ivf_parser,
                                  std::move(OUTPUT_queue),
                                  std::move(CAPTURE_queue)),
       vp9_parser_(
-          std::make_unique<Vp9Parser>(/*parsing_compressed_header=*/false)) {}
+          std::make_unique<Vp9Parser>(/*parsing_compressed_header=*/false)) {
+  DCHECK(v4l2_ioctl_);
+
+  // TODO(b/230021497): add change in SetExtCtrls function.
+  CHECK(!v4l2_ioctl_->QueryCtrl(V4L2_CID_STATELESS_VP9_COMPRESSED_HDR))
+      << "VP9 compressed header not supported with current platform decoding "
+         "code.";
+
+  // MTK8192, MTK8195 don't support V4L2_CID_STATELESS_VP9_COMPRESSED_HDR.
+  LOG(INFO) << "VIDIOC_QUERYCTRL ioctl failure with "
+               "V4L2_CID_STATELESS_VP9_COMPRESSED_HDR is expected because VP9 "
+               "compressed header is not supported on current platform. VP9 "
+               "compressed header support is optional.";
+
+  // This control was landed in v5.17 and is pretty much a marker that the
+  // driver supports the stable API.
+  DCHECK(v4l2_ioctl_->QueryCtrl(V4L2_CID_STATELESS_VP9_FRAME));
+}
 
 Vp9Decoder::~Vp9Decoder() = default;
 
@@ -453,7 +470,7 @@ void Vp9Decoder::SetupFrameParams(
         NOTREACHED() << "Invalid reference frame index";
     }
   }
-  // TODO(stevecho): fill in the rest of |v4l2_frame_params| fields.
+
   FillV4L2VP9QuantizationParams(frame_hdr.quant_params,
                                 &v4l2_frame_params->quant);
 
