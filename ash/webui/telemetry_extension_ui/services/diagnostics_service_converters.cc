@@ -174,6 +174,8 @@ health::mojom::DiagnosticRoutineStatusEnum Convert(
 cros_healthd::mojom::DiagnosticRoutineCommandEnum Convert(
     health::mojom::DiagnosticRoutineCommandEnum input) {
   switch (input) {
+    case health::mojom::DiagnosticRoutineCommandEnum::kUnknown:
+      return cros_healthd::mojom::DiagnosticRoutineCommandEnum::kUnknown;
     case health::mojom::DiagnosticRoutineCommandEnum::kContinue:
       return cros_healthd::mojom::DiagnosticRoutineCommandEnum::kContinue;
     case health::mojom::DiagnosticRoutineCommandEnum::kCancel:
@@ -193,6 +195,8 @@ cros_healthd::mojom::DiagnosticRoutineCommandEnum Convert(
 cros_healthd::mojom::AcPowerStatusEnum Convert(
     health::mojom::AcPowerStatusEnum input) {
   switch (input) {
+    case health::mojom::AcPowerStatusEnum::kUnknown:
+      return cros_healthd::mojom::AcPowerStatusEnum::kUnknown;
     case health::mojom::AcPowerStatusEnum::kConnected:
       return cros_healthd::mojom::AcPowerStatusEnum::kConnected;
     case health::mojom::AcPowerStatusEnum::kDisconnected:
@@ -206,6 +210,8 @@ cros_healthd::mojom::AcPowerStatusEnum Convert(
 cros_healthd::mojom::NvmeSelfTestTypeEnum Convert(
     health::mojom::NvmeSelfTestTypeEnum input) {
   switch (input) {
+    case health::mojom::NvmeSelfTestTypeEnum::kUnknown:
+      return cros_healthd::mojom::NvmeSelfTestTypeEnum::kUnknown;
     case health::mojom::NvmeSelfTestTypeEnum::kShortSelfTest:
       return cros_healthd::mojom::NvmeSelfTestTypeEnum::kShortSelfTest;
     case health::mojom::NvmeSelfTestTypeEnum::kLongSelfTest:
