@@ -16,7 +16,8 @@ option java_package = "org.chromium.android_webview.proto";
 //
 // Next tag: 7
 message AwVariationsSeed {
-  // Whether seed_data is compressed. Comes from HTTP header "X-Seed-Signature".
+  // A base64-encoded signature of the seed data. This can be used by the client
+  // to verify the seed contents. Comes from HTTP header "X-Seed-Signature".
   optional string signature = 1;
   // 2-letter country code. Comes from HTTP header "X-Country".
   optional string country = 2;
@@ -24,7 +25,7 @@ message AwVariationsSeed {
   // sections 3.3.1 and 14.18 for the format.
   // This was deprecated in favor of the |date| field in October 2019.
   optional string date_header = 3 [deprecated = true];
-  // Whether seed_data is compressed. Comes from HTTP header "IM".
+  // Whether seed_data is GZIP compressed. Comes from HTTP header "IM".
   optional bool is_gzip_compressed = 4;
   // The download body, itself a serialized VariationsSeed proto.
   optional bytes seed_data = 5;
