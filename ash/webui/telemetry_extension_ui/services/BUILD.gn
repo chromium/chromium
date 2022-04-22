@@ -53,7 +53,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
-    "//chromeos/ash/components/dbus/cros_healthd",
     "//chromeos/dbus",
     "//chromeos/dbus/debug_daemon",
     "//chromeos/services/cros_healthd/public/cpp",
