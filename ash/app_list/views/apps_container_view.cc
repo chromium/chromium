@@ -32,6 +32,7 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_constants.h"
@@ -106,7 +107,7 @@ constexpr int kAppsGridMarginRatio = 16;
 constexpr int kAppsGridMarginRatioForSmallWidth = 12;
 
 // The margins within the apps container for app list folder view.
-constexpr int kFolderMargin = 8;
+constexpr int kFolderMargin = 16;
 
 // The suggestion chip container height.
 constexpr int kSuggestionChipContainerHeight = 32;
@@ -917,8 +918,18 @@ void AppsContainerView::Layout() {
   // Set bounding box for the folder view - the folder may overlap with
   // suggestion chips, but not the search box.
   gfx::Rect folder_bounding_box = rect;
+  int top_folder_inset = chip_container_rect.y();
+  int bottom_folder_inset = kFolderMargin;
+
+  if (features::IsProductivityLauncherEnabled())
+    top_folder_inset += kFolderMargin;
+
+  // Account for the hotseat which overlaps with contents bounds in tablet mode.
+  if (contents_view_->app_list_view()->is_tablet_mode())
+    bottom_folder_inset += ShelfConfig::Get()->hotseat_bottom_padding();
+
   folder_bounding_box.Inset(gfx::Insets::TLBR(
-      chip_container_rect.y(), kFolderMargin, kFolderMargin, kFolderMargin));
+      top_folder_inset, kFolderMargin, bottom_folder_inset, kFolderMargin));
   app_list_folder_view_->SetBoundingBox(folder_bounding_box);
 
   // Leave the same available bounds for the apps grid view in both
