@@ -65,8 +65,6 @@
 #include "chrome/test/base/chrome_unit_test_suite.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/cicerone/cicerone_client.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
@@ -87,6 +85,9 @@
 #include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
+#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd.h"
+#include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/ownership/mock_owner_key_util.h"
@@ -790,7 +791,7 @@ void SetFakeCrosHealthdData() {
     telemetry_info->bus_result = CreateBusResult();
   }
 
-  ash::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
 }
 
@@ -915,7 +916,7 @@ class DeviceStatusCollectorTest : public testing::Test {
     chromeos::AttestationClient::InitializeFake();
     chromeos::TpmManagerClient::InitializeFake();
     chromeos::LoginState::Initialize();
-    ash::cros_healthd::CrosHealthdClient::InitializeFake();
+    ash::cros_healthd::FakeCrosHealthd::Initialize();
 
     chromeos::CiceroneClient::InitializeFake();
     chromeos::ConciergeClient::InitializeFake();
@@ -939,8 +940,7 @@ class DeviceStatusCollectorTest : public testing::Test {
     chromeos::UserDataAuthClient::Shutdown();
     chromeos::CrasAudioHandler::Shutdown();
     ash::KioskAppManager::Shutdown();
-    ash::cros_healthd::CrosHealthdClient::Shutdown();
-    chromeos::cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
+    ash::cros_healthd::FakeCrosHealthd::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 
     // Finish pending tasks.
@@ -3571,7 +3571,7 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfoOptional) {
   telemetry_info->battery_result = CreateEmptyBatteryResult();
   telemetry_info->backlight_result = CreateEmptyBacklightResult();
   telemetry_info->fan_result = CreateEmptyFanResult();
-  ash::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
   GetStatus();
 

@@ -8,9 +8,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -45,17 +43,9 @@ class UsbEventsObserverTest : public ::testing::Test {
 
   ~UsbEventsObserverTest() override = default;
 
-  void SetUp() override {
-    ::ash::cros_healthd::CrosHealthdClient::InitializeFake();
-  }
+  void SetUp() override { ::ash::cros_healthd::FakeCrosHealthd::Initialize(); }
 
-  void TearDown() override {
-    ::ash::cros_healthd::CrosHealthdClient::Shutdown();
-
-    // Wait for ServiceConnection to observe the destruction of the client.
-    ::chromeos::cros_healthd::ServiceConnection::GetInstance()
-        ->FlushForTesting();
-  }
+  void TearDown() override { ::ash::cros_healthd::FakeCrosHealthd::Shutdown(); }
 
   UsbEventInfoPtr test_usb_event_info = UsbEventInfo::New(kTestVendor,
                                                           kTestName,
@@ -145,7 +135,7 @@ TEST_F(UsbEventsObserverTest, UsbOnAdd) {
   }
 }
 
-TEST_F(UsbEventsObserverTest, UsbOnAddUsingFakeCrosHealthdClient) {
+TEST_F(UsbEventsObserverTest, UsbOnAddUsingFakeCrosHealthd) {
   test::TestEvent<MetricData> result_metric_data;
   UsbEventsObserver usb_observer;
   constexpr int kExpectedUsbTelemetrySize = 1;
@@ -154,8 +144,7 @@ TEST_F(UsbEventsObserverTest, UsbOnAddUsingFakeCrosHealthdClient) {
   usb_observer.SetOnEventObservedCallback(result_metric_data.cb());
   usb_observer.SetReportingEnabled(true);
 
-  ::ash::cros_healthd::FakeCrosHealthdClient::Get()
-      ->EmitUsbAddEventForTesting();
+  ::ash::cros_healthd::FakeCrosHealthd::Get()->EmitUsbAddEventForTesting();
 
   const auto metric_data = result_metric_data.result();
 

@@ -4038,6 +4038,7 @@ if (!is_android) {
         "//chromeos/services/assistant:lib",
         "//chromeos/services/assistant/public/cpp",
         "//chromeos/services/assistant/public/proto",
+        "//chromeos/services/cros_healthd/public/cpp",
         "//chromeos/services/machine_learning/public/cpp:stub",
         "//chromeos/services/tts",
         "//chromeos/system",

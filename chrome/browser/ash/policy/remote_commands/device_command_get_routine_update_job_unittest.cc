@@ -13,9 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -161,15 +159,12 @@ class DeviceCommandGetRoutineUpdateJobTest : public testing::Test {
 };
 
 DeviceCommandGetRoutineUpdateJobTest::DeviceCommandGetRoutineUpdateJobTest() {
-  ash::cros_healthd::CrosHealthdClient::InitializeFake();
+  ash::cros_healthd::FakeCrosHealthd::Initialize();
   test_start_time_ = base::TimeTicks::Now();
 }
 
 DeviceCommandGetRoutineUpdateJobTest::~DeviceCommandGetRoutineUpdateJobTest() {
-  ash::cros_healthd::CrosHealthdClient::Shutdown();
-
-  // Wait for ServiceConnection to observe the destruction of the client.
-  chromeos::cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
+  ash::cros_healthd::FakeCrosHealthd::Shutdown();
 }
 
 void DeviceCommandGetRoutineUpdateJobTest::InitializeJob(
@@ -283,7 +278,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
   auto response = chromeos::cros_healthd::mojom::RoutineUpdate::New(
       kProgressPercent,
       /*output=*/mojo::ScopedHandle(), update_union.Clone());
-  ash::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetGetRoutineUpdateResponseForTesting(response);
   std::unique_ptr<RemoteCommandJob> job =
       std::make_unique<DeviceCommandGetRoutineUpdateJob>();
@@ -321,7 +316,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
   auto response = chromeos::cros_healthd::mojom::RoutineUpdate::New(
       kProgressPercent,
       /*output=*/mojo::ScopedHandle(), update_union.Clone());
-  ash::cros_healthd::FakeCrosHealthdClient::Get()
+  ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetGetRoutineUpdateResponseForTesting(response);
   std::unique_ptr<RemoteCommandJob> job =
       std::make_unique<DeviceCommandGetRoutineUpdateJob>();

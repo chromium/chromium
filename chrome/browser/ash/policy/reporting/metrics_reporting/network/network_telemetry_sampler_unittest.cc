@@ -15,15 +15,13 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
-#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/tether_constants.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "components/reporting/metrics/fake_sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/util/test_support_callbacks.h"
@@ -88,7 +86,7 @@ void SetWifiInterfaceData() {
 
   telemetry_info->network_interface_result =
       std::move(network_interface_result);
-  ::ash::cros_healthd::FakeCrosHealthdClient::Get()
+  ::ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
 }
 
@@ -99,7 +97,7 @@ std::string DevicePath(const std::string& interface_name) {
 class NetworkTelemetrySamplerTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    ::ash::cros_healthd::CrosHealthdClient::InitializeFake();
+    ::ash::cros_healthd::FakeCrosHealthd::Initialize();
     SetWifiInterfaceData();
 
     MetricData metric_data;
@@ -113,10 +111,7 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
     https_latency_sampler_->SetMetricData(metric_data);
   }
 
-  void TearDown() override {
-    ash::cros_healthd::CrosHealthdClient::Shutdown();
-    chromeos::cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
-  }
+  void TearDown() override { ash::cros_healthd::FakeCrosHealthd::Shutdown(); }
 
   void SetNetworkData(const std::vector<FakeNetworkData>& networks_data,
                       bool enable_full_network_telemetry_reporting = true) {
