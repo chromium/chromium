@@ -65,6 +65,7 @@ void VideoEncoderFallback::Encode(scoped_refptr<VideoFrame> frame,
                                   bool key_frame,
                                   EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!init_done_cb_);
 
   if (use_fallback_) {
     if (fallback_initialized_) {
