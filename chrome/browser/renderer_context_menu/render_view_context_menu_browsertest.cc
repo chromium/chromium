@@ -251,8 +251,8 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
     web_app_info->title = u"Test app 🐐";
     web_app_info->description = u"Test description 🐐";
     web_app_info->user_display_mode =
-        open_as_window ? blink::mojom::DisplayMode::kStandalone
-                       : blink::mojom::DisplayMode::kBrowser;
+        open_as_window ? web_app::UserDisplayMode::kStandalone
+                       : web_app::UserDisplayMode::kBrowser;
 
     return web_app::test::InstallWebApp(browser()->profile(),
                                         std::move(web_app_info));

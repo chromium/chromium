@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -111,21 +112,22 @@ void UninstallWebAppWithDialogFromStartupSwitch(const AppId& app_id,
 
 #endif  // BUILDFLAG(IS_WIN)
 
-DisplayMode GetExtensionDisplayMode(Profile* profile,
-                                    const extensions::Extension* extension) {
+UserDisplayMode GetExtensionUserDisplayMode(
+    Profile* profile,
+    const extensions::Extension* extension) {
   // Platform apps always open in an app window and their user preference is
   // meaningless.
   if (extension->is_platform_app())
-    return DisplayMode::kStandalone;
+    return UserDisplayMode::kStandalone;
 
   switch (extensions::GetLaunchContainer(
       extensions::ExtensionPrefs::Get(profile), extension)) {
     case apps::mojom::LaunchContainer::kLaunchContainerWindow:
     case apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated:
-      return DisplayMode::kStandalone;
+      return UserDisplayMode::kStandalone;
     case apps::mojom::LaunchContainer::kLaunchContainerTab:
     case apps::mojom::LaunchContainer::kLaunchContainerNone:
-      return DisplayMode::kBrowser;
+      return UserDisplayMode::kBrowser;
   }
 }
 
@@ -254,7 +256,9 @@ bool WebAppUiManagerImpl::UninstallAndReplaceIfExists(
                                     app_sorting->GetPageOrdinal(from_app));
 
         sync_bridge_->SetAppUserDisplayMode(
-            to_app, GetExtensionDisplayMode(profile_, from_extension),
+            to_app,
+
+            GetExtensionUserDisplayMode(profile_, from_extension),
             /*is_user_action=*/false);
 
         auto shortcut_info = web_app::ShortcutInfoForExtensionAndProfile(

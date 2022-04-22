@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/values.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
@@ -266,8 +267,8 @@ struct WebAppInstallInfo {
   // User preference for whether the app should be opened as a tab or in an app
   // window. Must be either kBrowser or kStandalone, this will be checked by
   // WebApp::SetUserDisplayMode().
-  blink::mojom::DisplayMode user_display_mode =
-      blink::mojom::DisplayMode::kBrowser;
+  absl::optional<web_app::UserDisplayMode> user_display_mode =
+      web_app::UserDisplayMode::kBrowser;
 
   // The extensions and mime types the app can handle.
   apps::FileHandlers file_handlers;

@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -88,7 +89,7 @@ void AutoAcceptDialogCallback(
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback acceptance_callback) {
-  web_app_info->user_display_mode = DisplayMode::kStandalone;
+  web_app_info->user_display_mode = UserDisplayMode::kStandalone;
   std::move(acceptance_callback)
       .Run(
           /*user_accepted=*/true, std::move(web_app_info));
@@ -226,7 +227,8 @@ Browser* LaunchBrowserForWebAppInTab(Profile* profile, const AppId& app_id) {
 
 ExternalInstallOptions CreateInstallOptions(const GURL& url) {
   ExternalInstallOptions install_options(
-      url, DisplayMode::kStandalone, ExternalInstallSource::kInternalDefault);
+      url, UserDisplayMode::kStandalone,
+      ExternalInstallSource::kInternalDefault);
   // Avoid creating real shortcuts in tests.
   install_options.add_to_applications_menu = false;
   install_options.add_to_desktop = false;

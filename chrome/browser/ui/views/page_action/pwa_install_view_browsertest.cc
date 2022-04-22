@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
@@ -358,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
   // Change launch container to open in tab.
   web_app::WebAppProvider::GetForTest(browser()->profile())
       ->sync_bridge()
-      .SetAppUserDisplayMode(app_id, web_app::DisplayMode::kBrowser,
+      .SetAppUserDisplayMode(app_id, web_app::UserDisplayMode::kBrowser,
                              /*is_user_action=*/false);
 
   // Use a new tab because installed app may have opened in new window.
@@ -670,7 +671,8 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
 }
 
 // TODO(crbug.com/1258062): Flaky.
-IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, DISABLED_PwaIntallIphSiteEngagement) {
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
+                       DISABLED_PwaIntallIphSiteEngagement) {
   GURL app_url = GetInstallableAppURL();
   bool installable = OpenTab(app_url).installable;
   ASSERT_TRUE(installable);

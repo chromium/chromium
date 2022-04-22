@@ -43,6 +43,7 @@
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -562,7 +563,7 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
 #endif
 
   app->window_mode = ConvertDisplayModeToWindowMode(
-      registrar().GetAppUserDisplayMode(web_app->app_id()));
+      registrar().GetAppEffectiveDisplayMode(web_app->app_id()));
 
   const auto login_mode = registrar().GetAppRunOnOsLoginMode(web_app->app_id());
   app->run_on_os_login = apps::RunOnOsLogin(
@@ -618,7 +619,7 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
   // Web App's publisher_id the start url.
   app->publisher_id = web_app->start_url().spec();
 
-  auto display_mode = registrar().GetAppUserDisplayMode(web_app->app_id());
+  auto display_mode = registrar().GetAppEffectiveDisplayMode(web_app->app_id());
   app->window_mode = apps::ConvertWindowModeToMojomWindowMode(
       ConvertDisplayModeToWindowMode(display_mode));
 
@@ -1087,26 +1088,26 @@ apps::WindowMode WebAppPublisherHelper::GetWindowMode(
   if (!web_app)
     return apps::WindowMode::kUnknown;
 
-  auto display_mode = registrar().GetAppUserDisplayMode(web_app->app_id());
+  auto display_mode = registrar().GetAppEffectiveDisplayMode(web_app->app_id());
   return ConvertDisplayModeToWindowMode(display_mode);
 }
 
 void WebAppPublisherHelper::SetWindowMode(const std::string& app_id,
                                           apps::mojom::WindowMode window_mode) {
-  auto display_mode = blink::mojom::DisplayMode::kStandalone;
+  auto user_display_mode = web_app::UserDisplayMode::kStandalone;
   switch (window_mode) {
     case apps::mojom::WindowMode::kBrowser:
-      display_mode = blink::mojom::DisplayMode::kBrowser;
+      user_display_mode = web_app::UserDisplayMode::kBrowser;
       break;
     case apps::mojom::WindowMode::kUnknown:
     case apps::mojom::WindowMode::kWindow:
-      display_mode = blink::mojom::DisplayMode::kStandalone;
+      user_display_mode = web_app::UserDisplayMode::kStandalone;
       break;
     case apps::mojom::WindowMode::kTabbedWindow:
-      display_mode = blink::mojom::DisplayMode::kTabbed;
+      user_display_mode = web_app::UserDisplayMode::kTabbed;
       break;
   }
-  provider_->sync_bridge().SetAppUserDisplayMode(app_id, display_mode,
+  provider_->sync_bridge().SetAppUserDisplayMode(app_id, user_display_mode,
                                                  /*is_user_action=*/true);
 }
 
@@ -1323,8 +1324,9 @@ void WebAppPublisherHelper::OnWebAppLastLaunchTimeChanged(
 
 void WebAppPublisherHelper::OnWebAppUserDisplayModeChanged(
     const AppId& app_id,
-    DisplayMode user_display_mode) {
-  PublishWindowModeUpdate(app_id, user_display_mode);
+    UserDisplayMode user_display_mode) {
+  PublishWindowModeUpdate(app_id,
+                          registrar().GetAppEffectiveDisplayMode(app_id));
 }
 
 void WebAppPublisherHelper::OnWebAppRunOnOsLoginModeChanged(

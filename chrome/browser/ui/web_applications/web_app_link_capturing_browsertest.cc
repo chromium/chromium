@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/manifest_update_task.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -273,7 +274,7 @@ class WebAppTabStripLinkCapturingBrowserTest
   void InstallTestTabbedApp() {
     WebAppLinkCapturingBrowserTest::InstallTestApp("/web_apps/basic.html");
     provider().sync_bridge().SetAppUserDisplayMode(
-        app_id_, DisplayMode::kTabbed, /*is_user_action=*/false);
+        app_id_, UserDisplayMode::kTabbed, /*is_user_action=*/false);
   }
 
  private:

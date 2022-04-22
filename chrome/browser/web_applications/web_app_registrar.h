@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -184,7 +185,8 @@ class WebAppRegistrar : public ProfileManagerObserver {
   absl::optional<GURL> GetAppScopeInternal(const AppId& app_id) const;
 
   DisplayMode GetAppDisplayMode(const AppId& app_id) const;
-  DisplayMode GetAppUserDisplayMode(const AppId& app_id) const;
+  absl::optional<UserDisplayMode> GetAppUserDisplayMode(
+      const AppId& app_id) const;
   std::vector<DisplayMode> GetAppDisplayModeOverride(const AppId& app_id) const;
 
   // Returns the "url_handlers" field from the app manifest.
@@ -311,7 +313,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   void NotifyWebAppInstallTimeChanged(const AppId& app_id,
                                       const base::Time& time);
   void NotifyWebAppUserDisplayModeChanged(const AppId& app_id,
-                                          DisplayMode user_display_mode);
+                                          UserDisplayMode user_display_mode);
   void NotifyWebAppRunOnOsLoginModeChanged(
       const AppId& app_id,
       RunOnOsLoginMode run_on_os_login_mode);

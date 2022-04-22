@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/preinstalled_web_apps_resources.h"
@@ -105,7 +106,7 @@ ExternalInstallOptions GetConfigForGoogleDrive() {
   ExternalInstallOptions options(
       /*install_url=*/GURL(
           "https://drive.google.com/drive/installwebapp?usp=chrome_default"),
-      /*user_display_mode=*/DisplayMode::kBrowser,
+      /*user_display_mode=*/UserDisplayMode::kBrowser,
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
   options.user_type_allowlist = {"unmanaged", "managed", "child"};

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -62,7 +63,6 @@ class WebAppIconManagerBrowserTest : public InProcessBrowserTest {
  private:
   net::EmbeddedTestServer https_server_;
   apps::AppServiceTest app_service_test_;
-
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
     web_application_info->start_url = start_url;
     web_application_info->scope = start_url.GetWithoutFilename();
     web_application_info->title = u"App Name";
-    web_application_info->user_display_mode = DisplayMode::kStandalone;
+    web_application_info->user_display_mode = UserDisplayMode::kStandalone;
 
     {
       SkBitmap bitmap;

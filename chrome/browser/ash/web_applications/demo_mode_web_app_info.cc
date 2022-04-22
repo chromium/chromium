@@ -9,6 +9,7 @@
 #include "ash/webui/grit/ash_demo_mode_app_resources.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 
 std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForDemoModeApp() {
@@ -25,7 +26,7 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForDemoModeApp() {
   info->theme_color = 0xFF4285F4;
   info->background_color = 0xFFFFFFFF;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
+  info->user_display_mode = web_app::UserDisplayMode::kStandalone;
 
   return info;
 }

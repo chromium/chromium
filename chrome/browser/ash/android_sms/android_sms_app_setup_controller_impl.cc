@@ -16,6 +16,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/external_install_options.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -248,7 +249,7 @@ void AndroidSmsAppSetupControllerImpl::TryInstallApp(const GURL& install_url,
                   << "Trying to install PWA for " << install_url
                   << ". Num attempts so far # " << num_attempts_so_far;
   web_app::ExternalInstallOptions options(
-      install_url, blink::mojom::DisplayMode::kStandalone,
+      install_url, web_app::UserDisplayMode::kStandalone,
       web_app::ExternalInstallSource::kInternalDefault);
   options.override_previous_user_uninstall = true;
   // The ServiceWorker does not load in time for the installability check, so

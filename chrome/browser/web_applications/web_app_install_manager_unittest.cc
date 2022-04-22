@@ -31,6 +31,7 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -75,7 +76,8 @@ std::unique_ptr<WebAppInstallInfo> ConvertWebAppToRendererWebAppInstallInfo(
   // |user_display_mode| is a user's display mode value and it is typically
   // populated by a UI dialog in production code. We set it here for testing
   // purposes.
-  web_application_info->user_display_mode = app.user_display_mode();
+  CHECK(app.user_display_mode().has_value());
+  web_application_info->user_display_mode = *app.user_display_mode();
   return web_application_info;
 }
 
@@ -234,7 +236,7 @@ class WebAppInstallManagerTest
   std::unique_ptr<WebApp> CreateWebAppFromSyncAndPendingInstallation(
       const GURL& start_url,
       const std::string& app_name,
-      DisplayMode user_display_mode,
+      absl::optional<UserDisplayMode> user_display_mode,
       SkColor theme_color,
       bool is_locally_installed,
       const GURL& scope,
@@ -242,7 +244,8 @@ class WebAppInstallManagerTest
     auto web_app = test::CreateWebApp(start_url, WebAppManagement::kSync);
     web_app->SetIsFromSyncAndPendingInstallation(true);
     web_app->SetIsLocallyInstalled(is_locally_installed);
-    web_app->SetUserDisplayMode(user_display_mode);
+    DCHECK(user_display_mode.has_value());
+    web_app->SetUserDisplayMode(*user_display_mode);
 
     WebApp::SyncFallbackData sync_fallback_data;
     sync_fallback_data.name = app_name;
@@ -481,11 +484,11 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   const AppId app2_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url2);
   {
     std::unique_ptr<WebApp> app1 = CreateWebAppFromSyncAndPendingInstallation(
-        url1, "Name1 from sync", DisplayMode::kStandalone, SK_ColorRED,
+        url1, "Name1 from sync", UserDisplayMode::kStandalone, SK_ColorRED,
         /*is_locally_installed=*/false, /*scope=*/GURL(), /*icon_infos=*/{});
 
     std::unique_ptr<WebApp> app2 = CreateWebAppFromSyncAndPendingInstallation(
-        url2, "Name2 from sync", DisplayMode::kBrowser, SK_ColorGREEN,
+        url2, "Name2 from sync", UserDisplayMode::kBrowser, SK_ColorGREEN,
         /*is_locally_installed=*/true, /*scope=*/GURL(), /*icon_infos=*/{});
 
     Registry registry;
@@ -628,7 +631,8 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   {
     std::unique_ptr<WebApp> app_in_sync_install =
         CreateWebAppFromSyncAndPendingInstallation(
-            start_url, "Name from sync", DisplayMode::kStandalone, SK_ColorRED,
+            start_url, "Name from sync", UserDisplayMode::kStandalone,
+            SK_ColorRED,
             /*is_locally_installed=*/true, /*scope=*/GURL(), /*icon_infos=*/{});
 
     InitRegistrarWithApp(std::move(app_in_sync_install));
@@ -698,7 +702,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Success) {
   expected_app->SetDescription("Description");
   expected_app->SetThemeColor(SK_ColorCYAN);
   expected_app->SetDisplayMode(DisplayMode::kBrowser);
-  expected_app->SetUserDisplayMode(DisplayMode::kStandalone);
+  expected_app->SetUserDisplayMode(UserDisplayMode::kStandalone);
 
   std::vector<apps::IconInfo> manifest_icons;
   std::vector<int> sizes;
@@ -721,6 +725,8 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Success) {
     sync_fallback_data.icon_infos = expected_app->manifest_icons();
     expected_app->SetSyncFallbackData(std::move(sync_fallback_data));
   }
+
+  ASSERT_TRUE(expected_app->user_display_mode().has_value());
 
   std::unique_ptr<const WebApp> app_in_sync_install =
       CreateWebAppFromSyncAndPendingInstallation(
@@ -768,7 +774,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Fallback) {
   expected_app->SetName("Name from sync");
   expected_app->SetScope(url);
   expected_app->SetDisplayMode(DisplayMode::kBrowser);
-  expected_app->SetUserDisplayMode(DisplayMode::kBrowser);
+  expected_app->SetUserDisplayMode(UserDisplayMode::kBrowser);
   expected_app->SetIsLocallyInstalled(expect_locally_installed);
   expected_app->SetInstallSourceForMetrics(webapps::WebappInstallSource::SYNC);
   expected_app->SetThemeColor(SK_ColorRED);
@@ -843,7 +849,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
        UninstallFromSyncAfterRegistryUpdate) {
   std::unique_ptr<WebApp> app = test::CreateWebApp(
       GURL("https://example.com/path"), WebAppManagement::kSync);
-  app->SetUserDisplayMode(DisplayMode::kStandalone);
+  app->SetUserDisplayMode(UserDisplayMode::kStandalone);
 
   const AppId app_id = app->app_id();
   InitRegistrarWithApp(std::move(app));
@@ -909,7 +915,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
        UninstallFromSyncAfterRegistryUpdateInstallManagerObserver) {
   std::unique_ptr<WebApp> app = test::CreateWebApp(
       GURL("https://example.com/path"), WebAppManagement::kSync);
-  app->SetUserDisplayMode(DisplayMode::kStandalone);
+  app->SetUserDisplayMode(UserDisplayMode::kStandalone);
 
   const AppId app_id = app->app_id();
   InitRegistrarWithApp(std::move(app));
@@ -976,7 +982,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   std::unique_ptr<WebApp> policy_and_user_app = test::CreateWebApp(
       GURL("https://example.com/path"), WebAppManagement::kSync);
   policy_and_user_app->AddSource(WebAppManagement::kPolicy);
-  policy_and_user_app->SetUserDisplayMode(DisplayMode::kStandalone);
+  policy_and_user_app->SetUserDisplayMode(UserDisplayMode::kStandalone);
 
   const AppId app_id = policy_and_user_app->app_id();
   const GURL external_app_url("https://example.com/path/policy");
@@ -1013,7 +1019,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   std::unique_ptr<WebApp> policy_and_user_app = test::CreateWebApp(
       GURL("https://example.com/path"), WebAppManagement::kSync);
   policy_and_user_app->AddSource(WebAppManagement::kPolicy);
-  policy_and_user_app->SetUserDisplayMode(DisplayMode::kStandalone);
+  policy_and_user_app->SetUserDisplayMode(UserDisplayMode::kStandalone);
 
   const AppId app_id = policy_and_user_app->app_id();
   const GURL external_app_url("https://example.com/path/policy");
@@ -1049,7 +1055,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, DefaultAndUser_UninstallWebApp) {
   std::unique_ptr<WebApp> default_and_user_app = test::CreateWebApp(
       GURL("https://example.com/path"), WebAppManagement::kSync);
   default_and_user_app->AddSource(WebAppManagement::kDefault);
-  default_and_user_app->SetUserDisplayMode(DisplayMode::kStandalone);
+  default_and_user_app->SetUserDisplayMode(UserDisplayMode::kStandalone);
 
   const AppId app_id = default_and_user_app->app_id();
   const GURL external_app_url("https://example.com/path/default");
@@ -1086,7 +1092,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   std::unique_ptr<WebApp> default_and_user_app = test::CreateWebApp(
       GURL("https://example.com/path"), WebAppManagement::kSync);
   default_and_user_app->AddSource(WebAppManagement::kDefault);
-  default_and_user_app->SetUserDisplayMode(DisplayMode::kStandalone);
+  default_and_user_app->SetUserDisplayMode(UserDisplayMode::kStandalone);
 
   const AppId app_id = default_and_user_app->app_id();
   const GURL external_app_url("https://example.com/path/default");
@@ -1203,7 +1209,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
     std::unique_ptr<WebApp> app_in_sync_install =
         CreateWebAppFromSyncAndPendingInstallation(
             start_url, "Name from sync",
-            /*user_display_mode=*/DisplayMode::kStandalone, SK_ColorRED,
+            /*user_display_mode=*/UserDisplayMode::kStandalone, SK_ColorRED,
             /*is_locally_installed=*/false, /*scope=*/GURL(),
             /*icon_infos=*/{});
 
@@ -1243,7 +1249,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   apk_web_application_info->title = u"Name from APK";
   apk_web_application_info->theme_color = SK_ColorWHITE;
   apk_web_application_info->display_mode = DisplayMode::kStandalone;
-  apk_web_application_info->user_display_mode = DisplayMode::kStandalone;
+  apk_web_application_info->user_display_mode = UserDisplayMode::kStandalone;
   AddGeneratedIcon(&apk_web_application_info->icon_bitmaps.any, icon_size::k128,
                    SK_ColorYELLOW);
 
@@ -1274,7 +1280,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
             web_app->sync_fallback_data().scope.spec());
 
   EXPECT_EQ(DisplayMode::kStandalone, web_app->display_mode());
-  EXPECT_EQ(DisplayMode::kStandalone, web_app->user_display_mode());
+  EXPECT_EQ(UserDisplayMode::kStandalone, web_app->user_display_mode());
 
   EXPECT_TRUE(web_app->manifest_icons().empty());
   EXPECT_TRUE(web_app->sync_fallback_data().icon_infos.empty());
@@ -1288,7 +1294,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
     synced_specifics_data->SetStartUrl(start_url);
 
     synced_specifics_data->AddSource(WebAppManagement::kSync);
-    synced_specifics_data->SetUserDisplayMode(DisplayMode::kBrowser);
+    synced_specifics_data->SetUserDisplayMode(UserDisplayMode::kBrowser);
     synced_specifics_data->SetName("Name From Sync");
 
     WebApp::SyncFallbackData sync_fallback_data;
@@ -1322,7 +1328,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   EXPECT_FALSE(web_app->is_from_sync_and_pending_installation());
 
   EXPECT_EQ(DisplayMode::kStandalone, web_app->display_mode());
-  EXPECT_EQ(DisplayMode::kBrowser, web_app->user_display_mode());
+  EXPECT_EQ(UserDisplayMode::kBrowser, web_app->user_display_mode());
 
   ASSERT_TRUE(web_app->theme_color().has_value());
   EXPECT_EQ(SK_ColorWHITE, web_app->theme_color().value());

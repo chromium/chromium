@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -81,7 +82,7 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void Init(base::OnceClosure callback);
 
   void SetAppUserDisplayMode(const AppId& app_id,
-                             DisplayMode user_display_mode,
+                             UserDisplayMode user_display_mode,
                              bool is_user_action);
 
   void SetAppIsDisabled(const AppId& app_id, bool is_disabled);

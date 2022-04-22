@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -28,7 +29,7 @@ class AppPlatformMetricsBrowserTest : public InProcessBrowserTest {
  public:
   AppId InstallWebApp(const GURL& start_url,
                       blink::mojom::DisplayMode display_mode,
-                      blink::mojom::DisplayMode user_display_mode) {
+                      web_app::UserDisplayMode user_display_mode) {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
@@ -122,10 +123,10 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsBrowserTest, WindowedWebApps) {
   const AppId standalone_app_id = InstallWebApp(
       GURL("https://standalone.example.com/"),
       blink::mojom::DisplayMode::kStandalone,
-      /*user_display_mode=*/blink::mojom::DisplayMode::kStandalone);
+      /*user_display_mode=*/web_app::UserDisplayMode::kStandalone);
   const AppId browser_app_id = InstallWebApp(
       GURL("https://browser.example.com/"), blink::mojom::DisplayMode::kBrowser,
-      /*user_display_mode=*/blink::mojom::DisplayMode::kStandalone);
+      /*user_display_mode=*/web_app::UserDisplayMode::kStandalone);
 
   // Wait for app service to see the newly installed app.
   apps::AppServiceProxyFactory::GetForProfile(profile())
@@ -172,10 +173,10 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsBrowserTest, TabbedWebApps) {
   const AppId standalone_app_id =
       InstallWebApp(GURL("https://standalone.example.com/"),
                     blink::mojom::DisplayMode::kStandalone,
-                    /*user_display_mode=*/blink::mojom::DisplayMode::kBrowser);
+                    /*user_display_mode=*/web_app::UserDisplayMode::kBrowser);
   const AppId browser_app_id = InstallWebApp(
       GURL("https://browser.example.com/"), blink::mojom::DisplayMode::kBrowser,
-      /*user_display_mode=*/blink::mojom::DisplayMode::kBrowser);
+      /*user_display_mode=*/web_app::UserDisplayMode::kBrowser);
 
   // Wait for app service to see the newly installed app.
   apps::AppServiceProxyFactory::GetForProfile(profile())

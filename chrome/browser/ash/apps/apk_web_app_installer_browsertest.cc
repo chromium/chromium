@@ -30,6 +30,7 @@
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -70,7 +71,8 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInstallInfo(const GURL& url) {
   web_application_info->theme_color = SK_ColorBLUE;
   web_application_info->scope = url.Resolve("scope");
   web_application_info->display_mode = web_app::DisplayMode::kBrowser;
-  web_application_info->user_display_mode = web_app::DisplayMode::kStandalone;
+  web_application_info->user_display_mode =
+      web_app::UserDisplayMode::kStandalone;
 
   const std::vector<SquareSizePx> sizes_px{web_app::icon_size::k256,
                                            web_app::icon_size::k512};
@@ -133,7 +135,8 @@ void ExpectInitialManifestFieldsFromWebAppInstallInfo(
             SK_ColorYELLOW);
 
   // User preferences:
-  EXPECT_EQ(web_app->user_display_mode(), web_app::DisplayMode::kStandalone);
+  EXPECT_EQ(web_app->user_display_mode(),
+            web_app::UserDisplayMode::kStandalone);
 }
 
 }  // namespace

@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -341,7 +342,7 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
     web_app_info->title = base::UTF8ToUTF16(app_name);
     web_app_info->start_url = kAppUrl;
     web_app_info->scope = kAppUrl;
-    web_app_info->user_display_mode = web_app::DisplayMode::kStandalone;
+    web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
 
     return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   }

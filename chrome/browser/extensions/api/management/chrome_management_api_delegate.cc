@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -265,7 +266,7 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
     web_app_info->title = base::UTF8ToUTF16(title);
     web_app_info->start_url = launch_url;
     web_app_info->display_mode = web_app::DisplayMode::kBrowser;
-    web_app_info->user_display_mode = blink::mojom::DisplayMode::kBrowser;
+    web_app_info->user_display_mode = web_app::UserDisplayMode::kBrowser;
 
     if (!image_result.image.IsEmpty()) {
       web_app_info->icon_bitmaps.any[image_result.image.Width()] =
@@ -351,10 +352,10 @@ void LaunchWebApp(const web_app::AppId& app_id, Profile* profile) {
   // add a "default" launch container enum value.
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);
-  blink::mojom::DisplayMode display_mode =
+  absl::optional<web_app::UserDisplayMode> display_mode =
       provider->registrar().GetAppUserDisplayMode(app_id);
   auto launch_container = apps::mojom::LaunchContainer::kLaunchContainerWindow;
-  if (display_mode == blink::mojom::DisplayMode::kBrowser)
+  if (display_mode == web_app::UserDisplayMode::kBrowser)
     launch_container = apps::mojom::LaunchContainer::kLaunchContainerTab;
 
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
@@ -413,11 +414,9 @@ void OnWebAppInstallabilityChecked(
 
 }  // namespace
 
-ChromeManagementAPIDelegate::ChromeManagementAPIDelegate() {
-}
+ChromeManagementAPIDelegate::ChromeManagementAPIDelegate() = default;
 
-ChromeManagementAPIDelegate::~ChromeManagementAPIDelegate() {
-}
+ChromeManagementAPIDelegate::~ChromeManagementAPIDelegate() = default;
 
 void ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
     const extensions::Extension* extension,

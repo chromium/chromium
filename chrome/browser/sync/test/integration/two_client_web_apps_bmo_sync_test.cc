@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -260,12 +261,12 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
   WebAppInstallInfo info;
   info.title = u"Test name";
   info.start_url = GURL("http://www.chromium.org/path");
-  info.user_display_mode = DisplayMode::kStandalone;
+  info.user_display_mode = UserDisplayMode::kStandalone;
 
   // Install web app to both profiles.
   AppId app_id = InstallApp(info, GetProfile(0));
   // The web app has a different open on the second profile.
-  info.user_display_mode = DisplayMode::kBrowser;
+  info.user_display_mode = UserDisplayMode::kBrowser;
   AppId app_id2 = InstallApp(info, GetProfile(1));
 
   EXPECT_EQ(app_id, app_id2);
@@ -300,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, DisplayMode) {
 
   WebAppProvider::GetForTest(GetProfile(1))
       ->sync_bridge()
-      .SetAppUserDisplayMode(app_id, DisplayMode::kBrowser,
+      .SetAppUserDisplayMode(app_id, UserDisplayMode::kBrowser,
                              /*is_user_action=*/false);
 
   // Install a 'dummy' app & wait for installation to ensure sync has processed
@@ -312,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, DisplayMode) {
 
   // The change should have synced to profile 0.
   EXPECT_EQ(GetRegistrar(GetProfile(0)).GetAppUserDisplayMode(app_id),
-            DisplayMode::kBrowser);
+            UserDisplayMode::kBrowser);
   // The user display settings is synced, so it should match.
   EXPECT_EQ(GetRegistrar(GetProfile(0)).GetAppUserDisplayMode(app_id),
             GetRegistrar(GetProfile(1)).GetAppUserDisplayMode(app_id));
@@ -397,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NotSyncedThenSynced) {
   // on profile 0. So changes should propagate from profile 0 to profile 1 now.
   WebAppProvider::GetForTest(GetProfile(0))
       ->sync_bridge()
-      .SetAppUserDisplayMode(app_id, DisplayMode::kBrowser,
+      .SetAppUserDisplayMode(app_id, UserDisplayMode::kBrowser,
                              /*is_user_action=*/false);
 
   // Install a 'dummy' app & wait for installation to ensure sync has processed
@@ -407,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NotSyncedThenSynced) {
 
   // Check that profile 1 has the display mode change.
   EXPECT_EQ(GetRegistrar(GetProfile(1)).GetAppUserDisplayMode(app_id),
-            DisplayMode::kBrowser);
+            UserDisplayMode::kBrowser);
 
   // The user display settings is syned, so it should match.
   EXPECT_EQ(GetRegistrar(GetProfile(0)).GetAppUserDisplayMode(app_id),

@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
@@ -124,8 +125,10 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
   base::TrimWhitespace(web_app_info_->title, base::TRIM_ALL,
                        &web_app_info_->title);
   // PWAs should always be configured not to open in a browser tab.
-  DCHECK_NE(web_app_info_->user_display_mode,
-            blink::mojom::DisplayMode::kBrowser);
+  if (web_app_info_->user_display_mode.has_value()) {
+    DCHECK_NE(*web_app_info_->user_display_mode,
+              web_app::UserDisplayMode::kBrowser);
+  }
 
   const ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
@@ -162,7 +165,7 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
         std::make_unique<views::Checkbox>(l10n_util::GetStringUTF16(
             IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_TABBED_WINDOW)));
     tabbed_window_checkbox_->SetChecked(web_app_info_->user_display_mode ==
-                                        web_app::DisplayMode::kTabbed);
+                                        web_app::UserDisplayMode::kTabbed);
   }
 
   chrome::RecordDialogCreation(chrome::DialogIdentifier::PWA_CONFIRMATION);
@@ -205,8 +208,8 @@ bool PWAConfirmationBubbleView::Accept() {
   DCHECK(web_app_info_);
   web_app_info_->user_display_mode =
       tabbed_window_checkbox_ && tabbed_window_checkbox_->GetChecked()
-          ? web_app::DisplayMode::kTabbed
-          : web_app::DisplayMode::kStandalone;
+          ? web_app::UserDisplayMode::kTabbed
+          : web_app::UserDisplayMode::kStandalone;
 
   if (iph_state_ == chrome::PwaInProductHelpState::kShown) {
     web_app::AppId app_id = web_app::GenerateAppId(web_app_info_->manifest_id,

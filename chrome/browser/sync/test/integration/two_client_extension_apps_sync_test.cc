@@ -21,6 +21,7 @@
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -402,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
         web_app::GenerateAppId(absl::nullopt, kStartUrl);
     web_app::ExternalInstallOptions options(
         GURL("https://www.example.com/install_url"),
-        web_app::DisplayMode::kStandalone,
+        web_app::UserDisplayMode::kStandalone,
         web_app::ExternalInstallSource::kExternalDefault);
     options.user_type_allowlist = {"unmanaged"};
     options.uninstall_and_replace = {kHostedAppId0};

@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -210,7 +211,6 @@ TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
   const GURL start_url{"https://example.com/"};
   const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
   const std::string name = "App Name";
-  const auto user_display_mode = DisplayMode::kBrowser;
   const bool is_locally_installed = true;
 
   std::vector<std::unique_ptr<WebAppProto>> protos;
@@ -222,7 +222,7 @@ TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
     sync_pb::WebAppSpecifics sync_proto;
     sync_proto.set_start_url(start_url.spec());
     sync_proto.set_user_display_mode(
-        ToWebAppSpecificsUserDisplayMode(user_display_mode));
+        ToWebAppSpecificsUserDisplayMode(DisplayMode::kBrowser));
     *(proto->mutable_sync_data()) = std::move(sync_proto);
   }
 
@@ -253,7 +253,7 @@ TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
   EXPECT_EQ(app_id, app->app_id());
   EXPECT_EQ(start_url, app->start_url());
   EXPECT_EQ(name, app->untranslated_name());
-  EXPECT_EQ(user_display_mode, app->user_display_mode());
+  EXPECT_EQ(UserDisplayMode::kBrowser, app->user_display_mode());
   EXPECT_EQ(is_locally_installed, app->is_locally_installed());
   EXPECT_TRUE(app->IsSynced());
   EXPECT_FALSE(app->IsPreinstalledApp());
@@ -275,14 +275,13 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   const AppId app_id =
       GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(start_url));
   const std::string name = "Name";
-  const auto user_display_mode = DisplayMode::kBrowser;
 
   auto app = std::make_unique<WebApp>(app_id);
 
   // Required fields:
   app->SetStartUrl(start_url);
   app->SetName(name);
-  app->SetUserDisplayMode(user_display_mode);
+  app->SetUserDisplayMode(UserDisplayMode::kBrowser);
   app->SetIsLocallyInstalled(false);
   // chromeos_data should always be set on ChromeOS.
   if (IsChromeOsDataMandatory())
@@ -343,7 +342,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_EQ(app_id, app_copy->app_id());
   EXPECT_EQ(start_url, app_copy->start_url());
   EXPECT_EQ(name, app_copy->untranslated_name());
-  EXPECT_EQ(user_display_mode, app_copy->user_display_mode());
+  EXPECT_EQ(UserDisplayMode::kBrowser, app_copy->user_display_mode());
   EXPECT_FALSE(app_copy->is_locally_installed());
 
   auto& chromeos_data = app_copy->chromeos_data();

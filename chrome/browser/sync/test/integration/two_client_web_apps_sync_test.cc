@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -41,8 +42,9 @@ class DisplayModeChangeWaiter : public AppRegistrarObserver {
   explicit DisplayModeChangeWaiter(WebAppRegistrar& registrar) {
     observation_.Observe(&registrar);
   }
-  void OnWebAppUserDisplayModeChanged(const AppId& app_id,
-                                      DisplayMode user_display_mode) override {
+  void OnWebAppUserDisplayModeChanged(
+      const AppId& app_id,
+      UserDisplayMode user_display_mode) override {
     run_loop_.Quit();
   }
   void Wait() { run_loop_.Run(); }
@@ -410,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUserDisplayModeChange) {
   info.description = u"Test description";
   info.start_url = GURL("http://www.chromium.org/path");
   info.scope = GURL("http://www.chromium.org/");
-  info.user_display_mode = DisplayMode::kStandalone;
+  info.user_display_mode = UserDisplayMode::kStandalone;
   AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
 
   EXPECT_EQ(install_observer.Wait(), app_id);
@@ -418,14 +420,16 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUserDisplayModeChange) {
 
   auto* provider1 = WebAppProvider::GetForTest(GetProfile(1));
   WebAppRegistrar& registrar1 = provider1->registrar();
-  EXPECT_EQ(registrar1.GetAppUserDisplayMode(app_id), DisplayMode::kStandalone);
+  EXPECT_EQ(registrar1.GetAppUserDisplayMode(app_id),
+            UserDisplayMode::kStandalone);
 
   DisplayModeChangeWaiter display_mode_change_waiter(registrar1);
-  provider1->sync_bridge().SetAppUserDisplayMode(app_id, DisplayMode::kTabbed,
+  provider1->sync_bridge().SetAppUserDisplayMode(app_id,
+                                                 UserDisplayMode::kTabbed,
                                                  /*is_user_action=*/true);
   display_mode_change_waiter.Wait();
 
-  EXPECT_EQ(registrar1.GetAppUserDisplayMode(app_id), DisplayMode::kTabbed);
+  EXPECT_EQ(registrar1.GetAppUserDisplayMode(app_id), UserDisplayMode::kTabbed);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

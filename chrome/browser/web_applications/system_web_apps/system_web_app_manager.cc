@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -173,7 +174,7 @@ ExternalInstallOptions CreateInstallOptionsForSystemApp(
              content::kChromeUIUntrustedScheme);
 
   ExternalInstallOptions install_options(
-      delegate.GetInstallUrl(), DisplayMode::kStandalone,
+      delegate.GetInstallUrl(), UserDisplayMode::kStandalone,
       ExternalInstallSource::kSystemInstalled);
   install_options.only_use_app_info_factory = true;
   // This can be Unretained because it's referring to the delegate owning this

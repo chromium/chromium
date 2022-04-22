@@ -49,26 +49,6 @@ bool WebAppExposed(const WebApp& web_app) {
   return true;
 }
 
-UserDisplayMode CreateUserDisplayModeFromDisplayMode(
-    blink::mojom::DisplayMode display_mode) {
-  using DisplayMode = blink::mojom::DisplayMode;
-  switch (display_mode) {
-    case DisplayMode::kBrowser:
-      return UserDisplayMode::kBrowser;
-    case DisplayMode::kTabbed:
-      return UserDisplayMode::kTabbed;
-    case DisplayMode::kStandalone:
-      return UserDisplayMode::kStandalone;
-
-    case DisplayMode::kFullscreen:
-    case DisplayMode::kWindowControlsOverlay:
-    case DisplayMode::kMinimalUi:
-    case DisplayMode::kUndefined:
-      NOTREACHED();
-      return UserDisplayMode::kBrowser;
-  }
-}
-
 }  // namespace
 
 WebAppRegistrar::WebAppRegistrar(Profile* profile) : profile_(profile) {}
@@ -165,7 +145,7 @@ void WebAppRegistrar::NotifyWebAppProfileWillBeDeleted(const AppId& app_id) {
 
 void WebAppRegistrar::NotifyWebAppUserDisplayModeChanged(
     const AppId& app_id,
-    DisplayMode user_display_mode) {
+    UserDisplayMode user_display_mode) {
   for (AppRegistrarObserver& observer : observers_)
     observer.OnWebAppUserDisplayModeChanged(app_id, user_display_mode);
 }
@@ -372,18 +352,17 @@ DisplayMode WebAppRegistrar::GetAppEffectiveDisplayMode(
     return DisplayMode::kBrowser;
 
   auto app_display_mode = GetAppDisplayMode(app_id);
-  auto user_display_mode = GetAppUserDisplayMode(app_id);
+  absl::optional<UserDisplayMode> user_display_mode =
+      GetAppUserDisplayMode(app_id);
   if (app_display_mode == DisplayMode::kUndefined ||
-      user_display_mode == DisplayMode::kUndefined) {
+      !user_display_mode.has_value()) {
     return DisplayMode::kUndefined;
   }
 
   std::vector<DisplayMode> display_mode_overrides =
       GetAppDisplayModeOverride(app_id);
-  return ResolveEffectiveDisplayMode(
-      app_display_mode, display_mode_overrides,
-      CreateUserDisplayModeFromDisplayMode(user_display_mode),
-      IsIsolated(app_id));
+  return ResolveEffectiveDisplayMode(app_display_mode, display_mode_overrides,
+                                     *user_display_mode, IsIsolated(app_id));
 }
 
 DisplayMode WebAppRegistrar::GetEffectiveDisplayModeFromManifest(
@@ -702,9 +681,14 @@ DisplayMode WebAppRegistrar::GetAppDisplayMode(const AppId& app_id) const {
   return web_app ? web_app->display_mode() : DisplayMode::kUndefined;
 }
 
-DisplayMode WebAppRegistrar::GetAppUserDisplayMode(const AppId& app_id) const {
+absl::optional<UserDisplayMode> WebAppRegistrar::GetAppUserDisplayMode(
+    const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->user_display_mode() : DisplayMode::kUndefined;
+  if (web_app == nullptr) {
+    return absl::nullopt;
+  }
+
+  return web_app->user_display_mode();
 }
 
 std::vector<DisplayMode> WebAppRegistrar::GetAppDisplayModeOverride(

@@ -38,6 +38,7 @@
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -330,7 +331,7 @@ TEST_F(SystemWebAppManagerTest, UninstallAppInstalledInPreviousSession) {
   StartAndWaitForAppsToSynchronize();
 
   // We should only try to install the app in the System App list.
-  ExternalInstallOptions options(AppUrl1(), DisplayMode::kStandalone,
+  ExternalInstallOptions options(AppUrl1(), UserDisplayMode::kStandalone,
                                  ExternalInstallSource::kSystemInstalled);
   options.add_to_applications_menu = true;
   options.add_to_desktop = false;

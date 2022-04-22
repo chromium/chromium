@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -142,22 +143,22 @@ WebAppConfirmationView::WebAppConfirmationView(
             .SetText(
                 l10n_util::GetStringUTF16(IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_TAB))
             .SetGroup(kRadioGroupId)
-            .SetChecked(display_mode == web_app::DisplayMode::kBrowser),
+            .SetChecked(display_mode == web_app::UserDisplayMode::kBrowser),
         views::Builder<views::View>(),  // Column skip.
         views::Builder<views::RadioButton>()
             .CopyAddressTo(&open_as_window_radio_)
             .SetText(l10n_util::GetStringUTF16(
                 IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_WINDOW))
             .SetGroup(kRadioGroupId)
-            .SetChecked(display_mode != web_app::DisplayMode::kBrowser &&
-                        display_mode != web_app::DisplayMode::kTabbed),
+            .SetChecked(display_mode != web_app::UserDisplayMode::kBrowser &&
+                        display_mode != web_app::UserDisplayMode::kTabbed),
         views::Builder<views::View>(),  // Column skip.
         views::Builder<views::RadioButton>()
             .CopyAddressTo(&open_as_tabbed_window_radio_)
             .SetText(l10n_util::GetStringUTF16(
                 IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_TABBED_WINDOW))
             .SetGroup(kRadioGroupId)
-            .SetChecked(display_mode == web_app::DisplayMode::kTabbed));
+            .SetChecked(display_mode == web_app::UserDisplayMode::kTabbed));
   } else {
     builder.AddChildren(
         views::Builder<views::View>(),  // Column skip.
@@ -165,7 +166,7 @@ WebAppConfirmationView::WebAppConfirmationView(
             .CopyAddressTo(&open_as_window_checkbox_)
             .SetText(l10n_util::GetStringUTF16(
                 IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_WINDOW))
-            .SetChecked(display_mode != web_app::DisplayMode::kBrowser));
+            .SetChecked(display_mode != web_app::UserDisplayMode::kBrowser));
   }
 
   std::move(builder).BuildChildren();
@@ -201,16 +202,18 @@ bool WebAppConfirmationView::Accept() {
   web_app_info_->title = GetTrimmedTitle();
   if (ShowRadioButtons()) {
     if (open_as_tabbed_window_radio_->GetChecked()) {
-      web_app_info_->user_display_mode = web_app::DisplayMode::kTabbed;
+      web_app_info_->user_display_mode = web_app::UserDisplayMode::kTabbed;
     } else {
-      web_app_info_->user_display_mode = open_as_window_radio_->GetChecked()
-                                             ? web_app::DisplayMode::kStandalone
-                                             : web_app::DisplayMode::kBrowser;
+      web_app_info_->user_display_mode =
+          open_as_window_radio_->GetChecked()
+              ? web_app::UserDisplayMode::kStandalone
+              : web_app::UserDisplayMode::kBrowser;
     }
   } else {
-    web_app_info_->user_display_mode = open_as_window_checkbox_->GetChecked()
-                                           ? web_app::DisplayMode::kStandalone
-                                           : web_app::DisplayMode::kBrowser;
+    web_app_info_->user_display_mode =
+        open_as_window_checkbox_->GetChecked()
+            ? web_app::UserDisplayMode::kStandalone
+            : web_app::UserDisplayMode::kBrowser;
   }
   std::move(callback_).Run(true, std::move(web_app_info_));
   return true;

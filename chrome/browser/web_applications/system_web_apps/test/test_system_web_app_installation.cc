@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_url_data_source.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -307,7 +308,7 @@ std::unique_ptr<WebAppInstallInfo> GenerateWebAppInstallInfoForTestApp() {
   info->title = u"Test System App";
   info->theme_color = 0xFF00FF00;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->user_display_mode = DisplayMode::kStandalone;
+  info->user_display_mode = UserDisplayMode::kStandalone;
   return info;
 }
 
@@ -479,7 +480,7 @@ TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation() {
             info->title = u"Test System App";
             info->theme_color = 0xFF00FF00;
             info->display_mode = blink::mojom::DisplayMode::kStandalone;
-            info->user_display_mode = DisplayMode::kStandalone;
+            info->user_display_mode = UserDisplayMode::kStandalone;
             return info;
           })));
   auto factory = std::make_unique<TestSystemWebAppWebUIControllerFactory>(
@@ -644,7 +645,7 @@ CreateSystemAppDelegateWithWindowConfig(
         info->title = u"Test System App";
         info->theme_color = 0xFF00FF00;
         info->display_mode = blink::mojom::DisplayMode::kStandalone;
-        info->user_display_mode = DisplayMode::kStandalone;
+        info->user_display_mode = UserDisplayMode::kStandalone;
         return info;
       }));
 
