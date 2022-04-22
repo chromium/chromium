@@ -103,19 +103,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "Win7 Tests (dbg)(1)",
-    builderless = True,
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
-    console_view_entry = consoles.console_view_entry(
-        category = "debug|tester",
-        short_name = "7",
-    ),
-    cq_mirrors_console_view = "mirrors",
-    os = os.WINDOWS_10,
-    triggered_by = ["ci/Win Builder (dbg)"],
-)
-
-ci.builder(
     name = "Win 7 Tests x64 (1)",
     builderless = True,
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
