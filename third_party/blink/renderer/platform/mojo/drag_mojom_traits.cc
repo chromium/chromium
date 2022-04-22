@@ -261,13 +261,13 @@ bool UnionTraits<blink::mojom::DragItemDataView, blink::WebDragData::Item>::
     Read(blink::mojom::DragItemDataView data, blink::WebDragData::Item* out) {
   blink::WebDragData::Item item;
   switch (data.tag()) {
-    case blink::mojom::DragItemDataView::Tag::STRING:
+    case blink::mojom::DragItemDataView::Tag::kString:
       return data.ReadString(out);
-    case blink::mojom::DragItemDataView::Tag::FILE:
+    case blink::mojom::DragItemDataView::Tag::kFile:
       return data.ReadFile(out);
-    case blink::mojom::DragItemDataView::Tag::BINARY:
+    case blink::mojom::DragItemDataView::Tag::kBinary:
       return data.ReadBinary(out);
-    case blink::mojom::DragItemDataView::Tag::FILE_SYSTEM_FILE:
+    case blink::mojom::DragItemDataView::Tag::kFileSystemFile:
       return data.ReadFileSystemFile(out);
   }
   NOTREACHED();
@@ -280,16 +280,16 @@ UnionTraits<blink::mojom::DragItemDataView, blink::WebDragData::Item>::GetTag(
     const blink::WebDragData::Item& item) {
   switch (item.storage_type) {
     case blink::WebDragData::Item::kStorageTypeString:
-      return blink::mojom::DragItemDataView::Tag::STRING;
+      return blink::mojom::DragItemDataView::Tag::kString;
     case blink::WebDragData::Item::kStorageTypeFilename:
-      return blink::mojom::DragItemDataView::Tag::FILE;
+      return blink::mojom::DragItemDataView::Tag::kFile;
     case blink::WebDragData::Item::kStorageTypeBinaryData:
-      return blink::mojom::DragItemDataView::Tag::BINARY;
+      return blink::mojom::DragItemDataView::Tag::kBinary;
     case blink::WebDragData::Item::kStorageTypeFileSystemFile:
-      return blink::mojom::DragItemDataView::Tag::FILE_SYSTEM_FILE;
+      return blink::mojom::DragItemDataView::Tag::kFileSystemFile;
   }
   NOTREACHED();
-  return blink::mojom::DragItemDataView::Tag::STRING;
+  return blink::mojom::DragItemDataView::Tag::kString;
 }
 
 // static
