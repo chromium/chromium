@@ -186,16 +186,18 @@ bool IsNoOpBGColorOrVariableAnimation(const PropertyHandle& property,
   return is_no_op_variable_anim || is_no_op_bgcolor_anim;
 }
 
-bool CompositedAnimationRequiresProperties(const PropertyHandle& property) {
+bool CompositedAnimationRequiresProperties(const PropertyHandle& property,
+                                           LayoutObject* layout_object) {
   if (!property.IsCSSProperty())
     return false;
   switch (property.GetCSSProperty().PropertyID()) {
-    case CSSPropertyID::kOpacity:
-    case CSSPropertyID::kBackdropFilter:
     case CSSPropertyID::kRotate:
     case CSSPropertyID::kScale:
     case CSSPropertyID::kTranslate:
     case CSSPropertyID::kTransform:
+      return !layout_object || layout_object->IsTransformApplicable();
+    case CSSPropertyID::kOpacity:
+    case CSSPropertyID::kBackdropFilter:
     case CSSPropertyID::kFilter:
       return true;
     default:
@@ -271,6 +273,9 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
     if (IsTransformRelatedCSSProperty(property)) {
       // We use this later in computing element IDs too.
       if (layout_object && !layout_object->IsTransformApplicable()) {
+        // TODO(dbaron): We could consider ignoring the
+        // transform-related property and still running the others on
+        // the compositor.
         reasons |= kTransformRelatedPropertyCannotBeAcceleratedOnTarget;
       }
       if (const auto* svg_element = DynamicTo<SVGElement>(target_element)) {
@@ -479,7 +484,7 @@ bool CompositorAnimations::CompositorPropertyAnimationsHaveNoEffect(
   bool has_paint_properties =
       layout_object && layout_object->FirstFragment().PaintProperties();
   for (const PropertyHandle& property : groups.Keys()) {
-    if (!CompositedAnimationRequiresProperties(property))
+    if (!CompositedAnimationRequiresProperties(property, layout_object))
       continue;
 
     if (!has_paint_properties) {
