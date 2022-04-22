@@ -825,6 +825,10 @@ const base::Feature MEDIA_EXPORT kMediaFoundationAV1Encoding{
 const base::Feature MEDIA_EXPORT kMediaFoundationH264CbpEncoding{
     "MediaFoundationH264CbpEncoding", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables VP9 encode acceleration for Windows.
+const base::Feature MEDIA_EXPORT kMediaFoundationVP9Encoding{
+    "MediaFoundationVP9Encoding", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables MediaFoundation based video capture
 const base::Feature kMediaFoundationVideoCapture{
     "MediaFoundationVideoCapture", base::FEATURE_ENABLED_BY_DEFAULT};

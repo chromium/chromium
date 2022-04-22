@@ -81,6 +81,16 @@ eAVEncH264VProfile GetH264VProfile(VideoCodecProfile profile,
   }
 }
 
+// Only eAVEncVP9VProfile_420_8 is supported on Intel graphics.
+eAVEncVP9VProfile GetVP9VProfile(VideoCodecProfile profile) {
+  switch (profile) {
+    case VP9PROFILE_PROFILE0:
+      return eAVEncVP9VProfile_420_8;
+    default:
+      return eAVEncVP9VProfile_unknown;
+  }
+}
+
 bool IsSvcSupported(IMFActivate* activate) {
 #if defined(ARCH_CPU_X86)
   // x86 systems sometimes crash in video drivers here.
@@ -235,7 +245,7 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
 
   SupportedProfiles profiles;
 
-  for (auto codec : {VideoCodec::kH264, VideoCodec::kAV1}) {
+  for (auto codec : {VideoCodec::kH264, VideoCodec::kVP9, VideoCodec::kAV1}) {
     auto codec_profiles = GetSupportedProfilesForCodec(codec, true);
     profiles.insert(profiles.end(), codec_profiles.begin(),
                     codec_profiles.end());
@@ -254,7 +264,7 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesLight() {
 
   SupportedProfiles profiles;
 
-  for (auto codec : {VideoCodec::kH264, VideoCodec::kAV1}) {
+  for (auto codec : {VideoCodec::kH264, VideoCodec::kVP9, VideoCodec::kAV1}) {
     auto codec_profiles = GetSupportedProfilesForCodec(codec, false);
     profiles.insert(profiles.end(), codec_profiles.begin(),
                     codec_profiles.end());
@@ -269,9 +279,12 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesForCodec(
     VideoCodec codec,
     bool populate_svc_info) {
   SupportedProfiles profiles;
-  if (codec == VideoCodec::kAV1 &&
-      !base::FeatureList::IsEnabled(kMediaFoundationAV1Encoding))
+  if ((codec == VideoCodec::kVP9 &&
+       !base::FeatureList::IsEnabled(kMediaFoundationVP9Encoding)) ||
+      (codec == VideoCodec::kAV1 &&
+       !base::FeatureList::IsEnabled(kMediaFoundationAV1Encoding))) {
     return profiles;
+  }
 
   IMFActivate** pp_activate = nullptr;
   uint32_t encoder_count = EnumerateHardwareEncoders(codec, &pp_activate);
@@ -320,6 +333,9 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesForCodec(
 
     profile.profile = H264PROFILE_HIGH;
     profiles.push_back(profile);
+  } else if (codec == VideoCodec::kVP9) {
+    profile.profile = VP9PROFILE_PROFILE0;
+    profiles.push_back(profile);
   } else if (codec == VideoCodec::kAV1) {
     profile.profile = AV1PROFILE_PROFILE_MAIN;
     profiles.push_back(profile);
@@ -347,17 +363,25 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
     if (GetH264VProfile(config.output_profile, config.is_constrained_h264) ==
         eAVEncH264VProfile_unknown) {
       MEDIA_LOG(ERROR, media_log.get())
-          << "Output profile not supported= " << config.output_profile;
+          << "Output profile not supported = " << config.output_profile;
       return false;
     }
     codec_ = VideoCodec::kH264;
+  } else if (config.output_profile >= VP9PROFILE_MIN &&
+             config.output_profile <= VP9PROFILE_MAX) {
+    if (GetVP9VProfile(config.output_profile) == eAVEncVP9VProfile_unknown) {
+      MEDIA_LOG(ERROR, media_log.get())
+          << "Output profile not supported = " << config.output_profile;
+      return false;
+    }
+    codec_ = VideoCodec::kVP9;
   } else if (config.output_profile == AV1PROFILE_PROFILE_MAIN) {
     codec_ = VideoCodec::kAV1;
   }
 
   if (codec_ == VideoCodec::kUnknown) {
     MEDIA_LOG(ERROR, media_log.get())
-        << "Output profile not supported= " << config.output_profile;
+        << "Output profile not supported = " << config.output_profile;
     return false;
   }
 
@@ -602,7 +626,8 @@ uint32_t MediaFoundationVideoEncodeAccelerator::EnumerateHardwareEncoders(
     return 0;
   }
 
-  if (codec != VideoCodec::kH264 && codec != VideoCodec::kAV1) {
+  if (codec != VideoCodec::kH264 && codec != VideoCodec::kVP9 &&
+      codec != VideoCodec::kAV1) {
     DVLOG(ERROR) << "Enumerating unsupported hardware encoders.";
     return 0;
   }
@@ -784,6 +809,9 @@ bool MediaFoundationVideoEncodeAccelerator::InitializeInputOutputParameters(
     hr = imf_output_media_type_->SetUINT32(
         MF_MT_MPEG2_PROFILE,
         GetH264VProfile(output_profile, is_constrained_h264));
+  } else if (codec_ == VideoCodec::kVP9) {
+    hr = imf_output_media_type_->SetUINT32(MF_MT_MPEG2_PROFILE,
+                                           GetVP9VProfile(output_profile));
   }
   RETURN_ON_HR_FAILURE(hr, "Couldn't set codec profile", false);
   hr = encoder_->SetOutputType(output_stream_id_, imf_output_media_type_.Get(),

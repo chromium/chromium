@@ -262,6 +262,8 @@ MEDIA_EXPORT extern const base::Feature kMediaFoundationAV1Encoding;
 // please use IsMediaFoundationH264CbpEncodingEnabled() instead.
 MEDIA_EXPORT extern const base::Feature kMediaFoundationH264CbpEncoding;
 
+MEDIA_EXPORT extern const base::Feature kMediaFoundationVP9Encoding;
+
 MEDIA_EXPORT extern const base::Feature kMediaFoundationVideoCapture;
 MEDIA_EXPORT extern const base::Feature kMediaFoundationVP8Decoding;
 
