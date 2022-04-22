@@ -932,8 +932,7 @@ _CONFIG = [
     },
     {
         'paths': [
-            'third_party/blink/renderer/core/inspector/inspector_memory_agent.cc',
-            'third_party/blink/renderer/core/inspector/inspector_memory_agent.h',
+            'third_party/blink/renderer/core/inspector/inspector_memory_agent.cc'
         ],
         'allowed': [
             'base::ModuleCache',

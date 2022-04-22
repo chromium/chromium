@@ -19,9 +19,6 @@
 
 namespace base {
 
-using ScopedSuppressRandomnessForTesting =
-    PoissonAllocationSampler::ScopedSuppressRandomnessForTesting;
-
 class SamplingHeapProfilerTest : public ::testing::Test {
  public:
   void SetUp() override {
@@ -29,11 +26,6 @@ class SamplingHeapProfilerTest : public ::testing::Test {
     allocator::InitializeAllocatorShim();
 #endif
     SamplingHeapProfiler::Init();
-
-    // Ensure the PoissonAllocationSampler starts in the default state.
-    ASSERT_FALSE(PoissonAllocationSampler::AreHookedSamplesMuted());
-    ASSERT_FALSE(PoissonAllocationSampler::ScopedMuteThreadSamples::IsMuted());
-    ASSERT_FALSE(ScopedSuppressRandomnessForTesting::IsSuppressed());
   }
 
   size_t GetNextSample(size_t mean_interval) {
@@ -82,9 +74,9 @@ class SamplesCollector : public PoissonAllocationSampler::SamplesObserver {
 };
 
 TEST_F(SamplingHeapProfilerTest, SampleObserver) {
-  ScopedSuppressRandomnessForTesting suppress;
   SamplesCollector collector(10000);
   auto* sampler = PoissonAllocationSampler::Get();
+  sampler->SuppressRandomnessForTest(true);
   sampler->SetSamplingInterval(1024);
   sampler->AddSamplesObserver(&collector);
   void* volatile p = malloc(10000);
@@ -95,9 +87,9 @@ TEST_F(SamplingHeapProfilerTest, SampleObserver) {
 }
 
 TEST_F(SamplingHeapProfilerTest, SampleObserverMuted) {
-  ScopedSuppressRandomnessForTesting suppress;
   SamplesCollector collector(10000);
   auto* sampler = PoissonAllocationSampler::Get();
+  sampler->SuppressRandomnessForTest(true);
   sampler->SetSamplingInterval(1024);
   sampler->AddSamplesObserver(&collector);
   {
@@ -111,7 +103,7 @@ TEST_F(SamplingHeapProfilerTest, SampleObserverMuted) {
 }
 
 TEST_F(SamplingHeapProfilerTest, IntervalRandomizationSanity) {
-  ASSERT_FALSE(ScopedSuppressRandomnessForTesting::IsSuppressed());
+  PoissonAllocationSampler::Get()->SuppressRandomnessForTest(false);
   constexpr int iterations = 50;
   constexpr size_t target = 10000000;
   int sum = 0;
@@ -168,8 +160,8 @@ class MyThread2 : public SimpleThread {
 };
 
 void CheckAllocationPattern(void (*allocate_callback)()) {
-  ASSERT_FALSE(ScopedSuppressRandomnessForTesting::IsSuppressed());
   auto* profiler = SamplingHeapProfiler::Get();
+  PoissonAllocationSampler::Get()->SuppressRandomnessForTest(false);
   profiler->SetSamplingInterval(10240);
   base::TimeTicks t0 = base::TimeTicks::Now();
   std::map<size_t, size_t> sums;
@@ -317,10 +309,10 @@ TEST_F(SamplingHeapProfilerTest, MAYBE_ConcurrentStartStop) {
 }
 
 TEST_F(SamplingHeapProfilerTest, HookedAllocatorMuted) {
-  ScopedSuppressRandomnessForTesting suppress;
   EXPECT_FALSE(PoissonAllocationSampler::AreHookedSamplesMuted());
 
   auto* sampler = PoissonAllocationSampler::Get();
+  sampler->SuppressRandomnessForTest(true);
   sampler->SetSamplingInterval(1024);
 
   {

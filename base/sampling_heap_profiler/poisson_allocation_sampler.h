@@ -69,21 +69,6 @@ class BASE_EXPORT PoissonAllocationSampler {
     static bool IsMuted();
   };
 
-  // An instance of this class makes the sampler behave deterministically to
-  // ensure test results are repeatable. Does not support nesting.
-  class BASE_EXPORT ScopedSuppressRandomnessForTesting {
-   public:
-    ScopedSuppressRandomnessForTesting();
-    ~ScopedSuppressRandomnessForTesting();
-
-    ScopedSuppressRandomnessForTesting(
-        const ScopedSuppressRandomnessForTesting&) = delete;
-    ScopedSuppressRandomnessForTesting& operator=(
-        const ScopedSuppressRandomnessForTesting&) = delete;
-
-    static bool IsSuppressed();
-  };
-
   // Must be called early during the process initialization. It creates and
   // reserves a TLS slot.
   static void Init();
@@ -114,6 +99,8 @@ class BASE_EXPORT PoissonAllocationSampler {
 
   // Returns the current mean sampling interval, in bytes.
   size_t SamplingInterval() const;
+
+  void SuppressRandomnessForTest(bool suppress);
 
   static void RecordAlloc(void* address,
                           size_t,
