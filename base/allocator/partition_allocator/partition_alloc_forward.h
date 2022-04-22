@@ -69,18 +69,6 @@ using ::partition_alloc::PartitionStatsDumper;
 using ::partition_alloc::ThreadSafePartitionRoot;
 using ::partition_alloc::internal::kAlignment;
 
-namespace internal {
-
-using ::partition_alloc::internal::SlotSpanMetadata;
-using ::partition_alloc::internal::ThreadSafe;
-
-#if (DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
-    BUILDFLAG(USE_BACKUP_REF_PTR)
-using ::partition_alloc::internal::CheckThatSlotOffsetIsZero;
-#endif
-
-}  // namespace internal
-
 }  // namespace base
 
 // From https://clang.llvm.org/docs/AttributeReference.html#malloc:
