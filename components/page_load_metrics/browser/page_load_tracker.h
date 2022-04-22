@@ -200,6 +200,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   ~PageLoadTracker() override;
 
   // PageLoadMetricsUpdateDispatcher::Client implementation:
+  bool IsPageMainFrame(content::RenderFrameHost* rfh) const override;
   void OnTimingChanged() override;
   void OnSubFrameTimingChanged(content::RenderFrameHost* rfh,
                                const mojom::PageLoadTiming& timing) override;
@@ -394,6 +395,25 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // Called when V8 per-frame memory usage updates are available.
   void OnV8MemoryChanged(const std::vector<MemoryUpdate>& memory_updates);
 
+  // Checks if this tracker is for outermost pages.
+  bool IsOutermostTracker() const { return !parent_tracker_; }
+
+  void UpdateMetrics(
+      content::RenderFrameHost* render_frame_host,
+      mojom::PageLoadTimingPtr new_timing,
+      mojom::FrameMetadataPtr new_metadata,
+      const std::vector<blink::UseCounterFeature>& new_features,
+      const std::vector<mojom::ResourceDataUpdatePtr>& resources,
+      mojom::FrameRenderDataUpdatePtr render_data,
+      mojom::CpuTimingPtr new_cpu_timing,
+      mojom::InputTimingPtr input_timing_delta,
+      const absl::optional<blink::MobileFriendliness>& mobile_friendliness);
+
+  // Set RenderFrameHost for the main frame of the page this tracker instance is
+  // bound. This is called on moving the tracker to the active / inactive
+  // tracker list after the provisional load is committed.
+  void SetPageMainFrame(content::RenderFrameHost* rfh);
+
   // Obtains a weak pointer for this instance.
   base::WeakPtr<PageLoadTracker> GetWeakPtr();
 
@@ -495,6 +515,11 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   ukm::SourceId source_id_;
 
   const raw_ptr<content::WebContents> web_contents_;
+
+  // Holds the RenderFrameHost for the main frame of the page that this tracker
+  // instance is bound. Safe to use raw_ptr as the tracker instance is accessed
+  // via a map that uses the RenderFrameHost as the key while it's valid.
+  raw_ptr<content::RenderFrameHost> page_main_frame_;
 
   const bool is_first_navigation_in_web_contents_;
 

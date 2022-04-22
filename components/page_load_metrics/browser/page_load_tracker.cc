@@ -51,11 +51,12 @@
           it = observers_.erase(it);                                         \
           break;                                                             \
         case PageLoadMetricsObserver::FORWARD_OBSERVING:                     \
-          DCHECK(parent_tracker_);                                           \
           DCHECK((*it)->GetObserverName())                                   \
               << "GetObserverName should be implemented";                    \
           auto target_observer =                                             \
-              parent_tracker_->FindObserver((*it)->GetObserverName());       \
+              parent_tracker_                                                \
+                  ? parent_tracker_->FindObserver((*it)->GetObserverName())  \
+                  : nullptr;                                                 \
           if (target_observer) {                                             \
             forward_observers.emplace_back(                                  \
                 std::make_unique<PageLoadMetricsForwardObserver>(            \
@@ -501,6 +502,11 @@ void PageLoadTracker::FailedProvisionalLoad(
     content::NavigationHandle* navigation_handle,
     base::TimeTicks failed_load_time) {
   DCHECK(!failed_provisional_load_info_);
+  if (parent_tracker_) {
+    // Notify the parent of the inner main frame navigation as a sub-frame
+    // navigation.
+    parent_tracker_->DidFinishSubFrameNavigation(navigation_handle);
+  }
   failed_provisional_load_info_ = std::make_unique<FailedProvisionalLoadInfo>(
       failed_load_time - navigation_handle->NavigationStart(),
       navigation_handle->GetNetErrorCode());
@@ -731,9 +737,20 @@ void PageLoadTracker::MediaStartedPlaying(
     observer->MediaStartedPlaying(video_type, render_frame_host);
 }
 
+bool PageLoadTracker::IsPageMainFrame(content::RenderFrameHost* rfh) const {
+  DCHECK(page_main_frame_);
+  return rfh == page_main_frame_;
+}
+
 void PageLoadTracker::OnTimingChanged() {
   DCHECK(!last_dispatched_merged_page_timing_->Equals(
       metrics_update_dispatcher_.timing()));
+
+  if (parent_tracker_) {
+    // Notify the parent of inner main frame's timing changes as subframe's one.
+    parent_tracker_->OnSubFrameTimingChanged(
+        page_main_frame_, metrics_update_dispatcher_.timing());
+  }
 
   const mojom::PaintTimingPtr& paint_timing =
       metrics_update_dispatcher_.timing().paint_timing;
@@ -758,7 +775,11 @@ void PageLoadTracker::OnTimingChanged() {
 void PageLoadTracker::OnSubFrameTimingChanged(
     content::RenderFrameHost* rfh,
     const mojom::PageLoadTiming& timing) {
-  DCHECK(rfh->GetParent());
+  DCHECK(rfh->GetParentOrOuterDocument());
+  if (parent_tracker_) {
+    // Notify the parent of inner frames' timing changes.
+    parent_tracker_->OnSubFrameTimingChanged(rfh, timing);
+  }
   const mojom::PaintTimingPtr& paint_timing = timing.paint_timing;
   largest_contentful_paint_handler_.RecordTiming(
       *paint_timing->largest_contentful_paint,
@@ -774,7 +795,7 @@ void PageLoadTracker::OnSubFrameTimingChanged(
 void PageLoadTracker::OnSubFrameInputTimingChanged(
     content::RenderFrameHost* rfh,
     const mojom::InputTiming& input_timing_delta) {
-  DCHECK(rfh->GetParent());
+  DCHECK(rfh->GetParentOrOuterDocument());
   for (const auto& observer : observers_) {
     observer->OnInputTimingUpdate(rfh, input_timing_delta);
   }
@@ -783,7 +804,7 @@ void PageLoadTracker::OnSubFrameInputTimingChanged(
 void PageLoadTracker::OnSubFrameRenderDataChanged(
     content::RenderFrameHost* rfh,
     const mojom::FrameRenderDataUpdate& render_data) {
-  DCHECK(rfh->GetParent());
+  DCHECK(rfh->GetParentOrOuterDocument());
   for (const auto& observer : observers_) {
     observer->OnSubFrameRenderDataUpdate(rfh, render_data);
   }
@@ -1049,6 +1070,33 @@ void PageLoadTracker::OnV8MemoryChanged(
     const std::vector<MemoryUpdate>& memory_updates) {
   for (const auto& observer : observers_)
     observer->OnV8MemoryChanged(memory_updates);
+}
+
+void PageLoadTracker::UpdateMetrics(
+    content::RenderFrameHost* render_frame_host,
+    mojom::PageLoadTimingPtr timing,
+    mojom::FrameMetadataPtr metadata,
+    const std::vector<blink::UseCounterFeature>& features,
+    const std::vector<mojom::ResourceDataUpdatePtr>& resources,
+    mojom::FrameRenderDataUpdatePtr render_data,
+    mojom::CpuTimingPtr cpu_timing,
+    mojom::InputTimingPtr input_timing_delta,
+    const absl::optional<blink::MobileFriendliness>& mobile_friendliness) {
+  if (parent_tracker_) {
+    parent_tracker_->UpdateMetrics(
+        render_frame_host, timing.Clone(), metadata.Clone(), features,
+        resources, render_data.Clone(), cpu_timing.Clone(),
+        input_timing_delta.Clone(), mobile_friendliness);
+  }
+  metrics_update_dispatcher_.UpdateMetrics(
+      render_frame_host, std::move(timing), std::move(metadata),
+      std::move(features), resources, std::move(render_data),
+      std::move(cpu_timing), std::move(input_timing_delta),
+      std::move(mobile_friendliness));
+}
+
+void PageLoadTracker::SetPageMainFrame(content::RenderFrameHost* rfh) {
+  page_main_frame_ = rfh;
 }
 
 base::WeakPtr<PageLoadTracker> PageLoadTracker::GetWeakPtr() {

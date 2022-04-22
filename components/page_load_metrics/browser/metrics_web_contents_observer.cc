@@ -619,6 +619,8 @@ void MetricsWebContentsObserver::DidFinishNavigation(
   }
 
   if (navigation_handle->HasCommitted()) {
+    navigation_handle_tracker->SetPageMainFrame(
+        navigation_handle->GetRenderFrameHost());
     HandleCommittedNavigationForTrackedLoad(
         navigation_handle, std::move(navigation_handle_tracker));
   } else {
@@ -1017,11 +1019,11 @@ void MetricsWebContentsObserver::OnTimingUpdated(
   }
 
   if (tracker) {
-    tracker->metrics_update_dispatcher()->UpdateMetrics(
-        render_frame_host, std::move(timing), std::move(metadata),
-        std::move(new_features), resources, std::move(render_data),
-        std::move(cpu_timing), std::move(input_timing_delta),
-        std::move(mobile_friendliness));
+    tracker->UpdateMetrics(render_frame_host, std::move(timing),
+                           std::move(metadata), std::move(new_features),
+                           resources, std::move(render_data),
+                           std::move(cpu_timing), std::move(input_timing_delta),
+                           std::move(mobile_friendliness));
   }
 }
 

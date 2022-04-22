@@ -172,8 +172,7 @@ AdsPageLoadMetricsObserver::CreateIfNeeded(
 bool AdsPageLoadMetricsObserver::IsSubframeSameOriginToMainFrame(
     content::RenderFrameHost* sub_host) {
   DCHECK(sub_host);
-  content::RenderFrameHost* main_host =
-      content::WebContents::FromRenderFrameHost(sub_host)->GetMainFrame();
+  content::RenderFrameHost* main_host = sub_host->GetOutermostMainFrame();
   url::Origin subframe_origin = sub_host->GetLastCommittedOrigin();
   url::Origin mainframe_origin = main_host->GetLastCommittedOrigin();
   return subframe_origin.IsSameOriginWith(mainframe_origin);
@@ -240,6 +239,11 @@ AdsPageLoadMetricsObserver::AdsPageLoadMetricsObserver(
 
 AdsPageLoadMetricsObserver::~AdsPageLoadMetricsObserver() = default;
 
+const char* AdsPageLoadMetricsObserver::GetObserverName() const {
+  static const char kName[] = "AdsPageLoadMetricsObserver";
+  return kName;
+}
+
 PageLoadMetricsObserver::ObservePolicy AdsPageLoadMetricsObserver::OnStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url,
@@ -254,6 +258,13 @@ PageLoadMetricsObserver::ObservePolicy AdsPageLoadMetricsObserver::OnStart(
     subresource_observation_.Observe(observer_manager);
   aggregate_frame_data_ = std::make_unique<AggregateFrameData>();
   return CONTINUE_OBSERVING;
+}
+
+PageLoadMetricsObserver::ObservePolicy
+AdsPageLoadMetricsObserver::OnFencedFramesStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  return FORWARD_OBSERVING;
 }
 
 PageLoadMetricsObserver::ObservePolicy AdsPageLoadMetricsObserver::OnCommit(
@@ -376,7 +387,7 @@ void AdsPageLoadMetricsObserver::UpdateAdFrameData(
   // Determine who the parent frame's ad ancestor is.  If we don't know who it
   // is, return, such as with a frame from a previous navigation.
   content::RenderFrameHost* parent_frame_host =
-      navigation_handle->GetParentFrame();
+      navigation_handle->GetParentFrameOrOuterDocument();
   const auto& parent_id_and_data =
       parent_frame_host
           ? ad_frames_data_.find(parent_frame_host->GetFrameTreeNodeId())
@@ -489,7 +500,7 @@ void AdsPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
         navigation_handle->GetRenderFrameHost()->GetLastCommittedURL();
     const GURL& main_frame_last_committed_url =
         navigation_handle->GetRenderFrameHost()
-            ->GetMainFrame()
+            ->GetOutermostMainFrame()
             ->GetLastCommittedURL();
     // If a frame is detected to be an ad, but is same domain to the top frame,
     // and does not match a disallowed rule, ignore it.
@@ -548,7 +559,7 @@ void AdsPageLoadMetricsObserver::OnResourceDataUseObserved(
     content::RenderFrameHost* rfh,
     const std::vector<mojom::ResourceDataUpdatePtr>& resources) {
   for (auto const& resource : resources) {
-    ProcessResourceForPage(rfh->GetProcess()->GetID(), resource);
+    ProcessResourceForPage(rfh, resource);
     ProcessResourceForFrame(rfh, resource);
   }
 }
@@ -694,7 +705,7 @@ void AdsPageLoadMetricsObserver::OnV8MemoryChanged(
       ad_frame_data->UpdateMemoryUsage(update.delta_bytes);
       UpdateAggregateMemoryUsage(update.delta_bytes,
                                  ad_frame_data->visibility());
-    } else if (!render_frame_host->GetParent()) {
+    } else if (!render_frame_host->GetParentOrOuterDocument()) {
       // |render_frame_host| is the main frame.
       aggregate_frame_data_->update_main_frame_memory(update.delta_bytes);
     }
@@ -745,11 +756,12 @@ int AdsPageLoadMetricsObserver::GetUnaccountedAdBytes(
 }
 
 void AdsPageLoadMetricsObserver::ProcessResourceForPage(
-    int process_id,
+    content::RenderFrameHost* render_frame_host,
     const mojom::ResourceDataUpdatePtr& resource) {
+  int process_id = render_frame_host->GetProcess()->GetID();
   auto mime_type = ResourceLoadAggregator::GetResourceMimeType(resource);
   int unaccounted_ad_bytes = GetUnaccountedAdBytes(process_id, resource);
-  bool is_main_frame = resource->is_main_frame_resource;
+  bool is_main_frame = !render_frame_host->GetParentOrOuterDocument();
   aggregate_frame_data_->ProcessResourceLoadInFrame(resource, is_main_frame);
   if (unaccounted_ad_bytes)
     aggregate_frame_data_->AdjustAdBytes(unaccounted_ad_bytes, mime_type,
@@ -1221,7 +1233,7 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
   // ad by our heuristics.
   while (render_frame_host && render_frame_host->GetFrameTreeNodeId() !=
                                   frame_data->root_frame_tree_node_id()) {
-    render_frame_host = render_frame_host->GetParent();
+    render_frame_host = render_frame_host->GetParentOrOuterDocument();
   }
   if (!render_frame_host) {
     frame_data->set_heavy_ad_action(HeavyAdAction::kIgnored);
@@ -1229,7 +1241,7 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
   }
 
   // Ensure that this RenderFrameHost is a subframe.
-  DCHECK(render_frame_host->GetParent());
+  DCHECK(render_frame_host->GetParentOrOuterDocument());
 
   frame_data->set_heavy_ad_action(action);
 

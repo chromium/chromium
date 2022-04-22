@@ -119,7 +119,6 @@ PageLoadMetricsForwardObserver::ShouldObserveMimeType(
 
 // As PageLoadTracker handles OnTimingUpdate to dispatch also for the parent
 // page, do not forward the event to the target here.
-// TODO(https://crbug.com/1301880): Not yet implemented.
 void PageLoadMetricsForwardObserver::OnTimingUpdate(
     content::RenderFrameHost* subframe_rfh,
     const mojom::PageLoadTiming& timing) {}
@@ -143,13 +142,11 @@ void PageLoadMetricsForwardObserver::OnSubFrameRenderDataUpdate(
   parent_observer_->OnSubFrameRenderDataUpdate(subframe_rfh, render_data);
 }
 
+// As PageLoadTracker handles OnCpuTimingUpdate to dispatch also for the parent
+// page, do not forward the event to the target here.
 void PageLoadMetricsForwardObserver::OnCpuTimingUpdate(
     content::RenderFrameHost* subframe_rfh,
-    const mojom::CpuTiming& timing) {
-  if (!parent_observer_)
-    return;
-  parent_observer_->OnCpuTimingUpdate(subframe_rfh, timing);
-}
+    const mojom::CpuTiming& timing) {}
 
 void PageLoadMetricsForwardObserver::OnUserInput(
     const blink::WebInputEvent& event,
@@ -236,13 +233,12 @@ void PageLoadMetricsForwardObserver::SetUpSharedMemoryForSmoothness(
   parent_observer_->SetUpSharedMemoryForSmoothness(shared_memory);
 }
 
+// PageLoadTracker already aggregates inter-pages data and processes it via
+// PageLoadMetricsUpdateDispatcher to dispatch OnResourceDataUseObserved with
+// the aggregated data. So, we don't need to forward here.
 void PageLoadMetricsForwardObserver::OnResourceDataUseObserved(
     content::RenderFrameHost* rfh,
-    const std::vector<mojom::ResourceDataUpdatePtr>& resources) {
-  if (!parent_observer_)
-    return;
-  parent_observer_->OnResourceDataUseObserved(rfh, resources);
-}
+    const std::vector<mojom::ResourceDataUpdatePtr>& resources) {}
 
 void PageLoadMetricsForwardObserver::MediaStartedPlaying(
     const content::WebContentsObserver::MediaPlayerInfo& video_type,
@@ -260,8 +256,8 @@ void PageLoadMetricsForwardObserver::OnFrameIntersectionUpdate(
   parent_observer_->OnFrameIntersectionUpdate(rfh, intersection_update);
 }
 
-// Don't need to forward FlushMetricsOnAppEnterBackground, OnComplete, and
-// OnFailedProvisionalLoad as they are dispatched to all trackers.
+// Don't need to forward FlushMetricsOnAppEnterBackground and OnComplete as they
+// are dispatched to all trackers.
 PageLoadMetricsObserver::ObservePolicy
 PageLoadMetricsForwardObserver::FlushMetricsOnAppEnterBackground(
     const mojom::PageLoadTiming& timing) {
@@ -271,7 +267,8 @@ PageLoadMetricsForwardObserver::FlushMetricsOnAppEnterBackground(
 void PageLoadMetricsForwardObserver::OnComplete(
     const mojom::PageLoadTiming& timing) {}
 
-// OnFailedProvisionalLoad should be handled per page.
+// OnFailedProvisionalLoad are handled at PageLoadTracker to forward events as a
+// sub-frame navigation regardless of each observer's policy.
 void PageLoadMetricsForwardObserver::OnFailedProvisionalLoad(
     const FailedProvisionalLoadInfo& failed_provisional_load_info) {}
 

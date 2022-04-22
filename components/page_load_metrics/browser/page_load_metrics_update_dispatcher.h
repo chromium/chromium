@@ -112,6 +112,7 @@ class PageLoadMetricsUpdateDispatcher {
    public:
     virtual ~Client() {}
 
+    virtual bool IsPageMainFrame(content::RenderFrameHost* rfh) const = 0;
     virtual void OnTimingChanged() = 0;
     virtual void OnSubFrameTimingChanged(
         content::RenderFrameHost* rfh,
