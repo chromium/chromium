@@ -41,10 +41,10 @@ class ExtensionCleanupHandler : public CleanupHandler {
   std::unordered_set<std::string> GetCleanupExemptExtensions();
 
   Profile* profile_;
+  std::vector<std::string> errors_;
   extensions::ExtensionService* extension_service_;
   CleanupHandlerCallback callback_;
   std::unordered_set<std::string> extensions_to_be_uninstalled_;
-  bool wait_for_uninstall_ = false;
 };
 
 }  // namespace chromeos
