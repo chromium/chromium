@@ -16,9 +16,9 @@ struct UnionTraits<ax::mojom::AXTreeIDDataView, ui::AXTreeID> {
   static ax::mojom::AXTreeIDDataView::Tag GetTag(const ui::AXTreeID& p) {
     switch (p.type()) {
       case ax::mojom::AXTreeIDType::kUnknown:
-        return ax::mojom::AXTreeIDDataView::Tag::UNKNOWN;
+        return ax::mojom::AXTreeIDDataView::Tag::kUnknown;
       case ax::mojom::AXTreeIDType::kToken:
-        return ax::mojom::AXTreeIDDataView::Tag::TOKEN;
+        return ax::mojom::AXTreeIDDataView::Tag::kToken;
     }
   }
   static uint8_t unknown(const ui::AXTreeID& p) { return 0; }
