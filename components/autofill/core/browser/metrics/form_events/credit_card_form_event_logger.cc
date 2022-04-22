@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace autofill {
 

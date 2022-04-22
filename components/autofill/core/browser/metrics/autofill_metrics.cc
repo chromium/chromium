@@ -33,6 +33,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/language/core/browser/language_usage_metrics.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace autofill {
 
