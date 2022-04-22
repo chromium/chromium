@@ -16,6 +16,8 @@ namespace blink {
 // MediaStreamTrackPlatform is a low-level object backing a
 // WebMediaStreamTrack.
 class PLATFORM_EXPORT MediaStreamTrackPlatform {
+  USING_FAST_MALLOC(MediaStreamTrackPlatform);
+
  public:
   enum class FacingMode { kNone, kUser, kEnvironment, kLeft, kRight };
 
