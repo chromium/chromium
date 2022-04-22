@@ -41,16 +41,16 @@ struct UnionTraits<viz::mojom::VideoCaptureSubTargetDataView,
   using Tag = viz::mojom::VideoCaptureSubTargetDataView::Tag;
   static Tag GetTag(const viz::VideoCaptureSubTarget& data) {
     if (absl::holds_alternative<viz::RegionCaptureCropId>(data)) {
-      return Tag::REGION_CAPTURE_CROP_ID;
+      return Tag::kRegionCaptureCropId;
     }
     DCHECK(absl::holds_alternative<viz::SubtreeCaptureId>(data));
-    return Tag::SUBTREE_CAPTURE_ID;
+    return Tag::kSubtreeCaptureId;
   }
 
   static bool Read(viz::mojom::VideoCaptureSubTargetDataView data,
                    viz::VideoCaptureSubTarget* out) {
     switch (data.tag()) {
-      case Tag::REGION_CAPTURE_CROP_ID: {
+      case Tag::kRegionCaptureCropId: {
         viz::RegionCaptureCropId crop_id;
         if (!data.ReadRegionCaptureCropId(&crop_id) || crop_id.is_zero())
           return false;
@@ -58,7 +58,7 @@ struct UnionTraits<viz::mojom::VideoCaptureSubTargetDataView,
         *out = crop_id;
         return true;
       }
-      case Tag::SUBTREE_CAPTURE_ID: {
+      case Tag::kSubtreeCaptureId: {
         viz::SubtreeCaptureId capture_id;
         if (!data.ReadSubtreeCaptureId(&capture_id) || !capture_id.is_valid())
           return false;
