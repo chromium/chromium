@@ -586,6 +586,10 @@ namespace {
 
 - (void)handleFeedSelected:(FeedType)feedType {
   DCHECK(IsWebChannelsEnabled());
+
+  // Saves scroll position before changing feed.
+  CGFloat scrollPosition = [self.ntpViewController scrollPosition];
+
   if (feedType == FeedTypeFollowing) {
     // Clears dot and notifies service that the Following feed content has been
     // seen.
@@ -594,6 +598,11 @@ namespace {
   }
   self.selectedFeed = feedType;
   [self updateNTPForFeed];
+  [self updateFeedLayout];
+
+  // Scroll position resets when changing the feed, so we set it back to what it
+  // was.
+  [self.ntpViewController setContentOffsetUpToTopOfFeed:scrollPosition];
 }
 
 - (void)handleSortTypeForFollowingFeed:(FollowingFeedSortType)sortType {

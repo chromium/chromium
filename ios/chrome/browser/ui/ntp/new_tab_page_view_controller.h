@@ -122,6 +122,14 @@
 // Resets hierarchy of views and view controllers.
 - (void)resetViewHierarchy;
 
+// Returns the y content offset of the NTP collection view.
+- (CGFloat)scrollPosition;
+
+// Sets the NTP collection view's scroll position to |contentOffset|, unless it
+// is beyond the top of the feed. In that case, sets the scroll position to the
+// top of the feed.
+- (void)setContentOffsetUpToTopOfFeed:(CGFloat)contentOffset;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_VIEW_CONTROLLER_H_

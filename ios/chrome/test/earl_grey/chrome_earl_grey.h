@@ -667,6 +667,9 @@ UIWindow* GetAnyKeyWindow();
 // number.
 - (BOOL)isThumbstripEnabledForWindowWithNumber:(int)windowNumber;
 
+// Returns whether the Web Channels feature is enabled.
+- (BOOL)isWebChannelsEnabled;
+
 #pragma mark - ContentSettings
 
 // Gets the current value of the popup content setting preference for the

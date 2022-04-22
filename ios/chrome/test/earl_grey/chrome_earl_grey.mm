@@ -1258,6 +1258,10 @@ UIWindow* GetAnyKeyWindow() {
       isThumbstripEnabledForWindowWithNumber:windowNumber];
 }
 
+- (BOOL)isWebChannelsEnabled {
+  return [ChromeEarlGreyAppInterface isWebChannelsEnabled];
+}
+
 #pragma mark - ContentSettings
 
 - (ContentSetting)popupPrefValue {

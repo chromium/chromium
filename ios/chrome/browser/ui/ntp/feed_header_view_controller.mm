@@ -382,6 +382,9 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
                        action:@selector(onSegmentSelected:)
              forControlEvents:UIControlEventValueChanged];
 
+  segmentedControl.accessibilityIdentifier =
+      kNTPFeedHeaderSegmentedControlIdentifier;
+
   return segmentedControl;
 }
 

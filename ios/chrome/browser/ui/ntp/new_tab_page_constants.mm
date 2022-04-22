@@ -17,3 +17,6 @@ NSString* const kNTPFeedHeaderMenuButtonIdentifier =
 
 NSString* const kNTPFeedHeaderSortButtonIdentifier =
     @"kNTPFeedHeaderSortButtonIdentifier";
+
+NSString* const kNTPFeedHeaderSegmentedControlIdentifier =
+    @"kNTPFeedHeaderSegmentedControlIdentifier";

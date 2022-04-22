@@ -1007,6 +1007,30 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   GREYWaitForAppToIdle(@"App failed to idle");
 }
 
+// Tests that the scroll position is maintained when switching from the Discover
+// feed to the Following feed without fully scrolling into the feed.
+- (void)testScrollPositionMaintainedWhenSwitchingFeedAboveFeed {
+  if (![ChromeEarlGrey isWebChannelsEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Only applicable with Web Channels enabled.");
+  }
+
+  // Scrolls down a bit, not fully into the feed.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+      performAction:grey_scrollInDirection(kGREYDirectionDown, 150)];
+
+  // Saves the content offset and switches to the Following feed.
+  UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
+  CGFloat yOffsetBeforeSwitchingFeed = collectionView.contentOffset.y;
+
+  [[EarlGrey selectElementWithMatcher:FeedHeaderSegmentFollowing()]
+      performAction:grey_tap()];
+
+  // Ensures that the new content offset is the same.
+  collectionView = [NewTabPageAppInterface collectionView];
+  GREYAssertEqual(yOffsetBeforeSwitchingFeed, collectionView.contentOffset.y,
+                  @"Content offset is not the same after switching feeds.");
+}
+
 #pragma mark - Helpers
 
 - (void)addMostVisitedTile {
@@ -1126,6 +1150,30 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   feed_visible =
       [ChromeEarlGrey userBooleanPref:feed::prefs::kArticlesListVisible];
   GREYAssertFalse(feed_visible, @"Expect feed to be hidden!");
+}
+
+#pragma mark - Matchers
+
+// Returns the segment of the feed header with a given title.
+id<GREYMatcher> FeedHeaderSegmentedControlSegmentWithTitle(int title_id) {
+  id<GREYMatcher> title_matcher =
+      grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(title_id)),
+                 grey_sufficientlyVisible(), nil);
+  return grey_allOf(
+      grey_accessibilityID(kNTPFeedHeaderSegmentedControlIdentifier),
+      grey_descendant(title_matcher), grey_sufficientlyVisible(), nil);
+}
+
+// Returns the Discover segment of the feed header.
+id<GREYMatcher> FeedHeaderSegmentDiscover() {
+  return FeedHeaderSegmentedControlSegmentWithTitle(
+      IDS_IOS_DISCOVER_FEED_TITLE);
+}
+
+// Returns the Following segment of the feed header.
+id<GREYMatcher> FeedHeaderSegmentFollowing() {
+  return FeedHeaderSegmentedControlSegmentWithTitle(
+      IDS_IOS_FOLLOWING_FEED_TITLE);
 }
 
 @end

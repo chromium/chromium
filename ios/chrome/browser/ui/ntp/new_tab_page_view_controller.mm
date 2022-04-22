@@ -196,7 +196,7 @@
 
   // Scrolls NTP into feed initially if |shouldScrollIntoFeed|.
   if (self.shouldScrollIntoFeed) {
-    [self setContentOffset:[self offsetWhenScrolledIntoFeed]];
+    [self scrollIntoFeed];
     self.shouldScrollIntoFeed = NO;
   }
 
@@ -227,13 +227,12 @@
 
   __weak NewTabPageViewController* weakSelf = self;
 
-  CGFloat yOffsetBeforeRotation = self.collectionView.contentOffset.y;
+  CGFloat yOffsetBeforeRotation = [self scrollPosition];
   CGFloat heightAboveFeedBeforeRotation = [self heightAboveFeed];
 
   void (^alongsideBlock)(id<UIViewControllerTransitionCoordinatorContext>) = ^(
       id<UIViewControllerTransitionCoordinatorContext> context) {
-    [weakSelf handleStickyElementsForScrollPosition:weakSelf.collectionView
-                                                        .contentOffset.y
+    [weakSelf handleStickyElementsForScrollPosition:[weakSelf scrollPosition]
                                               force:YES];
 
     // Redraw the ContentSuggestionsViewController to properly
@@ -263,7 +262,7 @@
     // minimum scroll position upon device rotation.
     CGFloat pinnedOffsetY = [weakSelf.headerSynchronizer pinnedOffsetY];
     if ([weakSelf.headerSynchronizer isOmniboxFocused] &&
-        weakSelf.collectionView.contentOffset.y < pinnedOffsetY) {
+        [weakSelf scrollPosition] < pinnedOffsetY) {
       weakSelf.collectionView.contentOffset = CGPointMake(0, pinnedOffsetY);
     }
     if (!self.isFeedVisible) {
@@ -411,7 +410,7 @@
 }
 
 - (BOOL)isNTPScrolledToTop {
-  return self.collectionView.contentOffset.y <= -[self heightAboveFeed];
+  return [self scrollPosition] <= -[self heightAboveFeed];
 }
 
 - (void)updateNTPLayout {
@@ -466,6 +465,18 @@
     [self removeFromViewHierarchy:self.headerController];
   }
   self.contentSuggestionsHeightConstraint.active = NO;
+}
+
+- (CGFloat)scrollPosition {
+  return self.collectionView.contentOffset.y;
+}
+
+- (void)setContentOffsetUpToTopOfFeed:(CGFloat)contentOffset {
+  if (contentOffset < [self offsetWhenScrolledIntoFeed]) {
+    [self setContentOffset:contentOffset];
+  } else {
+    [self scrollIntoFeed];
+  }
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -909,6 +920,11 @@
       CGSizeMake(self.view.frame.size.width, minimumNTPHeight);
 }
 
+// Sets the content offset to the top of the feed.
+- (void)scrollIntoFeed {
+  [self setContentOffset:[self offsetWhenScrolledIntoFeed]];
+}
+
 #pragma mark - Helpers
 
 - (UIViewController*)contentSuggestionsViewController {
@@ -1078,8 +1094,7 @@
 // updates property.
 - (void)updateScrolledToMinimumHeight {
   CGFloat pinnedOffsetY = [self.headerSynchronizer pinnedOffsetY];
-  self.scrolledToMinimumHeight =
-      self.collectionView.contentOffset.y >= pinnedOffsetY;
+  self.scrolledToMinimumHeight = [self scrollPosition] >= pinnedOffsetY;
 }
 
 // Adds |viewController| as a child of |parentViewController| and adds
@@ -1127,11 +1142,10 @@
   self.contentSuggestionsLayout.isScrolledIntoFeed = scrolledIntoFeed;
 }
 
-// Sets the feed collection contentOffset to |offset| to set the initial scroll
-// position.
+// Sets the y content offset of the NTP collection view.
 - (void)setContentOffset:(CGFloat)offset {
   self.collectionView.contentOffset = CGPointMake(0, offset);
-  self.scrolledIntoFeed = offset > -[self offsetWhenScrolledIntoFeed];
+  self.scrolledIntoFeed = offset >= -[self offsetWhenScrolledIntoFeed];
   if (self.feedHeaderViewController) {
     [self.feedHeaderViewController toggleBackgroundBlur:self.scrolledIntoFeed
                                                animated:NO];

@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -1124,6 +1125,10 @@ NSString* SerializedValue(const base::Value* value) {
 + (BOOL)isThumbstripEnabledForWindowWithNumber:(int)windowNumber {
   return ShowThumbStripInTraitCollection(
       [self windowWithNumber:windowNumber].traitCollection);
+}
+
++ (BOOL)isWebChannelsEnabled {
+  return base::FeatureList::IsEnabled(kEnableWebChannels);
 }
 
 #pragma mark - ContentSettings
