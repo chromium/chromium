@@ -54,7 +54,6 @@ import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter;
@@ -290,11 +289,9 @@ public class HistoryActivityTest {
         Assert.assertEquals(3, mAdapter.getItemCount());
     }
 
-    // TODO(crbug.com/1306031): remove this test.
     @Test
     @SmallTest
-    @DisableFeatures("AllowHistoryDeletionForChildAccounts")
-    public void testSupervisedUserHistoryDeletionNotAllowed() throws Exception {
+    public void testSupervisedUser() throws Exception {
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
         final HistoryItemView item = (HistoryItemView) getItemView(2);
         View itemRemoveButton = item.getRemoveButtonForTests();
@@ -315,7 +312,7 @@ public class HistoryActivityTest {
         Assert.assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
         Assert.assertEquals(View.VISIBLE, item.getRemoveButtonForTests().getVisibility());
 
-        signInToSupervisedAccount(false);
+        signInToSupervisedAccount();
 
         Assert.assertEquals(View.GONE, item.getRemoveButtonForTests().getVisibility());
         toggleItemSelection(2);
@@ -333,55 +330,6 @@ public class HistoryActivityTest {
 
         // Check that the item's remove button visibility is set correctly after signing out.
         Assert.assertEquals(View.VISIBLE, item.getRemoveButtonForTests().getVisibility());
-    }
-
-    @Test
-    @SmallTest
-    public void testSupervisedUser() throws Exception {
-        final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
-        final HistoryItemView item = (HistoryItemView) getItemView(2);
-        View itemRemoveButton = item.getRemoveButtonForTests();
-
-        // First check the behaviour for non-supervised users.
-
-        // The item's remove button is visible when there is no selection.
-        Assert.assertEquals(View.VISIBLE, itemRemoveButton.getVisibility());
-
-        toggleItemSelection(2);
-        Assert.assertTrue(toolbar.getItemById(R.id.selection_mode_open_in_incognito).isVisible());
-        Assert.assertTrue(toolbar.getItemById(R.id.selection_mode_open_in_incognito).isEnabled());
-        Assert.assertTrue(toolbar.getItemById(R.id.selection_mode_delete_menu_id).isVisible());
-        Assert.assertTrue(toolbar.getItemById(R.id.selection_mode_delete_menu_id).isEnabled());
-        // The item's remove button is invisible for non-supervised users when there is a selection.
-        Assert.assertEquals(View.INVISIBLE, item.getRemoveButtonForTests().getVisibility());
-
-        // Turn selection off and check the remove button is visible.
-        toggleItemSelection(2);
-        Assert.assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
-        Assert.assertEquals(View.VISIBLE, item.getRemoveButtonForTests().getVisibility());
-
-        // Now check the behaviour for supervised users.
-        signInToSupervisedAccount(true);
-
-        // The item's remove button remains visible when there is no selection.
-        Assert.assertEquals(View.VISIBLE, itemRemoveButton.getVisibility());
-
-        // Incognito is hidden.
-        toggleItemSelection(2);
-        Assert.assertNull(toolbar.getItemById(R.id.selection_mode_open_in_incognito));
-
-        // History deletion behaviour is unchanged from the non-supervised case.
-        Assert.assertTrue(toolbar.getItemById(R.id.selection_mode_delete_menu_id).isVisible());
-        Assert.assertTrue(toolbar.getItemById(R.id.selection_mode_delete_menu_id).isEnabled());
-        Assert.assertTrue(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
-        Assert.assertEquals(View.INVISIBLE, item.getRemoveButtonForTests().getVisibility());
-
-        // Make sure selection is no longer enabled.
-        toggleItemSelection(2);
-        Assert.assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
-        Assert.assertEquals(View.VISIBLE, item.getRemoveButtonForTests().getVisibility());
-
-        signOut();
     }
 
     @Test
@@ -634,13 +582,10 @@ public class HistoryActivityTest {
                 () -> mAdapter.hasOtherFormsOfBrowsingData(hasOtherForms));
     }
 
-    // TODO(crbug.com/1306031): remove allowDeletingBrowserHistory once
-    // AllowSyncOffForChildAccounts is cleaned up.
-    private void signInToSupervisedAccount(boolean allowDeletingBrowserHistory) throws Exception {
+    private void signInToSupervisedAccount() throws Exception {
         // Initialize PrefChangeRegistrar for test.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPrefChangeRegistrar = new PrefChangeRegistrar();
-            // TODO(crbug.com/1306031): remove the ALLOW_DELETING_BROWSER_HISTORY listener.
             mPrefChangeRegistrar.addObserver(Pref.ALLOW_DELETING_BROWSER_HISTORY, mTestObserver);
             mPrefChangeRegistrar.addObserver(Pref.INCOGNITO_MODE_AVAILABILITY, mTestObserver);
             IdentityServicesProvider.get()
@@ -665,18 +610,15 @@ public class HistoryActivityTest {
         Assert.assertTrue(TestThreadUtils.runOnUiThreadBlocking(() -> {
             Profile profile = Profile.getLastUsedRegularProfile();
             UserPrefs.get(profile).setString(Pref.SUPERVISED_USER_ID, "ChildAccountSUID");
-            return profile.isChild() && !IncognitoUtils.isIncognitoModeEnabled();
+            return profile.isChild()
+                    && !UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                .getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY)
+                    && !IncognitoUtils.isIncognitoModeEnabled();
         }));
 
-        // Wait for preference change callbacks:
-        // * one for ALLOW_DELETING_BROWSER_HISTORY, if it is the non-default value (false) in this
-        // test
-        // * one for INCOGNITO_MODE_AVAILABILITY.
-        //
-        // TODO(crbug.com/1306031): unconditionally expect 1 once AllowSyncOffForChildAccounts is
-        // cleaned up.
-        mTestObserver.onPreferenceChangeCallback.waitForCallback(
-                onPreferenceChangeCallCount, allowDeletingBrowserHistory ? 1 : 2);
+        // Wait for preference change callbacks. One for ALLOW_DELETING_BROWSER_HISTORY and one for
+        // INCOGNITO_MODE_AVAILABILITY.
+        mTestObserver.onPreferenceChangeCallback.waitForCallback(onPreferenceChangeCallCount, 2);
 
         // Wait until animator finish removing history item delete icon
         // TODO(twellington): Figure out a better way to do this (e.g. listen for RecyclerView
