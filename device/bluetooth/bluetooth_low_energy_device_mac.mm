@@ -207,6 +207,10 @@ void BluetoothLowEnergyDeviceMac::ConnectToServiceInsecurely(
   NOTIMPLEMENTED();
 }
 
+bool BluetoothLowEnergyDeviceMac::IsLowEnergyDevice() {
+  return true;
+}
+
 void BluetoothLowEnergyDeviceMac::CreateGattConnectionImpl(
     absl::optional<BluetoothUUID> serivce_uuid) {
   if (!IsGattConnected()) {
