@@ -326,7 +326,7 @@ public class AutocompleteMediatorUnitTest {
         final int maximumListHeight = SUGGESTION_MIN_HEIGHT * 7;
 
         mMediator.onSuggestionDropdownHeightChanged(maximumListHeight);
-        mMediator.onSuggestionsReceived(AutocompleteResult.EMPTY_RESULT, "");
+        mMediator.onSuggestionsReceived(AutocompleteResult.EMPTY_RESULT, "", true);
 
         Assert.assertEquals(0, mSuggestionModels.size());
         Assert.assertFalse(mListModel.get(SuggestionListProperties.VISIBLE));
@@ -341,7 +341,7 @@ public class AutocompleteMediatorUnitTest {
         final int maximumListHeight = SUGGESTION_MIN_HEIGHT * 7;
 
         mMediator.onSuggestionDropdownHeightChanged(maximumListHeight);
-        mMediator.onSuggestionsReceived(AutocompleteResult.EMPTY_RESULT, "");
+        mMediator.onSuggestionsReceived(AutocompleteResult.EMPTY_RESULT, "", true);
 
         Assert.assertEquals(0, mSuggestionModels.size());
         Assert.assertFalse(mListModel.get(SuggestionListProperties.VISIBLE));
@@ -357,7 +357,8 @@ public class AutocompleteMediatorUnitTest {
                 (mSuggestionsList.size() - 2) * SUGGESTION_MIN_HEIGHT;
 
         mMediator.onSuggestionDropdownHeightChanged(heightWithOneConcealedItem);
-        mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), "");
+        mMediator.onSuggestionsReceived(
+                AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
         Assert.assertTrue(
                 mMediator.getDropdownItemViewInfoListBuilderForTest().hasFullyConcealedElements());
 
@@ -401,7 +402,8 @@ public class AutocompleteMediatorUnitTest {
         // In both cases, the updated suggestions list height should be used to estimate presence of
         // fully concealed items on the suggestions list.
         mMediator.onSuggestionDropdownHeightChanged(heightOfOAllSuggestions);
-        mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), "");
+        mMediator.onSuggestionsReceived(
+                AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
         Assert.assertFalse(
                 mMediator.getDropdownItemViewInfoListBuilderForTest().hasFullyConcealedElements());
 
@@ -412,7 +414,7 @@ public class AutocompleteMediatorUnitTest {
         List<AutocompleteMatch> newList =
                 buildDummySuggestionsList(mSuggestionsList.size(), "SuggestionB");
         mMediator.onSuggestionDropdownHeightChanged(heightWithOneConcealedItem);
-        mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(newList, null), "");
+        mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(newList, null), "", true);
         Assert.assertTrue(
                 mMediator.getDropdownItemViewInfoListBuilderForTest().hasFullyConcealedElements());
     }
@@ -432,7 +434,8 @@ public class AutocompleteMediatorUnitTest {
 
         // Report height change with keyboard visible
         mMediator.onSuggestionDropdownHeightChanged(heightWithOneConcealedItem);
-        mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), "");
+        mMediator.onSuggestionsReceived(
+                AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
         Assert.assertTrue(
                 mMediator.getDropdownItemViewInfoListBuilderForTest().hasFullyConcealedElements());
 
@@ -441,7 +444,8 @@ public class AutocompleteMediatorUnitTest {
         // is active.
         when(mAutocompleteDelegate.isKeyboardActive()).thenReturn(false);
         mMediator.onSuggestionDropdownHeightChanged(heightOfOAllSuggestions);
-        mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), "");
+        mMediator.onSuggestionsReceived(
+                AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
         Assert.assertTrue(
                 mMediator.getDropdownItemViewInfoListBuilderForTest().hasFullyConcealedElements());
     }
@@ -628,12 +632,12 @@ public class AutocompleteMediatorUnitTest {
     public void onSuggestionsReceived_sendsOnSuggestionsChanged() {
         mMediator.onNativeInitialized();
         mMediator.onSuggestionsReceived(
-                AutocompleteResult.fromCache(mSuggestionsList, null), "inline_autocomplete");
+                AutocompleteResult.fromCache(mSuggestionsList, null), "inline_autocomplete", true);
         verify(mAutocompleteDelegate).onSuggestionsChanged("inline_autocomplete", true);
 
         // Ensure duplicate requests are suppressed.
         mMediator.onSuggestionsReceived(
-                AutocompleteResult.fromCache(mSuggestionsList, null), "inline_autocomplete2");
+                AutocompleteResult.fromCache(mSuggestionsList, null), "inline_autocomplete2", true);
         verifyNoMoreInteractions(mAutocompleteDelegate);
     }
 
@@ -644,7 +648,8 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onNativeInitialized();
         mMediator.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         mMediator.onSuggestionDropdownHeightChanged(Integer.MAX_VALUE);
-        mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), "");
+        mMediator.onSuggestionsReceived(
+                AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
         Assert.assertEquals(mSuggestionsList.size(), mSuggestionModels.size());
         for (int i = 0; i < mSuggestionModels.size(); i++) {
             Assert.assertEquals(i + "th model does not have the expected layout direction.",
@@ -660,7 +665,8 @@ public class AutocompleteMediatorUnitTest {
     public void setLayoutDirection_afterInitialization() {
         mMediator.onNativeInitialized();
         mMediator.onSuggestionDropdownHeightChanged(Integer.MAX_VALUE);
-        mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), "");
+        mMediator.onSuggestionsReceived(
+                AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
         Assert.assertEquals(mSuggestionsList.size(), mSuggestionModels.size());
 
         mMediator.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);

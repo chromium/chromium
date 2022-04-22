@@ -194,7 +194,7 @@ public class MostVisitedTilesTest {
                 1, new AutocompleteResult.GroupDetails("See also", false));
 
         doAnswer(invocation -> {
-            mListener.getValue().onSuggestionsReceived(autocompleteResult, mStartUrl);
+            mListener.getValue().onSuggestionsReceived(autocompleteResult, mStartUrl, true);
             return null;
         })
                 .when(mController)

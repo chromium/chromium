@@ -43,7 +43,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -79,11 +78,7 @@ public class OmniboxTest {
     }
 
     private static final OnSuggestionsReceivedListener sEmptySuggestionListener =
-            new OnSuggestionsReceivedListener() {
-                @Override
-                public void onSuggestionsReceived(
-                        AutocompleteResult autocompleteResult, String inlineAutocompleteText) {}
-            };
+            (result, autocompleteText, isFinal) -> {};
 
     /**
      * Sanity check of Omnibox.  The problem in http://b/5021723 would

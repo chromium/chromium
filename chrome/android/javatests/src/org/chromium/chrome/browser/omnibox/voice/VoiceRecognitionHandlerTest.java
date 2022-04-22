@@ -72,7 +72,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteMatch;
-import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -136,11 +135,7 @@ public class VoiceRecognitionHandlerTest {
     private FeatureList.TestValues mFeatures;
 
     private static final OnSuggestionsReceivedListener sEmptySuggestionListener =
-            new OnSuggestionsReceivedListener() {
-                @Override
-                public void onSuggestionsReceived(
-                        AutocompleteResult autocompleteResult, String inlineAutocompleteText) {}
-            };
+            (result, inlineText, isFinal) -> {};
 
     // The default Tab URL.
     private static final String DEFAULT_URL = "https://example.com/";

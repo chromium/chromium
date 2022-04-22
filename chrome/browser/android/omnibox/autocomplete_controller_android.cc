@@ -495,7 +495,7 @@ void AutocompleteControllerAndroid::NotifySuggestionsReceived(
 
   Java_AutocompleteController_onSuggestionsReceived(
       env, java_controller_, autocomplete_result.GetOrCreateJavaObject(env),
-      inline_text);
+      inline_text, autocomplete_controller_->done());
 }
 
 void AutocompleteControllerAndroid::WarmUpRenderProcess() const {

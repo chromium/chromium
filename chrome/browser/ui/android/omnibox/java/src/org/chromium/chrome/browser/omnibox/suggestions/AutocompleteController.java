@@ -49,10 +49,21 @@ public class AutocompleteController {
     private long mNativeController;
     private @NonNull AutocompleteResult mAutocompleteResult = AutocompleteResult.EMPTY_RESULT;
 
-    /** Listener for receiving OmniboxSuggestions. */
+    /**
+     * Listener for receiving OmniboxSuggestions.
+     */
     public interface OnSuggestionsReceivedListener {
-        void onSuggestionsReceived(
-                AutocompleteResult autocompleteResult, String inlineAutocompleteText);
+        /**
+         * Receive autocomplete matches for currently executing query.
+         *
+         * @param autocompleteResult The current set of autocomplete matches for previously supplied
+         *         query.
+         * @param inlineAutocompleteText The text to offer as an inline autocompletion.
+         * @param isFinal Whether this result is transitory (false) or final (true). Final result
+         *         always comes in last, even if the query is canceled.
+         */
+        void onSuggestionsReceived(AutocompleteResult autocompleteResult,
+                String inlineAutocompleteText, boolean isFinal);
     }
 
     @CalledByNative
@@ -197,11 +208,11 @@ public class AutocompleteController {
 
     @CalledByNative
     private void onSuggestionsReceived(@NonNull AutocompleteResult autocompleteResult,
-            @NonNull String inlineAutocompleteText) {
+            @NonNull String inlineAutocompleteText, boolean isFinal) {
         mAutocompleteResult = autocompleteResult;
         // Notify callbacks of suggestions.
         for (OnSuggestionsReceivedListener listener : mListeners) {
-            listener.onSuggestionsReceived(autocompleteResult, inlineAutocompleteText);
+            listener.onSuggestionsReceived(autocompleteResult, inlineAutocompleteText, isFinal);
         }
     }
 

@@ -191,7 +191,7 @@ public class OmniboxTestUtils {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             OnSuggestionsReceivedListener listener =
                     mAutocomplete.getSuggestionsReceivedListenerForTest();
-            listener.onSuggestionsReceived(autocompleteResult, inlineAutocompleteText);
+            listener.onSuggestionsReceived(autocompleteResult, inlineAutocompleteText, true);
         });
     }
 
