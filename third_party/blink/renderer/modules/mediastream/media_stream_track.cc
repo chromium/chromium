@@ -26,6 +26,36 @@ class GetOpenDeviceRequestCallbacks final : public UserMediaRequest::Callbacks {
 
 }  // namespace
 
+String ContentHintToString(
+    const WebMediaStreamTrack::ContentHintType& content_hint) {
+  switch (content_hint) {
+    case WebMediaStreamTrack::ContentHintType::kNone:
+      return kContentHintStringNone;
+    case WebMediaStreamTrack::ContentHintType::kAudioSpeech:
+      return kContentHintStringAudioSpeech;
+    case WebMediaStreamTrack::ContentHintType::kAudioMusic:
+      return kContentHintStringAudioMusic;
+    case WebMediaStreamTrack::ContentHintType::kVideoMotion:
+      return kContentHintStringVideoMotion;
+    case WebMediaStreamTrack::ContentHintType::kVideoDetail:
+      return kContentHintStringVideoDetail;
+    case WebMediaStreamTrack::ContentHintType::kVideoText:
+      return kContentHintStringVideoText;
+  }
+}
+
+String ReadyStateToString(const MediaStreamSource::ReadyState& ready_state) {
+  // Although muted is tracked as a ReadyState, only "live" and "ended" are
+  // visible externally.
+  switch (ready_state) {
+    case MediaStreamSource::kReadyStateLive:
+    case MediaStreamSource::kReadyStateMuted:
+      return "live";
+    case MediaStreamSource::kReadyStateEnded:
+      return "ended";
+  }
+}
+
 MediaStreamTrack* MediaStreamTrack::Create(
     ScriptState* script_state,
     const base::UnguessableToken& session_id) {
@@ -47,7 +77,14 @@ MediaStreamTrack* MediaStreamTrack::Create(
   // supporting BrowserCaptureMediaStreamTrack or FocusableMediaStreamTrack
   // operations when needed (or support these behaviors in some other way).
   TransferredMediaStreamTrack* transferred_media_stream_track =
-      MakeGarbageCollected<TransferredMediaStreamTrack>();
+      MakeGarbageCollected<TransferredMediaStreamTrack>(TransferredValues{
+          .kind = "video",
+          .id = "",
+          .label = "dummy",
+          .enabled = true,
+          .muted = false,
+          .contentHint = WebMediaStreamTrack::ContentHintType::kNone,
+          .readyState = MediaStreamSource::kReadyStateLive});
 
   request->SetTransferData(session_id, transferred_media_stream_track);
   request->Start();

@@ -51,36 +51,35 @@
 
 namespace blink {
 
+TransferredMediaStreamTrack::TransferredMediaStreamTrack(TransferredValues data)
+    : data_(data) {}
+
 String TransferredMediaStreamTrack::kind() const {
   if (track_) {
     return track_->kind();
   }
-  // TODO(https://crbug.com/1288839): return the transferred value.
-  return "video";
+  return data_.kind;
 }
 
 String TransferredMediaStreamTrack::id() const {
   if (track_) {
     return track_->id();
   }
-  // TODO(https://crbug.com/1288839): return the transferred value.
-  return "";
+  return data_.id;
 }
 
 String TransferredMediaStreamTrack::label() const {
   if (track_) {
     return track_->label();
   }
-  // TODO(https://crbug.com/1288839): return the transferred value.
-  return "dummy";
+  return data_.label;
 }
 
 bool TransferredMediaStreamTrack::enabled() const {
   if (track_) {
     return track_->enabled();
   }
-  // TODO(https://crbug.com/1288839): return the transferred value.
-  return true;
+  return data_.enabled;
 }
 
 void TransferredMediaStreamTrack::setEnabled(bool enabled) {
@@ -95,16 +94,14 @@ bool TransferredMediaStreamTrack::muted() const {
   if (track_) {
     return track_->muted();
   }
-  // TODO(https://crbug.com/1288839): return the transferred value.
-  return false;
+  return data_.muted;
 }
 
 String TransferredMediaStreamTrack::ContentHint() const {
   if (track_) {
     return track_->ContentHint();
   }
-  // TODO(https://crbug.com/1288839): return the transferred value.
-  return "";
+  return ContentHintToString(data_.contentHint);
 }
 
 void TransferredMediaStreamTrack::SetContentHint(const String& content_hint) {
@@ -119,8 +116,7 @@ String TransferredMediaStreamTrack::readyState() const {
   if (track_) {
     return track_->readyState();
   }
-  // TODO(https://crbug.com/1288839): return the transferred value.
-  return "live";
+  return ReadyStateToString(data_.readyState);
 }
 
 MediaStreamTrack* TransferredMediaStreamTrack::clone(
@@ -207,7 +203,7 @@ MediaStreamSource::ReadyState TransferredMediaStreamTrack::GetReadyState() {
     return track_->GetReadyState();
   }
   // TODO(https://crbug.com/1288839): return the transferred value.
-  return MediaStreamSource::kReadyStateLive;
+  return data_.readyState;
 }
 
 MediaStreamComponent* TransferredMediaStreamTrack::Component() const {
@@ -222,8 +218,7 @@ bool TransferredMediaStreamTrack::Ended() const {
   if (track_) {
     return track_->Ended();
   }
-  // TODO(https://crbug.com/1288839): return the transferred value.
-  return false;
+  return (data_.readyState == MediaStreamSource::kReadyStateEnded);
 }
 
 void TransferredMediaStreamTrack::RegisterMediaStream(MediaStream* stream) {

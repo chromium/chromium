@@ -17,9 +17,14 @@ class TransferredMediaStreamTrackTest : public testing::Test {
 };
 
 TEST_F(TransferredMediaStreamTrackTest, InitialProperties) {
-  // TODO(https://crbug.com/1288839): Set the initial parameters in a struct in
-  // the non-default constructor and test that they are set.
-  TransferredMediaStreamTrack transferred_track;
+  TransferredMediaStreamTrack transferred_track(TransferredValues{
+      .kind = "video",
+      .id = "",
+      .label = "dummy",
+      .enabled = true,
+      .muted = false,
+      .contentHint = WebMediaStreamTrack::ContentHintType::kNone,
+      .readyState = MediaStreamSource::kReadyStateLive});
 
   EXPECT_EQ(transferred_track.kind(), "video");
   EXPECT_EQ(transferred_track.id(), "");
@@ -72,7 +77,14 @@ TEST_F(TransferredMediaStreamTrackTest, PropertiesInheritFromImplementation) {
   mock_impl.SetEnded(kEnded);
   mock_impl.SetSerializableSessionId(kSerializableSessionId);
 
-  TransferredMediaStreamTrack transferred_track;
+  TransferredMediaStreamTrack transferred_track(TransferredValues{
+      .kind = "video",
+      .id = "",
+      .label = "dummy",
+      .enabled = true,
+      .muted = false,
+      .contentHint = WebMediaStreamTrack::ContentHintType::kNone,
+      .readyState = MediaStreamSource::kReadyStateLive});
   transferred_track.setImplementation(&mock_impl);
 
   EXPECT_EQ(transferred_track.kind(), kKind);

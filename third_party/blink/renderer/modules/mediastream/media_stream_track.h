@@ -22,6 +22,13 @@
 
 namespace blink {
 
+static const char kContentHintStringNone[] = "";
+static const char kContentHintStringAudioSpeech[] = "speech";
+static const char kContentHintStringAudioMusic[] = "music";
+static const char kContentHintStringVideoMotion[] = "motion";
+static const char kContentHintStringVideoDetail[] = "detail";
+static const char kContentHintStringVideoText[] = "text";
+
 class AudioSourceProvider;
 class ImageCapture;
 class MediaTrackCapabilities;
@@ -29,6 +36,11 @@ class MediaTrackConstraints;
 class MediaStream;
 class MediaTrackSettings;
 class ScriptState;
+
+String ContentHintToString(
+    const WebMediaStreamTrack::ContentHintType& content_hint);
+
+String ReadyStateToString(const MediaStreamSource::ReadyState& ready_state);
 
 class MODULES_EXPORT MediaStreamTrack
     : public EventTargetWithInlineData,

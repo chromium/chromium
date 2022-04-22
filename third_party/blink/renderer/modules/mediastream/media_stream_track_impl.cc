@@ -74,13 +74,6 @@ namespace blink {
 
 namespace {
 
-static const char kContentHintStringNone[] = "";
-static const char kContentHintStringAudioSpeech[] = "speech";
-static const char kContentHintStringAudioMusic[] = "music";
-static const char kContentHintStringVideoMotion[] = "motion";
-static const char kContentHintStringVideoDetail[] = "detail";
-static const char kContentHintStringVideoText[] = "text";
-
 // The set of constrainable properties for image capture is available at
 // https://w3c.github.io/mediacapture-image/#constrainable-properties
 // TODO(guidou): Integrate image-capture constraints processing with the
@@ -376,24 +369,7 @@ bool MediaStreamTrackImpl::muted() const {
 }
 
 String MediaStreamTrackImpl::ContentHint() const {
-  WebMediaStreamTrack::ContentHintType hint = component_->ContentHint();
-  switch (hint) {
-    case WebMediaStreamTrack::ContentHintType::kNone:
-      return kContentHintStringNone;
-    case WebMediaStreamTrack::ContentHintType::kAudioSpeech:
-      return kContentHintStringAudioSpeech;
-    case WebMediaStreamTrack::ContentHintType::kAudioMusic:
-      return kContentHintStringAudioMusic;
-    case WebMediaStreamTrack::ContentHintType::kVideoMotion:
-      return kContentHintStringVideoMotion;
-    case WebMediaStreamTrack::ContentHintType::kVideoDetail:
-      return kContentHintStringVideoDetail;
-    case WebMediaStreamTrack::ContentHintType::kVideoText:
-      return kContentHintStringVideoText;
-  }
-
-  NOTREACHED();
-  return String();
+  return ContentHintToString(component_->ContentHint());
 }
 
 void MediaStreamTrackImpl::SetContentHint(const String& hint) {
@@ -439,19 +415,7 @@ void MediaStreamTrackImpl::SetContentHint(const String& hint) {
 String MediaStreamTrackImpl::readyState() const {
   if (Ended())
     return "ended";
-
-  // Although muted is tracked as a ReadyState, only "live" and "ended" are
-  // visible externally.
-  switch (ready_state_) {
-    case MediaStreamSource::kReadyStateLive:
-    case MediaStreamSource::kReadyStateMuted:
-      return "live";
-    case MediaStreamSource::kReadyStateEnded:
-      return "ended";
-  }
-
-  NOTREACHED();
-  return String();
+  return ReadyStateToString(ready_state_);
 }
 
 void MediaStreamTrackImpl::setReadyState(
