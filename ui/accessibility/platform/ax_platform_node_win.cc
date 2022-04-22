@@ -7094,6 +7094,10 @@ bool AXPlatformNodeWin::IsNameExposed() const {
   }
 }
 
+bool AXPlatformNodeWin::IsPlatformDocumentWithContent() const {
+  return IsPlatformDocument() && GetChildCount();
+}
+
 bool AXPlatformNodeWin::IsUIAControl() const {
   // UIA provides multiple "views": raw, content and control. We only want to
   // populate the content and control views with items that make sense to
@@ -7327,8 +7331,14 @@ int AXPlatformNodeWin::MSAAState() const {
   // Map the ax::mojom::State to MSAA state. Note that some of the states are
   // not currently handled.
 
-  if (GetBoolAttribute(ax::mojom::BoolAttribute::kBusy))
+  // TODO(accessibility): https://crbug.com/1292018
+  // Exposing the busy state on the root web area means the NVDA user will end
+  // up without a virtualBuffer until the page fully loads. So if we have
+  // content, don't expose the busy state.
+  if (GetBoolAttribute(ax::mojom::BoolAttribute::kBusy) &&
+      !IsPlatformDocumentWithContent()) {
     msaa_state |= STATE_SYSTEM_BUSY;
+  }
 
   if (HasState(ax::mojom::State::kCollapsed))
     msaa_state |= STATE_SYSTEM_COLLAPSED;

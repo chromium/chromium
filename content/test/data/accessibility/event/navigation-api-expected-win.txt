@@ -1,4 +1,4 @@
-EVENT_OBJECT_STATECHANGE on <#document> role=ROLE_SYSTEM_DOCUMENT name="Starting title" value~=[doc-url] FOCUSED,BUSY,FOCUSABLE
+EVENT_OBJECT_STATECHANGE on <#document> role=ROLE_SYSTEM_DOCUMENT name="Starting title" value~=[doc-url] FOCUSED,FOCUSABLE
 === Start Continuation ===
 EVENT_OBJECT_HIDE on <p> role=ROLE_SYSTEM_GROUPING
 EVENT_OBJECT_REORDER on <main> role=ROLE_SYSTEM_GROUPING
