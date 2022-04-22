@@ -103,9 +103,8 @@ class DesksTemplatesTest : public OverviewTestBase {
                 DeskTemplateType type,
                 std::unique_ptr<app_restore::RestoreData> restore_data) {
     auto desk_template = std::make_unique<DeskTemplate>(
-        uuid.AsLowercaseString(), source, name, created_time);
+        uuid.AsLowercaseString(), source, name, created_time, type);
     desk_template->set_desk_restore_data(std::move(restore_data));
-    desk_template->set_type(type);
 
     AddEntry(std::move(desk_template));
   }
@@ -2871,7 +2870,8 @@ TEST_F(DesksTemplatesTest, SaveDeskRecordsWindowAndTabCountMetrics) {
 
   auto desk_template = std::make_unique<DeskTemplate>(
       base::GUID::GenerateRandomV4().AsLowercaseString(),
-      DeskTemplateSource::kUser, "template_1", base::Time::Now());
+      DeskTemplateSource::kUser, "template_1", base::Time::Now(),
+      DeskTemplateType::kTemplate);
   desk_template->set_desk_restore_data(std::move(restore_data));
 
   // Record histogram.

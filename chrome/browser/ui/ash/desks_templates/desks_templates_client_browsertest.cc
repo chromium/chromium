@@ -604,7 +604,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchMultipleDeskTemplates) {
   // workflow.
   auto desk_template = std::make_unique<ash::DeskTemplate>(
       kDeskUuid.AsLowercaseString(), ash::DeskTemplateSource::kUser,
-      base::UTF16ToUTF8(kDeskName), base::Time::Now());
+      base::UTF16ToUTF8(kDeskName), base::Time::Now(),
+      ash::DeskTemplateType::kTemplate);
   SetTemplate(std::move(desk_template));
 
   auto check_launch_template_desk_name =

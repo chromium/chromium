@@ -132,9 +132,9 @@ void RestoreDataCollector::SendDeskTemplate(uint32_t serial) {
 
   auto desk_template = std::make_unique<DeskTemplate>(
       base::GUID::GenerateRandomV4().AsLowercaseString(),
-      DeskTemplateSource::kUser, call.template_name, base::Time::Now());
+      DeskTemplateSource::kUser, call.template_name, base::Time::Now(),
+      call.template_type);
   desk_template->set_desk_restore_data(std::move(call.data));
-  desk_template->set_type(call.template_type);
 
   if (!call.unsupported_apps.empty() &&
       Shell::Get()->overview_controller()->InOverviewSession()) {

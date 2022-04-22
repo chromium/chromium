@@ -720,18 +720,14 @@ std::unique_ptr<DeskTemplate> DeskSyncBridge::FromSyncProto(
 
   // Protobuf parsing enforces UTF-8 encoding for all strings.
   auto desk_template = std::make_unique<DeskTemplate>(
-      uuid, ash::DeskTemplateSource::kUser, pb_entry.name(), created_time);
+      uuid, ash::DeskTemplateSource::kUser, pb_entry.name(), created_time,
+      pb_entry.has_desk_type()
+          ? GetDeskTemplateTypeFromProtoType(pb_entry.desk_type())
+          : ash::DeskTemplateType::kTemplate);
 
   if (pb_entry.has_updated_time_windows_epoch_micros()) {
     desk_template->set_updated_time(desk_template_conversion::ProtoTimeToTime(
         pb_entry.updated_time_windows_epoch_micros()));
-  }
-
-  if (pb_entry.has_desk_type()) {
-    desk_template->set_type(
-        GetDeskTemplateTypeFromProtoType(pb_entry.desk_type()));
-  } else {
-    desk_template->set_type(DeskTemplateType::kTemplate);
   }
 
   desk_template->set_desk_restore_data(ConvertToRestoreData(pb_entry));

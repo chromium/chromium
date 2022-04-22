@@ -25,6 +25,7 @@ namespace {
 
 using ash::DeskTemplate;
 using ash::DeskTemplateSource;
+using ash::DeskTemplateType;
 using desks_storage::DeskModel;
 using desks_storage::DeskSyncService;
 using sync_pb::WorkspaceDeskSpecifics;
@@ -168,9 +169,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest,
 
   base::RunLoop loop;
   model->AddOrUpdateEntry(
-      std::make_unique<DeskTemplate>(kTestUuid1_.AsLowercaseString(),
-                                     DeskTemplateSource::kUser, "template 1",
-                                     AdvanceAndGetTime()),
+      std::make_unique<DeskTemplate>(
+          kTestUuid1_.AsLowercaseString(), DeskTemplateSource::kUser,
+          "template 1", AdvanceAndGetTime(), DeskTemplateType::kTemplate),
       base::BindLambdaForTesting([&](DeskModel::AddOrUpdateEntryStatus status) {
         EXPECT_EQ(DeskModel::AddOrUpdateEntryStatus::kOk, status);
         loop.Quit();

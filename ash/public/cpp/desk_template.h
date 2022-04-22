@@ -47,7 +47,8 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   DeskTemplate(const std::string& uuid,
                DeskTemplateSource source,
                const std::string& name,
-               const base::Time created_time);
+               const base::Time created_time,
+               DeskTemplateType type);
 
   DeskTemplate(const DeskTemplate&) = delete;
   DeskTemplate& operator=(const DeskTemplate&) = delete;
@@ -74,7 +75,6 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   }
 
   DeskTemplateType type() const { return type_; }
-  void set_type(DeskTemplateType type) { type_ = type; }
 
   const ::app_restore::RestoreData* desk_restore_data() const {
     return desk_restore_data_.get();
@@ -124,7 +124,7 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   const DeskTemplateSource source_;
 
   // The type of this desk template.
-  DeskTemplateType type_ = DeskTemplateType::kTemplate;
+  const DeskTemplateType type_;
 
   const base::Time created_time_;  // Template creation time.
 

@@ -78,7 +78,8 @@ std::unique_ptr<ash::DeskTemplate> ConvertValueToDeskTemplate(
 
   std::unique_ptr<ash::DeskTemplate> desk_template =
       std::make_unique<ash::DeskTemplate>(*uuid, ash::DeskTemplateSource::kUser,
-                                          *name, created_time.value());
+                                          *name, created_time.value(),
+                                          ash::DeskTemplateType::kTemplate);
 
   // Full Restore will only take in std::unique_ptr as it's constructor
   // parameter from base::Value.  We're not allowed to use the explicit

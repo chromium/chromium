@@ -809,11 +809,11 @@ std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromPolicy(
 
   std::unique_ptr<ash::DeskTemplate> desk_template =
       std::make_unique<ash::DeskTemplate>(
-          uuid, ash::DeskTemplateSource::kPolicy, name, created_time);
+          uuid, ash::DeskTemplateSource::kPolicy, name, created_time,
+          GetDeskTypeFromString(desk_type_string));
 
   desk_template->set_updated_time(updated_time);
   desk_template->set_desk_restore_data(ConvertJsonToRestoreData(desk));
-  desk_template->set_type(GetDeskTypeFromString(desk_type_string));
 
   return desk_template;
 }
