@@ -265,7 +265,8 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
   SharedStorageBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kSharedStorageAPI,
-                              blink::features::kFencedFrames},
+                              blink::features::kFencedFrames,
+                              features::kPrivacySandboxAdsAPIsOverride},
         /*disabled_features=*/{});
   }
 

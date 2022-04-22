@@ -933,9 +933,11 @@ class FencedFrameFileSystemAccessBrowserTest
       fenced_frame_helper_ =
           std::make_unique<content::test::FencedFrameTestHelper>();
     } else {
-      feature_list_.InitAndEnableFeatureWithParameters(
-          blink::features::kFencedFrames,
-          {{"implementation_type", "shadow_dom"}});
+      feature_list_.InitWithFeaturesAndParameters(
+          {{blink::features::kFencedFrames,
+            {{"implementation_type", "shadow_dom"}}},
+           {features::kPrivacySandboxAdsAPIsOverride, {}}},
+          {/* disabled_features */});
     }
   }
   ~FencedFrameFileSystemAccessBrowserTest() override = default;

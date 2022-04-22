@@ -7,7 +7,9 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
@@ -22,6 +24,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -31,6 +34,11 @@ namespace content {
 
 namespace {
 constexpr char kBaseDataDir[] = "content/test/data/attribution_reporting/";
+
+constexpr char kAddFencedFrameScript[] = R"(
+  const fenced_frame = document.createElement('fencedframe');
+  document.body.appendChild(fenced_frame);
+)";
 }
 
 class PrivacySandboxAdsAPIsBrowserTestBase : public ContentBrowserTest {
@@ -58,6 +66,12 @@ class PrivacySandboxAdsAPIsBrowserTestBase : public ContentBrowserTest {
 
   WebContents* web_contents() { return shell()->web_contents(); }
 
+  FrameTreeNode* root() {
+    return static_cast<WebContentsImpl*>(web_contents())
+        ->GetPrimaryFrameTree()
+        .root();
+  }
+
  private:
   std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
 };
@@ -66,10 +80,11 @@ class PrivacySandboxAdsAPIsAllEnabledBrowserTest
     : public PrivacySandboxAdsAPIsBrowserTestBase {
  public:
   PrivacySandboxAdsAPIsAllEnabledBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {blink::features::kPrivacySandboxAdsAPIs,
-         blink::features::kBrowsingTopics, blink::features::kInterestGroupStorage},
-        /*disabled_features=*/{});
+    feature_list_.InitWithFeatures({blink::features::kPrivacySandboxAdsAPIs,
+                                    blink::features::kBrowsingTopics,
+                                    blink::features::kInterestGroupStorage,
+                                    blink::features::kFencedFrames},
+                                   /*disabled_features=*/{});
   }
 
  private:
@@ -96,6 +111,9 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsAllEnabledBrowserTest,
   EXPECT_EQ(true, EvalJs(shell(), "navigator.runAdAuction !== undefined"));
   EXPECT_EQ(true,
             EvalJs(shell(), "navigator.joinAdInterestGroup !== undefined"));
+
+  EXPECT_TRUE(ExecJs(root(), kAddFencedFrameScript));
+  EXPECT_EQ(1U, root()->child_count());
 }
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsAllEnabledBrowserTest,
@@ -119,6 +137,9 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsAllEnabledBrowserTest,
   EXPECT_EQ(true, EvalJs(shell(), "navigator.runAdAuction === undefined"));
   EXPECT_EQ(true,
             EvalJs(shell(), "navigator.joinAdInterestGroup === undefined"));
+
+  EXPECT_TRUE(ExecJs(root(), kAddFencedFrameScript));
+  EXPECT_EQ(0U, root()->child_count());
 }
 
 class PrivacySandboxAdsAPIsTopicsDisabledBrowserTest
@@ -179,6 +200,33 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsFledgeDisabledBrowserTest,
             EvalJs(shell(), "navigator.joinAdInterestGroup !== undefined"));
 }
 
+class PrivacySandboxAdsAPIsFencedFramesDisabledBrowserTest
+    : public PrivacySandboxAdsAPIsBrowserTestBase {
+ public:
+  PrivacySandboxAdsAPIsFencedFramesDisabledBrowserTest() {
+    feature_list_.InitWithFeatures({blink::features::kPrivacySandboxAdsAPIs},
+                                   {blink::features::kFencedFrames});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsFencedFramesDisabledBrowserTest,
+                       OriginTrialEnabled_CorrectFeaturesDetected) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GURL("https://example.test/page_with_ads_apis_ot.html")));
+
+  EXPECT_EQ(true, EvalJs(shell(),
+                         "document.featurePolicy.features().includes('"
+                         "attribution-reporting')"));
+
+  EXPECT_EQ(true, EvalJs(shell(), "window.attributionReporting !== undefined"));
+
+  EXPECT_TRUE(ExecJs(root(), kAddFencedFrameScript));
+  EXPECT_EQ(0U, root()->child_count());
+}
+
 class PrivacySandboxAdsAPIsDisabledBrowserTest
     : public PrivacySandboxAdsAPIsBrowserTestBase {
  public:
@@ -211,6 +259,9 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsDisabledBrowserTest,
   EXPECT_EQ(true, EvalJs(shell(), "navigator.runAdAuction === undefined"));
   EXPECT_EQ(true,
             EvalJs(shell(), "navigator.joinAdInterestGroup === undefined"));
+
+  EXPECT_TRUE(ExecJs(root(), kAddFencedFrameScript));
+  EXPECT_EQ(0U, root()->child_count());
 }
 
 }  // namespace content

@@ -170,7 +170,8 @@ public class ContactsProviderTest {
      */
     @Test
     @SmallTest
-    @CommandLineFlags.Add({"enable-features=FencedFrames<Study", "force-fieldtrials=Study/Group",
+    @CommandLineFlags.Add({"enable-features=FencedFrames<Study,PrivacySandboxAdsAPIsOverride",
+            "force-fieldtrials=Study/Group",
             "force-fieldtrial-params=Study.Group:implementation_type/mparch"})
     public void
     testDontGetContactsInFencedFrame() throws TimeoutException {

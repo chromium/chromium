@@ -8,6 +8,7 @@
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/test/fenced_frame_test_utils.h"
@@ -35,8 +36,10 @@ constexpr char kNavigateFrameScript[] = R"({location.href = $1;})";
 }  // namespace
 
 FencedFrameTestHelper::FencedFrameTestHelper() {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{blink::features::kFencedFrames, {{"implementation_type", "mparch"}}},
+       {features::kPrivacySandboxAdsAPIsOverride, {}}},
+      {/* disabled_features */});
 }
 
 FencedFrameTestHelper::~FencedFrameTestHelper() = default;

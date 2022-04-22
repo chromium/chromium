@@ -4066,7 +4066,7 @@ class ChromeDriverFencedFrame(ChromeDriverBaseTestWithWebServer):
 
   def _initDriver(self, fenced_frame_implementation):
     self._driver = self.CreateDriver(chrome_switches=['--site-per-process',
-        '--enable-features=FencedFrames:implementation_type/%s' % fenced_frame_implementation])
+        '--enable-features=FencedFrames:implementation_type/%s,PrivacySandboxAdsAPIsOverride' % fenced_frame_implementation])
 
   def _testCanSwitchToFencedFrame(self, fenced_frame_implementation):
     self._initDriver(fenced_frame_implementation)

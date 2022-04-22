@@ -672,7 +672,8 @@ class WebNavigationApiFencedFrameTest
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{blink::features::kFencedFrames,
                                {{"implementation_type",
-                                 GetParam() ? "shadow_dom" : "mparch"}}}},
+                                 GetParam() ? "shadow_dom" : "mparch"}}},
+                              {features::kPrivacySandboxAdsAPIsOverride, {}}},
         /*disabled_features=*/{features::kSpareRendererForSitePerProcess});
     // Fenced frames are only allowed in a secure context.
     UseHttpsTestServer();

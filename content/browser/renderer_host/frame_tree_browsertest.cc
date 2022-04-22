@@ -844,7 +844,8 @@ class FencedFrameTreeBrowserTest
                 ? "shadow_dom"
                 : "mparch"}}},
          {blink::features::kThirdPartyStoragePartitioning, {}},
-         {net::features::kPartitionedCookies, {}}},
+         {net::features::kPartitionedCookies, {}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}}},
         {/* disabled_features */});
   }
 

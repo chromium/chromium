@@ -1087,7 +1087,8 @@
       // Portals, as we require the support of the browser process to fully
       // enable the feature. Enabling this runtime enabled feature alone has no
       // effect.
-      origin_trial_feature_name: "FencedFrames",
+      origin_trial_feature_name: "PrivacySandboxAdsAPIs",
+      origin_trial_allows_third_party: true,
     },
     {
       name: "FetchUploadStreaming",

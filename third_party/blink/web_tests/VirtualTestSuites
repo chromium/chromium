@@ -1113,7 +1113,7 @@
     "bases": [
       "wpt_internal/shared_storage"
     ],
-    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch"]
+    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride"]
   },
   {
     "prefix": "shared-storage-fenced-frame-shadow-dom",
@@ -1121,7 +1121,7 @@
     "bases": [
       "wpt_internal/shared_storage"
     ],
-    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/shadow_dom"]
+    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/shadow_dom,PrivacySandboxAdsAPIsOverride"]
   },
   {
     "prefix": "task-tracking",
@@ -1140,7 +1140,7 @@
       "http/tests/inspector-protocol/fenced-frame",
       "external/wpt/html/anonymous-iframe"
     ],
-    "args": ["--enable-features=FencedFrames:implementation_type/mparch,SharedStorageAPI,Prerender2,NoncedPartitionedCookies"]
+    "args": ["--enable-features=FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,SharedStorageAPI,Prerender2,NoncedPartitionedCookies"]
   },
   {
     "prefix": "fenced-frame-shadow-dom",
@@ -1150,7 +1150,7 @@
       "wpt_internal/fenced_frame",
       "external/wpt/html/anonymous-iframe"
     ],
-    "args": ["--enable-features=FencedFrames:implementation_type/shadow_dom,SharedStorageAPI,Prerender2,NoncedPartitionedCookies"]
+    "args": ["--enable-features=FencedFrames:implementation_type/shadow_dom,PrivacySandboxAdsAPIsOverride,SharedStorageAPI,Prerender2,NoncedPartitionedCookies"]
   },
   {
     "prefix": "disable-custom-element-default-style",

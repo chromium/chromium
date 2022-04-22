@@ -15,6 +15,7 @@
 #include "content/common/frame.mojom-test-utils.h"
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -1013,9 +1014,11 @@ class FencedFrameNestedFrameBrowserTest
  protected:
   FencedFrameNestedFrameBrowserTest() {
     if (std::get<1>(GetParam())) {
-      feature_list_.InitAndEnableFeatureWithParameters(
-          blink::features::kFencedFrames,
-          {{"implementation_type", "shadow_dom"}});
+      feature_list_.InitWithFeaturesAndParameters(
+          {{blink::features::kFencedFrames,
+            {{"implementation_type", "shadow_dom"}}},
+           {features::kPrivacySandboxAdsAPIsOverride, {}}},
+          {/* disabled_features */});
     } else {
       fenced_frame_helper_ = std::make_unique<test::FencedFrameTestHelper>();
     }
@@ -1162,9 +1165,11 @@ class FencedFrameNestedModesTest
  protected:
   FencedFrameNestedModesTest() {
     if (std::get<2>(GetParam())) {
-      feature_list_.InitAndEnableFeatureWithParameters(
-          blink::features::kFencedFrames,
-          {{"implementation_type", "shadow_dom"}});
+      feature_list_.InitWithFeaturesAndParameters(
+          {{blink::features::kFencedFrames,
+            {{"implementation_type", "shadow_dom"}}},
+           {features::kPrivacySandboxAdsAPIsOverride, {}}},
+          {/* disabled_features */});
     } else {
       fenced_frame_test_helper_ =
           std::make_unique<test::FencedFrameTestHelper>();

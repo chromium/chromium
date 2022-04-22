@@ -816,9 +816,11 @@ class InterestGroupFencedFrameBrowserTest
   InterestGroupFencedFrameBrowserTest() {
     // Tests are run with both the ShadowDOM and MPArch ("Multi-Page
     // Architecture") fenced frames implementations.
-    feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kFencedFrames,
-        {{"implementation_type", GetFencedFrameFeatureParam()}});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kFencedFrames,
+          {{"implementation_type", GetFencedFrameFeatureParam()}}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}}},
+        {/* disabled_features */});
   }
 
   const char* GetFencedFrameFeatureParam() const {

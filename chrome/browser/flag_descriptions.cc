@@ -948,7 +948,8 @@ const char kWinrtGeolocationImplementationDescription[] =
 const char kEnableFencedFramesName[] = "Enable the <fencedframe> element.";
 const char kEnableFencedFramesDescription[] =
     "Fenced frames are an experimental web platform feature that allows "
-    "embedding an isolated top-level page. See "
+    "embedding an isolated top-level page. This requires "
+    "#privacy-sandbox-ads-apis to also be enabled. See "
     "https://github.com/shivanigithub/fenced-frame";
 
 const char kEnableFirmwareUpdaterAppName[] = "Enable firmware updater app";
@@ -2106,8 +2107,8 @@ const char kPrivacyGuide2Description[] =
 
 const char kPrivacySandboxAdsAPIsOverrideName[] = "Privacy Sandbox Ads APIs";
 const char kPrivacySandboxAdsAPIsOverrideDescription[] =
-    "Enables Privacy Sandbox APIs: Attribtuion Reporting, Fledge, Topics and "
-    "their associated features.";
+    "Enables Privacy Sandbox APIs: Attribution Reporting, Fledge, Topics, "
+    "Fenced Frames and their associated features.";
 
 const char kPrivacySandboxV3Name[] = "Privacy Sandbox V3";
 const char kPrivacySandboxV3Description[] =

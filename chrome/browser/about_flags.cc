@@ -7231,7 +7231,7 @@ const FeatureEntry kFeatureEntries[] = {
                                  "InterestGroupStorage,Fledge,"
                                  "BiddingAndScoringDebugReportingAPI,"
                                  "AllowURNsInIframes,BrowsingTopics,"
-                                 "ConversionMeasurement,"
+                                 "ConversionMeasurement,FencedFrames,"
                                  "OverridePrivacySandboxSettingsLocalTesting")},
 
     {"animated-image-resume", flag_descriptions::kAnimatedImageResumeName,
