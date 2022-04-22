@@ -26,7 +26,8 @@ def main(raw_args):
   args = parser.parse_args(raw_args)
 
   # Matches http://bit.ly/2WZO33P
-  h = hashlib.sha256('%s/%s/%s' % (args.project, args.bucket, args.builder))
+  string_to_hash = '%s/%s/%s' % (args.project, args.bucket, args.builder)
+  h = hashlib.sha256(string_to_hash.encode('utf-8'))
   cache = 'builder_%s_v2' % (h.hexdigest())
   pool = args.pool or 'luci.%s.%s' % (args.project, args.bucket)
 
