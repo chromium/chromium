@@ -378,7 +378,7 @@ std::string ReformatJson(const std::string& in) {
 void ReportResult(absl::optional<mojom::AnnotateImageError>* const error,
                   std::vector<mojom::Annotation>* const annotations,
                   mojom::AnnotateImageResultPtr result) {
-  if (result->which() == mojom::AnnotateImageResult::Tag::ERROR_CODE) {
+  if (result->which() == mojom::AnnotateImageResult::Tag::kErrorCode) {
     *error = result->get_error_code();
   } else {
     // If annotations exists, then it is not empty.
