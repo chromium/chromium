@@ -6,7 +6,7 @@
 #define ASH_DBUS_USER_AUTHENTICATION_SERVICE_PROVIDER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/services/cros_dbus_service.h"
+#include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
 
 namespace dbus {
@@ -18,7 +18,7 @@ namespace ash {
 // This class exports a D-Bus method that platform daemons call to request Ash
 // to start in-session user authentication flow.
 class UserAuthenticationServiceProvider
-    : public chromeos::CrosDBusService::ServiceProviderInterface {
+    : public CrosDBusService::ServiceProviderInterface {
  public:
   UserAuthenticationServiceProvider();
   UserAuthenticationServiceProvider(const UserAuthenticationServiceProvider&) =

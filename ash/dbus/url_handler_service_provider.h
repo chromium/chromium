@@ -13,7 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/services/cros_dbus_service.h"
+#include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
 #include "url/gurl.h"
 
@@ -34,7 +34,7 @@ namespace ash {
 //
 // % (returns true on success, otherwise returns false)
 class ASH_EXPORT UrlHandlerServiceProvider
-    : public chromeos::CrosDBusService::ServiceProviderInterface {
+    : public CrosDBusService::ServiceProviderInterface {
  public:
   UrlHandlerServiceProvider();
 

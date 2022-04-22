@@ -7,8 +7,8 @@
 
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
+#include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "chromeos/dbus/metrics_event/metrics_event.pb.h"
-#include "chromeos/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
 
 namespace ash {

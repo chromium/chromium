@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_SERVICES_SERVICE_PROVIDER_TEST_HELPER_H_
-#define CHROMEOS_DBUS_SERVICES_SERVICE_PROVIDER_TEST_HELPER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_SERVICES_SERVICE_PROVIDER_TEST_HELPER_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_SERVICES_SERVICE_PROVIDER_TEST_HELPER_H_
 
 #include <memory>
 #include <string>
 
-#include "chromeos/dbus/services/cros_dbus_service.h"
+#include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "dbus/mock_exported_object.h"
 #include "dbus/mock_object_proxy.h"
 #include "dbus/object_proxy.h"
@@ -22,7 +22,7 @@ class ObjectPath;
 
 }  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 // Helps to implement |CrosDBusService::ServiceProviderInterface| unittests.
 // Setups mocking of dbus classes.
@@ -96,11 +96,6 @@ class ServiceProviderTestHelper {
   std::string exported_method_name_;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::ServiceProviderTestHelper;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_SERVICES_SERVICE_PROVIDER_TEST_HELPER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SERVICES_SERVICE_PROVIDER_TEST_HELPER_H_

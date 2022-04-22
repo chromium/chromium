@@ -24,10 +24,10 @@
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chromeos/ash/components/dbus/services/service_provider_test_helper.h"
 #include "chromeos/dbus/constants/cryptohome_key_delegate_constants.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/dbus/services/service_provider_test_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/browser_context.h"
@@ -73,8 +73,7 @@ class CryptohomeKeyDelegateServiceProviderTest
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
 
-    dbus_service_test_helper_ =
-        std::make_unique<chromeos::ServiceProviderTestHelper>();
+    dbus_service_test_helper_ = std::make_unique<ServiceProviderTestHelper>();
     dbus_service_test_helper_->SetUp(
         cryptohome::kCryptohomeKeyDelegateServiceName,
         dbus::ObjectPath(cryptohome::kCryptohomeKeyDelegateServicePath),
@@ -104,7 +103,7 @@ class CryptohomeKeyDelegateServiceProviderTest
     MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }
 
-  chromeos::ServiceProviderTestHelper* dbus_service_test_helper() {
+  ServiceProviderTestHelper* dbus_service_test_helper() {
     return dbus_service_test_helper_.get();
   }
 
@@ -210,8 +209,7 @@ class CryptohomeKeyDelegateServiceProviderTest
   ExtensionForceInstallMixin force_install_mixin_{&mixin_host_};
 
   CryptohomeKeyDelegateServiceProvider service_provider_;
-  std::unique_ptr<chromeos::ServiceProviderTestHelper>
-      dbus_service_test_helper_;
+  std::unique_ptr<ServiceProviderTestHelper> dbus_service_test_helper_;
 
   TestCertificateProviderExtensionMixin
       test_certificate_provider_extension_mixin_{&mixin_host_,

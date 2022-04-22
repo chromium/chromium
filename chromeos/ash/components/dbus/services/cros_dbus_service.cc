@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/services/cros_dbus_service.h"
+#include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 
 #include <stddef.h>
 
@@ -16,7 +16,7 @@
 #include "dbus/exported_object.h"
 #include "dbus/object_path.h"
 
-namespace chromeos {
+namespace ash {
 
 // The CrosDBusService implementation used in production, and unit tests.
 class CrosDBusServiceImpl : public CrosDBusService {
@@ -145,4 +145,4 @@ CrosDBusService::CrosDBusService() = default;
 CrosDBusService::ServiceProviderInterface::~ServiceProviderInterface() =
     default;
 
-}  // namespace chromeos
+}  // namespace ash

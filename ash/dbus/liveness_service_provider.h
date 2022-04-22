@@ -10,7 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/services/cros_dbus_service.h"
+#include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
 
 namespace dbus {
@@ -32,7 +32,7 @@ namespace ash {
 //
 // (An empty response should be returned.)
 class LivenessServiceProvider
-    : public chromeos::CrosDBusService::ServiceProviderInterface {
+    : public CrosDBusService::ServiceProviderInterface {
  public:
   LivenessServiceProvider();
 
@@ -41,7 +41,7 @@ class LivenessServiceProvider
 
   ~LivenessServiceProvider() override;
 
-  // chromeos::CrosDBusService::ServiceProviderInterface overrides:
+  // CrosDBusService::ServiceProviderInterface overrides:
   void Start(scoped_refptr<dbus::ExportedObject> exported_object) override;
 
  private:

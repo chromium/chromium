@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_DBUS_VM_VM_SK_FORWARDING_SERVICE_PROVIDER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/services/cros_dbus_service.h"
+#include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
 
 namespace dbus {

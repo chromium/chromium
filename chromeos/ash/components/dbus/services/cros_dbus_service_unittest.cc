@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/services/cros_dbus_service.h"
+#include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 
 #include <memory>
 #include <utility>
@@ -25,7 +25,7 @@ using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::Return;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -112,4 +112,4 @@ TEST_F(CrosDBusServiceTest, Start) {
   // - The proxy resolution service is started.
 }
 
-}  // namespace chromeos
+}  // namespace ash

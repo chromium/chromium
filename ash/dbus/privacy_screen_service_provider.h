@@ -10,7 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chromeos/dbus/services/cros_dbus_service.h"
+#include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
 
 namespace dbus {
@@ -23,7 +23,7 @@ namespace ash {
 // with to understand the current privacy screen setting. Unit test is in
 // ash/display/privacy_screen_controller_unittest.cc file.
 class ASH_EXPORT PrivacyScreenServiceProvider
-    : public chromeos::CrosDBusService::ServiceProviderInterface,
+    : public CrosDBusService::ServiceProviderInterface,
       public PrivacyScreenController::Observer {
  public:
   PrivacyScreenServiceProvider();

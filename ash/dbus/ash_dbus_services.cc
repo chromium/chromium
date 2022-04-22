@@ -12,45 +12,45 @@
 #include "ash/dbus/url_handler_service_provider.h"
 #include "ash/dbus/user_authentication_service_provider.h"
 #include "base/feature_list.h"
-#include "chromeos/dbus/services/cros_dbus_service.h"
+#include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
 
 AshDBusServices::AshDBusServices(dbus::Bus* system_bus) {
-  display_service_ = chromeos::CrosDBusService::Create(
-      system_bus, chromeos::kDisplayServiceName,
-      dbus::ObjectPath(chromeos::kDisplayServicePath),
-      chromeos::CrosDBusService::CreateServiceProviderList(
-          std::make_unique<DisplayServiceProvider>()));
+  display_service_ =
+      CrosDBusService::Create(system_bus, chromeos::kDisplayServiceName,
+                              dbus::ObjectPath(chromeos::kDisplayServicePath),
+                              CrosDBusService::CreateServiceProviderList(
+                                  std::make_unique<DisplayServiceProvider>()));
   if (base::FeatureList::IsEnabled(
           chromeos::features::kGesturePropertiesDBusService)) {
-    gesture_properties_service_ = chromeos::CrosDBusService::Create(
+    gesture_properties_service_ = CrosDBusService::Create(
         system_bus, chromeos::kGesturePropertiesServiceName,
         dbus::ObjectPath(chromeos::kGesturePropertiesServicePath),
-        chromeos::CrosDBusService::CreateServiceProviderList(
+        CrosDBusService::CreateServiceProviderList(
             std::make_unique<GesturePropertiesServiceProvider>()));
   }
-  liveness_service_ = chromeos::CrosDBusService::Create(
-      system_bus, chromeos::kLivenessServiceName,
-      dbus::ObjectPath(chromeos::kLivenessServicePath),
-      chromeos::CrosDBusService::CreateServiceProviderList(
-          std::make_unique<LivenessServiceProvider>()));
-  privacy_screen_service_ = chromeos::CrosDBusService::Create(
+  liveness_service_ =
+      CrosDBusService::Create(system_bus, chromeos::kLivenessServiceName,
+                              dbus::ObjectPath(chromeos::kLivenessServicePath),
+                              CrosDBusService::CreateServiceProviderList(
+                                  std::make_unique<LivenessServiceProvider>()));
+  privacy_screen_service_ = CrosDBusService::Create(
       system_bus, privacy_screen::kPrivacyScreenServiceName,
       dbus::ObjectPath(privacy_screen::kPrivacyScreenServicePath),
-      chromeos::CrosDBusService::CreateServiceProviderList(
+      CrosDBusService::CreateServiceProviderList(
           std::make_unique<PrivacyScreenServiceProvider>()));
-  url_handler_service_ = chromeos::CrosDBusService::Create(
+  url_handler_service_ = CrosDBusService::Create(
       system_bus, chromeos::kUrlHandlerServiceName,
       dbus::ObjectPath(chromeos::kUrlHandlerServicePath),
-      chromeos::CrosDBusService::CreateServiceProviderList(
+      CrosDBusService::CreateServiceProviderList(
           std::make_unique<UrlHandlerServiceProvider>()));
-  user_authentication_service_ = chromeos::CrosDBusService::Create(
+  user_authentication_service_ = CrosDBusService::Create(
       system_bus, chromeos::kUserAuthenticationServiceName,
       dbus::ObjectPath(chromeos::kUserAuthenticationServicePath),
-      chromeos::CrosDBusService::CreateServiceProviderList(
+      CrosDBusService::CreateServiceProviderList(
           std::make_unique<UserAuthenticationServiceProvider>()));
 }
 
