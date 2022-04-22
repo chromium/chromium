@@ -25,6 +25,8 @@ if (!limit_android_deps) {
 
   java_group("android_support_v7_appcompat_java") {
     deps = [
+      "//third_party/androidx:androidx_appcompat_appcompat_java",
+      "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
       "//third_party/androidx:androidx_core_core_java",
       "//third_party/androidx:androidx_drawerlayout_drawerlayout_java",
       "//third_party/androidx:androidx_fragment_fragment_java",
@@ -33,8 +35,6 @@ if (!limit_android_deps) {
       "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java",
       "//third_party/androidx:androidx_media_media_java",
       "//third_party/androidx:androidx_recyclerview_recyclerview_java",
-      "//third_party/androidx:androidx_appcompat_appcompat_java",
-      "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
       "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",
       "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
     ]

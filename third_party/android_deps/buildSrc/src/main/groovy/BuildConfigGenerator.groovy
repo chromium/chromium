@@ -476,7 +476,7 @@ class BuildConfigGenerator extends DefaultTask {
             } else if (dep.id == 'com_google_android_material_material') {
                 // Material design is pulled in via doubledown, should
                 // use the variable instead of the real target.
-                depsStr += '"$material_design_target",'
+                depsStr += 'material_design_target,'
             } else if (excludeDependency(dep)) {
                 String thirdPartyDir = (dep.id.startsWith('androidx')) ? 'androidx' : 'android_deps'
                 depsStr += "\"//third_party/${thirdPartyDir}:${depTargetName}\","
