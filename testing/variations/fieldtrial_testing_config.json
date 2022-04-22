@@ -47,6 +47,21 @@
             ]
         }
     ],
+    "AllowHistoryDeletionForChildAccounts": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AllowHistoryDeletionForChildAccounts"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidContextualSearchM95": [
         {
             "platforms": [
