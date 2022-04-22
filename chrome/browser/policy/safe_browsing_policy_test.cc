@@ -22,9 +22,4 @@ bool SafeBrowsingPolicyTest::IsShowingInterstitial(content::WebContents* tab) {
          helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting();
 }
 
-void SafeBrowsingPolicyTest::WaitForInterstitial(content::WebContents* tab) {
-  ASSERT_TRUE(IsShowingInterstitial(tab));
-  ASSERT_TRUE(WaitForRenderFrameReady(tab->GetMainFrame()));
-}
-
 }  // namespace policy

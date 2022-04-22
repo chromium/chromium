@@ -140,12 +140,6 @@ bool IsShowingInterstitial(content::WebContents* tab) {
          nullptr;
 }
 
-// Waits until an interstitial is showing.
-void WaitForInterstitial(content::WebContents* tab) {
-  ASSERT_TRUE(IsShowingInterstitial(tab));
-  ASSERT_TRUE(WaitForRenderFrameReady(tab->GetMainFrame()));
-}
-
 // Inject a script into every frame in the active page. Used by tests that check
 // for visible password fields to wait for notifications about these fields.
 // Notifications about visible password fields are queued at the end of the
@@ -1281,7 +1275,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // An interstitial should show, and an event for the lock icon on the
   // interstitial should fire.
-  WaitForInterstitial(web_contents);
+  ASSERT_TRUE(IsShowingInterstitial(web_contents));
   EXPECT_EQ(security_state::SecurityLevel::DANGEROUS,
             observer.latest_security_level());
 
@@ -1295,7 +1289,7 @@ IN_PROC_BROWSER_TEST_F(
   // After going back to the interstitial, an event for a broken lock
   // icon should fire again.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), expired_url));
-  WaitForInterstitial(web_contents);
+  ASSERT_TRUE(IsShowingInterstitial(web_contents));
   EXPECT_EQ(security_state::SecurityLevel::DANGEROUS,
             observer.latest_security_level());
 
@@ -1346,7 +1340,7 @@ IN_PROC_BROWSER_TEST_F(DidChangeVisibleSecurityStateTest,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), https_url_different_host));
 
-  WaitForInterstitial(web_contents);
+  ASSERT_TRUE(IsShowingInterstitial(web_contents));
   EXPECT_EQ(security_state::SecurityLevel::DANGEROUS,
             observer.latest_security_level());
   ProceedThroughInterstitial(web_contents);

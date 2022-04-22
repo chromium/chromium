@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(NetworkTimePolicyTest,
   // network time query was not sent.
   ASSERT_TRUE(NavigateToUrl(https_server_expired_.GetURL("/"), this));
   content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
-  WaitForInterstitial(tab);
+  ASSERT_TRUE(IsShowingInterstitial(tab));
   EXPECT_EQ(0u, num_requests());
 
   // Now enable the policy and check that a network time query is sent.

@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
 
   // The page should initially be blocked.
   content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
-  WaitForInterstitial(tab);
+  ASSERT_TRUE(IsShowingInterstitial(tab));
 
   EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
       tab->GetMainFrame(), "proceed-link"));
