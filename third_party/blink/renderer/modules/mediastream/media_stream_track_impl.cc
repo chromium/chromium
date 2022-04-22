@@ -209,9 +209,7 @@ void DidCloneMediaStreamTrack(MediaStreamComponent* original,
 
   switch (clone->Source()->GetType()) {
     case MediaStreamSource::kTypeAudio:
-      // TODO(crbug.com/704136): Use per thread task runner.
-      MediaStreamUtils::CreateNativeAudioMediaStreamTrack(
-          clone, Thread::MainThread()->GetTaskRunner());
+      MediaStreamAudioSource::From(clone->Source())->ConnectToTrack(clone);
       break;
     case MediaStreamSource::kTypeVideo:
       CloneNativeVideoMediaStreamTrack(original, clone);

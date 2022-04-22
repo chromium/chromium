@@ -8,10 +8,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
-namespace base {
-class SingleThreadTaskRunner;
-}
-
 namespace blink {
 
 class MediaStreamComponent;
@@ -20,10 +16,6 @@ class MediaStreamUtils {
   STATIC_ONLY(MediaStreamUtils);
 
  public:
-  static void CreateNativeAudioMediaStreamTrack(
-      MediaStreamComponent*,
-      scoped_refptr<base::SingleThreadTaskRunner>);
-
   static void DidCreateMediaStreamTrack(MediaStreamComponent*);
 };
 

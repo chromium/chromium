@@ -32,20 +32,6 @@ void CreateNativeVideoMediaStreamTrack(MediaStreamComponent* component) {
 
 }  // namespace
 
-void MediaStreamUtils::CreateNativeAudioMediaStreamTrack(
-    MediaStreamComponent* component,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  MediaStreamSource* source = component->Source();
-  MediaStreamAudioSource* audio_source = MediaStreamAudioSource::From(source);
-
-  if (audio_source)
-    audio_source->ConnectToTrack(component);
-  else
-    LOG(DFATAL) << "MediaStreamSource missing its MediaStreamAudioSource.";
-}
-
-// TODO(crbug.com/704136): Change this method to take the task
-// runner instance, and use per thread task runner on the call site.
 void MediaStreamUtils::DidCreateMediaStreamTrack(
     MediaStreamComponent* component) {
   DCHECK(component);
@@ -54,8 +40,8 @@ void MediaStreamUtils::DidCreateMediaStreamTrack(
 
   switch (component->Source()->GetType()) {
     case MediaStreamSource::kTypeAudio:
-      CreateNativeAudioMediaStreamTrack(component,
-                                        Thread::MainThread()->GetTaskRunner());
+      MediaStreamAudioSource::From(component->Source())
+          ->ConnectToTrack(component);
       break;
     case MediaStreamSource::kTypeVideo:
       CreateNativeVideoMediaStreamTrack(component);
