@@ -1829,7 +1829,7 @@ int QuicStreamFactory::CreateSession(
       connection_id, quic::QuicSocketAddress(), ToQuicSocketAddress(addr),
       helper_.get(), alarm_factory_.get(), writer, true /* owns_writer */,
       quic::Perspective::IS_CLIENT, {quic_version});
-  connection->set_ping_timeout(ping_timeout_);
+  connection->set_keep_alive_ping_timeout(ping_timeout_);
   connection->SetMaxPacketLength(params_.max_packet_length);
 
   quic::QuicConfig config = config_;
