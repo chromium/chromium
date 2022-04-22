@@ -256,7 +256,7 @@ bool ValidateUnfencedTopNavigation(RenderFrameHostImpl* render_frame_host,
   // It should only be possible to send this IPC with this flag from an
   // MPArch opaque-ads fenced frame. Opaque-ads fenced frames should always
   // have the sandbox flag `allow-top-navigation-by-user-activation`.
-  if (!render_frame_host->IsInFencedFrameTree() ||
+  if (!render_frame_host->frame_tree_node()->IsInFencedFrameTree() ||
       !blink::features::IsFencedFramesMPArchBased() ||
       (render_frame_host->GetMainFrame()
            ->frame_tree_node()

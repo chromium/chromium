@@ -2451,20 +2451,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   void DidChangeReferrerPolicy(network::mojom::ReferrerPolicy referrer_policy);
 
-  // TODO: While FencedFrame shadow DOM implementation exists and is dependent
-  // on the effective frame policy in BrowsingContextState, fenced frame status
-  // is dependent on FrameTreeNode being initialized and associated with a
-  // RenderFrameHostImpl. However, it may need to be accessed before node
-  // initialization, which is the reason for these methods. For example,
-  // RenderFrameHostImpl needs to have access to the effective frame policy
-  // (which is stored in FrameReplicationState), and we need to call this
-  // inside RenderFrameHostImpl's constructor (where FrameTreeNode doesn't
-  // have current RenderFrameHost yet). Remove these methods when shadow DOM is
-  // also removed.
-  bool IsFencedFrameRootNoStatus();
-  bool IsInFencedFrameTree();
-
   float GetPageScaleFactor() const;
+
+  enum class FencedFrameStatus {
+    kNotNestedInFencedFrame,
+    kFencedFrameRoot,
+    kIframeNestedWithinFencedFrame
+  };
 
  protected:
   friend class RenderFrameHostFactory;
@@ -2635,12 +2628,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest, FrozenAndUnfrozenIPC);
 
   class SubresourceLoaderFactoriesConfig;
-
-  enum class FencedFrameStatus {
-    kNotNestedInFencedFrame,
-    kFencedFrameRoot,
-    kIframeNestedWithinFencedFrame
-  };
 
   FrameTreeNode* GetSibling(int relative_offset) const;
 

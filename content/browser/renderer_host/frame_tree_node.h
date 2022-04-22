@@ -718,6 +718,9 @@ class CONTENT_EXPORT FrameTreeNode {
   // partition will be used.
   absl::optional<base::UnguessableToken> fenced_frame_nonce_;
 
+  const RenderFrameHostImpl::FencedFrameStatus fenced_frame_status_ =
+      RenderFrameHostImpl::FencedFrameStatus::kNotNestedInFencedFrame;
+
   // Manages creation and swapping of RenderFrameHosts for this frame.
   //
   // This field needs to be declared last, because destruction of
