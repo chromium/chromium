@@ -10,6 +10,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 component("network_service") {
   sources = [
+    "brokered_client_socket_factory.cc",
+    "brokered_client_socket_factory.h",
     "chunked_data_pipe_upload_data_stream.cc",
     "chunked_data_pipe_upload_data_stream.h",
     "conditional_cache_deletion_helper.cc",
@@ -136,6 +138,8 @@ component("network_service") {
     "ssl_config_type_converter.h",
     "tcp_bound_socket.cc",
     "tcp_bound_socket.h",
+    "tcp_client_socket_brokered.cc",
+    "tcp_client_socket_brokered.h",
     "tcp_connected_socket.cc",
     "tcp_connected_socket.h",
     "tcp_server_socket.cc",
@@ -382,6 +386,7 @@ source_set("tests") {
     "socket_data_pump_unittest.cc",
     "ssl_config_service_mojo_unittest.cc",
     "tcp_bound_socket_unittest.cc",
+    "tcp_client_socket_brokered_unittest.cc",
     "tcp_socket_unittest.cc",
     "test/test_url_loader_factory_unittest.cc",
     "test_chunked_data_pipe_getter.cc",

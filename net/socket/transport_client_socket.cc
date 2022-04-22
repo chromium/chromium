@@ -19,4 +19,10 @@ bool TransportClientSocket::SetKeepAlive(bool enable, int delay_secs) {
   return false;
 }
 
+void TransportClientSocket::SetSocketCreatorForTesting(
+    base::RepeatingCallback<std::unique_ptr<net::TransportClientSocket>(void)>
+        socket_creator) {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace net
