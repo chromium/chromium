@@ -96,7 +96,8 @@ String ElementInnerTextCollector::RunOn(const Element& element) {
   // 1. If this element is locked or a part of a locked subtree, then it is
   // hidden from view (and also possibly not laid out) and innerText should be
   // empty.
-  if (DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(element))
+  if (DisplayLockUtilities::
+          LockedInclusiveAncestorPreventingPaintIgnoringDeferred(element))
     return {};
 
   // 2. If this element is not being rendered, or if the user agent is a non-CSS
@@ -266,7 +267,8 @@ void ElementInnerTextCollector::ProcessNode(const Node& node) {
 
   // 2. If the node is display locked, then we should not process it or its
   // children, since they are not visible or accessible via innerText.
-  if (DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(node))
+  if (DisplayLockUtilities::
+          LockedInclusiveAncestorPreventingPaintIgnoringDeferred(node))
     return;
 
   // 3. If node's computed value of 'visibility' is not 'visible', then return

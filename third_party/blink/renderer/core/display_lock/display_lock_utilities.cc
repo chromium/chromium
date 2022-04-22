@@ -480,6 +480,15 @@ const Element* DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(
       });
 }
 
+const Element*
+DisplayLockUtilities::LockedInclusiveAncestorPreventingPaintIgnoringDeferred(
+    const Node& node) {
+  return LockedInclusiveAncestorPreventingUpdate(
+      node, [](DisplayLockContext* context) {
+        return !context->ShouldPaintChildrenIncludingDeferred();
+      });
+}
+
 Element* DisplayLockUtilities::HighestLockedInclusiveAncestor(
     const Node& node) {
   if (node.IsShadowRoot())

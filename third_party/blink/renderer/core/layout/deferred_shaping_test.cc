@@ -558,4 +558,15 @@ TEST_F(DeferredShapingTest, ShapeResultCrash) {
   // Pass if no crashes.
 }
 
+TEST_F(DeferredShapingTest, InnerText) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px">Not-deferred</div>
+<div id="target">IFC</div>
+)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("target"));
+  EXPECT_TRUE(IsLocked("target"));
+  EXPECT_EQ("Not-deferred\nIFC", GetDocument().body()->innerText());
+}
+
 }  // namespace blink

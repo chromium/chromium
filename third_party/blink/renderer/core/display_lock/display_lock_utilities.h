@@ -210,6 +210,8 @@ class CORE_EXPORT DisplayLockUtilities {
       const LayoutObject& object);
   static const Element* LockedInclusiveAncestorPreventingPaint(
       const Node& node);
+  static const Element* LockedInclusiveAncestorPreventingPaintIgnoringDeferred(
+      const Node& node);
 
   // The following don't consider the passed argument as a valid lock (i.e. they
   // are exclusive checks).
