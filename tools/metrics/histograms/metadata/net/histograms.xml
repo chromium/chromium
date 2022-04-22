@@ -653,6 +653,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DNS.DnsConfig.Windows.Compatibility"
+    enum="DNS.WindowsCompatibility" expires_after="2022-10-19">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Enumeration of whether or not the DNS configuration setting of Windows is
+    considered compatible with Chrome and the reason why it is considered
+    incompatible. Reported whenever the DNS configuration setting of Windows is
+    read by Chrome.
+  </summary>
+</histogram>
+
 <histogram name="Net.DNS.DnsTask.AdditionalHttps.Requested"
     enum="UnsolicitedHttpsRecordStatus" expires_after="2022-08-14">
   <owner>ericorth@chromium.org</owner>

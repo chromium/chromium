@@ -21,6 +21,7 @@
 #include "base/memory/free_deleter.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -54,6 +55,30 @@ const wchar_t kDnscachePath[] =
     L"SYSTEM\\CurrentControlSet\\Services\\Dnscache\\Parameters";
 const wchar_t kPolicyPath[] =
     L"SOFTWARE\\Policies\\Microsoft\\Windows NT\\DNSClient";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DnsWindowsCompatibility {
+  kCompatible = 0,
+  kIncompatibleResolutionPolicy = 1,
+  kIncompatibleProxy = 1 << 1,
+  kIncompatibleVpn = 1 << 2,
+  kIncompatibleAdapterSpecificNameserver = 1 << 3,
+
+  KAllIncompatibleFlags = (1 << 4) - 1,
+  kMaxValue = KAllIncompatibleFlags
+};
+
+inline constexpr DnsWindowsCompatibility operator|(DnsWindowsCompatibility a,
+                                                   DnsWindowsCompatibility b) {
+  return static_cast<DnsWindowsCompatibility>(static_cast<int>(a) |
+                                              static_cast<int>(b));
+}
+
+inline DnsWindowsCompatibility& operator|=(DnsWindowsCompatibility& a,
+                                           DnsWindowsCompatibility b) {
+  return a = a | b;
+}
 
 // Wrapper for GetAdaptersAddresses to get unicast addresses.
 // Returns nullptr if failed.
@@ -306,6 +331,26 @@ absl::optional<std::vector<IPEndPoint>> GetNameServers(
   return nameservers;
 }
 
+bool CheckAndRecordCompatibility(bool have_name_resolution_policy,
+                                 bool have_proxy,
+                                 bool uses_vpn,
+                                 bool has_adapter_specific_nameservers) {
+  DnsWindowsCompatibility compatibility = DnsWindowsCompatibility::kCompatible;
+  if (have_name_resolution_policy)
+    compatibility |= DnsWindowsCompatibility::kIncompatibleResolutionPolicy;
+  if (have_proxy)
+    compatibility |= DnsWindowsCompatibility::kIncompatibleProxy;
+  if (uses_vpn)
+    compatibility |= DnsWindowsCompatibility::kIncompatibleVpn;
+  if (has_adapter_specific_nameservers) {
+    compatibility |=
+        DnsWindowsCompatibility::kIncompatibleAdapterSpecificNameserver;
+  }
+  base::UmaHistogramEnumeration("Net.DNS.DnsConfig.Windows.Compatibility",
+                                compatibility);
+  return compatibility == DnsWindowsCompatibility::kCompatible;
+}
+
 }  // namespace
 
 std::string ParseDomainASCII(base::WStringPiece widestr) {
@@ -430,8 +475,9 @@ absl::optional<DnsConfig> ConvertSettingsToDnsConfig(
     dns_config.use_local_ipv6 = true;
   }
 
-  if (settings.have_name_resolution_policy || settings.have_proxy || uses_vpn ||
-      has_adapter_specific_nameservers) {
+  if (!CheckAndRecordCompatibility(settings.have_name_resolution_policy,
+                                   settings.have_proxy, uses_vpn,
+                                   has_adapter_specific_nameservers)) {
     dns_config.unhandled_options = true;
   }
 

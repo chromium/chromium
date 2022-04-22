@@ -23697,6 +23697,33 @@ Called by update_debug_scenarios.py.-->
   <int value="3" label="Exhaustion of process-wide UDP socket limit"/>
 </enum>
 
+<enum name="DNS.WindowsCompatibility">
+  <int value="0" label="Compatible"/>
+  <int value="1" label="Incompatible resolution policy"/>
+  <int value="2" label="Incompatible proxy"/>
+  <int value="3" label="Incompatible resolution policy and proxy"/>
+  <int value="4" label="Incompatible VPN"/>
+  <int value="5" label="Incompatible resolution policy and VPN"/>
+  <int value="6" label="Incompatible proxy and VPN"/>
+  <int value="7" label="Incompatible resolution policy, proxy and VPN"/>
+  <int value="8" label="Incompatible adapter specific nameserver"/>
+  <int value="9"
+      label="Incompatible resolution policy and adapter specific nameserver"/>
+  <int value="10" label="Incompatible proxy and adapter specific nameserver"/>
+  <int value="11"
+      label="Incompatible resolution policy, proxy and adapter specific
+             nameserver"/>
+  <int value="12" label="Incompatible VPN and adapter specific nameserver"/>
+  <int value="13"
+      label="Incompatible resolution policy, VPN and adapter specific
+             nameserver"/>
+  <int value="14"
+      label="Incompatible proxy, VPN and adapter specific nameserver"/>
+  <int value="15"
+      label="Incompatible resolution policy, proxy, VPN and adapter specific
+             nameserver"/>
+</enum>
+
 <enum name="DNSEmptyAddressListAndNoError">
   <int value="0" label="Error reported or Address List is not empty"/>
   <int value="1" label="Success reported but Address List is empty"/>
