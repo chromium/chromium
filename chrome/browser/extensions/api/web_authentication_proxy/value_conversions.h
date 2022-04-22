@@ -42,6 +42,8 @@ base::Value ToValue(
 
 // Converts a `base::Value` encoding a `PublicKeyCredential` instance from a
 // WebAuthn `get()` request into a `MakeCredentialAuthenticatorResponse`.
+// Returns a pair of the converted message and an error string. The message will
+// be nullptr on error, and the error string empty on success.
 //
 // The input is expected to be a JSON-serialized `PublicKeyCredential` in which
 // ArrayBuffer-valued attributes are replaced by base64url-encoded strings. The
@@ -49,11 +51,13 @@ base::Value ToValue(
 //
 // TODO(crbug.com/1231802): Reference spec and update code to match once
 // https://github.com/w3c/webauthn/pull/1703 lands.
-blink::mojom::MakeCredentialAuthenticatorResponsePtr
+std::pair<blink::mojom::MakeCredentialAuthenticatorResponsePtr, std::string>
 MakeCredentialResponseFromValue(const base::Value& value);
 
 // Converts a `base::Value` encoding a `PublicKeyCredential` instance from a
-// WebAuthn `get()` request into a `GetAssertionAuthenticatorResponse`.
+// WebAuthn `get()` request into a `GetAssertionAuthenticatorResponse`. Returns
+// a pair of the converted message and an error string. The message will be
+// nullptr on error, and the error string empty on success.
 //
 // The input is expected to be a JSON-serialized `PublicKeyCredential` in which
 // ArrayBuffer-valued attributes are replaced by base64url-encoded strings. The
@@ -61,7 +65,7 @@ MakeCredentialResponseFromValue(const base::Value& value);
 //
 // TODO(crbug.com/1231802): Reference spec and update code to match once
 // https://github.com/w3c/webauthn/pull/1703 lands.
-blink::mojom::GetAssertionAuthenticatorResponsePtr
+std::pair<blink::mojom::GetAssertionAuthenticatorResponsePtr, std::string>
 GetAssertionResponseFromValue(const base::Value& value);
 
 }  // namespace extensions::webauthn_proxy

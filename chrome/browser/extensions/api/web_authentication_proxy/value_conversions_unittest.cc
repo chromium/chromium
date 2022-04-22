@@ -181,9 +181,8 @@ TEST(WebAuthenticationProxyValueConversionsTest,
       deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
   ASSERT_TRUE(value) << deserialize_error;
 
-  MakeCredentialAuthenticatorResponsePtr response =
-      MakeCredentialResponseFromValue(*value);
-  ASSERT_TRUE(response);
+  auto [response, error] = MakeCredentialResponseFromValue(*value);
+  ASSERT_TRUE(response) << error;
 
   auto expected = MakeCredentialAuthenticatorResponse::New(
       CommonCredentialInfo::New(kIdB64Url, kId, kClientDataJson,
@@ -266,9 +265,8 @@ TEST(WebAuthenticationProxyValueConversionsTest,
       deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
   ASSERT_TRUE(value) << deserialize_error;
 
-  GetAssertionAuthenticatorResponsePtr response =
-      GetAssertionResponseFromValue(*value);
-  ASSERT_TRUE(response);
+  auto [response, error] = GetAssertionResponseFromValue(*value);
+  ASSERT_TRUE(response) << error;
 
   auto expected = GetAssertionAuthenticatorResponse::New(
       CommonCredentialInfo::New(kIdB64Url, kId, kClientDataJson,

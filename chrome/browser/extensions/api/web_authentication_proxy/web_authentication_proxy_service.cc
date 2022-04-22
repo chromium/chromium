@@ -219,10 +219,10 @@ void WebAuthenticationProxyService::OnParseCreateResponse(
         .Run("Parsing responseJson failed: " + *value_or_error.error);
     return;
   }
-  blink::mojom::MakeCredentialAuthenticatorResponsePtr response =
+  auto [response, error] =
       webauthn_proxy::MakeCredentialResponseFromValue(*value_or_error.value);
   if (!response) {
-    std::move(respond_callback).Run("Invalid responseJson");
+    std::move(respond_callback).Run("Invalid responseJson: " + error);
     return;
   }
 
@@ -250,10 +250,10 @@ void WebAuthenticationProxyService::OnParseGetResponse(
         .Run("Parsing responseJson failed: " + *value_or_error.error);
     return;
   }
-  blink::mojom::GetAssertionAuthenticatorResponsePtr response =
+  auto [response, error] =
       webauthn_proxy::GetAssertionResponseFromValue(*value_or_error.value);
   if (!response) {
-    std::move(respond_callback).Run("Invalid responseJson");
+    std::move(respond_callback).Run("Invalid responseJson: " + error);
     return;
   }
 
