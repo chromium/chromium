@@ -77,6 +77,7 @@
 <translation id="1717874160321062422">A következők kezelik: <ph name="FIRST_MANAGER" /> és <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Névszerverek</translation>
 <translation id="1731082422893354635">Bluetooth-érintőpad</translation>
+<translation id="1751249301761991853">Személyes</translation>
 <translation id="1753496554272155572">Kilépés a háttérkép előnézetéből</translation>
 <translation id="175763766237925754">Jó (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -496,6 +497,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6472207088655375767">Egyszer használatos jelszó</translation>
 <translation id="6480327114083866287">Kezelő: <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Leállt – Papírelakadás</translation>
+<translation id="6494974875566443634">Személyre szabás</translation>
 <translation id="6500818810472529210">Az eredmény megtekintése a Google Keresőben</translation>
 <translation id="650266656685499220">Albumok létrehozásához nyissa meg a Google Fotók szolgáltatást</translation>
 <translation id="6516990319416533844">Az akkumulátor töltési sebességének teszteléséhez egy kis ideig hagyja merülni az akkumulátort</translation>

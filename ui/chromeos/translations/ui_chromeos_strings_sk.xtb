@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">Hebrejská klávesnica (prepis)</translation>
 <translation id="1747761757048858544">Holandská (Holandsko) klávesnica</translation>
 <translation id="174937106936716857">Celkový počet súborov</translation>
+<translation id="1755345808328621801">Tento súbor je určený pre počítač so softvérom Windows. Nie je kompatibilný s vaším zariadením so systémom Chrome OS. Nájdite vhodnú náhradnú aplikáciu v Internetovom obchode Chrome.</translation>
 <translation id="1773212559869067373">Certifikát na overenie totožnosti bol zamietnutý miestne</translation>
 <translation id="1775381402323441512">Informácie o videu</translation>
 <translation id="180035236176489073">Ak chcete pristupovať k týmto súborom, musíte byť online.</translation>
@@ -225,6 +226,7 @@
 <translation id="2943503720238418293">Použite kratší názov</translation>
 <translation id="2949781154072577687">Disk <ph name="DRIVE_NAME" /> sa formátuje...</translation>
 <translation id="2951236788251446349">Medúza</translation>
+<translation id="2977940621473452797">Tento súbor je určený pre počítač so softvérom Macintosh. Nie je kompatibilný s vaším zariadením so systémom Chrome OS. Nájdite vhodnú náhradnú aplikáciu v Internetovom obchode Chrome.</translation>
 <translation id="2984337792991268709">Dnes o <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Obnovujú sa položky (<ph name="COUNT" />)…</translation>
 <translation id="2994669386200004489"><ph name="FILE_NAME" /> sa nepodarilo zálohovať</translation>
@@ -422,6 +424,7 @@
 <translation id="4694604912444486114">Opica</translation>
 <translation id="469612310041132144">Čínska klávesnica Quick</translation>
 <translation id="4697043402264950621">Zoznam súborov je usporiadaný podľa stĺpca <ph name="COLUMN_NAME" /> vo vzostupnom poradí.</translation>
+<translation id="469897186246626197">Tento súbor je určený pre počítač so softvérom Windows. Nie je kompatibilný s vaším zariadením so systémom Chrome OS. Prečítajte si viac o <ph name="BEGIN_LINK_HELP" />otváraní súborov v systéme Chrome OS<ph name="END_LINK_HELP" />.</translation>
 <translation id="4706042980341760088">Tamilská klávesnica s rozložením Typewriter</translation>
 <translation id="4711094779914110278">Turečtina</translation>
 <translation id="4712283082407695269">Otvára sa <ph name="PATH" /></translation>
@@ -543,6 +546,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5602622065581044566">Bulharská fonetická klávesnica</translation>
 <translation id="5605830556594064952">Americká klávesnica s rozložením klávesov Dvorak</translation>
+<translation id="5618330573454123917">Tento súbor je určený pre počítač so softvérom Macintosh. Nie je kompatibilný s vaším zariadením so systémom Chrome OS. Prečítajte si viac o <ph name="BEGIN_LINK_HELP" />otváraní súborov v systéme Chrome OS<ph name="END_LINK_HELP" />.</translation>
 <translation id="5625294776298156701">Tamilská klávesnica s rozložením Tamil99</translation>
 <translation id="5633226425545095130">Ak presuniete túto položku, budete ju zdieľať so všetkými používateľmi, ktorí vidia zdieľaný priečinok <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Počúvať</translation>
@@ -738,6 +742,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7309413087278791451">Nemecká (Belgicko) klávesnica</translation>
 <translation id="7339898014177206373">Nové okno</translation>
 <translation id="7343393116438664539">Vietnamská klávesnica s rozložením Telex</translation>
+<translation id="7357762654218998920">Tento typ súboru nie je podporovaný. Prečítajte si viac o <ph name="BEGIN_LINK_HELP" />otváraní súborov v systéme Chrome OS<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347">Kopíruje sa viacero položiek (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="7375951387215729722">Zoznam súborov je usporiadaný podľa stĺpca <ph name="COLUMN_NAME" /> v zostupnom poradí.</translation>
 <translation id="7402503521691663770">Zariadenia so systémom Chrome OS Flex</translation>

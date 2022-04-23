@@ -137,6 +137,7 @@
 <translation id="1697284962337958118">ഇതിലേക്ക് ചേര്‍‌ക്കുക</translation>
 <translation id="1702543251015153180">നിങ്ങളുടെ ഡാർക്ക് തീം ക്രമീകരണം മാറ്റണോ?</translation>
 <translation id="1702907158640575240">മാനേജ് ചെയ്യുന്ന ബ്രൗസർ</translation>
+<translation id="1710099199314114079">ടാബുകൾ മാറുക അല്ലെങ്കിൽ അടയ്ക്കുക</translation>
 <translation id="1718835860248848330">കഴിഞ്ഞ മണിക്കൂര്‍‌</translation>
 <translation id="1724977129262658800">നിങ്ങളുടെ പാസ്‍വേഡ് എഡിറ്റ് ചെയ്യാൻ അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="1726477445370128854">നിങ്ങൾ സന്ദർശിക്കുമെന്ന് കരുതുന്ന പേജുകൾ Chrome മുൻകൂട്ടി ലോഡ് ചെയ്യുമ്പോൾ നിങ്ങൾക്ക് അതിവേഗം ബ്രൗസ് ചെയ്യാനും തിരയാനുമാകും.</translation>
@@ -950,6 +951,7 @@
 <translation id="6324997754869598316">(പിശക് <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> വഴി പങ്കിടുക</translation>
 <translation id="6337234675334993532">എന്‍ക്രിപ്ഷന്‍</translation>
+<translation id="6340910702212418132">Password Manager <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
 <translation id="6341580099087024258">ഫയലുകൾ എവിടെയാണ് സംരക്ഷിക്കേണ്ടതെന്ന് ചോദിക്കുക</translation>
 <translation id="6342069812937806050">ഇപ്പോള്‍‌</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> പേയ്‌മെന്റ് രീതികളും}}</translation>

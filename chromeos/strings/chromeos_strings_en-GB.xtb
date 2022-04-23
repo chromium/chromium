@@ -77,6 +77,7 @@
 <translation id="1717874160321062422">Managed by <ph name="FIRST_MANAGER" /> and <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Name servers</translation>
 <translation id="1731082422893354635">Bluetooth touchpad</translation>
+<translation id="1751249301761991853">Personal</translation>
 <translation id="1753496554272155572">Exit wallpaper preview</translation>
 <translation id="175763766237925754">Good (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -498,6 +499,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Managed by <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Stopped – paper jam</translation>
+<translation id="6494974875566443634">Customisation</translation>
 <translation id="6500818810472529210">See result in Google Search</translation>
 <translation id="650266656685499220">To create albums, go to Google Photos</translation>
 <translation id="6516990319416533844">To test battery charging rate, let your battery drain for a short period</translation>

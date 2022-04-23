@@ -10,6 +10,7 @@
 <translation id="110877069173485804">हा तुमचा Chrome आहे</translation>
 <translation id="1125124144982679672">Chrome कोण वापरत आहे?</translation>
 <translation id="1142745911746664600">Chrome अपडेट करू शकत नाही</translation>
+<translation id="1152920704813762236">ChromeOS बद्दल</translation>
 <translation id="1154147086299354128">Chrome मध्‍ये &amp;उघडा</translation>
 <translation id="1178374936842835197">या पेजवर सेटिंग दिसत नसल्यास, तुमची <ph name="LINK_BEGIN" />
         ChromeOS Flex सेटिंग्ज<ph name="LINK_END" /> यामध्ये पहा</translation>
@@ -17,6 +18,7 @@
 <translation id="1278833599417554002">&amp;Chrome अपडेट करण्यासाठी पुन्हा लाँच करा</translation>
 <translation id="1302523850133262269">कृपया Chrome नवीनतम सिस्टम अपडेट इंस्टॉल करताना प्रतीक्षा करा.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> नुसार तुम्ही हे डिव्हाइस वापरण्यापूर्वी खालील सेवा अटी वाचणे आणि स्वीकारणे आवश्यक आहे. या अटी Google ChromeOS Flex अटींचा विस्तार करत नाहीत, त्यामध्ये सुधारणा करत नाहीत किंवा त्या मर्यादित करत नाहीत.</translation>
+<translation id="1363996462118479832">साइन इन करताना एरर आल्यामुळे, ChromeOS ला तुमचा डेटा सिंक करता आला नाही.</translation>
 <translation id="137466361146087520">Google Chrome बीटा</translation>
 <translation id="1399397803214730675">या कॉंप्युटरत आधीपासून Google Chrome ची अगदी अलिकडील आवृत्ती आहे. सॉफ्टवेअर काम करत नसल्यास, कृपया Google Chrome अनइंस्टॉल करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="139993653570221430">तुम्हाला हवे, तेव्हा तुम्ही Chrome सेटिंग्जमध्ये हे बदलू शकता. चाचण्या सध्याच्या जाहिराती ज्या पद्धतीने दाखवल्या जातात त्यासोबत रन केल्या जातात, त्यामुळे तुम्हाला लगेच बदल दिसणार नाहीत.</translation>
@@ -24,6 +26,7 @@
 <translation id="1507198376417198979">तुमची नवीन Chrome प्रोफाइल कस्टमाइझ करा</translation>
 <translation id="1516530951338665275">पेअर करणे पुढे सुरू ठेवण्यासाठी, Google Chrome ला ब्लूटूथ ॲक्सेस करण्याची 
  आवश्यकता आहे. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1547295885616600893">ChromeOS हे अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />मुक्त स्रोत सॉफ्टवेअर<ph name="END_LINK_CROS_OSS" /> याद्वारे तयार करण्यात आले आहे.</translation>
 <translation id="1553358976309200471">Chrome अपडेट करा</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> यांनी आधीपासून या Chrome प्रोफाइलमध्ये साइन इन केलेले आहे. हे <ph name="USER_EMAIL_ADDRESS" /> साठी नवीन Chrome प्रोफाइल तयार करेल</translation>
 <translation id="1587223624401073077">Google Chrome तुमचा कॅमेरा वापरत आहे.</translation>
@@ -59,6 +62,7 @@
 <translation id="2121284319307530122">&amp;Chrome अपडेट करण्यासाठी पुन्हा लाँच करा</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />वर्तमान सेटिंग्ज<ph name="END_LINK" /> चा अहवाल देऊन Chrome ला आणखी चांगले बनवण्यात मदत करा</translation>
 <translation id="2131230230468101642">तुमच्या गोपनीयतेचे संरक्षण करण्यासाठी, आम्ही तुमची चार आठवड्यांपेक्षा जुनी स्वारस्ये ऑटो-डिलीट करतो. तुम्ही ब्राउझ करत राहाल, तसे सूचीमध्ये स्वारस्य पुन्हा दिसू शकते. किंवा Chrome ने विचारात घेऊ नये असे तुम्हाला वाटत असलेली स्वारस्ये तुम्ही काढून टाकू शकता.</translation>
+<translation id="2139300032719313227">ChromeOS रीस्टार्ट करा</translation>
 <translation id="2151406531797534936">कृपया आता Chrome रीस्टार्ट करा</translation>
 <translation id="2258103955319320201">तुमच्या Chrome ब्राउझरवरील आशय तुमच्या सर्व डिव्हाइसवर अ‍ॅक्सेस करण्यासाठी साइन इन करा, त्यानंतर सिंक सुरू करा</translation>
 <translation id="2290014774651636340">Google API की गहाळ आहेत. Google Chrome ची काही कार्यक्षमता अक्षम केली जाईल.</translation>
@@ -69,6 +73,7 @@
 <translation id="234869673307233423">Chrome तुमचे पासवर्ड तपासू शकत नाही. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="235650106824528204">या प्रोफाइलच्या वापरादरम्यान जनरेट केला गेलेला कोणताही Chrome डेटा (जसे की बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्जची निर्मिती) कार्य प्रोफाइल अ‍ॅडमिनिस्ट्रेटरला हटवता येतो. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">सुरू ठेवा</translation>
+<translation id="2401189691232800402">ChromeOS सिस्टीम</translation>
 <translation id="2429317896000329049">आपल्या डोमेनसाठी सिंक उपलब्ध नसल्यामुळे Google Chrome तुमचा डेटा संकालित करू शकले नाही.</translation>
 <translation id="2467438592969358367">Google Chrome ला तुमचे पासवर्ड निर्यात करायचे आहेत. हे करू देण्यासाठी तुमचा Windows पासवर्ड टाइप करा.</translation>
 <translation id="2485422356828889247">अनइंस्टॉल करा</translation>
@@ -79,6 +84,7 @@
 <translation id="2580411288591421699">सध्या चालत असलेली Google Chrome ची समान आवृत्ती इंस्टॉल करू शकत नाही. कृपया Google Chrome बंद करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="2586406160782125153">हे या डिव्‍हाइस मधून तुमचा ब्राउझिंग डेटा हटवेल. नंतर तुमचा डेटा पुनर्प्राप्त करण्‍यासाठी, Chrome मध्ये <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>
 <translation id="2622559029861875898">Chrome अपडेट तपासू शकत नाही. तुमचे इंटरनेट कनेक्शन तपासून पहा.</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2652691236519827073">लिंक नवीन Chrome &amp;टॅबमध्ये उघडा</translation>
 <translation id="2665296953892887393">Google कडे क्रॅश अहवाल आणि <ph name="UMA_LINK" /> पाठवून Google Chrome ला अधिक चांगले बनवण्यात मदत करा</translation>
 <translation id="2689103672227170538">तुम्ही Chrome सुरू करता तेव्हा कोणते पेज दर्शविले जाते हे या एक्स्टेंशनने बदलले आहे.</translation>
@@ -120,6 +126,7 @@
 <translation id="3434246496373299699">तुम्ही तुमचे Google खाते वापरून साइन इन करता तेव्हा, Chrome तुमचे पासवर्ड तपासू शकते</translation>
 <translation id="3451115285585441894">Chrome मध्‍ये जोडत आहे...</translation>
 <translation id="345171907106878721">Chrome वर आपल्या स्वतःस जोडा</translation>
+<translation id="3453763134178591239">ChromeOS अटी</translation>
 <translation id="34857402635545079">Chrome (<ph name="URL" />) वरील डेटा देखील साफ करा</translation>
 <translation id="3503306920980160878">तुमचे स्थान या साइटसोबत शेअर करण्यासाठी Chrome ला तुमच्या स्थानाचा अ‍ॅक्सेस हवा आहे</translation>
 <translation id="3533694711092285624">सेव्ह केलेले पासवर्ड नाहीत. तुम्ही तुमचे पासवर्ड सेव्ह केल्यावर Chrome ते तपासू शकते.</translation>
@@ -129,16 +136,20 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{अपडेट लागू करता यावे यासाठी तुम्ही Chrome पुन्हा लाँच करण्याची तुमच्या ॲडमिनिस्ट्रेटरला गरज आहे}=1{अपडेट लागू करता यावे यासाठी तुम्ही Chrome पुन्हा लाँच करण्याची तुमच्या ॲडमिनिस्ट्रेटरला गरज आहे. तुमची गुप्त विंडो पुन्हा उघडणार नाही.}other{अपडेट लागू करता यावे यासाठी तुम्ही Chrome पुन्हा लाँच करण्याची तुमच्या ॲडमिनिस्ट्रेटरला गरज आहे. तुमच्या # गुप्त विंडो पुन्हा उघडणार नाहीत.}}</translation>
 <translation id="3622797965165704966">आता आपल्या Google खात्यावर आणि शेअर केलेल्या संगणकांवर Chrome वापरणे अधिक सुलभ आहे.</translation>
 <translation id="3673813398384385993">Chrome ला "<ph name="EXTENSION_NAME" />" मध्ये मालवेअर असल्याचे आढळले</translation>
+<translation id="3703994572283698466">ChromeOS हे <ph name="BEGIN_LINK_LINUX_OSS" />Linux डेव्हलपमेंट पद्धत<ph name="END_LINK_LINUX_OSS" /> यासारखे अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />मुक्त स्रोत सॉफ्टवेअर<ph name="END_LINK_CROS_OSS" /> याद्वारे तयार करण्यात आले आहे.</translation>
 <translation id="3716540481907974026">ChromeOS Flex आवृत्ती</translation>
 <translation id="3718181793972440140">हे या डिव्‍हाइस मधून 1 आयटम हटवेल. नंतर तुमचा डेटा पुनर्प्राप्त करण्‍यासाठी, Chrome मध्ये <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>
 <translation id="3735758079232443276">तुम्ही Chrome सुरू करता तेव्हा कोणते पेज दर्शविले जाते हे "<ph name="EXTENSION_NAME" />" एक्स्टेंशनने बदलले आहे.</translation>
+<translation id="3744202345691150878">ChromeOS शी संबंधित मदत मिळवा</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">साइन इन करताना एरर आल्यामुळे ChromeOS Flex ला तुमचा डेटा सिंक करता आला नाही.</translation>
+<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3835168907083856002">हे <ph name="USER_EMAIL_ADDRESS" /> साठी नवीन Chrome प्रोफाइल तयार करेल</translation>
 <translation id="386202838227397562">कृपया सर्व Google Chrome विंडो बंद करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="3865754807470779944">Chrome आवृत्ती <ph name="PRODUCT_VERSION" /> इंस्टॉल केली आहे</translation>
 <translation id="3873044882194371212">लिंक Chrome गुप्त विंडोमध्ये उघडा</translation>
 <translation id="3889417619312448367">Google Chrome अनइंस्टॉल करा</translation>
+<translation id="4035053306113201399">अपडेट लागू करण्यासाठी ChromeOS रीस्टार्ट करणे आवश्यक आहे.</translation>
 <translation id="4050175100176540509">नवीनतम आवृत्तीमध्‍ये महत्त्वाच्या सुरक्षितता सुधारणा आणि नवीन वैशिष्ट्ये उपलब्‍ध आहेत.</translation>
 <translation id="4053720452172726777">Google Chrome कस्टमाइझ करा आणि नियंत्रित करा</translation>
 <translation id="4106587138345390261">Chrome नवीन वैशिष्‍ट्ये एक्सप्लोर करत आहे, ज्यामुळे साइटना तुमची कमी माहिती वापरून समान ब्राउझिंग अनुभव देता येतो</translation>
@@ -182,8 +193,10 @@
 <translation id="495931528404527476">Chrome मध्ये</translation>
 <translation id="4969674060580488087">तुमच्या खात्याचे साइन-इन तपशील कालबाह्य झाल्यामुळे ChromeOS Flex ला तुमचा डेटा सिंक करता आला नाही.</translation>
 <translation id="4970761609246024540">Chrome प्रोफाइलमध्ये स्वागत आहे</translation>
+<translation id="4970880042055371251">ChromeOS ची आवृत्ती</translation>
 <translation id="4990567037958725628">Google Chrome कॅनरी</translation>
 <translation id="5037581483200764584">भविष्यातील Google Chrome अपडेट मिळवण्यासाठी, तुमच्याकडे macOS 10.13 किंवा त्यानंतरची आवृत्ती असणे आवश्यक आहे. हा कॉंप्युटर OS X 10.11 ही आवृत्ती वापरत आहे.</translation>
+<translation id="5112116809696021727">तुमचे डिव्हाइस अप टू डेट आहे का हे पाहण्यासाठी, <ph name="LINK_BEGIN" />ChromeOS सेटिंग्ज<ph name="LINK_END" /> वर जा</translation>
 <translation id="5132929315877954718">Google Chrome साठी उत्कृष्ट ॲप, खेळ, विस्तार आणि थीम शोधा.</translation>
 <translation id="5139423532931106058">तुमची Chrome प्रोफाइल कस्टमाइझ करा</translation>
 <translation id="5163087008893166964">Chrome मध्ये स्वागत आहे; नवीन ब्राउझर विंडो उघडली</translation>
@@ -191,7 +204,9 @@
 काही वैशिष्‍ट्ये अनुपलब्ध असू शकतात. कृपया एक भिन्न प्रोफाइल डिरेक्टरी नमूद करा किंवा Google Chrome ची नवीनतम आवृत्ती वापरा.</translation>
 <translation id="521447420733633466">तुम्ही डिव्हाइस शेअर केल्यास, मित्रमैत्रिणी आणि कुटुंब स्वतंत्रपणे ब्राउझ करू शकतात आणि त्यांना हवे तसे Chrome सेट करू शकतात</translation>
 <translation id="5251420635869119124">अतिथी कोणतीही गोष्ट मागे न सोडता Chrome वापरू शकतात.</translation>
+<translation id="5334309298019785904">तुमच्या डोमेनसाठी सिंक करणे उपलब्ध नसल्यामुळे, ChromeOS ला तुमचा डेटा सिंक करता आला नाही.</translation>
 <translation id="5334487786912937552">Chrome ला फाइल डाउनलोड करण्यासाठी स्टोरेज ॲक्सेस करण्याची परवानगी आवश्यक आहे.</translation>
+<translation id="5337648990166757586">पर्यायी: Google ला निदान आणि वापर डेटा आपोआप पाठवून, ChromeOS च्या वैशिष्‍ट्यांमध्ये व परफॉर्मन्समध्ये सुधारणा करण्यात मदत करा.</translation>
 <translation id="5357889879764279201">ChromeOS Flex शी संबंधित मदत मिळवा</translation>
 <translation id="5386244825306882791">तुम्ही Chrome सुरू करता किंवा ओम्निबॉक्समधून शोध घेता तेव्हा कोणते पृष्ठ दर्शविले जाते हेदेखील हे नियंत्रित करते.</translation>
 <translation id="5394833366792865639">Chrome टॅब शेअर करा</translation>
@@ -219,6 +234,8 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - नेटवर्क साइन इन</translation>
 <translation id="5940385492829620908">तुमचे वेब, बुकमार्क आणि अन्य Chrome आशय येथे थेट आहे.</translation>
 <translation id="5941830788786076944">Google Chromeला डीफॉल्ट ब्राउझर बनवा</translation>
+<translation id="5959292945051687759">या पेजवर एखादे सेटिंग दिसत नसल्यास, तुमची <ph name="LINK_BEGIN" />
+        ChromeOS सेटिंग्ज<ph name="LINK_END" /> यामध्ये पहा</translation>
 <translation id="6070348360322141662">अतिरिक्त सुरक्षिततेसाठी, Google Chrome तुमचा डेटा एंक्रिप्ट करेल</translation>
 <translation id="608006075545470555">या ब्राउझरवर कार्य प्रोफाइल जोडा</translation>
 <translation id="6113794647360055231">Chrome आता उत्कृष्ट झाले आहे</translation>
@@ -245,6 +262,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="683440813066116847">mDNS रहदारीस अनुमती देण्यासाठी Google Chrome कॅनरी साठी अंतर्गामी नियम.</translation>
 <translation id="6881299373831449287">Chrome अपडेट करत आहे</translation>
 <translation id="6885412569789873916">Chrome बीटा ॲप</translation>
+<translation id="6933858244219479645">ChromeOS सिस्टीम</translation>
 <translation id="6943584222992551122">या व्यक्तीचा ब्राउझिंग डेटा या डिव्हाइसवरून हटवला जाईल. डेटा रीकव्हर करण्यासाठी, Chrome वर <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>
 <translation id="6967962315388095737">Google Chrome बीटाचा mDNS रहदारीस अनुमती देण्यासाठी इनबाउंड नियम.</translation>
 <translation id="6989339256997917931">Google Chrome अपडेट केला गेला, परंतु तुम्ही तो किमान 30 दिवसांपासून वापरलेला नाही.</translation>
@@ -256,6 +274,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7085332316435785646">Google सेवांमध्ये आणखी पर्सनलाइझ केलेल्या अनुभवासाठी Chrome इतिहासाचा समावेश करायचा की नाही हे ठरवा</translation>
 <translation id="7088681679121566888">Chrome अप टू डेट आहे</translation>
 <translation id="7098166902387133879">Google Chrome तुमचा मायक्रोफोन वापरत आहे.</translation>
+<translation id="7099479769133613710">&amp;ChromeOS अपडेट करण्यासाठी पुन्हा लाँच करा</translation>
 <translation id="7106741999175697885">टास्क मॅनेजर – Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome चे नवीन अपडेट उपलब्ध आहे आणि तुम्ही ते पुन्हा लाँच करताच लागू केले जाईल.}=1{Chrome चे नवीन अपडेट उपलब्ध आहे आणि तुम्ही ते पुन्हा लाँच करताच लागू केले जाईल. तुमची गुप्त विंडो पुन्हा उघडणार नाही.}other{Chrome चे नवीन अपडेट उपलब्ध आहे आणि तुम्ही ते पुन्हा लाँच करताच लागू केले जाईल. तुमच्या # गुप्त विंडो पुन्हा उघडणार नाहीत.}}</translation>
 <translation id="7155997830309522122">कृपया Chrome मध्ये सेव्ह केलेला तुमचा पासवर्ड संपादित करा जेणेकरून तो नवीन पासवर्डशी जुळेल.</translation>
@@ -277,6 +296,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7592736734348559088">तुमचे खाते साइन इन तपशील कालबाह्य झाल्यामुळे Google Chrome तुमचा डेटा संकालित करू शकले नाही.</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Chrome मध्ये स्वागत आहे</translation>
+<translation id="7626072681686626474"><ph name="MANAGER" /> नुसार, तुम्ही हे डिव्हाइस वापरण्यापूर्वी खालील सेवा अटी वाचणे आणि स्वीकारणे आवश्यक आहे. या अटी Google ChromeOS अटी यांचा विस्तार करत नाहीत, त्यामध्ये सुधारणा करत नाहीत किंवा त्या मर्यादित करत नाहीत.</translation>
 <translation id="7629695634924605473">तुमचे पासवर्ड कधीही धोक्यात असल्यास, Chrome तुम्हाला कळवते</translation>
 <translation id="7641148173327520642">तुमच्या सिस्टम अ‍ॅडमिनिस्ट्रेटरने <ph name="TARGET_URL_HOSTNAME" /> अ‍ॅक्सेस करण्यासाठी <ph name="ALTERNATIVE_BROWSER_NAME" /> उघडण्याकरिता Google Chrome कॉंफिगर केले आहे.</translation>
 <translation id="7651907282515937834">Chrome एंटरप्राइझ लोगो</translation>
@@ -313,6 +333,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="8394720698884623075">Chrome मध्ये स्टोअर केलेल्या असुरक्षित साइटच्या सूचीसह URLs तपासते</translation>
 <translation id="840084489713044809">Google Chrome ला तुमचे पासवर्ड एक्सपोर्ट करायचे आहेत.</translation>
 <translation id="8416347857511542594">Chrome मध्ये जाहिरात पर्सनलायझेशनबद्दल अधिक जाणून घ्या</translation>
+<translation id="8418845734693287262">तुमच्या खात्याचे साइन-इन तपशील कालबाह्य झाल्यामुळे, ChromeOS ला तुमचा डेटा सिंक करता आला नाही.</translation>
 <translation id="8421734018304082652">ही फाइल एंक्रिप्ट केलेली असल्याने, Chrome ने ती ब्लॉक केली. तिच्या मालकाला ती डीक्रिप्ट करण्यास सांगा</translation>
 <translation id="8433638294851456451">येथून तुमच्या Android फोनवर नंबर पाठवण्यासाठी, दोन्ही डिव्हाइसवर Chrome मध्ये साइन इन करा.</translation>
 <translation id="8498858610309223613">Google Chrome साठी आत्ताच एक विशिष्ट सुरक्षितता अपडेट लागू करण्यात आला. आता रीस्टार्ट करा आणि आम्ही तुमचे टॅब रिस्टोअर करू.</translation>

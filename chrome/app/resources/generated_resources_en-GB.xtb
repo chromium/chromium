@@ -134,6 +134,7 @@
 <translation id="1125550662859510761">Looks like <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Native)</translation>
 <translation id="1126809382673880764">Does not protect you against dangerous websites, downloads and extensions. You’ll still get Safe Browsing protection, where available, in other Google services, like Gmail and Search.</translation>
 <translation id="1128591060186966949">Edit search engine</translation>
+<translation id="1129420403709586868">View your phone's photos and media</translation>
 <translation id="1129850422003387628">Manage apps</translation>
 <translation id="113050636487300043">Choose a name and colour theme to differentiate between profiles</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – Part of group <ph name="GROUP_NAME" /></translation>
@@ -210,6 +211,7 @@
 <translation id="1195558154361252544">Notifications are automatically blocked for all sites except ones that you allow</translation>
 <translation id="1197088940767939838">Orange</translation>
 <translation id="1197199342062592414">Let’s get started</translation>
+<translation id="11978075283960463">Data stored in app: <ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">Deactivate</translation>
 <translation id="119944043368869598">Clear all</translation>
 <translation id="1199814941632954229">Certificates are being provisioned for these certificate profiles</translation>
@@ -418,6 +420,7 @@
 <translation id="1414648216875402825">You are updating to an unstable version of <ph name="PRODUCT_NAME" /> which contains features that are in progress. Crashes and unexpected bugs will occur. Please proceed with caution.</translation>
 <translation id="1415708812149920388">Clipboard read access denied</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (extension ID "<ph name="EXTENSION_ID" />") is not allowed in this type of session.</translation>
+<translation id="1418552618736477642">Notifications and apps</translation>
 <translation id="1418954524306642206">Browse to specify your printer PPD</translation>
 <translation id="1420834118113404499">Media licences</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> to allow pairing</translation>
@@ -1591,7 +1594,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2470702053775288986">Unsupported extensions disabled</translation>
 <translation id="2471469610750100598">Black (default)</translation>
 <translation id="2471506181342525583">Location access allowed</translation>
-<translation id="247208220409682803">The list of sites that define your interests is deleted and refreshed each month. A site that you visit again might appear on the list again. Or you can remove a site if you don't want that site to ever define interests for you.</translation>
 <translation id="2473195200299095979">Translate this page</translation>
 <translation id="2475982808118771221">An error occurred</translation>
 <translation id="2476578072172137802">Site settings</translation>
@@ -2039,6 +2041,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2897878306272793870">Are you sure that you want to open <ph name="TAB_COUNT" /> tabs?</translation>
 <translation id="2900477968385519153">Search Your Screen with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">File uses unsupported features</translation>
+<translation id="2901348420151309559">Recent photos and apps</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> could not communicate with this printer. Make sure that the printer is plugged in and try again.</translation>
 <translation id="2902265136119311513">Browsing as a guest</translation>
 <translation id="2902312830803030883">More actions</translation>
@@ -2251,6 +2254,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3108931485517391283">Can't receive</translation>
 <translation id="3109724472072898302">Collapsed</translation>
 <translation id="311214366526552035">Download anyway</translation>
+<translation id="3112292765614504292">App size: <ph name="APP_SIZE" /></translation>
 <translation id="311394601889664316">Don't allow sites to edit files or folders on your device</translation>
 <translation id="3115147772012638511">Waiting for cache...</translation>
 <translation id="3115580024857770654">Collapse all</translation>
@@ -2464,6 +2468,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3348038390189153836">Removable device detected</translation>
 <translation id="3348131053948466246">Emoji suggested. Press up or down to navigate, and enter to insert.</translation>
 <translation id="3349933790966648062">Memory footprint</translation>
+<translation id="335153035108712532">You won't need to remember this password. It will be saved to <ph name="GOOGLE_PASSWORD_MANAGER" /> for <ph name="EMAIL" /></translation>
 <translation id="3354972872297836698">Couldn't pair to device <ph name="DEVICE_NAME" />; select device to try again</translation>
 <translation id="3355936511340229503">Connection error</translation>
 <translation id="3356469410714175391">(Virtual card enabled)</translation>
@@ -3959,6 +3964,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4837128290434901661">Change back to Google Search?</translation>
 <translation id="4837926214103741331">You are not authorised to use this device. Please contact the device owner for sign-in permission.</translation>
 <translation id="4837952862063191349">To unlock and restore your local data, please enter your old <ph name="DEVICE_TYPE" /> password.</translation>
+<translation id="4838170306476614339">View your phone's photos, media and notifications</translation>
 <translation id="4838836835474292213">Clipboard read access allowed</translation>
 <translation id="4838907349371614303">Password updated</translation>
 <translation id="4839303808932127586">Sa&amp;ve video as...</translation>
@@ -4072,6 +4078,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4941074198479265146">Sites usually connect to MIDI devices for features for creating and editing music</translation>
 <translation id="4941246025622441835">Use this device requisition when enrolling the device for enterprise management:</translation>
 <translation id="4941627891654116707">Font size</translation>
+<translation id="4941963255146903244">View your phone's photos, media and apps</translation>
 <translation id="494286511941020793">Proxy Configuration Help</translation>
 <translation id="4943368462779413526">Football</translation>
 <translation id="4943691134276646401">'<ph name="CHROME_EXTENSION_NAME" />' wants to connect to a serial port</translation>
@@ -4107,7 +4114,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4980805016576257426">This extension contains malware.</translation>
 <translation id="4981449534399733132">To clear browsing data from all of your synced devices and your Google Account, <ph name="BEGIN_LINK" />sign in<ph name="END_LINK" />.</translation>
 <translation id="4982236238228587209">Device software</translation>
-<translation id="4985248278475639481">About ad personalisation</translation>
 <translation id="4986728572522335985">This will delete all data on the security key, including its PIN</translation>
 <translation id="4988526792673242964">Pages</translation>
 <translation id="49896407730300355">Rotate a&amp;nti-clockwise</translation>
@@ -5932,6 +5938,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6813907279658683733">Entire screen</translation>
 <translation id="6817174620439930047">Ask when a site wants to use system exclusive messages to access MIDI devices (recommended)</translation>
 <translation id="6818198425579322765">Page language to translate</translation>
+<translation id="6818547713623251698">View your phone's photos, media, notifications and apps</translation>
 <translation id="6818802132960437751">Built-in virus protection</translation>
 <translation id="6823174134746916417">Touchpad tap-to-click</translation>
 <translation id="6824564591481349393">Copy &amp;Email Address</translation>
@@ -6841,6 +6848,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="7721258531237831532">Your organisation requires a profile</translation>
 <translation id="7722040605881499779">Needed to update: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">Cut</translation>
+<translation id="7726391492136714301">View your phone's notifications and apps</translation>
 <translation id="7728465250249629478">Change device language</translation>
 <translation id="7728570244950051353">Lock screen from sleep mode</translation>
 <translation id="7728668285692163452">Channel change will be applied later</translation>
@@ -7172,6 +7180,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8037357227543935929">Ask (default)</translation>
 <translation id="803771048473350947">File</translation>
 <translation id="8041089156583427627">Send Feedback</translation>
+<translation id="8041267120753677077">Stream your phone's apps</translation>
 <translation id="8042142357103597104">Text opacity</translation>
 <translation id="8042331986490021244">Your passwords are encrypted on your device before they‘re saved to Google Password Manager</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> not responding.</translation>
@@ -7401,6 +7410,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="825238165904109940">Always Show Full URLs</translation>
 <translation id="8252569384384439529">Uploading…</translation>
 <translation id="8253198102038551905">Click '+' to get network properties</translation>
+<translation id="8255212965098517578">Recent photos, notifications and apps</translation>
 <translation id="8256319818471787266">Sparky</translation>
 <translation id="8257950718085972371">Continue blocking camera access</translation>
 <translation id="8260864402787962391">Mouse</translation>

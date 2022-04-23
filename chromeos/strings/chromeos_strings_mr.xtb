@@ -77,6 +77,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> आणि <ph name="SECOND_MANAGER" /> द्वारे व्यवस्थापित</translation>
 <translation id="1726100011689679555">नाव सर्व्हर</translation>
 <translation id="1731082422893354635">ब्लूटूथ टचपॅड</translation>
+<translation id="1751249301761991853">वैयक्तिक</translation>
 <translation id="1753496554272155572">वॉलपेपर पूर्वावलोकनामधून बाहेर पडा</translation>
 <translation id="175763766237925754">चांगला (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -248,6 +249,7 @@
 <translation id="3954678691475912818">डिव्हाइसचा प्रकार अज्ञात आहे.</translation>
 <translation id="3966286471246132217">आणखी अचूक परिणामांसाठी, चाचणी पूर्ण होईपर्यंत सर्व अ‍ॅप्स बंद करा.</translation>
 <translation id="3967822245660637423">पूर्ण डाउनलोड करा</translation>
+<translation id="3969602104473960991">ChromeOS चा पासवर्ड अपडेट केला आहे</translation>
 <translation id="397105322502079400">गणना करत आहे...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> दिवसांपेक्षा जुने प्रिंट जॉब काढून टाकले जातील</translation>
 <translation id="3993704782688964914">तुमचे <ph name="DEVICE_NAME" /> आता अप टू डेट आहे</translation>
@@ -462,6 +464,7 @@
 <translation id="6113701710518389813">अप अ‍ॅरो</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, + आणखी <ph name="NUMBER" /> अल्बम</translation>
 <translation id="6122191549521593678">ऑनलाइन</translation>
+<translation id="6122277663991249694">ChromeOS इनपुट पद्धत सेवा</translation>
 <translation id="6137767437444130246">वापरकर्ता सर्टिफिकेट</translation>
 <translation id="6146993107019042706">पूर्ण करण्यासाठी, तुमचा नवीन पासवर्ड एंटर करा</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -496,6 +499,7 @@
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> द्वारे व्यवस्थापित</translation>
 <translation id="649050271426829538">थांबले - कागद अडकला</translation>
+<translation id="6494974875566443634">कस्टमायझेशन</translation>
 <translation id="6500818810472529210">Google Search मधील परिणाम पहा</translation>
 <translation id="650266656685499220">अल्बम तयार करण्यासाठी Google Photos वर जा</translation>
 <translation id="6516990319416533844">बॅटरी चार्जिंग रेटची चाचणी घेण्यासाठी, थोडा वेळ तुमची बॅटरी ड्रेन होऊ द्या</translation>
@@ -660,6 +664,7 @@
 <translation id="8398927464629426868">ज्या गतीने डिव्हाइस सध्या चार्ज किंवा डिस्चार्ज होत आहे</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">अंतर्गत कीबोर्ड</translation>
+<translation id="8431300646573772016">ChromeOS मध्ये नवीन</translation>
 <translation id="843568408673868420">इंटरनेट कनेक्टिव्हिटी</translation>
 <translation id="844521431886043384">DNS सेट केलेली नाही</translation>
 <translation id="8461329675984532579">होम पुरवठादार नाव</translation>

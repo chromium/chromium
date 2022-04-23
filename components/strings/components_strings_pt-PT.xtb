@@ -512,6 +512,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2298855485018661510">Botão Gerir cookies. Prima Enter para gerir as suas preferências de cookies nas Definições do Chrome.</translation>
 <translation id="2300306941146563769">Não carregado</translation>
 <translation id="2310021320168182093">Chou2 (Envelope)</translation>
+<translation id="2316159751672436664">Personalize as ferramentas de acessibilidade nas definições do ChromeOS</translation>
 <translation id="2316887270356262533">Liberta menos de 1 MB. É possível que alguns sites sejam carregados mais lentamente na sua próxima visita.</translation>
 <translation id="2317259163369394535">O domínio <ph name="DOMAIN" /> requer um nome de utilizador e uma palavra-passe.</translation>
 <translation id="2318594867107319532">Última data/hora da política:</translation>
@@ -1669,6 +1670,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5518670652865028077">Arte e entretenimento</translation>
 <translation id="5519516356611866228">Com as suas alterações</translation>
 <translation id="5523118979700054094">Nome da política</translation>
+<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para personalizar as ferramentas de acessibilidade nas definições do ChromeOS</translation>
 <translation id="5528532273234423708">Domótica</translation>
 <translation id="55293785478302737">Coser extremidade</translation>
 <translation id="553484882784876924">Prc6 (Envelope)</translation>
@@ -2247,6 +2249,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="722454870747268814">Novo separador de navegação anónima</translation>
 <translation id="7233592378249864828">Imprimir folha de confirmação</translation>
 <translation id="7234638337680728591">Preços da gasolina e combustíveis</translation>
+<translation id="7237492777898608035">Não voltar a mostrar esta mensagem para este site</translation>
 <translation id="7238585580608191973">Impressão digital SHA-256</translation>
 <translation id="7240120331469437312">Nome alternativo do requerente do certificado</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -2628,6 +2631,7 @@ Detalhes adicionais:
 <translation id="8242426110754782860">Continuar</translation>
 <translation id="8249296373107784235">Abortar</translation>
 <translation id="8249463483885748674">Testes padronizados e de admissão</translation>
+<translation id="8252991034201168845">Botão Gerir definições de acessibilidade, Enter para personalizar as ferramentas de acessibilidade nas definições do ChromeOS</translation>
 <translation id="8253091569723639551">É necessário um endereço de faturação</translation>
 <translation id="8257387598443225809">Esta app foi concebida para dispositivos móveis</translation>
 <translation id="825929999321470778">Mostrar todas as palavras-passe guardadas</translation>

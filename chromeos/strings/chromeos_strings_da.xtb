@@ -77,6 +77,7 @@
 <translation id="1717874160321062422">Administreres af <ph name="FIRST_MANAGER" /> og <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Navneservere</translation>
 <translation id="1731082422893354635">Bluetooth-touchplade</translation>
+<translation id="1751249301761991853">Personlig</translation>
 <translation id="1753496554272155572">Forlad forhåndsvisning af baggrund</translation>
 <translation id="175763766237925754">Godt (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -248,6 +249,7 @@
 <translation id="3954678691475912818">Enhedstypen er ukendt.</translation>
 <translation id="3966286471246132217">Luk alle apps, indtil testen er fuldført, for at få mere nøjagtige resultater.</translation>
 <translation id="3967822245660637423">Download fuldført</translation>
+<translation id="3969602104473960991">Chrome OS-adgangskoden er opdateret</translation>
 <translation id="397105322502079400">Beregner...</translation>
 <translation id="39823212440917567">Udskriftsjobs, der er ældre end <ph name="NUMBER_OF_DAYS" /> dage, fjernes</translation>
 <translation id="3993704782688964914">Din <ph name="DEVICE_NAME" /> er nu opdateret</translation>
@@ -461,6 +463,7 @@
 <translation id="6113701710518389813">Pil op</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> flere album</translation>
 <translation id="6122191549521593678">Online</translation>
+<translation id="6122277663991249694">Indtastningsmetodetjeneste for Chrome OS</translation>
 <translation id="6137767437444130246">Brugercertifikat</translation>
 <translation id="6146993107019042706">Angiv din nye adgangskode for at afslutte</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -495,6 +498,7 @@
 <translation id="6472207088655375767">Engangskode</translation>
 <translation id="6480327114083866287">Administreres af <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Stoppet – Papirstop</translation>
+<translation id="6494974875566443634">Tilpasning</translation>
 <translation id="6500818810472529210">Se resultatet i Google Søgning</translation>
 <translation id="650266656685499220">Gå til Google Fotos for at oprette album</translation>
 <translation id="6516990319416533844">Du kan teste, hvor hurtigt batteriet oplades, ved at aflade det i en kortere periode</translation>
@@ -659,6 +663,7 @@
 <translation id="8398927464629426868">Den aktuelle hastighed for opladning eller afladning på enheden</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Indbygget tastatur</translation>
+<translation id="8431300646573772016">Nyt i Chrome OS</translation>
 <translation id="843568408673868420">Internetforbindelse</translation>
 <translation id="844521431886043384">DNS er ikke konfigureret</translation>
 <translation id="8461329675984532579">Navn på udbyder til hjem</translation>

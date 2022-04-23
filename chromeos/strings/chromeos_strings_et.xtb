@@ -77,6 +77,7 @@
 <translation id="1717874160321062422">Seadet haldab <ph name="FIRST_MANAGER" /> ja <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Nimeserverid</translation>
 <translation id="1731082422893354635">Bluetooth-puuteplaat</translation>
+<translation id="1751249301761991853">Isiklik</translation>
 <translation id="1753496554272155572">Taustapildi eelvaatest väljumine</translation>
 <translation id="175763766237925754">Hea (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -248,6 +249,7 @@
 <translation id="3954678691475912818">Seadme tüüp pole teada.</translation>
 <translation id="3966286471246132217">Täpsemate tulemuste saamiseks sulgege kõik rakendused, kuni test on lõpetatud.</translation>
 <translation id="3967822245660637423">Allalaadimine on lõpule viidud</translation>
+<translation id="3969602104473960991">Chrome OS-i parooli värskendati</translation>
 <translation id="397105322502079400">Arvutamine ...</translation>
 <translation id="39823212440917567">Prinditööd, mis on vanemad kui <ph name="NUMBER_OF_DAYS" /> päeva, eemaldatakse</translation>
 <translation id="3993704782688964914">Teie <ph name="DEVICE_NAME" /> on nüüd ajakohane</translation>
@@ -462,6 +464,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6113701710518389813">Ülesnool</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, + veel <ph name="NUMBER" /> albumit</translation>
 <translation id="6122191549521593678">Onlain</translation>
+<translation id="6122277663991249694">Chrome OS sisestusmeetodi teenus</translation>
 <translation id="6137767437444130246">Kasutaja sertifikaat</translation>
 <translation id="6146993107019042706">Toimingu lõpuleviimiseks sisestage oma uus parool</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -496,6 +499,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6472207088655375767">Ühekordne parool</translation>
 <translation id="6480327114083866287">Haldab <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Peatatud – paberiummistus</translation>
+<translation id="6494974875566443634">Kohandamine</translation>
 <translation id="6500818810472529210">Kuva Google'i otsingu tulemused</translation>
 <translation id="650266656685499220">Albumite loomiseks minge teenusesse Google Photos</translation>
 <translation id="6516990319416533844">Aku laadimiskiiruse testimiseks laske akul lühikese perioodi jooksul tühjeneda</translation>
@@ -660,6 +664,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8398927464629426868">Praegune seadme laadimise või tühjenemise kiirus</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Sisemine klaviatuur</translation>
+<translation id="8431300646573772016">Mis on Chrome OS-is uut?</translation>
 <translation id="843568408673868420">Interneti ühenduvus</translation>
 <translation id="844521431886043384">DNS ei ole seadistatud</translation>
 <translation id="8461329675984532579">Koduteenuse pakkuja nimi</translation>

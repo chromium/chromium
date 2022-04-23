@@ -77,6 +77,7 @@
 <translation id="1717874160321062422">Gestionat per <ph name="FIRST_MANAGER" /> i <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Servidors de noms</translation>
 <translation id="1731082422893354635">Ratolí tàctil Bluetooth</translation>
+<translation id="1751249301761991853">Personal</translation>
 <translation id="1753496554272155572">Surt de la previsualització del fons de pantalla</translation>
 <translation id="175763766237925754">Bo (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -496,6 +497,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Gestionat per <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">S'ha aturat: embús de paper</translation>
+<translation id="6494974875566443634">Personalització</translation>
 <translation id="6500818810472529210">Consulta el resultat a la Cerca de Google</translation>
 <translation id="650266656685499220">Per crear àlbums, ves a Google Fotos</translation>
 <translation id="6516990319416533844">Per provar la velocitat de càrrega de la bateria, deixa que s'exhaureixi una estona</translation>

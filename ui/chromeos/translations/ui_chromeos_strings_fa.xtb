@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">نویسه‌گردانی عبری</translation>
 <translation id="1747761757048858544">هلندی (هلند)</translation>
 <translation id="174937106936716857">تعداد کل فایل‌ها</translation>
+<translation id="1755345808328621801">‏این فایل برای رایانه شخصی‌ای که از نرم‌افزار Windows استفاده می‌کند طراحی شده است. این فایل با دستگاه شما که ChromeOS را اجرا می‌کند سازگار نیست. لطفاً «نت‌بازار Chrome» را برای یافتن برنامه جایگزین مناسب جستجو کنید.</translation>
 <translation id="1773212559869067373">گواهینامه راستی‌آزمایی به صورت محلی رد شد</translation>
 <translation id="1775381402323441512">اطلاعات ویدیو</translation>
 <translation id="180035236176489073">باید آنلاین باشید تا به این فایل‌ها دسترسی داشته باشید.</translation>
@@ -225,6 +226,7 @@
 <translation id="2943503720238418293">از نام کوتاه‌تری استفاده کنید</translation>
 <translation id="2949781154072577687">درحال قالب‌بندی <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">عروس دریایی</translation>
+<translation id="2977940621473452797">‏این فایل برای رایانه‌ای که از نرم‌افزار Macintosh استفاده می‌کند طراحی شده است. این فایل با دستگاه شما که ChromeOS را اجرا می‌کند سازگار نیست. لطفاً «نت‌بازار Chrome» را برای یافتن برنامه جایگزین مناسب جستجو کنید.</translation>
 <translation id="2984337792991268709">امروز <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">درحال بازیابی <ph name="COUNT" /> مورد…</translation>
 <translation id="2994669386200004489"><ph name="FILE_NAME" /> پشتیبان‌گیری نشد</translation>
@@ -422,6 +424,7 @@
 <translation id="4694604912444486114">میمون</translation>
 <translation id="469612310041132144">چینی (سریع)</translation>
 <translation id="4697043402264950621">فهرست فایل براساس <ph name="COLUMN_NAME" /> به‌صورت صعودی مرتب شد.</translation>
+<translation id="469897186246626197">‏این فایل برای رایانه شخصی‌ای که از نرم‌افزار Windows استفاده می‌کند طراحی شده است. این فایل با دستگاه شما که ChromeOS را اجرا می‌کند سازگار نیست. درباره باز کردن فایل‌ها در ChromeOS <ph name="BEGIN_LINK_HELP" />بیشتر بدانید<ph name="END_LINK_HELP" />.</translation>
 <translation id="4706042980341760088">تامیل با صفحه‌کلید ماشین تحریر</translation>
 <translation id="4711094779914110278">ترکی</translation>
 <translation id="4712283082407695269">درحال باز کردن «<ph name="PATH" />»</translation>
@@ -543,6 +546,7 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5602622065581044566">بلغاری با صفحه‌کلید آوایی</translation>
 <translation id="5605830556594064952">دووراک آمریکایی</translation>
+<translation id="5618330573454123917">‏این فایل برای رایانه‌ای که از نرم‌افزار Macintosh استفاده می‌کند طراحی شده است. این فایل با دستگاه شما که ChromeOS را اجرا می‌کند سازگار نیست. درباره باز کردن فایل‌ها در ChromeOS <ph name="BEGIN_LINK_HELP" />بیشتر بدانید<ph name="END_LINK_HELP" />.</translation>
 <translation id="5625294776298156701">‏تامیل با صفحه کلید Tamil99</translation>
 <translation id="5633226425545095130">اگر این مورد را منتقل کنید با همه افرادی که می‌توانند پوشه هم‌رسانی‌شده «<ph name="DESTINATION_NAME" />» را ببینند هم‌رسانی خواهد شد.</translation>
 <translation id="5649768706273821470">گوش دادن</translation>
@@ -738,6 +742,7 @@
 <translation id="7309413087278791451">آلمانی (بلژیک)</translation>
 <translation id="7339898014177206373">پنجرهٔ جدید</translation>
 <translation id="7343393116438664539">ویتنامی (تلکس)</translation>
+<translation id="7357762654218998920">‏این نوع فایل پشتیبانی نمی‌شود. درباره باز کردن فایل‌ها در ChromeOS <ph name="BEGIN_LINK_HELP" />بیشتر بدانید<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347">در حال کپی کردن <ph name="NUMBER_OF_ITEMS" /> مورد…</translation>
 <translation id="7375951387215729722">فهرست فایل براساس <ph name="COLUMN_NAME" /> به‌ترتیب نزولی مرتب شد.</translation>
 <translation id="7402503521691663770">‏دستگاه‌های ChromeOS Flex</translation>

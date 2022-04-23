@@ -77,6 +77,7 @@
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> va <ph name="SECOND_MANAGER" /> tomonidan boshqariladi</translation>
 <translation id="1726100011689679555">Nom serverlari (NS)</translation>
 <translation id="1731082422893354635">Bluetooth sensorli panel</translation>
+<translation id="1751249301761991853">Shaxsiy</translation>
 <translation id="1753496554272155572">Fon rasmiga razm solishdan chiqish</translation>
 <translation id="175763766237925754">Yaxshi (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -248,6 +249,7 @@
 <translation id="3954678691475912818">Qurilma — noaniq.</translation>
 <translation id="3966286471246132217">Yanada aniq natijalar olish uchun test tugamaguncha barcha ilovalarni yopib turing.</translation>
 <translation id="3967822245660637423">Yuklab olindi</translation>
+<translation id="3969602104473960991">ChromeOS paroli yangilandi</translation>
 <translation id="397105322502079400">Hisoblanmoqda...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> kundan eski chop etish vazifalari avtomatik tozalanadi</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> hozir yangi</translation>
@@ -462,6 +464,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6113701710518389813">Tepaga strelka</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> va yana <ph name="NUMBER" /> ta albom</translation>
 <translation id="6122191549521593678">Onlayn</translation>
+<translation id="6122277663991249694">ChromeOS matn kiritish xizmati</translation>
 <translation id="6137767437444130246">Foydalanuvchi sertifikati</translation>
 <translation id="6146993107019042706">Yakunlash uchun yangi parolni kiriting</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -496,6 +499,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6472207088655375767">Bir martalik kod</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> tomonidan boshqariladi</translation>
 <translation id="649050271426829538">Toʻxtatildi – Qogʻoz tiqilib qoldi</translation>
+<translation id="6494974875566443634">Moslashtirish</translation>
 <translation id="6500818810472529210">Google Qidiruv natijalarini oching</translation>
 <translation id="650266656685499220">Albomlar yaratish uchun Google Photos sahifasini oching</translation>
 <translation id="6516990319416533844">Batareyaning quvvatlanish tezligini bilish uchun uni biroz muddat sarflang</translation>
@@ -660,6 +664,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8398927464629426868">Qurilmaning quvvat olish yoki sarflash darajasi</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Ichki klaviatura</translation>
+<translation id="8431300646573772016">Yangilangan ChromeOS</translation>
 <translation id="843568408673868420">Internet aloqasi</translation>
 <translation id="844521431886043384">DNS sozlanmagan</translation>
 <translation id="8461329675984532579">Mahalliy ta’minotchi nomi</translation>

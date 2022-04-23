@@ -77,6 +77,7 @@
 <translation id="1717874160321062422">Spravujú <ph name="FIRST_MANAGER" /> a <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Menné servery</translation>
 <translation id="1731082422893354635">Touchpad s rozhraním Bluetooth</translation>
+<translation id="1751249301761991853">Osobné</translation>
 <translation id="1753496554272155572">Ukončiť ukážku tapety</translation>
 <translation id="175763766237925754">Dobré (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -248,6 +249,7 @@
 <translation id="3954678691475912818">Typ zariadenia nie je známy.</translation>
 <translation id="3966286471246132217">Ak chcete získať presnejšie výsledky, zavrite všetky aplikácie, dokým sa test nedokončí.</translation>
 <translation id="3967822245660637423">Sťahovanie dokončené</translation>
+<translation id="3969602104473960991">Heslo systému Chrome OS bolo aktualizované</translation>
 <translation id="397105322502079400">Prebieha výpočet...</translation>
 <translation id="39823212440917567">Tlačové úlohy staršie ako <ph name="NUMBER_OF_DAYS" /> d. budú odstránené</translation>
 <translation id="3993704782688964914">Vaše zariadenie <ph name="DEVICE_NAME" /> je teraz aktuálne</translation>
@@ -462,6 +464,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6113701710518389813">Šípka nahor</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> a ďalšie albumy (<ph name="NUMBER" />)</translation>
 <translation id="6122191549521593678">Online</translation>
+<translation id="6122277663991249694">Služba metódy vstupu systému Chrome OS</translation>
 <translation id="6137767437444130246">Certifikát používateľa</translation>
 <translation id="6146993107019042706">Ak chcete zmenu dokončiť, zadajte nové heslo</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -496,6 +499,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6472207088655375767">Jednorazové heslo</translation>
 <translation id="6480327114083866287">Spravuje <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Zastavené – zaseknutý papier</translation>
+<translation id="6494974875566443634">Prispôsobenie</translation>
 <translation id="6500818810472529210">Zobrazte si výsledok vo Vyhľadávaní Google</translation>
 <translation id="650266656685499220">Ak chcete vytvoriť albumy, prejdite do Fotiek Google</translation>
 <translation id="6516990319416533844">Ak chcete otestovať rýchlosť nabíjania batérie, nechajte batériu chvíľu vybíjať.</translation>
@@ -660,6 +664,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8398927464629426868">Rýchlosť, akou sa zariadenie momentálne nabíja či vybíja</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Interná klávesnica</translation>
+<translation id="8431300646573772016">Chrome OS – novinky</translation>
 <translation id="843568408673868420">Internetové pripojenie</translation>
 <translation id="844521431886043384">Systém DNS nie je nastavený</translation>
 <translation id="8461329675984532579">Názov poskytovateľa domácej siete</translation>

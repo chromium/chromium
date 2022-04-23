@@ -137,6 +137,7 @@
 <translation id="1697284962337958118">దీనికి జోడించు</translation>
 <translation id="1702543251015153180">మీ ముదురు రంగు రూపం సెట్టింగ్‌లను మార్చాలనుకుంటున్నారా?</translation>
 <translation id="1702907158640575240">మేనేజ్ చేయబడుతున్న బ్రౌజర్</translation>
+<translation id="1710099199314114079">ట్యాబ్‌లను మార్చండి లేదా మూసివేయండి</translation>
 <translation id="1718835860248848330">చివరి గంట</translation>
 <translation id="1724977129262658800">మీ పాస్‌వర్డ్‌ను ఎడిట్ చేయడానికి అన్‌లాక్ చేయండి</translation>
 <translation id="1726477445370128854">Chrome మీరు సందర్శించవచ్చని భావించే పేజీలను ప్రీ - లోడ్ చేసినప్పుడు మీరు వేగంగా బ్రౌజ్ చేయవచ్చు, సెర్చ్ చేయవచ్చు</translation>
@@ -950,6 +951,7 @@
 <translation id="6324997754869598316">(ఎర్రర్ <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> ద్వారా షేర్ చేయండి</translation>
 <translation id="6337234675334993532">ఎన్‌క్రిప్షన్</translation>
+<translation id="6340910702212418132">పాస్‌వర్డ్ మేనేజర్ <ph name="BEGIN_NEW" />కొత్తది<ph name="END_NEW" /></translation>
 <translation id="6341580099087024258">ఫైళ్లను ఎక్కడ సేవ్ చేయాలో అడుగు</translation>
 <translation id="6342069812937806050">ఇప్పుడే</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>

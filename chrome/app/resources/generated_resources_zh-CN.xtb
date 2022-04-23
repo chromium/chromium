@@ -1533,7 +1533,6 @@
 <translation id="2470702053775288986">已停用不支持的扩展程序</translation>
 <translation id="2471469610750100598">黑色（默认）</translation>
 <translation id="2471506181342525583">已允许使用位置信息</translation>
-<translation id="247208220409682803">系统每月都会从用来推测您的兴趣的网站列表中删除网站以刷新列表。您再次访问的网站可能会重新出现在列表中。如果您不希望系统（再）根据某个网站来推测您的兴趣，也可自行移除相应网站。</translation>
 <translation id="2473195200299095979">翻译此页</translation>
 <translation id="2475982808118771221">出现错误</translation>
 <translation id="2476578072172137802">网站设置</translation>
@@ -4029,7 +4028,6 @@
 <translation id="4980805016576257426">此扩展程序包含恶意软件。</translation>
 <translation id="4981449534399733132">要想清除您的所有已同步设备中的浏览数据以及您的 Google 帐号中的浏览数据，请<ph name="BEGIN_LINK" />登录<ph name="END_LINK" />。</translation>
 <translation id="4982236238228587209">设备软件</translation>
-<translation id="4985248278475639481">关于广告个性化</translation>
 <translation id="4986728572522335985">安全密钥上的所有数据（包括它的 PIN 码）都会被删除</translation>
 <translation id="4988526792673242964">页面</translation>
 <translation id="49896407730300355">逆时针旋转(&amp;O)</translation>

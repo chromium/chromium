@@ -77,6 +77,7 @@
 <translation id="1717874160321062422">Под управлением <ph name="FIRST_MANAGER" /> и <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Серверы имен</translation>
 <translation id="1731082422893354635">Сенсорная панель Bluetooth</translation>
+<translation id="1751249301761991853">Персональные настройки</translation>
 <translation id="1753496554272155572">Выйти из предпросмотра обоев</translation>
 <translation id="175763766237925754">Хороший (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -248,6 +249,7 @@
 <translation id="3954678691475912818">Это неизвестное устройство.</translation>
 <translation id="3966286471246132217">Чтобы получить более точные результаты, закройте все приложения и не запускайте их до завершения проверки.</translation>
 <translation id="3967822245660637423">Скачивание завершено.</translation>
+<translation id="3969602104473960991">Пароль Chrome OS изменен</translation>
 <translation id="397105322502079400">Вычисление…</translation>
 <translation id="39823212440917567">Задания печати, хранящиеся дольше <ph name="NUMBER_OF_DAYS" /> дн., будут удалены</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" />: установлено актуальное ПО</translation>
@@ -462,6 +464,7 @@
 <translation id="6113701710518389813">Стрелка вверх</translation>
 <translation id="6117895505466548728">Альбом "<ph name="TITLE" />" и ещё <ph name="NUMBER" /> других</translation>
 <translation id="6122191549521593678">Онлайн</translation>
+<translation id="6122277663991249694">Выбор способа ввода в Chrome OS</translation>
 <translation id="6137767437444130246">Сертификат пользователя</translation>
 <translation id="6146993107019042706">Чтобы завершить процедуру, введите новый пароль.</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -496,6 +499,7 @@
 <translation id="6472207088655375767">Одноразовый код</translation>
 <translation id="6480327114083866287">Под управлением <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Печать прервана: застряла бумага</translation>
+<translation id="6494974875566443634">Персонализация</translation>
 <translation id="6500818810472529210">Посмотрите результат в Google Поиске.</translation>
 <translation id="650266656685499220">Чтобы создать альбомы, перейдите в Google Фото</translation>
 <translation id="6516990319416533844">Чтобы проверить скорость зарядки батареи, разрядите ее в течение короткого промежутка времени.</translation>
@@ -660,6 +664,7 @@
 <translation id="8398927464629426868">Скорость, с которой устройство заряжается или разряжается в настоящее время</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Встроенная клавиатура</translation>
+<translation id="8431300646573772016">Что нового в Chrome OS</translation>
 <translation id="843568408673868420">Подключение к интернету</translation>
 <translation id="844521431886043384">DNS-сервер не настроен.</translation>
 <translation id="8461329675984532579">Название провайдера</translation>

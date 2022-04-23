@@ -77,6 +77,7 @@
 <translation id="1717874160321062422">მართავს <ph name="FIRST_MANAGER" /> და <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">სახელთა სერვერები</translation>
 <translation id="1731082422893354635">Bluetooth სენსორული პანელი</translation>
+<translation id="1751249301761991853">პირადი</translation>
 <translation id="1753496554272155572">ფონის გადახედვის რეჟიმიდან გასვლა</translation>
 <translation id="175763766237925754">კარგი (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -498,6 +499,7 @@
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">მართავს <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">გაჩერდა — ქაღალდი გაიჭედა</translation>
+<translation id="6494974875566443634">მორგება</translation>
 <translation id="6500818810472529210">იხილეთ შედეგები Google Search-ში</translation>
 <translation id="650266656685499220">ალბომების შესაქმნელად გადადით Google Photos-ზე</translation>
 <translation id="6516990319416533844">ბატარეის დატენის სიჩქარის შესამოწმებლად ჯერ დაცალეთ ბატარეა გარკვეული დროის განმავლობაში</translation>

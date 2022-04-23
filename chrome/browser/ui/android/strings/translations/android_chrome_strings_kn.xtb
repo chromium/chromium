@@ -136,6 +136,7 @@
 <translation id="1697284962337958118">ಇದಕ್ಕೆ ಸೇರಿಸಿ</translation>
 <translation id="1702543251015153180">ನಿಮ್ಮ ಡಾರ್ಕ್‌ ಥೀಮ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಬೇಕೆ?</translation>
 <translation id="1702907158640575240">ನಿರ್ವಹಿಸಿದ ಬ್ರೌಸರ್</translation>
+<translation id="1710099199314114079">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಿ ಅಥವಾ ಮುಚ್ಚಿರಿ</translation>
 <translation id="1718835860248848330">ಕೊನೆಯ ಗಂಟೆ</translation>
 <translation id="1724977129262658800">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="1726477445370128854">ನೀವು ಭೇಟಿ ನೀಡಬಹುದೆಂದು Chrome ಭಾವಿಸುವ ಪುಟಗಳನ್ನು ಅದು ಮುಂಚಿತವಾಗಿ ಲೋಡ್ ಮಾಡಿದಾಗ, ನೀವು ವೇಗವಾಗಿ ಬ್ರೌಸ್ ಮಾಡಬಹುದು ಮತ್ತು ಹುಡುಕಾಟ ನಡೆಸಬಹುದು</translation>
@@ -945,6 +946,7 @@
 <translation id="6324997754869598316">(ದೋಷ <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> ಮೂಲಕ ಹಂಚು</translation>
 <translation id="6337234675334993532">ಎನ್‌ಕ್ರಿಪ್ಶನ್</translation>
+<translation id="6340910702212418132">Password Manager <ph name="BEGIN_NEW" />ಹೊಸತು<ph name="END_NEW" /></translation>
 <translation id="6341580099087024258">ಫೈಲ್‌ಗಳನ್ನು ಎಲ್ಲಿ ಉಳಿಸಬೇಕೆಂದು ಕೇಳಿ</translation>
 <translation id="6342069812937806050">ಇದೀಗ</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>

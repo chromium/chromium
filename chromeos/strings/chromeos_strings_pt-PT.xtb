@@ -77,6 +77,7 @@
 <translation id="1717874160321062422">Gerido por <ph name="FIRST_MANAGER" /> e <ph name="SECOND_MANAGER" />.</translation>
 <translation id="1726100011689679555">Servidores de nomes</translation>
 <translation id="1731082422893354635">Touchpad Bluetooth</translation>
+<translation id="1751249301761991853">Pessoal</translation>
 <translation id="1753496554272155572">Sair da pré-visualização da imagem de fundo</translation>
 <translation id="175763766237925754">Boa (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -248,6 +249,7 @@
 <translation id="3954678691475912818">O tipo de dispositivo é desconhecido.</translation>
 <translation id="3966286471246132217">Para obter resultados mais exatos, feche todas as apps até que o teste esteja concluído.</translation>
 <translation id="3967822245660637423">Transferência concluída</translation>
+<translation id="3969602104473960991">A palavra-passe do ChromeOS foi atualizada</translation>
 <translation id="397105322502079400">A calcular...</translation>
 <translation id="39823212440917567">As tarefas de impressão com mais de <ph name="NUMBER_OF_DAYS" /> dias serão removidas.</translation>
 <translation id="3993704782688964914">O dispositivo <ph name="DEVICE_NAME" /> está agora atualizado</translation>
@@ -462,6 +464,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6113701710518389813">Seta para cima</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> e mais <ph name="NUMBER" /> álbuns</translation>
 <translation id="6122191549521593678">Online</translation>
+<translation id="6122277663991249694">Serviço do método de introdução do ChromeOS</translation>
 <translation id="6137767437444130246">Certificado do utilizador</translation>
 <translation id="6146993107019042706">Para terminar, introduza a nova palavra-passe.</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -496,6 +499,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6472207088655375767">PUU</translation>
 <translation id="6480327114083866287">Gerido por <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Parada – Encravamento de papel</translation>
+<translation id="6494974875566443634">Personalização</translation>
 <translation id="6500818810472529210">Veja o resultado na Pesquisa Google</translation>
 <translation id="650266656685499220">Para criar álbuns, aceda ao Google Fotos.</translation>
 <translation id="6516990319416533844">Para testar a velocidade de carregamento da bateria, descarregue a bateria durante um curto período.</translation>
@@ -660,6 +664,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8398927464629426868">A velocidade de carregamento ou descarregamento atual do dispositivo.</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Teclado interno</translation>
+<translation id="8431300646573772016">Novidades no ChromeOS</translation>
 <translation id="843568408673868420">Ligação à Internet</translation>
 <translation id="844521431886043384">O DNS não está configurado</translation>
 <translation id="8461329675984532579">Nome do fornecedor base</translation>

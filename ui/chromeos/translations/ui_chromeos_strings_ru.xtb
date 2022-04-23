@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">Иврит, транслитерация</translation>
 <translation id="1747761757048858544">Нидерландский (Нидерланды)</translation>
 <translation id="174937106936716857">Общее количество файлов</translation>
+<translation id="1755345808328621801">Этот файл предназначен для ПК с ОС Windows и несовместим с Chrome OS на вашем устройстве. Чтобы найти аналогичное приложение, перейдите в интернет-магазин Chrome.</translation>
 <translation id="1773212559869067373">Сертификат аутентификации отклонен локально</translation>
 <translation id="1775381402323441512">Информация о видео</translation>
 <translation id="180035236176489073">Для доступа к файлам необходимо подключение к Интернету.</translation>
@@ -225,6 +226,7 @@
 <translation id="2943503720238418293">Слишком длинное название.</translation>
 <translation id="2949781154072577687">Форматирование внешнего хранилища "<ph name="DRIVE_NAME" />"…</translation>
 <translation id="2951236788251446349">Медуза</translation>
+<translation id="2977940621473452797">Этот файл предназначен для компьютеров с ПО Macintosh и несовместим с Chrome OS на вашем устройстве. Чтобы найти аналогичное приложение, перейдите в интернет-магазин Chrome.</translation>
 <translation id="2984337792991268709">Сегодня, <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Восстановление объектов (<ph name="COUNT" />)…</translation>
 <translation id="2994669386200004489">Не удалось сохранить резервную копию файла "<ph name="FILE_NAME" />"</translation>
@@ -422,6 +424,7 @@
 <translation id="4694604912444486114">Обезьяна</translation>
 <translation id="469612310041132144">Китайский, быстрое письмо</translation>
 <translation id="4697043402264950621">Данные в столбце "<ph name="COLUMN_NAME" />" отсортированы по возрастанию.</translation>
+<translation id="469897186246626197">Этот файл предназначен для ПК с ОС Windows и несовместим с Chrome OS на вашем устройстве. Подробнее <ph name="BEGIN_LINK_HELP" />об открытии файлов в Chrome OS<ph name="END_LINK_HELP" />…</translation>
 <translation id="4706042980341760088">Тамильский, раскладка пишущей машинки</translation>
 <translation id="4711094779914110278">Турецкий</translation>
 <translation id="4712283082407695269">Открытие архива "<ph name="PATH" />"…</translation>
@@ -543,6 +546,7 @@
 <translation id="5583640892426849032">Клавиша возврата (Backspace)</translation>
 <translation id="5602622065581044566">Болгарский, фонетическая раскладка</translation>
 <translation id="5605830556594064952">США (раскладка Дворака)</translation>
+<translation id="5618330573454123917">Этот файл предназначен для компьютеров с ПО Macintosh и несовместим с Chrome OS на вашем устройстве. Подробнее <ph name="BEGIN_LINK_HELP" />об открытии файлов в Chrome OS<ph name="END_LINK_HELP" />…</translation>
 <translation id="5625294776298156701">Тамильский, раскладка Tamil99</translation>
 <translation id="5633226425545095130">Если вы переместите этот объект, то его увидят все пользователи, у которых есть доступ к общей папке "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Прослушать</translation>
@@ -738,6 +742,7 @@
 <translation id="7309413087278791451">Немецкий (Бельгия)</translation>
 <translation id="7339898014177206373">Новое окно</translation>
 <translation id="7343393116438664539">Вьетнамский, раскладка Telex</translation>
+<translation id="7357762654218998920">Этот тип файла не поддерживается. Подробнее <ph name="BEGIN_LINK_HELP" />об открытии файлов в Chrome OS<ph name="END_LINK_HELP" />…</translation>
 <translation id="7359359531237882347">Копирование объектов (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="7375951387215729722">Данные в столбце "<ph name="COLUMN_NAME" />" отсортированы по убыванию.</translation>
 <translation id="7402503521691663770">Устройства с Chrome OS Flex</translation>

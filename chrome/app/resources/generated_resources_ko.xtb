@@ -1555,7 +1555,6 @@
 <translation id="2470702053775288986">지원되지 않는 확장 프로그램이 사용 중지됨</translation>
 <translation id="2471469610750100598">검정(기본)</translation>
 <translation id="2471506181342525583">위치 액세스 허용됨</translation>
-<translation id="247208220409682803">관심분야를 정의하는 사이트 목록은 매월 삭제되고 새로고침됩니다. 재방문한 사이트는 목록에 다시 표시될 수 있습니다. 사이트에서 관심분야를 정의하는 것을 원치 않으면 해당 사이트를 삭제하면 됩니다.</translation>
 <translation id="2473195200299095979">이 페이지 번역하기</translation>
 <translation id="2475982808118771221">오류가 발생했습니다.</translation>
 <translation id="2476578072172137802">사이트 설정</translation>
@@ -4055,7 +4054,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4980805016576257426">확장 프로그램에 멀웨어가 포함되어 있습니다.</translation>
 <translation id="4981449534399733132">동기화된 모든 기기 및 Google 계정에서 인터넷 사용 기록을 삭제하려면 <ph name="BEGIN_LINK" />로그인<ph name="END_LINK" />하세요.</translation>
 <translation id="4982236238228587209">기기 소프트웨어</translation>
-<translation id="4985248278475639481">광고 개인 최적화 알아보기</translation>
 <translation id="4986728572522335985">PIN을 비롯하여 보안 키에 저장된 모든 데이터가 삭제됩니다</translation>
 <translation id="4988526792673242964">페이지</translation>
 <translation id="49896407730300355">반시계 방향으로 회전(&amp;O)</translation>

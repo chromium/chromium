@@ -589,6 +589,16 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 <translation id="1654087023995670109">Gastmodus im Browser erzwingen</translation>
 <translation id="1655229863189977773">Cache-Größe für Datenträger in Byte festlegen</translation>
 <translation id="165769015320654523">Websites automatisch die Berechtigung erteilen, eine Verbindung zu HID-Geräten mit den angegebenen Anbieter- und Produkt-IDs herzustellen.</translation>
+<translation id="1661930501743720282">Diese Richtlinie legt die Sichtbarkeit von Onlinerecherchen auf der Chrome-Verlaufsseite fest.
+
+      Wenn diese Richtlinie aktiviert ist, sind Onlinerecherchen unter chrome://history/journeys sichtbar.
+
+      Ist sie deaktiviert, sind Onlinerecherchen nicht unter chrome://history/journeys sichtbar.
+
+      Wenn die Richtlinie nicht konfiguriert ist, sind Onlinerecherchen standardmäßig unter chrome://history/journeys sichtbar und Nutzer können die Sichtbarkeit von Onlinerecherchen ändern.
+
+      Hinweis: Wenn die Richtlinie <ph name="OPTIMIZATION_GUIDE_FETCHING_ENABLED_POLICY_NAME" /> deaktiviert, <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> jedoch aktiviert oder nicht konfiguriert ist, sind Onlinerecherchen eventuell unter chrome://history/journeys verfügbar, möglicherweise aber nicht in der Omnibox. Außerdem können sie weniger relevant für den Nutzer sein.
+      </translation>
 <translation id="166427968280387991">Proxyserver</translation>
 <translation id="1669584285557771729">Wenn diese Richtlinie konfiguriert ist, wird damit der Lupentyp bestimmt, der aktiviert ist.
 

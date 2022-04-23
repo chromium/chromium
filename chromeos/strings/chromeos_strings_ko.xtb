@@ -77,6 +77,7 @@
 <translation id="1717874160321062422">관리자: <ph name="FIRST_MANAGER" /> 및 <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">네임서버</translation>
 <translation id="1731082422893354635">블루투스 터치패드</translation>
+<translation id="1751249301761991853">개인</translation>
 <translation id="1753496554272155572">배경화면 미리보기 종료</translation>
 <translation id="175763766237925754">양호(<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -496,6 +497,7 @@
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" />에서 관리함</translation>
 <translation id="649050271426829538">중지됨 - 용지 걸림</translation>
+<translation id="6494974875566443634">맞춤설정</translation>
 <translation id="6500818810472529210">Google 검색에서 결과 보기</translation>
 <translation id="650266656685499220">앨범을 만들려면 Google 포토로 이동하세요.</translation>
 <translation id="6516990319416533844">배터리 충전 속도를 테스트하려면 짧은 시간 동안 배터리를 소모하세요.</translation>

@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
 <translation id="1113173431709655881">Tryb kamery</translation>
+<translation id="1153190633558910465">Siatka wyłączona</translation>
 <translation id="1175958423215084756">Wykryto link. <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">Obróć o 90 stopni w prawo</translation>
 <translation id="1276998909102132017">Zdjęcia z galerii</translation>
 <translation id="1300209025925956156">Skanowanie dokumentu</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Wyszukaj + strzałka w lewo, aby przejść.</translation>
+<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">Drukuj</translation>
 <translation id="1467231725790366244">Odłączono kamerę <ph name="CAMERA" />.</translation>
 <translation id="1473110567575736769">3-sekundowy samowyzwalacz</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">Czas samowyzwalacza</translation>
 <translation id="2050339315714019657">Pionowo</translation>
 <translation id="2064538373111010176">Aparat <ph name="CAMERA" /> jest aktywny</translation>
+<translation id="2134029355740465625">Ustawienia wideo</translation>
 <translation id="2144806332417375165">Niestandardowe parametry wideo</translation>
 <translation id="2175927920773552910">Kod QR</translation>
 <translation id="2271433936731426666">Włącz funkcję stopklatki w pełnym rozmiarze</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">Tylny aparat</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Typ skanowania</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">Podgląd odbicia lustrzanego</translation>
 <translation id="2879583609344924966">Podłączono kamerę <ph name="CAMERA" />.</translation>
 <translation id="2968794441791257519">Zdjęcia i filmy pochodzące z aparatu zostaną przeniesione do folderu Pobrane pliki. Dostęp do nich możesz uzyskać w aplikacji Pliki.
 
@@ -52,6 +57,8 @@
 <translation id="3240426699337459095">Link skopiowany</translation>
 <translation id="3259149966178251584">Rozdzielczość aparatu</translation>
 <translation id="3305962767867348165">Rozwiąż problem</translation>
+<translation id="3354465018370944241">Ustawienia zdjęć</translation>
+<translation id="3411958449466169012">Wyłącz licznik</translation>
 <translation id="3448774564454087943">Film nie został zapisany, ponieważ jest za krótki</translation>
 <translation id="346539236881580388">Zrób ponownie</translation>
 <translation id="3517926952904427380">Nie można zrobić zdjęcia w orientacji pionowej</translation>
@@ -63,9 +70,12 @@
 <translation id="3810838688059735925">Wideo</translation>
 <translation id="3838931309141338733">Zeskanuj kod kreskowy</translation>
 <translation id="3892148308691398805">Kopiuj tekst</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpix</translation>
 <translation id="4118525110028899586">Wstrzymaj nagrywanie</translation>
 <translation id="4121305183798804752">Wykryto dokument</translation>
+<translation id="414641094616694804">Ta kamera nie umożliwia zmiany rozdzielczości</translation>
 <translation id="4269820728363426813">Kopiuj adres linku</translation>
+<translation id="4281620174117014503">Rozdzielczość średnia</translation>
 <translation id="4329152592498422850">Przełącz, by zrobić kwadratowe zdjęcie</translation>
 <translation id="4383571725254449280">Drukuj dzienniki wydajności</translation>
 <translation id="4445542136948522167">Nie rób zdjęcia</translation>
@@ -74,12 +84,15 @@
 <translation id="4628948037717959914">Zdjęcie</translation>
 <translation id="4649291346448517080">Nie udało się zapisać pliku</translation>
 <translation id="4695379108709712600">Przesuwam w górę</translation>
+<translation id="4705093842003735294">Rozdzielczość pełna</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Nagrywanie kilku strumieni wideo</translation>
+<translation id="5034763830503483128">Współczynnik proporcji zdjęcia</translation>
 <translation id="5057360777601936059">Aparat jest obecnie niedostępny.
         Sprawdź, czy jest prawidłowo podłączony.</translation>
 <translation id="5163387177077603948">Przesuwam w prawo</translation>
 <translation id="520537883758714667">Skanowanie dokumentów jest teraz dostępne</translation>
+<translation id="5235304959032763950">16 na 9</translation>
 <translation id="5266635337630551423">Lewy górny róg dokumentu</translation>
 <translation id="5317780077021120954">Zapisz</translation>
 <translation id="5320594929574852403">Przesuwam w lewo</translation>
@@ -94,6 +107,7 @@
 <translation id="5916664084637901428">Włączone</translation>
 <translation id="5975083100439434680">Pomniejsz</translation>
 <translation id="5976160379964388480">Pozostałe</translation>
+<translation id="603973421174355542">Full HD</translation>
 <translation id="6073451960410192870">Zatrzymaj nagrywanie</translation>
 <translation id="6197807149213783179">Zapisz metadane</translation>
 <translation id="6233780560267770709">3 na 3</translation>
@@ -104,6 +118,7 @@
 Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe zdjęcie lub film i opisz, na czym polega problem (na przykład zdjęcie jest za ciemne lub obiekt jest nieostry).</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> Mpix</translation>
 <translation id="6527303717912515753">Udostępnij</translation>
+<translation id="6631515515009660915">Odbicie lustrzane wyłączone</translation>
 <translation id="6652737148136672975">Przesuń pozycję rogu za pomocą klawiszy strzałek</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6681668084120808868">Zrób zdjęcie</translation>
@@ -114,6 +129,7 @@ Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe
 <translation id="698156982839284926">3 sekundy</translation>
 <translation id="712848772518857951">Czy na pewno chcesz usunąć te elementy (<ph name="COUNT" />)?</translation>
 <translation id="7134221860976209830">10-sekundowy samowyzwalacz</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Typ rekordu</translation>
 <translation id="7243947652761655814">Rozdzielczość wideo</translation>
 <translation id="7337660886763914220">Błędy systemu plików.</translation>
@@ -146,9 +162,11 @@ Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe
 <translation id="8815966864175525708">Przełącz, by zrobić zdjęcie w orientacji pionowej</translation>
 <translation id="8828441885228359828">Wznów nagrywanie</translation>
 <translation id="8870695351537079478">Nie udało się rozpocząć nagrywania</translation>
+<translation id="8880167521484863515">4 na 3</translation>
 <translation id="8903921497873541725">Powiększ</translation>
 <translation id="9045010116236796332">Wszystkie krawędzie dokumentu muszą znaleźć się wewnątrz ramki</translation>
 <translation id="9045155556724273246">10 sekund</translation>
 <translation id="906331135292332864">Przetwarzam obraz...</translation>
+<translation id="922762992951083513">Odbicie lustrzane włączone</translation>
 <translation id="945522503751344254">Prześlij opinię</translation>
 </translationbundle>

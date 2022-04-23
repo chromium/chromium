@@ -136,6 +136,7 @@
 <translation id="1697284962337958118">အောက်ပါသို့ ထည့်ပါ</translation>
 <translation id="1702543251015153180">သင့်မှောင်သည့် အပြင်အဆင် ဆက်တင်များကို ပြောင်းမလား။</translation>
 <translation id="1702907158640575240">စီမံထားသော ဘရောင်ဇာ</translation>
+<translation id="1710099199314114079">တဘ်များကို ပြောင်းပါ သို့မဟုတ် ပိတ်ပါ</translation>
 <translation id="1718835860248848330">နောက်ဆုံးတစ်နာရီ</translation>
 <translation id="1724977129262658800">သင့်စကားဝှက်ကို တည်းဖြတ်ရန် ဖွင့်ပါ</translation>
 <translation id="1726477445370128854">Chrome က သင်ဝင်ကြည့်နိုင်မည်ဟု ထင်သည့် စာမျက်နှာများကို ကြိုဖွင့်သည့်အခါ ပိုမိုမြန်ဆန်စွာ ကြည့်ရှုပြီး ရှာဖွေနိုင်ပါသည်</translation>
@@ -945,6 +946,7 @@
 <translation id="6324997754869598316">(အမှား <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> မှတစ်ဆင့် မျှဝေရန်</translation>
 <translation id="6337234675334993532">လျှို့ဝှက်ကုဒ်သွင်းခြင်း</translation>
+<translation id="6340910702212418132">စကားဝှက်မန်နေဂျာ <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="6341580099087024258">ဖိုင်များ သိမ်းရန် နေရာကို မေးမြန်းပါ</translation>
 <translation id="6342069812937806050">ယခုပင်</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ခု}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ခု}}</translation>

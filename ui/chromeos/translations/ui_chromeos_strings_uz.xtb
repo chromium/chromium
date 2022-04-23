@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">Ivrit tili transliteratsiyasi</translation>
 <translation id="1747761757048858544">Niderland (Niderlandiya)</translation>
 <translation id="174937106936716857">Umumiy fayllar soni</translation>
+<translation id="1755345808328621801">Ushbu fayl Windows platformasidagi kompyuterlar uchun ishlab chiqilgan va qurilmangizdagi ChromeOS tizimida ishga tushmaydi. Uni ochishga mos ilova topish uchun Chrome internet doʻkoniga tashrif buyuring.</translation>
 <translation id="1773212559869067373">Haqiqiylikni tekshirish sertifikati mahalliy tarzda rad etildi</translation>
 <translation id="1775381402323441512">Video haqida</translation>
 <translation id="180035236176489073">Ushbu fayllarni ochish uchun internetga ulangan bo‘lish kerak.</translation>
@@ -225,6 +226,7 @@
 <translation id="2943503720238418293">Nomni qisqartiring</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> formatlanmoqda...</translation>
 <translation id="2951236788251446349">Meduza</translation>
+<translation id="2977940621473452797">Bu fayl Mac platformasi uchun ishlab chiqilgan va ChromeOS qurilmangizda ishga tushmaydi. Ochadigan kerakli ilovani topish uchun Chrome internet doʻkoniga tashrif buyuring.</translation>
 <translation id="2984337792991268709">Bugun <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> ta fayl tiklanmoqda...</translation>
 <translation id="2994669386200004489"><ph name="FILE_NAME" /> nusxasi zaxiralanmadi</translation>
@@ -422,6 +424,7 @@
 <translation id="4694604912444486114">Maymun</translation>
 <translation id="469612310041132144">Xitoy (tezkor)</translation>
 <translation id="4697043402264950621"><ph name="COLUMN_NAME" /> ustunidagi fayllar roʻyxati oʻsishi boʻyicha tartiblangan.</translation>
+<translation id="469897186246626197">Bu fayl Windows platformasidagi kompyuterlar uchun ishlab chiqilgan. U qurilmadagi Chrome OS tizimida ishga tushmaydi. ChromeOS tizimida fayllarni ochish haqida <ph name="BEGIN_LINK_HELP" />batafsil<ph name="END_LINK_HELP" />.</translation>
 <translation id="4706042980341760088">Tamil (yozuv mashinkasi klaviaturasi)</translation>
 <translation id="4711094779914110278">Turk tili</translation>
 <translation id="4712283082407695269">“<ph name="PATH" />” ochilmoqda</translation>
@@ -542,6 +545,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5602622065581044566">Bolgar (fonetik klaviatura)</translation>
 <translation id="5605830556594064952">AQSH (Dvorak)</translation>
+<translation id="5618330573454123917">Bu fayl Mac platformasi uchun ishlab chiqilgan. U qurilmadagi Chrome OS tizimida ishga tushmaydi. ChromeOS tizimida fayllarni ochish haqida <ph name="BEGIN_LINK_HELP" />batafsil<ph name="END_LINK_HELP" />.</translation>
 <translation id="5625294776298156701">Tamil (Tamil99 klaviaturasi)</translation>
 <translation id="5633226425545095130">Bu fayl koʻchirilsa, u <ph name="DESTINATION_NAME" /> jildiga ruxsati bor barcha foydalanuvchilarga ulashiladi.</translation>
 <translation id="5649768706273821470">Tinglash</translation>
@@ -737,6 +741,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7309413087278791451">Nemis (Belgiya)</translation>
 <translation id="7339898014177206373">Yangi oyna</translation>
 <translation id="7343393116438664539">Vyetnam (Telex)</translation>
+<translation id="7357762654218998920">Bunday fayl turi ochilmaydi. ChromeOS tizimida fayllarni ochish haqida <ph name="BEGIN_LINK_HELP" />batafsil<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> ta fayl nusxalanmoqda...</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> ustunidagi fayllar roʻyxati kamayishi boʻyicha tartiblangan.</translation>
 <translation id="7402503521691663770">ChromeOS Flex qurilmalari</translation>

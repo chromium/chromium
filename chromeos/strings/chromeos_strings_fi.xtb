@@ -77,6 +77,7 @@
 <translation id="1717874160321062422">Ylläpitäjät: <ph name="FIRST_MANAGER" /> ja <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Nimipalvelimet</translation>
 <translation id="1731082422893354635">Bluetooth-kosketuslevy</translation>
+<translation id="1751249301761991853">Henkilökohtainen</translation>
 <translation id="1753496554272155572">Poistu taustakuvan esikatselusta</translation>
 <translation id="175763766237925754">Hyvä (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -496,6 +497,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Ylläpitäjä: <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Pysähtynyt – Paperitukos</translation>
+<translation id="6494974875566443634">Personointi</translation>
 <translation id="6500818810472529210">Katso tulos Google Haussa</translation>
 <translation id="650266656685499220">Voit luoda albumeita avaamalla Google Kuvat</translation>
 <translation id="6516990319416533844">Anna akun tyhjentyä hetken aikaa, jotta voit testata sen latautumisnopeutta</translation>
