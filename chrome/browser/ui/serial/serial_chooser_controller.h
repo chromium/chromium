@@ -13,7 +13,9 @@
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "components/permissions/chooser_controller.h"
 #include "content/public/browser/serial_chooser.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "services/device/public/mojom/serial.mojom-forward.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/serial/serial.mojom.h"
 #include "url/origin.h"
 
@@ -59,12 +61,14 @@ class SerialChooserController final
  private:
   void OnGetDevices(std::vector<device::mojom::SerialPortInfoPtr> ports);
   bool DisplayDevice(const device::mojom::SerialPortInfo& port) const;
+  void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
+                           const std::string& message) const;
   void RunCallback(device::mojom::SerialPortInfoPtr port);
 
   std::vector<blink::mojom::SerialPortFilterPtr> filters_;
   content::SerialChooser::Callback callback_;
+  content::WeakDocumentPtr initiator_document_;
   url::Origin origin_;
-  const int frame_tree_node_id_;
 
   base::WeakPtr<SerialChooserContext> chooser_context_;
   base::ScopedObservation<SerialChooserContext,

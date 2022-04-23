@@ -32,7 +32,7 @@ SerialChooserController::SerialChooserController(
           IDS_SERIAL_PORT_CHOOSER_PROMPT_EXTENSION_NAME)),
       filters_(std::move(filters)),
       callback_(std::move(callback)),
-      frame_tree_node_id_(render_frame_host->GetFrameTreeNodeId()) {
+      initiator_document_(render_frame_host->GetWeakDocumentPtr()) {
   origin_ = render_frame_host->GetMainFrame()->GetLastCommittedOrigin();
 
   auto* profile =
@@ -121,8 +121,13 @@ void SerialChooserController::Cancel() {}
 void SerialChooserController::Close() {}
 
 void SerialChooserController::OpenHelpCenterUrl() const {
-  auto* web_contents =
-      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
+  auto* rfh = initiator_document_.AsRenderFrameHostIfValid();
+  auto* web_contents = rfh && rfh->IsActive()
+                           ? content::WebContents::FromRenderFrameHost(rfh)
+                           : nullptr;
+  if (!web_contents)
+    return;
+
   web_contents->OpenURL(content::OpenURLParams(
       GURL(chrome::kChooserSerialOverviewUrl), content::Referrer(),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -175,8 +180,19 @@ void SerialChooserController::OnGetDevices(
 
 bool SerialChooserController::DisplayDevice(
     const device::mojom::SerialPortInfo& port) const {
-  if (SerialBlocklist::Get().IsExcluded(port))
+  if (SerialBlocklist::Get().IsExcluded(port)) {
+    DCHECK(port.has_vendor_id && port.has_product_id);
+    AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kInfo,
+        base::StringPrintf(
+            "Chooser dialog is not displaying a port blocked by "
+            "the Serial blocklist: vendorId=%d, "
+            "productId=%d, name='%s', serial='%s'",
+            port.vendor_id, port.product_id,
+            port.display_name ? port.display_name.value().c_str() : "",
+            port.serial_number ? port.serial_number.value().c_str() : ""));
     return false;
+  }
 
   if (filters_.empty())
     return true;
@@ -194,6 +210,15 @@ bool SerialChooserController::DisplayDevice(
   }
 
   return false;
+}
+
+void SerialChooserController::AddMessageToConsole(
+    blink::mojom::ConsoleMessageLevel level,
+    const std::string& message) const {
+  if (content::RenderFrameHost* rfh =
+          initiator_document_.AsRenderFrameHostIfValid()) {
+    rfh->AddMessageToConsole(level, message);
+  }
 }
 
 void SerialChooserController::RunCallback(
