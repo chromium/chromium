@@ -19,6 +19,7 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -225,6 +226,61 @@ class PowerMetricsReporterUnitTest : public testing::Test {
 };
 
 }  // namespace
+
+using testing::ElementsAre;
+using testing::StrEq;
+
+TEST_F(PowerMetricsReporterUnitTest, LongIntervalHistograms) {
+  UsageScenarioDataStore::IntervalData interval_data;
+  interval_data.max_tab_count = 1;
+  interval_data.max_visible_window_count = 1;
+  interval_data.time_capturing_video = base::Seconds(1);
+  long_data_store_.SetIntervalDataToReturn(interval_data);
+
+  task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      1, 1, 0.30, true, base::TimeTicks::Now()});
+  WaitForNextSample(GetFakeProcessMetrics());
+
+  const char* kScenarioSuffix = ".VideoCapture";
+  const std::vector<const char*> suffixes({"", kScenarioSuffix});
+  ExpectHistogramSamples(&histogram_tester_, suffixes,
+                         {{"PerformanceMonitor.AverageCPU2.Total", 500}});
+}
+
+#if BUILDFLAG(IS_MAC)
+TEST_F(PowerMetricsReporterUnitTest, ResourceCoalitionHistograms_EndToEnd) {
+  UsageScenarioDataStore::IntervalData interval_data;
+  interval_data.max_tab_count = 1;
+  interval_data.max_visible_window_count = 1;
+  interval_data.time_capturing_video = base::Seconds(1);
+  long_data_store_.SetIntervalDataToReturn(interval_data);
+
+  auto cru1 = std::make_unique<coalition_resource_usage>();
+  cru1->cpu_time = base::Seconds(5).InNanoseconds();
+  coalition_resource_usage_provider_->SetCoalitionResourceUsage(
+      std::move(cru1));
+  task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval -
+                                  PowerMetricsReporter::kShortIntervalDuration);
+
+  auto cru2 = std::make_unique<coalition_resource_usage>();
+  cru2->cpu_time = base::Seconds(6).InNanoseconds();
+  coalition_resource_usage_provider_->SetCoalitionResourceUsage(
+      std::move(cru2));
+  task_environment_.FastForwardBy(PowerMetricsReporter::kShortIntervalDuration);
+
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      1, 1, 0.30, true, base::TimeTicks::Now()});
+  performance_monitor::ProcessMonitor::Metrics aggregated_process_metrics = {};
+  WaitForNextSample(aggregated_process_metrics);
+
+  const char* kScenarioSuffix = ".VideoCapture";
+  const std::vector<const char*> suffixes({"", kScenarioSuffix});
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"PerformanceMonitor.ResourceCoalition.CPUTime2", 500}});
+}
+#endif
 
 TEST_F(PowerMetricsReporterUnitTest, UKMs) {
   UsageScenarioDataStore::IntervalData fake_interval_data;
@@ -576,40 +632,17 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateIncrease) {
       BatteryDischargeMode::kBatteryLevelIncreased, 1);
 }
 
-TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_ZeroWindow) {
+TEST_F(PowerMetricsReporterUnitTest, GetLongIntervalSuffixes_ZeroWindow) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 0;
 
-  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
-      interval_data, GetFakeProcessMetrics(),
-      kExpectedMetricsCollectionInterval,
-      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
-#if BUILDFLAG(IS_MAC)
-      ,
-      GetFakeResourceUsageRate()
-#endif  // BUILDFLAG(IS_MAC)
-  );
-
-  const std::vector<const char*> suffixes({"", ".ZeroWindow"});
-  ExpectHistogramSamples(&histogram_tester_, suffixes, {
-    {"Power.BatteryDischargeRate2", 2500},
-        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                           BatteryDischargeMode::kDischarging)},
-    {
-      "PerformanceMonitor.AverageCPU2.Total", 500
-    }
-#if BUILDFLAG(IS_MAC)
-    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
-#endif  // BUILDFLAG(IS_MAC)
-  });
-
-  // Note: For simplicity, this test only verifies that one of the
-  // PerformanceMonitor.* and ResourceCoalition.* histograms is recorded
-  // correctly.
+  EXPECT_THAT(PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
+                  interval_data),
+              ElementsAre(StrEq(""), StrEq(".ZeroWindow")));
 }
 
 TEST_F(PowerMetricsReporterUnitTest,
-       SuffixedHistograms_AllTabsHidden_VideoCapture) {
+       GetLongIntervalSuffixes_AllTabsHidden_VideoCapture) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 0;
@@ -622,34 +655,13 @@ TEST_F(PowerMetricsReporterUnitTest,
   interval_data.top_level_navigation_count = 1;
   interval_data.user_interaction_count = 1;
 
-  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
-      interval_data, GetFakeProcessMetrics(),
-      kExpectedMetricsCollectionInterval,
-      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
-#if BUILDFLAG(IS_MAC)
-      ,
-      GetFakeResourceUsageRate()
-#endif  // BUILDFLAG(IS_MAC)
-  );
-
-  const std::vector<const char*> suffixes({"", ".AllTabsHidden_VideoCapture"});
-  ExpectHistogramSamples(&histogram_tester_, suffixes, {
-    {"Power.BatteryDischargeRate2", 2500},
-        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                           BatteryDischargeMode::kDischarging)},
-    {
-      "PerformanceMonitor.AverageCPU2.Total", 500
-    }
-#if BUILDFLAG(IS_MAC)
-    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
-#endif  // BUILDFLAG(IS_MAC)
-  });
-
-  // Note: For simplicity, this test only verifies that one of the
-  // PerformanceMonitor.* histograms is recorded correctly.
+  EXPECT_THAT(PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
+                  interval_data),
+              ElementsAre(StrEq(""), StrEq(".AllTabsHidden_VideoCapture")));
 }
 
-TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_AllTabsHidden_Audio) {
+TEST_F(PowerMetricsReporterUnitTest,
+       GetLongIntervalSuffixes_AllTabsHidden_Audio) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 0;
@@ -662,35 +674,13 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_AllTabsHidden_Audio) {
   interval_data.top_level_navigation_count = 1;
   interval_data.user_interaction_count = 1;
 
-  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
-      interval_data, GetFakeProcessMetrics(),
-      kExpectedMetricsCollectionInterval,
-      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
-#if BUILDFLAG(IS_MAC)
-      ,
-      GetFakeResourceUsageRate()
-#endif  // BUILDFLAG(IS_MAC)
-  );
-
-  const std::vector<const char*> suffixes({"", ".AllTabsHidden_Audio"});
-  ExpectHistogramSamples(&histogram_tester_, suffixes, {
-    {"Power.BatteryDischargeRate2", 2500},
-        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                           BatteryDischargeMode::kDischarging)},
-    {
-      "PerformanceMonitor.AverageCPU2.Total", 500
-    }
-#if BUILDFLAG(IS_MAC)
-    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
-#endif  // BUILDFLAG(IS_MAC)
-  });
-
-  // Note: For simplicity, this test only verifies that one of the
-  // PerformanceMonitor.* histograms is recorded correctly.
+  EXPECT_THAT(PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
+                  interval_data),
+              ElementsAre(StrEq(""), StrEq(".AllTabsHidden_Audio")));
 }
 
 TEST_F(PowerMetricsReporterUnitTest,
-       SuffixedHistograms_AllTabsHidden_NoVideoCaptureOrAudio) {
+       GetLongIntervalSuffixes_AllTabsHidden_NoVideoCaptureOrAudio) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 0;
@@ -703,36 +693,13 @@ TEST_F(PowerMetricsReporterUnitTest,
   interval_data.top_level_navigation_count = 1;
   interval_data.user_interaction_count = 1;
 
-  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
-      interval_data, GetFakeProcessMetrics(),
-      kExpectedMetricsCollectionInterval,
-      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
-#if BUILDFLAG(IS_MAC)
-      ,
-      GetFakeResourceUsageRate()
-#endif  // BUILDFLAG(IS_MAC)
-  );
-
-  const std::vector<const char*> suffixes(
-      {"", ".AllTabsHidden_NoVideoCaptureOrAudio"});
-  ExpectHistogramSamples(&histogram_tester_, suffixes, {
-    {"Power.BatteryDischargeRate2", 2500},
-        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                           BatteryDischargeMode::kDischarging)},
-    {
-      "PerformanceMonitor.AverageCPU2.Total", 500
-    }
-#if BUILDFLAG(IS_MAC)
-    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
-#endif  // BUILDFLAG(IS_MAC)
-  });
-
-  // Note: For simplicity, this test only verifies that one of the
-  // PerformanceMonitor.* and ResourceCoalition.* histograms is recorded
-  // correctly.
+  EXPECT_THAT(
+      PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
+          interval_data),
+      ElementsAre(StrEq(""), StrEq(".AllTabsHidden_NoVideoCaptureOrAudio")));
 }
 
-TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_VideoCapture) {
+TEST_F(PowerMetricsReporterUnitTest, GetLongIntervalSuffixes_VideoCapture) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 1;
@@ -745,35 +712,12 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_VideoCapture) {
   interval_data.top_level_navigation_count = 1;
   interval_data.user_interaction_count = 1;
 
-  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
-      interval_data, GetFakeProcessMetrics(),
-      kExpectedMetricsCollectionInterval,
-      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
-#if BUILDFLAG(IS_MAC)
-      ,
-      GetFakeResourceUsageRate()
-#endif  // BUILDFLAG(IS_MAC)
-  );
-
-  const std::vector<const char*> suffixes({"", ".VideoCapture"});
-  ExpectHistogramSamples(&histogram_tester_, suffixes, {
-    {"Power.BatteryDischargeRate2", 2500},
-        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                           BatteryDischargeMode::kDischarging)},
-    {
-      "PerformanceMonitor.AverageCPU2.Total", 500
-    }
-#if BUILDFLAG(IS_MAC)
-    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
-#endif  // BUILDFLAG(IS_MAC)
-  });
-
-  // Note: For simplicity, this test only verifies that one of the
-  // PerformanceMonitor.* and ResourceCoalition.* histograms is recorded
-  // correctly.
+  EXPECT_THAT(PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
+                  interval_data),
+              ElementsAre(StrEq(""), StrEq(".VideoCapture")));
 }
 
-TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_FullscreenVideo) {
+TEST_F(PowerMetricsReporterUnitTest, GetLongIntervalSuffixes_FullscreenVideo) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 1;
@@ -786,36 +730,13 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_FullscreenVideo) {
   interval_data.top_level_navigation_count = 1;
   interval_data.user_interaction_count = 1;
 
-  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
-      interval_data, GetFakeProcessMetrics(),
-      kExpectedMetricsCollectionInterval,
-      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
-#if BUILDFLAG(IS_MAC)
-      ,
-      GetFakeResourceUsageRate()
-#endif  // BUILDFLAG(IS_MAC)
-  );
-
-  const std::vector<const char*> suffixes({"", ".FullscreenVideo"});
-  ExpectHistogramSamples(&histogram_tester_, suffixes, {
-    {"Power.BatteryDischargeRate2", 2500},
-        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                           BatteryDischargeMode::kDischarging)},
-    {
-      "PerformanceMonitor.AverageCPU2.Total", 500
-    }
-#if BUILDFLAG(IS_MAC)
-    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
-#endif  // BUILDFLAG(IS_MAC)
-  });
-
-  // Note: For simplicity, this test only verifies that one of the
-  // PerformanceMonitor.* and ResourceCoalition.* histograms is recorded
-  // correctly.
+  EXPECT_THAT(PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
+                  interval_data),
+              ElementsAre(StrEq(""), StrEq(".FullscreenVideo")));
 }
 
 TEST_F(PowerMetricsReporterUnitTest,
-       SuffixedHistograms_EmbeddedVideo_NoNavigation) {
+       GetLongIntervalSuffixes_EmbeddedVideo_NoNavigation) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 1;
@@ -828,36 +749,13 @@ TEST_F(PowerMetricsReporterUnitTest,
   interval_data.time_playing_audio = base::Seconds(1);
   interval_data.user_interaction_count = 1;
 
-  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
-      interval_data, GetFakeProcessMetrics(),
-      kExpectedMetricsCollectionInterval,
-      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
-#if BUILDFLAG(IS_MAC)
-      ,
-      GetFakeResourceUsageRate()
-#endif  // BUILDFLAG(IS_MAC)
-  );
-
-  const std::vector<const char*> suffixes({"", ".EmbeddedVideo_NoNavigation"});
-  ExpectHistogramSamples(&histogram_tester_, suffixes, {
-    {"Power.BatteryDischargeRate2", 2500},
-        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                           BatteryDischargeMode::kDischarging)},
-    {
-      "PerformanceMonitor.AverageCPU2.Total", 500
-    }
-#if BUILDFLAG(IS_MAC)
-    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
-#endif  // BUILDFLAG(IS_MAC)
-  });
-
-  // Note: For simplicity, this test only verifies that one of the
-  // PerformanceMonitor.* and ResourceCoalition.* histograms is recorded
-  // correctly.
+  EXPECT_THAT(PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
+                  interval_data),
+              ElementsAre(StrEq(""), StrEq(".EmbeddedVideo_NoNavigation")));
 }
 
 TEST_F(PowerMetricsReporterUnitTest,
-       SuffixedHistograms_EmbeddedVideo_WithNavigation) {
+       GetLongIntervalSuffixes_EmbeddedVideo_WithNavigation) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 1;
@@ -870,36 +768,12 @@ TEST_F(PowerMetricsReporterUnitTest,
   interval_data.time_playing_audio = base::Seconds(1);
   interval_data.user_interaction_count = 1;
 
-  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
-      interval_data, GetFakeProcessMetrics(),
-      kExpectedMetricsCollectionInterval,
-      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
-#if BUILDFLAG(IS_MAC)
-      ,
-      GetFakeResourceUsageRate()
-#endif  // BUILDFLAG(IS_MAC)
-  );
-
-  const std::vector<const char*> suffixes(
-      {"", ".EmbeddedVideo_WithNavigation"});
-  ExpectHistogramSamples(&histogram_tester_, suffixes, {
-    {"Power.BatteryDischargeRate2", 2500},
-        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                           BatteryDischargeMode::kDischarging)},
-    {
-      "PerformanceMonitor.AverageCPU2.Total", 500
-    }
-#if BUILDFLAG(IS_MAC)
-    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
-#endif  // BUILDFLAG(IS_MAC)
-  });
-
-  // Note: For simplicity, this test only verifies that one of the
-  // PerformanceMonitor.* and ResourceCoalition.* histograms is recorded
-  // correctly.
+  EXPECT_THAT(PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
+                  interval_data),
+              ElementsAre(StrEq(""), StrEq(".EmbeddedVideo_WithNavigation")));
 }
 
-TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Audio) {
+TEST_F(PowerMetricsReporterUnitTest, GetLongIntervalSuffixes_Audio) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 1;
@@ -912,35 +786,12 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Audio) {
   interval_data.user_interaction_count = 1;
   interval_data.top_level_navigation_count = 1;
 
-  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
-      interval_data, GetFakeProcessMetrics(),
-      kExpectedMetricsCollectionInterval,
-      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
-#if BUILDFLAG(IS_MAC)
-      ,
-      GetFakeResourceUsageRate()
-#endif  // BUILDFLAG(IS_MAC)
-  );
-
-  const std::vector<const char*> suffixes({"", ".Audio"});
-  ExpectHistogramSamples(&histogram_tester_, suffixes, {
-    {"Power.BatteryDischargeRate2", 2500},
-        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                           BatteryDischargeMode::kDischarging)},
-    {
-      "PerformanceMonitor.AverageCPU2.Total", 500
-    }
-#if BUILDFLAG(IS_MAC)
-    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
-#endif  // BUILDFLAG(IS_MAC)
-  });
-
-  // Note: For simplicity, this test only verifies that one of the
-  // PerformanceMonitor.* and ResourceCoalition.* histograms is recorded
-  // correctly.
+  EXPECT_THAT(PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
+                  interval_data),
+              ElementsAre(StrEq(""), StrEq(".Audio")));
 }
 
-TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Navigation) {
+TEST_F(PowerMetricsReporterUnitTest, GetLongIntervalSuffixes_Navigation) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 1;
@@ -953,35 +804,12 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Navigation) {
   // Values below should be ignored.
   interval_data.user_interaction_count = 1;
 
-  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
-      interval_data, GetFakeProcessMetrics(),
-      kExpectedMetricsCollectionInterval,
-      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
-#if BUILDFLAG(IS_MAC)
-      ,
-      GetFakeResourceUsageRate()
-#endif  // BUILDFLAG(IS_MAC)
-  );
-
-  const std::vector<const char*> suffixes({"", ".Navigation"});
-  ExpectHistogramSamples(&histogram_tester_, suffixes, {
-    {"Power.BatteryDischargeRate2", 2500},
-        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                           BatteryDischargeMode::kDischarging)},
-    {
-      "PerformanceMonitor.AverageCPU2.Total", 500
-    }
-#if BUILDFLAG(IS_MAC)
-    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
-#endif  // BUILDFLAG(IS_MAC)
-  });
-
-  // Note: For simplicity, this test only verifies that one of the
-  // PerformanceMonitor.* and ResourceCoalition.* histograms is recorded
-  // correctly.
+  EXPECT_THAT(PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
+                  interval_data),
+              ElementsAre(StrEq(""), StrEq(".Navigation")));
 }
 
-TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Interaction) {
+TEST_F(PowerMetricsReporterUnitTest, GetLongIntervalSuffixes_Interaction) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 1;
@@ -993,35 +821,12 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Interaction) {
   interval_data.top_level_navigation_count = 0;
   interval_data.user_interaction_count = 1;
 
-  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
-      interval_data, GetFakeProcessMetrics(),
-      kExpectedMetricsCollectionInterval,
-      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
-#if BUILDFLAG(IS_MAC)
-      ,
-      GetFakeResourceUsageRate()
-#endif  // BUILDFLAG(IS_MAC)
-  );
-
-  const std::vector<const char*> suffixes({"", ".Interaction"});
-  ExpectHistogramSamples(&histogram_tester_, suffixes, {
-    {"Power.BatteryDischargeRate2", 2500},
-        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                           BatteryDischargeMode::kDischarging)},
-    {
-      "PerformanceMonitor.AverageCPU2.Total", 500
-    }
-#if BUILDFLAG(IS_MAC)
-    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
-#endif  // BUILDFLAG(IS_MAC)
-  });
-
-  // Note: For simplicity, this test only verifies that one of the
-  // PerformanceMonitor.* and ResourceCoalition.* histograms is recorded
-  // correctly.
+  EXPECT_THAT(PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
+                  interval_data),
+              ElementsAre(StrEq(""), StrEq(".Interaction")));
 }
 
-TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Passive) {
+TEST_F(PowerMetricsReporterUnitTest, GetLongIntervalSuffixes_Passive) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 1;
@@ -1033,32 +838,9 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Passive) {
   interval_data.top_level_navigation_count = 0;
   interval_data.user_interaction_count = 0;
 
-  PowerMetricsReporterAccess::ReportLongIntervalHistograms(
-      interval_data, GetFakeProcessMetrics(),
-      kExpectedMetricsCollectionInterval,
-      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
-#if BUILDFLAG(IS_MAC)
-      ,
-      GetFakeResourceUsageRate()
-#endif  // BUILDFLAG(IS_MAC)
-  );
-
-  const std::vector<const char*> suffixes({"", ".Passive"});
-  ExpectHistogramSamples(&histogram_tester_, suffixes, {
-    {"Power.BatteryDischargeRate2", 2500},
-        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                           BatteryDischargeMode::kDischarging)},
-    {
-      "PerformanceMonitor.AverageCPU2.Total", 500
-    }
-#if BUILDFLAG(IS_MAC)
-    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
-#endif  // BUILDFLAG(IS_MAC)
-  });
-
-  // Note: For simplicity, this test only verifies that one of the
-  // PerformanceMonitor.* and ResourceCoalition.* histograms is recorded
-  // correctly.
+  EXPECT_THAT(PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
+                  interval_data),
+              ElementsAre(StrEq(""), StrEq(".Passive")));
 }
 
 TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsTooEarly) {
