@@ -1064,7 +1064,8 @@ TEST_F(CalendarViewAnimationTest, DISABLED_HeaderAnimation) {
 }
 
 // The month views and header should animate when scrolling up or down.
-TEST_F(CalendarViewAnimationTest, MonthAndHeaderAnimation) {
+// TODO(crbug.com/1319005): Fix flakiness and re-enable.
+TEST_F(CalendarViewAnimationTest, DISABLED_MonthAndHeaderAnimation) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
@@ -1194,7 +1195,8 @@ TEST_F(CalendarViewAnimationTest, MonthAndHeaderAnimation) {
 }
 
 // The content view should not be scrollable when the month view is animating.
-TEST_F(CalendarViewAnimationTest, NotScrollableWhenAnimating) {
+// TODO(crbug.com/1319005): Fix flakiness and re-enable.
+TEST_F(CalendarViewAnimationTest, DISABLED_NotScrollableWhenAnimating) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
