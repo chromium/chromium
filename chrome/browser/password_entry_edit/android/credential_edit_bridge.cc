@@ -138,7 +138,7 @@ std::u16string CredentialEditBridge::GetDisplayURLOrAppName() {
           url_formatter::kFormatUrlOmitHTTPS |
           url_formatter::kFormatUrlOmitTrivialSubdomains |
           url_formatter::kFormatUrlTrimAfterHost,
-      net::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
+      base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
 }
 
 std::u16string CredentialEditBridge::GetDisplayFederationOrigin() {
@@ -149,6 +149,6 @@ std::u16string CredentialEditBridge::GetDisplayFederationOrigin() {
                        url_formatter::kFormatUrlOmitHTTPS |
                        url_formatter::kFormatUrlOmitTrivialSubdomains |
                        url_formatter::kFormatUrlTrimAfterHost,
-                   net::UnescapeRule::SPACES, nullptr, nullptr, nullptr)
+                   base::UnescapeRule::SPACES, nullptr, nullptr, nullptr)
              : std::u16string();
 }

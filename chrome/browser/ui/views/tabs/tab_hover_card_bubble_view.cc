@@ -901,7 +901,7 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
               url_formatter::kFormatUrlOmitHTTPS |
               url_formatter::kFormatUrlOmitTrivialSubdomains |
               url_formatter::kFormatUrlTrimAfterHost,
-          net::UnescapeRule::NORMAL, nullptr, nullptr, nullptr);
+          base::UnescapeRule::NORMAL, nullptr, nullptr, nullptr);
 
       // Most of the time we want our standard (tail-elided) formatting for web
       // pages, but when viewing an image in the browser, many users want to

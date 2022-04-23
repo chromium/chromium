@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/notreached.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_split.h"
-#include "net/base/escape.h"
 
 namespace android_webview {
 
@@ -51,7 +51,7 @@ bool ParseHeader(const std::string& header,
        ++it) {
     const std::string& key = it->first;
     const std::string& value = it->second;
-    std::string unescaped_value = net::UnescapeBinaryURLComponent(value);
+    std::string unescaped_value = base::UnescapeBinaryURLComponent(value);
     if (key == "realm") {
       if (!MatchRealm(unescaped_value, realm_restriction))
         return false;

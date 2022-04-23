@@ -11,10 +11,10 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/json/json_writer.h"
+#include "base/strings/escape.h"
 #include "base/values.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
-#include "net/base/escape.h"
 
 namespace file_manager {
 namespace util {
@@ -140,9 +140,10 @@ GURL GetFileManagerMainPageUrlWithParams(
   std::string json_args;
   base::JSONWriter::Write(arg_value, &json_args);
 
-  std::string url = GetFileManagerMainPageUrl().spec() + '?' +
-      net::EscapeUrlEncodedData(json_args,
-                                false);  // Space to %20 instead of +.
+  std::string url =
+      GetFileManagerMainPageUrl().spec() + '?' +
+      base::EscapeUrlEncodedData(json_args,
+                                 false);  // Space to %20 instead of +.
   return GURL(url);
 }
 

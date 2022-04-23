@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -20,7 +21,6 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/base/data_url.h"
-#include "net/base/escape.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -77,7 +77,7 @@ class AccessibilityActionBrowserTest : public ContentBrowserTest {
                                            ui::kAXModeComplete,
                                            ax::mojom::Event::kLoadComplete);
     GURL html_data_url("data:text/html," +
-                       net::EscapeQueryParamValue(html, false));
+                       base::EscapeQueryParamValue(html, false));
     EXPECT_TRUE(NavigateToURL(shell(), html_data_url));
     waiter.WaitForNotification();
   }

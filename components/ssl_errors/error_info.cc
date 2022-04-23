@@ -8,9 +8,9 @@
 
 #include "base/i18n/message_formatter.h"
 #include "base/notreached.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
-#include "net/base/escape.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/ssl/ssl_info.h"
@@ -58,7 +58,7 @@ ErrorInfo ErrorInfo::CreateError(ErrorType error_type,
         details = l10n_util::GetStringFUTF16(
             IDS_CERT_ERROR_COMMON_NAME_INVALID_DETAILS,
             UTF8ToUTF16(request_url.host()),
-            net::EscapeForHTML(UTF8ToUTF16(dns_names[i])));
+            base::EscapeForHTML(UTF8ToUTF16(dns_names[i])));
       }
 
       short_description = l10n_util::GetStringUTF16(

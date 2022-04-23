@@ -11,12 +11,12 @@
 #include "base/hash/sha1.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "components/cast_channel/cast_socket.h"
 #include "components/cast_channel/enum_table.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
-#include "net/base/escape.h"
 
 namespace cast_util {
 
@@ -152,7 +152,7 @@ base::Value CreateReceiver(const MediaSinkInternal& sink,
   }
 
   receiver.SetKey("friendlyName",
-                  base::Value(net::EscapeForHTML(sink.sink().name())));
+                  base::Value(base::EscapeForHTML(sink.sink().name())));
   receiver.SetKey("capabilities",
                   CapabilitiesToListValue(sink.cast_data().capabilities));
   receiver.SetKey("volume", base::Value());

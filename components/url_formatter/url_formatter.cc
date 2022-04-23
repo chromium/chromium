@@ -103,20 +103,20 @@ class HostComponentTransform : public AppendComponentTransform {
 
 class NonHostComponentTransform : public AppendComponentTransform {
  public:
-  explicit NonHostComponentTransform(net::UnescapeRule::Type unescape_rules)
+  explicit NonHostComponentTransform(base::UnescapeRule::Type unescape_rules)
       : unescape_rules_(unescape_rules) {}
 
  private:
   std::u16string Execute(
       const std::string& component_text,
       base::OffsetAdjuster::Adjustments* adjustments) const override {
-    return (unescape_rules_ == net::UnescapeRule::NONE)
+    return (unescape_rules_ == base::UnescapeRule::NONE)
                ? base::UTF8ToUTF16WithAdjustments(component_text, adjustments)
-               : net::UnescapeAndDecodeUTF8URLComponentWithAdjustments(
+               : base::UnescapeAndDecodeUTF8URLComponentWithAdjustments(
                      component_text, unescape_rules_, adjustments);
   }
 
-  const net::UnescapeRule::Type unescape_rules_;
+  const base::UnescapeRule::Type unescape_rules_;
 };
 
 // Transforms the portion of |spec| covered by |original_component| according to
@@ -192,7 +192,7 @@ void AdjustAllComponentsButScheme(int delta, url::Parsed* parsed) {
 std::u16string FormatViewSourceUrl(
     const GURL& url,
     FormatUrlTypes format_types,
-    net::UnescapeRule::Type unescape_rules,
+    base::UnescapeRule::Type unescape_rules,
     url::Parsed* new_parsed,
     size_t* prefix_end,
     base::OffsetAdjuster::Adjustments* adjustments) {
@@ -507,7 +507,7 @@ const FormatUrlType kFormatUrlOmitDefaults =
 
 std::u16string FormatUrl(const GURL& url,
                          FormatUrlTypes format_types,
-                         net::UnescapeRule::Type unescape_rules,
+                         base::UnescapeRule::Type unescape_rules,
                          url::Parsed* new_parsed,
                          size_t* prefix_end,
                          size_t* offset_for_adjustment) {
@@ -524,7 +524,7 @@ std::u16string FormatUrl(const GURL& url,
 std::u16string FormatUrlWithOffsets(
     const GURL& url,
     FormatUrlTypes format_types,
-    net::UnescapeRule::Type unescape_rules,
+    base::UnescapeRule::Type unescape_rules,
     url::Parsed* new_parsed,
     size_t* prefix_end,
     std::vector<size_t>* offsets_for_adjustment) {
@@ -539,7 +539,7 @@ std::u16string FormatUrlWithOffsets(
 std::u16string FormatUrlWithAdjustments(
     const GURL& url,
     FormatUrlTypes format_types,
-    net::UnescapeRule::Type unescape_rules,
+    base::UnescapeRule::Type unescape_rules,
     url::Parsed* new_parsed,
     size_t* prefix_end,
     base::OffsetAdjuster::Adjustments* adjustments) {

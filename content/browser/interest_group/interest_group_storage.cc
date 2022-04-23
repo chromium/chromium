@@ -19,12 +19,12 @@
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "net/base/escape.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"
@@ -82,7 +82,7 @@ enum class KAnonType {
 GURL KAnonKeyFor(url::Origin interest_group_owner,
                  std::string interest_group_name) {
   return interest_group_owner.GetURL().Resolve(
-      net::EscapePath(interest_group_name));
+      base::EscapePath(interest_group_name));
 }
 
 std::string Serialize(const base::Value& value) {

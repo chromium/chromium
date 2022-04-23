@@ -9,10 +9,10 @@
 
 #include "ash/components/arc/mojom/file_system.mojom.h"
 #include "base/containers/contains.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "net/base/escape.h"
 #include "net/base/mime_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "url/gurl.h"
@@ -117,9 +117,10 @@ std::string EscapePathComponent(const std::string& name) {
 }
 
 std::string UnescapePathComponent(const std::string& escaped) {
-  return net::UnescapeURLComponent(
-      escaped, net::UnescapeRule::PATH_SEPARATORS |
-                   net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
+  return base::UnescapeURLComponent(
+      escaped,
+      base::UnescapeRule::PATH_SEPARATORS |
+          base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
 }
 
 const char kDocumentsProviderMountPointName[] = "arc-documents-provider";
@@ -181,8 +182,8 @@ GURL BuildDocumentUrl(const std::string& authority,
                       const std::string& document_id) {
   return GURL(base::StringPrintf(
       "content://%s/document/%s",
-      net::EscapeQueryParamValue(authority, false /* use_plus */).c_str(),
-      net::EscapeQueryParamValue(document_id, false /* use_plus */).c_str()));
+      base::EscapeQueryParamValue(authority, false /* use_plus */).c_str(),
+      base::EscapeQueryParamValue(document_id, false /* use_plus */).c_str()));
 }
 
 std::vector<base::FilePath::StringType> GetExtensionsForArcMimeType(

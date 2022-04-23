@@ -11,6 +11,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -23,7 +24,6 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_external_agent_proxy.h"
 #include "content/public/browser/devtools_external_agent_proxy_delegate.h"
-#include "net/base/escape.h"
 
 using content::BrowserThread;
 using content::DevToolsAgentHost;
@@ -282,7 +282,7 @@ AgentHostDelegate::AgentHostDelegate(
       remote_id_(value ? GetStringProperty(*value, "id") : ""),
       frontend_url_(value ? GetFrontendURLFromValue(*value, browser_version)
                           : ""),
-      title_(value ? base::UTF16ToUTF8(net::UnescapeForHTML(
+      title_(value ? base::UTF16ToUTF8(base::UnescapeForHTML(
                          base::UTF8ToUTF16(GetStringProperty(*value, "title"))))
                    : ""),
       description_(value ? GetStringProperty(*value, "description") : ""),

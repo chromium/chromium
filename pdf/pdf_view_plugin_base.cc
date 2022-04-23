@@ -29,6 +29,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -36,7 +37,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "net/base/escape.h"
 #include "pdf/accessibility.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/buildflags.h"
@@ -323,11 +323,11 @@ void PdfViewPluginBase::Email(const std::string& to,
                               const std::string& body) {
   base::Value::Dict message;
   message.Set("type", "email");
-  message.Set("to", net::EscapeUrlEncodedData(to, false));
-  message.Set("cc", net::EscapeUrlEncodedData(cc, false));
-  message.Set("bcc", net::EscapeUrlEncodedData(bcc, false));
-  message.Set("subject", net::EscapeUrlEncodedData(subject, false));
-  message.Set("body", net::EscapeUrlEncodedData(body, false));
+  message.Set("to", base::EscapeUrlEncodedData(to, false));
+  message.Set("cc", base::EscapeUrlEncodedData(cc, false));
+  message.Set("bcc", base::EscapeUrlEncodedData(bcc, false));
+  message.Set("subject", base::EscapeUrlEncodedData(subject, false));
+  message.Set("body", base::EscapeUrlEncodedData(body, false));
   SendMessage(std::move(message));
 }
 

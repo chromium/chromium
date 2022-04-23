@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -25,7 +26,6 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "google_apis/google_api_keys.h"
-#include "net/base/escape.h"
 #include "net/base/url_util.h"
 
 using password_manager::metrics_util::PasswordType;
@@ -270,7 +270,7 @@ GURL PasswordProtectionServiceBase::GetPasswordProtectionRequestUrl() {
   GURL url(kPasswordProtectionRequestUrl);
   std::string api_key = google_apis::GetAPIKey();
   DCHECK(!api_key.empty());
-  return url.Resolve("?key=" + net::EscapeQueryParamValue(api_key, true));
+  return url.Resolve("?key=" + base::EscapeQueryParamValue(api_key, true));
 }
 
 // static

@@ -6,8 +6,8 @@
 
 #include <utility>
 
+#include "base/strings/escape.h"
 #include "base/strings/string_split.h"
-#include "net/base/escape.h"
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"
 
@@ -36,9 +36,9 @@ absl::optional<GURL> RewriteHandler::HandleRewriteIfNecessary(
         if (query_str.substr(key.begin, key.len) == url_rule.query_param) {
           // Unescape the inner URL since it was escaped to be made a query
           // param.
-          std::string unescaped = net::UnescapeURLComponent(
+          std::string unescaped = base::UnescapeURLComponent(
               query_str.substr(value.begin, value.len),
-              net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
+              base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
           return GURL(unescaped);
         }
       }

@@ -417,7 +417,7 @@ SharesheetHeaderView::ExtractShareText() {
       const auto format_types = url_formatter::kFormatUrlOmitDefaults &
                                 ~url_formatter::kFormatUrlOmitHTTP;
       const auto formatted_text = url_formatter::FormatUrl(
-          extracted_text.url, format_types, net::UnescapeRule::NORMAL,
+          extracted_text.url, format_types, base::UnescapeRule::NORMAL,
           /*new_parsed=*/nullptr,
           /*prefix_end=*/nullptr, /*offset_for_adjustment=*/nullptr);
       url_label->SetTooltipText(formatted_text);

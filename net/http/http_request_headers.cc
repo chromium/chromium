@@ -8,12 +8,12 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "net/base/escape.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log_capture_mode.h"

@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/strings/escape.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
@@ -40,7 +41,6 @@
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
-#include "net/base/escape.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "url/gurl.h"
@@ -188,9 +188,9 @@ void ArcFileSystemBridge::GetFileName(const std::string& url,
   // It's generally not safe to unescape path separators in strings to be used
   // in file paths.
   if (url_decoded.is_empty() || !IsUrlAllowed(url_decoded) ||
-      !net::UnescapeBinaryURLComponentSafe(url_decoded.ExtractFileName(),
-                                           true /* fail_on_path_separators */,
-                                           &unescaped_file_name)) {
+      !base::UnescapeBinaryURLComponentSafe(url_decoded.ExtractFileName(),
+                                            true /* fail_on_path_separators */,
+                                            &unescaped_file_name)) {
     LOG(ERROR) << "Invalid URL: " << url << " " << url_decoded;
     std::move(callback).Run(absl::nullopt);
     return;

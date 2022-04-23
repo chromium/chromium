@@ -165,7 +165,7 @@ std::u16string ComputeURLForDisplay(const GURL& url, bool trim_after_host) {
   if (trim_after_host)
     format_types |= url_formatter::kFormatUrlTrimAfterHost;
 
-  return url_formatter::FormatUrl(url, format_types, net::UnescapeRule::SPACES,
+  return url_formatter::FormatUrl(url, format_types, base::UnescapeRule::SPACES,
                                   nullptr, nullptr, nullptr);
 }
 

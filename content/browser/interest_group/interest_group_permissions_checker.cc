@@ -5,10 +5,10 @@
 #include "content/browser/interest_group/interest_group_permissions_checker.h"
 
 #include "base/callback.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "content/public/browser/global_request_id.h"
-#include "net/base/escape.h"
 #include "net/base/network_isolation_key.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -129,8 +129,8 @@ void InterestGroupPermissionsChecker::CheckPermissions(
     GURL::Replacements replacements;
     replacements.SetPathStr("/.well-known/interest-group/permissions/");
     std::string query = base::StrCat(
-        {"origin=", net::EscapeQueryParamValue(frame_origin.Serialize(),
-                                               /*use_plus=*/false)});
+        {"origin=", base::EscapeQueryParamValue(frame_origin.Serialize(),
+                                                /*use_plus=*/false)});
     replacements.SetQueryStr(query);
     resource_request->url = url.ReplaceComponents(replacements);
     resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,

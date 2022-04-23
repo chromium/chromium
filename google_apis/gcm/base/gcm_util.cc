@@ -4,7 +4,7 @@
 
 #include "google_apis/gcm/base/gcm_util.h"
 
-#include "net/base/escape.h"
+#include "base/strings/escape.h"
 
 namespace gcm {
 
@@ -13,7 +13,7 @@ void BuildFormEncoding(const std::string& key,
                        std::string* out) {
   if (!out->empty())
     out->append("&");
-  out->append(key + "=" + net::EscapeUrlEncodedData(value, true));
+  out->append(key + "=" + base::EscapeUrlEncodedData(value, true));
 }
 
 }  // namespace gcm

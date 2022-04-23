@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -21,7 +22,6 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/backoff_entry.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -164,13 +164,12 @@ void GaiaOAuthClient::Core::GetTokensFromAuthCode(
     int max_retries,
     GaiaOAuthClient::Delegate* delegate) {
   std::string post_body =
-      "code=" + net::EscapeUrlEncodedData(auth_code, true) +
-      "&client_id=" + net::EscapeUrlEncodedData(oauth_client_info.client_id,
-                                                true) +
+      "code=" + base::EscapeUrlEncodedData(auth_code, true) + "&client_id=" +
+      base::EscapeUrlEncodedData(oauth_client_info.client_id, true) +
       "&client_secret=" +
-      net::EscapeUrlEncodedData(oauth_client_info.client_secret, true) +
+      base::EscapeUrlEncodedData(oauth_client_info.client_secret, true) +
       "&redirect_uri=" +
-      net::EscapeUrlEncodedData(oauth_client_info.redirect_uri, true) +
+      base::EscapeUrlEncodedData(oauth_client_info.redirect_uri, true) +
       "&grant_type=authorization_code";
   net::MutableNetworkTrafficAnnotationTag traffic_annotation(
       net::DefineNetworkTrafficAnnotation("gaia_oauth_client_get_tokens", R"(
@@ -216,16 +215,16 @@ void GaiaOAuthClient::Core::RefreshToken(
     int max_retries,
     GaiaOAuthClient::Delegate* delegate) {
   std::string post_body =
-      "refresh_token=" + net::EscapeUrlEncodedData(refresh_token, true) +
-      "&client_id=" + net::EscapeUrlEncodedData(oauth_client_info.client_id,
-                                                true) +
+      "refresh_token=" + base::EscapeUrlEncodedData(refresh_token, true) +
+      "&client_id=" +
+      base::EscapeUrlEncodedData(oauth_client_info.client_id, true) +
       "&client_secret=" +
-      net::EscapeUrlEncodedData(oauth_client_info.client_secret, true) +
+      base::EscapeUrlEncodedData(oauth_client_info.client_secret, true) +
       "&grant_type=refresh_token";
 
   if (!scopes.empty()) {
     std::string scopes_string = base::JoinString(scopes, " ");
-    post_body += "&scope=" + net::EscapeUrlEncodedData(scopes_string, true);
+    post_body += "&scope=" + base::EscapeUrlEncodedData(scopes_string, true);
   }
 
   net::MutableNetworkTrafficAnnotationTag traffic_annotation(
@@ -325,7 +324,7 @@ void GaiaOAuthClient::Core::GetTokenInfo(const std::string& qualifier,
                                          int max_retries,
                                          Delegate* delegate) {
   std::string post_body =
-      qualifier + "=" + net::EscapeUrlEncodedData(query, true);
+      qualifier + "=" + base::EscapeUrlEncodedData(query, true);
   net::MutableNetworkTrafficAnnotationTag traffic_annotation(
       net::DefineNetworkTrafficAnnotation("gaia_oauth_client_get_token_info",
                                           R"(
@@ -373,12 +372,13 @@ void GaiaOAuthClient::Core::GetAccountCapabilities(
     Delegate* delegate) {
   DCHECK(!capabilities_names.empty());
 
-  std::string post_body = base::StrCat(
-      {"names=", net::EscapeUrlEncodedData(*capabilities_names.begin(), true)});
+  std::string post_body =
+      base::StrCat({"names=", base::EscapeUrlEncodedData(
+                                  *capabilities_names.begin(), true)});
   for (auto it = capabilities_names.begin() + 1; it != capabilities_names.end();
        ++it) {
     base::StrAppend(&post_body,
-                    {"&names=", net::EscapeUrlEncodedData(*it, true)});
+                    {"&names=", base::EscapeUrlEncodedData(*it, true)});
   }
 
   std::string auth = base::StrCat({"Bearer ", oauth_access_token});

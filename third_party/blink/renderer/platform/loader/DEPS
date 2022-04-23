@@ -58,7 +58,7 @@ specific_include_rules = {
     "+base/strings/sys_string_conversions.h",
     "+base/strings/utf_string_conversions.h",
     "+net/base/directory_listing.h",
-    "+net/base/escape.h",
+    "+base/strings/escape.h",
     "+net/base/net_errors.h",
     "+net/ftp/ftp_directory_listing_parser.h",
     "+net/net_buildflags.h",

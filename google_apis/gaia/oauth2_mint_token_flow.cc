@@ -15,6 +15,7 @@
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -23,7 +24,6 @@
 #include "base/values.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "net/base/escape.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/cookie_constants.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -203,30 +203,32 @@ std::string OAuth2MintTokenFlow::CreateApiCallBody() {
       parameters_.enable_granular_permissions ? kValueTrue : kValueFalse;
   std::string body = base::StringPrintf(
       kOAuth2IssueTokenBodyFormat,
-      net::EscapeUrlEncodedData(force_value, true).c_str(),
-      net::EscapeUrlEncodedData(response_type_value, true).c_str(),
-      net::EscapeUrlEncodedData(base::JoinString(parameters_.scopes, " "), true)
+      base::EscapeUrlEncodedData(force_value, true).c_str(),
+      base::EscapeUrlEncodedData(response_type_value, true).c_str(),
+      base::EscapeUrlEncodedData(base::JoinString(parameters_.scopes, " "),
+                                 true)
           .c_str(),
-      net::EscapeUrlEncodedData(enable_granular_permissions_value, true)
+      base::EscapeUrlEncodedData(enable_granular_permissions_value, true)
           .c_str(),
-      net::EscapeUrlEncodedData(parameters_.client_id, true).c_str(),
-      net::EscapeUrlEncodedData(parameters_.extension_id, true).c_str(),
-      net::EscapeUrlEncodedData(parameters_.version, true).c_str(),
-      net::EscapeUrlEncodedData(parameters_.channel, true).c_str());
+      base::EscapeUrlEncodedData(parameters_.client_id, true).c_str(),
+      base::EscapeUrlEncodedData(parameters_.extension_id, true).c_str(),
+      base::EscapeUrlEncodedData(parameters_.version, true).c_str(),
+      base::EscapeUrlEncodedData(parameters_.channel, true).c_str());
   if (!parameters_.device_id.empty()) {
     body.append(base::StringPrintf(
         kOAuth2IssueTokenBodyFormatDeviceIdAddendum,
-        net::EscapeUrlEncodedData(parameters_.device_id, true).c_str()));
+        base::EscapeUrlEncodedData(parameters_.device_id, true).c_str()));
   }
   if (!parameters_.selected_user_id.empty()) {
     body.append(base::StringPrintf(
         kOAuth2IssueTokenBodyFormatSelectedUserIdAddendum,
-        net::EscapeUrlEncodedData(parameters_.selected_user_id, true).c_str()));
+        base::EscapeUrlEncodedData(parameters_.selected_user_id, true)
+            .c_str()));
   }
   if (!parameters_.consent_result.empty()) {
     body.append(base::StringPrintf(
         kOAuth2IssueTokenBodyFormatConsentResultAddendum,
-        net::EscapeUrlEncodedData(parameters_.consent_result, true).c_str()));
+        base::EscapeUrlEncodedData(parameters_.consent_result, true).c_str()));
   }
   return body;
 }

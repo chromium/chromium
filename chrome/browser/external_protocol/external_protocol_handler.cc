@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -26,7 +27,6 @@
 #include "components/url_matcher/url_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/weak_document_ptr.h"
-#include "net/base/escape.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
@@ -433,7 +433,7 @@ void ExternalProtocolHandler::LaunchUrl(
   // the URL", something that probably should be done by the GURL constructor
   // itself. The GURL constructor does do it in some cases (e.g., mailto) but
   // not in general. https://crbug.com/788244.
-  std::string escaped_url_string = net::EscapeExternalHandlerValue(url.spec());
+  std::string escaped_url_string = base::EscapeExternalHandlerValue(url.spec());
   GURL escaped_url(escaped_url_string);
 
   content::WebContents* web_contents = web_contents_getter.Run();
@@ -497,7 +497,7 @@ void ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(
   // TODO(788244): This essentially amounts to "remove illegal characters from
   // the URL", something that probably should be done by the GURL constructor
   // itself.
-  std::string escaped_url_string = net::EscapeExternalHandlerValue(url.spec());
+  std::string escaped_url_string = base::EscapeExternalHandlerValue(url.spec());
   GURL escaped_url(escaped_url_string);
 
   LaunchUrlWithoutSecurityCheckWithDelegate(

@@ -24,7 +24,7 @@ include_rules = [
   "+media/remoting/remoting_constants.h",
   "+media/renderers",
   "+mojo/public",
-  "+net/base/escape.h",
+  "+base/strings/escape.h",
   "+net/http/http_request_headers.h",
   "+net/base/net_errors.h",
   "+net/base/url_util.h",

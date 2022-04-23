@@ -429,7 +429,7 @@ bool DoesBookmarkContainWords(const std::u16string& title,
          DoesBookmarkTextContainWords(base::UTF8ToUTF16(url.spec()), words) ||
          DoesBookmarkTextContainWords(
              url_formatter::FormatUrl(url, url_formatter::kFormatUrlOmitNothing,
-                                      net::UnescapeRule::NORMAL, nullptr,
+                                      base::UnescapeRule::NORMAL, nullptr,
                                       nullptr, nullptr),
              words);
 }
@@ -522,8 +522,8 @@ std::u16string CleanUpUrlForMatching(
   return base::i18n::ToLower(url_formatter::FormatUrlWithAdjustments(
       GURL(TruncateUrl(gurl.spec())),
       url_formatter::kFormatUrlOmitUsernamePassword,
-      net::UnescapeRule::SPACES | net::UnescapeRule::PATH_SEPARATORS |
-          net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS,
+      base::UnescapeRule::SPACES | base::UnescapeRule::PATH_SEPARATORS |
+          base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS,
       nullptr, nullptr, adjustments ? adjustments : &tmp_adjustments));
 }
 

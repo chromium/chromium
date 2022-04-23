@@ -19,6 +19,7 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -48,7 +49,6 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/shell/browser/shell.h"
-#include "net/base/escape.h"
 #include "net/base/net_errors.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -902,9 +902,9 @@ std::unique_ptr<net::test_server::HttpResponse> CorruptDBRequestHandler(
       std::string escaped_value(
           request_query.substr(value_pos.begin, value_pos.len));
 
-      std::string key = net::UnescapeBinaryURLComponent(escaped_key);
+      std::string key = base::UnescapeBinaryURLComponent(escaped_key);
 
-      std::string value = net::UnescapeBinaryURLComponent(escaped_value);
+      std::string value = base::UnescapeBinaryURLComponent(escaped_value);
 
       if (key == "method")
         fail_method = value;

@@ -250,7 +250,7 @@ public class UrlUtilities {
 
     /**
      * Escapes characters in text suitable for use as a query parameter value.
-     * This method calls into net::EscapeQueryParamValue.
+     * This method calls into base::EscapeQueryParamValue.
      * @param text string to be escaped.
      * @param usePlus whether or not to use "+" in place of spaces.
      * @return the escaped string.

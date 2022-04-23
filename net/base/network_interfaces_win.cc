@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -16,7 +17,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/win/scoped_handle.h"
-#include "net/base/escape.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "url/gurl.h"

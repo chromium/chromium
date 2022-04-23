@@ -6,10 +6,10 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "components/embedder_support/android/util_jni_headers/UrlUtilities_jni.h"
 #include "components/google/core/common/google_util.h"
-#include "net/base/escape.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "url/android/gurl_android.h"
@@ -174,7 +174,7 @@ static ScopedJavaLocalRef<jstring> JNI_UrlUtilities_EscapeQueryParamValue(
     const JavaParamRef<jstring>& url,
     jboolean use_plus) {
   return ConvertUTF8ToJavaString(
-      env, net::EscapeQueryParamValue(
+      env, base::EscapeQueryParamValue(
                base::android::ConvertJavaStringToUTF8(url), use_plus));
 }
 

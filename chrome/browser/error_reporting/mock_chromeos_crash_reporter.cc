@@ -25,13 +25,13 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/error_reporting/constants.h"
-#include "net/base/escape.h"
 #include "net/http/http_status_code.h"
 #include "third_party/crashpad/crashpad/third_party/cpp-httplib/cpp-httplib/httplib.h"
 #include "url/gurl.h"
@@ -99,8 +99,8 @@ bool UploadViaHttp(const std::string& base_url,
   std::vector<std::string> query_parts;
   for (const auto& kv : values) {
     query_parts.emplace_back(base::StrCat(
-        {net::EscapeQueryParamValue(kv.first, /*use_plus=*/false), "=",
-         net::EscapeQueryParamValue(kv.second, /*use_plus=*/false)}));
+        {base::EscapeQueryParamValue(kv.first, /*use_plus=*/false), "=",
+         base::EscapeQueryParamValue(kv.second, /*use_plus=*/false)}));
   }
   std::string upload_str =
       base::StrCat({base_url, "?", base::JoinString(query_parts, "&")});

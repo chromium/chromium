@@ -5,13 +5,13 @@
 #include "components/security_interstitials/core/mitm_software_ui.h"
 
 #include "base/i18n/time_formatting.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/ssl_errors/error_info.h"
 #include "components/strings/grit/components_strings.h"
-#include "net/base/escape.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace security_interstitials {
@@ -114,12 +114,12 @@ void MITMSoftwareUI::PopulateEnterpriseUserStringsForHTML(
       "primaryParagraph",
       l10n_util::GetStringFUTF16(
           IDS_MITM_SOFTWARE_PRIMARY_PARAGRAPH_ENTERPRISE,
-          net::EscapeForHTML(base::UTF8ToUTF16(mitm_software_name_))));
+          base::EscapeForHTML(base::UTF8ToUTF16(mitm_software_name_))));
   load_time_data->SetStringKey(
       "explanationParagraph",
       l10n_util::GetStringFUTF16(
           IDS_MITM_SOFTWARE_EXPLANATION_ENTERPRISE,
-          net::EscapeForHTML(base::UTF8ToUTF16(mitm_software_name_)),
+          base::EscapeForHTML(base::UTF8ToUTF16(mitm_software_name_)),
           l10n_util::GetStringUTF16(IDS_MITM_SOFTWARE_EXPLANATION)));
 }
 
@@ -129,12 +129,12 @@ void MITMSoftwareUI::PopulateAtHomeUserStringsForHTML(
       "primaryParagraph",
       l10n_util::GetStringFUTF16(
           IDS_MITM_SOFTWARE_PRIMARY_PARAGRAPH_NONENTERPRISE,
-          net::EscapeForHTML(base::UTF8ToUTF16(mitm_software_name_))));
+          base::EscapeForHTML(base::UTF8ToUTF16(mitm_software_name_))));
   load_time_data->SetStringKey(
       "explanationParagraph",
       l10n_util::GetStringFUTF16(
           IDS_MITM_SOFTWARE_EXPLANATION_NONENTERPRISE,
-          net::EscapeForHTML(base::UTF8ToUTF16(mitm_software_name_)),
+          base::EscapeForHTML(base::UTF8ToUTF16(mitm_software_name_)),
           l10n_util::GetStringUTF16(IDS_MITM_SOFTWARE_EXPLANATION)));
 }
 

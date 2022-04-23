@@ -8,11 +8,11 @@
 
 #include "ash/assistant/util/i18n_util.h"
 #include "base/containers/contains.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
-#include "net/base/escape.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
@@ -224,8 +224,8 @@ absl::optional<std::string> GetDeepLinkParam(
   const std::string key = GetDeepLinkParamKey(param);
   const auto it = params.find(key);
   return it != params.end()
-             ? absl::optional<std::string>(net::UnescapeBinaryURLComponent(
-                   it->second, net::UnescapeRule::REPLACE_PLUS_WITH_SPACE))
+             ? absl::optional<std::string>(base::UnescapeBinaryURLComponent(
+                   it->second, base::UnescapeRule::REPLACE_PLUS_WITH_SPACE))
              : absl::nullopt;
 }
 

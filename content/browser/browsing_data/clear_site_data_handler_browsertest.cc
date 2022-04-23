@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -33,7 +34,6 @@
 #include "content/public/test/mock_browsing_data_remover_delegate.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
-#include "net/base/escape.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/cookies/cookie_access_result.h"
@@ -56,7 +56,7 @@ namespace {
 // Adds a key=value pair to the url's query.
 void AddQuery(GURL* url, const std::string& key, const std::string& value) {
   *url = GURL(url->spec() + (url->has_query() ? "&" : "?") + key + "=" +
-              net::EscapeQueryParamValue(value, false));
+              base::EscapeQueryParamValue(value, false));
 }
 
 // A helper function to synchronize with JS side of the tests. JS can append

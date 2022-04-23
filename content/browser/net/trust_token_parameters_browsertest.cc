@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/containers/contains.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -14,7 +15,6 @@
 #include "content/public/test/url_loader_monitor.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_content_browser_client.h"
-#include "net/base/escape.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"

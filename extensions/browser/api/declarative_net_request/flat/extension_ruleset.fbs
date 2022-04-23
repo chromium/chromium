@@ -45,11 +45,11 @@ table UrlTransform {
    query : string;
 
    /// Query params to be removed. These are already sorted and escaped using
-   /// net::EscapeQueryParamValue.
+   /// base::EscapeQueryParamValue.
    remove_query_params : [string];
 
    /// Query params to be added/replaced. These are already escaped using
-   /// net::EscapeQueryParamValue.
+   /// base::EscapeQueryParamValue.
    add_or_replace_query_params : [QueryKeyValue];
 
    clear_fragment : bool = false;

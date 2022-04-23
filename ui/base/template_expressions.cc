@@ -9,10 +9,10 @@
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "net/base/escape.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if DCHECK_IS_ON()
@@ -181,7 +181,7 @@ bool ReplaceTemplateExpressionsInternal(
 
     if (context.empty()) {
       // Make the replacement HTML safe.
-      replacement = net::EscapeForHTML(replacement);
+      replacement = base::EscapeForHTML(replacement);
     } else if (context == "Raw") {
       // Pass the replacement through unchanged.
     } else if (context == "Polymer") {

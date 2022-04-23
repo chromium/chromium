@@ -64,8 +64,8 @@ JNI_DomDistillerTabUtils_GetFormattedUrlFromOriginalDistillerUrl(
   // the space.
   return base::android::ConvertUTF16ToJavaString(
       env, url_formatter::FormatUrl(url, url_formatter::kFormatUrlOmitDefaults,
-                                    net::UnescapeRule::NORMAL, nullptr, nullptr,
-                                    nullptr));
+                                    base::UnescapeRule::NORMAL, nullptr,
+                                    nullptr, nullptr));
 }
 
 jint JNI_DomDistillerTabUtils_GetDistillerHeuristics(JNIEnv* env) {

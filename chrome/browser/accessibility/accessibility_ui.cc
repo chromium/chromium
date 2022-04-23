@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
+#include "base/strings/escape.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -40,7 +41,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "net/base/escape.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
@@ -123,7 +123,7 @@ std::unique_ptr<base::DictionaryValue> BuildTargetDescriptor(
   target_data->SetIntKey(kProcessIdField, process_id);
   target_data->SetIntKey(kRoutingIdField, routing_id);
   target_data->SetStringKey(kUrlField, url.spec());
-  target_data->SetStringKey(kNameField, net::EscapeForHTML(name));
+  target_data->SetStringKey(kNameField, base::EscapeForHTML(name));
   target_data->SetIntKey(kPidField, base::GetProcId(handle));
   target_data->SetStringKey(kFaviconUrlField, favicon_url.spec());
   target_data->SetIntKey(kAccessibilityModeField, accessibility_mode.mode());

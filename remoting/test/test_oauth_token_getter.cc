@@ -9,10 +9,10 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "google_apis/google_api_keys.h"
-#include "net/base/escape.h"
 #include "remoting/base/fake_oauth_token_getter.h"
 #include "remoting/base/oauth_token_getter_impl.h"
 #include "remoting/base/url_request_context_getter.h"
@@ -45,8 +45,8 @@ std::string GetAuthorizationCodeUri(bool show_consent_page) {
       "&response_type=code"
       "&client_id=%s"
       "&access_type=offline",
-      net::EscapeUrlEncodedData(kChromotingAuthScopeValues, use_plus).c_str(),
-      net::EscapeUrlEncodedData(
+      base::EscapeUrlEncodedData(kChromotingAuthScopeValues, use_plus).c_str(),
+      base::EscapeUrlEncodedData(
           google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING),
           use_plus)
           .c_str());

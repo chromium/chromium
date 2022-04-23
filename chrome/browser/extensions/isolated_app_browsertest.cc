@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -26,7 +27,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/common/switches.h"
-#include "net/base/escape.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -75,8 +75,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleExpectAndSetCookieRequest(
     std::string escaped_value(
         query_string.substr(value_pos.begin, value_pos.len));
 
-    std::string key = net::UnescapeBinaryURLComponent(escaped_key);
-    std::string value = net::UnescapeBinaryURLComponent(escaped_value);
+    std::string key = base::UnescapeBinaryURLComponent(escaped_key);
+    std::string value = base::UnescapeBinaryURLComponent(escaped_value);
 
     if (key == "expect") {
       if (request_cookies.find(value) == std::string::npos)

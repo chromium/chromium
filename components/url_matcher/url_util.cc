@@ -10,12 +10,12 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/google/core/common/google_util.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/url_matcher/url_matcher.h"
-#include "net/base/escape.h"
 #include "net/base/filename_util.h"
 #include "net/base/url_util.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -139,7 +139,7 @@ class EmbeddedURLExtractor {
       if (re2::RE2::FullMatch(url.path(), google_amp_viewer_path_regex_, &s,
                               &embedded)) {
         // The embedded URL may be percent-encoded. Undo that.
-        embedded = net::UnescapeBinaryURLComponent(embedded);
+        embedded = base::UnescapeBinaryURLComponent(embedded);
         return BuildURL(!s.empty(), embedded);
       }
     }

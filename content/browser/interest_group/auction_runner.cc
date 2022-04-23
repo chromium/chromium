@@ -17,6 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -31,7 +32,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
-#include "net/base/escape.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -383,18 +383,18 @@ GURL AuctionRunner::Auction::FillPostAuctionSignals(
   // reportWin()/reportResult().
   std::string url_string = url.spec();
   base::ReplaceSubstringsAfterOffset(
-      &url_string, 0, net::EscapeExternalHandlerValue("${winningBid}"),
+      &url_string, 0, base::EscapeExternalHandlerValue("${winningBid}"),
       base::NumberToString(signals.winning_bid));
   base::ReplaceSubstringsAfterOffset(
-      &url_string, 0, net::EscapeExternalHandlerValue("${madeWinningBid}"),
+      &url_string, 0, base::EscapeExternalHandlerValue("${madeWinningBid}"),
       signals.made_winning_bid ? "true" : "false");
   base::ReplaceSubstringsAfterOffset(
       &url_string, 0,
-      net::EscapeExternalHandlerValue("${highestScoringOtherBid}"),
+      base::EscapeExternalHandlerValue("${highestScoringOtherBid}"),
       base::NumberToString(signals.highest_scoring_other_bid));
   base::ReplaceSubstringsAfterOffset(
       &url_string, 0,
-      net::EscapeExternalHandlerValue("${madeHighestScoringOtherBid}"),
+      base::EscapeExternalHandlerValue("${madeHighestScoringOtherBid}"),
       signals.made_highest_scoring_other_bid ? "true" : "false");
 
   // For component auction sellers only, which get post auction signals from
@@ -404,11 +404,11 @@ GURL AuctionRunner::Auction::FillPostAuctionSignals(
   if (top_level_signals.has_value()) {
     base::ReplaceSubstringsAfterOffset(
         &url_string, 0,
-        net::EscapeExternalHandlerValue("${topLevelWinningBid}"),
+        base::EscapeExternalHandlerValue("${topLevelWinningBid}"),
         base::NumberToString(top_level_signals->winning_bid));
     base::ReplaceSubstringsAfterOffset(
         &url_string, 0,
-        net::EscapeExternalHandlerValue("${topLevelMadeWinningBid}"),
+        base::EscapeExternalHandlerValue("${topLevelMadeWinningBid}"),
         top_level_signals->made_winning_bid ? "true" : "false");
   }
 

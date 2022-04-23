@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -18,7 +19,6 @@
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/url_formatter/url_formatter.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -55,7 +55,7 @@ std::vector<std::string> GetMatchingDomains(
             url_formatter::kFormatUrlOmitHTTPS |
             url_formatter::kFormatUrlOmitTrivialSubdomains |
             url_formatter::kFormatUrlTrimAfterHost,
-        net::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
+        base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
     matching_domains.push_back(std::move(domain));
   }
   return base::flat_set<std::string>(std::move(matching_domains)).extract();

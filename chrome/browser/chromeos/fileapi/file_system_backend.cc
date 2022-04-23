@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/notreached.h"
+#include "base/strings/escape.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #include "chrome/common/url_constants.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
-#include "net/base/escape.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_stream_reader.h"
@@ -197,7 +197,7 @@ void FileSystemBackend::ResolveURL(const storage::FileSystemURL& url,
     base::FilePath(arc::kDocumentsProviderMountPointPath)
         .AppendRelativePath(mount_path, &relative_mount_path);
     root_url +=
-        net::EscapePath(storage::FilePathToString(relative_mount_path)) + "/";
+        base::EscapePath(storage::FilePathToString(relative_mount_path)) + "/";
     name = authority + ":" + root_document_id;
   } else {
     name = id;

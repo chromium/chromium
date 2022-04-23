@@ -6,12 +6,12 @@
 
 #import <UIKit/UIKit.h>
 
+#include "base/strings/escape.h"
 #import "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/chrome_url_util.h"
 #include "ios/web/public/deprecated/url_verification_constants.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "net/base/escape.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -64,10 +64,10 @@ class U2FTabHelperTest : public PlatformTest {
       @"%26requestUUID%3.+%26isU2F%3D1&x-error=.+u2f-callback%2F%3FtabID%3D",
       web_state_.GetStableIdentifier(), @"%26requestUUID%3.+%26isU2F%3D1&data=",
       base::SysUTF8ToNSString(
-          net::EscapeQueryParamValue(request_url.query(), true)),
+          base::EscapeQueryParamValue(request_url.query(), true)),
       @"&origin=",
       base::SysUTF8ToNSString(
-          net::EscapeQueryParamValue(origin_url.spec(), true))
+          base::EscapeQueryParamValue(origin_url.spec(), true))
     ] componentsJoinedByString:@""];
   }
 

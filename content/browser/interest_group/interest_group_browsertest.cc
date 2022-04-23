@@ -14,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
@@ -45,7 +46,6 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/fenced_frame_test_utils.h"
 #include "content/test/test_content_browser_client.h"
-#include "net/base/escape.h"
 #include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/mock_host_resolver.h"
@@ -2869,12 +2869,12 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
       "a.test",
       base::StringPrintf(
           "/cross_site_iframe_factory.html?a(%s,%s)",
-          net::EscapeUrlEncodedData(
+          base::EscapeUrlEncodedData(
               https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html")
                   .spec(),
               /*use_plus=*/false)
               .c_str(),
-          net::EscapeUrlEncodedData(
+          base::EscapeUrlEncodedData(
               https_server_->GetURL("b.test", "/fenced_frames/opaque_ads.html")
                   .spec(),
               /*use_plus=*/false)
@@ -3002,7 +3002,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
   GURL ad_url = https_server_->GetURL(
       "b.test", "/fenced_frames/outer_inner_frame_as_param.html");
   GURL::Replacements rep;
-  std::string query = "innerFrame=" + net::EscapeUrlEncodedData(
+  std::string query = "innerFrame=" + base::EscapeUrlEncodedData(
                                           inner_url.spec(), /*use_plus=*/false);
   rep.SetQueryStr(query);
   ad_url = ad_url.ReplaceComponents(rep);

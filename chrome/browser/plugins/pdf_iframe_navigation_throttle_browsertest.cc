@@ -4,6 +4,7 @@
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/escape.h"
 #include "base/test/bind.h"
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "chrome/browser/ui/browser.h"
@@ -16,7 +17,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
-#include "net/base/escape.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(PDFIFrameNavigationThrottleBrowserTest,
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf");
 
   const std::string html = GetPDFPlaceholderHTML(kPdfUrl);
-  const GURL kFallbackPdfUrl("data:text/html," + net::EscapePath(html));
+  const GURL kFallbackPdfUrl("data:text/html," + base::EscapePath(html));
   TestNavigationManager pdf_navigation(web_contents(), kFallbackPdfUrl);
 
   // Trigger a prerender of a page containing an iframe with a pdf file.

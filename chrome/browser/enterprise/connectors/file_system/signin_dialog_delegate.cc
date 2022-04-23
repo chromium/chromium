@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/enterprise/connectors/file_system/account_info_utils.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_endpoints.h"
@@ -21,7 +22,6 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
-#include "net/base/escape.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -282,7 +282,7 @@ std::string FileSystemSigninDialogDelegate::GetProviderSpecificUrlParameters() {
       // escaped version of it.
       return base::StringPrintf(
           "box_login=%s%s", settings_.email_domain[0] == '@' ? "" : "%40",
-          net::EscapeQueryParamValue(settings_.email_domain, true).c_str());
+          base::EscapeQueryParamValue(settings_.email_domain, true).c_str());
     }
   } else {
     NOTREACHED() << "Unknown service provider: " << settings_.service_provider;

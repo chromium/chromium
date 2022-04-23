@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/escape.h"
 #include "base/time/time.h"
 #include "chrome/renderer/chrome_content_renderer_client.h"
 #include "chrome/test/base/chrome_render_view_test.h"
@@ -18,7 +19,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/test_utils.h"
-#include "net/base/escape.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/platform/url_conversion.h"
@@ -380,7 +380,7 @@ TEST_F(PhishingDOMFeatureExtractorTest, SubFrames) {
       "<form action=\"http://host1.com/submit\"></form>"
       "<a href=\"http://www.host1.com/reset\">link</a>"
       "<iframe src=\"" +
-      net::EscapeForHTML(iframe1_nested_url.spec()) +
+      base::EscapeForHTML(iframe1_nested_url.spec()) +
       "\"></iframe></head></html>");
   GURL iframe1_url(urlprefix + iframe1_html);
   // iframe1 is on host1.com too.
@@ -400,8 +400,8 @@ TEST_F(PhishingDOMFeatureExtractorTest, SubFrames) {
       "<html><body><input type=text>"
       "<a href=\"info.html\">link</a>"
       "<iframe src=\"" +
-      net::EscapeForHTML(iframe1_url.spec()) + "\"></iframe><iframe src=\"" +
-      net::EscapeForHTML(iframe2_url.spec()) + "\"></iframe></body></html>");
+      base::EscapeForHTML(iframe1_url.spec()) + "\"></iframe><iframe src=\"" +
+      base::EscapeForHTML(iframe2_url.spec()) + "\"></iframe></body></html>");
   // The entire html is hosted on host.com
   url_iframe_map["info.html"] = "host.com";
 
@@ -558,7 +558,7 @@ TEST_F(PhishingDOMFeatureExtractorTest, SubframeRemoval) {
   std::string html(
       "<html><head></head><body>"
       "<iframe src=\"" +
-      net::EscapeForHTML(iframe1_url.spec()) +
+      base::EscapeForHTML(iframe1_url.spec()) +
       "\" id=\"frame1\"></iframe>"
       "<form></form></body></html>");
   ExtractFeatures("host.com", html, &features);

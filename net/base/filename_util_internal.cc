@@ -7,12 +7,12 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "net/base/escape.h"
 #include "net/base/filename_util_internal.h"
 #include "net/base/mime_util.h"
 #include "net/base/net_string_util.h"
@@ -126,7 +126,7 @@ std::string GetFileNameFromURL(const GURL& url,
     return std::string();
 
   std::string unescaped_url_filename = base::UnescapeBinaryURLComponent(
-      url.ExtractFileName(), UnescapeRule::NORMAL);
+      url.ExtractFileName(), base::UnescapeRule::NORMAL);
 
   // The URL's path should be escaped UTF-8, but may not be.
   std::string decoded_filename = unescaped_url_filename;

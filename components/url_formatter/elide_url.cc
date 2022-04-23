@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -15,7 +16,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/url_formatter/url_formatter.h"
-#include "net/base/escape.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
@@ -172,7 +172,7 @@ std::u16string ElideUrl(const GURL& url,
   // Get a formatted string and corresponding parsing of the url.
   url::Parsed parsed;
   const std::u16string url_string = url_formatter::FormatUrl(
-      url, url_formatter::kFormatUrlOmitDefaults, net::UnescapeRule::SPACES,
+      url, url_formatter::kFormatUrlOmitDefaults, base::UnescapeRule::SPACES,
       &parsed, nullptr, nullptr);
   if (available_pixel_width <= 0)
     return url_string;
@@ -439,7 +439,7 @@ std::u16string FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
           url_formatter::kFormatUrlTrimAfterHost |
           url_formatter::kFormatUrlOmitHTTPS |
           url_formatter::kFormatUrlOmitTrivialSubdomains,
-      net::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
+      base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
 }
 
 }  // namespace url_formatter

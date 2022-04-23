@@ -22,6 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -81,7 +82,6 @@
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/verifier_formats.h"
 #include "net/base/backoff_entry.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -556,7 +556,7 @@ static std::map<std::string, ParamsMap> GetPingDataFromURL(
 
     // We've found "x=<something>", now unescape <something> and look for
     // the "id=<id>&ping=<ping_value>" parameters within.
-    std::string unescaped = net::UnescapeBinaryURLComponent(param.second);
+    std::string unescaped = base::UnescapeBinaryURLComponent(param.second);
     base::StringPairs extension_params;
     base::SplitStringIntoKeyValuePairs(unescaped, '=', '&', &extension_params);
     std::multimap<std::string, std::string> param_map;
@@ -568,7 +568,7 @@ static std::map<std::string, ParamsMap> GetPingDataFromURL(
       // Pull the key=value pairs out of the ping parameter for this id and
       // put into the result.
       std::string ping =
-          net::UnescapeBinaryURLComponent(param_map.find("ping")->second);
+          base::UnescapeBinaryURLComponent(param_map.find("ping")->second);
       base::StringPairs ping_params;
       base::SplitStringIntoKeyValuePairs(ping, '=', '&', &ping_params);
       for (const auto& ping_param : ping_params) {
@@ -596,7 +596,7 @@ static void VerifyQueryAndExtractParameters(
   }
 
   EXPECT_EQ(1U, params.count("x"));
-  std::string decoded = net::UnescapeBinaryURLComponent(params["x"]);
+  std::string decoded = base::UnescapeBinaryURLComponent(params["x"]);
   ExtractParameters(decoded, result);
 }
 

@@ -7,11 +7,11 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "net/base/escape.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
@@ -27,11 +27,12 @@ namespace {
 std::string ExtractUlrSpecFromQuery(
     const net::test_server::HttpRequest& request) {
   GURL request_url = request.GetURL();
-  std::string spec = net::UnescapeBinaryURLComponent(request_url.query_piece());
+  std::string spec =
+      base::UnescapeBinaryURLComponent(request_url.query_piece());
 
   // Escape the URL spec.
   GURL url(spec);
-  return url.is_valid() ? net::EscapeForHTML(url.spec()) : spec;
+  return url.is_valid() ? base::EscapeForHTML(url.spec()) : spec;
 }
 
 // A HttpResponse that responds with |length| zeroes and kTestDownloadMimeType

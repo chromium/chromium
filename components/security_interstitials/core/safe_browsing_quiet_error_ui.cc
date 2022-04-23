@@ -6,13 +6,13 @@
 
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/escape.h"
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_resources.h"
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/strings/grit/components_strings.h"
-#include "net/base/escape.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace security_interstitials {

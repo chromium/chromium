@@ -18,6 +18,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
@@ -32,7 +33,6 @@
 #include "google_apis/common/test_util.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "google_apis/drive/drive_common_callbacks.h"
-#include "net/base/escape.h"
 #include "net/base/url_util.h"
 
 using google_apis::AboutResource;
@@ -534,11 +534,11 @@ CancelCallbackOnce FakeDriveService::GetRemainingChangeList(
       if (param.first == "changestamp") {
         base::StringToInt64(param.second, &start_changestamp);
       } else if (param.first == "q") {
-        search_query = net::UnescapeBinaryURLComponent(param.second);
+        search_query = base::UnescapeBinaryURLComponent(param.second);
       } else if (param.first == "parent") {
-        directory_resource_id = net::UnescapeBinaryURLComponent(param.second);
+        directory_resource_id = base::UnescapeBinaryURLComponent(param.second);
       } else if (param.first == "team-drive-id") {
-        team_drive_id = net::UnescapeBinaryURLComponent(param.second);
+        team_drive_id = base::UnescapeBinaryURLComponent(param.second);
       } else if (param.first == "start-offset") {
         base::StringToInt(param.second, &start_offset);
       } else if (param.first == "max-results") {
@@ -1657,7 +1657,7 @@ const FakeDriveService::EntryInfo* FakeDriveService::AddNewEntry(
     new_file->set_shared_with_me_date(base::Time::Now());
   }
 
-  std::string escaped_resource_id = net::EscapePath(resource_id);
+  std::string escaped_resource_id = base::EscapePath(resource_id);
 
   // Set mime type.
   new_file->set_mime_type(content_type);

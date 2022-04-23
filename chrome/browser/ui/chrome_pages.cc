@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -45,7 +46,6 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_urls.h"
-#include "net/base/escape.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
@@ -251,8 +251,8 @@ void ShowHistory(Browser* browser, const std::string& host_name) {
   if (!host_name.empty()) {
     GURL::Replacements replacements;
     std::string query("q=");
-    query += net::EscapeQueryParamValue(base::StrCat({"host:", host_name}),
-                                        /*use_plus=*/false);
+    query += base::EscapeQueryParamValue(base::StrCat({"host:", host_name}),
+                                         /*use_plus=*/false);
     replacements.SetQueryStr(query);
     url = url.ReplaceComponents(replacements);
   }

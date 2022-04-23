@@ -146,8 +146,6 @@ component("net") {
     "base/datagram_buffer.h",
     "base/elements_upload_data_stream.cc",
     "base/elements_upload_data_stream.h",
-    "base/escape.cc",
-    "base/escape.h",
     "base/expiring_cache.h",
     "base/features.cc",
     "base/features.h",

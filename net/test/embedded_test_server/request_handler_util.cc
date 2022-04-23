@@ -14,12 +14,12 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "net/base/escape.h"
 #include "net/base/url_util.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_util.h"
@@ -99,7 +99,7 @@ RequestQuery ParseQuery(const GURL& url) {
   RequestQuery queries;
   for (QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
     std::string unescaped_query = base::UnescapeBinaryURLComponent(
-        it.GetKey(), UnescapeRule::REPLACE_PLUS_WITH_SPACE);
+        it.GetKey(), base::UnescapeRule::REPLACE_PLUS_WITH_SPACE);
     queries[unescaped_query].push_back(it.GetUnescapedValue());
   }
   return queries;

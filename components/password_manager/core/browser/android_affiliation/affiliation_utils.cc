@@ -8,10 +8,10 @@
 #include <ostream>
 
 #include "base/base64.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/url_formatter/elide_url.h"
-#include "net/base/escape.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon_stdstring.h"
 
@@ -93,7 +93,8 @@ bool CanonicalizeHashComponent(const base::StringPiece& input_hash,
   // safe" base64 alphabet; plus the padding ('=').
   const char kBase64NonAlphanumericChars[] = "-_=";
 
-  std::string base64_encoded_hash = net::UnescapeBinaryURLComponent(input_hash);
+  std::string base64_encoded_hash =
+      base::UnescapeBinaryURLComponent(input_hash);
 
   if (!base64_encoded_hash.empty() &&
       CanonicalizeBase64Padding(&base64_encoded_hash) &&
@@ -117,7 +118,7 @@ bool CanonicalizePackageNameComponent(
   const char kPackageNameNonAlphanumericChars[] = "._";
 
   std::string package_name =
-      net::UnescapeBinaryURLComponent(input_package_name);
+      base::UnescapeBinaryURLComponent(input_package_name);
 
   // TODO(engedy): We might want to use a regex to check this more throughly.
   if (!package_name.empty() &&

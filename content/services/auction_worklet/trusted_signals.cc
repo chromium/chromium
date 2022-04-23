@@ -15,13 +15,13 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "content/services/auction_worklet/auction_downloader.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "gin/converter.h"
-#include "net/base/escape.h"
 #include "net/base/parse_number.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "url/gurl.h"
@@ -50,7 +50,7 @@ std::string CreateQueryParam(const char* name,
     } else {
       query_param.append(",");
     }
-    query_param.append(net::EscapeQueryParamValue(key, /*use_plus=*/true));
+    query_param.append(base::EscapeQueryParamValue(key, /*use_plus=*/true));
   }
   return query_param;
 }
@@ -220,7 +220,7 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
                          std::move(load_signals_callback)));
 
   std::string query_params = base::StrCat(
-      {"hostname=", net::EscapeQueryParamValue(hostname, /*use_plus=*/true),
+      {"hostname=", base::EscapeQueryParamValue(hostname, /*use_plus=*/true),
        CreateQueryParam("keys", *trusted_signals->bidding_signals_keys_)});
   if (experiment_group_id.has_value()) {
     base::StrAppend(&query_params,
@@ -255,7 +255,7 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadScoringSignals(
           std::move(v8_helper), std::move(load_signals_callback)));
 
   std::string query_params = base::StrCat(
-      {"hostname=", net::EscapeQueryParamValue(hostname, /*use_plus=*/true),
+      {"hostname=", base::EscapeQueryParamValue(hostname, /*use_plus=*/true),
        CreateQueryParam("renderUrls", *trusted_signals->render_urls_),
        CreateQueryParam("adComponentRenderUrls",
                         *trusted_signals->ad_component_render_urls_)});

@@ -4,13 +4,13 @@
 
 #include <string>
 
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/extensions/webstore_installer.h"
 #include "chrome/browser/update_client/chrome_update_query_params_delegate.h"
 #include "components/crx_file/id_util.h"
 #include "components/update_client/update_query_params.h"
-#include "net/base/escape.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::StringPrintf;
@@ -39,10 +39,9 @@ TEST(WebstoreInstallerTest, PlatformParams) {
                    base::SysInfo().OperatingSystemArchitecture().c_str())));
   EXPECT_TRUE(Contains(
       query, StringPrintf("nacl_arch=%s", UpdateQueryParams::GetNaclArch())));
-  EXPECT_TRUE(
-      Contains(query,
-               net::EscapeQueryParamValue(
-                   StringPrintf("installsource=%s", source.c_str()), true)));
+  EXPECT_TRUE(Contains(
+      query, base::EscapeQueryParamValue(
+                 StringPrintf("installsource=%s", source.c_str()), true)));
   EXPECT_TRUE(Contains(
       query,
       StringPrintf("lang=%s", ChromeUpdateQueryParamsDelegate::GetLang())));

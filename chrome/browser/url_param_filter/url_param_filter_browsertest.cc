@@ -4,6 +4,7 @@
 
 #include "chrome/test/base/in_process_browser_test.h"
 
+#include "base/strings/escape.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -19,7 +20,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "net/base/escape.h"
 #include "net/http/http_util.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 
@@ -296,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
       "/empty.html?plzblock=1&nochanges=2&plzblockredirect=2"));
   GURL redirect_page(embedded_test_server()->GetURL(
       "/server-redirect?" +
-      net::EscapeQueryParamValue(test_root.spec(), false)));
+      base::EscapeQueryParamValue(test_root.spec(), false)));
 
   // Go to a |page| with a link to a URL that has associated filtering rules.
   GURL page("data:text/html,<a href='" + test_root.spec() + "'>link</a>");
@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
       embedded_test_server()->GetURL("/empty.html?plzblock=1&nochanges=2"));
   GURL redirect_page(embedded_test_server()->GetURL(
       "/client-redirect?" +
-      net::EscapeQueryParamValue(test_root.spec(), false)));
+      base::EscapeQueryParamValue(test_root.spec(), false)));
 
   // Go to a |page| with a link to a URL that has associated filtering rules.
   GURL page("data:text/html,<a href='" + test_root.spec() + "'>link</a>");
@@ -403,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
       embedded_test_server()->GetURL("/empty.html?plzblock=1&nochanges=2"));
   GURL redirect_page(embedded_test_server()->GetURL(
       "/client-redirect?" +
-      net::EscapeQueryParamValue(test_root.spec(), false)));
+      base::EscapeQueryParamValue(test_root.spec(), false)));
 
   // Go to a |page| with a link to a URL that has associated filtering rules.
   GURL page("data:text/html,<a href='" + test_root.spec() + "'>link</a>");

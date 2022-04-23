@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/strings/escape.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -26,7 +27,6 @@
 #import "ios/web/test/fakes/crw_fake_back_forward_list.h"
 #include "ios/web/test/test_url_constants.h"
 #import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
-#include "net/base/escape.h"
 #import "net/base/mac/url_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -139,7 +139,7 @@ class NavigationManagerTest : public PlatformTest {
 
   // Returns the value of the "#session=" URL hash component from |url|.
   static std::string ExtractRestoredSession(const GURL& url) {
-    std::string decoded = net::UnescapeBinaryURLComponent(url.ref());
+    std::string decoded = base::UnescapeBinaryURLComponent(url.ref());
     return decoded.substr(
         strlen(wk_navigation_util::kRestoreSessionSessionHashPrefix));
   }

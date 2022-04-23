@@ -5,9 +5,9 @@
 #include "ios/chrome/common/x_callback_url.h"
 
 #include "base/check.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "net/base/escape.h"
 #include "net/base/url_util.h"
 
 namespace {

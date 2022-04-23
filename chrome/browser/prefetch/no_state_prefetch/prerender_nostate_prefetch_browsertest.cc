@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -67,7 +68,6 @@
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/public/test/url_loader_monitor.h"
-#include "net/base/escape.h"
 #include "net/base/features.h"
 #include "net/base/load_flags.h"
 #include "net/base/request_priority.h"
@@ -90,7 +90,7 @@ const char kExpectedPurposeHeaderOnPrefetch[] = "Purpose";
 
 std::string CreateServerRedirect(const std::string& dest_url) {
   const char* const kServerRedirectBase = "/server-redirect?";
-  return kServerRedirectBase + net::EscapeQueryParamValue(dest_url, false);
+  return kServerRedirectBase + base::EscapeQueryParamValue(dest_url, false);
 }
 
 // This is the public key of tools/origin_trials/eftest.key, used to validate
@@ -1142,7 +1142,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, Prefetch301Subresource) {
 // Checks a client redirect is not followed.
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrefetchClientRedirect) {
   PrefetchFromFile(
-      "/client-redirect/?" + net::EscapeQueryParamValue(kPrefetchPage, false),
+      "/client-redirect/?" + base::EscapeQueryParamValue(kPrefetchPage, false),
       FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       current_browser(), src_server()->GetURL(kPrefetchPage2)));

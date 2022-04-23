@@ -133,7 +133,7 @@ TEST_F(ArcFileSystemBridgeTest, GetFileNameNonASCII) {
   run_loop.Run();
 }
 
-// net::UnescapeURLComponent() leaves UTF-8 lock icons escaped, but they're
+// base::UnescapeURLComponent() leaves UTF-8 lock icons escaped, but they're
 // valid file names, so shouldn't be left escaped here.
 TEST_F(ArcFileSystemBridgeTest, GetFileNameLockIcon) {
   const GURL url("externalfile:abc:test-filesystem:/%F0%9F%94%92");

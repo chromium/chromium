@@ -10,10 +10,10 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/escape.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "google_apis/google_api_keys.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -110,7 +110,7 @@ GURL IncidentReportUploaderImpl::GetIncidentReportUrl() {
   std::string api_key(google_apis::GetAPIKey());
   if (api_key.empty())
     return url;
-  return url.Resolve("?key=" + net::EscapeQueryParamValue(api_key, true));
+  return url.Resolve("?key=" + base::EscapeQueryParamValue(api_key, true));
 }
 
 void IncidentReportUploaderImpl::OnURLLoaderComplete(

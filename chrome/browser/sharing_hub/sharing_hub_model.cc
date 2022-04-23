@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -27,7 +28,6 @@
 #include "components/feed/feed_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
-#include "net/base/escape.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
@@ -133,7 +133,7 @@ void SharingHubModel::ExecuteThirdPartyAction(Profile* profile,
   std::string url_found = url_it->second.spec();
   size_t location_shared_url = url_found.find(kUrlReplace);
   if (location_shared_url != std::string::npos) {
-    std::string escaped_url = net::EscapeUrlEncodedData(url, false);
+    std::string escaped_url = base::EscapeUrlEncodedData(url, false);
     url_found.replace(location_shared_url, strlen(kUrlReplace), escaped_url);
   } else {
     LOG(ERROR) << "Third Party Share API did not contain URL param.";
@@ -142,7 +142,7 @@ void SharingHubModel::ExecuteThirdPartyAction(Profile* profile,
   size_t location_title = url_found.find(kTitleReplace);
   if (location_title != std::string::npos) {
     std::string escaped_title =
-        net::EscapeQueryParamValue(base::UTF16ToUTF8(title), false);
+        base::EscapeQueryParamValue(base::UTF16ToUTF8(title), false);
     url_found.replace(location_title, strlen(kTitleReplace), escaped_title);
   }
 

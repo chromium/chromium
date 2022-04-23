@@ -4,6 +4,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -21,7 +22,6 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/portal/portal_activated_observer.h"
 #include "content/test/portal/portal_created_observer.h"
-#include "net/base/escape.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -41,7 +41,7 @@ GURL GetServerRedirectURL(const net::EmbeddedTestServer* server,
   return server->GetURL(
       hostname,
       "/server-redirect?" +
-          net::EscapeQueryParamValue(destination.spec(), /*use_plus=*/false));
+          base::EscapeQueryParamValue(destination.spec(), /*use_plus=*/false));
 }
 
 class PortalNavigationThrottleBrowserTest : public ContentBrowserTest {

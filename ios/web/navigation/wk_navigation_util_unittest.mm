@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/json/json_reader.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,7 +17,6 @@
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/test/test_url_constants.h"
-#include "net/base/escape.h"
 #import "net/base/mac/url_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -49,8 +49,8 @@ base::JSONReader::ValueWithError ExtractSessionDict(GURL restore_session_url) {
   NSString* fragment = net::NSURLWithGURL(restore_session_url).fragment;
   NSString* encoded_session =
       [fragment substringFromIndex:strlen(kRestoreSessionSessionHashPrefix)];
-  std::string session_json =
-      net::UnescapeBinaryURLComponent(base::SysNSStringToUTF8(encoded_session));
+  std::string session_json = base::UnescapeBinaryURLComponent(
+      base::SysNSStringToUTF8(encoded_session));
   return base::JSONReader::ReadAndReturnValueWithError(session_json,
                                                        base::JSON_PARSE_RFC);
 }
@@ -144,7 +144,7 @@ TEST_F(WKNavigationUtilTest, CreateRestoreSessionUrl) {
   ASSERT_TRUE(IsRestoreSessionUrl(net::NSURLWithGURL(restore_session_url)));
 
   std::string session_json =
-      net::UnescapeBinaryURLComponent(restore_session_url.ref());
+      base::UnescapeBinaryURLComponent(restore_session_url.ref());
 
   EXPECT_EQ("session={\"offset\":-2,\"titles\":[\"Test Website 0\",\"\",\"\"],"
             "\"urls\":[\"http://www.0.com/\",\"http://www.1.com/\","

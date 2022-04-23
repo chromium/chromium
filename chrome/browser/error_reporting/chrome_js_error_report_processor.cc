@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
@@ -29,7 +30,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
-#include "net/base/escape.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -179,8 +179,8 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
       error_report->version.empty() ? platform.version : error_report->version;
 
   ParameterMap params;
-  params["prod"] = net::EscapeQueryParamValue(product, /*use_plus=*/false);
-  params["ver"] = net::EscapeQueryParamValue(version, /*use_plus=*/false);
+  params["prod"] = base::EscapeQueryParamValue(product, /*use_plus=*/false);
+  params["ver"] = base::EscapeQueryParamValue(version, /*use_plus=*/false);
   params["type"] = "JavascriptError";
   params["error_message"] = error_report->message;
   params["browser"] = "Chrome";

@@ -9,13 +9,13 @@
 #include "base/callback.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/google/core/common/google_util.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -34,7 +34,7 @@ const char kDataFormat[] = "key=%s&urls=%s";
 
 // Builds the POST data for SafeSearch API requests.
 std::string BuildRequestData(const std::string& api_key, const GURL& url) {
-  std::string query = net::EscapeQueryParamValue(url.spec(), true);
+  std::string query = base::EscapeQueryParamValue(url.spec(), true);
   return base::StringPrintf(kDataFormat, api_key.c_str(), query.c_str());
 }
 

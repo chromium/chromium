@@ -5,10 +5,10 @@
 #include "net/log/net_log_values.h"
 
 #include "base/base64.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "net/base/escape.h"
 
 namespace net {
 

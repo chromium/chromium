@@ -16,6 +16,7 @@
 #include "base/guid.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -36,7 +37,6 @@
 #include "chrome/credential_provider/test/gls_runner_test_base.h"
 #include "chrome/credential_provider/test/test_credential.h"
 #include "google_apis/gaia/gaia_urls.h"
-#include "net/base/escape.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace credential_provider {
@@ -1405,7 +1405,7 @@ class GcpGaiaCredentialBaseCloudMappingTest
   std::string get_cd_user_url_ = base::StringPrintf(
       "https://www.googleapis.com/admin/directory/v1/users/"
       "%s?projection=full&viewType=domain_public",
-      net::EscapeUrlEncodedData(kDefaultEmail, true).c_str());
+      base::EscapeUrlEncodedData(kDefaultEmail, true).c_str());
   raw_ptr<GaiaUrls> gaia_urls_ = GaiaUrls::GetInstance();
   bool is_ad_user = GetParam();
 };
@@ -1571,7 +1571,7 @@ class GcpGaiaCredentialBaseAdScenariosTest : public GcpGaiaCredentialBaseTest {
   std::string get_cd_user_url_ = base::StringPrintf(
       "https://www.googleapis.com/admin/directory/v1/users/"
       "%s?projection=full&viewType=domain_public",
-      net::EscapeUrlEncodedData(kDefaultEmail, true).c_str());
+      base::EscapeUrlEncodedData(kDefaultEmail, true).c_str());
   raw_ptr<GaiaUrls> gaia_urls_ = GaiaUrls::GetInstance();
 };
 
@@ -1801,7 +1801,7 @@ class GcpGaiaCredentialBaseAdOfflineScenariosTest
   std::string get_cd_user_url_ = base::StringPrintf(
       "https://www.googleapis.com/admin/directory/v1/users/"
       "%s?projection=full&viewType=domain_public",
-      net::EscapeUrlEncodedData(kDefaultEmail, true).c_str());
+      base::EscapeUrlEncodedData(kDefaultEmail, true).c_str());
   raw_ptr<GaiaUrls> gaia_urls_ = GaiaUrls::GetInstance();
 };
 
@@ -1985,7 +1985,7 @@ class GcpGaiaCredentialBaseCloudLocalAccountTest
   std::string get_cd_user_url_ = base::StringPrintf(
       "https://www.googleapis.com/admin/directory/v1/users/"
       "%s?projection=full&viewType=domain_public",
-      net::EscapeUrlEncodedData(kDefaultEmail, true).c_str());
+      base::EscapeUrlEncodedData(kDefaultEmail, true).c_str());
   raw_ptr<GaiaUrls> gaia_urls_ = GaiaUrls::GetInstance();
 };
 

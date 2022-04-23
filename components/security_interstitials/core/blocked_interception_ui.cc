@@ -5,13 +5,13 @@
 #include "components/security_interstitials/core/blocked_interception_ui.h"
 
 #include "base/i18n/number_formatting.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/ssl_errors/error_info.h"
 #include "components/strings/grit/components_strings.h"
-#include "net/base/escape.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace security_interstitials {

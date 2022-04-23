@@ -24,6 +24,7 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -42,7 +43,6 @@
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "net/base/completion_repeating_callback.h"
-#include "net/base/escape.h"
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
@@ -4509,7 +4509,7 @@ TEST_F(URLLoaderTest, ClientAuthRespondTwice) {
   ResourceRequest request = CreateResourceRequest(
       "GET",
       test_server_1.GetURL("/server-redirect-307?" +
-                           net::EscapeQueryParamValue(
+                           base::EscapeQueryParamValue(
                                test_server_2.GetURL("/echo").spec(), true)));
 
   base::RunLoop delete_run_loop;

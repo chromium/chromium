@@ -9,6 +9,7 @@
 #include "base/hash/sha1.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -16,7 +17,6 @@
 #include "components/version_info/version_info.h"
 #include "crypto/sha2.h"
 #include "google_apis/google_api_keys.h"
-#include "net/base/escape.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
@@ -47,7 +47,7 @@ std::string Unescape(const std::string& url) {
   int loop_var = 0;
   do {
     old_size = unescaped_str.size();
-    unescaped_str = net::UnescapeBinaryURLComponent(unescaped_str);
+    unescaped_str = base::UnescapeBinaryURLComponent(unescaped_str);
   } while (old_size != unescaped_str.size() &&
            ++loop_var <= kMaxLoopIterations);
 
@@ -97,7 +97,7 @@ std::string GetReportUrl(const V4ProtocolConfig& config,
   std::string api_key = google_apis::GetAPIKey();
   if (!api_key.empty()) {
     base::StringAppendF(&url, "&key=%s",
-                        net::EscapeQueryParamValue(api_key, true).c_str());
+                        base::EscapeQueryParamValue(api_key, true).c_str());
   }
   if (reporting_level)
     url.append(base::StringPrintf("&ext=%d", *reporting_level));
@@ -323,7 +323,7 @@ std::string V4ProtocolManagerUtil::ComposeUrl(const std::string& prefix,
       method.c_str(), request_base64.c_str());
   if (!key_param.empty()) {
     base::StringAppendF(&url, "&key=%s",
-                        net::EscapeQueryParamValue(key_param, true).c_str());
+                        base::EscapeQueryParamValue(key_param, true).c_str());
   }
   return url;
 }

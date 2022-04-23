@@ -7,15 +7,15 @@
 #import <MaterialComponents/MaterialAppBar.h>
 #import <MaterialComponents/MaterialButtons.h>
 
+#include "base/strings/escape.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/sys_string_conversions.h"
+#include "google_apis/google_api_keys.h"
+#include "remoting/base/string_resources.h"
 #import "remoting/ios/app/remoting_theme.h"
 #import "remoting/ios/app/side_menu_items.h"
 #import "remoting/ios/facade/remoting_authentication.h"
 #import "remoting/ios/facade/remoting_service.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
-#include "google_apis/google_api_keys.h"
-#include "net/base/escape.h"
-#include "remoting/base/string_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -49,8 +49,8 @@ std::string GetAuthorizationCodeUri() {
       "&client_id=%s"
       "&access_type=offline"
       "&approval_prompt=force",
-      net::EscapeUrlEncodedData(kChromotingAuthScopeValues, use_plus).c_str(),
-      net::EscapeUrlEncodedData(
+      base::EscapeUrlEncodedData(kChromotingAuthScopeValues, use_plus).c_str(),
+      base::EscapeUrlEncodedData(
           google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING),
           use_plus)
           .c_str());

@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "net/base/escape.h"
+#include "base/strings/escape.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/host/ppapi_host.h"
 #include "ppapi/shared_impl/file_ref_util.h"
@@ -56,7 +56,7 @@ GURL PepperFileRefRendererHost::GetFileSystemURL() const {
     // We strip off the leading slash when passing the URL to Resolve().
     // Internal paths are required to be absolute, so we can require this.
     return fs_host_->GetRootUrl().Resolve(
-        net::EscapePath(internal_path_.substr(1)));
+        base::EscapePath(internal_path_.substr(1)));
   }
   return GURL();
 }

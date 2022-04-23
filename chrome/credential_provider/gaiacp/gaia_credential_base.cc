@@ -21,6 +21,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -64,7 +65,6 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
-#include "net/base/escape.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -152,7 +152,7 @@ HRESULT GetExistingAccountMappingFromCD(
   *error_text = nullptr;
 
   std::string escape_url_encoded_email =
-      net::EscapeUrlEncodedData(base::WideToUTF8(email), true);
+      base::EscapeUrlEncodedData(base::WideToUTF8(email), true);
   std::string get_cd_user_url = base::StringPrintf(
       "https://www.googleapis.com/admin/directory/v1/users/"
       "%s?projection=full&viewType=domain_public",
@@ -214,15 +214,15 @@ HRESULT RequestDownscopedAccessToken(const std::string& refresh_token,
 
   GaiaUrls* gaia_urls = GaiaUrls::GetInstance();
   std::string enc_client_id =
-      net::EscapeUrlEncodedData(gaia_urls->oauth2_chrome_client_id(), true);
-  std::string enc_client_secret =
-      net::EscapeUrlEncodedData(gaia_urls->oauth2_chrome_client_secret(), true);
+      base::EscapeUrlEncodedData(gaia_urls->oauth2_chrome_client_id(), true);
+  std::string enc_client_secret = base::EscapeUrlEncodedData(
+      gaia_urls->oauth2_chrome_client_secret(), true);
   std::string enc_refresh_token =
-      net::EscapeUrlEncodedData(refresh_token, true);
+      base::EscapeUrlEncodedData(refresh_token, true);
   std::string get_access_token_body = base::StringPrintf(
       kGetAccessTokenBodyWithScopeFormat, enc_client_id.c_str(),
       enc_client_secret.c_str(), enc_refresh_token.c_str(),
-      net::EscapeUrlEncodedData(kAccessScopes, true).c_str());
+      base::EscapeUrlEncodedData(kAccessScopes, true).c_str());
   std::string get_oauth_token_url =
       base::StringPrintf("%s", gaia_urls->oauth2_token_url().spec().c_str());
 

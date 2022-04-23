@@ -11,6 +11,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -27,7 +28,6 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/google_api_keys.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/url_request/url_request_context_getter.h"
@@ -222,8 +222,8 @@ void PasswordSyncTokenFetcher::FetchSyncToken(const std::string& access_token) {
       break;
     case RequestType::kVerifyToken:
       resource_request->url = GetSyncTokenVerifyUrl(
-          sync_token_, net::EscapeQueryParamValue(google_apis::GetAPIKey(),
-                                                  /*use_plus=*/true));
+          sync_token_, base::EscapeQueryParamValue(google_apis::GetAPIKey(),
+                                                   /*use_plus=*/true));
       break;
     case RequestType::kNone:
       // Error: request type needs to be already set.

@@ -15,12 +15,12 @@
 #include "base/i18n/time_formatting.h"
 #include "base/location.h"
 #include "base/notreached.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "net/base/escape.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/blob/blob_data_item.h"
 #include "storage/browser/blob/blob_entry.h"
@@ -110,7 +110,7 @@ void EndHTML(std::string* out) {
 
 void AddHTMLBoldText(const std::string& text, std::string* out) {
   out->append("<b>");
-  out->append(net::EscapeForHTML(text));
+  out->append(base::EscapeForHTML(text));
   out->append("</b>");
 }
 
@@ -128,7 +128,7 @@ void AddHTMLListItem(const std::string& element_title,
   out->append("<li>");
   // No need to escape element_title since constant string is passed.
   out->append(element_title);
-  out->append(net::EscapeForHTML(element_data));
+  out->append(base::EscapeForHTML(element_data));
   out->append("</li>\n");
 }
 
@@ -189,9 +189,8 @@ void ViewBlobInternalsJob::GenerateHTMLForBlobData(
         break;
       case BlobDataItem::Type::kFile:
         AddHTMLListItem(kType, "file", out);
-        AddHTMLListItem(kPath,
-                 net::EscapeForHTML(item.path().AsUTF8Unsafe()),
-                 out);
+        AddHTMLListItem(kPath, base::EscapeForHTML(item.path().AsUTF8Unsafe()),
+                        out);
         if (!item.expected_modification_time().is_null()) {
           AddHTMLListItem(kModificationTime, base::UTF16ToUTF8(
               TimeFormatFriendlyDateAndTime(item.expected_modification_time())),

@@ -7,7 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/mac/scoped_nsobject.h"
-#include "net/base/escape.h"
+#include "base/strings/escape.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
 
@@ -25,9 +25,9 @@ NSURL* NSURLWithGURL(const GURL& url) {
   // ref. This function manually encodes those components, and then passes the
   // result to NSURL.
   GURL::Replacements replacements;
-  std::string escaped_path = EscapeNSURLPrecursor(url.path());
-  std::string escaped_query = EscapeNSURLPrecursor(url.query());
-  std::string escaped_ref = EscapeNSURLPrecursor(url.ref());
+  std::string escaped_path = base::EscapeNSURLPrecursor(url.path());
+  std::string escaped_query = base::EscapeNSURLPrecursor(url.query());
+  std::string escaped_ref = base::EscapeNSURLPrecursor(url.ref());
   if (!escaped_path.empty()) {
     replacements.SetPathStr(escaped_path);
   }

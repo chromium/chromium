@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/json/json_writer.h"
+#include "base/strings/escape.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
@@ -13,7 +14,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/color_parser.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/base/escape.h"
 #include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/site_for_cookies.h"
@@ -807,7 +807,7 @@ void IdpNetworkRequestManager::FetchClientMetadata(
   client_metadata_callback_ = std::move(callback);
 
   GURL target_url = endpoint.Resolve(
-      "?client_id=" + net::EscapeQueryParamValue(client_id, true));
+      "?client_id=" + base::EscapeQueryParamValue(client_id, true));
 
   url_loader_ =
       CreateUncredentialedUrlLoader(target_url, /* send_referrer= */ true);

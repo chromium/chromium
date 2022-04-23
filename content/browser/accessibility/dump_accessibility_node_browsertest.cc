@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/files/file_util.h"
+#include "base/strings/escape.h"
 #include "content/browser/accessibility/dump_accessibility_browsertest_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "net/base/escape.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 
@@ -67,7 +67,7 @@ class DumpAccessibilityNodeTest : public DumpAccessibilityTestBase {
     std::string contents =
         test_node ? formatter->FormatNode(test_node) : "Test node not found.";
 
-    std::string escaped_contents = net::EscapeNonASCII(contents);
+    std::string escaped_contents = base::EscapeNonASCII(contents);
     return base::SplitString(escaped_contents, "\n", base::KEEP_WHITESPACE,
                              base::SPLIT_WANT_NONEMPTY);
   }

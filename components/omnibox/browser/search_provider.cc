@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/rand_util.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -39,7 +40,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/variations/net/variations_http_headers.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -1509,7 +1509,7 @@ AutocompleteMatch SearchProvider::NavigationToMatch(
       AutocompleteInput::FormattedStringWithEquivalentMeaning(
           navigation.url(),
           url_formatter::FormatUrl(navigation.url(), format_types,
-                                   net::UnescapeRule::SPACES, nullptr, nullptr,
+                                   base::UnescapeRule::SPACES, nullptr, nullptr,
                                    &inline_autocomplete_offset),
           client()->GetSchemeClassifier(), &inline_autocomplete_offset);
   if (inline_autocomplete_offset != std::u16string::npos) {

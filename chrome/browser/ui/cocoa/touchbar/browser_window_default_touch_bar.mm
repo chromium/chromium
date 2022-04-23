@@ -417,7 +417,7 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
     std::u16string displayText = url_formatter::FormatUrl(
         contents->GetLastCommittedURL(),
         url_formatter::kFormatUrlOmitTrailingSlashOnBareHostname,
-        net::UnescapeRule::SPACES, &parsed, nullptr, nullptr);
+        base::UnescapeRule::SPACES, &parsed, nullptr, nullptr);
 
     base::scoped_nsobject<NSMutableAttributedString> attributedString(
         [[NSMutableAttributedString alloc]

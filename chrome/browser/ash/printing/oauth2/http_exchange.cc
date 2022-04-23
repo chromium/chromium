@@ -10,9 +10,9 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
-#include "net/base/escape.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -90,7 +90,7 @@ void HttpExchange::Exchange(
       if (!data.empty()) {
         data += "&";
       }
-      data += net::EscapeUrlEncodedData(kv.first, true);
+      data += base::EscapeUrlEncodedData(kv.first, true);
       data += "=";
       switch (kv.second.type()) {
         case base::Value::Type::BOOLEAN:
@@ -100,7 +100,7 @@ void HttpExchange::Exchange(
           data += base::NumberToString(kv.second.GetInt());
           break;
         case base::Value::Type::STRING:
-          data += net::EscapeUrlEncodedData(kv.second.GetString(), true);
+          data += base::EscapeUrlEncodedData(kv.second.GetString(), true);
           break;
         default:
           error_msg_ = "Cannot save a vector value as x-www-form-urlencoded.";

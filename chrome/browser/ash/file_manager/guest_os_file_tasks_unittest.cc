@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/file_manager/guest_os_file_tasks.h"
 
 #include "base/files/file_path.h"
+#include "base/strings/escape.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -16,7 +17,6 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/entry_info.h"
-#include "net/base/escape.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -84,7 +84,7 @@ class GuestOsFileTasksTest : public testing::Test {
   void AddEntry(const std::string& path, const std::string& mime) {
     entries_.push_back(
         extensions::EntryInfo(base::FilePath(path), mime, false));
-    std::string virtual_path = net::EscapeUrlEncodedData(
+    std::string virtual_path = base::EscapeUrlEncodedData(
         util::GetDownloadsMountPointName(&profile_) + "/" + path,
         /*use_plus=*/false);
     urls_.push_back(

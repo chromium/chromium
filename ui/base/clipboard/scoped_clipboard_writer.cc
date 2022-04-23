@@ -8,9 +8,9 @@
 
 #include "base/json/json_writer.h"
 #include "base/pickle.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "net/base/escape.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_metrics.h"
@@ -131,9 +131,9 @@ void ScopedClipboardWriter::WriteHyperlink(const std::u16string& anchor_text,
 
   // Construct the hyperlink.
   std::string html = "<a href=\"";
-  html += net::EscapeForHTML(url);
+  html += base::EscapeForHTML(url);
   html += "\">";
-  html += net::EscapeForHTML(base::UTF16ToUTF8(anchor_text));
+  html += base::EscapeForHTML(base::UTF16ToUTF8(anchor_text));
   html += "</a>";
   WriteHTML(base::UTF8ToUTF16(html), std::string());
 }

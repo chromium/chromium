@@ -16,6 +16,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/stl_util.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -28,7 +29,6 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_id_token_decoder.h"
 #include "google_apis/gaia/oauth_multilogin_result.h"
-#include "net/base/escape.h"
 #include "net/base/isolation_info.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -359,8 +359,8 @@ std::string GaiaAuthFetcher::MakeIssueAuthTokenBody(
     const std::string& sid,
     const std::string& lsid,
     const char* const service) {
-  std::string encoded_sid = net::EscapeUrlEncodedData(sid, true);
-  std::string encoded_lsid = net::EscapeUrlEncodedData(lsid, true);
+  std::string encoded_sid = base::EscapeUrlEncodedData(sid, true);
+  std::string encoded_lsid = base::EscapeUrlEncodedData(lsid, true);
 
   // All tokens should be session tokens except the gaia auth token.
   bool session = true;
@@ -378,13 +378,13 @@ std::string GaiaAuthFetcher::MakeIssueAuthTokenBody(
 std::string GaiaAuthFetcher::MakeGetTokenPairBody(
     const std::string& auth_code,
     const std::string& device_id) {
-  std::string encoded_scope = net::EscapeUrlEncodedData(
-      GaiaConstants::kOAuth1LoginScope, true);
-  std::string encoded_client_id = net::EscapeUrlEncodedData(
+  std::string encoded_scope =
+      base::EscapeUrlEncodedData(GaiaConstants::kOAuth1LoginScope, true);
+  std::string encoded_client_id = base::EscapeUrlEncodedData(
       GaiaUrls::GetInstance()->oauth2_chrome_client_id(), true);
-  std::string encoded_client_secret = net::EscapeUrlEncodedData(
+  std::string encoded_client_secret = base::EscapeUrlEncodedData(
       GaiaUrls::GetInstance()->oauth2_chrome_client_secret(), true);
-  std::string encoded_auth_code = net::EscapeUrlEncodedData(auth_code, true);
+  std::string encoded_auth_code = base::EscapeUrlEncodedData(auth_code, true);
   std::string body = base::StringPrintf(
       kOAuth2CodeToTokenPairBodyFormat, encoded_scope.c_str(),
       encoded_client_id.c_str(), encoded_client_secret.c_str(),
@@ -404,7 +404,7 @@ std::string GaiaAuthFetcher::MakeRevokeTokenBody(
 
 // static
 std::string GaiaAuthFetcher::MakeGetUserInfoBody(const std::string& lsid) {
-  std::string encoded_lsid = net::EscapeUrlEncodedData(lsid, true);
+  std::string encoded_lsid = base::EscapeUrlEncodedData(lsid, true);
   return base::StringPrintf(kGetUserInfoFormat, encoded_lsid.c_str());
 }
 
@@ -414,18 +414,18 @@ std::string GaiaAuthFetcher::MakeMergeSessionQuery(
     const std::string& external_cc_result,
     const std::string& continue_url,
     const std::string& source) {
-  std::string encoded_auth_token = net::EscapeUrlEncodedData(auth_token, true);
-  std::string encoded_continue_url = net::EscapeUrlEncodedData(continue_url,
-                                                               true);
-  std::string encoded_source = net::EscapeUrlEncodedData(source, true);
+  std::string encoded_auth_token = base::EscapeUrlEncodedData(auth_token, true);
+  std::string encoded_continue_url =
+      base::EscapeUrlEncodedData(continue_url, true);
+  std::string encoded_source = base::EscapeUrlEncodedData(source, true);
   std::string result = base::StringPrintf(kMergeSessionFormat,
                                           encoded_auth_token.c_str(),
                                           encoded_continue_url.c_str(),
                                           encoded_source.c_str());
   if (!external_cc_result.empty()) {
-    base::StringAppendF(&result, "&externalCcResult=%s",
-                        net::EscapeUrlEncodedData(
-                            external_cc_result, true).c_str());
+    base::StringAppendF(
+        &result, "&externalCcResult=%s",
+        base::EscapeUrlEncodedData(external_cc_result, true).c_str());
   }
 
   return result;
@@ -470,8 +470,8 @@ void GaiaAuthFetcher::ParseClientLoginResponse(const std::string& data,
 // static
 std::string GaiaAuthFetcher::MakeOAuthLoginBody(const std::string& service,
                                                 const std::string& source) {
-  std::string encoded_service = net::EscapeUrlEncodedData(service, true);
-  std::string encoded_source = net::EscapeUrlEncodedData(source, true);
+  std::string encoded_service = base::EscapeUrlEncodedData(service, true);
+  std::string encoded_source = base::EscapeUrlEncodedData(source, true);
   return base::StringPrintf(kOAuthLoginFormat,
                             encoded_service.c_str(),
                             encoded_source.c_str());
@@ -800,7 +800,7 @@ void GaiaAuthFetcher::StartOAuthMultilogin(
       kOAuthMultiBearerHeaderFormat,
       base::JoinString(authorization_header_parts, ",").c_str());
 
-  std::string source_string = net::EscapeUrlEncodedData(source_, true);
+  std::string source_string = base::EscapeUrlEncodedData(source_, true);
   std::string parameters = base::StringPrintf(
       "?source=%s&reuseCookies=%i", source_string.c_str(),
       mode == gaia::MultiloginMode::MULTILOGIN_PRESERVE_COOKIE_ACCOUNTS_ORDER
@@ -809,7 +809,7 @@ void GaiaAuthFetcher::StartOAuthMultilogin(
   if (!external_cc_result.empty()) {
     base::StringAppendF(
         &parameters, "&externalCcResult=%s",
-        net::EscapeUrlEncodedData(external_cc_result, true).c_str());
+        base::EscapeUrlEncodedData(external_cc_result, true).c_str());
   }
 
   net::NetworkTrafficAnnotationTag traffic_annotation =

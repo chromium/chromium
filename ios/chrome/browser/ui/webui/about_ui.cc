@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/grit/components_resources.h"
@@ -21,7 +22,6 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/web/public/webui/url_data_source_ios.h"
-#include "net/base/escape.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
@@ -64,7 +64,7 @@ void AppendHeader(std::string* output,
   output->append("<!DOCTYPE HTML>\n<html>\n<head>\n");
   if (!unescaped_title.empty()) {
     output->append("<title>");
-    output->append(net::EscapeForHTML(unescaped_title));
+    output->append(base::EscapeForHTML(unescaped_title));
     output->append("</title>\n");
   }
   output->append("<meta charset='utf-8'>\n");
@@ -145,9 +145,9 @@ void AboutUIHTMLSource::StartDataRequest(
 
       response.append("<PRE>");
       response.append("<h4>");
-      response.append(net::EscapeForHTML(*header));
+      response.append(base::EscapeForHTML(*header));
       response.append("</h4>");
-      response.append(net::EscapeForHTML(*body));
+      response.append(base::EscapeForHTML(*body));
       response.append("</PRE>");
       response.append("<br><hr><br>");
     }

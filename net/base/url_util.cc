@@ -13,11 +13,11 @@
 #endif
 
 #include "base/check_op.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "net/base/escape.h"
 #include "net/base/ip_address.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
@@ -68,8 +68,8 @@ GURL AppendQueryParameter(const GURL& url,
   if (!query.empty())
     query += "&";
 
-  query += (EscapeQueryParamValue(name, true) + "=" +
-            EscapeQueryParamValue(value, true));
+  query += (base::EscapeQueryParamValue(name, true) + "=" +
+            base::EscapeQueryParamValue(value, true));
   GURL::Replacements replacements;
   replacements.SetQueryStr(query);
   return url.ReplaceComponents(replacements);
@@ -79,8 +79,8 @@ GURL AppendOrReplaceQueryParameter(const GURL& url,
                                    const std::string& name,
                                    const std::string& value) {
   bool replaced = false;
-  std::string param_name = EscapeQueryParamValue(name, true);
-  std::string param_value = EscapeQueryParamValue(value, true);
+  std::string param_name = base::EscapeQueryParamValue(name, true);
+  std::string param_value = base::EscapeQueryParamValue(value, true);
 
   const std::string input = url.query();
   url::Component cursor(0, input.size());
@@ -144,9 +144,10 @@ const std::string& QueryIterator::GetUnescapedValue() {
   DCHECK(!at_end_);
   if (value_.is_nonempty() && unescaped_value_.empty()) {
     unescaped_value_ = base::UnescapeURLComponent(
-        GetValue(), UnescapeRule::SPACES | UnescapeRule::PATH_SEPARATORS |
-                        UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS |
-                        UnescapeRule::REPLACE_PLUS_WITH_SPACE);
+        GetValue(),
+        base::UnescapeRule::SPACES | base::UnescapeRule::PATH_SEPARATORS |
+            base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS |
+            base::UnescapeRule::REPLACE_PLUS_WITH_SPACE);
   }
   return unescaped_value_;
 }

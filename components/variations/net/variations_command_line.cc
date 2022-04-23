@@ -7,9 +7,9 @@
 #include "base/base_switches.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
+#include "base/strings/escape.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
 #include "components/variations/variations_switches.h"
-#include "net/base/escape.h"
 
 namespace variations {
 

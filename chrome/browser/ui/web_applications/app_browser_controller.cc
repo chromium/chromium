@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -36,7 +37,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
-#include "net/base/escape.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/image_model.h"
@@ -89,7 +89,7 @@ std::u16string AppBrowserController::FormatUrlOrigin(
     url_formatter::FormatUrlTypes format_types) {
   auto origin = url::Origin::Create(url);
   return url_formatter::FormatUrl(origin.opaque() ? url : origin.GetURL(),
-                                  format_types, net::UnescapeRule::SPACES,
+                                  format_types, base::UnescapeRule::SPACES,
                                   nullptr, nullptr, nullptr);
 }
 

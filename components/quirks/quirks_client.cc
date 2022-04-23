@@ -8,12 +8,12 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_runner_util.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/quirks/quirks_manager.h"
 #include "components/version_info/version_info.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -78,8 +78,8 @@ void QuirksClient::StartDownload() {
       kQuirksUrlFormat, IdToHexString(product_id_).c_str(), major_version);
 
   if (!display_name_.empty()) {
-    url +=
-        "display_name=" + net::EscapeQueryParamValue(display_name_, true) + "&";
+    url += "display_name=" + base::EscapeQueryParamValue(display_name_, true) +
+           "&";
   }
 
   VLOG(2) << "Preparing to download\n  " << url << "\nto file "

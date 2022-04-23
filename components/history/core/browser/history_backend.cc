@@ -29,6 +29,7 @@
 #include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/ranges/ranges.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -53,7 +54,6 @@
 #include "components/history/core/browser/url_utils.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/url_formatter/url_formatter.h"
-#include "net/base/escape.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "sql/error_delegate_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -197,7 +197,7 @@ std::u16string FormatUrlForRedirectComparison(const GURL& url) {
       url_formatter::kFormatUrlOmitHTTP | url_formatter::kFormatUrlOmitHTTPS |
           url_formatter::kFormatUrlOmitUsernamePassword |
           url_formatter::kFormatUrlOmitTrivialSubdomains,
-      net::UnescapeRule::NONE, nullptr, nullptr, nullptr);
+      base::UnescapeRule::NONE, nullptr, nullptr, nullptr);
 }
 
 base::Time MidnightNDaysLater(base::Time time, int days) {

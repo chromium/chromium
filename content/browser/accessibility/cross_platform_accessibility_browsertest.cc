@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/elapsed_timer.h"
@@ -29,7 +30,6 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "net/base/escape.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -103,7 +103,7 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
                                            ui::kAXModeComplete,
                                            ax::mojom::Event::kLoadComplete);
     GURL html_data_url(
-        net::EscapeExternalHandlerValue("data:text/html," + html));
+        base::EscapeExternalHandlerValue("data:text/html," + html));
     ASSERT_TRUE(NavigateToURL(shell(), html_data_url));
     waiter.WaitForNotification();
   }
@@ -317,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   const ui::AXNode* root = tree.root();
 
   // Check properties of the tree.
-  EXPECT_EQ(net::EscapeExternalHandlerValue("data:text/html," + url_str),
+  EXPECT_EQ(base::EscapeExternalHandlerValue("data:text/html," + url_str),
             tree.data().url);
   EXPECT_EQ("Accessibility Test", tree.data().title);
   EXPECT_EQ("html", tree.data().doctype);
@@ -1540,7 +1540,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
       shell()->web_contents(), ui::kAXModeComplete,
       ax::mojom::Event::kScrolledToAnchor);
 
-  GURL url(net::EscapeExternalHandlerValue(R"HTML(data:text/html,
+  GURL url(base::EscapeExternalHandlerValue(R"HTML(data:text/html,
       <p>
         Some text
       </p>

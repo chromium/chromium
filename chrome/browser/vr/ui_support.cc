@@ -17,7 +17,7 @@ std::u16string FormatUrlForVr(const GURL& gurl, url::Parsed* new_parsed) {
       url_formatter::kFormatUrlOmitDefaults |
           url_formatter::kFormatUrlOmitHTTPS |
           url_formatter::kFormatUrlOmitTrivialSubdomains,
-      net::UnescapeRule::NORMAL, new_parsed, nullptr, nullptr);
+      base::UnescapeRule::NORMAL, new_parsed, nullptr, nullptr);
 }
 
 }  // namespace vr

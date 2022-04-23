@@ -1621,7 +1621,7 @@ std::unique_ptr<views::View> BookmarkBarView::CreateBookmarkButton(
         node->url(), node->GetTitle());
     button->GetViewAccessibility().OverrideDescription(url_formatter::FormatUrl(
         node->url(), url_formatter::kFormatUrlOmitDefaults,
-        net::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
+        base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
   } else {
     button = std::make_unique<BookmarkFolderButton>(
         base::BindRepeating(&BookmarkBarView::OnMenuButtonPressed,

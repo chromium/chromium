@@ -578,7 +578,7 @@ std::string GetDisplayNameForGURL(
       url_formatter::kFormatUrlOmitDefaults |
           url_formatter::kFormatUrlOmitHTTPS |
           url_formatter::kFormatUrlOmitTrailingSlashOnBareHostname,
-      net::UnescapeRule::NONE, nullptr, nullptr, nullptr);
+      base::UnescapeRule::NONE, nullptr, nullptr, nullptr);
   auto url_string = base::UTF16ToUTF8(url_16);
   return url_string;
 }

@@ -143,7 +143,7 @@ std::u16string FormatBookmarkURLForDisplay(const GURL& url) {
   if (url.has_username())
     format_types &= ~url_formatter::kFormatUrlOmitHTTP;
 
-  return url_formatter::FormatUrl(url, format_types, net::UnescapeRule::SPACES,
+  return url_formatter::FormatUrl(url, format_types, base::UnescapeRule::SPACES,
                                   nullptr, nullptr, nullptr);
 }
 

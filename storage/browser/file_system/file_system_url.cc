@@ -7,8 +7,8 @@
 #include <sstream>
 
 #include "base/check.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
-#include "net/base/escape.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -122,7 +122,7 @@ GURL FileSystemURL::ToGURL() const {
   // Exactly match with DOMFileSystemBase::createFileSystemURL()'s encoding
   // behavior, where the path is escaped by KURL::encodeWithURLEscapeSequences
   // which is essentially encodeURIComponent except '/'.
-  std::string escaped = net::EscapeQueryParamValue(
+  std::string escaped = base::EscapeQueryParamValue(
       virtual_path_.NormalizePathSeparatorsTo('/').AsUTF8Unsafe(),
       false /* use_plus */);
   base::ReplaceSubstringsAfterOffset(&escaped, 0, "%2F", "/");

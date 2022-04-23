@@ -309,7 +309,7 @@ reading_list::mojom::ReadLaterEntryPtr ReadingListPageHandler::GetEntryData(
           url_formatter::kFormatUrlOmitHTTPS |
           url_formatter::kFormatUrlOmitTrivialSubdomains |
           url_formatter::kFormatUrlTrimAfterHost,
-      net::UnescapeRule::NORMAL, nullptr, nullptr, nullptr));
+      base::UnescapeRule::NORMAL, nullptr, nullptr, nullptr));
   entry_data->update_time = entry->UpdateTime();
   entry_data->read = entry->IsRead();
   entry_data->display_time_since_update =

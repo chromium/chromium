@@ -13,6 +13,7 @@
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -47,7 +48,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "net/base/escape.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/base_window.h"
@@ -147,7 +147,7 @@ GURL GenerateTerminalURL(Profile* profile,
                          const std::string& cwd,
                          const std::vector<std::string>& terminal_args) {
   auto escape = [](std::string param) {
-    return net::EscapeQueryParamValue(param, /*use_plus=*/true);
+    return base::EscapeQueryParamValue(param, /*use_plus=*/true);
   };
   std::string start = base::StrCat({chrome::kChromeUIUntrustedTerminalURL,
                                     "html/terminal.html?command=vmshell"});

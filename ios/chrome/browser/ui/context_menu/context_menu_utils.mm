@@ -91,7 +91,7 @@ NSString* GetContextMenuTitle(web::ContextMenuParams params) {
           url_formatter::kFormatUrlOmitTrivialSubdomains;
 
       std::u16string formatted_url = url_formatter::FormatUrl(
-          params.link_url, format_types, net::UnescapeRule::NORMAL,
+          params.link_url, format_types, base::UnescapeRule::NORMAL,
           /*new_parsed=*/nullptr,
           /*prefix_end=*/nullptr, /*offset_for_adjustment=*/nullptr);
       return base::SysUTF16ToNSString(formatted_url);

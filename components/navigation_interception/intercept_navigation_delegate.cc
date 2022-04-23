@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/strings/escape.h"
 #include "components/navigation_interception/jni_headers/InterceptNavigationDelegate_jni.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -17,7 +18,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
-#include "net/base/escape.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -104,7 +104,7 @@ InterceptNavigationDelegate::~InterceptNavigationDelegate() {
 bool InterceptNavigationDelegate::ShouldIgnoreNavigation(
     content::NavigationHandle* navigation_handle) {
   GURL escaped_url = escape_external_handler_value_
-                         ? GURL(net::EscapeExternalHandlerValue(
+                         ? GURL(base::EscapeExternalHandlerValue(
                                navigation_handle->GetURL().spec()))
                          : navigation_handle->GetURL();
 
@@ -128,7 +128,7 @@ void InterceptNavigationDelegate::HandleExternalProtocolDialog(
     bool has_user_gesture,
     const absl::optional<url::Origin>& initiating_origin) {
   GURL escaped_url = escape_external_handler_value_
-                         ? GURL(net::EscapeExternalHandlerValue(url.spec()))
+                         ? GURL(base::EscapeExternalHandlerValue(url.spec()))
                          : url;
   if (!escaped_url.is_valid())
     return;

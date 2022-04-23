@@ -10,13 +10,13 @@
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "net/base/escape.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -291,9 +291,9 @@ std::string OAuth2AccessTokenFetcherImpl::MakeGetAccessTokenBody(
   // to specify both at the same time.
   CHECK_NE(refresh_token.empty(), auth_code.empty());
 
-  std::string enc_client_id = net::EscapeUrlEncodedData(client_id, true);
+  std::string enc_client_id = base::EscapeUrlEncodedData(client_id, true);
   std::string enc_client_secret =
-      net::EscapeUrlEncodedData(client_secret, true);
+      base::EscapeUrlEncodedData(client_secret, true);
 
   const char* key = nullptr;
   const char* grant_type = nullptr;
@@ -301,11 +301,11 @@ std::string OAuth2AccessTokenFetcherImpl::MakeGetAccessTokenBody(
   if (refresh_token.empty()) {
     key = kKeyAuthCode;
     grant_type = kGrantTypeAuthCode;
-    enc_value = net::EscapeUrlEncodedData(auth_code, true);
+    enc_value = base::EscapeUrlEncodedData(auth_code, true);
   } else {
     key = kKeyRefreshToken;
     grant_type = kGrantTypeRefreshToken;
-    enc_value = net::EscapeUrlEncodedData(refresh_token, true);
+    enc_value = base::EscapeUrlEncodedData(refresh_token, true);
   }
 
   if (scopes.empty()) {
@@ -317,7 +317,7 @@ std::string OAuth2AccessTokenFetcherImpl::MakeGetAccessTokenBody(
     return base::StringPrintf(
         kGetAccessTokenBodyWithScopeFormat, enc_client_id.c_str(),
         enc_client_secret.c_str(), grant_type, key, enc_value.c_str(),
-        net::EscapeUrlEncodedData(scopes_string, true).c_str());
+        base::EscapeUrlEncodedData(scopes_string, true).c_str());
   }
 }
 

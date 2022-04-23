@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -18,7 +19,6 @@
 #include "google_apis/gcm/engine/gcm_request_test_base.h"
 #include "google_apis/gcm/engine/instance_id_get_token_request_handler.h"
 #include "google_apis/gcm/monitoring/fake_gcm_stats_recorder.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -166,7 +166,7 @@ TEST_F(GCMRegistrationRequestTest, RequestRegistrationWithMultipleSenderIds) {
     continue;
 
   ASSERT_TRUE(data_tokenizer.GetNext());
-  std::string senders(net::UnescapeBinaryURLComponent(data_tokenizer.token()));
+  std::string senders(base::UnescapeBinaryURLComponent(data_tokenizer.token()));
   base::StringTokenizer sender_tokenizer(senders, ",");
   ASSERT_TRUE(sender_tokenizer.GetNext());
   EXPECT_EQ("sender1", sender_tokenizer.token());

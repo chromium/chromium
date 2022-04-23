@@ -40,7 +40,7 @@ namespace navigation_interception {
 class InterceptNavigationDelegate : public base::SupportsUserData::Data {
  public:
   // Pass true for |escape_external_handler_value| to have
-  // net::EscapeExternalHandlerValue() invoked on URLs passed to
+  // base::EscapeExternalHandlerValue() invoked on URLs passed to
   // ShouldIgnoreNavigation() before the navigation is processed.
   InterceptNavigationDelegate(JNIEnv* env,
                               jobject jdelegate,

@@ -42,6 +42,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -127,7 +128,6 @@
 #include "google_apis/common/test_util.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "media/base/media_switches.h"
-#include "net/base/escape.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -2259,7 +2259,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
       std::string json_args;
       base::JSONWriter::Write(arg_value, &json_args);
       search = base::StrCat(
-          {"?", net::EscapeUrlEncodedData(json_args, /*use_plus=*/false)});
+          {"?", base::EscapeUrlEncodedData(json_args, /*use_plus=*/false)});
     }
 
     std::string baseURL = ash::file_manager::kChromeUIFileManagerURL;

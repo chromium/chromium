@@ -260,7 +260,7 @@ GetSearchOverriddenParams(Profile* profile) {
       url_formatter::kFormatUrlTrimAfterHost |
       url_formatter::kFormatUrlOmitHTTP | url_formatter::kFormatUrlOmitHTTPS;
   std::u16string formatted_search_url = url_formatter::FormatUrl(
-      search_url, kFormatRules, net::UnescapeRule::SPACES, nullptr, nullptr,
+      search_url, kFormatRules, base::UnescapeRule::SPACES, nullptr, nullptr,
       nullptr);
 
   constexpr char kGenericDialogHistogramName[] =

@@ -24,7 +24,7 @@ namespace {
 std::u16string FormatUrlToSubdomain(const GURL& url) {
   std::u16string formated_url = url_formatter::FormatUrl(
       url, url_formatter::kFormatUrlOmitTrivialSubdomains,
-      net::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
+      base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
   return base::UTF8ToUTF16(GURL(formated_url).host());
 }
 

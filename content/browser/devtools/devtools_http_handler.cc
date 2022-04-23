@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -38,7 +39,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/user_agent.h"
-#include "net/base/escape.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -609,7 +609,7 @@ void DevToolsHttpHandler::OnJsonRequest(
   }
 
   if (command == "new") {
-    GURL url(net::UnescapeBinaryURLComponent(query));
+    GURL url(base::UnescapeBinaryURLComponent(query));
     if (!url.is_valid())
       url = GURL(url::kAboutBlankURL);
     scoped_refptr<DevToolsAgentHost> agent_host =
@@ -880,7 +880,7 @@ base::Value DevToolsHttpHandler::SerializeDescriptor(
     dictionary.SetStringKey(kTargetParentIdField, parent_id);
   dictionary.SetStringKey(kTargetTypeField, agent_host->GetType());
   dictionary.SetStringKey(kTargetTitleField,
-                          net::EscapeForHTML(agent_host->GetTitle()));
+                          base::EscapeForHTML(agent_host->GetTitle()));
   dictionary.SetStringKey(kTargetDescriptionField,
                           agent_host->GetDescription());
 

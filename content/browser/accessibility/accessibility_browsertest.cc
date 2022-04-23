@@ -4,6 +4,7 @@
 
 #include "content/browser/accessibility/accessibility_browsertest.h"
 #include "base/callback_helpers.h"
+#include "base/strings/escape.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -13,7 +14,6 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
-#include "net/base/escape.h"
 
 namespace content {
 
@@ -41,7 +41,7 @@ void AccessibilityBrowserTest::LoadInitialAccessibilityTreeFromHtml(
                                          accessibility_mode,
                                          ax::mojom::Event::kLoadComplete);
   GURL html_data_url("data:text/html," +
-                     net::EscapeQueryParamValue(html, false));
+                     base::EscapeQueryParamValue(html, false));
   EXPECT_TRUE(NavigateToURL(shell(), html_data_url));
   waiter.WaitForNotification();
 }
@@ -54,7 +54,7 @@ void AccessibilityBrowserTest::LoadInputField() {
             <form>
               <label for="textField">Browser name:</label>
               <input type="text" id="textField" name="name" value=")HTML") +
-                                       net::EscapeForHTML(kInputContents) +
+                                       base::EscapeForHTML(kInputContents) +
                                        std::string(R"HTML(">
             </form>
           </body>
@@ -66,7 +66,7 @@ void AccessibilityBrowserTest::LoadTextareaField() {
       <html>
       <body>
                     <textarea rows="3" cols="60">)HTML") +
-                                       net::EscapeForHTML(kTextareaContents) +
+                                       base::EscapeForHTML(kTextareaContents) +
                                        std::string(R"HTML(</textarea>
           </body>
           </html>)HTML"));

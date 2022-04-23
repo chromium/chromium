@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -82,7 +83,6 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "google_apis/google_api_keys.h"
 #include "ipc/ipc_channel.h"
-#include "net/base/escape.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
@@ -299,8 +299,8 @@ std::string SanitizeRemoteBase(const std::string& value) {
 }
 
 std::string SanitizeRemoteFrontendURL(const std::string& value) {
-  GURL url(net::UnescapeBinaryURLComponent(
-      value, net::UnescapeRule::REPLACE_PLUS_WITH_SPACE));
+  GURL url(base::UnescapeBinaryURLComponent(
+      value, base::UnescapeRule::REPLACE_PLUS_WITH_SPACE));
   std::string path = url.path();
   std::vector<std::string> parts = base::SplitString(
       path, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -313,7 +313,7 @@ std::string SanitizeRemoteFrontendURL(const std::string& value) {
                             revision.c_str(), filename.c_str());
   std::string sanitized = SanitizeFrontendURL(url, url::kHttpsScheme,
       kRemoteFrontendDomain, path, true).spec();
-  return net::EscapeQueryParamValue(sanitized, false);
+  return base::EscapeQueryParamValue(sanitized, false);
 }
 
 std::string SanitizeEnabledExperiments(const std::string& value) {

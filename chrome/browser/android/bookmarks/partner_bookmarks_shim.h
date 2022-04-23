@@ -14,12 +14,12 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/string_search.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/url_formatter/url_formatter.h"
-#include "net/base/escape.h"
 #include "ui/base/models/tree_node_iterator.h"
 #include "url/gurl.h"
 

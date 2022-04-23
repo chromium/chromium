@@ -794,7 +794,7 @@ _CONFIG = [
     },
     {
         'paths': ['third_party/blink/renderer/core/clipboard'],
-        'allowed': ['net::EscapeForHTML'],
+        'allowed': ['base::EscapeForHTML'],
     },
     {
         'paths': ['third_party/blink/renderer/core/css'],

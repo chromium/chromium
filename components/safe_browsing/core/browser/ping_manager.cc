@@ -11,12 +11,12 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "google_apis/google_api_keys.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -240,7 +240,7 @@ GURL PingManager::SafeBrowsingHitUrl(
     // Population_id should be URL-safe, but escape it and size-limit it
     // anyway since it came from outside Chrome.
     std::string up_str =
-        net::EscapeQueryParamValue(hit_report.population_id, true);
+        base::EscapeQueryParamValue(hit_report.population_id, true);
     if (up_str.size() > 512) {
       DCHECK(false) << "population_id is too long: " << up_str;
       up_str = "UP_STRING_TOO_LONG";
@@ -252,9 +252,10 @@ GURL PingManager::SafeBrowsingHitUrl(
   return GURL(base::StringPrintf(
       "%s&evts=%s&evtd=%s&evtr=%s&evhr=%s&evtb=%d&src=%s&m=%d%s", url.c_str(),
       threat_list.c_str(),
-      net::EscapeQueryParamValue(hit_report.malicious_url.spec(), true).c_str(),
-      net::EscapeQueryParamValue(hit_report.page_url.spec(), true).c_str(),
-      net::EscapeQueryParamValue(hit_report.referrer_url.spec(), true).c_str(),
+      base::EscapeQueryParamValue(hit_report.malicious_url.spec(), true)
+          .c_str(),
+      base::EscapeQueryParamValue(hit_report.page_url.spec(), true).c_str(),
+      base::EscapeQueryParamValue(hit_report.referrer_url.spec(), true).c_str(),
       hit_report.is_subresource, threat_source.c_str(),
       hit_report.is_metrics_reporting_active, user_population_comp.c_str()));
 }

@@ -10,6 +10,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
@@ -17,7 +18,6 @@
 #include "base/task/thread_pool.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/upload_list/crash_upload_list.h"
-#include "net/base/escape.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -56,7 +56,7 @@ std::string ChromeJsErrorReportProcessor::BuildPostRequestQueryString(
   for (const auto& kv : params) {
     query_parts.push_back(base::StrCat(
         {kv.first, "=",
-         net::EscapeQueryParamValue(kv.second, /*use_plus=*/false)}));
+         base::EscapeQueryParamValue(kv.second, /*use_plus=*/false)}));
   }
   return base::JoinString(query_parts, "&");
 }

@@ -5,13 +5,13 @@
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 
 #include "base/bind.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/base/escape.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -96,7 +96,7 @@ void QuickAnswersUiController::OnQuickAnswersViewPressed() {
   controller_->DismissQuickAnswers(QuickAnswersExitPoint::kQuickAnswersClick);
 
   OpenUrl(GURL(kGoogleSearchUrlPrefix +
-               net::EscapeUrlEncodedData(query_, /*use_plus=*/true)));
+               base::EscapeUrlEncodedData(query_, /*use_plus=*/true)));
   controller_->OnQuickAnswerClick();
 }
 

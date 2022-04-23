@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -20,7 +21,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
-#include "net/base/escape.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 namespace content {
@@ -91,7 +91,7 @@ constexpr char kOnDiskFallback[] = "ondiskfallback";
 GURL GetSiteURLForGuestPartitionConfig(
     const StoragePartitionConfig& storage_partition_config) {
   DCHECK(!storage_partition_config.is_default());
-  std::string url_encoded_partition = net::EscapeQueryParamValue(
+  std::string url_encoded_partition = base::EscapeQueryParamValue(
       storage_partition_config.partition_name(), false);
   const char* fallback = "";
   switch (
@@ -128,9 +128,9 @@ bool GetGuestPartitionConfigForSite(
   // EscapeQueryParamValue(), it should have no path separators or control codes
   // when unescaped, but safest to check for that and fail if it does.
   std::string partition_name;
-  if (!net::UnescapeBinaryURLComponentSafe(site.query_piece(),
-                                           true /* fail_on_path_separators */,
-                                           &partition_name)) {
+  if (!base::UnescapeBinaryURLComponentSafe(site.query_piece(),
+                                            true /* fail_on_path_separators */,
+                                            &partition_name)) {
     return false;
   }
 

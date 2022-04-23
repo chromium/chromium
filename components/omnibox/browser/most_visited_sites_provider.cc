@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
+#include "base/strings/escape.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -16,7 +17,6 @@
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/url_formatter/url_formatter.h"
-#include "net/base/escape.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "url/gurl.h"
@@ -48,7 +48,7 @@ AutocompleteMatch BuildMatch(AutocompleteProvider* provider,
   // Zero suggest results should always omit protocols and never appear bold.
   auto format_types = AutocompleteMatch::GetFormatTypes(false, false);
   match.contents = url_formatter::FormatUrl(
-      url, format_types, net::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
+      url, format_types, base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
   match.contents_class = ClassifyTermMatches({}, match.contents.length(), 0,
                                              ACMatchClassification::URL);
 

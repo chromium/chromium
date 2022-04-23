@@ -23,7 +23,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "chromeos/printing/uri.h"
-#include "net/base/escape.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -72,11 +71,11 @@ bool ParseURLParameters(const std::string& params_str,
     } else {
       key = key_val;
     }
-    key = net::UnescapeBinaryURLComponent(key);
+    key = base::UnescapeBinaryURLComponent(key);
     if (key.empty() || results.contains(key)) {
       return false;
     }
-    results[key] = net::UnescapeBinaryURLComponent(val);
+    results[key] = base::UnescapeBinaryURLComponent(val);
   }
   return true;
 }

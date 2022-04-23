@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/process/process_handle.h"
+#include "base/strings/escape.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -44,7 +45,6 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
-#include "net/base/escape.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
@@ -180,7 +180,7 @@ void AccessibilityWinBrowserTest::SetUpScrollableInputField(
           <html>
           <body>
             <input type="text" style="width: 150px;" value=")HTML") +
-      net::EscapeForHTML(InputContentsString()) + std::string(R"HTML(">
+      base::EscapeForHTML(InputContentsString()) + std::string(R"HTML(">
           </body>
           </html>)HTML"));
 
@@ -198,7 +198,7 @@ void AccessibilityWinBrowserTest::SetUpScrollableInputTypeSearchField(
           <html>
           <body>
             <input type="search" style="width: 150px;" value=")HTML") +
-      net::EscapeForHTML(InputContentsString()) + std::string(R"HTML(">
+      base::EscapeForHTML(InputContentsString()) + std::string(R"HTML(">
           </body>
           </html>)HTML"));
 
@@ -1162,7 +1162,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, FocusEventOnPageLoad) {
                                          ax::mojom::Event::kLoadComplete);
   GURL html_data_url(
       "data:text/html," +
-      net::EscapeQueryParamValue(R"HTML(<p> Hello</ p>)HTML", false));
+      base::EscapeQueryParamValue(R"HTML(<p> Hello</ p>)HTML", false));
   EXPECT_TRUE(NavigateToURL(shell(), html_data_url));
   WaitForAccessibilityFocusChange();
   waiter.WaitForNotification();

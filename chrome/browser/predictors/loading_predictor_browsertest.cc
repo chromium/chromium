@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -55,7 +56,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
-#include "net/base/escape.h"
 #include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/mock_host_resolver.h"
@@ -510,7 +510,7 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
 
     GURL request_url = request.GetURL();
     std::string dest =
-        net::UnescapeBinaryURLComponent(request_url.query_piece());
+        base::UnescapeBinaryURLComponent(request_url.query_piece());
 
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();

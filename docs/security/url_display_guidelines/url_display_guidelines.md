@@ -192,7 +192,7 @@ An attacker may abuse whitespace and line-wrapping characters in order to push t
 
 * Use of [Combining characters](https://blog.emojipedia.org/fun-emoji-hacks/) to create look-alikes.
 
-In Chromium, this is handled by routines in `net/base/escape.h`. Outside of Chromium, consult `ShouldUnescapeCodePoint` in `net/base/escape.cc` for guidance.
+In Chromium, this is handled by routines in `base/strings/escape.h`. Outside of Chromium, consult `ShouldUnescapeCodePoint` in `net/base/escape.cc` for guidance.
 
 ### Literal IP Addresses
 
@@ -255,7 +255,7 @@ The [URL Standard](https://url.spec.whatwg.org/#url-rendering) suggests that *th
 
 This is generally a user-experience feature (some sites strive to use human-readable URLs and %-escaped characters are not human readable) but could lead to spoofing attacks if performed incorrectly.
 
-Chrome’s [`FormatUrl`](https://cs.chromium.org/chromium/src/components/url_formatter/url_formatter.h?l=100&rcl=1deab0dd75a1659e44b8159d60de9cf26dc3dbf0) function takes an [`UnescapeRule`](https://cs.chromium.org/chromium/src/net/base/escape.h?l=64&rcl=ecba19472b9290092745e9846edd0d6fd8dcc48b) parameter that determines what components should be decoded for display. As of Chrome 65, we unescape path, query, and fragment components for display.
+Chrome’s [`FormatUrl`](https://cs.chromium.org/chromium/src/components/url_formatter/url_formatter.h?l=100&rcl=1deab0dd75a1659e44b8159d60de9cf26dc3dbf0) function takes an [`UnescapeRule`](https://cs.chromium.org/chromium/src/base/strings/escape.h?l=64&rcl=ecba19472b9290092745e9846edd0d6fd8dcc48b) parameter that determines what components should be decoded for display. As of Chrome 65, we unescape path, query, and fragment components for display.
 
 Space and other invisible characters should be displayed in encoded form.
 

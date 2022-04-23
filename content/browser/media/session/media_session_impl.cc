@@ -1714,7 +1714,7 @@ void MediaSessionImpl::RebuildAndNotifyMetadataChanged() {
                   url_formatter::kFormatUrlOmitDefaults |
                       url_formatter::kFormatUrlOmitHTTPS |
                       url_formatter::kFormatUrlOmitTrivialSubdomains,
-                  net::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
+                  base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
   }
 
   metadata.source_title = source_title;

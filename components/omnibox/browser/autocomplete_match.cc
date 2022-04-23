@@ -63,7 +63,7 @@ bool WordMatchesURLContent(
       url.scheme().length() + strlen(url::kStandardSchemeSeparator);
   DCHECK_GE(url.spec().length(), prefix_length);
   const std::u16string& formatted_url = url_formatter::FormatUrl(
-      url, url_formatter::kFormatUrlOmitNothing, net::UnescapeRule::NORMAL,
+      url, url_formatter::kFormatUrlOmitNothing, base::UnescapeRule::NORMAL,
       nullptr, nullptr, &prefix_length);
   if (prefix_length == std::u16string::npos)
     return false;

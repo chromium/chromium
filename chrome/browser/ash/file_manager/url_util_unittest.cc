@@ -9,12 +9,12 @@
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "extensions/common/constants.h"
-#include "net/base/escape.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
@@ -25,7 +25,7 @@ namespace {
 
 // Parse a JSON query string into a base::Value.
 base::Value ParseJsonQueryString(const std::string& query) {
-  const std::string json = net::UnescapeBinaryURLComponent(query);
+  const std::string json = base::UnescapeBinaryURLComponent(query);
   std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(json);
   return value ? std::move(*value) : base::Value();
 }

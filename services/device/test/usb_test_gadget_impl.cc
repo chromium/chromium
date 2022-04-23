@@ -24,13 +24,13 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/stl_util.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/base/elements_upload_data_stream.h"
-#include "net/base/escape.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -275,7 +275,7 @@ class UsbGadgetFactory : public UsbService::Observer {
 
     GURL url("http://" + serial_number_ + "/claim");
     std::string form_data = base::StringPrintf(
-        "session_id=%s", net::EscapeUrlEncodedData(session_id_, true).c_str());
+        "session_id=%s", base::EscapeUrlEncodedData(session_id_, true).c_str());
 
     std::unique_ptr<net::URLRequest> request =
         CreateSimpleRequest(*request_context_, &delegate_, url,

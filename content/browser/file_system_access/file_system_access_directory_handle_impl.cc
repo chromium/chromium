@@ -5,6 +5,7 @@
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 
 #include "base/i18n/file_util_icu.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,7 +15,6 @@
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
 #include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "net/base/escape.h"
 #include "net/base/filename_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"

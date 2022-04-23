@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -17,7 +18,6 @@
 #include "components/cast_channel/cast_message_util.h"
 #include "components/cast_channel/enum_table.h"
 #include "components/media_router/common/media_source.h"
-#include "net/base/escape.h"
 #include "net/base/url_util.h"
 #include "third_party/openscreen/src/cast/common/public/cast_streaming_app_ids.h"
 #include "url/gurl.h"
@@ -158,7 +158,7 @@ base::flat_map<std::string, std::string> MakeQueryMap(const GURL& url) {
 }
 
 // TODO(crbug.com/1291718): Move to common utils?  Should this use
-// net::UnescapeURLComponent instead of url::DecodeURLEscapeSequences?
+// base::UnescapeURLComponent instead of url::DecodeURLEscapeSequences?
 std::string DecodeURLComponent(const std::string& encoded) {
   url::RawCanonOutputT<char16_t> unescaped;
   std::string output;
@@ -315,11 +315,11 @@ std::unique_ptr<CastMediaSource> ParseLegacyCastUrl(
   base::StringPairs params;
   base::SplitStringIntoKeyValuePairs(url.ref(), '=', '/', &params);
   for (auto& pair : params) {
-    pair.second = net::UnescapeURLComponent(
+    pair.second = base::UnescapeURLComponent(
         pair.second,
-        net::UnescapeRule::SPACES | net::UnescapeRule::PATH_SEPARATORS |
-            net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS |
-            net::UnescapeRule::REPLACE_PLUS_WITH_SPACE);
+        base::UnescapeRule::SPACES | base::UnescapeRule::PATH_SEPARATORS |
+            base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS |
+            base::UnescapeRule::REPLACE_PLUS_WITH_SPACE);
   }
 
   // Legacy URLs can specify multiple apps.

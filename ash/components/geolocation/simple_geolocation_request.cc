@@ -18,12 +18,12 @@
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "google_apis/google_api_keys.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -155,7 +155,7 @@ GURL GeolocationRequestURL(const GURL& url) {
   std::string query(url.query());
   if (!query.empty())
     query += "&";
-  query += "key=" + net::EscapeQueryParamValue(api_key, true);
+  query += "key=" + base::EscapeQueryParamValue(api_key, true);
   GURL::Replacements replacements;
   replacements.SetQueryStr(query);
   return url.ReplaceComponents(replacements);

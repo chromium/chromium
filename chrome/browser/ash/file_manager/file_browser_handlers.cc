@@ -15,6 +15,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/i18n/case_conversion.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
@@ -40,7 +41,6 @@
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/url_pattern.h"
-#include "net/base/escape.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_info.h"
@@ -63,8 +63,8 @@ namespace {
 
 std::string EscapedUtf8ToLower(const std::string& str) {
   std::u16string utf16 = base::UTF8ToUTF16(
-      net::UnescapeURLComponent(str, net::UnescapeRule::NORMAL));
-  return net::EscapeUrlEncodedData(
+      base::UnescapeURLComponent(str, base::UnescapeRule::NORMAL));
+  return base::EscapeUrlEncodedData(
       base::UTF16ToUTF8(base::i18n::ToLower(utf16)),
       false /* do not replace space with plus */);
 }

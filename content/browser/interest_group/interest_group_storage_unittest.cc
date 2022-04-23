@@ -14,6 +14,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -23,7 +24,6 @@
 #include "base/time/time.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
-#include "net/base/escape.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/test/scoped_error_expecter.h"
@@ -403,8 +403,8 @@ TEST_F(InterestGroupStorageTest, UpdatesInterestGroupNameKAnonymity) {
   const std::string name = "name with space";
   const std::string name2 = "name%20with%20space";
 
-  const GURL key = test_origin.GetURL().Resolve(net::EscapePath(name));
-  const GURL key2 = test_origin.GetURL().Resolve(net::EscapePath(name2));
+  const GURL key = test_origin.GetURL().Resolve(base::EscapePath(name));
+  const GURL key2 = test_origin.GetURL().Resolve(base::EscapePath(name2));
 
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
@@ -626,7 +626,7 @@ TEST_F(InterestGroupStorageTest, KAnonDataExpires) {
   GURL daily_update_url("https://owner.example.com/groupUpdate");
   url::Origin test_origin = url::Origin::Create(daily_update_url);
   const std::string name = "name";
-  const GURL key = test_origin.GetURL().Resolve(net::EscapePath(name));
+  const GURL key = test_origin.GetURL().Resolve(base::EscapePath(name));
   // We make the ad urls equal to the name key and update urls to verify the
   // database stores them separately.
   GURL ad1_url = GURL("https://owner.example.com/groupUpdate");

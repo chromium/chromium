@@ -8,6 +8,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,7 +25,6 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/google_api_keys.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -64,7 +64,7 @@ constexpr char kClassifyUrlRestricted[] = "restricted";
 std::string GetClassifyURLRequestString(
     kids_chrome_management::ClassifyUrlRequest* request_proto) {
   std::string query =
-      net::EscapeQueryParamValue(request_proto->url(), true /* use_plus */);
+      base::EscapeQueryParamValue(request_proto->url(), true /* use_plus */);
   return base::StringPrintf(kClassifyUrlDataFormat, query.c_str(),
                             request_proto->region_code().c_str());
 }

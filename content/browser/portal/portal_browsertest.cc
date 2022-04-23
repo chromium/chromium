@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -62,7 +63,6 @@
 #include "content/test/portal/portal_created_observer.h"
 #include "content/test/portal/portal_interceptor_for_testing.h"
 #include "content/test/test_render_frame_host_factory.h"
-#include "net/base/escape.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -2515,7 +2515,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DownloadsBlockedInSubframe) {
   GURL download_url = embedded_test_server()->GetURL(
       "portal.test", "/set-header?Content-Disposition: attachment");
   GURL iframe_url = embedded_test_server()->GetURL(
-      "portal.test", "/iframe?" + net::EscapeQueryParamValue(
+      "portal.test", "/iframe?" + base::EscapeQueryParamValue(
                                       download_url.spec(), /*use_plus=*/false));
 
   DownloadObserver download_observer;

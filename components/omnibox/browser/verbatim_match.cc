@@ -72,7 +72,7 @@ AutocompleteMatch VerbatimMatchForInput(AutocompleteProvider* provider,
 
     std::u16string display_string(url_formatter::FormatUrl(
         destination_url, url_formatter::kFormatUrlOmitDefaults & ~format_type,
-        net::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
+        base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
     if (trim_default_scheme) {
       AutocompleteProvider::TrimSchemePrefix(
           &display_string, input.added_default_scheme_to_typed_url());

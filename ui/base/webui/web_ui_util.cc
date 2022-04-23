@@ -11,13 +11,13 @@
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "net/base/escape.h"
 #include "third_party/modp_b64/modp_b64.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -134,7 +134,7 @@ void ParsePathAndImageSpec(const GURL& url,
                            std::string* path,
                            float* scale_factor,
                            int* frame_index) {
-  *path = net::UnescapeBinaryURLComponent(url.path_piece().substr(1));
+  *path = base::UnescapeBinaryURLComponent(url.path_piece().substr(1));
   if (scale_factor)
     *scale_factor = 1.0f;
   if (frame_index)

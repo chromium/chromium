@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "base/strings/escape.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -16,7 +17,6 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/google_api_keys.h"
-#include "net/base/escape.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -115,7 +115,7 @@ GURL& SCTReportingService::GetReportURLInstance() {
 GURL& SCTReportingService::GetHashdanceLookupQueryURLInstance() {
   static base::NoDestructor<GURL> instance(
       std::string(kHashdanceLookupQueryURL) +
-      net::EscapeQueryParamValue(google_apis::GetAPIKey(), /*use_plus=*/true));
+      base::EscapeQueryParamValue(google_apis::GetAPIKey(), /*use_plus=*/true));
   return *instance;
 }
 

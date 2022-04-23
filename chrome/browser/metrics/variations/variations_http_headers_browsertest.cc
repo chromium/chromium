@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -51,7 +52,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/network_connection_change_simulator.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
-#include "net/base/escape.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -284,13 +284,13 @@ class VariationsHttpHeadersBrowserTest : public InProcessBrowserTest {
     GURL absolute_import = GetExampleUrlWithPath("/workers/empty.js");
     const std::string worker_path = base::StrCat(
         {worker, "?import=",
-         net::EscapeQueryParamValue(absolute_import.spec(), false)});
+         base::EscapeQueryParamValue(absolute_import.spec(), false)});
     GURL worker_url = GetGoogleUrlWithPath(worker_path);
 
     // Build the page URL that tells the page to create the worker.
-    const std::string page_path = base::StrCat(
-        {page,
-         "?worker_url=", net::EscapeQueryParamValue(worker_url.spec(), false)});
+    const std::string page_path =
+        base::StrCat({page, "?worker_url=",
+                      base::EscapeQueryParamValue(worker_url.spec(), false)});
     GURL page_url = GetGoogleUrlWithPath(page_path);
 
     // Navigate and test.
@@ -807,7 +807,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, ServiceWorkerScript) {
   GURL absolute_import = GetExampleUrlWithPath("/service_worker/empty.js");
   const std::string worker_path =
       "/service_worker/import_scripts_worker.js?import=" +
-      net::EscapeQueryParamValue(absolute_import.spec(), false);
+      base::EscapeQueryParamValue(absolute_import.spec(), false);
   RegisterServiceWorker(worker_path);
 
   // Test that the header is present on the main script request.

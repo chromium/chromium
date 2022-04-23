@@ -9,12 +9,12 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "components/google/core/common/google_util.h"
 #include "components/signin/core/browser/chrome_connected_header_helper.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "net/base/escape.h"
 #include "net/http/http_request_headers.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -152,12 +152,12 @@ SigninHeaderHelper::ParseAccountConsistencyResponseHeader(
       DLOG(WARNING) << "Unexpected Gaia header field '" << field << "'.";
       continue;
     }
-    dictionary.insert(
-        {std::string(field.substr(0, delim)),
-         net::UnescapeURLComponent(
-             field.substr(delim + 1),
-             net::UnescapeRule::PATH_SEPARATORS |
-                 net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS)});
+    dictionary.insert({std::string(field.substr(0, delim)),
+                       base::UnescapeURLComponent(
+                           field.substr(delim + 1),
+                           base::UnescapeRule::PATH_SEPARATORS |
+                               base::UnescapeRule::
+                                   URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS)});
   }
   return dictionary;
 }

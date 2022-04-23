@@ -21,6 +21,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -62,7 +63,6 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
-#include "net/base/escape.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -205,11 +205,11 @@ GURL WebstoreInstaller::GetWebstoreInstallURL(
   params.push_back("uc");
   std::string url_string = extension_urls::GetWebstoreUpdateUrl().spec();
 
-  GURL url(url_string + "?response=redirect&" +
-           update_client::UpdateQueryParams::Get(
-               update_client::UpdateQueryParams::CRX) +
-           "&x=" + net::EscapeQueryParamValue(base::JoinString(params, "&"),
-                                              true));
+  GURL url(
+      url_string + "?response=redirect&" +
+      update_client::UpdateQueryParams::Get(
+          update_client::UpdateQueryParams::CRX) +
+      "&x=" + base::EscapeQueryParamValue(base::JoinString(params, "&"), true));
   DCHECK(url.is_valid());
 
   return url;

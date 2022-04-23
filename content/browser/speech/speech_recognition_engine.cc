@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -22,7 +23,6 @@
 #include "media/base/audio_timestamp_helper.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -324,7 +324,7 @@ SpeechRecognitionEngine::ConnectBothStreams(const FSMEventArgs&) {
   // Setup downstream fetcher.
   std::vector<std::string> downstream_args;
   downstream_args.push_back(
-      "key=" + net::EscapeQueryParamValue(google_apis::GetAPIKey(), true));
+      "key=" + base::EscapeQueryParamValue(google_apis::GetAPIKey(), true));
   downstream_args.push_back("pair=" + request_key);
   downstream_args.push_back("output=pb");
   GURL downstream_url(std::string(web_service_base_url) +
@@ -380,12 +380,12 @@ SpeechRecognitionEngine::ConnectBothStreams(const FSMEventArgs&) {
   // Setup upstream fetcher.
   // TODO(hans): Support for user-selected grammars.
   std::vector<std::string> upstream_args;
-  upstream_args.push_back("key=" +
-      net::EscapeQueryParamValue(google_apis::GetAPIKey(), true));
+  upstream_args.push_back(
+      "key=" + base::EscapeQueryParamValue(google_apis::GetAPIKey(), true));
   upstream_args.push_back("pair=" + request_key);
   upstream_args.push_back("output=pb");
   upstream_args.push_back(
-      "lang=" + net::EscapeQueryParamValue(GetAcceptedLanguages(), true));
+      "lang=" + base::EscapeQueryParamValue(GetAcceptedLanguages(), true));
   upstream_args.push_back(
       config_.filter_profanities ? "pFilter=2" : "pFilter=0");
   if (config_.max_hypotheses > 0U) {
@@ -399,8 +399,8 @@ SpeechRecognitionEngine::ConnectBothStreams(const FSMEventArgs&) {
        config_.grammars) {
     std::string grammar_value(base::NumberToString(grammar.weight) + ":" +
                               grammar.url.spec());
-    upstream_args.push_back(
-        "grammar=" + net::EscapeQueryParamValue(grammar_value, true));
+    upstream_args.push_back("grammar=" +
+                            base::EscapeQueryParamValue(grammar_value, true));
   }
   if (config_.continuous)
     upstream_args.push_back("continuous");
@@ -410,17 +410,17 @@ SpeechRecognitionEngine::ConnectBothStreams(const FSMEventArgs&) {
     upstream_args.push_back("interim");
   if (!config_.auth_token.empty() && !config_.auth_scope.empty()) {
     upstream_args.push_back(
-        "authScope=" + net::EscapeQueryParamValue(config_.auth_scope, true));
+        "authScope=" + base::EscapeQueryParamValue(config_.auth_scope, true));
     upstream_args.push_back(
-        "authToken=" + net::EscapeQueryParamValue(config_.auth_token, true));
+        "authToken=" + base::EscapeQueryParamValue(config_.auth_token, true));
   }
   if (use_framed_post_data_) {
     std::string audio_format;
     if (preamble_encoder_)
       audio_format = preamble_encoder_->GetMimeType() + ",";
     audio_format += encoder_->GetMimeType();
-    upstream_args.push_back(
-        "audioFormat=" + net::EscapeQueryParamValue(audio_format, true));
+    upstream_args.push_back("audioFormat=" +
+                            base::EscapeQueryParamValue(audio_format, true));
   }
 
   GURL upstream_url(std::string(web_service_base_url) +

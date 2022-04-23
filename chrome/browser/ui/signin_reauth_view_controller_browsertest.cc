@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -37,7 +38,6 @@
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_switches.h"
-#include "net/base/escape.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -101,7 +101,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReauthURL(
 
   GURL request_url = request.GetURL();
   std::string parameter =
-      net::UnescapeBinaryURLComponent(request_url.query_piece());
+      base::UnescapeBinaryURLComponent(request_url.query_piece());
 
   if (parameter.empty()) {
     // Parameterless request redirects to the fake challenge page.

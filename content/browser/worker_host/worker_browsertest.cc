@@ -6,6 +6,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/path_service.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -38,7 +39,6 @@
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/test/content_browser_test_utils_internal.h"
-#include "net/base/escape.h"
 #include "net/base/features.h"
 #include "net/base/filename_util.h"
 #include "net/cookies/canonical_cookie.h"
@@ -349,7 +349,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTestWithAllowFileAccessFromFiles,
 IN_PROC_BROWSER_TEST_P(WorkerTest, HttpPageCantCreateFileWorker) {
   GURL url = GetTestURL(
       "single_worker.html",
-      "workerUrl=" + net::EscapeQueryParamValue(
+      "workerUrl=" + base::EscapeQueryParamValue(
                          GetTestFileURL("worker_common.js").spec(), true));
   RunTest(url, /*expect_failure=*/true);
 }
@@ -580,7 +580,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, WorkerTlsClientAuthImportScripts) {
   RunTest(GetTestURL(
       "worker_tls_client_auth.html",
       "test=import&url=" +
-          net::EscapeQueryParamValue(https_server.GetURL("/").spec(), true)));
+          base::EscapeQueryParamValue(https_server.GetURL("/").spec(), true)));
   EXPECT_EQ(1, select_certificate_count());
 }
 
@@ -598,7 +598,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, WorkerTlsClientAuthFetch) {
   RunTest(GetTestURL(
       "worker_tls_client_auth.html",
       "test=fetch&url=" +
-          net::EscapeQueryParamValue(https_server.GetURL("/").spec(), true)));
+          base::EscapeQueryParamValue(https_server.GetURL("/").spec(), true)));
   EXPECT_EQ(1, select_certificate_count());
 }
 
@@ -620,7 +620,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SharedWorkerTlsClientAuthImportScripts) {
   RunTest(GetTestURL(
       "worker_tls_client_auth.html",
       "test=import&shared=true&url=" +
-          net::EscapeQueryParamValue(https_server.GetURL("/").spec(), true)));
+          base::EscapeQueryParamValue(https_server.GetURL("/").spec(), true)));
   EXPECT_EQ(0, select_certificate_count());
 }
 

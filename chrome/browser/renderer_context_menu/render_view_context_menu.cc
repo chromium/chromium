@@ -24,6 +24,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
@@ -161,7 +162,6 @@
 #include "extensions/buildflags/buildflags.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "net/base/escape.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -868,18 +868,18 @@ std::u16string RenderViewContextMenu::FormatURLForClipboard(const GURL& url) {
 
   GURL url_to_format = url;
   url_formatter::FormatUrlTypes format_types;
-  net::UnescapeRule::Type unescape_rules;
+  base::UnescapeRule::Type unescape_rules;
   if (url.SchemeIs(url::kMailToScheme)) {
     GURL::Replacements replacements;
     replacements.ClearQuery();
     url_to_format = url.ReplaceComponents(replacements);
     format_types = url_formatter::kFormatUrlOmitMailToScheme;
     unescape_rules =
-        net::UnescapeRule::PATH_SEPARATORS |
-        net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS;
+        base::UnescapeRule::PATH_SEPARATORS |
+        base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS;
   } else {
     format_types = url_formatter::kFormatUrlOmitNothing;
-    unescape_rules = net::UnescapeRule::NONE;
+    unescape_rules = base::UnescapeRule::NONE;
   }
 
   return url_formatter::FormatUrl(url_to_format, format_types, unescape_rules,

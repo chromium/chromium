@@ -9,11 +9,11 @@
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "extensions/browser/disable_reason.h"
-#include "net/base/escape.h"
 
 using extensions::mojom::ManifestLocation;
 
@@ -170,7 +170,7 @@ bool ManifestFetchData::AddExtension(const std::string& id,
     // Make sure the update_url_data string is escaped before using it so that
     // there is no chance of overriding the id or v other parameter value
     // we place into the x= value.
-    parts.push_back("ap=" + net::EscapeQueryParamValue(update_url_data, true));
+    parts.push_back("ap=" + base::EscapeQueryParamValue(update_url_data, true));
   }
 
   // Append brand code, rollcall and active ping parameters.
@@ -198,12 +198,12 @@ bool ManifestFetchData::AddExtension(const std::string& id,
       }
     }
     if (!ping_value.empty())
-      parts.push_back("ping=" + net::EscapeQueryParamValue(ping_value, true));
+      parts.push_back("ping=" + base::EscapeQueryParamValue(ping_value, true));
   }
 
   std::string extra = full_url_.has_query() ? "&" : "?";
   extra +=
-      "x=" + net::EscapeQueryParamValue(base::JoinString(parts, "&"), true);
+      "x=" + base::EscapeQueryParamValue(base::JoinString(parts, "&"), true);
 
   // Check against our max url size, exempting the first extension added.
   int new_size = full_url_.possibly_invalid_spec().size() + extra.size();

@@ -40,6 +40,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -58,7 +59,6 @@
 #include "net/base/chunked_upload_data_stream.h"
 #include "net/base/directory_listing.h"
 #include "net/base/elements_upload_data_stream.h"
-#include "net/base/escape.h"
 #include "net/base/features.h"
 #include "net/base/hash_value.h"
 #include "net/base/ip_address.h"
@@ -5007,7 +5007,8 @@ TEST_F(URLRequestTestHTTP, RedirectEscaping) {
   std::string destination_escaped =
       destination_base.spec() + "#%E2%98%83_%E2%98%83_%E0%E0";
   GURL original_url = http_test_server()->GetURL(
-      "/server-redirect?" + EscapeQueryParamValue(destination_url, false));
+      "/server-redirect?" +
+      base::EscapeQueryParamValue(destination_url, false));
   TestDelegate d;
   std::unique_ptr<URLRequest> req(default_context().CreateRequest(
       original_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));

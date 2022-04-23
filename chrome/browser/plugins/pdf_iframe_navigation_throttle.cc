@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/escape.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pdf_util.h"
@@ -17,7 +18,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "net/base/escape.h"
 #include "net/http/http_response_headers.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -150,7 +150,7 @@ void PDFIFrameNavigationThrottle::OnPluginsLoaded(
 void PDFIFrameNavigationThrottle::LoadPlaceholderHTML() {
   // Prepare the params to navigate to the placeholder.
   std::string html = GetPDFPlaceholderHTML(navigation_handle()->GetURL());
-  GURL data_url("data:text/html," + net::EscapePath(html));
+  GURL data_url("data:text/html," + base::EscapePath(html));
   content::OpenURLParams params =
       content::OpenURLParams::FromNavigationHandle(navigation_handle());
   params.url = data_url;

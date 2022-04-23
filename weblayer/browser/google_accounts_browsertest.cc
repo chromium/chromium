@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
-#include "net/base/escape.h"
 #include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -100,7 +100,7 @@ class GoogleAccountsBrowserTest : public WebLayerBrowserTest,
       http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
       http_response->AddCustomHeader(
           "Location",
-          net::UnescapeBinaryURLComponent(request.GetURL().query_piece()));
+          base::UnescapeBinaryURLComponent(request.GetURL().query_piece()));
     } else {
       http_response->set_code(net::HTTP_OK);
     }

@@ -115,7 +115,7 @@ void StoragePressureBubbleView::Init() {
           url_formatter::kFormatUrlOmitTrivialSubdomains |
           url_formatter::kFormatUrlOmitHTTPS |
           url_formatter::kFormatUrlOmitTrailingSlashOnBareHostname,
-      net::UnescapeRule::NONE, nullptr, nullptr, nullptr);
+      base::UnescapeRule::NONE, nullptr, nullptr, nullptr);
   auto text_label = std::make_unique<views::Label>(l10n_util::GetStringFUTF16(
       IDS_SETTINGS_STORAGE_PRESSURE_BUBBLE_VIEW_MESSAGE, origin_string));
   text_label->SetMultiLine(true);

@@ -22,6 +22,7 @@
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
@@ -39,7 +40,6 @@
 #include "extensions/common/manifest_handlers/default_locale_handler.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/strings/grit/extensions_strings.h"
-#include "net/base/escape.h"
 #include "net/base/filename_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -450,7 +450,7 @@ base::FilePath ExtensionURLToRelativeFilePath(const GURL& url) {
 
   // Convert %-encoded UTF8 to regular UTF8.
   std::string file_path;
-  if (!net::UnescapeBinaryURLComponentSafe(
+  if (!base::UnescapeBinaryURLComponentSafe(
           url_path, true /* fail_on_path_separators */, &file_path)) {
     // There shouldn't be any escaped path separators or control characters in
     // the path. However, if there are, it's best to just fail.

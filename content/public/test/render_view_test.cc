@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "cc/test/test_task_graph_runner.h"
@@ -41,7 +42,6 @@
 #include "content/test/test_render_frame.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/base/escape.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
@@ -378,7 +378,7 @@ bool RenderViewTest::ExecuteJavaScriptAndReturnNumberValue(
 void RenderViewTest::LoadHTML(const char* html) {
   FrameLoadWaiter waiter(GetMainRenderFrame());
   std::string url_string = "data:text/html;charset=utf-8,";
-  url_string.append(net::EscapeQueryParamValue(html, false));
+  url_string.append(base::EscapeQueryParamValue(html, false));
   RenderFrame::FromWebFrame(GetMainFrame())
       ->LoadHTMLStringForTesting(html, GURL(url_string), "UTF-8", GURL(),
                                  false /* replace_current_item */);

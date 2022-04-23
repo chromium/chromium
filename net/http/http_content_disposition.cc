@@ -6,12 +6,12 @@
 
 #include "base/base64.h"
 #include "base/check_op.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "net/base/escape.h"
 #include "net/base/net_string_util.h"
 #include "net/http/http_util.h"
 
@@ -189,8 +189,8 @@ bool DecodeWord(base::StringPiece encoded_word,
   // web browser.
 
   // What IE6/7 does: %-escaped UTF-8.
-  decoded_word =
-      base::UnescapeBinaryURLComponent(encoded_word, UnescapeRule::NORMAL);
+  decoded_word = base::UnescapeBinaryURLComponent(encoded_word,
+                                                  base::UnescapeRule::NORMAL);
   if (decoded_word != encoded_word)
     *parse_result_flags |= HttpContentDisposition::HAS_PERCENT_ENCODED_STRINGS;
   if (base::IsStringUTF8(decoded_word)) {
@@ -326,7 +326,7 @@ bool DecodeExtValue(const std::string& param_value, std::string* decoded) {
   }
 
   std::string unescaped =
-      base::UnescapeBinaryURLComponent(value, UnescapeRule::NORMAL);
+      base::UnescapeBinaryURLComponent(value, base::UnescapeRule::NORMAL);
 
   return ConvertToUtf8AndNormalize(unescaped, charset.c_str(), decoded);
 }

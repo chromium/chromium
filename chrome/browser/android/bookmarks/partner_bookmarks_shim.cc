@@ -11,6 +11,7 @@
 #include "base/i18n/string_search.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_reader.h"
@@ -23,7 +24,6 @@
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "net/base/escape.h"
 #include "ui/base/models/tree_node_iterator.h"
 
 using bookmarks::BookmarkNode;

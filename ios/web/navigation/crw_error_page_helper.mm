@@ -7,8 +7,8 @@
 #include <ostream>
 
 #include "base/check.h"
+#include "base/strings/escape.h"
 #include "base/strings/sys_string_conversions.h"
-#include "net/base/escape.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
@@ -28,7 +28,7 @@ NSBundle* BundleForHTMLFiles() {
 // Escapes HTML characters in |text|.
 NSString* EscapeHTMLCharacters(NSString* text) {
   return base::SysUTF8ToNSString(
-      net::EscapeForHTML(base::SysNSStringToUTF8(text)));
+      base::EscapeForHTML(base::SysNSStringToUTF8(text)));
 }
 
 // Resturns the path for the error page to be loaded.

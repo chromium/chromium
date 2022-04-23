@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -52,7 +53,6 @@
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/test/browser_task_environment.h"
-#include "net/base/escape.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -508,7 +508,7 @@ void BaseSearchProviderTest::QueryForInputAndWaitForFetcherResponses(
 
   if (!default_fetcher_response.empty()) {
     test_url_loader_factory_.AddResponse(
-        base::StrCat({"http://defaultturl2/", net::EscapePath(text8)}),
+        base::StrCat({"http://defaultturl2/", base::EscapePath(text8)}),
         default_fetcher_response);
   }
   if (!keyword_fetcher_response.empty()) {
@@ -521,7 +521,7 @@ void BaseSearchProviderTest::QueryForInputAndWaitForFetcherResponses(
     if (base::StartsWith(keyword, "k ", base::CompareCase::SENSITIVE))
       keyword = keyword.substr(2);
     test_url_loader_factory_.AddResponse(
-        base::StrCat({"http://suggest_keyword/", net::EscapePath(keyword)}),
+        base::StrCat({"http://suggest_keyword/", base::EscapePath(keyword)}),
         keyword_fetcher_response);
   }
   RunTillProviderDone();
@@ -578,7 +578,7 @@ void BaseSearchProviderTest::FinishDefaultSuggestQuery(
   ASSERT_TRUE(
       base::UTF16ToUTF8(query_text.data(), query_text.length(), &text8));
   std::string url =
-      base::StrCat({"http://defaultturl2/", net::EscapePath(text8)});
+      base::StrCat({"http://defaultturl2/", base::EscapePath(text8)});
 
   ASSERT_TRUE(test_url_loader_factory_.IsPending(url));
 
@@ -807,13 +807,13 @@ TEST_F(SearchProviderTest, SendDataToSuggestAtAppropriateTimes) {
     // as appropriate.
     EXPECT_EQ(cases[i].expect_to_send_to_default_provider,
               test_url_loader_factory_.IsPending(base::StrCat(
-                  {"http://defaultturl2/", net::EscapePath(cases[i].input)})));
+                  {"http://defaultturl2/", base::EscapePath(cases[i].input)})));
 
     // Send the same input with an explicitly invoked keyword.  In all cases,
     // it's okay to send the request to the keyword suggest server.
     QueryForInput(u"k " + ASCIIToUTF16(cases[i].input), false, false);
     EXPECT_TRUE(test_url_loader_factory_.IsPending(base::StrCat(
-        {"http://suggest_keyword/", net::EscapePath(cases[i].input)})));
+        {"http://suggest_keyword/", base::EscapePath(cases[i].input)})));
   }
 }
 

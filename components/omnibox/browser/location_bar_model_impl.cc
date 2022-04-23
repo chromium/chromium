@@ -122,9 +122,9 @@ std::u16string LocationBarModelImpl::GetFormattedURL(
   // the space.
   const std::u16string formatted_text =
       delegate_->FormattedStringWithEquivalentMeaning(
-          url,
-          url_formatter::FormatUrl(url, format_types, net::UnescapeRule::NORMAL,
-                                   nullptr, nullptr, nullptr));
+          url, url_formatter::FormatUrl(url, format_types,
+                                        base::UnescapeRule::NORMAL, nullptr,
+                                        nullptr, nullptr));
 
   // Truncating the URL breaks editing and then pressing enter, but hopefully
   // people won't try to do much with such enormous URLs anyway. If this becomes

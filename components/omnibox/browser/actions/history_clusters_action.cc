@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -19,7 +20,6 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "net/base/escape.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -43,7 +43,7 @@ class HistoryClustersAction : public OmniboxAction {
                 IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH),
             GURL(base::StringPrintf(
                 "chrome://history/journeys?q=%s",
-                net::EscapeQueryParamValue(query, /*use_plus=*/false)
+                base::EscapeQueryParamValue(query, /*use_plus=*/false)
                     .c_str()))) {
 #if BUILDFLAG(IS_ANDROID)
     CreateOrUpdateJavaObject();

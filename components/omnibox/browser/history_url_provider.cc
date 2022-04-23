@@ -1109,7 +1109,7 @@ AutocompleteMatch HistoryURLProvider::HistoryMatchToACMatch(
       AutocompleteInput::FormattedStringWithEquivalentMeaning(
           info.url(),
           url_formatter::FormatUrl(info.url(), fill_into_edit_format_types,
-                                   net::UnescapeRule::SPACES, nullptr, nullptr,
+                                   base::UnescapeRule::SPACES, nullptr, nullptr,
                                    &inline_autocomplete_offset),
           client()->GetSchemeClassifier(), &inline_autocomplete_offset);
 
@@ -1118,7 +1118,7 @@ AutocompleteMatch HistoryURLProvider::HistoryMatchToACMatch(
           history_match.match_in_scheme,
       history_match.match_in_subdomain);
   match.contents = url_formatter::FormatUrl(info.url(), format_types,
-                                            net::UnescapeRule::SPACES, nullptr,
+                                            base::UnescapeRule::SPACES, nullptr,
                                             nullptr, nullptr);
   auto term_matches = FindTermMatches(params.input.text(), match.contents);
   match.contents_class = ClassifyTermMatches(

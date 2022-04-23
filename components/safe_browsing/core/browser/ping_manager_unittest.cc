@@ -6,12 +6,12 @@
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "base/base64.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
 #include "google_apis/google_api_keys.h"
-#include "net/base/escape.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
@@ -29,7 +29,7 @@ class PingManagerTest : public testing::Test {
     std::string key = google_apis::GetAPIKey();
     if (!key.empty()) {
       key_param_ = base::StringPrintf(
-          "&key=%s", net::EscapeQueryParamValue(key, true).c_str());
+          "&key=%s", base::EscapeQueryParamValue(key, true).c_str());
     }
 
     ping_manager_.reset(

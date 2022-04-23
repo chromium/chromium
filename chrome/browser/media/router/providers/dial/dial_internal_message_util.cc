@@ -10,10 +10,10 @@
 #include "base/hash/sha1.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/media_router/browser/route_message_util.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
-#include "net/base/escape.h"
 #include "url/url_util.h"
 
 namespace media_router {
@@ -307,7 +307,7 @@ base::Value DialInternalMessageUtil::CreateReceiver(
   receiver.SetKey("label", base::Value(label));
 
   receiver.SetKey("friendlyName",
-                  base::Value(net::EscapeForHTML(sink.sink().name())));
+                  base::Value(base::EscapeForHTML(sink.sink().name())));
   receiver.SetKey("capabilities", base::ListValue());
   receiver.SetKey("volume", base::Value(base::Value::Type::NONE));
   receiver.SetKey("isActiveInput", base::Value(base::Value::Type::NONE));

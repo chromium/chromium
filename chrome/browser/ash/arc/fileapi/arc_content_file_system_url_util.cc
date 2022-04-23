@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
 
 #include "base/files/file_path.h"
+#include "base/strings/escape.h"
 #include "chrome/browser/chromeos/fileapi/external_file_url_util.h"
-#include "net/base/escape.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 namespace arc {
@@ -19,11 +19,11 @@ const base::FilePath::CharType kContentFileSystemMountPointPath[] =
     FILE_PATH_LITERAL("/special/arc-content");
 
 std::string EscapeArcUrl(const GURL& arc_url) {
-  return net::EscapeQueryParamValue(arc_url.spec(), false);
+  return base::EscapeQueryParamValue(arc_url.spec(), false);
 }
 
 GURL UnescapeArcUrl(const std::string& escaped_arc_url) {
-  return GURL(net::UnescapeBinaryURLComponent(escaped_arc_url));
+  return GURL(base::UnescapeBinaryURLComponent(escaped_arc_url));
 }
 
 GURL ArcUrlToExternalFileUrl(const GURL& arc_url) {

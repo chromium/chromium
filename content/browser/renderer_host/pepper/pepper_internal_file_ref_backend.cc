@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_util.h"
+#include "base/strings/escape.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/file_system/browser_file_system_helper.h"
 #include "content/browser/renderer_host/pepper/pepper_file_system_browser_host.h"
@@ -20,7 +21,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
-#include "net/base/escape.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/pp_file_info.h"
 #include "ppapi/c/pp_instance.h"
@@ -134,7 +134,7 @@ PepperInternalFileRefBackend::~PepperInternalFileRefBackend() {}
 storage::FileSystemURL PepperInternalFileRefBackend::GetFileSystemURL() const {
   if (!fs_url_.is_valid() && fs_host_.get() && fs_host_->IsOpened()) {
     GURL fs_path =
-        fs_host_->GetRootUrl().Resolve(net::EscapePath(path_.substr(1)));
+        fs_host_->GetRootUrl().Resolve(base::EscapePath(path_.substr(1)));
     scoped_refptr<storage::FileSystemContext> fs_context =
         GetFileSystemContext();
     if (fs_context.get())

@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -44,7 +45,6 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/variations/net/variations_http_headers.h"
-#include "net/base/escape.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -439,7 +439,7 @@ AutocompleteMatch ZeroSuggestProvider::NavigationToMatch(
   // Zero suggest results should always omit protocols and never appear bold.
   auto format_types = AutocompleteMatch::GetFormatTypes(false, false);
   match.contents = url_formatter::FormatUrl(navigation.url(), format_types,
-                                            net::UnescapeRule::SPACES, nullptr,
+                                            base::UnescapeRule::SPACES, nullptr,
                                             nullptr, nullptr);
   match.contents_class = ClassifyTermMatches({}, match.contents.length(), 0,
                                              ACMatchClassification::URL);

@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/hats/hats_config.h"
@@ -24,7 +25,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
-#include "net/base/escape.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/size.h"
@@ -118,9 +118,9 @@ std::string HatsDialog::GetFormattedSiteContext(
     if (!first_iteration)
       stream << kDeviceInfoStopKeyword;
 
-    stream << net::EscapeQueryParamValue(pair.first, /*use_plus=*/false)
+    stream << base::EscapeQueryParamValue(pair.first, /*use_plus=*/false)
            << kDeviceInfoKeyValueDelimiter
-           << net::EscapeQueryParamValue(pair.second, /*use_plus=*/false);
+           << base::EscapeQueryParamValue(pair.second, /*use_plus=*/false);
 
     first_iteration = false;
   }

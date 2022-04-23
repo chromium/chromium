@@ -5,6 +5,7 @@
 #include "components/safe_browsing/content/renderer/threat_dom_details.h"
 
 #include <memory>
+#include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -14,7 +15,6 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/renderer/render_view.h"
-#include "net/base/escape.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "ui/native_theme/native_theme_features.h"
@@ -64,7 +64,7 @@ TEST_F(ThreatDOMDetailsTest, Everything) {
     details->ExtractResources(&params);
     ASSERT_EQ(1u, params.size());
     auto* param = params[0].get();
-    EXPECT_EQ(GURL(kUrlPrefix + net::EscapeQueryParamValue(html, false)),
+    EXPECT_EQ(GURL(kUrlPrefix + base::EscapeQueryParamValue(html, false)),
               param->url);
     EXPECT_EQ(0, param->node_id);
     EXPECT_EQ(0, param->parent_node_id);
@@ -80,7 +80,7 @@ TEST_F(ThreatDOMDetailsTest, Everything) {
     std::string html = "<html><head><script src=\"" + script1_url.spec() +
                        "\"></script><script src=\"" + script2_url.spec() +
                        "\"></script></head></html>";
-    GURL url(kUrlPrefix + net::EscapeQueryParamValue(html, false));
+    GURL url(kUrlPrefix + base::EscapeQueryParamValue(html, false));
 
     LoadHTML(html.c_str());
     std::vector<safe_browsing::mojom::ThreatDOMDetailsNodePtr> params;
@@ -129,15 +129,15 @@ TEST_F(ThreatDOMDetailsTest, Everything) {
     std::string iframe2_html = "<html><body>iframe2</body></html>";
     GURL iframe2_url(kUrlPrefix + iframe2_html);
     std::string iframe1_html = "<iframe src=\"" +
-                               net::EscapeForHTML(iframe2_url.spec()) +
+                               base::EscapeForHTML(iframe2_url.spec()) +
                                "\"></iframe>";
     GURL iframe1_url(kUrlPrefix + iframe1_html);
     std::string html =
         "<html><head><div foo=1 foo2=2><img foo=1><div bar=1><div baz=1></div>"
         "<iframe src=\"" +
-        net::EscapeForHTML(iframe1_url.spec()) +
+        base::EscapeForHTML(iframe1_url.spec()) +
         "\"></iframe></div></div></head></html>";
-    GURL url(kUrlPrefix + net::EscapeQueryParamValue(html, false));
+    GURL url(kUrlPrefix + base::EscapeQueryParamValue(html, false));
 
     LoadHTML(html.c_str());
     std::vector<safe_browsing::mojom::ThreatDOMDetailsNodePtr> params;
@@ -196,7 +196,7 @@ TEST_F(ThreatDOMDetailsTest, Everything) {
     for (int i = 0; i < 55; ++i) {
       // The iframe contents is just a number.
       GURL iframe_url(base::StringPrintf("%s%d", kUrlPrefix, i));
-      html += "<iframe src=\"" + net::EscapeForHTML(iframe_url.spec()) +
+      html += "<iframe src=\"" + base::EscapeForHTML(iframe_url.spec()) +
               "\"></iframe>";
     }
     GURL url(kUrlPrefix + html);
@@ -223,7 +223,7 @@ TEST_F(ThreatDOMDetailsTest, Everything) {
     for (int i = 0; i < 55; ++i) {
       // The iframe contents is just a number.
       GURL script_url(base::StringPrintf("%s%d", kUrlPrefix, i));
-      html += "<script src=\"" + net::EscapeForHTML(script_url.spec()) +
+      html += "<script src=\"" + base::EscapeForHTML(script_url.spec()) +
               "\"></script>";
     }
     GURL url(kUrlPrefix + html);
@@ -253,7 +253,7 @@ TEST_F(ThreatDOMDetailsTest, Everything) {
     LoadHTML(html.c_str());
     std::vector<safe_browsing::mojom::ThreatDOMDetailsNodePtr> params;
     details->ExtractResources(&params);
-    GURL url = GURL(kUrlPrefix + net::EscapeQueryParamValue(html, false));
+    GURL url = GURL(kUrlPrefix + base::EscapeQueryParamValue(html, false));
     ASSERT_EQ(2u, params.size());
     auto* param = params[0].get();
     EXPECT_TRUE(param->url.is_empty());
@@ -316,9 +316,9 @@ TEST_F(ThreatDOMDetailsTest, DefaultTagAndAttributesList) {
   std::string html =
       "<html><head><div data-google-query-id=foo><div id=bar>"
       "<iframe id=baz><iframe src=\"" +
-      net::EscapeForHTML(iframe2_url.spec()) +
+      base::EscapeForHTML(iframe2_url.spec()) +
       "\"></iframe></iframe></div></div></head></html>";
-  GURL url(kUrlPrefix + net::EscapeQueryParamValue(html, false));
+  GURL url(kUrlPrefix + base::EscapeQueryParamValue(html, false));
 
   LoadHTML(html.c_str());
   std::vector<safe_browsing::mojom::ThreatDOMDetailsNodePtr> params;

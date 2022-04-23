@@ -15,8 +15,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
-#include "net/base/escape.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/chromeos/styles/cros_styles.h"
@@ -134,12 +134,12 @@ void AssistantQueryView::SetText(const std::string& high_confidence_text,
   // |low_confidence_text| may be HTML escaped, so we need to unescape both
   // before displaying to avoid printing HTML entities to the user.
   const std::u16string& high_confidence_text_16 =
-      net::UnescapeForHTML(base::UTF8ToUTF16(high_confidence_text));
+      base::UnescapeForHTML(base::UTF8ToUTF16(high_confidence_text));
 
   high_confidence_label_->SetText(high_confidence_text_16);
 
   const std::u16string& low_confidence_text_16 =
-      net::UnescapeForHTML(base::UTF8ToUTF16(low_confidence_text));
+      base::UnescapeForHTML(base::UTF8ToUTF16(low_confidence_text));
 
   low_confidence_label_->SetText(low_confidence_text_16);
 }

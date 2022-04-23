@@ -30,8 +30,8 @@
 
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
 
+#include "base/strings/escape.h"
 #include "mojo/public/cpp/base/big_buffer.h"
-#include "net/base/escape.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
@@ -69,14 +69,14 @@ String ConvertURIListToURL(const String& uri_list) {
 }
 
 static String EscapeForHTML(const String& str) {
-  // net::EscapeForHTML can work on 8-bit Latin-1 strings as well as 16-bit
+  // base::EscapeForHTML can work on 8-bit Latin-1 strings as well as 16-bit
   // strings.
   if (str.Is8Bit()) {
-    auto result = net::EscapeForHTML(
+    auto result = base::EscapeForHTML(
         {reinterpret_cast<const char*>(str.Characters8()), str.length()});
     return String(result.data(), result.size());
   }
-  auto result = net::EscapeForHTML({str.Characters16(), str.length()});
+  auto result = base::EscapeForHTML({str.Characters16(), str.length()});
   return String(result.data(), result.size());
 }
 

@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -39,7 +40,6 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "components/variations/net/variations_http_headers.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -687,15 +687,15 @@ class UploadCardRequest : public PaymentsRequest {
     if (request_details_.cvc.empty()) {
       request_content = base::StringPrintf(
           kUploadCardRequestFormatWithoutCvc,
-          net::EscapeUrlEncodedData(json_request, true).c_str(),
-          net::EscapeUrlEncodedData(base::UTF16ToASCII(pan), true).c_str());
+          base::EscapeUrlEncodedData(json_request, true).c_str(),
+          base::EscapeUrlEncodedData(base::UTF16ToASCII(pan), true).c_str());
     } else {
       request_content = base::StringPrintf(
           kUploadCardRequestFormat,
-          net::EscapeUrlEncodedData(json_request, true).c_str(),
-          net::EscapeUrlEncodedData(base::UTF16ToASCII(pan), true).c_str(),
-          net::EscapeUrlEncodedData(base::UTF16ToASCII(request_details_.cvc),
-                                    true)
+          base::EscapeUrlEncodedData(json_request, true).c_str(),
+          base::EscapeUrlEncodedData(base::UTF16ToASCII(pan), true).c_str(),
+          base::EscapeUrlEncodedData(base::UTF16ToASCII(request_details_.cvc),
+                                     true)
               .c_str());
     }
     VLOG(3) << "savecard request body: " << request_content;
@@ -826,7 +826,7 @@ class MigrateCardsRequest : public PaymentsRequest {
     base::JSONWriter::Write(request_dict, &json_request);
     std::string request_content = base::StringPrintf(
         kMigrateCardsRequestFormat,
-        net::EscapeUrlEncodedData(json_request, true).c_str());
+        base::EscapeUrlEncodedData(json_request, true).c_str());
     request_content += all_pans_data;
     return request_content;
   }
@@ -875,7 +875,7 @@ class MigrateCardsRequest : public PaymentsRequest {
     const std::u16string pan =
         credit_card.GetInfo(AutofillType(CREDIT_CARD_NUMBER), app_locale);
     std::string pan_str =
-        net::EscapeUrlEncodedData(base::UTF16ToASCII(pan), true).c_str();
+        base::EscapeUrlEncodedData(base::UTF16ToASCII(pan), true).c_str();
     std::string append_pan = "&" + pan_field_name + "=" + pan_str;
     return append_pan;
   }

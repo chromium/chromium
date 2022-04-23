@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -30,7 +31,6 @@
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
-#include "net/base/escape.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -58,11 +58,11 @@ enum class SyncMetadataReadError {
 
 std::string ComputeClientTag(
     const sync_pb::PasswordSpecificsData& password_data) {
-  return net::EscapePath(GURL(password_data.origin()).spec()) + "|" +
-         net::EscapePath(password_data.username_element()) + "|" +
-         net::EscapePath(password_data.username_value()) + "|" +
-         net::EscapePath(password_data.password_element()) + "|" +
-         net::EscapePath(password_data.signon_realm());
+  return base::EscapePath(GURL(password_data.origin()).spec()) + "|" +
+         base::EscapePath(password_data.username_element()) + "|" +
+         base::EscapePath(password_data.username_value()) + "|" +
+         base::EscapePath(password_data.password_element()) + "|" +
+         base::EscapePath(password_data.signon_realm());
 }
 
 base::Time ConvertToBaseTime(uint64_t time) {

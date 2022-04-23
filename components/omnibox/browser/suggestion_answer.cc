@@ -11,12 +11,12 @@
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "build/build_config.h"
-#include "net/base/escape.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -73,7 +73,7 @@ bool SuggestionAnswer::TextField::ParseTextField(
   const bool parsed = text && !text->empty() && type;
   if (parsed) {
     text_field->type_ = *type;
-    text_field->text_ = net::UnescapeForHTML(base::UTF8ToUTF16(*text));
+    text_field->text_ = base::UnescapeForHTML(base::UTF8ToUTF16(*text));
 
     absl::optional<int> num_lines = field_json.FindInt(kAnswerJsonNumLines);
     text_field->has_num_lines_ = num_lines.has_value();

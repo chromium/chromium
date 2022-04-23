@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/strings/escape.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "net/base/escape.h"
 #include "net/base/mime_util.h"
 
 namespace {
@@ -147,11 +147,11 @@ std::string ComputeUrlEncodedBody(const std::vector<std::string>& names,
   if (names.size() != values.size() || names.size() == 0)
     return "";
   std::ostringstream application_body_oss;
-  application_body_oss << net::EscapeUrlEncodedData(names[0], true) << "="
-                       << net::EscapeUrlEncodedData(values[0], true);
+  application_body_oss << base::EscapeUrlEncodedData(names[0], true) << "="
+                       << base::EscapeUrlEncodedData(values[0], true);
   for (size_t i = 1; i < names.size(); i++)
-    application_body_oss << "&" << net::EscapeUrlEncodedData(names[i], true)
-                         << "=" << net::EscapeUrlEncodedData(values[i], true);
+    application_body_oss << "&" << base::EscapeUrlEncodedData(names[i], true)
+                         << "=" << base::EscapeUrlEncodedData(values[i], true);
 
   return application_body_oss.str();
 }

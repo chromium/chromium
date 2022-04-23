@@ -287,7 +287,7 @@ UIColor* DimColorIncognito() {
   const std::u16string& string = field->text();
 
   NSString* unescapedString =
-      base::SysUTF16ToNSString(net::UnescapeForHTML(string));
+      base::SysUTF16ToNSString(base::UnescapeForHTML(string));
 
   NSDictionary* attributes =
       [self formattingAttributesForSuggestionStyle:field->style()

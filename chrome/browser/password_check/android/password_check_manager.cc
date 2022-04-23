@@ -282,7 +282,7 @@ CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
             url_formatter::kFormatUrlOmitHTTPS |
             url_formatter::kFormatUrlOmitTrivialSubdomains |
             url_formatter::kFormatUrlTrimAfterHost,
-        net::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
+        base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
     ui_credential.change_password_url =
         password_manager::CreateChangePasswordUrl(ui_credential.url).spec();
   }

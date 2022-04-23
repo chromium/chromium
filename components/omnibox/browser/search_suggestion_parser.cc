@@ -282,7 +282,7 @@ SearchSuggestionParser::NavigationResult::NavigationResult(
           url_formatter::FormatUrl(url,
                                    url_formatter::kFormatUrlOmitDefaults &
                                        ~url_formatter::kFormatUrlOmitHTTP,
-                                   net::UnescapeRule::SPACES,
+                                   base::UnescapeRule::SPACES,
                                    nullptr,
                                    nullptr,
                                    nullptr),
@@ -332,8 +332,9 @@ void SearchSuggestionParser::NavigationResult::
       GURL(input_text).has_scheme(), match_in_subdomain);
 
   // Find matches in the potentially new match_contents
-  std::u16string match_contents = url_formatter::FormatUrl(
-      url_, format_types, net::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
+  std::u16string match_contents =
+      url_formatter::FormatUrl(url_, format_types, base::UnescapeRule::SPACES,
+                               nullptr, nullptr, nullptr);
   TermMatches term_matches = FindTermMatches(input_text, match_contents);
 
   // Update |match_contents_| and |match_contents_class_| if it's allowed.

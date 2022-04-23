@@ -27,6 +27,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -51,7 +52,6 @@
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
-#include "net/base/escape.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "skia/ext/image_operations.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -683,7 +683,7 @@ class NotificationPlatformBridgeLinuxImpl
         if (linkify_context_if_possible) {
           if (base::Contains(capabilities_, kCapabilityBodyHyperlinks)) {
             body << "<a href=\""
-                 << net::EscapeForHTML(notification->origin_url().spec())
+                 << base::EscapeForHTML(notification->origin_url().spec())
                  << "\">" << context_display_text << "</a>\n\n";
           } else {
             body << context_display_text << "\n\n";
@@ -717,7 +717,7 @@ class NotificationPlatformBridgeLinuxImpl
             ResizeImageToFdoMaxSize(notification->image()).As1xPNGBytes());
         if (image_file) {
           body << "<img src=\""
-               << "file://" + net::EscapePath(image_file->file_path().value())
+               << "file://" + base::EscapePath(image_file->file_path().value())
                << "\" alt=\"\"/>\n";
           data->resource_files.push_back(std::move(image_file));
         }

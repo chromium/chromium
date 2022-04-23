@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/no_destructor.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -48,7 +49,6 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/extension.h"
-#include "net/base/escape.h"
 #include "net/base/filename_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -370,7 +370,7 @@ std::string GetDownloadsMountPointName(Profile* profile) {
                 profile->GetOriginalProfile())
           : nullptr;
   const std::string id = user ? "-" + user->username_hash() : "";
-  return net::EscapeQueryParamValue(kFolderNameDownloads + id, false);
+  return base::EscapeQueryParamValue(kFolderNameDownloads + id, false);
 }
 
 std::string GetAndroidFilesMountPointName() {
@@ -390,8 +390,8 @@ std::string GetGuestOsMountPointName(Profile* profile,
                                      crostini::ContainerId id) {
   return base::JoinString(
       {"guestos", ash::ProfileHelper::GetUserIdHashFromProfile(profile),
-       net::EscapeAllExceptUnreserved(id.vm_name),
-       net::EscapeAllExceptUnreserved(id.container_name)},
+       base::EscapeAllExceptUnreserved(id.vm_name),
+       base::EscapeAllExceptUnreserved(id.container_name)},
       "+");
 }
 
@@ -651,7 +651,7 @@ bool ConvertPathToArcUrl(const base::FilePath& path,
   base::FilePath result_path(kArcDownloadRoot);
   if (primary_downloads.AppendRelativePath(path, &result_path)) {
     *arc_url_out = GURL(arc::kFileSystemFileproviderUrl)
-                       .Resolve(net::EscapePath(result_path.AsUTF8Unsafe()));
+                       .Resolve(base::EscapePath(result_path.AsUTF8Unsafe()));
     return true;
   }
 
@@ -660,7 +660,7 @@ bool ConvertPathToArcUrl(const base::FilePath& path,
   if (base::FilePath(kAndroidFilesPath)
           .AppendRelativePath(path, &result_path)) {
     *arc_url_out = GURL(arc::kFileSystemFileproviderUrl)
-                       .Resolve(net::EscapePath(result_path.AsUTF8Unsafe()));
+                       .Resolve(base::EscapePath(result_path.AsUTF8Unsafe()));
     return true;
   }
 
@@ -686,7 +686,7 @@ bool ConvertPathToArcUrl(const base::FilePath& path,
     }
     *arc_url_out =
         GURL(kArcRemovableMediaContentUrlPrefix)
-            .Resolve(net::EscapePath(relative_path_with_uuid.AsUTF8Unsafe()));
+            .Resolve(base::EscapePath(relative_path_with_uuid.AsUTF8Unsafe()));
     return true;
   }
 
@@ -694,7 +694,7 @@ bool ConvertPathToArcUrl(const base::FilePath& path,
   if (GetMyFilesFolderForProfile(primary_profile)
           .AppendRelativePath(path, &relative_path)) {
     *arc_url_out = GURL(kArcMyFilesContentUrlPrefix)
-                       .Resolve(net::EscapePath(relative_path.AsUTF8Unsafe()));
+                       .Resolve(base::EscapePath(relative_path.AsUTF8Unsafe()));
     return true;
   }
 
@@ -709,7 +709,7 @@ bool ConvertPathToArcUrl(const base::FilePath& path,
     if (arc::IsArcVmEnabled()) {
       *arc_url_out =
           GURL("content://org.chromium.arc.volumeprovider/MyDrive/")
-              .Resolve(net::EscapePath(relative_path.AsUTF8Unsafe()));
+              .Resolve(base::EscapePath(relative_path.AsUTF8Unsafe()));
       *requires_sharing_out = true;
       return true;
     }
@@ -732,7 +732,7 @@ bool ConvertPathToArcUrl(const base::FilePath& path,
     if (arc::IsArcVmEnabled()) {
       *arc_url_out =
           GURL("content://org.chromium.arc.volumeprovider/archive/")
-              .Resolve(net::EscapePath(relative_path.AsUTF8Unsafe()));
+              .Resolve(base::EscapePath(relative_path.AsUTF8Unsafe()));
       *requires_sharing_out = true;
       return true;
     }
@@ -752,7 +752,7 @@ bool ConvertPathToArcUrl(const base::FilePath& path,
               GURL(base::StrCat(
                        {"content://org.chromium.arc.volumeprovider/smb/",
                         share->mount_id(), "/"}))
-                  .Resolve(net::EscapePath(relative_path.AsUTF8Unsafe()));
+                  .Resolve(base::EscapePath(relative_path.AsUTF8Unsafe()));
           *requires_sharing_out = true;
           return true;
         }
@@ -999,9 +999,9 @@ std::string GetDisplayableFileName(GURL file_url) {
   // Try to convert %20 to spaces, if this produces any invalid char, use the
   // file name URL encoded.
   std::string file_name;
-  if (!net::UnescapeBinaryURLComponentSafe(file_url.ExtractFileName(),
-                                           /*fail_on_path_separators=*/true,
-                                           &file_name)) {
+  if (!base::UnescapeBinaryURLComponentSafe(file_url.ExtractFileName(),
+                                            /*fail_on_path_separators=*/true,
+                                            &file_name)) {
     file_name = file_url.ExtractFileName();
   }
 

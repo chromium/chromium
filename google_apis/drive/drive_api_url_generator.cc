@@ -7,10 +7,10 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/notreached.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "google_apis/google_api_keys.h"
-#include "net/base/escape.h"
 #include "net/base/url_util.h"
 
 namespace google_apis {
@@ -94,7 +94,7 @@ GURL DriveApiUrlGenerator::GetAboutGetUrl() const {
 GURL DriveApiUrlGenerator::GetFilesGetUrl(const std::string& file_id,
                                           const GURL& embed_origin) const {
   GURL url =
-      base_url_.Resolve(kDriveV2FileUrlPrefix + net::EscapePath(file_id));
+      base_url_.Resolve(kDriveV2FileUrlPrefix + base::EscapePath(file_id));
   url = net::AppendOrReplaceQueryParameter(url, kSupportsTeamDrives, "true");
 
   if (!embed_origin.is_empty()) {
@@ -127,7 +127,7 @@ GURL DriveApiUrlGenerator::GetFilesPatchUrl(const std::string& file_id,
                                             bool set_modified_date,
                                             bool update_viewed_date) const {
   GURL url =
-      base_url_.Resolve(kDriveV2FileUrlPrefix + net::EscapePath(file_id));
+      base_url_.Resolve(kDriveV2FileUrlPrefix + base::EscapePath(file_id));
 
   url = net::AppendOrReplaceQueryParameter(url, kSupportsTeamDrives, "true");
   // setModifiedDate is "false" by default.
@@ -144,8 +144,8 @@ GURL DriveApiUrlGenerator::GetFilesPatchUrl(const std::string& file_id,
 GURL DriveApiUrlGenerator::GetFilesCopyUrl(
     const std::string& file_id,
     const std::string& visibility) const {
-  GURL url =  base_url_.Resolve(base::StringPrintf(
-      kDriveV2FileCopyUrlFormat, net::EscapePath(file_id).c_str()));
+  GURL url = base_url_.Resolve(base::StringPrintf(
+      kDriveV2FileCopyUrlFormat, base::EscapePath(file_id).c_str()));
 
   url = net::AppendOrReplaceQueryParameter(url, kSupportsTeamDrives, "true");
   if (!visibility.empty())
@@ -183,14 +183,14 @@ GURL DriveApiUrlGenerator::GetFilesListUrl(int max_results,
 
 GURL DriveApiUrlGenerator::GetFilesDeleteUrl(const std::string& file_id) const {
   GURL url = base_url_.Resolve(base::StringPrintf(
-      kDriveV2FileDeleteUrlFormat, net::EscapePath(file_id).c_str()));
+      kDriveV2FileDeleteUrlFormat, base::EscapePath(file_id).c_str()));
   url = net::AppendOrReplaceQueryParameter(url, kSupportsTeamDrives, "true");
   return url;
 }
 
 GURL DriveApiUrlGenerator::GetFilesTrashUrl(const std::string& file_id) const {
   GURL url = base_url_.Resolve(base::StringPrintf(
-      kDriveV2FileTrashUrlFormat, net::EscapePath(file_id).c_str()));
+      kDriveV2FileTrashUrlFormat, base::EscapePath(file_id).c_str()));
   url = net::AppendOrReplaceQueryParameter(url, kSupportsTeamDrives, "true");
   return url;
 }
@@ -232,17 +232,16 @@ GURL DriveApiUrlGenerator::GetChangesListUrl(
 GURL DriveApiUrlGenerator::GetChildrenInsertUrl(
     const std::string& file_id) const {
   GURL url = base_url_.Resolve(base::StringPrintf(
-      kDriveV2ChildrenUrlFormat, net::EscapePath(file_id).c_str()));
+      kDriveV2ChildrenUrlFormat, base::EscapePath(file_id).c_str()));
   url = net::AppendOrReplaceQueryParameter(url, kSupportsTeamDrives, "true");
   return url;
 }
 
 GURL DriveApiUrlGenerator::GetChildrenDeleteUrl(
     const std::string& child_id, const std::string& folder_id) const {
-  return base_url_.Resolve(
-      base::StringPrintf(kDriveV2ChildrenUrlForRemovalFormat,
-                         net::EscapePath(folder_id).c_str(),
-                         net::EscapePath(child_id).c_str()));
+  return base_url_.Resolve(base::StringPrintf(
+      kDriveV2ChildrenUrlForRemovalFormat, base::EscapePath(folder_id).c_str(),
+      base::EscapePath(child_id).c_str()));
 }
 
 GURL DriveApiUrlGenerator::GetInitiateUploadNewFileUrl(
@@ -261,9 +260,8 @@ GURL DriveApiUrlGenerator::GetInitiateUploadNewFileUrl(
 GURL DriveApiUrlGenerator::GetInitiateUploadExistingFileUrl(
     const std::string& resource_id,
     bool set_modified_date) const {
-  GURL url = base_url_.Resolve(
-      kDriveV2UploadExistingFileUrlPrefix +
-      net::EscapePath(resource_id));
+  GURL url = base_url_.Resolve(kDriveV2UploadExistingFileUrlPrefix +
+                               base::EscapePath(resource_id));
   url = AddResumableUploadParam(url);
 
   url = net::AppendOrReplaceQueryParameter(url, kSupportsTeamDrives, "true");
@@ -290,9 +288,8 @@ GURL DriveApiUrlGenerator::GetMultipartUploadNewFileUrl(
 GURL DriveApiUrlGenerator::GetMultipartUploadExistingFileUrl(
     const std::string& resource_id,
     bool set_modified_date) const {
-  GURL url = base_url_.Resolve(
-      kDriveV2UploadExistingFileUrlPrefix +
-      net::EscapePath(resource_id));
+  GURL url = base_url_.Resolve(kDriveV2UploadExistingFileUrlPrefix +
+                               base::EscapePath(resource_id));
   url = AddMultipartUploadParam(url);
 
   url = net::AppendOrReplaceQueryParameter(url, kSupportsTeamDrives, "true");
@@ -306,7 +303,7 @@ GURL DriveApiUrlGenerator::GetMultipartUploadExistingFileUrl(
 GURL DriveApiUrlGenerator::GenerateDownloadFileUrl(
     const std::string& resource_id) const {
   GURL url = base_url_.Resolve(base::StringPrintf(
-      kDriveV2DownloadUrlFormat, net::EscapePath(resource_id).c_str()));
+      kDriveV2DownloadUrlFormat, base::EscapePath(resource_id).c_str()));
   url = net::AppendOrReplaceQueryParameter(url, kSupportsTeamDrives, "true");
   return url;
 }
@@ -314,7 +311,7 @@ GURL DriveApiUrlGenerator::GenerateDownloadFileUrl(
 GURL DriveApiUrlGenerator::GetPermissionsInsertUrl(
     const std::string& resource_id) const {
   GURL url = base_url_.Resolve(base::StringPrintf(
-      kDriveV2PermissionsUrlFormat, net::EscapePath(resource_id).c_str()));
+      kDriveV2PermissionsUrlFormat, base::EscapePath(resource_id).c_str()));
   url = net::AppendOrReplaceQueryParameter(url, kSupportsTeamDrives, "true");
   return url;
 }
@@ -323,10 +320,9 @@ GURL DriveApiUrlGenerator::GetThumbnailUrl(const std::string& resource_id,
                                            int width,
                                            int height,
                                            bool crop) const {
-  return base_thumbnail_url_.Resolve(
-    base::StringPrintf(
-        crop ? kDriveV2ThumbnailUrlWithCropFormat : kDriveV2ThumbnailUrlFormat,
-        net::EscapePath(resource_id).c_str(), width, height));
+  return base_thumbnail_url_.Resolve(base::StringPrintf(
+      crop ? kDriveV2ThumbnailUrlWithCropFormat : kDriveV2ThumbnailUrlFormat,
+      base::EscapePath(resource_id).c_str(), width, height));
 }
 
 GURL DriveApiUrlGenerator::GetBatchUploadUrl() const {

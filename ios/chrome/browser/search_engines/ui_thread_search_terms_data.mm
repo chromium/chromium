@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/strings/escape.h"
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/version_info/version_info.h"
@@ -16,7 +17,6 @@
 #include "ios/chrome/common/channel_info.h"
 #include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #include "ios/web/public/thread/web_thread.h"
-#include "net/base/escape.h"
 #include "rlz/buildflags/buildflags.h"
 #include "url/gurl.h"
 

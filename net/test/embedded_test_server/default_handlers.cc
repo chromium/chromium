@@ -22,6 +22,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -30,7 +31,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "net/base/escape.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/url_util.h"
 #include "net/filter/filter_source_stream_test_util.h"
@@ -305,8 +305,9 @@ std::unique_ptr<HttpResponse> HandleExpectAndSetCookie(
   if (got_all_expected) {
     for (const auto& cookie : query_list.at("set")) {
       http_response->AddCustomHeader(
-          "Set-Cookie", base::UnescapeBinaryURLComponent(
-                            cookie, UnescapeRule::REPLACE_PLUS_WITH_SPACE));
+          "Set-Cookie",
+          base::UnescapeBinaryURLComponent(
+              cookie, base::UnescapeRule::REPLACE_PLUS_WITH_SPACE));
     }
   }
 

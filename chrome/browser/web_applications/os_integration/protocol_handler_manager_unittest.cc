@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/escape.h"
 #include "chrome/browser/web_applications/test/fake_web_app_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -9,7 +10,6 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/custom_handlers/protocol_handler.h"
-#include "net/base/escape.h"
 
 using custom_handlers::ProtocolHandler;
 

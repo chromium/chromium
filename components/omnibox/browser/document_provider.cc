@@ -948,9 +948,10 @@ const GURL DocumentProvider::GetURLForDeduping(const GURL& url) {
   }
 
   // Unescape |url_str|
-  url_str = net::UnescapeURLComponent(
-      url_str, net::UnescapeRule::PATH_SEPARATORS |
-                   net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
+  url_str = base::UnescapeURLComponent(
+      url_str,
+      base::UnescapeRule::PATH_SEPARATORS |
+          base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
 
   const std::string id = ExtractDocIdFromUrl(url_str);
 

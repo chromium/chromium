@@ -18,10 +18,10 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -218,7 +218,7 @@ GURL FormRequestURL(const std::string& api_key) {
     std::string query(url.query());
     if (!query.empty())
       query += "&";
-    query += "key=" + net::EscapeQueryParamValue(api_key, true);
+    query += "key=" + base::EscapeQueryParamValue(api_key, true);
     GURL::Replacements replacements;
     replacements.SetQueryStr(query);
     return url.ReplaceComponents(replacements);

@@ -648,8 +648,9 @@ void ClipboardProvider::UpdateClipboardURLContent(const GURL& url,
   // Because the user did not type a related input to get this clipboard
   // suggestion, preserve the subdomain so the user has extra context.
   auto format_types = AutocompleteMatch::GetFormatTypes(false, true);
-  match->contents.assign(url_formatter::FormatUrl(
-      url, format_types, net::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
+  match->contents.assign(url_formatter::FormatUrl(url, format_types,
+                                                  base::UnescapeRule::SPACES,
+                                                  nullptr, nullptr, nullptr));
   if (!match->contents.empty())
     match->contents_class.push_back({0, ACMatchClassification::URL});
   match->fill_into_edit =

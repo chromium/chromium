@@ -276,7 +276,7 @@ TEST(AutocompleteMatchTest, FormatUrlForSuggestionDisplay) {
                                                             preserve_subdomain);
       EXPECT_EQ(base::WideToUTF16(expected_result),
                 url_formatter::FormatUrl(GURL(url), format_types,
-                                         net::UnescapeRule::SPACES, nullptr,
+                                         base::UnescapeRule::SPACES, nullptr,
                                          nullptr, nullptr));
     }
   };

@@ -12,13 +12,13 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/url_formatter/url_formatter.h"
-#include "net/base/escape.h"
 #include "net/base/filename_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/third_party/mozilla/url_parse.h"
@@ -195,7 +195,7 @@ std::string FixupPath(const std::string& text) {
   if (file_url.is_valid()) {
     return base::UTF16ToUTF8(url_formatter::FormatUrl(
         file_url, url_formatter::kFormatUrlOmitUsernamePassword,
-        net::UnescapeRule::NORMAL, nullptr, nullptr, nullptr));
+        base::UnescapeRule::NORMAL, nullptr, nullptr, nullptr));
   }
 
   // Invalid file URL, just return the input.
@@ -650,13 +650,12 @@ GURL FixupRelativeFile(const base::FilePath& base_dir,
 // Not a path as entered, try unescaping it in case the user has
 // escaped things. We need to go through 8-bit since the escaped values
 // only represent 8-bit values.
-    std::string unescaped = net::UnescapeURLComponent(
-        trimmed,
-        net::UnescapeRule::SPACES | net::UnescapeRule::PATH_SEPARATORS |
-            net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
+std::string unescaped = base::UnescapeURLComponent(
+    trimmed, base::UnescapeRule::SPACES | base::UnescapeRule::PATH_SEPARATORS |
+                 base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
 
-    if (!ValidPathForFile(unescaped, &full_path))
-      is_file = false;
+if (!ValidPathForFile(unescaped, &full_path))
+  is_file = false;
   }
 
   // Put back the current directory if we saved it.
@@ -668,7 +667,7 @@ GURL FixupRelativeFile(const base::FilePath& base_dir,
     if (file_url.is_valid())
       return GURL(base::UTF16ToUTF8(url_formatter::FormatUrl(
           file_url, url_formatter::kFormatUrlOmitUsernamePassword,
-          net::UnescapeRule::NORMAL, nullptr, nullptr, nullptr)));
+          base::UnescapeRule::NORMAL, nullptr, nullptr, nullptr)));
     // Invalid files fall through to regular processing.
   }
 

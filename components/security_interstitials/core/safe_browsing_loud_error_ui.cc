@@ -6,6 +6,7 @@
 
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -15,7 +16,6 @@
 #include "components/security_interstitials/core/controller_client.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/strings/grit/components_strings.h"
-#include "net/base/escape.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -212,7 +212,7 @@ void SafeBrowsingLoudErrorUI::HandleCommand(
           security_interstitials::MetricsHelper::SHOW_DIAGNOSTIC);
       std::string diagnostic = base::StringPrintf(
           kSbDiagnosticUrl,
-          net::EscapeQueryParamValue(request_url().spec(), true).c_str());
+          base::EscapeQueryParamValue(request_url().spec(), true).c_str());
       GURL diagnostic_url(diagnostic);
       diagnostic_url =
           google_util::AppendGoogleLocaleParam(diagnostic_url, app_locale());
@@ -224,7 +224,7 @@ void SafeBrowsingLoudErrorUI::HandleCommand(
           security_interstitials::MetricsHelper::REPORT_PHISHING_ERROR);
       std::string phishing_error = base::StringPrintf(
           kReportPhishingErrorUrl,
-          net::EscapeQueryParamValue(request_url().spec(), true).c_str());
+          base::EscapeQueryParamValue(request_url().spec(), true).c_str());
       GURL phishing_error_url(phishing_error);
       phishing_error_url = google_util::AppendGoogleLocaleParam(
           phishing_error_url, app_locale());

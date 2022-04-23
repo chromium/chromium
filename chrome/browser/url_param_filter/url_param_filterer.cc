@@ -10,12 +10,12 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/url_param_filter/url_param_classifications_loader.h"
 #include "chrome/browser/url_param_filter/url_param_filter_classification.pb.h"
 #include "chrome/common/chrome_features.h"
-#include "net/base/escape.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -91,14 +91,14 @@ FilterResult FilterUrl(const GURL& source_url,
         blocked_parameters.end()) {
       std::string value = std::string{it.GetValue()};
       if (check_nested) {
-        GURL nested = GURL{net::UnescapeBinaryURLComponent(value)};
+        GURL nested = GURL{base::UnescapeBinaryURLComponent(value)};
         if (nested.is_valid()) {
           FilterResult nested_result =
               FilterUrl(destination_url, nested, source_classification_map,
                         destination_classification_map, false);
           // If a nested URL contains a param we must filter, do so now.
           if (nested != nested_result.filtered_url) {
-            value = net::EscapeQueryParamValue(
+            value = base::EscapeQueryParamValue(
                 nested_result.filtered_url.spec(), /*use_plus=*/false);
             filtered_params_count += nested_result.filtered_param_count;
           }

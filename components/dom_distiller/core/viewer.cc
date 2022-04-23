@@ -10,6 +10,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -24,7 +25,6 @@
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/grit/components_resources.h"
 #include "components/strings/grit/components_strings.h"
-#include "net/base/escape.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/template_expressions.h"

@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -34,7 +35,6 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
-#include "net/base/escape.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
@@ -126,7 +126,7 @@ std::string DumpAccessibilityTestBase::DumpTreeAsString() const {
   formatter->SetNodeFilters(scenario_.node_filters);
   std::string actual_contents =
       formatter->Format(GetRootAccessibilityNode(GetWebContents()));
-  return net::EscapeNonASCII(actual_contents);
+  return base::EscapeNonASCII(actual_contents);
 }
 
 std::string

@@ -48,7 +48,7 @@ JNI_UrlFormatter_FormatUrlForDisplayOmitScheme(
                JNI_UrlFormatter_ConvertJavaStringToGURL(env, url),
                url_formatter::kFormatUrlOmitDefaults |
                    url_formatter::kFormatUrlOmitHTTPS,
-               net::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
+               base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
 }
 
 static ScopedJavaLocalRef<jstring>
@@ -58,8 +58,8 @@ JNI_UrlFormatter_FormatUrlForDisplayOmitHTTPScheme(
   return base::android::ConvertUTF16ToJavaString(
       env, url_formatter::FormatUrl(
                JNI_UrlFormatter_ConvertJavaStringToGURL(env, url),
-               url_formatter::kFormatUrlOmitDefaults, net::UnescapeRule::SPACES,
-               nullptr, nullptr, nullptr));
+               url_formatter::kFormatUrlOmitDefaults,
+               base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
 }
 
 static ScopedJavaLocalRef<jstring>
@@ -71,7 +71,7 @@ JNI_UrlFormatter_FormatUrlForDisplayOmitUsernamePassword(
                JNI_UrlFormatter_ConvertJavaStringToGURL(env, url),
                url_formatter::kFormatUrlOmitUsernamePassword |
                    kFormatUrlOmitTrailingSlashOnBareHostname,
-               net::UnescapeRule::NONE, nullptr, nullptr, nullptr));
+               base::UnescapeRule::NONE, nullptr, nullptr, nullptr));
 }
 
 static ScopedJavaLocalRef<jstring> JNI_UrlFormatter_FormatUrlForCopy(
@@ -80,7 +80,7 @@ static ScopedJavaLocalRef<jstring> JNI_UrlFormatter_FormatUrlForCopy(
   return base::android::ConvertUTF16ToJavaString(
       env, url_formatter::FormatUrl(
                JNI_UrlFormatter_ConvertJavaStringToGURL(env, url),
-               url_formatter::kFormatUrlOmitNothing, net::UnescapeRule::NORMAL,
+               url_formatter::kFormatUrlOmitNothing, base::UnescapeRule::NORMAL,
                nullptr, nullptr, nullptr));
 }
 
@@ -128,7 +128,7 @@ JNI_UrlFormatter_FormatUrlForDisplayOmitSchemeOmitTrivialSubdomains(
                url_formatter::kFormatUrlOmitDefaults |
                    url_formatter::kFormatUrlOmitHTTPS |
                    url_formatter::kFormatUrlOmitTrivialSubdomains,
-               net::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
+               base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
 }
 
 static ScopedJavaLocalRef<jstring>

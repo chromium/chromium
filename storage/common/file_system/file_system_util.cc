@@ -10,10 +10,10 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
-#include "net/base/escape.h"
 #include "net/base/net_errors.h"
 #include "storage/common/database/database_identifier.h"
 #include "url/gurl.h"
@@ -174,7 +174,7 @@ bool ParseFileSystemSchemeURL(const GURL& url,
   if (file_system_type == kFileSystemTypeUnknown)
     return false;
 
-  std::string path = net::UnescapeBinaryURLComponent(url.path_piece());
+  std::string path = base::UnescapeBinaryURLComponent(url.path_piece());
 
   // Ensure the path is relative.
   while (!path.empty() && path[0] == '/')
@@ -385,12 +385,12 @@ std::string GetIsolatedFileSystemRootURIString(
       GetFileSystemRootURI(origin_url, kFileSystemTypeIsolated).spec();
   if (base::FilePath::FromUTF8Unsafe(filesystem_id).ReferencesParent())
     return std::string();
-  root.append(net::EscapePath(filesystem_id));
+  root.append(base::EscapePath(filesystem_id));
   root.append("/");
   if (!optional_root_name.empty()) {
     if (base::FilePath::FromUTF8Unsafe(optional_root_name).ReferencesParent())
       return std::string();
-    root.append(net::EscapePath(optional_root_name));
+    root.append(base::EscapePath(optional_root_name));
     root.append("/");
   }
   return root;
@@ -402,7 +402,7 @@ std::string GetExternalFileSystemRootURIString(const GURL& origin_url,
       GetFileSystemRootURI(origin_url, kFileSystemTypeExternal).spec();
   if (base::FilePath::FromUTF8Unsafe(mount_name).ReferencesParent())
     return std::string();
-  root.append(net::EscapePath(mount_name));
+  root.append(base::EscapePath(mount_name));
   root.append("/");
   return root;
 }

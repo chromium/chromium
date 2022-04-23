@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/json/json_reader.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringize_macros.h"
 #include "base/task/single_thread_task_runner.h"
@@ -21,7 +22,6 @@
 #include "build/branding_buildflags.h"
 #include "crypto/random.h"
 #include "net/base/elements_upload_data_stream.h"
-#include "net/base/escape.h"
 #include "net/base/io_buffer.h"
 #include "net/base/request_priority.h"
 #include "net/base/upload_bytes_element_reader.h"
@@ -79,12 +79,12 @@ TokenValidatorImpl::TokenValidatorImpl(
 
 // TokenValidator interface.
 void TokenValidatorImpl::StartValidateRequest(const std::string& token) {
-  post_body_ = "code=" + net::EscapeUrlEncodedData(token, true) +
-      "&client_id=" + net::EscapeUrlEncodedData(
-          key_pair_->GetPublicKey(), true) +
-      "&client_secret=" + net::EscapeUrlEncodedData(
-          key_pair_->SignMessage(token), true) +
-      "&grant_type=authorization_code";
+  post_body_ = "code=" + base::EscapeUrlEncodedData(token, true) +
+               "&client_id=" +
+               base::EscapeUrlEncodedData(key_pair_->GetPublicKey(), true) +
+               "&client_secret=" +
+               base::EscapeUrlEncodedData(key_pair_->SignMessage(token), true) +
+               "&grant_type=authorization_code";
 
   request_ = request_context_getter_->GetURLRequestContext()->CreateRequest(
       third_party_auth_config_.token_validation_url, net::DEFAULT_PRIORITY,

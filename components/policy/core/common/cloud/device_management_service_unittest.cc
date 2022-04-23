@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -22,7 +23,6 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
@@ -528,11 +528,11 @@ class QueryParams {
   std::vector<std::string> GetParams(const std::string& name) {
     std::vector<std::string> results;
     for (const auto& param : params_) {
-      std::string unescaped_name = net::UnescapeBinaryURLComponent(
-          param.first, net::UnescapeRule::REPLACE_PLUS_WITH_SPACE);
+      std::string unescaped_name = base::UnescapeBinaryURLComponent(
+          param.first, base::UnescapeRule::REPLACE_PLUS_WITH_SPACE);
       if (unescaped_name == name) {
-        std::string value = net::UnescapeBinaryURLComponent(
-            param.second, net::UnescapeRule::REPLACE_PLUS_WITH_SPACE);
+        std::string value = base::UnescapeBinaryURLComponent(
+            param.second, base::UnescapeRule::REPLACE_PLUS_WITH_SPACE);
         results.push_back(value);
       }
     }

@@ -158,7 +158,7 @@ void CaptivePortalBlockingPage::PopulateInterstitialStrings(
     } else {
       paragraph = l10n_util::GetStringFUTF16(
           IDS_CAPTIVE_PORTAL_PRIMARY_PARAGRAPH_NO_LOGIN_URL_WIFI_SSID,
-          net::EscapeForHTML(base::UTF8ToUTF16(wifi_ssid)));
+          base::EscapeForHTML(base::UTF8ToUTF16(wifi_ssid)));
     }
   } else {
     // Portal redirection was done with HTTP redirects, so show the login URL.
@@ -175,7 +175,7 @@ void CaptivePortalBlockingPage::PopulateInterstitialStrings(
     } else {
       paragraph = l10n_util::GetStringFUTF16(
           IDS_CAPTIVE_PORTAL_PRIMARY_PARAGRAPH_WIFI_SSID,
-          net::EscapeForHTML(base::UTF8ToUTF16(wifi_ssid)), login_host);
+          base::EscapeForHTML(base::UTF8ToUTF16(wifi_ssid)), login_host);
     }
   }
   load_time_data->SetStringKey("primaryParagraph", paragraph);

@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
@@ -29,7 +30,6 @@
 #include "content/public/common/content_switches.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
-#include "net/base/escape.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace credential_provider {
@@ -605,7 +605,8 @@ TEST_P(GcpNormalReauthCredentialUserSidMismatch, ShouldFail) {
   std::string get_cd_user_url_ = base::StringPrintf(
       "https://www.googleapis.com/admin/directory/v1/users/"
       "%s?projection=full&viewType=domain_public",
-      net::EscapeUrlEncodedData(base::WideToUTF8(OLE2CW(email)), true).c_str());
+      base::EscapeUrlEncodedData(base::WideToUTF8(OLE2CW(email)), true)
+          .c_str());
   GaiaUrls* gaia_urls_ = GaiaUrls::GetInstance();
   // Set token result as a valid access token.
   fake_http_url_fetcher_factory()->SetFakeResponse(

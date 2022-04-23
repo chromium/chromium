@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -44,7 +45,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "media/base/media_switches.h"
-#include "net/base/escape.h"
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -555,7 +555,7 @@ class CreativeOriginAdsPageLoadMetricsObserverBrowserTest
       query_pieces.push_back(")");
       std::string out = base::StrCat(query_pieces);
       if (should_escape)
-        out = net::EscapeQueryParamValue(out, false /* use_plus */);
+        out = base::EscapeQueryParamValue(out, false /* use_plus */);
       return out;
     }
 

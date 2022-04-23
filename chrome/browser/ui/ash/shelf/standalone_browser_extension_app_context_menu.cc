@@ -10,6 +10,7 @@
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "base/strings/escape.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "chrome/grit/generated_resources.h"
-#include "net/base/escape.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/vector_icons.h"
@@ -112,7 +112,7 @@ void StandaloneBrowserExtensionAppContextMenu::ExecuteCommand(int command_id,
 
       // Normally app ids would only contain alphanumerics, but Lacros uses '#'
       // as a delimiter.
-      std::string escaped_id = net::EscapeAllExceptUnreserved(app_id_);
+      std::string escaped_id = base::EscapeAllExceptUnreserved(app_id_);
       chrome::ShowAppManagementPage(ProfileManager::GetPrimaryUserProfile(),
                                     escaped_id, entry);
       return;

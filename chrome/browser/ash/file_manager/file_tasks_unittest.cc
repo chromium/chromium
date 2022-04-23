@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
@@ -44,7 +45,6 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest.h"
 #include "google_apis/drive/drive_api_parser.h"
-#include "net/base/escape.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -583,7 +583,7 @@ class FileManagerFileTasksCrostiniTest
   }
 
   GURL PathToURL(const std::string& path) {
-    std::string virtual_path = net::EscapeUrlEncodedData(
+    std::string virtual_path = base::EscapeUrlEncodedData(
         util::GetDownloadsMountPointName(test_profile_.get()) + "/" + path,
         /*use_plus=*/false);
     return GURL("filesystem:chrome-extension://id/external/" + virtual_path);

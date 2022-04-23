@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -22,7 +23,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/pref_service.h"
-#include "net/base/escape.h"
 #include "net/base/mime_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -135,7 +135,7 @@ void TerminalSource::StartDataRequest(
 
   // Refresh the $i8n{themeColor} replacement for css files.
   if (base::EndsWith(path, ".css", base::CompareCase::INSENSITIVE_ASCII)) {
-    replacements_["themeColor"] = net::EscapeForHTML(
+    replacements_["themeColor"] = base::EscapeForHTML(
         crostini::GetTerminalSettingBackgroundColor(profile_));
   }
 

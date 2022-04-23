@@ -198,10 +198,10 @@ ScoredHistoryMatches URLIndexPrivateData::HistoryItemsForTerms(
     // Have to convert to UTF-8 and back, because UnescapeURLComponent doesn't
     // support unescaping UTF-8 characters and converting them to UTF-16.
     std::u16string lower_unescaped_string =
-        base::UTF8ToUTF16(net::UnescapeURLComponent(
+        base::UTF8ToUTF16(base::UnescapeURLComponent(
             base::UTF16ToUTF8(lower_raw_string),
-            net::UnescapeRule::SPACES | net::UnescapeRule::PATH_SEPARATORS |
-                net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS));
+            base::UnescapeRule::SPACES | base::UnescapeRule::PATH_SEPARATORS |
+                base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS));
 
     // Extract individual 'words' (as opposed to 'terms'; see comment in
     // HistoryIdsToScoredMatches()) from the search string. When the user types
@@ -802,7 +802,7 @@ bool URLIndexPrivateData::IndexRow(
   // Strip out username and password before saving and indexing.
   std::u16string url(url_formatter::FormatUrl(
       gurl, url_formatter::kFormatUrlOmitUsernamePassword,
-      net::UnescapeRule::NONE, nullptr, nullptr, nullptr));
+      base::UnescapeRule::NONE, nullptr, nullptr, nullptr));
 
   HistoryID history_id = static_cast<HistoryID>(row_id);
   DCHECK_LT(history_id, std::numeric_limits<HistoryID>::max());

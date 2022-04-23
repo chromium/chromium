@@ -16,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/notreached.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,7 +31,6 @@
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
-#include "net/base/escape.h"
 #include "net/base/net_errors.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -968,7 +968,7 @@ LocalizedError::PageState LocalizedError::GetPageState(
 
   std::u16string failed_url_string(url_formatter::FormatUrl(
       failed_url, url_formatter::kFormatUrlOmitNothing,
-      net::UnescapeRule::NORMAL, nullptr, nullptr, nullptr));
+      base::UnescapeRule::NORMAL, nullptr, nullptr, nullptr));
   // URLs are always LTR.
   if (base::i18n::IsRTL())
     base::i18n::WrapStringWithLTRFormatting(&failed_url_string);
@@ -1156,7 +1156,7 @@ LocalizedError::PageState LocalizedError::GetPageStateForOverriddenErrorPage(
   } else {
     std::u16string failed_url_string(url_formatter::FormatUrl(
         failed_url, url_formatter::kFormatUrlOmitNothing,
-        net::UnescapeRule::NORMAL, nullptr, nullptr, nullptr));
+        base::UnescapeRule::NORMAL, nullptr, nullptr, nullptr));
     // URLs are always LTR.
     if (base::i18n::IsRTL())
       base::i18n::WrapStringWithLTRFormatting(&failed_url_string);

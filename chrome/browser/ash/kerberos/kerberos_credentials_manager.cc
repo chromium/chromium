@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -29,7 +30,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "dbus/message.h"
-#include "net/base/escape.h"
 #include "third_party/cros_system_api/dbus/kerberos/dbus-constants.h"
 
 namespace ash {
@@ -918,7 +918,7 @@ void KerberosCredentialsManager::OnTicketExpiryNotificationClick(
       primary_profile_,
       chromeos::settings::mojom::kKerberosAccountsV2SubpagePath +
           std::string("?kerberos_reauth=") +
-          net::EscapeQueryParamValue(principal_name, false /* use_plus */));
+          base::EscapeQueryParamValue(principal_name, false /* use_plus */));
 
   // Close last! |principal_name| is owned by the notification.
   kerberos_ticket_expiry_notification::Close(primary_profile_);

@@ -13,6 +13,7 @@
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -29,7 +30,6 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
 #include "google_apis/common/task_util.h"
-#include "net/base/escape.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "storage/browser/file_system/open_file_system_mode.h"
@@ -57,8 +57,8 @@ GURL ConvertRelativeFilePathToFileSystemUrl(const base::FilePath& relative_path,
   GURL base_url = storage::GetFileSystemRootURI(
       source_url, storage::kFileSystemTypeExternal);
   return GURL(base_url.spec() +
-              net::EscapeUrlEncodedData(relative_path.AsUTF8Unsafe(),
-                                        false));  // Space to %20 instead of +.
+              base::EscapeUrlEncodedData(relative_path.AsUTF8Unsafe(),
+                                         false));  // Space to %20 instead of +.
 }
 
 // Creates an ErrorDefinition with an error set to |error|.

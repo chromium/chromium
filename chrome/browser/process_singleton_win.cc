@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process.h"
 #include "base/process/process_info.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -36,7 +37,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/chromium_strings.h"
 #include "content/public/common/result_codes.h"
-#include "net/base/escape.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/win/hwnd_util.h"
 

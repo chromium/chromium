@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/syslog_logging.h"
@@ -40,7 +41,6 @@
 #include "extensions/common/manifest_url_handlers.h"
 #include "extensions/common/switches.h"
 #include "net/base/backoff_entry.h"
-#include "net/base/escape.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/extensions/extension_assets_manager_chromeos.h"
@@ -174,7 +174,7 @@ GURL ChromeContentVerifierDelegate::GetSignatureFetchUrl(
   // ManifestFetchData class that can be shared for use here.
   std::string id_part = "id=" + extension_id;
   std::string version_part = "v=" + version.GetString();
-  std::string x_value = net::EscapeQueryParamValue(
+  std::string x_value = base::EscapeQueryParamValue(
       base::JoinString({"uc", "installsource=signature", id_part, version_part},
                        "&"),
       true);
