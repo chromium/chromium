@@ -5167,10 +5167,19 @@ void WebGLRenderingContextBase::TexImage2DBase(GLenum target,
                           height, border, format, type, pixels);
 }
 
-// Software-based upload of Image* to WebGL texture.
-void WebGLRenderingContextBase::TexImageImpl(TexImageParams params,
-                                             Image* image,
-                                             bool image_has_flip_y) {
+void WebGLRenderingContextBase::TexImageStaticBitmapImage(
+    TexImageParams params,
+    StaticBitmapImage* image,
+    bool image_has_flip_y,
+    bool allow_copy_via_gpu) {
+  // Copy using the GPU, if possible.
+  if (allow_copy_via_gpu && image->IsTextureBacked() &&
+      CanUseTexImageViaGPU(params)) {
+    TexImageViaGPU(params, static_cast<AcceleratedStaticBitmapImage*>(image),
+                   nullptr);
+    return;
+  }
+
   // All calling functions check isContextLost, so a duplicate check is not
   // needed here.
   const char* func_name = GetTexImageFunctionName(params.function_id);
@@ -5287,10 +5296,9 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBuffer(
 }
 
 WebGLTexture* WebGLRenderingContextBase::ValidateTexImageBinding(
-    const char* func_name,
-    TexImageFunctionID function_id,
-    GLenum target) {
-  return ValidateTexture2DBinding(func_name, target);
+    const TexImageParams& params) {
+  const char* func_name = GetTexImageFunctionName(params.function_id);
+  return ValidateTexture2DBinding(func_name, params.target);
 }
 
 const char* WebGLRenderingContextBase::GetTexImageFunctionName(
@@ -5356,7 +5364,7 @@ void WebGLRenderingContextBase::TexImageHelperDOMArrayBufferView(
   const char* func_name = GetTexImageFunctionName(params.function_id);
   if (isContextLost())
     return;
-  if (!ValidateTexImageBinding(func_name, params.function_id, params.target))
+  if (!ValidateTexImageBinding(params))
     return;
   if (!ValidateTexFunc(params, kSourceArrayBufferView, absl::nullopt,
                        absl::nullopt)) {
@@ -5460,7 +5468,7 @@ void WebGLRenderingContextBase::TexImageHelperImageData(TexImageParams params,
     return;
   }
 
-  if (!ValidateTexImageBinding(func_name, params.function_id, params.target))
+  if (!ValidateTexImageBinding(params))
     return;
   if (!ValidateTexFunc(params, kSourceImageData, pixels->width(),
                        pixels->height())) {
@@ -5497,7 +5505,7 @@ void WebGLRenderingContextBase::TexImageHelperHTMLImageElement(
   if (!ValidateHTMLImageElement(security_origin, func_name, image,
                                 exception_state))
     return;
-  if (!ValidateTexImageBinding(func_name, params.function_id, params.target))
+  if (!ValidateTexImageBinding(params))
     return;
 
   scoped_refptr<Image> image_for_render = image->CachedImage()->GetImage();
@@ -5587,9 +5595,12 @@ bool WebGLRenderingContextBase::CanUseTexImageViaGPU(
 
 void WebGLRenderingContextBase::TexImageViaGPU(
     TexImageParams params,
-    WebGLTexture* texture,
     AcceleratedStaticBitmapImage* source_image,
     WebGLRenderingContextBase* source_canvas_webgl_context) {
+  WebGLTexture* texture = ValidateTexImageBinding(params);
+  if (!texture)
+    return;
+
   // Only one of `source_image` and `source_canvas_webgl_context` may be
   // specified.
   gfx::Size source_size;
@@ -5728,9 +5739,7 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
                                           context_host, exception_state)) {
     return;
   }
-  WebGLTexture* texture =
-      ValidateTexImageBinding(func_name, params.function_id, params.target);
-  if (!texture)
+  if (!ValidateTexImageBinding(params))
     return;
   if (!ValidateTexFunc(params, kSourceHTMLCanvasElement, *params.width,
                        *params.height)) {
@@ -5746,48 +5755,34 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
     return;
   }
 
-  bool is_webgl_canvas = context_host->IsWebGL();
-  WebGLRenderingContextBase* source_canvas_webgl_context = nullptr;
-  SourceImageStatus source_image_status = kInvalidSourceImageStatus;
-  scoped_refptr<Image> image;
-
-  bool upload_via_gpu = CanUseTexImageViaGPU(params);
-
   // The Image-based upload path may still be used for WebGL-rendered
   // canvases in the case of driver bug workarounds
   // (e.g. CanUseTexImageViaGPU returning false).
-  if (is_webgl_canvas && upload_via_gpu) {
-    source_canvas_webgl_context =
-        To<WebGLRenderingContextBase>(context_host->RenderingContext());
-  } else {
-    image = context_host->GetSourceImageForCanvas(
-        &source_image_status, gfx::SizeF(*params.width, *params.height));
-    if (source_image_status != kNormalSourceImageStatus)
+  if (auto* source_canvas_webgl_context = DynamicTo<WebGLRenderingContextBase>(
+          context_host->RenderingContext())) {
+    if (CanUseTexImageViaGPU(params)) {
+      TexImageViaGPU(params, nullptr, source_canvas_webgl_context);
       return;
-  }
-
-  // Still not clear whether we will take the accelerated upload path
-  // at this point; it depends on what came back from
-  // CanUseTexImageViaGPU, for example.
-  auto* static_bitmap_image = DynamicTo<StaticBitmapImage>(image.get());
-  upload_via_gpu &= source_canvas_webgl_context ||
-                    (static_bitmap_image && image->IsTextureBacked());
-
-  if (upload_via_gpu) {
-    AcceleratedStaticBitmapImage* accel_image = nullptr;
-    if (image) {
-      accel_image =
-          static_cast<AcceleratedStaticBitmapImage*>(static_bitmap_image);
     }
-    TexImageViaGPU(params, texture, accel_image, source_canvas_webgl_context);
-  } else {
-    DCHECK(image);
-    // TODO(crbug.com/612542): Implement GPU-to-GPU copy path for more
-    // cases, like copying to layers of 3D textures, and elements of
-    // 2D texture arrays.
-    const bool source_has_flip_y = is_origin_top_left_ && is_webgl_canvas;
-    TexImageImpl(params, image.get(), source_has_flip_y);
   }
+
+  SourceImageStatus source_image_status = kInvalidSourceImageStatus;
+  scoped_refptr<Image> image = context_host->GetSourceImageForCanvas(
+      &source_image_status, gfx::SizeF(*params.width, *params.height));
+  if (source_image_status != kNormalSourceImageStatus)
+    return;
+
+  // The implementation of GetSourceImageForCanvas for both subclasses of
+  // CanvasRenderingContextHost (HTMLCanvasElement and OffscreenCanvas) always
+  // return a StaticBitmapImage.
+  StaticBitmapImage* static_bitmap_image =
+      DynamicTo<StaticBitmapImage>(image.get());
+  DCHECK(static_bitmap_image);
+
+  const bool source_has_flip_y = is_origin_top_left_ && context_host->IsWebGL();
+  const bool allow_copy_via_gpu = true;
+  TexImageStaticBitmapImage(params, static_bitmap_image, source_has_flip_y,
+                            allow_copy_via_gpu);
 }
 
 void WebGLRenderingContextBase::texImage2D(
@@ -5823,8 +5818,7 @@ void WebGLRenderingContextBase::TexImageHelperHTMLVideoElement(
     return;
   }
 
-  WebGLTexture* texture =
-      ValidateTexImageBinding(func_name, params.function_id, params.target);
+  WebGLTexture* texture = ValidateTexImageBinding(params);
   if (!texture)
     return;
   if (!ValidateTexFunc(params, kSourceHTMLVideoElement, video->videoWidth(),
@@ -5860,8 +5854,7 @@ void WebGLRenderingContextBase::TexImageHelperVideoFrame(
   // TODO(crbug.com/1210718): It may be possible to simplify this code
   // by consolidating on CanvasImageSource::GetSourceImageForCanvas().
 
-  WebGLTexture* texture =
-      ValidateTexImageBinding(func_name, params.function_id, params.target);
+  WebGLTexture* texture = ValidateTexImageBinding(params);
   if (!texture)
     return;
 
@@ -5895,7 +5888,8 @@ void WebGLRenderingContextBase::TexImageHelperVideoFrame(
     auto image = UnacceleratedStaticBitmapImage::Create(std::move(sk_img));
     // Note: kHtmlDomVideo means alpha won't be unmultiplied.
     params.internalformat = adjusted_internalformat;
-    TexImageImpl(params, image.get(), /*image_has_flip_y=*/false);
+    TexImageStaticBitmapImage(params, image.get(), /*image_has_flip_y=*/false,
+                              /*allow_copy_via_gpu=*/false);
     texture->UpdateLastUploadedFrame(metadata);
     return;
   }
@@ -6084,23 +6078,18 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     dest_rect.Transpose();
   }
 
-  // Since TexImageImpl() and TexImageGPU() don't know how to handle tagged
-  // orientation, we set |prefer_tagged_orientation| to false.
-  scoped_refptr<Image> image = CreateImageFromVideoFrame(
+  // Since TexImageStaticBitmapImage() and TexImageGPU() don't know how to
+  // handle tagged orientation, we set |prefer_tagged_orientation| to false.
+  scoped_refptr<StaticBitmapImage> image = CreateImageFromVideoFrame(
       std::move(media_video_frame), kAllowZeroCopyImages,
       image_cache.GetCanvasResourceProvider(dest_rect.size()), video_renderer,
       dest_rect, /*prefer_tagged_orientation=*/false);
   if (!image)
     return;
 
-  if (can_upload_via_gpu && image->IsTextureBacked()) {
-    auto* accel_image = static_cast<AcceleratedStaticBitmapImage*>(image.get());
-    TexImageViaGPU(params, texture, accel_image, nullptr);
-  } else {
-    params.internalformat = adjusted_internalformat;
-    // Note: kHtmlDomVideo means alpha won't be unmultiplied.
-    TexImageImpl(params, image.get(), /*image_has_flip_y=*/false);
-  }
+  params.internalformat = adjusted_internalformat;
+  TexImageStaticBitmapImage(params, image.get(), /*image_has_flip_y=*/false,
+                            can_upload_via_gpu);
 
   texture->UpdateLastUploadedFrame(metadata);
 }
@@ -6146,9 +6135,7 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
 
   if (!ValidateImageBitmap(func_name, bitmap, exception_state))
     return;
-  WebGLTexture* texture =
-      ValidateTexImageBinding(func_name, params.function_id, params.target);
-  if (!texture)
+  if (!ValidateTexImageBinding(params))
     return;
 
   if (!params.width)
@@ -6195,18 +6182,11 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
   params.unpack_premultiply_alpha =
       image->GetSkColorInfo().alphaType() == kPremul_SkAlphaType;
   params.unpack_flip_y = false;
-
+  const bool image_has_flip_y = false;
   // TODO(kbr): make this work for sub-rectangles of ImageBitmaps.
-  if (image->IsTextureBacked() && CanUseTexImageViaGPU(params) &&
-      !selecting_sub_rectangle) {
-    AcceleratedStaticBitmapImage* accel_image =
-        static_cast<AcceleratedStaticBitmapImage*>(image.get());
-    // All AcceleratedStaticBitmapImages have premultiplied alpha.
-    DCHECK_NE(accel_image->GetSkColorInfo().alphaType(), kUnpremul_SkAlphaType);
-    TexImageViaGPU(params, texture, accel_image, nullptr);
-  } else {
-    TexImageImpl(params, image.get(), /*image_has_flip_y=*/false);
-  }
+  const bool can_copy_via_gpu = !selecting_sub_rectangle;
+  TexImageStaticBitmapImage(params, image.get(), image_has_flip_y,
+                            can_copy_via_gpu);
 }
 
 void WebGLRenderingContextBase::texImage2D(GLenum target,

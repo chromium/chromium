@@ -3822,12 +3822,11 @@ void WebGL2RenderingContextBase::GetCurrentUnpackState(TexImageParams& params) {
 }
 
 WebGLTexture* WebGL2RenderingContextBase::ValidateTexImageBinding(
-    const char* func_name,
-    TexImageFunctionID function_id,
-    GLenum target) {
-  if (function_id == kTexImage3D || function_id == kTexSubImage3D)
-    return ValidateTexture3DBinding(func_name, target);
-  return ValidateTexture2DBinding(func_name, target);
+    const TexImageParams& params) {
+  const char* func_name = GetTexImageFunctionName(params.function_id);
+  if (params.function_id == kTexImage3D || params.function_id == kTexSubImage3D)
+    return ValidateTexture3DBinding(func_name, params.target);
+  return ValidateTexture2DBinding(func_name, params.target);
 }
 
 void WebGL2RenderingContextBase::clearBufferiv(GLenum buffer,

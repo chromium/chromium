@@ -1131,9 +1131,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                                const char* function_name) override;
 
   void GetCurrentUnpackState(TexImageParams& params) override;
-  WebGLTexture* ValidateTexImageBinding(const char*,
-                                        TexImageFunctionID,
-                                        GLenum) override;
+  WebGLTexture* ValidateTexImageBinding(const TexImageParams& params) override;
   // Helper function to check texture 3D target and texture bound to the target.
   // Generate GL errors and return 0 if target is invalid or texture bound is
   // null.  Otherwise, return the texture bound to the target.

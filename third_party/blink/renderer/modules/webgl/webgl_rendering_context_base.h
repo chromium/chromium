@@ -1219,7 +1219,15 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                       GLenum format,
                       GLenum type,
                       const void* pixels);
-  void TexImageImpl(TexImageParams params, Image* image, bool image_has_flip_y);
+
+  // Upload `image` to the specified texture. If `allow_copy_via_gpu` is
+  // true and `image` is an AcceleratedBitmapImage, then the copy may be
+  // performed using TexImageViaGPU. Otherwise, the copy will be be performed
+  // using TexImageSkImage.
+  void TexImageStaticBitmapImage(TexImageParams params,
+                                 StaticBitmapImage* image,
+                                 bool image_has_flip_y,
+                                 bool allow_copy_via_gpu);
   template <typename T>
   gfx::Rect GetTextureSourceSize(T* texture_source) {
     return gfx::Rect(0, 0, texture_source->width(), texture_source->height());
@@ -1351,9 +1359,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 
   // Wrapper function for validateTexture2D(3D)Binding, used in TexImageHelper
   // functions.
-  virtual WebGLTexture* ValidateTexImageBinding(const char*,
-                                                TexImageFunctionID,
-                                                GLenum);
+  virtual WebGLTexture* ValidateTexImageBinding(const TexImageParams& params);
 
   // Helper function to check texture 2D target and texture bound to the target.
   // Generate GL errors and return 0 if target is invalid or texture bound is
@@ -1796,11 +1802,10 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
       scoped_refptr<media::VideoFrame> media_video_frame,
       media::PaintCanvasVideoRenderer* video_renderer);
 
-  // Copy from the source directly to the texture via the gpu, without
-  // a read-back to system memory. Source can be a texture-backed
-  // Image, or another canvas's WebGLRenderingContext.
+  // Copy from the source directly to texture target specified by `params` via
+  // the gpu, without a read-back to system memory. Source can be an
+  // AcceleratedStaticBitmapImage or WebGLRenderingContextBase.
   void TexImageViaGPU(TexImageParams,
-                      WebGLTexture*,
                       AcceleratedStaticBitmapImage*,
                       WebGLRenderingContextBase*);
   bool CanUseTexImageViaGPU(const TexImageParams&);
