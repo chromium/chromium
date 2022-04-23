@@ -509,6 +509,11 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         }
     }
 
+    public void emitWindowContentChanged() {
+        announceForAccessibility(getContext().getString(
+                R.string.accessibility_omnibox_suggested_items, mAdapter.getItemCount()));
+    }
+
     private void adjustSidePadding() {
         if (mAlignmentView == null) return;
 

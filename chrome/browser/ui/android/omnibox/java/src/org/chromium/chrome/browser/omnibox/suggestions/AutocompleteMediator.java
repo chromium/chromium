@@ -716,6 +716,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             mDelegate.onSuggestionsChanged(inlineAutocompleteText, defaultMatchIsSearch);
             updateOmniboxSuggestionsVisibility();
         }
+
+        mListPropertyModel.set(SuggestionListProperties.LIST_IS_FINAL, isFinal);
     }
 
     @Override

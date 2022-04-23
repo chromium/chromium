@@ -29,6 +29,11 @@ public class SuggestionListProperties {
             new WritableObjectPropertyKey<>(true);
 
     /**
+     * Whether the list encompasses the final set of suggestions for the current user query.
+     */
+    public static final WritableBooleanPropertyKey LIST_IS_FINAL = new WritableBooleanPropertyKey();
+
+    /**
      * Specifies the color scheme. It can be light or dark because of a publisher defined color,
      * incognito, or the default theme that follows dynamic colors.
      */
@@ -38,6 +43,6 @@ public class SuggestionListProperties {
     public static final WritableObjectPropertyKey<OmniboxSuggestionsDropdown.Observer> OBSERVER =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {VISIBLE, EMBEDDER, SUGGESTION_MODELS, COLOR_SCHEME, OBSERVER};
+    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
+            VISIBLE, EMBEDDER, SUGGESTION_MODELS, COLOR_SCHEME, OBSERVER, LIST_IS_FINAL};
 }
