@@ -93,8 +93,8 @@ HidChooserController::HidChooserController(
       filters_(std::move(filters)),
       exclusion_filters_(std::move(exclusion_filters)),
       callback_(std::move(callback)),
-      origin_(render_frame_host->GetMainFrame()->GetLastCommittedOrigin()),
-      frame_tree_node_id_(render_frame_host->GetFrameTreeNodeId()) {
+      initiator_document_(render_frame_host->GetWeakDocumentPtr()),
+      origin_(render_frame_host->GetMainFrame()->GetLastCommittedOrigin()) {
   // The use above of GetMainFrame is safe as content::HidService instances are
   // not created for fenced frames.
   DCHECK(!render_frame_host->IsNestedWithinFencedFrame());
@@ -208,8 +208,13 @@ void HidChooserController::Close() {
 }
 
 void HidChooserController::OpenHelpCenterUrl() const {
-  auto* web_contents =
-      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
+  auto* rfh = initiator_document_.AsRenderFrameHostIfValid();
+  auto* web_contents = rfh && rfh->IsActive()
+                           ? content::WebContents::FromRenderFrameHost(rfh)
+                           : nullptr;
+  if (!web_contents)
+    return;
+
   web_contents->OpenURL(content::OpenURLParams(
       GURL(chrome::kChooserHidOverviewUrl), content::Referrer(),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -296,15 +301,30 @@ bool HidChooserController::DisplayDevice(
          chooser_context_->IsFidoAllowedForOrigin(origin_))) {
       return FilterMatchesAny(device) && !IsExcluded(device);
     }
-    VLOG(1) << "Not displaying a FIDO HID device.";
+
+    AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kInfo,
+        base::StringPrintf(
+            "Chooser dialog is not displaying a FIDO HID device: vendorId=%d, "
+            "productId=%d, name='%s', serial='%s'",
+            device.vendor_id, device.product_id, device.product_name.c_str(),
+            device.serial_number.c_str()));
     return false;
   }
 
-  if (!device::HidBlocklist::IsDeviceExcluded(device))
-    return FilterMatchesAny(device) && !IsExcluded(device);
+  if (device::HidBlocklist::IsDeviceExcluded(device)) {
+    AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kInfo,
+        base::StringPrintf(
+            "Chooser dialog is not displaying a device blocked by "
+            "the HID blocklist: vendorId=%d, "
+            "productId=%d, name='%s', serial='%s'",
+            device.vendor_id, device.product_id, device.product_name.c_str(),
+            device.serial_number.c_str()));
+    return false;
+  }
 
-  VLOG(1) << "Not displaying a device blocked by the HID blocklist.";
-  return false;
+  return FilterMatchesAny(device) && !IsExcluded(device);
 }
 
 bool HidChooserController::FilterMatchesAny(
@@ -326,6 +346,15 @@ bool HidChooserController::IsExcluded(
       return true;
   }
   return false;
+}
+
+void HidChooserController::AddMessageToConsole(
+    blink::mojom::ConsoleMessageLevel level,
+    const std::string& message) const {
+  if (content::RenderFrameHost* rfh =
+          initiator_document_.AsRenderFrameHostIfValid()) {
+    rfh->AddMessageToConsole(level, message);
+  }
 }
 
 bool HidChooserController::AddDeviceInfo(
