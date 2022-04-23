@@ -4,7 +4,7 @@
 
 import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
-import {MultiDeviceFeature, MultiDevicePageContentData} from './multidevice_constants.js';
+import {MultiDeviceFeature, MultiDevicePageContentData, PhoneHubPermissionsSetupAction, PhoneHubPermissionsSetupFeatureCombination, PhoneHubPermissionsSetupFlowScreens} from './multidevice_constants.js';
 
 /**
  * An object containing messages for web permissisions origin
@@ -102,6 +102,20 @@ export class MultiDeviceBrowserProxy {
    * Cancels the phone hub combined feature access setup flow.
    */
   cancelCombinedFeatureSetup() {}
+
+  /**
+   * Log [Cancel] button click event in phone hub combined feature access setup
+   * flow.
+   *  @param {!PhoneHubPermissionsSetupFlowScreens} screen
+   *  @param {!PhoneHubPermissionsSetupAction} action
+   */
+  logPhoneHubPermissionSetUpScreenAction(screen, action) {}
+
+  /**
+   * Log phone hub combined feature access [Set Up] button click event.
+   *  @param {!PhoneHubPermissionsSetupFeatureCombination} setup_mode
+   */
+  logPhoneHubPermissionSetUpButtonClicked(setup_mode) {}
 }
 
 /**
@@ -187,6 +201,16 @@ export class MultiDeviceBrowserProxyImpl {
   /** @override */
   cancelCombinedFeatureSetup() {
     chrome.send('cancelCombinedFeatureSetup');
+  }
+
+  /** @override */
+  logPhoneHubPermissionSetUpScreenAction(screen, action) {
+    chrome.send('logPhoneHubPermissionSetUpScreenAction', [screen, action]);
+  }
+
+  /** @override */
+  logPhoneHubPermissionSetUpButtonClicked(setup_mode) {
+    chrome.send('logPhoneHubPermissionSetUpButtonClicked', [setup_mode]);
   }
 }
 

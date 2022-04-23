@@ -72,14 +72,6 @@ void LogScreenOnSettingsButtonClicked(Screen screen) {
                                 screen);
 }
 
-void LogNotificationOptInEvent(InterstitialScreenEvent event) {
-  base::UmaHistogramEnumeration("PhoneHub.NotificationOptInEvents", event);
-}
-
-void LogCameraRollOptInEvent(InterstitialScreenEvent event) {
-  base::UmaHistogramEnumeration("PhoneHub.CameraRoll.OptInEvents", event);
-}
-
 void LogTabContinuationChipClicked(int tab_index) {
   base::UmaHistogramCounts100("PhoneHub.TabContinuationChipClicked", tab_index);
 }

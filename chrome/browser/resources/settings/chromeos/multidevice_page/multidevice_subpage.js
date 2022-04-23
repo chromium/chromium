@@ -24,7 +24,7 @@ import {OsSettingsRoutes} from '../os_settings_routes.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
-import {MultiDeviceFeature, MultiDeviceFeatureState, MultiDeviceSettingsMode, PhoneHubFeatureAccessProhibitedReason} from './multidevice_constants.js';
+import {MultiDeviceFeature, MultiDeviceFeatureState, MultiDeviceSettingsMode, PhoneHubFeatureAccessProhibitedReason, PhoneHubPermissionsSetupFeatureCombination} from './multidevice_constants.js';
 import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
 
 /**
@@ -269,6 +269,17 @@ Polymer({
   /** @private */
   handlePhoneHubSetupClick_() {
     this.fire('permission-setup-requested');
+    let setupMode = PhoneHubPermissionsSetupFeatureCombination.NONE;
+    if (this.shouldShowPhoneHubCameraRollItem_()) {
+      setupMode = PhoneHubPermissionsSetupFeatureCombination.CAMERA_ROLL;
+    }
+    if (this.shouldShowPhoneHubNotificationsItem_()) {
+      setupMode = PhoneHubPermissionsSetupFeatureCombination.NOTIFICATION;
+    }
+    if (this.shouldShowPhoneHubAppsItem_()) {
+      setupMode = PhoneHubPermissionsSetupFeatureCombination.MESSAGING_APP;
+    }
+    this.browserProxy_.logPhoneHubPermissionSetUpButtonClicked(setupMode);
   },
 
   /**

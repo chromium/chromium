@@ -59,6 +59,7 @@ export class TestMultideviceBrowserProxy extends TestBrowserProxy {
       'cancelAppsSetup',
       'attemptCombinedFeatureSetup',
       'cancelCombinedFeatureSetup',
+      'logPhoneHubPermissionSetUpScreenAction',
     ]);
     this.data = createFakePageContentData(MultiDeviceSettingsMode.NO_HOST_SET);
     this.androidSmsInfo = {origin: TEST_ANDROID_SMS_ORIGIN, enabled: true};
@@ -155,5 +156,11 @@ export class TestMultideviceBrowserProxy extends TestBrowserProxy {
     cr.webUIListenerCallback(
         'settings.updateMultidevicePageContentData',
         Object.assign({}, this.data));
+  }
+
+  /** @override */
+  logPhoneHubPermissionSetUpScreenAction(screen, action) {
+    this.methodCalled(
+        'logPhoneHubPermissionSetUpScreenAction', [screen, action]);
   }
 }

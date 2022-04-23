@@ -126,6 +126,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PhoneHub.CameraRoll.OptInEvents"
     enum="PhoneHubInterstitialScreenEvent" expires_after="2023-02-01">
+  <obsolete>
+    No longer valid as combined feature onboarding flow replaced existing camera
+    roll op-in flow. Deprecated 04/2022.
+  </obsolete>
   <owner>jianbing@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -284,6 +288,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PhoneHub.NotificationOptInEvents"
     enum="PhoneHubInterstitialScreenEvent" expires_after="2023-02-01">
+  <obsolete>
+    No longer valid as combined feature onboarding flow replaced existing
+    notification op-in flow. Deprecated 04/2022.
+  </obsolete>
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Events for the given notification opt-in prompt.</summary>
@@ -294,6 +302,45 @@ chromium-metrics-reviews@google.com.
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Tracks the UI surface with which users enable Phone Hub.</summary>
+</histogram>
+
+<histogram
+    name="PhoneHub.PermissionsOnboarding.DialogScreenEvents.{SetupScreen}Screen"
+    enum="PhoneHubPermissionsOnboardingScreenEvent" expires_after="2023-02-01">
+  <owner>jianbing@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Actions user performed in combined multidevice feature set up {SetupScreen}.
+    Event would be emitted when user click on buttons on {SetupScreen} and setup
+    finished screen is shown.
+  </summary>
+  <token key="SetupScreen">
+    <variant name="ConnectingToPhone" summary="connecting screen"/>
+    <variant name="ConnectionLost" summary="connection lost screen"/>
+    <variant name="CouldNotEstablishConnection"
+        summary="could not establish connection screen"/>
+    <variant name="FinishSetupOnYourPhone"
+        summary="finish setup on your phone screen"/>
+    <variant name="Intro" summary="introduction screen"/>
+    <variant name="Promo" summary="promotion in Phonehub tray"/>
+    <variant name="SetAPinOrPassword" summary="set a PIN or password screen"/>
+    <variant name="SetUpFinished" summary="setup finished screen"/>
+  </token>
+</histogram>
+
+<histogram name="PhoneHub.PermissionsOnboarding.SetUpMode.{ModeRecordingEvent}"
+    enum="PhoneHubPermissionsOnboardingSetUpMode" expires_after="2023-02-01">
+  <owner>jianbing@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Tracks which feature combination user is setting up. Event would be emitted
+    when {ModeRecordingEvent}.
+  </summary>
+  <token key="ModeRecordingEvent">
+    <variant name="OnPromoShown" summary="setup promo shown in Phonehub tray"/>
+    <variant name="OnSettingsClicked"
+        summary="setup button clicked in multidevice setting\'s page"/>
+  </token>
 </histogram>
 
 <histogram name="PhoneHub.QuickActionClicked" enum="PhoneHubQuickAction"

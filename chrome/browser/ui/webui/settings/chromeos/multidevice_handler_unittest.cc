@@ -15,6 +15,7 @@
 #include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "ash/webui/eche_app_ui/fake_apps_access_manager.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/android_sms/android_sms_urls.h"
 #include "chrome/browser/ash/android_sms/fake_android_sms_app_manager.h"
@@ -35,6 +36,25 @@ namespace chromeos {
 namespace settings {
 
 namespace {
+
+constexpr char kDialogIntroActionHistogram[] =
+    "PhoneHub.PermissionsOnboarding.DialogScreenEvents.IntroScreen";
+constexpr char kDialogFinishOnPhoneActionHistogram[] =
+    "PhoneHub.PermissionsOnboarding.DialogScreenEvents."
+    "FinishSetupOnYourPhoneScreen";
+constexpr char kDialogConnectingActionHistogram[] =
+    "PhoneHub.PermissionsOnboarding.DialogScreenEvents.ConnectingToPhoneScreen";
+constexpr char kDialogConnectionErrorActionHistogram[] =
+    "PhoneHub.PermissionsOnboarding.DialogScreenEvents."
+    "CouldNotEstablishConnectionScreen";
+constexpr char kDialogConnectionTimeOutActionHistogram[] =
+    "PhoneHub.PermissionsOnboarding.DialogScreenEvents.ConnectionLostScreen";
+constexpr char kDialogSetAPinOrPasswordHistogram[] =
+    "PhoneHub.PermissionsOnboarding.DialogScreenEvents.SetAPinOrPasswordScreen";
+constexpr char kDialogSetupFinishedActionHistogram[] =
+    "PhoneHub.PermissionsOnboarding.DialogScreenEvents.SetUpFinishedScreen";
+constexpr char kSetupButtonInSettingsClikedHistogram[] =
+    "PhoneHub.PermissionsOnboarding.SetUpMode.OnSettingsClicked";
 
 // TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace multidevice_setup = ::ash::multidevice_setup;
@@ -920,6 +940,124 @@ TEST_F(MultideviceHandlerTest, CameraRollSetupFlow) {
   // If access has already been granted, a setup operation should not occur.
   CallAttemptCameraRollSetup(/*has_access_been_granted=*/true);
   EXPECT_FALSE(IsCameraRollAccessSetupOperationInProgress());
+}
+
+TEST_F(MultideviceHandlerTest, LogUmaMetricsForSetupFlow) {
+  using Status = phonehub::CombinedAccessSetupOperation::Status;
+  fake_multidevice_feature_access_manager()
+      ->SetFeatureSetupRequestSupportedInternal(true);
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kDialogIntroActionHistogram, 0);
+
+  base::ListValue set_up_screen_args;
+  set_up_screen_args.Append(/*irrelivant_set_up_dialog=*/0);
+  set_up_screen_args.Append(/*action_cancel=*/3);
+  test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
+                                       &set_up_screen_args);
+  histogram_tester.ExpectTotalCount(kDialogIntroActionHistogram, 0);
+
+  set_up_screen_args.ClearList();
+  set_up_screen_args.Append(/*intro_screen_index=*/1);
+  set_up_screen_args.Append(/*learn_more=*/2);
+  test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
+                                       &set_up_screen_args);
+  histogram_tester.ExpectBucketCount(kDialogIntroActionHistogram,
+                                     /*learn_more=*/2, 1);
+
+  set_up_screen_args.ClearList();
+  set_up_screen_args.Append(/*intro_screen_index=*/1);
+  set_up_screen_args.Append(/*cancel=*/3);
+  test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
+                                       &set_up_screen_args);
+  histogram_tester.ExpectBucketCount(kDialogIntroActionHistogram,
+                                     /*cancel=*/3, 1);
+
+  set_up_screen_args.ClearList();
+  set_up_screen_args.Append(/*intro_screen_index=*/1);
+  set_up_screen_args.Append(/*next=*/5);
+  test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
+                                       &set_up_screen_args);
+  histogram_tester.ExpectBucketCount(kDialogIntroActionHistogram,
+                                     /*done=*/5, 1);
+
+  set_up_screen_args.ClearList();
+  set_up_screen_args.Append(/*finish_on_phone_screen_index=*/2);
+  set_up_screen_args.Append(/*learn_more=*/2);
+  test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
+                                       &set_up_screen_args);
+  histogram_tester.ExpectBucketCount(kDialogFinishOnPhoneActionHistogram,
+                                     /*learn_more=*/2, 1);
+
+  set_up_screen_args.ClearList();
+  set_up_screen_args.Append(/*finish_on_phone_screen_index=*/2);
+  set_up_screen_args.Append(/*cancel=*/3);
+  test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
+                                       &set_up_screen_args);
+  histogram_tester.ExpectBucketCount(kDialogFinishOnPhoneActionHistogram,
+                                     /*cancel=*/3, 1);
+
+  set_up_screen_args.ClearList();
+  set_up_screen_args.Append(/*connecting_screen_index=*/3);
+  set_up_screen_args.Append(/*cancel=*/3);
+  test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
+                                       &set_up_screen_args);
+  histogram_tester.ExpectBucketCount(kDialogConnectingActionHistogram,
+                                     /*cancel=*/3, 1);
+
+  set_up_screen_args.ClearList();
+  set_up_screen_args.Append(/*connected_screen_index=*/6);
+  set_up_screen_args.Append(/*done=*/4);
+  test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
+                                       &set_up_screen_args);
+  histogram_tester.ExpectBucketCount(kDialogSetupFinishedActionHistogram,
+                                     /*done=*/4, 1);
+
+  set_up_screen_args.ClearList();
+  set_up_screen_args.Append(/*connection_error_screen_index=*/4);
+  set_up_screen_args.Append(/*try_again=*/5);
+  test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
+                                       &set_up_screen_args);
+  histogram_tester.ExpectBucketCount(kDialogConnectionErrorActionHistogram,
+                                     /*try_again=*/5, 1);
+
+  set_up_screen_args.ClearList();
+  set_up_screen_args.Append(/*connection_error_screen_index=*/4);
+  set_up_screen_args.Append(/*cancel=*/3);
+  test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
+                                       &set_up_screen_args);
+  histogram_tester.ExpectBucketCount(kDialogConnectionErrorActionHistogram,
+                                     /*cancel=*/3, 1);
+
+  set_up_screen_args.ClearList();
+  set_up_screen_args.Append(/*connection_time_out_screen_index=*/5);
+  set_up_screen_args.Append(/*try_again=*/5);
+  test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
+                                       &set_up_screen_args);
+  histogram_tester.ExpectBucketCount(kDialogConnectionTimeOutActionHistogram,
+                                     /*try_again=*/5, 1);
+
+  set_up_screen_args.ClearList();
+  set_up_screen_args.Append(/*connection_time_out_screen_index=*/5);
+  set_up_screen_args.Append(/*cancel=*/3);
+  test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
+                                       &set_up_screen_args);
+  histogram_tester.ExpectBucketCount(kDialogConnectionTimeOutActionHistogram,
+                                     /*cancel=*/3, 1);
+
+  set_up_screen_args.ClearList();
+  set_up_screen_args.Append(/*set_a_pin_screen_index=*/7);
+  set_up_screen_args.Append(/*cancel=*/3);
+  test_web_ui()->HandleReceivedMessage("logPhoneHubPermissionSetUpScreenAction",
+                                       &set_up_screen_args);
+  histogram_tester.ExpectBucketCount(kDialogSetAPinOrPasswordHistogram,
+                                     /*cancel=*/3, 1);
+
+  set_up_screen_args.ClearList();
+  set_up_screen_args.Append(/*camera_roll_setup=*/3);
+  test_web_ui()->HandleReceivedMessage(
+      "logPhoneHubPermissionSetUpButtonClicked", &set_up_screen_args);
+  histogram_tester.ExpectBucketCount(kSetupButtonInSettingsClikedHistogram,
+                                     /*camera_roll_setup=*/3, 1);
 }
 
 TEST_F(MultideviceHandlerTest, PageContentData) {

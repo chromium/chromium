@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/components/phonehub/multidevice_feature_access_manager.h"
+#include "ash/components/phonehub/util/histogram_util.h"
 #include "ash/system/phonehub/sub_feature_opt_in_view.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -21,17 +22,6 @@ class ASH_EXPORT MultideviceFeatureOptInView
       public phonehub::MultideviceFeatureAccessManager::Observer {
  public:
   METADATA_HEADER(MultideviceFeatureOptInView);
-
-  enum class PermissionSetupMode {
-    kNone = 0,
-    kNotificationSetupMode = 1,
-    kAppsSetupMode = 2,
-    kCameraRollSetupMode = 3,
-    kNotificationAndApps = 4,
-    kNotificationAndCameraRoll = 5,
-    kAppsAndCameraRoll = 6,
-    kAllPermissionsSetupMode = 7,
-  };
 
   explicit MultideviceFeatureOptInView(
       phonehub::MultideviceFeatureAccessManager*
@@ -62,7 +52,7 @@ class ASH_EXPORT MultideviceFeatureOptInView
       access_manager_observation_{this};
 
   // The current setup mode.
-  MultideviceFeatureOptInView::PermissionSetupMode setup_mode_;
+  phonehub::util::PermissionsOnboardingSetUpMode setup_mode_;
 };
 
 }  // namespace ash

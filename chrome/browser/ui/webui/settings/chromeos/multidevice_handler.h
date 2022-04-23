@@ -10,6 +10,7 @@
 #include "ash/components/phonehub/combined_access_setup_operation.h"
 #include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/components/phonehub/notification_access_setup_operation.h"
+#include "ash/components/phonehub/util/histogram_util.h"
 #include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
 #include "ash/webui/eche_app_ui/apps_access_manager.h"
@@ -61,6 +62,9 @@ class MultideviceHandler
  protected:
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
+
+  void LogPhoneHubPermissionSetUpScreenAction(const base::Value::List& args);
+  void LogPhoneHubPermissionSetUpButtonClicked(const base::Value::List& args);
 
  private:
   // ::settings::SettingsPageUIHandler:

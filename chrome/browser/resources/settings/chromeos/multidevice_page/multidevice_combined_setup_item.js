@@ -8,6 +8,8 @@ import './multidevice_feature_item.js';
 
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
+import {PhoneHubPermissionsSetupFeatureCombination} from './multidevice_constants.js';
 import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
 
 /**
@@ -52,6 +54,14 @@ Polymer({
       computed: 'getSetupSummary_(cameraRoll, notifications, appStreaming)',
       reflectToAttribute: true,
     },
+  },
+
+  /** @private {?MultiDeviceBrowserProxy} */
+  browserProxy_: null,
+
+  /** @override */
+  created() {
+    this.browserProxy_ = MultiDeviceBrowserProxyImpl.getInstance();
   },
 
   /**
@@ -101,6 +111,23 @@ Polymer({
   /** @private */
   handlePhoneHubSetupClick_() {
     this.fire('permission-setup-requested');
+    let setupMode = PhoneHubPermissionsSetupFeatureCombination.NONE;
+    if (this.cameraRoll && this.notifications && this.appStreaming) {
+      setupMode = PhoneHubPermissionsSetupFeatureCombination.ALL_PERMISSONS;
+    }
+    if (this.cameraRoll && this.notifications) {
+      setupMode = PhoneHubPermissionsSetupFeatureCombination
+                      .NOTIFICATION_AND_CAMERA_ROLL;
+    }
+    if (this.cameraRoll && this.appStreaming) {
+      setupMode = PhoneHubPermissionsSetupFeatureCombination
+                      .MESSAGING_APP_AND_CAMERA_ROLL;
+    }
+    if (this.notifications && this.appStreaming) {
+      setupMode = PhoneHubPermissionsSetupFeatureCombination
+                      .NOTIFICATION_AND_MESSAGING_APP;
+    }
+    this.browserProxy_.logPhoneHubPermissionSetUpButtonClicked(setupMode);
   },
 
   /**

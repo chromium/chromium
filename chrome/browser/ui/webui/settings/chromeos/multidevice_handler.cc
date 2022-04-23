@@ -29,6 +29,12 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
+using ash::phonehub::util::LogPermissionOnboardingDialogAction;
+using ash::phonehub::util::LogPermissionOnboardingSettingsClicked;
+using ash::phonehub::util::PermissionsOnboardingScreenEvent;
+using ash::phonehub::util::PermissionsOnboardingSetUpMode;
+using ash::phonehub::util::PermissionsOnboardingStep;
+
 namespace chromeos {
 
 namespace settings {
@@ -172,6 +178,16 @@ void MultideviceHandler::RegisterMessages() {
       "cancelCombinedFeatureSetup",
       base::BindRepeating(&MultideviceHandler::HandleCancelCombinedFeatureSetup,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "logPhoneHubPermissionSetUpScreenAction",
+      base::BindRepeating(
+          &MultideviceHandler::LogPhoneHubPermissionSetUpScreenAction,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "logPhoneHubPermissionSetUpButtonClicked",
+      base::BindRepeating(
+          &MultideviceHandler::LogPhoneHubPermissionSetUpButtonClicked,
+          base::Unretained(this)));
 }
 
 void MultideviceHandler::OnJavascriptAllowed() {
@@ -582,6 +598,22 @@ void MultideviceHandler::HandleCancelCombinedFeatureSetup(
   DCHECK(combined_access_operation_);
 
   combined_access_operation_.reset();
+}
+
+void MultideviceHandler::LogPhoneHubPermissionSetUpScreenAction(
+    const base::Value::List& args) {
+  int setup_screen_int = args[0].GetInt();
+  int setup_action_int = args[1].GetInt();
+  LogPermissionOnboardingDialogAction(
+      static_cast<PermissionsOnboardingStep>(setup_screen_int),
+      static_cast<PermissionsOnboardingScreenEvent>(setup_action_int));
+}
+
+void MultideviceHandler::LogPhoneHubPermissionSetUpButtonClicked(
+    const base::Value::List& args) {
+  int setup_mode = args[0].GetInt();
+  LogPermissionOnboardingSettingsClicked(
+      static_cast<PermissionsOnboardingSetUpMode>(setup_mode));
 }
 
 void MultideviceHandler::OnNotificationStatusChange(

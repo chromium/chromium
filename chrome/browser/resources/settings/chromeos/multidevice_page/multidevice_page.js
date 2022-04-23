@@ -32,8 +32,9 @@ import {PrefsBehavior} from '../prefs_behavior.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
-import {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, PhoneHubFeatureAccessStatus} from './multidevice_constants.js';
+import {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, PhoneHubFeatureAccessStatus, PhoneHubPermissionsSetupAction, PhoneHubPermissionsSetupFlowScreens} from './multidevice_constants.js';
 import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';
+
 
 Polymer({
   _template: html`{__html_template__}`,
@@ -645,7 +646,13 @@ Polymer({
     if (!this.showPhonePermissionSetupDialog_) {
       return false;
     }
-    return this.pageContentData.isPhoneHubPermissionsDialogSupported;
+    if (this.pageContentData.isPhoneHubPermissionsDialogSupported) {
+      this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
+          PhoneHubPermissionsSetupFlowScreens.INTRO,
+          PhoneHubPermissionsSetupAction.SHOWN);
+      return true;
+    }
+    return false;
   },
 
   /** @private */

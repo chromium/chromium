@@ -9,6 +9,7 @@
 
 #include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/phonehub/multidevice_feature_access_manager.h"
+#include "ash/components/phonehub/util/histogram_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -19,13 +20,13 @@
 
 namespace ash {
 
+using ash::phonehub::util::LogPermissionOnboardingPromoAction;
+using ash::phonehub::util::LogPermissionOnboardingPromoShown;
+using ash::phonehub::util::PermissionsOnboardingScreenEvent;
+using ash::phonehub::util::PermissionsOnboardingSetUpMode;
 using multidevice_setup::mojom::Feature;
-using phone_hub_metrics::InterstitialScreenEvent;
-using phone_hub_metrics::LogInterstitialScreenEvent;
 
 namespace {
-
-using PermissionSetupMode = MultideviceFeatureOptInView::PermissionSetupMode;
 
 // URL of the multidevice settings page with the URL parameter that will
 // start up the opt-in-flow.
@@ -34,7 +35,7 @@ constexpr char kMultideviceSettingsUrl[] =
     "chrome://os-settings/multidevice/"
     "features?showPhonePermissionSetupDialog&mode=%d";
 
-PermissionSetupMode GetPermissionSetupMode(
+PermissionsOnboardingSetUpMode GetPermissionSetupMode(
     phonehub::MultideviceFeatureAccessManager*
         multidevice_feature_access_manager) {
   bool can_request_notification_access =
@@ -64,48 +65,49 @@ PermissionSetupMode GetPermissionSetupMode(
                << can_request_camera_roll_access;
   if (can_request_notification_access && can_request_camera_roll_access &&
       can_request_apps_acess) {
-    return PermissionSetupMode::kAllPermissionsSetupMode;
+    return PermissionsOnboardingSetUpMode::kAllPermissions;
   } else if (can_request_notification_access && can_request_apps_acess &&
              !can_request_camera_roll_access) {
-    return PermissionSetupMode::kNotificationAndApps;
+    return PermissionsOnboardingSetUpMode::kNotificationAndMessagingApps;
   } else if (can_request_apps_acess && can_request_camera_roll_access &&
              !can_request_notification_access) {
-    return PermissionSetupMode::kAppsAndCameraRoll;
+    return PermissionsOnboardingSetUpMode::kMessagingAppsAndCameraRoll;
   } else if (can_request_notification_access &&
              can_request_camera_roll_access && !can_request_apps_acess) {
-    return PermissionSetupMode::kNotificationAndCameraRoll;
+    return PermissionsOnboardingSetUpMode::kNotificationAndCameraRoll;
   } else if (!can_request_notification_access &&
              !can_request_camera_roll_access && can_request_apps_acess) {
-    return PermissionSetupMode::kAppsSetupMode;
+    return PermissionsOnboardingSetUpMode::kMessagingApps;
   } else if (!can_request_notification_access && !can_request_apps_acess &&
              can_request_camera_roll_access) {
-    return PermissionSetupMode::kCameraRollSetupMode;
+    return PermissionsOnboardingSetUpMode::kCameraRoll;
   } else if (!can_request_camera_roll_access && !can_request_apps_acess &&
              can_request_notification_access) {
-    return PermissionSetupMode::kNotificationSetupMode;
+    return PermissionsOnboardingSetUpMode::kNotification;
   }
 
-  return PermissionSetupMode::kNone;
+  return PermissionsOnboardingSetUpMode::kNone;
 }
 
 int GetDescriptionStringId(phonehub::MultideviceFeatureAccessManager*
                                multidevice_feature_access_manager) {
-  MultideviceFeatureOptInView::PermissionSetupMode permission_setup_mode =
+  PermissionsOnboardingSetUpMode permission_setup_mode =
       GetPermissionSetupMode(multidevice_feature_access_manager);
   switch (permission_setup_mode) {
-    case PermissionSetupMode::kCameraRollSetupMode:
+    case PermissionsOnboardingSetUpMode::kCameraRoll:
       return IDS_ASH_PHONE_HUB_CAMERA_ROLL_OPT_IN_DESCRIPTION;
-    case PermissionSetupMode::kAppsSetupMode:
+    case PermissionsOnboardingSetUpMode::kMessagingApps:
       return IDS_ASH_PHONE_HUB_APPS_OPT_IN_DESCRIPTION;
-    case PermissionSetupMode::kNotificationAndCameraRoll:
+    case PermissionsOnboardingSetUpMode::kNotificationAndCameraRoll:
       return IDS_ASH_PHONE_HUB_NOTIFICATION_AND_CAMERA_ROLL_OPT_IN_DESCRIPTION;
-    case PermissionSetupMode::kNotificationSetupMode:
+    case PermissionsOnboardingSetUpMode::kNotification:
       return IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_DESCRIPTION;
-    case PermissionSetupMode::kNotificationAndApps:
-    case PermissionSetupMode::kAppsAndCameraRoll:
-    case PermissionSetupMode::kAllPermissionsSetupMode:
+    case PermissionsOnboardingSetUpMode::kNotificationAndMessagingApps:
+    case PermissionsOnboardingSetUpMode::kMessagingAppsAndCameraRoll:
+    case PermissionsOnboardingSetUpMode::kAllPermissions:
       return IDS_ASH_PHONE_HUB_NOTIFICATION_AND_APPS_OPT_IN_DESCRIPTION;
-    case PermissionSetupMode::kNone:
+    case PermissionsOnboardingSetUpMode::kNone:
+    default:
       // Just return the default strings since the MultideviceFeatureOptInView
       // will be invisible.
       return IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_DESCRIPTION;
@@ -113,7 +115,7 @@ int GetDescriptionStringId(phonehub::MultideviceFeatureAccessManager*
 }
 
 std::string GetMultiDeviceSettingUrl(
-    PermissionSetupMode permission_setup_mode) {
+    PermissionsOnboardingSetUpMode permission_setup_mode) {
   return base::StringPrintf(kMultideviceSettingsUrl,
                             static_cast<int>(permission_setup_mode));
 }
@@ -134,15 +136,15 @@ MultideviceFeatureOptInView::MultideviceFeatureOptInView(
   // Checks and updates its visibility upon creation.
   UpdateVisibility();
 
-  // TODO: Update metric event to a non-notification specific event
-  LogNotificationOptInEvent(InterstitialScreenEvent::kShown);
+  LogPermissionOnboardingPromoShown(setup_mode_);
 }
 
 MultideviceFeatureOptInView::~MultideviceFeatureOptInView() = default;
 
 void MultideviceFeatureOptInView::SetUpButtonPressed() {
-  // Opens the notification set up dialog in settings to start the opt in flow.
-  LogNotificationOptInEvent(InterstitialScreenEvent::kConfirm);
+  // Opens the set up dialog in settings to start the opt in flow.
+  LogPermissionOnboardingPromoAction(
+      PermissionsOnboardingScreenEvent::kSetUpOrDone);
   // This intentionally uses GetInstance() to open an OS Settings page in ash.
   std::string url = GetMultiDeviceSettingUrl(setup_mode_);
   PA_LOG(INFO) << "MultideviceFeatureOptInView SetUpButtonPressed target url:"
@@ -153,7 +155,8 @@ void MultideviceFeatureOptInView::SetUpButtonPressed() {
 
 void MultideviceFeatureOptInView::DismissButtonPressed() {
   // Dismiss this view if user chose to opt out and update the bubble size.
-  LogNotificationOptInEvent(InterstitialScreenEvent::kDismiss);
+  LogPermissionOnboardingPromoAction(
+      PermissionsOnboardingScreenEvent::kDismissOrCancel);
   SetVisible(false);
   multidevice_feature_access_manager_->DismissSetupRequiredUi();
 }
@@ -170,7 +173,7 @@ void MultideviceFeatureOptInView::UpdateVisibility() {
   DCHECK(multidevice_feature_access_manager_);
   // Refresh the permission status.
   setup_mode_ = GetPermissionSetupMode(multidevice_feature_access_manager_);
-  SetVisible(setup_mode_ != PermissionSetupMode::kNone &&
+  SetVisible(setup_mode_ != PermissionsOnboardingSetUpMode::kNone &&
              !multidevice_feature_access_manager_
                   ->HasMultideviceFeatureSetupUiBeenDismissed());
 }

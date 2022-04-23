@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "base/metrics/histogram_functions.h"
 
@@ -96,6 +97,75 @@ void LogMessageResult(proto::MessageType message_type,
 void LogCameraRollAndroidHasStorageAccessPermission(bool has_permission) {
   base::UmaHistogramBoolean("PhoneHub.CameraRoll.AndroidHasStoragePermission",
                             has_permission);
+}
+
+void LogPermissionOnboardingPromoShown(PermissionsOnboardingSetUpMode mode) {
+  base::UmaHistogramEnumeration(
+      "PhoneHub.PermissionsOnboarding.SetUpMode.OnPromoShown", mode);
+}
+
+void LogPermissionOnboardingPromoAction(
+    PermissionsOnboardingScreenEvent event) {
+  base::UmaHistogramEnumeration(
+      "PhoneHub.PermissionsOnboarding.DialogScreenEvents.PromoScreen", event);
+}
+
+void LogPermissionOnboardingSettingsClicked(
+    PermissionsOnboardingSetUpMode mode) {
+  base::UmaHistogramEnumeration(
+      "PhoneHub.PermissionsOnboarding.SetUpMode.OnSettingsClicked", mode);
+}
+
+void LogPermissionOnboardingDialogAction(
+    PermissionsOnboardingStep step,
+    PermissionsOnboardingScreenEvent event) {
+  switch (step) {
+    case PermissionsOnboardingStep::kDialogIntroAction:
+      base::UmaHistogramEnumeration(
+          "PhoneHub.PermissionsOnboarding.DialogScreenEvents.IntroScreen",
+          event);
+      break;
+    case PermissionsOnboardingStep::kDialogFinishOnPhoneAction:
+      base::UmaHistogramEnumeration(
+          "PhoneHub.PermissionsOnboarding.DialogScreenEvents."
+          "FinishSetupOnYourPhoneScreen",
+          event);
+      break;
+    case PermissionsOnboardingStep::kDialogConnectingAction:
+      base::UmaHistogramEnumeration(
+          "PhoneHub.PermissionsOnboarding.DialogScreenEvents"
+          ".ConnectingToPhoneScreen",
+          event);
+      break;
+    case PermissionsOnboardingStep::kDialogConnectionErrorAction:
+      base::UmaHistogramEnumeration(
+          "PhoneHub.PermissionsOnboarding.DialogScreenEvents"
+          ".CouldNotEstablishConnectionScreen",
+          event);
+      break;
+    case PermissionsOnboardingStep::kDialogConnectionTimeOutAction:
+      base::UmaHistogramEnumeration(
+          "PhoneHub.PermissionsOnboarding.DialogScreenEvents"
+          ".ConnectionLostScreen",
+          event);
+      break;
+    case PermissionsOnboardingStep::kDialogSetupFinished:
+      base::UmaHistogramEnumeration(
+          "PhoneHub.PermissionsOnboarding.DialogScreenEvents"
+          ".SetUpFinishedScreen",
+          event);
+      break;
+    case PermissionsOnboardingStep::kDialogSetAPinOrPassword:
+      base::UmaHistogramEnumeration(
+          "PhoneHub.PermissionsOnboarding.DialogScreenEvents"
+          ".SetAPinOrPasswordScreen",
+          event);
+      break;
+    case PermissionsOnboardingStep::kUnknown:
+      PA_LOG(ERROR) << "Tried to emit event on invalid"
+                    << " permissions onboarding dialog screen.";
+      break;
+  }
 }
 
 }  // namespace util

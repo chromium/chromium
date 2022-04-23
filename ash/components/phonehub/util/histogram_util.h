@@ -49,6 +49,54 @@ enum class PhoneHubMessageResult {
   kMaxValue = kResponseReceived,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+// Keep in sync with PhoneHubPermissionsSetupFlowScreens in
+// chrome/browser/resources/settings/chromeos/multidevice_page/
+// multidevice_constants.js
+enum class PermissionsOnboardingSetUpMode {
+  kNone = 0,
+  kNotification = 1,
+  kMessagingApps = 2,
+  kCameraRoll = 3,
+  kNotificationAndMessagingApps = 4,
+  kNotificationAndCameraRoll = 5,
+  kMessagingAppsAndCameraRoll = 6,
+  kAllPermissions = 7,
+  kMaxValue = kAllPermissions
+};
+
+// Keep in sync with PhoneHubPermissionsSetupFlowScreens in
+// chrome/browser/resources/settings/chromeos/multidevice_page/
+// multidevice_constants.js
+enum class PermissionsOnboardingStep {
+  kUnknown = 0,
+  kDialogIntroAction = 1,
+  kDialogFinishOnPhoneAction = 2,
+  kDialogConnectingAction = 3,
+  kDialogConnectionErrorAction = 4,
+  kDialogConnectionTimeOutAction = 5,
+  kDialogSetupFinished = 6,
+  kDialogSetAPinOrPassword = 7
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+// Keep in sync with PhoneHubPermissionsSetupAction in
+// chrome/browser/resources/settings/chromeos/multidevice_page/
+// multidevice_constants.js
+enum class PermissionsOnboardingScreenEvent {
+  kUnknown = 0,
+  kShown = 1,
+  kLearnMore = 2,
+  kDismissOrCancel = 3,
+  kSetUpOrDone = 4,
+  kNextOrTryAgain = 5,
+  kMaxValue = kNextOrTryAgain
+};
+
 // Logs a given opt-in |entry_point| for the PhoneHub feature.
 void LogFeatureOptInEntryPoint(OptInEntryPoint entry_point);
 
@@ -64,6 +112,22 @@ void LogMessageResult(proto::MessageType message, PhoneHubMessageResult result);
 // Logs if the Android component has storage access permission. If not, Camera
 // Roll is hidden.
 void LogCameraRollAndroidHasStorageAccessPermission(bool has_permission);
+
+// Log multidevice permissions setup onboarding promotion in Phonehub tray.
+void LogPermissionOnboardingPromoShown(PermissionsOnboardingSetUpMode mode);
+
+// Log user action in multidevice permissions set up onboarding dialog.
+void LogPermissionOnboardingPromoAction(PermissionsOnboardingScreenEvent event);
+
+// Log click [Setup] in multidevice settings page for setting up multidevice
+// permissions.
+void LogPermissionOnboardingSettingsClicked(
+    PermissionsOnboardingSetUpMode mode);
+
+// Log user action in multidevice permissions set up dialog.
+void LogPermissionOnboardingDialogAction(
+    PermissionsOnboardingStep step,
+    PermissionsOnboardingScreenEvent event);
 
 }  // namespace util
 }  // namespace phonehub

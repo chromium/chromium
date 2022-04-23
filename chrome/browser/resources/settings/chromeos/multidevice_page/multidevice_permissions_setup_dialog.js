@@ -18,7 +18,7 @@ import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.j
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
-import {MultiDeviceFeature} from './multidevice_constants.js';
+import {MultiDeviceFeature, PhoneHubPermissionsSetupAction, PhoneHubPermissionsSetupFlowScreens} from './multidevice_constants.js';
 
 /**
  * @fileoverview
@@ -65,6 +65,12 @@ Polymer({
   ],
 
   properties: {
+    /** @private {!PhoneHubPermissionsSetupFlowScreens} */
+    setupScreen_: {
+      type: Number,
+      computed: 'getCurrentScreen_(setupState_, flowState_)',
+    },
+
     /**
      * A null |setupState_| indicates that the operation has not yet started.
      * @private {?PermissionsSetupStatus}
@@ -259,6 +265,9 @@ Polymer({
       return;
     }
 
+    this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
+        this.setupScreen_, PhoneHubPermissionsSetupAction.SHOWN);
+
     if (this.showCameraRoll) {
       this.browserProxy_.setFeatureEnabledState(
           MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL, true);
@@ -324,6 +333,8 @@ Polymer({
 
   /** @private */
   nextPage_() {
+    this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
+        this.setupScreen_, PhoneHubPermissionsSetupAction.NEXT_OR_TRY_AGAIN);
     const isScreenLockRequired =
         this.isScreenLockRequired_();
     switch (this.flowState_) {
@@ -367,17 +378,55 @@ Polymer({
     } else if (this.flowState_ === SetupFlowStatus.WAIT_FOR_PHONE_COMBINED) {
       this.browserProxy_.cancelCombinedFeatureSetup();
     }
+    this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
+        this.setupScreen_, PhoneHubPermissionsSetupAction.CANCEL);
     this.$.dialog.close();
   },
 
   /** @private */
   onDoneOrCloseButtonClicked_() {
+    this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
+        this.setupScreen_, PhoneHubPermissionsSetupAction.DONE);
     this.$.dialog.close();
   },
 
   /** @private */
   onLearnMoreClicked_() {
+    this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
+        this.setupScreen_, PhoneHubPermissionsSetupAction.LEARN_MORE);
     window.open(this.i18n('multidevicePhoneHubPermissionsLearnMoreURL'));
+  },
+
+  /** @private */
+  getCurrentScreen_() {
+    if (!this.combinedSetupSupported && !this.showCameraRoll) {
+      return PhoneHubPermissionsSetupFlowScreens.NOT_APPLICABLE;
+    }
+
+    if (this.flowState_ === SetupFlowStatus.INTRO) {
+      return PhoneHubPermissionsSetupFlowScreens.INTRO;
+    }
+
+    if (this.flowState_ === SetupFlowStatus.SET_LOCKSCREEN) {
+      return PhoneHubPermissionsSetupFlowScreens.SET_A_PIN_OR_PASSWORD;
+    }
+
+    const Status = PermissionsSetupStatus;
+    switch (this.setupState_) {
+      case Status.CONNECTION_REQUESTED:
+      case Status.CONNECTING:
+        return PhoneHubPermissionsSetupFlowScreens.CONNECTING;
+      case Status.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE:
+        return PhoneHubPermissionsSetupFlowScreens.FINISH_SET_UP_ON_PHONE;
+      case Status.COMPLETED_SUCCESSFULLY:
+        return PhoneHubPermissionsSetupFlowScreens.CONNECTED;
+      case Status.TIMED_OUT_CONNECTING:
+        return PhoneHubPermissionsSetupFlowScreens.CONNECTION_TIME_OUT;
+      case Status.CONNECTION_DISCONNECTED:
+        return PhoneHubPermissionsSetupFlowScreens.CONNECTION_ERROR;
+      default:
+        return PhoneHubPermissionsSetupFlowScreens.NOT_APPLICABLE;
+    }
   },
 
   /**
