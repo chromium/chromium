@@ -13,6 +13,7 @@ import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeInfoList} from '../../externs/volume_info_list.js';
 import {ExternallyUnmountedEvent, VolumeManager} from '../../externs/volume_manager.js';
 
+import {util} from './util.js';
 import {AllowedPaths, VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
@@ -114,6 +115,13 @@ export class FilteredVolumeManager extends EventTarget {
     this.isFuseBoxOnly_ = volumeFilter.includes('fusebox-only');
 
     /**
+     * True if chrome://flags#fuse-box-debug is enabled. This shows additional
+     * UI elements, for manual testing.
+     * @private @const {boolean}
+     */
+    this.isFuseBoxDebugEnabled_ = util.isFuseBoxDebugEnabled();
+
+    /**
      * Tracks async initialization of volume manager.
      * @private @const {!Promise<void> }
      */
@@ -172,7 +180,11 @@ export class FilteredVolumeManager extends EventTarget {
     // If the volume type is supported by fusebox, we have to decide whether
     // to use the fusebox or non-fusebox version in the UI.
 
-    if (this.isFuseBoxOnly_) {
+    if (this.isFuseBoxDebugEnabled_) {
+      // Do nothing (code-wise), which means that we don't filter out any
+      // volumes. This makes us show both fusebox and non-fusebox versions in
+      // the UI, which aids manually testing fusebox.
+    } else if (this.isFuseBoxOnly_) {
       // SelectFileAsh requires native volumes. Note: DocumentsProvider and
       // FSPs return false here, until they are implemented in the Fusebox.
       return this.isFuseBoxFileSystem(volumeInfo.diskFileSystemType) ||

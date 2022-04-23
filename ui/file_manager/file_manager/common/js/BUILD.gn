@@ -190,6 +190,7 @@ js_library("file_operation_common") {
 
 js_library("filtered_volume_manager") {
   deps = [
+    ":util",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:entry_location",

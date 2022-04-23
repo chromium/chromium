@@ -1022,6 +1022,9 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->Set("FUSEBOX",
             base::FeatureList::IsEnabled(chromeos::features::kFuseBox));
 
+  dict->Set("FUSEBOX_DEBUG",
+            base::FeatureList::IsEnabled(chromeos::features::kFuseBoxDebug));
+
   dict->Set("GUEST_OS",
             base::FeatureList::IsEnabled(chromeos::features::kGuestOsFiles));
 

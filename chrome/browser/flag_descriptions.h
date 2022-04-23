@@ -2802,6 +2802,9 @@ extern const char kFullRestoreForLacrosDescription[];
 extern const char kFuseBoxName[];
 extern const char kFuseBoxDescription[];
 
+extern const char kFuseBoxDebugName[];
+extern const char kFuseBoxDebugDescription[];
+
 extern const char kGuestOsFilesName[];
 extern const char kGuestOsFilesDescription[];
 

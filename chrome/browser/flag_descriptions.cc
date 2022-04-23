@@ -4895,6 +4895,10 @@ const char kFullRestoreForLacrosDescription[] =
 const char kFuseBoxName[] = "Enable ChromeOS FuseBox service";
 const char kFuseBoxDescription[] = "ChromeOS FuseBox service.";
 
+const char kFuseBoxDebugName[] = "Debugging UI for ChromeOS FuseBox service";
+const char kFuseBoxDebugDescription[] =
+    "Show additional debugging UI for ChromeOS FuseBox service.";
+
 const char kGuestOsFilesName[] =
     "Enabled Guest OS Service + file manager integration";
 const char kGuestOsFilesDescription[] =
