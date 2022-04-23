@@ -55,7 +55,7 @@ class DevToolsProtocolTestBase : public InProcessBrowserTest,
   void SendCommand(const std::string& method,
                    base::Value params,
                    bool synchronous);
-  void WaitForResponse();
+  void WaitForResponse(bool accept_errors);
   void RunLoopUpdatingQuitClosure();
 
   void AttachToBrowser();
@@ -79,6 +79,7 @@ class DevToolsProtocolTestBase : public InProcessBrowserTest,
   bool in_dispatch_ = false;
   int waiting_for_command_result_id_ = 0;
   base::Value result_;
+  base::Value error_;
   std::vector<std::string> notifications_;
   std::vector<base::Value> notification_params_;
   std::string waiting_for_notification_;
@@ -86,6 +87,7 @@ class DevToolsProtocolTestBase : public InProcessBrowserTest,
   base::Value waiting_for_notification_params_;
   bool allow_unsafe_operations_ = true;
   bool may_send_input_event_to_browser_ = true;
+  bool accept_error_response_ = false;
   absl::optional<url::Origin> navigation_initiator_origin_;
 };
 

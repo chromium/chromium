@@ -49,7 +49,6 @@ class PageHandler : public DomainHandler, public Page::Backend {
                   Maybe<double> margin_left,
                   Maybe<double> margin_right,
                   Maybe<String> page_ranges,
-                  Maybe<bool> ignore_invalid_page_ranges,
                   Maybe<String> header_template,
                   Maybe<String> footer_template,
                   Maybe<bool> prefer_css_page_size,

@@ -179,7 +179,6 @@ void PageHandler::PrintToPDF(protocol::Maybe<bool> landscape,
                              protocol::Maybe<double> margin_left,
                              protocol::Maybe<double> margin_right,
                              protocol::Maybe<protocol::String> page_ranges,
-                             protocol::Maybe<bool> ignore_invalid_page_ranges,
                              protocol::Maybe<protocol::String> header_template,
                              protocol::Maybe<protocol::String> footer_template,
                              protocol::Maybe<bool> prefer_css_page_size,
@@ -227,7 +226,7 @@ void PageHandler::PrintToPDF(protocol::Maybe<bool> landscape,
           print_to_pdf::PdfPrintManager::FromWebContents(web_contents_.get())) {
     print_manager->PrintToPdf(
         web_contents_->GetMainFrame(), page_ranges.fromMaybe(""),
-        ignore_invalid_page_ranges.fromMaybe(false),
+        /*ignore_invalid_page_ranges=*/false,
         std::move(absl::get<printing::mojom::PrintPagesParamsPtr>(
             print_pages_params)),
         base::BindOnce(&PageHandler::OnPDFCreated,

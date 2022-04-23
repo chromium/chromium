@@ -17,6 +17,7 @@
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -363,8 +364,7 @@ class PrintToPdfPagesTest : public PrintToPdfProtocolTest {
     SendCommandSync("Runtime.evaluate", std::move(params));
   }
 
-  void PrintPageRanges(const std::string& page_ranges,
-                       bool ignore_invalid_page_ranges = false) {
+  base::Value BuildPrintParams(const std::string& page_ranges) {
     base::Value params(base::Value::Type::DICTIONARY);
     params.SetDoublePath("paperWidth", kPaperWidth);
     params.SetDoublePath("paperHeight", kPaperHeight);
@@ -373,9 +373,11 @@ class PrintToPdfPagesTest : public PrintToPdfProtocolTest {
     params.SetDoublePath("marginBottom", 0);
     params.SetDoublePath("marginRight", 0);
     params.SetStringPath("pageRanges", page_ranges);
-    params.SetBoolPath("ignoreInvalidPageRanges", ignore_invalid_page_ranges);
+    return params;
+  }
 
-    PrintToPdf(std::move(params));
+  void PrintPageRanges(const std::string& page_ranges) {
+    PrintToPdf(BuildPrintParams(page_ranges));
   }
 };
 
@@ -413,9 +415,12 @@ IN_PROC_BROWSER_TEST_F(PrintToPdfPagesTest, PrintToPdfPageRanges) {
   PrintPageRanges("2-999");
   EXPECT_EQ(pdf_num_pages_, kExpectedTotalPages - 1);
 
-  // Invalid page ranges are OK if explicitly requested.
-  PrintPageRanges("998-999", /*ignore_invalid_page_ranges=*/true);
-  EXPECT_EQ(pdf_num_pages_, kExpectedTotalPages);
+  // Expect specific error for ranges beyond end of the document.
+  SendCommand("Page.printToPDF", BuildPrintParams("998-999"), false);
+  WaitForResponse(/*accept_errors=*/true);
+  EXPECT_THAT(error_,
+              base::test::DictionaryHasValue(
+                  "message", base::Value("Page range exceeds page count")));
 }
 
 IN_PROC_BROWSER_TEST_F(PrintToPdfPagesTest, PrintToPdfCssPageSize) {

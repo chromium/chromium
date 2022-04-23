@@ -62,7 +62,6 @@ class PageHandler : public protocol::Page::Backend {
                   protocol::Maybe<double> margin_left,
                   protocol::Maybe<double> margin_right,
                   protocol::Maybe<protocol::String> page_ranges,
-                  protocol::Maybe<bool> ignore_invalid_page_ranges,
                   protocol::Maybe<protocol::String> header_template,
                   protocol::Maybe<protocol::String> footer_template,
                   protocol::Maybe<bool> prefer_css_page_size,

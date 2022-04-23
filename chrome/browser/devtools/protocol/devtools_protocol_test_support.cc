@@ -4,6 +4,7 @@
 
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 
+#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
@@ -36,9 +37,16 @@ void DevToolsProtocolTestBase::DispatchProtocolMessage(
       base::JSONReader::Read(message_str);
   ASSERT_TRUE(parsed_message.has_value());
   if (auto id = parsed_message->FindIntPath("id")) {
-    base::Value* result = parsed_message->FindDictPath("result");
-    ASSERT_TRUE(result) << "message: " << message_str;
-    result_ = result->Clone();
+    if (base::Value* result = parsed_message->FindDictPath("result")) {
+      result_ = result->Clone();
+      error_ = base::Value();
+    } else {
+      ASSERT_TRUE(accept_error_response_) << "message: " << message_str;
+      base::Value* error = parsed_message->FindDictPath("error");
+      ASSERT_TRUE(error) << "no \"result\" and no \"error\" " << message_str;
+      result_ = base::Value();
+      error_ = error->Clone();
+    }
     in_dispatch_ = false;
     if (*id && *id == waiting_for_command_result_id_) {
       waiting_for_command_result_id_ = 0;
@@ -77,11 +85,13 @@ void DevToolsProtocolTestBase::SendCommand(const std::string& method,
   // Some messages are dispatched synchronously.
   // Only run loop if we are not finished yet.
   if (in_dispatch_ && synchronous)
-    WaitForResponse();
+    WaitForResponse(/*accept_errors=*/false);
   in_dispatch_ = false;
 }
 
-void DevToolsProtocolTestBase::WaitForResponse() {
+void DevToolsProtocolTestBase::WaitForResponse(bool accept_error) {
+  base::AutoReset<bool> accept_error_response(&accept_error_response_,
+                                              accept_error);
   waiting_for_command_result_id_ = last_sent_id_;
   RunLoopUpdatingQuitClosure();
 }
