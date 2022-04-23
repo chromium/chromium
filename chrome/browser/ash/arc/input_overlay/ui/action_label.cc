@@ -104,8 +104,6 @@ void ActionLabel::OnKeyEvent(ui::KeyEvent* event) {
   if (base::UTF8ToUTF16(GetDisplayText(code)) == GetText())
     parent_view->ShowErrorMsg(kEditErrorSameKey);
 
-  // TODO(cuicuiruan): Show error message for general unsupported keys.
-
   parent_view->OnKeyBindingChange(code);
 }
 

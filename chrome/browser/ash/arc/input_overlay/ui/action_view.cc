@@ -17,6 +17,21 @@ constexpr int kMenuEntryOffset = 4;
 constexpr base::StringPiece kEditErrorUnsupportedKey("Unsupported key");
 constexpr base::StringPiece kEditErrorDuplicatedKey(
     "Duplicated key in the same action");
+
+// For the keys that are caught by display overlay, check if they are reserved
+// for special use.
+bool IsReservedDomCode(ui::DomCode code) {
+  switch (code) {
+    // Audio, brightness key events won't be caught by display overlay so no
+    // need to add them.
+    case ui::DomCode::ESCAPE:  // Used for mouse lock.
+      // TODO(cuicuiruan): Add more reserved keys as needed.
+      return true;
+    default:
+      return false;
+  }
+}
+
 }  // namespace
 
 ActionView::ActionView(Action* action,
@@ -122,12 +137,14 @@ bool ActionView::ShouldShowErrorMsg(ui::DomCode code) {
     }
   }
 
-  if (!action_->support_modifier_key() &&
-      ModifierDomCodeToEventFlag(code) != ui::EF_NONE) {
+  if ((!action_->support_modifier_key() &&
+       ModifierDomCodeToEventFlag(code) != ui::EF_NONE) ||
+      IsReservedDomCode(code)) {
     display_overlay_controller_->AddEditErrorMsg(this,
                                                  kEditErrorUnsupportedKey);
     return true;
   }
+
   return false;
 }
 
