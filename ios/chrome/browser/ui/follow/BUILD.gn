@@ -49,6 +49,7 @@ source_set("first_follow_ui") {
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
 }
