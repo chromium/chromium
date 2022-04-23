@@ -20,6 +20,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
@@ -1104,7 +1105,8 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
 // after quitting the move loop. Regression test for crbug.com/1267791 and
 // should be caught in both regular and ASAN builds, where more details about
 // the actual memory issue is provided.
-TEST_P(WaylandWindowDragControllerTest, HandleDraggedWindowDestruction) {
+TEST_P(WaylandWindowDragControllerTest,
+       HandleDraggedWindowDestructionAfterMoveLoop) {
   // 1. Ensure there is no window currently focused
   EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   SendPointerEnter(window_.get(), &delegate_);
@@ -1138,6 +1140,95 @@ TEST_P(WaylandWindowDragControllerTest, HandleDraggedWindowDestruction) {
   // drop handling code at window drag controller does not call into the above
   // destroyed dragged window.
   EXPECT_CALL(delegate_, DispatchEvent(_)).Times(0);
+  SendDndDrop();
+  Sync();
+  Mock::VerifyAndClearExpectations(&delegate_);
+
+  // 6. Verifies that related state is correctly reset after drop.
+  EXPECT_EQ(State::kIdle, drag_controller()->state());
+  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+  EXPECT_EQ(gfx::kNullAcceleratedWidget,
+            screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
+}
+
+// Ensure no memory issues happen when the dragged and/or events grabber windows
+// get destroyed while the move loop is running.
+TEST_P(WaylandWindowDragControllerTest,
+       HandleWindowsDestructionDuringMoveLoop) {
+  // 1. Send some initial pointer events to |window_|.
+  ASSERT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+  SendPointerEnter(window_.get(), &delegate_);
+  SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
+  SendPointerMotion(window_.get(), &delegate_, {10, 10});
+  Mock::VerifyAndClearExpectations(&delegate_);
+
+  // 2. Start the window drag session.
+  auto* wayland_extension = GetWaylandExtension(*window_);
+  wayland_extension->StartWindowDraggingSessionIfNeeded(
+      /*allow_system_drag=*/false);
+  EXPECT_EQ(State::kAttached, drag_controller()->state());
+
+  // 3. Spawns a new toplevel |window_2| out of the origin |window_|. Similarly
+  // to when a tab is detached in a Chrome's tab drag session.
+  PlatformWindowInitProperties properties{gfx::Rect{80, 80}};
+  properties.type = PlatformWindowType::kWindow;
+  MockPlatformWindowDelegate delegate_2;
+  EXPECT_CALL(delegate_2, OnAcceleratedWidgetAvailable(_)).Times(1);
+  auto window_2 = WaylandWindow::Create(&delegate_2, connection_.get(),
+                                        std::move(properties));
+  ASSERT_NE(gfx::kNullAcceleratedWidget, window_2->GetWidget());
+  Sync();
+
+  // Spin the nested move loop and schedule a sequence of test steps to be
+  // pefomed while it is running.
+  ScheduleTestTask(base::BindLambdaForTesting([&]() {
+    auto* cursor_tracker = connection_->wayland_cursor_position();
+    ASSERT_TRUE(cursor_tracker);
+
+    // Send a motion event and verify it is correctly propagated.
+    EXPECT_CALL(delegate_2, OnBoundsChanged(_)).Times(1);
+    SendDndMotion({11, 10});
+    Sync();
+    EXPECT_EQ(gfx::Point(11, 10), cursor_tracker->GetCursorSurfacePoint());
+    Mock::VerifyAndClearExpectations(&delegate_2);
+
+    // Destroy the window being currently dragged.
+    window_2.reset();
+    Sync();
+
+    // Verifies that motion events are no longer propagated, as the dragged
+    // window was just destroyed.
+    EXPECT_CALL(delegate_2, OnBoundsChanged(_)).Times(0);
+    SendDndMotion({12, 10});
+    Sync();
+    EXPECT_EQ(gfx::Point(12, 10), cursor_tracker->GetCursorSurfacePoint());
+    Mock::VerifyAndClearExpectations(&delegate_2);
+
+    // Destroy the current drag controler's pointer events grabber.
+    window_.reset();
+    Sync();
+
+    // And verifies neither motion events are propagated nor internal "last
+    // cursor position" gets updated.
+    EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(0);
+    SendDndMotion({13, 10});
+    Sync();
+    EXPECT_EQ(gfx::Point(12, 10), cursor_tracker->GetCursorSurfacePoint());
+    Mock::VerifyAndClearExpectations(&delegate_);
+
+    drag_controller()->StopDragging();
+  }));
+
+  ASSERT_TRUE(GetWmMoveLoopHandler(*window_2));
+  GetWmMoveLoopHandler(*window_2)->RunMoveLoop({});
+  Sync();
+
+  EXPECT_EQ(State::kAttached, drag_controller()->state());
+
+  // 5. Ensure no events are dispatched for drop. Which indirectly means that
+  // drop handling code at window drag controller does not call into the above
+  // destroyed dragged window.
+  EXPECT_CALL(delegate_2, DispatchEvent(_)).Times(0);
   SendDndDrop();
   Sync();
   Mock::VerifyAndClearExpectations(&delegate_);

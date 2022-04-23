@@ -187,7 +187,6 @@ void WaylandWindowDragController::StopDragging() {
   state_ = State::kAttaching;
   pointer_grab_owner_ =
       window_manager_->GetCurrentPointerOrTouchFocusedWindow();
-  DCHECK(pointer_grab_owner_);
   QuitLoop();
 }
 
@@ -420,7 +419,6 @@ void WaylandWindowDragController::OnToplevelWindowCreated(
 
 void WaylandWindowDragController::OnWindowRemoved(WaylandWindow* window) {
   DCHECK_NE(state_, State::kIdle);
-  DCHECK_NE(window, dragged_window_);
   DVLOG(1) << "Window being destroyed. widget=" << window->GetWidget();
 
   if (window == pointer_grab_owner_)
@@ -428,11 +426,13 @@ void WaylandWindowDragController::OnWindowRemoved(WaylandWindow* window) {
 
   if (window == origin_window_)
     origin_surface_ = origin_window_->TakeWaylandSurface();
+
+  if (window == dragged_window_)
+    SetDraggedWindow(nullptr, {});
 }
 
 void WaylandWindowDragController::HandleMotionEvent(LocatedEvent* event) {
   DCHECK_EQ(state_, State::kDetached);
-  DCHECK(dragged_window_);
   DCHECK(event);
 
   if (!should_process_drag_event_)
@@ -441,16 +441,19 @@ void WaylandWindowDragController::HandleMotionEvent(LocatedEvent* event) {
   // Update current cursor position relative to the event source
   // (pointer_grab_owner_) so it can be retrieved later on through
   // |Screen::GetCursorScreenPoint| API.
-  pointer_grab_owner_->UpdateCursorPositionFromEvent(Event::Clone(*event));
+  if (pointer_grab_owner_)
+    pointer_grab_owner_->UpdateCursorPositionFromEvent(Event::Clone(*event));
 
   // Notify listeners about window bounds change (i.e: re-positioning) event.
   // To do so, set the new bounds as per the motion event location and the drag
   // offset. Note that setting a new location (i.e: bounds.origin()) for a
   // surface has no visual effect in ozone/wayland backend. Actual window
   // re-positioning during dragging session is done through the drag icon.
-  gfx::Point new_location = event->location() - drag_offset_;
-  gfx::Size size = dragged_window_->GetBounds().size();
-  dragged_window_->SetBounds({new_location, size});
+  if (dragged_window_) {
+    gfx::Point new_location = event->location() - drag_offset_;
+    gfx::Size size = dragged_window_->GetBounds().size();
+    dragged_window_->SetBounds({new_location, size});
+  }
 
   should_process_drag_event_ = false;
 }
