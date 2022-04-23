@@ -239,7 +239,7 @@ TEST_P(NdkVideoEncoderAcceleratorTest, HandleEncodingError) {
 
 TEST_P(NdkVideoEncoderAcceleratorTest, EncodeSeveralFrames) {
   const size_t total_frames_count = 10;
-  const size_t key_frame_index = 5;
+  const size_t key_frame_index = 7;
   auto config = GetDefaultConfig();
   accelerator_ = MakeNdkAccelerator();
   EXPECT_CALL(*this, OnRequireBuffer()).WillRepeatedly(Return(true));
@@ -266,10 +266,9 @@ TEST_P(NdkVideoEncoderAcceleratorTest, EncodeSeveralFrames) {
   Run();
   EXPECT_FALSE(error_.has_value());
   EXPECT_GE(outputs_.size(), total_frames_count);
+  EXPECT_TRUE(outputs_[key_frame_index].md.key_frame);
 
-  bool seen_key_frame = false;
-  for (size_t i = 0; i < outputs_.size(); i++) {
-    auto& output = outputs_[i];
+  for (auto& output : outputs_) {
     auto& mapping = id_to_buffer_[output.id]->GetMapping();
     EXPECT_GE(mapping.size(), output.md.payload_size_bytes);
     EXPECT_GT(output.md.payload_size_bytes, 0u);
@@ -277,15 +276,7 @@ TEST_P(NdkVideoEncoderAcceleratorTest, EncodeSeveralFrames) {
     bool found_not_zero =
         std::any_of(span.begin(), span.end(), [](uint8_t x) { return x != 0; });
     EXPECT_TRUE(found_not_zero);
-    if (i >= key_frame_index && output.md.key_frame)
-      seen_key_frame = true;
   }
-
-  // We would like to test that output with an index `key_frame_index` was a
-  // key frame, because that's what we requested, but currently MediaCodec
-  // doesn't allow us to reliably force a key frame at any point only to
-  // express a general desire to have a key frame soon.
-  EXPECT_TRUE(seen_key_frame);
 }
 
 std::string PrintTestParams(const testing::TestParamInfo<VideoParams>& info) {
