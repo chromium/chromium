@@ -1102,7 +1102,7 @@ QuicStreamRequest::ReleaseSessionHandle() {
 
 void QuicStreamRequest::SetSession(
     std::unique_ptr<QuicChromiumClientSession::Handle> session) {
-  session_ = move(session);
+  session_ = std::move(session);
 }
 
 QuicStreamFactory::QuicSessionAliasKey::QuicSessionAliasKey(
