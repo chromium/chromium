@@ -143,12 +143,14 @@ base::Value ToValue(const device::PublicKeyCredentialDescriptor& descriptor) {
 base::Value ToValue(
     const device::AuthenticatorAttachment& authenticator_attachment) {
   switch (authenticator_attachment) {
-    case device::AuthenticatorAttachment::kAny:
-      return base::Value();
     case device::AuthenticatorAttachment::kCrossPlatform:
       return base::Value("cross-platform");
     case device::AuthenticatorAttachment::kPlatform:
       return base::Value("platform");
+    case device::AuthenticatorAttachment::kAny:
+      // Any maps to the key being omitted, not a null value.
+      NOTREACHED();
+      return base::Value("invalid");
   }
 }
 
@@ -180,8 +182,11 @@ base::Value ToValue(
     const device::AuthenticatorSelectionCriteria& authenticator_selection) {
   base::Value value(base::Value::Type::DICTIONARY);
   absl::optional<std::string> attachment;
-  value.SetKey("authenticatorAttachment",
-               ToValue(authenticator_selection.authenticator_attachment));
+  if (authenticator_selection.authenticator_attachment !=
+      device::AuthenticatorAttachment::kAny) {
+    value.SetKey("authenticatorAttachment",
+                 ToValue(authenticator_selection.authenticator_attachment));
+  }
   value.SetKey("residentKey", ToValue(authenticator_selection.resident_key));
   value.SetKey("userVerification",
                ToValue(authenticator_selection.user_verification_requirement));
