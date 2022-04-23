@@ -12,7 +12,8 @@
 <iron-list id="grid" items="[[albums]]" as="album" grid>
   <template>
     <wallpaper-grid-item
-      class="album"
+      aria-label$="[[album.title]]"
+      class$="[[getAlbumItemClass_(album, albums)]]"
       image-src="[[album.url.url]]"
       on-click="onAlbumSelected_"
       on-keypress="onAlbumSelected_"

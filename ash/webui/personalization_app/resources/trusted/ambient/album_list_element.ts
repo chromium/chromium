@@ -78,6 +78,13 @@ export class AlbumList extends WithPersonalizationStore {
     return !!album && album.checked;
   }
 
+  private getAlbumItemClass_(
+      album: AmbientModeAlbum|null, albums: AmbientModeAlbum[]|null): string {
+    return album && this.isAlbumSelected_(album, albums) ?
+        'album album-selected' :
+        'album';
+  }
+
   /** Returns the secondary text to display for the specified |album|. */
   private getSecondaryText_(
       album: AmbientModeAlbum|null, topicSource: TopicSource): string {
