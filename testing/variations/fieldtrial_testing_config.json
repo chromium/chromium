@@ -2896,21 +2896,6 @@
             ]
         }
     ],
-    "DisableDiscoverFeedAppFlows": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20211027",
-                    "enable_features": [
-                        "EnableDiscoverFeedAppFlows"
-                    ]
-                }
-            ]
-        }
-    ],
     "DiscardableMemoryExperiments": [
         {
             "platforms": [
@@ -3813,6 +3798,21 @@
                     "name": "Disabled",
                     "disable_features": [
                         "RemoveMobileViewportDoubleTap"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSAppFlows": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220419",
+                    "enable_features": [
+                        "EnableDiscoverFeedAppFlows"
                     ]
                 }
             ]
