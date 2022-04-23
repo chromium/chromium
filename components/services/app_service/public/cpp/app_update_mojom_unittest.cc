@@ -122,8 +122,7 @@ class AppUpdateMojomTest : public testing::Test {
       apps::mojom::TriState value) {
     apps::mojom::PermissionPtr permission = apps::mojom::Permission::New();
     permission->permission_type = permission_type;
-    permission->value = apps::mojom::PermissionValue::New();
-    permission->value->set_tristate_value(value);
+    permission->value = apps::mojom::PermissionValue::NewTristateValue(value);
     return permission;
   }
 
@@ -1072,8 +1071,7 @@ TEST_F(AppUpdateMojomTest, AppConvert) {
 
   auto permission = apps::mojom::Permission::New();
   permission->permission_type = apps::mojom::PermissionType::kCamera;
-  permission->value = apps::mojom::PermissionValue::New();
-  permission->value->set_bool_value(true);
+  permission->value = apps::mojom::PermissionValue::NewBoolValue(true);
   permission->is_managed = true;
   input->permissions.push_back(std::move(permission));
 
