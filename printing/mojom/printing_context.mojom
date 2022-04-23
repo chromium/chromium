@@ -31,12 +31,6 @@ struct PageSetup {
   int32 text_height;
 };
 
-// Corresponds to `printing::PageRange` in printing/page_range.h.
-struct PageRange {
-  uint32 from;
-  uint32 to;
-};
-
 // Corresponds to `printing::PrintSettings::RequestedMedia` in
 // printing/print_settings.h.
 struct RequestedMedia {

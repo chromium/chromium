@@ -33,6 +33,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
+#include "printing/page_number.h"
 #include "printing/pdf_render_settings.h"
 #include "printing/printed_page_win.h"
 #include "printing/printing_features.h"
@@ -131,11 +132,7 @@ void PrintJob::Initialize(std::unique_ptr<PrinterQuery> query,
   std::unique_ptr<PrintSettings> settings = query->ExtractSettings();
 
 #if BUILDFLAG(IS_WIN)
-  pdf_page_mapping_ = PageRange::GetPages(settings->ranges());
-  if (pdf_page_mapping_.empty()) {
-    for (uint32_t i = 0; i < page_count; i++)
-      pdf_page_mapping_.push_back(i);
-  }
+  pdf_page_mapping_ = PageNumber::GetPages(settings->ranges(), page_count);
 #endif
 
   auto new_doc = base::MakeRefCounted<PrintedDocument>(std::move(settings),

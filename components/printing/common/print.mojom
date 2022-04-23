@@ -173,7 +173,7 @@ struct PrintPagesParams {
   // value for all the document.
   PrintParams params;
   // If empty, this means a request to render all the printed pages.
-  array<uint32> pages;
+  array<PageRange> pages;
 };
 
 // Parameters to describe a rendered page.

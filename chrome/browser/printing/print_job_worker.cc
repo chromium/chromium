@@ -445,7 +445,7 @@ bool PrintJobWorker::OnNewPageHelperGdi() {
       return false;
     }
     // We have enough information to initialize `page_number_`.
-    page_number_.Init(document_->settings(), page_count);
+    page_number_.Init(document_->settings().ranges(), page_count);
   }
 
   while (true) {

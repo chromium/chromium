@@ -84,7 +84,7 @@ class MockPrinter {
                      printing::mojom::PrintPagesParams* settings);
   void UpdateSettings(int cookie,
                       printing::mojom::PrintPagesParams* params,
-                      const std::vector<uint32_t>& page_range_array,
+                      const printing::PageRanges& page_range_array,
                       int margins_type,
                       const gfx::Size& page_size,
                       int scale_factor);

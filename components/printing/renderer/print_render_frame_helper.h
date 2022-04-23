@@ -410,12 +410,6 @@ class PrintRenderFrameHelper
       bool ignore_css_margins,
       double* scale_factor);
 
-  // Return an array of pages to print given the print |params| and an expected
-  // |page_count|. Page numbers are zero-based.
-  static std::vector<uint32_t> GetPrintedPages(
-      const mojom::PrintPagesParams& params,
-      uint32_t page_count);
-
   // Given the |device| and |canvas| to draw on, prints the appropriate headers
   // and footers using strings from |header_footer_info| on to the canvas.
   static void PrintHeaderAndFooter(
@@ -532,7 +526,7 @@ class PrintRenderFrameHelper
     // Create the print preview document. |pages| is empty to print all pages.
     bool CreatePreviewDocument(
         std::unique_ptr<PrepareFrameAndViewForPrint> prepared_frame,
-        const std::vector<uint32_t>& pages,
+        const PageRanges& pages,
         mojom::SkiaDocumentType doc_type,
         int document_cookie,
         bool require_document_metafile);

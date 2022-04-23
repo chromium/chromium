@@ -174,7 +174,7 @@ void MockPrinter::ScriptedPrint(int cookie,
 
 void MockPrinter::UpdateSettings(int cookie,
                                  printing::mojom::PrintPagesParams* params,
-                                 const std::vector<uint32_t>& pages,
+                                 const printing::PageRanges& pages,
                                  int margins_type,
                                  const gfx::Size& page_size,
                                  int scale_factor) {

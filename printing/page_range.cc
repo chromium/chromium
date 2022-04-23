@@ -11,19 +11,20 @@
 namespace printing {
 
 // static
-std::vector<uint32_t> PageRange::GetPages(const PageRanges& ranges) {
-  // TODO(vitalybuka): crbug.com/95548 Remove this method as part fix.
-  std::set<uint32_t> pages;
-  for (const PageRange& range : ranges) {
-    // Ranges are inclusive.
-    for (uint32_t i = range.from; i <= range.to; ++i) {
-      static constexpr size_t kMaxNumberOfPages = 100000;
-      pages.insert(i);
-      if (pages.size() >= kMaxNumberOfPages)
-        return std::vector<uint32_t>(pages.begin(), pages.end());
+void PageRange::Normalize(PageRanges& ranges) {
+  std::sort(ranges.begin(), ranges.end());
+  PageRanges::iterator dst = ranges.begin();
+  for (PageRanges::iterator src = ranges.begin() + 1; src < ranges.end();
+       ++src) {
+    if (dst->to + 1 < src->from) {
+      *++dst = *src;
+      continue;
     }
+    dst->to = std::max(dst->to, src->to);
   }
-  return std::vector<uint32_t>(pages.begin(), pages.end());
+  if (dst < ranges.end())
+    dst++;
+  ranges.resize(dst - ranges.begin());
 }
 
 }  // namespace printing

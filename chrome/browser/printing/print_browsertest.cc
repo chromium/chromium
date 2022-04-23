@@ -206,7 +206,7 @@ void UpdatePrintSettingsReplyOnIO(
     RenderParamsFromPrintSettings(printer_query->settings(),
                                   params->params.get());
     params->params->document_cookie = printer_query->cookie();
-    params->pages = PageRange::GetPages(printer_query->settings().ranges());
+    params->pages = printer_query->settings().ranges();
     snooped_settings =
         std::make_unique<PrintSettings>(printer_query->settings());
   }

@@ -6,43 +6,44 @@
 #define PRINTING_PAGE_NUMBER_H_
 
 #include <ostream>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "printing/page_range.h"
 
 namespace printing {
 
-class PrintSettings;
-
-// Represents a page series following the array of page ranges defined in a
-// PrintSettings.
+// Represents a page series using the array of page ranges.
 class COMPONENT_EXPORT(PRINTING) PageNumber {
  public:
-  // Initializes the page to the first page in the settings's range or 0.
-  PageNumber(const PrintSettings& settings, uint32_t document_page_count);
+  // Initializes the page to the first page in the ranges or 0.
+  PageNumber(const PageRanges& ranges, uint32_t document_page_count);
 
   PageNumber();
 
   PageNumber(const PageNumber& other);
   PageNumber& operator=(const PageNumber& other);
 
-  // Initializes the page to the first page in the setting's range or 0. It
-  // initialize to npos if the range is empty and document_page_count is 0.
-  void Init(const PrintSettings& settings, uint32_t document_page_count);
+  // Initializes the page to the first page in the ranges or 0.
+  // Initializes to npos if the ranges is empty and document_page_count is 0.
+  void Init(const PageRanges& ranges, uint32_t document_page_count);
 
   // Converts to a page numbers.
   uint32_t ToUint() const { return page_number_; }
 
-  // Calculates the next page in the serie.
-  int operator++();
+  // Calculates the next page in the series.
+  uint32_t operator++();
 
-  // Returns an instance that represents the end of a serie.
+  // Returns an instance that represents the end of a series.
   static const PageNumber npos() { return PageNumber(); }
 
   // Equality operator. Only the current page number is verified so that
   // "page != PageNumber::npos()" works.
   bool operator==(const PageNumber& other) const;
   bool operator!=(const PageNumber& other) const;
+
+  static std::vector<uint32_t> GetPages(PageRanges ranges,
+                                        uint32_t document_page_count);
 
  private:
   // The page range to follow.

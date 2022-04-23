@@ -22,12 +22,16 @@ struct COMPONENT_EXPORT(PRINTING) PageRange {
   uint32_t from;
   uint32_t to;
 
+  bool operator<(const PageRange& rhs) const {
+    return from < rhs.from || (from == rhs.from && to < rhs.to);
+  }
   bool operator==(const PageRange& rhs) const {
     return from == rhs.from && to == rhs.to;
   }
 
-  // Retrieves the sorted list of unique pages in the page ranges.
-  static std::vector<uint32_t> GetPages(const PageRanges& ranges);
+  // Ensures entries come in monotonically increasing order and do not
+  // overlap.
+  static void Normalize(PageRanges& ranges);
 };
 
 }  // namespace printing

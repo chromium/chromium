@@ -167,8 +167,7 @@ void PdfPrintManager::ScriptedPrint(
   }
 
   DCHECK(absl::holds_alternative<printing::PageRanges>(page_ranges));
-  print_pages_params_->pages = printing::PageRange::GetPages(
-      absl::get<printing::PageRanges>(page_ranges));
+  print_pages_params_->pages = absl::get<printing::PageRanges>(page_ranges);
 
   std::move(callback).Run(print_pages_params_->Clone());
 }

@@ -109,7 +109,7 @@ void AwPrintManager::ScriptedPrint(
 
   printing::RenderParamsFromPrintSettings(*settings_, params->params.get());
   params->params->document_cookie = scripted_params->cookie;
-  params->pages = printing::PageRange::GetPages(settings_->ranges());
+  params->pages = settings_->ranges();
   std::move(callback).Run(std::move(params));
 }
 

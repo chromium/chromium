@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
+#include "printing/page_number.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace print_to_pdf {
@@ -11,7 +12,8 @@ namespace {
 
 std::vector<uint32_t> GetPages(
     absl::variant<printing::PageRanges, PageRangeError> result) {
-  return printing::PageRange::GetPages(absl::get<printing::PageRanges>(result));
+  return printing::PageNumber::GetPages(absl::get<printing::PageRanges>(result),
+                                        std::numeric_limits<uint32_t>::max());
 }
 
 PageRangeError GetError(

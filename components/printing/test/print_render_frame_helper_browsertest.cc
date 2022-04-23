@@ -396,9 +396,8 @@ class TestPrintManagerHost
         job_settings.FindInt(kSettingScaleFactor);
     int scale_factor = setting_scale_factor.value_or(100);
 
-    std::vector<uint32_t> pages(PageRange::GetPages(new_ranges));
-    printer_->UpdateSettings(cookie, params.get(), pages, margins_type.value(),
-                             page_size, scale_factor);
+    printer_->UpdateSettings(cookie, params.get(), new_ranges,
+                             margins_type.value(), page_size, scale_factor);
     absl::optional<bool> selection_only =
         job_settings.FindBool(kSettingShouldPrintSelectionOnly);
     absl::optional<bool> should_print_backgrounds =

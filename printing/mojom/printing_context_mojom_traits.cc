@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "printing/mojom/print.mojom.h"
-#include "printing/page_range.h"
 #include "printing/page_setup.h"
 #include "printing/print_settings.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom-shared.h"
@@ -66,20 +65,6 @@ bool StructTraits<printing::mojom::PageSetupDataView, printing::PageSetup>::
     return false;
 
   *out = page_setup;
-  return true;
-}
-
-// static
-bool StructTraits<printing::mojom::PageRangeDataView, printing::PageRange>::
-    Read(printing::mojom::PageRangeDataView data, printing::PageRange* out) {
-  out->from = data.from();
-  out->to = data.to();
-
-  // A range should represent increasing page numbers, not to be used to
-  // indicate processing pages backwards.
-  if (out->from > out->to)
-    return false;
-
   return true;
 }
 

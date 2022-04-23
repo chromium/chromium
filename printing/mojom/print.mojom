@@ -164,3 +164,9 @@ enum PrinterLanguageType {
   kPostscriptLevel2,
   kPostscriptLevel3,
 };
+
+// Corresponds to `printing::PageRange` in printing/page_range.h.
+struct PageRange {
+  uint32 from;
+  uint32 to;
+};

@@ -3,44 +3,30 @@
 // found in the LICENSE file.
 
 #include "printing/page_range.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(PageRangeTest, RangeMerge) {
   printing::PageRanges ranges;
-  printing::PageRange range;
-  range.from = 1;
-  range.to = 3;
-  ranges.push_back(range);
-  range.from = 10;
-  range.to = 12;
-  ranges.push_back(range);
-  range.from = 2;
-  range.to = 5;
-  ranges.push_back(range);
-  std::vector<uint32_t> pages(printing::PageRange::GetPages(ranges));
-  ASSERT_EQ(8U, pages.size());
-  EXPECT_EQ(1u, pages[0]);
-  EXPECT_EQ(2u, pages[1]);
-  EXPECT_EQ(3u, pages[2]);
-  EXPECT_EQ(4u, pages[3]);
-  EXPECT_EQ(5u, pages[4]);
-  EXPECT_EQ(10u, pages[5]);
-  EXPECT_EQ(11u, pages[6]);
-  EXPECT_EQ(12u, pages[7]);
+  ranges.push_back({1, 3});
+  ranges.push_back({10, 12});
+  ranges.push_back({2, 5});
+  ranges.push_back({12, 13});
+  ranges.push_back({14, 14});
+
+  printing::PageRange::Normalize(ranges);
+  EXPECT_THAT(ranges, testing::ElementsAreArray<printing::PageRange>(
+                          {{1, 5}, {10, 14}}));
 }
 
 TEST(PageRangeTest, Empty) {
   printing::PageRanges ranges;
-  std::vector<uint32_t> pages(printing::PageRange::GetPages(ranges));
-  EXPECT_TRUE(pages.empty());
+  printing::PageRange::Normalize(ranges);
+  EXPECT_THAT(ranges, testing::IsEmpty());
 }
 
-TEST(PageRangeTest, Huge) {
+TEST(PageRangeTest, SingleEntry) {
   printing::PageRanges ranges;
-  printing::PageRange range;
-  range.from = 1;
-  range.to = 2000000000;
-  ranges.push_back(range);
-  std::vector<uint32_t> pages(printing::PageRange::GetPages(ranges));
-  EXPECT_FALSE(pages.empty());
+  ranges.push_back({1, 1});
+  EXPECT_THAT(ranges, testing::ElementsAre(printing::PageRange{1, 1}));
 }
