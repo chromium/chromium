@@ -256,6 +256,7 @@ source_set("web_applications") {
     "//components/custom_handlers",
     "//components/policy/core/browser:browser",
     "//components/resources:components_resources_grit",
+    "//components/services/storage:lock_manager",
 
     # TODO(crbug.com/1225132): Clean up this legacy crx dependency.
     "//components/crx_file",

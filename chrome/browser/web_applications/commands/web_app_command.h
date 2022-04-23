@@ -11,11 +11,63 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
 class WebAppCommandManager;
+
+class WebAppCommandLock {
+ public:
+  using LockRequestSet =
+      base::flat_set<content::DisjointRangeLockManager::LeveledLockRequest>;
+
+  WebAppCommandLock(const WebAppCommandLock& lock);
+  ~WebAppCommandLock();
+
+  //  Creates a lock that guarantees isolation against all commands.
+  //  This makes sure that all commands are finished before this command is
+  //  started, and no command will be started during execution of the command.
+  static WebAppCommandLock CreateForFullSystemLock();
+
+  // Creates a lock that guarantees isolation against all
+  // commands that also use this lock type. Background web app installations can
+  // use this lock to run tasks sequentially that loads a `WebContents` in the
+  // background to avoid adding too much load to the system.
+  static WebAppCommandLock CreateForBackgroundWebContentsLock();
+
+  // Creates a lock that guarantees isolation against all commands that has lock
+  // on any of the `app_ids`.
+  static WebAppCommandLock CreateForAppLock(base::flat_set<AppId> app_ids);
+
+  const LockRequestSet& GetLockRequests() const { return lock_requests_; }
+
+  bool IsAppLocked(const AppId& app_id) const;
+
+  friend class WebAppCommandManager;
+
+ private:
+  enum class LockType {
+    kFullSystem,
+    kApp,
+    kBackgroundWebContents,
+  };
+
+  explicit WebAppCommandLock(base::flat_set<AppId> app_ids,
+                             LockType lock_type,
+                             LockRequestSet lock_requests);
+
+  enum class LockLevel {
+    kStatic = 0,
+    kApp = 1,
+    kMaxValue = kApp,
+  };
+
+  const base::flat_set<AppId> app_ids_{};
+  const LockType lock_type_;
+  const LockRequestSet lock_requests_{};
+};
 
 enum class CommandResult { kSuccess, kFailure, kShutdown };
 
@@ -46,18 +98,14 @@ using WebAppCommandQueueId = absl::optional<AppId>;
 class WebAppCommand {
  public:
   using Id = int;
-  explicit WebAppCommand(WebAppCommandQueueId queue_id);
+  explicit WebAppCommand(WebAppCommandLock command_lock);
   virtual ~WebAppCommand();
 
   // Unique id generated for this command. Currently only used for debug values.
   Id id() const { return id_; }
-  // If this command was scheduled from another command (calling
-  // `StartNestedCommand`), then this value is populated. currently only used
-  // for debug values.
-  absl::optional<Id> parent_id() const { return parent_id_; }
 
-  // The queue for this command.
-  WebAppCommandQueueId queue_id() const { return queue_id_; }
+  // The command lock that contains isolation information.
+  const WebAppCommandLock& lock() const { return command_lock_; }
 
   // Returns if the command has been started yet.
   bool IsStarted() const { return command_manager_ != nullptr; }
@@ -94,19 +142,11 @@ class WebAppCommand {
   //                           command, it can be passed here   to ensure it is
   //                           called after this  command is destructed and any
   //                           chained  commands are queued.
-  // `chained_commands`: If this operation requires more commands to be run
-  //                     next, then those commands can be specified here. If
-  //                     the `queue_id()` of any of these commands matches the
-  //                     existing command, then those commands will be
-  //                     executed next (in order). If not, then they will be
-  //                     placed a the end of the queue for their respective
-  //                     `queue_id()`.
   // Note: This can ONLY be called if `Start()` has been called (`IsStarted()`
   // is true). Otherwise it will CHECK-fail.
   void SignalCompletionAndSelfDestruct(
       CommandResult result,
-      base::OnceClosure call_after_destruction,
-      std::vector<std::unique_ptr<WebAppCommand>> chained_commands);
+      base::OnceClosure call_after_destruction);
 
   WebAppCommandManager* command_manager() { return command_manager_; }
 
@@ -121,8 +161,7 @@ class WebAppCommand {
   base::WeakPtr<WebAppCommand> AsWeakPtr();
 
   Id id_;
-  absl::optional<Id> parent_id_;
-  absl::optional<AppId> queue_id_;
+  WebAppCommandLock command_lock_;
   WebAppCommandManager* command_manager_ = nullptr;
 
   base::WeakPtrFactory<WebAppCommand> weak_factory_{this};

@@ -10,13 +10,11 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
-#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
@@ -28,8 +26,6 @@ base::Value CreateLogValue(const WebAppCommand& command,
   base::Value::Dict dict;
   dict.Set("id", command.id());
   dict.Set("started", command.IsStarted());
-  if (command.parent_id())
-    dict.Set("parent_id", command.parent_id().value());
   dict.Set("value", command.ToDebugValue());
   if (result) {
     switch (result.value()) {
@@ -49,20 +45,11 @@ base::Value CreateLogValue(const WebAppCommand& command,
 
 }  // namespace
 
-WebAppCommandManager::CommandQueueState::CommandQueueState() = default;
-WebAppCommandManager::CommandQueueState::~CommandQueueState() = default;
+WebAppCommandManager::CommandState::CommandState(
+    std::unique_ptr<WebAppCommand> command)
+    : command(std::move(command)) {}
 
-base::Value WebAppCommandManager::CommandQueueState::CreateLogValue() const {
-  base::Value::List queued;
-  for (const auto& queued_command : queued_commands) {
-    queued.Append(::web_app::CreateLogValue(*queued_command, absl::nullopt));
-  }
-  base::Value::Dict dict;
-  dict.Set("running_command",
-           ::web_app::CreateLogValue(*running_command, absl::nullopt));
-  dict.Set("queued_commands", std::move(queued));
-  return base::Value(std::move(dict));
-}
+WebAppCommandManager::CommandState::~CommandState() = default;
 
 WebAppCommandManager::WebAppCommandManager() = default;
 WebAppCommandManager::~WebAppCommandManager() {
@@ -77,32 +64,67 @@ void WebAppCommandManager::EnqueueCommand(
     AddValueToLog(CreateLogValue(*command, CommandResult::kShutdown));
     return;
   }
-  WebAppCommandQueueId queue_id = command->queue_id();
-  auto queue_it = commands_queues_.find(queue_id);
-  if (queue_it == commands_queues_.end()) {
-    queue_it = commands_queues_
-                   .emplace(std::piecewise_construct, std::make_tuple(queue_id),
-                            std::make_tuple())
-                   .first;
-  }
-  CommandQueueState& queue = queue_it->second;
-  queue.queued_commands.push_back(std::move(command));
-  MaybeRunNextCommand(queue_id);
+
+  auto command_id = command->id();
+  auto command_state_it =
+      commands_.try_emplace(command_id, std::move(command)).first;
+  lock_manager_.AcquireLocks(
+      command_state_it->second.command->lock().GetLockRequests(),
+      command_state_it->second.lock_holder.AsWeakPtr(),
+      base::BindOnce(&WebAppCommandManager::OnLockAcquired,
+                     weak_ptr_factory_.GetWeakPtr(), command_id));
+}
+
+void WebAppCommandManager::OnLockAcquired(WebAppCommand::Id command_id) {
+  if (is_in_shutdown_)
+    return;
+
+  auto command_it = commands_.find(command_id);
+  DCHECK(command_it != commands_.end());
+  // Start is called in a new task to avoid re-entry issues with started tasks
+  // calling back into Enqueue/Destroy. This can especially be an issue if
+  // this task is being run in response to a call to
+  // NotifyBeforeSyncUninstalls.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&WebAppCommandManager::StartCommand,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                command_it->second.command.get()));
+}
+
+void WebAppCommandManager::StartCommand(WebAppCommand* command) {
+  if (is_in_shutdown_)
+    return;
+#if DCHECK_IS_ON()
+  DCHECK(command);
+  auto command_state_it = commands_.find(command->id());
+  DCHECK(command_state_it != commands_.end());
+  DCHECK(!command->IsStarted());
+#endif
+  command->Start(this);
 }
 
 void WebAppCommandManager::Shutdown() {
   DCHECK(!is_in_shutdown_);
   is_in_shutdown_ = true;
   AddValueToLog(base::Value("Shutdown has begun"));
-  for (const auto& [id, state] : commands_queues_) {
-    if (!state.running_command)
-      continue;
+
+  // Create a copy of commands to call `OnShutdown` because commands can call
+  // `CallSignalCompletionAndSelfDestruct` during `OnShutdown`, which removes
+  // the command from the `commands_` map.
+  std::vector<base::WeakPtr<WebAppCommand>> commands_to_shutdown;
+  for (const auto& [id, command_state] : commands_) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(
-        state.running_command->command_sequence_checker_);
-    if (state.running_command->IsStarted())
-      state.running_command->OnShutdown();
+        command_state.command->command_sequence_checker_);
+    if (command_state.command->IsStarted()) {
+      commands_to_shutdown.push_back(command_state.command->AsWeakPtr());
+    }
   }
-  commands_queues_.clear();
+  for (const auto& command_ptr : commands_to_shutdown) {
+    if (!command_ptr)
+      continue;
+    command_ptr->OnShutdown();
+  }
+  commands_.clear();
 }
 
 void WebAppCommandManager::NotifyBeforeSyncUninstalls(
@@ -117,21 +139,17 @@ void WebAppCommandManager::NotifyBeforeSyncUninstalls(
   // `Start()`ed asynchronously, we will never have to notify any commands that
   // are newly scheduled. So at most one command needs to be notified per queue,
   // and that command can be destroyed before we notify it.
-  std::map<WebAppCommandQueueId, base::WeakPtr<WebAppCommand>>
-      commands_to_notify;
+  std::vector<base::WeakPtr<WebAppCommand>> commands_to_notify;
   for (const AppId& app_id : app_ids) {
-    auto queue_it = commands_queues_.find(app_id);
-    if (queue_it == commands_queues_.end())
-      continue;
-    if (!queue_it->second.running_command)
-      continue;
-    if (!queue_it->second.running_command->IsStarted())
-      continue;
-    commands_to_notify[queue_it->first] =
-        queue_it->second.running_command->AsWeakPtr();
+    for (const auto& [id, command_state] : commands_) {
+      if (command_state.command->lock().IsAppLocked(app_id)) {
+        if (command_state.command->IsStarted()) {
+          commands_to_notify.push_back(command_state.command->AsWeakPtr());
+        }
+      }
+    }
   }
-
-  for (const auto& [queue_id, command_ptr] : commands_to_notify) {
+  for (const auto& command_ptr : commands_to_notify) {
     if (!command_ptr)
       continue;
     command_ptr->OnBeforeForcedUninstallFromSync();
@@ -144,91 +162,30 @@ base::Value WebAppCommandManager::ToDebugValue() {
     command_log.Append(std ::move(command_value));
   }
 
-  base::Value::Dict running_state;
-  for (const auto& [queue_id, queue] : commands_queues_) {
-    running_state.Set(queue_id.value_or("global"), queue.CreateLogValue());
+  base::Value::List queued;
+  for (const auto& [id, command_state] : commands_) {
+    queued.Append(
+        ::web_app::CreateLogValue(*command_state.command, absl::nullopt));
   }
 
   base::Value::Dict state;
   state.Set("command_log", std::move(command_log));
-  state.Set("command_queue", base::Value(std::move(running_state)));
+  state.Set("command_queue", base::Value(std::move(queued)));
   return base::Value(std::move(state));
 }
 
 void WebAppCommandManager::OnCommandComplete(
     WebAppCommand* running_command,
     CommandResult result,
-    base::OnceClosure completion_callback,
-    std::vector<std::unique_ptr<WebAppCommand>> chained_commands) {
+    base::OnceClosure completion_callback) {
   DCHECK(running_command);
   AddValueToLog(CreateLogValue(*running_command, result));
 
-  auto queue_state_it = commands_queues_.find(running_command->queue_id());
-  DCHECK(queue_state_it != commands_queues_.end());
-  CommandQueueState& queue_state = queue_state_it->second;
-  DCHECK(queue_state.running_command.get() == running_command);
+  auto command_it = commands_.find(running_command->id());
+  DCHECK(command_it != commands_.end());
+  commands_.erase(command_it);
 
-  if (is_in_shutdown_) {
-    queue_state.running_command.reset();
-    std::move(completion_callback).Run();
-    return;
-  }
-
-  // Add the chained commands.
-  for (auto it = chained_commands.rbegin(); it != chained_commands.rend();
-       ++it) {
-    std::unique_ptr<WebAppCommand>& command = *it;
-    if (command.get() == nullptr)
-      continue;
-    command->parent_id_ = running_command->id();
-    if (command->queue_id() == running_command->queue_id()) {
-      queue_state.queued_commands.push_front(std::move(command));
-    } else {
-      EnqueueCommand(std::move(command));
-    }
-  }
-
-  queue_state.running_command.reset();
   std::move(completion_callback).Run();
-  MaybeRunNextCommand(queue_state_it->first);
-}
-
-void WebAppCommandManager::MaybeRunNextCommand(
-    const WebAppCommandQueueId& queue_id) {
-  DCHECK(!is_in_shutdown_);
-  auto queue_state_it = commands_queues_.find(queue_id);
-  DCHECK(queue_state_it != commands_queues_.end());
-  CommandQueueState& queue_state = queue_state_it->second;
-
-  if (queue_state.running_command)
-    return;
-  if (queue_state.queued_commands.empty())
-    return;
-
-  queue_state.running_command = std::move(queue_state.queued_commands.front());
-  queue_state.queued_commands.pop_front();
-  base::WeakPtr<WebAppCommand> command_ptr =
-      queue_state.running_command->weak_factory_.GetWeakPtr();
-  // Start is called in a new task to avoid re-entry issues with started tasks
-  // calling back into Enqueue/Destroy. This can especially be an issue if this
-  // task is being run in response to a call to NotifyBeforeSyncUninstalls.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&WebAppCommandManager::StartCommand,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                queue_state.running_command.get()));
-}
-
-void WebAppCommandManager::StartCommand(WebAppCommand* command) {
-  if (is_in_shutdown_)
-    return;
-#if DCHECK_IS_ON()
-  DCHECK(command);
-  auto queue_state_it = commands_queues_.find(command->queue_id());
-  DCHECK(queue_state_it != commands_queues_.end());
-  DCHECK(queue_state_it->second.running_command.get() == command);
-  DCHECK(!command->IsStarted());
-#endif
-  command->Start(this);
 }
 
 void WebAppCommandManager::AddValueToLog(base::Value value) {

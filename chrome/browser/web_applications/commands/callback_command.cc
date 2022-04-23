@@ -9,15 +9,15 @@
 
 namespace web_app {
 
-CallbackCommand::CallbackCommand(WebAppCommandQueueId queue_id,
+CallbackCommand::CallbackCommand(WebAppCommandLock command_lock,
                                  base::OnceClosure callback)
-    : WebAppCommand(queue_id), callback_(std::move(callback)) {}
+    : WebAppCommand(std::move(command_lock)), callback_(std::move(callback)) {}
 
 CallbackCommand::~CallbackCommand() = default;
 
 void CallbackCommand::Start() {
-  return SignalCompletionAndSelfDestruct(
-      CommandResult::kSuccess, base::BindOnce(std::move(callback_)), {});
+  return SignalCompletionAndSelfDestruct(CommandResult::kSuccess,
+                                         base::BindOnce(std::move(callback_)));
 }
 
 base::Value CallbackCommand::ToDebugValue() const {
