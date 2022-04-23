@@ -297,6 +297,13 @@ export class AvatarList extends WithPersonalizationStore {
             .toString();
     }
   }
+
+  private getOptionInnerContainerClass_(option: Option, image: UserImage|null):
+      string {
+    return this.getAriaSelected_(option, image) === 'true' ?
+        `${option.class} selected-${option.id}` :
+        option.class;
+  }
 }
 
 customElements.define(AvatarList.is, AvatarList);
