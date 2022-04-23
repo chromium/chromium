@@ -135,6 +135,10 @@ const std::string& SoftBindAttestationFlow::Session::GetUserKey() const {
 
 void SoftBindAttestationFlow::Session::ReportFailure(
     const std::string& error_message) {
+  if (!callback_) {
+    LOG(ERROR) << "Attestation session failure callback in null.";
+    return;
+  }
   std::move(callback_).Run(
       std::vector<std::string>{"INVALID:" + error_message});
 }
