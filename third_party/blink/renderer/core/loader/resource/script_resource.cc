@@ -428,7 +428,6 @@ void ScriptResource::DidReceiveDecodedData(
   if (IsWebSnapshot())
     return;
 
-  ClearData();
   source_text_ = ParkableString(data.Impl(), std::move(digest));
   SetDecodedSize(source_text_.CharactersSizeInBytes());
 }
@@ -465,6 +464,15 @@ void ScriptResource::NotifyFinished() {
       break;
   }
   CheckStreamingState();
+
+  if (!source_text_.IsNull() && Data()) {
+    DCHECK(
+        base::FeatureList::IsEnabled(features::kDecodeScriptSourceOffThread));
+    // Wait to call ClearData() here instead of in DidReceiveDecodedData() since
+    // the integrity check requires Data() to not be null.
+    ClearData();
+  }
+
   TextResource::NotifyFinished();
 }
 
