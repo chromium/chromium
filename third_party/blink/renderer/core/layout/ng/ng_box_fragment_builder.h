@@ -444,6 +444,8 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     disable_oof_descendants_propagation_ = true;
   }
 
+  void SetDisableSimplifiedLayout() { disable_simplified_layout = true; }
+
   // See |NGPhysicalBoxFragment::InflowBounds|.
   void SetInflowBounds(const LogicalRect& inflow_bounds) {
     DCHECK_NE(box_type_, NGPhysicalBoxFragment::NGBoxType::kInlineBox);
@@ -733,6 +735,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   bool is_math_operator_ = false;
   bool is_at_block_end_ = false;
   bool disable_oof_descendants_propagation_ = false;
+  bool disable_simplified_layout = false;
   LayoutUnit block_offset_for_additional_columns_;
 
   LayoutUnit minimal_space_shortage_ = LayoutUnit::Max();

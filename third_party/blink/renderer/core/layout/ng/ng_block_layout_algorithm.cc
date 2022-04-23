@@ -1432,6 +1432,9 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
     block_size -= bsp_block_sum;
     logical_offset =
         CenterBlockChild(logical_offset, block_size, fragment.BlockSize());
+    // We can't apply the simplified layout to the container if
+    // |-internal-align-self-block:center| is specified to a child.
+    container_builder_.SetDisableSimplifiedLayout();
   }
 
   PropagateBaselineFromChild(physical_fragment, logical_offset.block_offset);

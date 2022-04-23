@@ -92,6 +92,7 @@ NGLayoutResult::NGLayoutResult(NGBoxFragmentBuilderPassKey passkey,
     bitfields_.break_appeal = builder->break_appeal_;
     bitfields_.has_forced_break = builder->has_forced_break_;
   }
+  bitfields_.disable_simplified_layout = builder->disable_simplified_layout;
 
   if (builder->ConstraintSpace() &&
       builder->ConstraintSpace()->ShouldPropagateChildBreakValues()) {

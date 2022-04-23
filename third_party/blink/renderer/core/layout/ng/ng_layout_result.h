@@ -406,6 +406,12 @@ class CORE_EXPORT NGLayoutResult final
     return bitfields_.subtree_modified_margin_strut;
   }
 
+  // Returns true if we can't apply the simplified layout algorithm to the
+  // box with this layout result.
+  bool DisableSimplifiedLayout() const {
+    return bitfields_.disable_simplified_layout;
+  }
+
   // Returns the space which generated this object for caching purposes.
   const NGConstraintSpace& GetConstraintSpaceForCaching() const {
 #if DCHECK_IS_ON()
@@ -840,7 +846,8 @@ class CORE_EXPORT NGLayoutResult final
           subtree_modified_margin_strut(subtree_modified_margin_strut),
           initial_break_before(static_cast<unsigned>(EBreakBetween::kAuto)),
           final_break_after(static_cast<unsigned>(EBreakBetween::kAuto)),
-          status(static_cast<unsigned>(kSuccess)) {}
+          status(static_cast<unsigned>(kSuccess)),
+          disable_simplified_layout(false) {}
 
     unsigned has_rare_data_exclusion_space : 1;
     unsigned has_oof_positioned_offset : 1;
@@ -865,6 +872,7 @@ class CORE_EXPORT NGLayoutResult final
     unsigned final_break_after : 4;     // EBreakBetween
 
     unsigned status : 3;  // EStatus
+    unsigned disable_simplified_layout : 1;
   };
 
   // The constraint space which generated this layout result, may not be valid
