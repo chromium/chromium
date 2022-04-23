@@ -17,9 +17,6 @@ class ChromeBrowserState;
 @interface FollowManagementMediator
     : NSObject <FollowedWebChannelsDataSource, TableViewFaviconDataSource>
 
-// The current BrowserState.
-@property(nonatomic, assign) ChromeBrowserState* browserState;
-
 - (instancetype)init NS_UNAVAILABLE;
 // Init method. |browserState| can't be nil.
 - (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState

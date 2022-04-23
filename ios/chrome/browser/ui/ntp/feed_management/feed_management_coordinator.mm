@@ -82,8 +82,21 @@
   self.followManagementMediator = mediator;
   followManagementViewController.feedMetricsRecorder = self.feedMetricsRecorder;
 
+  ios::GetChromeBrowserProvider()
+      .GetFollowProvider()
+      ->AddFollowManagementUIUpdater(followManagementViewController);
+
   [self.navigationController pushViewController:followManagementViewController
                                        animated:YES];
+}
+
+#pragma mark - FollowManagementViewDelegate
+
+- (void)followManagementViewControllerWillDismiss:
+    (FollowManagementViewController*)viewController {
+  ios::GetChromeBrowserProvider()
+      .GetFollowProvider()
+      ->RemoveFollowManagementUIUpdater(viewController);
 }
 
 @end

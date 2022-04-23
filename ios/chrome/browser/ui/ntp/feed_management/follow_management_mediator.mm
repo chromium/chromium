@@ -18,6 +18,9 @@
 
 @interface FollowManagementMediator ()
 
+// The current BrowserState.
+@property(nonatomic, assign) ChromeBrowserState* browserState;
+
 // FaviconLoader retrieves favicons for a given page URL.
 @property(nonatomic, assign) FaviconLoader* faviconLoader;
 

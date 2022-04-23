@@ -66,6 +66,7 @@ source_set("follow_management_ui") {
     "follow_management_ui_updater.h",
     "follow_management_view_controller.h",
     "follow_management_view_controller.mm",
+    "follow_management_view_delegate.h",
     "followed_web_channel_item.h",
     "followed_web_channel_item.mm",
     "followed_web_channels_data_source.h",
@@ -79,8 +80,6 @@ source_set("follow_management_ui") {
     "//ios/chrome/browser/ui/ntp:metrics",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/common/ui/favicon",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/follow",
     "//ui/base",
   ]
 }

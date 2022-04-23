@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/follow/follow_block_types.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
-#import "ios/chrome/browser/ui/ntp/feed_management/follow_management_ui_updater.h"
+#import "ios/chrome/browser/ui/ntp/feed_management/follow_management_view_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/followed_web_channel_item.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/followed_web_channels_data_source.h"
 #include "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
@@ -16,8 +16,6 @@
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/follow/follow_provider.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -38,7 +36,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 }  // namespace
 
-@interface FollowManagementViewController () <FollowManagementUIUpdater>
+@interface FollowManagementViewController ()
 
 // Saved placement of the item that was last attempted to unfollow.
 @property(nonatomic, strong) NSIndexPath* indexPathOfLastUnfollowAttempt;
@@ -55,20 +53,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [super viewDidLoad];
   [self configureNavigationBar];
   [self loadModel];
-  // TODO(crbug.com/1264872): keep the model layer object (FollowProvider) out
-  // of this view controller.
-  ios::GetChromeBrowserProvider()
-      .GetFollowProvider()
-      ->AddFollowManagementUIUpdater(self);
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
-  [super viewDidDisappear:animated];
-  // TODO(crbug.com/1264872): keep the model layer object (FollowProvider) out
-  // of this view controller.
-  ios::GetChromeBrowserProvider()
-      .GetFollowProvider()
-      ->RemoveFollowManagementUIUpdater(self);
+- (void)viewWillDisappear:(BOOL)animated {
+  [super viewWillDisappear:animated];
+  [self.viewDelegate followManagementViewControllerWillDismiss:self];
 }
 
 #pragma mark - UITableView
