@@ -582,15 +582,26 @@ void Frame::InsertAfter(Frame* new_child, Frame* previous_sibling) {
   GetPage()->IncrementSubframeCount();
 }
 
-void Frame::ScheduleFormSubmission(FrameScheduler* scheduler,
-                                   FormSubmission* form_submission) {
+base::OnceClosure Frame::ScheduleFormSubmission(
+    FrameScheduler* scheduler,
+    FormSubmission* form_submission) {
   form_submit_navigation_task_ = PostCancellableTask(
       *scheduler->GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
       WTF::Bind(&FormSubmission::Navigate, WrapPersistent(form_submission)));
+  form_submit_navigation_task_version_++;
+
+  return WTF::Bind(&Frame::CancelFormSubmissionWithVersion,
+                   WrapWeakPersistent(this),
+                   form_submit_navigation_task_version_);
 }
 
 void Frame::CancelFormSubmission() {
   form_submit_navigation_task_.Cancel();
+}
+
+void Frame::CancelFormSubmissionWithVersion(uint64_t version) {
+  if (form_submit_navigation_task_version_ == version)
+    form_submit_navigation_task_.Cancel();
 }
 
 bool Frame::IsFormSubmissionPending() {

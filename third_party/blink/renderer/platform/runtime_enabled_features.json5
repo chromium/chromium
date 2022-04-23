@@ -323,6 +323,10 @@
       status: "experimental",
     },
     {
+      name: "CancelFormSubmissionInDefaultHandler",
+      status: "stable",
+    },
+    {
       name: "Canvas2dImageChromium",
     },
     {

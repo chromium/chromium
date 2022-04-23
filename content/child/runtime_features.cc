@@ -329,6 +329,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"AutofillShadowDOM", blink::features::kAutofillShadowDOM},
           {"AndroidDownloadableFontsMatching",
            features::kAndroidDownloadableFontsMatching},
+          {"CancelFormSubmissionInDefaultHandler",
+           blink::features::kCancelFormSubmissionInDefaultHandler},
           {"ClipboardCustomFormats", blink::features::kClipboardCustomFormats},
           {"CSSContainerQueries", blink::features::kCSSContainerQueries},
           {"ComputePressure", blink::features::kComputePressure,

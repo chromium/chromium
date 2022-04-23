@@ -176,6 +176,8 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
 
   uint64_t unique_renderer_form_id_;
 
+  base::OnceClosure cancel_last_submission_;
+
   bool is_submitting_ = false;
   bool in_user_js_submit_event_ = false;
   bool is_constructing_entry_list_ = false;
