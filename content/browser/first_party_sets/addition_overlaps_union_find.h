@@ -15,7 +15,7 @@ namespace content {
 // disjoint transitively-overlapping addition sets together.
 class CONTENT_EXPORT AdditionOverlapsUnionFind {
  public:
-  using SetsMap = base::flat_map<int, base::flat_set<int>>;
+  using SetsMap = base::flat_map<size_t, base::flat_set<size_t>>;
 
   // The number of sets (num_sets) must be greater than or equal to zero.
   explicit AdditionOverlapsUnionFind(int num_sets);
@@ -32,7 +32,7 @@ class CONTENT_EXPORT AdditionOverlapsUnionFind {
   // Both set indices (set_x, set_y) must be in the range [0, num_sets) where
   // num_sets is the argument given to the constructor.
   // If Union is called when num_sets = 0, then this will crash.
-  void Union(int set_x, int set_y);
+  void Union(size_t set_x, size_t set_y);
 
   // Returns a mapping from an addition set index 'i' to a set of indices
   // which all have 'i' as their representative.
@@ -40,9 +40,9 @@ class CONTENT_EXPORT AdditionOverlapsUnionFind {
 
  private:
   // Returns the index for the representative of the given set.
-  int Find(int set);
+  size_t Find(size_t set);
 
-  std::vector<int> representatives_;
+  std::vector<size_t> representatives_;
 };
 
 }  // namespace content

@@ -20,6 +20,7 @@
 #include "base/strings/string_split.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "content/browser/first_party_sets/addition_overlaps_union_find.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -75,6 +76,26 @@ base::flat_set<net::SchemefulSite> FlattenSingleSetList(
     sites.insert(sites.end(), set.second.begin(), set.second.end());
   }
   return sites;
+}
+
+// Populates the `policy_set_overlaps` out-parameter by checking
+// `existing_sets`. If `site` is equal to an existing site e in `sets`, then
+// `policy_set_index` will be added to the list of set indices at
+// `policy_set_overlaps`[e].
+void AddIfPolicySetOverlaps(
+    const net::SchemefulSite& site,
+    size_t policy_set_index,
+    FirstPartySetsLoader::FlattenedSets existing_sets,
+    base::flat_map<net::SchemefulSite, base::flat_set<size_t>>&
+        policy_set_overlaps) {
+  // Check `site` for membership in `existing_sets`.
+  if (auto it = existing_sets.find(site); it != existing_sets.end()) {
+    // Add the index of `site`'s policy set to the list of policy set indices
+    // that also overlap with site_owner.
+    auto [site_and_sets, inserted] =
+        policy_set_overlaps.insert({it->second, {}});
+    site_and_sets->second.insert(policy_set_index);
+  }
 }
 
 }  // namespace
@@ -153,6 +174,51 @@ void FirstPartySetsLoader::DisposeFile(base::File sets_file) {
             },
             std::move(sets_file)));
   }
+}
+
+std::vector<FirstPartySetsLoader::SingleSet>
+FirstPartySetsLoader::NormalizeAdditionSets(
+    const FlattenedSets& existing_sets,
+    const std::vector<SingleSet>& addition_sets) {
+  // Create a mapping from an owner site in `existing_sets` to all policy sets
+  // that intersect with the set that it owns.
+  base::flat_map<net::SchemefulSite, base::flat_set<size_t>>
+      policy_set_overlaps;
+  for (size_t set_idx = 0; set_idx < addition_sets.size(); set_idx++) {
+    const net::SchemefulSite& owner = addition_sets[set_idx].first;
+    AddIfPolicySetOverlaps(owner, set_idx, existing_sets, policy_set_overlaps);
+    for (const net::SchemefulSite& member : addition_sets[set_idx].second) {
+      AddIfPolicySetOverlaps(member, set_idx, existing_sets,
+                             policy_set_overlaps);
+    }
+  }
+
+  AdditionOverlapsUnionFind union_finder(addition_sets.size());
+  for (auto& [public_site, policy_set_indices] : policy_set_overlaps) {
+    // Union together all overlapping policy sets to determine which one will
+    // take ownership.
+    for (size_t representative : policy_set_indices) {
+      union_finder.Union(*policy_set_indices.begin(), representative);
+    }
+  }
+
+  // The union-find data structure now knows which policy set should be given
+  // the role of representative for each entry in policy_set_overlaps.
+  // AdditionOverlapsUnionFind::SetsMapping returns a map from representative
+  // index to list of its children.
+  std::vector<SingleSet> normalized_additions;
+  for (auto& [rep, children] : union_finder.SetsMapping()) {
+    SingleSet normalized = addition_sets[rep];
+    for (size_t child_set_idx : children) {
+      // Update normalized to absorb the child_set_idx-th addition set.
+      const SingleSet& child_set = addition_sets[child_set_idx];
+      normalized.second.insert(child_set.first);
+      normalized.second.insert(child_set.second.begin(),
+                               child_set.second.end());
+    }
+    normalized_additions.push_back(normalized);
+  }
+  return normalized_additions;
 }
 
 void FirstPartySetsLoader::ApplyManuallySpecifiedSet() {

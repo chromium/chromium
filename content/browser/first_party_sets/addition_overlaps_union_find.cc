@@ -15,19 +15,19 @@ namespace content {
 AdditionOverlapsUnionFind::AdditionOverlapsUnionFind(int num_sets) {
   CHECK_GE(num_sets, 0);
   representatives_.resize(num_sets);
-  std::iota(representatives_.begin(), representatives_.end(), 0);
+  std::iota(representatives_.begin(), representatives_.end(), 0ul);
 }
 
 AdditionOverlapsUnionFind::~AdditionOverlapsUnionFind() = default;
 
-void AdditionOverlapsUnionFind::Union(int set_x, int set_y) {
-  CHECK_GE(set_x, 0);
-  CHECK_LT(set_x, static_cast<int>(representatives_.size()));
-  CHECK_GE(set_y, 0);
-  CHECK_LT(set_y, static_cast<int>(representatives_.size()));
+void AdditionOverlapsUnionFind::Union(size_t set_x, size_t set_y) {
+  CHECK_GE(set_x, 0ul);
+  CHECK_LT(set_x, representatives_.size());
+  CHECK_GE(set_y, 0ul);
+  CHECK_LT(set_y, representatives_.size());
 
-  int root_x = Find(set_x);
-  int root_y = Find(set_y);
+  size_t root_x = Find(set_x);
+  size_t root_y = Find(set_y);
 
   if (root_x == root_y)
     return;
@@ -48,22 +48,22 @@ AdditionOverlapsUnionFind::SetsMap AdditionOverlapsUnionFind::SetsMapping() {
   // After the intermediate vector is populated, and we can use
   // base::MakeFlatMap to construct the mapping all at once.
   // This improvement makes this method less straightforward however.
-  for (int i = 0; i < static_cast<int>(representatives_.size()); i++) {
-    int cur_rep = Find(i);
+  for (size_t i = 0; i < representatives_.size(); i++) {
+    size_t cur_rep = Find(i);
     if (!sets.contains(cur_rep)) {
-      sets.emplace(cur_rep, base::flat_set<int>());
+      sets.emplace(cur_rep, base::flat_set<size_t>());
     }
     if (i != cur_rep) {
-      base::flat_set<int>& overlaps = sets.at(cur_rep);
+      base::flat_set<size_t>& overlaps = sets.at(cur_rep);
       overlaps.insert(i);
     }
   }
   return sets;
 }
 
-int AdditionOverlapsUnionFind::Find(int set) {
-  CHECK_GE(set, 0);
-  CHECK_LT(set, static_cast<int>(representatives_.size()));
+size_t AdditionOverlapsUnionFind::Find(size_t set) {
+  CHECK_GE(set, 0ul);
+  CHECK_LT(set, representatives_.size());
   if (representatives_[set] != set)
     representatives_[set] = Find(representatives_[set]);
   return representatives_[set];

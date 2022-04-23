@@ -57,6 +57,19 @@ class CONTENT_EXPORT FirstPartySetsLoader {
   // Close the file on thread pool that allows blocking.
   void DisposeFile(base::File sets_file);
 
+  // Handles addition sets which overlap by intersecting with the same existing
+  // set, known as a transitive-overlap.
+  //
+  // This uses a Union-Find algorithm to select the earliest-provided addition
+  // set as the representative of all other addition sets that
+  // transitively-overlap with it.
+  //
+  // The "earliest-provided" tie-breaker is determined using a set's index in
+  // `addition_sets`.
+  static std::vector<SingleSet> NormalizeAdditionSets(
+      const FlattenedSets& existing_sets,
+      const std::vector<SingleSet>& addition_sets);
+
  private:
   // Parses the contents of `raw_sets` as a collection of First-Party Set
   // declarations, and assigns to `sets_`.

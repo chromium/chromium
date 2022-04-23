@@ -28,8 +28,11 @@
 using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
+using ::testing::UnorderedElementsAreArray;
 
 namespace content {
+
+using SingleSet = FirstPartySetsLoader::SingleSet;
 
 namespace {
 
@@ -90,6 +93,21 @@ base::Value::Dict MakePolicySetInputFromMap(
 }
 
 enum class FirstPartySetsSource { kPublicSets, kCommandLineSet };
+
+FirstPartySetsLoader::FlattenedSets MakeFlattenedSetsFromMap(
+    const base::flat_map<std::string, std::vector<std::string>>&
+        owners_to_members) {
+  FirstPartySetsLoader::FlattenedSets result;
+  for (const auto& [owner, members] : owners_to_members) {
+    net::SchemefulSite owner_site = net::SchemefulSite(GURL(owner));
+    result.emplace(owner_site, owner_site);
+    for (const std::string& member : members) {
+      net::SchemefulSite member_site = net::SchemefulSite(GURL(member));
+      result.emplace(member_site, owner_site);
+    }
+  }
+  return result;
+}
 
 }  // namespace
 
@@ -622,5 +640,197 @@ INSTANTIATE_TEST_CASE_P(
     FirstPartySetsLoaderTestWithPolicySets,
     ::testing::Values(FirstPartySetsSource::kPublicSets,
                       FirstPartySetsSource::kCommandLineSet));
+
+// There is no overlap between the existing sets and the addition sets, so
+// normalization should be a noop.
+TEST(FirstPartySetsLoaderTestNormalizeAdditionSets,
+     NoOverlap_AdditionSetsAreUnchanged) {
+  const FirstPartySetsLoader::FlattenedSets existing_sets(
+      MakeFlattenedSetsFromMap(
+          {{"https://owner42.test", {"https://member42.test"}}}));
+  const std::vector<FirstPartySetsLoader::SingleSet> additions{
+      SingleSet(net::SchemefulSite(GURL("https://owner1.test")),
+                {net::SchemefulSite(GURL("https://member1.test"))}),
+      SingleSet(net::SchemefulSite(GURL("https://owner2.test")),
+                {net::SchemefulSite(GURL("https://member2.test"))})};
+
+  EXPECT_THAT(
+      FirstPartySetsLoader::NormalizeAdditionSets(existing_sets, additions),
+      UnorderedElementsAreArray(additions));
+}
+
+// There is no transitive overlap since only all the overlaps are from the same
+// addition set, so normalization should be a noop.
+TEST(FirstPartySetsLoaderTestNormalizeAdditionSets,
+     NoTransitiveOverlap_SingleSetMultipleOverlaps_AdditionSetsAreUnchanged) {
+  const FirstPartySetsLoader::FlattenedSets existing_sets(
+      MakeFlattenedSetsFromMap(
+          {{"https://owner42.test",
+            {"https://member1a.test", "https://member1b.test"}}}));
+  const std::vector<FirstPartySetsLoader::SingleSet> additions{
+      SingleSet(net::SchemefulSite(GURL("https://owner1.test")),
+                {net::SchemefulSite(GURL("https://member1a.test")),
+                 net::SchemefulSite(GURL("https://member1b.test"))}),
+      SingleSet(net::SchemefulSite(GURL("https://owner2.test")),
+                {net::SchemefulSite(GURL("https://member2.test"))})};
+
+  EXPECT_THAT(
+      FirstPartySetsLoader::NormalizeAdditionSets(existing_sets, additions),
+      UnorderedElementsAreArray(additions));
+}
+
+// There is no transitive overlap since the addition sets intersect with
+// different existing sets, so normalization should be a noop.
+TEST(FirstPartySetsLoaderTestNormalizeAdditionSets,
+     NoTransitiveOverlap_SeparateOverlaps_AdditionSetsAreUnchanged) {
+  const FirstPartySetsLoader::FlattenedSets existing_sets(
+      MakeFlattenedSetsFromMap(
+          {{"https://ownerA.test", {"https://member1.test"}},
+           {"https://ownerB.test", {"https://member2.test"}}}));
+  const std::vector<FirstPartySetsLoader::SingleSet> additions{
+      SingleSet(net::SchemefulSite(GURL("https://owner1.test")),
+                {net::SchemefulSite(GURL("https://member1.test"))}),
+      SingleSet(net::SchemefulSite(GURL("https://owner2.test")),
+                {net::SchemefulSite(GURL("https://member2.test"))})};
+
+  EXPECT_THAT(
+      FirstPartySetsLoader::NormalizeAdditionSets(existing_sets, additions),
+      UnorderedElementsAreArray(additions));
+}
+
+TEST(FirstPartySetsLoaderTestNormalizeAdditionSets,
+     TransitiveOverlap_TwoCommonOwners) {
+  const FirstPartySetsLoader::FlattenedSets existing_sets(
+      MakeFlattenedSetsFromMap(
+          {{"https://owner1.test", {"https://owner2.test"}}}));
+  const std::vector<FirstPartySetsLoader::SingleSet> additions{
+      SingleSet(net::SchemefulSite(GURL("https://owner0.test")),
+                {net::SchemefulSite(GURL("https://member0.test"))}),
+      SingleSet(net::SchemefulSite(GURL("https://owner1.test")),
+                {net::SchemefulSite(GURL("https://member1.test"))}),
+      SingleSet(net::SchemefulSite(GURL("https://owner2.test")),
+                {net::SchemefulSite(GURL("https://member2.test"))}),
+      SingleSet(net::SchemefulSite(GURL("https://owner42.test")),
+                {net::SchemefulSite(GURL("https://member42.test"))})};
+
+  // {owner1, {member1}} and {owner2, {member2}} transitively overlap with the
+  // existing set.
+  // owner1 takes ownership of the normalized addition set since it was
+  // provided first.
+  // The other addition sets are unaffected.
+  EXPECT_THAT(
+      FirstPartySetsLoader::NormalizeAdditionSets(existing_sets, additions),
+      UnorderedElementsAre(
+          SingleSet(net::SchemefulSite(GURL("https://owner0.test")),
+                    {net::SchemefulSite(GURL("https://member0.test"))}),
+          SingleSet(net::SchemefulSite(GURL("https://owner1.test")),
+                    {net::SchemefulSite(GURL("https://member1.test")),
+                     net::SchemefulSite(GURL("https://owner2.test")),
+                     net::SchemefulSite(GURL("https://member2.test"))}),
+          SingleSet(net::SchemefulSite(GURL("https://owner42.test")),
+                    {net::SchemefulSite(GURL("https://member42.test"))})));
+}
+
+TEST(FirstPartySetsLoaderTestNormalizeAdditionSets,
+     TransitiveOverlap_TwoCommonMembers) {
+  const FirstPartySetsLoader::FlattenedSets existing_sets(
+      MakeFlattenedSetsFromMap(
+          {{"https://owner2.test", {"https://owner1.test"}}}));
+  const std::vector<FirstPartySetsLoader::SingleSet> additions{
+      SingleSet(net::SchemefulSite(GURL("https://owner0.test")),
+                {net::SchemefulSite(GURL("https://member0.test"))}),
+      SingleSet(net::SchemefulSite(GURL("https://owner2.test")),
+                {net::SchemefulSite(GURL("https://member2.test"))}),
+      SingleSet(net::SchemefulSite(GURL("https://owner1.test")),
+                {net::SchemefulSite(GURL("https://member1.test"))}),
+      SingleSet(net::SchemefulSite(GURL("https://owner42.test")),
+                {net::SchemefulSite(GURL("https://member42.test"))})};
+
+  // {owner1, {member1}} and {owner2, {member2}} transitively overlap with the
+  // existing set.
+  // owner2 takes ownership of the normalized addition set since it was
+  // provided first.
+  // The other addition sets are unaffected.
+  EXPECT_THAT(
+      FirstPartySetsLoader::NormalizeAdditionSets(existing_sets, additions),
+      UnorderedElementsAre(
+          SingleSet(net::SchemefulSite(GURL("https://owner0.test")),
+                    {net::SchemefulSite(GURL("https://member0.test"))}),
+          SingleSet(net::SchemefulSite(GURL("https://owner2.test")),
+                    {net::SchemefulSite(GURL("https://member2.test")),
+                     net::SchemefulSite(GURL("https://owner1.test")),
+                     net::SchemefulSite(GURL("https://member1.test"))}),
+          SingleSet(net::SchemefulSite(GURL("https://owner42.test")),
+                    {net::SchemefulSite(GURL("https://member42.test"))})));
+}
+
+TEST(FirstPartySetsLoaderTestNormalizeAdditionSets,
+     TransitiveOverlap_ThreeCommonOwners) {
+  const FirstPartySetsLoader::FlattenedSets existing_sets(
+      MakeFlattenedSetsFromMap({{"https://owner.test",
+                                 {"https://owner1.test", "https://owner42.test",
+                                  "https://owner2.test"}}}));
+  const std::vector<FirstPartySetsLoader::SingleSet> additions{
+      SingleSet(net::SchemefulSite(GURL("https://owner42.test")),
+                {net::SchemefulSite(GURL("https://member42.test"))}),
+      SingleSet(net::SchemefulSite(GURL("https://owner0.test")),
+                {net::SchemefulSite(GURL("https://member0.test"))}),
+      SingleSet(net::SchemefulSite(GURL("https://owner2.test")),
+                {net::SchemefulSite(GURL("https://member2.test"))}),
+      SingleSet(net::SchemefulSite(GURL("https://owner1.test")),
+                {net::SchemefulSite(GURL("https://member1.test"))})};
+
+  // {owner1, {member1}}, {owner2, {member2}}, and {owner42, {member42}}
+  // transitively overlap with the existing set.
+  // owner42 takes ownership of the normalized addition set since it was
+  // provided first.
+  // The other addition sets are unaffected.
+  EXPECT_THAT(
+      FirstPartySetsLoader::NormalizeAdditionSets(existing_sets, additions),
+      UnorderedElementsAre(
+          SingleSet(net::SchemefulSite(GURL("https://owner42.test")),
+                    {net::SchemefulSite(GURL("https://member42.test")),
+                     net::SchemefulSite(GURL("https://owner1.test")),
+                     net::SchemefulSite(GURL("https://member1.test")),
+                     net::SchemefulSite(GURL("https://owner2.test")),
+                     net::SchemefulSite(GURL("https://member2.test"))}),
+          SingleSet(net::SchemefulSite(GURL("https://owner0.test")),
+                    {net::SchemefulSite(GURL("https://member0.test"))})));
+}
+
+TEST(FirstPartySetsLoaderTestNormalizeAdditionSets,
+     TransitiveOverlap_ThreeCommonMembers) {
+  const FirstPartySetsLoader::FlattenedSets existing_sets(
+      MakeFlattenedSetsFromMap(
+          {{"https://owner.test",
+            {"https://member1.test", "https://member42.test",
+             "https://member2.test"}}}));
+  const std::vector<FirstPartySetsLoader::SingleSet> additions{
+      SingleSet(net::SchemefulSite(GURL("https://owner42.test")),
+                {net::SchemefulSite(GURL("https://member42.test"))}),
+      SingleSet(net::SchemefulSite(GURL("https://owner0.test")),
+                {net::SchemefulSite(GURL("https://member0.test"))}),
+      SingleSet(net::SchemefulSite(GURL("https://owner2.test")),
+                {net::SchemefulSite(GURL("https://member2.test"))}),
+      SingleSet(net::SchemefulSite(GURL("https://owner1.test")),
+                {net::SchemefulSite(GURL("https://member1.test"))})};
+
+  // {owner1, {member1}}, {owner2, {member2}}, and {owner42, {member42}}
+  // transitively overlap with the existing set.
+  // owner42 takes ownership of the normalized addition set since it was
+  // provided first.
+  // The other addition sets are unaffected.
+  EXPECT_THAT(
+      FirstPartySetsLoader::NormalizeAdditionSets(existing_sets, additions),
+      UnorderedElementsAre(
+          SingleSet(net::SchemefulSite(GURL("https://owner42.test")),
+                    {net::SchemefulSite(GURL("https://member42.test")),
+                     net::SchemefulSite(GURL("https://owner1.test")),
+                     net::SchemefulSite(GURL("https://member1.test")),
+                     net::SchemefulSite(GURL("https://owner2.test")),
+                     net::SchemefulSite(GURL("https://member2.test"))}),
+          SingleSet(net::SchemefulSite(GURL("https://owner0.test")),
+                    {net::SchemefulSite(GURL("https://member0.test"))})));
+}
 
 }  // namespace content
