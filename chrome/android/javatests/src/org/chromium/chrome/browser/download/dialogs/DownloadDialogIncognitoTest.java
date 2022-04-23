@@ -27,6 +27,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.download.DuplicateDownloadDialog;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -101,6 +102,7 @@ public class DownloadDialogIncognitoTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1317700")
     public void testDuplicateDownloadForIncognitoCCT() throws Exception {
         // Showing a duplicate download dialog with a non-primary off-the-record profile.
         OTRProfileID nonPrimaryOTRId = OTRProfileID.createUnique("CCT:Incognito");
