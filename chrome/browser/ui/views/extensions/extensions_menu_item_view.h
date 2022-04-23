@@ -44,6 +44,8 @@ class SiteAccessMenuItemView : public views::FlexLayoutView {
   // Updates the controller and child views to be on sync with the parent views.
   void Update();
 
+  void SetSiteAccessComboboxVisible(bool visibility);
+
   ToolbarActionViewController* view_controller() { return controller_.get(); }
 
   ExtensionsMenuButton* primary_action_button_for_testing() {

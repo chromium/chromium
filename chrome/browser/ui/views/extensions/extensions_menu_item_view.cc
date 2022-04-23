@@ -126,6 +126,10 @@ void SiteAccessMenuItemView::Update() {
   site_access_combobox_->SetSelectedIndex(index);
 }
 
+void SiteAccessMenuItemView::SetSiteAccessComboboxVisible(bool visibility) {
+  site_access_combobox_->SetVisible(visibility);
+}
+
 void SiteAccessMenuItemView::OnComboboxSelectionChanged() {
   int selected_index = site_access_combobox_->GetSelectedIndex();
   site_access_combobox_model_->HandleSelection(selected_index);

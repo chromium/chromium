@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension.h"
 
 namespace extensions {
@@ -66,6 +67,10 @@ class ExtensionsToolbarUnitTest : public TestWithBrowserView {
 
   // Triggers the press and release event of the given `button`.
   void ClickButton(views::Button* button) const;
+
+  // Returns the user's site setting for `url`.
+  extensions::PermissionsManager::UserSiteSetting GetUserSiteSetting(
+      const GURL& url);
 
   // Returns a list of the views of the currently pinned extensions, in order
   // from left to right.

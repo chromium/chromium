@@ -59,6 +59,9 @@ constexpr int kGroupId = 1;
 constexpr size_t kGrantAllExtensionsIndex = 0;
 constexpr size_t kBlockAllExtensionsIndex = 1;
 constexpr size_t kCustomizeByExtensionIndex = 2;
+// Site access combobox visibility in site access menu item.
+constexpr bool kDontShowCombobox = false;
+constexpr bool kShowCombobox = true;
 
 ExtensionsTabbedMenuView* g_extensions_dialog = nullptr;
 
@@ -717,8 +720,7 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessTab() {
   switch (site_setting) {
     case extensions::PermissionsManager::UserSiteSetting::kGrantAllExtensions:
       SetButtonChecked(site_settings_, kGrantAllExtensionsIndex);
-      // TODO(crbug.com/1263310): Remove combobox from SiteAccessMenuItems.
-      UpdateSiteAccessSectionsVisibility();
+      UpdateSiteAccessSectionsVisibility(kDontShowCombobox);
       // TODO(crbug.com/1263310): After finishing implementation of user
       // permission (grant user permissions with precedence over extension
       // permissions), check that "requests access" section is hidden, and
@@ -734,7 +736,7 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessTab() {
       break;
     case extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension:
       SetButtonChecked(site_settings_, kCustomizeByExtensionIndex);
-      UpdateSiteAccessSectionsVisibility();
+      UpdateSiteAccessSectionsVisibility(kShowCombobox);
       break;
   }
 
@@ -745,7 +747,8 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessTab() {
     SizeToContents();
 }
 
-void ExtensionsTabbedMenuView::UpdateSiteAccessSectionsVisibility() {
+void ExtensionsTabbedMenuView::UpdateSiteAccessSectionsVisibility(
+    bool show_combobox) {
   auto* web_contents = browser_->tab_strip_model()->GetActiveWebContents();
   DCHECK(web_contents);
 
@@ -760,6 +763,16 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessSectionsVisibility() {
 
   update_section(&has_access_);
   update_section(&requests_access_);
+
+  // Has access item's combobox is present depending on `show_combobox`. Request
+  // access item's combobox is always present if the item is visible (since
+  // a request access item is only visible if the extension can be customized).
+  // TODO(crbug.com/1263310): Request access items can be visible if the site
+  // setting is set to "grant all extensions", since site settings are not
+  // granted yet. After finishing implementation of user permissions, check no
+  // request access items is visible if `show_combobox` is true.
+  for (SiteAccessMenuItemView* item : GetVisibleMenuItemsOf(has_access_))
+    item->SetSiteAccessComboboxVisible(show_combobox);
 
   // Display a message when no extensions have or request access.
   if (!has_access_.container->GetVisible() &&

@@ -186,9 +186,10 @@ class ExtensionsTabbedMenuView
   // current site setting.
   void UpdateSiteAccessTab();
 
-  // Updates the visibility and header of the site access sections. A given
-  // section should be visible if there are any extensions displayed in it.
-  void UpdateSiteAccessSectionsVisibility();
+  // Updates the visibility and header of the site access sections, and whether
+  // their items should `show_combobox`. A given section should be visible if
+  // there are any extensions displayed in it.
+  void UpdateSiteAccessSectionsVisibility(bool show_combobox);
 
   // Returns the section corresponding to `site_interaction`, or nullptr.
   SiteAccessSection* GetSectionForSiteInteraction(

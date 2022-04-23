@@ -1066,25 +1066,46 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest, SiteAccessTab_SelectSiteSetting) {
   WaitForAnimation();
   ShowSiteAccessTabInMenu();
 
-  // Verify site has "customize by extensions" site setting by default, and both
-  // site access sections are displayed.
+  // Verify site has "customize by extensions" site setting by default, and
+  // items with dropdowns are displayed in both site access sections.
+  ASSERT_EQ(
+      GetUserSiteSetting(url),
+      extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension);
   EXPECT_TRUE(IsHasAccessSectionDisplayed());
+  EXPECT_TRUE(GetOnlyHasAccessMenuItem()
+                  ->site_access_combobox_for_testing()
+                  ->GetVisible());
   EXPECT_TRUE(IsRequestsAccessSectionDisplayed());
+  EXPECT_TRUE(GetOnlyRequestsAccessMenuItem()
+                  ->site_access_combobox_for_testing()
+                  ->GetVisible());
   EXPECT_FALSE(site_access_message()->GetVisible());
 
   SelectSiteSetting(kGrantAllExtensionsIndex);
+
+  // Verify site has "grant all extensions" site setting and only site access
+  // items without dropdown are visible.
+  ASSERT_EQ(
+      GetUserSiteSetting(url),
+      extensions::PermissionsManager::UserSiteSetting::kGrantAllExtensions);
   EXPECT_TRUE(IsHasAccessSectionDisplayed());
   // TODO(crbug.com/1263310): Currently, user site settings are stored but not
-  // granted and thus extension B is still requesting access. Requests access
-  // section should be empty once user permissions are granted.
+  // granted and thus extension B is still requesting access. Has access section
+  // should have two items, and requests access section should be empty once
+  // user permissions are granted.
+  ASSERT_EQ(has_access_items().size(), 1u);
+  for (auto* item : has_access_items())
+    EXPECT_FALSE(item->site_access_combobox_for_testing()->GetVisible());
   EXPECT_TRUE(IsRequestsAccessSectionDisplayed());
   EXPECT_FALSE(site_access_message()->GetVisible());
-  // TODO(crbug.com/1263310): Test the site access menu items do not have a
-  // dropdown.
 
-  // Verify selecting "block all extensions" site setting displays only the
-  // appropriate message.
   SelectSiteSetting(kBlockAllExtensionsIndex);
+
+  // Verify site has "block all extensions" site setting and only the
+  // appropriate message is displayed.
+  ASSERT_EQ(
+      GetUserSiteSetting(url),
+      extensions::PermissionsManager::UserSiteSetting::kBlockAllExtensions);
   EXPECT_FALSE(IsHasAccessSectionDisplayed());
   EXPECT_FALSE(IsRequestsAccessSectionDisplayed());
   EXPECT_TRUE(site_access_message()->GetVisible());
@@ -1092,11 +1113,21 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest, SiteAccessTab_SelectSiteSetting) {
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_BLOCK_ALL_EXTENSIONS_TEXT));
 
-  // Verify selecting "customize by extension" site setting displays both site
-  // access sections.
   SelectSiteSetting(kCustomizeByExtensionIndex);
+
+  // Verify site has "customize by extension" site setting and items with
+  // dropdowns are visible in both site access sections.
+  ASSERT_EQ(
+      GetUserSiteSetting(url),
+      extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension);
   EXPECT_TRUE(IsHasAccessSectionDisplayed());
+  EXPECT_TRUE(GetOnlyHasAccessMenuItem()
+                  ->site_access_combobox_for_testing()
+                  ->GetVisible());
   EXPECT_TRUE(IsRequestsAccessSectionDisplayed());
+  EXPECT_TRUE(GetOnlyRequestsAccessMenuItem()
+                  ->site_access_combobox_for_testing()
+                  ->GetVisible());
   EXPECT_FALSE(site_access_message()->GetVisible());
 }
 

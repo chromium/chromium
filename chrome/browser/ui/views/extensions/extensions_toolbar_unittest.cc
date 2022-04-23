@@ -124,6 +124,12 @@ void ExtensionsToolbarUnitTest::ClickButton(views::Button* button) const {
   button->OnMouseReleased(release_event);
 }
 
+extensions::PermissionsManager::UserSiteSetting
+ExtensionsToolbarUnitTest::GetUserSiteSetting(const GURL& url) {
+  return extensions::PermissionsManager::Get(browser()->profile())
+      ->GetUserSiteSetting(url::Origin::Create(url));
+}
+
 std::vector<ToolbarActionView*>
 ExtensionsToolbarUnitTest::GetPinnedExtensionViews() {
   std::vector<ToolbarActionView*> result;
