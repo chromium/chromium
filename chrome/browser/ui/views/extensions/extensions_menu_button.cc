@@ -24,14 +24,12 @@
 
 ExtensionsMenuButton::ExtensionsMenuButton(
     Browser* browser,
-    ToolbarActionViewController* controller,
-    bool allow_pinning)
+    ToolbarActionViewController* controller)
     : HoverButton(base::BindRepeating(&ExtensionsMenuButton::ButtonPressed,
                                       base::Unretained(this)),
                   std::u16string()),
       browser_(browser),
-      controller_(controller),
-      allow_pinning_(allow_pinning) {
+      controller_(controller) {
   controller_->SetDelegate(this);
   // TODO(pbos): This currently inherits HoverButton, is this not a no-op?
   // Also see call in OnThemeChanged() to
@@ -42,10 +40,6 @@ ExtensionsMenuButton::ExtensionsMenuButton(
 }
 
 ExtensionsMenuButton::~ExtensionsMenuButton() = default;
-
-bool ExtensionsMenuButton::CanShowIconInToolbar() const {
-  return allow_pinning_;
-}
 
 void ExtensionsMenuButton::AddedToWidget() {
   ConfigureBubbleMenuItem(this, 0);

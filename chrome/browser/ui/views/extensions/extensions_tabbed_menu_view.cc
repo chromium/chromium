@@ -617,8 +617,8 @@ void ExtensionsTabbedMenuView::MaybeCreateAndInsertSiteAccessItem(
   if (!section)
     return;
 
-  auto item = std::make_unique<SiteAccessMenuItemView>(
-      browser_, std::move(controller), allow_pinning_);
+  auto item =
+      std::make_unique<SiteAccessMenuItemView>(browser_, std::move(controller));
 
   InsertSiteAccessItem(std::move(item), section);
 }

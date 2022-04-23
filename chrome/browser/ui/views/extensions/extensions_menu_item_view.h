@@ -36,8 +36,7 @@ class SiteAccessMenuItemView : public views::FlexLayoutView {
 
   SiteAccessMenuItemView(
       Browser* browser,
-      std::unique_ptr<ToolbarActionViewController> controller,
-      bool allow_pinning);
+      std::unique_ptr<ToolbarActionViewController> controller);
   SiteAccessMenuItemView(const SiteAccessMenuItemView&) = delete;
   SiteAccessMenuItemView& operator=(const SiteAccessMenuItemView&) = delete;
   ~SiteAccessMenuItemView() override;

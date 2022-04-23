@@ -129,7 +129,7 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   }
 
  private:
-  void InitMenu(const Extension* extension, ButtonVisibility button_visibility);
+  void InitMenu(const Extension* extension, bool can_show_icon_in_toolbar);
 
   // Adds the page access items based on the current site setting pointed by
   // `web_contents`.
@@ -176,8 +176,6 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
 
   // The visibility of the button at the time the menu opened.
   ButtonVisibility button_visibility_;
-
-  const bool can_show_icon_in_toolbar_;
 
   // Menu matcher for context menu items specified by the extension.
   std::unique_ptr<ContextMenuMatcher> extension_items_;

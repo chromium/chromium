@@ -225,9 +225,8 @@ ExtensionContextMenuModel::ExtensionContextMenuModel(
       profile_(browser->profile()),
       delegate_(delegate),
       button_visibility_(button_visibility),
-      can_show_icon_in_toolbar_(can_show_icon_in_toolbar),
       source_(source) {
-  InitMenu(extension, button_visibility);
+  InitMenu(extension, can_show_icon_in_toolbar);
 }
 
 bool ExtensionContextMenuModel::IsCommandIdChecked(int command_id) const {
@@ -394,7 +393,7 @@ void ExtensionContextMenuModel::MenuClosed(ui::SimpleMenuModel* menu) {
 ExtensionContextMenuModel::~ExtensionContextMenuModel() {}
 
 void ExtensionContextMenuModel::InitMenu(const Extension* extension,
-                                         ButtonVisibility button_visibility) {
+                                         bool can_show_icon_in_toolbar) {
   DCHECK(extension);
 
   absl::optional<ActionInfo::Type> action_type;
@@ -445,9 +444,9 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
   }
 
   if ((source_ == ContextMenuSource::kToolbarAction) &&
-      can_show_icon_in_toolbar_) {
+      can_show_icon_in_toolbar) {
     int visibility_string_id =
-        GetVisibilityStringId(profile_, extension, button_visibility);
+        GetVisibilityStringId(profile_, extension, button_visibility_);
     DCHECK_NE(-1, visibility_string_id);
     AddItemWithStringId(TOGGLE_VISIBILITY, visibility_string_id);
     if (IsExtensionForcePinned(*extension, profile_)) {
