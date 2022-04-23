@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">Enhedstypen er ukendt.</translation>
 <translation id="3966286471246132217">Luk alle apps, indtil testen er fuldført, for at få mere nøjagtige resultater.</translation>
 <translation id="3967822245660637423">Download fuldført</translation>
+<translation id="3969602104473960991">Chrome OS-adgangskoden er opdateret</translation>
 <translation id="397105322502079400">Beregner...</translation>
 <translation id="39823212440917567">Udskriftsjobs, der er ældre end <ph name="NUMBER_OF_DAYS" /> dage, fjernes</translation>
 <translation id="3993704782688964914">Din <ph name="DEVICE_NAME" /> er nu opdateret</translation>
@@ -461,6 +462,7 @@
 <translation id="6113701710518389813">Pil op</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> flere album</translation>
 <translation id="6122191549521593678">Online</translation>
+<translation id="6122277663991249694">Indtastningsmetodetjeneste for Chrome OS</translation>
 <translation id="6137767437444130246">Brugercertifikat</translation>
 <translation id="6146993107019042706">Angiv din nye adgangskode for at afslutte</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -659,6 +661,7 @@
 <translation id="8398927464629426868">Den aktuelle hastighed for opladning eller afladning på enheden</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Indbygget tastatur</translation>
+<translation id="8431300646573772016">Nyt i Chrome OS</translation>
 <translation id="843568408673868420">Internetforbindelse</translation>
 <translation id="844521431886043384">DNS er ikke konfigureret</translation>
 <translation id="8461329675984532579">Navn på udbyder til hjem</translation>

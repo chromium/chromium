@@ -201,6 +201,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2107914222138020205">USB-C kabelingiz Thunderbolt qurilmalar bilan ishlamaydi. Qurilma samaradorligi cheklanishi mumkin.</translation>
 <translation id="2108303511227308752">Alt + Backspace tezkor tugmasi oʻzgardi. Delete tugmasidan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + Backspace tugmasini bosing.</translation>
 <translation id="211328683600082144">MIKROFONNI YOQISH</translation>
+<translation id="2123115117533398272">ChromeOS yangi kontent bilan tanishuvni taklif qiladi. Takliflar sifatini yaxshilash maqsadida faqat siz tanlagan statistik axborotlar yuboriladi. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">Yangi ish stoli</translation>
 <translation id="2127372758936585790">Kam quvvatli zaryadlovchi vosita</translation>
 <translation id="2132302418721800944">Butun ekranni yozib olish</translation>
@@ -271,6 +272,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2620436844016719705">Tizim</translation>
 <translation id="2621713457727696555">Himoyalangan</translation>
 <translation id="263399434338050016">“Hammasini tanlash”</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Oynani tasvirga olish</translation>
 <translation id="2653659639078652383">Yuborish</translation>
 <translation id="2658778018866295321">Bosib torting</translation>
@@ -396,6 +398,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3375634426936648815">Ulandi</translation>
 <translation id="3378442621503952303">Profilga ulanmoqda. Bir necha daqiqa kuting.</translation>
 <translation id="3386978599540877378">butun ekran rejimidagi lupa</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">Kengaytirilgan sozlamalar</translation>
 <translation id="3410336247007142655">Tungi mavzu sozlamalarini chiqarish</translation>
 <translation id="3413817803639110246">Hozircha hech narsa yo‘q</translation>
