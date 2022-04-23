@@ -11,6 +11,8 @@ namespace base {
 
 // C++14 implementation of C++17's std::as_const():
 // https://en.cppreference.com/w/cpp/utility/as_const
+// 这里使用C++4实现了C++17才加入的std::as_const()
+// 见：https://cloud.tencent.com/developer/section/1012671
 template <typename T>
 constexpr std::add_const_t<T>& as_const(T& t) noexcept {
   return t;

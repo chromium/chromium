@@ -360,6 +360,20 @@ void PlatformThread::SetName(const std::string& name) {
   // Note that glibc also has a 'pthread_setname_np' api, but it may not be
   // available everywhere and it's only benefit over using prctl directly is
   // that it can set the name of threads other than the current thread.
+  // 设置 LWP 的名称（截断为 15 个字符）。
+  // 请注意，glibc 也有一个 'pthread_setname_np' api，但它可能并非无处不在，与
+  // 直接使用 prctl 相比，它唯一的好处是它可以设置当前线程以外的线程的名称。
+  // 这个系统调用指令是为进程制定而设计的，明确的选择取决于option:
+  // PR_SET_NAME :把参数arg2作为调用进程的经常名字。（SinceLinux 2.6.11）
+  // PR_GET_NAME :返回调用进程的进程名字给参数arg2; （Since Linux2.6.9）
+  // PR_SET_TIMING :判定和修改进程计时模式,用于启用传统进程计时模式的
+  // ......等等
+  // 其中设置当前线程的线程名的方法还有：
+  // #if defined(__ANDROID__) || defined(ANDROID)
+  //   pthread_setname_np(pthread_self(), name_.c_str());
+  // #elif defined(__APPLE__)
+  //   pthread_setname_np(name_.c_str());
+  // #endif
   int err = prctl(PR_SET_NAME, name.c_str());
   // We expect EPERM failures in sandboxed processes, just ignore those.
   if (err < 0 && errno != EPERM)

@@ -34,10 +34,9 @@ namespace base {
 // 当 exit_manager 对象超出范围时，将调用所有注册的回调和单例析构函数。
 // 参考：https://chowdera.com/2022/02/202202280550401719.html
 // 参考：https://illx10000.github.io/2018/12/26/4.html
-// 参考：https://illx10000.github.io/2018/12/26/4.html
-// AtExitManager离开作用域，所有的回调函数，单例的析构函数将会被调用。
-// AtExitManager类似于Linux下的atexit，注册退出清理函数，不过base库
-// 的实现机制是利用了C++的RAII
+// AtExitManager离开作用域，所有的回调函数将会被调用。
+// AtExitManager类似于Linux下的atexit，注册退出清理函数，不过base库的实现机制是
+// 利用了C++的RAII
 
 class BASE_EXPORT AtExitManager {
  public:

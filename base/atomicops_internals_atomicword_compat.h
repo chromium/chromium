@@ -48,7 +48,7 @@ inline AtomicWord Barrier_AtomicIncrement(volatile AtomicWord* ptr, AtomicWord i
 inline AtomicWord Acquire_CompareAndSwap(volatile AtomicWord* ptr,
                                          AtomicWord old_value,
                                          AtomicWord new_value) {
-                                             
+
   return base::subtle::Acquire_CompareAndSwap(
       reinterpret_cast<volatile Atomic32*>(ptr), old_value, new_value);
 }

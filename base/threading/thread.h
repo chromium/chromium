@@ -23,6 +23,8 @@
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 
+// Chromium的无锁线程模型: https://zhuanlan.zhihu.com/p/104205774
+
 // Chromium的线程模型是：
 // Chromium是一个极其多线程的产品。我们努力让UI尽可能快速响应，这意味着任何阻塞I/O
 // 或者其他昂贵操作不能阻塞UI线程。我们的做法是在线程间传递消息作为交流的方式。我们

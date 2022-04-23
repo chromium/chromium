@@ -4,6 +4,7 @@
 
 // This is a low level implementation of atomic semantics for reference
 // counting.  Please use base/memory/ref_counted.h directly instead.
+// 这是用于引用计数的原子语义的低级实现。请直接使用 base/memory/ref_counted.h
 
 #ifndef BASE_ATOMIC_REF_COUNT_H_
 #define BASE_ATOMIC_REF_COUNT_H_
@@ -24,6 +25,7 @@ class AtomicRefCount {
 
   // Increment a reference count by "increment", which must exceed 0.
   // Returns the previous value of the count.
+  // 将引用计数增加“increment”，该值必须超过 0。返回之前的计数值。
   int Increment(int increment) {
     return ref_count_.fetch_add(increment, std::memory_order_relaxed);
   }
@@ -36,6 +38,9 @@ class AtomicRefCount {
     // unless the result is 1 (i.e., the ref count did indeed reach zero).
     // However, there are toolchain issues that make that not work as well at
     // present (notably TSAN doesn't like it).
+    // TODO(jbroman)：从技术上讲，这不需要是获取操作，除非结果为 1（即，引用计数确
+    // 实达到了零）。但是，目前存在一些工具链问题使其无法正常工作（特别是 TSAN 不喜
+    // 欢它）。
     return ref_count_.fetch_sub(1, std::memory_order_acq_rel) != 1;
   }
 
@@ -45,11 +50,14 @@ class AtomicRefCount {
   // performs the test for a reference count of one, and performs the memory
   // barrier needed for the owning thread to act on the object, knowing that it
   // has exclusive access to the object.
-  bool IsOne() const { return ref_count_.load(std::memory_order_acquire) == 1; }
+  bool IsOne() const {
+    return ref_count_.load(std::memory_order_acquire) == 1;
+  }
 
   // Return whether the reference count is zero.  With conventional object
-  // referencing counting, the object will be destroyed, so the reference count
-  // should never be zero.  Hence this is generally used for a debug check.
+  // referencing counting, the object will be destroyed, so the reference
+  // count should never be zero.  Hence this is generally used for a debug
+  // check.
   bool IsZero() const {
     return ref_count_.load(std::memory_order_acquire) == 0;
   }

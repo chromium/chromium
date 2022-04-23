@@ -24,6 +24,9 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 
+// Chromium 消息循环和线程池 (MessageLoop 和 TaskScheduler)
+// https://keyou.github.io/blog/2019/06/11/Chromium-MessageLoop-and-TaskScheduler/
+
 namespace base {
 
 // This is the interface to post tasks to base's thread pool.

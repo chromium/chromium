@@ -78,8 +78,7 @@ void PlatformThread::SetName(const std::string& name) {
 }
 
 
-void InitThreading() {
-}
+void InitThreading() {}
 
 void TerminateOnThread() {
   base::android::DetachFromVM();
