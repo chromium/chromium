@@ -231,9 +231,14 @@ void PerformNewDeskMiniViewAnimation(
   for (auto* mini_view : new_mini_views) {
     ui::Layer* layer = mini_view->layer();
     layer->SetOpacity(0);
+    // TODO(crbug.com/1311314): Add a mechanism to make it possible to skip the
+    // left shift of newly-added mini views, which we can use when re-adding a
+    // removed desk when the user decides to undo its removal.
+    layer->SetTransform(mini_views_left_begin_transform);
     ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
     InitScopedAnimationSettings(&settings, kExistingMiniViewsAnimationDuration);
     layer->SetOpacity(1);
+    layer->SetTransform(kEndTransform);
   }
 
   AnimateMiniViews(mini_views_left, mini_views_left_begin_transform);
