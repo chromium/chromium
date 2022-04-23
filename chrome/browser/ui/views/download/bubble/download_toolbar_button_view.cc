@@ -184,23 +184,17 @@ std::unique_ptr<views::View> DownloadToolbarButtonView::GetPrimaryView() {
 }
 
 void DownloadToolbarButtonView::OpenPrimaryDialog() {
-  switcher_view_->RemoveAllChildViews();
-  std::unique_ptr<views::View> primary_view = GetPrimaryView();
-  if (primary_view) {
-    switcher_view_->AddChildView(std::move(primary_view));
-    bubble_delegate_->SizeToContents();
-  } else {
-    CloseDialog(views::Widget::ClosedReason::kUnspecified);
-  }
+  primary_view_->SetVisible(true);
+  security_view_->SetVisible(false);
+  ResizeDialog();
 }
 
 void DownloadToolbarButtonView::OpenSecurityDialog(
-    DownloadUIModel::DownloadUIModelPtr download,
-    DownloadUIModel::BubbleUIInfo info) {
-  switcher_view_->RemoveAllChildViews();
-  switcher_view_->AddChildView(std::make_unique<DownloadBubbleSecurityView>(
-      std::move(download), info, bubble_controller_.get(), this));
-  bubble_delegate_->SizeToContents();
+    DownloadBubbleRowView* download_row_view) {
+  security_view_->UpdateSecurityView(download_row_view);
+  primary_view_->SetVisible(false);
+  security_view_->SetVisible(true);
+  ResizeDialog();
 }
 
 void DownloadToolbarButtonView::CloseDialog(
@@ -214,7 +208,8 @@ void DownloadToolbarButtonView::ResizeDialog() {
 
 void DownloadToolbarButtonView::OnBubbleDelegateDeleted() {
   bubble_delegate_ = nullptr;
-  switcher_view_ = nullptr;
+  primary_view_ = nullptr;
+  security_view_ = nullptr;
 }
 
 void DownloadToolbarButtonView::CreateBubbleDialogDelegate(
@@ -230,11 +225,16 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate(
   bubble_delegate->RegisterDeleteDelegateCallback(
       base::BindOnce(&DownloadToolbarButtonView::OnBubbleDelegateDeleted,
                      weak_factory_.GetWeakPtr()));
-  switcher_view_ =
+  auto* switcher_view =
       bubble_delegate->SetContentsView(std::make_unique<views::View>());
-  switcher_view_->SetLayoutManager(std::make_unique<views::FlexLayout>())
+  switcher_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
-  switcher_view_->AddChildView(std::move(bubble_contents_view));
+  primary_view_ = switcher_view->AddChildView(std::move(bubble_contents_view));
+  // raw ptr for this is safe as Toolbar Button view owns the Bubble.
+  security_view_ =
+      switcher_view->AddChildView(std::make_unique<DownloadBubbleSecurityView>(
+          bubble_controller_.get(), this));
+  security_view_->SetVisible(false);
   bubble_delegate->set_fixed_width(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_BUBBLE_PREFERRED_WIDTH));

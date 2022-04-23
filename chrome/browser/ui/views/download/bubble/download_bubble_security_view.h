@@ -12,38 +12,52 @@
 namespace views {
 class MdTextButton;
 class Checkbox;
+class Label;
+class ImageView;
+class StyledLabel;
 }  // namespace views
 
 class DownloadBubbleUIController;
 class DownloadBubbleNavigationHandler;
+class DownloadBubbleRowView;
 
 class DownloadBubbleSecurityView : public views::View {
  public:
   METADATA_HEADER(DownloadBubbleSecurityView);
   DownloadBubbleSecurityView(
-      DownloadUIModel::DownloadUIModelPtr model,
-      DownloadUIModel::BubbleUIInfo info,
       DownloadBubbleUIController* bubble_controller,
       DownloadBubbleNavigationHandler* navigation_handler);
   DownloadBubbleSecurityView(const DownloadBubbleSecurityView&) = delete;
   DownloadBubbleSecurityView& operator=(const DownloadBubbleSecurityView&) =
       delete;
   ~DownloadBubbleSecurityView() override;
+  void UpdateSecurityView(DownloadBubbleRowView* download_row_view);
+
+  raw_ptr<views::MdTextButton> keep_button_ = nullptr;
+  raw_ptr<views::MdTextButton> discard_button_ = nullptr;
+  raw_ptr<views::MdTextButton> bypass_deep_scan_button_ = nullptr;
+  raw_ptr<views::MdTextButton> deep_scan_button_ = nullptr;
 
  private:
+  void UpdateHeader();
   void AddHeader();
   void CloseBubble();
   void OnCheckboxClicked();
+  void UpdateIconAndText();
   void AddIconAndText();
+  void UpdateButtons();
   void AddButtons();
   void ProcessButtonClick(DownloadCommands::Command command);
+  views::MdTextButton* GetButtonForCommand(DownloadCommands::Command command);
 
-  DownloadUIModel::DownloadUIModelPtr model_;
-  DownloadUIModel::BubbleUIInfo info_;
+  raw_ptr<DownloadBubbleRowView> download_row_view_;
   raw_ptr<DownloadBubbleUIController> bubble_controller_ = nullptr;
   raw_ptr<DownloadBubbleNavigationHandler> navigation_handler_ = nullptr;
   raw_ptr<views::MdTextButton> first_button_ = nullptr;
   raw_ptr<views::Checkbox> checkbox_ = nullptr;
+  raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
+  raw_ptr<views::StyledLabel> styled_label_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_SECURITY_VIEW_H_

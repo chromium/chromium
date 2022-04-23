@@ -18,13 +18,14 @@ class Browser;
 class BrowserView;
 class DownloadDisplayController;
 class DownloadBubbleUIController;
+class DownloadBubbleRowView;
+class DownloadBubbleSecurityView;
 
 class DownloadBubbleNavigationHandler {
  public:
   // Primary dialog is either main or partial view.
   virtual void OpenPrimaryDialog() = 0;
-  virtual void OpenSecurityDialog(DownloadUIModel::DownloadUIModelPtr download,
-                                  DownloadUIModel::BubbleUIInfo info) = 0;
+  virtual void OpenSecurityDialog(DownloadBubbleRowView* download_row_view) = 0;
   virtual void CloseDialog(views::Widget::ClosedReason reason) = 0;
   virtual void ResizeDialog() = 0;
 };
@@ -57,8 +58,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
 
   // DownloadBubbleNavigationHandler:
   void OpenPrimaryDialog() override;
-  void OpenSecurityDialog(DownloadUIModel::DownloadUIModelPtr download,
-                          DownloadUIModel::BubbleUIInfo info) override;
+  void OpenSecurityDialog(DownloadBubbleRowView* download_row_view) override;
   void CloseDialog(views::Widget::ClosedReason reason) override;
   void ResizeDialog() override;
 
@@ -87,7 +87,8 @@ class DownloadToolbarButtonView : public ToolbarButton,
   // Controller for keeping track of items for both main view and partial view.
   std::unique_ptr<DownloadBubbleUIController> bubble_controller_;
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
-  raw_ptr<View> switcher_view_ = nullptr;
+  raw_ptr<View> primary_view_ = nullptr;
+  raw_ptr<DownloadBubbleSecurityView> security_view_ = nullptr;
 
   gfx::SlideAnimation scanning_animation_{this};
 
