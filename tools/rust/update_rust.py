@@ -36,6 +36,9 @@ STAGE0_JSON_SHA256 = (
 
 def GetPackageVersion():
   from update import (CLANG_REVISION, CLANG_SUB_REVISION)
+  # TODO(https://crbug.com/1319223): Move rust to pinned LLVM revision.
+  CLANG_REVISION = 'llvmorg-15-init-7980-g4ffd0b6f'
+  CLANG_SUB_REVISION = 2
   return '%s-%s-%s-%s' % (RUST_REVISION, RUST_SUB_REVISION, CLANG_REVISION,
                           CLANG_SUB_REVISION)
 
