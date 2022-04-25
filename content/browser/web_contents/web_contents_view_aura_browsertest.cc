@@ -305,7 +305,9 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
 
 // Flaky on Windows: http://crbug.com/305722
 // The test frequently times out on Linux, too. See crbug.com/440043.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// For Fuchsia, see https://crbug.com/1318245.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_OverscrollNavigation DISABLED_OverscrollNavigation
 #else
 #define MAYBE_OverscrollNavigation OverscrollNavigation
@@ -318,7 +320,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, MAYBE_OverscrollNavigation) {
 // Flaky on Windows (might be related to the above test):
 // http://crbug.com/305722
 // On Linux, the test frequently times out. (See crbug.com/440043).
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// For Fuchsia, see https://crbug.com/1318245.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_OverscrollNavigationWithTouchHandler \
   DISABLED_OverscrollNavigationWithTouchHandler
 #else
@@ -771,12 +775,14 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, ContentWindowClose) {
   delete web_contents->GetContentNativeView();
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_FUCHSIA)
 // This appears to be flaky in the same was as the other overscroll
 // tests. Enabling for non-Windows platforms.
 // See http://crbug.com/369871.
 // For linux, see http://crbug.com/381294.
 // For ChromeOS, see http://crbug.com/668128.
+// For Fuchsia, see https://crbug.com/1318245.
 #define MAYBE_RepeatedQuickOverscrollGestures DISABLED_RepeatedQuickOverscrollGestures
 #else
 #define MAYBE_RepeatedQuickOverscrollGestures RepeatedQuickOverscrollGestures
