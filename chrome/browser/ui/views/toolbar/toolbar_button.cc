@@ -176,8 +176,8 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
   views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
       [](ToolbarButton* host) {
         if (host->has_in_product_help_promo_) {
-          return host->GetThemeProvider()->GetColor(
-              ThemeProperties::COLOR_TOOLBAR_FEATURE_PROMO_HIGHLIGHT);
+          return host->GetColorProvider()->GetColor(
+              kColorToolbarFeaturePromoHighlight);
         }
         absl::optional<SkColor> drop_base_color =
             host->highlight_color_animation_.GetInkDropBaseColor();
@@ -304,19 +304,18 @@ void ToolbarButton::UpdateColorsAndInsets() {
 }
 
 SkColor ToolbarButton::GetForegroundColor(ButtonState state) const {
-  const ui::ThemeProvider* tp = GetThemeProvider();
-  DCHECK(tp);
+  const auto* color_provider = GetColorProvider();
   if (has_in_product_help_promo_)
-    return tp->GetColor(ThemeProperties::COLOR_TOOLBAR_FEATURE_PROMO_HIGHLIGHT);
+    return color_provider->GetColor(kColorToolbarFeaturePromoHighlight);
   switch (state) {
     case ButtonState::STATE_HOVERED:
-      return tp->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_HOVERED);
+      return color_provider->GetColor(kColorToolbarButtonIconHovered);
     case ButtonState::STATE_PRESSED:
-      return tp->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_PRESSED);
+      return color_provider->GetColor(kColorToolbarButtonIconPressed);
     case ButtonState::STATE_DISABLED:
-      return tp->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_INACTIVE);
+      return color_provider->GetColor(kColorToolbarButtonIconInactive);
     case ButtonState::STATE_NORMAL:
-      return tp->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
+      return color_provider->GetColor(kColorToolbarButtonIcon);
     default:
       NOTREACHED();
       return gfx::kPlaceholderColor;
@@ -739,18 +738,15 @@ absl::optional<SkColor> ToolbarButton::HighlightColorAnimation::GetBorderColor()
 
 absl::optional<SkColor>
 ToolbarButton::HighlightColorAnimation::GetBackgroundColor() const {
-  if (!IsShown() || !parent_->GetColorProvider())
+  const auto* const color_provider = parent_->GetColorProvider();
+  if (!IsShown() || !color_provider)
     return absl::nullopt;
-  SkColor bg_color = parent_->GetColorProvider()->GetColor(
-      kColorToolbarButtonBackgroundHighlightedDefault);
+  SkColor bg_color =
+      color_provider->GetColor(kColorToolbarButtonBackgroundHighlightedDefault);
   if (highlight_color_) {
-    // TODO(crbug.com/967317): Change the highlight opacity to 4% to match the
-    // mocks, if needed.
-    bg_color = color_utils::GetResultingPaintColor(
-        /*foreground=*/SkColorSetA(*highlight_color_,
-                                   SkColorGetA(*highlight_color_) *
-                                       kToolbarInkDropHighlightVisibleOpacity),
-        /*background=*/bg_color);
+    bg_color = color_utils::AlphaBlend(*highlight_color_,
+                                       color_provider->GetColor(kColorToolbar),
+                                       kToolbarInkDropHighlightVisibleOpacity);
   }
   return FadeWithAnimation(bg_color, highlight_color_animation_);
 }

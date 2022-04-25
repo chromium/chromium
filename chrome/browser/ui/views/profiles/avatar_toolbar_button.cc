@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -142,7 +143,7 @@ void AvatarToolbarButton::UpdateText() {
   absl::optional<SkColor> color;
   std::u16string text;
 
-  const auto* tp = GetThemeProvider();
+  const auto* const color_provider = GetColorProvider();
   switch (delegate_->GetState()) {
     case State::kIncognitoProfile: {
       const int incognito_window_count = delegate_->GetWindowCount();
@@ -157,13 +158,11 @@ void AvatarToolbarButton::UpdateText() {
       break;
     }
     case State::kSyncError:
-      color = tp->GetColor(
-          ThemeProperties::COLOR_AVATAR_BUTTON_HIGHLIGHT_SYNC_ERROR);
+      color = color_provider->GetColor(kColorAvatarButtonHighlightSyncError);
       text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_ERROR);
       break;
     case State::kSyncPaused:
-      color = tp->GetColor(
-          ThemeProperties::COLOR_AVATAR_BUTTON_HIGHLIGHT_SYNC_PAUSED);
+      color = color_provider->GetColor(kColorAvatarButtonHighlightSyncPaused);
       text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PAUSED);
       break;
     case State::kGuestSession: {
@@ -184,8 +183,7 @@ void AvatarToolbarButton::UpdateText() {
     }
     case State::kNormal:
       if (delegate_->IsHighlightAnimationVisible()) {
-        color =
-            tp->GetColor(ThemeProperties::COLOR_AVATAR_BUTTON_HIGHLIGHT_NORMAL);
+        color = color_provider->GetColor(kColorAvatarButtonHighlightNormal);
       }
       break;
   }

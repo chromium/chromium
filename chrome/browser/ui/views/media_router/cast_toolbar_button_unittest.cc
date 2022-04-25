@@ -97,16 +97,15 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
     auto context_menu = std::make_unique<MediaRouterContextualMenu>(
         browser_.get(), false, &context_menu_observer_);
 
-    // Button needs to be in a widget to be able to access ThemeProvider.
+    // Button needs to be in a widget to be able to access ColorProvider.
     widget_ = CreateTestWidget();
     button_ = widget_->SetContentsView(std::make_unique<CastToolbarButton>(
         browser_.get(), media_router, std::move(context_menu)));
 
     const ui::ColorProvider* color_provider = button_->GetColorProvider();
-    idle_icon_ = gfx::Image(
-        gfx::CreateVectorIcon(vector_icons::kMediaRouterIdleIcon,
-                              button_->GetThemeProvider()->GetColor(
-                                  ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON)));
+    idle_icon_ = gfx::Image(gfx::CreateVectorIcon(
+        vector_icons::kMediaRouterIdleIcon,
+        color_provider->GetColor(kColorToolbarButtonIcon)));
     warning_icon_ = gfx::Image(gfx::CreateVectorIcon(
         vector_icons::kMediaRouterWarningIcon,
         color_provider->GetColor(kColorMediaRouterIconWarning)));

@@ -125,36 +125,6 @@ const std::array<SkColor, 2> GetTabGroupColors(int color_id) {
   }
 }
 
-// Chooses from |desired_dark_color| and |desired_light_color| based on whether
-// |background_color| is light or dark.
-//
-// If the resulting color will achieve sufficient contrast, returns it.
-// Otherwise, blends it towards |dark_extreme| if it's light, or |dark_extreme|
-// if it's dark until minimum contrast is achieved, and returns the result.
-SkColor AdjustHighlightColorForContrast(SkColor background_color,
-                                        SkColor desired_dark_color,
-                                        SkColor desired_light_color,
-                                        SkColor dark_extreme,
-                                        SkColor light_extreme) {
-  const SkColor contrasting_color = color_utils::PickContrastingColor(
-      desired_dark_color, desired_light_color, background_color);
-  const SkColor limit =
-      contrasting_color == desired_dark_color ? dark_extreme : light_extreme;
-  // Setting highlight color will set the text to the highlight color, and the
-  // background to the same color with a low alpha. This means that our target
-  // contrast is between the text (the highlight color) and a blend of the
-  // highlight color and the toolbar color.
-  const SkColor base_color = color_utils::AlphaBlend(
-      contrasting_color, background_color, SkAlpha{0x20});
-
-  // Add a fudge factor to the minimum contrast ratio since we'll actually be
-  // blending with the adjusted color.
-  return color_utils::BlendForMinContrast(
-             contrasting_color, base_color, limit,
-             color_utils::kMinimumReadableContrastRatio * 1.05)
-      .color;
-}
-
 SkColor IncreaseLightness(SkColor color, double percent) {
   color_utils::HSL result;
   color_utils::SkColorToHSL(color, &result);
@@ -352,33 +322,6 @@ SkColor ThemeHelper::GetDefaultColor(
                     incognito, theme_supplier);
   };
   switch (id) {
-    case TP::COLOR_APP_MENU_HIGHLIGHT_SEVERITY_LOW:
-      return AdjustHighlightColorForContrast(
-          GetColor(TP::COLOR_TOOLBAR_BUTTON_BACKGROUND, incognito,
-                   theme_supplier),
-          gfx::kGoogleGreen600, gfx::kGoogleGreen300, gfx::kGoogleGreen900,
-          gfx::kGoogleGreen050);
-    case TP::COLOR_APP_MENU_HIGHLIGHT_SEVERITY_HIGH:
-    case TP::COLOR_AVATAR_BUTTON_HIGHLIGHT_SYNC_ERROR:
-      return AdjustHighlightColorForContrast(
-          GetColor(TP::COLOR_TOOLBAR_BUTTON_BACKGROUND, incognito,
-                   theme_supplier),
-          gfx::kGoogleRed600, gfx::kGoogleRed300, gfx::kGoogleRed900,
-          gfx::kGoogleRed050);
-    case TP::COLOR_APP_MENU_HIGHLIGHT_SEVERITY_MEDIUM:
-      return AdjustHighlightColorForContrast(
-          GetColor(TP::COLOR_TOOLBAR_BUTTON_BACKGROUND, incognito,
-                   theme_supplier),
-          gfx::kGoogleYellow600, gfx::kGoogleYellow300, gfx::kGoogleYellow900,
-          gfx::kGoogleYellow050);
-    case TP::COLOR_AVATAR_BUTTON_HIGHLIGHT_NORMAL:
-    case TP::COLOR_AVATAR_BUTTON_HIGHLIGHT_SYNC_PAUSED:
-    case TP::COLOR_READ_LATER_BUTTON_HIGHLIGHT:
-      return AdjustHighlightColorForContrast(
-          GetColor(TP::COLOR_TOOLBAR_BUTTON_BACKGROUND, incognito,
-                   theme_supplier),
-          gfx::kGoogleBlue600, gfx::kGoogleBlue300, gfx::kGoogleBlue900,
-          gfx::kGoogleBlue050);
     case TP::COLOR_BOOKMARK_BAR_BACKGROUND:
       return GetColor(TP::COLOR_TOOLBAR, incognito, theme_supplier);
     case TP::COLOR_BOOKMARK_FAVICON: {
@@ -516,19 +459,10 @@ SkColor ThemeHelper::GetDefaultColor(
     case TP::COLOR_TOOLBAR_INK_DROP:
       return color_utils::GetColorWithMaxContrast(
           GetColor(TP::COLOR_TOOLBAR, incognito, theme_supplier));
-    case TP::COLOR_TOOLBAR_BUTTON_BACKGROUND:
-      return color_utils::GetColorWithMaxContrast(
-          GetColor(TP::COLOR_TOOLBAR_BUTTON_TEXT, incognito, theme_supplier));
     case TP::COLOR_TOOLBAR_BUTTON_BORDER:
       return SkColorSetA(
           GetColor(TP::COLOR_TOOLBAR_INK_DROP, incognito, theme_supplier),
           0x20);
-    case TP::COLOR_TOOLBAR_FEATURE_PROMO_HIGHLIGHT:
-      return AdjustHighlightColorForContrast(
-          GetColor(TP::COLOR_TOOLBAR_BUTTON_BACKGROUND, incognito,
-                   theme_supplier),
-          gfx::kGoogleBlue600, gfx::kGoogleGrey100, gfx::kGoogleBlue900,
-          SK_ColorWHITE);
     case TP::COLOR_INFOBAR_CONTENT_AREA_SEPARATOR:
       return color_utils::AlphaBlend(
           GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, incognito, theme_supplier),

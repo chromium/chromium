@@ -15,20 +15,14 @@
   /* The kColorAppMenuHighlightSeverityLow color id is used in */ \
   /* color_provider_css_colors_test.ts. If changing the variable name, the */ \
   /* variable name in the test needs to be changed as well. */ \
-  E(kColorAppMenuHighlightSeverityLow, \
-    ThemeProperties::COLOR_APP_MENU_HIGHLIGHT_SEVERITY_LOW, \
-    kChromeColorsStart) \
-  E(kColorAppMenuHighlightSeverityHigh, \
-    ThemeProperties::COLOR_APP_MENU_HIGHLIGHT_SEVERITY_HIGH) \
-  E(kColorAppMenuHighlightSeverityMedium, \
-    ThemeProperties::COLOR_APP_MENU_HIGHLIGHT_SEVERITY_MEDIUM) \
+  E_CPONLY(kColorAppMenuHighlightSeverityLow, kChromeColorsStart, \
+           kChromeColorsStart) \
+  E_CPONLY(kColorAppMenuHighlightSeverityHigh) \
+  E_CPONLY(kColorAppMenuHighlightSeverityMedium) \
   /* Avatar colors. */ \
-  E(kColorAvatarButtonHighlightNormal, \
-    ThemeProperties::COLOR_AVATAR_BUTTON_HIGHLIGHT_NORMAL) \
-  E(kColorAvatarButtonHighlightSyncError, \
-    ThemeProperties::COLOR_AVATAR_BUTTON_HIGHLIGHT_SYNC_ERROR) \
-  E(kColorAvatarButtonHighlightSyncPaused, \
-    ThemeProperties::COLOR_AVATAR_BUTTON_HIGHLIGHT_SYNC_PAUSED) \
+  E_CPONLY(kColorAvatarButtonHighlightNormal) \
+  E_CPONLY(kColorAvatarButtonHighlightSyncError) \
+  E_CPONLY(kColorAvatarButtonHighlightSyncPaused) \
   E_CPONLY(kColorAvatarStrokeLight) \
   /* Bookmark bar colors. */ \
   E(kColorBookmarkBarBackground, \
@@ -261,9 +255,6 @@
   /* Quick Answers colors. */ \
   E_CPONLY(kColorQuickAnswersReportQueryButtonBackground) \
   E_CPONLY(kColorQuickAnswersReportQueryButtonForeground) \
-  /* Read Later button colors. */ \
-  E(kColorReadLaterButtonHighlight, \
-    ThemeProperties::COLOR_READ_LATER_BUTTON_HIGHLIGHT) \
   /* Screenshot captured bubble colors. */ \
   E_CPONLY(kColorScreenshotCapturedImageBackground) \
   E_CPONLY(kColorScreenshotCapturedImageBorder) \
@@ -412,8 +403,6 @@
   E_CPONLY(kColorThumbnailTabForeground) \
   /* Toolbar colors. */ \
   E(kColorToolbar, ThemeProperties::COLOR_TOOLBAR) \
-  E(kColorToolbarButtonBackground, \
-    ThemeProperties::COLOR_TOOLBAR_BUTTON_BACKGROUND) \
   E_CPONLY(kColorToolbarButtonBackgroundHighlightedDefault) \
   E(kColorToolbarButtonBorder, ThemeProperties::COLOR_TOOLBAR_BUTTON_BORDER) \
   E(kColorToolbarButtonIcon, ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON) \
@@ -428,8 +417,7 @@
   E(kColorToolbarButtonText, ThemeProperties::COLOR_TOOLBAR_BUTTON_TEXT) \
   E(kColorToolbarContentAreaSeparator, \
     ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR) \
-  E(kColorToolbarFeaturePromoHighlight, \
-    ThemeProperties::COLOR_TOOLBAR_FEATURE_PROMO_HIGHLIGHT) \
+  E_CPONLY(kColorToolbarFeaturePromoHighlight) \
   E(kColorToolbarInkDrop, ThemeProperties::COLOR_TOOLBAR_INK_DROP) \
   E(kColorToolbarSeparator, \
     ThemeProperties::COLOR_TOOLBAR_VERTICAL_SEPARATOR) \

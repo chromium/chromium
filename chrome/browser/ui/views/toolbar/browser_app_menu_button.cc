@@ -16,6 +16,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_otr_state.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/user_education/feature_promo_controller.h"
@@ -131,21 +132,18 @@ void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
   }
 
   absl::optional<SkColor> color;
-  const auto* tp = GetThemeProvider();
+  const auto* const color_provider = GetColorProvider();
   switch (type_and_severity_.severity) {
     case AppMenuIconController::Severity::NONE:
       break;
     case AppMenuIconController::Severity::LOW:
-      color =
-          tp->GetColor(ThemeProperties::COLOR_APP_MENU_HIGHLIGHT_SEVERITY_LOW);
+      color = color_provider->GetColor(kColorAppMenuHighlightSeverityLow);
       break;
     case AppMenuIconController::Severity::MEDIUM:
-      color = tp->GetColor(
-          ThemeProperties::COLOR_APP_MENU_HIGHLIGHT_SEVERITY_MEDIUM);
+      color = color_provider->GetColor(kColorAppMenuHighlightSeverityMedium);
       break;
     case AppMenuIconController::Severity::HIGH:
-      color =
-          tp->GetColor(ThemeProperties::COLOR_APP_MENU_HIGHLIGHT_SEVERITY_HIGH);
+      color = color_provider->GetColor(kColorAppMenuHighlightSeverityHigh);
       break;
   }
 
