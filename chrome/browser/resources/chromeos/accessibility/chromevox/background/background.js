@@ -19,6 +19,7 @@ import {LiveRegions} from './live_regions.js';
 import {MathHandler} from './math_handler.js';
 import {MediaAutomationHandler} from './media_automation_handler.js';
 import {PageLoadSoundHandler} from './page_load_sound_handler.js';
+import {PanelBackground} from './panel/panel_background.js';
 import {RangeAutomationHandler} from './range_automation_handler.js';
 
 /**
@@ -113,6 +114,7 @@ export class Background extends ChromeVoxState {
 
     FindHandler.init();
     DownloadHandler.init();
+    PanelBackground.init();
     JaPhoneticData.init(JaPhoneticMap.MAP);
 
     chrome.accessibilityPrivate.onAnnounceForAccessibility.addListener(

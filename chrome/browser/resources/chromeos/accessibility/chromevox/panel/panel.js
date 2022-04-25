@@ -572,12 +572,12 @@ export class Panel extends PanelInterface {
   }
 
   /** Open incremental search. */
-  static onSearch() {
+  static async onSearch() {
     Panel.setMode(PanelMode.SEARCH);
     Panel.clearMenus();
     Panel.pendingCallback_ = null;
     Panel.updateFromPrefs();
-    ISearchUI.init(Panel.searchInput_);
+    await ISearchUI.init(Panel.searchInput_);
   }
 
   /**
