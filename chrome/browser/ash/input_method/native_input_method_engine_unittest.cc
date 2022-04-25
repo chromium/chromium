@@ -997,11 +997,10 @@ TEST_F(NativeInputMethodEngineWithRenderViewHostTest,
   test_recorder.EnableRecording(false /* extensions */);
   ASSERT_EQ(0u, test_recorder.entries_count());
 
-  auto entry = ime::mojom::UkmEntry::New();
   auto metric = ime::mojom::NonCompliantApiMetric::New();
   metric->non_compliant_operation =
       ime::mojom::InputMethodApiOperation::kSetCompositionText;
-  entry->set_non_compliant_api(std::move(metric));
+  auto entry = ime::mojom::UkmEntry::NewNonCompliantApi(std::move(metric));
   mock_input_method.host->RecordUkm(std::move(entry));
   mock_input_method.host.FlushForTesting();
 

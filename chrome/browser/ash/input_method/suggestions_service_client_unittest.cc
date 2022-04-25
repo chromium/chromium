@@ -38,9 +38,9 @@ machine_learning::mojom::TextSuggesterResultPtr GenerateMultiWordResult(
   result->status = machine_learning::mojom::TextSuggesterResult::Status::OK;
   auto multi_word = machine_learning::mojom::MultiWordSuggestionCandidate::New(
       /*text=*/text, /*normalized_score=*/score);
-  auto candidate = machine_learning::mojom::TextSuggestionCandidate::New();
-  candidate->set_multi_word(std::move(multi_word));
-  result->candidates.emplace_back(std::move(candidate));
+  result->candidates.emplace_back(
+      machine_learning::mojom::TextSuggestionCandidate::NewMultiWord(
+          std::move(multi_word)));
   return result;
 }
 
