@@ -440,6 +440,26 @@ TEST_F(UkmDatabaseBackendTest, ReadOnlyQueries) {
       0, UkmDatabase::CustomSqlQuery(
              "SELECT metric_value FROM metrics WHERE metric_hash=?", {}));
   ExpectQueryResult(queries, false, {});
+
+  queries.clear();
+  queries.emplace(0, UkmDatabase::CustomSqlQuery("DROP TABLE metrics", {}));
+  ExpectQueryResult(queries, false, {});
+
+  // Database should not have changed.
+  DatabaseStats stats = GetDatabaseStats(backend_->db());
+  EXPECT_EQ(12, stats.total_metrics);
+  EXPECT_EQ(4u, stats.metric_count_for_event_id.size());
+
+  queries.clear();
+  queries.emplace(
+      0, UkmDatabase::CustomSqlQuery(
+             "INSERT INTO urls(url_id, url) VALUES(1,'not_added')", {}));
+  ExpectQueryResult(queries, false, {});
+
+  // Database should not have changed.
+  DatabaseStats stats1 = GetDatabaseStats(backend_->db());
+  EXPECT_EQ(12, stats1.total_metrics);
+  EXPECT_EQ(4u, stats1.metric_count_for_event_id.size());
 }
 
 class FailedUkmDatabaseTest : public UkmDatabaseBackendTest {

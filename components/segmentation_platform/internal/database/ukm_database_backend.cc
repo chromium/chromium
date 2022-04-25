@@ -209,8 +209,7 @@ void UkmDatabaseBackend::RunReadonlyQueries(const QueryList& queries,
     const processing::FeatureIndex index = index_and_query.first;
     const UkmDatabase::CustomSqlQuery& query = index_and_query.second;
 
-    // TODO(ssid): Make the queries readonly.
-    sql::Statement statement(db_.GetUniqueStatement(query.query.c_str()));
+    sql::Statement statement(db_.GetReadonlyStatement(query.query.c_str()));
     BindValuesToStatement(query.bind_values, statement);
 
     if (!statement.is_valid() || !statement.Step()) {
