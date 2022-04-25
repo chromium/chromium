@@ -360,7 +360,7 @@ const base::FeatureParam<std::string> kDnsOverHttpsTemplatesParam{
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables the DNS-Over-HTTPS in the DNS proxy.
 const base::Feature kDnsProxyEnableDOH{"DnsProxyEnableDOH",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+                                       base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
