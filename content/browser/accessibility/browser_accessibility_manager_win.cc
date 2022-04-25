@@ -173,7 +173,7 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
 
   if (!can_fire_events && !load_complete_pending_ &&
       event_type == ui::AXEventGenerator::Event::LOAD_COMPLETE && GetRoot() &&
-      !GetRoot()->IsOffscreen() && GetRoot()->PlatformChildCount() > 0) {
+      !GetRoot()->IsOffscreen() && GetRoot()->IsPlatformDocumentWithContent()) {
     load_complete_pending_ = true;
   }
 

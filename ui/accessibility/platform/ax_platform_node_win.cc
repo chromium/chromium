@@ -7094,10 +7094,6 @@ bool AXPlatformNodeWin::IsNameExposed() const {
   }
 }
 
-bool AXPlatformNodeWin::IsPlatformDocumentWithContent() const {
-  return IsPlatformDocument() && GetChildCount();
-}
-
 bool AXPlatformNodeWin::IsUIAControl() const {
   // UIA provides multiple "views": raw, content and control. We only want to
   // populate the content and control views with items that make sense to

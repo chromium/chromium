@@ -425,6 +425,10 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   // PDF.
   bool IsPlatformDocument() const;
 
+  // Returns true if this object is a platform document as described above and
+  // also has at least some content.
+  bool IsPlatformDocumentWithContent() const;
+
  protected:
   AXPlatformNodeBase();
 

@@ -785,7 +785,11 @@ bool AXPlatformNodeBase::SetHypertextSelection(int start_offset,
 }
 
 bool AXPlatformNodeBase::IsPlatformDocument() const {
-  return ui::IsPlatformDocument(GetRole());
+  return delegate_ && delegate_->IsPlatformDocument();
+}
+
+bool AXPlatformNodeBase::IsPlatformDocumentWithContent() const {
+  return delegate_ && delegate_->IsPlatformDocumentWithContent();
 }
 
 bool AXPlatformNodeBase::IsStructuredAnnotation() const {
