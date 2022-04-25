@@ -22,16 +22,14 @@ DownloadNativeTaskImpl::DownloadNativeTaskImpl(
     int64_t total_bytes,
     const std::string& mime_type,
     NSString* identifier,
-    DownloadNativeTaskBridge* download,
-    Delegate* delegate)
+    DownloadNativeTaskBridge* download)
     : DownloadTaskImpl(web_state,
                        original_url,
                        http_method,
                        content_disposition,
                        total_bytes,
                        mime_type,
-                       identifier,
-                       delegate),
+                       identifier),
       download_bridge_(download) {
   DCHECK(download_bridge_);
 }
@@ -89,15 +87,6 @@ void DownloadNativeTaskImpl::Cancel() {
     download_bridge_ = nil;
   }
   DownloadTaskImpl::Cancel();
-}
-
-void DownloadNativeTaskImpl::ShutDown() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (@available(iOS 15, *)) {
-    [download_bridge_ cancel];
-    download_bridge_ = nil;
-  }
-  DownloadTaskImpl::ShutDown();
 }
 
 NSData* DownloadNativeTaskImpl::GetResponseData() const {

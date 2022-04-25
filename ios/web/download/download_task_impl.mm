@@ -24,8 +24,7 @@ DownloadTaskImpl::DownloadTaskImpl(WebState* web_state,
                                    const std::string& content_disposition,
                                    int64_t total_bytes,
                                    const std::string& mime_type,
-                                   NSString* identifier,
-                                   Delegate* delegate)
+                                   NSString* identifier)
     : original_url_(original_url),
       http_method_(http_method),
       total_bytes_(total_bytes),
@@ -33,10 +32,8 @@ DownloadTaskImpl::DownloadTaskImpl(WebState* web_state,
       original_mime_type_(mime_type),
       mime_type_(mime_type),
       identifier_([identifier copy]),
-      web_state_(web_state),
-      delegate_(delegate) {
+      web_state_(web_state) {
   DCHECK(web_state_);
-  DCHECK(delegate_);
   base::WeakPtr<DownloadTaskImpl> weak_Task = weak_factory_.GetWeakPtr();
   observer_ = [NSNotificationCenter.defaultCenter
       addObserverForName:UIApplicationWillResignActiveNotification
@@ -57,16 +54,6 @@ DownloadTaskImpl::~DownloadTaskImpl() {
   [NSNotificationCenter.defaultCenter removeObserver:observer_];
   for (auto& observer : observers_)
     observer.OnDownloadDestroyed(this);
-
-  if (delegate_) {
-    delegate_->OnTaskDestroyed(this);
-    delegate_ = nullptr;
-  }
-}
-
-void DownloadTaskImpl::ShutDown() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  delegate_ = nullptr;
 }
 
 WebState* DownloadTaskImpl::GetWebState() {

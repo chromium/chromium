@@ -11,8 +11,9 @@
 
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
-#import "ios/web/download/download_task_impl.h"
-#import "ios/web/public/download/download_controller.h"
+#include "ios/web/download/download_task_impl.h"
+#include "ios/web/public/download/download_controller.h"
+#include "ios/web/public/download/download_task_observer.h"
 #include "ui/base/page_transition_types.h"
 
 namespace web {
@@ -22,7 +23,7 @@ class WebState;
 
 class DownloadControllerImpl : public DownloadController,
                                public base::SupportsUserData::Data,
-                               public DownloadTaskImpl::Delegate {
+                               public DownloadTaskObserver {
  public:
   DownloadControllerImpl();
 
@@ -53,12 +54,15 @@ class DownloadControllerImpl : public DownloadController,
   void SetDelegate(DownloadControllerDelegate* delegate) override;
   DownloadControllerDelegate* GetDelegate() const override;
 
-  // DownloadTaskImpl::Delegate overrides:
-  void OnTaskDestroyed(DownloadTaskImpl* task) override;
+  // DownloadTaskObserver overrides:
+  void OnDownloadDestroyed(DownloadTask* task) override;
 
  private:
+  // Called when a new task is created.
+  void OnDownloadCreated(std::unique_ptr<DownloadTaskImpl> task);
+
   // Set of tasks which are currently alive.
-  std::set<DownloadTaskImpl*> alive_tasks_;
+  std::set<DownloadTask*> alive_tasks_;
   DownloadControllerDelegate* delegate_ = nullptr;
   SEQUENCE_CHECKER(my_sequence_checker_);
 };

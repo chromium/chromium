@@ -19,7 +19,7 @@ namespace web {
 class DownloadNativeTaskImpl final : public DownloadTaskImpl {
  public:
   // Constructs a new DownloadSessionTaskImpl objects. |web_state|, |identifier|
-  // |delegate|, and |download| must be valid.
+  // and |download| must be valid.
   DownloadNativeTaskImpl(WebState* web_state,
                          const GURL& original_url,
                          NSString* http_method,
@@ -27,8 +27,8 @@ class DownloadNativeTaskImpl final : public DownloadTaskImpl {
                          int64_t total_bytes,
                          const std::string& mime_type,
                          NSString* identifier,
-                         DownloadNativeTaskBridge* download,
-                         Delegate* delegate) API_AVAILABLE(ios(15));
+                         DownloadNativeTaskBridge* download)
+      API_AVAILABLE(ios(15));
 
   DownloadNativeTaskImpl(const DownloadNativeTaskImpl&) = delete;
   DownloadNativeTaskImpl& operator=(const DownloadNativeTaskImpl&) = delete;
@@ -38,7 +38,6 @@ class DownloadNativeTaskImpl final : public DownloadTaskImpl {
   // DownloadTaskImpl overrides:
   void Start(const base::FilePath& path, Destination destination_hint) final;
   void Cancel() final;
-  void ShutDown() final;
 
   // DownloadTask overrides:
   NSData* GetResponseData() const final;

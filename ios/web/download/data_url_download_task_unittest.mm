@@ -37,14 +37,6 @@ const char kTestData[] = "Chromium";
 const int kTestDataLen = sizeof(kTestData) - 1;
 NSString* const kMethodGet = @"GET";
 
-// Fake DownloadTaskImpl::Delegate used for tests.
-class DataUrlDownloadTaskTestDelegate : public DownloadTaskImpl::Delegate {
- public:
-  DataUrlDownloadTaskTestDelegate() {}
-
-  void OnTaskDestroyed(DownloadTaskImpl* task) override {}
-};
-
 // Fake DownloadTaskObserver used to wait for task completion.
 class DataUrlDownloadTaskTestObserver : public DownloadTaskObserver {
  public:
@@ -98,16 +90,14 @@ class DataUrlDownloadTaskTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   FakeBrowserState browser_state_;
   FakeWebState web_state_;
-  DataUrlDownloadTaskTestDelegate task_delegate_;
 };
 
 // Tests valid data:// url downloads.
 TEST_F(DataUrlDownloadTaskTest, ValidDataUrl) {
   // Create data:// url download task.
-  DataUrlDownloadTask task(&web_state_, GURL(kValidDataUrl), kMethodGet,
-                           kContentDisposition,
-                           /*total_bytes=*/-1, kMimeType,
-                           [[NSUUID UUID] UUIDString], &task_delegate_);
+  DataUrlDownloadTask task(
+      &web_state_, GURL(kValidDataUrl), kMethodGet, kContentDisposition,
+      /*total_bytes=*/-1, kMimeType, [[NSUUID UUID] UUIDString]);
 
   StartTaskAndWaitUntilDone(&task, base::FilePath());
 
@@ -130,10 +120,9 @@ TEST_F(DataUrlDownloadTaskTest, ValidUrlToFile) {
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
 
   // Create data:// url download task.
-  DataUrlDownloadTask task(&web_state_, GURL(kValidDataUrl), kMethodGet,
-                           kContentDisposition,
-                           /*total_bytes=*/-1, kMimeType,
-                           [[NSUUID UUID] UUIDString], &task_delegate_);
+  DataUrlDownloadTask task(
+      &web_state_, GURL(kValidDataUrl), kMethodGet, kContentDisposition,
+      /*total_bytes=*/-1, kMimeType, [[NSUUID UUID] UUIDString]);
 
   base::FilePath path = scoped_temp_dir.GetPath().Append(
       base::UTF16ToUTF8(task.GetSuggestedFilename()));
@@ -160,10 +149,9 @@ TEST_F(DataUrlDownloadTaskTest, ValidUrlToFile) {
 // Tests valid data:// url downloads to a non-existent location.
 TEST_F(DataUrlDownloadTaskTest, ValidUrlNonExistentFile) {
   // Create data:// url download task.
-  DataUrlDownloadTask task(&web_state_, GURL(kValidDataUrl), kMethodGet,
-                           kContentDisposition,
-                           /*total_bytes=*/-1, kMimeType,
-                           [[NSUUID UUID] UUIDString], &task_delegate_);
+  DataUrlDownloadTask task(
+      &web_state_, GURL(kValidDataUrl), kMethodGet, kContentDisposition,
+      /*total_bytes=*/-1, kMimeType, [[NSUUID UUID] UUIDString]);
 
   StartTaskAndWaitUntilDone(&task, base::FilePath("/no-such-dir/file.txt"));
 
@@ -180,10 +168,9 @@ TEST_F(DataUrlDownloadTaskTest, ValidUrlNonExistentFile) {
 // Tests empty data:// url downloads.
 TEST_F(DataUrlDownloadTaskTest, EmptyDataUrl) {
   // Create data:// url download task.
-  DataUrlDownloadTask task(&web_state_, GURL(kEmptyDataUrl), kMethodGet,
-                           kContentDisposition,
-                           /*total_bytes=*/-1, kMimeType,
-                           [[NSUUID UUID] UUIDString], &task_delegate_);
+  DataUrlDownloadTask task(
+      &web_state_, GURL(kEmptyDataUrl), kMethodGet, kContentDisposition,
+      /*total_bytes=*/-1, kMimeType, [[NSUUID UUID] UUIDString]);
 
   StartTaskAndWaitUntilDone(&task, base::FilePath());
 

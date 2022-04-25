@@ -55,14 +55,6 @@ class MockDownloadTaskObserver : public DownloadTaskObserver {
   }
 };
 
-// Mocks DownloadTaskImpl::Delegate's OnTaskDestroyed method.
-class FakeDownloadTaskImplDelegate : public DownloadTaskImpl::Delegate {
- public:
-  FakeDownloadTaskImplDelegate() {}
-
-  MOCK_METHOD1(OnTaskDestroyed, void(DownloadTaskImpl* task));
-};
-
 }  //  namespace
 
 // Creates a non-virtual class to use for testing
@@ -74,16 +66,14 @@ class FakeDownloadTaskImpl : public DownloadTaskImpl {
                        const std::string& content_disposition,
                        int64_t total_bytes,
                        const std::string& mime_type,
-                       NSString* identifier,
-                       Delegate* delegate)
+                       NSString* identifier)
       : DownloadTaskImpl(web_state,
                          original_url,
                          http_method,
                          content_disposition,
                          total_bytes,
                          mime_type,
-                         identifier,
-                         delegate) {}
+                         identifier) {}
 
   NSData* GetResponseData() const override { return response_data_; }
 
@@ -100,20 +90,19 @@ class FakeDownloadTaskImpl : public DownloadTaskImpl {
 class DownloadTaskImplTest : public PlatformTest {
  protected:
   DownloadTaskImplTest()
-      : task_(std::make_unique<FakeDownloadTaskImpl>(&web_state_,
-                                                     GURL(kUrl),
-                                                     kHttpMethod,
-                                                     kContentDisposition,
-                                                     /*total_bytes=*/-1,
-                                                     kMimeType,
-                                                     [[NSUUID UUID] UUIDString],
-                                                     &task_delegate_)) {
+      : task_(std::make_unique<FakeDownloadTaskImpl>(
+            &web_state_,
+            GURL(kUrl),
+            kHttpMethod,
+            kContentDisposition,
+            /*total_bytes=*/-1,
+            kMimeType,
+            [[NSUUID UUID] UUIDString])) {
     task_->AddObserver(&task_observer_);
   }
 
   web::WebTaskEnvironment task_environment_;
   FakeWebState web_state_;
-  testing::StrictMock<FakeDownloadTaskImplDelegate> task_delegate_;
   std::unique_ptr<FakeDownloadTaskImpl> task_;
   MockDownloadTaskObserver task_observer_;
 };
@@ -134,8 +123,6 @@ TEST_F(DownloadTaskImplTest, DefaultState) {
   EXPECT_EQ(kMimeType, task_->GetMimeType());
   EXPECT_EQ(kMimeType, task_->GetOriginalMimeType());
   EXPECT_EQ("file.test", base::UTF16ToUTF8(task_->GetSuggestedFilename()));
-
-  EXPECT_CALL(task_delegate_, OnTaskDestroyed(task_.get()));
 }
 
 // Tests that DownloadTaskImpl methods are overloaded
@@ -148,7 +135,5 @@ TEST_F(DownloadTaskImplTest, SuccessfulInitialization) {
   // Tests that Cancel() is overloaded
   task_->Cancel();
   EXPECT_EQ(DownloadTask::State::kCancelled, task_->GetState());
-
-  EXPECT_CALL(task_delegate_, OnTaskDestroyed(task_.get()));
 }
 }  // namespace web

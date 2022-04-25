@@ -78,16 +78,14 @@ DataUrlDownloadTask::DataUrlDownloadTask(WebState* web_state,
                                          const std::string& content_disposition,
                                          int64_t total_bytes,
                                          const std::string& mime_type,
-                                         NSString* identifier,
-                                         Delegate* delegate)
+                                         NSString* identifier)
     : DownloadTaskImpl(web_state,
                        original_url,
                        http_method,
                        content_disposition,
                        total_bytes,
                        mime_type,
-                       identifier,
-                       delegate) {
+                       identifier) {
   DCHECK(original_url_.SchemeIs(url::kDataScheme));
 }
 

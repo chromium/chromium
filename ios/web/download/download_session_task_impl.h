@@ -35,7 +35,6 @@ class DownloadSessionTaskImpl final : public DownloadTaskImpl {
                           int64_t total_bytes,
                           const std::string& mime_type,
                           NSString* identifier,
-                          Delegate* delegate,
                           SessionFactory session_factory = SessionFactory());
 
   DownloadSessionTaskImpl(const DownloadSessionTaskImpl&) = delete;
@@ -50,7 +49,6 @@ class DownloadSessionTaskImpl final : public DownloadTaskImpl {
   // DownloadTaskImpl overrides:
   void Start(const base::FilePath& path, Destination destination_hint) final;
   void Cancel() final;
-  void ShutDown() final;
 
  private:
   // Called once net::URLFetcherResponseWriter completes the download

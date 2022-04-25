@@ -24,8 +24,7 @@ class DataUrlDownloadTask final : public DownloadTaskImpl {
                       const std::string& content_disposition,
                       int64_t total_bytes,
                       const std::string& mime_type,
-                      NSString* identifier,
-                      Delegate* delegate);
+                      NSString* identifier);
 
   DataUrlDownloadTask(const DataUrlDownloadTask&) = delete;
   DataUrlDownloadTask& operator=(const DataUrlDownloadTask&) = delete;

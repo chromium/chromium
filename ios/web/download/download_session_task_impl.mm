@@ -190,7 +190,6 @@ DownloadSessionTaskImpl::DownloadSessionTaskImpl(
     int64_t total_bytes,
     const std::string& mime_type,
     NSString* identifier,
-    Delegate* delegate,
     SessionFactory session_factory)
     : DownloadTaskImpl(web_state,
                        original_url,
@@ -198,8 +197,7 @@ DownloadSessionTaskImpl::DownloadSessionTaskImpl(
                        content_disposition,
                        total_bytes,
                        mime_type,
-                       identifier,
-                       delegate),
+                       identifier),
       session_factory_(std::move(session_factory)) {
   DCHECK(!original_url_.SchemeIs(url::kDataScheme));
 }
@@ -267,13 +265,6 @@ void DownloadSessionTaskImpl::Cancel() {
   [session_task_ cancel];
   session_task_ = nil;
   DownloadTaskImpl::Cancel();
-}
-
-void DownloadSessionTaskImpl::ShutDown() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  [session_task_ cancel];
-  session_task_ = nil;
-  DownloadTaskImpl::ShutDown();
 }
 
 void DownloadSessionTaskImpl::OnWriterDownloadFinished(int error_code) {

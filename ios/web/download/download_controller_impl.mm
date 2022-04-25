@@ -41,8 +41,10 @@ DownloadControllerImpl::DownloadControllerImpl() = default;
 
 DownloadControllerImpl::~DownloadControllerImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
-  for (DownloadTaskImpl* task : alive_tasks_)
-    task->ShutDown();
+  for (DownloadTask* task : alive_tasks_) {
+    task->RemoveObserver(this);
+    task->Cancel();
+  }
 
   if (delegate_)
     delegate_->OnDownloadControllerDestroyed(this);
@@ -62,20 +64,15 @@ void DownloadControllerImpl::CreateDownloadTask(
   if (!delegate_)
     return;
 
-  std::unique_ptr<DownloadTaskImpl> task;
   if (original_url.SchemeIs(url::kDataScheme)) {
-    task = std::make_unique<DataUrlDownloadTask>(
+    OnDownloadCreated(std::make_unique<DataUrlDownloadTask>(
         web_state, original_url, http_method, content_disposition, total_bytes,
-        mime_type, identifier, this);
+        mime_type, identifier));
   } else {
-    task = std::make_unique<DownloadSessionTaskImpl>(
+    OnDownloadCreated(std::make_unique<DownloadSessionTaskImpl>(
         web_state, original_url, http_method, content_disposition, total_bytes,
-        mime_type, identifier, this);
+        mime_type, identifier));
   }
-  DCHECK(task);
-
-  alive_tasks_.insert(task.get());
-  delegate_->OnDownloadCreated(this, web_state, std::move(task));
 }
 
 void DownloadControllerImpl::CreateNativeDownloadTask(
@@ -93,11 +90,9 @@ void DownloadControllerImpl::CreateNativeDownloadTask(
     return;
   }
 
-  auto task = std::make_unique<DownloadNativeTaskImpl>(
+  OnDownloadCreated(std::make_unique<DownloadNativeTaskImpl>(
       web_state, original_url, http_method, content_disposition, total_bytes,
-      mime_type, identifier, download, this);
-  alive_tasks_.insert(task.get());
-  delegate_->OnDownloadCreated(this, web_state, std::move(task));
+      mime_type, identifier, download));
 }
 
 void DownloadControllerImpl::SetDelegate(DownloadControllerDelegate* delegate) {
@@ -110,11 +105,23 @@ DownloadControllerDelegate* DownloadControllerImpl::GetDelegate() const {
   return delegate_;
 }
 
-void DownloadControllerImpl::OnTaskDestroyed(DownloadTaskImpl* task) {
+void DownloadControllerImpl::OnDownloadDestroyed(DownloadTask* task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
   auto it = alive_tasks_.find(task);
   DCHECK(it != alive_tasks_.end());
+  task->RemoveObserver(this);
   alive_tasks_.erase(it);
+}
+
+void DownloadControllerImpl::OnDownloadCreated(
+    std::unique_ptr<DownloadTaskImpl> task) {
+  DCHECK(task);
+  alive_tasks_.insert(task.get());
+  task->AddObserver(this);
+
+  DCHECK(task->GetWebState());
+  WebState* web_state = task->GetWebState();
+  delegate_->OnDownloadCreated(this, web_state, std::move(task));
 }
 
 }  // namespace web
