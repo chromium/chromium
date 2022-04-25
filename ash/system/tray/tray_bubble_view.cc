@@ -289,11 +289,15 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
     // NativeViewHost and may steal events.
     SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 
-    if (features::IsDarkLightModeEnabled()) {
+    if (features::IsDarkLightModeEnabled() && !init_params.transparent) {
       SetPaintToLayer();
       layer()->SetRoundedCornerRadius(
           gfx::RoundedCornersF{static_cast<float>(params_.corner_radius)});
     }
+  }
+
+  if (init_params.transparent) {
+    set_color(SK_ColorTRANSPARENT);
   }
 
   auto layout = std::make_unique<BottomAlignedBoxLayout>(this);
@@ -509,6 +513,8 @@ void TrayBubbleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void TrayBubbleView::OnThemeChanged() {
   views::BubbleDialogDelegateView::OnThemeChanged();
+  if (params_.transparent)
+    return;
 
   if (features::IsDarkLightModeEnabled()) {
     SetBorder(std::make_unique<HighlightBorder>(

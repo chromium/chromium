@@ -319,11 +319,11 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
   init_params.close_on_deactivate = true;
   init_params.has_shadow = false;
   init_params.reroute_event_handler = true;
+  init_params.transparent = true;
 
   // Create and customize bubble view.
   TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
   // Ensure bubble frame does not draw background behind bubble view.
-  bubble_view->set_color(SK_ColorTRANSPARENT);
   child_bubble_container_ =
       bubble_view->AddChildView(std::make_unique<ChildBubbleContainer>());
   child_bubble_container_->SetMaxHeight(CalculateMaxHeight());

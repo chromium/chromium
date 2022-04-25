@@ -109,6 +109,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     bool has_shadow = true;
     // Use half opaque widget instead of fully opaque.
     bool translucent = false;
+    // Whether the view is fully transparent (only serves as a container).
+    bool transparent = false;
   };
 
   explicit TrayBubbleView(const InitParams& init_params);
