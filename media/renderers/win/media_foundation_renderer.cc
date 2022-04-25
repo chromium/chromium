@@ -86,6 +86,7 @@ const std::string GetErrorReasonString(
     STRINGIFY(kFailedToSetDCompMode);
     STRINGIFY(kFailedToGetDCompSurface);
     STRINGIFY(kFailedToDuplicateHandle);
+    STRINGIFY(kFailedToCreateMediaEngine);
   }
 #undef STRINGIFY
 }
@@ -166,20 +167,21 @@ void MediaFoundationRenderer::Initialize(MediaResource* media_resource,
     }
   }
 
-  if (!start_in_dcomp_mode) {
-    rendering_mode_ = RenderingMode::FrameServer;
-  } else {
-    rendering_mode_ = RenderingMode::DirectComposition;
-  }
+  rendering_mode_ = start_in_dcomp_mode ? RenderingMode::DirectComposition
+                                        : RenderingMode::FrameServer;
 
   HRESULT hr = CreateMediaEngine(media_resource);
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to create media engine: " << PrintHr(hr);
-    std::move(init_cb).Run(PIPELINE_ERROR_INITIALIZATION_FAILED);
-  } else {
-    SetVolume(volume_);
-    std::move(init_cb).Run(PIPELINE_OK);
+    base::UmaHistogramSparse(
+        "Media.MediaFoundationRenderer.CreateMediaEngineError", hr);
+    OnError(PIPELINE_ERROR_INITIALIZATION_FAILED,
+            ErrorReason::kFailedToCreateMediaEngine, hr, std::move(init_cb));
+    return;
   }
+
+  SetVolume(volume_);
+  std::move(init_cb).Run(PIPELINE_OK);
 }
 
 HRESULT MediaFoundationRenderer::CreateMediaEngine(
@@ -879,7 +881,8 @@ void MediaFoundationRenderer::OnVideoNaturalSizeChange() {
 
 void MediaFoundationRenderer::OnError(PipelineStatus status,
                                       ErrorReason reason,
-                                      absl::optional<HRESULT> hresult) {
+                                      absl::optional<HRESULT> hresult,
+                                      PipelineStatusCallback status_cb) {
   const std::string error =
       "MediaFoundationRenderer error: " + GetErrorReasonString(reason) +
       (hresult.has_value() ? (" (" + PrintHr(hresult.value()) + ")") : "");
@@ -909,7 +912,10 @@ void MediaFoundationRenderer::OnError(PipelineStatus status,
   if (hresult.has_value())
     new_status.WithData("hresult", static_cast<uint32_t>(hresult.value()));
 
-  renderer_client_->OnError(new_status);
+  if (status_cb)
+    std::move(status_cb).Run(new_status);
+  else
+    renderer_client_->OnError(new_status);
 }
 
 void MediaFoundationRenderer::RequestNextFrameBetweenTimestamps(

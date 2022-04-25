@@ -57,8 +57,9 @@ class MEDIA_EXPORT MediaFoundationRenderer
     kFailedToSetDCompMode = 9,
     kFailedToGetDCompSurface = 10,
     kFailedToDuplicateHandle = 11,
+    kFailedToCreateMediaEngine = 12,
     // Add new values here and update `kMaxValue`. Never reuse existing values.
-    kMaxValue = kFailedToDuplicateHandle,
+    kMaxValue = kFailedToCreateMediaEngine,
   };
 
   // Report `reason` to UMA.
@@ -139,9 +140,18 @@ class MEDIA_EXPORT MediaFoundationRenderer
   HRESULT PauseInternal();
   HRESULT InitializeTexturePool(const gfx::Size& size);
   void OnVideoNaturalSizeChange();
+
+  // Handles errors in MediaFoundationRenderer:
+  // - DLOG for local debugging
+  // - MEDIA_LOG for media-internals, dev tools etc.
+  // - Report error reason to UMA.
+  // - Notify the `cdm_proxy_`.
+  // - Notify the client via `status_cb`, or if `status_cb` is null, notify
+  //   `renderer_client` via OnError().
   void OnError(PipelineStatus status,
                ErrorReason reason,
-               absl::optional<HRESULT> hresult = absl::nullopt);
+               absl::optional<HRESULT> hresult = absl::nullopt,
+               PipelineStatusCallback status_cb = base::NullCallback());
 
   // Renderer methods are running in the same sequence.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
