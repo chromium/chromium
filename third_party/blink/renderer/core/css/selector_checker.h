@@ -30,12 +30,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SELECTOR_CHECKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SELECTOR_CHECKER_H_
 
+#include <limits>
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
+#include "third_party/blink/renderer/core/css/style_scope.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
@@ -100,6 +107,46 @@ class CORE_EXPORT SelectorChecker {
   SelectorChecker(const SelectorChecker&) = delete;
   SelectorChecker& operator=(const SelectorChecker&) = delete;
 
+  struct StyleScopeActivation {
+    DISALLOW_NEW();
+
+   public:
+    void Trace(blink::Visitor*) const;
+
+    // The root is the element when the activation happened. In other words,
+    // the element that matched <scope-start>.
+    //
+    // https://drafts.csswg.org/css-cascade-6/#typedef-scope-start
+    Member<Element> root;
+    // The distance to the root, in terms of number of inclusive ancestors
+    // between some subject element and the root.
+    unsigned proximity = 0;
+    // True if some subject element matches <scope-end>.
+    //
+    // https://drafts.csswg.org/css-cascade-6/#typedef-scope-end
+    bool limit = false;
+  };
+
+  // Stores the current @scope activations for a given subject element.
+  //
+  // See documentation near EnsureActivations for more information.
+  //
+  // TODO(crbug.com/1280240): Provide a parent frame in the future.
+  class StyleScopeFrame {
+    STACK_ALLOCATED();
+
+   public:
+    using Activations = HeapVector<StyleScopeActivation>;
+
+    explicit StyleScopeFrame(Element& element) : element_(element) {}
+
+   private:
+    friend class SelectorChecker;
+
+    Element& element_;
+    HeapHashMap<Member<const StyleScope>, Member<const Activations>> data_;
+  };
+
   // Wraps the current element and a CSSSelector and stores some other state of
   // the selector matching process.
   struct SelectorCheckingContext {
@@ -112,7 +159,14 @@ class CORE_EXPORT SelectorChecker {
     // Group fields by type to avoid perf test regression.
     // https://crrev.com/c/3362008
     const CSSSelector* selector = nullptr;
+
+    // Used to match the :scope pseudo-class.
     const ContainerNode* scope = nullptr;
+    // If `style_scope` is specified, that is used to match the :scope
+    // pseudo-class instead (and `scope` is ignored).
+    const StyleScope* style_scope = nullptr;
+    // StyleScopeFrame is required if style_scope is non-nullptr.
+    StyleScopeFrame* style_scope_frame = nullptr;
 
     Element* element = nullptr;
     Element* previous_element = nullptr;
@@ -192,6 +246,7 @@ class CORE_EXPORT SelectorChecker {
     // MatchResult instance allocation overhead for none-has matching operations
     HeapVector<Member<Element>>* has_argument_leftmost_compound_matches{
         nullptr};
+    unsigned proximity{std::numeric_limits<unsigned>::max()};
   };
 
   bool Match(const SelectorCheckingContext& context, MatchResult& result) const;
@@ -256,6 +311,25 @@ class CORE_EXPORT SelectorChecker {
   bool CheckPseudoNot(const SelectorCheckingContext&, MatchResult&) const;
   bool CheckPseudoHas(const SelectorCheckingContext&, MatchResult&) const;
 
+  // The *activations* for a given StyleScope/element, is a list of active
+  // scopes found in the ancestor chain, their roots (Element*), and the
+  // proximities to those roots.
+  //
+  // The idea is that, if we're matching a selector ':scope' within some
+  // StyleScope, we look up the activations for that StyleScope, and
+  // and check if the current element (`SelectorCheckingContext.element`)
+  // matches any of the activation roots.
+  using Activations = StyleScopeFrame::Activations;
+
+  const Activations& EnsureActivations(const SelectorCheckingContext&,
+                                       const StyleScope&) const;
+  const Activations* CalculateActivations(
+      Element&,
+      const StyleScope&,
+      const Activations& outer_activations) const;
+  bool CheckInStyleScope(const SelectorCheckingContext&, MatchResult&) const;
+  bool MatchesWithScope(Element&, const CSSSelectorList&, Element* scope) const;
+
   ComputedStyle* element_style_;
   CustomScrollbar* scrollbar_;
   PartNames* part_names_;
@@ -269,5 +343,10 @@ class CORE_EXPORT SelectorChecker {
 };
 
 }  // namespace blink
+
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(
+    blink::SelectorChecker::StyleScopeActivation);
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(
+    blink::SelectorChecker::StyleScopeFrame);
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SELECTOR_CHECKER_H_

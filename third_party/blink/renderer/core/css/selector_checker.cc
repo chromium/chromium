@@ -218,7 +218,13 @@ bool SelectorChecker::Match(const SelectorCheckingContext& context,
       return false;
   }
   HasMatchedCacheScope has_matched_cache_scope(&context.element->GetDocument());
-  return MatchSelector(context, result) == kSelectorMatches;
+  if (MatchSelector(context, result) != kSelectorMatches)
+    return false;
+  if (RuntimeEnabledFeatures::CSSScopeEnabled() &&
+      !CheckInStyleScope(context, result)) {
+    return false;
+  }
+  return true;
 }
 
 // Recursive check of selectors and combinators
@@ -1575,6 +1581,21 @@ bool SelectorChecker::CheckPseudoHost(const SelectorCheckingContext& context,
 bool SelectorChecker::CheckPseudoScope(const SelectorCheckingContext& context,
                                        MatchResult& result) const {
   Element& element = *context.element;
+  if (RuntimeEnabledFeatures::CSSScopeEnabled() && context.style_scope) {
+    DCHECK(context.style_scope_frame);
+    const Activations& activations =
+        EnsureActivations(context, *context.style_scope);
+    // The same @scope may produce multiple activations, but only (at most)
+    // one activation per element in the ancestor chain. Therefore we do not
+    // need to check the list of activations in any particular order.
+    for (const StyleScopeActivation& activation : activations) {
+      if (&element == activation.root) {
+        result.proximity = activation.proximity;
+        return true;
+      }
+    }
+    return false;
+  }
   if (!context.scope)
     return false;
   if (context.scope == &element.GetDocument())
@@ -1734,6 +1755,136 @@ bool SelectorChecker::MatchesSpatialNavigationInterestPseudoClass(
                                     ->GetSpatialNavigationController()
                                     .GetInterestedElement();
   return interested_element && *interested_element == element;
+}
+
+void SelectorChecker::StyleScopeActivation::Trace(
+    blink::Visitor* visitor) const {
+  visitor->Trace(root);
+}
+
+const SelectorChecker::Activations& SelectorChecker::EnsureActivations(
+    const SelectorCheckingContext& context,
+    const StyleScope& style_scope) const {
+  DCHECK(context.style_scope_frame);
+
+  // The *outer activations* are the activations of the outer StyleScope.
+  // If there is no outer StyleScope, we create a "default" activation to
+  // make the code in CalculateActivations more readable.
+  //
+  // Must not be confused with the *parent activations* (seen in
+  // CalculateActivations), which are the activations (for the same StyleScope)
+  // of the *parent element*.
+  //
+  // TODO(crbug.com/1280240): Pass context.scope instead of nullptr for the
+  // default activation.
+  const Activations* outer_activations =
+      style_scope.Parent()
+          ? &EnsureActivations(context, *style_scope.Parent())
+          : MakeGarbageCollected<Activations>(
+                1, StyleScopeActivation{nullptr /* scope */,
+                                        std::numeric_limits<unsigned>::max(),
+                                        false});
+
+  auto entry = context.style_scope_frame->data_.insert(&style_scope, nullptr);
+  Member<const Activations>& activations = entry.stored_value->value;
+  if (entry.is_new_entry) {
+    activations = CalculateActivations(context.style_scope_frame->element_,
+                                       style_scope, *outer_activations);
+  }
+  DCHECK(activations.Get());
+  return *activations;
+}
+
+const SelectorChecker::Activations* SelectorChecker::CalculateActivations(
+    Element& element,
+    const StyleScope& style_scope,
+    const Activations& outer_activations) const {
+  auto* activations = MakeGarbageCollected<Activations>();
+
+  if (outer_activations.IsEmpty())
+    return activations;
+
+  const Activations* parent_activations = nullptr;
+
+  // Remain within the outer scope. I.e. don't look at elements above the
+  // highest outer activation.
+  if (outer_activations.front().root != &element) {
+    // TODO(crbug.com/1280240): Consider :host (etc).
+    if (Element* parent = element.parentElement()) {
+      parent_activations =
+          CalculateActivations(*parent, style_scope, outer_activations);
+    }
+  }
+
+  // The activations of the parent element are still active for this element,
+  // unless the activation was limited.
+  if (parent_activations) {
+    for (const StyleScopeActivation& activation : *parent_activations) {
+      if (!activation.limit) {
+        activations->push_back(StyleScopeActivation{
+            activation.root, activation.proximity + 1, false});
+      }
+    }
+  }
+
+  // Check if we need to add a new activation for this element.
+  for (const StyleScopeActivation& activation : outer_activations) {
+    if (MatchesWithScope(element, style_scope.From(), activation.root)) {
+      activations->push_back(StyleScopeActivation{&element, 0, false});
+      break;
+    }
+    // TODO(crbug.com/1280240): Break if we don't depend on :scope.
+  }
+
+  if (style_scope.To()) {
+    for (StyleScopeActivation& activation : *activations) {
+      DCHECK(!activation.limit);
+      if (MatchesWithScope(element, *style_scope.To(), activation.root.Get())) {
+        // TODO(crbug.com/1280240): If we don't depend on :scope, just set all
+        // to limit=true.
+        activation.limit = true;
+      }
+    }
+  }
+
+  return activations;
+}
+
+bool SelectorChecker::MatchesWithScope(Element& element,
+                                       const CSSSelectorList& selector_list,
+                                       Element* scope) const {
+  SelectorCheckingContext context(&element);
+  context.scope = scope;
+  for (context.selector = selector_list.First(); context.selector;
+       context.selector = CSSSelectorList::Next(*context.selector)) {
+    SelectorChecker::MatchResult ignore_result;
+    if (MatchSelector(context, ignore_result) ==
+        SelectorChecker::kSelectorMatches) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool SelectorChecker::CheckInStyleScope(const SelectorCheckingContext& context,
+                                        MatchResult& result) const {
+  const StyleScope* style_scope = context.style_scope;
+  if (!style_scope)
+    return true;
+
+  SelectorCheckingContext local_context(context);
+
+  // TODO(crbug.com/1280240): We can probably skip this if the main selector
+  // contained :scope.
+
+  for (; local_context.element;
+       local_context.element = ParentElement(local_context)) {
+    if (CheckPseudoScope(local_context, result))
+      return true;
+    // TODO(crbug.com/1280240): Early-out if there are no activations.
+  }
+
+  return false;
 }
 
 }  // namespace blink

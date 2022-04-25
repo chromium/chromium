@@ -252,10 +252,13 @@ void ElementRuleCollector::CollectMatchingRulesForList(
   if (!rules)
     return;
 
+  SelectorChecker::StyleScopeFrame style_scope_frame(context_.GetElement());
+
   SelectorChecker::SelectorCheckingContext context(&context_.GetElement());
   context.scope = match_request.scope;
   context.pseudo_id = pseudo_style_request_.pseudo_id;
   context.vtt_originating_element = match_request.vtt_originating_element;
+  context.style_scope_frame = &style_scope_frame;
 
   CascadeLayerSeeker layer_seeker(match_request);
 
@@ -288,6 +291,7 @@ void ElementRuleCollector::CollectMatchingRulesForList(
 
     SelectorChecker::MatchResult result;
     context.selector = &selector;
+    context.style_scope = rule_data->GetStyleScope();
     context.is_inside_visited_link =
         rule_data->LinkMatchType() == CSSSelector::kMatchVisited;
     DCHECK(!context.is_inside_visited_link ||
@@ -342,7 +346,8 @@ void ElementRuleCollector::CollectMatchingRulesForList(
     matched++;
     unsigned layer_order =
         layer_seeker.SeekLayerOrder(rule_data->GetPosition());
-    DidMatchRule(rule_data, layer_order, result, match_request);
+    DidMatchRule(rule_data, layer_order, result.proximity, result,
+                 match_request);
   }
 
   StyleEngine& style_engine =
@@ -632,6 +637,7 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
 void ElementRuleCollector::DidMatchRule(
     const RuleData* rule_data,
     unsigned layer_order,
+    unsigned proximity,
     const SelectorChecker::MatchResult& result,
     const MatchRequest& match_request) {
   PseudoId dynamic_pseudo = result.dynamic_pseudo;
@@ -657,7 +663,7 @@ void ElementRuleCollector::DidMatchRule(
       }
     }
   } else {
-    matched_rules_.push_back(MatchedRule(rule_data, layer_order,
+    matched_rules_.push_back(MatchedRule(rule_data, layer_order, proximity,
                                          match_request.style_sheet_index,
                                          match_request.style_sheet));
 
@@ -701,6 +707,11 @@ static inline bool CompareRules(const MatchedRule& matched_rule1,
   unsigned specificity2 = matched_rule2.Specificity();
   if (specificity1 != specificity2)
     return specificity1 < specificity2;
+
+  unsigned proximity1 = matched_rule1.Proximity();
+  unsigned proximity2 = matched_rule2.Proximity();
+  if (proximity1 != proximity2)
+    return proximity1 > proximity2;
 
   return matched_rule1.GetPosition() < matched_rule2.GetPosition();
 }

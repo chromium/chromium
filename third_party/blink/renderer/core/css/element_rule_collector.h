@@ -53,10 +53,12 @@ class MatchedRule {
  public:
   MatchedRule(const RuleData* rule_data,
               unsigned layer_order,
+              unsigned proximity,
               unsigned style_sheet_index,
               const CSSStyleSheet* parent_style_sheet)
       : rule_data_(rule_data),
         layer_order_(layer_order),
+        proximity_(proximity),
         parent_style_sheet_(parent_style_sheet) {
     DCHECK(rule_data_);
     static const unsigned kBitsForPositionInRuleData = 18;
@@ -69,6 +71,7 @@ class MatchedRule {
   uint64_t GetPosition() const { return position_; }
   unsigned Specificity() const { return GetRuleData()->Specificity(); }
   unsigned LayerOrder() const { return layer_order_; }
+  unsigned Proximity() const { return proximity_; }
   const CSSStyleSheet* ParentStyleSheet() const { return parent_style_sheet_; }
   void Trace(Visitor* visitor) const {
     visitor->Trace(parent_style_sheet_);
@@ -78,6 +81,8 @@ class MatchedRule {
  private:
   Member<const RuleData> rule_data_;
   unsigned layer_order_;
+  // https://drafts.csswg.org/css-cascade-6/#weak-scoping-proximity
+  unsigned proximity_;
   uint64_t position_;
   Member<const CSSStyleSheet> parent_style_sheet_;
 };
@@ -199,6 +204,7 @@ class CORE_EXPORT ElementRuleCollector {
              MatchResult&);
   void DidMatchRule(const RuleData*,
                     unsigned layer_order,
+                    unsigned proximity,
                     const SelectorChecker::MatchResult&,
                     const MatchRequest&);
 
