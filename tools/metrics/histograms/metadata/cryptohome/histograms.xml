@@ -416,9 +416,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.OOPMountCleanupResult"
-    enum="CryptohomeOOPMountCleanupResult" expires_after="2022-05-01">
+    enum="CryptohomeOOPMountCleanupResult" expires_after="2023-04-01">
   <owner>betuls@chromium.org</owner>
-  <owner>jorgelo@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
     The result of a cryptohome out-of-process mount cleanup. Recorded once per
     logout.
@@ -426,9 +426,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.OOPMountOperationResult"
-    enum="CryptohomeOOPMountOperationResult" expires_after="2022-05-01">
+    enum="CryptohomeOOPMountOperationResult" expires_after="2023-04-01">
   <owner>betuls@chromium.org</owner>
-  <owner>jorgelo@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
     The result of a cryptohome out-of-process mount operation. Recorded once per
     login attempt.
@@ -446,7 +446,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.RestoreSELinuxContextResultForHome"
-    enum="BooleanSuccess" expires_after="2022-05-01">
+    enum="BooleanSuccess" expires_after="2023-04-01">
   <owner>betuls@chromium.org</owner>
   <owner>jorgelo@chromium.org</owner>
   <summary>
@@ -457,13 +457,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.RestoreSELinuxContextResultForShadow"
-    enum="BooleanSuccess" expires_after="2022-02-25">
+    enum="BooleanSuccess" expires_after="2023-04-01">
   <owner>betuls@chromium.org</owner>
   <owner>jorgelo@chromium.org</owner>
   <summary>
     The result of a cryptohome restore SELinux context operation of shadow
     directory /home/.shadow and its subdirectories. Recorded on a user's first
     login on a device or login after factory reset.
+
+    WARNING: This histogram was expired from 2022-02-25 to 2022-04-22.
   </summary>
 </histogram>
 
@@ -535,8 +537,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToMountEx" units="ms"
-    expires_after="2022-05-01">
-  <owner>jorgelo@chromium.org</owner>
+    expires_after="2023-04-01">
+  <owner>betuls@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
     The amount of time for Chrome OS cryptohome to mount the encrypted home
@@ -555,8 +557,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToMountGuestEx" units="ms"
-    expires_after="2022-05-01">
-  <owner>jorgelo@chromium.org</owner>
+    expires_after="2023-04-01">
+  <owner>betuls@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
     The amount of time for Chrome OS cryptohome to mount the encrypted guest
@@ -565,8 +567,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToPerformEphemeralMount" units="ms"
-    expires_after="2022-05-01">
-  <owner>jorgelo@chromium.org</owner>
+    expires_after="2023-04-01">
+  <owner>betuls@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
     The amount of time cryptohome spends actively performing mounts when
@@ -576,9 +578,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToPerformMount" units="ms"
-    expires_after="2022-05-01">
+    expires_after="2023-04-01">
   <owner>betuls@chromium.org</owner>
-  <owner>jorgelo@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
     The amount of time cryptohome spends performing the mounts for the user's
