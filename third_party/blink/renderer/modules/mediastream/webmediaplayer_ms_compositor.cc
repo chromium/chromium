@@ -525,6 +525,9 @@ bool WebMediaPlayerMSCompositor::HasCurrentFrame() {
 scoped_refptr<media::VideoFrame> WebMediaPlayerMSCompositor::GetCurrentFrame() {
   DVLOG(3) << __func__;
   base::AutoLock auto_lock(current_frame_lock_);
+  if (!current_frame_)
+    return nullptr;
+
   TRACE_EVENT_INSTANT1("media", "WebMediaPlayerMSCompositor::GetCurrentFrame",
                        TRACE_EVENT_SCOPE_THREAD, "Timestamp",
                        current_frame_->timestamp().InMicroseconds());
