@@ -218,7 +218,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // still has a chance to be stored in the back-forward cache later on, and
   // should not be used as a final check before storing a page to the
   // back-forward cache (for that, use CanStorePageNow() instead).
-  BackForwardCacheCanStoreDocumentResult CanPotentiallyStorePageLater(
+  BackForwardCacheCanStoreDocumentResultWithTree CanPotentiallyStorePageLater(
       RenderFrameHostImpl* render_frame_host);
 
   // Moves the specified BackForwardCache entry into the BackForwardCache. It
@@ -340,7 +340,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // This preserves the frame tree structure after eviction, because the actual
   // page and frame tree is not kept around after eviction.
   // |rfh| will be marked as having |eviction_reason| as not restored reasons.
-  static std::unique_ptr<BackForwardCacheCanStoreTreeResult>
+  static BackForwardCacheCanStoreDocumentResultWithTree
   CreateEvictionBackForwardCacheCanStoreTreeResult(
       RenderFrameHostImpl& rfh,
       BackForwardCacheCanStoreDocumentResult& eviction_reason);
@@ -363,15 +363,14 @@ class CONTENT_EXPORT BackForwardCacheImpl
       bool include_non_sticky);
 
   // Populates the reasons why this |rfh| and its subframes cannot enter the
-  // back/forward cache.
-  // If |create_tree| is true, returns a tree of reasons by the document.
+  // back/forward cache in a flat list through |flattened_result| and as a tree
+  // through its return value.
   // |include_non_sticky| controls whether we include non-sticky reasons in the
   // result.
   std::unique_ptr<BackForwardCacheCanStoreTreeResult> PopulateReasonsForPage(
       RenderFrameHostImpl* rfh,
       BackForwardCacheCanStoreDocumentResult& flattened_result,
-      bool include_non_sticky,
-      bool create_tree);
+      bool include_non_sticky);
 
   // Populates the sticky reasons for `rfh` without recursing into subframes.
   // Sticky features can't be unregistered and remain active for the rest of the
@@ -469,13 +468,9 @@ class CONTENT_EXPORT BackForwardCacheImpl
     // Construct a tree of NotRestoredReasons by checking the eligibility of
     // each frame in the frame tree rooted at |root_rfh|.
     // |root_rfh| represents the root document of the page. |include_non_sticky|
-    // controls whether or not we should record non-sticky reasons in the tree,
-    // and |create_tree| controls whether or not we should build
-    // |BackForwardCacheCanStoreTreeResult|. If |create_tree| is false, we only
-    // record them in a flattened list.
+    // controls whether or not we should record non-sticky reasons in the tree.
     NotRestoredReasonBuilder(RenderFrameHostImpl* root_rfh,
-                             bool include_non_sticky,
-                             bool create_tree);
+                             bool include_non_sticky);
 
     // Struct for containing the RenderFrameHostImpl that is going to be
     // evicted if applicable. |reasons| represent why |rfh_to_be_evicted| will
@@ -490,7 +485,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
 
     NotRestoredReasonBuilder(RenderFrameHostImpl* root_rfh,
                              bool include_non_sticky,
-                             bool create_tree,
                              absl::optional<EvictionInfo> eviction_info);
 
     ~NotRestoredReasonBuilder();
@@ -508,10 +502,9 @@ class CONTENT_EXPORT BackForwardCacheImpl
    private:
     // Populate NotRestoredReasons for the subtree whose root is |rfh| by
     // iterating the frame tree and populating NotRestoredReasons in
-    // |flattened_result_|. This will return nullptr if |create_tree| is false,
-    // and returns a NotRestoredReason tree otherwise.
+    // |flattened_result_|.
     std::unique_ptr<BackForwardCacheCanStoreTreeResult>
-    PopulateReasonsAndReturnSubtreeIfNeededFor(RenderFrameHostImpl* rfh);
+    PopulateReasonsAndReturnSubtree(RenderFrameHostImpl* rfh);
 
     // Root document of the tree.
     RenderFrameHostImpl* const root_rfh_;
@@ -525,9 +518,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
     // If true, check both non-sticky reasons and sticky reasons. If false,
     // check only sticky reasons.
     const bool include_non_sticky_;
-    // If true, construct a tree of NotRestoredReasons representing the frame
-    // tree structure. If false, only populate |flattened_result_|.
-    const bool create_tree_;
     // Contains the information of the RenderFrameHost that causes eviction, if
     // applicable. If set, the result returned by the builder will only contain
     // the NotRestoredReason for the RenderFrameHost that causes eviction

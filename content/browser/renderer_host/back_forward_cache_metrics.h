@@ -28,6 +28,7 @@ class BackForwardCacheCanStoreTreeResult;
 class NavigationEntryImpl;
 class NavigationRequest;
 class RenderFrameHostImpl;
+struct BackForwardCacheCanStoreDocumentResultWithTree;
 
 // Helper class for recording metrics around history navigations.
 // Associated with a main frame document and shared between all
@@ -217,17 +218,17 @@ class BackForwardCacheMetrics
   // placed in the back-forward cache.
   void RecordFeatureUsage(RenderFrameHostImpl* main_frame);
 
-  // Marks when the page is not cached, or evicted. This information is useful
-  // e.g., to prioritize the tasks to improve cache-hit rate.
-  void MarkNotRestoredWithReason(
-      const BackForwardCacheCanStoreDocumentResult& can_store);
+  // Adds the flattened list of NotRestoredReasons to the existing
+  // |page_store_result_|.
+  // TODO(yuzus): Make this function take
+  // BackForwardCacheCanStoreDocumentResultWithTree.
+  void AddNotRestoredFlattenedReasonsToExistingResult(
+      BackForwardCacheCanStoreDocumentResult& flattened);
 
-  // TODO: Take BackForwardCacheCanStoreDocumentResultWithTree as an argument
-  // instead of using BackForwardCacheCanStoreDocumentResult and
-  // BackForwardCacheCanStoreTreeResult as arguments.
-  void FinalizeNotRestoredReasons(
-      const BackForwardCacheCanStoreDocumentResult& can_store_flat,
-      std::unique_ptr<BackForwardCacheCanStoreTreeResult> can_store_tree);
+  // Sets |can_store| as the final NotRestoredReasons to report. This replaces
+  // the existing |page_store_tree_result_|.
+  void SetNotRestoredReasons(
+      BackForwardCacheCanStoreDocumentResultWithTree& can_store);
 
   // Exported for testing.
   // The DisabledReason's source and id combined to give a unique uint64.

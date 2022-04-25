@@ -770,8 +770,7 @@ void RenderFrameHostManager::UnloadOldFrame(
     }
 
     if (old_page_back_forward_cache_metrics) {
-      old_page_back_forward_cache_metrics->FinalizeNotRestoredReasons(
-          can_store.flattened_reasons, std::move(can_store.tree_reasons));
+      old_page_back_forward_cache_metrics->SetNotRestoredReasons(can_store);
     }
   }
 
@@ -1809,8 +1808,9 @@ RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
     // impossible to get correct non-sticky reasons at this timing.
     BackForwardCacheMetrics* back_forward_cache_metrics =
         render_frame_host_->GetBackForwardCacheMetrics();
-    if (back_forward_cache_metrics)
-      back_forward_cache_metrics->MarkNotRestoredWithReason(can_store);
+    if (back_forward_cache_metrics) {
+      back_forward_cache_metrics->SetNotRestoredReasons(can_store);
+    }
     return ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache;
   }
 }

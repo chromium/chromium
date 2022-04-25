@@ -1866,6 +1866,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   RenderFrameHostImpl* rfh_1 = current_frame_host();
   scoped_refptr<SiteInstanceImpl> site_instance_1 =
       static_cast<SiteInstanceImpl*>(rfh_1->GetSiteInstance());
+  rfh_1->GetBackForwardCacheMetrics()->SetObserverForTesting(this);
 
   // 2) Use BroadcastChannel (non-sticky) and dummy sticky blocklisted features.
   EXPECT_TRUE(ExecJs(rfh_1, "window.foo = new BroadcastChannel('foo');"));
@@ -1892,6 +1893,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       {blink::scheduler::WebSchedulerTrackedFeature::kDummy},
       {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {}, {},
       FROM_HERE);
+  // NotRestoredReason tree should match the flattened list.
+  EXPECT_THAT(
+      GetTreeResult()->GetDocumentResult(),
+      MatchesDocumentResult(
+          NotRestoredReasons(NotRestoredReason::kBlocklistedFeatures,
+                           NotRestoredReason::kBrowsingInstanceNotSwapped),
+          BlockListedFeatures(
+              blink::scheduler::WebSchedulerTrackedFeature::kDummy)));
 }
 
 // Tests which blocklisted features are tracked in the metrics when we used a

@@ -308,19 +308,14 @@ void BackForwardCacheMetrics::CollectFeatureUsageFromSubtree(
   }
 }
 
-void BackForwardCacheMetrics::FinalizeNotRestoredReasons(
-    const BackForwardCacheCanStoreDocumentResult& can_store_flat,
-    std::unique_ptr<BackForwardCacheCanStoreTreeResult> can_store_tree) {
-  page_store_tree_result_ = std::move(can_store_tree);
-  MarkNotRestoredWithReason(can_store_flat);
-}
-
-void BackForwardCacheMetrics::MarkNotRestoredWithReason(
-    const BackForwardCacheCanStoreDocumentResult& can_store) {
-  page_store_result_->AddReasonsFrom(can_store);
+void BackForwardCacheMetrics::AddNotRestoredFlattenedReasonsToExistingResult(
+    BackForwardCacheCanStoreDocumentResult& flattened) {
+  // TODO(yuzus): Add DCHECK to ensure the flattened reasons and the tree
+  // reasons match.
+  page_store_result_->AddReasonsFrom(flattened);
 
   const BackForwardCacheCanStoreDocumentResult::NotRestoredReasons&
-      not_restored_reasons = can_store.not_restored_reasons();
+      not_restored_reasons = flattened.not_restored_reasons();
 
   if (not_restored_reasons.Has(NotRestoredReason::kRendererProcessKilled)) {
     renderer_killed_timestamp_ = Now();
@@ -332,6 +327,12 @@ void BackForwardCacheMetrics::MarkNotRestoredWithReason(
         DebugScenario::kDebugNoResponseHeadForHttpOrHttps);
     base::debug::DumpWithoutCrashing();
   }
+}
+
+void BackForwardCacheMetrics::SetNotRestoredReasons(
+    BackForwardCacheCanStoreDocumentResultWithTree& can_store) {
+  page_store_tree_result_ = std::move(can_store.tree_reasons);
+  AddNotRestoredFlattenedReasonsToExistingResult(can_store.flattened_reasons);
 }
 
 void BackForwardCacheMetrics::UpdateNotRestoredReasonsForNavigation(

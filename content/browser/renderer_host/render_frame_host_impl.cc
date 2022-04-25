@@ -6037,29 +6037,23 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithReason(
 void RenderFrameHostImpl::EvictFromBackForwardCacheWithFlattenedReasons(
     BackForwardCacheCanStoreDocumentResult can_store_flat) {
   // Create a NotRestoredReasons tree that has |can_store_flat| as a reason
-  // for |this| render frame host.
-  std::unique_ptr<BackForwardCacheCanStoreTreeResult> can_store_tree =
+  // for |this| RenderFrameHost.
+  auto can_store =
       BackForwardCacheImpl::CreateEvictionBackForwardCacheCanStoreTreeResult(
           *this, can_store_flat);
-  BackForwardCacheCanStoreDocumentResultWithTree can_store(
-      can_store_flat, std::move(can_store_tree));
   EvictFromBackForwardCacheWithFlattenedAndTreeReasons(can_store);
 }
 
 void RenderFrameHostImpl::EvictFromBackForwardCacheWithFlattenedAndTreeReasons(
     BackForwardCacheCanStoreDocumentResultWithTree& can_store) {
-  BackForwardCacheCanStoreDocumentResult& can_store_flattened =
-      can_store.flattened_reasons;
-  std::unique_ptr<BackForwardCacheCanStoreTreeResult> can_store_tree =
-      std::move(can_store.tree_reasons);
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::EvictFromBackForwardCache",
-               "can_store", can_store_flattened.ToString(), "rfh",
+               "can_store", can_store.flattened_reasons.ToString(), "rfh",
                static_cast<void*>(this));
   TRACE_EVENT("navigation",
               "RenderFrameHostImpl::"
               "EvictFromBackForwardCacheWithFlattenedAndTreeReasons",
               ChromeTrackEvent::kBackForwardCacheCanStoreDocumentResult,
-              can_store_flattened);
+              can_store.flattened_reasons);
   DCHECK(IsBackForwardCacheEnabled());
 
   if (is_evicted_from_back_forward_cache_)
@@ -6077,8 +6071,7 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithFlattenedAndTreeReasons(
   // |in_back_forward_cache| is false.
   BackForwardCacheMetrics* metrics = top_document->GetBackForwardCacheMetrics();
   if (in_back_forward_cache && metrics) {
-    metrics->FinalizeNotRestoredReasons(can_store_flattened,
-                                        std::move(can_store_tree));
+    metrics->SetNotRestoredReasons(can_store);
   }
 
   if (!in_back_forward_cache) {

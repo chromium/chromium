@@ -588,8 +588,7 @@ BackForwardCacheImpl::CanStorePageNow(RenderFrameHostImpl* rfh,
   BackForwardCacheCanStoreDocumentResult flattened_result;
   std::unique_ptr<BackForwardCacheCanStoreTreeResult> tree =
       PopulateReasonsForPage(rfh, flattened_result,
-                             /*include_non_sticky=*/true,
-                             /*create_tree=*/true);
+                             /*include_non_sticky=*/true);
 
   // TODO(https://crbug.com/1280150): Call
   // UpdateCanStoreToIncludeCacheControlNoStore() for tree structure.
@@ -608,26 +607,25 @@ BackForwardCacheImpl::CanStorePageNow(RenderFrameHostImpl* rfh,
                                                         std::move(tree));
 }
 
-BackForwardCacheCanStoreDocumentResult
+BackForwardCacheCanStoreDocumentResultWithTree
 BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
-  BackForwardCacheCanStoreDocumentResult result;
-  PopulateReasonsForPage(rfh, result,
-                         /*include_non_sticky = */ false,
-                         /*create_tree = */ false);
+  BackForwardCacheCanStoreDocumentResult flattened;
+  auto result = PopulateReasonsForPage(rfh, flattened,
+                                       /*include_non_sticky = */ false);
   DVLOG(1) << "CanPotentiallyStorePageLater: " << rfh->GetLastCommittedURL()
-           << " : " << result.ToString();
+           << " : " << flattened.ToString();
   TRACE_EVENT(
       "navigation", "BackForwardCacheImpl::CanPotentiallyStorePageLater",
-      ChromeTrackEvent::kBackForwardCacheCanStoreDocumentResult, result);
-  return result;
+      ChromeTrackEvent::kBackForwardCacheCanStoreDocumentResult, flattened);
+  return BackForwardCacheCanStoreDocumentResultWithTree(flattened,
+                                                        std::move(result));
 }
 
 std::unique_ptr<BackForwardCacheCanStoreTreeResult>
 BackForwardCacheImpl::PopulateReasonsForPage(
     RenderFrameHostImpl* rfh,
     BackForwardCacheCanStoreDocumentResult& flattened_result,
-    bool include_non_sticky,
-    bool create_tree) {
+    bool include_non_sticky) {
   // TODO(crbug.com/1275977): This function should only be called when |rfh| is
   // the primary main frame. Fix |ShouldProactivelySwapBrowsingInstance()| and
   // |UnloadOldFrame()| so that it will not check bfcache eligibility if not
@@ -658,14 +656,12 @@ BackForwardCacheImpl::PopulateReasonsForPage(
   // flattened list, and return the tree if needed.
   std::unique_ptr<BackForwardCacheCanStoreTreeResult> result_tree;
   if (rfh->IsInPrimaryMainFrame() || main_frame_in_bfcache) {
-    NotRestoredReasonBuilder builder(rfh, include_non_sticky, create_tree);
+    NotRestoredReasonBuilder builder(rfh, include_non_sticky);
     result_tree = builder.GetTreeResult();
     flattened_result.AddReasonsFrom(builder.GetFlattenedResult());
   } else {
     result_tree = BackForwardCacheCanStoreTreeResult::CreateEmptyTree(rfh);
   }
-  if (!create_tree)
-    return nullptr;
   // |result_tree| does not have main document specific reasons such as
   // "disabled via command line", and we have to manually add them.
   result_tree->AddReasonsToSubtreeRootFrom(main_document_specific_result);
@@ -882,32 +878,29 @@ void BackForwardCacheImpl::PopulateReasonsForDocument(
   }
 }
 
-std::unique_ptr<BackForwardCacheCanStoreTreeResult>
+BackForwardCacheCanStoreDocumentResultWithTree
 BackForwardCacheImpl::CreateEvictionBackForwardCacheCanStoreTreeResult(
     RenderFrameHostImpl& rfh,
     BackForwardCacheCanStoreDocumentResult& eviction_reason) {
   BackForwardCacheImpl::NotRestoredReasonBuilder builder(
       rfh.GetMainFrame(),
       /* include_non_sticky = */ false,
-      /* create_tree = */ true,
       BackForwardCacheImpl::NotRestoredReasonBuilder::EvictionInfo(
           rfh, &eviction_reason));
-  return builder.GetTreeResult();
+  return BackForwardCacheCanStoreDocumentResultWithTree(
+      eviction_reason, builder.GetTreeResult());
 }
 
 BackForwardCacheImpl::NotRestoredReasonBuilder::NotRestoredReasonBuilder(
     RenderFrameHostImpl* root_rfh,
-    bool include_non_sticky,
-    bool create_tree)
+    bool include_non_sticky)
     : NotRestoredReasonBuilder(root_rfh,
                                include_non_sticky,
-                               create_tree,
                                /* eviction_info = */ absl::nullopt) {}
 
 BackForwardCacheImpl::NotRestoredReasonBuilder::NotRestoredReasonBuilder(
     RenderFrameHostImpl* root_rfh,
     bool include_non_sticky,
-    bool create_tree,
     absl::optional<EvictionInfo> eviction_info)
     : root_rfh_(root_rfh),
       bfcache_(root_rfh_->frame_tree_node()
@@ -915,22 +908,21 @@ BackForwardCacheImpl::NotRestoredReasonBuilder::NotRestoredReasonBuilder(
                    .controller()
                    .GetBackForwardCache()),
       include_non_sticky_(include_non_sticky),
-      create_tree_(create_tree),
       eviction_info_(eviction_info) {
   // |root_rfh_| should be either primary main frame or back/forward cached
   // page's main frame.
   DCHECK(root_rfh_->IsInPrimaryMainFrame() ||
          (root_rfh_->IsInBackForwardCache() && root_rfh_->is_main_frame()));
-  // Populate the reasons and build the tree if needed.
-  tree_result_ = PopulateReasonsAndReturnSubtreeIfNeededFor(root_rfh_);
+  // Populate the reasons and build the tree.
+  tree_result_ = PopulateReasonsAndReturnSubtree(root_rfh_);
 }
 
 BackForwardCacheImpl::NotRestoredReasonBuilder::~NotRestoredReasonBuilder() =
     default;
 
-std::unique_ptr<BackForwardCacheCanStoreTreeResult> BackForwardCacheImpl::
-    NotRestoredReasonBuilder::PopulateReasonsAndReturnSubtreeIfNeededFor(
-        RenderFrameHostImpl* rfh) {
+std::unique_ptr<BackForwardCacheCanStoreTreeResult>
+BackForwardCacheImpl::NotRestoredReasonBuilder::PopulateReasonsAndReturnSubtree(
+    RenderFrameHostImpl* rfh) {
   // TODO(https://crbug.com/1280150): Add cache-control:no-store reasons to the
   // tree.
 
@@ -955,15 +947,9 @@ std::unique_ptr<BackForwardCacheCanStoreTreeResult> BackForwardCacheImpl::
   BackForwardCacheCanStoreTreeResult::ChildrenVector children_result;
   for (size_t i = 0; i < rfh->child_count(); i++) {
     std::unique_ptr<BackForwardCacheCanStoreTreeResult> child =
-        PopulateReasonsAndReturnSubtreeIfNeededFor(
-            rfh->child_at(i)->current_frame_host());
-    if (create_tree_) {
-      children_result.emplace_back(std::move(child));
-    }
+        PopulateReasonsAndReturnSubtree(rfh->child_at(i)->current_frame_host());
+    children_result.emplace_back(std::move(child));
   }
-
-  if (!create_tree_)
-    return nullptr;
 
   std::unique_ptr<BackForwardCacheCanStoreTreeResult> tree(
       new BackForwardCacheCanStoreTreeResult(
@@ -1267,12 +1253,14 @@ void BackForwardCacheImpl::DestroyEvictedFrames() {
       // no-store related reasons before evicting. Because at this point, we
       // have not recorded cache-control:no-store related reasons so that the
       // page can temporarily enter bfcache.
-      BackForwardCacheCanStoreDocumentResult can_store;
-      UpdateCanStoreToIncludeCacheControlNoStore(can_store,
+      BackForwardCacheCanStoreDocumentResult flattened_result;
+      // TODO(yuzus): Move this function to BackForwardCacheMetrics.
+      UpdateCanStoreToIncludeCacheControlNoStore(flattened_result,
                                                  entry->render_frame_host());
       if (auto* metrics =
               entry->render_frame_host()->GetBackForwardCacheMetrics()) {
-        metrics->MarkNotRestoredWithReason(can_store);
+        metrics->AddNotRestoredFlattenedReasonsToExistingResult(
+            flattened_result);
       }
       RemoveProcessesForEntry(*entry);
       return true;
