@@ -9,6 +9,10 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/cppgc/heap-consistency.h"
 
+#if defined(LEAK_SANITIZER)
+#include <sanitizer/lsan_interface.h>
+#endif
+
 namespace blink {
 
 // The NoAllocationScope class is used in debug mode to catch unwanted
