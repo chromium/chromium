@@ -9,12 +9,9 @@ namespace personalization_app {
 
 const char kChromeUIPersonalizationAppHost[] = "personalization";
 const char kChromeUIPersonalizationAppURL[] = "chrome://personalization/";
-const char kChromeUIPersonalizationAppAmbientModeSubpageURL[] =
-    "chrome://personalization/ambient";
-const char kChromeUIPersonalizationAppUserSubpageURL[] =
-    "chrome://personalization/user";
-const char kChromeUIPersonalizationAppWallpaperSubpageURL[] =
-    "chrome://personalization/wallpaper";
+const char kAmbientSubpageRelativeUrl[] = "ambient";
+const char kUserSubpageRelativeUrl[] = "user";
+const char kWallpaperSubpageRelativeUrl[] = "wallpaper";
 
 }  // namespace personalization_app
 }  // namespace ash

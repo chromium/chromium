@@ -10,9 +10,9 @@ namespace personalization_app {
 
 extern const char kChromeUIPersonalizationAppHost[];
 extern const char kChromeUIPersonalizationAppURL[];
-extern const char kChromeUIPersonalizationAppAmbientModeSubpageURL[];
-extern const char kChromeUIPersonalizationAppUserSubpageURL[];
-extern const char kChromeUIPersonalizationAppWallpaperSubpageURL[];
+extern const char kAmbientSubpageRelativeUrl[];
+extern const char kUserSubpageRelativeUrl[];
+extern const char kWallpaperSubpageRelativeUrl[];
 
 }  // namespace personalization_app
 }  // namespace ash

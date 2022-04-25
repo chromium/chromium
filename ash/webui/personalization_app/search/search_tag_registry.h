@@ -10,10 +10,12 @@
 #include <vector>
 
 #include "ash/webui/personalization_app/search/search_concept.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/components/local_search_service/public/mojom/index.mojom.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 // TODO(https://crbug.com/1164001): move forward declaration to ash.
@@ -22,6 +24,8 @@ namespace local_search_service {
 class LocalSearchServiceProxy;
 }  // namespace local_search_service
 }  // namespace chromeos
+
+class PrefService;
 
 namespace ash {
 namespace personalization_app {
@@ -34,17 +38,18 @@ class SearchTagRegistry {
     virtual void OnRegistryUpdated() = 0;
   };
 
-  explicit SearchTagRegistry(
-      ::chromeos::local_search_service::LocalSearchServiceProxy&
-          local_search_service_proxy);
+  using SearchConceptUpdates = std::map<const SearchConcept*, bool>;
+
+  SearchTagRegistry(::chromeos::local_search_service::LocalSearchServiceProxy&
+                        local_search_service_proxy,
+                    PrefService* pref_service);
 
   SearchTagRegistry(const SearchTagRegistry& other) = delete;
   SearchTagRegistry& operator=(const SearchTagRegistry& other) = delete;
 
   virtual ~SearchTagRegistry();
 
-  void AddSearchConcepts(
-      const std::vector<const SearchConcept>& search_concepts);
+  void UpdateSearchConcepts(const SearchConceptUpdates& search_concept_updates);
 
   const SearchConcept* GetSearchConceptById(const std::string& id) const;
 
@@ -52,11 +57,16 @@ class SearchTagRegistry {
   void RemoveObserver(Observer* observer);
 
  private:
-  void OnIndexUpdateComplete();
+  void OnIndexUpdateComplete(uint32_t num_deleted);
+
+  void OnAmbientPrefChanged();
+  void OnDarkModePrefChanged();
 
   base::ObserverList<Observer> observer_list_;
   mojo::Remote<::chromeos::local_search_service::mojom::Index> index_remote_;
   std::map<std::string, const SearchConcept*> result_id_to_search_concept_;
+  raw_ptr<PrefService> pref_service_;
+  PrefChangeRegistrar pref_change_registrar_;
   base::WeakPtrFactory<SearchTagRegistry> weak_ptr_factory_{this};
 };
 

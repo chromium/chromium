@@ -2338,6 +2338,117 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE_ALT2" desc="Text for search result item which, when clicked, navigates the user to personalization settings. Alternate phrase for: 'Personalization'">
         Personal
       </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_DEVICE_ACCOUNT_IMAGE" desc="Text for search result item which, when clicked, navigates the user to the personalization app page where they can change their device account image (visible on log-in screen). Alternate phrase for: 'Sign-in image', 'Login image', 'Profile picture', 'Profile image'">
+        Change device account image
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_DEVICE_ACCOUNT_IMAGE_ALT1" desc="Text for search result item which, when clicked, navigates the user to the personalization app page where they can change their device account image (visible on log-in screen). Alternate phrase for: 'Change device account image', 'Login image', 'Profile picture', 'Profile image'">
+        Sign-in image
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_DEVICE_ACCOUNT_IMAGE_ALT2" desc="Text for search result item which, when clicked, navigates the user to the personalization app page where they can change their device account image (visible on log-in screen). Alternate phrase for: 'Change device account image', 'Sign-in image', 'Profile picture', 'Profile image'">
+        Login image
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_DEVICE_ACCOUNT_IMAGE_ALT3" desc="Text for search result item which, when clicked, navigates the user to the personalization app page where they can change their device account image (visible on log-in screen). Alternate phrase for: 'Change device account image', 'Sign-in image', 'Login image', 'Profile image'">
+        Profile picture
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_DEVICE_ACCOUNT_IMAGE_ALT4" desc="Text for search result item which, when clicked, navigates the user to the personalization app page where they can change their device account image (visible on log-in screen). Alternate phrase for: 'Change device account image', 'Sign-in image', 'Login image', 'Profile picture'">
+        Profile image
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_WALLPAPER" desc="Text for search result item which, when clicked, navigates the user to wallpaper settings. Alternate phrase for: 'Background', 'Desktop'">
+        Change wallpaper
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_WALLPAPER_ALT1" desc="Text for search result item which, when clicked, navigates the user to wallpaper settings. Alternate phrase for: 'Change wallpaper', 'Desktop'">
+        Background
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_WALLPAPER_ALT2" desc="Text for search result item which, when clicked, navigates the user to wallpaper settings. Alternate phrase for: 'Change wallpaper', 'Background'">
+        Desktop
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE" desc="Text for search result item which, when clicked, navigates the user to ambient mode settings, which allow the user to set backgrounds to be displayed when the device is idle.">
+        Screen saver
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_TURN_OFF" desc="Text for search result item which, when clicked, navigates the user to ambient mode settings, with a toggle to enable/disable the feature. Alternate phrase for: 'Disable ambient mode'">
+        Turn off screen saver
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_TURN_OFF_ALT1" desc="Text for search result item which, when clicked, navigates the user to ambient mode settings, with a toggle to enable/disable the feature. Alternate phrase for: 'Turn off Ambient mode'">
+        Disable screen saver
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_CHOOSE_SOURCE" desc="Text for search result item which, when clicked, navigates the user to ambient mode settings, with buttons to choose a source (e.g., photos from Google Photos or an art gallery).">
+        Choose screen saver background
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_TURN_ON" desc="Text for search result item which, when clicked, navigates the user to ambient mode settings, with a toggle to enable/disable the feature. Alternate phrase for: 'Enable Ambient mode'">
+        Turn on screen saver
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_TURN_ON_ALT1" desc="Text for search result item which, when clicked, navigates the user to ambient mode settings, with a toggle to enable/disable the feature. Alternate phrase for: 'Turn on Ambient mode'">
+        Enable screen saver
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_GOOGLE_PHOTOS_ALBUM" desc="Text for search result item which, when clicked, navigates the user to ambient mode Google Photos album settings, which allow the user to set Google Photos albums to be displayed when the device is idle.">
+        Google Photos album
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_ART_GALLERY_ALBUM" desc="Text for search result item which, when clicked, navigates the user to ambient mode Art gallery album settings, which allow the user to set Art gallery albums to be displayed when the device is idle.">
+        Art gallery album
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings. Alternate phrase for: 'Dark mode', 'Light mode', 'Light theme'">
+        Dark theme
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_ALT1" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings. Alternate phrase for: 'Dark theme', 'Light mode', 'Light theme'">
+        Dark mode
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_ALT2" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings. Alternate phrase for: 'Dark theme', 'Dark mode', 'Light mode'">
+        Light theme
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_ALT3" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings. Alternate phrase for: 'Dark theme', 'Dark mode', 'Light theme'">
+        Light mode
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_TURN_ON" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings, with a toggle to turn on dark mode. Alternate phrase for: 'Enable dark theme', 'Turn dark mode on', 'Enable dark mode', 'Turn light theme off',  'Disable light theme'">
+        Turn dark theme on
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_TURN_ON_ALT1" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings, with a toggle to turn on dark mode. Alternate phrase for: 'Turn dark theme on', 'Turn dark mode on', 'Enable dark mode', 'Turn light theme off',  'Disable light theme'">
+        Enable dark theme
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_TURN_ON_ALT2" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings, with a toggle to turn on dark mode. Alternate phrase for: 'Turn dark theme on', 'Enable dark theme', 'Enable dark mode', 'Turn light theme off',  'Disable light theme'">
+        Turn dark mode on
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_TURN_ON_ALT3" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings, with a toggle to turn on dark mode. Alternate phrase for: 'Turn dark theme on', 'Enable dark theme', 'Turn dark mode on', 'Turn light theme off',  'Disable light theme'">
+        Enable dark mode
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_TURN_ON_ALT4" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings, with a toggle to turn on dark mode. Alternate phrase for: 'Turn dark theme on', 'Enable dark theme', 'Turn dark mode on', 'Enable dark mode',  'Disable light theme'">
+        Turn light theme off
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_TURN_ON_ALT5" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings, with a toggle to turn on dark mode. Alternate phrase for: 'Turn dark theme on', 'Enable dark theme', 'Turn dark mode on', 'Enable dark mode', 'Turn light theme off'">
+        Disable light theme
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_TURN_OFF" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings, with a toggle to turn off dark mode. Alternate phrase for: 'Disable dark theme', 'Turn dark mode off', 'Disable dark mode', 'Turn light theme on',  'Enable light theme'">
+        Turn dark theme off
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_TURN_OFF_ALT1" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings, with a toggle to turn off dark mode. Alternate phrase for: 'Turn dark theme off', 'Turn dark mode off', 'Disable dark mode', 'Turn light theme on',  'Enable light theme'">
+        Disable dark theme
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_TURN_OFF_ALT2" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings, with a toggle to turn off dark mode. Alternate phrase for: 'Turn dark theme off', 'Disable dark theme', 'Disable dark mode', 'Turn light theme on',  'Enable light theme'">
+        Turn dark mode off
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_TURN_OFF_ALT3" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings, with a toggle to turn off dark mode. Alternate phrase for: 'Turn dark theme off', 'Disable dark theme', 'Turn dark mode off', 'Turn light theme on',  'Enable light theme'">
+        Disable dark mode
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_TURN_OFF_ALT4" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings, with a toggle to turn off dark mode. Alternate phrase for: 'Turn dark theme off', 'Disable dark theme', 'Turn dark mode off', 'Disable dark mode',  'Enable light theme'">
+        Turn light theme on
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_TURN_OFF_ALT5" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings, with a toggle to turn off dark mode. Alternate phrase for: 'Turn dark theme off', 'Disable dark theme', 'Turn dark mode off', 'Disable dark mode', 'Turn light theme on'">
+        Enable light theme
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_SCHEDULE" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings, with a dropdown to select scheduling mode. Alternate phrase for: 'Dark mode schedule', 'Automatic dark mode', 'Automatic light mode', 'Automatic dark theme'">
+        Dark theme schedule
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_SCHEDULE_ALT1" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings, with a dropdown to select scheduling mode. Alternate phrase for: 'Dark theme schedule','Automatic dark mode', 'Automatic light mode', 'Automatic dark theme'">
+        Dark mode schedule
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_SCHEDULE_ALT2" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings, with a dropdown to select scheduling mode. Alternate phrase for: 'Dark theme schedule', 'Dark mode schedule', 'Automatic light mode', 'Automatic dark theme'">
+        Automatic dark mode
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_SCHEDULE_ALT3" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings, with a dropdown to select scheduling mode. Alternate phrase for: 'Dark theme schedule', 'Dark mode schedule', 'Automatic dark mode', 'Automatic dark theme'">
+        Automatic light mode
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_SCHEDULE_ALT4" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings, with a dropdown to select scheduling mode. Alternate phrase for: 'Dark theme schedule', 'Dark mode schedule', 'Automatic dark mode', 'Automatic light mode'">
+        Automatic dark theme
+      </message>
 
       <!-- Traffic Counters UI -->
       <message name="IDS_TRAFFIC_COUNTERS_UNKNOWN" desc="Traffic counters related to an unknown source">

@@ -29,15 +29,17 @@ class LocalSearchServiceProxy;
 }  // namespace local_search_service
 }  // namespace chromeos
 
+class PrefService;
+
 namespace ash {
 namespace personalization_app {
 
 class SearchHandler : public mojom::SearchHandler,
                       public SearchTagRegistry::Observer {
  public:
-  explicit SearchHandler(
-      ::chromeos::local_search_service::LocalSearchServiceProxy&
-          local_search_service_proxy);
+  SearchHandler(::chromeos::local_search_service::LocalSearchServiceProxy&
+                    local_search_service_proxy,
+                PrefService* pref_service);
 
   SearchHandler(const SearchHandler& other) = delete;
   SearchHandler& operator=(const SearchHandler& other) = delete;

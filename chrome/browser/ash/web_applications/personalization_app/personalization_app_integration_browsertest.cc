@@ -236,7 +236,8 @@ class PersonalizationAppIntegrationTest : public SystemWebAppIntegrationTest {
     apps::AppLaunchParams launch_params =
         LaunchParamsForApp(web_app::SystemAppType::PERSONALIZATION);
     launch_params.override_url =
-        GURL(kChromeUIPersonalizationAppWallpaperSubpageURL);
+        GURL(std::string(kChromeUIPersonalizationAppURL) +
+             kWallpaperSubpageRelativeUrl);
     return LaunchApp(std::move(launch_params), browser);
   }
 

@@ -9,13 +9,21 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/ambient/ambient_prefs.h"
+#include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/search/search.mojom-test-utils.h"
 #include "ash/webui/personalization_app/search/search.mojom.h"
+#include "ash/webui/personalization_app/search/search_concept.h"
 #include "base/callback.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -26,6 +34,16 @@ namespace personalization_app {
 namespace {
 
 inline constexpr int kMaxNumResults = 3;
+
+bool HasSearchResult(const std::vector<mojom::SearchResultPtr>& search_results,
+                     const std::u16string& text) {
+  for (const auto& result : search_results) {
+    if (result->text == text) {
+      return true;
+    }
+  }
+  return false;
+}
 
 class TestSearchResultsObserver : public mojom::SearchResultsObserver {
  public:
@@ -65,18 +83,27 @@ class TestSearchResultsObserver : public mojom::SearchResultsObserver {
 class PersonalizationAppSearchHandlerTest : public testing::Test {
  protected:
   PersonalizationAppSearchHandlerTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::ash::features::kPersonalizationHub);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{::ash::features::kPersonalizationHub,
+                              ::chromeos::features::kDarkLightMode,
+                              ::ash::features::kAmbientModeFeature},
+        /*disabled_features=*/{});
   }
 
   ~PersonalizationAppSearchHandlerTest() override = default;
 
   void SetUp() override {
-    local_search_service_proxy_ = std::make_unique<
-        ::chromeos::local_search_service::LocalSearchServiceProxy>(
-        /*for_testing=*/true);
-    search_handler_ =
-        std::make_unique<SearchHandler>(*local_search_service_proxy_);
+    local_search_service_proxy_ =
+        std::make_unique<::ash::local_search_service::LocalSearchServiceProxy>(
+            /*for_testing=*/true);
+    test_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+    test_pref_service_->registry()->RegisterBooleanPref(
+        ::ash::ambient::prefs::kAmbientModeEnabled, true);
+    test_pref_service_->registry()->RegisterBooleanPref(
+        ::ash::prefs::kDarkModeEnabled, false);
+
+    search_handler_ = std::make_unique<SearchHandler>(
+        *local_search_service_proxy_, test_pref_service_.get());
     search_handler_->BindInterface(
         search_handler_remote_.BindNewPipeAndPassReceiver());
   }
@@ -91,11 +118,26 @@ class PersonalizationAppSearchHandlerTest : public testing::Test {
     return &search_handler_remote_;
   }
 
+  void SetDarkModeEnabled(bool enabled) {
+    test_pref_service_->SetBoolean(::ash::prefs::kDarkModeEnabled, enabled);
+  }
+
+  std::vector<mojom::SearchResultPtr> RunSearch(int message_id) {
+    std::vector<mojom::SearchResultPtr> search_results;
+    std::u16string query = l10n_util::GetStringUTF16(message_id);
+    // Search results match better if one character is subtracted.
+    query.pop_back();
+    mojom::SearchHandlerAsyncWaiter(search_handler_remote()->get())
+        .Search(query, /*max_num_results=*/kMaxNumResults, &search_results);
+    return search_results;
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<::chromeos::local_search_service::LocalSearchServiceProxy>
       local_search_service_proxy_;
+  std::unique_ptr<TestingPrefServiceSimple> test_pref_service_;
   std::unique_ptr<SearchHandler> search_handler_;
   mojo::Remote<mojom::SearchHandler> search_handler_remote_;
 };
@@ -118,11 +160,28 @@ TEST_F(PersonalizationAppSearchHandlerTest, AnswersPersonalizationQuery) {
 TEST_F(PersonalizationAppSearchHandlerTest, ObserverFiresWhenResultsUpdated) {
   TestSearchResultsObserver test_observer;
   search_handler_remote()->get()->AddObserver(test_observer.GetRemote());
-  std::vector<const SearchConcept> test_search_concepts = {
-      {.message_id = IDS_PERSONALIZATION_APP_WALLPAPER_LABEL,
-       .relative_url = "testing"}};
-  search_tag_registry()->AddSearchConcepts(test_search_concepts);
+  SearchConcept concept = {
+      .message_id = IDS_PERSONALIZATION_APP_WALLPAPER_LABEL,
+      .relative_url = "testing",
+  };
+
+  // Add a search concept.
+  search_tag_registry()->UpdateSearchConcepts({{&concept, /*add=*/true}});
   test_observer.WaitForSearchResultsChanged();
+
+  EXPECT_EQ(&concept,
+            search_tag_registry()->GetSearchConceptById(
+                base::NumberToString(IDS_PERSONALIZATION_APP_WALLPAPER_LABEL)))
+      << "Search concept was added";
+
+  // Remove the search concept.
+  search_tag_registry()->UpdateSearchConcepts({{&concept, false}});
+  test_observer.WaitForSearchResultsChanged();
+
+  EXPECT_EQ(nullptr,
+            search_tag_registry()->GetSearchConceptById(
+                base::NumberToString(IDS_PERSONALIZATION_APP_WALLPAPER_LABEL)))
+      << "Search concept was removed";
 }
 
 TEST_F(PersonalizationAppSearchHandlerTest, RespondsToAltQuery) {
@@ -137,6 +196,85 @@ TEST_F(PersonalizationAppSearchHandlerTest, RespondsToAltQuery) {
   EXPECT_EQ(search_results.size(), 1u);
   EXPECT_EQ(search_results.front()->text, search_query);
   EXPECT_GT(search_results.front()->relevance_score, 0.9);
+}
+
+TEST_F(PersonalizationAppSearchHandlerTest, HasBasicPersonalizationConcepts) {
+  // Message id to expected relative url.
+  std::unordered_map<int, std::string> message_ids_to_search = {
+      {IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE_ALT2, std::string()},
+      {IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_WALLPAPER_ALT2,
+       kWallpaperSubpageRelativeUrl},
+      {IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_DEVICE_ACCOUNT_IMAGE_ALT4,
+       kUserSubpageRelativeUrl},
+  };
+
+  for (const auto& [message_id, expected_url] : message_ids_to_search) {
+    std::vector<mojom::SearchResultPtr> search_results = RunSearch(message_id);
+    EXPECT_EQ(1u, search_results.size());
+    EXPECT_EQ(expected_url, search_results.front()->relative_url);
+  }
+}
+
+TEST_F(PersonalizationAppSearchHandlerTest, HasDarkModeSearchResults) {
+  {
+    // Search one of the basic dark mode tags.
+    std::vector<mojom::SearchResultPtr> dark_mode_results =
+        RunSearch(IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_ALT2);
+
+    EXPECT_EQ(dark_mode_results.front()->text,
+              l10n_util::GetStringUTF16(
+                  IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_ALT2));
+
+    for (const auto& search_result : dark_mode_results) {
+      // All dark mode results link to main page.
+      EXPECT_EQ(std::string(), search_result->relative_url);
+    }
+  }
+
+  // Terms to search when dark mode is on.
+  std::vector<int> dark_mode_on_tags = {
+      IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_TURN_OFF,
+      IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_TURN_OFF_ALT1,
+  };
+  // Terms to search when dark mode is off.
+  std::vector<int> dark_mode_off_tags = {
+      IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_TURN_ON,
+      IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_TURN_ON_ALT1,
+  };
+
+  {
+    SetDarkModeEnabled(true);
+    for (auto message_id : dark_mode_on_tags) {
+      // Has expected search result because dark mode is on.
+      auto expected_result = l10n_util::GetStringUTF16(message_id);
+      EXPECT_TRUE(HasSearchResult(RunSearch(message_id), expected_result))
+          << "Search result should be present: " << expected_result;
+    }
+
+    for (auto message_id : dark_mode_off_tags) {
+      // Does not have dark mode off search result because dark mode is on.
+      auto unexpected_result = l10n_util::GetStringUTF16(message_id);
+      EXPECT_FALSE(HasSearchResult(RunSearch(message_id), unexpected_result))
+          << "Search result should not be present: " << unexpected_result;
+    }
+  }
+
+  {
+    SetDarkModeEnabled(false);
+    for (auto message_id : dark_mode_on_tags) {
+      // Does not have dark mode on search result because dark mode is off.
+      auto unexpected_result = l10n_util::GetStringUTF16(message_id);
+      EXPECT_FALSE(HasSearchResult(RunSearch(message_id), unexpected_result))
+          << "Search result should not be present: " << unexpected_result;
+    }
+
+    for (auto message_id : dark_mode_off_tags) {
+      // Has expected search result because dark mode is off.
+      auto expected_result = l10n_util::GetStringUTF16(message_id);
+      EXPECT_TRUE(HasSearchResult(RunSearch(message_id), expected_result))
+          << "Search result should be present: " << expected_result;
+    }
+  }
 }
 
 }  // namespace personalization_app

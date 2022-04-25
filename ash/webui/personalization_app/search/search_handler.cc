@@ -18,6 +18,7 @@
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/components/local_search_service/shared_structs.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -36,9 +37,11 @@ bool CompareSearchResults(const mojom::SearchResultPtr& a,
 
 SearchHandler::SearchHandler(
     ::chromeos::local_search_service::LocalSearchServiceProxy&
-        local_search_service_proxy)
+        local_search_service_proxy,
+    PrefService* pref_service)
     : search_tag_registry_(
-          std::make_unique<SearchTagRegistry>(local_search_service_proxy)) {
+          std::make_unique<SearchTagRegistry>(local_search_service_proxy,
+                                              pref_service)) {
   local_search_service_proxy.GetIndex(
       local_search_service::IndexId::kPersonalization,
       local_search_service::Backend::kLinearMap,

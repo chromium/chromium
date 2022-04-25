@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash {
@@ -45,8 +46,9 @@ class PersonalizationAppManagerImpl : public PersonalizationAppManager {
       ::chromeos::local_search_service::LocalSearchServiceProxy&
           local_search_service_proxy)
       : context_(context),
-        search_handler_(
-            std::make_unique<SearchHandler>(local_search_service_proxy)) {}
+        search_handler_(std::make_unique<SearchHandler>(
+            local_search_service_proxy,
+            Profile::FromBrowserContext(context)->GetPrefs())) {}
 
   ~PersonalizationAppManagerImpl() override = default;
 
