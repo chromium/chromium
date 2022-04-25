@@ -75,6 +75,7 @@ config("libxml_warnings") {
   }
 }
 
+# Please keep in sync with //build/linux/unbundle/libxml.gn.
 static_library("xml_reader") {
   # Do not expand this visibility list without first consulting with the
   # Security Team.
@@ -98,6 +99,7 @@ static_library("xml_reader") {
   configs += [ ":libxml_config" ]
 }
 
+# Please keep in sync with //build/linux/unbundle/libxml.gn.
 static_library("xml_writer") {
   # The XmlWriter is considered safe to use from any target.
   visibility = [ "*" ]
@@ -112,6 +114,7 @@ static_library("xml_writer") {
   configs += [ ":libxml_config" ]
 }
 
+# Please keep in sync with //build/linux/unbundle/libxml.gn.
 static_library("libxml_utils") {
   # Do not expand this visibility list without first consulting with the
   # Security Team.
