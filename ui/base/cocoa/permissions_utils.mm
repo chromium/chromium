@@ -10,6 +10,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/task/thread_pool.h"
 
 namespace ui {
 
@@ -75,6 +76,29 @@ bool TryPromptUserForScreenCapture() {
   } else {
     // Screen capture is always allowed in older macOS versions.
     return true;
+  }
+}
+
+void WarmScreenCapture() {
+  if (@available(macOS 10.15, *)) {
+    // WarmScreenCapture() is meant to be called during early startup. Since the
+    // calls to warm the cache may block, execute them off the main thread so we
+    // don't hold up startup. To be effective these calls need to run before
+    // Chrome is updated. Running them off the main thread technically opens us
+    // to a race condition, however updating happens way later so this is not a
+    // concern.
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        // Checking screen capture access hits the TCC.db and reads Chrome's
+        // code signature from disk, marking as MayBlock.
+        {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::BindOnce([] {
+          if (IsScreenCaptureAllowed()) {
+            base::ScopedCFTypeRef<CGImageRef>(CGWindowListCreateImage(
+                CGRectInfinite, kCGWindowListOptionOnScreenOnly,
+                kCGNullWindowID, kCGWindowImageDefault));
+          }
+        }));
   }
 }
 
