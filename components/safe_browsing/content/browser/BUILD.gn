@@ -48,6 +48,7 @@ if (safe_browsing_mode > 0) {
       "//components/no_state_prefetch/browser",
       "//components/prefs",
       "//components/safe_browsing/content/browser/triggers",
+      "//components/safe_browsing/content/browser/web_ui",
       "//components/safe_browsing/core/browser",
       "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
       "//components/safe_browsing/core/common",

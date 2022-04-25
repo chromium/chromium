@@ -14,6 +14,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -203,6 +204,15 @@ void SafeBrowsingUIManager::MaybeReportSafeBrowsingHit(
            << hit_report.is_subresource << " " << hit_report.threat_type;
   delegate_->GetPingManager(web_contents->GetBrowserContext())
       ->ReportSafeBrowsingHit(hit_report);
+
+  // The following is to log this HitReport on any open chrome://safe-browsing
+  // pages.
+  auto hit_report_copy = std::make_unique<HitReport>(hit_report);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WebUIInfoSingleton::AddToHitReportsSent,
+                     base::Unretained(WebUIInfoSingleton::GetInstance()),
+                     std::move(hit_report_copy)));
 }
 
 // Static.

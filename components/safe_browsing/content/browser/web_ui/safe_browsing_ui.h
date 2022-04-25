@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
+#include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/download_check_result.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -140,6 +141,10 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   // open chrome://safe-browsing tab was opened.
   void GetSentCSBRRs(const base::Value::List& args);
 
+  // Get the HitReports that have been collected since the oldest currently
+  // open chrome://safe-browsing tab was opened.
+  void GetSentHitReports(const base::Value::List& args);
+
   // Get the PhishGuard events that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
   void GetPGEvents(const base::Value::List& args);
@@ -220,6 +225,10 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   // Get the new ThreatDetails messages sent from ThreatDetails when a ping is
   // sent, while one or more WebUI tabs are opened.
   void NotifyCSBRRJsListener(ClientSafeBrowsingReportRequest* csbrr);
+
+  // Get the new HitReport messages sent from PingManager when a ping is
+  // sent, while one or more WebUI tabs are opened.
+  void NotifyHitReportJsListener(HitReport* hit_report);
 
   // Called when any new PhishGuard events are sent while one or more WebUI tabs
   // are open.
@@ -350,6 +359,13 @@ class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
   // Clear the list of the sent ClientSafeBrowsingReportRequest messages.
   void ClearCSBRRsSent();
 
+  // Add the new message in |hit_reports_sent_| and send it to all the open
+  // chrome://safe-browsing tabs.
+  void AddToHitReportsSent(std::unique_ptr<HitReport> hit_report);
+
+  // Clear the list of the sent HitReport messages.
+  void ClearHitReportsSent();
+
   // Add the new message in |pg_event_log_| and send it to all the open
   // chrome://safe-browsing tabs.
   void AddToPGEvents(const sync_pb::UserEventSpecifics& event);
@@ -475,6 +491,12 @@ class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
     return csbrrs_sent_;
   }
 
+  // Get the list of the sent HitReports that have been collected since the
+  // oldest currently open chrome://safe-browsing tab was opened.
+  const std::vector<std::unique_ptr<HitReport>>& hit_reports_sent() const {
+    return hit_reports_sent_;
+  }
+
   // Get the list of WebUI listener objects.
   const std::vector<SafeBrowsingUIHandler*>& webui_instances() const {
     return webui_instances_;
@@ -598,6 +620,12 @@ class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
   // "ClientSafeBrowsingReportRequest" cannot be const, due to being used by
   // functions that call AllowJavascript(), which is not marked const.
   std::vector<std::unique_ptr<ClientSafeBrowsingReportRequest>> csbrrs_sent_;
+
+  // List of HitReports sent since since the oldest currently open
+  // chrome://safe-browsing tab was opened.
+  // "HitReport" cannot be const, due to being used by
+  // functions that call AllowJavascript(), which is not marked const.
+  std::vector<std::unique_ptr<HitReport>> hit_reports_sent_;
 
   // List of PhishGuard events sent since the oldest currently open
   // chrome://safe-browsing tab was opened.
