@@ -14,7 +14,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/policy/messaging_layer/upload/event_upload_size_controller.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
 #include "chromeos/dbus/missive/missive_client.h"
@@ -157,16 +156,9 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
     return;
   }
 
-  reporting::EventUploadSizeController event_upload_size_controller(
-      network_condition_service_, /*enabled=*/false);
   auto records = std::make_unique<std::vector<reporting::EncryptedRecord>>();
   for (auto& record : request.encrypted_record()) {
     records->push_back(std::move(record));
-    // Check if we have uploaded enough records after adding each record
-    event_upload_size_controller.AccountForRecord(record);
-    if (event_upload_size_controller.IsMaximumUploadSizeReached()) {
-      break;
-    }
   }
   DCHECK(upload_provider_);
   MissiveClient* const missive_client = MissiveClient::Get();
