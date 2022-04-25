@@ -354,10 +354,7 @@ absl::optional<uint16_t> GetUUID16(const BluetoothUUID& uuid) {
 }
 
 arc::mojom::BluetoothPropertyPtr GetDiscoveryTimeoutProperty(uint32_t timeout) {
-  arc::mojom::BluetoothPropertyPtr property =
-      arc::mojom::BluetoothProperty::New();
-  property->set_discovery_timeout(timeout);
-  return property;
+  return arc::mojom::BluetoothProperty::NewDiscoveryTimeout(timeout);
 }
 
 void OnCreateServiceRecordDone(CreateSdpRecordCallback callback,
@@ -2621,51 +2618,43 @@ ArcBluetoothBridge::GetDeviceProperties(mojom::BluetoothPropertyType type,
 
   if (type == mojom::BluetoothPropertyType::ALL ||
       type == mojom::BluetoothPropertyType::BDNAME) {
-    mojom::BluetoothPropertyPtr btp = mojom::BluetoothProperty::New();
-    btp->set_bdname(device->GetName() ? device->GetName().value() : "");
-    properties.push_back(std::move(btp));
+    properties.push_back(mojom::BluetoothProperty::NewBdname(
+        device->GetName() ? device->GetName().value() : ""));
   }
   if (type == mojom::BluetoothPropertyType::ALL ||
       type == mojom::BluetoothPropertyType::BDADDR) {
-    mojom::BluetoothPropertyPtr btp = mojom::BluetoothProperty::New();
-    btp->set_bdaddr(mojom::BluetoothAddress::From(device->GetAddress()));
-    properties.push_back(std::move(btp));
+    properties.push_back(mojom::BluetoothProperty::NewBdaddr(
+        mojom::BluetoothAddress::From(device->GetAddress())));
   }
   if (type == mojom::BluetoothPropertyType::ALL ||
       type == mojom::BluetoothPropertyType::UUIDS) {
     BluetoothDevice::UUIDSet uuids = device->GetUUIDs();
     if (uuids.size() > 0) {
-      mojom::BluetoothPropertyPtr btp = mojom::BluetoothProperty::New();
-      btp->set_uuids(std::vector<BluetoothUUID>(uuids.begin(), uuids.end()));
-      properties.push_back(std::move(btp));
+      properties.push_back(mojom::BluetoothProperty::NewUuids(
+          std::vector<BluetoothUUID>(uuids.begin(), uuids.end())));
     }
   }
   if (type == mojom::BluetoothPropertyType::ALL ||
       type == mojom::BluetoothPropertyType::CLASS_OF_DEVICE) {
-    mojom::BluetoothPropertyPtr btp = mojom::BluetoothProperty::New();
-    btp->set_device_class(device->GetBluetoothClass());
-    properties.push_back(std::move(btp));
+    properties.push_back(
+        mojom::BluetoothProperty::NewDeviceClass(device->GetBluetoothClass()));
   }
   if (type == mojom::BluetoothPropertyType::ALL ||
       type == mojom::BluetoothPropertyType::TYPE_OF_DEVICE) {
-    mojom::BluetoothPropertyPtr btp = mojom::BluetoothProperty::New();
-    btp->set_device_type(device->GetType());
-    properties.push_back(std::move(btp));
+    properties.push_back(
+        mojom::BluetoothProperty::NewDeviceType(device->GetType()));
   }
   if (type == mojom::BluetoothPropertyType::ALL ||
       type == mojom::BluetoothPropertyType::REMOTE_FRIENDLY_NAME) {
-    mojom::BluetoothPropertyPtr btp = mojom::BluetoothProperty::New();
-    btp->set_remote_friendly_name(
-        base::UTF16ToUTF8(device->GetNameForDisplay()));
-    properties.push_back(std::move(btp));
+    properties.push_back(mojom::BluetoothProperty::NewRemoteFriendlyName(
+        base::UTF16ToUTF8(device->GetNameForDisplay())));
   }
   if (type == mojom::BluetoothPropertyType::ALL ||
       type == mojom::BluetoothPropertyType::REMOTE_RSSI) {
     absl::optional<int8_t> rssi = device->GetInquiryRSSI();
     if (rssi.has_value()) {
-      mojom::BluetoothPropertyPtr btp = mojom::BluetoothProperty::New();
-      btp->set_remote_rssi(rssi.value());
-      properties.push_back(std::move(btp));
+      properties.push_back(
+          mojom::BluetoothProperty::NewRemoteRssi(rssi.value()));
     }
   }
   // TODO(smbarber): Add remote version info
@@ -2689,50 +2678,42 @@ ArcBluetoothBridge::GetAdapterProperties(
 
   if (type == mojom::BluetoothPropertyType::ALL ||
       type == mojom::BluetoothPropertyType::BDNAME) {
-    mojom::BluetoothPropertyPtr btp = mojom::BluetoothProperty::New();
-    std::string name = bluetooth_adapter_->GetName();
-    btp->set_bdname(name);
-    properties.push_back(std::move(btp));
+    properties.push_back(
+        mojom::BluetoothProperty::NewBdname(bluetooth_adapter_->GetName()));
   }
   if (type == mojom::BluetoothPropertyType::ALL ||
       type == mojom::BluetoothPropertyType::BDADDR) {
-    mojom::BluetoothPropertyPtr btp = mojom::BluetoothProperty::New();
-    btp->set_bdaddr(mojom::BluetoothAddress::From(adapter_address));
-    properties.push_back(std::move(btp));
+    properties.push_back(mojom::BluetoothProperty::NewBdaddr(
+        mojom::BluetoothAddress::From(adapter_address)));
   }
   if (type == mojom::BluetoothPropertyType::ALL ||
       type == mojom::BluetoothPropertyType::UUIDS) {
-    mojom::BluetoothPropertyPtr btp = mojom::BluetoothProperty::New();
-    btp->set_uuids(bluetooth_adapter_->GetUUIDs());
-    properties.push_back(std::move(btp));
+    properties.push_back(
+        mojom::BluetoothProperty::NewUuids(bluetooth_adapter_->GetUUIDs()));
   }
   if (type == mojom::BluetoothPropertyType::ALL ||
       type == mojom::BluetoothPropertyType::CLASS_OF_DEVICE) {
-    mojom::BluetoothPropertyPtr btp = mojom::BluetoothProperty::New();
-    btp->set_device_class(kBluetoothComputerClass);
-    properties.push_back(std::move(btp));
+    properties.push_back(
+        mojom::BluetoothProperty::NewDeviceClass(kBluetoothComputerClass));
   }
   if (type == mojom::BluetoothPropertyType::ALL ||
       type == mojom::BluetoothPropertyType::TYPE_OF_DEVICE) {
     // Assume that all ChromeOS devices are dual mode Bluetooth device.
-    mojom::BluetoothPropertyPtr btp = mojom::BluetoothProperty::New();
-    btp->set_device_type(device::BLUETOOTH_TRANSPORT_DUAL);
-    properties.push_back(std::move(btp));
+    properties.push_back(mojom::BluetoothProperty::NewDeviceType(
+        device::BLUETOOTH_TRANSPORT_DUAL));
   }
   if (type == mojom::BluetoothPropertyType::ALL ||
       type == mojom::BluetoothPropertyType::ADAPTER_SCAN_MODE) {
-    mojom::BluetoothPropertyPtr btp = mojom::BluetoothProperty::New();
     mojom::BluetoothScanMode scan_mode = mojom::BluetoothScanMode::CONNECTABLE;
 
     if (bluetooth_adapter_->IsDiscoverable())
       scan_mode = mojom::BluetoothScanMode::CONNECTABLE_DISCOVERABLE;
 
-    btp->set_adapter_scan_mode(scan_mode);
-    properties.push_back(std::move(btp));
+    properties.push_back(
+        mojom::BluetoothProperty::NewAdapterScanMode(scan_mode));
   }
   if (type == mojom::BluetoothPropertyType::ALL ||
       type == mojom::BluetoothPropertyType::ADAPTER_BONDED_DEVICES) {
-    mojom::BluetoothPropertyPtr btp = mojom::BluetoothProperty::New();
     BluetoothAdapter::DeviceList devices = bluetooth_adapter_->GetDevices();
 
     std::vector<mojom::BluetoothAddressPtr> bonded_devices;
@@ -2746,19 +2727,17 @@ ArcBluetoothBridge::GetAdapterProperties(
       bonded_devices.push_back(std::move(addr));
     }
 
-    btp->set_bonded_devices(std::move(bonded_devices));
-    properties.push_back(std::move(btp));
+    properties.push_back(
+        mojom::BluetoothProperty::NewBondedDevices(std::move(bonded_devices)));
   }
   if (type == mojom::BluetoothPropertyType::ALL ||
       type == mojom::BluetoothPropertyType::ADAPTER_DISCOVERY_TIMEOUT) {
-    mojom::BluetoothPropertyPtr btp = mojom::BluetoothProperty::New();
-    btp->set_discovery_timeout(bluetooth_adapter_->GetDiscoverableTimeout());
-    properties.push_back(std::move(btp));
+    properties.push_back(mojom::BluetoothProperty::NewDiscoveryTimeout(
+        bluetooth_adapter_->GetDiscoverableTimeout()));
   }
   if (type == mojom::BluetoothPropertyType::ALL ||
       type == mojom::BluetoothPropertyType::LOCAL_LE_FEATURES) {
     // TODO(crbug.com/637171) Investigate all the le_features.
-    mojom::BluetoothPropertyPtr btp = mojom::BluetoothProperty::New();
     mojom::BluetoothLocalLEFeaturesPtr le_features =
         mojom::BluetoothLocalLEFeatures::New();
     le_features->version_supported = kAndroidMBluetoothVersionNumber;
@@ -2772,8 +2751,8 @@ ArcBluetoothBridge::GetAdapterProperties(
     le_features->total_trackable_advertisers = 0;
     le_features->extended_scan_support = false;
     le_features->debug_logging_supported = false;
-    btp->set_local_le_features(std::move(le_features));
-    properties.push_back(std::move(btp));
+    properties.push_back(
+        mojom::BluetoothProperty::NewLocalLeFeatures(std::move(le_features)));
   }
 
   return properties;
@@ -2789,18 +2768,13 @@ ArcBluetoothBridge::GetAdvertisingData(const BluetoothDevice* device) const {
 
   // Advertising Data Flags
   if (device->GetAdvertisingDataFlags().has_value()) {
-    mojom::BluetoothAdvertisingDataPtr flags =
-        mojom::BluetoothAdvertisingData::New();
-    flags->set_flags(device->GetAdvertisingDataFlags().value());
-    advertising_data.push_back(std::move(flags));
+    advertising_data.push_back(mojom::BluetoothAdvertisingData::NewFlags(
+        device->GetAdvertisingDataFlags().value()));
   }
 
   // Local Name
-  mojom::BluetoothAdvertisingDataPtr local_name =
-      mojom::BluetoothAdvertisingData::New();
-  local_name->set_local_name(device->GetName() ? device->GetName().value()
-                                               : "");
-  advertising_data.push_back(std::move(local_name));
+  advertising_data.push_back(mojom::BluetoothAdvertisingData::NewLocalName(
+      device->GetName() ? device->GetName().value() : ""));
 
   // Service UUIDs
   BluetoothDevice::UUIDSet uuid_set = device->GetUUIDs();
@@ -2809,20 +2783,14 @@ ArcBluetoothBridge::GetAdvertisingData(const BluetoothDevice* device) const {
     uuid_set.erase(gatt_service->GetUUID());
   }
   if (uuid_set.size() > 0) {
-    mojom::BluetoothAdvertisingDataPtr service_uuids =
-        mojom::BluetoothAdvertisingData::New();
-    service_uuids->set_service_uuids(
-        std::vector<BluetoothUUID>(uuid_set.begin(), uuid_set.end()));
-    advertising_data.push_back(std::move(service_uuids));
+    advertising_data.push_back(mojom::BluetoothAdvertisingData::NewServiceUuids(
+        std::vector<BluetoothUUID>(uuid_set.begin(), uuid_set.end())));
   }
 
   // Tx Power Level
   if (device->GetInquiryTxPower().has_value()) {
-    mojom::BluetoothAdvertisingDataPtr tx_power_level_element =
-        mojom::BluetoothAdvertisingData::New();
-    tx_power_level_element->set_tx_power_level(
-        device->GetInquiryTxPower().value());
-    advertising_data.push_back(std::move(tx_power_level_element));
+    advertising_data.push_back(mojom::BluetoothAdvertisingData::NewTxPowerLevel(
+        device->GetInquiryTxPower().value()));
   }
 
   // Service Data
@@ -2831,8 +2799,6 @@ ArcBluetoothBridge::GetAdvertisingData(const BluetoothDevice* device) const {
     if (!uuid16)
       continue;
 
-    mojom::BluetoothAdvertisingDataPtr service_data_element =
-        mojom::BluetoothAdvertisingData::New();
     mojom::BluetoothServiceDataPtr service_data =
         mojom::BluetoothServiceData::New();
 
@@ -2844,8 +2810,8 @@ ArcBluetoothBridge::GetAdvertisingData(const BluetoothDevice* device) const {
 
     service_data->data = *data;
 
-    service_data_element->set_service_data(std::move(service_data));
-    advertising_data.push_back(std::move(service_data_element));
+    advertising_data.push_back(mojom::BluetoothAdvertisingData::NewServiceData(
+        std::move(service_data)));
   }
 
   // Manufacturer Data
@@ -2859,10 +2825,9 @@ ArcBluetoothBridge::GetAdvertisingData(const BluetoothDevice* device) const {
       manufacturer_data.insert(manufacturer_data.end(), pair.second.begin(),
                                pair.second.end());
     }
-    mojom::BluetoothAdvertisingDataPtr manufacturer_data_element =
-        mojom::BluetoothAdvertisingData::New();
-    manufacturer_data_element->set_manufacturer_data(manufacturer_data);
-    advertising_data.push_back(std::move(manufacturer_data_element));
+    advertising_data.push_back(
+        mojom::BluetoothAdvertisingData::NewManufacturerData(
+            std::move(manufacturer_data)));
   }
 
   return advertising_data;
