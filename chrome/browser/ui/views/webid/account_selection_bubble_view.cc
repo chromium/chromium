@@ -267,7 +267,7 @@ void AccountSelectionBubbleView::OnSingleAccountPicked(
   // being picked.
   RemoveAllChildViews();
   AddChildView(std::make_unique<views::Separator>());
-  std::vector<const content::IdentityRequestAccount> accounts = {account};
+  std::vector<content::IdentityRequestAccount> accounts = {account};
   AddChildView(CreateAccountChooser(accounts));
   SizeToContents();
   PreferredSizeChanged();
