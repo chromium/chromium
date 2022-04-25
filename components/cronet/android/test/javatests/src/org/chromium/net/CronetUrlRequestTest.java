@@ -777,11 +777,11 @@ public class CronetUrlRequestTest {
         assertEquals(ResponseStep.ON_FAILED, callback.mResponseStep);
     }
 
-    @DisabledTest(message = "crbug.com/738183")
     @Test
     @SmallTest
     @Feature({"Cronet"})
     @OnlyRunNativeCronet // Java impl doesn't support MockUrlRequestJobFactory
+    @DisabledTest(message = "crbug.com/1315367")
     public void testMockReadDataAsyncError() throws Exception {
         final int arbitraryNetError = -5;
         TestUrlRequestCallback callback =
