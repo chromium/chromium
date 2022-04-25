@@ -1224,5 +1224,14 @@
     "args": [
       "--webauthn-remote-desktop-support"
     ]
+  },
+  {
+    "prefix": "mediastreamtrack-transfer",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [ "external/wpt/mediacapture-streams/MediaStreamTrack-iframe-transfer.https.html" ],
+    "args": [
+      "--enable-blink-features=MediaStreamTrackTransfer",
+      "--enable-features=MediaStreamTrackTransfer"
+    ]
   }
 ]
