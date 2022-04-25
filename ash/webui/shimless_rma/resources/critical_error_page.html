@@ -14,12 +14,13 @@
   }
 </style>
 <base-page>
-  <iron-icon slot="optional-icon" icon="shimless-icon:warning"
-      class="warning-icon">
-  </iron-icon>
   <div slot="left-pane">
     <h1>[[i18n('criticalErrorTitleText')]]</h1>
-    <div class="instructions">[[i18n('criticalErrorMessageText')]]</div>
+    <div class="icon-message">
+      <iron-icon icon="shimless-icon:warning" class="warning-icon small-icon">
+      </iron-icon>
+      <div class="instructions">[[i18n('criticalErrorMessageText')]]</div>
+    </div>
     <div id="writeProtectStatus">[[statusString_]]</div>
     <div id="navigationButtonWrapper">
       <cr-button id="rebootButton" class="action-button"

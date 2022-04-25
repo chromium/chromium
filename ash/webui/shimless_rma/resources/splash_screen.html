@@ -2,10 +2,6 @@
   .busy-icon {
     float: left;
   }
-  .loading-message {
-    display: flex;
-    float: left;
-  }
 </style>
 
 <base-page>
@@ -14,7 +10,7 @@
     <div class="splash-title">
       <h1>[[i18n('shimlessSplashTitle')]]</h1>
     </div>
-    <div class="loading-message">
+    <div class="icon-message">
       <paper-spinner-lite id="busyIcon" class="small-icon" active></paper-spinner-lite>
       <span class="instructions">[[getSplashInstructionsText_()]]</span>
     </div>
