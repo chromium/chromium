@@ -836,7 +836,6 @@ public class CustomTabActivityTest {
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug/1216498")
     public void testPageLoadMetricsAreSent() throws Exception {
         checkPageLoadMetrics(true);
     }
