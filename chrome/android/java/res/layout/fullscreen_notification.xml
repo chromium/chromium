@@ -4,10 +4,12 @@
      found in the LICENSE file. -->
 
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fullscreen_notification"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:gravity="center"
     android:paddingTop="24dp">
     <TextView
         android:id="@+id/text"
