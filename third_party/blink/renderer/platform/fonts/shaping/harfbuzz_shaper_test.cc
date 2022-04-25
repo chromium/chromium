@@ -457,7 +457,7 @@ TEST_F(HarfBuzzShaperTest, MAYBE_ShapeArabicWithContext) {
 }
 
 TEST_F(HarfBuzzShaperTest, ShapeTabulationCharacters) {
-  const unsigned length = HarfBuzzRunGlyphData::kMaxGlyphs * 2 + 1;
+  const unsigned length = HarfBuzzRunGlyphData::kMaxCharacters * 2 + 1;
   scoped_refptr<ShapeResult> result =
       ShapeResult::CreateForTabulationCharacters(&font, TextDirection::kLtr,
                                                  TabSize(8), 0.f, 0, length);
@@ -600,7 +600,7 @@ TEST_P(ShapeStringTest, MissingGlyph) {
 // Test splitting runs by kMaxCharacterIndex using a simple string that has code
 // point:glyph:cluster are all 1:1.
 TEST_P(ShapeParameterTest, MaxGlyphsSimple) {
-  const unsigned length = HarfBuzzRunGlyphData::kMaxCharacterIndex + 2;
+  const unsigned length = HarfBuzzRunGlyphData::kMaxCharacters + 1;
   String string = CreateStringOf('X', length);
   HarfBuzzShaper shaper(string);
   scoped_refptr<ShapeResult> result = ShapeWithParameter(&shaper);
@@ -618,9 +618,9 @@ TEST_P(ShapeParameterTest, MaxGlyphsSimple) {
 // 'X' + U+0300 COMBINING GRAVE ACCENT is a cluster, but most fonts do not have
 // a pre-composed glyph for it, so code points and glyphs are 1:1. Because the
 // length is "+1" and the last character is combining, this string does not hit
-// kMaxCharacterIndex but hits kMaxGlyphs.
+// kMaxCharacterIndex but hits kMaxCharacters.
 TEST_P(ShapeParameterTest, MaxGlyphsClusterLatin) {
-  const unsigned length = HarfBuzzRunGlyphData::kMaxGlyphs + 1;
+  const unsigned length = HarfBuzzRunGlyphData::kMaxCharacters + 1;
   String string = CreateStringOf('X', length);
   string.replace(1, 1, u"\u0300");
   string.replace(length - 2, 2, u"Z\u0300");
@@ -640,7 +640,7 @@ TEST_P(ShapeParameterTest, MaxGlyphsClusterLatin) {
 // Same as MaxGlyphsClusterLatin, but by making the length "+2", this string
 // hits kMaxCharacterIndex.
 TEST_P(ShapeParameterTest, MaxGlyphsClusterLatin2) {
-  const unsigned length = HarfBuzzRunGlyphData::kMaxGlyphs + 2;
+  const unsigned length = HarfBuzzRunGlyphData::kMaxCharacters + 2;
   String string = CreateStringOf('X', length);
   string.replace(1, 1, u"\u0300");
   string.replace(length - 2, 2, u"Z\u0300");
@@ -658,7 +658,7 @@ TEST_P(ShapeParameterTest, MaxGlyphsClusterLatin2) {
 }
 
 TEST_P(ShapeParameterTest, MaxGlyphsClusterDevanagari) {
-  const unsigned length = HarfBuzzRunGlyphData::kMaxCharacterIndex + 2;
+  const unsigned length = HarfBuzzRunGlyphData::kMaxCharacters + 1;
   String string = CreateStringOf(0x930, length);
   string.replace(0, 3, u"\u0930\u093F\u0902");
   string.replace(length - 3, 3, u"\u0930\u093F\u0902");

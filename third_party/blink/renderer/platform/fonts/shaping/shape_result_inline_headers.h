@@ -49,11 +49,19 @@ class SimpleFontData;
 struct HarfBuzzRunGlyphData {
   DISALLOW_NEW();
 
+  // The max number of characters in a |RunInfo| is limited by
+  // |character_index|.
   static constexpr unsigned kCharacterIndexBits = 15;
-  static constexpr unsigned kMaxCharacterIndex = (1 << kCharacterIndexBits) - 1;
-  static constexpr unsigned kMaxGlyphs = 1 << kCharacterIndexBits;
+  static constexpr unsigned kMaxCharacters = 1 << kCharacterIndexBits;
+  static constexpr unsigned kMaxCharacterIndex = kMaxCharacters - 1;
+  // The max number of glyphs in a |RunInfo|. This make the number
+  // of glyphs predictable and minimizes the buffer reallocations.
+  static constexpr unsigned kMaxGlyphs = kMaxCharacters;
 
   unsigned glyph : 16;
+  // The index of the character this glyph is for. To use as an index of
+  // |String|, it is the index of UTF16 code unit, and it is always at the
+  // HarfBuzz cluster boundary.
   unsigned character_index : kCharacterIndexBits;
   unsigned safe_to_break_before : 1;
 
