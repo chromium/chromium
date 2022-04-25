@@ -505,6 +505,28 @@ TEST(DnsConfigServiceWinTest, AdapterSpecificNameservers) {
                                                testing::IsTrue())));
 }
 
+// Setting adapter specific nameservers for non operational adapter should not
+// set `unhandled_options`.
+TEST(DnsConfigServiceWinTest, AdapterSpecificNameserversForNo) {
+  AdapterInfo infos[3] = {
+      {IF_TYPE_FASTETHER,
+       IfOperStatusUp,
+       L"example.com",
+       {"1.0.0.1", "fec0:0:0:ffff::2", "8.8.8.8"}},
+      {IF_TYPE_USB,
+       IfOperStatusDown,
+       L"chromium.org",
+       {"10.0.0.10", "2001:FFFF::1111"}},
+      {0},
+  };
+
+  WinDnsSystemSettings settings;
+  settings.addresses = CreateAdapterAddresses(infos);
+  EXPECT_THAT(internal::ConvertSettingsToDnsConfig(settings),
+              testing::Optional(testing::Field(&DnsConfig::unhandled_options,
+                                               testing::IsFalse())));
+}
+
 }  // namespace
 
 }  // namespace net

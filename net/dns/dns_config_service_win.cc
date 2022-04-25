@@ -427,7 +427,7 @@ absl::optional<DnsConfig> ConvertSettingsToDnsConfig(
     if (!nameservers)
       return absl::nullopt;
 
-    if (!nameservers->empty()) {
+    if (!nameservers->empty() && (adapter->OperStatus == IfOperStatusUp)) {
       // Check if the |adapter| has adapter specific nameservers.
       std::set<IPEndPoint> nameservers_set(nameservers->begin(),
                                            nameservers->end());
