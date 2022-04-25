@@ -612,7 +612,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCancelledOn205Page) {
       PrerenderHost::FinalStatus::kNavigationBadHttpStatus);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCancelledOn204Iframe) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderAllowedOn204Iframe) {
   base::HistogramTester histogram_tester;
 
   // Navigate to an initial page.
@@ -633,14 +633,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCancelledOn204Iframe) {
              "const i = document.createElement('iframe'); i.src = '" +
                  kIFrameUrl.spec() + "'; document.body.appendChild(i);");
 
-  // The prerender should be destroyed.
-  host_observer.WaitForDestroyed();
-  EXPECT_EQ(GetHostForUrl(kPrerenderingUrl),
-            RenderFrameHost::kNoFrameTreeNodeId);
-
-  // Cancellation must have occurred due to bad http status code.
-  ExpectFinalStatusForSpeculationRule(
-      PrerenderHost::FinalStatus::kNavigationBadHttpStatus);
+  // Fetching a subframe that response 204 status code shouldn't cancel
+  // prerendering unlike the mainframe that response 204 status code.
+  // https://wicg.github.io/nav-speculation/prerendering.html#no-bad-navs
+  EXPECT_EQ(GetHostForUrl(kPrerenderingUrl), host_id);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelOnAuthRequested) {

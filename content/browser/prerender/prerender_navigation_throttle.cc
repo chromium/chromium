@@ -215,6 +215,7 @@ PrerenderNavigationThrottle::WillProcessResponse() {
   auto* navigation_request = NavigationRequest::From(navigation_handle());
   absl::optional<PrerenderHost::FinalStatus> cancel_reason;
 
+  // TODO(crbug.com/1318739): Delay until activation instead of cancellation.
   if (navigation_handle()->IsDownload()) {
     // Disallow downloads during prerendering and cancel the prerender.
     cancel_reason = PrerenderHost::FinalStatus::kDownload;

@@ -6,11 +6,11 @@
 
 namespace content::prerender_navigation_utils {
 
-// TODO(crbug.com/1299316): Sync with
-// https://github.com/WICG/nav-speculation/issues/138 once it's settled down.
+// https://wicg.github.io/nav-speculation/prerendering.html#no-bad-navs
+// > If browsingContext is a top level prerendering browsing context, and any of
+// the following hold:
 bool IsDisallowedHttpResponseCode(int response_code) {
-  // Disallow status code 204 and 205 because all error statuses should abandon
-  // prerendering as a default behavior.
+  // > - response’s status is 204 or 205,
   if (response_code == 204 || response_code == 205) {
     return true;
   }

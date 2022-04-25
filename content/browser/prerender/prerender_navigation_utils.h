@@ -7,8 +7,9 @@
 
 namespace content::prerender_navigation_utils {
 
-// Returns true if a the response code is disallowed for pre-rendering (e.g 404,
-// etc), and false otherwise.
+// Returns true if the response code is disallowed for pre-rendering (e.g 404,
+// etc), and false otherwise. This should be called only for the response of the
+// main frame in a prerendered page.
 bool IsDisallowedHttpResponseCode(int response_code);
 
 }  // namespace content::prerender_navigation_utils

@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "content/browser/prerender/prerender_host_registry.h"
-#include "content/browser/prerender/prerender_navigation_utils.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -69,12 +68,10 @@ PrerenderSubframeNavigationThrottle::WillProcessResponse() {
   if (!frame_tree_node->frame_tree()->is_prerendering())
     return NavigationThrottle::PROCEED;
 
-  // Disallow downloads during prerendering and cancel the prerender.
+  // TODO(crbug.com/1318739): Delay until activation instead of cancellation.
   if (navigation_handle()->IsDownload()) {
+    // Disallow downloads during prerendering and cancel the prerender.
     cancel_reason = PrerenderHost::FinalStatus::kDownload;
-  } else if (prerender_navigation_utils::IsDisallowedHttpResponseCode(
-                 navigation_request->commit_params().http_response_code)) {
-    cancel_reason = PrerenderHost::FinalStatus::kNavigationBadHttpStatus;
   }
 
   if (cancel_reason.has_value()) {
