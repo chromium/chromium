@@ -56504,6 +56504,7 @@ from previous Chrome versions.
   <int value="723385329" label="SystemEmojiPickerClipboard:enabled"/>
   <int value="723619383" label="TopSitesFromSiteEngagement:enabled"/>
   <int value="724052572" label="EnableFilesystemInIncognito"/>
+  <int value="724189703" label="OptimizeNetworkBuffers:disabled"/>
   <int value="724208771" label="TabsInCBD:enabled"/>
   <int value="724427456" label="WebAuthenticationPINSupport:disabled"/>
   <int value="725067265" label="enable-experimental-cookie-features"/>
@@ -56691,6 +56692,7 @@ from previous Chrome versions.
   <int value="851238417" label="VirtualKeyboardFloatingResizable:enabled"/>
   <int value="851616920" label="EnableTLS13EarlyData:disabled"/>
   <int value="852313529" label="RTCUnifiedPlanByDefault:disabled"/>
+  <int value="852703179" label="OptimizeNetworkBuffers:enabled"/>
   <int value="853279705"
       label="DesktopPWAsAdditionalWindowingControls:disabled"/>
   <int value="854294457" label="EnableOmniboxRichEntities:disabled"/>

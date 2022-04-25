@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -158,6 +159,7 @@ class AndroidStreamReaderURLLoader : public network::mojom::URLLoader {
   mojo::ScopedDataPipeProducerHandle producer_handle_;
   scoped_refptr<network::NetToMojoPendingBuffer> pending_buffer_;
   mojo::SimpleWatcher writable_handle_watcher_;
+  base::Time start_time_;
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<AndroidStreamReaderURLLoader> weak_factory_{this};
