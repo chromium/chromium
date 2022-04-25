@@ -371,6 +371,14 @@ class PermissionUmaUtil {
   static std::string GetPermissionActionString(
       PermissionAction permission_action);
 
+  static std::string GetPromptDispositionString(
+      PermissionPromptDisposition ui_disposition);
+
+  static std::string GetPromptDispositionReasonString(
+      PermissionPromptDispositionReason ui_disposition_reason);
+
+  static std::string GetRequestTypeString(RequestType request_type);
+
   static bool IsPromptDispositionQuiet(
       PermissionPromptDisposition prompt_disposition);
 

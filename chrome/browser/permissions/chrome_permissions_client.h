@@ -8,6 +8,7 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
 
@@ -58,6 +59,8 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
       permissions::PermissionAction action,
       const GURL& origin,
       permissions::PermissionPromptDisposition prompt_disposition,
+      permissions::PermissionPromptDispositionReason prompt_disposition_reason,
+      permissions::PermissionRequestGestureType gesture_type,
       absl::optional<QuietUiReason> quiet_ui_reason) override;
   absl::optional<bool> HadThreeConsecutiveNotificationPermissionDenies(
       content::BrowserContext* browser_context) override;

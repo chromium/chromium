@@ -335,41 +335,6 @@ void RecordPermissionActionUkm(
   builder.Record(ukm::UkmRecorder::Get());
 }
 
-std::string GetPromptDispositionString(
-    PermissionPromptDisposition ui_disposition) {
-  switch (ui_disposition) {
-    case PermissionPromptDisposition::ANCHORED_BUBBLE:
-      return "AnchoredBubble";
-    case PermissionPromptDisposition::CUSTOM_MODAL_DIALOG:
-      return "CustomModalDialog";
-    case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP:
-      return "LocationBarLeftChip";
-    case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP:
-      return "LocationBarLeftQuietChip";
-    case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP:
-      return "LocationBarLeftQuietAbusiveChip";
-    case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE:
-      return "LocationBarLeftChipAutoBubble";
-    case PermissionPromptDisposition::LOCATION_BAR_RIGHT_ANIMATED_ICON:
-      return "LocationBarRightAnimatedIcon";
-    case PermissionPromptDisposition::LOCATION_BAR_RIGHT_STATIC_ICON:
-      return "LocationBarRightStaticIcon";
-    case PermissionPromptDisposition::MINI_INFOBAR:
-      return "MiniInfobar";
-    case PermissionPromptDisposition::MESSAGE_UI:
-      return "MessageUI";
-    case PermissionPromptDisposition::MODAL_DIALOG:
-      return "ModalDialog";
-    case PermissionPromptDisposition::NONE_VISIBLE:
-      return "NoneVisible";
-    case PermissionPromptDisposition::NOT_APPLICABLE:
-      return "NotApplicable";
-  }
-
-  NOTREACHED();
-  return "";
-}
-
 // |full_version| represented in the format `YYYY.M.D.m`, where m is the
 // minute-of-day. Return int represented in the format `YYYYMMDD`.
 // CrowdDeny versions published before 2020 will be reported as 1.
@@ -1110,6 +1075,67 @@ std::string PermissionUmaUtil::GetPermissionActionString(
   }
   NOTREACHED();
   return std::string();
+}
+
+// static
+std::string PermissionUmaUtil::GetPromptDispositionString(
+    PermissionPromptDisposition ui_disposition) {
+  switch (ui_disposition) {
+    case PermissionPromptDisposition::ANCHORED_BUBBLE:
+      return "AnchoredBubble";
+    case PermissionPromptDisposition::CUSTOM_MODAL_DIALOG:
+      return "CustomModalDialog";
+    case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP:
+      return "LocationBarLeftChip";
+    case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP:
+      return "LocationBarLeftQuietChip";
+    case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP:
+      return "LocationBarLeftQuietAbusiveChip";
+    case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE:
+      return "LocationBarLeftChipAutoBubble";
+    case PermissionPromptDisposition::LOCATION_BAR_RIGHT_ANIMATED_ICON:
+      return "LocationBarRightAnimatedIcon";
+    case PermissionPromptDisposition::LOCATION_BAR_RIGHT_STATIC_ICON:
+      return "LocationBarRightStaticIcon";
+    case PermissionPromptDisposition::MINI_INFOBAR:
+      return "MiniInfobar";
+    case PermissionPromptDisposition::MESSAGE_UI:
+      return "MessageUI";
+    case PermissionPromptDisposition::MODAL_DIALOG:
+      return "ModalDialog";
+    case PermissionPromptDisposition::NONE_VISIBLE:
+      return "NoneVisible";
+    case PermissionPromptDisposition::NOT_APPLICABLE:
+      return "NotApplicable";
+  }
+
+  NOTREACHED();
+  return std::string();
+}
+
+// static
+std::string PermissionUmaUtil::GetPromptDispositionReasonString(
+    PermissionPromptDispositionReason ui_disposition_reason) {
+  switch (ui_disposition_reason) {
+    case PermissionPromptDispositionReason::DEFAULT_FALLBACK:
+      return "DefaultFallback";
+    case PermissionPromptDispositionReason::ON_DEVICE_PREDICTION_MODEL:
+      return "OnDevicePredictionModel";
+    case PermissionPromptDispositionReason::PREDICTION_SERVICE:
+      return "PredictionService";
+    case PermissionPromptDispositionReason::SAFE_BROWSING_VERDICT:
+      return "SafeBrowsingVerdict";
+    case PermissionPromptDispositionReason::USER_PREFERENCE_IN_SETTINGS:
+      return "UserPreferenceInSettings";
+  }
+
+  NOTREACHED();
+  return std::string();
+}
+
+// static
+std::string PermissionUmaUtil::GetRequestTypeString(RequestType request_type) {
+  return GetPermissionRequestString(GetUmaValueForRequestType(request_type));
 }
 
 // static
