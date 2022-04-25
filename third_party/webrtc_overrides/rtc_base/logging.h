@@ -24,6 +24,10 @@
 #ifndef THIRD_PARTY_WEBRTC_OVERRIDES_WEBRTC_RTC_BASE_LOGGING_H_
 #define THIRD_PARTY_WEBRTC_OVERRIDES_WEBRTC_RTC_BASE_LOGGING_H_
 
+#include <ostream>
+#include <string>
+#include <type_traits>
+
 #include "third_party/webrtc_overrides/rtc_base/diagnostic_logging.h"
 
 //////////////////////////////////////////////////////////////////////
@@ -117,6 +121,15 @@ bool CheckVlogIsOn(LoggingSeverity severity, const char (&file)[N]) {
 #define RTC_DLOG_V(sev) RTC_DLOG_EAT_STREAM_PARAMS(sev)
 #define RTC_DLOG_F(sev) RTC_DLOG_EAT_STREAM_PARAMS(sev)
 #endif
+
+// Add operator<< for WebRTC types with the ToLogString method.
+template <typename T,
+          typename = std::enable_if_t<
+              std::is_convertible<decltype(ToLogString(std::declval<T>())),
+                                  std::string>::value>>
+std::ostream& operator<<(std::ostream& os, T val) {
+  return os << ToLogString(val);
+}
 
 #endif  // LOGGING_INSIDE_WEBRTC
 
