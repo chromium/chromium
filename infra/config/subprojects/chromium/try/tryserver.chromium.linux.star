@@ -394,6 +394,7 @@ try_.builder(
     ],
     goma_jobs = goma.jobs.J150,
     os = os.LINUX_FOCAL,
+    execution_timeout = 16 * time.hour,
 )
 
 try_.builder(
@@ -461,7 +462,7 @@ try_.builder(
     mirrors = [
         "ci/Linux MSan Focal",
     ],
-    execution_timeout = 6 * time.hour,
+    execution_timeout = 16 * time.hour,
     goma_jobs = goma.jobs.J150,
     os = os.LINUX_FOCAL,
 )

@@ -1394,6 +1394,7 @@ ci.builder(
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
     reclient_instance = rbe_instance.DEFAULT,
     os = os.LINUX_FOCAL,
+    execution_timeout = 16 * time.hour,
 )
 
 ci.builder(
@@ -1420,6 +1421,7 @@ ci.builder(
     ),
     goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
     os = os.LINUX_FOCAL,
+    execution_timeout = 16 * time.hour,
 )
 
 fyi_mac_builder(
