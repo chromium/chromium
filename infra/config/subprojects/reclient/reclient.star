@@ -81,13 +81,13 @@ def fyi_reclient_test_builder(
 fyi_reclient_staging_builder(
     name = "Linux Builder reclient staging",
     console_view_category = "linux",
-    os = os.LINUX_DEFAULT,
+    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
 )
 
 fyi_reclient_test_builder(
     name = "Linux Builder reclient test",
     console_view_category = "linux",
-    os = os.LINUX_DEFAULT,
+    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
 )
 
 fyi_reclient_staging_builder(
