@@ -80,7 +80,7 @@ public interface ContextualSearchManagementDelegate {
     void logCurrentState();
 
     /**
-     * Called when the Contextual Search panel's animation is finished and it's shown.
+     * Called when the Contextual Search panel is closed.
      */
     void onPanelFinishedShowing();
 
