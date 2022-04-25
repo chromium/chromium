@@ -192,15 +192,6 @@ void QuicHttp3Logger::OnGoAwayFrameReceived(const quic::GoAwayFrame& frame) {
                                  "stream_id", frame.id);
 }
 
-void QuicHttp3Logger::OnMaxPushIdFrameReceived(
-    const quic::MaxPushIdFrame& frame) {
-  if (!net_log_.IsCapturing()) {
-    return;
-  }
-  net_log_.AddEventWithIntParams(NetLogEventType::HTTP3_MAX_PUSH_ID_RECEIVED,
-                                 "push_id", frame.push_id);
-}
-
 void QuicHttp3Logger::OnPriorityUpdateFrameReceived(
     const quic::PriorityUpdateFrame& frame) {
   if (!net_log_.IsCapturing()) {
