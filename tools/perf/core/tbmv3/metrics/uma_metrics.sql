@@ -51,7 +51,7 @@ SELECT UMAMetrics(
     FROM histogram_samples
     WHERE histogram_name = 'Graphics.Smoothness.Checkerboarding.MainThreadAnimation'
   ),
-  'graphics_smoothness_checkerboarding_pitch_zoom', (
+  'graphics_smoothness_checkerboarding_pinch_zoom', (
     SELECT RepeatedField(sample / 1e2)
     FROM histogram_samples
     WHERE histogram_name = 'Graphics.Smoothness.Checkerboarding.PinchZoom'
