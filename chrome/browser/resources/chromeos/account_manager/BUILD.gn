@@ -10,15 +10,7 @@ js_type_check("closure_compile") {
   deps = [
     ":account_manager_browser_proxy",
     ":account_manager_error_app",
-    ":account_manager_welcome_app",
     ":account_migration_welcome_app",
-  ]
-}
-
-js_library("account_manager_welcome_app") {
-  deps = [
-    ":account_manager_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
@@ -48,7 +40,6 @@ js_library("account_manager_browser_proxy") {
 html_to_js("web_components") {
   js_files = [
     "account_manager_shared_css.js",
-    "account_manager_welcome_app.js",
     "account_migration_welcome_app.js",
     "account_manager_error_app.js",
   ]

@@ -296,7 +296,6 @@ static constexpr const char* const kChromeUrls[] = {
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     "chrome://account-manager-error",
-    "chrome://account-manager-welcome",
     "chrome://account-migration-welcome",
     "chrome://add-supervision",
     // TODO(crbug.com/1102129): DCHECK failure in

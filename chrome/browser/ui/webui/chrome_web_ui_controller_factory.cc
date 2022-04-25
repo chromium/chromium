@@ -241,7 +241,6 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chrome/browser/ui/webui/chromeos/account_manager/account_manager_error_ui.h"
-#include "chrome/browser/ui/webui/chromeos/account_manager/account_manager_welcome_ui.h"
 #include "chrome/browser/ui/webui/chromeos/account_manager/account_migration_welcome_ui.h"
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_ui.h"
 #include "chrome/browser/ui/webui/chromeos/arc_graphics_tracing/arc_graphics_tracing_ui.h"
@@ -950,8 +949,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
   if (url.host_piece() == chrome::kChromeUIAccountManagerErrorHost)
     return &NewWebUI<chromeos::AccountManagerErrorUI>;
-  if (url.host_piece() == chrome::kChromeUIAccountManagerWelcomeHost)
-    return &NewWebUI<chromeos::AccountManagerWelcomeUI>;
   if (url.host_piece() == chrome::kChromeUIAccountMigrationWelcomeHost)
     return &NewWebUI<chromeos::AccountMigrationWelcomeUI>;
   if (url.host_piece() == chrome::kChromeUIAddSupervisionHost)
@@ -1535,8 +1532,6 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
       GURL(chrome::kChromeUIUntrustedTerminalURL), GURL(chrome::kOsUIAboutURL),
       GURL(chrome::kChromeUIAccountManagerErrorURL),
       GURL(chrome::kOsUIAccountManagerErrorURL),
-      GURL(chrome::kChromeUIAccountManagerWelcomeURL),
-      GURL(chrome::kOsUIAccountManagerWelcomeURL),
       GURL(chrome::kChromeUIAccountMigrationWelcomeURL),
       GURL(chrome::kOsUIAccountMigrationWelcomeURL),
       GURL(chrome::kChromeUIAddSupervisionURL),

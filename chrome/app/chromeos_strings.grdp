@@ -5601,15 +5601,6 @@
   </message>
 
   <!-- Strings for Account Manager screens -->
-  <message name="IDS_ACCOUNT_MANAGER_WELCOME_TITLE" desc="Title for the ChromeOS Account Manager Welcome screen.">
-    Sign-in has changed
-  </message>
-  <message name="IDS_ACCOUNT_MANAGER_WELCOME_TEXT" desc="Text body for the ChromeOS Account Manager Welcome screen.">
-    You can now manage all of your Google Accounts in one place. Access and permissions you've granted to apps, websites, and extensions in Chrome and Google Play may now apply to all of your signed-in accounts. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://support.google.com/chromebook/?p=google_accounts</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_ACCOUNT_MANAGER_WELCOME_BUTTON" desc="Label for the button to view accounts on the ChromeOS Account Manager Welcome screen.">
-    View accounts
-  </message>
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_TITLE" desc="Title for the ChromeOS 'Add account' dialog.">
     Sign in to add a Google account
   </message>

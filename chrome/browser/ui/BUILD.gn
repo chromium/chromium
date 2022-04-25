@@ -2490,8 +2490,6 @@ static_library("ui") {
       "webui/certificate_provisioning_ui_handler.h",
       "webui/chromeos/account_manager/account_manager_error_ui.cc",
       "webui/chromeos/account_manager/account_manager_error_ui.h",
-      "webui/chromeos/account_manager/account_manager_welcome_ui.cc",
-      "webui/chromeos/account_manager/account_manager_welcome_ui.h",
       "webui/chromeos/account_manager/account_migration_welcome_dialog.cc",
       "webui/chromeos/account_manager/account_migration_welcome_dialog.h",
       "webui/chromeos/account_manager/account_migration_welcome_ui.cc",

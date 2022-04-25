@@ -252,8 +252,6 @@ extern const char kChromeUIHistogramsURL[];
 // IsSystemWebUIHost().
 extern const char kChromeUIAccountManagerErrorHost[];
 extern const char kChromeUIAccountManagerErrorURL[];
-extern const char kChromeUIAccountManagerWelcomeHost[];
-extern const char kChromeUIAccountManagerWelcomeURL[];
 extern const char kChromeUIAccountMigrationWelcomeHost[];
 extern const char kChromeUIAccountMigrationWelcomeURL[];
 extern const char kChromeUIActivationMessageHost[];
@@ -343,7 +341,6 @@ extern const char kChromeUIVmHost[];
 extern const char kChromeUIVmUrl[];
 
 extern const char kOsUIAccountManagerErrorURL[];
-extern const char kOsUIAccountManagerWelcomeURL[];
 extern const char kOsUIAccountMigrationWelcomeURL[];
 extern const char kOsUIAddSupervisionURL[];
 extern const char kOsUIAppDisabledURL[];

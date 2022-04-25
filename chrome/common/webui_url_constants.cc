@@ -275,9 +275,6 @@ const char kChromeUIHistogramsURL[] = "chrome://histograms";
 // Keep alphabetized.
 const char kChromeUIAccountManagerErrorHost[] = "account-manager-error";
 const char kChromeUIAccountManagerErrorURL[] = "chrome://account-manager-error";
-const char kChromeUIAccountManagerWelcomeHost[] = "account-manager-welcome";
-const char kChromeUIAccountManagerWelcomeURL[] =
-    "chrome://account-manager-welcome";
 const char kChromeUIAccountMigrationWelcomeHost[] = "account-migration-welcome";
 const char kChromeUIAccountMigrationWelcomeURL[] =
     "chrome://account-migration-welcome";
@@ -374,7 +371,6 @@ const char kChromeUIUrgentPasswordExpiryNotificationUrl[] =
     "chrome://urgent-password-expiry-notification/";
 
 const char kOsUIAccountManagerErrorURL[] = "os://account-manager-error";
-const char kOsUIAccountManagerWelcomeURL[] = "os://account-manager-welcome";
 const char kOsUIAccountMigrationWelcomeURL[] = "os://account-migration-welcome";
 const char kOsUIAddSupervisionURL[] = "os://add-supervision";
 const char kOsUIAppDisabledURL[] = "os://app-disabled";
@@ -404,7 +400,6 @@ bool IsSystemWebUIHost(base::StringPiece host) {
   // shorter).
   static const char* const kHosts[] = {
     kChromeUIAccountManagerErrorHost,
-    kChromeUIAccountManagerWelcomeHost,
     kChromeUIAccountMigrationWelcomeHost,
     kChromeUIActivationMessageHost,
     kChromeUIAddSupervisionHost,
