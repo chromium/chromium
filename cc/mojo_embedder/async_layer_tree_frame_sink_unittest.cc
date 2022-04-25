@@ -179,7 +179,7 @@ TEST_F(AsyncLayerTreeFrameSinkSimpleTest, HitTestRegionListEmpty) {
   auto pass = viz::CompositorRenderPass::Create();
   pass->id = viz::CompositorRenderPassId{1};
   pass->output_rect = display_rect_;
-  pass_list.push_back(move(pass));
+  pass_list.push_back(std::move(pass));
 
   SendRenderPassList(&pass_list, /*hit_test_data_changed=*/false);
   task_runner_->RunUntilIdle();
@@ -194,7 +194,7 @@ TEST_F(AsyncLayerTreeFrameSinkSimpleTest, HitTestRegionListDuplicate) {
   auto pass1 = viz::CompositorRenderPass::Create();
   pass1->id = viz::CompositorRenderPassId{1};
   pass1->output_rect = display_rect_;
-  pass_list.push_back(move(pass1));
+  pass_list.push_back(std::move(pass1));
 
   viz::HitTestRegionList region_list1;
   region_list1.flags = viz::HitTestRegionFlags::kHitTestMine;
@@ -209,7 +209,7 @@ TEST_F(AsyncLayerTreeFrameSinkSimpleTest, HitTestRegionListDuplicate) {
   auto pass2 = viz::CompositorRenderPass::Create();
   pass2->id = viz::CompositorRenderPassId{2};
   pass2->output_rect = display_rect_;
-  pass_list.push_back(move(pass2));
+  pass_list.push_back(std::move(pass2));
 
   SendRenderPassList(&pass_list, /*hit_test_data_changed=*/false);
   task_runner_->RunUntilIdle();
@@ -221,7 +221,7 @@ TEST_F(AsyncLayerTreeFrameSinkSimpleTest, HitTestRegionListDuplicate) {
   auto pass3 = viz::CompositorRenderPass::Create();
   pass3->id = viz::CompositorRenderPassId{3};
   pass3->output_rect = display_rect_;
-  pass_list.push_back(move(pass3));
+  pass_list.push_back(std::move(pass3));
 
   viz::HitTestRegionList region_list2;
   region_list2.flags = viz::HitTestRegionFlags::kHitTestMine;
@@ -242,7 +242,7 @@ TEST_F(AsyncLayerTreeFrameSinkSimpleTest,
   auto pass1 = viz::CompositorRenderPass::Create();
   pass1->id = viz::CompositorRenderPassId{1};
   pass1->output_rect = display_rect_;
-  pass_list.push_back(move(pass1));
+  pass_list.push_back(std::move(pass1));
 
   viz::HitTestRegionList region_list1;
   region_list1.flags = viz::HitTestRegionFlags::kHitTestMine;
@@ -276,7 +276,7 @@ TEST_F(AsyncLayerTreeFrameSinkSimpleTest,
   auto pass3 = viz::CompositorRenderPass::Create();
   pass3->id = viz::CompositorRenderPassId{3};
   pass3->output_rect = display_rect_;
-  pass_list.push_back(move(pass3));
+  pass_list.push_back(std::move(pass3));
 
   viz::HitTestRegionList region_list3;
   region_list3.flags = viz::HitTestRegionFlags::kHitTestChildSurface;
