@@ -144,9 +144,9 @@ TEST(UrlRequestRewriteRulesValidationTest, ValidateAppendToQuery) {
 }
 
 // Tests validation is working as expected.
-TEST(UrlRequestRewriteRulesValidationTest, ValidateEmptyAction) {
+TEST(UrlRequestRewriteRulesValidationTest, ValidateNullAction) {
   // Empty action.
-  EXPECT_FALSE(ValidateRulesFromAction(mojom::UrlRequestAction::New()));
+  EXPECT_FALSE(ValidateRulesFromAction(nullptr));
 }
 
 TEST(UrlRequestRewriteRulesValidationTest, ValidateNullRules) {
