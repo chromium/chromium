@@ -10,6 +10,8 @@ static_library("browser") {
     "user_note_instance.h",
     "user_note_service.cc",
     "user_note_service.h",
+    "user_note_utils.cc",
+    "user_note_utils.h",
     "user_notes_manager.cc",
     "user_notes_manager.h",
   ]
