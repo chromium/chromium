@@ -927,7 +927,7 @@ BUILDERS = {
             'gpu':
             '8086:1626',
             'os':
-            'Mac',
+            'Mac-12.3',
             'pool':
             'chrome.tests.perf',
             'synthetic_product_name':
