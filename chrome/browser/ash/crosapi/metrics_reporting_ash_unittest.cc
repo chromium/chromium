@@ -6,20 +6,17 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
-#include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
-namespace {
 
 class TestObserver : public mojom::MetricsReportingObserver {
  public:
@@ -29,7 +26,9 @@ class TestObserver : public mojom::MetricsReportingObserver {
   ~TestObserver() override = default;
 
   // crosapi::mojom::MetricsReportingObserver:
-  void OnMetricsReportingChanged(bool enabled) override {
+  void OnMetricsReportingChanged(
+      bool enabled,
+      const absl::optional<std::string>& client_id) override {
     metrics_enabled_ = enabled;
   }
 
@@ -45,34 +44,45 @@ class TestDelegate : public MetricsReportingAsh::Delegate {
   TestDelegate& operator=(const TestDelegate&) = delete;
   ~TestDelegate() override = default;
 
-  // MetricsReportingAsh::Delegate:
-  void SetMetricsReportingEnabled(bool enabled) override { enabled_ = enabled; }
+  bool IsMetricsReportingEnabled() override { return metrics_enabled_; }
 
-  // Public because this is test code.
-  absl::optional<bool> enabled_;
+  // MetricsReportingAsh::Delegate:
+  void SetMetricsReportingEnabled(bool enabled) override {
+    metrics_enabled_ = enabled;
+    observers_.Notify(metrics_enabled_);
+  }
+
+  std::string GetClientId() override { return client_id_; }
+
+  base::CallbackListSubscription AddEnablementObserver(
+      const base::RepeatingCallback<void(bool)>& observer) override {
+    return observers_.Add(observer);
+  }
+
+  std::string client_id_;
+  bool metrics_enabled_ = false;
+  base::RepeatingCallbackList<void(bool)> observers_;
 };
 
 class MetricsReportingAshTest : public testing::Test {
  public:
-  MetricsReportingAshTest()
-      : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()),
-        local_state_(scoped_testing_local_state_.Get()) {}
+  MetricsReportingAshTest() = default;
   MetricsReportingAshTest(const MetricsReportingAshTest&) = delete;
   MetricsReportingAshTest& operator=(const MetricsReportingAshTest&) = delete;
   ~MetricsReportingAshTest() override = default;
 
-  // Public because this is test code.
   base::test::TaskEnvironment task_environment_;
-  ScopedTestingLocalState scoped_testing_local_state_;
-  PrefService* const local_state_;
 };
 
 TEST_F(MetricsReportingAshTest, Basics) {
+  auto delegate = std::make_unique<TestDelegate>();
+  TestDelegate* test_delegate = delegate.get();
+
   // Simulate metrics reporting enabled.
-  local_state_->SetBoolean(metrics::prefs::kMetricsReportingEnabled, true);
+  test_delegate->SetMetricsReportingEnabled(true);
 
   // Construct the object under test.
-  MetricsReportingAsh metrics_reporting_ash(local_state_);
+  MetricsReportingAsh metrics_reporting_ash(std::move(delegate));
   mojo::Remote<mojom::MetricsReporting> metrics_reporting_remote;
   metrics_reporting_ash.BindReceiver(
       metrics_reporting_remote.BindNewPipeAndPassReceiver());
@@ -87,20 +97,21 @@ TEST_F(MetricsReportingAshTest, Basics) {
 
   // Disabling metrics reporting in ash fires the observer with the new value.
   observer.metrics_enabled_.reset();
-  local_state_->SetBoolean(metrics::prefs::kMetricsReportingEnabled, false);
+  test_delegate->SetMetricsReportingEnabled(false);
   observer.receiver_.FlushForTesting();
   ASSERT_TRUE(observer.metrics_enabled_.has_value());
   EXPECT_FALSE(observer.metrics_enabled_.value());
 }
 
 TEST_F(MetricsReportingAshTest, SetMetricsReportingEnabled) {
-  // Simulate metrics reporting disabled.
-  local_state_->SetBoolean(metrics::prefs::kMetricsReportingEnabled, false);
-
   // Construct the object with a test delegate.
   auto delegate = std::make_unique<TestDelegate>();
   TestDelegate* test_delegate = delegate.get();
-  MetricsReportingAsh metrics_reporting_ash(std::move(delegate), local_state_);
+
+  // Simulate metrics reporting disabled.
+  test_delegate->SetMetricsReportingEnabled(false);
+
+  MetricsReportingAsh metrics_reporting_ash(std::move(delegate));
   mojo::Remote<mojom::MetricsReporting> metrics_reporting_remote;
   metrics_reporting_ash.BindReceiver(
       metrics_reporting_remote.BindNewPipeAndPassReceiver());
@@ -111,9 +122,7 @@ TEST_F(MetricsReportingAshTest, SetMetricsReportingEnabled) {
   metrics_reporting_remote->SetMetricsReportingEnabled(true,
                                                        run_loop.QuitClosure());
   run_loop.Run();
-  EXPECT_TRUE(test_delegate->enabled_.has_value());
-  EXPECT_TRUE(test_delegate->enabled_.value());
+  EXPECT_TRUE(test_delegate->metrics_enabled_);
 }
 
-}  // namespace
 }  // namespace crosapi

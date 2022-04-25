@@ -14,6 +14,9 @@
 #include <memory>
 #include <string>
 
+#include "base/bind.h"
+#include "base/callback_forward.h"
+#include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -21,6 +24,8 @@
 #include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_snapshot_manager.h"
 #include "base/metrics/user_metrics.h"
+#include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -104,6 +109,14 @@ class MetricsService : public base::HistogramFlattener {
   // recording is not currently running.
   std::string GetClientId() const;
 
+  // Set an external provided id for the metrics service. This method can be
+  // set by a caller which wants to explicitly control the *next* id used by the
+  // metrics service. Note that setting the external client id will *not* change
+  // the current metrics client id. In order to change the current client id,
+  // callers should call ResetClientId to change the current client id to the
+  // provided id.
+  void SetExternalClientId(const std::string& id);
+
   // Returns the date at which the current metrics client ID was created as
   // an int64_t containing seconds since the epoch.
   int64_t GetMetricsReportingEnabledDate();
@@ -143,6 +156,8 @@ class MetricsService : public base::HistogramFlattener {
   bool recording_active() const;
   bool reporting_active() const;
   bool has_unsent_logs() const;
+
+  bool IsMetricsReportingEnabled() const;
 
   // Register the specified |provider| to provide additional metrics into the
   // UMA log. Should be called during MetricsService initialization only.
@@ -215,14 +230,16 @@ class MetricsService : public base::HistogramFlattener {
 
   // Updates the current user metrics consent. No-ops if no user has logged in.
   void UpdateCurrentUserMetricsConsent(bool user_metrics_consent);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Forces the client ID to be reset and generates a new client ID. This will
   // be called when a user re-consents to metrics collection and the user had
   // consented in the past.
   //
   // This is to preserve the pseudo-anonymous identifier <client_id, user_id>.
   void ResetClientId();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   variations::SyntheticTrialRegistry* GetSyntheticTrialRegistry();
 
@@ -236,6 +253,12 @@ class MetricsService : public base::HistogramFlattener {
   DelegatingProvider* GetDelegatingProviderForTesting() {
     return &delegating_provider_;
   }
+
+  // Observers will be notified when the enablement state changes. The callback
+  // should accept one boolean argument, which will signal whether or not the
+  // metrics collection has been enabled.
+  base::CallbackListSubscription AddEnablementObserver(
+      const base::RepeatingCallback<void(bool)>& observer);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   bool IsInForegroundForTesting() const { return is_in_foreground_; }
@@ -448,6 +471,9 @@ class MetricsService : public base::HistogramFlattener {
 
   // Indicates if loading of independent metrics is currently active.
   bool independent_loader_active_ = false;
+
+  // A set of observers that keeps track of the metrics reporting state.
+  base::RepeatingCallbackList<void(bool)> enablement_observers_;
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Indicates whether OnAppEnterForeground() (true) or OnAppEnterBackground

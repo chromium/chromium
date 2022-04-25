@@ -22,14 +22,18 @@ class TestObserver : public mojom::MetricsReportingObserver {
   ~TestObserver() override = default;
 
   // crosapi::mojom::MetricsReportingObserver:
-  void OnMetricsReportingChanged(bool enabled) override {
+  void OnMetricsReportingChanged(
+      bool enabled,
+      const absl::optional<std::string>& client_id) override {
     metrics_enabled_ = enabled;
+    metrics_client_id_ = client_id;
     if (on_changed_run_loop_)
       on_changed_run_loop_->Quit();
   }
 
   // Public because this is test code.
   absl::optional<bool> metrics_enabled_;
+  absl::optional<std::string> metrics_client_id_;
   base::RunLoop* on_changed_run_loop_ = nullptr;
   mojo::Receiver<mojom::MetricsReportingObserver> receiver_{this};
 };
@@ -44,6 +48,8 @@ IN_PROC_BROWSER_TEST_F(MetricsReportingLacrosBrowserTest, Basics) {
   // on the ash build type (official vs. not).
   const bool ash_metrics_enabled =
       lacros_service->init_params()->ash_metrics_enabled;
+  const absl::optional<std::string> ash_metrics_client_id =
+      lacros_service->init_params()->metrics_service_client_id;
 
   mojo::Remote<mojom::MetricsReporting> metrics_reporting;
   lacros_service->BindMetricsReporting(
@@ -58,6 +64,7 @@ IN_PROC_BROWSER_TEST_F(MetricsReportingLacrosBrowserTest, Basics) {
   run_loop1.Run();
   ASSERT_TRUE(observer1.metrics_enabled_.has_value());
   EXPECT_EQ(ash_metrics_enabled, observer1.metrics_enabled_.value());
+  EXPECT_EQ(ash_metrics_client_id, observer1.metrics_client_id_);
 
   // Adding another observer fires it as well.
   base::RunLoop run_loop2;
@@ -68,6 +75,7 @@ IN_PROC_BROWSER_TEST_F(MetricsReportingLacrosBrowserTest, Basics) {
   run_loop2.Run();
   ASSERT_TRUE(observer2.metrics_enabled_.has_value());
   EXPECT_EQ(ash_metrics_enabled, observer2.metrics_enabled_.value());
+  EXPECT_EQ(ash_metrics_client_id, observer2.metrics_client_id_);
 
   // Exercise SetMetricsReportingEnabled() and ensure its callback is called.
   base::RunLoop run_loop3;

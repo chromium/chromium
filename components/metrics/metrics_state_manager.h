@@ -143,6 +143,10 @@ class MetricsStateManager final {
   // before recording.
   void ForceClientIdCreation();
 
+  // Sets the external client id. Useful for callers that want explicit control
+  // of the next metrics client id.
+  void SetExternalClientId(const std::string& id);
+
   // Checks if this install was cloned or imaged from another machine. If a
   // clone is detected, resets the client id and low entropy source. This
   // should not be called more than once.

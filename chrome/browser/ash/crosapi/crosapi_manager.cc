@@ -31,8 +31,10 @@ CrosapiManager* CrosapiManager::Get() {
   return g_instance;
 }
 
-CrosapiManager::CrosapiManager()
-    : crosapi_ash_(std::make_unique<CrosapiAsh>()) {
+CrosapiManager::CrosapiManager() : CrosapiManager(&default_registry_) {}
+
+CrosapiManager::CrosapiManager(CrosapiDependencyRegistry* registry)
+    : crosapi_ash_(std::make_unique<CrosapiAsh>(registry)) {
   DCHECK(!g_instance);
   g_instance = this;
 }

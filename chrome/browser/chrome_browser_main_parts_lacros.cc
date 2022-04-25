@@ -8,6 +8,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lacros/metrics_reporting_observer.h"
 #include "chrome/browser/lacros/prefs_ash_observer.h"
+#include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/lacros/dbus/lacros_dbus_helper.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -30,10 +31,8 @@ int ChromeBrowserMainPartsLacros::PreEarlyInitialization() {
   // The observer sets the initial metrics consent state, then observes ash
   // for updates. Create it here because local state is required to check for
   // policy overrides.
-  DCHECK(g_browser_process->local_state());
-  metrics_reporting_observer_ = std::make_unique<MetricsReportingObserver>(
-      g_browser_process->local_state());
-  metrics_reporting_observer_->Init();
+  MetricsReportingObserver::InitSettingsFromAsh();
+
   prefs_ash_observer_ =
       std::make_unique<PrefsAshObserver>(g_browser_process->local_state());
   prefs_ash_observer_->Init();
@@ -50,6 +49,17 @@ int ChromeBrowserMainPartsLacros::PreCreateThreads() {
         switches::kNoStartupWindow);
   }
   return ChromeBrowserMainPartsLinux::PreCreateThreads();
+}
+
+void ChromeBrowserMainPartsLacros::PostCreateThreads() {
+  if (g_browser_process->metrics_service()) {
+    metrics_reporting_observer_ = MetricsReportingObserver::CreateObserver(
+        g_browser_process->metrics_service());
+  } else {
+    LOG(WARNING)
+        << "Metrics service is not available, not syncing metrics settings.";
+  }
+  return ChromeBrowserMainPartsLinux::PostCreateThreads();
 }
 
 void ChromeBrowserMainPartsLacros::PreProfileInit() {

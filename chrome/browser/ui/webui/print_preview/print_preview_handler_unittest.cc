@@ -54,6 +54,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
+#include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
 #include "chrome/browser/ash/crosapi/test_local_printer_ash.h"
 #include "chromeos/login/login_state/login_state.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -397,7 +398,7 @@ class PrintPreviewHandlerTest : public testing::Test {
     local_printer_ = std::make_unique<TestLocalPrinterAsh>(profile_, nullptr);
     crosapi::IdleServiceAsh::DisableForTesting();
     chromeos::LoginState::Initialize();
-    manager_ = std::make_unique<crosapi::CrosapiManager>();
+    manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
 #endif
     initiator_web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));

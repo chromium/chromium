@@ -518,6 +518,10 @@ void MetricsStateManager::ForceClientIdCreation() {
   BackUpCurrentClientInfo();
 }
 
+void MetricsStateManager::SetExternalClientId(const std::string& id) {
+  external_client_id_ = id;
+}
+
 void MetricsStateManager::CheckForClonedInstall() {
   cloned_install_detector_.CheckForClonedInstall(local_state_);
 }

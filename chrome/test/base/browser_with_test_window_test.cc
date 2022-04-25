@@ -4,6 +4,8 @@
 
 #include "chrome/test/base/browser_with_test_window_test.h"
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/run_loop.h"
@@ -40,6 +42,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
+#include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -92,7 +95,7 @@ void BrowserWithTestWindowTest::SetUp() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   crosapi::IdleServiceAsh::DisableForTesting();
-  manager_ = std::make_unique<crosapi::CrosapiManager>();
+  manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
 #endif
 
   // Subclasses can provide their own Profile.

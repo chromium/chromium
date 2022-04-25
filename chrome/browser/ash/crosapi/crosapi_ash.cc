@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/crosapi/clipboard_ash.h"
 #include "chrome/browser/ash/crosapi/clipboard_history_ash.h"
 #include "chrome/browser/ash/crosapi/content_protection_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_dependency_registry.h"
 #include "chrome/browser/ash/crosapi/desk_template_ash.h"
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/device_settings_ash.h"
@@ -133,7 +134,7 @@ Profile* GetAshProfile() {
 
 }  // namespace
 
-CrosapiAsh::CrosapiAsh()
+CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
     : arc_ash_(std::make_unique<ArcAsh>()),
       authentication_ash_(std::make_unique<AuthenticationAsh>()),
       automation_ash_(std::make_unique<AutomationAsh>()),
@@ -171,8 +172,8 @@ CrosapiAsh::CrosapiAsh()
       login_screen_storage_ash_(std::make_unique<LoginScreenStorageAsh>()),
       login_state_ash_(std::make_unique<LoginStateAsh>()),
       message_center_ash_(std::make_unique<MessageCenterAsh>()),
-      metrics_reporting_ash_(std::make_unique<MetricsReportingAsh>(
-          g_browser_process->local_state())),
+      metrics_reporting_ash_(registry->CreateMetricsReportingAsh(
+          g_browser_process->metrics_service())),
       native_theme_service_ash_(std::make_unique<NativeThemeServiceAsh>()),
       networking_attributes_ash_(std::make_unique<NetworkingAttributesAsh>()),
       network_settings_service_ash_(std::make_unique<NetworkSettingsServiceAsh>(

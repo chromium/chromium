@@ -7,13 +7,17 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
+#include "base/gtest_prod_util.h"
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-class PrefService;
+namespace metrics {
+class MetricsService;
+}  // namespace metrics
 
 namespace crosapi {
 
@@ -25,13 +29,18 @@ class MetricsReportingAsh : public mojom::MetricsReporting {
   class Delegate {
    public:
     virtual ~Delegate() = default;
+    virtual bool IsMetricsReportingEnabled() = 0;
     virtual void SetMetricsReportingEnabled(bool enabled) = 0;
+    virtual std::string GetClientId() = 0;
+    virtual base::CallbackListSubscription AddEnablementObserver(
+        const base::RepeatingCallback<void(bool)>& observer) = 0;
   };
-  // Constructor for production. Uses the real metrics reporting subsystem.
-  explicit MetricsReportingAsh(PrefService* local_state);
-  // Constructor for testing.
-  MetricsReportingAsh(std::unique_ptr<Delegate> delegate,
-                      PrefService* local_state);
+  static std::unique_ptr<MetricsReportingAsh> CreateMetricsReportingAsh(
+      metrics::MetricsService* metrics_service);
+
+  // Constructs a metrics service impl. Do not use this directly and use the
+  // Factory interface instead.
+  explicit MetricsReportingAsh(std::unique_ptr<Delegate> delegate);
   MetricsReportingAsh(const MetricsReportingAsh&) = delete;
   MetricsReportingAsh& operator=(const MetricsReportingAsh&) = delete;
   ~MetricsReportingAsh() override;
@@ -45,17 +54,17 @@ class MetricsReportingAsh : public mojom::MetricsReporting {
       bool enabled,
       SetMetricsReportingEnabledCallback callback) override;
 
+  void OnEnablementChange(bool enabled);
+
  private:
   // Notifies all observers of the current metrics state.
   void NotifyObservers();
 
-  // Returns whether metrics reporting is enabled.
-  bool IsMetricsReportingEnabled() const;
-
   std::unique_ptr<Delegate> delegate_;
 
-  // In production, owned by g_browser_process, which outlives this object.
-  PrefService* const local_state_;
+  // Handle for the observer watching the metrics enablement state. This needs
+  // to remain active for the lifetime of the observer.
+  base::CallbackListSubscription observer_subscription_;
 
   // Observes the metrics enabled pref.
   PrefChangeRegistrar pref_change_registrar_;

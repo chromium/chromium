@@ -36,6 +36,7 @@ class ChromeAppWindowTrackerAsh;
 class ClipboardAsh;
 class ClipboardHistoryAsh;
 class ContentProtectionAsh;
+class CrosapiDependencyRegistry;
 class DeskTemplateAsh;
 class DeviceAttributesAsh;
 class DeviceSettingsAsh;
@@ -86,7 +87,7 @@ class NetworkSettingsServiceAsh;
 // crosapi clients, such as lacros-chrome, can call into.
 class CrosapiAsh : public mojom::Crosapi {
  public:
-  CrosapiAsh();
+  explicit CrosapiAsh(CrosapiDependencyRegistry* registry);
   ~CrosapiAsh() override;
 
   // Abstract base class to support dependency injection for tests.

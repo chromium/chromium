@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/values.h"
+#include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -104,7 +105,7 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     crosapi::IdleServiceAsh::DisableForTesting();
     chromeos::LoginState::Initialize();
-    manager_ = std::make_unique<crosapi::CrosapiManager>();
+    manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
 #endif
     preview_web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));

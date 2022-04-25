@@ -4,52 +4,64 @@
 
 #include "chrome/browser/lacros/metrics_reporting_observer.h"
 
-#include "base/test/task_environment.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "components/metrics/metrics_pref_names.h"
+#include "chrome/browser/metrics/metrics_reporting_state.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// MetricsReportingObserver that avoids calling ChangeMetricsReportingState().
-class TestMetricsReportingObserver : public MetricsReportingObserver {
+class MockMetricsServiceProxy
+    : public MetricsReportingObserver::MetricsServiceProxy {
  public:
-  explicit TestMetricsReportingObserver(PrefService* local_state)
-      : MetricsReportingObserver(local_state) {}
-  TestMetricsReportingObserver(const TestMetricsReportingObserver&) = delete;
-  TestMetricsReportingObserver& operator=(const TestMetricsReportingObserver&) =
-      delete;
-  ~TestMetricsReportingObserver() override = default;
-
-  // MetricsReportingObserver:
-  void DoChangeMetricsReportingState(bool enabled) override {
-    metrics_reporting_enabled_ = enabled;
-    ++change_metrics_reporting_count_;
-  }
-
-  absl::optional<bool> metrics_reporting_enabled_;
-  int change_metrics_reporting_count_ = 0;
+  MOCK_METHOD(void, SetReportingEnabled, (bool enabled), (override));
+  MOCK_METHOD(void, SetExternalClientId, (const std::string&), (override));
+  MOCK_METHOD(void, RecreateClientIdIfNecessary, (), (override));
 };
 
-TEST(MetricsReportingObserverTest, ChangesOnlyApplyOnce) {
-  base::test::TaskEnvironment task_environment;
+class MetricsReportingObserverTest : public ::testing::Test {
+ public:
+  void SetUp() override {
+    std::unique_ptr<MetricsReportingObserver::MetricsServiceProxy>
+        metrics_service = std::make_unique<MockMetricsServiceProxy>();
+    mock_metrics_service_ =
+        static_cast<MockMetricsServiceProxy*>(metrics_service.get());
+    observer_ =
+        std::make_unique<MetricsReportingObserver>(std::move(metrics_service));
+  }
 
-  // Simulate starting with metrics reporting starting enabled.
-  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
-  local_state.Get()->SetBoolean(metrics::prefs::kMetricsReportingEnabled, true);
+  MetricsReportingObserver* observer() { return observer_.get(); }
 
-  // Construct object under test.
-  TestMetricsReportingObserver observer(local_state.Get());
+  MockMetricsServiceProxy* mock_metrics_service() {
+    return mock_metrics_service_;
+  }
 
-  // Receiving metrics reporting enabled from ash does not call
-  // ChangeMetricsReportingState() because metrics are already enabled.
-  observer.OnMetricsReportingChanged(true);
-  EXPECT_FALSE(observer.metrics_reporting_enabled_.has_value());
-  EXPECT_EQ(0, observer.change_metrics_reporting_count_);
+ private:
+  MockMetricsServiceProxy* mock_metrics_service_;
+  std::unique_ptr<MetricsReportingObserver> observer_;
+};
 
-  // However, receiving metrics reporting disabled from ash does call
-  // ChangeMetricsReportingState() because the value changed.
-  observer.OnMetricsReportingChanged(false);
-  EXPECT_TRUE(observer.metrics_reporting_enabled_.has_value());
-  EXPECT_FALSE(observer.metrics_reporting_enabled_.value());
-  EXPECT_EQ(1, observer.change_metrics_reporting_count_);
+TEST_F(MetricsReportingObserverTest, EnablingMetricsReporting) {
+  std::string test_id = "my little id";
+
+  EXPECT_CALL(*mock_metrics_service(),
+              SetExternalClientId(testing::StrEq(test_id)));
+  EXPECT_CALL(*mock_metrics_service(), SetReportingEnabled(testing::IsTrue()));
+  EXPECT_CALL(*mock_metrics_service(), RecreateClientIdIfNecessary);
+
+  observer()->OnMetricsReportingChanged(true, test_id);
+}
+
+TEST_F(MetricsReportingObserverTest, DisablingMetricsReporting) {
+  EXPECT_CALL(*mock_metrics_service(), SetExternalClientId).Times(0);
+  EXPECT_CALL(*mock_metrics_service(), SetReportingEnabled(testing::IsFalse()));
+  EXPECT_CALL(*mock_metrics_service(), RecreateClientIdIfNecessary).Times(0);
+
+  observer()->OnMetricsReportingChanged(false, absl::nullopt);
+}
+
+TEST_F(MetricsReportingObserverTest, DisablingMetricsReportingWithClientId) {
+  // Attempting to set the client id on disable should result in a noop.
+  EXPECT_CALL(*mock_metrics_service(), SetExternalClientId).Times(0);
+  EXPECT_CALL(*mock_metrics_service(), SetReportingEnabled(testing::IsFalse()));
+  EXPECT_CALL(*mock_metrics_service(), RecreateClientIdIfNecessary).Times(0);
+
+  observer()->OnMetricsReportingChanged(false, absl::nullopt);
 }

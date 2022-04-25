@@ -7,11 +7,14 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_list.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 
 namespace crosapi {
@@ -20,10 +23,17 @@ namespace {
 // Delegate for production, which uses the real reporting subsystem.
 class DelegateImpl : public MetricsReportingAsh::Delegate {
  public:
-  DelegateImpl() = default;
+  explicit DelegateImpl(metrics::MetricsService* metrics_service)
+      : metrics_service_(metrics_service) {
+    DCHECK(metrics_service_);
+  }
   DelegateImpl(const DelegateImpl&) = delete;
   DelegateImpl& operator=(const DelegateImpl&) = delete;
   ~DelegateImpl() override = default;
+
+  bool IsMetricsReportingEnabled() override {
+    return metrics_service_->IsMetricsReportingEnabled();
+  }
 
   // MetricsReportingAsh::Delegate:
   void SetMetricsReportingEnabled(bool enabled) override {
@@ -32,25 +42,39 @@ class DelegateImpl : public MetricsReportingAsh::Delegate {
     // Chrome OS uses this wrapper around the underlying metrics pref.
     ash::StatsReportingController::Get()->SetEnabled(profile, enabled);
   }
+
+  std::string GetClientId() override { return metrics_service_->GetClientId(); }
+
+  base::CallbackListSubscription AddEnablementObserver(
+      const base::RepeatingCallback<void(bool)>& observer) override {
+    return metrics_service_->AddEnablementObserver(observer);
+  }
+
+ private:
+  const raw_ptr<metrics::MetricsService> metrics_service_;
 };
+
+absl::optional<std::string> MaybeGetClientId(
+    bool enabled,
+    MetricsReportingAsh::Delegate* delegate) {
+  return enabled ? absl::make_optional(delegate->GetClientId()) : absl::nullopt;
+}
 
 }  // namespace
 
-MetricsReportingAsh::MetricsReportingAsh(PrefService* local_state)
-    : MetricsReportingAsh(std::make_unique<DelegateImpl>(), local_state) {}
+std::unique_ptr<MetricsReportingAsh>
+MetricsReportingAsh::CreateMetricsReportingAsh(
+    metrics::MetricsService* metrics_service) {
+  DCHECK(metrics_service);
+  return std::make_unique<MetricsReportingAsh>(
+      std::make_unique<DelegateImpl>(metrics_service));
+}
 
-MetricsReportingAsh::MetricsReportingAsh(std::unique_ptr<Delegate> delegate,
-                                         PrefService* local_state)
-    : delegate_(std::move(delegate)), local_state_(local_state) {
+MetricsReportingAsh::MetricsReportingAsh(std::unique_ptr<Delegate> delegate)
+    : delegate_(std::move(delegate)) {
   DCHECK(delegate_);
-  DCHECK(local_state_);
-  pref_change_registrar_.Init(local_state_);
-  // base::Unretained() is safe because PrefChangeRegistrar removes all
-  // observers when it is destroyed.
-  pref_change_registrar_.Add(
-      metrics::prefs::kMetricsReportingEnabled,
-      base::BindRepeating(&MetricsReportingAsh::NotifyObservers,
-                          base::Unretained(this)));
+  observer_subscription_ = delegate_->AddEnablementObserver(base::BindRepeating(
+      &MetricsReportingAsh::OnEnablementChange, base::Unretained(this)));
 }
 
 MetricsReportingAsh::~MetricsReportingAsh() = default;
@@ -64,8 +88,9 @@ void MetricsReportingAsh::AddObserver(
     mojo::PendingRemote<mojom::MetricsReportingObserver> observer) {
   mojo::Remote<mojom::MetricsReportingObserver> remote(std::move(observer));
   // Fire the observer with the initial value.
-  bool enabled = IsMetricsReportingEnabled();
-  remote->OnMetricsReportingChanged(enabled);
+  bool enabled = delegate_->IsMetricsReportingEnabled();
+  remote->OnMetricsReportingChanged(enabled,
+                                    MaybeGetClientId(enabled, delegate_.get()));
   // Store the observer for future notifications.
   observers_.Add(std::move(remote));
 }
@@ -77,15 +102,11 @@ void MetricsReportingAsh::SetMetricsReportingEnabled(
   std::move(callback).Run();
 }
 
-void MetricsReportingAsh::NotifyObservers() {
-  bool enabled = IsMetricsReportingEnabled();
+void MetricsReportingAsh::OnEnablementChange(bool enabled) {
   for (auto& observer : observers_) {
-    observer->OnMetricsReportingChanged(enabled);
+    observer->OnMetricsReportingChanged(
+        enabled, MaybeGetClientId(enabled, delegate_.get()));
   }
-}
-
-bool MetricsReportingAsh::IsMetricsReportingEnabled() const {
-  return local_state_->GetBoolean(metrics::prefs::kMetricsReportingEnabled);
 }
 
 }  // namespace crosapi

@@ -129,6 +129,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_list.h"
 #include "base/location.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_flattener.h"
@@ -327,6 +328,10 @@ std::string MetricsService::GetClientId() const {
   return state_manager_->client_id();
 }
 
+void MetricsService::SetExternalClientId(const std::string& id) {
+  state_manager_->SetExternalClientId(id);
+}
+
 bool MetricsService::WasLastShutdownClean() const {
   return state_manager_->clean_exit_beacon()->exited_cleanly();
 }
@@ -364,6 +369,8 @@ void MetricsService::EnableRecording() {
   action_callback_ = base::BindRepeating(&MetricsService::OnUserAction,
                                          base::Unretained(this));
   base::AddActionCallback(action_callback_);
+
+  enablement_observers_.Notify(/*enabled=*/true);
 }
 
 void MetricsService::DisableRecording() {
@@ -378,6 +385,8 @@ void MetricsService::DisableRecording() {
   delegating_provider_.OnRecordingDisabled();
 
   PushPendingLogsToPersistentStorage();
+
+  enablement_observers_.Notify(/*enabled=*/false);
 }
 
 bool MetricsService::recording_active() const {
@@ -392,6 +401,10 @@ bool MetricsService::reporting_active() const {
 
 bool MetricsService::has_unsent_logs() const {
   return reporting_service_.metrics_log_store()->has_unsent_logs();
+}
+
+bool MetricsService::IsMetricsReportingEnabled() const {
+  return state_manager_->IsMetricsReportingEnabled();
 }
 
 void MetricsService::RecordDelta(const base::HistogramBase& histogram,
@@ -549,7 +562,9 @@ void MetricsService::UpdateCurrentUserMetricsConsent(
     bool user_metrics_consent) {
   client_->UpdateCurrentUserMetricsConsent(user_metrics_consent);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void MetricsService::ResetClientId() {
   // Pref must be cleared in order for ForceClientIdCreation to generate a new
   // client ID.
@@ -557,7 +572,7 @@ void MetricsService::ResetClientId() {
   state_manager_->ForceClientIdCreation();
   client_->SetMetricsClientId(state_manager_->client_id());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 variations::SyntheticTrialRegistry*
 MetricsService::GetSyntheticTrialRegistry() {
@@ -956,6 +971,11 @@ std::unique_ptr<MetricsLog> MetricsService::CreateLog(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return new_metrics_log;
+}
+
+base::CallbackListSubscription MetricsService::AddEnablementObserver(
+    const base::RepeatingCallback<void(bool)>& observer) {
+  return enablement_observers_.Add(observer);
 }
 
 void MetricsService::SetPersistentSystemProfile(

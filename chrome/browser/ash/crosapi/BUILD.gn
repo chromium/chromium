@@ -66,6 +66,8 @@ source_set("crosapi") {
     "copy_migrator.h",
     "crosapi_ash.cc",
     "crosapi_ash.h",
+    "crosapi_dependency_registry.cc",
+    "crosapi_dependency_registry.h",
     "crosapi_id.h",
     "crosapi_manager.cc",
     "crosapi_manager.h",
@@ -286,6 +288,8 @@ source_set("test_support") {
     "fake_browser_manager.h",
     "test_controller_ash.cc",
     "test_controller_ash.h",
+    "test_crosapi_dependency_registry.cc",
+    "test_crosapi_dependency_registry.h",
   ]
 
   deps = [

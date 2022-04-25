@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
+#include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/extensions/api/login_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -110,7 +111,7 @@ class SessionStateChangedEventDispatcherAshUnittest : public testing::Test {
 
     crosapi::IdleServiceAsh::DisableForTesting();
     chromeos::LoginState::Initialize();
-    manager_ = std::make_unique<crosapi::CrosapiManager>();
+    manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
 
     dispatcher_ =
         std::make_unique<SessionStateChangedEventDispatcher>(testing_profile_);

@@ -6,10 +6,12 @@ module crosapi.mojom;
 
 // Interface for observers of metrics reporting consent. Implemented by
 // lacros-chrome. Used by ash-chrome to send update notifications.
+// Next version: 2
 [Stable, Uuid="3bfcacbc-ab16-4731-9e11-3523983915d0"]
 interface MetricsReportingObserver {
   // Called when the metrics reporting state changes.
-  OnMetricsReportingChanged@0(bool enabled);
+  // If enabled is set to true, the client_id must be provided.
+  OnMetricsReportingChanged@0(bool enabled, [MinVersion=1] string? client_id);
 };
 
 // Interface for metrics reporting consent. Implemented by ash-chrome.
