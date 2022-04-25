@@ -43,7 +43,7 @@ namespace {
 
 // Flag used to set thread priority to |THREAD_PRIORITY_LOWEST| for
 // |kUseThreadPriorityLowest| Feature.
-std::atomic<bool> g_use_thread_priority_lowest;
+std::atomic<bool> g_use_thread_priority_lowest{false};
 
 // The most common value returned by ::GetThreadPriority() after background
 // thread mode is enabled on Windows 7.
