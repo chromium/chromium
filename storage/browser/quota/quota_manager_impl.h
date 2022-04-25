@@ -577,7 +577,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   // Methods for eviction logic.
   void StartEviction();
-  void DeleteBucketFromDatabase(BucketId bucket_id,
+  void DeleteBucketFromDatabase(const BucketLocator& bucket,
                                 base::OnceCallback<void(QuotaError)> callback);
 
   void DidBucketDataEvicted(QuotaDatabase::BucketTableEntry entry,

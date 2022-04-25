@@ -27,6 +27,7 @@
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_impl.h"
 #include "storage/browser/quota/quota_override_handle.h"
+#include "storage/browser/quota/storage_directory_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
@@ -81,31 +82,13 @@ QuotaManagerProxy::QuotaManagerProxy(
 }
 
 base::FilePath QuotaManagerProxy::GetBucketPath(const BucketLocator& bucket) {
-  return profile_path_.Append(kWebStorageDirectory)
-      .AppendASCII(base::NumberToString(bucket.id.value()));
+  return CreateBucketPath(profile_path_, bucket);
 }
 
 base::FilePath QuotaManagerProxy::GetClientBucketPath(
     const BucketLocator& bucket,
     QuotaClientType client_type) {
-  base::FilePath bucket_directory = GetBucketPath(bucket);
-
-  switch (client_type) {
-    case QuotaClientType::kFileSystem:
-      return bucket_directory.Append(kFileSystemDirectory);
-    case QuotaClientType::kIndexedDatabase:
-      return bucket_directory.Append(kIndexedDbDirectory);
-    case QuotaClientType::kBackgroundFetch:
-    case QuotaClientType::kServiceWorkerCache:
-      return bucket_directory.Append(kCacheStorageDirectory);
-    case QuotaClientType::kServiceWorker:
-      return bucket_directory.Append(kScriptCacheDirectory);
-    case QuotaClientType::kMediaLicense:
-      return bucket_directory.Append(kMediaLicenseDirectory);
-    default:
-      NOTREACHED() << "Unsupported QuotaClientType";
-      return base::FilePath();
-  }
+  return CreateClientBucketPath(profile_path_, bucket, client_type);
 }
 
 void QuotaManagerProxy::RegisterClient(

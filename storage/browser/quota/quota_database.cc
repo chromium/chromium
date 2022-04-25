@@ -558,16 +558,21 @@ QuotaError QuotaDatabase::DeleteHostQuota(const std::string& host,
   return QuotaError::kNone;
 }
 
-QuotaError QuotaDatabase::DeleteBucketInfo(BucketId bucket_id) {
+QuotaError QuotaDatabase::DeleteBucketData(const BucketLocator& bucket) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!bucket_id.is_null());
   QuotaError open_error = EnsureOpened();
   if (open_error != QuotaError::kNone)
     return open_error;
 
+  // Doom bucket directory first so data is no longer accessible, even if
+  // directory deletion fails. `storage_directory_` may be nullptr for
+  // in-memory only.
+  if (storage_directory_ && !storage_directory_->DoomBucket(bucket))
+    return QuotaError::kFileOperationError;
+
   static constexpr char kSql[] = "DELETE FROM buckets WHERE id = ?";
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindInt64(0, bucket_id.value());
+  statement.BindInt64(0, bucket.id.value());
 
   if (!statement.Run())
     return QuotaError::kDatabaseError;
@@ -584,6 +589,9 @@ QuotaError QuotaDatabase::DeleteBucketInfo(BucketId bucket_id) {
   // TODO(crbug.com/1314567): For handling inconsistencies between the db and
   // the file system.
   ScheduleCommit();
+
+  if (storage_directory_)
+    storage_directory_->ClearDoomedBuckets();
 
   return QuotaError::kNone;
 }

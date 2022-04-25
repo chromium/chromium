@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "components/services/storage/public/cpp/constants.h"
+#include "storage/browser/quota/storage_directory_util.h"
 
 namespace storage {
 namespace {
@@ -28,14 +29,7 @@ bool StorageDirectory::Create() {
 }
 
 bool StorageDirectory::Doom() {
-  if (!base::PathExists(web_storage_path_))
-    return true;
-
-  base::FilePath doomed_dir;
-  base::CreateTemporaryDirInDir(
-      web_storage_path_.DirName(),
-      base::StrCat({kWebStorageDirectory, kDoomedPathName}), &doomed_dir);
-  return base::Move(web_storage_path_, doomed_dir);
+  return DoomPath(web_storage_path_);
 }
 
 void StorageDirectory::ClearDoomed() {
@@ -45,12 +39,55 @@ void StorageDirectory::ClearDoomed() {
     base::DeletePathRecursively(path);
 }
 
+bool StorageDirectory::CreateBucket(const BucketLocator& bucket) {
+  base::FilePath bucket_path =
+      CreateBucketPath(web_storage_path_.DirName(), bucket);
+  return base::CreateDirectory(bucket_path);
+}
+
+bool StorageDirectory::DoomBucket(const BucketLocator& bucket) {
+  base::FilePath bucket_path =
+      CreateBucketPath(web_storage_path_.DirName(), bucket);
+  return DoomPath(bucket_path);
+}
+
+void StorageDirectory::ClearDoomedBuckets() {
+  std::set<base::FilePath> paths = EnumerateDoomedBuckets();
+
+  for (const base::FilePath& path : paths)
+    base::DeletePathRecursively(path);
+}
+
+bool StorageDirectory::DoomPath(const base::FilePath& path) {
+  if (!base::PathExists(path))
+    return true;
+
+  base::FilePath doomed_dir;
+  base::CreateTemporaryDirInDir(
+      path.DirName(), base::StrCat({path.BaseName().value(), kDoomedPathName}),
+      &doomed_dir);
+  return base::Move(path, doomed_dir);
+}
+
 std::set<base::FilePath> StorageDirectory::EnumerateDoomedDirectories() {
   base::FileEnumerator enumerator(
-      web_storage_path_.DirName(), /*recursive=*/false,
-      base::FileEnumerator::DIRECTORIES,
+      web_storage_path_.DirName(),
+      /*recursive=*/false, base::FileEnumerator::DIRECTORIES,
       base::StrCat(
           {kWebStorageDirectory, kDoomedPathName, FILE_PATH_LITERAL("*")}));
+
+  std::set<base::FilePath> paths;
+  base::FilePath path;
+  while (path = enumerator.Next(), !path.empty())
+    paths.insert(path);
+  return paths;
+}
+
+std::set<base::FilePath> StorageDirectory::EnumerateDoomedBuckets() {
+  base::FileEnumerator enumerator(
+      web_storage_path_, /*recursive=*/false, base::FileEnumerator::DIRECTORIES,
+      base::StrCat(
+          {FILE_PATH_LITERAL("*"), kDoomedPathName, FILE_PATH_LITERAL("*")}));
 
   std::set<base::FilePath> paths;
   base::FilePath path;

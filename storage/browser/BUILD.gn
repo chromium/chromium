@@ -216,6 +216,8 @@ component("browser") {
     "quota/special_storage_policy.h",
     "quota/storage_directory.cc",
     "quota/storage_directory.h",
+    "quota/storage_directory_util.cc",
+    "quota/storage_directory_util.h",
     "quota/storage_policy_observer.cc",
     "quota/storage_policy_observer.h",
     "quota/usage_tracker.cc",

@@ -9,8 +9,13 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/storage_directory.h"
+#include "storage/browser/quota/storage_directory_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 
 namespace storage {
 
@@ -76,6 +81,90 @@ TEST_F(StorageDirectoryTest, ClearDoomedMultiple) {
 
   storage_directory_->ClearDoomed();
   directories = storage_directory_->EnumerateDoomedDirectoriesForTesting();
+  EXPECT_EQ(directories.size(), 0u);
+}
+
+TEST_F(StorageDirectoryTest, CreateBucketDirectory) {
+  BucketLocator example_bucket(
+      BucketId(123),
+      blink::StorageKey::CreateFromStringForTesting("http://example/"),
+      blink::mojom::StorageType::kTemporary, /*is_default=*/false);
+
+  base::FilePath bucket_path =
+      CreateBucketPath(storage_directory_->path().DirName(), example_bucket);
+  EXPECT_FALSE(base::PathExists(bucket_path));
+
+  ASSERT_TRUE(storage_directory_->CreateBucket(example_bucket));
+  EXPECT_TRUE(base::PathExists(bucket_path));
+
+  // Should still return true if it already exists.
+  ASSERT_TRUE(storage_directory_->CreateBucket(example_bucket));
+  EXPECT_TRUE(base::PathExists(bucket_path));
+}
+
+TEST_F(StorageDirectoryTest, DoomAndClearBucketDirectory) {
+  BucketLocator bucket1(
+      BucketId(1),
+      blink::StorageKey::CreateFromStringForTesting("http://example/"),
+      blink::mojom::StorageType::kTemporary, /*is_default=*/false);
+  BucketLocator bucket2(
+      BucketId(2),
+      blink::StorageKey::CreateFromStringForTesting("http://example/"),
+      blink::mojom::StorageType::kTemporary, /*is_default=*/false);
+
+  // Create directories for buckets.
+  ASSERT_TRUE(storage_directory_->CreateBucket(bucket1));
+  ASSERT_TRUE(storage_directory_->CreateBucket(bucket2));
+
+  // Write data into bucket directories.
+  base::FilePath bucket1_idb_path =
+      CreateClientBucketPath(storage_directory_->path().DirName(), bucket1,
+                             QuotaClientType::kIndexedDatabase);
+  base::FilePath bucket2_idb_path =
+      CreateClientBucketPath(storage_directory_->path().DirName(), bucket2,
+                             QuotaClientType::kIndexedDatabase);
+  ASSERT_TRUE(base::CreateDirectory(bucket1_idb_path));
+  ASSERT_TRUE(base::CreateDirectory(bucket2_idb_path));
+  ASSERT_TRUE(base::WriteFile(bucket1_idb_path.AppendASCII("FakeStorage"),
+                              "fake_content"));
+  ASSERT_TRUE(base::WriteFile(bucket2_idb_path.AppendASCII("FakeStorage"),
+                              "fake_content"));
+
+  ASSERT_TRUE(storage_directory_->DoomBucket(bucket1));
+  EXPECT_FALSE(base::PathExists(bucket1_idb_path));
+  EXPECT_TRUE(base::PathExists(bucket2_idb_path));
+
+  std::set<base::FilePath> directories =
+      storage_directory_->EnumerateDoomedBucketsForTesting();
+  EXPECT_EQ(directories.size(), 1u);
+
+  storage_directory_->ClearDoomedBuckets();
+  directories = storage_directory_->EnumerateDoomedBucketsForTesting();
+  EXPECT_EQ(directories.size(), 0u);
+}
+
+TEST_F(StorageDirectoryTest, ClearMultipleDoomedBuckets) {
+  BucketLocator bucket1(
+      BucketId(1),
+      blink::StorageKey::CreateFromStringForTesting("http://example/"),
+      blink::mojom::StorageType::kTemporary, /*is_default=*/false);
+  BucketLocator bucket2(
+      BucketId(2),
+      blink::StorageKey::CreateFromStringForTesting("http://example/"),
+      blink::mojom::StorageType::kTemporary, /*is_default=*/false);
+
+  ASSERT_TRUE(storage_directory_->CreateBucket(bucket1));
+  ASSERT_TRUE(storage_directory_->CreateBucket(bucket2));
+
+  ASSERT_TRUE(storage_directory_->DoomBucket(bucket1));
+  ASSERT_TRUE(storage_directory_->DoomBucket(bucket2));
+
+  std::set<base::FilePath> directories =
+      storage_directory_->EnumerateDoomedBucketsForTesting();
+  EXPECT_EQ(directories.size(), 2u);
+
+  storage_directory_->ClearDoomedBuckets();
+  directories = storage_directory_->EnumerateDoomedBucketsForTesting();
   EXPECT_EQ(directories.size(), 0u);
 }
 

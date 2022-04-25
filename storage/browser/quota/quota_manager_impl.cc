@@ -724,7 +724,7 @@ class QuotaManagerImpl::BucketDataDeleter {
     // types.
     if (skipped_clients_ == 0 && error_count_ == 0) {
       manager_->DeleteBucketFromDatabase(
-          bucket_.id,
+          bucket_,
           base::BindOnce(&BucketDataDeleter::DidDeleteBucketFromDatabase,
                          weak_factory_.GetWeakPtr()));
       return;
@@ -2002,7 +2002,7 @@ void QuotaManagerImpl::StartEviction() {
 }
 
 void QuotaManagerImpl::DeleteBucketFromDatabase(
-    BucketId bucket_id,
+    const BucketLocator& bucket,
     base::OnceCallback<void(QuotaError)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
@@ -2015,11 +2015,11 @@ void QuotaManagerImpl::DeleteBucketFromDatabase(
 
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(
-          [](BucketId bucket_id, QuotaDatabase* database) {
+          [](const BucketLocator& bucket, QuotaDatabase* database) {
             DCHECK(database);
-            return database->DeleteBucketInfo(bucket_id);
+            return database->DeleteBucketData(bucket);
           },
-          bucket_id),
+          bucket),
       std::move(callback));
 }
 
@@ -2682,9 +2682,8 @@ void QuotaManagerImpl::DidGetBucketForDeletion(
     return;
   }
 
-  BucketLocator bucket(result->id, result->storage_key, result->type,
-                       result->name == kDefaultBucketName);
-  DeleteBucketDataInternal(bucket, AllQuotaClientTypes(), std::move(callback));
+  DeleteBucketDataInternal(result->ToBucketLocator(), AllQuotaClientTypes(),
+                           std::move(callback));
   return;
 }
 

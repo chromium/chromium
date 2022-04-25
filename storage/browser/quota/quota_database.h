@@ -74,6 +74,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
     BucketTableEntry(const BucketTableEntry&);
     BucketTableEntry& operator=(const BucketTableEntry&);
 
+    BucketLocator ToBucketLocator() const {
+      return BucketLocator(bucket_id, storage_key, type,
+                           name == kDefaultBucketName);
+    }
+
     BucketId bucket_id;
     blink::StorageKey storage_key;
     blink::mojom::StorageType type = blink::mojom::StorageType::kUnknown;
@@ -189,8 +194,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   // QuotaError if not found or the operation has failed.
   QuotaErrorOr<BucketTableEntry> GetBucketInfo(BucketId bucket_id);
 
-  // Deletes the specified bucket.
-  QuotaError DeleteBucketInfo(BucketId bucket_id);
+  // Deletes the bucket from the database as well as the bucket directory in the
+  // storage directory.
+  QuotaError DeleteBucketData(const BucketLocator& bucket);
 
   // Returns the BucketLocator for the least recently used bucket. Will exclude
   // buckets with ids in `bucket_exceptions` and origins that have the special

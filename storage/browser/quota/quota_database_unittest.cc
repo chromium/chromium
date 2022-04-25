@@ -30,7 +30,9 @@
 #include "sql/statement.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
+#include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_database.h"
+#include "storage/browser/quota/storage_directory_util.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
@@ -585,7 +587,7 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
             QuotaError::kNone);
 
   // Delete storage_key/type last access time information.
-  EXPECT_EQ(db->DeleteBucketInfo(bucket3.bucket_id), QuotaError::kNone);
+  EXPECT_EQ(db->DeleteBucketData(bucket3.ToBucketLocator()), QuotaError::kNone);
 
   // Querying again to see if the deletion has worked.
   bucket_exceptions.clear();
@@ -867,6 +869,44 @@ TEST_P(QuotaDatabaseTest, GetBucketInfo) {
     QuotaErrorOr<QuotaDatabase::BucketTableEntry> entry =
         db->GetBucketInfo(BucketId(456));
     EXPECT_FALSE(entry.ok());
+  }
+}
+
+TEST_F(QuotaDatabaseTest, DeleteBucketData) {
+  StorageKey storage_key =
+      StorageKey::CreateFromStringForTesting("http://google/");
+  std::string bucket_name = "inbox";
+
+  // Create db, create a bucket and add bucket data. Close db by leaving scope.
+  {
+    auto db = CreateDatabase(/*is_incognito=*/false);
+    EXPECT_TRUE(EnsureOpened(db.get()));
+    QuotaErrorOr<BucketInfo> result =
+        db->CreateBucketForTesting(storage_key, bucket_name, kTemp);
+    ASSERT_TRUE(result.ok());
+    BucketLocator bucket = result->ToBucketLocator();
+
+    const base::FilePath idb_bucket_path = CreateClientBucketPath(
+        ProfilePath(), bucket, QuotaClientType::kIndexedDatabase);
+    ASSERT_TRUE(base::CreateDirectory(idb_bucket_path));
+    ASSERT_TRUE(base::WriteFile(idb_bucket_path.AppendASCII("FakeStorage"),
+                                "fake_content"));
+  }
+
+  // Reopen db and verify that previously added bucket data is gone on deletion.
+  {
+    auto db = CreateDatabase(/*is_incognito=*/false);
+    EXPECT_TRUE(EnsureOpened(db.get()));
+    QuotaErrorOr<BucketInfo> result =
+        db->GetBucket(storage_key, bucket_name, kTemp);
+    ASSERT_TRUE(result.ok());
+    BucketLocator bucket = result->ToBucketLocator();
+
+    const base::FilePath bucket_path = CreateBucketPath(ProfilePath(), bucket);
+    ASSERT_TRUE(base::PathExists(bucket_path));
+
+    ASSERT_EQ(db->DeleteBucketData(bucket), QuotaError::kNone);
+    ASSERT_FALSE(base::PathExists(bucket_path));
   }
 }
 
