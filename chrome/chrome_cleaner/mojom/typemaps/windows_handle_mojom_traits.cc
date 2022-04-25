@@ -122,7 +122,7 @@ bool EnumTraits<PredefinedHandle, HANDLE>::FromMojom(PredefinedHandle input,
 // static
 mojo::PlatformHandle UnionTraits<WindowsHandleDataView, HANDLE>::raw_handle(
     HANDLE handle) {
-  DCHECK_EQ(WindowsHandleDataView::Tag::RAW_HANDLE, GetTag(handle));
+  DCHECK_EQ(WindowsHandleDataView::Tag::kRawHandle, GetTag(handle));
 
   if (IsPredefinedHandle(handle)) {
     CHECK(false) << "Accessor raw_handle() should only be called when the "
@@ -137,7 +137,7 @@ mojo::PlatformHandle UnionTraits<WindowsHandleDataView, HANDLE>::raw_handle(
 // static
 PredefinedHandle UnionTraits<WindowsHandleDataView, HANDLE>::special_handle(
     HANDLE handle) {
-  DCHECK_EQ(WindowsHandleDataView::Tag::SPECIAL_HANDLE, GetTag(handle));
+  DCHECK_EQ(WindowsHandleDataView::Tag::kSpecialHandle, GetTag(handle));
 
   PredefinedHandle predefined_handle;
   if (ToPredefinedHandle(handle, &predefined_handle))
@@ -151,8 +151,8 @@ PredefinedHandle UnionTraits<WindowsHandleDataView, HANDLE>::special_handle(
 // static
 WindowsHandleDataView::Tag UnionTraits<WindowsHandleDataView, HANDLE>::GetTag(
     HANDLE handle) {
-  return IsPredefinedHandle(handle) ? WindowsHandleDataView::Tag::SPECIAL_HANDLE
-                                    : WindowsHandleDataView::Tag::RAW_HANDLE;
+  return IsPredefinedHandle(handle) ? WindowsHandleDataView::Tag::kSpecialHandle
+                                    : WindowsHandleDataView::Tag::kRawHandle;
 }
 
 // static
