@@ -1930,21 +1930,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(GetIsDragged(browser()));
 }
 
-namespace {
-
-void CloseTabsWhileDetachedStep2(const BrowserList* browser_list) {
-  ASSERT_EQ(2u, browser_list->size());
-  Browser* old_browser = browser_list->get(0);
-  EXPECT_EQ("0 3", IDString(old_browser->tab_strip_model()));
-  Browser* new_browser = browser_list->get(1);
-  EXPECT_EQ("1 2", IDString(new_browser->tab_strip_model()));
-  chrome::CloseTab(new_browser);
-}
-
-}  // namespace
-
-// Selects 2 tabs out of 4, drags them out and closes the new browser window
-// while dragging tabs.
+// Selects 1 tab out of 4, drags it out and closes the new browser window while
+// dragging.
 #if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
 // TODO(crbug.com/1031801) Test is flaky on Windows and Mac.
 #define MAYBE_DeleteTabsWhileDetached DISABLED_DeleteTabsWhileDetached
@@ -1957,23 +1944,32 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   EXPECT_EQ("0 1 2 3", IDString(browser()->tab_strip_model()));
 
-  // Click the first tab and select two middle tabs.
-  ASSERT_TRUE(PressInput(GetCenterInScreenCoordinates(tab_strip->tab_at(1))));
-  ASSERT_TRUE(ReleaseInput());
-  browser()->tab_strip_model()->ToggleSelectionAt(2);
-
-  // Press mouse button in the second tab and drag it enough to detach.
+  // Drag the third tab out of its browser window, request to close the detached
+  // tab and verify its owning window gets properly closed.
   DragTabAndNotify(
-      tab_strip, base::BindOnce(&CloseTabsWhileDetachedStep2, browser_list), 2);
+      tab_strip, base::BindLambdaForTesting([&]() {
+        ASSERT_EQ(2u, browser_list->size());
+        Browser* old_browser = browser_list->get(0);
+        EXPECT_EQ("0 1 3", IDString(old_browser->tab_strip_model()));
+        Browser* new_browser = browser_list->get(1);
+        EXPECT_EQ("2", IDString(new_browser->tab_strip_model()));
+        chrome::CloseTab(new_browser);
+        // Ensure that the newly created tab strip is "closeable" just after
+        // requesting to close it, even if we are still waiting for the nested
+        // move loop to exit. Regression test for https://crbug.com/1309461.
+        EXPECT_TRUE(GetTabStripForBrowser(new_browser)->IsTabStripCloseable());
+      }),
+      2);
 
-  // Should not be dragging.
+  // Should no longer be dragging.
   ASSERT_EQ(1u, browser_list->size());
   ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
   ASSERT_FALSE(TabDragController::IsActive());
 
-  // Both tabs "1" and "2" get closed.
-  EXPECT_EQ("0 3", IDString(browser()->tab_strip_model()));
+  // Dragged out tab (and its owning window) should get closed.
+  EXPECT_EQ("0 1 3", IDString(browser()->tab_strip_model()));
 
+  // No longer dragging.
   EXPECT_FALSE(GetIsDragged(browser()));
 }
 

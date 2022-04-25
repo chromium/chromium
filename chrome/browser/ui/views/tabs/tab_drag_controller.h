@@ -127,6 +127,12 @@ class TabDragController : public views::WidgetObserver {
     return current_state_ == DragState::kDraggingWindow;
   }
 
+  // Returns true if the nested move loop end was requested and we are waiting
+  // it to actually happen.
+  bool is_waiting_to_stop() const {
+    return current_state_ == DragState::kWaitingToStop;
+  }
+
   // Returns the tab group being dragged, if any. Will only return a value if
   // the user is dragging a tab group header, not an individual tab or tabs from
   // a group.

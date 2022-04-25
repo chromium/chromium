@@ -257,8 +257,11 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     // . The user is not actively dragging the tabstrip.
     // . In the process of reverting the drag, and the last tab is being
     //   removed (so that it can be inserted back into the source tabstrip).
+    // . In the process of ending the drag session's move loop. E.g: the dragged
+    //   window asks to close itself via window.close() JS API.
     return !IsDragSessionActive() ||
-           drag_controller_->IsRemovingLastTabForRevert();
+           drag_controller_->IsRemovingLastTabForRevert() ||
+           drag_controller_->is_waiting_to_stop();
   }
 
   // TabDragContext:
