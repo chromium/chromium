@@ -7718,3 +7718,6 @@ crbug.com/1318952 http/tests/inspector-protocol/fetch/fetch-samesite-cookies.js 
 crbug.com/1318456 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/opt-out.html [ Crash Skip Timeout ]
 crbug.com/1318456 [ Mac ] virtual/prerender/external/wpt/speculation-rules/prerender/opt-out.html [ Crash Skip Timeout ]
 crbug.com/1318456 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/opt-out.html [ Crash Skip Timeout ]
+
+# Sheriff 2022-04-25
+crbug.com/1319320 rootscroller/root-scroller-apply-filter-to-parent.html [ Failure Pass ]
