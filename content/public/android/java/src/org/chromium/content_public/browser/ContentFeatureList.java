@@ -52,8 +52,6 @@ public class ContentFeatureList {
     public static final String BACKGROUND_MEDIA_RENDERER_HAS_MODERATE_BINDING =
             "BackgroundMediaRendererHasModerateBinding";
 
-    public static final String BINDING_MANAGEMENT_WAIVE_CPU = "BindingManagementWaiveCpu";
-
     public static final String COMPUTE_AX_MODE = "ComputeAXMode";
 
     public static final String ON_DEMAND_ACCESSIBILITY_EVENTS = "OnDemandAccessibilityEvents";

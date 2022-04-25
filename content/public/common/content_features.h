@@ -290,7 +290,6 @@ CONTENT_EXPORT extern const base::Feature kAccessibilityPageZoom;
 CONTENT_EXPORT extern const base::Feature
     kBackgroundMediaRendererHasModerateBinding;
 CONTENT_EXPORT extern const base::Feature kBigLittleScheduling;
-CONTENT_EXPORT extern const base::Feature kBindingManagementWaiveCpu;
 CONTENT_EXPORT extern const base::Feature kIndependentFlingAnimation;
 CONTENT_EXPORT extern const base::Feature kOnDemandAccessibilityEvents;
 CONTENT_EXPORT extern const base::Feature kRequestDesktopSiteExceptions;

@@ -26,7 +26,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAutoDisableAccessibility,
     &features::kAccessibilityPageZoom,
     &features::kBackgroundMediaRendererHasModerateBinding,
-    &features::kBindingManagementWaiveCpu,
     &features::kComputeAXMode,
     &features::kFedCm,
     &features::kOnDemandAccessibilityEvents,

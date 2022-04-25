@@ -82,8 +82,8 @@ public class ChildProcessLauncherIntegrationTest {
         }
 
         @Override
-        public void removeModerateBinding(boolean waiveCpuPrority) {
-            super.removeModerateBinding(waiveCpuPrority);
+        public void removeModerateBinding() {
+            super.removeModerateBinding();
             if (mRemovedBothModerateAndStrongBinding == null && !isStrongBindingBound()) {
                 mRemovedBothModerateAndStrongBinding =
                         new RuntimeException("removeModerateBinding");

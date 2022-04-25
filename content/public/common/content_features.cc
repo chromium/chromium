@@ -1169,11 +1169,6 @@ const base::Feature kBackgroundMediaRendererHasModerateBinding{
 const base::Feature kBigLittleScheduling{"BigLittleScheduling",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, BindingManager will use Context.BIND_NOT_FOREGROUND to avoid
-// affecting cpu scheduling priority.
-const base::Feature kBindingManagementWaiveCpu{
-    "BindingManagementWaiveCpu", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Tick fling animation independent from the browser compositor.
 const base::Feature kIndependentFlingAnimation{
     "IndependentFlingAnimation", base::FEATURE_DISABLED_BY_DEFAULT};
