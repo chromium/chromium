@@ -114,6 +114,8 @@ class BuiltInBackendToAndroidBackendMigrator {
 
   const raw_ptr<PasswordStoreBackend::SyncDelegate> sync_delegate_;
 
+  bool non_syncable_data_migration_in_progress_ = false;
+
   base::WeakPtrFactory<BuiltInBackendToAndroidBackendMigrator>
       weak_ptr_factory_{this};
 };

@@ -59,6 +59,31 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
     backend_migration_decorator()->Shutdown(base::DoNothing());
   }
 
+  void InitSyncService(bool is_password_sync_enabled) {
+    if (is_password_sync_enabled) {
+      sync_service_.GetUserSettings()->SetSelectedTypes(
+          /*sync_everything=*/false,
+          /*types=*/{syncer::UserSelectableType::kPasswords});
+    } else {
+      sync_service_.GetUserSettings()->SetSelectedTypes(
+          /*sync_everything=*/false, /*types=*/{});
+    }
+    backend_migration_decorator()->OnSyncServiceInitialized(&sync_service_);
+  }
+
+  void ChangeSyncSetting(bool is_password_sync_enabled) {
+    if (is_password_sync_enabled) {
+      sync_service_.GetUserSettings()->SetSelectedTypes(
+          /*sync_everything=*/false,
+          /*types=*/{syncer::UserSelectableType::kPasswords});
+    } else {
+      sync_service_.GetUserSettings()->SetSelectedTypes(
+          /*sync_everything=*/false, /*types=*/{});
+    }
+    sync_service_.FireStateChanged();
+    RunUntilIdle();
+  }
+
   MockPasswordBackendSyncDelegate& sync_delegate() { return sync_delegate_; }
   PasswordStoreBackend* backend_migration_decorator() {
     return backend_migration_decorator_.get();
@@ -67,6 +92,8 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
   MockPasswordStoreBackend* android_backend() { return android_backend_; }
 
   TestingPrefServiceSimple& prefs() { return prefs_; }
+
+  syncer::TestSyncService& sync_service() { return sync_service_; }
 
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
 
@@ -94,6 +121,7 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
   MockPasswordBackendSyncDelegate sync_delegate_;
   raw_ptr<MockPasswordStoreBackend> built_in_backend_;
   raw_ptr<MockPasswordStoreBackend> android_backend_;
+  syncer::TestSyncService sync_service_;
 
   std::unique_ptr<PasswordStoreBackendMigrationDecorator>
       backend_migration_decorator_;
@@ -101,23 +129,13 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
 
 TEST_F(PasswordStoreBackendMigrationDecoratorTest,
        MigrationPreferenceClearedWhenSyncEnabled) {
-  syncer::TestSyncService sync_service;
-  // Change selected sync types to simulate unselecting passwords in sync
-  // settings.
-  sync_service.GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
-                                                   /*types=*/{});
-  backend_migration_decorator()->OnSyncServiceInitialized(&sync_service);
+  InitSyncService(/*is_password_sync_enabled=*/false);
 
   // Set up pref to indicate that initial migration is finished.
   prefs().SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
   prefs().SetDouble(prefs::kTimeOfLastMigrationAttempt, 100);
 
-  // Enable password sync.
-  sync_service.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kPasswords});
-  sync_service.FireStateChanged();
-  RunUntilIdle();
+  ChangeSyncSetting(/*is_password_sync_enabled=*/true);
 
   // Since sync was enabled migration prefs should be reset.
   EXPECT_EQ(0, prefs().GetInteger(
@@ -129,23 +147,13 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
 
 TEST_F(PasswordStoreBackendMigrationDecoratorTest,
        MigrationPreferenceClearedWhenSyncDisabled) {
-  // Enable password sync.
-  syncer::TestSyncService sync_service;
-  sync_service.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kPasswords});
-  backend_migration_decorator()->OnSyncServiceInitialized(&sync_service);
+  InitSyncService(/*is_password_sync_enabled=*/true);
 
   // Set up pref to indicate that initial migration is finished.
   prefs().SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
   prefs().SetDouble(prefs::kTimeOfLastMigrationAttempt, 100);
 
-  // Change selected sync types to simulate unselecting passwords in sync
-  // settings.
-  sync_service.GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
-                                                   /*types=*/{});
-  sync_service.FireStateChanged();
-
+  ChangeSyncSetting(/*is_password_sync_enabled=*/false);
   RunUntilIdle();
 
   // Since sync was disabled migration prefs should be reset.
@@ -159,12 +167,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
 TEST_F(
     PasswordStoreBackendMigrationDecoratorTest,
     MigrationPreferenceUnchangedWhenSyncDisabledAndEnabledWithoutClosingSettings) {
-  // Enable password sync.
-  syncer::TestSyncService sync_service;
-  sync_service.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kPasswords});
-  backend_migration_decorator()->OnSyncServiceInitialized(&sync_service);
+  InitSyncService(/*is_password_sync_enabled=*/true);
 
   constexpr int kCurrentMigrationVersion = 2;
   constexpr double kCurrentLastMigrationAttemptTime = 100;
@@ -174,20 +177,10 @@ TEST_F(
   prefs().SetDouble(prefs::kTimeOfLastMigrationAttempt,
                     kCurrentLastMigrationAttemptTime);
 
-  // Change selected sync types to simulate unselecting passwords in sync
-  // settings.
-  sync_service.GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
-                                                   /*types=*/{});
-  sync_service.FireStateChanged();
-  RunUntilIdle();
-
+  ChangeSyncSetting(/*is_password_sync_enabled=*/false);
   // Change selected sync types to simulate selecting passwords again in sync
   // settings.
-  sync_service.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kPasswords});
-  sync_service.FireStateChanged();
-  RunUntilIdle();
+  ChangeSyncSetting(/*is_password_sync_enabled=*/true);
 
   // Check that migration prefs are not reset.
   EXPECT_EQ(kCurrentMigrationVersion,
@@ -238,9 +231,8 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
 
 TEST_F(PasswordStoreBackendMigrationDecoratorTest,
        OnSyncServiceInitializedPropagatedToAndroidBackend) {
-  syncer::TestSyncService sync_service;
-  EXPECT_CALL(*android_backend(), OnSyncServiceInitialized(&sync_service));
-  backend_migration_decorator()->OnSyncServiceInitialized(&sync_service);
+  EXPECT_CALL(*android_backend(), OnSyncServiceInitialized(&sync_service()));
+  backend_migration_decorator()->OnSyncServiceInitialized(&sync_service());
 }
 
 TEST_F(PasswordStoreBackendMigrationDecoratorTest,
@@ -268,8 +260,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
       /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
       /*completion=*/mock_completion_callback.Get());
 
-  syncer::TestSyncService sync_service;
-  backend_migration_decorator()->OnSyncServiceInitialized(&sync_service);
+  InitSyncService(/*is_password_sync_enabled=*/false);
 
   // Invoke sync callback to simulate a change in sync status. Set expectation
   // for sync to be turned on.
@@ -314,19 +305,8 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
       /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
       /*completion=*/mock_completion_callback.Get());
 
-  // Init enabled sync.
-  syncer::TestSyncService sync_service;
-  sync_service.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kPasswords});
-  backend_migration_decorator()->OnSyncServiceInitialized(&sync_service);
-
-  // Change selected sync types to simulate unselecting passwords in sync
-  // settings.
-  sync_service.GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
-                                                   /*types=*/{});
-  sync_service.FireStateChanged();
-  RunUntilIdle();
+  InitSyncService(/*is_password_sync_enabled=*/true);
+  ChangeSyncSetting(/*is_password_sync_enabled=*/false);
 
   // Invoke sync callback to simulate appliying new setting. Set expectation
   // for sync to be turned off.
@@ -384,6 +364,77 @@ TEST_F(
 
   EXPECT_EQ(false,
             prefs().GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange));
+}
+
+TEST_F(PasswordStoreBackendMigrationDecoratorTest,
+       NonSyncableDataMigrationHappensOnlyOnceOnMultipleSyncStatusChanges) {
+  // Init backend.
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_completion_callback;
+  base::RepeatingClosure sync_status_changed_closure;
+  EXPECT_CALL(mock_completion_callback, Run(/*success=*/true));
+  EXPECT_CALL(*built_in_backend(), InitBackend)
+      .WillOnce(WithArgs<1, 2>(
+          [&sync_status_changed_closure](auto sync_status_changed,
+                                         auto completion_callback) {
+            std::move(completion_callback).Run(/*success=*/true);
+            // Capture |sync_enabled_or_disabled_cb| passed to the
+            // build_in_backend.
+            sync_status_changed_closure = std::move(sync_status_changed);
+          }));
+  EXPECT_CALL(*android_backend(), InitBackend)
+      .WillOnce(WithArg<2>([](auto completion_callback) {
+        std::move(completion_callback).Run(/*success=*/true);
+      }));
+  backend_migration_decorator()->InitBackend(
+      /*remote_form_changes_received=*/base::DoNothing(),
+      /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
+      /*completion=*/mock_completion_callback.Get());
+
+  InitSyncService(/*is_password_sync_enabled=*/true);
+
+  ChangeSyncSetting(/*is_password_sync_enabled=*/false);
+  // Invoke sync callback to simulate appliying new setting. Set expectation
+  // for sync to be turned off.
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(false));
+  // Migration of non-syncable data to the built-in backend will trigger
+  // retrieval of logins for the last sync account from the android backend
+  // first.
+  EXPECT_CALL(*built_in_backend(), GetAllLoginsAsync).Times(0);
+  // Imitate android backend retrieving logins for migration, do not proceed
+  // with updating logins in the built-in backend to imitate migration running.
+  // (This test uses mock backends, so unless a callback from updating a login
+  // in the built-in backend is imitated, migration is not finished.)
+  EXPECT_CALL(*android_backend(), GetAllLoginsForAccountAsync)
+      .WillOnce(
+          WithArg<1>(testing::Invoke([](LoginsOrErrorReply reply) -> void {
+            LoginsResult logins;
+            logins.emplace_back(std::make_unique<PasswordForm>());
+            base::SequencedTaskRunnerHandle::Get()->PostTask(
+                FROM_HERE, base::BindOnce(std::move(reply), std::move(logins)));
+          })));
+
+  sync_status_changed_closure.Run();
+  RunUntilIdle();
+
+  // Check that the migration is not finished yet by querying the migration
+  // version pref that was reset on sync settings change, and will be updated
+  // only when the migration finishes.
+  EXPECT_EQ(0, prefs().GetInteger(
+                   prefs::kCurrentMigrationVersionToGoogleMobileServices));
+
+  ChangeSyncSetting(/*is_password_sync_enabled=*/true);
+  // Invoke sync callback to simulate appliying new setting. Set expectation
+  // for sync to be turned on.
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(true));
+
+  // Migration of non-syncable data should not start, as the previous
+  // migration attempt is still running.
+  EXPECT_CALL(*built_in_backend(), GetAllLoginsAsync).Times(0);
+  EXPECT_CALL(*android_backend(), GetAllLoginsForAccountAsync).Times(0);
+  sync_status_changed_closure.Run();
+  RunUntilIdle();
 }
 
 }  // namespace password_manager
