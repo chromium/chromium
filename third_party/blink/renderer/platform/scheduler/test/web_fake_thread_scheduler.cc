@@ -109,7 +109,5 @@ void WebFakeThreadScheduler::SetTopLevelBlameContext(
 void WebFakeThreadScheduler::SetRendererProcessType(
     WebRendererProcessType type) {}
 
-void WebFakeThreadScheduler::OnMainFrameRequestedForInput() {}
-
 }  // namespace scheduler
 }  // namespace blink

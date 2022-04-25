@@ -196,7 +196,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void DidRunBeginMainFrame() override;
   void SetRendererHidden(bool hidden) override;
   void SetRendererBackgrounded(bool backgrounded) override;
-  void OnMainFrameRequestedForInput() override;
 #if BUILDFLAG(IS_ANDROID)
   void PauseTimersForAndroidWebView() override;
   void ResumeTimersForAndroidWebView() override;

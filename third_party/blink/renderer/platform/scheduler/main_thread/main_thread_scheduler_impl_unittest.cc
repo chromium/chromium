@@ -3410,26 +3410,25 @@ class MainThreadSchedulerImplWithCompositingAfterInputPrioritizationTest
 TEST_F(MainThreadSchedulerImplWithCompositingAfterInputPrioritizationTest,
        CompositingAfterInput) {
   Vector<String> run_order;
-  PostTestTasks(&run_order, "P1 T1 C1");
+  // Input tasks cause compositor tasks to be prioritized until a BeginMainFrame
+  // runs.
+  PostTestTasks(&run_order, "P1 T1 C1 C2");
   base::RunLoop().RunUntilIdle();
-  // Without an explicit signal nothing should be reordered.
-  EXPECT_THAT(run_order, testing::ElementsAre("P1", "T1", "C1"));
-  run_order.clear();
-
-  scheduler_->OnMainFrameRequestedForInput();
-
-  PostTestTasks(&run_order, "T2 C2 C3");
-  base::RunLoop().RunUntilIdle();
-  // When a signal is present, compositing tasks should be prioritized until
-  // WillBeginMainFrame is received.
-  EXPECT_THAT(run_order, testing::ElementsAre("C2", "C3", "T2"));
+  EXPECT_THAT(run_order, testing::ElementsAre("P1", "C1", "C2", "T1"));
   run_order.clear();
 
   scheduler_->WillBeginFrame(viz::BeginFrameArgs());
 
-  PostTestTasks(&run_order, "T3 C4 C5");
+  PostTestTasks(&run_order, "T2 C3 C4");
   base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(run_order, testing::ElementsAre("T3", "C4", "C5"));
+  EXPECT_THAT(run_order, testing::ElementsAre("T2", "C3", "C4"));
+  run_order.clear();
+
+  // Input tasks and compositor tasks will be interleaved because they have the
+  // same priority.
+  PostTestTasks(&run_order, "T3 P2 C5 P3 C6");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(run_order, testing::ElementsAre("P2", "C5", "P3", "C6", "T3"));
   run_order.clear();
 }
 

@@ -1054,11 +1054,6 @@ void MainThreadSchedulerImpl::SetRendererBackgrounded(bool backgrounded) {
   memory_purge_manager_.SetRendererBackgrounded(backgrounded);
 }
 
-void MainThreadSchedulerImpl::OnMainFrameRequestedForInput() {
-  SetPrioritizeCompositingAfterInput(
-      scheduling_settings().prioritize_compositing_after_input);
-}
-
 #if BUILDFLAG(IS_ANDROID)
 void MainThreadSchedulerImpl::PauseTimersForAndroidWebView() {
   main_thread_only().pause_timers_for_webview = true;
@@ -2556,6 +2551,14 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
 
   RecordTaskUkm(queue.get(), task, *task_timing);
 
+  // Assume this input will result in a frame, which we want to show ASAP.
+  if (queue &&
+      queue->GetPrioritisationType() ==
+          MainThreadTaskQueue::QueueTraits::PrioritisationType::kInput) {
+    SetPrioritizeCompositingAfterInput(
+        scheduling_settings().prioritize_compositing_after_input);
+  }
+
   MaybeUpdateCompositorTaskQueuePriorityOnTaskCompleted(queue.get(),
                                                         *task_timing);
 
@@ -2762,7 +2765,9 @@ void MainThreadSchedulerImpl::SetPrioritizeCompositingAfterInput(
 TaskQueue::QueuePriority MainThreadSchedulerImpl::ComputeCompositorPriority()
     const {
   if (main_thread_only().prioritize_compositing_after_input) {
-    return TaskQueue::QueuePriority::kVeryHighPriority;
+    // Return the highest priority here otherwise consecutive heavy inputs (e.g.
+    // typing) will starve rendering.
+    return TaskQueue::QueuePriority::kHighestPriority;
   } else if (scheduling_settings_
                  .prioritize_compositing_and_loading_during_early_loading &&
              current_use_case() == UseCase::kEarlyLoading) {

@@ -57,7 +57,6 @@ class WebFakeThreadScheduler : public WebThreadScheduler {
   void SetTopLevelBlameContext(
       base::trace_event::BlameContext* blame_context) override;
   void SetRendererProcessType(WebRendererProcessType type) override;
-  void OnMainFrameRequestedForInput() override;
 };
 
 }  // namespace scheduler

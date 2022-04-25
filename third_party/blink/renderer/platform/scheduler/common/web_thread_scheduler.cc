@@ -183,9 +183,5 @@ void WebThreadScheduler::SetRendererProcessType(WebRendererProcessType type) {
   NOTREACHED();
 }
 
-void WebThreadScheduler::OnMainFrameRequestedForInput() {
-  NOTREACHED();
-}
-
 }  // namespace scheduler
 }  // namespace blink

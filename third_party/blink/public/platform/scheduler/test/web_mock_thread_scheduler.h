@@ -72,7 +72,6 @@ class WebMockThreadScheduler : public WebThreadScheduler {
   MOCK_METHOD0(VirtualTimeResumed, void());
   MOCK_METHOD1(SetTopLevelBlameContext, void(base::trace_event::BlameContext*));
   MOCK_METHOD1(SetRendererProcessType, void(WebRendererProcessType));
-  MOCK_METHOD0(OnMainFrameRequestedForInput, void());
 };
 
 }  // namespace scheduler
