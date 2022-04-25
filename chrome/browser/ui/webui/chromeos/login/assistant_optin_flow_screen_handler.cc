@@ -654,6 +654,12 @@ void AssistantOptInFlowScreenHandler::HandleFlowFinished() {
 
 void AssistantOptInFlowScreenHandler::HandleFlowInitialized(
     const int flow_type) {
+  // Allow JavaScript. This is necessary for the in-session WebUI and is is not
+  // triggered in the OOBE flow, where `screen` objects are associated with
+  // handlers. TODO(crbug.com/1309022) - Separate in-session and OOBE handlers.
+  if (!screen_)
+    AllowJavascript();
+
   auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   // Do not skip the flow if the OOBE debug overlay is present. Otherwise it is
   // not possible to test the screen manually.
