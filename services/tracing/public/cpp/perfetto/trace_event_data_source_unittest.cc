@@ -85,8 +85,6 @@ class TraceEventDataSourceTest
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 {
  public:
-  using PacketVector =
-      std::vector<std::unique_ptr<perfetto::protos::TracePacket>>;
   void SetUp() override {
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     TracingUnitTest::SetUp();
@@ -256,22 +254,23 @@ class TraceEventDataSourceTest
 
   TestProducerClient* producer_client() { return producer_client_.get(); }
 
-  const PacketVector& GetFinalizedPackets() {
+  const perfetto::protos::TracePacket* GetFinalizedPacket(size_t packet_index) {
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     EnsureTraceStopped();
-    return finalized_packets_;
+    EXPECT_GT(finalized_packets_.size(), packet_index);
+    return finalized_packets_[packet_index].get();
 #else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-    return producer_client()->finalized_packets();
+    return producer_client()->GetFinalizedPacket(packet_index);
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   }
 
-  const perfetto::protos::TracePacket* GetFinalizedPacket(size_t packet_index) {
-    auto& packets = GetFinalizedPackets();
-    EXPECT_GT(packets.size(), packet_index);
-    return packets.at(packet_index).get();
+  size_t GetFinalizedPacketCount() {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    return finalized_packets_.size();
+#else
+    return producer_client()->GetFinalizedPacketCount();
+#endif
   }
-
-  size_t GetFinalizedPacketCount() { return GetFinalizedPackets().size(); }
 
   const perfetto::protos::ChromeMetadataPacket* GetProtoChromeMetadata(
       size_t packet_index = 0) {
@@ -838,7 +837,8 @@ class TraceEventDataSourceTest
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   base::test::TaskEnvironment task_environment_;
   base::test::TracingEnvironment tracing_environment_;
-  PacketVector finalized_packets_;
+  std::vector<std::unique_ptr<perfetto::protos::TracePacket>>
+      finalized_packets_;
   std::vector<perfetto::protos::ChromeMetadataPacket> metadata_packets_;
   std::vector<perfetto::protos::ChromeEventBundle> legacy_metadata_packets_;
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
