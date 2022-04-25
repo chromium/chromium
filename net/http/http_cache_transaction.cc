@@ -2049,13 +2049,13 @@ int HttpCache::Transaction::DoCacheWriteResponse() {
   TRACE_EVENT_WITH_FLOW0("io", "HttpCacheTransaction::DoCacheWriteResponse",
                          net_log().source().id,
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  DCHECK(response_.headers);
   // Invalidate any current entry with a successful response if this transaction
   // cannot write to this entry. This transaction then continues to read from
   // the network without writing to the backend.
   bool is_match = response_.headers->response_code() == 304;
-  if (entry_ && response_.headers &&
-      !cache_->CanTransactionWriteResponseHeaders(
-          entry_, this, partial_ != nullptr, is_match)) {
+  if (entry_ && !cache_->CanTransactionWriteResponseHeaders(
+                    entry_, this, partial_ != nullptr, is_match)) {
     done_headers_create_new_entry_ = true;
 
     // The transaction needs to overwrite this response. Doom the current entry,
@@ -3218,6 +3218,8 @@ int HttpCache::Transaction::WriteToEntry(int index,
 int HttpCache::Transaction::WriteResponseInfoToEntry(
     const HttpResponseInfo& response,
     bool truncated) {
+  DCHECK(response.headers);
+
   if (!entry_)
     return OK;
 
