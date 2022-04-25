@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/lacros/account_manager/web_signin_helper_lacros.h"
+#include "chrome/browser/lacros/account_manager/signin_helper_lacros.h"
 
 #include <memory>
 #include <string>
@@ -73,9 +73,9 @@ class TestAccountReconcilor : public AccountReconcilor {
 
 }  // namespace
 
-class WebSigninHelperLacrosTest : public testing::Test {
+class SigninHelperLacrosTest : public testing::Test {
  public:
-  WebSigninHelperLacrosTest() {
+  SigninHelperLacrosTest() {
     CHECK(testing_profile_manager_.SetUp());
 
     profile_path_ =
@@ -125,14 +125,14 @@ class WebSigninHelperLacrosTest : public testing::Test {
     WaitForConsistentReconcilorState();
   }
 
-  ~WebSigninHelperLacrosTest() override { reconcilor_.Shutdown(); }
+  ~SigninHelperLacrosTest() override { reconcilor_.Shutdown(); }
 
-  // Returns a `WebSigninHelperLacros` instance. The `AccountProfileMapper` and
+  // Returns a `SigninHelperLacros` instance. The `AccountProfileMapper` and
   // the `IdentityManager` are not connected to each other, and must be managed
   // separately.
-  std::unique_ptr<WebSigninHelperLacros> CreateWebSigninHelperLacros(
+  std::unique_ptr<SigninHelperLacros> CreateSigninHelperLacros(
       base::OnceCallback<void(const CoreAccountId&)> callback) {
-    return std::make_unique<WebSigninHelperLacros>(
+    return std::make_unique<SigninHelperLacros>(
         profile_path_,
         testing_profile_manager_.profile_manager()->GetAccountProfileMapper(),
         identity_test_env_.identity_manager(),
@@ -213,14 +213,14 @@ class WebSigninHelperLacrosTest : public testing::Test {
 
 // Checks that creating a deleting the helper updates the cookie and that the
 // destruction callback is run.
-TEST_F(WebSigninHelperLacrosTest, DeletionCallback) {
+TEST_F(SigninHelperLacrosTest, DeletionCallback) {
   testing::StrictMock<base::MockOnceCallback<void(const CoreAccountId&)>>
       helper_deleted;
 
   // Create the helper.
   ExpectCookieSet("Updating");
-  std::unique_ptr<WebSigninHelperLacros> web_signin_helper =
-      CreateWebSigninHelperLacros(helper_deleted.Get());
+  std::unique_ptr<SigninHelperLacros> web_signin_helper =
+      CreateSigninHelperLacros(helper_deleted.Get());
 
   // Delete the helper.
   EXPECT_CALL(helper_deleted, Run(CoreAccountId())).Times(1);
@@ -230,7 +230,7 @@ TEST_F(WebSigninHelperLacrosTest, DeletionCallback) {
 
 // Checks that an account can be added through the OS when there is no available
 // account.
-TEST_F(WebSigninHelperLacrosTest, NoAccountAvailable) {
+TEST_F(SigninHelperLacrosTest, NoAccountAvailable) {
   testing::StrictMock<base::MockOnceCallback<void(const CoreAccountId&)>>
       helper_complete;
 
@@ -256,8 +256,8 @@ TEST_F(WebSigninHelperLacrosTest, NoAccountAvailable) {
                     new_account));
           });
   ExpectCookieSet("Updating");
-  std::unique_ptr<WebSigninHelperLacros> web_signin_helper =
-      CreateWebSigninHelperLacros(helper_complete.Get());
+  std::unique_ptr<SigninHelperLacros> web_signin_helper =
+      CreateSigninHelperLacros(helper_complete.Get());
   testing::Mock::VerifyAndClearExpectations(cookie_manager());
   testing::Mock::VerifyAndClearExpectations(mock_facade());
 

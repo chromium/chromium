@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/lacros/account_manager/web_signin_helper_lacros.h"
+#include "chrome/browser/lacros/account_manager/signin_helper_lacros.h"
 
 #include "base/callback.h"
 #include "base/feature_list.h"
@@ -13,7 +13,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/core_account_id.h"
 
-WebSigninHelperLacros::WebSigninHelperLacros(
+SigninHelperLacros::SigninHelperLacros(
     const base::FilePath& profile_path,
     AccountProfileMapper* account_profile_mapper,
     signin::IdentityManager* identity_manager,
@@ -34,33 +34,32 @@ WebSigninHelperLacros::WebSigninHelperLacros(
 
   GetAccountsAvailableAsSecondary(
       account_profile_mapper, profile_path,
-      base::BindOnce(
-          &WebSigninHelperLacros::OnAccountsAvailableAsSecondaryFetched,
-          weak_factory_.GetWeakPtr()));
+      base::BindOnce(&SigninHelperLacros::OnAccountsAvailableAsSecondaryFetched,
+                     weak_factory_.GetWeakPtr()));
 }
 
-WebSigninHelperLacros::~WebSigninHelperLacros() {
+SigninHelperLacros::~SigninHelperLacros() {
   Finalize(CoreAccountId());
 }
 
-void WebSigninHelperLacros::OnAccountsAvailableAsSecondaryFetched(
+void SigninHelperLacros::OnAccountsAvailableAsSecondaryFetched(
     const std::vector<account_manager::Account>& accounts) {
   if (!accounts.empty()) {
     // Pass in the current profile to signal that the user wants to select a
     // _secondary_ account for this particular profile.
     ProfilePicker::Show(ProfilePicker::Params::ForLacrosSelectAvailableAccount(
-        profile_path_, base::BindOnce(&WebSigninHelperLacros::OnAccountPicked,
+        profile_path_, base::BindOnce(&SigninHelperLacros::OnAccountPicked,
                                       weak_factory_.GetWeakPtr())));
     return;
   }
 
   account_profile_mapper_->ShowAddAccountDialog(
       profile_path_, source_,
-      base::BindOnce(&WebSigninHelperLacros::OnAccountAdded,
+      base::BindOnce(&SigninHelperLacros::OnAccountAdded,
                      weak_factory_.GetWeakPtr()));
 }
 
-void WebSigninHelperLacros::OnAccountAdded(
+void SigninHelperLacros::OnAccountAdded(
     const absl::optional<AccountProfileMapper::AddAccountResult>& result) {
   std::string gaia_id;
   if (result.has_value() && result->account.key.account_type() ==
@@ -70,7 +69,7 @@ void WebSigninHelperLacros::OnAccountAdded(
   OnAccountPicked(gaia_id);
 }
 
-void WebSigninHelperLacros::OnAccountPicked(const std::string& gaia_id) {
+void SigninHelperLacros::OnAccountPicked(const std::string& gaia_id) {
   if (gaia_id.empty()) {
     Finalize(CoreAccountId());
     return;
@@ -91,7 +90,7 @@ void WebSigninHelperLacros::OnAccountPicked(const std::string& gaia_id) {
   identity_manager_observervation_.Observe(identity_manager_);
 }
 
-void WebSigninHelperLacros::Finalize(const CoreAccountId& account_id) {
+void SigninHelperLacros::Finalize(const CoreAccountId& account_id) {
   identity_manager_observervation_.Reset();
   scoped_account_update_.reset();
   if (callback_)
@@ -99,7 +98,7 @@ void WebSigninHelperLacros::Finalize(const CoreAccountId& account_id) {
   // `this` may be deleted.
 }
 
-void WebSigninHelperLacros::OnRefreshTokenUpdatedForAccount(
+void SigninHelperLacros::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
   if (account_added_to_mapping_ == account_info.gaia) {
     Finalize(account_info.account_id);

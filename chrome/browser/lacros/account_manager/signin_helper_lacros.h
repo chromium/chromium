@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_LACROS_ACCOUNT_MANAGER_WEB_SIGNIN_HELPER_LACROS_H_
-#define CHROME_BROWSER_LACROS_ACCOUNT_MANAGER_WEB_SIGNIN_HELPER_LACROS_H_
+#ifndef CHROME_BROWSER_LACROS_ACCOUNT_MANAGER_SIGNIN_HELPER_LACROS_H_
+#define CHROME_BROWSER_LACROS_ACCOUNT_MANAGER_SIGNIN_HELPER_LACROS_H_
 
 #include <memory>
 
@@ -30,9 +30,9 @@ struct CoreAccountId;
 //    to the OS.
 // 4) Once the account is added to the profile, wait until the `Identitymanager`
 //    picks it up.
-class WebSigninHelperLacros : public signin::IdentityManager::Observer {
+class SigninHelperLacros : public signin::IdentityManager::Observer {
  public:
-  WebSigninHelperLacros(
+  SigninHelperLacros(
       const base::FilePath& profile_path,
       AccountProfileMapper* account_profile_mapper,
       signin::IdentityManager* identity_manager,
@@ -40,10 +40,10 @@ class WebSigninHelperLacros : public signin::IdentityManager::Observer {
       account_manager::AccountManagerFacade::AccountAdditionSource source,
       base::OnceCallback<void(const CoreAccountId&)> callback);
 
-  ~WebSigninHelperLacros() override;
+  ~SigninHelperLacros() override;
 
-  WebSigninHelperLacros(const WebSigninHelperLacros&) = delete;
-  WebSigninHelperLacros& operator=(const WebSigninHelperLacros&) = delete;
+  SigninHelperLacros(const SigninHelperLacros&) = delete;
+  SigninHelperLacros& operator=(const SigninHelperLacros&) = delete;
 
  private:
   // Callback for `GetAccountsAvailableAsSecondary()`.
@@ -83,7 +83,7 @@ class WebSigninHelperLacros : public signin::IdentityManager::Observer {
   // Gaia ID returned by `AccountProfileMapper::ShowAddAccountDialog()`.
   std::string account_added_to_mapping_;
 
-  base::WeakPtrFactory<WebSigninHelperLacros> weak_factory_{this};
+  base::WeakPtrFactory<SigninHelperLacros> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_LACROS_ACCOUNT_MANAGER_WEB_SIGNIN_HELPER_LACROS_H_
+#endif  // CHROME_BROWSER_LACROS_ACCOUNT_MANAGER_SIGNIN_HELPER_LACROS_H_

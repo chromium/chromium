@@ -12,7 +12,7 @@
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/account_manager/web_signin_helper_lacros.h"
+#include "chrome/browser/lacros/account_manager/signin_helper_lacros.h"
 #include "components/signin/public/base/signin_client.h"
 #include "google_apis/gaia/core_account_id.h"
 #endif
@@ -43,7 +43,7 @@ void SigninManager::StartLacrosSigninFlow(
     signin::ConsistencyCookieManager* consistency_cookie_manager,
     account_manager::AccountManagerFacade::AccountAdditionSource source,
     base::OnceCallback<void(const CoreAccountId&)> on_completion_callback) {
-  if (web_signin_helper_lacros_) {
+  if (signin_helper_lacros_) {
     // There is already a signin flow in progress.
     // TODO(https://crbug.com/1260291): Activate the profile picker if it's
     // already open.
@@ -51,11 +51,11 @@ void SigninManager::StartLacrosSigninFlow(
     return;
   }
 
-  web_signin_helper_lacros_ = std::make_unique<WebSigninHelperLacros>(
+  signin_helper_lacros_ = std::make_unique<SigninHelperLacros>(
       profile_path, account_profile_mapper, identity_manager_,
       consistency_cookie_manager, source,
       // Using `base::Unretained()` is fine because this owns the helper.
-      base::BindOnce(&SigninManager::OnWebSigninHelperLacrosComplete,
+      base::BindOnce(&SigninManager::OnSigninHelperLacrosComplete,
                      base::Unretained(this),
                      std::move(on_completion_callback)));
 }
@@ -266,10 +266,10 @@ void SigninManager::OnSigninAllowedPrefChanged() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-void SigninManager::OnWebSigninHelperLacrosComplete(
+void SigninManager::OnSigninHelperLacrosComplete(
     base::OnceCallback<void(const CoreAccountId&)> on_completion_callback,
     const CoreAccountId& account_id) {
   std::move(on_completion_callback).Run(account_id);
-  web_signin_helper_lacros_.reset();
+  signin_helper_lacros_.reset();
 }
 #endif

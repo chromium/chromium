@@ -31,7 +31,7 @@ class ConsistencyCookieManager;
 }
 
 class AccountProfileMapper;
-class WebSigninHelperLacros;
+class SigninHelperLacros;
 class SigninClient;
 struct CoreAccountId;
 #endif
@@ -97,7 +97,7 @@ class SigninManager : public KeyedService,
   void OnSigninAllowedPrefChanged();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnWebSigninHelperLacrosComplete(
+  void OnSigninHelperLacrosComplete(
       base::OnceCallback<void(const CoreAccountId&)> on_completion_callback,
       const CoreAccountId& account_id);
 #endif
@@ -112,7 +112,7 @@ class SigninManager : public KeyedService,
   BooleanPrefMember signin_allowed_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<WebSigninHelperLacros> web_signin_helper_lacros_;
+  std::unique_ptr<SigninHelperLacros> signin_helper_lacros_;
   // Whether this is the main profile for which the primary account is
   // the account used to signin to the device aka initial primary account.
   bool is_main_profile_ = false;
