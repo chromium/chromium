@@ -32,6 +32,10 @@ class SyncService;
 // Contains the user choice for UMA reporting. This value is set to the default
 // value when the coordinator is initialized.
 @property(nonatomic, assign) BOOL UMAReportingUserChoice;
+// Whether the user tapped on the TOS link.
+@property(nonatomic, assign) BOOL TOSLinkWasTapped;
+// Whether the user tapped on the UMA link.
+@property(nonatomic, assign) BOOL UMALinkWasTapped;
 // Whether an account has been added. Must be set externally.
 @property(nonatomic, assign) BOOL addedAccount;
 

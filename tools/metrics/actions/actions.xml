@@ -17391,6 +17391,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileFreUMALinkTapped">
+  <owner>arthurmilchior@google.com</owner>
+  <owner>jlebel@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    User tapped on the UMA link on the first run welcome view. This metric is
+    only recorded if and after the TOS are accepted. This metric is specific to
+    iOS.
+  </description>
+</action>
+
 <action name="MobileGoogleServicesSettingsBack">
   <owner>gambard@chromium.org</owner>
   <owner>sczs@chromium.org</owner>

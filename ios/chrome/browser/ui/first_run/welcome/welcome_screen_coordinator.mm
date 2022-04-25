@@ -32,6 +32,9 @@
 // Whether the user tapped on the TOS link.
 @property(nonatomic, assign) BOOL TOSLinkWasTapped;
 
+// Whether the user tapped on the UMA link.
+@property(nonatomic, assign) BOOL UMALinkWasTapped;
+
 // Coordinator used to manage the TOS page.
 @property(nonatomic, strong) TOSCoordinator* TOSCoordinator;
 
@@ -96,6 +99,9 @@
   if (self.TOSLinkWasTapped) {
     base::RecordAction(base::UserMetricsAction("MobileFreTOSLinkTapped"));
   }
+  if (self.UMALinkWasTapped) {
+    base::RecordAction(base::UserMetricsAction("MobileFreUMALinkTapped"));
+  }
 
   [self.delegate willFinishPresenting];
 }
@@ -130,6 +136,7 @@
 
 - (void)showUMADialog {
   DCHECK(!self.UMACoordinator);
+  self.UMALinkWasTapped = YES;
   self.UMACoordinator = [[UMACoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
