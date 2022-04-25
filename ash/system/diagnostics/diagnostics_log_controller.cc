@@ -4,10 +4,15 @@
 
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
 
+#include <memory>
+
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/diagnostics/diagnostics_browser_delegate.h"
+#include "ash/system/diagnostics/networking_log.h"
+#include "ash/system/diagnostics/routine_log.h"
+#include "ash/system/diagnostics/telemetry_log.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -66,7 +71,7 @@ void DiagnosticsLogController::Initialize(
     std::unique_ptr<DiagnosticsBrowserDelegate> delegate) {
   DCHECK(g_instance);
   g_instance->delegate_ = std::move(delegate);
-  g_instance->ResetLogBasePath();
+  g_instance->ResetAndInitializeLogWriters();
 }
 
 bool DiagnosticsLogController::GenerateSessionLogOnBlockingPool(
@@ -84,6 +89,22 @@ void DiagnosticsLogController::ResetAndInitializeLogWriters() {
   }
 
   ResetLogBasePath();
+
+  networking_log_ = std::make_unique<NetworkingLog>(log_base_path_);
+  routine_log_ = std::make_unique<RoutineLog>(log_base_path_);
+  telemetry_log_ = std::make_unique<TelemetryLog>();
+}
+
+NetworkingLog* DiagnosticsLogController::GetNetworkingLog() {
+  return networking_log_.get();
+}
+
+RoutineLog* DiagnosticsLogController::GetRoutineLog() {
+  return routine_log_.get();
+}
+
+TelemetryLog* DiagnosticsLogController::GetTelemetryLog() {
+  return telemetry_log_.get();
 }
 
 void DiagnosticsLogController::ResetLogBasePath() {
