@@ -59,6 +59,10 @@ extern const wchar_t kRegValueInstallerResult[];
 extern const wchar_t kRegValueInstallerResultUIString[];
 extern const wchar_t kRegValueInstallerSuccessLaunchCmdLine[];
 
+// AppCommand registry constants.
+extern const wchar_t kRegKeyCommands[];
+extern const wchar_t kRegValueCommandLine[];
+
 // Device management.
 //
 // Registry for enrollment token.

@@ -23,7 +23,7 @@ installing an application with `needsadmin=true` or `needsadmin=prefers`.
 ### Localization
 Metainstaller localization presents the metainstaller UI with the user's
 preferred language on the current system. Every string shown in the UI is
-translated. 
+translated.
 
 ## Standalone Installer
 TODO(crbug.com/1035895): Document the standalone installer.
@@ -345,3 +345,88 @@ TODO(crbug.com/1035895): Document updater self-uninstallation.
 TODO(crbug.com/1035895): Document external constant overrides (test build only).
 
 TODO(crbug.com/1035895): Document tagging tools.
+
+## Application Commands
+
+The Application Command feature allows installed Updater-managed products to
+pre-register and later run command lines in the format
+`c:\path-to-exe\exe.exe {params}` (elevated for system applications). `{params}`
+is optional and can also include replaceable parameters substituted at runtime.
+
+### Registration
+App commands are registered in the registry with the following formats:
+
+* New command layout format:
+```
+    Update\Clients\{`app_id`}\Commands\`command_id`
+        REG_SZ "CommandLine" == {command format}
+```
+* Older command layout format, which may be deprecated in the future:
+```
+    Update\Clients\{`app_id`}
+        REG_SZ `command_id` == {command format}
+```
+
+Example `{command format}`: `c:\path-to\echo.exe %1 %2 %3 StaticParam4`
+
+As shown above, `{command format}` needs to be the complete path to an
+executable followed by optional parameters.
+
+### Usage
+Once registered, commands may be invoked using the `execute` method in the
+`IAppCommandWeb` interface.
+
+```
+interface IAppCommandWeb : IDispatch {
+  // Use values from the AppCommandStatus enum.
+  [propget] HRESULT status([out, retval] UINT*);
+  [propget] HRESULT exitCode([out, retval] DWORD*);
+  [propget] HRESULT output([out, retval] BSTR*);
+  HRESULT execute([in, optional] VARIANT parameter1,
+                  [in, optional] VARIANT parameter2,
+                  [in, optional] VARIANT parameter3,
+                  [in, optional] VARIANT parameter4,
+                  [in, optional] VARIANT parameter5,
+                  [in, optional] VARIANT parameter6,
+                  [in, optional] VARIANT parameter7,
+                  [in, optional] VARIANT parameter8,
+                  [in, optional] VARIANT parameter9);
+};
+```
+
+Here is a code snippet a client may use, with error checking omitted:
+
+```
+var bundle = update3WebServer.createAppBundleWeb();
+bundle.initialize();
+bundle.createInstalledApp(appGuid);
+var app = bundle.appWeb(0);
+cmd = app.command(command);
+cmd.execute();
+```
+
+Parameters placeholders (`%1-%9`) are filled by the numbered parameters in
+`IAppCommandWeb::execute`. Placeholders without corresponding parameters will
+cause execution to fail.
+
+Clients may poll for the execution status of commands that they have invoked by
+using the `status` method of `IAppCommandWeb`. When the status is
+`COMMAND_STATUS_COMPLETE`, the `exitCode` method can be used to get the process
+exit code.
+
+### Command-Line Format
+
+Some rules to follow for the command line:
+
+* for system applications, the executable path must be in a secure location such
+as `%ProgramFiles%` for security, since it will be run elevated.
+* placeholders are not permitted in the executable path.
+* placeholders take the form of a percent character `%` followed by a digit.
+Literal `%` characters must be escaped by doubling them.
+
+For example, if parameters to `IAppCommandWeb::execute` are `AA` and `BB`
+respectively, a command format of:
+  `echo.exe %1 %%2 %%%2`
+becomes the command line
+  `echo.exe AA %2 %BB`
+

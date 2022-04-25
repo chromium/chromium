@@ -18,6 +18,9 @@ extern const char kTestSleepMinutesSwitch[];
 // The switch to signal the event with the name given as a switch value.
 extern const char kTestEventToSignal[];
 
+// The switch to wait on the event with the name given as a switch value.
+extern const char kTestEventToWaitOn[];
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_WIN_TEST_TEST_STRINGS_H_

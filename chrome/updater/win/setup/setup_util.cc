@@ -119,9 +119,10 @@ std::vector<IID> GetActiveInterfaces() {
         __uuidof(IUpdaterRegisterAppCallback), __uuidof(IUpdaterCallback),
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-        __uuidof(IAppBundleWeb), __uuidof(IAppWeb), __uuidof(ICompleteStatus),
-        __uuidof(ICurrentState), __uuidof(IGoogleUpdate3Web),
-        __uuidof(IProcessLauncher), __uuidof(IProcessLauncher2),
+        __uuidof(IAppBundleWeb), __uuidof(IAppWeb), __uuidof(IAppCommandWeb),
+        __uuidof(ICompleteStatus), __uuidof(ICurrentState),
+        __uuidof(IGoogleUpdate3Web), __uuidof(IProcessLauncher),
+        __uuidof(IProcessLauncher2),
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   };
 }
@@ -317,6 +318,7 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
       // Updater legacy typelib.
       {__uuidof(IAppBundleWeb), kUpdaterLegacyIndex},
       {__uuidof(IAppWeb), kUpdaterLegacyIndex},
+      {__uuidof(IAppCommandWeb), kUpdaterLegacyIndex},
       {__uuidof(ICurrentState), kUpdaterLegacyIndex},
       {__uuidof(IGoogleUpdate3Web), kUpdaterLegacyIndex},
       {__uuidof(IProcessLauncher), kUpdaterLegacyIndex},

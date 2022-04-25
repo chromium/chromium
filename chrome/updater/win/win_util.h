@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/hash/hash.h"
 #include "base/process/process_iterator.h"
+#include "base/scoped_generic.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
@@ -57,6 +58,13 @@ class ScHandleTraits {
 using ScopedScHandle =
     base::win::GenericScopedHandle<ScHandleTraits,
                                    base::win::DummyVerifierTraits>;
+
+struct LocalAllocTraits {
+  static HLOCAL InvalidValue() { return nullptr; }
+  static void Free(HLOCAL mem) { ::LocalFree(mem); }
+};
+
+using ScopedLocalAlloc = base::ScopedGeneric<HLOCAL, LocalAllocTraits>;
 
 class ProcessFilterName : public base::ProcessFilter {
  public:

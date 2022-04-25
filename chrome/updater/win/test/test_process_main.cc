@@ -18,6 +18,24 @@
 #include "chrome/updater/win/test/test_initializer.h"
 #include "chrome/updater/win/test/test_strings.h"
 
+namespace {
+
+base::WaitableEvent EventForSwitch(const base::CommandLine& command_line,
+                                   const char switch_value[]) {
+  DCHECK(command_line.HasSwitch(switch_value));
+
+  const std::wstring event_name =
+      command_line.GetSwitchValueNative(switch_value);
+  VLOG(1) << __func__ << " event name '" << event_name << "'";
+  base::win::ScopedHandle handle(
+      ::OpenEvent(EVENT_ALL_ACCESS, TRUE, event_name.c_str()));
+  PLOG_IF(ERROR, !handle.IsValid())
+      << __func__ << " cannot open event '" << event_name << "'";
+  return base::WaitableEvent(std::move(handle));
+}
+
+}  // namespace
+
 int main(int, char**) {
   bool success = base::CommandLine::Init(0, nullptr);
   DCHECK(success);
@@ -47,16 +65,9 @@ int main(int, char**) {
   }
 
   if (command_line->HasSwitch(updater::kTestEventToSignal)) {
-    VLOG(1) << "Process is signaling event '" << updater::kTestEventToSignal
-            << "'";
-    std::wstring event_name =
-        command_line->GetSwitchValueNative(updater::kTestEventToSignal);
-    base::win::ScopedHandle handle(
-        ::OpenEvent(EVENT_ALL_ACCESS, TRUE, event_name.c_str()));
-    PLOG_IF(ERROR, !handle.IsValid())
-        << "Cannot open event '" << event_name << "'";
-    base::WaitableEvent event(std::move(handle));
-    event.Signal();
+    EventForSwitch(*command_line, updater::kTestEventToSignal).Signal();
+  } else if (command_line->HasSwitch(updater::kTestEventToWaitOn)) {
+    EventForSwitch(*command_line, updater::kTestEventToWaitOn).Wait();
   }
 
   VLOG(1) << "Process ended.";

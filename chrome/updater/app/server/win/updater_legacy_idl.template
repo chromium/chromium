@@ -40,6 +40,17 @@ typedef enum CurrentState {
   STATE_ERROR = 17,
 } CurrentState;
 
+enum AppCommandStatus {
+  // The command has never been executed.
+  COMMAND_STATUS_INIT = 1,
+  // The command is running.
+  COMMAND_STATUS_RUNNING = 2,
+  // An error occurred while launching or monitoring the command.
+  COMMAND_STATUS_ERROR = 3,
+  // The command has completed execution.
+  COMMAND_STATUS_COMPLETE = 4,
+};
+
 [
   object,
   dual,
@@ -213,6 +224,29 @@ interface IAppWeb : IDispatch {
 
 [
   object,
+  dual,
+  uuid(IAPPCOMMANDWEB_IID),
+  helpstring("IAppCommandWeb Interface"),
+  pointer_default(unique)
+]
+interface IAppCommandWeb : IDispatch {
+  // Use values from the AppCommandStatus enum.
+  [propget] HRESULT status([out, retval] UINT*);
+  [propget] HRESULT exitCode([out, retval] DWORD*);
+  [propget] HRESULT output([out, retval] BSTR*);
+  HRESULT execute([in, optional] VARIANT parameter1,
+                  [in, optional] VARIANT parameter2,
+                  [in, optional] VARIANT parameter3,
+                  [in, optional] VARIANT parameter4,
+                  [in, optional] VARIANT parameter5,
+                  [in, optional] VARIANT parameter6,
+                  [in, optional] VARIANT parameter7,
+                  [in, optional] VARIANT parameter8,
+                  [in, optional] VARIANT parameter9);
+};
+
+[
+  object,
   oleautomation,
   uuid(IPROCESSLAUNCHER_IID),
   helpstring("Google Update IProcessLauncher Interface"),
@@ -283,6 +317,7 @@ library UpdaterLegacyLib {
   interface IGoogleUpdate3Web;
   interface IAppBundleWeb;
   interface IAppWeb;
+  interface IAppCommandWeb;
   interface IProcessLauncher;
   interface IProcessLauncher2;
 };

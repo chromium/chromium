@@ -9,11 +9,15 @@
 #include <wrl/implements.h>
 
 #include <string>
+#include <vector>
 
+#include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/process/process.h"
 #include "base/synchronization/lock.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_scope.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -172,6 +176,121 @@ class LegacyProcessLauncherImpl
 
  private:
   ~LegacyProcessLauncherImpl() override;
+};
+
+// This class implements the legacy Omaha3 IAppCommandWeb interface. AppCommands
+// are a mechanism to run pre-registered command lines in the format
+// `c:\path-to-exe\exe.exe param1 param2...param9` elevated. The params are
+// optional and can also include replaceable parameters substituted at runtime.
+//
+// App commands are registered in the registry with the following formats:
+// * New command layout format:
+//     Update\Clients\`app_id`\Commands\`command_id`
+//         REG_SZ "CommandLine" == {command format}
+// * Older command layout format:
+//     Update\Clients\`app_id`
+//         REG_SZ `command_id` == {command format}
+//
+// Example {command format}: "c:\path-to\echo.exe %1 %2 %3 StaticParam4"
+//
+// As shown above, {command format} needs to be the complete path to an
+// executable followed by optional parameters.
+//
+// For system applications, the registered executable path above must be in a
+// secure location such as %ProgramFiles% for security, since it will be run
+// elevated.
+//
+// Parameters can be placeholders (%1-%9) that can be filled by the numbered
+// parameters in `IAppCommandWeb::execute`. Literal `%` characters must be
+// escaped by doubling them.
+//
+// If parameters to `IAppCommandWeb::execute` are AA and BB
+// respectively, a command format of:
+//     `echo.exe %1 %%2 %%%2`
+// becomes the command line
+//     `echo.exe AA %2 %BB`
+//
+// Placeholders are not permitted in the process name.
+//
+// Placeholders may be embedded within words, and appropriate quoting of
+// back-slash, double-quotes, space, and tab is applied if necessary.
+//
+// TODO(crbug/1318293): Verify AppCommand executables are authenticode signed by
+// Google before executing them.
+// TODO(crbug/1316682): Implement AutoRunOnOSUpgrade app commands.
+class LegacyAppCommandWebImpl
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          IAppCommandWeb,
+          IDispatch> {
+ public:
+  // Creates an instance of `IAppCommandWeb` for the given `app_id` and
+  // `command_id`. Returns an error if the command format does not exist in the
+  // registry, or if the command format in the registry has an invalid
+  // formatting.
+  static HRESULT CreateAppCommandWeb(UpdaterScope scope,
+                                     const std::wstring& app_id,
+                                     const std::wstring& command_id,
+                                     IDispatch** app_command_web);
+
+  LegacyAppCommandWebImpl();
+  LegacyAppCommandWebImpl(const LegacyAppCommandWebImpl&) = delete;
+  LegacyAppCommandWebImpl& operator=(const LegacyAppCommandWebImpl&) = delete;
+
+  // Overrides for IAppCommandWeb.
+  IFACEMETHODIMP get_status(UINT* status) override;
+  IFACEMETHODIMP get_exitCode(DWORD* exit_code) override;
+  IFACEMETHODIMP get_output(BSTR* output) override;
+
+  // Executes the AppCommand with the optional parameters provided. `execute`
+  // will fail if the number of non-empty VARIANT parameters provided to
+  // `execute` are less than the number of parameter placeholders in the
+  // loaded-from-the-registry command format. Each placeholder %N is replaced
+  // with the corresponding `parameterN`.
+  IFACEMETHODIMP execute(VARIANT parameter1,
+                         VARIANT parameter2,
+                         VARIANT parameter3,
+                         VARIANT parameter4,
+                         VARIANT parameter5,
+                         VARIANT parameter6,
+                         VARIANT parameter7,
+                         VARIANT parameter8,
+                         VARIANT parameter9) override;
+
+  // Overrides for IDispatch.
+  // TODO(crbug/1316683): Implement the IDispatch methods for the AppCommand
+  // implementation.
+  IFACEMETHODIMP GetTypeInfoCount(UINT*) override;
+  IFACEMETHODIMP GetTypeInfo(UINT, LCID, ITypeInfo**) override;
+  IFACEMETHODIMP GetIDsOfNames(REFIID, LPOLESTR*, UINT, LCID, DISPID*) override;
+  IFACEMETHODIMP Invoke(DISPID,
+                        REFIID,
+                        LCID,
+                        WORD,
+                        DISPPARAMS*,
+                        VARIANT*,
+                        EXCEPINFO*,
+                        UINT*) override;
+
+ private:
+  ~LegacyAppCommandWebImpl() override;
+
+  static HRESULT CreateLegacyAppCommandWebImpl(
+      UpdaterScope scope,
+      const std::wstring& app_id,
+      const std::wstring& command_id,
+      Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl>& web_impl);
+
+  HRESULT Initialize(std::wstring command_format);
+
+  absl::optional<std::wstring> FormatCommandLine(
+      const std::vector<std::wstring>& parameters) const;
+
+  base::FilePath executable_;
+  std::vector<std::wstring> parameters_;
+  base::Process process_;
+
+  friend class LegacyAppCommandWebImplTest;
 };
 
 }  // namespace updater

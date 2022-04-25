@@ -93,3 +93,13 @@ passed to the installer: `--installerdata="pathtofile"`.
 The updater will not delete this file.
 * This installerdata is not persisted anywhere else, and it is not sent as a
 part of pings to the update server.
+
+## Application Commands
+
+The Application Command feature allows installed Updater-managed products to
+pre-register and then later run command lines (elevated for system
+applications). The command lines can also include replaceable parameters
+substituted at runtime.
+
+For more information, please see the
+[functional spec](functional_spec.md#Application-Commands).

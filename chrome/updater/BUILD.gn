@@ -629,6 +629,7 @@ if (is_win || is_mac || is_linux) {
     if (is_win) {
       sources += [
         "activity_impl_win_unittest.cc",
+        "app/server/win/com_classes_legacy_unittest.cc",
         "policy/win/group_policy_manager_unittest.cc",
         "test/integration_tests_win.cc",
         "util_win_unittest.cc",

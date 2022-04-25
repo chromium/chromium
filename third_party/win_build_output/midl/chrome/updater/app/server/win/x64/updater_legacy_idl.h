@@ -81,6 +81,13 @@ typedef interface IAppWeb IAppWeb;
 #endif 	/* __IAppWeb_FWD_DEFINED__ */
 
 
+#ifndef __IAppCommandWeb_FWD_DEFINED__
+#define __IAppCommandWeb_FWD_DEFINED__
+typedef interface IAppCommandWeb IAppCommandWeb;
+
+#endif 	/* __IAppCommandWeb_FWD_DEFINED__ */
+
+
 #ifndef __IProcessLauncher_FWD_DEFINED__
 #define __IProcessLauncher_FWD_DEFINED__
 typedef interface IProcessLauncher IProcessLauncher;
@@ -159,6 +166,13 @@ typedef interface IAppWeb IAppWeb;
 #endif 	/* __IAppWeb_FWD_DEFINED__ */
 
 
+#ifndef __IAppCommandWeb_FWD_DEFINED__
+#define __IAppCommandWeb_FWD_DEFINED__
+typedef interface IAppCommandWeb IAppCommandWeb;
+
+#endif 	/* __IAppCommandWeb_FWD_DEFINED__ */
+
+
 #ifndef __IProcessLauncher_FWD_DEFINED__
 #define __IProcessLauncher_FWD_DEFINED__
 typedef interface IProcessLauncher IProcessLauncher;
@@ -207,6 +221,14 @@ enum CurrentState
         STATE_ERROR	= 17
     } 	CurrentState;
 
+
+enum AppCommandStatus
+    {
+        COMMAND_STATUS_INIT	= 1,
+        COMMAND_STATUS_RUNNING	= 2,
+        COMMAND_STATUS_ERROR	= 3,
+        COMMAND_STATUS_COMPLETE	= 4
+    } ;
 
 
 extern RPC_IF_HANDLE __MIDL_itf_updater_legacy_idl_0000_0000_v0_0_c_ifspec;
@@ -1205,6 +1227,193 @@ EXTERN_C const IID IID_IAppWeb;
 #endif 	/* __IAppWeb_INTERFACE_DEFINED__ */
 
 
+#ifndef __IAppCommandWeb_INTERFACE_DEFINED__
+#define __IAppCommandWeb_INTERFACE_DEFINED__
+
+/* interface IAppCommandWeb */
+/* [unique][helpstring][uuid][dual][object] */ 
+
+
+EXTERN_C const IID IID_IAppCommandWeb;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("8476CE12-AE1F-4198-805C-BA0F9B783F57")
+    IAppCommandWeb : public IDispatch
+    {
+    public:
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_status( 
+            /* [retval][out] */ UINT *__MIDL__IAppCommandWeb0000) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_exitCode( 
+            /* [retval][out] */ DWORD *__MIDL__IAppCommandWeb0001) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_output( 
+            /* [retval][out] */ BSTR *__MIDL__IAppCommandWeb0002) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE execute( 
+            /* [optional][in] */ VARIANT parameter1,
+            /* [optional][in] */ VARIANT parameter2,
+            /* [optional][in] */ VARIANT parameter3,
+            /* [optional][in] */ VARIANT parameter4,
+            /* [optional][in] */ VARIANT parameter5,
+            /* [optional][in] */ VARIANT parameter6,
+            /* [optional][in] */ VARIANT parameter7,
+            /* [optional][in] */ VARIANT parameter8,
+            /* [optional][in] */ VARIANT parameter9) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IAppCommandWebVtbl
+    {
+        BEGIN_INTERFACE
+        
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IAppCommandWeb * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IAppCommandWeb * This);
+        
+        DECLSPEC_XFGVIRT(IUnknown, Release)
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IAppCommandWeb * This);
+        
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfoCount)
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
+            IAppCommandWeb * This,
+            /* [out] */ UINT *pctinfo);
+        
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfo)
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
+            IAppCommandWeb * This,
+            /* [in] */ UINT iTInfo,
+            /* [in] */ LCID lcid,
+            /* [out] */ ITypeInfo **ppTInfo);
+        
+        DECLSPEC_XFGVIRT(IDispatch, GetIDsOfNames)
+        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
+            IAppCommandWeb * This,
+            /* [in] */ REFIID riid,
+            /* [size_is][in] */ LPOLESTR *rgszNames,
+            /* [range][in] */ UINT cNames,
+            /* [in] */ LCID lcid,
+            /* [size_is][out] */ DISPID *rgDispId);
+        
+        DECLSPEC_XFGVIRT(IDispatch, Invoke)
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
+            IAppCommandWeb * This,
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
+        
+        DECLSPEC_XFGVIRT(IAppCommandWeb, get_status)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_status )( 
+            IAppCommandWeb * This,
+            /* [retval][out] */ UINT *__MIDL__IAppCommandWeb0000);
+        
+        DECLSPEC_XFGVIRT(IAppCommandWeb, get_exitCode)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_exitCode )( 
+            IAppCommandWeb * This,
+            /* [retval][out] */ DWORD *__MIDL__IAppCommandWeb0001);
+        
+        DECLSPEC_XFGVIRT(IAppCommandWeb, get_output)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_output )( 
+            IAppCommandWeb * This,
+            /* [retval][out] */ BSTR *__MIDL__IAppCommandWeb0002);
+        
+        DECLSPEC_XFGVIRT(IAppCommandWeb, execute)
+        HRESULT ( STDMETHODCALLTYPE *execute )( 
+            IAppCommandWeb * This,
+            /* [optional][in] */ VARIANT parameter1,
+            /* [optional][in] */ VARIANT parameter2,
+            /* [optional][in] */ VARIANT parameter3,
+            /* [optional][in] */ VARIANT parameter4,
+            /* [optional][in] */ VARIANT parameter5,
+            /* [optional][in] */ VARIANT parameter6,
+            /* [optional][in] */ VARIANT parameter7,
+            /* [optional][in] */ VARIANT parameter8,
+            /* [optional][in] */ VARIANT parameter9);
+        
+        END_INTERFACE
+    } IAppCommandWebVtbl;
+
+    interface IAppCommandWeb
+    {
+        CONST_VTBL struct IAppCommandWebVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IAppCommandWeb_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IAppCommandWeb_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IAppCommandWeb_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IAppCommandWeb_GetTypeInfoCount(This,pctinfo)	\
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
+
+#define IAppCommandWeb_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
+
+#define IAppCommandWeb_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
+
+#define IAppCommandWeb_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
+
+
+#define IAppCommandWeb_get_status(This,__MIDL__IAppCommandWeb0000)	\
+    ( (This)->lpVtbl -> get_status(This,__MIDL__IAppCommandWeb0000) ) 
+
+#define IAppCommandWeb_get_exitCode(This,__MIDL__IAppCommandWeb0001)	\
+    ( (This)->lpVtbl -> get_exitCode(This,__MIDL__IAppCommandWeb0001) ) 
+
+#define IAppCommandWeb_get_output(This,__MIDL__IAppCommandWeb0002)	\
+    ( (This)->lpVtbl -> get_output(This,__MIDL__IAppCommandWeb0002) ) 
+
+#define IAppCommandWeb_execute(This,parameter1,parameter2,parameter3,parameter4,parameter5,parameter6,parameter7,parameter8,parameter9)	\
+    ( (This)->lpVtbl -> execute(This,parameter1,parameter2,parameter3,parameter4,parameter5,parameter6,parameter7,parameter8,parameter9) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IAppCommandWeb_INTERFACE_DEFINED__ */
+
+
 #ifndef __IProcessLauncher_INTERFACE_DEFINED__
 #define __IProcessLauncher_INTERFACE_DEFINED__
 
@@ -1444,6 +1653,7 @@ EXTERN_C const IID IID_IProcessLauncher2;
 
 /* library UpdaterLegacyLib */
 /* [helpstring][version][uuid] */ 
+
 
 
 
