@@ -6,52 +6,14 @@
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_USE_COUNTER_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include <bitset>
+#include <string>
+
 #include "base/containers/flat_set.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/css_property_id.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-forward.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
-
-namespace internal {
-
-// Histogram name definitions for the primary uses.
-const char kFeaturesHistogramName[] = "Blink.UseCounter.Features";
-const char kFeaturesHistogramMainFrameName[] =
-    "Blink.UseCounter.MainFrame.Features";
-const char kCssPropertiesHistogramName[] = "Blink.UseCounter.CSSProperties";
-const char kAnimatedCssPropertiesHistogramName[] =
-    "Blink.UseCounter.AnimatedCSSProperties";
-const char kPermissionsPolicyViolationHistogramName[] =
-    "Blink.UseCounter.PermissionsPolicy.Violation.Enforce";
-const char kPermissionsPolicyHeaderHistogramName[] =
-    "Blink.UseCounter.PermissionsPolicy.Header2";
-const char kPermissionsPolicyIframeAttributeHistogramName[] =
-    "Blink.UseCounter.PermissionsPolicy.Allow2";
-const char kUserAgentOverrideHistogramName[] =
-    "Blink.UseCounter.UserAgentOverride";
-
-// Histogram name definitions for FencedFrames page variants.
-// TODO(https://crbug.com/1301880): Generate the name dynamically rather than
-// preparing prefixed names. See review comments at https://crrev.com/c/3573433.
-const char kFeaturesHistogramFencedFramesName[] =
-    "Blink.UseCounter.FencedFrames.Features";
-const char kFeaturesHistogramFencedFramesMainFrameName[] =
-    "Blink.UseCounter.FencedFrames.MainFrame.Features";
-const char kCssPropertiesHistogramFencedFramesName[] =
-    "Blink.UseCounter.FencedFrames.CSSProperties";
-const char kAnimatedCssPropertiesHistogramFencedFramesName[] =
-    "Blink.UseCounter.FencedFrames.AnimatedCSSProperties";
-const char kPermissionsPolicyViolationHistogramFencedFramesName[] =
-    "Blink.UseCounter.FencedFrames.PermissionsPolicy.Violation.Enforce";
-const char kPermissionsPolicyHeaderHistogramFencedFramesName[] =
-    "Blink.UseCounter.FencedFrames.PermissionsPolicy.Header2";
-const char kPermissionsPolicyIframeAttributeHistogramFencedFramesName[] =
-    "Blink.UseCounter.FencedFrames.PermissionsPolicy.Allow2";
-const char kUserAgentOverrideHistogramFencedFramesName[] =
-    "Blink.UseCounter.FencedFrames.UserAgentOverride";
-
-}  // namespace internal
 
 // This class reports several use counters coming from Blink.
 // For FencedFrames, it reports the use counters with a "FencedFrames" prefix.

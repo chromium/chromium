@@ -20,6 +20,10 @@ using PermissionsPolicyFeature = blink::mojom::PermissionsPolicyFeature;
 using UserAgentOverrideHistogram =
     blink::UserAgentOverride::UserAgentOverrideHistogram;
 
+#define FEATURE_HISTOGRAM_NAME(name, is_in_fenced_frames)     \
+  is_in_fenced_frames ? "Blink.UseCounter.FencedFrames." name \
+                      : "Blink.UseCounter." name
+
 namespace {
 
 // It's always recommended to use the deprecation API in blink. If the feature
@@ -165,18 +169,15 @@ void UseCounterPageLoadMetricsObserver::RecordUseCounterFeature(
     content::RenderFrameHost* rfh,
     const blink::UseCounterFeature& feature) {
   switch (feature.type()) {
-    case FeatureType::kWebFeature: {
+    case FeatureType::kWebFeature:
       if (TestAndSet(features_recorded_, feature.value()))
         return;
       base::UmaHistogramEnumeration(
-          is_in_fenced_frames_page_
-              ? internal::kFeaturesHistogramFencedFramesName
-              : internal::kFeaturesHistogramName,
+          FEATURE_HISTOGRAM_NAME("Features", is_in_fenced_frames_page_),
           static_cast<WebFeature>(feature.value()));
       PossiblyWarnFeatureDeprecation(rfh,
                                      static_cast<WebFeature>(feature.value()));
       break;
-    }
     // There are about 600 enums, so the memory required for a vector
     // histogram is about 600 * 8 byes = 5KB 50% of the time there are about
     // 100 CSS properties recorded per page load. Storage in sparce
@@ -190,18 +191,15 @@ void UseCounterPageLoadMetricsObserver::RecordUseCounterFeature(
       if (TestAndSet(css_properties_recorded_, feature.value()))
         return;
       base::UmaHistogramEnumeration(
-          is_in_fenced_frames_page_
-              ? internal::kCssPropertiesHistogramFencedFramesName
-              : internal::kCssPropertiesHistogramName,
+          FEATURE_HISTOGRAM_NAME("CSSProperties", is_in_fenced_frames_page_),
           static_cast<CSSSampleId>(feature.value()));
       break;
     case FeatureType::kAnimatedCssProperty:
       if (TestAndSet(animated_css_properties_recorded_, feature.value()))
         return;
       base::UmaHistogramEnumeration(
-          is_in_fenced_frames_page_
-              ? internal::kAnimatedCssPropertiesHistogramFencedFramesName
-              : internal::kAnimatedCssPropertiesHistogramName,
+          FEATURE_HISTOGRAM_NAME("AnimatedCSSProperties",
+                                 is_in_fenced_frames_page_),
           static_cast<CSSSampleId>(feature.value()));
       break;
 
@@ -210,9 +208,8 @@ void UseCounterPageLoadMetricsObserver::RecordUseCounterFeature(
                      feature.value()))
         return;
       base::UmaHistogramEnumeration(
-          is_in_fenced_frames_page_
-              ? internal::kPermissionsPolicyViolationHistogramFencedFramesName
-              : internal::kPermissionsPolicyViolationHistogramName,
+          FEATURE_HISTOGRAM_NAME("PermissionsPolicy.Violation.Enforce",
+                                 is_in_fenced_frames_page_),
           static_cast<PermissionsPolicyFeature>(feature.value()));
       break;
     case FeatureType::kPermissionsPolicyHeader:
@@ -220,9 +217,8 @@ void UseCounterPageLoadMetricsObserver::RecordUseCounterFeature(
                      feature.value()))
         return;
       base::UmaHistogramEnumeration(
-          is_in_fenced_frames_page_
-              ? internal::kPermissionsPolicyHeaderHistogramFencedFramesName
-              : internal::kPermissionsPolicyHeaderHistogramName,
+          FEATURE_HISTOGRAM_NAME("PermissionsPolicy.Header2",
+                                 is_in_fenced_frames_page_),
           static_cast<PermissionsPolicyFeature>(feature.value()));
       break;
     case FeatureType::kPermissionsPolicyIframeAttribute:
@@ -230,19 +226,16 @@ void UseCounterPageLoadMetricsObserver::RecordUseCounterFeature(
                      feature.value()))
         return;
       base::UmaHistogramEnumeration(
-          is_in_fenced_frames_page_
-              ? internal::
-                    kPermissionsPolicyIframeAttributeHistogramFencedFramesName
-              : internal::kPermissionsPolicyIframeAttributeHistogramName,
+          FEATURE_HISTOGRAM_NAME("PermissionsPolicy.Allow2",
+                                 is_in_fenced_frames_page_),
           static_cast<PermissionsPolicyFeature>(feature.value()));
       break;
     case FeatureType::kUserAgentOverride:
       if (TestAndSet(user_agent_override_features_recorded_, feature.value()))
         return;
       base::UmaHistogramEnumeration(
-          is_in_fenced_frames_page_
-              ? internal::kUserAgentOverrideHistogramFencedFramesName
-              : internal::kUserAgentOverrideHistogramName,
+          FEATURE_HISTOGRAM_NAME("UserAgentOverride",
+                                 is_in_fenced_frames_page_),
           static_cast<UserAgentOverrideHistogram>(feature.value()));
       break;
   }
@@ -262,9 +255,7 @@ void UseCounterPageLoadMetricsObserver::RecordMainFrameWebFeature(
     return;
   }
   base::UmaHistogramEnumeration(
-      is_in_fenced_frames_page_
-          ? internal::kFeaturesHistogramFencedFramesMainFrameName
-          : internal::kFeaturesHistogramMainFrameName,
+      FEATURE_HISTOGRAM_NAME("MainFrame.Features", is_in_fenced_frames_page_),
       web_feature);
 }
 

@@ -1487,28 +1487,28 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   NavigateToUntrackedUrl();
 
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kTextWholeText), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramMainFrameName,
+      "Blink.UseCounter.MainFrame.Features",
       static_cast<int32_t>(WebFeature::kTextWholeText), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kV8Element_Animate_Method), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramMainFrameName,
+      "Blink.UseCounter.MainFrame.Features",
       static_cast<int32_t>(WebFeature::kV8Element_Animate_Method), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kNavigatorVibrate), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramMainFrameName,
+      "Blink.UseCounter.MainFrame.Features",
       static_cast<int32_t>(WebFeature::kNavigatorVibrate), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kPageVisits), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramMainFrameName,
+      "Blink.UseCounter.MainFrame.Features",
       static_cast<int32_t>(WebFeature::kPageVisits), 1);
 }
 
@@ -1525,13 +1525,11 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   NavigateToUntrackedUrl();
 
   // CSSPropertyID::kFontFamily
-  histogram_tester_->ExpectBucketCount(internal::kCssPropertiesHistogramName, 6,
-                                       1);
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.CSSProperties", 6, 1);
   // CSSPropertyID::kFontSize
-  histogram_tester_->ExpectBucketCount(internal::kCssPropertiesHistogramName, 7,
-                                       1);
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.CSSProperties", 7, 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kCssPropertiesHistogramName,
+      "Blink.UseCounter.CSSProperties",
       blink::mojom::CSSSampleId::kTotalPagesMeasured, 1);
 }
 
@@ -1548,13 +1546,13 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   NavigateToUntrackedUrl();
 
   // CSSPropertyID::kWidth
-  histogram_tester_->ExpectBucketCount(
-      internal::kAnimatedCssPropertiesHistogramName, 161, 1);
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.AnimatedCSSProperties",
+                                       161, 1);
   // CSSPropertyID::kMarginLeft
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.AnimatedCSSProperties",
+                                       91, 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kAnimatedCssPropertiesHistogramName, 91, 1);
-  histogram_tester_->ExpectBucketCount(
-      internal::kAnimatedCssPropertiesHistogramName,
+      "Blink.UseCounter.AnimatedCSSProperties",
       blink::mojom::CSSSampleId::kTotalPagesMeasured, 1);
 }
 
@@ -1591,16 +1589,16 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAutoupgradesDisabled,
   NavigateToUntrackedUrl();
 
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kMixedContentAudio), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kMixedContentImage), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kMixedContentVideo), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kPageVisits), 1);
 }
 
@@ -1624,13 +1622,11 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAutoupgradesDisabled,
   NavigateToUntrackedUrl();
 
   // CSSPropertyID::kFontFamily
-  histogram_tester_->ExpectBucketCount(internal::kCssPropertiesHistogramName, 6,
-                                       1);
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.CSSProperties", 6, 1);
   // CSSPropertyID::kFontSize
-  histogram_tester_->ExpectBucketCount(internal::kCssPropertiesHistogramName, 7,
-                                       1);
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.CSSProperties", 7, 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kCssPropertiesHistogramName,
+      "Blink.UseCounter.CSSProperties",
       blink::mojom::CSSSampleId::kTotalPagesMeasured, 1);
 }
 
@@ -1654,13 +1650,13 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAutoupgradesDisabled,
   NavigateToUntrackedUrl();
 
   // CSSPropertyID::kWidth
-  histogram_tester_->ExpectBucketCount(
-      internal::kAnimatedCssPropertiesHistogramName, 161, 1);
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.AnimatedCSSProperties",
+                                       161, 1);
   // CSSPropertyID::kMarginLeft
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.AnimatedCSSProperties",
+                                       91, 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kAnimatedCssPropertiesHistogramName, 91, 1);
-  histogram_tester_->ExpectBucketCount(
-      internal::kAnimatedCssPropertiesHistogramName,
+      "Blink.UseCounter.AnimatedCSSProperties",
       blink::mojom::CSSSampleId::kTotalPagesMeasured, 1);
 }
 
@@ -1679,34 +1675,34 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   NavigateToUntrackedUrl();
 
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kTextWholeText), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramMainFrameName,
+      "Blink.UseCounter.MainFrame.Features",
       static_cast<int32_t>(WebFeature::kTextWholeText), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kV8Element_Animate_Method), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramMainFrameName,
+      "Blink.UseCounter.MainFrame.Features",
       static_cast<int32_t>(WebFeature::kV8Element_Animate_Method), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kNavigatorVibrate), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramMainFrameName,
+      "Blink.UseCounter.MainFrame.Features",
       static_cast<int32_t>(WebFeature::kNavigatorVibrate), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kPageVisits), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramMainFrameName,
+      "Blink.UseCounter.MainFrame.Features",
       static_cast<int32_t>(WebFeature::kPageVisits), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kFullscreenInsecureOrigin), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramMainFrameName,
+      "Blink.UseCounter.MainFrame.Features",
       static_cast<int32_t>(WebFeature::kFullscreenInsecureOrigin), 1);
 }
 
@@ -1824,29 +1820,29 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, UseCounterFeaturesInIframe) {
   NavigateToUntrackedUrl();
 
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kTextWholeText), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kV8Element_Animate_Method), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kNavigatorVibrate), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kPageVisits), 1);
   // No feature but page visits should get counted.
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramMainFrameName,
+      "Blink.UseCounter.MainFrame.Features",
       static_cast<int32_t>(WebFeature::kTextWholeText), 0);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramMainFrameName,
+      "Blink.UseCounter.MainFrame.Features",
       static_cast<int32_t>(WebFeature::kV8Element_Animate_Method), 0);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramMainFrameName,
+      "Blink.UseCounter.MainFrame.Features",
       static_cast<int32_t>(WebFeature::kNavigatorVibrate), 0);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramMainFrameName,
+      "Blink.UseCounter.MainFrame.Features",
       static_cast<int32_t>(WebFeature::kPageVisits), 1);
 }
 
@@ -1866,29 +1862,29 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   NavigateToUntrackedUrl();
 
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kTextWholeText), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kV8Element_Animate_Method), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kNavigatorVibrate), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kPageVisits), 1);
   // No feature but page visits should get counted.
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramMainFrameName,
+      "Blink.UseCounter.MainFrame.Features",
       static_cast<int32_t>(WebFeature::kTextWholeText), 0);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramMainFrameName,
+      "Blink.UseCounter.MainFrame.Features",
       static_cast<int32_t>(WebFeature::kV8Element_Animate_Method), 0);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramMainFrameName,
+      "Blink.UseCounter.MainFrame.Features",
       static_cast<int32_t>(WebFeature::kNavigatorVibrate), 0);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramMainFrameName,
+      "Blink.UseCounter.MainFrame.Features",
       static_cast<int32_t>(WebFeature::kPageVisits), 1);
 }
 
@@ -1908,13 +1904,11 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   NavigateToUntrackedUrl();
 
   // CSSPropertyID::kFontFamily
-  histogram_tester_->ExpectBucketCount(internal::kCssPropertiesHistogramName, 6,
-                                       1);
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.CSSProperties", 6, 1);
   // CSSPropertyID::kFontSize
-  histogram_tester_->ExpectBucketCount(internal::kCssPropertiesHistogramName, 7,
-                                       1);
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.CSSProperties", 7, 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kCssPropertiesHistogramName,
+      "Blink.UseCounter.CSSProperties",
       blink::mojom::CSSSampleId::kTotalPagesMeasured, 1);
 }
 
@@ -1934,13 +1928,11 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   NavigateToUntrackedUrl();
 
   // CSSPropertyID::kFontFamily
-  histogram_tester_->ExpectBucketCount(internal::kCssPropertiesHistogramName, 6,
-                                       1);
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.CSSProperties", 6, 1);
   // CSSPropertyID::kFontSize
-  histogram_tester_->ExpectBucketCount(internal::kCssPropertiesHistogramName, 7,
-                                       1);
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.CSSProperties", 7, 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kCssPropertiesHistogramName,
+      "Blink.UseCounter.CSSProperties",
       blink::mojom::CSSSampleId::kTotalPagesMeasured, 1);
 }
 
@@ -1960,13 +1952,13 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   NavigateToUntrackedUrl();
 
   // CSSPropertyID::kWidth
-  histogram_tester_->ExpectBucketCount(
-      internal::kAnimatedCssPropertiesHistogramName, 161, 1);
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.AnimatedCSSProperties",
+                                       161, 1);
   // CSSPropertyID::kMarginLeft
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.AnimatedCSSProperties",
+                                       91, 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kAnimatedCssPropertiesHistogramName, 91, 1);
-  histogram_tester_->ExpectBucketCount(
-      internal::kAnimatedCssPropertiesHistogramName,
+      "Blink.UseCounter.AnimatedCSSProperties",
       blink::mojom::CSSSampleId::kTotalPagesMeasured, 1);
 }
 
@@ -1986,13 +1978,13 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   NavigateToUntrackedUrl();
 
   // CSSPropertyID::kWidth
-  histogram_tester_->ExpectBucketCount(
-      internal::kAnimatedCssPropertiesHistogramName, 161, 1);
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.AnimatedCSSProperties",
+                                       161, 1);
   // CSSPropertyID::kMarginLeft
+  histogram_tester_->ExpectBucketCount("Blink.UseCounter.AnimatedCSSProperties",
+                                       91, 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kAnimatedCssPropertiesHistogramName, 91, 1);
-  histogram_tester_->ExpectBucketCount(
-      internal::kAnimatedCssPropertiesHistogramName,
+      "Blink.UseCounter.AnimatedCSSProperties",
       blink::mojom::CSSSampleId::kTotalPagesMeasured, 1);
 }
 
@@ -2007,7 +1999,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   NavigateToUntrackedUrl();
 
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kPageVisits), 1);
 }
 
@@ -2031,9 +2023,9 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   NavigateToUntrackedUrl();
 
   histogram_tester_->ExpectBucketCount(
-      internal::kPermissionsPolicyViolationHistogramName, test_feature, 1);
+      "Blink.UseCounter.PermissionsPolicy.Violation.Enforce", test_feature, 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kPermissionsPolicyHeaderHistogramName, test_feature, 1);
+      "Blink.UseCounter.PermissionsPolicy.Header2", test_feature, 1);
 }
 
 // Test UseCounter Permissions Policy Usages observed in child frame
@@ -2058,12 +2050,11 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   NavigateToUntrackedUrl();
 
   histogram_tester_->ExpectBucketCount(
-      internal::kPermissionsPolicyViolationHistogramName, test_feature, 1);
+      "Blink.UseCounter.PermissionsPolicy.Violation.Enforce", test_feature, 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kPermissionsPolicyHeaderHistogramName, test_feature, 1);
+      "Blink.UseCounter.PermissionsPolicy.Header2", test_feature, 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kPermissionsPolicyIframeAttributeHistogramName, test_feature,
-      1);
+      "Blink.UseCounter.PermissionsPolicy.Allow2", test_feature, 1);
 }
 
 // Test UseCounter Permissions Policy Usages observed in multiple child frames
@@ -2088,12 +2079,11 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   NavigateToUntrackedUrl();
 
   histogram_tester_->ExpectBucketCount(
-      internal::kPermissionsPolicyViolationHistogramName, test_feature, 1);
+      "Blink.UseCounter.PermissionsPolicy.Violation.Enforce", test_feature, 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kPermissionsPolicyHeaderHistogramName, test_feature, 1);
+      "Blink.UseCounter.PermissionsPolicy.Header2", test_feature, 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kPermissionsPolicyIframeAttributeHistogramName, test_feature,
-      1);
+      "Blink.UseCounter.PermissionsPolicy.Allow2", test_feature, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, LoadingMetrics) {
@@ -2987,10 +2977,10 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PreCommitWebFeature) {
   waiter->Wait();
 
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kSecureContextCheckPassed), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kSecureContextCheckFailed), 0);
 }
 
@@ -3589,13 +3579,13 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithBackForwardCache,
 
   // Check histogram counts.
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kPageVisits), 2);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kFullscreenSecureOrigin), 1);
   histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
+      "Blink.UseCounter.Features",
       static_cast<int32_t>(WebFeature::kNavigatorVibrate), 1);
 }
 
