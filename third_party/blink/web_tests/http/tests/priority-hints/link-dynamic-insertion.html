@@ -4,10 +4,10 @@
 
 <script>
   const tests = [
-    {description: 'high fetchpriority on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', fetchpriority: 'high', expected_priority: kVeryHigh},
-    {description: 'low fetchpriority on <link rel=stylesheet>s not fetched by the preload scanner must load with kHigh priority', fetchpriority: 'low', expected_priority: kHigh},
-    {description: 'auto fetchpriority on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', fetchpriority: 'auto', expected_priority: kVeryHigh},
-    {description: 'invalid fetchpriority on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', fetchpriority: 'xyz', expected_priority: kVeryHigh},
+    {description: 'high fetchpriority on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', fetchPriority: 'high', expected_priority: kVeryHigh},
+    {description: 'low fetchpriority on <link rel=stylesheet>s not fetched by the preload scanner must load with kHigh priority', fetchPriority: 'low', expected_priority: kHigh},
+    {description: 'auto fetchpriority on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', fetchPriority: 'auto', expected_priority: kVeryHigh},
+    {description: 'invalid fetchpriority on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', fetchPriority: 'xyz', expected_priority: kVeryHigh},
     {description: 'missing fetchpriority on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', expected_priority: kVeryHigh}
   ];
 
@@ -16,7 +16,7 @@
     promise_test(async () => {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
-      if (test.fetchpriority) link.fetchpriority = test.fetchpriority;
+      if (test.fetchPriority) link.fetchPriority = test.fetchPriority;
 
       const url = new URL(`../resources/square.png?${iteration++}`, location);
       const priorityPromise = internals.getInitialResourcePriority(url, document);

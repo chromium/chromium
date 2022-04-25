@@ -343,7 +343,7 @@ void HTMLImageElement::ParseAttribute(
              RuntimeEnabledFeatures::PriorityHintsEnabled(
                  GetExecutionContext())) {
     // We only need to keep track of usage here, as the communication of the
-    // |fetchpriority| attribute to the loading pipeline takes place in
+    // |fetchPriority| attribute to the loading pipeline takes place in
     // ImageLoader.
     UseCounter::Count(GetDocument(), WebFeature::kPriorityHints);
   } else if (name == html_names::kCrossoriginAttr) {

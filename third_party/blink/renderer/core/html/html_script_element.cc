@@ -101,7 +101,7 @@ void HTMLScriptElement::ParseAttribute(
   } else if (params.name == html_names::kFetchpriorityAttr &&
              RuntimeEnabledFeatures::PriorityHintsEnabled(
                  GetExecutionContext())) {
-    // The only thing we need to do for the the fetchpriority attribute/Priority
+    // The only thing we need to do for the the fetchPriority attribute/Priority
     // Hints is count usage upon parsing. Processing the value happens when the
     // element loads.
     UseCounter::Count(GetDocument(), WebFeature::kPriorityHints);

@@ -3645,7 +3645,7 @@ interface HTMLImageElement : HTMLElement
     getter crossOrigin
     getter currentSrc
     getter decoding
-    getter fetchpriority
+    getter fetchPriority
     getter height
     getter hspace
     getter isMap
@@ -3672,7 +3672,7 @@ interface HTMLImageElement : HTMLElement
     setter border
     setter crossOrigin
     setter decoding
-    setter fetchpriority
+    setter fetchPriority
     setter height
     setter hspace
     setter isMap
@@ -3815,7 +3815,7 @@ interface HTMLLinkElement : HTMLElement
     getter charset
     getter crossOrigin
     getter disabled
-    getter fetchpriority
+    getter fetchPriority
     getter href
     getter hreflang
     getter imageSizes
@@ -3836,7 +3836,7 @@ interface HTMLLinkElement : HTMLElement
     setter charset
     setter crossOrigin
     setter disabled
-    setter fetchpriority
+    setter fetchPriority
     setter href
     setter hreflang
     setter imageSizes
@@ -4166,7 +4166,7 @@ interface HTMLScriptElement : HTMLElement
     getter crossOrigin
     getter defer
     getter event
-    getter fetchpriority
+    getter fetchPriority
     getter htmlFor
     getter integrity
     getter noModule
@@ -4181,7 +4181,7 @@ interface HTMLScriptElement : HTMLElement
     setter crossOrigin
     setter defer
     setter event
-    setter fetchpriority
+    setter fetchPriority
     setter htmlFor
     setter integrity
     setter noModule
@@ -4770,7 +4770,7 @@ interface Image
     getter crossOrigin
     getter currentSrc
     getter decoding
-    getter fetchpriority
+    getter fetchPriority
     getter height
     getter hspace
     getter isMap
@@ -4797,7 +4797,7 @@ interface Image
     setter border
     setter crossOrigin
     setter decoding
-    setter fetchpriority
+    setter fetchPriority
     setter height
     setter hspace
     setter isMap

@@ -693,7 +693,7 @@ html element img
     property currentSrc
     property decode
     property decoding
-    property fetchpriority
+    property fetchPriority
     property height
     property hspace
     property isMap
@@ -791,7 +791,7 @@ html element link
     property charset
     property crossOrigin
     property disabled
-    property fetchpriority
+    property fetchPriority
     property href
     property hreflang
     property imageSizes
@@ -943,7 +943,7 @@ html element script
     property crossOrigin
     property defer
     property event
-    property fetchpriority
+    property fetchPriority
     property htmlFor
     property integrity
     property noModule
