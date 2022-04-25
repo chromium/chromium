@@ -861,7 +861,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
     const ComputedStyle& style = multicol_box_fragment->Style();
     const WritingModeConverter converter(writing_direction,
                                          multicol_box_fragment->Size());
-    wtf_size_t current_column_index = 0;
+    wtf_size_t current_column_index = kNotFound;
 
     if (column_inline_progression == kIndefiniteSize) {
       // TODO(almaher): This should eventually include scrollbar, as well.
@@ -906,7 +906,8 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
     // child break tokens and update the stored MulticolChildInfo if found.
     const NGBlockBreakToken* break_token =
         To<NGBlockBreakToken>(multicol_box_fragment->BreakToken());
-    if (break_token && break_token->ChildBreakTokens().size()) {
+    if (current_column_index != kNotFound && break_token &&
+        break_token->ChildBreakTokens().size()) {
       // If there is a column break token, it will be the last item in its
       // parent's list of break tokens.
       const auto children = break_token->ChildBreakTokens();
