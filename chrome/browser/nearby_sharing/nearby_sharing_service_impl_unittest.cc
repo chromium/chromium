@@ -422,43 +422,46 @@ sharing::mojom::FramePtr GetValidIntroductionFrame() {
                                                      kWifiCredentialsId));
   }
 
-  sharing::mojom::V1FramePtr mojo_v1frame = sharing::mojom::V1Frame::New();
-  mojo_v1frame->set_introduction(sharing::mojom::IntroductionFrame::New(
-      std::move(mojo_file_metadatas), std::move(mojo_text_metadatas),
-      /*required_package=*/absl::nullopt,
-      std::move(mojo_wifi_credentials_metadatas)));
+  sharing::mojom::V1FramePtr mojo_v1frame =
+      sharing::mojom::V1Frame::NewIntroduction(
+          sharing::mojom::IntroductionFrame::New(
+              std::move(mojo_file_metadatas), std::move(mojo_text_metadatas),
+              /*required_package=*/absl::nullopt,
+              std::move(mojo_wifi_credentials_metadatas)));
 
-  sharing::mojom::FramePtr mojo_frame = sharing::mojom::Frame::New();
-  mojo_frame->set_v1(std::move(mojo_v1frame));
+  sharing::mojom::FramePtr mojo_frame =
+      sharing::mojom::Frame::NewV1(std::move(mojo_v1frame));
   return mojo_frame;
 }
 
 sharing::mojom::FramePtr GetEmptyIntroductionFrame() {
-  sharing::mojom::V1FramePtr mojo_v1frame = sharing::mojom::V1Frame::New();
-  mojo_v1frame->set_introduction(sharing::mojom::IntroductionFrame::New());
+  sharing::mojom::V1FramePtr mojo_v1frame =
+      sharing::mojom::V1Frame::NewIntroduction(
+          sharing::mojom::IntroductionFrame::New());
 
-  sharing::mojom::FramePtr mojo_frame = sharing::mojom::Frame::New();
-  mojo_frame->set_v1(std::move(mojo_v1frame));
+  sharing::mojom::FramePtr mojo_frame =
+      sharing::mojom::Frame::NewV1(std::move(mojo_v1frame));
   return mojo_frame;
 }
 
 sharing::mojom::FramePtr GetConnectionResponseFrame(
     sharing::mojom::ConnectionResponseFrame::Status status) {
-  sharing::mojom::V1FramePtr mojo_v1frame = sharing::mojom::V1Frame::New();
-  mojo_v1frame->set_connection_response(
-      sharing::mojom::ConnectionResponseFrame::New(status));
+  sharing::mojom::V1FramePtr mojo_v1frame =
+      sharing::mojom::V1Frame::NewConnectionResponse(
+          sharing::mojom::ConnectionResponseFrame::New(status));
 
-  sharing::mojom::FramePtr mojo_frame = sharing::mojom::Frame::New();
-  mojo_frame->set_v1(std::move(mojo_v1frame));
+  sharing::mojom::FramePtr mojo_frame =
+      sharing::mojom::Frame::NewV1(std::move(mojo_v1frame));
   return mojo_frame;
 }
 
 sharing::mojom::FramePtr GetCancelFrame() {
-  sharing::mojom::V1FramePtr mojo_v1frame = sharing::mojom::V1Frame::New();
-  mojo_v1frame->set_cancel_frame(sharing::mojom::CancelFrame::New());
+  sharing::mojom::V1FramePtr mojo_v1frame =
+      sharing::mojom::V1Frame::NewCancelFrame(
+          sharing::mojom::CancelFrame::New());
 
-  sharing::mojom::FramePtr mojo_frame = sharing::mojom::Frame::New();
-  mojo_frame->set_v1(std::move(mojo_v1frame));
+  sharing::mojom::FramePtr mojo_frame =
+      sharing::mojom::Frame::NewV1(std::move(mojo_v1frame));
   return mojo_frame;
 }
 
@@ -794,15 +797,13 @@ class NearbySharingServiceImplTestBase : public testing::Test {
                 ash::nearby::MockNearbySharingDecoder::DecodeFrameCallback
                     callback) {
               sharing::mojom::V1FramePtr mojo_v1frame =
-                  sharing::mojom::V1Frame::New();
-              mojo_v1frame->set_paired_key_encryption(
-                  sharing::mojom::PairedKeyEncryptionFrame::New(
-                      is_incoming ? kIncomingConnectionSignedData
-                                  : kOutgoingConnectionSignedData,
-                      kPrivateCertificateHashAuthToken));
+                  sharing::mojom::V1Frame::NewPairedKeyEncryption(
+                      sharing::mojom::PairedKeyEncryptionFrame::New(
+                          is_incoming ? kIncomingConnectionSignedData
+                                      : kOutgoingConnectionSignedData,
+                          kPrivateCertificateHashAuthToken));
               sharing::mojom::FramePtr mojo_frame =
-                  sharing::mojom::Frame::New();
-              mojo_frame->set_v1(std::move(mojo_v1frame));
+                  sharing::mojom::Frame::NewV1(std::move(mojo_v1frame));
               std::move(callback).Run(std::move(mojo_frame));
             }));
     connection_.AppendReadableData(encryption_bytes);
@@ -817,13 +818,11 @@ class NearbySharingServiceImplTestBase : public testing::Test {
                 ash::nearby::MockNearbySharingDecoder::DecodeFrameCallback
                     callback) {
               sharing::mojom::V1FramePtr mojo_v1frame =
-                  sharing::mojom::V1Frame::New();
-              mojo_v1frame->set_paired_key_result(
-                  sharing::mojom::PairedKeyResultFrame::New(status));
+                  sharing::mojom::V1Frame::NewPairedKeyResult(
+                      sharing::mojom::PairedKeyResultFrame::New(status));
 
               sharing::mojom::FramePtr mojo_frame =
-                  sharing::mojom::Frame::New();
-              mojo_frame->set_v1(std::move(mojo_v1frame));
+                  sharing::mojom::Frame::NewV1(std::move(mojo_v1frame));
               std::move(callback).Run(std::move(mojo_frame));
             }));
     connection_.AppendReadableData(result_bytes);
@@ -2966,16 +2965,16 @@ TEST_P(NearbySharingServiceImplTest, IncomingConnection_OutOfStorage) {
                 /*id=*/123));
 
             sharing::mojom::V1FramePtr mojo_v1frame =
-                sharing::mojom::V1Frame::New();
-            mojo_v1frame->set_introduction(
-                sharing::mojom::IntroductionFrame::New(
-                    std::move(mojo_file_metadatas),
-                    std::vector<sharing::mojom::TextMetadataPtr>(),
-                    /*required_package=*/absl::nullopt,
-                    std::vector<sharing::mojom::WifiCredentialsMetadataPtr>()));
+                sharing::mojom::V1Frame::NewIntroduction(
+                    sharing::mojom::IntroductionFrame::New(
+                        std::move(mojo_file_metadatas),
+                        std::vector<sharing::mojom::TextMetadataPtr>(),
+                        /*required_package=*/absl::nullopt,
+                        std::vector<
+                            sharing::mojom::WifiCredentialsMetadataPtr>()));
 
-            sharing::mojom::FramePtr mojo_frame = sharing::mojom::Frame::New();
-            mojo_frame->set_v1(std::move(mojo_v1frame));
+            sharing::mojom::FramePtr mojo_frame =
+                sharing::mojom::Frame::NewV1(std::move(mojo_v1frame));
 
             std::move(callback).Run(std::move(mojo_frame));
           }));
@@ -3046,16 +3045,16 @@ TEST_P(NearbySharingServiceImplTest, IncomingConnection_FileSizeOverflow) {
                 /*id=*/124));
 
             sharing::mojom::V1FramePtr mojo_v1frame =
-                sharing::mojom::V1Frame::New();
-            mojo_v1frame->set_introduction(
-                sharing::mojom::IntroductionFrame::New(
-                    std::move(mojo_file_metadatas),
-                    std::vector<sharing::mojom::TextMetadataPtr>(),
-                    /*required_package=*/absl::nullopt,
-                    std::vector<sharing::mojom::WifiCredentialsMetadataPtr>()));
+                sharing::mojom::V1Frame::NewIntroduction(
+                    sharing::mojom::IntroductionFrame::New(
+                        std::move(mojo_file_metadatas),
+                        std::vector<sharing::mojom::TextMetadataPtr>(),
+                        /*required_package=*/absl::nullopt,
+                        std::vector<
+                            sharing::mojom::WifiCredentialsMetadataPtr>()));
 
-            sharing::mojom::FramePtr mojo_frame = sharing::mojom::Frame::New();
-            mojo_frame->set_v1(std::move(mojo_v1frame));
+            sharing::mojom::FramePtr mojo_frame =
+                sharing::mojom::Frame::NewV1(std::move(mojo_v1frame));
 
             std::move(callback).Run(std::move(mojo_frame));
           }));
@@ -3175,16 +3174,15 @@ TEST_P(NearbySharingServiceImplTest,
                     kWifiCredentialsId));
 
             sharing::mojom::V1FramePtr mojo_v1frame =
-                sharing::mojom::V1Frame::New();
-            mojo_v1frame->set_introduction(
-                sharing::mojom::IntroductionFrame::New(
-                    std::vector<sharing::mojom::FileMetadataPtr>(),
-                    std::vector<sharing::mojom::TextMetadataPtr>(),
-                    /*required_package=*/absl::nullopt,
-                    std::move(mojo_wifi_credentials_metadatas)));
+                sharing::mojom::V1Frame::NewIntroduction(
+                    sharing::mojom::IntroductionFrame::New(
+                        std::vector<sharing::mojom::FileMetadataPtr>(),
+                        std::vector<sharing::mojom::TextMetadataPtr>(),
+                        /*required_package=*/absl::nullopt,
+                        std::move(mojo_wifi_credentials_metadatas)));
 
-            sharing::mojom::FramePtr mojo_frame = sharing::mojom::Frame::New();
-            mojo_frame->set_v1(std::move(mojo_v1frame));
+            sharing::mojom::FramePtr mojo_frame =
+                sharing::mojom::Frame::NewV1(std::move(mojo_v1frame));
 
             std::move(callback).Run(std::move(mojo_frame));
           }));

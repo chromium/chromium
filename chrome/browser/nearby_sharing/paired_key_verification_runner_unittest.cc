@@ -140,16 +140,15 @@ class PairedKeyVerificationRunnerTest : public testing::Test {
                 return;
               }
 
-              sharing::mojom::V1FramePtr mojo_v1frame =
-                  sharing::mojom::V1Frame::New();
+              sharing::mojom::V1FramePtr mojo_v1frame;
 
               if (frame_type == ReturnFrameType::kValid) {
-                mojo_v1frame->set_paired_key_encryption(
+                mojo_v1frame = sharing::mojom::V1Frame::NewPairedKeyEncryption(
                     sharing::mojom::PairedKeyEncryptionFrame::New(
                         kIncomingConnectionSignedData,
                         kPrivateCertificateHashAuthToken));
               } else {
-                mojo_v1frame->set_paired_key_encryption(
+                mojo_v1frame = sharing::mojom::V1Frame::NewPairedKeyEncryption(
                     sharing::mojom::PairedKeyEncryptionFrame::New());
               }
 
@@ -174,9 +173,8 @@ class PairedKeyVerificationRunnerTest : public testing::Test {
               }
 
               sharing::mojom::V1FramePtr mojo_v1frame =
-                  sharing::mojom::V1Frame::New();
-              mojo_v1frame->set_paired_key_result(
-                  sharing::mojom::PairedKeyResultFrame::New(status));
+                  sharing::mojom::V1Frame::NewPairedKeyResult(
+                      sharing::mojom::PairedKeyResultFrame::New(status));
 
               std::move(callback).Run(std::move(mojo_v1frame));
             })));
