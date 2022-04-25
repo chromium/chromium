@@ -984,6 +984,10 @@ bool Document::IsInMainFrame() const {
   return GetFrame() && GetFrame()->IsMainFrame();
 }
 
+bool Document::IsInOutermostMainFrame() const {
+  return GetFrame() && GetFrame()->IsOutermostMainFrame();
+}
+
 AtomicString Document::ConvertLocalName(const AtomicString& name) {
   return IsA<HTMLDocument>(this) ? name.LowerASCII() : name;
 }

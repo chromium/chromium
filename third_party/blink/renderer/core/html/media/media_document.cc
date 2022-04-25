@@ -124,7 +124,7 @@ MediaDocument::MediaDocument(const DocumentInit& initializer)
   LockCompatibilityMode();
 
   // Set the autoplay policy to kNoUserGestureRequired.
-  if (GetSettings() && IsInMainFrame()) {
+  if (GetSettings() && IsInOutermostMainFrame()) {
     GetSettings()->SetAutoplayPolicy(
         AutoplayPolicy::Type::kNoUserGestureRequired);
   }

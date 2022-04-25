@@ -1588,7 +1588,13 @@ class CORE_EXPORT Document : public ContainerNode,
     return *root_scroller_controller_;
   }
 
+  // Returns true if this document has a frame and it is a main frame.
+  // See `Frame::IsMainFrame`.
   bool IsInMainFrame() const;
+
+  // Returns true if this document has a frame and is an outermost main frame.
+  // See `Frame::IsOutermostMainFrame`.
+  bool IsInOutermostMainFrame() const;
 
   const PropertyRegistry* GetPropertyRegistry() const {
     return property_registry_;
