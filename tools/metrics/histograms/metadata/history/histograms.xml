@@ -320,7 +320,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.InstalledAppsDialogAction"
-    enum="InstalledAppsDialogActions" expires_after="2022-04-24">
+    enum="InstalledAppsDialogActions" expires_after="2023-04-19">
+  <owner>ayui@chromium.org</owner>
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -330,7 +331,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.InstalledAppsDialogShown"
-    units="Boolean" expires_after="2022-04-24">
+    units="Boolean" expires_after="2023-04-19">
+  <owner>ayui@chromium.org</owner>
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
