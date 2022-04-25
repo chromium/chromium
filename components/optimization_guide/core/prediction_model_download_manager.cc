@@ -103,6 +103,11 @@ PredictionModelDownloadManager::PredictionModelDownloadManager(
 
 PredictionModelDownloadManager::~PredictionModelDownloadManager() = default;
 
+// static
+base::FilePath::StringType PredictionModelDownloadManager::ModelInfoFileName() {
+  return kModelInfoFileName;
+}
+
 void PredictionModelDownloadManager::StartDownload(
     const GURL& download_url,
     proto::OptimizationTarget optimization_target) {
@@ -219,8 +224,8 @@ void PredictionModelDownloadManager::OnDownloadSucceeded(
 
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&PredictionModelDownloadManager::ProcessDownload,
-                     base::Unretained(this), file_path),
+      base::BindOnce(&PredictionModelDownloadManager::VerifyDownload, file_path,
+                     /*delete_file_on_error=*/true),
       base::BindOnce(&PredictionModelDownloadManager::StartUnzipping,
                      ui_weak_ptr_factory_.GetWeakPtr(), optimization_target));
 }
@@ -237,11 +242,11 @@ void PredictionModelDownloadManager::OnDownloadFailed(
     NotifyModelDownloadFailed(*optimization_target);
 }
 
+// static
+// Note: This function runs on a background sequence!
 absl::optional<std::pair<base::FilePath, base::FilePath>>
-PredictionModelDownloadManager::ProcessDownload(
-    const base::FilePath& file_path) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-
+PredictionModelDownloadManager::VerifyDownload(const base::FilePath& file_path,
+                                               bool delete_file_on_error) {
   if (!switches::ShouldSkipModelDownloadVerificationForTesting()) {
     // Verify that the |file_path| contains a valid CRX file.
     std::string public_key;
@@ -253,9 +258,11 @@ PredictionModelDownloadManager::ProcessDownload(
     if (verifier_result != crx_file::VerifierResult::OK_FULL) {
       RecordPredictionModelDownloadStatus(
           PredictionModelDownloadStatus::kFailedCrxVerification);
-      base::ThreadPool::PostTask(
-          FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-          base::BindOnce(base::GetDeleteFileCallback(), file_path));
+      if (delete_file_on_error) {
+        base::ThreadPool::PostTask(
+            FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+            base::BindOnce(base::GetDeleteFileCallback(), file_path));
+      }
       return absl::nullopt;
     }
 
@@ -270,22 +277,26 @@ PredictionModelDownloadManager::ProcessDownload(
     if (publisher_key_hash != public_key_hash) {
       RecordPredictionModelDownloadStatus(
           PredictionModelDownloadStatus::kFailedCrxInvalidPublisher);
-      base::ThreadPool::PostTask(
-          FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-          base::BindOnce(base::GetDeleteFileCallback(), file_path));
+      if (delete_file_on_error) {
+        base::ThreadPool::PostTask(
+            FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+            base::BindOnce(base::GetDeleteFileCallback(), file_path));
+      }
       return absl::nullopt;
     }
   }
 
-  // Unzip download.
+  // Create a temp directory to unzip the model package.
   base::FilePath temp_dir_path;
   if (!base::CreateNewTempDirectory(base::FilePath::StringType(),
                                     &temp_dir_path)) {
     RecordPredictionModelDownloadStatus(
         PredictionModelDownloadStatus::kFailedUnzipDirectoryCreation);
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-        base::BindOnce(base::GetDeleteFileCallback(), file_path));
+    if (delete_file_on_error) {
+      base::ThreadPool::PostTask(
+          FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+          base::BindOnce(base::GetDeleteFileCallback(), file_path));
+    }
     return absl::nullopt;
   }
 
@@ -379,7 +390,6 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
   if (model_dir_path.empty()) {
     RecordPredictionModelDownloadStatus(
         PredictionModelDownloadStatus::kOptGuideDirectoryDoesNotExist);
-
     return absl::nullopt;
   }
 

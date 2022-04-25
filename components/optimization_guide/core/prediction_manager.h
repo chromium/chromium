@@ -187,6 +187,12 @@ class PredictionManager : public PredictionModelDownloadObserver {
       bool record_availability_metrics,
       std::unique_ptr<proto::PredictionModel> prediction_model);
 
+  // Callback run after a prediction model is loaded from a command-line
+  // override.
+  void OnPredictionModelOverrideLoaded(
+      proto::OptimizationTarget optimization_target,
+      std::unique_ptr<proto::PredictionModel> prediction_model);
+
   // Process loaded |model| into memory. Return true if a prediction
   // model object was created and successfully stored, otherwise false.
   bool ProcessAndStoreLoadedModel(const proto::PredictionModel& model);

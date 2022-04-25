@@ -32,6 +32,10 @@ std::string FilePathToString(const base::FilePath& file_path);
 // Returns the base file name to use for storing all prediction models.
 base::FilePath GetBaseFileNameForModels();
 
+// Returns the separator used in the model override switch below, which differs
+// between platforms.
+std::string ModelOverrideSeparator();
+
 // Returns the file path string and metadata for the model provided via
 // command-line for |optimization_target|, if applicable.
 absl::optional<

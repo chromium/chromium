@@ -36,19 +36,22 @@
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
 #include "components/optimization_guide/core/prediction_model_download_manager.h"
 #include "components/optimization_guide/core/prediction_model_fetcher_impl.h"
+#include "components/optimization_guide/core/prediction_model_override.h"
 #include "components/optimization_guide/core/store_update_data.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+namespace optimization_guide {
+
 namespace {
 
 // Provide a random time delta in seconds before fetching models.
 base::TimeDelta RandomFetchDelay() {
-  return base::Seconds(base::RandInt(
-      optimization_guide::features::PredictionModelFetchRandomMinDelaySecs(),
-      optimization_guide::features::PredictionModelFetchRandomMaxDelaySecs()));
+  return base::Seconds(
+      base::RandInt(features::PredictionModelFetchRandomMinDelaySecs(),
+                    features::PredictionModelFetchRandomMaxDelaySecs()));
 }
 
 // Util class for recording the state of a prediction model. The result is
@@ -56,31 +59,26 @@ base::TimeDelta RandomFetchDelay() {
 class ScopedPredictionManagerModelStatusRecorder {
  public:
   explicit ScopedPredictionManagerModelStatusRecorder(
-      optimization_guide::proto::OptimizationTarget optimization_target)
-      : status_(optimization_guide::PredictionManagerModelStatus::kUnknown),
-        optimization_target_(optimization_target) {}
+      proto::OptimizationTarget optimization_target)
+      : optimization_target_(optimization_target) {}
 
   ~ScopedPredictionManagerModelStatusRecorder() {
-    DCHECK_NE(status_,
-              optimization_guide::PredictionManagerModelStatus::kUnknown);
+    DCHECK_NE(status_, PredictionManagerModelStatus::kUnknown);
     base::UmaHistogramEnumeration(
         "OptimizationGuide.ShouldTargetNavigation.PredictionModelStatus",
         status_);
 
     base::UmaHistogramEnumeration(
         "OptimizationGuide.ShouldTargetNavigation.PredictionModelStatus." +
-            optimization_guide::GetStringNameForOptimizationTarget(
-                optimization_target_),
+            GetStringNameForOptimizationTarget(optimization_target_),
         status_);
   }
 
-  void set_status(optimization_guide::PredictionManagerModelStatus status) {
-    status_ = status;
-  }
+  void set_status(PredictionManagerModelStatus status) { status_ = status; }
 
  private:
-  optimization_guide::PredictionManagerModelStatus status_;
-  const optimization_guide::proto::OptimizationTarget optimization_target_;
+  PredictionManagerModelStatus status_ = PredictionManagerModelStatus::kUnknown;
+  const proto::OptimizationTarget optimization_target_;
 };
 
 // Util class for recording the construction and validation of a prediction
@@ -89,7 +87,7 @@ class ScopedPredictionManagerModelStatusRecorder {
 class ScopedPredictionModelConstructionAndValidationRecorder {
  public:
   explicit ScopedPredictionModelConstructionAndValidationRecorder(
-      optimization_guide::proto::OptimizationTarget optimization_target)
+      proto::OptimizationTarget optimization_target)
       : validation_start_time_(base::TimeTicks::Now()),
         optimization_target_(optimization_target) {}
 
@@ -98,8 +96,7 @@ class ScopedPredictionModelConstructionAndValidationRecorder {
                               is_valid_);
     base::UmaHistogramBoolean(
         "OptimizationGuide.IsPredictionModelValid." +
-            optimization_guide::GetStringNameForOptimizationTarget(
-                optimization_target_),
+            GetStringNameForOptimizationTarget(optimization_target_),
         is_valid_);
 
     // Only record the timing if the model is valid and was able to be
@@ -112,8 +109,7 @@ class ScopedPredictionModelConstructionAndValidationRecorder {
           validation_latency);
       base::UmaHistogramTimes(
           "OptimizationGuide.PredictionModelValidationLatency." +
-              optimization_guide::GetStringNameForOptimizationTarget(
-                  optimization_target_),
+              GetStringNameForOptimizationTarget(optimization_target_),
           validation_latency);
     }
   }
@@ -123,64 +119,33 @@ class ScopedPredictionModelConstructionAndValidationRecorder {
  private:
   bool is_valid_ = true;
   const base::TimeTicks validation_start_time_;
-  const optimization_guide::proto::OptimizationTarget optimization_target_;
+  const proto::OptimizationTarget optimization_target_;
 };
 
-void RecordModelUpdateVersion(
-    const optimization_guide::proto::ModelInfo& model_info) {
+void RecordModelUpdateVersion(const proto::ModelInfo& model_info) {
   base::UmaHistogramSparse(
       "OptimizationGuide.PredictionModelUpdateVersion." +
-          optimization_guide::GetStringNameForOptimizationTarget(
-              model_info.optimization_target()),
+          GetStringNameForOptimizationTarget(model_info.optimization_target()),
       model_info.version());
 }
 
-void RecordLifecycleState(
-    optimization_guide::proto::OptimizationTarget optimization_target,
-    optimization_guide::ModelDeliveryEvent event) {
+void RecordLifecycleState(proto::OptimizationTarget optimization_target,
+                          ModelDeliveryEvent event) {
   base::UmaHistogramEnumeration(
       "OptimizationGuide.PredictionManager.ModelDeliveryEvents." +
-          optimization_guide::GetStringNameForOptimizationTarget(
-              optimization_target),
+          GetStringNameForOptimizationTarget(optimization_target),
       event);
 }
 
 // Returns whether models should be fetched from the
 // remote Optimization Guide Service.
 bool ShouldFetchModels(bool off_the_record, PrefService* pref_service) {
-  return optimization_guide::features::IsRemoteFetchingEnabled(pref_service) &&
-         !off_the_record &&
-         optimization_guide::features::IsModelDownloadingEnabled();
-}
-
-std::unique_ptr<optimization_guide::proto::PredictionModel>
-BuildPredictionModelFromCommandLineForOptimizationTarget(
-    optimization_guide::proto::OptimizationTarget optimization_target) {
-  absl::optional<
-      std::pair<std::string, absl::optional<optimization_guide::proto::Any>>>
-      model_file_path_and_metadata =
-          optimization_guide::GetModelOverrideForOptimizationTarget(
-              optimization_target);
-  if (!model_file_path_and_metadata)
-    return nullptr;
-
-  std::unique_ptr<optimization_guide::proto::PredictionModel> prediction_model =
-      std::make_unique<optimization_guide::proto::PredictionModel>();
-  prediction_model->mutable_model_info()->set_optimization_target(
-      optimization_target);
-  prediction_model->mutable_model_info()->set_version(123);
-  if (model_file_path_and_metadata->second) {
-    *prediction_model->mutable_model_info()->mutable_model_metadata() =
-        model_file_path_and_metadata->second.value();
-  }
-  prediction_model->mutable_model()->set_download_url(
-      model_file_path_and_metadata->first);
-  return prediction_model;
+  return features::IsRemoteFetchingEnabled(pref_service) && !off_the_record &&
+         features::IsModelDownloadingEnabled();
 }
 
 // Returns whether the model metadata proto is on the server allowlist.
-bool IsModelMetadataTypeOnServerAllowlist(
-    const optimization_guide::proto::Any& model_metadata) {
+bool IsModelMetadataTypeOnServerAllowlist(const proto::Any& model_metadata) {
   return model_metadata.type_url() ==
              "type.googleapis.com/"
              "google.internal.chrome.optimizationguide.v1."
@@ -200,18 +165,15 @@ bool IsModelMetadataTypeOnServerAllowlist(
 }
 
 void RecordModelAvailableAtRegistration(
-    optimization_guide::proto::OptimizationTarget optimization_target,
+    proto::OptimizationTarget optimization_target,
     bool model_available_at_registration) {
   base::UmaHistogramBoolean(
       "OptimizationGuide.PredictionManager.ModelAvailableAtRegistration." +
-          optimization_guide::GetStringNameForOptimizationTarget(
-              optimization_target),
+          GetStringNameForOptimizationTarget(optimization_target),
       model_available_at_registration);
 }
 
 }  // namespace
-
-namespace optimization_guide {
 
 PredictionManager::PredictionManager(
     base::WeakPtr<OptimizationGuideStore> model_and_features_store,
@@ -692,20 +654,27 @@ void PredictionManager::OnStoreInitialized(
   MaybeScheduleFirstModelFetch();
 }
 
+void PredictionManager::OnPredictionModelOverrideLoaded(
+    proto::OptimizationTarget optimization_target,
+    std::unique_ptr<proto::PredictionModel> prediction_model) {
+  OnLoadPredictionModel(optimization_target,
+                        /*record_availability_metrics=*/false,
+                        std::move(prediction_model));
+  RecordModelAvailableAtRegistration(optimization_target,
+                                     prediction_model != nullptr);
+}
+
 void PredictionManager::LoadPredictionModels(
     const base::flat_set<proto::OptimizationTarget>& optimization_targets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (switches::IsModelOverridePresent()) {
     for (proto::OptimizationTarget optimization_target : optimization_targets) {
-      std::unique_ptr<proto::PredictionModel> prediction_model =
-          BuildPredictionModelFromCommandLineForOptimizationTarget(
-              optimization_target);
-      OnLoadPredictionModel(optimization_target,
-                            /*record_availability_metrics=*/false,
-                            std::move(prediction_model));
-      RecordModelAvailableAtRegistration(optimization_target,
-                                         prediction_model != nullptr);
+      BuildPredictionModelFromCommandLineForOptimizationTarget(
+          optimization_target,
+          base::BindOnce(&PredictionManager::OnPredictionModelOverrideLoaded,
+                         ui_weak_ptr_factory_.GetWeakPtr(),
+                         optimization_target));
     }
     return;
   }
@@ -757,11 +726,10 @@ void PredictionManager::OnProcessLoadedModel(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (success) {
-    base::UmaHistogramSparse(
-        "OptimizationGuide.PredictionModelLoadedVersion." +
-            optimization_guide::GetStringNameForOptimizationTarget(
-                model.model_info().optimization_target()),
-        model.model_info().version());
+    base::UmaHistogramSparse("OptimizationGuide.PredictionModelLoadedVersion." +
+                                 GetStringNameForOptimizationTarget(
+                                     model.model_info().optimization_target()),
+                             model.model_info().version());
     return;
   }
 
@@ -770,11 +738,10 @@ void PredictionManager::OnProcessLoadedModel(
   if (model_and_features_store_ &&
       model_and_features_store_->FindPredictionModelEntryKey(
           model.model_info().optimization_target(), &model_entry_key)) {
-    LOCAL_HISTOGRAM_BOOLEAN(
-        "OptimizationGuide.PredictionModelRemoved." +
-            optimization_guide::GetStringNameForOptimizationTarget(
-                model.model_info().optimization_target()),
-        true);
+    LOCAL_HISTOGRAM_BOOLEAN("OptimizationGuide.PredictionModelRemoved." +
+                                GetStringNameForOptimizationTarget(
+                                    model.model_info().optimization_target()),
+                            true);
     model_and_features_store_->RemovePredictionModelFromEntryKey(
         model_entry_key);
   }

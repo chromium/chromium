@@ -247,6 +247,8 @@ static_library("prediction") {
     "prediction_model_download_manager.cc",
     "prediction_model_download_manager.h",
     "prediction_model_download_observer.h",
+    "prediction_model_override.cc",
+    "prediction_model_override.h",
   ]
   deps = [
     "//components/crx_file",

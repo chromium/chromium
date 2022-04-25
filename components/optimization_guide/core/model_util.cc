@@ -98,6 +98,10 @@ base::FilePath GetBaseFileNameForModels() {
   return base::FilePath(FILE_PATH_LITERAL("model.tflite"));
 }
 
+std::string ModelOverrideSeparator() {
+  return kModelOverrideSeparator;
+}
+
 absl::optional<
     std::pair<std::string, absl::optional<optimization_guide::proto::Any>>>
 GetModelOverrideForOptimizationTarget(
@@ -142,6 +146,7 @@ GetModelOverrideForOptimizationTarget(
           file_path_and_metadata = std::make_pair(file_name, absl::nullopt);
       return file_path_and_metadata;
     }
+
     std::string binary_pb;
     if (!base::Base64Decode(override_parts[2], &binary_pb)) {
       DLOG(ERROR) << "Invalid base64 encoding of the Model Override";

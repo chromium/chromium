@@ -62,11 +62,23 @@ class PredictionModelDownloadManager {
   virtual void StartDownload(const GURL& download_url,
                              proto::OptimizationTarget optimization_target);
 
+  // Verifies the download came from a trusted source and process the downloaded
+  // contents. Returns a pair of file paths of the form (src, dst) if
+  // |file_path| is successfully verified.
+  //
+  // Must be called on a background thread, as it performs file I/O.
+  static absl::optional<std::pair<base::FilePath, base::FilePath>>
+  VerifyDownload(const base::FilePath& file_path, bool delete_file_on_error);
+
   // Cancels all pending downloads.
   virtual void CancelAllPendingDownloads();
 
   // Returns whether the downloader can download models.
   virtual bool IsAvailableForDownloads() const;
+
+  // Returns the basename of the model info file when it is packaged in a crx
+  // archive.
+  static base::FilePath::StringType ModelInfoFileName();
 
   // Adds and removes observers.
   //
@@ -112,14 +124,6 @@ class PredictionModelDownloadManager {
   void OnDownloadFailed(
       absl::optional<proto::OptimizationTarget> optimization_target,
       const std::string& failed_download_guid);
-
-  // Verifies the download came from a trusted source and process the downloaded
-  // contents. Returns a pair of file paths of the form (src, dst) if
-  // |file_path| is successfully verified.
-  //
-  // Must be called on the background thread, as it performs file I/O.
-  absl::optional<std::pair<base::FilePath, base::FilePath>> ProcessDownload(
-      const base::FilePath& file_path);
 
   // Starts unzipping the contents of |unzip_paths|, if present. |unzip_paths|
   // is a pair of the form (src, dst), if present.
