@@ -430,12 +430,7 @@ void AppServiceContextMenu::OnGetMenuModel(
             color_id));
   }
 
-  // chromeos::TabletState::Get() may be null in tests.
-  const bool tablet_mode = chromeos::TabletState::Get() &&
-                           chromeos::TabletState::Get()->InTabletMode();
-  // TODO(crbug.com/1317428): Add "hide continue section" item in tablet mode
-  // when the "show continue section" button works in tablet mode.
-  if (item_context_ == ash::AppListItemContext::kRecentApps && !tablet_mode) {
+  if (item_context_ == ash::AppListItemContext::kRecentApps) {
     menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
     menu_model->AddItemWithIcon(
         ash::HIDE_CONTINUE_SECTION,

@@ -371,6 +371,16 @@ void AppListPresenterImpl::UpdateForNewSortingOrder(
                                  std::move(done_closure));
 }
 
+void AppListPresenterImpl::UpdateContinueSectionVisibility() {
+  if (!view_)
+    return;
+
+  view_->app_list_main_view()
+      ->contents_view()
+      ->apps_container_view()
+      ->UpdateContinueSectionVisibility();
+}
+
 bool AppListPresenterImpl::IsVisibleDeprecated() const {
   return controller_->IsVisible(GetDisplayId());
 }

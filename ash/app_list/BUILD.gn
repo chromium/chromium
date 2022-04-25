@@ -288,6 +288,7 @@ source_set("unit_tests") {
     "views/app_list_menu_model_adapter_unittest.cc",
     "views/app_list_nudge_controller_unittest.cc",
     "views/app_list_view_unittest.cc",
+    "views/apps_container_view_unittest.cc",
     "views/apps_grid_view_unittest.cc",
     "views/assistant/assistant_dialog_plate_unittest.cc",
     "views/assistant/assistant_main_stage_unittest.cc",

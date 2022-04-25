@@ -39,8 +39,9 @@ class SuggestionChipContainerView;
 class GradientLayerDelegate;
 
 // AppsContainerView contains a root level AppsGridView to render the root level
-// app items, and a AppListFolderView to render the app items inside the
-// active folder.
+// app items, and a AppListFolderView to render the app items inside the active
+// folder. With productivity launcher, it also contains the continue section,
+// recent apps, and an optional separator.
 class ASH_EXPORT AppsContainerView
     : public AppListPage,
       public AppListModelProvider::Observer,
@@ -188,10 +189,8 @@ class ASH_EXPORT AppsContainerView
       base::OnceClosure update_position_closure,
       base::OnceClosure animation_done_closure);
 
-  // Called when the app list temporary sort order changes. If `new_order` is
-  // null, the temporary sort order is cleared.
-  void OnTemporarySortOrderChanged(
-      const absl::optional<AppListSortOrder>& new_order);
+  // Updates the continue section visibility based on user preference.
+  void UpdateContinueSectionVisibility();
 
   // Called by app list controller when the app list visibility is about to
   // change - when the app list is about to be shown, initiates zero state
@@ -239,6 +238,8 @@ class ASH_EXPORT AppsContainerView
 
   // Gets the height of the `separator_` including its vertical margin.
   int GetSeparatorHeight();
+
+  views::View* GetShowContinueSectionButtonForTest();
 
   SearchResultPageAnchoredDialog* dialog_for_test() {
     return dialog_controller_->dialog();

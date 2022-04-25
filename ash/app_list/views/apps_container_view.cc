@@ -36,6 +36,8 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_constants.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/style/pill_button.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
@@ -56,6 +58,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -157,11 +160,30 @@ class AppsContainerView::ContinueContainer : public views::View {
   ContinueContainer(AppsContainerView* apps_container,
                     AppListViewDelegate* view_delegate,
                     SearchResultPageDialogController* dialog_controller)
-      : separator_(apps_container->separator()) {
+      : view_delegate_(view_delegate), separator_(apps_container->separator()) {
     SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 
     SetLayoutManager(std::make_unique<views::FlexLayout>())
         ->SetOrientation(views::LayoutOrientation::kVertical);
+
+    // Add the button to show the continue section, wrapped in a view to center
+    // it horizontally.
+    auto* button_container = AddChildView(std::make_unique<views::View>());
+    button_container
+        ->SetLayoutManager(std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kVertical))
+        ->set_cross_axis_alignment(
+            views::BoxLayout::CrossAxisAlignment::kCenter);
+    show_continue_section_button_ =
+        button_container->AddChildView(std::make_unique<PillButton>(
+            base::BindRepeating(&AppsContainerView::ContinueContainer::
+                                    OnPressShowContinueSection,
+                                base::Unretained(this)),
+            l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_SHOW_CONTINUE_SECTION),
+            PillButton::Type::kIcon, &kExpandAllIcon));
+    show_continue_section_button_->SetUseDefaultLabelFont();
+    // Put the icon on the right.
+    show_continue_section_button_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
 
     continue_section_ = AddChildView(std::make_unique<ContinueSectionView>(
         view_delegate, dialog_controller, kContinueColumnCount,
@@ -175,7 +197,7 @@ class AppsContainerView::ContinueContainer : public views::View {
     recent_apps_->layer()->SetFillsBoundsOpaquely(false);
 
     UpdateRecentAppsMargins();
-    UpdateSeparatorVisibility();
+    UpdateContinueSectionVisibility();
   }
 
   // views::View:
@@ -196,6 +218,20 @@ class AppsContainerView::ContinueContainer : public views::View {
       recent_apps_->UpdateAppListConfig(config);
   }
 
+  void UpdateContinueSectionVisibility() {
+    // Show the "Show continue section" button if continue section is hidden.
+    bool hide_continue_section = view_delegate_->ShouldHideContinueSection();
+    show_continue_section_button_->SetVisible(hide_continue_section);
+    // The continue section view and recent apps view manage their own
+    // visibility internally.
+    continue_section_->UpdateElementsVisibility();
+    recent_apps_->UpdateVisibility();
+    UpdateSeparatorVisibility();
+  }
+
+  PillButton* show_continue_section_button() {
+    return show_continue_section_button_;
+  }
   ContinueSectionView* continue_section() { return continue_section_; }
   RecentAppsView* recent_apps() { return recent_apps_; }
 
@@ -218,6 +254,13 @@ class AppsContainerView::ContinueContainer : public views::View {
                            continue_section_->GetVisible());
   }
 
+  void OnPressShowContinueSection(const ui::Event& event) {
+    view_delegate_->SetHideContinueSection(false);
+    UpdateContinueSectionVisibility();
+  }
+
+  AppListViewDelegate* const view_delegate_;
+  PillButton* show_continue_section_button_ = nullptr;
   ContinueSectionView* continue_section_ = nullptr;
   RecentAppsView* recent_apps_ = nullptr;
   views::Separator* separator_ = nullptr;
@@ -796,6 +839,11 @@ void AppsContainerView::UpdateForNewSortingOrder(
     animation_builder.GetCurrentSequence().SetOpacity(toast_container_->layer(),
                                                       0.f);
   }
+}
+
+void AppsContainerView::UpdateContinueSectionVisibility() {
+  if (continue_container_)
+    continue_container_->UpdateContinueSectionVisibility();
 }
 
 ContinueSectionView* AppsContainerView::GetContinueSection() {
@@ -1708,6 +1756,12 @@ int AppsContainerView::GetSeparatorHeight() {
     return 0;
   return separator_->GetProperty(views::kMarginsKey)->height() +
          views::Separator::kThickness;
+}
+
+views::View* AppsContainerView::GetShowContinueSectionButtonForTest() {
+  return continue_container_
+             ? continue_container_->show_continue_section_button()
+             : nullptr;
 }
 
 }  // namespace ash

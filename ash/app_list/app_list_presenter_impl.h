@@ -113,6 +113,9 @@ class ASH_EXPORT AppListPresenterImpl
       bool animate,
       base::OnceClosure update_position_closure);
 
+  // Updates the continue section visibility based on user preference.
+  void UpdateContinueSectionVisibility();
+
   // Returns current visibility of the app list. Deprecated, use
   // |IsAtLeastPartiallyVisible| instead.
   bool IsVisibleDeprecated() const;

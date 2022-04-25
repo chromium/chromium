@@ -1636,6 +1636,7 @@ bool AppListControllerImpl::ShouldHideContinueSection() const {
 void AppListControllerImpl::SetHideContinueSection(bool hide) {
   PrefService* prefs = GetLastActiveUserPrefService();
   prefs->SetBoolean(prefs::kLauncherContinueSectionHidden, hide);
+  fullscreen_presenter_->UpdateContinueSectionVisibility();
   bubble_presenter_->UpdateContinueSectionVisibility();
 }
 
