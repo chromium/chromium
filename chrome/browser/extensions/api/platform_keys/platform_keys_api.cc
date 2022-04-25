@@ -18,6 +18,7 @@
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "net/cert/asn1_util.h"
+#include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -18,7 +18,6 @@
 #include "base/time/time.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
-#include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_cert_types.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 
