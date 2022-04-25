@@ -2,10 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
 import argparse
 import codecs
 import contextlib
-import io
 import json
 import os
 import logging
@@ -13,7 +13,6 @@ import platform
 import subprocess
 import sys
 import tempfile
-import time
 import traceback
 
 logging.basicConfig(level=logging.INFO)
@@ -154,9 +153,9 @@ def run_script(argv, funcs):
 
 
 def run_command(argv, env=None, cwd=None):
-  print('Running %r in %r (env: %r)' % (argv, cwd, env))
+  print('Running %r in %r (env: %r)' % (argv, cwd, env), file=sys.stderr)
   rc = test_env.run_command(argv, env=env, cwd=cwd)
-  print('Command %r returned exit code %d' % (argv, rc))
+  print('Command %r returned exit code %d' % (argv, rc), file=sys.stderr)
   return rc
 
 

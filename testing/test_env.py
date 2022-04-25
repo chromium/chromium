@@ -196,7 +196,7 @@ def run_command_with_output(argv, stdoutfile, env=None, cwd=None):
   Returns:
     integer returncode of the subprocess.
   """
-  print('Running %r in %r (env: %r)' % (argv, cwd, env))
+  print('Running %r in %r (env: %r)' % (argv, cwd, env), file=sys.stderr)
   assert stdoutfile
   with io.open(stdoutfile, 'wb') as writer, \
       io.open(stdoutfile, 'rb', 1) as reader:
@@ -210,7 +210,8 @@ def run_command_with_output(argv, stdoutfile, env=None, cwd=None):
       time.sleep(0.1)
     # Read the remaining.
     sys.stdout.write(reader.read().decode('utf-8'))
-    print('Command %r returned exit code %d' % (argv, process.returncode))
+    print('Command %r returned exit code %d' % (argv, process.returncode),
+          file=sys.stderr)
     return process.returncode
 
 
@@ -224,12 +225,12 @@ def run_command(argv, env=None, cwd=None, log=True):
     integer returncode of the subprocess.
   """
   if log:
-    print('Running %r in %r (env: %r)' % (argv, cwd, env))
+    print('Running %r in %r (env: %r)' % (argv, cwd, env), file=sys.stderr)
   process = _popen(argv, env=env, cwd=cwd, stderr=subprocess.STDOUT)
   forward_signals([process])
   exit_code = wait_with_signals(process)
   if log:
-    print('Command returned exit code %d' % exit_code)
+    print('Command returned exit code %d' % exit_code, file=sys.stderr)
   return exit_code
 
 
