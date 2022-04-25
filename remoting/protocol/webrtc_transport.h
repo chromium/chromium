@@ -74,9 +74,9 @@ class WebrtcTransport : public Transport,
 
     // Called when an incoming media stream is added or removed.
     virtual void OnWebrtcTransportMediaStreamAdded(
-        scoped_refptr<webrtc::MediaStreamInterface> stream) = 0;
+        rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) = 0;
     virtual void OnWebrtcTransportMediaStreamRemoved(
-        scoped_refptr<webrtc::MediaStreamInterface> stream) = 0;
+        rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) = 0;
 
     // Called when the transport route changes (for example, from relayed to
     // direct connection). Also called on initial connection.

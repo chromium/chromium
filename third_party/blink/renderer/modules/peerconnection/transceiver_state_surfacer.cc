@@ -99,8 +99,8 @@ void TransceiverStateSurfacer::Initialize(
         // adapters on the signaling thread for initialization on the main
         // thread or wait for Onion Souping to simplify this.
         // https://crbug.com/787254
-        sender_track_ref =
-            track_adapter_map->GetLocalTrackAdapter(webrtc_sender->track());
+        sender_track_ref = track_adapter_map->GetLocalTrackAdapter(
+            webrtc_sender->track().get());
         CHECK(sender_track_ref);
       }
       sender_state = blink::RtpSenderState(
@@ -133,7 +133,7 @@ void TransceiverStateSurfacer::Initialize(
         webrtc_transceiver->stopped(), webrtc_transceiver->direction(),
         blink::ToAbslOptional(webrtc_transceiver->current_direction()),
         blink::ToAbslOptional(webrtc_transceiver->fired_direction()),
-        GetHeaderExtensionsNegotiated(webrtc_transceiver));
+        GetHeaderExtensionsNegotiated(webrtc_transceiver.get()));
   }
   is_initialized_ = true;
 }

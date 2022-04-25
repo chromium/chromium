@@ -67,7 +67,7 @@ RTCDtlsTransport::RTCDtlsTransport(
     : ExecutionContextClient(context),
       current_state_(webrtc::DtlsTransportState::kNew),
       native_transport_(native_transport),
-      proxy_(CreateProxy(context, native_transport, this)),
+      proxy_(CreateProxy(context, native_transport.get(), this)),
       ice_transport_(ice_transport) {}
 
 RTCDtlsTransport::~RTCDtlsTransport() {}

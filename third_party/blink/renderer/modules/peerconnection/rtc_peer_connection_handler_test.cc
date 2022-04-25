@@ -423,7 +423,7 @@ class RTCPeerConnectionHandlerTest : public SimTest {
       InvokeAddTrack(
           stream, MockWebRtcAudioTrack::Create(audio_track_label.Utf8()).get());
     }
-    mock_peer_connection_->AddRemoteStream(stream);
+    mock_peer_connection_->AddRemoteStream(stream.get());
     return stream;
   }
 
@@ -964,7 +964,7 @@ TEST_F(RTCPeerConnectionHandlerTest, GetRTCStats) {
   report->AddStats(
       std::unique_ptr<const webrtc::RTCStats>(stats_defined_members.release()));
 
-  pc_handler_->native_peer_connection()->SetGetStatsReport(report);
+  pc_handler_->native_peer_connection()->SetGetStatsReport(report.get());
   std::unique_ptr<RTCStatsReportPlatform> result;
   pc_handler_->GetStats(
       base::BindOnce(OnStatsDelivered, &result,

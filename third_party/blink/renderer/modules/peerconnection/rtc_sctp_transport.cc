@@ -78,7 +78,7 @@ RTCSctpTransport::RTCSctpTransport(
       current_state_(webrtc::SctpTransportState::kNew),
       native_transport_(native_transport),
       proxy_(CreateProxy(context,
-                         native_transport,
+                         native_transport.get(),
                          this,
                          main_thread,
                          worker_thread)) {}

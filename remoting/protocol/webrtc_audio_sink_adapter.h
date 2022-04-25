@@ -21,8 +21,9 @@ class AudioStub;
 
 class WebrtcAudioSinkAdapter : public webrtc::AudioTrackSinkInterface {
  public:
-  WebrtcAudioSinkAdapter(scoped_refptr<webrtc::MediaStreamInterface> stream,
-                         base::WeakPtr<AudioStub> audio_stub);
+  WebrtcAudioSinkAdapter(
+      rtc::scoped_refptr<webrtc::MediaStreamInterface> stream,
+      base::WeakPtr<AudioStub> audio_stub);
   ~WebrtcAudioSinkAdapter() override;
 
   void OnData(const void* audio_data,
@@ -34,8 +35,8 @@ class WebrtcAudioSinkAdapter : public webrtc::AudioTrackSinkInterface {
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtr<AudioStub> audio_stub_;
-  scoped_refptr<webrtc::MediaStreamInterface> media_stream_;
-  scoped_refptr<webrtc::AudioTrackInterface> audio_track_;
+  rtc::scoped_refptr<webrtc::MediaStreamInterface> media_stream_;
+  rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track_;
 };
 
 }  // namespace protocol

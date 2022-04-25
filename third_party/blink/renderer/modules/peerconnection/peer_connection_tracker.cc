@@ -749,7 +749,7 @@ void PeerConnectionTracker::GetLegacyStats() {
             pair.value, main_thread_task_runner_,
             CrossThreadBindOnce(&PeerConnectionTracker::AddLegacyStats,
                                 WrapCrossThreadWeakPersistent(this))));
-    pair.key->GetStats(observer,
+    pair.key->GetStats(observer.get(),
                        webrtc::PeerConnectionInterface::kStatsOutputLevelDebug,
                        nullptr);
   }

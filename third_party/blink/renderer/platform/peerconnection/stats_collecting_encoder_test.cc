@@ -45,7 +45,7 @@ class FakeVideoFrameBuffer : public webrtc::VideoFrameBuffer {
   rtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override {
     rtc::scoped_refptr<webrtc::I420Buffer> buffer =
         webrtc::I420Buffer::Create(width_, height_);
-    webrtc::I420Buffer::SetBlack(buffer);
+    webrtc::I420Buffer::SetBlack(buffer.get());
     return buffer;
   }
 

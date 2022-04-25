@@ -447,7 +447,7 @@ PeerConnectionDependencyFactory::CreateRTCPeerConnectionHandler(
       force_encoded_video_insertable_streams);
 }
 
-const scoped_refptr<webrtc::PeerConnectionFactoryInterface>&
+const rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>&
 PeerConnectionDependencyFactory::GetPcFactory() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -666,7 +666,7 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
   media_deps.video_decoder_factory = std::move(webrtc_decoder_factory);
   // Audio Processing Module (APM) instances are owned and handled by the Blink
   // media stream module.
-  DCHECK_EQ(media_deps.audio_processing, nullptr);
+  DCHECK_EQ(media_deps.audio_processing.get(), nullptr);
   pcf_deps.media_engine = cricket::CreateMediaEngine(std::move(media_deps));
   pc_factory_ = webrtc::CreateModularPeerConnectionFactory(std::move(pcf_deps));
   CHECK(pc_factory_.get());

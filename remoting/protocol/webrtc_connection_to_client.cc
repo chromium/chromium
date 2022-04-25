@@ -243,13 +243,13 @@ void WebrtcConnectionToClient::OnWebrtcTransportIncomingDataChannel(
 }
 
 void WebrtcConnectionToClient::OnWebrtcTransportMediaStreamAdded(
-    scoped_refptr<webrtc::MediaStreamInterface> stream) {
+    rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) {
   DCHECK(thread_checker_.CalledOnValidThread());
   LOG(WARNING) << "The client created an unexpected media stream.";
 }
 
 void WebrtcConnectionToClient::OnWebrtcTransportMediaStreamRemoved(
-    scoped_refptr<webrtc::MediaStreamInterface> stream) {
+    rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) {
   DCHECK(thread_checker_.CalledOnValidThread());
 }
 

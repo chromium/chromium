@@ -443,9 +443,9 @@ class WebrtcTransport::PeerConnectionWrapper
 
  private:
   rtc::scoped_refptr<WebrtcAudioModule> audio_module_;
-  scoped_refptr<webrtc::PeerConnectionFactoryInterface>
+  rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
       peer_connection_factory_;
-  scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
+  rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
   std::unique_ptr<base::Watchdog> thread_join_watchdog_;
   base::OnceClosure before_disarm_thread_join_watchdog_callback_;
 
@@ -934,13 +934,13 @@ void WebrtcTransport::OnSignalingChange(
 void WebrtcTransport::OnAddStream(
     rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  event_handler_->OnWebrtcTransportMediaStreamAdded(stream.get());
+  event_handler_->OnWebrtcTransportMediaStreamAdded(stream);
 }
 
 void WebrtcTransport::OnRemoveStream(
     rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  event_handler_->OnWebrtcTransportMediaStreamRemoved(stream.get());
+  event_handler_->OnWebrtcTransportMediaStreamRemoved(stream);
 }
 
 void WebrtcTransport::OnDataChannel(

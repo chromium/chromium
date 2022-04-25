@@ -432,7 +432,7 @@ class StatsResponse : public webrtc::StatsObserver {
     // callback might be doing.
     TRACE_EVENT_NESTABLE_ASYNC_END0("webrtc", "getStats_Native",
                                     TRACE_ID_LOCAL(this));
-    request_->requestSucceeded(response);
+    request_->requestSucceeded(response.get());
     request_ = nullptr;  // must be freed on the main thread.
   }
 
@@ -490,9 +490,11 @@ void GetRTCStatsOnSignalingThread(
     RTCStatsReportCallbackInternal callback,
     const Vector<webrtc::NonStandardGroupId>& exposed_group_ids) {
   TRACE_EVENT0("webrtc", "GetRTCStatsOnSignalingThread");
-  native_peer_connection->GetStats(CreateRTCStatsCollectorCallback(
-      main_thread, ConvertToBaseOnceCallback(std::move(callback)),
-      exposed_group_ids));
+  native_peer_connection->GetStats(
+      CreateRTCStatsCollectorCallback(
+          main_thread, ConvertToBaseOnceCallback(std::move(callback)),
+          exposed_group_ids)
+          .get());
 }
 
 void ConvertOfferOptionsToWebrtcOfferOptions(
@@ -1699,7 +1701,8 @@ void RTCPeerConnectionHandler::getStats(
       selector = track_adapter_ref->webrtc_track();
   }
 
-  GetStats(observer, webrtc::PeerConnectionInterface::kStatsOutputLevelStandard,
+  GetStats(observer.get(),
+           webrtc::PeerConnectionInterface::kStatsOutputLevelStandard,
            std::move(selector));
 }
 

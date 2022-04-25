@@ -150,7 +150,7 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   // Ctor for tests.
   PeerConnectionDependencyFactory();
 
-  virtual const scoped_refptr<webrtc::PeerConnectionFactoryInterface>&
+  virtual const rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>&
   GetPcFactory();
   virtual bool PeerConnectionFactoryCreated();
 
@@ -189,7 +189,7 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   std::unique_ptr<IpcNetworkManager> network_manager_;
   std::unique_ptr<IpcPacketSocketFactory> socket_factory_;
 
-  scoped_refptr<webrtc::PeerConnectionFactoryInterface> pc_factory_;
+  rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> pc_factory_;
   scoped_refptr<MetronomeSource> metronome_source_;
 
   // Dispatches all P2P sockets.

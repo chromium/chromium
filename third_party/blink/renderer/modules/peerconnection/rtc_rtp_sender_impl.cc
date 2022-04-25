@@ -238,7 +238,7 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
     webrtc::MediaStreamTrackInterface* webrtc_track = nullptr;
     if (with_track) {
       track_ref = track_map_->GetOrCreateLocalTrackAdapter(with_track);
-      webrtc_track = track_ref->webrtc_track();
+      webrtc_track = track_ref->webrtc_track().get();
     }
     PostCrossThreadTask(
         *signaling_task_runner_.get(), FROM_HERE,
@@ -255,7 +255,7 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
     DCHECK(main_task_runner_->BelongsToCurrentThread());
     auto dtmf_sender = webrtc_sender_->GetDtmfSender();
     return std::make_unique<RtcDtmfSenderHandler>(main_task_runner_,
-                                                  dtmf_sender);
+                                                  dtmf_sender.get());
   }
 
   std::unique_ptr<webrtc::RtpParameters> GetParameters() {

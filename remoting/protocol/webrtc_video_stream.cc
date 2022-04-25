@@ -77,7 +77,7 @@ void WebrtcVideoStream::Start(
                           weak_factory_.GetWeakPtr()));
   rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track =
       peer_connection_factory->CreateVideoTrack(stream_name_,
-                                                video_track_source_);
+                                                video_track_source_.get());
 
   webrtc::RtpTransceiverInit init;
   init.stream_ids = {stream_name_};

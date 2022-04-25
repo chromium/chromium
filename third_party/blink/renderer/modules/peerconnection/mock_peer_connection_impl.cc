@@ -35,11 +35,13 @@ namespace blink {
 class MockStreamCollection : public webrtc::StreamCollectionInterface {
  public:
   size_t count() override { return streams_.size(); }
-  MediaStreamInterface* at(size_t index) override { return streams_[index]; }
+  MediaStreamInterface* at(size_t index) override {
+    return streams_[index].get();
+  }
   MediaStreamInterface* find(const std::string& id) override {
     for (size_t i = 0; i < streams_.size(); ++i) {
       if (streams_[i]->id() == id)
-        return streams_[i];
+        return streams_[i].get();
     }
     return nullptr;
   }
@@ -47,7 +49,7 @@ class MockStreamCollection : public webrtc::StreamCollectionInterface {
       const std::string& id) override {
     for (size_t i = 0; i < streams_.size(); ++i) {
       webrtc::MediaStreamTrackInterface* track =
-          streams_.at(i)->FindAudioTrack(id);
+          streams_.at(i)->FindAudioTrack(id).get();
       if (track)
         return track;
     }
@@ -57,7 +59,7 @@ class MockStreamCollection : public webrtc::StreamCollectionInterface {
       const std::string& id) override {
     for (size_t i = 0; i < streams_.size(); ++i) {
       webrtc::MediaStreamTrackInterface* track =
-          streams_.at(i)->FindVideoTrack(id);
+          streams_.at(i)->FindVideoTrack(id).get();
       if (track)
         return track;
     }

@@ -69,9 +69,9 @@ class WebrtcConnectionToHost : public ConnectionToHost,
       const std::string& name,
       std::unique_ptr<MessagePipe> pipe) override;
   void OnWebrtcTransportMediaStreamAdded(
-      scoped_refptr<webrtc::MediaStreamInterface> stream) override;
+      rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) override;
   void OnWebrtcTransportMediaStreamRemoved(
-      scoped_refptr<webrtc::MediaStreamInterface> stream) override;
+      rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) override;
   void OnWebrtcTransportRouteChanged(const TransportRoute& route) override;
 
   // ChannelDispatcherBase::EventHandler interface.

@@ -226,7 +226,7 @@ TEST_F(RTCRtpSenderImplTest, GetStats) {
       webrtc::RTCStatsReport::Create(0u);
   webrtc_report->AddStats(
       std::make_unique<webrtc::RTCOutboundRTPStreamStats>("stats-id", 1234u));
-  peer_connection_->SetGetStatsReport(webrtc_report);
+  peer_connection_->SetGetStatsReport(webrtc_report.get());
 
   auto obtainer = CallGetStats();
   // Make sure the operation is async.

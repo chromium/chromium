@@ -2816,7 +2816,7 @@ RTCIceTransport* RTCPeerConnection::CreateOrUpdateIceTransport(
     return nullptr;
   }
   auto& transport =
-      ice_transports_by_native_transport_.insert(ice_transport, nullptr)
+      ice_transports_by_native_transport_.insert(ice_transport.get(), nullptr)
           .stored_value->value;
   if (!transport) {
     transport = RTCIceTransport::Create(GetExecutionContext(),

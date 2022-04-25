@@ -51,7 +51,7 @@ using ::testing::Sequence;
 webrtc::VideoFrame::Builder CreateBlackFrameBuilder() {
   rtc::scoped_refptr<webrtc::I420Buffer> buffer =
       webrtc::I420Buffer::Create(8, 8);
-  webrtc::I420Buffer::SetBlack(buffer);
+  webrtc::I420Buffer::SetBlack(buffer.get());
   return webrtc::VideoFrame::Builder().set_video_frame_buffer(buffer);
 }
 
@@ -200,7 +200,7 @@ TEST_F(MediaStreamRemoteVideoSourceTest, StartTrack) {
   rtc::scoped_refptr<webrtc::I420Buffer> buffer(
       new rtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
 
-  webrtc::I420Buffer::SetBlack(buffer);
+  webrtc::I420Buffer::SetBlack(buffer.get());
 
   source()->SinkInterfaceForTesting()->OnFrame(
       webrtc::VideoFrame::Builder()
