@@ -118,11 +118,12 @@ diff --git a/base/third_party/symbolize/symbolize.h b/base/third_party/symbolize
 index c6f9ec4360ede..00cfa022219e6 100644
 --- a/base/third_party/symbolize/symbolize.h
 +++ b/base/third_party/symbolize/symbolize.h
-@@ -60,6 +60,8 @@
+@@ -60,6 +60,9 @@
  
  #ifdef HAVE_SYMBOLIZE
  
 +#include <algorithm>
++#include <utility>
 +
  #if defined(__ELF__)  // defined by gcc
  #if defined(__OpenBSD__)
