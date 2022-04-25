@@ -173,10 +173,9 @@ ci.builder(
         category = "emulator|x64|rel",
         short_name = "12",
     ),
-    # Set to an empty list to avoid chromium-gitiles-trigger triggering new
-    # builds. Also we don't set any `schedule` since this builder is for
-    # reference only and should not run any new builds.
-    triggered_by = [],
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(

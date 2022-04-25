@@ -718,6 +718,19 @@
           'gtest_tests': 'android_11_emulator_gtests',
         }
       },
+      'android-12-x64-fyi-rel': {
+        'mixins': [
+          '12-x64-emulator',
+          'emulator-8-cores',
+          'has_native_resultdb_integration',
+          'linux-xenial-or-bionic',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'webview_64_cts_tests_gtest',
+        }
+      },
       'android-12-x64-rel': {
         'mixins': [
           '12-x64-emulator',

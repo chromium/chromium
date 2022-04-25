@@ -56,6 +56,10 @@ try_.orchestrator_builder(
     ),
 )
 
+try_.builder(
+    name = "android-12-x64-fyi-rel",
+)
+
 try_.compilator_builder(
     name = "android-12-x64-rel-compilator",
     # TODO(crbug.com/1225851): Enable it on branch after running on CQ
