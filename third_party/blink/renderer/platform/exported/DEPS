@@ -1,4 +1,5 @@
 include_rules = [
+    "+media/base/media_log.h",
     "+net/base/ip_endpoint.h",
     "+net/base/load_flags.h",
     "+net/ssl/ssl_info.h",

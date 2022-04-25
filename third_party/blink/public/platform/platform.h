@@ -811,9 +811,7 @@ class BLINK_PLATFORM_EXPORT Platform {
   virtual std::unique_ptr<media::MediaLog> GetMediaLog(
       MediaInspectorContext* inspector_context,
       scoped_refptr<base::SingleThreadTaskRunner> owner_task_runner,
-      bool is_on_worker) {
-    return nullptr;
-  }
+      bool is_on_worker);
 
   // GpuVideoAcceleratorFactories --------------------------------------
 
