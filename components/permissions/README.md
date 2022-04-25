@@ -2,22 +2,59 @@
 
 [TOC]
 
+## PermissionController
+
+The
+[PermissionController](https://cs.chromium.org/chromium/src/content/public/browser/permission_controller.h)
+is the entry point for clients of the permissions infrastructure from both the
+`//content` and the embedder (e.g. `//chrome`) layers.
+[PermissionController](https://cs.chromium.org/chromium/src/content/public/browser/permission_controller.h)
+provides access to the permissions API and can be reached as
+`content::BrowserContext::GetPermissionController()` or
+`Profile::GetPermissionController()`.
+
+[PermissionController](https://cs.chromium.org/chromium/src/content/public/browser/permission_controller.h)
+has the following API:
+*   `blink::mojom::PermissionStatus PermissionController::GetPermissionStatusForWorker`
+*   `blink::mojom::PermissionStatus PermissionController::GetPermissionStatusForCurrentDocument`
+*   `blink::mojom::PermissionStatus PermissionController::GetPermissionStatusForOriginWithoutContext`
+    Use this API only in special cases when there is no active document or
+    worker. E.g., `PermissionType::PAYMENT_HANDLER` permission verification of
+    payment providers in a PWA's manifest.
+*   `PermissionController::RequestPermissionFromCurrentDocument`
+*   `PermissionController::RequestPermissionsFromCurrentDocument`
+
+## PermissionControllerImpl
+
+The [PermissionControllerImpl](https://cs.chromium.org/chromium/src/content/browser/permissions/permission_controller_impl.h)
+is the implementation of the
+[PermissionController](https://cs.chromium.org/chromium/src/content/public/browser/permission_controller.h).
+[PermissionControllerImpl](https://cs.chromium.org/chromium/src/content/browser/permissions/permission_controller_impl.h)
+is meant to be used only internally in `//content` and is not available for
+external clients.
+
+[PermissionControllerImpl](https://cs.chromium.org/chromium/src/content/browser/permissions/permission_controller_impl.h)
+provides various functionality such as:
+
+*   Reset a permission's state to the default
+*   Observe permissions changes
+*   Override permission status for DevTools.
+
 ## PermissionManager and PermissionContextBase
 
 The
 [PermissionManager](https://cs.chromium.org/chromium/src/components/permissions/permission_manager.h)
-is the entry point for clients of the permissions infrastructure.
+is an implementation of
+[PermissionControllerDelegate](https://cs.chromium.org/chromium/src/content/public/browser/permission_controller_delegate.h).
 [PermissionManager](https://cs.chromium.org/chromium/src/components/permissions/permission_manager.h)
 is a
 [KeyedService](https://cs.chromium.org/chromium/src/components/keyed_service/core/keyed_service.h)
 which means it is attached to a
 [BrowserContext](https://cs.chromium.org/chromium/src/content/public/browser/browser_context.h).
-Clients can perform various operations such as:
-
-*   Query the status of a permission
-*   Request a permission from the user
-*   Reset a permission's state to the default
-*   Observe permissions changes
+It allows to get permission status for
+[ContentSettingsType](https://cs.chromium.org/chromium/src/components/content_settings/core/common/content_settings_types.h).
+That API should be used only to display permission status in UI like PageInfo
+and SiteSettings.
 
 Internally,
 [PermissionManager](https://cs.chromium.org/chromium/src/components/permissions/permission_manager.h)
