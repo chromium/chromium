@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fragment_directive/css_selector_directive.h"
+#include "third_party/blink/renderer/core/fragment_directive/fragment_directive.h"
 #include "third_party/blink/renderer/core/fragment_directive/fragment_directive_utils.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 

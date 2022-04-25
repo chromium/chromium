@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
+#include "third_party/blink/renderer/core/fragment_directive/fragment_directive.h"
 #include "third_party/blink/renderer/core/fragment_directive/fragment_directive_utils.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_directive.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_handler.h"

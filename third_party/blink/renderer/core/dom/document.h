@@ -30,9 +30,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_H_
 
-#include <bitset>
-#include <string>
-#include <utility>
+#include <memory>
 
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
@@ -68,10 +66,8 @@
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/dom/user_action_element_set.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
-#include "third_party/blink/renderer/core/fragment_directive/fragment_directive.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/parser/parser_synchronization_policy.h"
-#include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
@@ -163,6 +159,7 @@ class ExceptionState;
 class FontMatchingMetrics;
 class FocusedElementChangeObserver;
 class FormController;
+class FragmentDirective;
 class FrameCallback;
 class FrameScheduler;
 class HTMLAllCollection;
@@ -201,6 +198,7 @@ class ProcessingInstruction;
 class PropertyRegistry;
 class QualifiedName;
 class Range;
+class RenderBlockingResourceManager;
 class ResizeObserver;
 class ResourceFetcher;
 class RootScrollerController;

@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/loader/fetch_priority_attribute.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
+#include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 #include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle.h"
 #include "third_party/blink/renderer/core/script/classic_pending_script.h"
