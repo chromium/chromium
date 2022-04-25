@@ -155,8 +155,12 @@
       <div id="contentArea" slot="content" class="layout flex vertical">
         <!-- Animation -->
         <div class="marketing-animation-content">
+          <iron-media-query query="(prefers-color-scheme: dark)"
+              query-matches="{{isDarkModeActive_}}">
+          </iron-media-query>
           <oobe-cr-lottie id="animation"
-              animation-url="animations/all_set.json" singleLoop="true">
+              animation-url="[[getAnimationUrl_(isDarkModeActive_)]]"
+              singleLoop="true">
           </oobe-cr-lottie>
         </div>
       </div>

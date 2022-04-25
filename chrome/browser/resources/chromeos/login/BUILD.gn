@@ -86,7 +86,8 @@ generate_grd("build_oobe_grd") {
   ]
   input_files = [
     # Lottie animation resources
-    "animations/all_set.json",
+    "animations/all_set_light.json",
+    "animations/all_set_dark.json",
     "animations/downloading_apps.json",
     "animations/gesture_go_back.json",
     "animations/gesture_go_home.json",
