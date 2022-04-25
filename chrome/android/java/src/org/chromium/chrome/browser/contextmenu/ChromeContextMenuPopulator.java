@@ -19,7 +19,6 @@ import android.net.MailTo;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Pair;
-import android.webkit.MimeTypeMap;
 import android.webkit.URLUtil;
 
 import androidx.annotation.IntDef;
@@ -190,21 +189,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int NUM_ENTRIES = 41;
         }
 
-        // Note: these values must match the ContextMenuSaveLinkType enum in enums.xml.
-        // Only add new values at the end, right before NUM_TYPES. We depend on these specific
-        // values in UMA histograms.
-        @IntDef({Type.UNKNOWN, Type.TEXT, Type.IMAGE, Type.AUDIO, Type.VIDEO, Type.PDF})
-        @Retention(RetentionPolicy.SOURCE)
-        public @interface Type {
-            int UNKNOWN = 0;
-            int TEXT = 1;
-            int IMAGE = 2;
-            int AUDIO = 3;
-            int VIDEO = 4;
-            int PDF = 5;
-            int NUM_ENTRIES = 6;
-        }
-
         // Note: these values must match the ContextMenuSaveImage enum in enums.xml.
         // Only add new values at the end, right before NUM_ENTRIES.
         @IntDef({TypeSaveImage.LOADED, TypeSaveImage.NOT_DOWNLOADABLE,
@@ -318,34 +302,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             }
             RecordHistogram.recordEnumeratedHistogram(histogramName + ".NewTabOption",
                     selectedNewTabCreationEnum, SelectedNewTabCreationEnum.NUM_ENTRIES);
-        }
-
-        /**
-         * Records the content types when user downloads the file by long pressing the
-         * save link context menu option.
-         */
-        static void recordSaveLinkTypes(GURL url) {
-            String extension = MimeTypeMap.getFileExtensionFromUrl(url.getSpec());
-            @Type
-            int mimeType = Type.UNKNOWN;
-            if (extension != null) {
-                String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-                if (type != null) {
-                    if (type.startsWith("text")) {
-                        mimeType = Type.TEXT;
-                    } else if (type.startsWith("image")) {
-                        mimeType = Type.IMAGE;
-                    } else if (type.startsWith("audio")) {
-                        mimeType = Type.AUDIO;
-                    } else if (type.startsWith("video")) {
-                        mimeType = Type.VIDEO;
-                    } else if (type.equals("application/pdf")) {
-                        mimeType = Type.PDF;
-                    }
-                }
-            }
-            RecordHistogram.recordEnumeratedHistogram(
-                    "ContextMenu.SaveLinkType", mimeType, Type.NUM_ENTRIES);
         }
 
         /**
@@ -736,7 +692,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             recordContextMenuSelection(ContextMenuUma.Action.SAVE_LINK);
             GURL url = mParams.getUnfilteredLinkUrl();
             if (mItemDelegate.startDownload(url, true)) {
-                ContextMenuUma.recordSaveLinkTypes(url);
                 mNativeDelegate.startDownload(true);
             }
         } else if (itemId == R.id.contextmenu_share_link) {

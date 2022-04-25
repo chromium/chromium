@@ -2957,6 +2957,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ContextMenu.SaveLinkType" enum="ContextMenuSaveLinkType"
     expires_after="M77">
+  <obsolete>
+    Removed in M103
+  </obsolete>
   <owner>qinmin@chromium.org</owner>
   <summary>
     Type of the url when user saves the content through the save link context

@@ -59,6 +59,7 @@
   <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_CONNECT"/>
   <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation"/>
   <uses-permission-sdk-23 android:name="android.permission.READ_CONTACTS"/>
+  <uses-permission-sdk-23 android:name="android.permission.READ_MEDIA_AUDIO"/>
   <uses-permission-sdk-23 android:name="android.permission.READ_MEDIA_IMAGES"/>
   <uses-permission-sdk-23 android:name="android.permission.READ_MEDIA_VIDEO"/>
   <uses-permission-sdk-23 android:name="android.permission.REORDER_TASKS"/>
