@@ -98,11 +98,13 @@ void StabilityMetricsHelper::ProvideStabilityMetrics(
     local_state_->SetInteger(prefs::kStabilityRendererCrashCount, 0);
   }
 
+#if BUILDFLAG(IS_ANDROID)
   count = local_state_->GetInteger(prefs::kStabilityRendererLaunchCount);
   if (count) {
     stability_proto->set_renderer_launch_count(count);
     local_state_->SetInteger(prefs::kStabilityRendererLaunchCount, 0);
   }
+#endif  // BUILDFLAG(IS_ANDROID)
 
   count =
       local_state_->GetInteger(prefs::kStabilityExtensionRendererCrashCount);
@@ -118,7 +120,9 @@ void StabilityMetricsHelper::ClearSavedStabilityMetrics() {
   local_state_->SetInteger(prefs::kStabilityGpuCrashCount, 0);
   local_state_->SetInteger(prefs::kStabilityPageLoadCount, 0);
   local_state_->SetInteger(prefs::kStabilityRendererCrashCount, 0);
+#if BUILDFLAG(IS_ANDROID)
   local_state_->SetInteger(prefs::kStabilityRendererLaunchCount, 0);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // static
@@ -128,7 +132,9 @@ void StabilityMetricsHelper::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kStabilityGpuCrashCount, 0);
   registry->RegisterIntegerPref(prefs::kStabilityPageLoadCount, 0);
   registry->RegisterIntegerPref(prefs::kStabilityRendererCrashCount, 0);
+#if BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(prefs::kStabilityRendererLaunchCount, 0);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void StabilityMetricsHelper::IncreaseRendererCrashCount() {
@@ -263,8 +269,10 @@ void StabilityMetricsHelper::LogRendererLaunched(bool was_extension_process) {
                     ? StabilityEventType::kExtensionRendererLaunch
                     : StabilityEventType::kRendererLaunch;
   RecordStabilityEvent(metric);
+#if BUILDFLAG(IS_ANDROID)
   if (!was_extension_process)
     IncrementPrefValue(prefs::kStabilityRendererLaunchCount);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void StabilityMetricsHelper::LogRendererLaunchFailed(

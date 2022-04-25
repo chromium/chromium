@@ -749,18 +749,17 @@ const char kShowReadingListInBookmarkBar[] = "bookmark_bar.show_reading_list";
 
 // Deprecated 04/2022.
 #if BUILDFLAG(ENABLE_PLUGINS)
-// Dictionary holding plugins metadata.
 const char kPluginsMetadata[] = "plugins.metadata";
-
-// Last update time of plugins resource cache.
 const char kPluginsResourceCacheUpdate[] = "plugins.resource_cache_update";
-#endif
-
-// Deprecated 04/2022
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kAccountManagerNumTimesWelcomeScreenShown[] =
     "account_manager.num_times_welcome_screen_shown";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID)
+const char kStabilityRendererLaunchCount[] =
+    "user_experience_metrics.stability.renderer_launch_count";
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -790,7 +789,7 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 02/2022.
   registry->RegisterBooleanPref(kWebSQLInThirdPartyContextEnabled, false);
 
-  // Deprecated 03/2002.
+  // Deprecated 03/2022.
   registry->RegisterIntegerPref(kStabilityChildProcessCrashCount, 0);
   registry->RegisterIntegerPref(kStabilityRendererFailedLaunchCount, 0);
   registry->RegisterIntegerPref(kStabilityExtensionRendererFailedLaunchCount,
@@ -808,6 +807,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kPluginsMetadata);
   registry->RegisterStringPref(kPluginsResourceCacheUpdate, "0");
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
+#if !BUILDFLAG(IS_ANDROID)
+  registry->RegisterIntegerPref(kStabilityRendererLaunchCount, 0);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1652,11 +1654,14 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 #endif
   local_state->ClearPref(kStabilityExtensionRendererLaunchCount);
 
-#if BUILDFLAG(ENABLE_PLUGINS)
   // Added 04/2022.
+#if BUILDFLAG(ENABLE_PLUGINS)
   local_state->ClearPref(kPluginsMetadata);
   local_state->ClearPref(kPluginsResourceCacheUpdate);
 #endif
+#if !BUILDFLAG(IS_ANDROID)
+  local_state->ClearPref(kStabilityRendererLaunchCount);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

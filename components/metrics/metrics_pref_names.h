@@ -55,10 +55,10 @@ extern const char kStabilityGmsCoreVersion[];
 extern const char kStabilityGpuCrashCount[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kStabilityLaunchCount[];
+extern const char kStabilityRendererLaunchCount[];
 #endif
 extern const char kStabilityPageLoadCount[];
 extern const char kStabilityRendererCrashCount[];
-extern const char kStabilityRendererLaunchCount[];
 extern const char kStabilitySavedSystemProfile[];
 extern const char kStabilitySavedSystemProfileHash[];
 extern const char kStabilityStatsBuildTime[];
