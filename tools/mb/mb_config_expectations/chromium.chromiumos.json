@@ -89,7 +89,8 @@
       "is_debug": true,
       "ozone_platform_headless": true,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "chromeos-amd64-generic-rel": {
@@ -98,8 +99,9 @@
       "dcheck_always_on": false,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
-      "use_goma": true,
-      "use_real_dbus_clients": false
+      "use_rbe": true,
+      "use_real_dbus_clients": false,
+      "use_remoteexec": true
     }
   },
   "chromeos-arm-generic-dbg": {
@@ -130,7 +132,8 @@
       "dcheck_always_on": false,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "chromeos-arm64-generic-rel": {
