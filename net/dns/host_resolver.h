@@ -426,6 +426,8 @@ class NET_EXPORT HostResolver {
   // performed exclusively for `target_network`, lookups will fail if
   // `target_network` disconnects. This can only be used by network-bound
   // URLRequestContexts.
+  // Due to the current implementation, if `options` is specified, its
+  // DnsConfigOverrides parameter must be empty.
   // Only implemented for Android starting from Marshmallow.
   static std::unique_ptr<HostResolver> CreateStandaloneNetworkBoundResolver(
       NetLog* net_log,
