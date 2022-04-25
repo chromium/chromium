@@ -132,7 +132,7 @@ NSAttributedString* FooterAttributedStringWithMessageIDAndURL(
     case SigninScreenConsumerSigninStatusAvailable: {
       self.titleText = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
       self.subtitleText =
-          l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE);
+          l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
       break;
     }
     case SigninScreenConsumerSigninStatusForced: {
