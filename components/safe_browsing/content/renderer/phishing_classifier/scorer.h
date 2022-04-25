@@ -131,7 +131,7 @@ class Scorer {
       const SkBitmap& bitmap,
       int input_width,
       int input_height,
-      const std::string& model_data,
+      std::string model_data,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(std::vector<double>)> callback);
 

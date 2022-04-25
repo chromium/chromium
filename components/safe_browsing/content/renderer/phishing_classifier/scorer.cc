@@ -190,17 +190,14 @@ void Scorer::ApplyVisualTfLiteModelHelper(
     const SkBitmap& bitmap,
     int input_width,
     int input_height,
-    const std::string& model_data,
+    std::string model_data,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(std::vector<double>)> callback) {
   TRACE_EVENT0("safe_browsing", "ApplyVisualTfLiteModel");
   base::Time before_operation = base::Time::Now();
-  std::string model_data_copy = model_data;
-  base::UmaHistogramTimes("SBClientPhishing.ApplyTfliteTime.ModelCopy",
-                          base::Time::Now() - before_operation);
   before_operation = base::Time::Now();
   std::unique_ptr<tflite::task::vision::ImageClassifier> classifier =
-      CreateClassifier(std::move(model_data_copy));
+      CreateClassifier(std::move(model_data));
   base::UmaHistogramTimes("SBClientPhishing.ApplyTfliteTime.CreateClassifier",
                           base::Time::Now() - before_operation);
   if (!classifier) {

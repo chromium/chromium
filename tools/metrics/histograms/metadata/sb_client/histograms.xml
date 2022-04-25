@@ -444,7 +444,11 @@ chromium-metrics-reviews@google.com.
         summary="extracting the model input data from the page screenshot"/>
     <variant name="ModelCopy"
         summary="copying the model data into a separate string for the TfLite
-                 runtime"/>
+                 runtime">
+      <obsolete>
+        Removed 04-2022 since this operation is no longer performed.
+      </obsolete>
+    </variant>
   </token>
 </histogram>
 
