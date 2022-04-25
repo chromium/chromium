@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/power/battery_level_provider.h"
+#include "chrome/browser/metrics/power/usage_scenario.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_tracker.h"
 #include "chrome/browser/performance_monitor/process_monitor.h"
@@ -91,33 +92,6 @@ class PowerMetricsReporter
   void OnFirstSampleForTesting(base::OnceClosure callback);
 
   static int64_t GetBucketForSampleForTesting(base::TimeDelta value);
-  static std::vector<const char*> GetLongIntervalSuffixesForTesting(
-      const UsageScenarioDataStore::IntervalData& interval_data);
-
-  // Contains data to determine when and how to generate histograms and trace
-  // events for a usage scenario.
-  struct ScenarioParams {
-    const char* histogram_suffix;
-    // CPU usage threshold to emit a "high CPU" trace event.
-    double short_interval_cpu_threshold;
-    const char* trace_event_title;
-  };
-
-#if BUILDFLAG(IS_MAC)
-  // Returns params to use for histograms and trace events related to a short
-  // interval described by `short_interval_data`. `pre_interval_data` describes
-  // a long interval ending simultaneously with the short interval.
-  //
-  // `pre_interval_data` is required to decide whether "_Recent" is appended to
-  // the ".ZeroWindow" or ".AllTabsHidden_NoVideoCaptureOrAudio" suffixes.
-  // Appending "_Recent" is useful  to isolate cases where the scenario changed
-  // recently (e.g. CPU usage in a short interval with zero window might be
-  // affected by cleanup tasks from recently closed tabs).
-  static const PowerMetricsReporter::ScenarioParams&
-  GetShortIntervalScenarioParams(
-      const UsageScenarioDataStore::IntervalData& short_interval_data,
-      const UsageScenarioDataStore::IntervalData& pre_interval_data);
-#endif  // BUILDFLAG(IS_MAC)
 
  protected:
   // Any change to this enum should be reflected in the corresponding enums.xml

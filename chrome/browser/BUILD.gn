@@ -4012,6 +4012,8 @@ static_library("browser") {
       "metrics/incognito_observer_desktop.cc",
       "metrics/power/power_metrics_reporter.cc",
       "metrics/power/power_metrics_reporter.h",
+      "metrics/power/usage_scenario.cc",
+      "metrics/power/usage_scenario.h",
       "metrics/tab_stats/tab_stats_data_store.cc",
       "metrics/tab_stats/tab_stats_data_store.h",
       "metrics/tab_stats/tab_stats_observer.h",

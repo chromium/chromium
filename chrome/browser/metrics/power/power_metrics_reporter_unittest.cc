@@ -19,7 +19,6 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -226,9 +225,6 @@ class PowerMetricsReporterUnitTest : public testing::Test {
 };
 
 }  // namespace
-
-using testing::ElementsAre;
-using testing::StrEq;
 
 TEST_F(PowerMetricsReporterUnitTest, LongIntervalHistograms) {
   UsageScenarioDataStore::IntervalData interval_data;
@@ -632,217 +628,6 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateIncrease) {
       BatteryDischargeMode::kBatteryLevelIncreased, 1);
 }
 
-TEST_F(PowerMetricsReporterUnitTest, GetLongIntervalSuffixes_ZeroWindow) {
-  UsageScenarioDataStore::IntervalData interval_data;
-  interval_data.max_tab_count = 0;
-
-  EXPECT_THAT(PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
-                  interval_data),
-              ElementsAre(StrEq(""), StrEq(".ZeroWindow")));
-}
-
-TEST_F(PowerMetricsReporterUnitTest,
-       GetLongIntervalSuffixes_AllTabsHidden_VideoCapture) {
-  UsageScenarioDataStore::IntervalData interval_data;
-  interval_data.max_tab_count = 1;
-  interval_data.max_visible_window_count = 0;
-  interval_data.time_capturing_video = base::Seconds(1);
-  // Values below should be ignored.
-  interval_data.time_playing_video_full_screen_single_monitor =
-      base::Seconds(1);
-  interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
-  interval_data.time_playing_audio = base::Seconds(1);
-  interval_data.top_level_navigation_count = 1;
-  interval_data.user_interaction_count = 1;
-
-  EXPECT_THAT(PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
-                  interval_data),
-              ElementsAre(StrEq(""), StrEq(".AllTabsHidden_VideoCapture")));
-}
-
-TEST_F(PowerMetricsReporterUnitTest,
-       GetLongIntervalSuffixes_AllTabsHidden_Audio) {
-  UsageScenarioDataStore::IntervalData interval_data;
-  interval_data.max_tab_count = 1;
-  interval_data.max_visible_window_count = 0;
-  interval_data.time_capturing_video = base::Seconds(0);
-  interval_data.time_playing_audio = base::Seconds(1);
-  // Values below should be ignored.
-  interval_data.time_playing_video_full_screen_single_monitor =
-      base::Seconds(1);
-  interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
-  interval_data.top_level_navigation_count = 1;
-  interval_data.user_interaction_count = 1;
-
-  EXPECT_THAT(PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
-                  interval_data),
-              ElementsAre(StrEq(""), StrEq(".AllTabsHidden_Audio")));
-}
-
-TEST_F(PowerMetricsReporterUnitTest,
-       GetLongIntervalSuffixes_AllTabsHidden_NoVideoCaptureOrAudio) {
-  UsageScenarioDataStore::IntervalData interval_data;
-  interval_data.max_tab_count = 1;
-  interval_data.max_visible_window_count = 0;
-  interval_data.time_capturing_video = base::Seconds(0);
-  interval_data.time_playing_audio = base::Seconds(0);
-  // Values below should be ignored.
-  interval_data.time_playing_video_full_screen_single_monitor =
-      base::Seconds(1);
-  interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
-  interval_data.top_level_navigation_count = 1;
-  interval_data.user_interaction_count = 1;
-
-  EXPECT_THAT(
-      PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
-          interval_data),
-      ElementsAre(StrEq(""), StrEq(".AllTabsHidden_NoVideoCaptureOrAudio")));
-}
-
-TEST_F(PowerMetricsReporterUnitTest, GetLongIntervalSuffixes_VideoCapture) {
-  UsageScenarioDataStore::IntervalData interval_data;
-  interval_data.max_tab_count = 1;
-  interval_data.max_visible_window_count = 1;
-  interval_data.time_capturing_video = base::Seconds(1);
-  // Values below should be ignored.
-  interval_data.time_playing_video_full_screen_single_monitor =
-      base::Seconds(1);
-  interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
-  interval_data.time_playing_audio = base::Seconds(1);
-  interval_data.top_level_navigation_count = 1;
-  interval_data.user_interaction_count = 1;
-
-  EXPECT_THAT(PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
-                  interval_data),
-              ElementsAre(StrEq(""), StrEq(".VideoCapture")));
-}
-
-TEST_F(PowerMetricsReporterUnitTest, GetLongIntervalSuffixes_FullscreenVideo) {
-  UsageScenarioDataStore::IntervalData interval_data;
-  interval_data.max_tab_count = 1;
-  interval_data.max_visible_window_count = 1;
-  interval_data.time_capturing_video = base::TimeDelta();
-  interval_data.time_playing_video_full_screen_single_monitor =
-      base::Seconds(1);
-  // Values below should be ignored.
-  interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
-  interval_data.time_playing_audio = base::Seconds(1);
-  interval_data.top_level_navigation_count = 1;
-  interval_data.user_interaction_count = 1;
-
-  EXPECT_THAT(PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
-                  interval_data),
-              ElementsAre(StrEq(""), StrEq(".FullscreenVideo")));
-}
-
-TEST_F(PowerMetricsReporterUnitTest,
-       GetLongIntervalSuffixes_EmbeddedVideo_NoNavigation) {
-  UsageScenarioDataStore::IntervalData interval_data;
-  interval_data.max_tab_count = 1;
-  interval_data.max_visible_window_count = 1;
-  interval_data.time_capturing_video = base::TimeDelta();
-  interval_data.time_playing_video_full_screen_single_monitor =
-      base::TimeDelta();
-  interval_data.top_level_navigation_count = 0;
-  interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
-  // Values below should be ignored.
-  interval_data.time_playing_audio = base::Seconds(1);
-  interval_data.user_interaction_count = 1;
-
-  EXPECT_THAT(PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
-                  interval_data),
-              ElementsAre(StrEq(""), StrEq(".EmbeddedVideo_NoNavigation")));
-}
-
-TEST_F(PowerMetricsReporterUnitTest,
-       GetLongIntervalSuffixes_EmbeddedVideo_WithNavigation) {
-  UsageScenarioDataStore::IntervalData interval_data;
-  interval_data.max_tab_count = 1;
-  interval_data.max_visible_window_count = 1;
-  interval_data.time_capturing_video = base::TimeDelta();
-  interval_data.time_playing_video_full_screen_single_monitor =
-      base::TimeDelta();
-  interval_data.top_level_navigation_count = 1;
-  interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
-  // Values below should be ignored.
-  interval_data.time_playing_audio = base::Seconds(1);
-  interval_data.user_interaction_count = 1;
-
-  EXPECT_THAT(PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
-                  interval_data),
-              ElementsAre(StrEq(""), StrEq(".EmbeddedVideo_WithNavigation")));
-}
-
-TEST_F(PowerMetricsReporterUnitTest, GetLongIntervalSuffixes_Audio) {
-  UsageScenarioDataStore::IntervalData interval_data;
-  interval_data.max_tab_count = 1;
-  interval_data.max_visible_window_count = 1;
-  interval_data.time_capturing_video = base::TimeDelta();
-  interval_data.time_playing_video_full_screen_single_monitor =
-      base::TimeDelta();
-  interval_data.time_playing_video_in_visible_tab = base::TimeDelta();
-  interval_data.time_playing_audio = base::Seconds(1);
-  // Values below should be ignored.
-  interval_data.user_interaction_count = 1;
-  interval_data.top_level_navigation_count = 1;
-
-  EXPECT_THAT(PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
-                  interval_data),
-              ElementsAre(StrEq(""), StrEq(".Audio")));
-}
-
-TEST_F(PowerMetricsReporterUnitTest, GetLongIntervalSuffixes_Navigation) {
-  UsageScenarioDataStore::IntervalData interval_data;
-  interval_data.max_tab_count = 1;
-  interval_data.max_visible_window_count = 1;
-  interval_data.time_capturing_video = base::TimeDelta();
-  interval_data.time_playing_video_full_screen_single_monitor =
-      base::TimeDelta();
-  interval_data.time_playing_video_in_visible_tab = base::TimeDelta();
-  interval_data.time_playing_audio = base::TimeDelta();
-  interval_data.top_level_navigation_count = 1;
-  // Values below should be ignored.
-  interval_data.user_interaction_count = 1;
-
-  EXPECT_THAT(PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
-                  interval_data),
-              ElementsAre(StrEq(""), StrEq(".Navigation")));
-}
-
-TEST_F(PowerMetricsReporterUnitTest, GetLongIntervalSuffixes_Interaction) {
-  UsageScenarioDataStore::IntervalData interval_data;
-  interval_data.max_tab_count = 1;
-  interval_data.max_visible_window_count = 1;
-  interval_data.time_capturing_video = base::TimeDelta();
-  interval_data.time_playing_video_full_screen_single_monitor =
-      base::TimeDelta();
-  interval_data.time_playing_video_in_visible_tab = base::TimeDelta();
-  interval_data.time_playing_audio = base::TimeDelta();
-  interval_data.top_level_navigation_count = 0;
-  interval_data.user_interaction_count = 1;
-
-  EXPECT_THAT(PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
-                  interval_data),
-              ElementsAre(StrEq(""), StrEq(".Interaction")));
-}
-
-TEST_F(PowerMetricsReporterUnitTest, GetLongIntervalSuffixes_Passive) {
-  UsageScenarioDataStore::IntervalData interval_data;
-  interval_data.max_tab_count = 1;
-  interval_data.max_visible_window_count = 1;
-  interval_data.time_capturing_video = base::TimeDelta();
-  interval_data.time_playing_video_full_screen_single_monitor =
-      base::TimeDelta();
-  interval_data.time_playing_video_in_visible_tab = base::TimeDelta();
-  interval_data.time_playing_audio = base::TimeDelta();
-  interval_data.top_level_navigation_count = 0;
-  interval_data.user_interaction_count = 0;
-
-  EXPECT_THAT(PowerMetricsReporterAccess::GetLongIntervalSuffixesForTesting(
-                  interval_data),
-              ElementsAre(StrEq(""), StrEq(".Passive")));
-}
-
 TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsTooEarly) {
   UsageScenarioDataStore::IntervalData interval_data;
 
@@ -850,7 +635,7 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsTooEarly) {
       (kExpectedMetricsCollectionInterval * kTolerableNegativeDrift) -
           base::Seconds(1),
       BatteryDischarge{BatteryDischargeMode::kDischarging, 2500},
-      PowerMetricsReporter::GetLongIntervalSuffixesForTesting(interval_data));
+      GetLongIntervalSuffixes(interval_data));
 
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
   histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
@@ -865,7 +650,7 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsEarly) {
       (kExpectedMetricsCollectionInterval * kTolerableNegativeDrift) +
           base::Seconds(1),
       BatteryDischarge{BatteryDischargeMode::kDischarging, 2500},
-      PowerMetricsReporter::GetLongIntervalSuffixesForTesting(interval_data));
+      GetLongIntervalSuffixes(interval_data));
 
   histogram_tester_.ExpectUniqueSample(kBatteryDischargeRateHistogramName, 2500,
                                        1);
@@ -880,7 +665,7 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsTooLate) {
       (kExpectedMetricsCollectionInterval * kTolerablePositiveDrift) +
           base::Seconds(1),
       BatteryDischarge{BatteryDischargeMode::kDischarging, 2500},
-      PowerMetricsReporter::GetLongIntervalSuffixesForTesting(interval_data));
+      GetLongIntervalSuffixes(interval_data));
 
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
   histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
@@ -895,7 +680,7 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsLate) {
       (kExpectedMetricsCollectionInterval * kTolerablePositiveDrift) -
           base::Seconds(1),
       BatteryDischarge{BatteryDischargeMode::kDischarging, 2500},
-      PowerMetricsReporter::GetLongIntervalSuffixesForTesting(interval_data));
+      GetLongIntervalSuffixes(interval_data));
 
   histogram_tester_.ExpectUniqueSample(kBatteryDischargeRateHistogramName, 2500,
                                        1);
@@ -1015,315 +800,6 @@ TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_Emitted) {
   ExpectHistogramSamples(
       &histogram_tester_, suffixes,
       {{"PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 5000}});
-}
-
-TEST_F(PowerMetricsReporterUnitTest,
-       GetShortIntervalScenarioParams_ZeroWindow) {
-  UsageScenarioDataStore::IntervalData short_interval_data;
-  short_interval_data.max_tab_count = 0;
-
-  UsageScenarioDataStore::IntervalData long_interval_data;
-  long_interval_data.max_tab_count = 0;
-
-  const PowerMetricsReporter::ScenarioParams scenario_params =
-      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
-          short_interval_data, long_interval_data);
-
-  EXPECT_STREQ(scenario_params.histogram_suffix, ".ZeroWindow");
-}
-
-TEST_F(PowerMetricsReporterUnitTest,
-       GetShortIntervalScenarioParams_ZeroWindow_Recent) {
-  UsageScenarioDataStore::IntervalData short_interval_data;
-  short_interval_data.max_tab_count = 0;
-
-  UsageScenarioDataStore::IntervalData long_interval_data;
-  long_interval_data.max_tab_count = 1;
-
-  const PowerMetricsReporter::ScenarioParams scenario_params =
-      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
-          short_interval_data, long_interval_data);
-
-  EXPECT_STREQ(scenario_params.histogram_suffix, ".ZeroWindow_Recent");
-}
-
-TEST_F(PowerMetricsReporterUnitTest,
-       GetShortIntervalScenarioParams_AllTabsHidden_VideoCapture) {
-  UsageScenarioDataStore::IntervalData short_interval_data;
-  short_interval_data.max_tab_count = 1;
-  short_interval_data.max_visible_window_count = 0;
-  short_interval_data.time_capturing_video = base::Seconds(1);
-  // Values below should be ignored.
-  short_interval_data.time_playing_video_full_screen_single_monitor =
-      base::Seconds(1);
-  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
-  short_interval_data.time_playing_audio = base::Seconds(1);
-  short_interval_data.top_level_navigation_count = 1;
-  short_interval_data.user_interaction_count = 1;
-
-  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
-  long_interval_data.max_visible_window_count = 1;
-
-  const PowerMetricsReporter::ScenarioParams scenario_params =
-      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
-          short_interval_data, long_interval_data);
-
-  EXPECT_STREQ(scenario_params.histogram_suffix, ".AllTabsHidden_VideoCapture");
-}
-
-TEST_F(PowerMetricsReporterUnitTest,
-       GetShortIntervalScenarioParams_AllTabsHidden_Audio) {
-  UsageScenarioDataStore::IntervalData short_interval_data;
-  short_interval_data.max_tab_count = 1;
-  short_interval_data.max_visible_window_count = 0;
-  short_interval_data.time_capturing_video = base::Seconds(0);
-  short_interval_data.time_playing_audio = base::Seconds(1);
-  // Values below should be ignored.
-  short_interval_data.time_playing_video_full_screen_single_monitor =
-      base::Seconds(1);
-  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
-  short_interval_data.top_level_navigation_count = 1;
-  short_interval_data.user_interaction_count = 1;
-
-  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
-  long_interval_data.max_visible_window_count = 1;
-
-  const PowerMetricsReporter::ScenarioParams scenario_params =
-      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
-          short_interval_data, long_interval_data);
-
-  EXPECT_STREQ(scenario_params.histogram_suffix, ".AllTabsHidden_Audio");
-}
-
-TEST_F(PowerMetricsReporterUnitTest,
-       GetShortIntervalScenarioParams_AllTabsHidden_NoVideoCaptureOrAudio) {
-  UsageScenarioDataStore::IntervalData short_interval_data;
-  short_interval_data.max_tab_count = 1;
-  short_interval_data.max_visible_window_count = 0;
-  short_interval_data.time_capturing_video = base::Seconds(0);
-  short_interval_data.time_playing_audio = base::Seconds(0);
-  // Values below should be ignored.
-  short_interval_data.time_playing_video_full_screen_single_monitor =
-      base::Seconds(1);
-  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
-  short_interval_data.top_level_navigation_count = 1;
-  short_interval_data.user_interaction_count = 1;
-
-  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
-
-  const PowerMetricsReporter::ScenarioParams scenario_params =
-      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
-          short_interval_data, long_interval_data);
-
-  EXPECT_STREQ(scenario_params.histogram_suffix,
-               ".AllTabsHidden_NoVideoCaptureOrAudio");
-}
-
-TEST_F(
-    PowerMetricsReporterUnitTest,
-    GetShortIntervalScenarioParams_AllTabsHidden_NoVideoCaptureOrAudio_Recent) {
-  UsageScenarioDataStore::IntervalData short_interval_data;
-  short_interval_data.max_tab_count = 1;
-  short_interval_data.max_visible_window_count = 0;
-  short_interval_data.time_capturing_video = base::Seconds(0);
-  short_interval_data.time_playing_audio = base::Seconds(0);
-  // Values below should be ignored.
-  short_interval_data.time_playing_video_full_screen_single_monitor =
-      base::Seconds(1);
-  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
-  short_interval_data.top_level_navigation_count = 1;
-  short_interval_data.user_interaction_count = 1;
-
-  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
-  long_interval_data.max_visible_window_count = 1;
-
-  const PowerMetricsReporter::ScenarioParams scenario_params =
-      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
-          short_interval_data, long_interval_data);
-
-  EXPECT_STREQ(scenario_params.histogram_suffix,
-               ".AllTabsHidden_NoVideoCaptureOrAudio_Recent");
-}
-
-TEST_F(PowerMetricsReporterUnitTest,
-       GetShortIntervalScenarioParams_VideoCapture) {
-  UsageScenarioDataStore::IntervalData short_interval_data;
-  short_interval_data.max_tab_count = 1;
-  short_interval_data.max_visible_window_count = 1;
-  short_interval_data.time_capturing_video = base::Seconds(1);
-  // Values below should be ignored.
-  short_interval_data.time_playing_audio = base::Seconds(1);
-  short_interval_data.time_playing_video_full_screen_single_monitor =
-      base::Seconds(1);
-  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
-  short_interval_data.top_level_navigation_count = 1;
-  short_interval_data.user_interaction_count = 1;
-
-  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
-
-  const PowerMetricsReporter::ScenarioParams scenario_params =
-      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
-          short_interval_data, long_interval_data);
-
-  EXPECT_STREQ(scenario_params.histogram_suffix, ".VideoCapture");
-}
-
-TEST_F(PowerMetricsReporterUnitTest,
-       GetShortIntervalScenarioParams_FullscreenVideo) {
-  UsageScenarioDataStore::IntervalData short_interval_data;
-  short_interval_data.max_tab_count = 1;
-  short_interval_data.max_visible_window_count = 1;
-  short_interval_data.time_capturing_video = base::Seconds(0);
-  short_interval_data.time_playing_video_full_screen_single_monitor =
-      base::Seconds(1);
-  // Values below should be ignored.
-  short_interval_data.time_playing_audio = base::Seconds(1);
-  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
-  short_interval_data.top_level_navigation_count = 1;
-  short_interval_data.user_interaction_count = 1;
-
-  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
-
-  const PowerMetricsReporter::ScenarioParams scenario_params =
-      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
-          short_interval_data, long_interval_data);
-
-  EXPECT_STREQ(scenario_params.histogram_suffix, ".FullscreenVideo");
-}
-
-TEST_F(PowerMetricsReporterUnitTest,
-       GetShortIntervalScenarioParams_EmbeddedVideo_NoNavigation) {
-  UsageScenarioDataStore::IntervalData short_interval_data;
-  short_interval_data.max_tab_count = 1;
-  short_interval_data.max_visible_window_count = 1;
-  short_interval_data.time_capturing_video = base::Seconds(0);
-  short_interval_data.time_playing_video_full_screen_single_monitor =
-      base::Seconds(0);
-  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
-  short_interval_data.top_level_navigation_count = 0;
-  // Values below should be ignored.
-  short_interval_data.time_playing_audio = base::Seconds(1);
-  short_interval_data.user_interaction_count = 1;
-
-  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
-
-  const PowerMetricsReporter::ScenarioParams scenario_params =
-      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
-          short_interval_data, long_interval_data);
-
-  EXPECT_STREQ(scenario_params.histogram_suffix, ".EmbeddedVideo_NoNavigation");
-}
-
-TEST_F(PowerMetricsReporterUnitTest,
-       GetShortIntervalScenarioParams_EmbeddedVideo_WithNavigation) {
-  UsageScenarioDataStore::IntervalData short_interval_data;
-  short_interval_data.max_tab_count = 1;
-  short_interval_data.max_visible_window_count = 1;
-  short_interval_data.time_capturing_video = base::Seconds(0);
-  short_interval_data.time_playing_video_full_screen_single_monitor =
-      base::Seconds(0);
-  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
-  short_interval_data.top_level_navigation_count = 1;
-  // Values below should be ignored.
-  short_interval_data.time_playing_audio = base::Seconds(1);
-  short_interval_data.user_interaction_count = 1;
-
-  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
-
-  const PowerMetricsReporter::ScenarioParams scenario_params =
-      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
-          short_interval_data, long_interval_data);
-
-  EXPECT_STREQ(scenario_params.histogram_suffix,
-               ".EmbeddedVideo_WithNavigation");
-}
-
-TEST_F(PowerMetricsReporterUnitTest, GetShortIntervalScenarioParams_Audio) {
-  UsageScenarioDataStore::IntervalData short_interval_data;
-  short_interval_data.max_tab_count = 1;
-  short_interval_data.max_visible_window_count = 1;
-  short_interval_data.time_capturing_video = base::Seconds(0);
-  short_interval_data.time_playing_video_full_screen_single_monitor =
-      base::Seconds(0);
-  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(0);
-  short_interval_data.time_playing_audio = base::Seconds(1);
-  // Values below should be ignored.
-  short_interval_data.top_level_navigation_count = 1;
-  short_interval_data.user_interaction_count = 1;
-
-  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
-
-  const PowerMetricsReporter::ScenarioParams scenario_params =
-      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
-          short_interval_data, long_interval_data);
-
-  EXPECT_STREQ(scenario_params.histogram_suffix, ".Audio");
-}
-
-TEST_F(PowerMetricsReporterUnitTest,
-       GetShortIntervalScenarioParams_Navigation) {
-  UsageScenarioDataStore::IntervalData short_interval_data;
-  short_interval_data.max_tab_count = 1;
-  short_interval_data.max_visible_window_count = 1;
-  short_interval_data.time_capturing_video = base::Seconds(0);
-  short_interval_data.time_playing_video_full_screen_single_monitor =
-      base::Seconds(0);
-  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(0);
-  short_interval_data.time_playing_audio = base::Seconds(0);
-  short_interval_data.top_level_navigation_count = 1;
-  // Values below should be ignored.
-  short_interval_data.user_interaction_count = 1;
-
-  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
-
-  const PowerMetricsReporter::ScenarioParams scenario_params =
-      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
-          short_interval_data, long_interval_data);
-
-  EXPECT_STREQ(scenario_params.histogram_suffix, ".Navigation");
-}
-
-TEST_F(PowerMetricsReporterUnitTest,
-       GetShortIntervalScenarioParams_Interaction) {
-  UsageScenarioDataStore::IntervalData short_interval_data;
-  short_interval_data.max_tab_count = 1;
-  short_interval_data.max_visible_window_count = 1;
-  short_interval_data.time_capturing_video = base::Seconds(0);
-  short_interval_data.time_playing_video_full_screen_single_monitor =
-      base::Seconds(0);
-  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(0);
-  short_interval_data.time_playing_audio = base::Seconds(0);
-  short_interval_data.top_level_navigation_count = 0;
-  short_interval_data.user_interaction_count = 1;
-  // Values below should be ignored.
-
-  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
-  const PowerMetricsReporter::ScenarioParams scenario_params =
-      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
-          short_interval_data, long_interval_data);
-
-  EXPECT_STREQ(scenario_params.histogram_suffix, ".Interaction");
-}
-
-TEST_F(PowerMetricsReporterUnitTest, GetShortIntervalScenarioParams_Passive) {
-  UsageScenarioDataStore::IntervalData short_interval_data;
-  short_interval_data.max_tab_count = 1;
-  short_interval_data.max_visible_window_count = 1;
-  short_interval_data.time_capturing_video = base::Seconds(0);
-  short_interval_data.time_playing_video_full_screen_single_monitor =
-      base::Seconds(0);
-  short_interval_data.time_playing_video_in_visible_tab = base::Seconds(0);
-  short_interval_data.time_playing_audio = base::Seconds(0);
-  short_interval_data.top_level_navigation_count = 0;
-  short_interval_data.user_interaction_count = 0;
-  // Values below should be ignored.
-
-  UsageScenarioDataStore::IntervalData long_interval_data = short_interval_data;
-  const PowerMetricsReporter::ScenarioParams scenario_params =
-      PowerMetricsReporterAccess::GetShortIntervalScenarioParams(
-          short_interval_data, long_interval_data);
-
-  EXPECT_STREQ(scenario_params.histogram_suffix, ".Passive");
 }
 
 TEST_F(PowerMetricsReporterUnitTest, ResourceCoalitionHistograms) {
