@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -94,6 +95,8 @@ bool IsEmptyIconBitmapsForIconUrl(const IconsMap& icons_map,
 
   return true;
 }
+
+const char* kHistogramInstallResult = "WebApp.Install.Result";
 
 #if BUILDFLAG(IS_CHROMEOS)
 struct PlayStoreIntent {
@@ -478,6 +481,7 @@ void WebAppInstallTask::CallInstallCallback(const AppId& app_id,
   }
 
   DCHECK(install_callback_);
+  base::UmaHistogramBoolean(kHistogramInstallResult, webapps::IsSuccess(code));
   std::move(install_callback_).Run(app_id, code);
 }
 
