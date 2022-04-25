@@ -27,8 +27,6 @@ nacl_arm_glibc_rev = revisions[1]
 pnacl_newlib_rev = revisions[2]
 saigo_newlib_rev = revisions[3]
 
-use_saigo = true
-
 if (host_os == "win") {
   toolsuffix = ".exe"
 } else {
@@ -219,12 +217,8 @@ template("nacl_irt_toolchain") {
   toolchain_cpu = target_name
   assert(defined(invoker.toolchain_tuple), "Must define toolchain_tuple")
 
-  toolchain_package = "pnacl_newlib"
-  toolchain_revision = pnacl_newlib_rev
-  if (use_saigo) {
-    toolchain_package = "saigo_newlib"
-    toolchain_revision = saigo_newlib_rev
-  }
+  toolchain_package = "saigo_newlib"
+  toolchain_revision = saigo_newlib_rev
   toolprefix = rebase_path("${nacl_toolchain_dir}/${toolchain_package}/bin/" +
                                invoker.toolchain_tuple + "-",
                            root_build_dir)
@@ -260,7 +254,7 @@ template("nacl_irt_toolchain") {
       current_cpu = toolchain_cpu
       is_clang = true
       use_lld = false
-      is_nacl_saigo = use_saigo
+      is_nacl_saigo = true
     }
 
     # TODO(ncbray): depend on link script
