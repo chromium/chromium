@@ -92596,6 +92596,19 @@
        {}
       ]
      ],
+     "contain-inline-size-removed.html": [
+      "6e82f8c760edb5a8bc61e5b88517443069618519",
+      [
+       null,
+       [
+        [
+         "/css/css-contain/reference/pass_if_pass_below_clipped.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "contain-inline-size-table.html": [
       "de726caa907ea4997d7f128889c65517c5d02365",
       [
@@ -94956,6 +94969,19 @@
        [
         [
          "/css/css-contain/contain-size-multicol-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "contain-size-removed.html": [
+      "9db8f44d633d02107da5956df2e0c767a2a4a6a9",
+      [
+       null,
+       [
+        [
+         "/css/css-contain/reference/pass_if_pass_below_clipped.html",
          "=="
         ]
        ],
@@ -241133,6 +241159,23 @@
     }
    },
    "web-animations": {
+    "animation-model": {
+     "keyframe-effects": {
+      "transform-and-opacity-on-inline-001.html": [
+       "f76b53cd4c49152b1527bae481d76ace94243c7b",
+       [
+        null,
+        [
+         [
+          "/web-animations/animation-model/keyframe-effects/transform-and-opacity-on-inline-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
+     }
+    },
     "timing-model": {
      "animations": {
       "infinite-duration-animation.html": [
@@ -260251,11 +260294,11 @@
        []
       ],
       "color-contrast-computed-expected.txt": [
-       "7ca45195a19f15d17eeaba75976275b5ca71f8f4",
+       "242a2c6625f189802bdf5bf1d258a580eec7ea0b",
        []
       ],
       "color-contrast-valid-expected.txt": [
-       "202fc2335dceefedb0fb447985ddd4490d0f3f9b",
+       "74fffce2be1a9c0692ec38ce4fc8d244f15182c2",
        []
       ],
       "color-mix-computed-expected.txt": [
@@ -301384,7 +301427,7 @@
       []
      ],
      "font-test-utils.js": [
-      "db471280a3d39c0468ddafc8128b60ea75f59fbd",
+      "e183b35bfa077a41f988f585fedec1264e19a877",
       []
      ]
     }
@@ -314361,6 +314404,10 @@
          []
         ]
        },
+       "show-picker-disabled-readonly-expected.txt": [
+        "ca2ba34e4ed304a06fdfebfc2e294689a4eab0fc",
+        []
+       ],
        "type-change-state-expected.txt": [
         "30ef5f217757a3e73d909739872ce1ba24843f50",
         []
@@ -335532,6 +335579,10 @@
       ],
       "effect-value-iteration-composite-operation-expected.txt": [
        "4be9f3481dbc7d5f9ea989b1e8f5970e7f6a375b",
+       []
+      ],
+      "transform-and-opacity-on-inline-001-ref.html": [
+       "1e7f250c48fb093160a509b3d98c0b265085179f",
        []
       ]
      }
@@ -377338,14 +377389,14 @@
        ]
       ],
       "color-contrast-invalid.html": [
-       "10c478563298c360328b5a1d561971b217dee954",
+       "fbb4ef0e8e82772a55f682ec02ac54c85f5e21d0",
        [
         null,
         {}
        ]
       ],
       "color-contrast-valid.html": [
-       "ed7cea47a4204ff15b5da9c445ce397c33187719",
+       "b247b67807d06718eb11365fc114e4dc189c3914",
        [
         null,
         {}
@@ -472297,6 +472348,13 @@
         ]
        ],
        "update-the-image-data": {
+        "current-request-microtask.html": [
+         "125b37eadb4b793425814bf30052e3e5fb0b3f68",
+         [
+          null,
+          {}
+         ]
+        ],
         "fail-to-resolve.html": [
          "959ceaa9793d1c1d74482e688db7ad07a93fe336",
          [
@@ -473920,7 +473978,7 @@
         ]
        ],
        "show-picker-disabled-readonly.html": [
-        "77073b3f8100df9ed0ab28deaf63dc6acc86644b",
+        "8fdffc158f45143bfdc554e4be41f2bd8354ef04",
         [
          null,
          {
@@ -475514,6 +475572,15 @@
        [
         null,
         {}
+       ]
+      ],
+      "popup-top-layer-interactions.tentative.html": [
+       "53ded3ed0eba3c4175fb5e0719e6ea3850b23a6d",
+       [
+        null,
+        {
+         "testdriver": true
+        }
        ]
       ]
      },
@@ -518196,6 +518263,69 @@
         [
          "title",
          "Scheduler: Basic Functionality without Signals"
+        ],
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "scheduler-replaceable.any.js": [
+     "12bf1116ddd8f41d43e98113478cb3b136a205ad",
+     [
+      "scheduler/scheduler-replaceable.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Scheduler: scheduler should be replaceable"
+        ],
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "scheduler/scheduler-replaceable.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Scheduler: scheduler should be replaceable"
+        ],
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "scheduler/scheduler-replaceable.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Scheduler: scheduler should be replaceable"
+        ],
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "scheduler/scheduler-replaceable.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Scheduler: scheduler should be replaceable"
         ],
         [
          "global",
