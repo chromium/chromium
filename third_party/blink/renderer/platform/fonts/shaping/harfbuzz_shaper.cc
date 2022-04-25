@@ -411,11 +411,11 @@ void HarfBuzzShaper::CommitGlyphs(RangeData* range_data,
   hb_script_t script = ICUScriptToHBScript(current_run_script);
   // Here we need to specify glyph positions.
   BufferSlice next_slice;
+  unsigned run_start_index = slice.start_character_index;
   for (const BufferSlice* current_slice = &slice;;) {
     auto run = ShapeResult::RunInfo::Create(
-        current_font, direction, canvas_rotation, script,
-        current_slice->start_character_index, current_slice->num_glyphs,
-        current_slice->num_characters);
+        current_font, direction, canvas_rotation, script, run_start_index,
+        current_slice->num_glyphs, current_slice->num_characters);
     unsigned next_start_glyph;
     shape_result->InsertRun(run, current_slice->start_glyph_index,
                             current_slice->num_glyphs, &next_start_glyph,
@@ -427,6 +427,7 @@ void HarfBuzzShaper::CommitGlyphs(RangeData* range_data,
         (next_start_glyph - current_slice->start_glyph_index);
     if (!next_num_glyphs)
       break;
+
     // If the slice exceeds the limit a RunInfo can store, create another
     // RunInfo for the rest of the slice.
     DCHECK_GT(current_slice->num_characters, run->num_characters_);
@@ -434,6 +435,12 @@ void HarfBuzzShaper::CommitGlyphs(RangeData* range_data,
                   current_slice->num_characters - run->num_characters_,
                   next_start_glyph, next_num_glyphs};
     current_slice = &next_slice;
+
+    // The |InsertRun| has truncated the right end. In LTR, advance the
+    // |run_start_index| because the end characters are truncated. In RTL, keep
+    // the same |run_start_index| because the start characters are truncated.
+    if (HB_DIRECTION_IS_FORWARD(direction))
+      run_start_index = next_slice.start_character_index;
   }
   if (is_last_font)
     range_data->font->ReportNotDefGlyph();

@@ -607,12 +607,15 @@ TEST_P(ShapeParameterTest, MaxGlyphsSimple) {
   EXPECT_EQ(length, result->NumCharacters());
   EXPECT_EQ(length, result->NumGlyphs());
   Vector<ShapeResultRunData> runs = ShapeResultRunData::Get(result);
-  if (IsRtl(GetParam()))
-    runs.Reverse();
   EXPECT_THAT(
-      runs, testing::ElementsAre(
+      runs,
+      IsLtr(GetParam())
+          ? testing::ElementsAre(
                 ShapeResultRunData{0, length - 1, length - 1, HB_SCRIPT_LATIN},
-                ShapeResultRunData{length - 1, 1, 1, HB_SCRIPT_LATIN}));
+                ShapeResultRunData{length - 1, 1, 1, HB_SCRIPT_LATIN})
+          : testing::ElementsAre(
+                ShapeResultRunData{1, length - 1, length - 1, HB_SCRIPT_LATIN},
+                ShapeResultRunData{0, 1, 1, HB_SCRIPT_LATIN}));
 }
 
 // 'X' + U+0300 COMBINING GRAVE ACCENT is a cluster, but most fonts do not have
@@ -622,19 +625,22 @@ TEST_P(ShapeParameterTest, MaxGlyphsSimple) {
 TEST_P(ShapeParameterTest, MaxGlyphsClusterLatin) {
   const unsigned length = HarfBuzzRunGlyphData::kMaxCharacters + 1;
   String string = CreateStringOf('X', length);
-  string.replace(1, 1, u"\u0300");
+  string.replace(1, 1, u"\u0300");  // U+0300 COMBINING GRAVE ACCENT
   string.replace(length - 2, 2, u"Z\u0300");
   HarfBuzzShaper shaper(string);
   scoped_refptr<ShapeResult> result = ShapeWithParameter(&shaper);
   EXPECT_EQ(length, result->NumCharacters());
   EXPECT_EQ(length, result->NumGlyphs());
   Vector<ShapeResultRunData> runs = ShapeResultRunData::Get(result);
-  if (IsRtl(GetParam()))
-    runs.Reverse();
   EXPECT_THAT(
-      runs, testing::ElementsAre(
+      runs,
+      IsLtr(GetParam())
+          ? testing::ElementsAre(
                 ShapeResultRunData{0, length - 2, length - 2, HB_SCRIPT_LATIN},
-                ShapeResultRunData{length - 2, 2u, 2u, HB_SCRIPT_LATIN}));
+                ShapeResultRunData{length - 2, 2u, 2u, HB_SCRIPT_LATIN})
+          : testing::ElementsAre(
+                ShapeResultRunData{2, length - 2, length - 2, HB_SCRIPT_LATIN},
+                ShapeResultRunData{0, 2, 2, HB_SCRIPT_LATIN}));
 }
 
 // Same as MaxGlyphsClusterLatin, but by making the length "+2", this string
@@ -642,19 +648,22 @@ TEST_P(ShapeParameterTest, MaxGlyphsClusterLatin) {
 TEST_P(ShapeParameterTest, MaxGlyphsClusterLatin2) {
   const unsigned length = HarfBuzzRunGlyphData::kMaxCharacters + 2;
   String string = CreateStringOf('X', length);
-  string.replace(1, 1, u"\u0300");
+  string.replace(1, 1, u"\u0300");  // U+0300 COMBINING GRAVE ACCENT
   string.replace(length - 2, 2, u"Z\u0300");
   HarfBuzzShaper shaper(string);
   scoped_refptr<ShapeResult> result = ShapeWithParameter(&shaper);
   EXPECT_EQ(length, result->NumCharacters());
   EXPECT_EQ(length, result->NumGlyphs());
   Vector<ShapeResultRunData> runs = ShapeResultRunData::Get(result);
-  if (IsRtl(GetParam()))
-    runs.Reverse();
   EXPECT_THAT(
-      runs, testing::ElementsAre(
+      runs,
+      IsLtr(GetParam())
+          ? testing::ElementsAre(
                 ShapeResultRunData{0, length - 2, length - 2, HB_SCRIPT_LATIN},
-                ShapeResultRunData{length - 2, 2u, 2u, HB_SCRIPT_LATIN}));
+                ShapeResultRunData{length - 2, 2u, 2u, HB_SCRIPT_LATIN})
+          : testing::ElementsAre(
+                ShapeResultRunData{2, length - 2, length - 2, HB_SCRIPT_LATIN},
+                ShapeResultRunData{0, 2u, 2u, HB_SCRIPT_LATIN}));
 }
 
 TEST_P(ShapeParameterTest, MaxGlyphsClusterDevanagari) {
@@ -675,13 +684,17 @@ TEST_P(ShapeParameterTest, MaxGlyphsClusterDevanagari) {
 #endif
   EXPECT_EQ(length, result->NumGlyphs());
   Vector<ShapeResultRunData> runs = ShapeResultRunData::Get(result);
-  if (IsRtl(GetParam()))
-    runs.Reverse();
   EXPECT_THAT(
       runs,
-      testing::ElementsAre(
-          ShapeResultRunData{0, length - 3, length - 3, HB_SCRIPT_DEVANAGARI},
-          ShapeResultRunData{length - 3, 3u, 3u, HB_SCRIPT_DEVANAGARI}));
+      IsLtr(GetParam())
+          ? testing::ElementsAre(
+                ShapeResultRunData{0, length - 3, length - 3,
+                                   HB_SCRIPT_DEVANAGARI},
+                ShapeResultRunData{length - 3, 3u, 3u, HB_SCRIPT_DEVANAGARI})
+          : testing::ElementsAre(
+                ShapeResultRunData{3, length - 3, length - 3,
+                                   HB_SCRIPT_DEVANAGARI},
+                ShapeResultRunData{0, 3u, 3u, HB_SCRIPT_DEVANAGARI}));
 }
 
 TEST_P(ShapeParameterTest, ZeroWidthSpace) {

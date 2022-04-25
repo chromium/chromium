@@ -130,12 +130,13 @@ struct ShapeResult::RunInfo final
   void CharacterIndexForXPosition(float,
                                   BreakGlyphsOption,
                                   GlyphIndexResult*) const;
-  unsigned LimitNumGlyphs(unsigned start_glyph,
-                          unsigned* num_glyphs_in_out,
-                          unsigned* num_glyphs_removed_out,
-                          const bool is_ltr,
-                          const hb_glyph_info_t* glyph_infos);
+  void LimitNumGlyphs(unsigned start_glyph,
+                      unsigned* num_glyphs_in_out,
+                      unsigned* num_glyphs_removed_out,
+                      const bool is_ltr,
+                      const hb_glyph_info_t* glyph_infos);
 
+  unsigned StartIndex() const { return start_index_; }
   unsigned GlyphToCharacterIndex(unsigned i) const {
     return start_index_ + glyph_data_[i].character_index;
   }
@@ -540,6 +541,13 @@ struct ShapeResult::RunInfo final
     // When all offsets are zero, we don't allocate for reducing memory usage.
     GlyphOffsetArray offsets_;
   };
+
+  void CheckConsistency() const {
+#if DCHECK_IS_ON()
+    for (const HarfBuzzRunGlyphData& glyph : glyph_data_)
+      DCHECK_LT(glyph.character_index, num_characters_);
+#endif
+  }
 
   GlyphDataCollection glyph_data_;
   scoped_refptr<SimpleFontData> font_data_;

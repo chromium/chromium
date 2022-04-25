@@ -475,7 +475,6 @@ class PLATFORM_EXPORT ShapeResult
   void ComputeGlyphPositions(ShapeResult::RunInfo*,
                              unsigned start_glyph,
                              unsigned num_glyphs,
-                             unsigned start_cluster,
                              hb_buffer_t*);
   // Inserts as many glyphs as possible as a RunInfo, and sets
   // |next_start_glyph| to the start index of the remaining glyphs to be
