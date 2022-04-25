@@ -219,6 +219,10 @@ enum PermissionsPolicyFeature {
   // Client Hint for Save-Data.
   kClientHintSaveData = 99,
 
+  // Controls access to local fonts.
+  // https://wicg.github.io/local-font-access/#permissions-policy
+  kLocalFonts = 100,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

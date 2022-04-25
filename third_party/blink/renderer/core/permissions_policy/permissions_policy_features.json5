@@ -382,5 +382,10 @@
       permissions_policy_name: "window-placement",
       depends_on: ["WindowPlacement"],
     },
+    {
+      name: "LocalFonts",
+      permissions_policy_name: "local-fonts",
+      depends_on: ["FontAccess"],
+    },
   ],
 }

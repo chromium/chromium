@@ -1860,6 +1860,12 @@ external/wpt/font-access/font_access_detached_iframe.tentative.https.window.html
 external/wpt/font-access/font_access_permission.tentative.https.window.html [ Skip ]
 external/wpt/font-access/font_access_query_select.tentative.https.window.html [ Skip ]
 external/wpt/font-access/font_access_sorted.tentative.https.window.html [ Skip ]
+external/wpt/font-access/permissions-policy/local-fonts-allowed-by-permissions-policy-attribute-redirect-on-load.https.sub.html [ Skip ]
+external/wpt/font-access/permissions-policy/local-fonts-allowed-by-permissions-policy-attribute.https.sub.html [ Skip ]
+external/wpt/font-access/permissions-policy/local-fonts-allowed-by-permissions-policy.https.sub.html [ Skip ]
+external/wpt/font-access/permissions-policy/local-fonts-default-permissions-policy.https.sub.html [ Skip ]
+external/wpt/font-access/permissions-policy/local-fonts-disabled-by-permissions-policy.https.sub.html [ Skip ]
+external/wpt/font-access/permissions-policy/local-fonts-supported-by-permissions-policy.html [ Skip ]
 
 # Remove from virtual tests when ComputePressure is turned on by default.
 crbug.com/1196419 external/wpt/compute-pressure/compute_pressure_arguments.tentative.https.window.html [ Skip ]

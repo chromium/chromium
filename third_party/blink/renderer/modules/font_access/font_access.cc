@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -25,6 +26,12 @@
 namespace blink {
 
 using mojom::blink::FontEnumerationStatus;
+
+namespace {
+
+const char kFeaturePolicyBlocked[] =
+    "Access to the feature \"local-fonts\" is disallowed by Permissions Policy";
+}
 
 // static
 const char FontAccess::kSupplementName[] = "FontAccess";
@@ -75,10 +82,16 @@ ScriptPromise FontAccess::QueryLocalFontsImpl(ScriptState* script_state,
                                       "The execution context is not valid.");
     return ScriptPromise();
   }
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  if (!context->IsFeatureEnabled(
+          mojom::blink::PermissionsPolicyFeature::kLocalFonts,
+          ReportOptions::kReportOnFailure)) {
+    exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
+    return ScriptPromise();
+  }
 
   // Connect to font access manager remote if not bound already.
   if (!remote_.is_bound()) {
-    ExecutionContext* context = ExecutionContext::From(script_state);
     context->GetBrowserInterfaceBroker().GetInterface(
         remote_.BindNewPipeAndPassReceiver());
     remote_.set_disconnect_handler(
