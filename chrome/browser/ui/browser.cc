@@ -1916,6 +1916,11 @@ void Browser::EnumerateDirectory(
 bool Browser::CanEnterFullscreenModeForTab(
     content::RenderFrameHost* requesting_frame,
     const blink::mojom::FullscreenOptions& options) {
+  // If the tab strip isn't editable then a drag session is in progress, and it
+  // is not safe to enter fullscreen. https://crbug.com/1315080
+  if (!tab_strip_model_delegate_->IsTabStripEditable())
+    return false;
+
   return exclusive_access_manager_->fullscreen_controller()
       ->CanEnterFullscreenModeForTab(requesting_frame, options.display_id);
 }
