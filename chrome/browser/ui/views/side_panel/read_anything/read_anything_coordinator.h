@@ -48,6 +48,7 @@ class ReadAnythingCoordinator
 
  private:
   friend class BrowserUserData<ReadAnythingCoordinator>;
+  friend class ReadAnythingCoordinatorTest;
 
   // Callback passed to SidePanelCoordinator. This function creates the
   // container view and all its child views and returns it.
