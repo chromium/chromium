@@ -138,6 +138,9 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         public void onDismiss() {
             if (mIgnoreDismissal) return;
 
+            mPopupWindow.getContentView().removeOnLayoutChangeListener(
+                    mContentViewOnLayoutChangeListener);
+
             mHandler.removeCallbacks(mDismissRunnable);
             for (OnDismissListener listener : mDismissListeners) listener.onDismiss();
 
@@ -186,6 +189,15 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     private boolean mUpdateOrientationOnChange;
     private boolean mSmartAnchorWithMaxWidth;
 
+    private final View.OnLayoutChangeListener mContentViewOnLayoutChangeListener =
+            new View.OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                        int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                    if (mPopupWindow.isShowing()) updatePopupLayout();
+                }
+            };
+
     /**
      * Constructs an {@link AnchoredPopupWindow} instance.
      * @param context  Context to draw resources from.
@@ -222,6 +234,8 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
 
         updatePopupLayout();
         showPopupWindow();
+
+        mPopupWindow.getContentView().addOnLayoutChangeListener(mContentViewOnLayoutChangeListener);
     }
 
     /**
