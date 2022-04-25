@@ -38,15 +38,6 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGBlock,
   explicit LayoutNGTable(Element*);
   ~LayoutNGTable() override;
 
-  // TODO(atotic) Replace all H/VBorderSpacing with BorderSpacing?
-  LogicalSize BorderSpacing() const {
-    NOT_DESTROYED();
-    if (ShouldCollapseBorders())
-      return LogicalSize();
-    return LogicalSize(LayoutUnit(HBorderSpacing()),
-                       LayoutUnit(VBorderSpacing()));
-  }
-
   wtf_size_t ColumnCount() const;
 
   const NGTableBorders* GetCachedTableBorders() const {

@@ -75,7 +75,6 @@ class CORE_EXPORT NGTableLayoutAlgorithm
       const NGTableTypes::Rows& rows,
       const NGTableBorders& table_borders,
       const PhysicalRect& table_grid_rect,
-      const LogicalSize& border_spacing,
       LayoutUnit table_grid_block_size);
 
   const NGLayoutResult* GenerateFragment(

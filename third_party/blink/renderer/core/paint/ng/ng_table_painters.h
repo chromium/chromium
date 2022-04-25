@@ -56,7 +56,7 @@ class NGTableSectionPainter {
                                     const BoxDecorationData&);
 
   void PaintColumnsBackground(const PaintInfo&,
-                              const PhysicalOffset& section_offset,
+                              const PhysicalOffset& section_paint_offset,
                               const PhysicalRect& columns_paint_rect,
                               const NGTableFragmentData::ColumnGeometries&);
 
@@ -81,10 +81,10 @@ class NGTableRowPainter {
       const PaintInfo& paint_info,
       const LayoutBox& table_part,
       const PhysicalRect& table_part_paint_rect,
-      const PhysicalOffset& row_offset);
+      const PhysicalOffset& row_paint_offset);
 
   void PaintColumnsBackground(const PaintInfo&,
-                              const PhysicalOffset& row_offset,
+                              const PhysicalOffset& row_paint_offset,
                               const PhysicalRect& columns_paint_rect,
                               const NGTableFragmentData::ColumnGeometries&);
 
@@ -103,10 +103,11 @@ class NGTableCellPainter {
                                     const PhysicalRect&,
                                     const BoxDecorationData&);
 
-  void PaintBackgroundForTablePart(const PaintInfo& paint_info,
-                                   const LayoutBox& table_part,
-                                   const PhysicalRect& table_part_paint_rect,
-                                   const PhysicalOffset& table_cell_offset);
+  void PaintBackgroundForTablePart(
+      const PaintInfo& paint_info,
+      const LayoutBox& table_part,
+      const PhysicalRect& table_part_paint_rect,
+      const PhysicalOffset& table_cell_paint_offset);
 
  private:
   const NGPhysicalBoxFragment& fragment_;

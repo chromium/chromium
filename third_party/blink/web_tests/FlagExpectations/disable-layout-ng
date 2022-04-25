@@ -1421,6 +1421,9 @@ crbug.com/708345 external/wpt/css/css-tables/height-distribution/extra-height-gi
 crbug.com/708345 external/wpt/css/css-tables/height-distribution/extra-height-given-to-all-row-groups-005.html [ Failure ]
 crbug.com/353580 external/wpt/css/css-tables/height-distribution/percentage-sizing-of-table-cell-children-005.html [ Failure ]
 
+### external/wpt/css/css-tables/paint/
+crbug.com/591099 external/wpt/css/css-tables/paint/col-paint-vrl-rtl.html [ Failure ]
+
 ### external/wpt/css/css-tables/tentative/
 crbug.com/958381 external/wpt/css/css-tables/tentative/baseline-table.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/tentative/baseline-td.html [ Failure ]

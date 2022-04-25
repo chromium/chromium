@@ -356,10 +356,19 @@ void NGTablePainter::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
     const PhysicalRect& paint_rect,
     const BoxDecorationData& box_decoration_data) {
+  PhysicalRect grid_paint_rect = fragment_.TableGridRect();
+  grid_paint_rect.offset += paint_rect.offset;
+
+  // Paint the table background on the grid-rect.
+  if (box_decoration_data.ShouldPaint()) {
+    NGBoxFragmentPainter(fragment_).PaintBoxDecorationBackgroundWithRectImpl(
+        paint_info, grid_paint_rect, box_decoration_data);
+  }
+
+  // Optimization: only traverse colgroups with backgrounds.
   const NGTableFragmentData::ColumnGeometries* column_geometries_original =
       fragment_.TableColumnGeometries();
   NGTableFragmentData::ColumnGeometries column_geometries_with_background;
-  // Optimization: only traverse colgroups with backgrounds.
   if (column_geometries_original) {
     for (const auto& column_geometry : *column_geometries_original) {
       if (column_geometry.node.Style().HasBoxDecorationBackground()) {
@@ -368,53 +377,27 @@ void NGTablePainter::PaintBoxDecorationBackground(
     }
   }
 
-  // BoxDecorationData is not aware of column backgrounds, so
-  // there is an explicit check.
-  bool should_paint_background = box_decoration_data.ShouldPaint() ||
-                                 column_geometries_with_background.size() != 0;
-  if (!should_paint_background)
+  if (column_geometries_with_background.IsEmpty())
     return;
-  PhysicalRect grid_paint_rect = fragment_.TableGridRect();
-  grid_paint_rect.offset += paint_rect.offset;
-  NGBoxFragmentPainter(fragment_).PaintBoxDecorationBackgroundWithRectImpl(
-      paint_info, grid_paint_rect, box_decoration_data);
-  const ComputedStyle& table_style = fragment_.Style();
-  if (should_paint_background) {
-    // Paint table background on table grid rect.
-    // Paint colgroup/col backgrounds.
-    if (column_geometries_with_background.size() > 0) {
-      NGPhysicalBoxStrut table_borders_padding =
-          fragment_.Borders() + fragment_.Padding();
 
-      const auto& layout_table =
-          *To<LayoutNGTable>(fragment_.GetLayoutObject());
-      PhysicalSize border_spacing = ToPhysicalSize(
-          layout_table.BorderSpacing(), table_style.GetWritingMode());
-      PhysicalSize column_size{
-          grid_paint_rect.size.width - table_borders_padding.HorizontalSum() -
-              border_spacing.width * 2,
-          grid_paint_rect.size.height - table_borders_padding.VerticalSum() -
-              border_spacing.height * 2};
-      PhysicalOffset column_offset{
-          grid_paint_rect.offset.left + table_borders_padding.left +
-              border_spacing.width,
-          grid_paint_rect.offset.top + table_borders_padding.top +
-              border_spacing.height};
-      PhysicalRect columns_paint_rect(column_offset, column_size);
-      for (const NGLink& child : fragment_.Children()) {
-        if (!child.fragment->IsTableNGSection())
-          continue;  // child is a caption.
-        PhysicalOffset section_offset =
-            child.offset - fragment_.TableGridRect().offset;
-        section_offset.top -= table_borders_padding.top + border_spacing.height;
-        section_offset.left -=
-            table_borders_padding.left + border_spacing.width;
-        NGTableSectionPainter(To<NGPhysicalBoxFragment>(*child.fragment))
-            .PaintColumnsBackground(paint_info, section_offset,
-                                    columns_paint_rect,
-                                    column_geometries_with_background);
-      }
-    }
+  const auto& style = fragment_.Style();
+  LogicalSize spacing = style.TableBorderSpacing();
+  NGBoxStrut spacing_strut(spacing.inline_size, spacing.inline_size,
+                           spacing.block_size, spacing.block_size);
+
+  PhysicalRect columns_paint_rect = grid_paint_rect;
+  columns_paint_rect.Contract(
+      fragment_.Borders() + fragment_.Padding() +
+      spacing_strut.ConvertToPhysical(style.GetWritingDirection()));
+
+  // Paint <colgroup>/<col> backgrounds.
+  for (const NGLink& child : fragment_.Children()) {
+    if (!child.fragment->IsTableNGSection())
+      continue;
+    NGTableSectionPainter(To<NGPhysicalBoxFragment>(*child.fragment))
+        .PaintColumnsBackground(paint_info, paint_rect.offset + child.offset,
+                                columns_paint_rect,
+                                column_geometries_with_background);
   }
 }
 
@@ -552,7 +535,7 @@ void NGTableSectionPainter::PaintBoxDecorationBackground(
     NGTableRowPainter(To<NGPhysicalBoxFragment>(child_fragment))
         .PaintTablePartBackgroundIntoCells(
             paint_info, *To<LayoutBox>(fragment_.GetLayoutObject()), paint_rect,
-            child.offset);
+            paint_rect.offset + child.offset);
   }
   if (box_decoration_data.ShouldPaintShadow()) {
     BoxPainterBase::PaintInsetBoxShadowWithInnerRect(paint_info, paint_rect,
@@ -562,14 +545,14 @@ void NGTableSectionPainter::PaintBoxDecorationBackground(
 
 void NGTableSectionPainter::PaintColumnsBackground(
     const PaintInfo& paint_info,
-    const PhysicalOffset& section_offset,
+    const PhysicalOffset& section_paint_offset,
     const PhysicalRect& columns_paint_rect,
     const NGTableFragmentData::ColumnGeometries& column_geometries) {
   for (const NGLink& row : fragment_.Children()) {
     if (!row.fragment->IsTableNGRow())
       continue;
     NGTableRowPainter(To<NGPhysicalBoxFragment>(*row.fragment))
-        .PaintColumnsBackground(paint_info, section_offset + row.offset,
+        .PaintColumnsBackground(paint_info, section_paint_offset + row.offset,
                                 columns_paint_rect, column_geometries);
   }
 }
@@ -587,7 +570,7 @@ void NGTableRowPainter::PaintBoxDecorationBackground(
 
   PaintTablePartBackgroundIntoCells(paint_info,
                                     *To<LayoutBox>(fragment_.GetLayoutObject()),
-                                    paint_rect, PhysicalOffset());
+                                    paint_rect, paint_rect.offset);
   if (box_decoration_data.ShouldPaintShadow()) {
     BoxPainterBase::PaintInsetBoxShadowWithInnerRect(paint_info, paint_rect,
                                                      fragment_.Style());
@@ -598,7 +581,7 @@ void NGTableRowPainter::PaintTablePartBackgroundIntoCells(
     const PaintInfo& paint_info,
     const LayoutBox& table_part,
     const PhysicalRect& table_part_paint_rect,
-    const PhysicalOffset& row_offset) {
+    const PhysicalOffset& row_paint_offset) {
   for (const NGLink& child : fragment_.Children()) {
     DCHECK(child.fragment->IsBox());
     DCHECK(child.fragment->GetLayoutObject()->IsTableCell() ||
@@ -609,17 +592,17 @@ void NGTableRowPainter::PaintTablePartBackgroundIntoCells(
     NGTableCellPainter(To<NGPhysicalBoxFragment>(child_fragment))
         .PaintBackgroundForTablePart(paint_info, table_part,
                                      table_part_paint_rect,
-                                     row_offset + child.offset);
+                                     row_paint_offset + child.offset);
   }
 }
 
 void NGTableRowPainter::PaintColumnsBackground(
     const PaintInfo& paint_info,
-    const PhysicalOffset& row_offset,
+    const PhysicalOffset& row_paint_offset,
     const PhysicalRect& columns_paint_rect,
     const NGTableFragmentData::ColumnGeometries& column_geometries) {
-  bool is_horizontal =
-      IsHorizontalWritingMode(fragment_.Style().GetWritingMode());
+  WritingModeConverter converter(fragment_.Style().GetWritingDirection(),
+                                 columns_paint_rect.size);
   for (const NGLink& child : fragment_.Children()) {
     if (!child.fragment->IsTableNGCell())
       continue;
@@ -632,24 +615,20 @@ void NGTableRowPainter::PaintColumnsBackground(
       if (cell_column < current_start || cell_column > current_end)
         continue;
 
-      PhysicalSize column_size;
-      PhysicalOffset column_offset = columns_paint_rect.offset;
-      PhysicalOffset cell_offset = row_offset + child.offset;
-      if (is_horizontal) {
-        column_size = {column_geometry.inline_size,
-                       columns_paint_rect.size.height};
-        column_offset.left += column_geometry.inline_offset;
-        cell_offset.left -= column_geometry.inline_offset;
-      } else {
-        column_size = {columns_paint_rect.size.width,
-                       column_geometry.inline_size};
-        column_offset.top += column_geometry.inline_offset;
-        cell_offset.top -= column_geometry.inline_offset;
-      }
+      LogicalSize column_size = converter.ToLogical(columns_paint_rect.size);
+      column_size.inline_size = column_geometry.inline_size;
+
+      PhysicalRect column_paint_rect;
+      column_paint_rect.size = converter.ToPhysical(column_size);
+      column_paint_rect.offset =
+          columns_paint_rect.offset +
+          converter.ToPhysical({column_geometry.inline_offset, LayoutUnit()},
+                               column_paint_rect.size);
+
       NGTableCellPainter(To<NGPhysicalBoxFragment>(*child.fragment))
           .PaintBackgroundForTablePart(
               paint_info, *column_geometry.node.GetLayoutBox(),
-              PhysicalRect(column_offset, column_size), cell_offset);
+              column_paint_rect, row_paint_offset + child.offset);
     }
   }
 }
@@ -671,7 +650,7 @@ void NGTableCellPainter::PaintBackgroundForTablePart(
     const PaintInfo& paint_info,
     const LayoutBox& table_part,
     const PhysicalRect& table_part_paint_rect,
-    const PhysicalOffset& table_cell_offset) {
+    const PhysicalOffset& table_cell_paint_offset) {
   if (fragment_.Style().Visibility() != EVisibility::kVisible)
     return;
   const LayoutNGTableCell& layout_table_cell =
@@ -683,14 +662,15 @@ void NGTableCellPainter::PaintBackgroundForTablePart(
       GetCSSPropertyBackgroundColor());
   const FillLayer& background_layers = table_part.StyleRef().BackgroundLayers();
   if (background_layers.AnyLayerHasImage() || color.Alpha()) {
-    BackgroundImageGeometry geometry(layout_table_cell, table_cell_offset,
-                                     table_part, table_part_paint_rect.size);
-    PhysicalRect cell_rect(table_part_paint_rect.offset + table_cell_offset,
-                           fragment_.Size());
+    BackgroundImageGeometry geometry(
+        layout_table_cell,
+        table_cell_paint_offset - table_part_paint_rect.offset, table_part,
+        table_part_paint_rect.size);
+    PhysicalRect cell_paint_rect(table_cell_paint_offset, fragment_.Size());
     TableCellBackgroundClipper clipper(paint_info.context, layout_table_cell,
-                                       cell_rect);
+                                       cell_paint_rect);
     NGBoxFragmentPainter(fragment_).PaintFillLayers(
-        paint_info, color, background_layers, cell_rect, geometry);
+        paint_info, color, background_layers, cell_paint_rect, geometry);
   }
 }
 
