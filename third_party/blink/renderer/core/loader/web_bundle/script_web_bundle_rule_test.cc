@@ -35,6 +35,7 @@ TEST(ScriptWebBundleRuleTest, Empty) {
       ScriptWebBundleRule::ParseJson("", KURL("https://example.com/"), nullptr);
   ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleError>(result));
   auto& error = absl::get<ScriptWebBundleError>(result);
+  EXPECT_EQ(error.GetType(), ScriptWebBundleError::Type::kSyntaxError);
   EXPECT_EQ(error.GetMessage(),
             "Failed to parse web bundle rule: invalid JSON.");
 }
@@ -209,6 +210,7 @@ TEST(ScriptWebBundleRuleTest, TopLevelIsNotAnObject) {
   auto result = ScriptWebBundleRule::ParseJson("[]", base_url, nullptr);
   ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleError>(result));
   auto& error = absl::get<ScriptWebBundleError>(result);
+  EXPECT_EQ(error.GetType(), ScriptWebBundleError::Type::kTypeError);
   EXPECT_EQ(error.GetMessage(),
             "Failed to parse web bundle rule: not an object.");
 }
@@ -218,6 +220,7 @@ TEST(ScriptWebBundleRuleTest, MissingSource) {
   auto result = ScriptWebBundleRule::ParseJson("{}", base_url, nullptr);
   ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleError>(result));
   auto& error = absl::get<ScriptWebBundleError>(result);
+  EXPECT_EQ(error.GetType(), ScriptWebBundleError::Type::kTypeError);
   EXPECT_EQ(error.GetMessage(),
             "Failed to parse web bundle rule: \"source\" "
             "top-level key must be a string.");
@@ -229,6 +232,7 @@ TEST(ScriptWebBundleRuleTest, WrongSourceType) {
       ScriptWebBundleRule::ParseJson(R"({"source": 123})", base_url, nullptr);
   ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleError>(result));
   auto& error = absl::get<ScriptWebBundleError>(result);
+  EXPECT_EQ(error.GetType(), ScriptWebBundleError::Type::kTypeError);
   EXPECT_EQ(error.GetMessage(),
             "Failed to parse web bundle rule: \"source\" "
             "top-level key must be a string.");
@@ -240,6 +244,7 @@ TEST(ScriptWebBundleRuleTest, BadSourceURL) {
                                                base_url, nullptr);
   ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleError>(result));
   auto& error = absl::get<ScriptWebBundleError>(result);
+  EXPECT_EQ(error.GetType(), ScriptWebBundleError::Type::kTypeError);
   EXPECT_EQ(error.GetMessage(),
             "Failed to parse web bundle rule: \"source\" "
             "is not parsable as a URL.");
@@ -251,6 +256,7 @@ TEST(ScriptWebBundleRuleTest, NoScopesNorResources) {
                                                base_url, nullptr);
   ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleError>(result));
   auto& error = absl::get<ScriptWebBundleError>(result);
+  EXPECT_EQ(error.GetType(), ScriptWebBundleError::Type::kTypeError);
   EXPECT_EQ(error.GetMessage(),
             "Failed to parse web bundle rule: \"source\" "
             "is not parsable as a URL.");
@@ -266,6 +272,7 @@ TEST(ScriptWebBundleRuleTest, InvalidScopesType) {
       base_url, nullptr);
   ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleError>(result));
   auto& error = absl::get<ScriptWebBundleError>(result);
+  EXPECT_EQ(error.GetType(), ScriptWebBundleError::Type::kTypeError);
   EXPECT_EQ(error.GetMessage(),
             "Failed to parse web bundle rule: \"scopes\" must be an array.");
 }
@@ -280,6 +287,7 @@ TEST(ScriptWebBundleRuleTest, InvalidResourcesType) {
       base_url, nullptr);
   ASSERT_TRUE(absl::holds_alternative<ScriptWebBundleError>(result));
   auto& error = absl::get<ScriptWebBundleError>(result);
+  EXPECT_EQ(error.GetType(), ScriptWebBundleError::Type::kTypeError);
   EXPECT_EQ(error.GetMessage(),
             "Failed to parse web bundle rule: \"resources\" must be an array.");
 }

@@ -56,13 +56,13 @@ ScriptWebBundleRule::ParseJson(const String& inline_text,
   std::unique_ptr<JSONValue> json = ParseJSON(inline_text);
   if (!json) {
     return ScriptWebBundleError(
-        ScriptWebBundleError::Type::kParseError,
+        ScriptWebBundleError::Type::kSyntaxError,
         "Failed to parse web bundle rule: invalid JSON.");
   }
   std::unique_ptr<JSONObject> json_obj = JSONObject::From(std::move(json));
   if (!json_obj) {
     return ScriptWebBundleError(
-        ScriptWebBundleError::Type::kParseError,
+        ScriptWebBundleError::Type::kTypeError,
         "Failed to parse web bundle rule: not an object.");
   }
 
@@ -81,13 +81,13 @@ ScriptWebBundleRule::ParseJson(const String& inline_text,
 
   String source;
   if (!json_obj->GetString(kSourceKey, &source)) {
-    return ScriptWebBundleError(ScriptWebBundleError::Type::kParseError,
+    return ScriptWebBundleError(ScriptWebBundleError::Type::kTypeError,
                                 "Failed to parse web bundle rule: \"source\" "
                                 "top-level key must be a string.");
   }
   KURL source_url(base_url, source);
   if (!source_url.IsValid()) {
-    return ScriptWebBundleError(ScriptWebBundleError::Type::kParseError,
+    return ScriptWebBundleError(ScriptWebBundleError::Type::kTypeError,
                                 "Failed to parse web bundle rule: \"source\" "
                                 "is not parsable as a URL.");
   }
@@ -104,13 +104,13 @@ ScriptWebBundleRule::ParseJson(const String& inline_text,
   JSONValue* scopes = json_obj->Get(kScopesKey);
   if (scopes && scopes->GetType() != JSONValue::kTypeArray) {
     return ScriptWebBundleError(
-        ScriptWebBundleError::Type::kParseError,
+        ScriptWebBundleError::Type::kTypeError,
         "Failed to parse web bundle rule: \"scopes\" must be an array.");
   }
   JSONValue* resources = json_obj->Get(kResourcesKey);
   if (resources && resources->GetType() != JSONValue::kTypeArray) {
     return ScriptWebBundleError(
-        ScriptWebBundleError::Type::kParseError,
+        ScriptWebBundleError::Type::kTypeError,
         "Failed to parse web bundle rule: \"resources\" must be an array.");
   }
 

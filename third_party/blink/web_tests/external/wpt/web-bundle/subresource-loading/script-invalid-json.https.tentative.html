@@ -17,8 +17,7 @@
     promise_test((t) => {
       const script = document.createElement("script");
       script.type = "webbundle";
-      const json_rule = { resources: [] };
-      script.textContent = JSON.stringify(json_rule);
+      script.textContent = "invalid json";
       return new Promise((resolve, reject) => {
         script.onload = () => reject(script);
         script.onerror = () => reject(script);
@@ -28,6 +27,21 @@
         };
         document.body.appendChild(script);
       });
-    }, "Invalid JSON rule should make the script loader report an exception and throw error on the window.");
+    }, "Invalid JSON rule should throw a SyntaxError on the window.");
+    promise_test((t) => {
+      const script = document.createElement("script");
+      script.type = "webbundle";
+      const json_rule = { resources: [] };
+      script.textContent = JSON.stringify(json_rule);
+      return new Promise((resolve, reject) => {
+        script.onload = () => reject(script);
+        script.onerror = () => reject(script);
+        window.onerror = function (message, url, line, col, error) {
+          assert_equals(error.name, "TypeError");
+          resolve(script);
+        };
+        document.body.appendChild(script);
+      });
+    }, "JSON rule with a type error should throw a TypeError on the window.");
   </script>
 </body>

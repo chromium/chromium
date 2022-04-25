@@ -12,15 +12,13 @@ namespace blink {
 v8::Local<v8::Value> ScriptWebBundleError::ToV8(ScriptState* script_state) {
   v8::Isolate* isolate = script_state->GetIsolate();
   switch (type_) {
-    case ScriptWebBundleError::Type::kParseError:
+    case ScriptWebBundleError::Type::kTypeError:
+      return V8ThrowException::CreateTypeError(isolate, message_);
+    case ScriptWebBundleError::Type::kSyntaxError:
       return V8ThrowException::CreateSyntaxError(isolate, message_);
     case ScriptWebBundleError::Type::kSystemError:
       return V8ThrowException::CreateError(isolate, message_);
   }
-}
-
-ScriptWebBundleError::Type ScriptWebBundleError::GetType() {
-  return type_;
 }
 
 }  // namespace blink

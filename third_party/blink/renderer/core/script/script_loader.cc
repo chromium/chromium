@@ -803,21 +803,19 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
                 script_web_bundle_or_error)) {
           ScriptWebBundleError error =
               absl::get<ScriptWebBundleError>(script_web_bundle_or_error);
-          // errors with type kSystemError should fire an error event silently
-          // for the user, while kParseError should report an exception.
-          switch (error.GetType()) {
-            case ScriptWebBundleError::Type::kSystemError:
-              element_->DispatchErrorEvent();
-              break;
-            case ScriptWebBundleError::Type::kParseError: {
-              ScriptState* script_state = ToScriptStateForMainWorld(
-                  To<LocalDOMWindow>(element_->GetExecutionContext())
-                      ->GetFrame());
-              if (script_state->ContextIsValid()) {
-                ScriptState::Scope scope(script_state);
-                V8ScriptRunner::ReportException(script_state->GetIsolate(),
-                                                error.ToV8(script_state));
-              }
+          // Errors with type kSystemError should fire an error event silently
+          // for the user, while the other error types should report an
+          // exception.
+          if (error.GetType() == ScriptWebBundleError::Type::kSystemError) {
+            element_->DispatchErrorEvent();
+          } else {
+            ScriptState* script_state = ToScriptStateForMainWorld(
+                To<LocalDOMWindow>(element_->GetExecutionContext())
+                    ->GetFrame());
+            if (script_state->ContextIsValid()) {
+              ScriptState::Scope scope(script_state);
+              V8ScriptRunner::ReportException(script_state->GetIsolate(),
+                                              error.ToV8(script_state));
             }
           }
         }
