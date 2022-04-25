@@ -205,8 +205,13 @@ AudioContext::AudioContext(Document& document,
     case AutoplayPolicy::Type::kUserGestureRequired:
       // kUserGestureRequire policy only applies to cross-origin iframes for Web
       // Audio.
+      // TODO(crbug.com/1318055): With MPArch there may be multiple main frames
+      // so we should use IsCrossOriginToOutermostMainFrame when we intend to
+      // check if any embedded frame (eg, iframe or fenced frame) is
+      // cross-origin with respect to the outermost main frame. Follow up to
+      // confirm correctness.
       if (document.GetFrame() &&
-          document.GetFrame()->IsCrossOriginToMainFrame()) {
+          document.GetFrame()->IsCrossOriginToOutermostMainFrame()) {
         autoplay_status_ = AutoplayStatus::kFailed;
         user_gesture_required_ = true;
       }
@@ -615,7 +620,7 @@ bool AudioContext::IsAllowedToStart() const {
       break;
     case AutoplayPolicy::Type::kUserGestureRequired:
       DCHECK(window->GetFrame());
-      DCHECK(window->GetFrame()->IsCrossOriginToMainFrame());
+      DCHECK(window->GetFrame()->IsCrossOriginToOutermostMainFrame());
       window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::ConsoleMessageSource::kOther,
           mojom::ConsoleMessageLevel::kWarning,
@@ -652,8 +657,12 @@ void AudioContext::RecordAutoplayMetrics() {
   // Record autoplay_status_ value.
   base::UmaHistogramEnumeration("WebAudio.Autoplay", autoplay_status_.value());
 
+  // TODO(crbug.com/1318055): With MPArch there may be multiple main frames so
+  // we should use IsCrossOriginToOutermostMainFrame when we intend to check if
+  // any embedded frame (eg, iframe or fenced frame) is cross-origin with
+  // respect to the outermost main frame. Follow up to confirm correctness.
   if (GetDocument()->GetFrame() &&
-      GetDocument()->GetFrame()->IsCrossOriginToMainFrame()) {
+      GetDocument()->GetFrame()->IsCrossOriginToOutermostMainFrame()) {
     base::UmaHistogramEnumeration("WebAudio.Autoplay.CrossOrigin",
                                   autoplay_status_.value());
   }

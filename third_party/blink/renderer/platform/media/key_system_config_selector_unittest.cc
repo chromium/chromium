@@ -394,7 +394,7 @@ class FakeWebLocalFrameDelegate
  public:
   FakeWebLocalFrameDelegate()
       : KeySystemConfigSelector::WebLocalFrameDelegate(nullptr) {}
-  bool IsCrossOriginToMainFrame() override { return is_cross_origin_; }
+  bool IsCrossOriginToOutermostMainFrame() override { return is_cross_origin_; }
   bool AllowStorageAccessSync(
       WebContentSettingsClient::StorageType storage_type) override {
     if (storage_type == WebContentSettingsClient::StorageType::kLocalStorage) {

@@ -159,7 +159,20 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   //   returns true when the frame is detached.
   // TODO(dcheng): Move this to LocalDOMWindow and figure out the right
   // behavior for detached windows.
+  // TODO(crbug.com/1318055): this function should be renamed
+  // IsCrossOriginToNearestMainFrame and most current usages should be
+  // conrverted to IsCrossOriginToOutermostMainFrame.
   bool IsCrossOriginToMainFrame() const;
+
+  // Returns true if and only if:
+  // - this frame is an embedded frame (i.e., a subframe or embedded main frame)
+  // - it is cross-origin to the outermost main frame.
+  //
+  // The notes for |IsCrossOriginToMainFrame| apply here, but it's also
+  // important to note that any frame in a fenced frame tree is considered
+  // cross-origin with respect to the outermost main frame.
+  bool IsCrossOriginToOutermostMainFrame() const;
+
   // Returns true if this frame is a subframe and is cross-origin to the parent
   // frame. See |IsCrossOriginToMainFrame| for important notes.
   bool IsCrossOriginToParentFrame() const;

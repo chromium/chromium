@@ -72,9 +72,13 @@ void ValidationMessageClientImpl::ShowValidationMessage(
   // If this frame is cross origin to the main frame, then shorten the
   // validation message to prevent validation popups that cover too much of the
   // main frame.
+  // TODO(crbug.com/1318055): With MPArch there may be multiple main frames
+  // so we should use IsCrossOriginToOutermostMainFrame when we intend to check
+  // if any embedded frame (eg, iframe or fenced frame) is cross-origin with
+  // respect to the outermost main frame. Follow up to confirm correctness.
   String message = original_message;
   if (original_message.length() > kMaxValidationStringLength &&
-      anchor.GetDocument().GetFrame()->IsCrossOriginToMainFrame()) {
+      anchor.GetDocument().GetFrame()->IsCrossOriginToOutermostMainFrame()) {
     message = original_message.Substring(0, kMaxValidationStringLength) + "...";
   }
 

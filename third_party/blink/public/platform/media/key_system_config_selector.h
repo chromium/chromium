@@ -42,7 +42,7 @@ class BLINK_PLATFORM_EXPORT KeySystemConfigSelector {
     virtual ~WebLocalFrameDelegate() = default;
 
     // Delegate to WebLocalFrame.
-    virtual bool IsCrossOriginToMainFrame();
+    virtual bool IsCrossOriginToOutermostMainFrame();
 
     // Delegate to WebContentSettingsClient within WebLocalFrame.
     virtual bool AllowStorageAccessSync(

@@ -594,9 +594,9 @@ class WebLocalFrame : public WebFrame {
   // have the flag "allow-downloads" set.
   virtual bool IsAllowedToDownload() const = 0;
 
-  // Returns true if a frame is a subframe and it is cross-origin to the main
-  // frame.
-  virtual bool IsCrossOriginToMainFrame() const = 0;
+  // Returns true if a frame is a subframe or an embedded main frame and it is
+  // cross-origin with respect to the outermost main frame.
+  virtual bool IsCrossOriginToOutermostMainFrame() const = 0;
 
   // Find-in-page -----------------------------------------------------------
 
