@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -53,7 +54,16 @@ bool ShouldThemifyFaviconForVisibleUrl(const GURL& visible_url) {
 TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
                                                 int index) {
   content::WebContents* const contents = model->GetWebContentsAt(index);
-
+  // If the tab is showing a lookalike interstitial ("Did you mean example.com"
+  // on éxample.com), don't show the URL in the hover card because it's
+  // misleading.
+  security_interstitials::SecurityInterstitialTabHelper*
+      security_interstitial_tab_helper = security_interstitials::
+          SecurityInterstitialTabHelper::FromWebContents(contents);
+  bool should_display_url =
+      !security_interstitial_tab_helper ||
+      !security_interstitial_tab_helper->IsDisplayingInterstitial() ||
+      security_interstitial_tab_helper->ShouldDisplayURL();
   TabRendererData data;
   TabUIHelper* const tab_ui_helper = TabUIHelper::FromWebContents(contents);
   data.favicon = tab_ui_helper->GetFavicon().AsImageSkia();
@@ -70,6 +80,7 @@ TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
     data.should_render_empty_title = true;
   }
   data.last_committed_url = contents->GetLastCommittedURL();
+  data.should_display_url = should_display_url;
   data.crashed_status = contents->GetCrashedStatus();
   data.incognito = contents->GetBrowserContext()->IsOffTheRecord();
   data.pinned = model->IsTabPinned(index);
@@ -103,6 +114,7 @@ bool TabRendererData::operator==(const TabRendererData& other) const {
          thumbnail == other.thumbnail && network_state == other.network_state &&
          title == other.title && visible_url == other.visible_url &&
          last_committed_url == other.last_committed_url &&
+         should_display_url == other.should_display_url &&
          crashed_status == other.crashed_status &&
          incognito == other.incognito && show_icon == other.show_icon &&
          pinned == other.pinned && blocked == other.blocked &&
