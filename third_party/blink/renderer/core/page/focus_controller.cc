@@ -1307,12 +1307,21 @@ bool FocusController::SetFocusedElement(Element* element,
                                 params.source_capabilities, focus_options);
   }
 
-  // Disallow programmatic focus that crosses a fenced frame boundary on a
-  // frame that doesn't have transient user activation.
   if (new_focused_frame && !new_focused_frame->ShouldAllowScriptFocus() &&
-      !new_focused_frame->HasTransientUserActivation() &&
       params_to_use.type == mojom::blink::FocusType::kScript) {
-    return false;
+    // Disallow script focus that crosses a fenced frame boundary on a
+    // frame that doesn't have transient user activation.
+    if (!new_focused_frame->HasTransientUserActivation())
+      return false;
+    // Fenced frames should consume user activation when attempting to pull
+    // focus across a fenced boundary into itself.
+    // TODO(crbug.com/1123606) Right now the browser can't verify that the
+    // renderer properly consumed user activation. When user activation code is
+    // migrated to the browser, move this logic to the browser as well.
+    if (new_focused_frame->IsInFencedFrameTree()) {
+      LocalFrame::ConsumeTransientUserActivation(
+          DynamicTo<LocalFrame>(new_focused_frame));
+    }
   }
 
   if (old_document && old_document != new_document)
@@ -1321,17 +1330,6 @@ bool FocusController::SetFocusedElement(Element* element,
   if (new_focused_frame && !new_focused_frame->GetPage()) {
     SetFocusedFrame(nullptr);
     return false;
-  }
-
-  // TODO(crbug.com/1123606) Right now the browser can't verify that the
-  // renderer properly consumed user activation. When user activation code is
-  // migrated to the browser, move this logic to the browser as well.
-  if (new_focused_frame &&
-      params_to_use.type == mojom::blink::FocusType::kScript &&
-      new_focused_frame->IsInFencedFrameTree() &&
-      !new_focused_frame->ShouldAllowScriptFocus()) {
-    LocalFrame::ConsumeTransientUserActivation(
-        DynamicTo<LocalFrame>(new_focused_frame));
   }
 
   SetFocusedFrame(new_focused_frame);
