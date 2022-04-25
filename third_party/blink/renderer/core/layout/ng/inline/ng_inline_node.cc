@@ -1594,7 +1594,8 @@ void NGInlineNode::ShapeTextIncludingFirstLine(
 #endif
 
   ShapeText(data, previous_text, previous_items);
-  ShapeTextForFirstLineIfNeeded(data);
+  if (new_state == NGInlineNodeData::kShapingDone)
+    ShapeTextForFirstLineIfNeeded(data);
 }
 
 void NGInlineNode::AssociateItemsWithInlines(NGInlineNodeData* data) const {
