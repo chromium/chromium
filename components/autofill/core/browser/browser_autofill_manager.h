@@ -152,7 +152,7 @@ class BrowserAutofillManager : public AutofillManager,
 
   // Called only from Autofill Assistant through
   // ContentAutofillDriver::FillFormForAssistant().
-  virtual void FillProfileForm(const autofill::AutofillProfile& profile,
+  virtual void FillProfileForm(const AutofillProfile& profile,
                                const FormData& form,
                                const FormFieldData& field);
 
@@ -192,9 +192,9 @@ class BrowserAutofillManager : public AutofillManager,
   // Returns true only if the previewed form should be cleared.
   bool ShouldClearPreviewedForm();
 
-  AutofillOfferManager* offer_manager() { return offer_manager_; }
+  AutofillOfferManager* GetOfferManager() { return offer_manager_; }
 
-  CreditCardAccessManager* credit_card_access_manager() {
+  CreditCardAccessManager* GetCreditCardAccessManager() {
     return credit_card_access_manager_.get();
   }
 
@@ -779,7 +779,7 @@ class BrowserAutofillManager : public AutofillManager,
   friend class AutofillAssistantTest;
   friend class BrowserAutofillManagerTest;
   friend class AutofillMetricsTest;
-  friend class ::autofill::metrics::AutofillMetricsBaseTest;
+  friend class metrics::AutofillMetricsBaseTest;
   friend class FormStructureBrowserTest;
   friend class GetMatchingTypesTest;
   friend class CreditCardAccessoryControllerTest;

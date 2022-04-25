@@ -587,7 +587,7 @@ AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction::Run() {
   if (!autofill_manager)
     return RespondNow(Error(kErrorDataUnavailable));
   autofill::CreditCardAccessManager* credit_card_access_manager =
-      autofill_manager->credit_card_access_manager();
+      autofill_manager->GetCreditCardAccessManager();
   if (!credit_card_access_manager)
     return RespondNow(Error(kErrorDataUnavailable));
 

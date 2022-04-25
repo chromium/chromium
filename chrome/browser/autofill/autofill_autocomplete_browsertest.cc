@@ -200,7 +200,7 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
  private:
   void GetAutocompleteSuggestions(const std::string& input_name,
                                   const std::string& prefix,
-                                  autofill::MockSuggestionsHandler& handler) {
+                                  MockSuggestionsHandler& handler) {
     autocomplete_history_manager()->OnGetSingleFieldSuggestions(
         1, true, false, ASCIIToUTF16(input_name), ASCIIToUTF16(prefix), "input",
         handler.GetWeakPtr());
@@ -217,7 +217,7 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
     return active_browser_->tab_strip_model()->GetActiveWebContents();
   }
 
-  scoped_refptr<autofill::AutofillWebDataService> GetWebDataService() {
+  scoped_refptr<AutofillWebDataService> GetWebDataService() {
     return WebDataServiceFactory::GetAutofillWebDataForProfile(
         current_profile(), ServiceAccessType::EXPLICIT_ACCESS);
   }

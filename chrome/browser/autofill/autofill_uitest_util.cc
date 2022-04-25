@@ -119,7 +119,7 @@ void WaitForPersonalDataChange(Profile* base_profile) {
 
 void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
   PersonalDataManager* pdm =
-      autofill::PersonalDataManagerFactory::GetForProfile(base_profile);
+      PersonalDataManagerFactory::GetForProfile(base_profile);
   while (!pdm->IsDataLoaded())
     WaitForPersonalDataChange(base_profile);
 }

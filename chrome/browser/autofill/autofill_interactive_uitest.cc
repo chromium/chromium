@@ -847,8 +847,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
     // "fr" instead of "en").
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kAutofillShadowDOM},
-        /*disabled_features=*/{
-            autofill::features::kAutofillPageLanguageDetection});
+        /*disabled_features=*/{features::kAutofillPageLanguageDetection});
   }
   ~AutofillInteractiveTestBase() override = default;
 
@@ -858,8 +857,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
 
   std::vector<FieldValue> GetFormValues(
       const ElementExpr& form = GetElementById("shipping")) {
-    return ::autofill::GetFieldValues(ElementExpr(*form + ".elements"),
-                                      GetWebContents());
+    return GetFieldValues(ElementExpr(*form + ".elements"), GetWebContents());
   }
 
   base::RepeatingClosure ExpectValues(

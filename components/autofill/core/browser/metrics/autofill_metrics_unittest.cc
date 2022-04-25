@@ -356,8 +356,7 @@ int GetFieldTypeGroupPredictionQualityMetric(
     ServerFieldType field_type,
     AutofillMetrics::FieldTypeQualityMetric metric);
 
-class AutofillMetricsTest
-    : public ::autofill::metrics::AutofillMetricsBaseTest {
+class AutofillMetricsTest : public metrics::AutofillMetricsBaseTest {
  public:
   AutofillMetricsTest() = default;
   ~AutofillMetricsTest() override = default;
@@ -365,9 +364,8 @@ class AutofillMetricsTest
 
 // Test parameter indicates if the metrics are being logged for a form in an
 // iframe or the main frame. True means the form is in the main frame.
-class AutofillMetricsIFrameTest
-    : public ::autofill::metrics::AutofillMetricsBaseTest,
-      public testing::WithParamInterface<bool> {
+class AutofillMetricsIFrameTest : public metrics::AutofillMetricsBaseTest,
+                                  public testing::WithParamInterface<bool> {
  public:
   AutofillMetricsIFrameTest()
       : is_in_any_main_frame_(GetParam()),
@@ -2035,8 +2033,8 @@ TEST_F(AutofillMetricsTest, LogHiddenRepresentationalFieldSkipDecision) {
 
 namespace {
 void AddFieldSuggestionToForm(
-    ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion,
-    autofill::FormFieldData field_data,
+    AutofillQueryResponse_FormSuggestion* form_suggestion,
+    FormFieldData field_data,
     ServerFieldType field_type) {
   auto* field_suggestion = form_suggestion->add_field_suggestions();
   field_suggestion->set_field_signature(
@@ -10366,8 +10364,8 @@ class AutofillMetricsParseQueryResponseTest : public testing::Test {
 
 namespace {
 void AddFieldSuggestionToForm(
-    ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion,
-    autofill::FieldSignature field_signature,
+    AutofillQueryResponse_FormSuggestion* form_suggestion,
+    FieldSignature field_signature,
     int field_type) {
   auto* field_suggestion = form_suggestion->add_field_suggestions();
   field_suggestion->set_field_signature(field_signature.value());
@@ -11839,7 +11837,7 @@ TEST_P(AutofillMetricsFunnelTest, LogFunnelMetrics) {
                                        SubmissionSource::FORM_SUBMISSION);
   }
 
-  CommitMetrics();
+  ResetAutofillManagerToCommitMetrics();
 
   // Phase 2: Validate Funnel expectations.
   histogram_tester.ExpectBucketCount("Autofill.Funnel.ParsedAsType.Address", 1,
@@ -11968,7 +11966,7 @@ TEST_F(AutofillMetricsFunnelTest, AblationState) {
   autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                      SubmissionSource::FORM_SUBMISSION);
 
-  CommitMetrics();
+  ResetAutofillManagerToCommitMetrics();
 
   // Phase 2: Validate Funnel expectations.
   const char* kMetrics[] = {
@@ -12048,7 +12046,7 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogEmptyForm) {
   autofill_manager().OnFormSubmitted(form_, false,
                                      SubmissionSource::FORM_SUBMISSION);
 
-  CommitMetrics();
+  ResetAutofillManagerToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.Address", 1, 1);
@@ -12085,7 +12083,7 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogNoProfile) {
   autofill_manager().OnFormSubmitted(form_, false,
                                      SubmissionSource::FORM_SUBMISSION);
 
-  CommitMetrics();
+  ResetAutofillManagerToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.Address", 0, 1);
@@ -12122,7 +12120,7 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogUserDoesNotAcceptSuggestion) {
   autofill_manager().OnFormSubmitted(form_, false,
                                      SubmissionSource::FORM_SUBMISSION);
 
-  CommitMetrics();
+  ResetAutofillManagerToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.Address", 1, 1);
@@ -12160,7 +12158,7 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogUserFixesFilledData) {
   autofill_manager().OnFormSubmitted(form_, false,
                                      SubmissionSource::FORM_SUBMISSION);
 
-  CommitMetrics();
+  ResetAutofillManagerToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.Address", 1, 1);
@@ -12197,7 +12195,7 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogUserFixesFilledDataButDoesNotSubmit) {
 
   // Don't submit form.
 
-  CommitMetrics();
+  ResetAutofillManagerToCommitMetrics();
 
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingReadiness.Address", 0);
@@ -12220,8 +12218,7 @@ TEST_F(AutofillMetricsTest, GetFieldTypeUserEditStatusMetric) {
           AUTOFILLED_FIELD_WAS_NOT_EDITED;
 
   int expected_result = 0b10'0100'0001;
-  int actual_result =
-      autofill::GetFieldTypeUserEditStatusMetric(server_type, metric);
+  int actual_result = GetFieldTypeUserEditStatusMetric(server_type, metric);
   EXPECT_EQ(expected_result, actual_result);
 }
 
@@ -12342,7 +12339,7 @@ TEST_F(AutofillMetricsTest,
        IsValueNotAutofilledOverExistingValueSameAsSubmittedValue) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(
-      autofill::features::kAutofillPreventOverridingPrefilledValues);
+      features::kAutofillPreventOverridingPrefilledValues);
   RecreateProfile(false);
 
   FormData form = test::GetFormData(
@@ -12495,7 +12492,7 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
                         false /* masked_card_is_enrolled_for_virtual_card */);
 
     credit_card_with_cvc_ = {.credit_card = *autofill_manager()
-                                                 .credit_card_access_manager()
+                                                 .GetCreditCardAccessManager()
                                                  ->GetCreditCardsToSuggest()
                                                  .front(),
                              .cvc = u"123"};
@@ -12622,7 +12619,7 @@ TEST_F(AutofillMetricsCrossFrameFormTest,
   // This fills nothing because all fields have been manually filled.
   FillForm(FormFieldData());
   SubmitForm();
-  CommitMetrics();
+  ResetAutofillManagerToCommitMetrics();
 
   histogram_tester.ExpectTotalCount(
       "Autofill.CreditCard.SeamlessFills.AtFillTimeBeforeSecurityPolicy", 0);
@@ -12704,7 +12701,7 @@ TEST_F(AutofillMetricsCrossFrameFormTest,
                 /*is_autofilled=*/true, /*is_user_typed=*/false);
 
   SubmitForm();
-  CommitMetrics();
+  ResetAutofillManagerToCommitMetrics();
 
   ExpectBuckets<Metric>(
       histogram_tester,

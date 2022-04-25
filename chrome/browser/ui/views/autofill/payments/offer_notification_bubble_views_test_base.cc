@@ -159,8 +159,7 @@ void OfferNotificationBubbleViewsTestBase::
   coupon_service_->DeleteAllFreeListingCoupons();
   // Simulate that user has given the consent to opt in the feature.
   coupon_service_->MaybeFeatureStatusChanged(true);
-  base::flat_map<GURL,
-                 std::vector<std::unique_ptr<autofill::AutofillOfferData>>>
+  base::flat_map<GURL, std::vector<std::unique_ptr<AutofillOfferData>>>
       coupon_map;
   for (auto origin : offer->merchant_origins) {
     coupon_map[origin].emplace_back(std::move(offer));
@@ -231,7 +230,7 @@ AutofillOfferManager* OfferNotificationBubbleViewsTestBase::GetOfferManager() {
   return ContentAutofillDriver::GetForRenderFrameHost(
              GetActiveWebContents()->GetMainFrame())
       ->browser_autofill_manager()
-      ->offer_manager();
+      ->GetOfferManager();
 }
 
 }  // namespace autofill

@@ -74,7 +74,9 @@ class AutofillMetricsBaseTest : public testing::Test {
   // Purge recorded UKM metrics for running more tests.
   void PurgeUKM();
 
-  void CommitMetrics() { browser_autofill_manager_.reset(); }
+  void ResetAutofillManagerToCommitMetrics() {
+    browser_autofill_manager_.reset();
+  }
 
   // Mocks a credit card fetching was completed. This mock starts from the
   // BrowserAutofillManager. Use these if your test does not depends on

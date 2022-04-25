@@ -576,7 +576,7 @@ void ContentAutofillDriver::DidNavigateFrame(
     // On page refresh, reset the rate limiter for fetching authentication
     // details for credit card unmasking.
     if (browser_autofill_manager_) {
-      browser_autofill_manager_->credit_card_access_manager()
+      browser_autofill_manager_->GetCreditCardAccessManager()
           ->SignalCanFetchUnmaskDetails();
     }
     return;
@@ -586,8 +586,8 @@ void ContentAutofillDriver::DidNavigateFrame(
   // exists (not in Android Webview), and the AutofillOfferManager exists (not
   // in Incognito windows), notifies the navigation event.
   if (navigation_handle->IsInPrimaryMainFrame() && browser_autofill_manager_ &&
-      browser_autofill_manager_->offer_manager()) {
-    browser_autofill_manager_->offer_manager()->OnDidNavigateFrame(
+      browser_autofill_manager_->GetOfferManager()) {
+    browser_autofill_manager_->GetOfferManager()->OnDidNavigateFrame(
         browser_autofill_manager_->client());
   }
 

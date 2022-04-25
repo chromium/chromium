@@ -27,7 +27,7 @@ class CreditCardAccessoryControllerImpl
 
   // AccessoryController:
   void RegisterFillingSourceObserver(FillingSourceObserver observer) override;
-  absl::optional<autofill::AccessorySheetData> GetSheetData() const override;
+  absl::optional<AccessorySheetData> GetSheetData() const override;
   void OnFillingTriggered(FieldGlobalId focused_field_id,
                           const AccessorySheetField& selection) override;
   void OnOptionSelected(AccessoryAction selected_action) override;
@@ -47,9 +47,9 @@ class CreditCardAccessoryControllerImpl
   static void CreateForWebContentsForTesting(
       content::WebContents* web_contents,
       base::WeakPtr<ManualFillingController> mf_controller,
-      autofill::PersonalDataManager* personal_data_manager,
-      autofill::BrowserAutofillManager* af_manager,
-      autofill::AutofillDriver* af_driver);
+      PersonalDataManager* personal_data_manager,
+      BrowserAutofillManager* af_manager,
+      AutofillDriver* af_driver);
 
  private:
   friend class content::WebContentsUserData<CreditCardAccessoryControllerImpl>;
@@ -65,8 +65,8 @@ class CreditCardAccessoryControllerImpl
       content::WebContents* web_contents,
       base::WeakPtr<ManualFillingController> mf_controller,
       PersonalDataManager* personal_data_manager,
-      autofill::BrowserAutofillManager* af_manager,
-      autofill::AutofillDriver* af_driver);
+      BrowserAutofillManager* af_manager,
+      AutofillDriver* af_driver);
 
   // Queries the `personal_data_manager_` for regular and virtual credit cards.
   // Virtual cards are (re-)created based on the enrollment status of the cards
@@ -84,15 +84,15 @@ class CreditCardAccessoryControllerImpl
   std::vector<const AutofillOfferData*> GetPromoCodeOffers() const;
 
   base::WeakPtr<ManualFillingController> GetManualFillingController();
-  autofill::AutofillDriver* GetDriver();
-  autofill::BrowserAutofillManager* GetManager() const;
+  AutofillDriver* GetDriver();
+  BrowserAutofillManager* GetManager() const;
 
   content::WebContents& GetWebContents() const;
 
   base::WeakPtr<ManualFillingController> mf_controller_;
   const raw_ptr<PersonalDataManager> personal_data_manager_;
-  raw_ptr<autofill::BrowserAutofillManager> af_manager_for_testing_ = nullptr;
-  raw_ptr<autofill::AutofillDriver> af_driver_for_testing_ = nullptr;
+  raw_ptr<BrowserAutofillManager> af_manager_for_testing_ = nullptr;
+  raw_ptr<AutofillDriver> af_driver_for_testing_ = nullptr;
 
   // The observer to notify if available suggestions change.
   FillingSourceObserver source_observer_;
