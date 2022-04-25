@@ -12,7 +12,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
-#include "components/security_state/core/features.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -67,10 +66,6 @@ std::string GetHistogramSuffixForSafetyTipStatus(
 // Sets |level| to the right value if status should be set.
 bool ShouldSetSecurityLevelFromSafetyTip(security_state::SafetyTipStatus status,
                                          SecurityLevel* level) {
-  if (!IsSafetyTipUIFeatureEnabled()) {
-    return false;
-  }
-
   switch (status) {
     case security_state::SafetyTipStatus::kBadReputation:
       *level = security_state::NONE;
@@ -290,13 +285,6 @@ bool IsSHA1InChain(const VisibleSecurityState& visible_security_state) {
   return visible_security_state.certificate &&
          (visible_security_state.cert_status &
           net::CERT_STATUS_SHA1_SIGNATURE_PRESENT);
-}
-
-bool IsSafetyTipUIFeatureEnabled() {
-  return base::FeatureList::IsEnabled(features::kSafetyTipUI) ||
-         base::FeatureList::IsEnabled(
-             features::kSafetyTipUIForSimplifiedDomainDisplay) ||
-         base::FeatureList::IsEnabled(features::kSafetyTipUIOnDelayedWarning);
 }
 
 }  // namespace security_state

@@ -16,19 +16,10 @@
 #include "components/lookalikes/core/features.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/reputation/core/safety_tips_config.h"
-#include "components/security_state/core/features.h"
 #include "components/url_formatter/spoof_checks/top_domains/top_domain_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 namespace {
-
-const base::FeatureParam<bool> kEnableLookalikeTopSites{
-    &security_state::features::kSafetyTipUI, "topsites", true};
-const base::FeatureParam<bool> kEnableLookalikeEditDistance{
-    &security_state::features::kSafetyTipUI, "editdistance", false};
-const base::FeatureParam<bool> kEnableLookalikeEditDistanceSiteEngagement{
-    &security_state::features::kSafetyTipUI, "editdistance_siteengagement",
-    true};
 
 // Binary search through |words| to find |needle|.
 bool SortedWordListContains(const std::string& needle,
@@ -84,29 +75,19 @@ bool ShouldTriggerSafetyTipFromLookalike(
           ? url::kHttpsScheme
           : url.scheme();
   *safe_url = GURL(scheme + url::kStandardSchemeSeparator + matched_domain);
-  // Safety Tips can be enabled by several features, with slightly different
-  // behavior for different experiments. The
-  // |kSafetyTipUIForSimplifiedDomainDisplay| feature enables specific lookalike
-  // Safety Tips and doesn't have parameters like the main |kSafetyTipUI|
-  // feature does.
-  bool is_safety_tip_for_simplified_domains_enabled =
-      base::FeatureList::IsEnabled(
-          security_state::features::kSafetyTipUIForSimplifiedDomainDisplay);
+
   switch (match_type) {
     case LookalikeUrlMatchType::kEditDistance:
-      return is_safety_tip_for_simplified_domains_enabled ||
-             kEnableLookalikeEditDistance.Get();
+      return false;
     case LookalikeUrlMatchType::kEditDistanceSiteEngagement:
-      return is_safety_tip_for_simplified_domains_enabled ||
-             kEnableLookalikeEditDistanceSiteEngagement.Get();
+      return true;
     case LookalikeUrlMatchType::kTargetEmbedding:
       // Target Embedding should block URL Navigation.
       return false;
     case LookalikeUrlMatchType::kTargetEmbeddingForSafetyTips:
       return true;
     case LookalikeUrlMatchType::kSkeletonMatchTop5k:
-      return is_safety_tip_for_simplified_domains_enabled ||
-             kEnableLookalikeTopSites.Get();
+      return true;
     case LookalikeUrlMatchType::kFailedSpoofChecks:
       // For now, no safety tip is shown for domain names that fail spoof checks
       // and don't have a suggested URL.

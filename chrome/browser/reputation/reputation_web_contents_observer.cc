@@ -18,7 +18,6 @@
 #include "chrome/browser/reputation/safety_tip_ui.h"
 #include "components/lookalikes/core/features.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
-#include "components/security_state/core/features.h"
 #include "components/security_state/core/security_state.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/navigation_entry.h"
@@ -33,10 +32,6 @@
 #endif
 
 namespace {
-
-// Whether to show tips on server-side-flagged sites included in the component.
-const base::FeatureParam<bool> kEnableSuspiciousSiteChecks{
-    &security_state::features::kSafetyTipUI, "suspicioussites", true};
 
 void RecordHeuristicsUKMData(ReputationCheckResult result,
                              ukm::SourceId navigation_source_id,
@@ -145,29 +140,6 @@ void RecordSafetyTipStatusWithInitiatorOriginInfo(
 
   base::UmaHistogramEnumeration(
       "Security.SafetyTips.StatusWithInitiator." + suffix, status);
-}
-
-// Returns whether a safety tip should be shown, according to finch.
-bool IsSafetyTipEnabled(security_state::SafetyTipStatus status) {
-  if (!security_state::IsSafetyTipUIFeatureEnabled()) {
-    return false;
-  }
-
-  if (status != security_state::SafetyTipStatus::kBadReputation) {
-    return true;
-  }
-
-  // Safety Tips can be enabled with a few different features that have slightly
-  // different behavior. "Suspicious site" Safety Tips are enabled for the main
-  // Safety Tip feature, |kSafetyTipUI|, by a parameter, and they are always
-  // enabled for the delayed warnings Safety Tip feature (which uses "Suspicious
-  // site" Safety Tips on phishing pages blocking by Safe Browsing.)
-  if (base::FeatureList::IsEnabled(security_state::features::kSafetyTipUI)) {
-    return kEnableSuspiciousSiteChecks.Get();
-  }
-
-  return base::FeatureList::IsEnabled(
-      security_state::features::kSafetyTipUIOnDelayedWarning);
 }
 
 }  // namespace
@@ -341,24 +313,6 @@ void ReputationWebContentsObserver::HandleReputationCheckResult(
             "If you believe this is shown in error please visit "
             "https://g.co/chrome/lookalike-warnings",
             result.url.host().c_str()));
-  }
-
-  if (!IsSafetyTipEnabled(result.safety_tip_status)) {
-    // When the feature isn't enabled, we 'ignore' the UI after the first visit
-    // to make it easier to disambiguate the control groups' first visit from
-    // subsequent navigations to the flagged page in metrics. Since the user
-    // never sees the UI, this is a no-op from their perspective.
-    if (result.safety_tip_status ==
-            security_state::SafetyTipStatus::kLookalike ||
-        result.safety_tip_status ==
-            security_state::SafetyTipStatus::kBadReputation) {
-      ReputationService::Get(profile_)->OnUIDisabledFirstVisit(result.url);
-    }
-
-    RecordPostFlagCheckHistogram(result.safety_tip_status);
-    FinalizeReputationCheckWhenTipNotShown(record_ukm_if_tip_not_shown, result,
-                                           navigation_source_id);
-    return;
   }
 
   if (!base::FeatureList::IsEnabled(

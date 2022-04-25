@@ -10,7 +10,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/chrome_features.h"
-#include "components/security_state/core/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -189,21 +188,11 @@ TEST(SafetyTipHeuristicsTest, SensitiveKeywordsTest) {
 }
 
 TEST(SafetyTipHeuristicsTest, ShouldTriggerSafetyTipFromLookalike) {
-  base::FieldTrialParams params;
-  params["editdistance"] = "true";
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeatureWithParameters(
-      security_state::features::kSafetyTipUI, params);
-
   struct TestCase {
     GURL navigated_url;
     GURL engaged_url;
     GURL expected_safe_url;
   } kTestCases[] = {
-      // Top domain matches should have https:// scheme for safe URLs.
-      {GURL("https://gooogle.com"), GURL(), GURL("https://google.com")},
-      {GURL("http://gooogle.com"), GURL(), GURL("https://google.com")},
-
       // Engaged site matches should use the scheme of the lookalike URL for
       // safe URLs.
       {GURL("http://teestsite.com"), GURL("https://testsite.com"),

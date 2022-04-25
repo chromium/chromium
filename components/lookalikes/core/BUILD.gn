@@ -17,7 +17,6 @@ static_library("core") {
     "//components/reputation/core:core",
     "//components/reputation/core:proto",
     "//components/security_interstitials/core",
-    "//components/security_state/core:features",
     "//components/strings",
     "//components/url_formatter",
     "//components/url_formatter/spoof_checks/common_words:common",

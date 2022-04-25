@@ -11,8 +11,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "components/security_state/core/features.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_connection_status_flags.h"
@@ -329,10 +327,6 @@ TEST(SecurityStateTest, SafetyTipSometimesRemovesSecure) {
       {SafetyTipStatus::kLookalike, SECURE},
       {SafetyTipStatus::kBadKeyword, SECURE},
   };
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      security_state::features::kSafetyTipUI);
 
   for (auto testcase : kTestCases) {
     TestSecurityStateHelper helper;

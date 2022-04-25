@@ -13,7 +13,6 @@
 #include "components/omnibox/browser/location_bar_model_delegate.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/security_state/core/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/favicon_size.h"

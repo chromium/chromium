@@ -14,7 +14,6 @@ static_library("core") {
   ]
 
   public_deps = [
-    ":features",
     "//base",
     "//net",
     "//url",
@@ -40,21 +39,7 @@ source_set("unit_tests") {
 
   deps = [
     ":core",
-    ":features",
     "//net:test_support",
     "//testing/gtest",
   ]
-}
-
-component("features") {
-  output_name = "security_state_features"
-
-  defines = [ "IS_SECURITY_STATE_FEATURES_IMPL" ]
-
-  sources = [
-    "features.cc",
-    "features.h",
-  ]
-
-  deps = [ "//base" ]
 }

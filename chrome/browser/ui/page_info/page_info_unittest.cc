@@ -41,7 +41,6 @@
 #include "components/permissions/features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
-#include "components/security_state/core/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
@@ -1236,9 +1235,6 @@ TEST_F(PageInfoTest, AdPersonalization) {
 #define MAYBE_SafetyTipMetrics SafetyTipMetrics
 #endif
 TEST_F(PageInfoTest, MAYBE_SafetyTipMetrics) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      security_state::features::kSafetyTipUI);
   struct TestCase {
     const security_state::SafetyTipInfo safety_tip_info;
     const std::string histogram_name;

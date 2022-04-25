@@ -822,15 +822,13 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
 
   safety_tip_info_ = visible_security_state.safety_tip_info;
 #if BUILDFLAG(IS_ANDROID)
-  if (security_state::IsSafetyTipUIFeatureEnabled()) {
-    // identity_status_description_android_ is only displayed on Android when
-    // the user taps "Details" link on the page info. Reuse the description from
-    // page info UI.
-    std::unique_ptr<PageInfoUI::SecurityDescription> security_description =
-        PageInfoUI::CreateSafetyTipSecurityDescription(safety_tip_info_);
-    if (security_description) {
-      identity_status_description_android_ = security_description->details;
-    }
+  // identity_status_description_android_ is only displayed on Android when
+  // the user taps "Details" link on the page info. Reuse the description from
+  // page info UI.
+  std::unique_ptr<PageInfoUI::SecurityDescription> security_description =
+      PageInfoUI::CreateSafetyTipSecurityDescription(safety_tip_info_);
+  if (security_description) {
+    identity_status_description_android_ = security_description->details;
   }
 #endif
 
@@ -1064,9 +1062,7 @@ void PageInfo::PresentSiteIdentity() {
   info.identity_status = site_identity_status_;
   info.safe_browsing_status = safe_browsing_status_;
   info.safe_browsing_details = safe_browsing_details_;
-  if (security_state::IsSafetyTipUIFeatureEnabled()) {
-    info.safety_tip_info = safety_tip_info_;
-  }
+  info.safety_tip_info = safety_tip_info_;
 #if BUILDFLAG(IS_ANDROID)
   info.identity_status_description_android =
       UTF16ToUTF8(identity_status_description_android_);

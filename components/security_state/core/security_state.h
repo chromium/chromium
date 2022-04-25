@@ -248,10 +248,6 @@ std::string GetSafetyTipHistogramName(const std::string& prefix,
 
 bool IsSHA1InChain(const VisibleSecurityState& visible_security_state);
 
-// Returns true if Safety Tip UI should be shown because a relevant field trial
-// is enabled.
-bool IsSafetyTipUIFeatureEnabled();
-
 }  // namespace security_state
 
 #endif  // COMPONENTS_SECURITY_STATE_CORE_SECURITY_STATE_H_
