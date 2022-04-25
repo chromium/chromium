@@ -94308,6 +94308,11 @@
               "revision": "version:100.0.4896.133"
             }
           ],
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-18.04"
+            }
+          ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
@@ -94331,6 +94336,11 @@
               "cipd_package": "chromium/testing/linux-ash-chromium/x86_64/ash.zip",
               "location": "lacros_version_skew_tests_v101.0.4951.41",
               "revision": "version:101.0.4951.41"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-18.04"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -94358,6 +94368,11 @@
               "revision": "version:102.0.5005.6"
             }
           ],
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-18.04"
+            }
+          ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
@@ -94381,6 +94396,11 @@
               "cipd_package": "chromium/testing/linux-ash-chromium/x86_64/ash.zip",
               "location": "lacros_version_skew_tests_v103.0.5024.0",
               "revision": "version:103.0.5024.0"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-18.04"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
