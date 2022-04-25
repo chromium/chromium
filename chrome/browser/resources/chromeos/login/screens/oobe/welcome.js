@@ -212,6 +212,18 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
     this.cleanupChromeVoxHint_();
   }
 
+  cancel() {
+    if (this.uiStep === WelcomeScreenState.LANGUAGE) {
+      this.closeLanguageSection_();
+      return;
+    }
+
+    if (this.uiStep === WelcomeScreenState.ACCESSIBILITY) {
+      this.closeAccessibilitySection_();
+      return;
+    }
+  }
+
   /**
    * This is called when UI strings are changed.
    * Overridden from LoginScreenBehavior.
