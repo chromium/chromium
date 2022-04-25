@@ -3,11 +3,6 @@
 // found in the LICENSE file.
 
 var video;
-
-// Some videos are less than 60 fps, so actual video frame presentations
-// could be much less than 30.
-var g_swaps_before_success = 30;
-
 var abort = false;
 
 function logOutput(s) {
@@ -36,25 +31,14 @@ function main() {
   // always be frames being generated.
   video.requestVideoFrameCallback((_, f) => {
     logOutput(`First frame: ${f.width}x${f.height}, ts: ${f.mediaTime}`);
-    chrome.gpuBenchmarking.addSwapCompletionEventListener(
-        waitForSwapsToComplete);
+
+    // Trace tests on Windows need some time to collect statistics from the
+    // overlay system, so allow for a 500ms delay (~30 swaps at 60Hz).
+    setTimeout(_ => {
+      if (abort)
+        return;
+      logOutput('Test complete.');
+      domAutomationController.send('SUCCESS');
+    }, 500);
   });
-}
-
-function waitForSwapsToComplete() {
-  if (abort)
-    return;
-
-  g_swaps_before_success--;
-  if (g_swaps_before_success > 0) {
-    if (g_swaps_before_success % 5 == 0) {
-      logOutput(
-          `Waiting for swaps to complete: ${g_swaps_before_success} left.`);
-    }
-    chrome.gpuBenchmarking.addSwapCompletionEventListener(
-        waitForSwapsToComplete);
-  } else {
-    logOutput('Test complete.');
-    domAutomationController.send('SUCCESS');
-  }
 }
