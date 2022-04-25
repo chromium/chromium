@@ -39,7 +39,6 @@ SidePanelToolbarButton::SidePanelToolbarButton(Browser* browser)
       reading_list_model_(
           ReadingListModelFactory::GetForBrowserContext(browser_->profile())) {
   SetVectorIcons(kSidePanelIcon, kSidePanelTouchIcon);
-  SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_SHOW));
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kMenu);
@@ -121,7 +120,6 @@ void SidePanelToolbarButton::ButtonPressed() {
     side_panel_webview_ =
         browser_view->right_aligned_side_panel()->AddChildView(
             std::move(webview));
-    SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_HIDE));
     if (reading_list_model_->loaded())
       reading_list_model_->MarkAllSeen();
     dot_indicator_->Hide();
@@ -136,7 +134,6 @@ void SidePanelToolbarButton::HideSidePanel() {
     browser_view->right_aligned_side_panel()->RemoveChildViewT(
         side_panel_webview_.get());
     side_panel_webview_ = nullptr;
-    SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_SHOW));
     browser_view->RightAlignedSidePanelWasClosed();
   }
 }
