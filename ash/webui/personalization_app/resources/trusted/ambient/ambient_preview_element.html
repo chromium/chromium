@@ -203,8 +203,8 @@
         <div id="imageContainer" class="preview-image-container" aria-hidden="true">
           <template is="dom-if" if="[[clickable]]">
             <img class="preview-image clickable" is="cr-auto-img"
-                on-click="onClickAmbientModeButton_"
-                on-keypress="onClickAmbientModeButton_"
+                on-click="onClickPreviewImage_"
+                on-keypress="onClickPreviewImage_"
                 auto-src="[[getPreviewImage_(firstPreviewAlbum_)]]"
                 is-google-photos>
           </template>

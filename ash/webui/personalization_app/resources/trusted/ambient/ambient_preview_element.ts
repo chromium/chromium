@@ -13,8 +13,10 @@ import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../../common/styles.js';
 import '../cros_button_style.js';
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {isNonEmptyArray} from '../../common/utils.js';
 import {AmbientModeAlbum, TopicSource} from '../personalization_app.mojom-webui.js';
+import {logAmbientModeOptInUMA} from '../personalization_metrics_logger.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getPhotoCount, getTopicSourceName, replaceResolutionSuffix} from '../utils.js';
@@ -93,9 +95,17 @@ export class AmbientPreview extends WithPersonalizationStore {
 
   /** Enable ambient mode and navigates to the ambient subpage. */
   private async onClickAmbientModeButton_(event: Event) {
+    assert(this.ambientModeEnabled_ === false);
     event.stopPropagation();
+    logAmbientModeOptInUMA();
     await setAmbientModeEnabled(
         /*ambientModeEnabled=*/ true, getAmbientProvider(), this.getStore());
+    PersonalizationRouter.instance().goToRoute(Paths.Ambient);
+  }
+
+  /** Navigates to the ambient subpage. */
+  private onClickPreviewImage_(event: Event) {
+    event.stopPropagation();
     PersonalizationRouter.instance().goToRoute(Paths.Ambient);
   }
 

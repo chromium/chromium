@@ -22,6 +22,8 @@ enum MetricsPath {
 }
 
 const PersonalizationPathHistogramName: string = 'Ash.Personalization.Path';
+const PersonalizationAmbientModeOptInHistogramName: string =
+    'Ash.Personalization.AmbientMode.OptIn';
 
 function ToMetricsEnum(path: Paths) {
   switch (path) {
@@ -49,4 +51,9 @@ export function logPersonalizationPathUMA(path: Paths) {
   assert(metricsPath <= MetricsPath.MAX_VALUE);
   chrome.metricsPrivate.recordEnumerationValue(
       PersonalizationPathHistogramName, metricsPath, MetricsPath.MAX_VALUE + 1);
+}
+
+export function logAmbientModeOptInUMA() {
+  chrome.metricsPrivate.recordBoolean(
+      PersonalizationAmbientModeOptInHistogramName, true);
 }
