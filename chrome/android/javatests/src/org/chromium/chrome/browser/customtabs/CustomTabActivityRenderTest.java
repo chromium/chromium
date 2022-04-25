@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
@@ -59,6 +60,7 @@ public class CustomTabActivityRenderTest {
     private static final int PORT_NO = 31415;
 
     private final boolean mRunWithHttps;
+    private String mUrl;
     private Intent mIntent;
 
     static class CustomTabTopActionIconHelper {
@@ -121,9 +123,9 @@ public class CustomTabActivityRenderTest {
     }
 
     private void prepareCCTIntent() {
-        String url = mEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
+        mUrl = mEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
         mIntent = CustomTabsTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getContext(), url);
+                InstrumentationRegistry.getContext(), mUrl);
     }
 
     private void startActivityAndRenderToolbar(String renderTestId) throws IOException {
@@ -169,5 +171,27 @@ public class CustomTabActivityRenderTest {
         startActivityAndRenderToolbar(
                 "cct_toolbar_with_custom_close_button_and_max_top_action_icon_and_with_https_"
                 + mRunWithHttps);
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    public void custom_color_red() throws IOException {
+        Context context = InstrumentationRegistry.getContext();
+        mIntent = CustomTabsTestUtils.createCustomTabIntent(
+                context, mUrl, builder -> { builder.setToolbarColor(Color.RED); });
+
+        startActivityAndRenderToolbar("cct_red" + mRunWithHttps);
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    public void custom_color_black() throws IOException {
+        Context context = InstrumentationRegistry.getContext();
+        mIntent = CustomTabsTestUtils.createCustomTabIntent(
+                context, mUrl, builder -> { builder.setToolbarColor(Color.BLACK); });
+
+        startActivityAndRenderToolbar("cct_black" + mRunWithHttps);
     }
 }

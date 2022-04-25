@@ -26,6 +26,7 @@ import androidx.browser.customtabs.CustomTabsSession;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 
+import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -104,9 +105,18 @@ public class CustomTabsTestUtils {
      */
     public static Intent createMinimalCustomTabIntent(
             Context context, String url) {
+        return createCustomTabIntent(context, url, builder -> {});
+    }
+
+    /**
+     * Creates an Intent that launches a CustomTabActivity, allows some customization.
+     */
+    public static Intent createCustomTabIntent(
+            Context context, String url, Callback<CustomTabsIntent.Builder> customizer) {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder(
                 CustomTabsSession.createMockSessionForTesting(
                         new ComponentName(context, ChromeLauncherActivity.class)));
+        customizer.onResult(builder);
         CustomTabsIntent customTabsIntent = builder.build();
         Intent intent = customTabsIntent.intent;
         intent.setAction(Intent.ACTION_VIEW);
@@ -139,17 +149,10 @@ public class CustomTabsTestUtils {
      */
     public static Intent createMinimalCustomTabIntentWithTheme(
             Context context, String url, boolean inNightMode) {
-        CustomTabsIntent.Builder builder =
-                new CustomTabsIntent.Builder(CustomTabsSession.createMockSessionForTesting(
-                        new ComponentName(context, ChromeLauncherActivity.class)));
-        builder.setColorScheme(inNightMode ? CustomTabsIntent.COLOR_SCHEME_DARK
-                                           : CustomTabsIntent.COLOR_SCHEME_LIGHT);
-        CustomTabsIntent customTabsIntent = builder.build();
-        Intent intent = customTabsIntent.intent;
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(url));
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        return intent;
+        return createCustomTabIntent(context, url, builder -> {
+            builder.setColorScheme(inNightMode ? CustomTabsIntent.COLOR_SCHEME_DARK
+                                               : CustomTabsIntent.COLOR_SCHEME_LIGHT);
+        });
     }
 
     public static CustomTabsConnection setUpConnection() {
