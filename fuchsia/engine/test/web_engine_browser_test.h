@@ -7,11 +7,13 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 #include <memory>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "content/public/test/browser_test_base.h"
 
 class ContextImpl;
+class FrameHostImpl;
 
 namespace base {
 class CommandLine;
@@ -40,8 +42,11 @@ class WebEngineBrowserTest : public content::BrowserTestBase {
   // Gets the client object for the Context service.
   fuchsia::web::ContextPtr& context() { return context_; }
 
-  // Gets the underlying ContextImpl service instance.
+  // Gets the bound ContextImpl instance. Crashes if there is no ContextImpl.
   ContextImpl* context_impl() const;
+
+  // Gets the FrameHostImpl instances that are bound.
+  std::vector<FrameHostImpl*> frame_host_impls() const;
 
   void SetHeadlessInCommandLine(base::CommandLine* command_line);
 

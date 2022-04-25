@@ -7,6 +7,7 @@
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/cpp/service_directory.h>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/fuchsia/fuchsia_logging.h"
@@ -92,6 +93,19 @@ ContextImpl* WebEngineBrowserTest::context_impl() const {
   CHECK(context) << "context_impl() called before Context connected.";
 
   return context;
+}
+
+std::vector<FrameHostImpl*> WebEngineBrowserTest::frame_host_impls() const {
+  // The ContentMainDelegate and ContentBrowserClient must already exist,
+  // since those are created early on, before test setup or execution.
+  auto* browser_client =
+      WebEngineMainDelegate::GetInstanceForTest()->browser_client();
+  DCHECK(browser_client);
+
+  auto* main_parts = browser_client->main_parts_for_test();
+  CHECK(main_parts) << "frame_host_impl() called too early in browser startup.";
+
+  return main_parts->frame_hosts_for_test();
 }
 
 }  // namespace cr_fuchsia

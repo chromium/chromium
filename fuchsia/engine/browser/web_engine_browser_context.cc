@@ -212,6 +212,8 @@ WebEngineBrowserContext::WebEngineBrowserContext(
       this, IsOffTheRecord() ? profile_metrics::BrowserProfileType::kIncognito
                              : profile_metrics::BrowserProfileType::kRegular);
 
+  BrowserContextDependencyManager::GetInstance()->MarkBrowserContextLive(this);
+
   // TODO(crbug.com/1181156): Should apply any persisted isolated origins here.
   // However, since WebEngine does not persist any, that would currently be a
   // no-op.
