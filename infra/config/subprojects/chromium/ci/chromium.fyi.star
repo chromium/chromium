@@ -603,6 +603,7 @@ ci.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
         ),
         test_results_config = builder_config.test_results_config(
             config = "staging_server",
