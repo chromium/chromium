@@ -21,3 +21,6 @@
 -ToolbarActionViewUnitTest.Basic*
 -UDPSocketUnitTest.TestUDPMulticastJoin*
 -UDPSocketUnitTest.TestUDPMulticastRecv
+
+# https://crbug.com/1315834
+-GalleryWatchManagerTest.Basic
