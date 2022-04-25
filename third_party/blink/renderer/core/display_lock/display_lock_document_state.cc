@@ -391,7 +391,7 @@ void DisplayLockDocumentState::UnlockShapingDeferredElements() {
   if (LockedDisplayLockCount() == DisplayLockBlockingAllActivationCount())
     return;
   for (auto& context : display_lock_contexts_) {
-    if (context->IsShapingDeferred())
+    if (context->HasElement() && context->IsShapingDeferred())
       context->SetRequestedState(EContentVisibility::kVisible);
   }
 }
