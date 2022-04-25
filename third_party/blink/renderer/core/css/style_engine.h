@@ -245,8 +245,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void SetPreferredStylesheetSetNameIfNotSet(const String&);
   void SetHttpDefaultStyle(const String&);
 
-  void AddPendingSheet(Node& style_sheet_candidate_node);
-  void RemovePendingSheet(Node& style_sheet_candidate_node);
+  // TODO(xiaochengh): Rename them to Add/RemovePendingBlockingSheet.
+  void AddPendingSheet(Node& style_sheet_candidate_node, PendingSheetType type);
+  void RemovePendingSheet(Node& style_sheet_candidate_node,
+                          PendingSheetType type);
 
   bool HasPendingScriptBlockingSheets() const {
     return pending_script_blocking_stylesheets_ > 0;

@@ -119,9 +119,9 @@ void StyleElement::ClearSheet(Element& owner_element) {
 
   if (sheet_->IsLoading()) {
     DCHECK(IsSameObject(owner_element));
-    if (pending_sheet_type_ == PendingSheetType::kBlocking) {
+    if (pending_sheet_type_ != PendingSheetType::kNonBlocking) {
       owner_element.GetDocument().GetStyleEngine().RemovePendingSheet(
-          owner_element);
+          owner_element, pending_sheet_type_);
     }
     pending_sheet_type_ = PendingSheetType::kNone;
   }
@@ -171,21 +171,11 @@ StyleElement::ProcessingResult StyleElement::CreateSheet(Element& element,
         media_query_matches = evaluator.Eval(*media_queries);
       }
     }
-    bool render_blocking =
-        media_query_matches &&
-        (created_by_parser_ ||
-         (RuntimeEnabledFeatures::BlockingAttributeEnabled() && blocking() &&
-          blocking()->IsRenderBlocking()));
-    pending_sheet_type_ = render_blocking ? PendingSheetType::kBlocking
-                                          : PendingSheetType::kNonBlocking;
-    bool is_in_body = element.IsDescendantOf(element.GetDocument().body());
-    render_blocking_behavior_ =
-        !media_query_matches
-            ? RenderBlockingBehavior::kNonBlocking
-            : (render_blocking
-                   ? (is_in_body ? RenderBlockingBehavior::kInBodyParserBlocking
-                                 : RenderBlockingBehavior::kBlocking)
-                   : RenderBlockingBehavior::kNonBlockingDynamic);
+    auto type_and_behavior = ComputePendingSheetTypeAndRenderBlockingBehavior(
+        element, media_query_matches, created_by_parser_);
+    pending_sheet_type_ = type_and_behavior.first;
+    render_blocking_behavior_ = type_and_behavior.second;
+
     loading_ = true;
     TextPosition start_position =
         start_position_ == TextPosition::BelowRangePosition()
@@ -220,8 +210,10 @@ bool StyleElement::SheetLoaded(Document& document) {
     return false;
 
   DCHECK(IsSameObject(*sheet_->ownerNode()));
-  if (pending_sheet_type_ == PendingSheetType::kBlocking)
-    document.GetStyleEngine().RemovePendingSheet(*sheet_->ownerNode());
+  if (pending_sheet_type_ != PendingSheetType::kNonBlocking) {
+    document.GetStyleEngine().RemovePendingSheet(*sheet_->ownerNode(),
+                                                 pending_sheet_type_);
+  }
   pending_sheet_type_ = PendingSheetType::kNone;
   return true;
 }
@@ -230,7 +222,7 @@ void StyleElement::SetToPendingState(Document& document, Element& element) {
   DCHECK(IsSameObject(element));
   DCHECK_LT(pending_sheet_type_, PendingSheetType::kBlocking);
   pending_sheet_type_ = PendingSheetType::kBlocking;
-  document.GetStyleEngine().AddPendingSheet(element);
+  document.GetStyleEngine().AddPendingSheet(element, pending_sheet_type_);
 }
 
 void StyleElement::Trace(Visitor* visitor) const {

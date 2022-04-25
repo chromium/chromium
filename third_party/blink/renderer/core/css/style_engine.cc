@@ -243,12 +243,20 @@ CSSStyleSheet& StyleEngine::EnsureInspectorStyleSheet() {
   return *inspector_style_sheet_;
 }
 
-void StyleEngine::AddPendingSheet(Node& style_sheet_candidate_node) {
-  pending_script_blocking_stylesheets_++;
+void StyleEngine::AddPendingSheet(Node& style_sheet_candidate_node,
+                                  PendingSheetType type) {
+  DCHECK(type == PendingSheetType::kBlocking ||
+         type == PendingSheetType::kDynamicRenderBlocking);
 
   auto* manager = GetDocument().GetRenderBlockingResourceManager();
   bool is_render_blocking =
       manager && manager->AddPendingStylesheet(style_sheet_candidate_node);
+
+  if (type != PendingSheetType::kBlocking)
+    return;
+
+  pending_script_blocking_stylesheets_++;
+
   if (!is_render_blocking) {
     pending_parser_blocking_stylesheets_++;
     if (GetDocument().body()) {
@@ -260,13 +268,21 @@ void StyleEngine::AddPendingSheet(Node& style_sheet_candidate_node) {
 }
 
 // This method is called whenever a top-level stylesheet has finished loading.
-void StyleEngine::RemovePendingSheet(Node& style_sheet_candidate_node) {
+void StyleEngine::RemovePendingSheet(Node& style_sheet_candidate_node,
+                                     PendingSheetType type) {
+  DCHECK(type == PendingSheetType::kBlocking ||
+         type == PendingSheetType::kDynamicRenderBlocking);
+
   if (style_sheet_candidate_node.isConnected())
     SetNeedsActiveStyleUpdate(style_sheet_candidate_node.GetTreeScope());
 
   auto* manager = GetDocument().GetRenderBlockingResourceManager();
   bool is_render_blocking =
       manager && manager->RemovePendingStylesheet(style_sheet_candidate_node);
+
+  if (type != PendingSheetType::kBlocking)
+    return;
+
   if (!is_render_blocking) {
     DCHECK_GT(pending_parser_blocking_stylesheets_, 0);
     pending_parser_blocking_stylesheets_--;
@@ -749,8 +765,8 @@ CSSStyleSheet* StyleEngine::CreateSheet(
   DCHECK(element.GetDocument() == GetDocument());
   CSSStyleSheet* style_sheet = nullptr;
 
-  if (type == PendingSheetType::kBlocking)
-    AddPendingSheet(element);
+  if (type != PendingSheetType::kNonBlocking)
+    AddPendingSheet(element, type);
 
   AtomicString text_content(text);
 

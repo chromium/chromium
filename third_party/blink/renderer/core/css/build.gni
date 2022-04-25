@@ -502,6 +502,7 @@ blink_core_sources_css = [
   "parser/sizes_math_function_parser.h",
   "part_names.cc",
   "part_names.h",
+  "pending_sheet_type.cc",
   "pending_sheet_type.h",
   "post_style_update_scope.cc",
   "post_style_update_scope.h",

@@ -170,7 +170,8 @@ void ProcessingInstruction::Process(const String& href, const String& charset) {
   } else {
     params.SetCharset(charset.IsEmpty() ? GetDocument().Encoding()
                                         : WTF::TextEncoding(charset));
-    GetDocument().GetStyleEngine().AddPendingSheet(*this);
+    GetDocument().GetStyleEngine().AddPendingSheet(*this,
+                                                   PendingSheetType::kBlocking);
     CSSStyleSheetResource::Fetch(params, GetDocument().Fetcher(), this);
   }
 }
@@ -296,7 +297,8 @@ void ProcessingInstruction::ClearSheet() {
 void ProcessingInstruction::RemovePendingSheet() {
   if (is_xsl_)
     return;
-  GetDocument().GetStyleEngine().RemovePendingSheet(*this);
+  GetDocument().GetStyleEngine().RemovePendingSheet(
+      *this, PendingSheetType::kBlocking);
 }
 
 void ProcessingInstruction::Trace(Visitor* visitor) const {
