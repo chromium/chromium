@@ -59,7 +59,13 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketUDPExtension) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketTCPExtension) {
+// Flaky on Windows. https://crbug.com/1319604.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SocketTCPExtension DISABLED_SocketTCPExtension
+#else
+#define MAYBE_SocketTCPExtension SocketTCPExtension
+#endif
+IN_PROC_BROWSER_TEST_F(SocketApiTest, MAYBE_SocketTCPExtension) {
   net::EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTP);
   test_server.AddDefaultHandlers();
   EXPECT_TRUE(test_server.Start());
