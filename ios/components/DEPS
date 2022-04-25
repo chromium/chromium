@@ -5,6 +5,7 @@ include_rules = [
   "+ios/net",
   "+ios/testing",
   "+ios/web/public",
+  "+mojo/core/embedder",
 
   # Individual components must explicitly declare their dependencies
   # on other components. Cycles in the dependency graph within

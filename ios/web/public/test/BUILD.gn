@@ -59,6 +59,7 @@ source_set("test_fixture") {
 
   visibility = [
     "//components/*",
+    "//ios/components/*",
     "//ios/web/*",
     "//ios/web_view/*",
 
