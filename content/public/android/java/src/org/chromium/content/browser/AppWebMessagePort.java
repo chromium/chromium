@@ -17,6 +17,7 @@ import org.chromium.blink.mojom.MessagePortDescriptor;
 import org.chromium.blink.mojom.SerializedArrayBufferContents;
 import org.chromium.blink.mojom.SerializedBlob;
 import org.chromium.blink.mojom.TransferableMessage;
+import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.mojo.bindings.Connector;
 import org.chromium.mojo.bindings.DeserializationException;
@@ -115,7 +116,7 @@ public class AppWebMessagePort implements MessagePort {
                     Log.w(TAG, "Undecodable message received, dropping message");
                     return;
                 }
-                mMessageCallback.onMessage(decodedMessage, message.ports);
+                mMessageCallback.onMessage(new MessagePayload(decodedMessage), message.ports);
                 return;
             }
             throw new IllegalStateException("undefined message");
@@ -265,7 +266,8 @@ public class AppWebMessagePort implements MessagePort {
     }
 
     @Override
-    public void postMessage(String message, MessagePort[] sentPorts) throws IllegalStateException {
+    public void postMessage(MessagePayload messagePayload, MessagePort[] sentPorts)
+            throws IllegalStateException {
         if (isClosed() || isTransferred()) {
             throw new IllegalStateException("Port is already closed or transferred");
         }
@@ -294,7 +296,7 @@ public class AppWebMessagePort implements MessagePort {
         TransferableMessage msg = new TransferableMessage();
         msg.message = new CloneableMessage();
         msg.message.encodedMessage = BigBufferUtil.createBigBufferFromBytes(
-                AppWebMessagePortJni.get().encodeStringMessage(message));
+                AppWebMessagePortJni.get().encodeStringMessage(messagePayload.getAsString()));
         msg.message.blobs = new SerializedBlob[0];
         msg.message.fileSystemAccessTokens = new FileSystemAccessTransferToken[0];
         msg.message.senderOrigin = null;

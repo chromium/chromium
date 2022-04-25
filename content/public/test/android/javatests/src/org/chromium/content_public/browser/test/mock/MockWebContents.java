@@ -15,6 +15,7 @@ import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.ImageDownloadCallback;
 import org.chromium.content_public.browser.JavaScriptCallback;
+import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -216,8 +217,8 @@ public class MockWebContents implements WebContents {
     public void addMessageToDevToolsConsole(int level, String message) {}
 
     @Override
-    public void postMessageToMainFrame(
-            String message, String sourceOrigin, String targetOrigin, MessagePort[] ports) {}
+    public void postMessageToMainFrame(MessagePayload messagePayload, String sourceOrigin,
+            String targetOrigin, MessagePort[] ports) {}
 
     @Override
     public MessagePort[] createMessageChannel() {

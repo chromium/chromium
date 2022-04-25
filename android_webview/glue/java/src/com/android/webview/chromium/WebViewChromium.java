@@ -69,6 +69,7 @@ import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.components.content_capture.ContentCaptureFeatures;
 import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
+import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.SmartClipProvider;
 import org.chromium.url.GURL;
@@ -1624,8 +1625,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
     @Override
     public void postMessageToMainFrame(final WebMessage message, final Uri targetOrigin) {
         recordWebViewApiCall(ApiCall.POST_MESSAGE_TO_MAIN_FRAME);
-        mSharedWebViewChromium.postMessageToMainFrame(message.getData(), targetOrigin.toString(),
-                WebMessagePortAdapter.toMessagePorts(message.getPorts()));
+        // Create MessagePayload from AOSP WebMessage, MessagePayload is not directly supported by
+        // AOSP.
+        mSharedWebViewChromium.postMessageToMainFrame(new MessagePayload(message.getData()),
+                targetOrigin.toString(), WebMessagePortAdapter.toMessagePorts(message.getPorts()));
     }
 
     @Override

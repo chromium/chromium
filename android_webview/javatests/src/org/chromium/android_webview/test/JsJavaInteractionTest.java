@@ -25,6 +25,7 @@ import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedTitleHel
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -179,7 +180,7 @@ public class JsJavaInteractionTest {
         final OnReceivedTitleHelper onReceivedTitleHelper =
                 mContentsClient.getOnReceivedTitleHelper();
         final int titleCallCount = onReceivedTitleHelper.getCallCount();
-        ports[0].postMessage(NEW_TITLE, new MessagePort[0]);
+        ports[0].postMessage(new MessagePayload(NEW_TITLE), new MessagePort[0]);
         onReceivedTitleHelper.waitForCallback(titleCallCount);
 
         Assert.assertEquals(NEW_TITLE, onReceivedTitleHelper.getTitle());
