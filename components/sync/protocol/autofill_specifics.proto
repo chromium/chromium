@@ -229,6 +229,7 @@ message WalletMaskedCreditCard {
     SWITCH = 7;
     VISA = 8;
     UNIONPAY = 9;
+    ELO = 10;
   }
 
   enum VirtualCardEnrollmentState {

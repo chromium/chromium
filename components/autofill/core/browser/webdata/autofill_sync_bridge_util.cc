@@ -39,6 +39,8 @@ sync_pb::WalletMaskedCreditCard::WalletCardType WalletCardTypeFromCardNetwork(
     return sync_pb::WalletMaskedCreditCard::UNIONPAY;
   if (network == kVisaCard)
     return sync_pb::WalletMaskedCreditCard::VISA;
+  if (network == kEloCard)
+    return sync_pb::WalletMaskedCreditCard::ELO;
 
   // Some cards aren't supported by the client, so just return unknown.
   return sync_pb::WalletMaskedCreditCard::UNKNOWN;
@@ -59,6 +61,8 @@ const char* CardNetworkFromWalletCardType(
       return kUnionPay;
     case sync_pb::WalletMaskedCreditCard::VISA:
       return kVisaCard;
+    case sync_pb::WalletMaskedCreditCard::ELO:
+      return kEloCard;
 
     // These aren't supported by the client, so just declare a generic card.
     case sync_pb::WalletMaskedCreditCard::MAESTRO:
