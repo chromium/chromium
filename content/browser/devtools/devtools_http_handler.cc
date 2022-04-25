@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -43,6 +44,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
+#include "net/http/http_request_headers.h"
 #include "net/server/http_server.h"
 #include "net/server/http_server_request_info.h"
 #include "net/server/http_server_response_info.h"
@@ -545,6 +547,15 @@ static bool ParseJsonPath(
   return true;
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DevToolsMutatingHttpActionVerb {
+  kGet = 0,
+  kPost = 1,
+  kOther = 2,
+  kMaxValue = kOther,
+};
+
 void DevToolsHttpHandler::OnJsonRequest(
     int connection_id,
     const net::HttpServerRequestInfo& info) {
@@ -609,6 +620,24 @@ void DevToolsHttpHandler::OnJsonRequest(
   }
 
   if (command == "new") {
+    DevToolsMutatingHttpActionVerb verb;
+    if (base::EqualsCaseInsensitiveASCII(info.method,
+                                         net::HttpRequestHeaders::kGetMethod)) {
+      verb = DevToolsMutatingHttpActionVerb::kGet;
+    } else if (base::EqualsCaseInsensitiveASCII(
+                   info.method, net::HttpRequestHeaders::kPostMethod)) {
+      verb = DevToolsMutatingHttpActionVerb::kPost;
+    } else {
+      verb = DevToolsMutatingHttpActionVerb::kOther;
+    }
+
+    UMA_HISTOGRAM_ENUMERATION("DevTools.MutatingHttpAction", verb);
+    if (verb != DevToolsMutatingHttpActionVerb::kOther) {
+      LOG(ERROR) << "Using unsafe HTTP verb " << info.method
+                 << " to invoke /json/new. This action will stop supporting "
+                    "GET and POST verbs in future versions.";
+    }
+
     GURL url(base::UnescapeBinaryURLComponent(query));
     if (!url.is_valid())
       url = GURL(url::kAboutBlankURL);

@@ -22891,6 +22891,12 @@ Called by update_debug_scenarios.py.-->
   <int value="4" label="WebAssembly.Memory"/>
 </enum>
 
+<enum name="DevToolsMutatingHttpActionVerb">
+  <int value="0" label="GET"/>
+  <int value="1" label="POST"/>
+  <int value="2" label="OTHER"/>
+</enum>
+
 <enum name="DevToolsOpenedByAction">
   <int value="1" label="Main menu or main shortcut"/>
   <int value="2" label="Console tab shortcut"/>

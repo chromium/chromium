@@ -293,6 +293,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.MutatingHttpAction"
+    enum="DevToolsMutatingHttpActionVerb" expires_after="2022-12-31">
+  <owner>dsv@chromium.org</owner>
+  <owner>caseq@chromium.org</owner>
+  <summary>
+    Records the invocation of actions like /json/new on the HTTP server exposed
+    with running with --remote-debugging-port.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.OpenedByAction" enum="DevToolsOpenedByAction"
     expires_after="2022-12-01">
   <owner>changhaohan@chromium.org</owner>
