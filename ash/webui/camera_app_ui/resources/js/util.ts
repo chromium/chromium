@@ -10,7 +10,7 @@ import * as Comlink from './lib/comlink.js';
 import * as loadTimeData from './models/load_time_data.js';
 import * as state from './state.js';
 import * as tooltip from './tooltip.js';
-import {Facing} from './type.js';
+import {AspectRatioSet, Facing, Resolution} from './type.js';
 import {WaitableEvent} from './waitable_event.js';
 
 /**
@@ -362,5 +362,19 @@ export async function cropSquare(blob: Blob): Promise<Blob> {
     return croppedBlob;
   } finally {
     URL.revokeObjectURL(img.src);
+  }
+}
+
+/**
+ * Returns the mapped aspect ratio set according to the given resolution.
+ */
+export function toAspectRatioSet(resolution: Resolution|null): AspectRatioSet {
+  switch (resolution?.aspectRatio) {
+    case 1.3333:
+      return AspectRatioSet.RATIO_4_3;
+    case 1.7778:
+      return AspectRatioSet.RATIO_16_9;
+    default:
+      return AspectRatioSet.RATIO_OTHER;
   }
 }

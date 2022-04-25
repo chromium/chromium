@@ -11,11 +11,14 @@ import {ChromeHelper} from './mojo/chrome_helper.js';
 import * as state from './state.js';
 import {State} from './state.js';
 import {
+  AspectRatioSet,
   Facing,
   Mode,
   PerfEvent,
   PerfInformation,
+  PhotoResolutionLevel,
   Resolution,
+  VideoResolutionLevel,
 } from './type.js';
 import {GAHelper} from './untrusted_ga_helper.js';
 import * as util from './util.js';
@@ -124,6 +127,8 @@ enum MetricDimension {
   SCHEMA_VERSION = 31,
   LAUNCH_TYPE = 32,
   DOC_FIX_TYPE = 33,
+  RESOLUTION_LEVEL = 34,
+  ASPECT_RATIO_SET = 35,
 }
 
 /**
@@ -289,6 +294,9 @@ export interface CaptureEventParam {
   docFixType?: DocFixType;
   gifResult?: GifResultType;
   recordType?: RecordType;
+
+  resolutionLevel: PhotoResolutionLevel|VideoResolutionLevel;
+  aspectRatioSet: AspectRatioSet;
 }
 
 /**
@@ -306,6 +314,8 @@ export function sendCaptureEvent({
   docFixType,
   recordType = RecordType.NOT_RECORDING,
   gifResult = GifResultType.NOT_GIF_RESULT,
+  resolutionLevel,
+  aspectRatioSet,
 }: CaptureEventParam): void {
   function condState(
       states: state.StateUnion[],
@@ -357,6 +367,8 @@ export function sendCaptureEvent({
         [MetricDimension.GIF_RESULT, gifResult],
         [MetricDimension.DURATION, duration],
         [MetricDimension.DOC_FIX_TYPE, docFixType ?? ''],
+        [MetricDimension.RESOLUTION_LEVEL, resolutionLevel],
+        [MetricDimension.ASPECT_RATIO_SET, aspectRatioSet],
       ]));
 }
 

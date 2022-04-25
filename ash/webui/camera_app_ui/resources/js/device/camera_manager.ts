@@ -401,6 +401,23 @@ export class CameraManager implements EventListener {
     }
   }
 
+  getPhotoResolutionLevel(resolution: Resolution): PhotoResolutionLevel {
+    return this.scheduler.reconfigurer.capturePreferrer.getPhotoResolutionLevel(
+        resolution);
+  }
+
+  getVideoResolutionLevel(resolution: Resolution): VideoResolutionLevel {
+    return this.scheduler.reconfigurer.capturePreferrer.getVideoResolutionLevel(
+        resolution);
+  }
+
+  getAspectRatioSet(resolution: Resolution): AspectRatioSet {
+    if (this.preferSquarePhoto()) {
+      return AspectRatioSet.RATIO_SQUARE;
+    }
+    return util.toAspectRatioSet(resolution);
+  }
+
   /**
    * Apply point of interest to the stream.
    *

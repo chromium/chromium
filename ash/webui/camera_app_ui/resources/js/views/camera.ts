@@ -120,7 +120,7 @@ export class Camera extends View implements CameraViewUI {
 
   constructor(
       protected readonly resultSaver: ResultSaver,
-      private readonly cameraManager: CameraManager,
+      protected readonly cameraManager: CameraManager,
       readonly perfLogger: PerfLogger,
   ) {
     super(ViewName.CAMERA);
@@ -483,6 +483,8 @@ export class Camera extends View implements CameraViewUI {
       resolution,
       shutterType: this.shutterType,
       isVideoSnapshot: true,
+      resolutionLevel: this.cameraManager.getVideoResolutionLevel(resolution),
+      aspectRatioSet: this.cameraManager.getAspectRatioSet(resolution),
     });
     try {
       const name = (new Filenamer(timestamp)).newImageName();
@@ -525,6 +527,8 @@ export class Camera extends View implements CameraViewUI {
         resolution,
         shutterType: this.shutterType,
         isVideoSnapshot: false,
+        resolutionLevel: this.cameraManager.getPhotoResolutionLevel(resolution),
+        aspectRatioSet: this.cameraManager.getAspectRatioSet(resolution),
       });
 
       try {
@@ -558,6 +562,8 @@ export class Camera extends View implements CameraViewUI {
         resolution,
         shutterType: this.shutterType,
         isVideoSnapshot: false,
+        resolutionLevel: this.cameraManager.getPhotoResolutionLevel(resolution),
+        aspectRatioSet: this.cameraManager.getAspectRatioSet(resolution),
       });
 
       // Save reference.
@@ -669,6 +675,10 @@ export class Camera extends View implements CameraViewUI {
             shutterType: this.shutterType,
             docResult,
             docFixType: fixType,
+            resolutionLevel: this.cameraManager.getPhotoResolutionLevel(
+                originImage.resolution),
+            aspectRatioSet:
+                this.cameraManager.getAspectRatioSet(originImage.resolution),
           });
         };
 
@@ -798,6 +808,8 @@ export class Camera extends View implements CameraViewUI {
         duration,
         shutterType: this.shutterType,
         gifResult,
+        resolutionLevel: this.cameraManager.getVideoResolutionLevel(resolution),
+        aspectRatioSet: this.cameraManager.getAspectRatioSet(resolution),
       });
     };
 
@@ -843,6 +855,8 @@ export class Camera extends View implements CameraViewUI {
         resolution,
         shutterType: this.shutterType,
         everPaused,
+        resolutionLevel: this.cameraManager.getVideoResolutionLevel(resolution),
+        aspectRatioSet: this.cameraManager.getAspectRatioSet(resolution),
       });
       await this.resultSaver.finishSaveVideo(videoSaver);
       state.set(

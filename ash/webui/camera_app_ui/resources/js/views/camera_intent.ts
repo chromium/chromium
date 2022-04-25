@@ -92,6 +92,10 @@ export class CameraIntent extends Camera {
         intentResult: confirmed ? metrics.IntentResultType.CONFIRMED :
                                   metrics.IntentResultType.CANCELED,
         shutterType: this.shutterType,
+        resolutionLevel:
+            this.cameraManager.getPhotoResolutionLevel(metricArgs.resolution),
+        aspectRatioSet:
+            this.cameraManager.getAspectRatioSet(metricArgs.resolution),
       });
       if (confirmed) {
         await this.intent.finish();

@@ -13,6 +13,7 @@ import {
   Resolution,
   VideoResolutionLevel,
 } from '../type.js';
+import {toAspectRatioSet} from '../util.js';
 
 import {
   Camera3DeviceInfo,
@@ -274,6 +275,43 @@ export class CaptureCandidatePreferrer {
   preferSquarePhoto(deviceId: string): boolean {
     return this.prefPhotoAspectRatioSetMap[deviceId] ===
         AspectRatioSet.RATIO_SQUARE;
+  }
+
+  /**
+   * Returns the photo resolution level where the resolution belongs in the
+   * current opened camera.
+   */
+  getPhotoResolutionLevel(resolution: Resolution): PhotoResolutionLevel {
+    assert(this.cameraConfig !== null);
+    const optionsGroups =
+        this.photoOptions.get(this.cameraConfig.deviceId)?.values();
+    assert(optionsGroups !== undefined);
+    for (const options of optionsGroups) {
+      for (const {resolutionLevel, resolutions} of options) {
+        if (resolutions.some((r) => resolution.equals(r))) {
+          return resolutionLevel;
+        }
+      }
+    }
+    assertNotReached();
+  }
+
+  /**
+   * Returns the video resolution level where the resolution belongs in the
+   * current opened camera.
+   */
+  getVideoResolutionLevel(resolution: Resolution): VideoResolutionLevel {
+    assert(this.cameraConfig !== null);
+    const options = this.videoOptions.get(this.cameraConfig.deviceId);
+    assert(options !== undefined);
+    for (const {resolutionLevel, fpsOptions} of options) {
+      for (const {resolutions} of fpsOptions) {
+        if (resolutions.some((r) => resolution.equals(r))) {
+          return resolutionLevel;
+        }
+      }
+    }
+    assertNotReached();
   }
 
   private getPhotoCandidates(deviceId: string): CaptureCandidate[] {
@@ -674,7 +712,8 @@ export class CaptureCandidatePreferrer {
     }
   }
 
-  getFallbackFPS(deviceId: string, level: VideoResolutionLevel): number {
+  private getFallbackFPS(deviceId: string, level: VideoResolutionLevel):
+      number {
     return (this.prefVideoFpsesMap[deviceId] ?? {})[level] ?? 30;
   }
 }
@@ -711,15 +750,4 @@ function getFallbackVideoResolutionLevel(options: VideoResolutionOption[]):
     }
   }
   assertNotReached();
-}
-
-function toAspectRatioSet(resolution: Resolution|null): AspectRatioSet {
-  switch (resolution?.aspectRatio) {
-    case 1.3333:
-      return AspectRatioSet.RATIO_4_3;
-    case 1.7778:
-      return AspectRatioSet.RATIO_16_9;
-    default:
-      return AspectRatioSet.RATIO_OTHER;
-  }
 }
