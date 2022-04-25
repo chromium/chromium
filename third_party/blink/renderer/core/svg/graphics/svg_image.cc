@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "ui/gfx/geometry/rect.h"
@@ -793,6 +794,8 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
 
   if (!all_data_received)
     return page_ ? kSizeAvailable : kSizeUnavailable;
+
+  SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES("Blink.SVGImage.DataChanged");
 
   CHECK(!page_);
 
