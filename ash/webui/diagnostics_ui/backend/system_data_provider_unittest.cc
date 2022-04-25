@@ -21,10 +21,9 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
-#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
+#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,8 +56,8 @@ void SetProbeTelemetryInfoResponse(healthd_mojom::BatteryInfoPtr battery_info,
         healthd_mojom::CpuResult::NewCpuInfo(std::move(cpu_info));
   }
 
-  cros_healthd::FakeCrosHealthdClient::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(info);
+  cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
+      info);
 }
 
 void SetCrosHealthdSystemInfoResponse(const std::string& board_name,
@@ -487,13 +486,13 @@ class SystemDataProviderTest : public testing::Test {
  public:
   SystemDataProviderTest() {
     chromeos::PowerManagerClient::InitializeFake();
-    cros_healthd::CrosHealthdClient::InitializeFake();
+    cros_healthd::FakeCrosHealthd::Initialize();
     system_data_provider_ = std::make_unique<SystemDataProvider>();
   }
 
   ~SystemDataProviderTest() override {
     system_data_provider_.reset();
-    cros_healthd::CrosHealthdClient::Shutdown();
+    cros_healthd::FakeCrosHealthd::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
     base::RunLoop().RunUntilIdle();
   }

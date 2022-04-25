@@ -16,8 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
-#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_service.h"
+#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -37,7 +36,7 @@ constexpr char kResultDetailsKey[] = "resultDetails";
 
 void SetCrosHealthdRunRoutineResponse(
     healthd::RunRoutineResponsePtr& response) {
-  cros_healthd::FakeCrosHealthdClient::Get()->SetRunRoutineResponseForTesting(
+  cros_healthd::FakeCrosHealthd::Get()->SetRunRoutineResponseForTesting(
       response);
 }
 
@@ -48,8 +47,8 @@ void SetRunRoutineResponse(int32_t id,
 }
 
 void SetCrosHealthdRoutineUpdateResponse(healthd::RoutineUpdatePtr& response) {
-  cros_healthd::FakeCrosHealthdClient::Get()
-      ->SetGetRoutineUpdateResponseForTesting(response);
+  cros_healthd::FakeCrosHealthd::Get()->SetGetRoutineUpdateResponseForTesting(
+      response);
 }
 
 void SetNonInteractiveRoutineUpdateResponse(
@@ -126,7 +125,7 @@ std::string ConstructPowerRoutineResultJson(double charge_percent,
 
 void SetAvailableRoutines(
     const std::vector<healthd::DiagnosticRoutineEnum>& routines) {
-  cros_healthd::FakeCrosHealthdClient::Get()->SetAvailableRoutinesForTesting(
+  cros_healthd::FakeCrosHealthd::Get()->SetAvailableRoutinesForTesting(
       routines);
 }
 
@@ -160,7 +159,7 @@ struct FakeRoutineRunner : public mojom::RoutineRunner {
 class SystemRoutineControllerTest : public testing::Test {
  public:
   SystemRoutineControllerTest() {
-    cros_healthd::CrosHealthdClient::InitializeFake();
+    cros_healthd::FakeCrosHealthd::Initialize();
     system_routine_controller_ = std::make_unique<SystemRoutineController>();
 
     wake_lock_provider_ = std::make_unique<device::TestWakeLockProvider>();
@@ -174,7 +173,7 @@ class SystemRoutineControllerTest : public testing::Test {
 
   ~SystemRoutineControllerTest() override {
     system_routine_controller_.reset();
-    cros_healthd::CrosHealthdClient::Shutdown();
+    cros_healthd::FakeCrosHealthd::Shutdown();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -619,9 +618,9 @@ TEST_F(SystemRoutineControllerTest, CancelRoutine) {
   base::RunLoop().RunUntilIdle();
 
   // Verify that CrosHealthd is called with the correct parameters.
-  absl::optional<cros_healthd::FakeCrosHealthdService::RoutineUpdateParams>
+  absl::optional<cros_healthd::FakeCrosHealthd::RoutineUpdateParams>
       update_params =
-          cros_healthd::FakeCrosHealthdClient::Get()->GetRoutineUpdateParams();
+          cros_healthd::FakeCrosHealthd::Get()->GetRoutineUpdateParams();
 
   ASSERT_TRUE(update_params.has_value());
   EXPECT_EQ(expected_id, update_params->id);
@@ -654,9 +653,9 @@ TEST_F(SystemRoutineControllerTest, CancelRoutineDtor) {
   base::RunLoop().RunUntilIdle();
 
   // Verify that CrosHealthd is called with the correct parameters.
-  absl::optional<cros_healthd::FakeCrosHealthdService::RoutineUpdateParams>
+  absl::optional<cros_healthd::FakeCrosHealthd::RoutineUpdateParams>
       update_params =
-          cros_healthd::FakeCrosHealthdClient::Get()->GetRoutineUpdateParams();
+          cros_healthd::FakeCrosHealthd::Get()->GetRoutineUpdateParams();
 
   ASSERT_TRUE(update_params.has_value());
   EXPECT_EQ(expected_id, update_params->id);
