@@ -138,7 +138,6 @@ void StabilityMetricsHelper::IncreaseRendererCrashCount() {
 
 void StabilityMetricsHelper::IncreaseGpuCrashCount() {
   IncrementPrefValue(prefs::kStabilityGpuCrashCount);
-  local_state_->CommitPendingWrite();  // Schedule a Local State write.
   RecordStabilityEvent(StabilityEventType::kGpuCrash);
 }
 
