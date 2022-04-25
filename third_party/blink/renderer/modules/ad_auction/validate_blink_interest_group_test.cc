@@ -318,6 +318,11 @@ TEST_F(ValidateBlinkInterestGroupTest, AdRenderUrlValidation) {
       {false, "http://a.test/"},
       {false, "data://text/html,payload"},
       {false, "filesystem:https://a.test/foo"},
+      {false, "blob:https://a.test:/2987fb0b-034b-4c79-85ae-cc6d3ef9c56e"},
+      {false, "about:blank"},
+      {false, "about:srcdoc"},
+      {false, "about:newtab"},
+      {false, "chrome:hang"},
 
       // URLs with user/ports are rejected.
       {false, "https://user:pass@a.test/"},
@@ -388,6 +393,11 @@ TEST_F(ValidateBlinkInterestGroupTest, AdComponentRenderUrlValidation) {
       {false, "http://a.test/"},
       {false, "data://text/html,payload"},
       {false, "filesystem:https://a.test/foo"},
+      {false, "blob:https://a.test:/2987fb0b-034b-4c79-85ae-cc6d3ef9c56e"},
+      {false, "about:blank"},
+      {false, "about:srcdoc"},
+      {false, "about:newtab"},
+      {false, "chrome:hang"},
 
       // URLs with user/ports are rejected.
       {false, "https://user:pass@a.test/"},
