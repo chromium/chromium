@@ -2596,15 +2596,14 @@ void RenderProcessHostBadMojoMessageWaiter::OnBadMojoMessage(
 }
 
 DOMMessageQueue::DOMMessageQueue() {
+  // TODO(https://crbug.com/1174774): Remove the need to listen for this
+  // notification.
   registrar_.Add(this, NOTIFICATION_DOM_OPERATION_RESPONSE,
                  NotificationService::AllSources());
 }
 
 DOMMessageQueue::DOMMessageQueue(WebContents* web_contents)
-    : WebContentsObserver(web_contents) {
-  registrar_.Add(this, NOTIFICATION_DOM_OPERATION_RESPONSE,
-                 Source<WebContents>(web_contents));
-}
+    : WebContentsObserver(web_contents) {}
 
 DOMMessageQueue::DOMMessageQueue(RenderFrameHost* render_frame_host)
     : DOMMessageQueue(WebContents::FromRenderFrameHost(render_frame_host)) {
@@ -2617,9 +2616,12 @@ void DOMMessageQueue::Observe(int type,
                               const NotificationSource& source,
                               const NotificationDetails& details) {
   Details<std::string> dom_op_result(details);
-  message_queue_.push(*dom_op_result.ptr());
-  if (quit_closure_)
-    std::move(quit_closure_).Run();
+  OnDomMessageReceived(*dom_op_result.ptr());
+}
+
+void DOMMessageQueue::DomOperationResponse(RenderFrameHost* render_frame_host,
+                                           const std::string& json_string) {
+  OnDomMessageReceived(json_string);
 }
 
 void DOMMessageQueue::PrimaryMainFrameRenderProcessGone(
@@ -2648,6 +2650,12 @@ void DOMMessageQueue::RenderFrameDeleted(RenderFrameHost* render_frame_host) {
 
 void DOMMessageQueue::ClearQueue() {
   message_queue_ = base::queue<std::string>();
+}
+
+void DOMMessageQueue::OnDomMessageReceived(const std::string& message) {
+  message_queue_.push(message);
+  if (quit_closure_)
+    std::move(quit_closure_).Run();
 }
 
 bool DOMMessageQueue::WaitForMessage(std::string* message) {

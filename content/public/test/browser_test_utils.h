@@ -1243,6 +1243,8 @@ class DOMMessageQueue : public NotificationObserver,
   // Constructs a DOMMessageQueue and begins listening for messages from the
   // DOMAutomationController. Do not construct this until the browser has
   // started.
+  // NOTE: Use one of the below constructors if observing messages for a single
+  // WebContents instance.
   DOMMessageQueue();
 
   // Same as the default constructor, but only listens for messages
@@ -1275,11 +1277,16 @@ class DOMMessageQueue : public NotificationObserver,
                const NotificationDetails& details) override;
 
   // Overridden WebContentsObserver methods.
+  void DomOperationResponse(RenderFrameHost* render_frame_host,
+                            const std::string& json_string) override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
 
  private:
+  // Invoked when a message is received from the DomAutomationController.
+  void OnDomMessageReceived(const std::string& message);
+
   NotificationRegistrar registrar_;
   base::queue<std::string> message_queue_;
   base::OnceClosure quit_closure_;
