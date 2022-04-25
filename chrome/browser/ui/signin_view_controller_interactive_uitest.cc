@@ -10,6 +10,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/reauth_result.h"
 #include "chrome/browser/ui/browser.h"
@@ -89,6 +90,8 @@ class SignInViewControllerBrowserTest : public InProcessBrowserTest {
   }
 };
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// DICE sign-in flow isn't applicable on Lacros.
 IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest, Accelerators) {
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
   browser()->signin_view_controller()->ShowSignin(
@@ -111,6 +114,7 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest, Accelerators) {
 
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Tests that the confirm button is focused by default in the sync confirmation
 // dialog.

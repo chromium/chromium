@@ -9288,6 +9288,10 @@ if (!is_android) {
         "../browser/ash/login/login_manager_test.h",
         "../browser/ui/app_list/app_list_client_interactive_uitest.cc",
       ]
+
+      # These tests are not applicable on Chrome OS.
+      sources -=
+          [ "../browser/ui/signin_view_controller_interactive_uitest.cc" ]
     } else {  # ! is_chromeos_ash
       # Non-ChromeOS notifications tests.
       sources += [
@@ -9298,10 +9302,6 @@ if (!is_android) {
     }
 
     if (is_chromeos) {
-      # These tests are not applicable on Chrome OS - Ash and Lacros.
-      sources -=
-          [ "../browser/ui/signin_view_controller_interactive_uitest.cc" ]
-
       deps += [
         "//chromeos/ui/base",
         "//chromeos/ui/frame",
