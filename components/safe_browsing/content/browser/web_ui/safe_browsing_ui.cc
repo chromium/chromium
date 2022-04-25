@@ -20,6 +20,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -1070,8 +1071,125 @@ std::string SerializeClientPhishingResponse(const ClientPhishingResponse& cpr) {
   return request_serialized;
 }
 
+base::Value::Dict SerializeHTTPHeader(
+    const ClientSafeBrowsingReportRequest::HTTPHeader& header) {
+  base::Value::Dict header_dict;
+  header_dict.Set("name", header.name());
+  header_dict.Set("value", header.value());
+  return header_dict;
+}
+
+base::Value::Dict SerializeResource(
+    const ClientSafeBrowsingReportRequest::Resource& resource) {
+  base::Value::Dict resource_dict;
+  resource_dict.Set("id", resource.id());
+  resource_dict.Set("url", resource.url());
+  // HTTPRequest
+  if (resource.has_request()) {
+    base::Value::Dict request;
+    if (resource.request().has_firstline()) {
+      base::Value::Dict firstline;
+      firstline.Set("verb", resource.request().firstline().verb());
+      firstline.Set("uri", resource.request().firstline().uri());
+      firstline.Set("version", resource.request().firstline().version());
+      request.Set("firstline", std::move(firstline));
+    }
+    base::Value::List headers;
+    for (const ClientSafeBrowsingReportRequest::HTTPHeader& header :
+         resource.request().headers()) {
+      headers.Append(SerializeHTTPHeader(header));
+    }
+    request.Set("headers", std::move(headers));
+    resource_dict.Set("request", std::move(request));
+  }
+  // HTTPResponse
+  if (resource.has_response()) {
+    base::Value::Dict response;
+    if (resource.response().has_firstline()) {
+      base::Value::Dict firstline;
+      firstline.Set("code", resource.response().firstline().code());
+      firstline.Set("message", resource.response().firstline().message());
+      firstline.Set("version", resource.response().firstline().version());
+      response.Set("firstline", std::move(firstline));
+    }
+    base::Value::List headers;
+    for (const ClientSafeBrowsingReportRequest::HTTPHeader& header :
+         resource.response().headers()) {
+      headers.Append(SerializeHTTPHeader(header));
+    }
+    response.Set("headers", std::move(headers));
+    response.Set("body", resource.response().body());
+    response.Set("remote_ip", resource.response().remote_ip());
+    resource_dict.Set("response", std::move(response));
+  }
+  resource_dict.Set("parent_id", resource.parent_id());
+  base::Value::List child_id_list;
+  for (const int& child_id : resource.child_ids()) {
+    child_id_list.Append(child_id);
+  }
+  resource_dict.Set("child_ids", std::move(child_id_list));
+  resource_dict.Set("tag_name", resource.tag_name());
+  return resource_dict;
+}
+
+base::Value::Dict SerializeHTMLElement(const HTMLElement& element) {
+  base::Value::Dict element_dict;
+  element_dict.Set("id", element.id());
+  element_dict.Set("tag", element.tag());
+  base::Value::List child_id_lists;
+  for (const int& child_id : element.child_ids()) {
+    child_id_lists.Append(child_id);
+  }
+  element_dict.Set("child_ids", std::move(child_id_lists));
+  element_dict.Set("resource_id", element.resource_id());
+  base::Value::List attribute_list;
+  for (const HTMLElement::Attribute& attribute : element.attribute()) {
+    base::Value::Dict attribute_dict;
+    attribute_dict.Set("name", attribute.name());
+    attribute_dict.Set("value", attribute.value());
+    attribute_list.Append(std::move(attribute_dict));
+  }
+  element_dict.Set("attribute", std::move(attribute_list));
+  element_dict.Set("inner_html", element.inner_html());
+  return element_dict;
+}
+
+base::Value::Dict SerializeSafeBrowsingClientProperties(
+    const ClientSafeBrowsingReportRequest::SafeBrowsingClientProperties&
+        client_properties) {
+  base::Value::Dict client_properties_dict;
+  client_properties_dict.Set("client_version",
+                             client_properties.client_version());
+  client_properties_dict.Set(
+      "google_play_services_version",
+      static_cast<int>(client_properties.google_play_services_version()));
+  client_properties_dict.Set("is_instant_apps",
+                             client_properties.is_instant_apps());
+  std::string url_api_type;
+  switch (client_properties.url_api_type()) {
+    case ClientSafeBrowsingReportRequest::
+        SAFE_BROWSING_URL_API_TYPE_UNSPECIFIED:
+      url_api_type = "SAFE_BROWSING_URL_API_TYPE_UNSPECIFIED";
+      break;
+    case ClientSafeBrowsingReportRequest::PVER4_NATIVE:
+      url_api_type = "PVER4_NATIVE";
+      break;
+    case ClientSafeBrowsingReportRequest::ANDROID_SAFETYNET:
+      url_api_type = "ANDROID_SAFETYNET";
+      break;
+    case ClientSafeBrowsingReportRequest::REAL_TIME:
+      url_api_type = "REAL_TIME";
+      break;
+    default:
+      NOTREACHED();
+      url_api_type = "";
+  }
+  client_properties_dict.Set("url_api_type", url_api_type);
+  return client_properties_dict;
+}
+
 std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
-  base::DictionaryValue report_request;
+  base::Value::Dict report_request;
   if (report.has_type()) {
     std::string report_type;
     switch (report.type()) {
@@ -1127,50 +1245,71 @@ std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
         report_type = "BLOCKED_AD_POPUP";
         break;
     }
-    report_request.SetString("type", report_type);
+    report_request.Set("type", report_type);
   }
-  if (report.has_page_url())
-    report_request.SetString("page_url", report.page_url());
+  if (report.has_page_url()) {
+    report_request.Set("page_url", report.page_url());
+  }
+  if (report.has_referrer_url()) {
+    report_request.Set("referrer_url", report.referrer_url());
+  }
   if (report.has_client_country()) {
-    report_request.SetString("client_country", report.client_country());
+    report_request.Set("client_country", report.client_country());
   }
   if (report.has_repeat_visit()) {
-    report_request.SetInteger("repeat_visit", report.repeat_visit());
+    report_request.Set("repeat_visit", report.repeat_visit());
   }
   if (report.has_did_proceed()) {
-    report_request.SetInteger("did_proceed", report.did_proceed());
+    report_request.Set("did_proceed", report.did_proceed());
   }
   if (report.has_download_verdict()) {
-    report_request.SetString(
+    report_request.Set(
         "download_verdict",
         ClientDownloadResponseVerdictToString(report.download_verdict()));
   }
   if (report.has_url()) {
-    report_request.SetString("url", report.url());
+    report_request.Set("url", report.url());
   }
   if (report.has_token()) {
-    report_request.SetString("token", report.token());
+    report_request.Set("token", report.token());
   }
   if (report.has_show_download_in_folder()) {
-    report_request.SetBoolean("show_download_in_folder",
-                              report.show_download_in_folder());
+    report_request.Set("show_download_in_folder",
+                       report.show_download_in_folder());
   }
   if (report.has_population()) {
-    report_request.SetKey("population",
-                          SerializeChromeUserPopulation(report.population()));
+    report_request.Set("population",
+                       SerializeChromeUserPopulation(report.population()));
+  }
+  base::Value::List resource_list;
+  for (const ClientSafeBrowsingReportRequest::Resource& resource :
+       report.resources()) {
+    resource_list.Append(SerializeResource(resource));
+  }
+  report_request.Set("resources", std::move(resource_list));
+  base::Value::List dom_list;
+  for (const HTMLElement& element : report.dom()) {
+    dom_list.Append(SerializeHTMLElement(element));
+  }
+  report_request.Set("dom", std::move(dom_list));
+  if (report.has_complete()) {
+    report_request.Set("complete", report.complete());
+  }
+  if (report.has_client_properties()) {
+    report_request.Set(
+        "client_properties",
+        SerializeSafeBrowsingClientProperties(report.client_properties()));
   }
   std::string serialized;
   if (report.SerializeToString(&serialized)) {
     std::string base64_encoded;
     base::Base64Encode(serialized, &base64_encoded);
-    report_request.SetString("csbrr(base64)", base64_encoded);
+    report_request.Set("csbrr(base64)", base64_encoded);
   }
-
-  base::Value* report_request_tree = &report_request;
   std::string report_request_serialized;
   JSONStringValueSerializer serializer(&report_request_serialized);
   serializer.set_pretty_print(true);
-  serializer.Serialize(*report_request_tree);
+  serializer.Serialize(report_request);
   return report_request_serialized;
 }
 
