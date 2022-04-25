@@ -184,6 +184,35 @@ TEST_F(LoginUserViewUnittest, EntireViewIsTapTarget) {
   EXPECT_FALSE(tap(view->GetBoundsInScreen().bottom_right(), 1, 1));
 }
 
+TEST_F(LoginUserViewUnittest, DropdownClickable) {
+  LoginUserView* view =
+      AddUserView(LoginDisplayStyle::kLarge, true /*show_dropdown*/,
+                  false /*public_account*/);
+  LoginUserView::TestApi view_test(view);
+
+  EXPECT_FALSE(view_test.remove_account_dialog()->GetVisible());
+
+  GetEventGenerator()->MoveMouseTo(
+      view_test.dropdown()->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_EQ(0, tap_count_);
+  EXPECT_TRUE(view_test.remove_account_dialog()->GetVisible());
+}
+
+TEST_F(LoginUserViewUnittest, DropdownTappable) {
+  LoginUserView* view =
+      AddUserView(LoginDisplayStyle::kLarge, true /*show_dropdown*/,
+                  false /*public_account*/);
+  LoginUserView::TestApi view_test(view);
+
+  EXPECT_FALSE(view_test.remove_account_dialog()->GetVisible());
+
+  GetEventGenerator()->GestureTapAt(
+      view_test.dropdown()->GetBoundsInScreen().CenterPoint());
+  EXPECT_EQ(0, tap_count_);
+  EXPECT_TRUE(view_test.remove_account_dialog()->GetVisible());
+}
+
 // Verifies the focused user view is opaque. Verifies that a hovered view is
 // opaque. Verifies the interaction between focus and hovered opaqueness.
 TEST_F(LoginUserViewUnittest, FocusHoverOpaqueInteractions) {
