@@ -121,7 +121,7 @@
 #include "components/nacl/zygote/nacl_fork_delegate_linux.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/dbus/constants/dbus_paths.h"
 #endif
 
@@ -543,9 +543,7 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   // on DBus, so initialize it here. Some D-Bus clients may depend on feature
   // list, so initialize them separately later at the end of this function.
   ash::InitializeDBus();
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // Initialize D-Bus for Lacros.
   chromeos::LacrosInitializeDBus();
 
@@ -600,13 +598,10 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   chrome_feature_list_creator->SetApplicationLocale(actual_locale);
   chrome_feature_list_creator->OverrideCachedUIStrings();
 
+  // On Chrome OS, initialize D-Bus clients that depend on feature list.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Initialize D-Bus clients that depend on feature list.
   ash::InitializeFeatureListDependentDBus();
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Initialize D-Bus clients that depend on feature list.
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosInitializeFeatureListDependentDBus();
 #endif
 
@@ -656,7 +651,7 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
   // it if not already overridden by command line, field trial etc.
   net::HttpCache::SplitCacheFeatureEnableByDefault();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Threading features.
   base::PlatformThread::InitThreadPostFieldTrial();
 #endif
@@ -835,7 +830,7 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::RegisterPathProvider();
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   chromeos::dbus_paths::RegisterPathProvider();
 #endif
 #if BUILDFLAG(ENABLE_NACL) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))

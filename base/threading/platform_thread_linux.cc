@@ -395,7 +395,7 @@ void PlatformThread::SetThreadPriority(ProcessId process_id,
 }
 #endif  //  !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 void PlatformThread::InitThreadPostFieldTrial() {
   DCHECK(FeatureList::GetInstance());
   if (!FeatureList::IsEnabled(kSchedUtilHints)) {

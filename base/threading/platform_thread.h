@@ -226,7 +226,7 @@ class BASE_EXPORT PlatformThread {
                                 ThreadPriority priority);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Signals that the feature list has been initialized which allows to check
   // the feature's value now and initialize state. This prevents race
   // conditions where the feature is being checked while it is being
