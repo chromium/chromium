@@ -31,7 +31,6 @@ TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
   model_neutral.num_successful_bookmark_commits = 10;
   model_neutral.num_updates_downloaded_total = 100;
   model_neutral.num_tombstone_updates_downloaded_total = 200;
-  model_neutral.num_reflected_updates_downloaded_total = 50;
 
   ProgressMarkerMap download_progress_markers;
   download_progress_markers[BOOKMARKS] = "\xef\xb7\xa4";
@@ -56,7 +55,7 @@ TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
       /*poll_interval=*/base::Minutes(30),
       /*has_remaining_local_changes=*/false);
   std::unique_ptr<base::DictionaryValue> value(snapshot.ToValue());
-  EXPECT_EQ(19u, value->DictSize());
+  EXPECT_EQ(18u, value->DictSize());
   ExpectDictStringValue(kBirthday, *value, "birthday");
   // Base64-encoded version of |kBagOfChips|.
   ExpectDictStringValue("YmFnb2ZjaGlwcwE=", *value, "bagOfChips");
@@ -68,8 +67,6 @@ TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
                          "numUpdatesDownloadedTotal");
   ExpectDictIntegerValue(model_neutral.num_tombstone_updates_downloaded_total,
                          *value, "numTombstoneUpdatesDownloadedTotal");
-  ExpectDictIntegerValue(model_neutral.num_reflected_updates_downloaded_total,
-                         *value, "numReflectedUpdatesDownloadedTotal");
   ExpectDictValue(*expected_download_progress_markers_value, *value,
                   "downloadProgressMarkers");
   ExpectDictBooleanValue(kIsSilenced, *value, "isSilenced");

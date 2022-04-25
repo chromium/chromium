@@ -56,8 +56,6 @@ SyncStatus SyncStatusTracker::CalcSyncing(const SyncCycleEvent& event) const {
           snapshot.model_neutral_state().num_updates_downloaded_total;
       status.tombstone_updates_received +=
           snapshot.model_neutral_state().num_tombstone_updates_downloaded_total;
-      status.reflected_updates_received +=
-          snapshot.model_neutral_state().num_reflected_updates_downloaded_total;
       status.num_commits_total +=
           snapshot.model_neutral_state().num_successful_commits;
       break;

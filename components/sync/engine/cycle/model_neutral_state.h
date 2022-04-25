@@ -34,7 +34,6 @@ struct ModelNeutralState {
   // Download event counters.
   int num_updates_downloaded_total;
   int num_tombstone_updates_downloaded_total;
-  int num_reflected_updates_downloaded_total;
 
   // Update application and conflicts.
   int num_encryption_conflicts;

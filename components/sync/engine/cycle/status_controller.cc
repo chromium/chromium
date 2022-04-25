@@ -42,11 +42,6 @@ void StatusController::increment_num_tombstone_updates_downloaded_by(
   model_neutral_.num_tombstone_updates_downloaded_total += value;
 }
 
-void StatusController::increment_num_reflected_updates_downloaded_by(
-    int value) {
-  model_neutral_.num_reflected_updates_downloaded_total += value;
-}
-
 void StatusController::UpdateStartTime() {
   sync_start_time_ = base::Time::Now();
 }

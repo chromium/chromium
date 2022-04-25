@@ -64,7 +64,6 @@ class StatusController {
   // Download counters.
   void increment_num_updates_downloaded_by(int value);
   void increment_num_tombstone_updates_downloaded_by(int value);
-  void increment_num_reflected_updates_downloaded_by(int value);
 
   // Update application and conflict resolution counters.
   void increment_num_encryption_conflicts_by(int value);

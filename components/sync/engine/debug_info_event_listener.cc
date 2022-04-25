@@ -40,8 +40,6 @@ void DebugInfoEventListener::OnSyncCycleCompleted(
 
   sync_completed_event_info->set_num_updates_downloaded(
       snapshot.model_neutral_state().num_updates_downloaded_total);
-  sync_completed_event_info->set_num_reflected_updates_downloaded(
-      snapshot.model_neutral_state().num_reflected_updates_downloaded_total);
   sync_completed_event_info->set_get_updates_origin(
       snapshot.get_updates_origin());
   sync_completed_event_info->mutable_caller_info()->set_notifications_enabled(

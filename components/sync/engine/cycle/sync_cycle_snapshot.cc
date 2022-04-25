@@ -94,8 +94,6 @@ std::unique_ptr<base::DictionaryValue> SyncCycleSnapshot::ToValue() const {
                    model_neutral_state_.num_updates_downloaded_total);
   value->SetIntKey("numTombstoneUpdatesDownloadedTotal",
                    model_neutral_state_.num_tombstone_updates_downloaded_total);
-  value->SetIntKey("numReflectedUpdatesDownloadedTotal",
-                   model_neutral_state_.num_reflected_updates_downloaded_total);
   value->SetKey("downloadProgressMarkers",
                 base::Value::FromUniquePtrValue(
                     ProgressMarkerMapToValue(download_progress_markers_)));

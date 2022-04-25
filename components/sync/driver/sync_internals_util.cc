@@ -390,8 +390,6 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
       section_counters->AddIntStat("Updates Downloaded");
   Stat<int>* tombstone_updates =
       section_counters->AddIntStat("Tombstone Updates");
-  Stat<int>* reflected_updates =
-      section_counters->AddIntStat("Reflected Updates");
   Stat<int>* successful_commits =
       section_counters->AddIntStat("Successful Commits");
 
@@ -557,7 +555,6 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
     notifications_received->Set(full_status.notifications_received);
     updates_received->Set(full_status.updates_received);
     tombstone_updates->Set(full_status.tombstone_updates_received);
-    reflected_updates->Set(full_status.reflected_updates_received);
     successful_commits->Set(full_status.num_commits_total);
   }
 

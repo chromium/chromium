@@ -55,8 +55,6 @@ struct SyncStatus {
 
   // Total updates received by the syncer since browser start.
   int updates_received = 0;
-  // Total updates received that are echoes of our own changes.
-  int reflected_updates_received = 0;
   // Of updates_received, how many were tombstones.
   int tombstone_updates_received = 0;
 
