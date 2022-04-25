@@ -72,6 +72,13 @@ extern const base::Feature kAutofillEnableDependentLocalityParsing;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillEnableImportWhenMultiplePhoneNumbers;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillEnableMultiStepImports;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<bool> kAutofillEnableMultiStepImportComplements;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<base::TimeDelta>
+    kAutofillMultiStepImportCandidateTTL;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillEnableSupportForApartmentNumbers;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillEnableLabelPrecedenceForTurkishAddresses;

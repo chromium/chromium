@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_DATA_IMPORTER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_DATA_IMPORTER_H_
 
+#include <deque>
 #include <map>
 #include <memory>
 #include <string>
@@ -12,6 +13,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
@@ -102,6 +104,11 @@ class FormDataImporter {
 
   raw_ptr<VirtualCardEnrollmentManager> GetVirtualCardEnrollmentManager() {
     return virtual_card_enrollment_manager_.get();
+  }
+
+  void ClearMultiStepImportCandidates() {
+    multistep_candidates_.clear();
+    multistep_candidates_origin_.reset();
   }
 
  protected:
@@ -255,6 +262,33 @@ class FormDataImporter {
       AutofillProfile& profile,
       const std::string& predicted_country_code);
 
+  // Removes updated multi-step candidates, merges |profile| with multi-step
+  // candidates and potentially stores it as a multi-step candidate itself.
+  // |profile| and |import_metadata| are updated accordingly, if the profile can
+  // be merged. See |MergeProfileWithMultiStepCandidates()| for details.
+  // Only applicable when |kAutofillEnableMultiStepImports| is enabled.
+  void ProcessMultiStepImport(AutofillProfile& profile,
+                              ProfileImportMetadata& import_metadata,
+                              const url::Origin& origin);
+
+  // Removes any MultiStepFormProfileCandidate from |multistep_candidates_| that
+  // reached their TTL or have a different |origin|.
+  void RemoveOutdatedMultiStepCandidates(const url::Origin& origin);
+
+  // Merges a given |profile| stepwise with |multistep_candidates_| to
+  // complete it. |profile| is assumed to contain no invalid information.
+  // Returns true if the resulting profile satisfies the minimum address
+  // requirements. |profile| and |import_metadata| are updated in this case with
+  // the result of merging all relevant candidates.
+  // Returns false otherwise and leaves |profile| and |import_metadata|
+  // unchanged.
+  // Any merged or colliding |multistep_candidates_| are cleared.
+  // |origin|: The origin of the form where |profile| was imported from.
+  bool MergeProfileWithMultiStepCandidates(
+      AutofillProfile& profile,
+      ProfileImportMetadata& import_metadata,
+      const url::Origin& origin);
+
   // Whether a dynamic change form is imported.
   bool from_dynamic_change_form_ = false;
 
@@ -298,6 +332,23 @@ class FormDataImporter {
   // Responsible for managing the virtual card enrollment flow through chrome.
   std::unique_ptr<VirtualCardEnrollmentManager>
       virtual_card_enrollment_manager_;
+
+  // Represents a submitted form, stored to be considered as a merge candidate
+  // for other candidate profiles in future submits in a multi-step import flow.
+  struct MultiStepFormProfileCandidate {
+    // The import candidate.
+    AutofillProfile profile;
+    // Metadata about how |profile| was constructed.
+    ProfileImportMetadata import_metadata;
+    // Timestamp when the submit happened.
+    base::Time timestamp;
+  };
+  // Current multi-step import candidates, in increasing order of their
+  // |timestamp|.
+  std::deque<MultiStepFormProfileCandidate> multistep_candidates_;
+  // All |multistep_candidates_| share the same origin. Has a value iff
+  // |multistep_candidates_| is not empty.
+  absl::optional<url::Origin> multistep_candidates_origin_;
 
   friend class AutofillMergeTest;
   friend class FormDataImporterTest;

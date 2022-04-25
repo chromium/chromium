@@ -7,6 +7,7 @@
 #include "base/stl_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 
@@ -153,6 +154,12 @@ void AddressProfileSaveManager::FinalizeProfileImport(
       personal_data_manager_->RemoveStrikesToBlockProfileUpdate(
           import_process->merge_candidate()->guid());
     }
+  }
+
+  // If an import is declined, all multi-step candidates should be cleared to
+  // avoid showing a similar import prompt again.
+  if (import_process->UserDeclined() && client_->GetFormDataImporter()) {
+    client_->GetFormDataImporter()->ClearMultiStepImportCandidates();
   }
 
   import_process->CollectMetrics();
