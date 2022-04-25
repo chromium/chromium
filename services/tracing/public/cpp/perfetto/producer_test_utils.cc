@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/debug/leak_annotations.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -145,6 +147,26 @@ TestProducerClient::GetProtoChromeMetadata(size_t packet_index) {
   FlushPacketIfPossible();
   EXPECT_GT(proto_metadata_packets_.size(), packet_index);
   return &proto_metadata_packets_[packet_index]->chrome_metadata();
+}
+
+// static
+void TestProducerClient::WriteTraceToFile(
+    const base::FilePath::StringType& filename,
+    const PacketVector& packets) {
+  auto&& raw_trace = TestProducerClient::SerializePacketsAsTrace(packets);
+  EXPECT_TRUE(base::WriteFile(base::FilePath(filename), raw_trace));
+}
+
+// static
+std::string TestProducerClient::SerializePacketsAsTrace(
+    const PacketVector& finalized_packets) {
+  perfetto::protos::Trace trace;
+  for (auto& packet : finalized_packets) {
+    *trace.add_packet() = *packet;
+  }
+  std::string trace_bytes;
+  trace.SerializeToString(&trace_bytes);
+  return trace_bytes;
 }
 
 TestTraceWriter::TestTraceWriter(TestProducerClient* producer_client)

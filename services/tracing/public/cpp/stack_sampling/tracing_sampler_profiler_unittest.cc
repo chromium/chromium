@@ -151,7 +151,7 @@ class TracingSampleProfilerTest : public TracingUnitTest {
     return profile_sequence_id;
   }
 
-  const TestProducerClient* producer() const { return producer_.get(); }
+  TestProducerClient* producer() const { return producer_.get(); }
 
  protected:
   // We want our singleton torn down after each test.
