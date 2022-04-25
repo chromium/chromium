@@ -194,9 +194,12 @@ PageHandler::PageHandler(
     EmulationHandler* emulation_handler,
     BrowserHandler* browser_handler,
     bool allow_unsafe_operations,
+    bool may_capture_screenshots_not_from_surface,
     absl::optional<url::Origin> navigation_initiator_origin)
     : DevToolsDomainHandler(Page::Metainfo::domainName),
       allow_unsafe_operations_(allow_unsafe_operations),
+      may_capture_screenshots_not_from_surface_(
+          may_capture_screenshots_not_from_surface),
       navigation_initiator_origin_(navigation_initiator_origin),
       enabled_(false),
       screencast_enabled_(false),
@@ -755,6 +758,11 @@ void PageHandler::CaptureScreenshot(
 
   // We don't support clip/emulation when capturing from window, bail out.
   if (!from_surface.fromMaybe(true)) {
+    if (!may_capture_screenshots_not_from_surface_) {
+      callback->sendFailure(
+          Response::ServerError("Only screenshots from surface are allowed."));
+      return;
+    }
     widget_host->GetSnapshotFromBrowser(
         base::BindOnce(&PageHandler::ScreenshotCaptured,
                        weak_factory_.GetWeakPtr(), std::move(callback),

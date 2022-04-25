@@ -475,7 +475,8 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
       bool from_surface,
       const gfx::RectF& clip = gfx::RectF(),
       float clip_scale = 0,
-      bool capture_beyond_viewport = false) {
+      bool capture_beyond_viewport = false,
+      bool expect_error = false) {
     std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
     params->SetStringKey("format", EncodingEnumToString(encoding));
     params->SetIntKey("quality", 100);
@@ -494,18 +495,24 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
     }
     SendCommand("Page.captureScreenshot", std::move(params));
 
-    std::string base64;
-    EXPECT_TRUE(result_->GetString("data", &base64));
     std::unique_ptr<SkBitmap> result_bitmap;
-    if (encoding == ScreenshotEncoding::PNG) {
-      result_bitmap = std::make_unique<SkBitmap>();
-      EXPECT_TRUE(DecodePNG(base64, result_bitmap.get()));
-    } else if (encoding == ScreenshotEncoding::JPEG) {
-      result_bitmap = DecodeJPEG(base64);
+    if (expect_error) {
+      EXPECT_THAT(error_, base::test::DictionaryHasValue(
+                              "code", base::Value(static_cast<int>(
+                                          crdtp::DispatchCode::SERVER_ERROR))));
     } else {
-      // Decode not implemented.
+      std::string base64;
+      EXPECT_TRUE(result_->GetString("data", &base64));
+      if (encoding == ScreenshotEncoding::PNG) {
+        result_bitmap = std::make_unique<SkBitmap>();
+        EXPECT_TRUE(DecodePNG(base64, result_bitmap.get()));
+      } else if (encoding == ScreenshotEncoding::JPEG) {
+        result_bitmap = DecodeJPEG(base64);
+      } else {
+        // Decode not implemented.
+      }
+      EXPECT_TRUE(result_bitmap);
     }
-    EXPECT_TRUE(result_bitmap);
     return result_bitmap;
   }
 
@@ -604,6 +611,10 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
     // Reset for next screenshot.
     SendCommand("Emulation.clearDeviceMetricsOverride", nullptr);
   }
+
+  bool MayAttachToBrowser() override { return may_attach_to_browser_; }
+
+  bool may_attach_to_browser_ = true;
 
  private:
 #if !BUILDFLAG(IS_ANDROID)
@@ -910,6 +921,17 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TransparentScreenshots) {
                                 device_scale_factor);
   SendCommand("Emulation.clearDeviceMetricsOverride", nullptr);
 #endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
+                       OnlyScreenshotsFromSurfaceWhenUnsafeNotAllowed) {
+  may_attach_to_browser_ = false;
+  shell()->LoadURL(GURL("about:blank"));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  Attach();
+
+  CaptureScreenshot(ScreenshotEncoding::PNG, false, gfx::RectF(), 0, true,
+                    true);
 }
 
 #if BUILDFLAG(IS_ANDROID)
