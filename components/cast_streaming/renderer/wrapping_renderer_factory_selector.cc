@@ -7,18 +7,17 @@
 #include <memory>
 
 #include "components/cast_streaming/renderer/playback_command_forwarding_renderer_factory.h"
-#include "components/cast_streaming/renderer/public/renderer_controller_proxy.h"
+#include "components/cast_streaming/renderer/public/resource_provider.h"
 
 namespace cast_streaming {
 
 WrappingRendererFactorySelector::WrappingRendererFactorySelector(
     content::RenderFrame* render_frame) {
   DCHECK(render_frame);
-  auto* renderer_controller_proxy = RendererControllerProxy::GetInstance();
-  DCHECK(renderer_controller_proxy);
+  auto receiver = ResourceProvider::GetReceiver(render_frame);
   wrapping_factory_ =
       std::make_unique<PlaybackCommandForwardingRendererFactory>(
-          renderer_controller_proxy->GetReceiver(render_frame));
+          std::move(receiver));
 }
 
 WrappingRendererFactorySelector::~WrappingRendererFactorySelector() = default;

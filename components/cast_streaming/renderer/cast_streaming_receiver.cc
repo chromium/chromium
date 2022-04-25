@@ -5,22 +5,22 @@
 #include "components/cast_streaming/renderer/cast_streaming_receiver.h"
 
 #include "components/cast_streaming/renderer/cast_streaming_demuxer.h"
+#include "content/public/renderer/render_frame.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
 namespace cast_streaming {
 
 CastStreamingReceiver::CastStreamingReceiver(
-    base::OnceCallback<
-        void(CastStreamingReceiver::InterfaceRegistryBinderCallback)>
-        interface_binder_factory) {
+    content::RenderFrame* render_frame) {
   DVLOG(1) << __func__;
-  DCHECK(interface_binder_factory);
+  DCHECK(render_frame);
 
   // It is fine to use an unretained pointer to |this| here as the
   // AssociatedInterfaceRegistry, owned by |render_frame| will be torn-down at
   // the same time as |this|.
-  std::move(interface_binder_factory)
-      .Run(base::BindRepeating(&CastStreamingReceiver::BindToReceiver,
-                               base::Unretained(this)));
+  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
+      base::BindRepeating(&CastStreamingReceiver::BindToReceiver,
+                          base::Unretained(this)));
 }
 
 CastStreamingReceiver::~CastStreamingReceiver() {

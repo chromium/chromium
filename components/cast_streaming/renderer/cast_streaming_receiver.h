@@ -11,27 +11,24 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
+namespace content {
+class RenderFrame;
+}  // namespace content
+
 namespace cast_streaming {
 
 class CastStreamingDemuxer;
 
-// Handles the Cast Streaming Session lifetime in the renderer process.
-// Owned by WebEngineRenderFrameObserver, this object will be destroyed on
-// RenderFrame destruction. This is guaranteed to outlive the
-// CastStreamingDemuxer that uses it as the RenderFrame destruction will have
-// triggered the destruction of the media pipeline and the CastStreamingDemuxer
-// before the call to content::RenderFrameObserver::OnDestruct(), which triggers
-// this object destruction.
+// Handles initiating the streaming session between the browser-process sender
+// and renderer-process receiver of the Cast Streaming Session. Specifically,
+// this class manages the CastStreamingReceiver's lifetime in the renderer
+// process. The lifetime of this object should match that of |render_frame| with
+// which it is associated, and is guaranteed to outlive the CastStreamingDemuxer
+// that uses it, as the RenderFrame destruction will have triggered its
+// destruction first.
 class CastStreamingReceiver final : public mojom::CastStreamingReceiver {
  public:
-  using PendingCastStreamingReceiver =
-      mojo::PendingAssociatedReceiver<mojom::CastStreamingReceiver>;
-  using InterfaceRegistryBinderCallback = base::RepeatingCallback<void(
-      CastStreamingReceiver::PendingCastStreamingReceiver)>;
-
-  explicit CastStreamingReceiver(
-      base::OnceCallback<void(InterfaceRegistryBinderCallback)>
-          interface_binder_factory);
+  explicit CastStreamingReceiver(content::RenderFrame* render_frame);
   ~CastStreamingReceiver() override;
 
   CastStreamingReceiver(const CastStreamingReceiver&) = delete;
@@ -44,7 +41,8 @@ class CastStreamingReceiver final : public mojom::CastStreamingReceiver {
   bool IsBound() const;
 
  private:
-  void BindToReceiver(PendingCastStreamingReceiver receiver);
+  void BindToReceiver(
+      mojo::PendingAssociatedReceiver<mojom::CastStreamingReceiver> receiver);
 
   void MaybeCallEnableReceiverCallback();
 

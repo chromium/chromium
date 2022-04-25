@@ -32,7 +32,7 @@ class CastStreamingDemuxer final : public media::Demuxer {
  public:
   CastStreamingDemuxer(
       CastStreamingReceiver* receiver,
-      const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner);
   ~CastStreamingDemuxer() override;
 
   CastStreamingDemuxer(const CastStreamingDemuxer&) = delete;

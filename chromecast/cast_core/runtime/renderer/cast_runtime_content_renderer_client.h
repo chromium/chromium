@@ -10,10 +10,9 @@
 #include "base/containers/flat_map.h"
 #include "chromecast/renderer/cast_content_renderer_client.h"
 #include "chromecast/renderer/url_rewrite_rules_provider.h"
-#include "components/cast_streaming/renderer/public/demuxer_provider.h"
 
 namespace cast_streaming {
-class RendererControllerProxy;
+class ResourceProvider;
 }
 
 namespace media {
@@ -47,9 +46,8 @@ class CastRuntimeContentRendererClient
       blink::URLLoaderThrottleProviderType type) override;
 
  private:
-  cast_streaming::DemuxerProvider cast_streaming_demuxer_provider_;
-  std::unique_ptr<cast_streaming::RendererControllerProxy>
-      cast_streaming_renderer_controller_proxy_;
+  std::unique_ptr<cast_streaming::ResourceProvider>
+      cast_streaming_resource_provider_;
 };
 
 }  // namespace chromecast

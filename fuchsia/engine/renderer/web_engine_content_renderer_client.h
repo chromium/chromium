@@ -5,10 +5,15 @@
 #ifndef FUCHSIA_ENGINE_RENDERER_WEB_ENGINE_CONTENT_RENDERER_CLIENT_H_
 #define FUCHSIA_ENGINE_RENDERER_WEB_ENGINE_CONTENT_RENDERER_CLIENT_H_
 
-#include "components/cast_streaming/renderer/public/demuxer_provider.h"
+#include <memory>
+
 #include "content/public/renderer/content_renderer_client.h"
 #include "fuchsia/engine/renderer/web_engine_audio_device_factory.h"
 #include "fuchsia/engine/renderer/web_engine_render_frame_observer.h"
+
+namespace cast_streaming {
+class ResourceProvider;
+}
 
 namespace memory_pressure {
 class MultiSourceMemoryPressureMonitor;
@@ -65,7 +70,8 @@ class WebEngineContentRendererClient : public content::ContentRendererClient {
   WebEngineAudioDeviceFactory audio_device_factory_;
 
   // Handles interaction with cast_streaming component.
-  cast_streaming::DemuxerProvider cast_streaming_demuxer_provider_;
+  std::unique_ptr<cast_streaming::ResourceProvider>
+      cast_streaming_resource_provider_;
 
   // Map of RenderFrame ID to WebEngineRenderFrameObserver.
   std::map<int, std::unique_ptr<WebEngineRenderFrameObserver>>

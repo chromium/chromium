@@ -14,13 +14,12 @@ cast_source_set("renderer") {
     "//base",
     "//chromecast/cast_core/runtime/common:cors_exempt_headers",
     "//components/cast_streaming/public",
-    "//components/cast_streaming/renderer:renderer_controller_proxy_factory",
+    "//components/cast_streaming/renderer",
     "//media",
   ]
 
   public_deps = [
     "//chromecast/renderer:renderer_base",
-    "//components/cast_streaming/renderer",
     "//third_party/blink/public/common:headers",
   ]
 

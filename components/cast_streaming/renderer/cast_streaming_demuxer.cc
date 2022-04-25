@@ -280,8 +280,8 @@ class CastStreamingVideoDemuxerStream final
 
 CastStreamingDemuxer::CastStreamingDemuxer(
     CastStreamingReceiver* receiver,
-    const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner)
-    : media_task_runner_(media_task_runner),
+    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner)
+    : media_task_runner_(std::move(media_task_runner)),
       original_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       receiver_(receiver),
       weak_factory_(this) {

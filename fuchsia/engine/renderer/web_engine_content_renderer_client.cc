@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "components/cast_streaming/renderer/public/resource_provider.h"
 #include "components/cdm/renderer/widevine_key_system_properties.h"
 #include "components/media_control/renderer/media_playback_options.h"
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
@@ -108,7 +109,9 @@ class PlayreadyKeySystemProperties : public ::media::KeySystemProperties {
 
 }  // namespace
 
-WebEngineContentRendererClient::WebEngineContentRendererClient() = default;
+WebEngineContentRendererClient::WebEngineContentRendererClient()
+    : cast_streaming_resource_provider_(
+          cast_streaming::ResourceProvider::Create()) {}
 
 WebEngineContentRendererClient::~WebEngineContentRendererClient() = default;
 
@@ -154,7 +157,7 @@ void WebEngineContentRendererClient::RenderFrameCreated(
   DCHECK(render_frame_observer_iter.second);
 
   // Call into the cast_streaming-specific frame creation logic.
-  cast_streaming_demuxer_provider_.RenderFrameCreated(render_frame);
+  cast_streaming_resource_provider_->RenderFrameCreated(render_frame);
 
   // Lifetime is tied to |render_frame| via content::RenderFrameObserver.
   new media_control::MediaPlaybackOptions(render_frame);
@@ -262,7 +265,7 @@ WebEngineContentRendererClient::OverrideDemuxerForUrl(
     return nullptr;
   }
 
-  return cast_streaming_demuxer_provider_.OverrideDemuxerForUrl(
+  return cast_streaming_resource_provider_->OverrideDemuxerForUrl(
       render_frame, url, std::move(media_task_runner));
 }
 

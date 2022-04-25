@@ -8,8 +8,7 @@
 #include "chromecast/cast_core/runtime/common/cors_exempt_headers.h"
 #include "chromecast/renderer/cast_url_loader_throttle_provider.h"
 #include "components/cast_streaming/public/cast_streaming_url.h"
-#include "components/cast_streaming/renderer/public/renderer_controller_proxy.h"
-#include "components/cast_streaming/renderer/public/renderer_controller_proxy_factory.h"
+#include "components/cast_streaming/renderer/public/resource_provider.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_media_playback_options.h"
 #include "media/base/demuxer.h"
@@ -18,9 +17,9 @@
 namespace chromecast {
 
 CastRuntimeContentRendererClient::CastRuntimeContentRendererClient()
-    : cast_streaming_renderer_controller_proxy_(
-          cast_streaming::CreateRendererControllerProxy()) {
-  DCHECK(cast_streaming_renderer_controller_proxy_);
+    : cast_streaming_resource_provider_(
+          cast_streaming::ResourceProvider::Create()) {
+  DCHECK(cast_streaming_resource_provider_);
 }
 
 CastRuntimeContentRendererClient::~CastRuntimeContentRendererClient() = default;
@@ -28,10 +27,7 @@ CastRuntimeContentRendererClient::~CastRuntimeContentRendererClient() = default;
 void CastRuntimeContentRendererClient::RenderFrameCreated(
     content::RenderFrame* render_frame) {
   CastContentRendererClient::RenderFrameCreated(render_frame);
-  cast_streaming_demuxer_provider_.RenderFrameCreated(render_frame);
-
-  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      cast_streaming_renderer_controller_proxy_->GetBinder(render_frame));
+  cast_streaming_resource_provider_->RenderFrameCreated(render_frame);
 }
 
 std::unique_ptr<::media::Demuxer>
@@ -44,7 +40,7 @@ CastRuntimeContentRendererClient::OverrideDemuxerForUrl(
   }
 
   LOG(INFO) << "Overriding demuxer for URL: " << url;
-  return cast_streaming_demuxer_provider_.OverrideDemuxerForUrl(
+  return cast_streaming_resource_provider_->OverrideDemuxerForUrl(
       render_frame, url, std::move(media_task_runner));
 }
 
