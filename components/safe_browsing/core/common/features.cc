@@ -49,10 +49,8 @@ const base::Feature kClientSideDetectionReferrerChain{
 const base::Feature kConnectorsScanningAccessToken{
     "ConnectorsScanningAccessToken", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// TODO(b/197749390): Add tests for this feature being enabled when it's
-// finalized.
 const base::Feature kConnectorsScanningReportOnlyUI{
-    "ConnectorsScanningReportOnlyUI", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ConnectorsScanningReportOnlyUI", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kDelayedWarnings{"SafeBrowsingDelayedWarnings",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
