@@ -10,9 +10,17 @@ action_foreach("generate_preload_list") {
 
   sources = [ "test.json" ]
   outputs = [ "$target_gen_dir/{{source_name_part}}.pb" ]
+
+  # The first argument is the build directory.
   args = [
+    ".",
     "{{source}}",
     rebase_path("${target_gen_dir}/{{source_name_part}}.pb", root_build_dir),
+  ]
+
+  deps = [
+    "//chrome/browser/media:media_engagement_preload_proto",
+    "//third_party/protobuf:py_proto",
   ]
 }
 

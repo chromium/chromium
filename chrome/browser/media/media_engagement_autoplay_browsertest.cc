@@ -154,16 +154,21 @@ class MediaEngagementAutoplayBrowserTest
     base::JSONWriter::Write(list, &json_data);
     EXPECT_TRUE(base::WriteFile(input_path, json_data));
 
-    // Get the path to the "generator" script. As it is copied by
-    // //tools/media_engagement_preload/BUILD.gn, it is generated test data.
-    base::FilePath generator_dir;
+    // Get the source root. The make_dafsa.py script is in here.
+    base::FilePath src_root;
     EXPECT_TRUE(
-        base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &generator_dir));
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_root));
+
+    // Get the generated root. The protobuf-generated files are in here.
+    base::FilePath gen_root;
+    EXPECT_TRUE(
+        base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &gen_root));
 
     // Launch the generator and wait for it to finish.
     base::CommandLine cmd(GetPythonPath());
-    cmd.AppendArgPath(generator_dir.Append(
+    cmd.AppendArgPath(src_root.Append(
         FILE_PATH_LITERAL("tools/media_engagement_preload/make_dafsa.py")));
+    cmd.AppendArgPath(gen_root);
     cmd.AppendArgPath(input_path);
     cmd.AppendArgPath(output_path);
     base::Process process = base::LaunchProcess(cmd, base::LaunchOptions());

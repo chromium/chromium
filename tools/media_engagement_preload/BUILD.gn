@@ -2,57 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-generator_sources = [
-  "make_dafsa.py",
-  "media_engagement_preload_pb2.py",
-
-  # protobuf dependency
-  "../../third_party/protobuf/python/google/__init__.py",
-  "../../third_party/protobuf/python/google/protobuf/__init__.py",
-  "../../third_party/protobuf/python/google/protobuf/descriptor.py",
-  "../../third_party/protobuf/python/google/protobuf/descriptor_database.py",
-  "../../third_party/protobuf/python/google/protobuf/descriptor_pb2.py",
-  "../../third_party/protobuf/python/google/protobuf/descriptor_pool.py",
-  "../../third_party/protobuf/python/google/protobuf/internal/__init__.py",
-  "../../third_party/protobuf/python/google/protobuf/internal/_parameterized.py",
-  "../../third_party/protobuf/python/google/protobuf/internal/api_implementation.cc",
-  "../../third_party/protobuf/python/google/protobuf/internal/api_implementation.py",
-  "../../third_party/protobuf/python/google/protobuf/internal/containers.py",
-  "../../third_party/protobuf/python/google/protobuf/internal/decoder.py",
-  "../../third_party/protobuf/python/google/protobuf/internal/encoder.py",
-  "../../third_party/protobuf/python/google/protobuf/internal/enum_type_wrapper.py",
-  "../../third_party/protobuf/python/google/protobuf/internal/extension_dict.py",
-  "../../third_party/protobuf/python/google/protobuf/internal/message_listener.py",
-  "../../third_party/protobuf/python/google/protobuf/internal/message_set_extensions.proto",
-  "../../third_party/protobuf/python/google/protobuf/internal/missing_enum_values.proto",
-  "../../third_party/protobuf/python/google/protobuf/internal/more_extensions.proto",
-  "../../third_party/protobuf/python/google/protobuf/internal/more_extensions_dynamic.proto",
-  "../../third_party/protobuf/python/google/protobuf/internal/more_messages.proto",
-  "../../third_party/protobuf/python/google/protobuf/internal/python_message.py",
-  "../../third_party/protobuf/python/google/protobuf/internal/python_protobuf.cc",
-  "../../third_party/protobuf/python/google/protobuf/internal/test_bad_identifiers.proto",
-  "../../third_party/protobuf/python/google/protobuf/internal/test_util.py",
-  "../../third_party/protobuf/python/google/protobuf/internal/testing_refleaks.py",
-  "../../third_party/protobuf/python/google/protobuf/internal/type_checkers.py",
-  "../../third_party/protobuf/python/google/protobuf/internal/well_known_types.py",
-  "../../third_party/protobuf/python/google/protobuf/internal/wire_format.py",
-  "../../third_party/protobuf/python/google/protobuf/json_format.py",
-  "../../third_party/protobuf/python/google/protobuf/message.py",
-  "../../third_party/protobuf/python/google/protobuf/message_factory.py",
-  "../../third_party/protobuf/python/google/protobuf/proto_builder.py",
-  "../../third_party/protobuf/python/google/protobuf/python_protobuf.h",
-  "../../third_party/protobuf/python/google/protobuf/reflection.py",
-  "../../third_party/protobuf/python/google/protobuf/service.py",
-  "../../third_party/protobuf/python/google/protobuf/service_reflection.py",
-  "../../third_party/protobuf/python/google/protobuf/symbol_database.py",
-  "../../third_party/protobuf/python/google/protobuf/text_encoding.py",
-  "../../third_party/protobuf/python/google/protobuf/text_format.py",
-  "../../third_party/protobuf/third_party/six/six.py",
-]
-
-copy("generator") {
-  sources = generator_sources
-
-  outputs =
-      [ "$root_out_dir/{{source_root_relative_dir}}/{{source_file_part}}" ]
+# A dependency to include in targets that require make_dafsa.py at runtime.
+group("make_dafsa_runtime") {
+  data = [ "make_dafsa.py" ]
+  data_deps = [
+    "//chrome/browser/media:media_engagement_preload_proto_py_runtime",
+    "//third_party/protobuf:py_proto_runtime",
+  ]
 }

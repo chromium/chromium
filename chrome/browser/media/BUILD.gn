@@ -20,4 +20,5 @@ mojom("mojo_bindings") {
 
 proto_library("media_engagement_preload_proto") {
   sources = [ "media_engagement_preload.proto" ]
+  generate_py_runtime = true
 }

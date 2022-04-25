@@ -1488,7 +1488,7 @@ if (!is_android) {
       "//third_party/private_membership:private_membership_proto",
       "//third_party/shell-encryption:serialization_proto",
       "//third_party/widevine/cdm:widevine_test_license_server",
-      "//tools/media_engagement_preload:generator",
+      "//tools/media_engagement_preload:make_dafsa_runtime",
       "//ui/webui/resources/cr_elements:modulize_runtime_data",
       "//ui/webui/resources/js:modulize_local_runtime_data",
       "//ui/webui/resources/js/cr:modulize_local_runtime_data",

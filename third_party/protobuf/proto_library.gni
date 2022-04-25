@@ -31,6 +31,10 @@
 #   generate_library (optional, default true)
 #       Generate a "static_library" target for linking with the generated code.
 #
+#   generate_py_runtime (optional, default false)
+#       Generates a "_py_runtime"-suffixed target for test targets that need the
+#       Python stubs available at runtime.
+#
 #   TODO(crbug.com/1237958): Remove allow_optional when proto rolls to 3.15.
 #   allow_optional (optional, default false)
 #       Enables experimental_allow_proto3_optional.
@@ -183,6 +187,15 @@ template("proto_library") {
     generate_descriptor = ""
   }
 
+  if (defined(invoker.generate_py_runtime)) {
+    generate_py_runtime = invoker.generate_py_runtime
+  } else {
+    generate_py_runtime = false
+  }
+  if (generate_py_runtime) {
+    generate_python = true
+  }
+
   # exclude_imports is only used for generating the descriptor. Therefore, the
   # check needs to be here to avoid complaints from GN about the unused
   # variable.
@@ -277,6 +290,7 @@ template("proto_library") {
 
   protos = rebase_path(invoker.sources, proto_in_dir)
   protogens = []
+  protogens_py = []
   protogens_cc = []
   protogens_js = []
 
@@ -307,7 +321,7 @@ template("proto_library") {
         ]
       }
       if (generate_python) {
-        protogens += [ "$py_out_dir/${proto_path}_pb2.py" ]
+        protogens_py += [ "$py_out_dir/${proto_path}_pb2.py" ]
       }
       if (generate_with_plugin) {
         foreach(suffix, generator_plugin_suffixes) {
@@ -328,18 +342,22 @@ template("proto_library") {
   action_name = "${target_name}_gen"
   source_set_name = target_name
   javascript_name = "${target_name}_js"
+  py_runtime_name = "${target_name}_py_runtime"
 
   # Generate protobuf stubs.
   action(action_name) {
     visibility = [
       ":$javascript_name",
+      ":$py_runtime_name",
       ":$source_set_name",
     ]
     script = "//tools/protoc_wrapper/protoc_wrapper.py"
     args = protos
 
     sources = proto_sources
-    outputs = get_path_info(protogens + protogens_cc + protogens_js, "abspath")
+    outputs =
+        get_path_info(protogens + protogens_cc + protogens_js + protogens_py,
+                      "abspath")
 
     if (defined(invoker.testonly)) {
       testonly = invoker.testonly
@@ -587,6 +605,16 @@ template("proto_library") {
     }
     if (defined(invoker.link_deps)) {
       deps += invoker.link_deps
+    }
+  }
+
+  if (generate_py_runtime) {
+    group(py_runtime_name) {
+      data = protogens_py
+      deps = [
+        ":$action_name",
+        "//third_party/protobuf:py_proto_runtime",
+      ]
     }
   }
 }
