@@ -84,13 +84,8 @@ class MockConnectClientSocket : public TransportClientSocket {
   bool WasAlpnNegotiated() const override { return false; }
   NextProto GetNegotiatedProtocol() const override { return kProtoUnknown; }
   bool GetSSLInfo(SSLInfo* ssl_info) override { return false; }
-  void GetConnectionAttempts(ConnectionAttempts* out) const override {
-    *out = connection_attempts_;
-  }
-  void ClearConnectionAttempts() override { connection_attempts_.clear(); }
-  void AddConnectionAttempts(const ConnectionAttempts& attempts) override {
-    connection_attempts_.insert(connection_attempts_.begin(), attempts.begin(),
-                                attempts.end());
+  ConnectionAttempts GetConnectionAttempts() const override {
+    return connection_attempts_;
   }
   int64_t GetTotalReceivedBytes() const override {
     NOTIMPLEMENTED();
@@ -160,13 +155,8 @@ class MockFailingClientSocket : public TransportClientSocket {
   bool WasAlpnNegotiated() const override { return false; }
   NextProto GetNegotiatedProtocol() const override { return kProtoUnknown; }
   bool GetSSLInfo(SSLInfo* ssl_info) override { return false; }
-  void GetConnectionAttempts(ConnectionAttempts* out) const override {
-    *out = connection_attempts_;
-  }
-  void ClearConnectionAttempts() override { connection_attempts_.clear(); }
-  void AddConnectionAttempts(const ConnectionAttempts& attempts) override {
-    connection_attempts_.insert(connection_attempts_.begin(), attempts.begin(),
-                                attempts.end());
+  ConnectionAttempts GetConnectionAttempts() const override {
+    return connection_attempts_;
   }
   int64_t GetTotalReceivedBytes() const override {
     NOTIMPLEMENTED();
@@ -251,9 +241,8 @@ class MockTriggerableClientSocket : public TransportClientSocket {
         new MockTriggerableClientSocket(addrlist, true, net_log));
     if (failing) {
       DCHECK_LE(1u, addrlist.size());
-      ConnectionAttempts attempts;
-      attempts.push_back(ConnectionAttempt(addrlist[0], ERR_CONNECTION_FAILED));
-      socket->AddConnectionAttempts(attempts);
+      socket->connection_attempts_.push_back(
+          ConnectionAttempt(addrlist[0], ERR_CONNECTION_FAILED));
     }
     return std::move(socket);
   }
@@ -294,13 +283,8 @@ class MockTriggerableClientSocket : public TransportClientSocket {
   bool WasAlpnNegotiated() const override { return false; }
   NextProto GetNegotiatedProtocol() const override { return kProtoUnknown; }
   bool GetSSLInfo(SSLInfo* ssl_info) override { return false; }
-  void GetConnectionAttempts(ConnectionAttempts* out) const override {
-    *out = connection_attempts_;
-  }
-  void ClearConnectionAttempts() override { connection_attempts_.clear(); }
-  void AddConnectionAttempts(const ConnectionAttempts& attempts) override {
-    connection_attempts_.insert(connection_attempts_.begin(), attempts.begin(),
-                                attempts.end());
+  ConnectionAttempts GetConnectionAttempts() const override {
+    return connection_attempts_;
   }
   int64_t GetTotalReceivedBytes() const override {
     NOTIMPLEMENTED();

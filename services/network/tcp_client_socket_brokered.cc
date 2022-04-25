@@ -57,6 +57,13 @@ void TCPClientSocketBrokered::SetSocketCreatorForTesting(
   socket_creator_for_testing_ = std::move(socket_creator);
 }
 
+net::ConnectionAttempts TCPClientSocketBrokered::GetConnectionAttempts() const {
+  if (!brokered_socket_) {
+    return {};
+  }
+  return brokered_socket_->GetConnectionAttempts();
+}
+
 void TCPClientSocketBrokered::SetBeforeConnectCallback(
     const BeforeConnectCallback& before_connect_callback) {
   // TODO(liza): Implement this.
@@ -82,7 +89,6 @@ int TCPClientSocketBrokered::Connect(net::CompletionOnceCallback callback) {
         network_quality_estimator_, net_log_, source_);
   }
   brokered_socket_->ApplySocketTag(tag_);
-  brokered_socket_->AddConnectionAttempts(connection_attempts_);
   return brokered_socket_->Connect(base::BindOnce(
       &TCPClientSocketBrokered::DidCompleteConnect,
       brokered_weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -171,32 +177,6 @@ net::NextProto TCPClientSocketBrokered::GetNegotiatedProtocol() const {
 
 bool TCPClientSocketBrokered::GetSSLInfo(net::SSLInfo* ssl_info) {
   return false;
-}
-
-void TCPClientSocketBrokered::GetConnectionAttempts(
-    net::ConnectionAttempts* out) const {
-  if (!brokered_socket_) {
-    *out = connection_attempts_;
-  } else {
-    brokered_socket_->GetConnectionAttempts(out);
-  }
-}
-
-void TCPClientSocketBrokered::ClearConnectionAttempts() {
-  if (brokered_socket_) {
-    brokered_socket_->ClearConnectionAttempts();
-  }
-  connection_attempts_.clear();
-}
-
-void TCPClientSocketBrokered::AddConnectionAttempts(
-    const net::ConnectionAttempts& attempts) {
-  if (!brokered_socket_) {
-    connection_attempts_.insert(connection_attempts_.begin(), attempts.begin(),
-                                attempts.end());
-  } else {
-    brokered_socket_->AddConnectionAttempts(attempts);
-  }
 }
 
 int64_t TCPClientSocketBrokered::GetTotalReceivedBytes() const {

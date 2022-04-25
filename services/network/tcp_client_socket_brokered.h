@@ -57,6 +57,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPClientSocketBrokered
   void SetSocketCreatorForTesting(
       base::RepeatingCallback<std::unique_ptr<net::TransportClientSocket>(void)>
           socket_creator) override;
+  net::ConnectionAttempts GetConnectionAttempts() const override;
 
   // StreamSocket implementation.
   void SetBeforeConnectCallback(
@@ -72,9 +73,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPClientSocketBrokered
   bool WasAlpnNegotiated() const override;
   net::NextProto GetNegotiatedProtocol() const override;
   bool GetSSLInfo(net::SSLInfo* ssl_info) override;
-  void GetConnectionAttempts(net::ConnectionAttempts* out) const override;
-  void ClearConnectionAttempts() override;
-  void AddConnectionAttempts(const net::ConnectionAttempts& attempts) override;
   int64_t GetTotalReceivedBytes() const override;
   void ApplySocketTag(const net::SocketTag& tag) override;
 
@@ -122,9 +120,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPClientSocketBrokered
 
   // Need to store the tag in case ApplySocketTag() is called before Connect().
   net::SocketTag tag_;
-
-  // Failed connection attempts made while trying to connect this socket.
-  net::ConnectionAttempts connection_attempts_;
 
   std::unique_ptr<net::TransportClientSocket> brokered_socket_;
 

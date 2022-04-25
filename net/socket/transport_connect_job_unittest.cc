@@ -364,8 +364,7 @@ TEST_F(TransportConnectJobTest, IPv6FallbackSocketIPv4FinishesFirst) {
   EXPECT_TRUE(endpoint.address().IsIPv4());
 
   // Check that the failed connection attempt on the main socket is collected.
-  ConnectionAttempts attempts;
-  test_delegate.socket()->GetConnectionAttempts(&attempts);
+  ConnectionAttempts attempts = transport_connect_job.GetConnectionAttempts();
   ASSERT_EQ(1u, attempts.size());
   EXPECT_THAT(attempts[0].result, test::IsError(ERR_CONNECTION_FAILED));
   EXPECT_TRUE(attempts[0].endpoint.address().IsIPv6());
@@ -411,8 +410,7 @@ TEST_F(TransportConnectJobTest, IPv6FallbackSocketIPv6FinishesFirst) {
 
   // Check that the failed connection attempt on the fallback socket is
   // collected.
-  ConnectionAttempts attempts;
-  test_delegate.socket()->GetConnectionAttempts(&attempts);
+  ConnectionAttempts attempts = transport_connect_job.GetConnectionAttempts();
   ASSERT_EQ(1u, attempts.size());
   EXPECT_THAT(attempts[0].result, test::IsError(ERR_CONNECTION_FAILED));
   EXPECT_TRUE(attempts[0].endpoint.address().IsIPv4());
@@ -438,8 +436,7 @@ TEST_F(TransportConnectJobTest, IPv6NoIPv4AddressesToFallbackTo) {
   IPEndPoint endpoint;
   test_delegate.socket()->GetLocalAddress(&endpoint);
   EXPECT_TRUE(endpoint.address().IsIPv6());
-  ConnectionAttempts attempts;
-  test_delegate.socket()->GetConnectionAttempts(&attempts);
+  ConnectionAttempts attempts = transport_connect_job.GetConnectionAttempts();
   EXPECT_EQ(0u, attempts.size());
   EXPECT_EQ(1, client_socket_factory_.allocation_count());
 }
@@ -461,8 +458,7 @@ TEST_F(TransportConnectJobTest, IPv4HasNoFallback) {
   IPEndPoint endpoint;
   test_delegate.socket()->GetLocalAddress(&endpoint);
   EXPECT_TRUE(endpoint.address().IsIPv4());
-  ConnectionAttempts attempts;
-  test_delegate.socket()->GetConnectionAttempts(&attempts);
+  ConnectionAttempts attempts = transport_connect_job.GetConnectionAttempts();
   EXPECT_EQ(0u, attempts.size());
   EXPECT_EQ(1, client_socket_factory_.allocation_count());
 }
@@ -544,8 +540,7 @@ TEST_F(TransportConnectJobTest, EndpointResult) {
   EXPECT_EQ(1, client_socket_factory_.allocation_count());
 
   // There were no failed connection attempts to report.
-  ConnectionAttempts attempts;
-  test_delegate.socket()->GetConnectionAttempts(&attempts);
+  ConnectionAttempts attempts = transport_connect_job.GetConnectionAttempts();
   EXPECT_EQ(0u, attempts.size());
 }
 
@@ -589,8 +584,7 @@ TEST_F(TransportConnectJobTest, MultipleRoutesFallback) {
   EXPECT_EQ(peer_address, IPEndPoint(ParseIP("4::"), 443));
 
   // Check that failed connection attempts are reported.
-  ConnectionAttempts attempts;
-  test_delegate.socket()->GetConnectionAttempts(&attempts);
+  ConnectionAttempts attempts = transport_connect_job.GetConnectionAttempts();
   ASSERT_EQ(2u, attempts.size());
   EXPECT_THAT(attempts[0].result, test::IsError(ERR_CONNECTION_FAILED));
   EXPECT_EQ(attempts[0].endpoint, IPEndPoint(ParseIP("1::"), 8441));
@@ -654,8 +648,7 @@ TEST_F(TransportConnectJobTest, MultipleRoutesIPV4Fallback) {
   EXPECT_EQ(peer_address, IPEndPoint(ParseIP("3.3.3.3"), 443));
 
   // Check that failed connection attempts are reported.
-  ConnectionAttempts attempts;
-  test_delegate.socket()->GetConnectionAttempts(&attempts);
+  ConnectionAttempts attempts = transport_connect_job.GetConnectionAttempts();
   ASSERT_EQ(2u, attempts.size());
   EXPECT_THAT(attempts[0].result, test::IsError(ERR_CONNECTION_FAILED));
   EXPECT_EQ(attempts[0].endpoint, IPEndPoint(ParseIP("1.1.1.1"), 8441));

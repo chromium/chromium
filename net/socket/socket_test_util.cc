@@ -921,8 +921,8 @@ NextProto MockClientSocket::GetNegotiatedProtocol() const {
   return kProtoUnknown;
 }
 
-void MockClientSocket::GetConnectionAttempts(ConnectionAttempts* out) const {
-  out->clear();
+ConnectionAttempts MockClientSocket::GetConnectionAttempts() const {
+  return {};
 }
 
 MockClientSocket::~MockClientSocket() = default;
@@ -1069,18 +1069,8 @@ bool MockTCPClientSocket::SetKeepAlive(bool enable, int delay) {
   return data_->set_keep_alive_result();
 }
 
-void MockTCPClientSocket::GetConnectionAttempts(ConnectionAttempts* out) const {
-  *out = connection_attempts_;
-}
-
-void MockTCPClientSocket::ClearConnectionAttempts() {
-  connection_attempts_.clear();
-}
-
-void MockTCPClientSocket::AddConnectionAttempts(
-    const ConnectionAttempts& attempts) {
-  connection_attempts_.insert(connection_attempts_.begin(), attempts.begin(),
-                              attempts.end());
+ConnectionAttempts MockTCPClientSocket::GetConnectionAttempts() const {
+  return connection_attempts_;
 }
 
 void MockTCPClientSocket::SetBeforeConnectCallback(
@@ -1460,10 +1450,6 @@ void MockSSLClientSocket::ApplySocketTag(const SocketTag& tag) {
 
 const NetLogWithSource& MockSSLClientSocket::NetLog() const {
   return net_log_;
-}
-
-void MockSSLClientSocket::GetConnectionAttempts(ConnectionAttempts* out) const {
-  out->clear();
 }
 
 int64_t MockSSLClientSocket::GetTotalReceivedBytes() const {
@@ -2125,17 +2111,8 @@ bool WrappedStreamSocket::GetSSLInfo(SSLInfo* ssl_info) {
   return transport_->GetSSLInfo(ssl_info);
 }
 
-void WrappedStreamSocket::GetConnectionAttempts(ConnectionAttempts* out) const {
-  transport_->GetConnectionAttempts(out);
-}
-
-void WrappedStreamSocket::ClearConnectionAttempts() {
-  transport_->ClearConnectionAttempts();
-}
-
-void WrappedStreamSocket::AddConnectionAttempts(
-    const ConnectionAttempts& attempts) {
-  transport_->AddConnectionAttempts(attempts);
+ConnectionAttempts WrappedStreamSocket::GetConnectionAttempts() const {
+  return {};
 }
 
 int64_t WrappedStreamSocket::GetTotalReceivedBytes() const {

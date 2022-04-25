@@ -87,6 +87,7 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   int Bind(const IPEndPoint& address) override;
   bool SetKeepAlive(bool enable, int delay) override;
   bool SetNoDelay(bool no_delay) override;
+  ConnectionAttempts GetConnectionAttempts() const override;
 
   // StreamSocket implementation.
   void SetBeforeConnectCallback(
@@ -102,9 +103,6 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   bool WasAlpnNegotiated() const override;
   NextProto GetNegotiatedProtocol() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
-  void GetConnectionAttempts(ConnectionAttempts* out) const override;
-  void ClearConnectionAttempts() override;
-  void AddConnectionAttempts(const ConnectionAttempts& attempts) override;
   int64_t GetTotalReceivedBytes() const override;
   void ApplySocketTag(const SocketTag& tag) override;
 

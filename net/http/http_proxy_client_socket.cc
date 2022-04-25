@@ -151,11 +151,6 @@ bool HttpProxyClientSocket::GetSSLInfo(SSLInfo* ssl_info) {
   return false;
 }
 
-void HttpProxyClientSocket::GetConnectionAttempts(
-    ConnectionAttempts* out) const {
-  out->clear();
-}
-
 int64_t HttpProxyClientSocket::GetTotalReceivedBytes() const {
   return socket_->GetTotalReceivedBytes();
 }

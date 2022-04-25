@@ -35,6 +35,7 @@ namespace net {
 
 class NetLogWithSource;
 class SocketTag;
+class TransportClientSocket;
 
 class NET_EXPORT_PRIVATE TransportSocketParams
     : public base::RefCounted<TransportSocketParams> {
@@ -228,7 +229,7 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
 
   // Appends connection attempts from `socket` to `connection_attempts_`. Should
   // be called when discarding a failed socket.
-  void SaveConnectionAttempts(const StreamSocket& socket);
+  void SaveConnectionAttempts(const TransportClientSocket& socket);
 
   scoped_refptr<TransportSocketParams> params_;
   std::unique_ptr<HostResolver::ResolveHostRequest> request_;
@@ -239,13 +240,12 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
 
   State next_state_;
 
-  std::unique_ptr<StreamSocket> transport_socket_;
+  std::unique_ptr<TransportClientSocket> transport_socket_;
 
-  std::unique_ptr<StreamSocket> fallback_transport_socket_;
+  std::unique_ptr<TransportClientSocket> fallback_transport_socket_;
   base::TimeTicks fallback_connect_start_time_;
   base::OneShotTimer fallback_timer_;
 
-  int resolve_result_;
   ResolveErrorInfo resolve_error_info_;
 
   // Used in the failure case to save connection attempts made on the main and

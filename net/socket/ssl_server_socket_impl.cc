@@ -94,9 +94,6 @@ class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
   NextProto GetNegotiatedProtocol() const override;
   absl::optional<base::StringPiece> GetPeerApplicationSettings() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
-  void GetConnectionAttempts(ConnectionAttempts* out) const override;
-  void ClearConnectionAttempts() override {}
-  void AddConnectionAttempts(const ConnectionAttempts& attempts) override {}
   int64_t GetTotalReceivedBytes() const override;
   void ApplySocketTag(const SocketTag& tag) override;
 
@@ -593,11 +590,6 @@ bool SSLServerContextImpl::SocketImpl::GetSSLInfo(SSLInfo* ssl_info) {
                                  : SSLInfo::HANDSHAKE_FULL;
 
   return true;
-}
-
-void SSLServerContextImpl::SocketImpl::GetConnectionAttempts(
-    ConnectionAttempts* out) const {
-  out->clear();
 }
 
 int64_t SSLServerContextImpl::SocketImpl::GetTotalReceivedBytes() const {

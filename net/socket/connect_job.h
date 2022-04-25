@@ -216,9 +216,8 @@ class NET_EXPORT_PRIVATE ConnectJob {
   // Not safe to call after NotifyComplete() is invoked.
   virtual bool HasEstablishedConnection() const = 0;
 
-  // If the ConnectJobFailed, this method returns a list of failed attempts to
-  // connect to the destination server. Returns an empty list if connecting to a
-  // proxy.
+  // Returns a list of failed attempts to connect to the destination server.
+  // Returns an empty list if connecting to a proxy.
   virtual ConnectionAttempts GetConnectionAttempts() const;
 
   // Returns error information about any host resolution attempt.

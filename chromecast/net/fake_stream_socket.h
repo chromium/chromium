@@ -57,9 +57,6 @@ class FakeStreamSocket : public net::StreamSocket {
   bool WasAlpnNegotiated() const override;
   net::NextProto GetNegotiatedProtocol() const override;
   bool GetSSLInfo(net::SSLInfo* ssl_info) override;
-  void GetConnectionAttempts(net::ConnectionAttempts* out) const override;
-  void ClearConnectionAttempts() override;
-  void AddConnectionAttempts(const net::ConnectionAttempts& attempts) override;
   int64_t GetTotalReceivedBytes() const override;
   void ApplySocketTag(const net::SocketTag& tag) override;
 

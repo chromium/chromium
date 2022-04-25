@@ -284,14 +284,6 @@ class FakeSocket : public StreamSocket {
 
   bool GetSSLInfo(SSLInfo* ssl_info) override { return false; }
 
-  void GetConnectionAttempts(ConnectionAttempts* out) const override {
-    out->clear();
-  }
-
-  void ClearConnectionAttempts() override {}
-
-  void AddConnectionAttempts(const ConnectionAttempts& attempts) override {}
-
   int64_t GetTotalReceivedBytes() const override {
     NOTIMPLEMENTED();
     return 0;

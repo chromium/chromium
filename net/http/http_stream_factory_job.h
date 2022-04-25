@@ -334,7 +334,7 @@ class HttpStreamFactory::Job
   // code is simply returned.
   int ReconsiderProxyAfterError(int error);
 
-  void MaybeCopyConnectionAttemptsFromSocketOrHandle();
+  void MaybeCopyConnectionAttemptsFromHandle();
 
   // Returns true if the request should be throttled to allow for only one
   // connection attempt to be made to an H2 server at a time.

@@ -185,9 +185,7 @@ class NET_EXPORT ClientSocketHandle {
     return ssl_cert_request_info_;
   }
 
-  // If the connection failed, returns the connection attempts made. (If it
-  // succeeded, they will be returned through the socket instead; see
-  // |StreamSocket::GetConnectionAttempts|.)
+  // If the connection failed, returns the connection attempts made.
   const ConnectionAttempts& connection_attempts() {
     return connection_attempts_;
   }

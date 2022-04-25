@@ -122,10 +122,6 @@ bool SOCKS5ClientSocket::GetSSLInfo(SSLInfo* ssl_info) {
   return false;
 }
 
-void SOCKS5ClientSocket::GetConnectionAttempts(ConnectionAttempts* out) const {
-  out->clear();
-}
-
 int64_t SOCKS5ClientSocket::GetTotalReceivedBytes() const {
   return transport_socket_->GetTotalReceivedBytes();
 }

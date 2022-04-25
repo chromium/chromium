@@ -226,11 +226,6 @@ bool AndroidUsbSocket::GetSSLInfo(net::SSLInfo* ssl_info) {
   return false;
 }
 
-void AndroidUsbSocket::GetConnectionAttempts(
-    net::ConnectionAttempts* out) const {
-  out->clear();
-}
-
 int64_t AndroidUsbSocket::GetTotalReceivedBytes() const {
   NOTIMPLEMENTED();
   return 0;

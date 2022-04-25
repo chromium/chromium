@@ -77,9 +77,6 @@ class MockClientSocket : public net::StreamSocket {
   MOCK_CONST_METHOD0(WasAlpnNegotiated, bool());
   MOCK_CONST_METHOD0(GetNegotiatedProtocol, net::NextProto());
   MOCK_METHOD1(GetSSLInfo, bool(net::SSLInfo*));
-  MOCK_CONST_METHOD1(GetConnectionAttempts, void(net::ConnectionAttempts*));
-  MOCK_METHOD0(ClearConnectionAttempts, void());
-  MOCK_METHOD1(AddConnectionAttempts, void(const net::ConnectionAttempts&));
   MOCK_CONST_METHOD0(GetTotalReceivedBytes, int64_t());
   MOCK_METHOD1(ApplySocketTag, void(const net::SocketTag&));
 };

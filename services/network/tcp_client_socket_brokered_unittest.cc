@@ -123,9 +123,7 @@ TEST_F(TCPClientSocketBrokeredTest, FailedConnect) {
   result = callback.WaitForResult();
   EXPECT_EQ(result, net::ERR_CONNECTION_FAILED);
 
-  net::ConnectionAttempts attempts;
-  socket_->GetConnectionAttempts(&attempts);
-
+  net::ConnectionAttempts attempts = socket_->GetConnectionAttempts();
   EXPECT_EQ(1u, attempts.size());
 }
 
@@ -190,36 +188,6 @@ TEST_F(TCPClientSocketBrokeredTest, SetNoDelay) {
   ASSERT_TRUE(socket_->IsConnected());
   EXPECT_TRUE(socket_->SetNoDelay(true /* no_delay */));
   EXPECT_TRUE(socket_->SetNoDelay(false /* no_delay */));
-
-  socket_->Disconnect();
-}
-
-TEST_F(TCPClientSocketBrokeredTest, ConnectionAttempts) {
-  net::TestCompletionCallback callback;
-  ASSERT_FALSE(socket_->IsConnected());
-
-  net::ConnectionAttempts attempts;
-  // Nothing should happen when adding a ConnectionAttempt before trying to
-  // Connect.
-  socket_->AddConnectionAttempts(attempts);
-  socket_->GetConnectionAttempts(&attempts);
-
-  EXPECT_EQ(0u, attempts.size());
-  ConnectClientSocket(&callback);
-
-  // Add an attempt after socket is connected.
-  net::ConnectionAttempts new_attempts;
-  new_attempts.push_back(
-      net::ConnectionAttempt(net::IPEndPoint(), net::ERR_IO_PENDING));
-  socket_->AddConnectionAttempts(new_attempts);
-  socket_->GetConnectionAttempts(&attempts);
-  EXPECT_EQ(1u, attempts.size());
-  EXPECT_EQ(attempts[0].result, net::ERR_IO_PENDING);
-
-  // Clear attempts
-  socket_->ClearConnectionAttempts();
-  socket_->GetConnectionAttempts(&attempts);
-  EXPECT_EQ(0u, attempts.size());
 
   socket_->Disconnect();
 }

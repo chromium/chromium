@@ -153,13 +153,6 @@ class NetStreamSocketAdapter : public net::StreamSocket {
     NOTREACHED();
     return false;
   }
-  void GetConnectionAttempts(net::ConnectionAttempts* out) const override {
-    NOTREACHED();
-  }
-  void ClearConnectionAttempts() override { NOTREACHED(); }
-  void AddConnectionAttempts(const net::ConnectionAttempts& attempts) override {
-    NOTREACHED();
-  }
   int64_t GetTotalReceivedBytes() const override {
     NOTIMPLEMENTED();
     return 0;

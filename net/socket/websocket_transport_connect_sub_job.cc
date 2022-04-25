@@ -101,15 +101,6 @@ class WebSocketStreamSocket final : public StreamSocket {
   bool GetSSLInfo(SSLInfo* ssl_info) override {
     return wrapped_socket_->GetSSLInfo(ssl_info);
   }
-  void GetConnectionAttempts(ConnectionAttempts* out) const override {
-    wrapped_socket_->GetConnectionAttempts(out);
-  }
-  void ClearConnectionAttempts() override {
-    wrapped_socket_->ClearConnectionAttempts();
-  }
-  void AddConnectionAttempts(const ConnectionAttempts& attempts) override {
-    wrapped_socket_->AddConnectionAttempts(attempts);
-  }
   int64_t GetTotalReceivedBytes() const override {
     return wrapped_socket_->GetTotalReceivedBytes();
   }

@@ -176,11 +176,6 @@ bool SpdyProxyClientSocket::GetSSLInfo(SSLInfo* ssl_info) {
   return false;
 }
 
-void SpdyProxyClientSocket::GetConnectionAttempts(
-    ConnectionAttempts* out) const {
-  out->clear();
-}
-
 int64_t SpdyProxyClientSocket::GetTotalReceivedBytes() const {
   NOTIMPLEMENTED();
   return 0;

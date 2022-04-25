@@ -194,11 +194,6 @@ bool ProxyResolvingClientSocket::GetSSLInfo(net::SSLInfo* ssl_info) {
   return false;
 }
 
-void ProxyResolvingClientSocket::GetConnectionAttempts(
-    net::ConnectionAttempts* out) const {
-  out->clear();
-}
-
 int64_t ProxyResolvingClientSocket::GetTotalReceivedBytes() const {
   NOTIMPLEMENTED();
   return 0;

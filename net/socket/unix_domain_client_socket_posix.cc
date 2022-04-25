@@ -144,11 +144,6 @@ bool UnixDomainClientSocket::GetSSLInfo(SSLInfo* ssl_info) {
   return false;
 }
 
-void UnixDomainClientSocket::GetConnectionAttempts(
-    ConnectionAttempts* out) const {
-  out->clear();
-}
-
 int64_t UnixDomainClientSocket::GetTotalReceivedBytes() const {
   NOTIMPLEMENTED();
   return 0;

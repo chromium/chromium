@@ -203,10 +203,6 @@ bool FakeSocket::GetSSLInfo(net::SSLInfo* ssl_info) {
   return false;
 }
 
-void FakeSocket::GetConnectionAttempts(net::ConnectionAttempts* out) const {
-  out->clear();
-}
-
 int64_t FakeSocket::GetTotalReceivedBytes() const {
   NOTIMPLEMENTED();
   return 0;

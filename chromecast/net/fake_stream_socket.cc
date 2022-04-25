@@ -213,14 +213,6 @@ bool FakeStreamSocket::GetSSLInfo(net::SSLInfo* /* ssl_info */) {
   return false;
 }
 
-void FakeStreamSocket::GetConnectionAttempts(
-    net::ConnectionAttempts* /* out */) const {}
-
-void FakeStreamSocket::ClearConnectionAttempts() {}
-
-void FakeStreamSocket::AddConnectionAttempts(
-    const net::ConnectionAttempts& /* attempts */) {}
-
 int64_t FakeStreamSocket::GetTotalReceivedBytes() const {
   return 0;
 }

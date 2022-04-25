@@ -96,9 +96,6 @@ class SSLClientSocketImpl : public SSLClientSocket,
   NextProto GetNegotiatedProtocol() const override;
   absl::optional<base::StringPiece> GetPeerApplicationSettings() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
-  void GetConnectionAttempts(ConnectionAttempts* out) const override;
-  void ClearConnectionAttempts() override {}
-  void AddConnectionAttempts(const ConnectionAttempts& attempts) override {}
   int64_t GetTotalReceivedBytes() const override;
   void GetSSLCertRequestInfo(
       SSLCertRequestInfo* cert_request_info) const override;

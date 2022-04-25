@@ -522,11 +522,6 @@ bool TransportClientSocketPool::AssignIdleSocketToRequest(
         socket->WasEverUsed() ? ClientSocketHandle::REUSED_IDLE
                               : ClientSocketHandle::UNUSED_IDLE;
 
-    // If this socket took multiple attempts to obtain, don't report those
-    // every time it's reused, just to the first user.
-    if (socket->WasEverUsed())
-      socket->ClearConnectionAttempts();
-
     HandOutSocket(std::move(socket), reuse_type,
                   LoadTimingInfo::ConnectTiming(), request.handle(), idle_time,
                   group, request.net_log());

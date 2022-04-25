@@ -460,18 +460,8 @@ SocketDescriptor TCPClientSocket::SocketDescriptorForTesting() const {
   return socket_->SocketDescriptorForTesting();
 }
 
-void TCPClientSocket::GetConnectionAttempts(ConnectionAttempts* out) const {
-  *out = connection_attempts_;
-}
-
-void TCPClientSocket::ClearConnectionAttempts() {
-  connection_attempts_.clear();
-}
-
-void TCPClientSocket::AddConnectionAttempts(
-    const ConnectionAttempts& attempts) {
-  connection_attempts_.insert(connection_attempts_.begin(), attempts.begin(),
-                              attempts.end());
+ConnectionAttempts TCPClientSocket::GetConnectionAttempts() const {
+  return connection_attempts_;
 }
 
 int64_t TCPClientSocket::GetTotalReceivedBytes() const {

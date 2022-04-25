@@ -149,11 +149,6 @@ bool QuicProxyClientSocket::GetSSLInfo(SSLInfo* ssl_info) {
   return false;
 }
 
-void QuicProxyClientSocket::GetConnectionAttempts(
-    ConnectionAttempts* out) const {
-  out->clear();
-}
-
 int64_t QuicProxyClientSocket::GetTotalReceivedBytes() const {
   return stream_->NumBytesConsumed();
 }

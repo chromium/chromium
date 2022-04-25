@@ -72,6 +72,7 @@ class FuzzedSocket : public TransportClientSocket {
 
   // TransportClientSocket implementation:
   int Bind(const net::IPEndPoint& local_addr) override;
+  ConnectionAttempts GetConnectionAttempts() const override;
   // StreamSocket implementation:
   int Connect(CompletionOnceCallback callback) override;
   void Disconnect() override;
@@ -84,9 +85,6 @@ class FuzzedSocket : public TransportClientSocket {
   bool WasAlpnNegotiated() const override;
   NextProto GetNegotiatedProtocol() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
-  void GetConnectionAttempts(ConnectionAttempts* out) const override;
-  void ClearConnectionAttempts() override;
-  void AddConnectionAttempts(const ConnectionAttempts& attempts) override;
   int64_t GetTotalReceivedBytes() const override;
   void ApplySocketTag(const net::SocketTag& tag) override;
 

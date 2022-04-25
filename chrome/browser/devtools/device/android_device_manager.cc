@@ -24,6 +24,7 @@
 #include "chrome/browser/devtools/device/usb/usb_device_provider.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "net/base/io_buffer.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/socket/stream_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

@@ -409,7 +409,7 @@ void HttpStreamFactory::Job::OnStreamReadyCallback() {
   DCHECK_NE(job_type_, PRECONNECT);
   DCHECK(!is_websocket_ || try_websocket_over_http2_);
 
-  MaybeCopyConnectionAttemptsFromSocketOrHandle();
+  MaybeCopyConnectionAttemptsFromHandle();
 
   delegate_->OnStreamReady(this, server_ssl_config_);
   // |this| may be deleted after this call.
@@ -420,7 +420,7 @@ void HttpStreamFactory::Job::OnWebSocketHandshakeStreamReadyCallback() {
   DCHECK_NE(job_type_, PRECONNECT);
   DCHECK(is_websocket_);
 
-  MaybeCopyConnectionAttemptsFromSocketOrHandle();
+  MaybeCopyConnectionAttemptsFromHandle();
 
   delegate_->OnWebSocketHandshakeStreamReady(
       this, server_ssl_config_, proxy_info_, std::move(websocket_stream_));
@@ -430,7 +430,7 @@ void HttpStreamFactory::Job::OnWebSocketHandshakeStreamReadyCallback() {
 void HttpStreamFactory::Job::OnBidirectionalStreamImplReadyCallback() {
   DCHECK(bidirectional_stream_impl_);
 
-  MaybeCopyConnectionAttemptsFromSocketOrHandle();
+  MaybeCopyConnectionAttemptsFromHandle();
 
   delegate_->OnBidirectionalStreamImplReady(this, server_ssl_config_,
                                             proxy_info_);
@@ -440,7 +440,7 @@ void HttpStreamFactory::Job::OnBidirectionalStreamImplReadyCallback() {
 void HttpStreamFactory::Job::OnStreamFailedCallback(int result) {
   DCHECK_NE(job_type_, PRECONNECT);
 
-  MaybeCopyConnectionAttemptsFromSocketOrHandle();
+  MaybeCopyConnectionAttemptsFromHandle();
 
   delegate_->OnStreamFailed(this, result, server_ssl_config_);
   // |this| may be deleted after this call.
@@ -452,7 +452,7 @@ void HttpStreamFactory::Job::OnCertificateErrorCallback(
   DCHECK_NE(job_type_, PRECONNECT);
   DCHECK(!spdy_session_request_);
 
-  MaybeCopyConnectionAttemptsFromSocketOrHandle();
+  MaybeCopyConnectionAttemptsFromHandle();
 
   delegate_->OnCertificateError(this, result, server_ssl_config_, ssl_info);
   // |this| may be deleted after this call.
@@ -1239,21 +1239,12 @@ int HttpStreamFactory::Job::ReconsiderProxyAfterError(int error) {
   return error;
 }
 
-// If the connection succeeds, failed connection attempts leading up to the
-// success will be returned via the successfully connected socket. If the
-// connection fails, failed connection attempts will be returned via the
-// ClientSocketHandle. Check whether a socket was returned and copy the
-// connection attempts from the proper place.
-void HttpStreamFactory::Job::MaybeCopyConnectionAttemptsFromSocketOrHandle() {
+void HttpStreamFactory::Job::MaybeCopyConnectionAttemptsFromHandle() {
   if (!connection_)
     return;
 
-  ConnectionAttempts socket_attempts = connection_->connection_attempts();
-  if (connection_->socket()) {
-    connection_->socket()->GetConnectionAttempts(&socket_attempts);
-  }
-
-  delegate_->AddConnectionAttemptsToRequest(this, socket_attempts);
+  delegate_->AddConnectionAttemptsToRequest(this,
+                                            connection_->connection_attempts());
 }
 
 HttpStreamFactory::JobFactory::JobFactory() = default;

@@ -742,6 +742,7 @@ class MockClientSocket : public TransportClientSocket {
   int Bind(const net::IPEndPoint& local_addr) override;
   bool SetNoDelay(bool no_delay) override;
   bool SetKeepAlive(bool enable, int delay) override;
+  ConnectionAttempts GetConnectionAttempts() const override;
 
   // StreamSocket implementation.
   int Connect(CompletionOnceCallback callback) override = 0;
@@ -753,9 +754,6 @@ class MockClientSocket : public TransportClientSocket {
   const NetLogWithSource& NetLog() const override;
   bool WasAlpnNegotiated() const override;
   NextProto GetNegotiatedProtocol() const override;
-  void GetConnectionAttempts(ConnectionAttempts* out) const override;
-  void ClearConnectionAttempts() override {}
-  void AddConnectionAttempts(const ConnectionAttempts& attempts) override {}
   int64_t GetTotalReceivedBytes() const override;
   void ApplySocketTag(const SocketTag& tag) override {}
 
@@ -818,9 +816,7 @@ class MockTCPClientSocket : public MockClientSocket, public AsyncSocket {
   int GetPeerAddress(IPEndPoint* address) const override;
   bool WasEverUsed() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
-  void GetConnectionAttempts(ConnectionAttempts* out) const override;
-  void ClearConnectionAttempts() override;
-  void AddConnectionAttempts(const ConnectionAttempts& attempts) override;
+  ConnectionAttempts GetConnectionAttempts() const override;
 
   // AsyncSocket:
   void OnReadComplete(const MockRead& data) override;
@@ -916,9 +912,6 @@ class MockSSLClientSocket : public AsyncSocket, public SSLClientSocket {
       SSLCertRequestInfo* cert_request_info) const override;
   void ApplySocketTag(const SocketTag& tag) override;
   const NetLogWithSource& NetLog() const override;
-  void GetConnectionAttempts(ConnectionAttempts* out) const override;
-  void ClearConnectionAttempts() override {}
-  void AddConnectionAttempts(const ConnectionAttempts& attempts) override {}
   int64_t GetTotalReceivedBytes() const override;
   int SetReceiveBufferSize(int32_t size) override;
   int SetSendBufferSize(int32_t size) override;
@@ -1277,6 +1270,9 @@ class WrappedStreamSocket : public TransportClientSocket {
   explicit WrappedStreamSocket(std::unique_ptr<StreamSocket> transport);
   ~WrappedStreamSocket() override;
 
+  // TransportClientSocket implementation:
+  ConnectionAttempts GetConnectionAttempts() const override;
+
   // StreamSocket implementation:
   int Bind(const net::IPEndPoint& local_addr) override;
   int Connect(CompletionOnceCallback callback) override;
@@ -1290,9 +1286,6 @@ class WrappedStreamSocket : public TransportClientSocket {
   bool WasAlpnNegotiated() const override;
   NextProto GetNegotiatedProtocol() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
-  void GetConnectionAttempts(ConnectionAttempts* out) const override;
-  void ClearConnectionAttempts() override;
-  void AddConnectionAttempts(const ConnectionAttempts& attempts) override;
   int64_t GetTotalReceivedBytes() const override;
   void ApplySocketTag(const SocketTag& tag) override;
 

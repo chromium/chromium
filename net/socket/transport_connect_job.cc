@@ -184,8 +184,7 @@ TransportConnectJob::TransportConnectJob(
                  NetLogSourceType::TRANSPORT_CONNECT_JOB,
                  NetLogEventType::TRANSPORT_CONNECT_JOB_CONNECT),
       params_(params),
-      next_state_(STATE_NONE),
-      resolve_result_(OK) {
+      next_state_(STATE_NONE) {
   // This is only set for WebSockets.
   DCHECK(!common_connect_job_params->websocket_endpoint_lock_manager);
 
@@ -227,14 +226,7 @@ bool TransportConnectJob::HasEstablishedConnection() const {
 }
 
 ConnectionAttempts TransportConnectJob::GetConnectionAttempts() const {
-  // If hostname resolution failed, record an empty endpoint and the result.
-  // Also record any attempts made on any failed sockets.
-  ConnectionAttempts attempts = connection_attempts_;
-  if (resolve_result_ != OK) {
-    DCHECK(endpoint_results_.empty());
-    attempts.push_back(ConnectionAttempt(IPEndPoint(), resolve_result_));
-  }
-  return attempts;
+  return connection_attempts_;
 }
 
 ResolveErrorInfo TransportConnectJob::GetResolveErrorInfo() const {
@@ -359,11 +351,14 @@ int TransportConnectJob::DoResolveHostComplete(int result) {
   // Overwrite connection start time, since for connections that do not go
   // through proxies, |connect_start| should not include dns lookup time.
   connect_timing_.connect_start = connect_timing_.dns_end;
-  resolve_result_ = result;
   resolve_error_info_ = request_->GetResolveErrorInfo();
 
-  if (result != OK)
+  if (result != OK) {
+    // If hostname resolution failed, record an empty endpoint and the result.
+    connection_attempts_.push_back(ConnectionAttempt(IPEndPoint(), result));
     return result;
+  }
+
   DCHECK(request_->GetAddressResults());
   DCHECK(request_->GetDnsAliasResults());
   DCHECK(request_->GetEndpointResults());
@@ -451,15 +446,15 @@ int TransportConnectJob::DoTransportConnect() {
 int TransportConnectJob::DoTransportConnectComplete(bool is_fallback,
                                                     int result) {
   // Either the main socket or the fallback one completed.
-  std::unique_ptr<StreamSocket>& completed_socket =
+  std::unique_ptr<TransportClientSocket>& completed_socket =
       is_fallback ? fallback_transport_socket_ : transport_socket_;
-  std::unique_ptr<StreamSocket>& other_socket =
+  std::unique_ptr<TransportClientSocket>& other_socket =
       is_fallback ? transport_socket_ : fallback_transport_socket_;
   DCHECK(completed_socket);
+  // Save the connection attempts from each socket. On failure, these will be
+  // returned via |GetAdditionalErrorState|.
+  SaveConnectionAttempts(*completed_socket);
   if (other_socket) {
-    // Save the connection attempts from the other socket. (Unfortunately, the
-    // only simple way to return information in the success case is through the
-    // successfully-connected socket.)
     SaveConnectionAttempts(*other_socket);
   }
   if (is_fallback) {
@@ -472,14 +467,8 @@ int TransportConnectJob::DoTransportConnectComplete(bool is_fallback,
 
   if (result == OK) {
     HistogramDuration(connect_timing_);
-
-    // Add connection attempts from previous routes.
-    completed_socket->AddConnectionAttempts(connection_attempts_);
     SetSocket(std::move(completed_socket), dns_aliases_);
   } else {
-    // Failure will be returned via |GetAdditionalErrorState|, so save
-    // connection attempts from the socket for use there.
-    SaveConnectionAttempts(*completed_socket);
     completed_socket.reset();
 
     // If there is another endpoint available, try it.
@@ -614,9 +603,9 @@ AddressList TransportConnectJob::GetCurrentAddressList() const {
   return AddressList(endpoint_result.ip_endpoints);
 }
 
-void TransportConnectJob::SaveConnectionAttempts(const StreamSocket& socket) {
-  ConnectionAttempts attempts;
-  socket.GetConnectionAttempts(&attempts);
+void TransportConnectJob::SaveConnectionAttempts(
+    const TransportClientSocket& socket) {
+  ConnectionAttempts attempts = socket.GetConnectionAttempts();
   connection_attempts_.insert(connection_attempts_.end(), attempts.begin(),
                               attempts.end());
 }

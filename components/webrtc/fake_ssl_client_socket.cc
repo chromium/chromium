@@ -361,11 +361,6 @@ bool FakeSSLClientSocket::GetSSLInfo(net::SSLInfo* ssl_info) {
   return transport_socket_->GetSSLInfo(ssl_info);
 }
 
-void FakeSSLClientSocket::GetConnectionAttempts(
-    net::ConnectionAttempts* out) const {
-  out->clear();
-}
-
 int64_t FakeSSLClientSocket::GetTotalReceivedBytes() const {
   NOTIMPLEMENTED();
   return 0;
