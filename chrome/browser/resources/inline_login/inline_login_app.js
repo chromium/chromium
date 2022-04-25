@@ -19,6 +19,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 import './arc_account_picker/arc_account_picker_app.js';
 import './gaia_action_buttons.js';
 import './signin_blocked_by_policy_page.js';
+import './signin_error_page.js';
 import './welcome_page_app.js';
 import './strings.m.js';
 import {getAccountAdditionOptionsFromJSON} from './inline_login_util.js';
@@ -36,6 +37,7 @@ import {InlineLoginBrowserProxy, InlineLoginBrowserProxyImpl} from './inline_log
 const View = {
   addAccount: 'addAccount',
   signinBlockedByPolicy: 'signinBlockedByPolicy',
+  signinError: 'signinError',
   welcome: 'welcome',
   arcAccountPicker: 'arcAccountPicker',
 };
@@ -350,11 +352,15 @@ Polymer({
    * @return {string}
    * @private
    */
-  getNextButtonLabel_() {
-    return this.currentView_ === View.signinBlockedByPolicy ||
-            !this.isArcAccountRestrictionsEnabled_ ?
-        this.i18n('ok') :
-        this.i18n('nextButtonLabel');
+  getNextButtonLabel_(currentView, isArcAccountRestrictionsEnabled) {
+    if (currentView === View.signinBlockedByPolicy ||
+        currentView === View.signinError) {
+      return this.i18n('ok');
+    }
+    if (!isArcAccountRestrictionsEnabled) {
+      return this.i18n('ok');
+    }
+    return this.i18n('nextButtonLabel');
   },
 
   /**
@@ -371,7 +377,8 @@ Polymer({
    */
   shouldShowOkButton_() {
     return this.currentView_ === View.welcome ||
-        this.currentView_ === View.signinBlockedByPolicy;
+        this.currentView_ === View.signinBlockedByPolicy ||
+        this.currentView_ === View.signinError;
   },
 
   /**
@@ -488,6 +495,7 @@ Polymer({
         this.setFocusToWebview_();
         break;
       case View.signinBlockedByPolicy:
+      case View.signinError:
         this.closeDialog_();
         break;
     }

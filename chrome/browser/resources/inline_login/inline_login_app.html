@@ -31,7 +31,7 @@
     margin-bottom: calc(3 * 32px);
   }
   /* Make distance to the top 64px. */
-  #welcome, #arcAccountPicker, #signinBlockedByPolicy {
+  #welcome, #arcAccountPicker, #signinBlockedByPolicy, #signinError {
     margin-top: calc(64px - var(--dialog-top-border-size));
   }
 </if>
@@ -82,6 +82,10 @@
         <signin-blocked-by-policy-page email="[[email_]]" hosted-domain="[[hostedDomain_]]">
         </signin-blocked-by-policy-page>
       </div>
+      <div id="[[View.signinError]]" slot="view">
+        <signin-error-page>
+        </signin-error-page>
+      </div>
     </if>
 
     <div id="[[View.addAccount]]" slot="view">
@@ -114,10 +118,10 @@
     </div>
 
     <cr-button class="next-button action-button"
-        aria-label="[[getNextButtonLabel_(isArcAccountRestrictionsEnabled_)]]"
+        aria-label="[[getNextButtonLabel_(currentView_, isArcAccountRestrictionsEnabled_)]]"
         on-tap="onOkButtonClick_"
         hidden$="[[!shouldShowOkButton_(currentView_)]]">
-      [[getNextButtonLabel_(isArcAccountRestrictionsEnabled_)]]
+      [[getNextButtonLabel_(currentView_, isArcAccountRestrictionsEnabled_)]]
     </cr-button>
   </div>
 </if>

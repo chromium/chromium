@@ -5671,6 +5671,12 @@ Permissions you've already given to apps may apply to this account. You can cont
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_IMAGE_ALT" desc="Alternate text for image on the sign-in blocked by policy screen in ChromeOS 'Add account' dialog.">
    Restriction image
   </message>
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_ERROR_TITLE" desc="Title for the sign-in error screen in ChromeOS 'Add account' dialog.">
+    Something went wrong
+  </message>
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_ERROR_BODY" desc="Text body for the sign-in error screen in ChromeOS 'Add account' dialog.">
+    Sorry, your email or password could not be verified. Please try again.
+  </message>
 
   <!-- Strings for per-account Migration welcome screen -->
   <message name="IDS_ACCOUNT_MIGRATION_WELCOME_PAGE_TITLE" desc="Title for the Account Migration Welcome page.">
