@@ -605,7 +605,7 @@ TEST_F(CRWWebControllerResponseTest,
   DownloadTask* task =
       download_delegate_->alive_download_tasks()[0].second.get();
   ASSERT_TRUE(task);
-  EXPECT_TRUE(task->GetIndentifier());
+  EXPECT_TRUE(task->GetIdentifier());
   EXPECT_EQ(kTestDataURL, task->GetOriginalUrl());
   EXPECT_EQ(-1, task->GetTotalBytes());
   EXPECT_TRUE(task->GetContentDisposition().empty());
@@ -663,7 +663,7 @@ TEST_F(CRWWebControllerResponseTest, DownloadForPostRequest) {
   DownloadTask* task =
       download_delegate_->alive_download_tasks()[0].second.get();
   ASSERT_TRUE(task);
-  EXPECT_TRUE(task->GetIndentifier());
+  EXPECT_TRUE(task->GetIdentifier());
   EXPECT_NSEQ(@"POST", task->GetHttpMethod());
 }
 
@@ -687,7 +687,7 @@ TEST_F(CRWWebControllerResponseTest, DownloadWithNSURLResponse) {
   DownloadTask* task =
       download_delegate_->alive_download_tasks()[0].second.get();
   ASSERT_TRUE(task);
-  EXPECT_TRUE(task->GetIndentifier());
+  EXPECT_TRUE(task->GetIdentifier());
   EXPECT_EQ(kTestURLString, task->GetOriginalUrl());
   EXPECT_EQ(content_length, task->GetTotalBytes());
   EXPECT_EQ("", task->GetContentDisposition());
@@ -716,7 +716,7 @@ TEST_F(CRWWebControllerResponseTest, DownloadWithNSHTTPURLResponse) {
   DownloadTask* task =
       download_delegate_->alive_download_tasks()[0].second.get();
   ASSERT_TRUE(task);
-  EXPECT_TRUE(task->GetIndentifier());
+  EXPECT_TRUE(task->GetIdentifier());
   EXPECT_EQ(kTestURLString, task->GetOriginalUrl());
   EXPECT_EQ(-1, task->GetTotalBytes());
   EXPECT_EQ(kContentDisposition, task->GetContentDisposition());
@@ -767,7 +767,7 @@ TEST_F(CRWWebControllerResponseTest, IFrameDownloadWithNSHTTPURLResponse) {
   DownloadTask* task =
       download_delegate_->alive_download_tasks()[0].second.get();
   ASSERT_TRUE(task);
-  EXPECT_TRUE(task->GetIndentifier());
+  EXPECT_TRUE(task->GetIdentifier());
   EXPECT_EQ(kTestURLString, task->GetOriginalUrl());
   EXPECT_EQ(-1, task->GetTotalBytes());
   EXPECT_EQ(kContentDisposition, task->GetContentDisposition());

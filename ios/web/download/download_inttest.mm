@@ -93,7 +93,7 @@ TEST_F(DownloadTest, SuccessfulDownload) {
   // Verify the initial state of the download task.
   DownloadTask* task = delegate_->alive_download_tasks()[0].second.get();
   ASSERT_TRUE(task);
-  EXPECT_TRUE(task->GetIndentifier());
+  EXPECT_TRUE(task->GetIdentifier());
   EXPECT_EQ(url, task->GetOriginalUrl());
   EXPECT_FALSE(task->IsDone());
   EXPECT_EQ(0, task->GetErrorCode());

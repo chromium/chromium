@@ -77,7 +77,7 @@ class DownloadNativeTaskImplTest : public PlatformTest {
 TEST_F(DownloadNativeTaskImplTest, DefaultState) {
   EXPECT_EQ(&web_state_, task_->GetWebState());
   EXPECT_EQ(DownloadTask::State::kNotStarted, task_->GetState());
-  EXPECT_NSEQ(@(kIdentifier), task_->GetIndentifier());
+  EXPECT_NSEQ(@(kIdentifier), task_->GetIdentifier());
   EXPECT_EQ(kUrl, task_->GetOriginalUrl());
   EXPECT_FALSE(task_->IsDone());
   EXPECT_EQ(0, task_->GetErrorCode());

@@ -32,7 +32,7 @@ class FakeDownloadTask final : public DownloadTask {
   void Cancel() final;
   NSData* GetResponseData() const final;
   const base::FilePath& GetResponsePath() const final;
-  NSString* GetIndentifier() const final;
+  NSString* GetIdentifier() const final;
   const GURL& GetOriginalUrl() const final;
   NSString* GetHttpMethod() const final;
   bool IsDone() const final;

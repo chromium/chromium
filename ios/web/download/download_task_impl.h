@@ -42,7 +42,7 @@ class DownloadTaskImpl : public DownloadTask {
   DownloadTask::State GetState() const override;
   void Start(const base::FilePath& path, Destination destination_hint) override;
   void Cancel() override;
-  NSString* GetIndentifier() const override;
+  NSString* GetIdentifier() const override;
   const GURL& GetOriginalUrl() const override;
   NSString* GetHttpMethod() const override;
   bool IsDone() const override;

@@ -83,7 +83,7 @@ void DownloadTaskImpl::Cancel() {
   OnDownloadUpdated();
 }
 
-NSString* DownloadTaskImpl::GetIndentifier() const {
+NSString* DownloadTaskImpl::GetIdentifier() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return identifier_;
 }

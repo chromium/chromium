@@ -83,7 +83,7 @@ class DownloadTask {
   // Unique indentifier for this task. Also can be used to resume unfinished
   // downloads after the application relaunch (see example in DownloadController
   // class comments).
-  virtual NSString* GetIndentifier() const = 0;
+  virtual NSString* GetIdentifier() const = 0;
 
   // The URL that the download request originally attempted to fetch. This may
   // differ from the final download URL if there were redirects.

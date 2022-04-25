@@ -62,7 +62,7 @@ const base::FilePath& FakeDownloadTask::GetResponsePath() const {
   return response_path_;
 }
 
-NSString* FakeDownloadTask::GetIndentifier() const {
+NSString* FakeDownloadTask::GetIdentifier() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return identifier_;
 }

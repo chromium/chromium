@@ -76,7 +76,7 @@ TEST_F(DownloadControllerImplTest, OnDownloadCreated) {
   ASSERT_EQ(1U, delegate_->alive_download_tasks().size());
   DownloadTask* task = delegate_->alive_download_tasks()[0].second.get();
   EXPECT_EQ(&web_state_, delegate_->alive_download_tasks()[0].first);
-  EXPECT_NSEQ(identifier, task->GetIndentifier());
+  EXPECT_NSEQ(identifier, task->GetIdentifier());
   EXPECT_EQ(url, task->GetOriginalUrl());
   EXPECT_NSEQ(@"POST", task->GetHttpMethod());
   EXPECT_FALSE(task->IsDone());
@@ -108,7 +108,7 @@ TEST_F(DownloadControllerImplTest, OnNativeDownloadCreated) {
     ASSERT_EQ(1U, delegate_->alive_download_tasks().size());
     DownloadTask* task = delegate_->alive_download_tasks()[0].second.get();
     EXPECT_EQ(&web_state_, delegate_->alive_download_tasks()[0].first);
-    EXPECT_NSEQ(identifier, task->GetIndentifier());
+    EXPECT_NSEQ(identifier, task->GetIdentifier());
     EXPECT_EQ(url, task->GetOriginalUrl());
     EXPECT_NSEQ(@"POST", task->GetHttpMethod());
     EXPECT_FALSE(task->IsDone());
