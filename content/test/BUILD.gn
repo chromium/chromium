@@ -865,6 +865,8 @@ static_library("browsertest_support") {
   sources = [
     "../browser/browsing_data/browsing_data_browsertest_utils.cc",
     "../browser/browsing_data/browsing_data_browsertest_utils.h",
+    "../browser/browsing_data/shared_storage_clear_site_data_tester.cc",
+    "../browser/browsing_data/shared_storage_clear_site_data_tester.h",
     "../public/test/content_browser_test.cc",
     "../public/test/content_browser_test.h",
     "../public/test/content_browser_test_shell_main_delegate.cc",
@@ -888,6 +890,7 @@ static_library("browsertest_support") {
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//components/network_session_configurator/common:common",
+    "//components/services/storage:storage",
     "//content/app:for_content_tests",
     "//content/browser:for_content_tests",
     "//content/shell:content_shell_app",

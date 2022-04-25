@@ -245,7 +245,7 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
   std::string webui_callback_id = args_list[0].GetString();
 
   PrefService* prefs = profile_->GetPrefs();
-  int site_data_mask = chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
+  uint64_t site_data_mask = chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
   // Don't try to clear LSO data if it's not supported.
   if (!prefs->GetBoolean(prefs::kClearPluginLSODataEnabled))
     site_data_mask &= ~chrome_browsing_data_remover::DATA_TYPE_PLUGIN_DATA;

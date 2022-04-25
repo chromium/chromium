@@ -28,6 +28,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/public/browser/browser_context.h"
@@ -60,6 +61,7 @@
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 
 using base::test::RunOnceClosure;
@@ -1731,6 +1733,123 @@ TEST_F(BrowsingDataRemoverImplTest, FailedDataTypes) {
 
   // Reset delegate.
   remover->SetEmbedderDelegate(nullptr);
+}
+
+class BrowsingDataRemoverImplSharedStorageTest
+    : public BrowsingDataRemoverImplTest {
+ public:
+  BrowsingDataRemoverImplSharedStorageTest() {
+    feature_list_.InitAndEnableFeature(blink::features::kSharedStorageAPI);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(BrowsingDataRemoverImplSharedStorageTest,
+       RemoveUnprotectedSharedStorageForever) {
+  storage::MockSpecialStoragePolicy* policy = CreateMockPolicy();
+  // Protect the test origin.
+  const url::Origin kTestOrigin = url::Origin::Create(GURL("http://host1.com"));
+  policy->AddProtected(kTestOrigin.GetURL());
+
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                BrowsingDataRemover::DATA_TYPE_SHARED_STORAGE,
+                                false);
+
+  EXPECT_EQ(BrowsingDataRemover::DATA_TYPE_SHARED_STORAGE, GetRemovalMask());
+  EXPECT_EQ(BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+            GetOriginTypeMask());
+
+  // Verify that storage partition was instructed to remove the data correctly.
+  StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
+  EXPECT_EQ(removal_data.remove_mask,
+            StoragePartition::REMOVE_DATA_MASK_SHARED_STORAGE);
+  EXPECT_EQ(removal_data.quota_storage_remove_mask,
+            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
+  EXPECT_EQ(removal_data.remove_begin, GetBeginTime());
+
+  // Check origin matcher.
+  EXPECT_FALSE(removal_data.origin_matcher.Run(kTestOrigin, mock_policy()));
+  EXPECT_TRUE(removal_data.origin_matcher.Run(
+      url::Origin::Create(GURL("http://host2.com")), mock_policy()));
+  EXPECT_TRUE(removal_data.origin_matcher.Run(
+      url::Origin::Create(GURL("http://host3.com")), mock_policy()));
+  EXPECT_FALSE(removal_data.origin_matcher.Run(
+      url::Origin::Create(
+          GURL("chrome-extension://abcdefghijklmnopqrstuvwxyz/")),
+      mock_policy()));
+}
+
+TEST_F(BrowsingDataRemoverImplSharedStorageTest,
+       RemoveProtectedSharedStorageForever) {
+  // Protect the test origin.
+  storage::MockSpecialStoragePolicy* policy = CreateMockPolicy();
+  const url::Origin kTestOrigin = url::Origin::Create(GURL("http://host1.com"));
+  policy->AddProtected(kTestOrigin.GetURL());
+
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                BrowsingDataRemover::DATA_TYPE_SHARED_STORAGE,
+                                true);
+
+  EXPECT_EQ(BrowsingDataRemover::DATA_TYPE_SHARED_STORAGE, GetRemovalMask());
+  EXPECT_EQ(BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
+                BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
+            GetOriginTypeMask());
+
+  // Verify that storage partition was instructed to remove the data correctly.
+  StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
+  EXPECT_EQ(removal_data.remove_mask,
+            StoragePartition::REMOVE_DATA_MASK_SHARED_STORAGE);
+  EXPECT_EQ(removal_data.quota_storage_remove_mask,
+            StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL);
+  EXPECT_EQ(removal_data.remove_begin, GetBeginTime());
+
+  // Check origin matcher all http origin will match since we specified
+  // both protected and unprotected.
+  EXPECT_TRUE(removal_data.origin_matcher.Run(kTestOrigin, mock_policy()));
+  EXPECT_TRUE(removal_data.origin_matcher.Run(
+      url::Origin::Create(GURL("http://host2.com")), mock_policy()));
+  EXPECT_TRUE(removal_data.origin_matcher.Run(
+      url::Origin::Create(GURL("http://host3.com")), mock_policy()));
+  EXPECT_FALSE(removal_data.origin_matcher.Run(
+      url::Origin::Create(
+          GURL("chrome-extension://abcdefghijklmnopqrstuvwxyz/")),
+      mock_policy()));
+}
+
+TEST_F(BrowsingDataRemoverImplSharedStorageTest,
+       RemoveSharedStorageForLastWeek) {
+  CreateMockPolicy();
+
+  BlockUntilBrowsingDataRemoved(
+      base::Time::Now() - base::Days(7), base::Time::Max(),
+      BrowsingDataRemover::DATA_TYPE_SHARED_STORAGE, false);
+
+  EXPECT_EQ(BrowsingDataRemover::DATA_TYPE_SHARED_STORAGE, GetRemovalMask());
+  EXPECT_EQ(BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+            GetOriginTypeMask());
+
+  // Verify that storage partition was instructed to remove the data correctly.
+  StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
+  EXPECT_EQ(removal_data.remove_mask,
+            StoragePartition::REMOVE_DATA_MASK_SHARED_STORAGE);
+  // Persistent storage won't be deleted.
+  EXPECT_EQ(removal_data.quota_storage_remove_mask,
+            ~StoragePartition::QUOTA_MANAGED_STORAGE_MASK_PERSISTENT);
+  EXPECT_EQ(removal_data.remove_begin, GetBeginTime());
+
+  // Check origin matcher.
+  EXPECT_TRUE(removal_data.origin_matcher.Run(
+      url::Origin::Create(GURL("http://host1.com")), mock_policy()));
+  EXPECT_TRUE(removal_data.origin_matcher.Run(
+      url::Origin::Create(GURL("http://host2.com")), mock_policy()));
+  EXPECT_TRUE(removal_data.origin_matcher.Run(
+      url::Origin::Create(GURL("http://host3.com")), mock_policy()));
+  EXPECT_FALSE(removal_data.origin_matcher.Run(
+      url::Origin::Create(
+          GURL("chrome-extension://abcdefghijklmnopqrstuvwxyz/")),
+      mock_policy()));
 }
 
 }  // namespace content

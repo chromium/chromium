@@ -94,8 +94,10 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
 
     // Delete origin-scoped data.
     uint64_t remove_mask = 0;
-    if (clear_storage_)
+    if (clear_storage_) {
       remove_mask |= BrowsingDataRemover::DATA_TYPE_DOM_STORAGE;
+      remove_mask |= BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX;
+    }
     if (clear_cache_)
       remove_mask |= BrowsingDataRemover::DATA_TYPE_CACHE;
 

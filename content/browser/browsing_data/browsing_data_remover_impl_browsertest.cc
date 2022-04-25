@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/browsing_data/shared_storage_clear_site_data_tester.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -38,7 +39,9 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace {
@@ -477,6 +480,102 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplTrustTokenTest,
   EXPECT_TRUE(tester.HasOrigin(origin));
   EXPECT_TRUE(tester.HasOrigin(sub_origin));
   EXPECT_FALSE(tester.HasOrigin(another_origin));
+}
+
+class BrowsingDataRemoverImplSharedStorageBrowserTest
+    : public BrowsingDataRemoverImplBrowserTest {
+ public:
+  BrowsingDataRemoverImplSharedStorageBrowserTest() {
+    feature_list_.InitAndEnableFeature(blink::features::kSharedStorageAPI);
+  }
+
+  StoragePartition* storage_partition() {
+    return shell()
+        ->web_contents()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
+                       Remove) {
+  SharedStorageClearSiteDataTester tester(storage_partition());
+
+  auto origin = url::Origin::Create(GURL("https://topframe.example"));
+
+  tester.AddConsecutiveSharedStorageEntries(origin, u"key", u"value", 10);
+  EXPECT_THAT(tester.GetSharedStorageOrigins(),
+              testing::UnorderedElementsAre(origin));
+  EXPECT_EQ(10, tester.GetSharedStorageTotalEntries());
+
+  RemoveAndWait(BrowsingDataRemover::DATA_TYPE_SHARED_STORAGE);
+
+  EXPECT_TRUE(tester.GetSharedStorageOrigins().empty());
+  EXPECT_EQ(0, tester.GetSharedStorageTotalEntries());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
+                       RemoveByDomain) {
+  SharedStorageClearSiteDataTester tester(storage_partition());
+
+  auto origin = url::Origin::Create(GURL("https://topframe.example"));
+  auto sub_origin = url::Origin::Create(GURL("https://sub.topframe.example"));
+  auto another_origin =
+      url::Origin::Create(GURL("https://another-topframe.example"));
+
+  tester.AddConsecutiveSharedStorageEntries(origin, u"key", u"value", 5);
+  tester.AddConsecutiveSharedStorageEntries(sub_origin, u"key", u"value", 10);
+  tester.AddConsecutiveSharedStorageEntries(another_origin, u"key", u"value",
+                                            1);
+  EXPECT_THAT(
+      tester.GetSharedStorageOrigins(),
+      testing::UnorderedElementsAre(origin, sub_origin, another_origin));
+  EXPECT_EQ(16, tester.GetSharedStorageTotalEntries());
+
+  std::unique_ptr<BrowsingDataFilterBuilder> builder(
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kDelete));
+  builder->AddRegisterableDomain("topframe.example");
+  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_SHARED_STORAGE,
+                          std::move(builder));
+
+  EXPECT_THAT(tester.GetSharedStorageOrigins(),
+              testing::UnorderedElementsAre(another_origin));
+  EXPECT_EQ(1, tester.GetSharedStorageTotalEntries());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
+                       PreserveByDomain) {
+  SharedStorageClearSiteDataTester tester(storage_partition());
+
+  auto origin = url::Origin::Create(GURL("https://topframe.example"));
+  auto sub_origin = url::Origin::Create(GURL("https://sub.topframe.example"));
+  auto another_origin =
+      url::Origin::Create(GURL("https://another-topframe.example"));
+
+  tester.AddConsecutiveSharedStorageEntries(origin, u"key", u"value", 5);
+  tester.AddConsecutiveSharedStorageEntries(sub_origin, u"key", u"value", 10);
+  tester.AddConsecutiveSharedStorageEntries(another_origin, u"key", u"value",
+                                            1);
+  EXPECT_THAT(
+      tester.GetSharedStorageOrigins(),
+      testing::UnorderedElementsAre(origin, sub_origin, another_origin));
+  EXPECT_EQ(16, tester.GetSharedStorageTotalEntries());
+
+  // Delete all data *except* that specified by the filter.
+  std::unique_ptr<BrowsingDataFilterBuilder> builder(
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kPreserve));
+  builder->AddRegisterableDomain("topframe.example");
+  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_SHARED_STORAGE,
+                          std::move(builder));
+
+  EXPECT_THAT(tester.GetSharedStorageOrigins(),
+              testing::UnorderedElementsAre(origin, sub_origin));
+  EXPECT_EQ(15, tester.GetSharedStorageTotalEntries());
 }
 
 }  // namespace content

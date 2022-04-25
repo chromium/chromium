@@ -121,8 +121,18 @@ class BrowsingDataRemover {
     // https://github.com/WICG/turtledove/blob/main/FLEDGE.md
     DATA_TYPE_INTEREST_GROUPS = 1 << 19,
 
+    // Shared storage API
+    // (https://github.com/pythagoraskitty/shared-storage) persistent storage.
+    DATA_TYPE_SHARED_STORAGE = 1 << 20,
+
+    // Data stored by APIs in The Privacy Sandbox (https://privacysandbox.com/).
+    DATA_TYPE_PRIVACY_SANDBOX = DATA_TYPE_TRUST_TOKENS | DATA_TYPE_CONVERSIONS |
+                                DATA_TYPE_AGGREGATION_SERVICE |
+                                DATA_TYPE_INTEREST_GROUPS |
+                                DATA_TYPE_SHARED_STORAGE,
+
     // Embedders can add more datatypes beyond this point.
-    DATA_TYPE_CONTENT_END = DATA_TYPE_INTEREST_GROUPS,
+    DATA_TYPE_CONTENT_END = DATA_TYPE_SHARED_STORAGE,
   };
 
   enum OriginType : uint64_t {

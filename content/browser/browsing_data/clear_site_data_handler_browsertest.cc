@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "content/browser/browsing_data/browsing_data_browsertest_utils.h"
 #include "content/browser/browsing_data/browsing_data_filter_builder_impl.h"
+#include "content/browser/browsing_data/shared_storage_clear_site_data_tester.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -100,7 +101,9 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
     }
     if (storage || cache) {
       uint64_t data_type_mask =
-          (storage ? BrowsingDataRemover::DATA_TYPE_DOM_STORAGE : 0) |
+          (storage ? BrowsingDataRemover::DATA_TYPE_DOM_STORAGE |
+                         BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX
+                   : 0) |
           (cache ? BrowsingDataRemover::DATA_TYPE_CACHE : 0);
 
       BrowsingDataFilterBuilderImpl filter_builder(
@@ -877,6 +880,52 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
 
   // Notify crbug.com/912313 if the test fails here again.
   EXPECT_FALSE(RunScriptAndGetBool("hasServiceWorker()"));
+}
+
+class ClearSiteDataHandlerSharedStorageBrowserTest
+    : public ClearSiteDataHandlerBrowserTest {
+ public:
+  ClearSiteDataHandlerSharedStorageBrowserTest() {
+    feature_list_.InitAndEnableFeature(blink::features::kSharedStorageAPI);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Integration test for the deletion of shared storage.
+IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerSharedStorageBrowserTest,
+                       SharedStorageIntegrationTest) {
+  SharedStorageClearSiteDataTester tester(storage_partition());
+
+  GURL url1 = https_server()->GetURL("origin1.com", "/");
+  const url::Origin kOrigin1 = url::Origin::Create(url1);
+  tester.AddConsecutiveSharedStorageEntries(kOrigin1, u"key", u"value", 10);
+
+  GURL url2 = https_server()->GetURL("origin2.com", "/");
+  const url::Origin kOrigin2 = url::Origin::Create(url2);
+  tester.AddConsecutiveSharedStorageEntries(kOrigin2, u"key", u"value", 5);
+
+  // There are 15 entries for two origins.
+  EXPECT_THAT(tester.GetSharedStorageOrigins(),
+              testing::UnorderedElementsAre(kOrigin1, kOrigin2));
+  EXPECT_EQ(10, tester.GetSharedStorageNumEntriesForOrigin(kOrigin1));
+  EXPECT_EQ(5, tester.GetSharedStorageNumEntriesForOrigin(kOrigin2));
+  EXPECT_EQ(15, tester.GetSharedStorageTotalEntries());
+
+  // Let Clear-Site-Data delete the shared storage of "origin1.com".
+  delegate()->ExpectClearSiteDataCall(kOrigin1, /*cookies=*/false,
+                                      /*storage=*/true, /*cache=*/false);
+  AddQuery(&url1, "header", "\"storage\"");
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  delegate()->VerifyAndClearExpectations();
+
+  // There are now only 5 entries for one origin.
+  EXPECT_THAT(tester.GetSharedStorageOrigins(),
+              testing::UnorderedElementsAre(kOrigin2));
+  EXPECT_EQ(0, tester.GetSharedStorageNumEntriesForOrigin(kOrigin1));
+  EXPECT_EQ(5, tester.GetSharedStorageNumEntriesForOrigin(kOrigin2));
+  EXPECT_EQ(5, tester.GetSharedStorageTotalEntries());
 }
 
 }  // namespace content
