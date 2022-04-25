@@ -25,7 +25,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -42,6 +41,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
+import org.chromium.chrome.browser.ui.signin.SignOutDialogFragment.SignOutDialogListener;
 import org.chromium.components.browser_ui.test.BrowserUiDummyFragmentActivity;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.GAIAServiceType;
@@ -54,10 +54,19 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 public class SignOutDialogFragmentTest {
     private static final String TEST_DOMAIN = "test.domain.example.com";
 
-    private class DummySignOutTargetFragment
-            extends Fragment implements SignOutDialogFragment.SignOutDialogListener {
+    /** Dummy {@link Fragment} used only for this test class. */
+    public static class DummySignOutTargetFragment
+            extends Fragment implements SignOutDialogListener {
+        private SignOutDialogListener mListener;
+
         @Override
-        public void onSignOutClicked(boolean forceWipeUserData) {}
+        public void onSignOutClicked(boolean forceWipeUserData) {
+            mListener.onSignOutClicked(forceWipeUserData);
+        }
+
+        void setListener(SignOutDialogListener listener) {
+            mListener = listener;
+        }
     }
 
     @Rule
@@ -81,7 +90,9 @@ public class SignOutDialogFragmentTest {
     @Mock
     private PrefService mPrefService;
 
-    @Spy
+    @Mock
+    private SignOutDialogListener mSignOutDialogListenerMock;
+
     private final DummySignOutTargetFragment mTargetFragment = new DummySignOutTargetFragment();
 
     private SignOutDialogFragment mSignOutDialog;
@@ -103,6 +114,7 @@ public class SignOutDialogFragmentTest {
                                    .setup()
                                    .get()
                                    .getSupportFragmentManager();
+        mTargetFragment.setListener(mSignOutDialogListenerMock);
         mFragmentManager.beginTransaction().add(mTargetFragment, null).commit();
         mSignOutDialog =
                 SignOutDialogFragment.create(SignOutDialogFragment.ActionType.CLEAR_PRIMARY_ACCOUNT,
@@ -135,7 +147,7 @@ public class SignOutDialogFragmentTest {
         verify(mSigninMetricsUtilsNativeMock)
                 .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-        verify(mTargetFragment).onSignOutClicked(false);
+        verify(mSignOutDialogListenerMock).onSignOutClicked(false);
     }
 
     @Test
@@ -155,7 +167,7 @@ public class SignOutDialogFragmentTest {
         verify(mSigninMetricsUtilsNativeMock)
                 .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-        verify(mTargetFragment).onSignOutClicked(false);
+        verify(mSignOutDialogListenerMock).onSignOutClicked(false);
     }
 
     @Test
@@ -168,7 +180,7 @@ public class SignOutDialogFragmentTest {
         verify(mSigninMetricsUtilsNativeMock)
                 .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-        verify(mTargetFragment).onSignOutClicked(false);
+        verify(mSignOutDialogListenerMock).onSignOutClicked(false);
     }
 
     @Test
@@ -181,7 +193,7 @@ public class SignOutDialogFragmentTest {
         verify(mSigninMetricsUtilsNativeMock)
                 .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-        verify(mTargetFragment).onSignOutClicked(true);
+        verify(mSignOutDialogListenerMock).onSignOutClicked(true);
     }
 
     @Test
@@ -189,7 +201,7 @@ public class SignOutDialogFragmentTest {
         when(mSigninManagerMock.getManagementDomain()).thenReturn(TEST_DOMAIN);
         AlertDialog alertDialog = showSignOutAlertDialog();
         alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).performClick();
-        verify(mTargetFragment, never()).onSignOutClicked(anyBoolean());
+        verify(mSignOutDialogListenerMock, never()).onSignOutClicked(anyBoolean());
         verify(mSigninMetricsUtilsNativeMock)
                 .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_CANCEL,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
@@ -201,7 +213,7 @@ public class SignOutDialogFragmentTest {
 
         AlertDialog alertDialog = showSignOutAlertDialog();
         alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).performClick();
-        verify(mTargetFragment, never()).onSignOutClicked(anyBoolean());
+        verify(mSignOutDialogListenerMock, never()).onSignOutClicked(anyBoolean());
         verify(mSigninMetricsUtilsNativeMock)
                 .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_CANCEL,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
@@ -213,7 +225,7 @@ public class SignOutDialogFragmentTest {
 
         AlertDialog alertDialog = showSignOutAlertDialog();
         alertDialog.dismiss();
-        verify(mTargetFragment, never()).onSignOutClicked(anyBoolean());
+        verify(mSignOutDialogListenerMock, never()).onSignOutClicked(anyBoolean());
         verify(mSigninMetricsUtilsNativeMock)
                 .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_CANCEL,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
