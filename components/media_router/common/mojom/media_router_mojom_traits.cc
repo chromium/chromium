@@ -52,14 +52,12 @@ UnionTraits<media_router::mojom::MediaSinkExtraDataDataView,
             media_router::MediaSinkInternal>::
     GetTag(const media_router::MediaSinkInternal& sink) {
   if (sink.is_dial_sink()) {
-    return media_router::mojom::MediaSinkExtraDataDataView::Tag::
-        DIAL_MEDIA_SINK;
+    return media_router::mojom::MediaSinkExtraDataDataView::Tag::kDialMediaSink;
   } else if (sink.is_cast_sink()) {
-    return media_router::mojom::MediaSinkExtraDataDataView::Tag::
-        CAST_MEDIA_SINK;
+    return media_router::mojom::MediaSinkExtraDataDataView::Tag::kCastMediaSink;
   }
   NOTREACHED();
-  return media_router::mojom::MediaSinkExtraDataDataView::Tag::CAST_MEDIA_SINK;
+  return media_router::mojom::MediaSinkExtraDataDataView::Tag::kCastMediaSink;
 }
 
 // static
@@ -119,16 +117,14 @@ bool UnionTraits<media_router::mojom::MediaSinkExtraDataDataView,
     Read(media_router::mojom::MediaSinkExtraDataDataView data,
          media_router::MediaSinkInternal* out) {
   switch (data.tag()) {
-    case media_router::mojom::MediaSinkExtraDataDataView::Tag::
-        DIAL_MEDIA_SINK: {
+    case media_router::mojom::MediaSinkExtraDataDataView::Tag::kDialMediaSink: {
       media_router::DialSinkExtraData extra_data;
       if (!data.ReadDialMediaSink(&extra_data))
         return false;
       out->set_dial_data(extra_data);
       return true;
     }
-    case media_router::mojom::MediaSinkExtraDataDataView::Tag::
-        CAST_MEDIA_SINK: {
+    case media_router::mojom::MediaSinkExtraDataDataView::Tag::kCastMediaSink: {
       media_router::CastSinkExtraData extra_data;
       if (!data.ReadCastMediaSink(&extra_data))
         return false;
