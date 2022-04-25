@@ -7178,6 +7178,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(printing::features::kEnableOopPrintDrivers)},
 #endif
 
+    {"enable-browsing-data-lifetime-manager",
+     flag_descriptions::kEnableBrowsingDataLifetimeManagerName,
+     flag_descriptions::kEnableBrowsingDataLifetimeManagerDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         browsing_data::features::kEnableBrowsingDataLifetimeManager)},
+
     {"privacy-sandbox-v3-desktop", flag_descriptions::kPrivacySandboxV3Name,
      flag_descriptions::kPrivacySandboxV3Description, kOsDesktop,
      // Use a command-line parameter instead of a FEATURE_VALUE_TYPE to enable

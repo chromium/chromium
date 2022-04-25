@@ -1611,6 +1611,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "enable-browsing-data-lifetime-manager",
+    "owners": ["ydago"],
+    "expiry_milestone": 106
+  },
+  {
     "name": "enable-cascade-layers",
     "owners": [ "xiaochengh" ],
     "expiry_milestone": 99
