@@ -137,6 +137,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.LeastUsedAccountDays" units="days" expires_after="M77">
+  <obsolete>
+    Removed in M103.
+  </obsolete>
   <owner>achuith@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
   <summary>
@@ -337,6 +340,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Login.UsersActive28Days" units="users"
     expires_after="2022-04-10">
+  <obsolete>
+    Removed in M103.
+  </obsolete>
   <owner>alemate@chromium.org</owner>
   <owner>achuith@chromium.org</owner>
   <summary>
@@ -347,6 +353,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Login.UsersActiveDaily" units="users"
     expires_after="2022-04-03">
+  <obsolete>
+    Removed in M103.
+  </obsolete>
   <owner>alemate@chromium.org</owner>
   <owner>achuith@chromium.org</owner>
   <summary>
@@ -357,6 +366,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Login.UsersActiveWeekly" units="users"
     expires_after="2022-04-24">
+  <obsolete>
+    Removed in M103.
+  </obsolete>
   <owner>alemate@chromium.org</owner>
   <owner>achuith@chromium.org</owner>
   <summary>
@@ -367,6 +379,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Login.UsersActiveWeekly.Percent" units="%"
     expires_after="2020-12-01">
+  <obsolete>
+    Removed in M103.
+  </obsolete>
   <owner>alemate@chromium.org</owner>
   <owner>achuith@chromium.org</owner>
   <summary>
