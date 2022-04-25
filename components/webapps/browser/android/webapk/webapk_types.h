@@ -81,6 +81,20 @@ enum class WebApkInstallResult {
   INSTALL_ALREADY_IN_PROGRESS = 11,
 };
 
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.webapps
+//
+// Lists the fields containing information about the app, which are shown on
+// the default offline experience page.
+enum class WebApkDetailsForDefaultOfflinePage {
+  SHORT_NAME = 0,
+  ICON,
+  BACKGROUND_COLOR,
+  BACKGROUND_COLOR_DARK_MODE,
+  THEME_COLOR,
+  THEME_COLOR_DARK_MODE,
+};
+
 }  // namespace webapps
 
 #endif  // COMPONENTS_WEBAPPS_BROWSER_ANDROID_WEBAPK_WEBAPK_TYPES_H_

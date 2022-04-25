@@ -140,7 +140,7 @@ content::BrowserContext* GetBrowserContextForWebAppMetrics(
   return is_web_app_metrics_enabled ? original_profile : nullptr;
 }
 
-content::mojom::AlternativeErrorPageOverrideInfoPtr GetAppManifestInfo(
+content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
     const GURL& url,
     content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);

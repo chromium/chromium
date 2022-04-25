@@ -146,8 +146,6 @@ source_set("web_applications") {
     "web_app_launch_params.h",
     "web_app_launch_queue.cc",
     "web_app_launch_queue.h",
-    "web_app_offline.cc",
-    "web_app_offline.h",
     "web_app_origin_association_manager.cc",
     "web_app_origin_association_manager.h",
     "web_app_origin_association_task.cc",

@@ -60,12 +60,6 @@ content::BrowserContext* GetBrowserContextForWebApps(
 content::BrowserContext* GetBrowserContextForWebAppMetrics(
     content::BrowserContext* context);
 
-// Gets information from web app's manifest, including theme color, background
-// color and app short name, and returns this inside a struct.
-content::mojom::AlternativeErrorPageOverrideInfoPtr GetAppManifestInfo(
-    const GURL& url,
-    content::BrowserContext* browser_context);
-
 // Returns a root directory for all Web Apps themed data.
 //
 // All the related directory getters always require |web_apps_root_directory| as

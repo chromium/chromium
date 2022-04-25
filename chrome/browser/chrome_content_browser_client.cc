@@ -151,9 +151,9 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_offline.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/webapps/web_app_offline.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -6497,9 +6497,16 @@ ChromeContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
     const GURL& url,
     content::BrowserContext* browser_context,
     int32_t error_code) {
+  if (error_code != net::ERR_INTERNET_DISCONNECTED)
+    return nullptr;
+
 #if BUILDFLAG(IS_ANDROID)
-  return nullptr;
+  if (!base::FeatureList::IsEnabled(features::kAndroidPWAsDefaultOfflinePage)) {
 #else
-  return web_app::GetOfflinePageInfo(url, browser_context, error_code);
+  if (!base::FeatureList::IsEnabled(features::kDesktopPWAsDefaultOfflinePage)) {
 #endif  //  BUILDFLAG(IS_ANDROID)
+    return nullptr;
+  }
+
+  return web_app::GetOfflinePageInfo(url, browser_context);
 }
