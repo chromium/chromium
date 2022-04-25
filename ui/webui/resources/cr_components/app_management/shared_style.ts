@@ -6,9 +6,6 @@ import './shared_vars.js';
 import '//resources/cr_elements/shared_style_css.m.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
 
-const template = document.createElement('template');
-template.innerHTML = `
-<dom-module id="app-management-shared-css" assetpath="chrome://resources/">
-{__html_template__}</dom-module>
-`;
-document.body.appendChild(template.content.cloneNode(true));
+const styleMod = document.createElement('dom-module');
+styleMod.innerHTML = `{__html_template__}`;
+styleMod.register('app-management-shared-css');

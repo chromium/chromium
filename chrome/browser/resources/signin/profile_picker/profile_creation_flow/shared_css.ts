@@ -8,8 +8,6 @@ import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import '../profile_picker_shared_css.js';
 
-const template = document.createElement('template');
-template.innerHTML = `
-<dom-module id="profile-creation-shared">{__html_template__}</dom-module>
-`;
-document.body.appendChild(template.content.cloneNode(true));
+const styleMod = document.createElement('dom-module');
+styleMod.innerHTML = `{__html_template__}`;
+styleMod.register('profile-creation-shared');

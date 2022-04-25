@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 import '../../cr_elements/shared_style_css.m.js';
-const template = document.createElement('template');
-template.innerHTML = `
-<dom-module id="certificate-shared">{__html_template__}</dom-module>
-`;
-document.body.appendChild(template.content.cloneNode(true));
+
+const styleMod = document.createElement('dom-module');
+styleMod.innerHTML = `{__html_template__}`;
+styleMod.register('certificate-shared');

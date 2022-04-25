@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const template = document.createElement('template');
-template.innerHTML = `
-<dom-module id="search-engine-entry">{__html_template__}</dom-module>
-`;
-document.body.appendChild(template.content.cloneNode(true));
+const styleMod = document.createElement('dom-module');
+styleMod.innerHTML = `{__html_template__}`;
+styleMod.register('search-engine-entry');
 export {};
