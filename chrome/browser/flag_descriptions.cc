@@ -2977,10 +2977,6 @@ const char kAppMenuMobileSiteOptionDescription[] =
     "When enabled, app menu should show 'Mobile site' when showing desktop "
     "site, instead of showing 'Desktop Site' with checkbox";
 
-const char kBookmarkBottomSheetName[] = "Enables bookmark bottom sheet";
-const char kBookmarkBottomSheetDescription[] =
-    "Enables showing a bookmark bottom sheet when adding a bookmark.";
-
 const char kCCTIncognitoName[] = "Chrome Custom Tabs Incognito mode";
 const char kCCTIncognitoDescription[] =
     "Enables incognito mode for Chrome Custom Tabs, on Android.";

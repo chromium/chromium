@@ -1678,9 +1678,6 @@ extern const char kAutofillUseMobileLabelDisambiguationDescription[];
 extern const char kAppMenuMobileSiteOptionName[];
 extern const char kAppMenuMobileSiteOptionDescription[];
 
-extern const char kBookmarkBottomSheetName[];
-extern const char kBookmarkBottomSheetDescription[];
-
 extern const char kCCTIncognitoName[];
 extern const char kCCTIncognitoDescription[];
 

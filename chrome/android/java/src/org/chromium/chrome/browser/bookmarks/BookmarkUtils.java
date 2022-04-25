@@ -35,15 +35,12 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.IntentHandler.IncognitoCCTCallerId;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
-import org.chromium.chrome.browser.bookmarks.bottomsheet.BookmarkBottomSheetCoordinator;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.commerce.shopping_list.ShoppingFeatures;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -113,42 +110,9 @@ public class BookmarkUtils {
             return;
         }
 
-        // TODO(crbug.com/1249283): Add separate entrypoint to save reading list items that uses
-        // the improved save flow.
-        if (bookmarkType != BookmarkType.READING_LIST
-                && CachedFeatureFlags.isEnabled(ChromeFeatureList.BOOKMARK_BOTTOM_SHEET)) {
-            // Show a bottom sheet to let the user select target bookmark folder.
-            showBookmarkBottomSheet(bookmarkModel, tab, snackbarManager, bottomSheetController,
-                    activity, fromCustomTab, callback);
-            return;
-        }
-
         BookmarkId newBookmarkId = addBookmarkAndShowSnackbar(
                 bookmarkModel, tab, snackbarManager, activity, fromCustomTab, bookmarkType);
         callback.onResult(newBookmarkId);
-    }
-
-    private static void showBookmarkBottomSheet(BookmarkModel bookmarkModel, Tab tab,
-            SnackbarManager snackbarManager, BottomSheetController bottomSheetController,
-            Activity activity, boolean fromCustomTab, Callback<BookmarkId> callback) {
-        BookmarkBottomSheetCoordinator bookmarkBottomSheet =
-                new BookmarkBottomSheetCoordinator(activity, bottomSheetController, bookmarkModel);
-        RecordUserAction.record("Android.Bookmarks.BottomSheet.Open");
-        bookmarkBottomSheet.show((selectedBookmarkItem) -> {
-            if (selectedBookmarkItem == null) {
-                callback.onResult(null);
-                return;
-            }
-
-            // Add to the selected bookmark folder.
-            BookmarkId newBookmarkId =
-                    addBookmarkAndShowSnackbar(bookmarkModel, tab, snackbarManager, activity,
-                            fromCustomTab, selectedBookmarkItem.getId().getType());
-
-            RecordHistogram.recordEnumeratedHistogram("Bookmarks.BottomSheet.DestinationFolder",
-                    selectedBookmarkItem.getId().getType(), BookmarkType.LAST + 1);
-            callback.onResult(newBookmarkId);
-        });
     }
 
     /**

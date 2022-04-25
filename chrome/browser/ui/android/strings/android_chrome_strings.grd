@@ -3465,21 +3465,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_BOOKMARK_NO_RESULT" desc="Text explaining that no bookmarks are found to match a search query">
         Can’t find that bookmark. Check your spelling or add a new bookmark.
       </message>
-      <message name="IDS_BOOKMARKS_BOTTOM_SHEET_TITLE" desc="The title for the bookmark bottom sheet, shown when trying to add a bookmark. Translation should match TC ID 9191031968346938109.">
-        Add to
-      </message>
-      <message name="IDS_BOOKMARKS_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="The content description for the bookmark bottom sheet. Read as accessibility string when tapping on the bottom sheet.">
-        List of bookmark folders
-      </message>
-      <message name="IDS_BOOKMARKS_BOTTOM_SHEET_OPENED_HALF" desc="The accessibility string read when the bookmark bottom sheet is half opened.">
-        List of bookmark folders opened at half height
-      </message>
-      <message name="IDS_BOOKMARKS_BOTTOM_SHEET_OPENED_FULL" desc="The accessibility string read when the bookmark bottom sheet is fully opened.">
-        List of bookmark folders opened at full height
-      </message>
-      <message name="IDS_BOOKMARKS_BOTTOM_SHEET_CLOSED" desc="The accessibility string read when the bookmark bottom sheet is closed.">
-        List of bookmark folders is closed
-      </message>
       <message name="IDS_EDIT_BOOKMARK" desc='The string prompting the user to edit the content of a bookmark. [CHAR_LIMIT=30]'>
         Edit bookmark
       </message>
@@ -3577,9 +3562,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- Read later strings -->
-      <message name="IDS_READING_LIST_TITLE_NEW" desc="The title for the reading list with a new text.">
-        Reading list <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
-      </message>
       <message name="IDS_READING_LIST_READ" desc="The header for the read section in the reading list UI.">
         Read
       </message>
@@ -3607,9 +3589,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_READING_LIST_NO_UNREAD_PAGES" desc="The text as reading list folder subtitle to inform the user that there is no reading list articles.">
         No unread pages
-      </message>
-      <message name="IDS_READING_LIST_INTRO_TEXT" desc="The text on the reading list in product help bubble and other UIs to introduce the feature to the user.">
-        Save this page for later and get a reminder
       </message>
       <message name="IDS_READING_LIST_SAVE_PAGES_FOR_LATER" desc="The text on the reading list in product help bubble to introduce the feature to the user.">
         Add pages to your reading list for later
