@@ -207,7 +207,8 @@ void SegmentResultProviderImpl::TryGetScoreFromDefaultModel(
   DCHECK_EQ(
       metadata_utils::ValidationResult::kValidationSuccess,
       metadata_utils::ValidateMetadata(default_segment_info->model_metadata()));
-  if (!signal_storage_config_->MeetsSignalCollectionRequirement(
+  if (!force_refresh_results_ &&
+      !signal_storage_config_->MeetsSignalCollectionRequirement(
           default_segment_info->model_metadata())) {
     VLOG(1) << __func__ << ": segment="
             << OptimizationTarget_Name(request_state->segment_id)

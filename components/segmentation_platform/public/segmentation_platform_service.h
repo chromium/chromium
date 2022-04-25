@@ -70,6 +70,11 @@ class SegmentationPlatformService : public KeyedService,
 
   // Called to get the proxy that is used for debugging purpose.
   virtual ServiceProxy* GetServiceProxy();
+
+  // Returns true when platform finished initializing, and can execute models.
+  // The `GetSelectedSegment()` calls work without full platform initialization
+  // since they load results from previous sessions.
+  virtual bool IsPlatformInitialized() = 0;
 };
 
 }  // namespace segmentation_platform

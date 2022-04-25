@@ -33,4 +33,9 @@ SegmentSelectionResult DummySegmentationPlatformService::GetCachedSegmentResult(
 
 void DummySegmentationPlatformService::EnableMetrics(
     bool signal_collection_allowed) {}
+
+bool DummySegmentationPlatformService::IsPlatformInitialized() {
+  return false;
+}
+
 }  // namespace segmentation_platform

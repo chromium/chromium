@@ -17,8 +17,6 @@ DefaultModelManager::DefaultModelManager(
     const std::vector<OptimizationTarget>& segment_ids)
     : model_provider_factory_(model_provider_factory) {
   for (OptimizationTarget segment_id : segment_ids) {
-    if (!model_provider_factory)
-      continue;
     std::unique_ptr<ModelProvider> provider =
         model_provider_factory->CreateDefaultProvider(segment_id);
     if (!provider)

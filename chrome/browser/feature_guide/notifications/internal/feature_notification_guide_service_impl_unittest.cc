@@ -113,6 +113,7 @@ class TestSegmentationPlatformService
   segmentation_platform::ServiceProxy* GetServiceProxy() override {
     return nullptr;
   }
+  bool IsPlatformInitialized() override { return true; }
 };
 
 class FeatureNotificationGuideServiceImplTest : public testing::Test {

@@ -144,6 +144,10 @@ ServiceProxy* SegmentationPlatformServiceImpl::GetServiceProxy() {
   return proxy_.get();
 }
 
+bool SegmentationPlatformServiceImpl::IsPlatformInitialized() {
+  return storage_initialized_;
+}
+
 void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
   storage_initialized_ = true;
   OnServiceStatusChanged();

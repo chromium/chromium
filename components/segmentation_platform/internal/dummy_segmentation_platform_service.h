@@ -30,6 +30,7 @@ class DummySegmentationPlatformService : public SegmentationPlatformService {
   SegmentSelectionResult GetCachedSegmentResult(
       const std::string& segmentation_key) override;
   void EnableMetrics(bool signal_collection_allowed) override;
+  bool IsPlatformInitialized() override;
 };
 
 }  // namespace segmentation_platform

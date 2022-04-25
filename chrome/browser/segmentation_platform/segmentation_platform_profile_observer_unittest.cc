@@ -35,6 +35,7 @@ class MockSegmentationPlatformService : public SegmentationPlatformService {
               (const std::string&));
   MOCK_METHOD(void, EnableMetrics, (bool));
   MOCK_METHOD(void, GetServiceStatus, ());
+  MOCK_METHOD(bool, IsPlatformInitialized, ());
 };
 
 class SegmentationPlatformProfileObserverTest : public testing::Test {

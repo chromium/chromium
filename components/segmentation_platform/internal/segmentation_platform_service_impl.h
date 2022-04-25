@@ -93,6 +93,7 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
       const std::string& segmentation_key) override;
   void EnableMetrics(bool signal_collection_allowed) override;
   ServiceProxy* GetServiceProxy() override;
+  bool IsPlatformInitialized() override;
 
  private:
   friend class SegmentationPlatformServiceImplTest;
