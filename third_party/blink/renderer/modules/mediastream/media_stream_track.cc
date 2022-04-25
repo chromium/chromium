@@ -42,6 +42,8 @@ String ContentHintToString(
     case WebMediaStreamTrack::ContentHintType::kVideoText:
       return kContentHintStringVideoText;
   }
+  NOTREACHED();
+  return kContentHintStringNone;
 }
 
 String ReadyStateToString(const MediaStreamSource::ReadyState& ready_state) {
@@ -54,11 +56,12 @@ String ReadyStateToString(const MediaStreamSource::ReadyState& ready_state) {
     case MediaStreamSource::kReadyStateEnded:
       return "ended";
   }
+  NOTREACHED();
+  return String();
 }
 
-MediaStreamTrack* MediaStreamTrack::Create(
-    ScriptState* script_state,
-    const base::UnguessableToken& session_id) {
+MediaStreamTrack* MediaStreamTrack::Create(ScriptState* script_state,
+                                           const TransferredValues& data) {
   auto* window =
       DynamicTo<LocalDOMWindow>(ExecutionContext::From(script_state));
   if (!window)
@@ -77,16 +80,9 @@ MediaStreamTrack* MediaStreamTrack::Create(
   // supporting BrowserCaptureMediaStreamTrack or FocusableMediaStreamTrack
   // operations when needed (or support these behaviors in some other way).
   TransferredMediaStreamTrack* transferred_media_stream_track =
-      MakeGarbageCollected<TransferredMediaStreamTrack>(TransferredValues{
-          .kind = "video",
-          .id = "",
-          .label = "dummy",
-          .enabled = true,
-          .muted = false,
-          .contentHint = WebMediaStreamTrack::ContentHintType::kNone,
-          .readyState = MediaStreamSource::kReadyStateLive});
+      MakeGarbageCollected<TransferredMediaStreamTrack>(data);
 
-  request->SetTransferData(session_id, transferred_media_stream_track);
+  request->SetTransferData(data.session_id, transferred_media_stream_track);
   request->Start();
   return transferred_media_stream_track;
 }

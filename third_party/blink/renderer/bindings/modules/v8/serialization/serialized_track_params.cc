@@ -25,6 +25,8 @@ SerializedContentHintType SerializeContentHint(
   // Exhaustive list of enum values of WebMediaStreamTrack::ContentHintType. If
   // new values are added in enum WebMediaStreamTrack::ContentHintType, then add
   // them here as well. Do not use default.
+  NOTREACHED();
+  return SerializedContentHintType::kNone;
 }
 
 SerializedReadyState SerializeReadyState(MediaStreamSource::ReadyState state) {
@@ -39,6 +41,8 @@ SerializedReadyState SerializeReadyState(MediaStreamSource::ReadyState state) {
   // Exhaustive list of enum values of MediaStreamSource::ReadyState. If new
   // values are added in enum MediaStreamSource::ReadyState, then add them here
   // as well. Do not use default.
+  NOTREACHED();
+  return SerializedReadyState::kReadyStateEnded;
 }
 
 WebMediaStreamTrack::ContentHintType DeserializeContentHint(

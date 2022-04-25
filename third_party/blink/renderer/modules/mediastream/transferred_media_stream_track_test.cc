@@ -23,8 +23,8 @@ TEST_F(TransferredMediaStreamTrackTest, InitialProperties) {
       .label = "dummy",
       .enabled = true,
       .muted = false,
-      .contentHint = WebMediaStreamTrack::ContentHintType::kNone,
-      .readyState = MediaStreamSource::kReadyStateLive});
+      .content_hint = WebMediaStreamTrack::ContentHintType::kNone,
+      .ready_state = MediaStreamSource::kReadyStateLive});
 
   EXPECT_EQ(transferred_track.kind(), "video");
   EXPECT_EQ(transferred_track.id(), "");
@@ -83,8 +83,8 @@ TEST_F(TransferredMediaStreamTrackTest, PropertiesInheritFromImplementation) {
       .label = "dummy",
       .enabled = true,
       .muted = false,
-      .contentHint = WebMediaStreamTrack::ContentHintType::kNone,
-      .readyState = MediaStreamSource::kReadyStateLive});
+      .content_hint = WebMediaStreamTrack::ContentHintType::kNone,
+      .ready_state = MediaStreamSource::kReadyStateLive});
   transferred_track.setImplementation(&mock_impl);
 
   EXPECT_EQ(transferred_track.kind(), kKind);

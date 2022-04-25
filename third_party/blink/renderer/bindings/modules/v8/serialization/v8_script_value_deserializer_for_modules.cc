@@ -543,15 +543,20 @@ MediaStreamTrack* V8ScriptValueDeserializerForModules::ReadMediaStreamTrack() {
       (kind != "audio" && kind != "video") || !ReadUTF8String(&id) ||
       !ReadUTF8String(&label) || !ReadOneByte(&enabled) || enabled > 1 ||
       !ReadOneByte(&muted) || muted > 1 || !ReadUint32Enum(&contentHint) ||
-      contentHint > SerializedContentHintType::kLast ||
-      !ReadUint32Enum(&readyState) ||
-      readyState > SerializedReadyState::kLast) {
+      !ReadUint32Enum(&readyState)) {
     return nullptr;
   }
 
-  // TODO(https://crbug.com/1288839): Pass these variables into
-  // MediaStreamTrack::Create using a struct.
-  return MediaStreamTrack::Create(GetScriptState(), session_id);
+  return MediaStreamTrack::Create(
+      GetScriptState(),
+      TransferredValues{.session_id = session_id,
+                        .kind = kind,
+                        .id = id,
+                        .label = label,
+                        .enabled = static_cast<bool>(enabled),
+                        .muted = static_cast<bool>(muted),
+                        .content_hint = DeserializeContentHint(contentHint),
+                        .ready_state = DeserializeReadyState(readyState)});
 }
 
 }  // namespace blink

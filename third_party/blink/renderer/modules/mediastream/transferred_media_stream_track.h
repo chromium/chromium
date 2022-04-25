@@ -26,23 +26,13 @@ class MediaTrackConstraints;
 class MediaTrackSettings;
 class ScriptState;
 
-struct TransferredValues {
-  String kind;
-  String id;
-  String label;
-  bool enabled;
-  bool muted;
-  WebMediaStreamTrack::ContentHintType contentHint;
-  MediaStreamSource::ReadyState readyState;
-};
-
 // A MediaStreamTrack implementation synchronously created when receiving a
 // transferred MediaStreamTrack, when the full instance is being asynchronously
 // created. Once the asynchronous setup has finished, proxies all calls to the
 // full instance.
 class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
  public:
-  explicit TransferredMediaStreamTrack(TransferredValues data);
+  explicit TransferredMediaStreamTrack(const TransferredValues& data);
 
   // MediaStreamTrack.idl
   String kind() const override;

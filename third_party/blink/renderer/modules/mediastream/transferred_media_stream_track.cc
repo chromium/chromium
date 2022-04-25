@@ -51,7 +51,8 @@
 
 namespace blink {
 
-TransferredMediaStreamTrack::TransferredMediaStreamTrack(TransferredValues data)
+TransferredMediaStreamTrack::TransferredMediaStreamTrack(
+    const TransferredValues& data)
     : data_(data) {}
 
 String TransferredMediaStreamTrack::kind() const {
@@ -101,7 +102,7 @@ String TransferredMediaStreamTrack::ContentHint() const {
   if (track_) {
     return track_->ContentHint();
   }
-  return ContentHintToString(data_.contentHint);
+  return ContentHintToString(data_.content_hint);
 }
 
 void TransferredMediaStreamTrack::SetContentHint(const String& content_hint) {
@@ -116,7 +117,7 @@ String TransferredMediaStreamTrack::readyState() const {
   if (track_) {
     return track_->readyState();
   }
-  return ReadyStateToString(data_.readyState);
+  return ReadyStateToString(data_.ready_state);
 }
 
 MediaStreamTrack* TransferredMediaStreamTrack::clone(
@@ -202,8 +203,7 @@ MediaStreamSource::ReadyState TransferredMediaStreamTrack::GetReadyState() {
   if (track_) {
     return track_->GetReadyState();
   }
-  // TODO(https://crbug.com/1288839): return the transferred value.
-  return data_.readyState;
+  return data_.ready_state;
 }
 
 MediaStreamComponent* TransferredMediaStreamTrack::Component() const {
@@ -218,7 +218,7 @@ bool TransferredMediaStreamTrack::Ended() const {
   if (track_) {
     return track_->Ended();
   }
-  return (data_.readyState == MediaStreamSource::kReadyStateEnded);
+  return (data_.ready_state == MediaStreamSource::kReadyStateEnded);
 }
 
 void TransferredMediaStreamTrack::RegisterMediaStream(MediaStream* stream) {

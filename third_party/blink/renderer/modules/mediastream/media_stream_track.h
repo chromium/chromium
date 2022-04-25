@@ -37,6 +37,17 @@ class MediaStream;
 class MediaTrackSettings;
 class ScriptState;
 
+struct TransferredValues {
+  base::UnguessableToken session_id;
+  String kind;
+  String id;
+  String label;
+  bool enabled;
+  bool muted;
+  WebMediaStreamTrack::ContentHintType content_hint;
+  MediaStreamSource::ReadyState ready_state;
+};
+
 String ContentHintToString(
     const WebMediaStreamTrack::ContentHintType& content_hint);
 
@@ -56,7 +67,7 @@ class MODULES_EXPORT MediaStreamTrack
 
   // TODO(1288839): Implement to recreate MST after transfer
   static MediaStreamTrack* Create(ScriptState* script_state,
-                                  const base::UnguessableToken& session_id);
+                                  const TransferredValues& data);
 
   // MediaStreamTrack.idl
   virtual String kind() const = 0;
