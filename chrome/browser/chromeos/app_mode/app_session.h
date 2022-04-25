@@ -11,6 +11,8 @@
 #include "base/callback.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_session_plugin_handler_delegate.h"
 
+class PrefRegistrySimple;
+class PrefService;
 class Profile;
 class Browser;
 
@@ -24,16 +26,39 @@ class AppWindow;
 
 namespace chromeos {
 
+// Kiosk histogram metrics-related constants.
+extern const char kKioskMetrics[];
+extern const char kKioskSessionStateHistogram[];
+extern const char kKioskSessionCountPerDayHistogram[];
+extern const char kKioskSessionLastDayList[];
+
 class KioskSessionPluginHandler;
+class AppSessionMetricsService;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Keep in sync with respective enum in tools/metrics/histograms/enums.xml
+enum class KioskSessionState {
+  kStarted = 0,
+  kWebStarted = 1,
+  kCrashed = 2,
+  kStopped = 3,
+  kPluginCrashed = 4,
+  kPluginHung = 5,
+  kMaxValue = kPluginHung,
+};
 
 // AppSession maintains a kiosk session and handles its lifetime.
 class AppSession : public KioskSessionPluginHandlerDelegate {
  public:
   AppSession();
-  explicit AppSession(base::OnceClosure attempt_user_exit);
+  explicit AppSession(base::OnceClosure attempt_user_exit,
+                      PrefService* local_state);
   AppSession(const AppSession&) = delete;
   AppSession& operator=(const AppSession&) = delete;
   ~AppSession() override;
+
+  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Initializes an app session.
   virtual void Init(Profile* profile, const std::string& app_id);
@@ -88,6 +113,8 @@ class AppSession : public KioskSessionPluginHandlerDelegate {
   Profile* profile_ = nullptr;
 
   base::OnceClosure attempt_user_exit_;
+  const std::unique_ptr<AppSessionMetricsService> metrics_service_;
+
   // Is called whenever a new browser creation was handled by the
   // BrowserWindowHandler.
   base::RepeatingClosure on_handle_browser_callback_;

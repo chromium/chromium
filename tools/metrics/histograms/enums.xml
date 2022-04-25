@@ -49832,6 +49832,15 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="ARC not available"/>
 </enum>
 
+<enum name="KioskSessionState">
+  <int value="0" label="Chrome app kiosk started"/>
+  <int value="1" label="Web kiosk started/"/>
+  <int value="2" label="Session crashed"/>
+  <int value="3" label="Successfully stopped"/>
+  <int value="4" label="Plugin crashed"/>
+  <int value="5" label="Plugin hung"/>
+</enum>
+
 <enum name="KmsVncMethodEnum">
   <int value="1" label="EGL"/>
   <int value="2" label="BO"/>

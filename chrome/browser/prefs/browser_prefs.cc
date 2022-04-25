@@ -442,6 +442,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/account_cache.h"
+#include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/lacros_prefs.h"
 #include "chrome/browser/lacros/net/proxy_config_service_lacros.h"
 #endif
@@ -1191,6 +1192,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   AccountCache::RegisterLocalStatePrefs(registry);
   lacros_prefs::RegisterLocalStatePrefs(registry);
+  KioskSessionServiceLacros::RegisterLocalStatePrefs(registry);
 #endif
 
 #if BUILDFLAG(IS_WIN)

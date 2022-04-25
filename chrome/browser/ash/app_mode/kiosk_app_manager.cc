@@ -201,6 +201,7 @@ void KioskAppManager::ResetForTesting() {
 // static
 void KioskAppManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kKioskDictionaryName);
+  chromeos::AppSession::RegisterPrefs(registry);
 }
 
 // static

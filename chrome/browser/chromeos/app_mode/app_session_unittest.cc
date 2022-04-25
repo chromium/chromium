@@ -4,11 +4,16 @@
 
 #include <memory>
 
+#include "base/json/values_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/chromeos/app_mode/app_session.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "content/public/browser/plugin_service.h"
@@ -34,38 +39,114 @@ constexpr char kUnregisteredPluginFilePath[] = "/path/to/unregistered_plugin";
 
 class AppSessionTest : public testing::Test {
  public:
-  AppSessionTest() = default;
+  AppSessionTest()
+      : local_state_(std::make_unique<ScopedTestingLocalState>(
+            TestingBrowserProcess::GetGlobal())) {}
+
   AppSessionTest(const AppSessionTest&) = delete;
   AppSessionTest& operator=(const AppSessionTest&) = delete;
 
+  TestingPrefServiceSimple* local_state() { return local_state_->Get(); }
+
+  void TearDown() override { local_state()->RemoveUserPref(kKioskMetrics); }
+
+  void WebKioskTracksBrowserCreationTest() {
+    auto app_session =
+        std::make_unique<AppSession>(base::DoNothing(), local_state());
+    TestingProfile profile;
+
+    Browser::CreateParams params(&profile, true);
+    auto app_browser = CreateBrowserWithTestWindowForParams(params);
+
+    app_session->InitForWebKiosk(app_browser.get());
+
+    Browser::CreateParams another_params(&profile, true);
+    auto another_browser = CreateBrowserWithTestWindowForParams(another_params);
+
+    base::RunLoop loop;
+    static_cast<TestBrowserWindow*>(another_browser->window())
+        ->SetCloseCallback(
+            base::BindLambdaForTesting([&loop]() { loop.Quit(); }));
+    loop.Run();
+
+    bool chrome_closed = false;
+    app_session->SetAttemptUserExitForTesting(base::BindLambdaForTesting(
+        [&chrome_closed]() { chrome_closed = true; }));
+
+    app_browser.reset();
+    ASSERT_TRUE(chrome_closed);
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<ScopedTestingLocalState> local_state_;
 };
 
 TEST_F(AppSessionTest, WebKioskTracksBrowserCreation) {
-  auto app_session = std::make_unique<AppSession>();
-  TestingProfile profile;
+  base::HistogramTester histogram;
 
-  Browser::CreateParams params(&profile, true);
-  auto app_browser = CreateBrowserWithTestWindowForParams(params);
+  WebKioskTracksBrowserCreationTest();
 
-  app_session->InitForWebKiosk(app_browser.get());
+  const base::Value* value = local_state()->GetDictionary(kKioskMetrics);
+  ASSERT_TRUE(value);
+  const base::Value* sessions_list =
+      value->FindListKey(kKioskSessionLastDayList);
+  ASSERT_TRUE(sessions_list);
+  EXPECT_EQ(1, sessions_list->GetIfList()->size());
 
-  Browser::CreateParams another_params(&profile, true);
-  auto another_browser = CreateBrowserWithTestWindowForParams(another_params);
+  histogram.ExpectBucketCount(kKioskSessionStateHistogram,
+                              KioskSessionState::kWebStarted, 1);
+  histogram.ExpectBucketCount(kKioskSessionStateHistogram,
+                              KioskSessionState::kStopped, 1);
+  EXPECT_EQ(2, histogram.GetAllSamples(kKioskSessionStateHistogram).size());
 
-  base::RunLoop loop;
-  static_cast<TestBrowserWindow*>(another_browser->window())
-      ->SetCloseCallback(
-          base::BindLambdaForTesting([&loop]() { loop.Quit(); }));
-  loop.Run();
+  histogram.ExpectTotalCount(kKioskSessionCountPerDayHistogram, 1);
+}
 
-  bool chrome_closed = false;
-  app_session->SetAttemptUserExitForTesting(
-      base::BindLambdaForTesting([&chrome_closed]() { chrome_closed = true; }));
+// Check that sessions list in local_state contains only sessions within the
+// last 24h.
+TEST_F(AppSessionTest, WebKioskLastDaySessions) {
+  base::HistogramTester histogram;
+  // Setup local_state with 5 more kiosk sessions happened prior to the current
+  // one: {now, 2,3,4,5 days ago}
+  {
+    base::Value::List session_list;
+    session_list.Append(base::TimeToValue(base::Time::Now()));
 
-  app_browser.reset();
-  ASSERT_TRUE(chrome_closed);
+    const size_t kMaxDays = 4;
+    for (size_t i = 0; i < kMaxDays; i++) {
+      session_list.Append(
+          base::TimeToValue(base::Time::Now() - base::Days(i + 2)));
+    }
+
+    base::Value::Dict value;
+    value.Set(kKioskSessionLastDayList, std::move(session_list));
+
+    local_state()->SetDict(kKioskMetrics, std::move(value));
+  }
+
+  WebKioskTracksBrowserCreationTest();
+
+  const base::Value* value = local_state()->GetDictionary(kKioskMetrics);
+  ASSERT_TRUE(value);
+  const base::Value* sessions_list =
+      value->FindListKey(kKioskSessionLastDayList);
+  ASSERT_TRUE(sessions_list);
+  // There should be only two kiosk sessions on the list:
+  // the one that happened right before the current one and the current one.
+  EXPECT_EQ(2, sessions_list->GetIfList()->size());
+  for (const auto& time : *sessions_list->GetIfList()) {
+    EXPECT_LE(base::Time::Now() - base::ValueToTime(time).value(),
+              base::Days(1));
+  }
+
+  histogram.ExpectBucketCount(kKioskSessionStateHistogram,
+                              KioskSessionState::kWebStarted, 1);
+  histogram.ExpectBucketCount(kKioskSessionStateHistogram,
+                              KioskSessionState::kStopped, 1);
+  EXPECT_EQ(2, histogram.GetAllSamples(kKioskSessionStateHistogram).size());
+
+  histogram.ExpectTotalCount(kKioskSessionCountPerDayHistogram, 1);
 }
 
 TEST_F(AppSessionTest, ShouldHandlePlugin) {
@@ -125,6 +206,7 @@ TEST_F(AppSessionTest, ShouldHandlePlugin) {
 }
 
 TEST_F(AppSessionTest, OnPluginCrashed) {
+  base::HistogramTester histogram;
   // Create an app session.
   std::unique_ptr<AppSession> app_session = std::make_unique<AppSession>();
   KioskSessionPluginHandlerDelegate* delegate = app_session.get();
@@ -136,9 +218,16 @@ TEST_F(AppSessionTest, OnPluginCrashed) {
   EXPECT_EQ(client.num_request_restart_calls(), 0);
   delegate->OnPluginCrashed(base::FilePath(kBrowserPluginFilePath));
   EXPECT_EQ(client.num_request_restart_calls(), 1);
+
+  histogram.ExpectBucketCount(kKioskSessionStateHistogram,
+                              KioskSessionState::kPluginCrashed, 1);
+  EXPECT_EQ(1, histogram.GetAllSamples(kKioskSessionStateHistogram).size());
+
+  histogram.ExpectTotalCount(kKioskSessionCountPerDayHistogram, 0);
 }
 
 TEST_F(AppSessionTest, OnPluginHung) {
+  base::HistogramTester histogram;
   // Create an app session.
   std::unique_ptr<AppSession> app_session = std::make_unique<AppSession>();
   KioskSessionPluginHandlerDelegate* delegate = app_session.get();
@@ -148,6 +237,11 @@ TEST_F(AppSessionTest, OnPluginHung) {
 
   // Only verify if this method can be called without error.
   delegate->OnPluginHung(std::set<int>());
+  histogram.ExpectBucketCount(kKioskSessionStateHistogram,
+                              KioskSessionState::kPluginHung, 1);
+  EXPECT_EQ(1, histogram.GetAllSamples(kKioskSessionStateHistogram).size());
+
+  histogram.ExpectTotalCount(kKioskSessionCountPerDayHistogram, 0);
 }
 
 }  // namespace chromeos

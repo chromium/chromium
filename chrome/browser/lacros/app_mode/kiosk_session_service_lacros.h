@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chromeos/crosapi/mojom/kiosk_session_service.mojom.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "url/gurl.h"
 
@@ -23,6 +24,9 @@ class KioskSessionServiceLacros {
   // Get the global instance. This singleton instance should be initialized
   // first before using it.
   static KioskSessionServiceLacros* Get();
+
+  // Registers all prefs associated with the service.
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   KioskSessionServiceLacros();
   KioskSessionServiceLacros(const KioskSessionServiceLacros&) = delete;
