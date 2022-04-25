@@ -49,6 +49,11 @@ void WebApkInstallScheduler::FetchProtoAndScheduleInstall(
   scheduler->FetchMurmur2Hashes(web_contents);
 }
 
+void WebApkInstallScheduler::FetchProtoAndScheduleInstallForTesting(
+    content::WebContents* web_contents) {
+  FetchMurmur2Hashes(web_contents);
+}
+
 void WebApkInstallScheduler::FetchMurmur2Hashes(
     content::WebContents* web_contents) {
   // We need to take the hash of the bitmap at the icon URL prior to any

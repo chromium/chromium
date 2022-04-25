@@ -37,6 +37,9 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
+// Keep tests that verify the result of building the WebAPK-proto in sync with
+// weblayer/browser/webapps/webapk_install_scheduler_browsertest.cc.
+
 namespace {
 
 const base::FilePath::CharType kTestDataDir[] =

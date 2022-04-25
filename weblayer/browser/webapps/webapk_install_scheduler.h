@@ -33,7 +33,7 @@ class WebApkInstallScheduler {
   // service finished or failed.
   using FinishCallback = base::OnceCallback<void(webapps::WebApkInstallResult)>;
 
-  ~WebApkInstallScheduler();
+  virtual ~WebApkInstallScheduler();
 
   WebApkInstallScheduler(const WebApkInstallScheduler&) = delete;
   WebApkInstallScheduler& operator=(const WebApkInstallScheduler&) = delete;
@@ -44,12 +44,16 @@ class WebApkInstallScheduler {
       const SkBitmap& primary_icon,
       bool is_primary_icon_maskable);
 
+  void FetchProtoAndScheduleInstallForTesting(
+      content::WebContents* web_contents);
+
   static bool IsInstallServiceAvailable();
 
  private:
   WebApkInstallScheduler(const webapps::ShortcutInfo& shortcut_info,
                          const SkBitmap& primary_icon,
                          bool is_primary_icon_maskable);
+  friend class TestWebApkInstallScheduler;
 
   void FetchMurmur2Hashes(content::WebContents* web_contents);
 
@@ -57,9 +61,10 @@ class WebApkInstallScheduler {
       absl::optional<std::map<std::string, webapps::WebApkIconHasher::Icon>>
           hashes);
 
-  void ScheduleWithChrome(std::unique_ptr<std::string> serialized_proto);
+  virtual void ScheduleWithChrome(
+      std::unique_ptr<std::string> serialized_proto);
 
-  void OnResult(webapps::WebApkInstallResult result);
+  virtual void OnResult(webapps::WebApkInstallResult result);
 
   std::unique_ptr<webapps::ShortcutInfo> shortcut_info_;
   const SkBitmap primary_icon_;
