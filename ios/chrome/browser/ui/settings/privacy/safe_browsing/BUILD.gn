@@ -21,6 +21,7 @@ source_set("safe_browsing") {
     "safe_browsing_standard_protection_mediator.mm",
     "safe_browsing_standard_protection_view_controller.h",
     "safe_browsing_standard_protection_view_controller.mm",
+    "safe_browsing_standard_protection_view_controller_delegate.h",
   ]
   deps = [
     "resources:bar_chart",

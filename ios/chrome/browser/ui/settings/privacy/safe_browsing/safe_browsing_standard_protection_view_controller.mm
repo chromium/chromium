@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_standard_protection_view_controller.h"
 
+#include "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/settings/cells/safe_browsing_header_item.h"
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_constants.h"
+#import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_standard_protection_view_controller_delegate.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -62,6 +65,35 @@ const CGFloat kSafeBrowsingStandardProtectionContentInset = 16;
                           0)];
 }
 
+#pragma mark - Private
+
+// Called when switch is toggled.
+- (void)switchAction:(UISwitch*)sender {
+  NSIndexPath* indexPath =
+      [self.tableViewModel indexPathForItemType:sender.tag];
+  DCHECK(indexPath);
+  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+  [self.modelDelegate toggleSwitchItem:item withValue:sender.isOn];
+}
+
+#pragma mark - UITableViewDataSource
+
+- (UITableViewCell*)tableView:(UITableView*)tableView
+        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  UITableViewCell* cell = [super tableView:tableView
+                     cellForRowAtIndexPath:indexPath];
+  if ([cell isKindOfClass:[TableViewSwitchCell class]]) {
+    TableViewSwitchCell* switchCell =
+        base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+    [switchCell.switchView addTarget:self
+                              action:@selector(switchAction:)
+                    forControlEvents:UIControlEventValueChanged];
+    TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+    switchCell.switchView.tag = item.type;
+  }
+  return cell;
+}
+
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {
@@ -83,20 +115,6 @@ const CGFloat kSafeBrowsingStandardProtectionContentInset = 16;
 }
 
 #pragma mark - SafeBrowsingStandardProtectionConsumer
-
-- (void)reloadSection {
-  if (!self.tableViewModel) {
-    // No need to reload since the model has not been loaded yet.
-    return;
-  }
-  TableViewModel* model = self.tableViewModel;
-  NSUInteger sectionIndex =
-      [model sectionForSectionIdentifier:
-                 SectionIdentifierSafeBrowsingStandardProtection];
-  NSIndexSet* sections = [NSIndexSet indexSetWithIndex:sectionIndex];
-  [self.tableView reloadSections:sections
-                withRowAnimation:UITableViewRowAnimationNone];
-}
 
 - (void)setSafeBrowsingStandardProtectionItems:
     (ItemArray)safeBrowsingStandardProtectionItems {
