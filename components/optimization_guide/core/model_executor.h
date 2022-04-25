@@ -37,7 +37,10 @@ class ModelExecutor {
   ModelExecutor() = default;
   virtual ~ModelExecutor() = default;
 
+  // If |model_inference_timeout| is nullopt a default value will be used,
+  // controlled by the optimization guide.
   virtual void InitializeAndMoveToExecutionThread(
+      absl::optional<base::TimeDelta> model_inference_timeout,
       proto::OptimizationTarget optimization_target,
       scoped_refptr<base::SequencedTaskRunner> execution_task_runner,
       scoped_refptr<base::SequencedTaskRunner> reply_task_runner) = 0;

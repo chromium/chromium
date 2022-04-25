@@ -204,8 +204,11 @@ base::TimeDelta PredictionModelFetchStartupDelay();
 // refresh models.
 base::TimeDelta PredictionModelFetchInterval();
 
-// The timeout for executing models, if enabled.
-absl::optional<base::TimeDelta> ModelExecutionTimeout();
+// Whether to use the model execution watchdog.
+bool IsModelExecutionWatchdogEnabled();
+
+// The default timeout for the watchdog to use if none is given by the caller.
+base::TimeDelta ModelExecutionWatchdogDefaultTimeout();
 
 // Returns a set of field trial name hashes that can be sent in the request to
 // the remote Optimization Guide Service if the client is in one of the

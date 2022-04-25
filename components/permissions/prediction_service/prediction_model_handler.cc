@@ -28,6 +28,7 @@ PredictionModelHandler::PredictionModelHandler(
           model_provider,
           background_task_runner,
           std::make_unique<PredictionModelExecutor>(),
+          /*model_inference_timeout=*/absl::nullopt,
           optimization_guide::proto::OptimizationTarget::
               OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS,
           absl::nullopt) {}

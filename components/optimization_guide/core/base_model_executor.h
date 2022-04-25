@@ -33,6 +33,7 @@ class BaseModelExecutor : public TFLiteModelExecutor<OutputType, InputTypes...>,
  public:
   // TFLiteModelExecutor:
   void InitializeAndMoveToExecutionThread(
+      absl::optional<base::TimeDelta> model_inference_timeout,
       proto::OptimizationTarget optimization_target,
       scoped_refptr<base::SequencedTaskRunner> execution_task_runner,
       scoped_refptr<base::SequencedTaskRunner> reply_task_runner) override {
@@ -40,7 +41,8 @@ class BaseModelExecutor : public TFLiteModelExecutor<OutputType, InputTypes...>,
                        .value_or(-1);
     TFLiteModelExecutor<OutputType, InputTypes...>::
         InitializeAndMoveToExecutionThread(
-            optimization_target, execution_task_runner, reply_task_runner);
+            model_inference_timeout, optimization_target, execution_task_runner,
+            reply_task_runner);
   }
 
  protected:

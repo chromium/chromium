@@ -182,7 +182,8 @@ class PageContentAnnotationsServicePageTopicsBrowserTest
  public:
   PageContentAnnotationsServicePageTopicsBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kOptimizationHints, features::kPageContentAnnotations}, {});
+        {features::kOptimizationHints, features::kPageContentAnnotations},
+        {features::kPreventLongRunningPredictionModels});
   }
   ~PageContentAnnotationsServicePageTopicsBrowserTest() override = default;
 
@@ -309,7 +310,7 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
               {"write_to_history_service", "true"},
           }},
          {features::kPageVisibilityPageContentAnnotations, {}}},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{features::kPreventLongRunningPredictionModels});
   }
   ~PageContentAnnotationsServiceBrowserTest() override = default;
 

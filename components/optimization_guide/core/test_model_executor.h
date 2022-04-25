@@ -16,6 +16,7 @@ class TestModelExecutor
   ~TestModelExecutor() override = default;
 
   void InitializeAndMoveToExecutionThread(
+      absl::optional<base::TimeDelta>,
       proto::OptimizationTarget,
       scoped_refptr<base::SequencedTaskRunner>,
       scoped_refptr<base::SequencedTaskRunner>) override {}
