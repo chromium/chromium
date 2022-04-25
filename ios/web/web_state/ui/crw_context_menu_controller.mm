@@ -103,11 +103,16 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
   CGPoint locationInWebView =
       [self.webView.scrollView convertPoint:location fromView:interaction.view];
 
-  absl::optional<web::ContextMenuParams> params =
+  absl::optional<web::ContextMenuParams> optionalParams =
       [self fetchContextMenuParamsAtLocation:locationInWebView];
 
+  if (!optionalParams.has_value()) {
+    return nil;
+  }
+  web::ContextMenuParams params = optionalParams.value();
+
   // Converts javascript bounding box to webView bounding box.
-  CGRect screenshotBoundingBox = params.value().bounding_box;
+  CGRect screenshotBoundingBox = params.bounding_box;
   if (!CGRectIsEmpty(screenshotBoundingBox)) {
     screenshotBoundingBox =
         [self webViewBoundingBoxFromElementBoundingBox:screenshotBoundingBox];
@@ -122,7 +127,7 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
       !CGRectIsEmpty(screenshotBoundingBox)) {
     self.screenshotView =
         [self fetchScreenshotViewAtBoundingBox:screenshotBoundingBox];
-    params.value().screenshot = self.screenshotView.image;
+    params.screenshot = self.screenshotView.image;
     self.screenshotView.center =
         CGPointMake(CGRectGetMidX(screenshotBoundingBox),
                     CGRectGetMidY(screenshotBoundingBox));
@@ -134,12 +139,12 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
   // delegate's methods. Will be removed if no menu is presented.
   [interaction.view addSubview:self.screenshotView];
 
-  params.value().location = [self.webView convertPoint:location
-                                              fromView:interaction.view];
+  params.location = [self.webView convertPoint:location
+                                      fromView:interaction.view];
 
   __block UIContextMenuConfiguration* configuration;
   self.webState->GetDelegate()->ContextMenuConfiguration(
-      self.webState, params.value(), ^(UIContextMenuConfiguration* conf) {
+      self.webState, params, ^(UIContextMenuConfiguration* conf) {
         configuration = conf;
       });
 
