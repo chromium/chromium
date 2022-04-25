@@ -36,6 +36,7 @@ rust_static_library("bindgen_test_lib") {
   crate_root = "src/lib.rs"
 
   bindgen_output = get_target_outputs(":c_lib_bindgen")
+  inputs = bindgen_output
   rustenv = [ "BINDGEN_RS_FILE=" + rebase_path(bindgen_output[0]) ]
 }
 
