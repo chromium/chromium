@@ -310,6 +310,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.DEFER_BEGIN_MAIN_FRAME_DURING_LOADING,
                     "If enabled, the parser may continue parsing if BeginMainFrame was "
                             + "recently called."),
+            Flag.baseFeature(BlinkFeatures.DECODE_SCRIPT_SOURCE_OFF_THREAD,
+                    "If enabled, script source text will be decoded and hashed off the main"
+                            + "thread."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
