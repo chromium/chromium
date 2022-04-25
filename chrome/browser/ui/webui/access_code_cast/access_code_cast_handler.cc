@@ -93,34 +93,40 @@ AccessCodeCastHandler::AccessCodeCastHandler(
     mojo::PendingRemote<access_code_cast::mojom::Page> page,
     const media_router::CastModeSet& cast_mode_set,
     std::unique_ptr<MediaRouteStarter> media_route_starter)
-    : AccessCodeCastHandler(std::move(page_handler),
-                            std::move(page),
-                            cast_mode_set,
-                            AccessCodeCastSinkServiceFactory::GetForProfile(
-                                media_route_starter->GetProfile()),
-                            std::move(media_route_starter)) {}
+    : page_(std::move(page)),
+      receiver_(this, std::move(page_handler)),
+      cast_mode_set_(cast_mode_set),
+      media_route_starter_(std::move(media_route_starter)) {
+  access_code_sink_service_ = AccessCodeCastSinkServiceFactory::GetForProfile(
+      media_route_starter_->GetProfile());
+  Init();
+}
 
 AccessCodeCastHandler::AccessCodeCastHandler(
     mojo::PendingReceiver<access_code_cast::mojom::PageHandler> page_handler,
     mojo::PendingRemote<access_code_cast::mojom::Page> page,
     const media_router::CastModeSet& cast_mode_set,
-    AccessCodeCastSinkService* access_code_sink_service,
-    std::unique_ptr<MediaRouteStarter> media_route_starter)
+    std::unique_ptr<MediaRouteStarter> media_route_starter,
+    AccessCodeCastSinkService* access_code_sink_service)
     : page_(std::move(page)),
       receiver_(this, std::move(page_handler)),
       cast_mode_set_(cast_mode_set),
-      access_code_sink_service_(access_code_sink_service),
-      media_route_starter_(std::move(media_route_starter)) {
+      media_route_starter_(std::move(media_route_starter)),
+      access_code_sink_service_(access_code_sink_service) {
+  Init();
+}
+
+AccessCodeCastHandler::~AccessCodeCastHandler() {
+  media_route_starter_->RemoveMediaSinkWithCastModesObserver(this);
+}
+
+void AccessCodeCastHandler::Init() {
   DCHECK(access_code_sink_service_)
       << "AccessCodeSinkService was not properly created!";
   DCHECK(media_route_starter_) << "Must have MediaRouterService!";
   media_route_starter_->SetLoggerComponent(kLoggerComponent);
   media_route_starter_->AddMediaSinkWithCastModesObserver(this);
   GetMediaRouter()->OnUserGesture();
-}
-
-AccessCodeCastHandler::~AccessCodeCastHandler() {
-  media_route_starter_->RemoveMediaSinkWithCastModesObserver(this);
 }
 
 void AccessCodeCastHandler::AddSink(

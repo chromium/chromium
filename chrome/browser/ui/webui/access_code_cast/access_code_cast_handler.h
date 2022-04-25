@@ -71,8 +71,10 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler,
       mojo::PendingReceiver<access_code_cast::mojom::PageHandler> page_handler,
       mojo::PendingRemote<access_code_cast::mojom::Page> page,
       const media_router::CastModeSet& cast_mode_set,
-      AccessCodeCastSinkService* access_code_sink_service,
-      std::unique_ptr<MediaRouteStarter> media_route_starter);
+      std::unique_ptr<MediaRouteStarter> media_route_starter,
+      AccessCodeCastSinkService* access_code_sink_service);
+
+  void Init();
 
   // Returns true if the specified cast mode is among the cast modes specified
   // for the dialog to use when it was initialized.
@@ -113,10 +115,10 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler,
 
   const media_router::CastModeSet cast_mode_set_;
 
-  raw_ptr<AccessCodeCastSinkService> const access_code_sink_service_;
-
   // Contains the info necessary to start a media route.
   std::unique_ptr<MediaRouteStarter> media_route_starter_;
+
+  raw_ptr<AccessCodeCastSinkService> access_code_sink_service_;
 
   AddSinkCallback add_sink_callback_;
 

@@ -175,8 +175,8 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
 
     handler_ = base::WrapUnique(new AccessCodeCastHandler(
         mojo::PendingReceiver<access_code_cast::mojom::PageHandler>(),
-        page_->BindAndGetRemote(), cast_modes,
-        access_code_cast_sink_service_.get(), std::move(starter)));
+        page_->BindAndGetRemote(), cast_modes, std::move(starter),
+        access_code_cast_sink_service_.get()));
   }
 
   AccessCodeCastHandler* handler() { return handler_.get(); }
