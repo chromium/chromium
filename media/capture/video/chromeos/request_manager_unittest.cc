@@ -251,9 +251,9 @@ class RequestManagerTest : public ::testing::Test {
         static_cast<uint64_t>(StreamType::kPreviewOutput);
     error_msg->error_code = error_code;
     auto notify_msg = cros::mojom::Camera3NotifyMsg::New();
-    notify_msg->message = cros::mojom::Camera3NotifyMsgMessage::New();
     notify_msg->type = cros::mojom::Camera3MsgType::CAMERA3_MSG_ERROR;
-    notify_msg->message->set_error(std::move(error_msg));
+    notify_msg->message =
+        cros::mojom::Camera3NotifyMsgMessage::NewError(std::move(error_msg));
     return notify_msg;
   }
 
@@ -264,9 +264,9 @@ class RequestManagerTest : public ::testing::Test {
     shutter_msg->frame_number = frame_number;
     shutter_msg->timestamp = timestamp;
     auto notify_msg = cros::mojom::Camera3NotifyMsg::New();
-    notify_msg->message = cros::mojom::Camera3NotifyMsgMessage::New();
     notify_msg->type = cros::mojom::Camera3MsgType::CAMERA3_MSG_SHUTTER;
-    notify_msg->message->set_shutter(std::move(shutter_msg));
+    notify_msg->message = cros::mojom::Camera3NotifyMsgMessage::NewShutter(
+        std::move(shutter_msg));
     return notify_msg;
   }
 
