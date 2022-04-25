@@ -8,13 +8,13 @@
 #include "services/network/brokered_client_socket_factory.h"
 
 #include "build/build_config.h"
+#include "net/socket/datagram_client_socket.h"
 #include "net/socket/tcp_client_socket.h"
 #include "services/network/tcp_client_socket_brokered.h"
 
 namespace net {
 
 class AddressList;
-class DatagramClientSocket;
 class HostPortPair;
 class NetLog;
 struct NetLogSource;
