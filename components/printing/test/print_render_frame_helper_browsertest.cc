@@ -155,7 +155,7 @@ class FakePrintPreviewUI : public mojom::PrintPreviewUI {
   // Waits until the preview request is failed, canceled, invalid, or done.
   void WaitUntilPreviewUpdate() {
     // If |preview_status_| is updated, it doesn't need to wait.
-    if (preview_status_ != PreviewStatus::kPreviewStatusNone)
+    if (preview_status_ != PreviewStatus::kNone)
       return;
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
@@ -166,17 +166,16 @@ class FakePrintPreviewUI : public mojom::PrintPreviewUI {
     print_preview_cancel_page_number_ = page;
   }
   bool PreviewFailed() const {
-    return preview_status_ == PreviewStatus::kPreviewStatusFailed;
+    return preview_status_ == PreviewStatus::kFailed;
   }
   bool PreviewCancelled() const {
-    return preview_status_ == PreviewStatus::kPreviewStatusCancelled;
+    return preview_status_ == PreviewStatus::kCancelled;
   }
   bool InvalidPrinterSetting() const {
-    return preview_status_ == PreviewStatus::kPreviewStatusInvalidSetting;
+    return preview_status_ == PreviewStatus::kInvalidSetting;
   }
   bool IsMetafileReadyForPrinting() const {
-    return preview_status_ ==
-           PreviewStatus::kPreviewStatusMetafileReadyForPrinting;
+    return preview_status_ == PreviewStatus::kMetafileReadyForPrinting;
   }
   uint32_t page_count() const { return page_count_; }
   mojom::PageSizeMargins* page_layout() const {
@@ -212,23 +211,27 @@ class FakePrintPreviewUI : public mojom::PrintPreviewUI {
   }
   void MetafileReadyForPrinting(mojom::DidPreviewDocumentParamsPtr params,
                                 int32_t request_id) override {
-    preview_status_ = PreviewStatus::kPreviewStatusMetafileReadyForPrinting;
+    DCHECK_EQ(preview_status_, PreviewStatus::kNone);
+    preview_status_ = PreviewStatus::kMetafileReadyForPrinting;
     did_preview_document_params_ = std::move(params);
     RunQuitClosure();
   }
   void PrintPreviewFailed(int32_t document_cookie,
                           int32_t request_id) override {
-    preview_status_ = PreviewStatus::kPreviewStatusFailed;
+    DCHECK_EQ(preview_status_, PreviewStatus::kNone);
+    preview_status_ = PreviewStatus::kFailed;
     RunQuitClosure();
   }
   void PrintPreviewCancelled(int32_t document_cookie,
                              int32_t request_id) override {
-    preview_status_ = PreviewStatus::kPreviewStatusCancelled;
+    DCHECK_EQ(preview_status_, PreviewStatus::kNone);
+    preview_status_ = PreviewStatus::kCancelled;
     RunQuitClosure();
   }
   void PrinterSettingsInvalid(int32_t document_cookie,
                               int32_t request_id) override {
-    preview_status_ = PreviewStatus::kPreviewStatusInvalidSetting;
+    DCHECK_EQ(preview_status_, PreviewStatus::kNone);
+    preview_status_ = PreviewStatus::kInvalidSetting;
     RunQuitClosure();
   }
   void DidGetDefaultPageLayout(mojom::PageSizeMarginsPtr page_layout_in_points,
@@ -255,15 +258,15 @@ class FakePrintPreviewUI : public mojom::PrintPreviewUI {
     std::move(quit_closure_).Run();
   }
 
-  enum PreviewStatus {
-    kPreviewStatusNone = 0,
-    kPreviewStatusFailed,
-    kPreviewStatusCancelled,
-    kPreviewStatusInvalidSetting,
-    kPreviewStatusMetafileReadyForPrinting,
+  enum class PreviewStatus {
+    kNone = 0,
+    kFailed,
+    kCancelled,
+    kInvalidSetting,
+    kMetafileReadyForPrinting,
   };
 
-  PreviewStatus preview_status_ = PreviewStatus::kPreviewStatusNone;
+  PreviewStatus preview_status_ = PreviewStatus::kNone;
   uint32_t page_count_ = 0;
   bool has_custom_page_size_style_ = false;
   // Simulates cancelling print preview if |print_preview_pages_remaining_|
