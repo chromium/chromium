@@ -160777,6 +160777,34 @@
        {}
       ]
      ],
+     "paint": {
+      "col-paint-htb-rtl.html": [
+       "15084218187d6d97197552470563282c945d513b",
+       [
+        null,
+        [
+         [
+          "/css/css-tables/paint/col-paint-htb-rtl-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "col-paint-vrl-rtl.html": [
+       "d76ea59dac6b32f6dfa047e413c2daa306ca60e4",
+       [
+        null,
+        [
+         [
+          "/css/css-tables/paint/col-paint-vrl-rtl-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
+     },
      "percent-height-overflow-auto-in-unrestricted-block-size-cell.tentative.html": [
       "ffbb796b6afe0fe9fa93e15de3586bef96174d8b",
       [
@@ -281924,6 +281952,16 @@
       "53f89af133dace914ebaaf7dfb3e517e8a4193fb",
       []
      ],
+     "paint": {
+      "col-paint-htb-rtl-ref.html": [
+       "107a960958a762fb5579593760d9957b7b9d7d07",
+       []
+      ],
+      "col-paint-vrl-rtl-ref.html": [
+       "a651e03b1c33a9428a379f42f64409eaefd0244a",
+       []
+      ]
+     },
      "parsing": {
       "border-spacing-valid-expected.txt": [
        "3f983b6eab3666d6064897cd0829c19d3d9a79d6",
@@ -503847,6 +503885,15 @@
       }
      ]
     ],
+    "preload-type-match.html": [
+     "646500f6b38cce3abe06abd8b85a207974cacabb",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
     "preload-with-type.html": [
      "7f92606cb7954cab45f28495499fbd84c3446459",
      [
@@ -543376,7 +543423,7 @@
       ]
      ],
      "script-invalid-json.https.tentative.html": [
-      "036de1bec1c669847247912e42296d63f74db8f2",
+      "f4f9405e2de7eef2f5133f708ab582c5e1da20de",
       [
        null,
        {}
