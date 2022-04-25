@@ -445,6 +445,9 @@ struct BLINK_EXPORT WebNavigationParams {
   WebVector<WebHistoryItem> navigation_api_forward_entries;
 
   // List of URLs which are preloaded by HTTP Early Hints.
+  // TODO(https://crbug.com/1317936): Pass information more than URL such as
+  // request destination so that ResourceFetcher can provide more useful
+  // console messages when Early Hints preloaded resources are not used.
   WebVector<WebURL> early_hints_preloaded_resources;
 
   // If this is a navigation to fenced frame from an interest group auction,

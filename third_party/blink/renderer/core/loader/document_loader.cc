@@ -331,7 +331,7 @@ struct SameSizeAsDocumentLoader
   WebVector<WebHistoryItem> navigation_api_back_entries;
   WebVector<WebHistoryItem> navigation_api_forward_entries;
   std::unique_ptr<CodeCacheHost> code_cache_host;
-  HashSet<KURL> early_hints_preloaded_resources;
+  HashMap<KURL, EarlyHintsPreloadEntry> early_hints_preloaded_resources;
   absl::optional<Vector<KURL>> ad_auction_components;
   mojom::blink::FencedFrameReportingPtr fenced_frame_reporting;
   bool anonymous;
@@ -488,7 +488,7 @@ DocumentLoader::DocumentLoader(
     ReplaceWithEmptyDocument();
 
   for (const auto& resource : params_->early_hints_preloaded_resources)
-    early_hints_preloaded_resources_.insert(resource);
+    early_hints_preloaded_resources_.insert(resource, EarlyHintsPreloadEntry());
 
   if (IsBackForwardLoadType(params_->frame_load_type))
     DCHECK(history_item_);
@@ -580,8 +580,8 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   params->force_enabled_origin_trials =
       CopyForceEnabledOriginTrials(force_enabled_origin_trials_);
   params->anonymous = anonymous_;
-  for (const auto& resource : early_hints_preloaded_resources_)
-    params->early_hints_preloaded_resources.push_back(resource);
+  for (const auto& pair : early_hints_preloaded_resources_)
+    params->early_hints_preloaded_resources.push_back(pair.key);
   if (ad_auction_components_) {
     params->ad_auction_components.emplace();
     for (const KURL& url : *ad_auction_components_) {
@@ -2897,7 +2897,8 @@ void DocumentLoader::NotifyPrerenderingDocumentActivated(
   GetTiming().MarkActivationStart(params.activation_start);
 }
 
-HashSet<KURL> DocumentLoader::GetEarlyHintsPreloadedResources() {
+HashMap<KURL, EarlyHintsPreloadEntry>
+DocumentLoader::GetEarlyHintsPreloadedResources() {
   return early_hints_preloaded_resources_;
 }
 

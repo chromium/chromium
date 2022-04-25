@@ -74,6 +74,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
+#include "third_party/blink/renderer/platform/loader/fetch/early_hints_preload_entry.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
@@ -366,7 +367,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   mojo::PendingRemote<blink::mojom::CodeCacheHost> CreateWorkerCodeCacheHost();
 
-  HashSet<KURL> GetEarlyHintsPreloadedResources();
+  HashMap<KURL, EarlyHintsPreloadEntry> GetEarlyHintsPreloadedResources();
 
   const absl::optional<Vector<KURL>>& AdAuctionComponents() const {
     return ad_auction_components_;
@@ -667,7 +668,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // requests to fetch code cache when loading resources.
   std::unique_ptr<CodeCacheHost> code_cache_host_;
 
-  HashSet<KURL> early_hints_preloaded_resources_;
+  HashMap<KURL, EarlyHintsPreloadEntry> early_hints_preloaded_resources_;
 
   // If this is a navigation to fenced frame from an interest group auction,
   // contains URNs to the ad components returned by the winning bid. Null,

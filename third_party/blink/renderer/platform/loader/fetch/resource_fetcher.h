@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/loader/fetch/early_hints_preload_entry.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/preload_key.h"
@@ -310,8 +311,9 @@ class PLATFORM_EXPORT ResourceFetcher
     return back_forward_cache_loader_helper_;
   }
 
-  void SetEarlyHintsPreloadedResources(HashSet<KURL> preloaded) {
-    early_hints_preloaded_resources_ = std::move(preloaded);
+  void SetEarlyHintsPreloadedResources(
+      HashMap<KURL, EarlyHintsPreloadEntry> resources) {
+    early_hints_preloaded_resources_ = std::move(resources);
   }
 
  private:
@@ -463,7 +465,7 @@ class PLATFORM_EXPORT ResourceFetcher
   HeapHashSet<Member<ResourceLoader>> loaders_;
   HeapHashSet<Member<ResourceLoader>> non_blocking_loaders_;
 
-  HashSet<KURL> early_hints_preloaded_resources_;
+  HashMap<KURL, EarlyHintsPreloadEntry> early_hints_preloaded_resources_;
 
   std::unique_ptr<HashSet<String>> preloaded_urls_for_test_;
 

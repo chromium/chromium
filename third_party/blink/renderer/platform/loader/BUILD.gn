@@ -35,6 +35,7 @@ blink_platform_sources("loader") {
     "fetch/data_pipe_bytes_consumer.cc",
     "fetch/data_pipe_bytes_consumer.h",
     "fetch/detachable_use_counter.h",
+    "fetch/early_hints_preload_entry.h",
     "fetch/fetch_api_request_body_mojom_traits.cc",
     "fetch/fetch_api_request_body_mojom_traits.h",
     "fetch/fetch_client_settings_object.h",
