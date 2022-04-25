@@ -23,6 +23,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/views/controls/webview/web_contents_set_background_color.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/tab_helper.h"
@@ -175,6 +176,12 @@ void SideSearchTabContentsHelper::CreateSidePanelContents() {
   side_panel_contents_ =
       content::WebContents::Create(content::WebContents::CreateParams(
           web_contents()->GetBrowserContext(), nullptr));
+
+  // Apply a transparent background color so that we fallback to the hosting
+  // side panel view's background color.
+  views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
+      side_panel_contents_.get(), SK_ColorTRANSPARENT);
+
   task_manager::WebContentsTags::CreateForTabContents(
       side_panel_contents_.get());
 
