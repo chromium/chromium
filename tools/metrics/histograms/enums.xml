@@ -72606,8 +72606,12 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="PerUserDaemonStoreFail">
-  <int value="0" label="Failed disabling consent"/>
-  <int value="1" label="Failed enabling consent"/>
+  <int value="0" label="Failed disabling consent in daemon store"/>
+  <int value="1" label="Failed enabling consent in daemon store"/>
+  <int value="2" label="Failed writing boot-collector consent"/>
+  <int value="3" label="Failed deleting boot-collector consent"/>
+  <int value="4" label="Write attempted to daemon store and boot-collector"/>
+  <int value="5" label="Delete boot-collector file succeeded"/>
 </enum>
 
 <enum name="PerUserIdType">

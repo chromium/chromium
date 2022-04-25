@@ -201,9 +201,9 @@ chromium-metrics-reviews@google.com.
   <owner>jongahn@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    Records the state that metrics service is in when user log store was set or
-    unset. This should be recorded once when a valid user that can use per-user
-    logs in and unsetting should be recorded once when a user logs out.
+    Records the status of writing the per-user metrics state to daemon-store (or
+    the boot state to /home/chronos/). Written on login or logout, and when a
+    user changes their consent state.
   </summary>
 </histogram>
 

@@ -30,6 +30,14 @@ namespace {
 
 constexpr char kDaemonStorePath[] = "/run/daemon-store/uma-consent/";
 constexpr char kDaemonStoreFileName[] = "consent-enabled";
+// We want to collect crashes that cause the OS to reboot based on the consent
+// of the user logged in at the time the OS rebooted. These "boot collectors"
+// can't access the cryptohome of that user, so we track the current consent
+// state outside of cryptohome, solely for the purpose of respecting user
+// consent while collecting these crashes.
+constexpr char kOutOfCryptohomeConsent[] = "/home/chronos/boot-collect-consent";
+constexpr char kWriteFileFailMetric[] =
+    "UMA.CrosPerUser.DaemonStoreWriteFailed";
 
 absl::optional<bool> g_is_managed_for_testing;
 
@@ -38,10 +46,16 @@ std::string GenerateUserId() {
 }
 
 // Keep in sync with PerUserDaemonStoreFail enum.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused
 enum class DaemonStoreFailType {
   kFailedDisabling = 0,
   kFailedEnabling = 1,
-  kMaxValue = kFailedEnabling,
+  kFailedWritingBoot = 2,
+  kFailedDeletingBoot = 3,
+  kWritesAttempted = 4,
+  kRemoveSucceeded = 5,
+  kMaxValue = kRemoveSucceeded,
 };
 
 // Keep in sync with PerUserIdType enum.
@@ -61,10 +75,30 @@ void WriteDaemonStore(base::FilePath path, bool metrics_consent) {
   if (!base::WriteFile(path, file_contents)) {
     LOG(ERROR) << "Failed to persist consent change " << file_contents
                << " to daemon-store. State on disk will be inaccurate!";
-    base::UmaHistogramEnumeration("UMA.CrosPerUser.DaemonStoreWriteFailed",
+    base::UmaHistogramEnumeration(kWriteFileFailMetric,
                                   metrics_consent
                                       ? DaemonStoreFailType::kFailedEnabling
                                       : DaemonStoreFailType::kFailedDisabling);
+  }
+  if (!base::WriteFile(base::FilePath(kOutOfCryptohomeConsent),
+                       file_contents)) {
+    LOG(ERROR) << "Failed to write out-of-cryptohome consent change: "
+               << file_contents;
+    base::UmaHistogramEnumeration(kWriteFileFailMetric,
+                                  DaemonStoreFailType::kFailedWritingBoot);
+  }
+  base::UmaHistogramEnumeration(kWriteFileFailMetric,
+                                DaemonStoreFailType::kWritesAttempted);
+}
+
+void RemoveGlobalMetricsConsent() {
+  if (!base::DeleteFile(base::FilePath(kOutOfCryptohomeConsent))) {
+    LOG(ERROR) << "failed to remove out-of-cryptohome consent file";
+    base::UmaHistogramEnumeration(kWriteFileFailMetric,
+                                  DaemonStoreFailType::kFailedDeletingBoot);
+  } else {
+    base::UmaHistogramEnumeration(kWriteFileFailMetric,
+                                  DaemonStoreFailType::kRemoveSucceeded);
   }
 }
 
@@ -83,6 +117,15 @@ PerUserStateManagerChromeOS::PerUserStateManagerChromeOS(
       signing_key_(signing_key) {
   user_manager_->AddSessionStateObserver(this);
   user_manager_->AddObserver(this);
+  // This could be null in very narrow cases during early browser startup
+  // (PreMainMessageLoopRun) or shutdown (destruction of
+  // ChromeMainBrowserPartsAsh).
+  // It's unlikely that we'd be running this constructor that early or that
+  // late, but just in case, avoid crashing. We won't behave correctly on
+  // logout, but if there's no termination manager there's not much we can do.
+  if (ash::SessionTerminationManager::Get()) {
+    ash::SessionTerminationManager::Get()->AddObserver(this);
+  }
 
   task_runner_ =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
@@ -326,6 +369,12 @@ void PerUserStateManagerChromeOS::OnUserToBeRemoved(
   }
 }
 
+void PerUserStateManagerChromeOS::OnSessionWillBeTerminated() {
+  // A logout will log out *all* signed-in users, so remove the user-specific
+  // consent file.
+  task_runner_->PostTask(FROM_HERE, base::BindOnce(RemoveGlobalMetricsConsent));
+}
+
 void PerUserStateManagerChromeOS::InitializeProfileMetricsState() {
   DCHECK_EQ(state_, State::USER_LOGIN);
 
@@ -398,6 +447,16 @@ void PerUserStateManagerChromeOS::InitializeProfileMetricsState() {
   // allowed to change the metrics consent.
   if (IsUserAllowedToChangeConsent(current_user_)) {
     SetReportingState(user_prefs->GetBoolean(prefs::kMetricsUserConsent));
+  } else {
+    // Clear out the non-cryptohome consent file, as we shouldn't allow this
+    // user to set consent. (Either we're the owner, or per-user consent is
+    // disabled. In either case, this user doesn't have any say over consent
+    // beyond device policy.)
+    // In general, the non-cryptohome consent file should be cleared on logout,
+    // but on an abnormal logout -- e.g. a session-manager crash -- it wouldn't
+    // be.
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(RemoveGlobalMetricsConsent));
   }
 }
 

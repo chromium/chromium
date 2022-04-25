@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/components/login/session/session_termination_manager.h"
 #include "base/callback_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -39,7 +40,8 @@ namespace metrics {
 // assumption is only true in Ash Chrome.
 class PerUserStateManagerChromeOS
     : public user_manager::UserManager::UserSessionStateObserver,
-      public user_manager::UserManager::Observer {
+      public user_manager::UserManager::Observer,
+      public ash::SessionTerminationManager::Observer {
  public:
   // Callback to handle changes in user metrics consent.
   using MetricsConsentHandler = base::RepeatingCallback<void(bool)>;
@@ -191,6 +193,9 @@ class PerUserStateManagerChromeOS
 
   // UserManager::Observer:
   void OnUserToBeRemoved(const AccountId& account_id) override;
+
+  // ash::SessionTerminationManager::Observer:
+  void OnSessionWillBeTerminated() override;
 
   // Loads appropriate prefs from |current_user_| and creates new log storage
   // using profile prefs.
