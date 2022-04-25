@@ -37,6 +37,7 @@ constexpr struct {
   uint16_t vendor;
   uint16_t product_id;
 } kKeyboardBlocklist[] = {
+    {0x0111, 0x183a},  // SteelSeries Aerox 3 Wireless (Bluetooth)
     {0x03f0, 0xa407},  // HP X4000 Wireless Mouse
     {0x045e, 0x0745},  // Microsoft Wireless Mobile Mouse 6000
     {0x045e, 0x0821},  // Microsoft Surface Precision Mouse
@@ -79,6 +80,8 @@ constexpr struct {
     {0x1038, 0x1369},  // SteelSeries Sensei RAW Frost Blue
     {0x1038, 0x1824},  // SteelSeries Rival 3 Wired
     {0x1038, 0x1830},  // SteelSeries Rival 3 Wireless (USB dongle)
+    {0x1038, 0x1836},  // SteelSeries Aerox 3
+    {0x1038, 0x183a},  // SteelSeries Aerox 3 Wireless (USB dongle)
     {0x1050, 0x0010},  // Yubico.com Yubikey
     {0x1050, 0x0407},  // Yubico.com Yubikey 4 OTP+U2F+CCID
     {0x1532, 0x007a},  // Razer Viper Ultimate (Wired)
