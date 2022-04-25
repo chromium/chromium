@@ -1146,9 +1146,11 @@ public class StartSurfaceMediatorUnitTest {
         verify(mMainTabGridController).showOverview(eq(false));
 
         when(mMainTabGridController.overviewVisible()).thenReturn(true);
-        mediator.initWithNative(mOmniboxStub, mExploreSurfaceCoordinatorFactory, mPrefService);
+        mediator.initWithNative(
+                mOmniboxStub, mExploreSurfaceCoordinatorFactory, mPrefService, null);
         when(mMainTabGridController.overviewVisible()).thenReturn(true);
-        mediator.initWithNative(mOmniboxStub, mExploreSurfaceCoordinatorFactory, mPrefService);
+        mediator.initWithNative(
+                mOmniboxStub, mExploreSurfaceCoordinatorFactory, mPrefService, null);
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
     }
 
@@ -1289,9 +1291,11 @@ public class StartSurfaceMediatorUnitTest {
         StartSurfaceMediator mediator = createStartSurfaceMediatorWithoutInit(
                 isStartSurfaceEnabled, excludeMVTiles, hadWarmStart);
         mediator.initWithNative(mOmniboxStub,
-                isStartSurfaceEnabled ? mExploreSurfaceCoordinatorFactory : null, mPrefService);
+                isStartSurfaceEnabled ? mExploreSurfaceCoordinatorFactory : null, mPrefService,
+                null);
         mediator.initWithNative(mOmniboxStub,
-                isStartSurfaceEnabled ? mExploreSurfaceCoordinatorFactory : null, mPrefService);
+                isStartSurfaceEnabled ? mExploreSurfaceCoordinatorFactory : null, mPrefService,
+                null);
         return mediator;
     }
 

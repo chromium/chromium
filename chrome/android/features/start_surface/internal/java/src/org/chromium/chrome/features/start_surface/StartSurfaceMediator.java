@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.prefs.PrefService;
@@ -167,6 +168,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
     private boolean mHideOverviewOnTabSelecting = true;
     private StartSurface.OnTabSelectingListener mOnTabSelectingListener;
     private ViewGroup mTabSwitcherContainer;
+    private SnackbarManager mSnackbarManager;
 
     StartSurfaceMediator(TabSwitcher.Controller controller, ViewGroup tabSwitcherContainer,
             TabModelSelector tabModelSelector, @Nullable PropertyModel propertyModel,
@@ -338,9 +340,10 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
 
     void initWithNative(@Nullable OmniboxStub omniboxStub,
             @Nullable ExploreSurfaceCoordinatorFactory exploreSurfaceCoordinatorFactory,
-            PrefService prefService) {
+            PrefService prefService, @Nullable SnackbarManager snackbarManager) {
         mOmniboxStub = omniboxStub;
         mExploreSurfaceCoordinatorFactory = exploreSurfaceCoordinatorFactory;
+        mSnackbarManager = snackbarManager;
         if (mPropertyModel != null) {
             assert mOmniboxStub != null;
 
@@ -577,6 +580,12 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
     @Override
     public ViewGroup getTabSwitcherContainer() {
         return mTabSwitcherContainer;
+    }
+
+    @Override
+    public void setSnackbarParentView(ViewGroup parentView) {
+        if (mSnackbarManager == null) return;
+        mSnackbarManager.setParentView(parentView);
     }
 
     @Override

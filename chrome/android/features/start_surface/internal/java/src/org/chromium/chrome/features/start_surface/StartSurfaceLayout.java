@@ -621,6 +621,7 @@ public class StartSurfaceLayout extends Layout {
                 // Skip fade-in for tab switcher view, since it will translate in instead.
                 mController.getTabSwitcherContainer().setVisibility(View.VISIBLE);
                 mController.showOverview(false);
+                mController.setSnackbarParentView(mController.getTabSwitcherContainer());
             }
 
             @Override
@@ -651,6 +652,11 @@ public class StartSurfaceLayout extends Layout {
         mTabToSwitcherAnimation = new AnimatorSet();
         mTabToSwitcherAnimation.play(translateDown);
         mTabToSwitcherAnimation.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mController.setSnackbarParentView(null);
+            }
+
             @Override
             public void onAnimationEnd(Animator animation) {
                 mTabToSwitcherAnimation = null;

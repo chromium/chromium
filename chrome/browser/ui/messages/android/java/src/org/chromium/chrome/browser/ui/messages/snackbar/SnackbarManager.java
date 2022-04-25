@@ -81,6 +81,7 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
     private boolean mActivityInForeground;
     private boolean mIsDisabledForTesting;
     private ViewGroup mSnackbarParentView;
+    private ViewGroup mSnackbarTemporaryParentView;
     private final WindowAndroid mWindowAndroid;
     private final Runnable mHideRunnable = new Runnable() {
         @Override
@@ -213,16 +214,28 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
     }
 
     /**
-     * Temporarily changes the parent {@link ViewGroup} of the snackbar. If a snackbar is currently
-     * showing, this method removes the snackbar from its original parent, and attaches it to the
-     * given parent. If <code>null</code> is given, the snackbar will be reattached to its original
-     * parent.
+     * Overrides the parent {@link ViewGroup} of the currently-showing snackbar. This method removes
+     * the snackbar from its original parent, and attaches it to the given parent. If
+     * <code>null</code> is given, the snackbar will be reattached to its original parent.
      *
-     * @param overridingParent The temporary parent of the snackbar. If null, previous calls of this
-     *                         method will be reverted.
+     * @param overridingParent The overriding parent for the current snackbar. If null, previous
+     *                         calls of this method will be reverted.
      */
     public void overrideParent(ViewGroup overridingParent) {
         if (mView != null) mView.overrideParent(overridingParent);
+    }
+
+    /**
+     * Changes the parent {@link ViewGroup} for snackbars (including the currently showing snackbar,
+     * if it exists). If <code>null</code> is given, snackbars will once again be attached to the
+     * original parent.
+     *
+     * @param parentView The new parent for snackbars. If null, previous calls of this
+     *                   method will be reverted.
+     */
+    public void setParentView(ViewGroup parentView) {
+        mSnackbarTemporaryParentView = parentView;
+        overrideParent(mSnackbarTemporaryParentView);
     }
 
     /**
@@ -251,6 +264,13 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
                 mView = new SnackbarView(
                         mActivity, this, currentSnackbar, mSnackbarParentView, mWindowAndroid);
                 mView.show();
+
+                // If there is a temporary parent set, reparent accordingly. We override here
+                // instead of instantiating the new SnackbarView with the temporary parent, so
+                // that overriding with <code>null</code> will reparent to mSnackbarParentView.
+                if (mSnackbarTemporaryParentView != null) {
+                    mView.overrideParent(mSnackbarTemporaryParentView);
+                }
             } else {
                 viewChanged = mView.update(currentSnackbar);
             }
