@@ -2098,10 +2098,13 @@ void PrintRenderFrameHelper::DidFinishPrinting(PrintingResult result) {
       DCHECK(!notify_browser_of_print_failure_);
       break;
 
+    case INVALID_PAGE_RANGE:
     case FAIL_PRINT:
       if (notify_browser_of_print_failure_ && print_pages_params_) {
         GetPrintManagerHost()->PrintingFailed(
-            cookie, mojom::PrintFailureReason::kGeneralFailure);
+            cookie, result == INVALID_PAGE_RANGE
+                        ? mojom::PrintFailureReason::kInvalidPageRange
+                        : mojom::PrintFailureReason::kGeneralFailure);
       }
       break;
 
@@ -2155,31 +2158,30 @@ void PrintRenderFrameHelper::PrintPages() {
   GetPrintManagerHost()->DidGetPrintedPagesCount(
       print_pages_params_->params->document_cookie, page_count);
 
-  bool is_pdf =
-      IsPrintingPdfFrame(prep_frame_view_->frame(), prep_frame_view_->node());
-  if (!PrintPagesNative(prep_frame_view_->frame(), page_count, is_pdf)) {
+  std::vector<uint32_t> pages_to_print =
+      PageNumber::GetPages(print_pages_params_->pages, page_count);
+  if (pages_to_print.empty())
+    return DidFinishPrinting(INVALID_PAGE_RANGE);
+  if (!PrintPagesNative(prep_frame_view_->frame(), page_count,
+                        pages_to_print)) {
     LOG(ERROR) << "Printing failed.";
     return DidFinishPrinting(FAIL_PRINT);
   }
 }
 
-bool PrintRenderFrameHelper::PrintPagesNative(blink::WebLocalFrame* frame,
-                                              uint32_t page_count,
-                                              bool is_pdf) {
+bool PrintRenderFrameHelper::PrintPagesNative(
+    blink::WebLocalFrame* frame,
+    uint32_t page_count,
+    const std::vector<uint32_t>& printed_pages) {
   const mojom::PrintPagesParams& params = *print_pages_params_;
   const mojom::PrintParams& print_params = *params.params;
 
-  std::vector<uint32_t> printed_pages =
-      PageNumber::GetPages(params.pages, page_count);
-
+  DCHECK(!printed_pages.empty());
   if (print_params.preview_ui_id < 0) {
     // Printing for system dialog.
     base::UmaHistogramCounts1M("PrintPreview.PageCount.SystemDialog",
                                printed_pages.size());
   }
-
-  if (printed_pages.empty())
-    return false;
 
   ContentProxySet typeface_content_info;
   MetafileSkia metafile(print_params.printed_doc_type,
@@ -2214,6 +2216,8 @@ bool PrintRenderFrameHelper::PrintPagesNative(blink::WebLocalFrame* frame,
   page_size_in_dpi = nullptr;
   content_area_in_dpi = nullptr;
 #endif
+  bool is_pdf =
+      IsPrintingPdfFrame(prep_frame_view_->frame(), prep_frame_view_->node());
   PrintPageInternal(print_params, printed_pages[0], page_count,
                     GetScaleFactor(print_params.scale_factor, is_pdf), frame,
                     &metafile, page_size_in_dpi, content_area_in_dpi);

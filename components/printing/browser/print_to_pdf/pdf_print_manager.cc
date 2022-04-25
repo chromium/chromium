@@ -81,6 +81,8 @@ std::string PdfPrintManager::PrintResultToString(PrintResult result) {
       return "The previous printing job hasn't finished";
     case PAGE_RANGE_SYNTAX_ERROR:
       return "Page range syntax error";
+    case PAGE_RANGE_INVALID_RANGE:
+      return "Page range is invalid (start > end)";
     case PAGE_COUNT_EXCEEDED:
       return "Page range exceeds page count";
     default:
@@ -92,7 +94,6 @@ std::string PdfPrintManager::PrintResultToString(PrintResult result) {
 void PdfPrintManager::PrintToPdf(
     content::RenderFrameHost* rfh,
     const std::string& page_ranges,
-    bool ignore_invalid_page_ranges,
     printing::mojom::PrintPagesParamsPtr print_pages_params,
     PrintToPdfCallback callback) {
   DCHECK(callback);
@@ -111,7 +112,6 @@ void PdfPrintManager::PrintToPdf(
 
   printing_rfh_ = rfh;
   page_ranges_ = page_ranges;
-  ignore_invalid_page_ranges_ = ignore_invalid_page_ranges;
   print_pages_params_ = std::move(print_pages_params);
   set_cookie(print_pages_params_->params->document_cookie);
   callback_ = std::move(callback);
@@ -149,16 +149,15 @@ void PdfPrintManager::ScriptedPrint(
     return;
   }
   absl::variant<printing::PageRanges, PageRangeError> page_ranges =
-      TextPageRangesToPageRanges(page_ranges_, ignore_invalid_page_ranges_,
-                                 params->expected_pages_count);
+      TextPageRangesToPageRanges(page_ranges_);
   if (absl::holds_alternative<PageRangeError>(page_ranges)) {
     PrintResult print_result;
     switch (absl::get<PageRangeError>(page_ranges)) {
-      case PageRangeError::SYNTAX_ERROR:
+      case PageRangeError::kSyntaxError:
         print_result = PAGE_RANGE_SYNTAX_ERROR;
         break;
-      case PageRangeError::LIMIT_ERROR:
-        print_result = PAGE_COUNT_EXCEEDED;
+      case PageRangeError::kInvalidRange:
+        print_result = PAGE_RANGE_INVALID_RANGE;
         break;
     }
     ReleaseJob(print_result);

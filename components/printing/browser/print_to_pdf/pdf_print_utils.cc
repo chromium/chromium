@@ -30,9 +30,7 @@ static constexpr double kDefaultMarginInInches =
 }  // namespace
 
 absl::variant<printing::PageRanges, PageRangeError> TextPageRangesToPageRanges(
-    base::StringPiece page_range_text,
-    bool ignore_invalid_page_ranges,
-    uint32_t expected_page_count) {
+    base::StringPiece page_range_text) {
   printing::PageRanges page_ranges;
   for (const auto& range_string :
        base::SplitStringPiece(page_range_text, ",", base::TRIM_WHITESPACE,
@@ -40,49 +38,41 @@ absl::variant<printing::PageRanges, PageRangeError> TextPageRangesToPageRanges(
     printing::PageRange range;
     if (range_string.find("-") == base::StringPiece::npos) {
       if (!base::StringToUint(range_string, &range.from))
-        return PageRangeError::SYNTAX_ERROR;
+        return PageRangeError::kSyntaxError;
       range.to = range.from;
     } else if (range_string == "-") {
       range.from = 1;
-      range.to = expected_page_count;
+      // Set last page to max value so it gets capped with actual
+      // page count once it becomes known in renderer during printing.
+      static_assert(printing::PageRange::kMaxPage <
+                    std::numeric_limits<uint32_t>::max());
+      range.to = printing::PageRange::kMaxPage + 1;
     } else if (base::StartsWith(range_string, "-")) {
       range.from = 1;
       if (!base::StringToUint(range_string.substr(1), &range.to))
-        return PageRangeError::SYNTAX_ERROR;
+        return PageRangeError::kSyntaxError;
     } else if (base::EndsWith(range_string, "-")) {
-      range.to = expected_page_count;
+      // See comment regarding kMaxPage above.
+      range.to = printing::PageRange::kMaxPage + 1;
       if (!base::StringToUint(range_string.substr(0, range_string.length() - 1),
                               &range.from)) {
-        return PageRangeError::SYNTAX_ERROR;
+        return PageRangeError::kSyntaxError;
       }
     } else {
       auto tokens = base::SplitStringPiece(
           range_string, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
       if (tokens.size() != 2 || !base::StringToUint(tokens[0], &range.from) ||
           !base::StringToUint(tokens[1], &range.to)) {
-        return PageRangeError::SYNTAX_ERROR;
+        return PageRangeError::kSyntaxError;
       }
     }
 
-    if (range.from < 1 || range.from > range.to) {
-      if (!ignore_invalid_page_ranges)
-        return PageRangeError::SYNTAX_ERROR;
-      continue;
-    }
-    if (range.from > expected_page_count) {
-      if (!ignore_invalid_page_ranges)
-        return PageRangeError::LIMIT_ERROR;
-      continue;
-    }
-
-    if (range.to > expected_page_count)
-      range.to = expected_page_count;
+    if (range.from < 1 || range.from > range.to)
+      return PageRangeError::kInvalidRange;
 
     // Page numbers are 1-based in the dictionary.
     // Page numbers are 0-based for the print settings.
-    range.from--;
-    range.to--;
-    page_ranges.push_back(range);
+    page_ranges.push_back({range.from - 1, range.to - 1});
   }
   return page_ranges;
 }

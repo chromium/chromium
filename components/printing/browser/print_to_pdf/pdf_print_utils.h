@@ -16,17 +16,12 @@
 
 namespace print_to_pdf {
 
-enum class PageRangeError {
-  SYNTAX_ERROR,
-  LIMIT_ERROR,
-};
+enum class PageRangeError { kSyntaxError, kInvalidRange };
 
 // Converts textual representation of the page range to printing::PageRanges,
 // page range error is returned as the PageRangeError variant case.
 absl::variant<printing::PageRanges, PageRangeError> TextPageRangesToPageRanges(
-    base::StringPiece page_range_text,
-    bool ignore_invalid_page_ranges,
-    uint32_t expected_page_count);
+    base::StringPiece page_range_text);
 
 // Converts print settings to printing::mojom::PrintPagesParamsPtr,
 // document error is returned as the string variant case.

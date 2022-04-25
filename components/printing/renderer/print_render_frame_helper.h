@@ -190,6 +190,7 @@ class PrintRenderFrameHelper
     OK,
     FAIL_PRINT_INIT,
     FAIL_PRINT,
+    INVALID_PAGE_RANGE,
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
     FAIL_PREVIEW,
     INVALID_SETTINGS,
@@ -367,7 +368,7 @@ class PrintRenderFrameHelper
   void PrintPages();
   bool PrintPagesNative(blink::WebLocalFrame* frame,
                         uint32_t page_count,
-                        bool is_pdf);
+                        const std::vector<uint32_t>& pages_to_print);
   void FinishFramePrinting();
   // Render the frame for printing.
   bool RenderPagesForPrint(blink::WebLocalFrame* frame,

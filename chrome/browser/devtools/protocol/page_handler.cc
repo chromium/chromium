@@ -226,7 +226,6 @@ void PageHandler::PrintToPDF(protocol::Maybe<bool> landscape,
           print_to_pdf::PdfPrintManager::FromWebContents(web_contents_.get())) {
     print_manager->PrintToPdf(
         web_contents_->GetMainFrame(), page_ranges.fromMaybe(""),
-        /*ignore_invalid_page_ranges=*/false,
         std::move(absl::get<printing::mojom::PrintPagesParamsPtr>(
             print_pages_params)),
         base::BindOnce(&PageHandler::OnPDFCreated,

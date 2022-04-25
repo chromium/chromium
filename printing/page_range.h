@@ -19,6 +19,11 @@ using PageRanges = std::vector<PageRange>;
 
 // Print range is inclusive. To select one page, set from == to.
 struct COMPONENT_EXPORT(PRINTING) PageRange {
+  // Any value above maximum practical page count (enforced by PageNumber)
+  // would work, but we chose something that works even where the page
+  // numbers are 1-based (i.e. can be increased by one without overflow).
+  static constexpr uint32_t kMaxPage = std::numeric_limits<uint32_t>::max() - 1;
+
   uint32_t from;
   uint32_t to;
 
