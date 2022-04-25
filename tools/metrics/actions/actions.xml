@@ -27533,6 +27533,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_Impression_FromManageCardsBubble"
     not_user_triggered="true">
+  <obsolete>Removed in M103.</obsolete>
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
@@ -27582,6 +27583,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Impression_FromSaveCardBubble" not_user_triggered="true">
+  <obsolete>Removed in M103.</obsolete>
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
@@ -27669,6 +27671,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithAccount_FromManageCardsBubble"
     not_user_triggered="true">
+  <obsolete>Removed in M103.</obsolete>
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
@@ -27709,6 +27712,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithAccount_FromSaveCardBubble"
     not_user_triggered="true">
+  <obsolete>Removed in M103.</obsolete>
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
@@ -27778,6 +27782,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithNoAccount_FromManageCardsBubble"
     not_user_triggered="true">
+  <obsolete>Removed in M103.</obsolete>
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
@@ -27819,6 +27824,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_ImpressionWithNoAccount_FromSaveCardBubble"
     not_user_triggered="true">
+  <obsolete>Removed in M103.</obsolete>
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
@@ -28081,6 +28087,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromManageCardsBubble">
+  <obsolete>Removed in M103.</obsolete>
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
@@ -28138,6 +28145,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromSaveCardBubble">
+  <obsolete>Removed in M103.</obsolete>
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
@@ -28425,6 +28433,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_SigninNewAccountExistingAccount_FromManageCardsBubble">
+  <obsolete>Removed in M103.</obsolete>
   <owner>bsazonov@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <owner>msarda@chromium.org</owner>
@@ -28468,6 +28477,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_SigninNewAccountExistingAccount_FromSaveCardBubble">
+  <obsolete>Removed in M103.</obsolete>
   <owner>bsazonov@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <owner>msarda@chromium.org</owner>
@@ -28544,6 +28554,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_SigninNewAccountNoExistingAccount_FromManageCardsBubble">
+  <obsolete>Removed in M103.</obsolete>
   <owner>bsazonov@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <owner>msarda@chromium.org</owner>
@@ -28589,6 +28600,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_SigninNewAccountNoExistingAccount_FromSaveCardBubble">
+  <obsolete>Removed in M103.</obsolete>
   <owner>bsazonov@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <owner>msarda@chromium.org</owner>
@@ -28794,6 +28806,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_SigninNotDefault_FromManageCardsBubble">
+  <obsolete>Removed in M103.</obsolete>
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
@@ -28835,6 +28848,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_SigninNotDefault_FromSaveCardBubble">
+  <obsolete>Removed in M103.</obsolete>
   <owner>bsazonov@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <owner>msarda@chromium.org</owner>
@@ -28920,6 +28934,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_SigninWithDefault_FromManageCardsBubble">
+  <obsolete>Removed in M103.</obsolete>
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <description>
@@ -28961,6 +28976,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_SigninWithDefault_FromSaveCardBubble">
+  <obsolete>Removed in M103.</obsolete>
   <owner>bsazonov@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <owner>msarda@chromium.org</owner>

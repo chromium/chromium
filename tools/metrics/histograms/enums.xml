@@ -83860,7 +83860,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="Supervised user"/>
   <int value="5" label="Extension install bubble"/>
   <int value="6" label="Extensions"/>
-  <int value="7" label="Apps page link"/>
+  <int value="7" label="(obsolete) Apps page link"/>
   <int value="8" label="Bookmark bubble"/>
   <int value="9" label="Bookmark manager"/>
   <int value="10" label="Avatar bubble sign in"/>
@@ -83876,9 +83876,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="20" label="NTP Content Suggestions"/>
   <int value="21" label="Re-signin infobar"/>
   <int value="22" label="Tab switcher"/>
-  <int value="23" label="Force signin warning"/>
-  <int value="24" label="Save card bubble"/>
-  <int value="25" label="Manage cards bubble"/>
+  <int value="23" label="(obsolete) Force signin warning"/>
+  <int value="24" label="(obsolete) Save card bubble"/>
+  <int value="25" label="(obsolete) Manage cards bubble"/>
   <int value="27" label="Sync and Google services settings"/>
   <int value="28" label="Re-signin from sync error card in settings"/>
   <int value="29" label="Forced sign-in"/>
