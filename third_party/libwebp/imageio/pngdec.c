@@ -133,7 +133,7 @@ static const struct {
                  MetadataPayload* const payload);
   size_t storage_offset;
 } kPNGMetadataMap[] = {
-  // http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/PNG.html#TextualData
+  // https://exiftool.org/TagNames/PNG.html#TextualData
   // See also: ExifTool on CPAN.
   { "Raw profile type exif", ProcessRawProfile, METADATA_OFFSET(exif) },
   { "Raw profile type xmp",  ProcessRawProfile, METADATA_OFFSET(xmp) },

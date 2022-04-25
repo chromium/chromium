@@ -46,7 +46,7 @@ static int ExtractMetadataFromTIFF(TIFF* const tif, Metadata* const metadata) {
         (MetadataPayload*)((uint8_t*)metadata +
                            kTIFFMetadataMap[i].storage_offset);
     void* tag_data;
-    uint32 tag_data_len;
+    uint32_t tag_data_len;
 
     if (TIFFGetField(tif, kTIFFMetadataMap[i].tag, &tag_data_len, &tag_data) &&
         !MetadataCopy((const char*)tag_data, tag_data_len, payload)) {
@@ -230,7 +230,7 @@ int ReadTIFF(const uint8_t* const data, size_t data_size,
   alloc_size = (int64_t)(stride * image_height);
   if (alloc_size < 0 || alloc_size != (tsize_t)alloc_size) goto End;
 
-  raster = (uint32*)_TIFFmalloc((tsize_t)alloc_size);
+  raster = (uint32_t*)_TIFFmalloc((tsize_t)alloc_size);
   if (raster != NULL) {
     if (TIFFReadRGBAImageOriented(tif, image_width, image_height, raster,
                                   ORIENTATION_TOPLEFT, 1)) {
