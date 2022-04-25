@@ -89,8 +89,6 @@ void CrossOtrObserver::DidFinishNavigation(
   // refreshes on the first page.
   if (protecting_navigations_) {
     observed_response_ = true;
-    // Metrics will not be collected for non intervened navigation chains and
-    // navigations occurring prior to params filtering.
     const net::HttpResponseHeaders* headers =
         navigation_handle->GetResponseHeaders();
 

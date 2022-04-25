@@ -48,6 +48,8 @@ class CrossOtrObserver : public content::WebContentsObserver,
 
   base::WeakPtr<CrossOtrObserver> GetWeakPtr();
 
+  // Inform the observer that params were filtered, which means metrics should
+  // be written.
   void SetDidFilterParams(bool value);
 
  private:
