@@ -31,7 +31,7 @@ using ChromeTrackEvent = perfetto::protos::pbzero::ChromeTrackEvent;
 // the naming of BackForwardCacheImpl::CanStorePageNow().
 class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
  public:
-  using NotStoredReasons =
+  using NotRestoredReasons =
       base::EnumSet<BackForwardCacheMetrics::NotRestoredReason,
                     BackForwardCacheMetrics::NotRestoredReason::kMinValue,
                     BackForwardCacheMetrics::NotRestoredReason::kMaxValue>;
@@ -45,7 +45,7 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
 
   // Add reasons contained in the |other| to |this|.
   void AddReasonsFrom(const BackForwardCacheCanStoreDocumentResult& other);
-  bool HasNotStoredReason(
+  bool HasNotRestoredReason(
       BackForwardCacheMetrics::NotRestoredReason reason) const;
 
   void No(BackForwardCacheMetrics::NotRestoredReason reason);
@@ -65,8 +65,8 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
   bool CanStore() const;
   operator bool() const { return CanStore(); }
 
-  const NotStoredReasons& not_stored_reasons() const {
-    return not_stored_reasons_;
+  const NotRestoredReasons& not_restored_reasons() const {
+    return not_restored_reasons_;
   }
   BlockListedFeatures blocklisted_features() const {
     return blocklisted_features_;
@@ -90,11 +90,11 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
           result) const;
 
  private:
-  void AddNotStoredReason(BackForwardCacheMetrics::NotRestoredReason reason);
+  void AddNotRestoredReason(BackForwardCacheMetrics::NotRestoredReason reason);
   std::string NotRestoredReasonToString(
       BackForwardCacheMetrics::NotRestoredReason reason) const;
 
-  NotStoredReasons not_stored_reasons_;
+  NotRestoredReasons not_restored_reasons_;
   BlockListedFeatures blocklisted_features_;
   std::set<BackForwardCache::DisabledReason> disabled_reasons_;
   absl::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result_;

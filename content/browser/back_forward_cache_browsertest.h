@@ -24,8 +24,8 @@
 
 namespace content {
 
-using NotStoredReasons =
-    BackForwardCacheCanStoreDocumentResult::NotStoredReasons;
+using NotRestoredReasons =
+    BackForwardCacheCanStoreDocumentResult::NotRestoredReasons;
 using NotRestoredReason = BackForwardCacheMetrics::NotRestoredReason;
 
 // Match RenderFrameHostImpl* that are in the BackForwardCache.
@@ -183,7 +183,7 @@ class BackForwardCacheBrowserTest
   void NavigateAndBlock(GURL url, int history_offset);
 
   static testing::Matcher<BackForwardCacheCanStoreDocumentResult>
-  MatchesDocumentResult(testing::Matcher<NotStoredReasons> not_stored,
+  MatchesDocumentResult(testing::Matcher<NotRestoredReasons> not_stored,
                         BlockListedFeatures block_listed);
 
   // Access the tree result of NotRestoredReason for the last main frame

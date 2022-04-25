@@ -85,8 +85,8 @@ using testing::UnorderedElementsAreArray;
 
 namespace content {
 
-using NotStoredReasons =
-    BackForwardCacheCanStoreDocumentResult::NotStoredReasons;
+using NotRestoredReasons =
+    BackForwardCacheCanStoreDocumentResult::NotRestoredReasons;
 using NotRestoredReason = BackForwardCacheMetrics::NotRestoredReason;
 
 namespace {
@@ -2521,12 +2521,12 @@ RenderFrameHostImpl* ChildFrame(RenderFrameHostImpl* rfh, int child_index) {
 // Verifies that the reasons match those given and no others.
 testing::Matcher<BackForwardCacheCanStoreDocumentResult>
 BackForwardCacheBrowserTest::MatchesDocumentResult(
-    testing::Matcher<NotStoredReasons> not_stored,
+    testing::Matcher<NotRestoredReasons> not_stored,
     BlockListedFeatures block_listed) {
   return testing::AllOf(
       testing::Property(
-          "not_stored_reasons",
-          &BackForwardCacheCanStoreDocumentResult::not_stored_reasons,
+          "not_restored_reasons",
+          &BackForwardCacheCanStoreDocumentResult::not_restored_reasons,
           not_stored),
       testing::Property(
           "blocklisted_features",
@@ -2595,25 +2595,25 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TreeResultFeatureUsage) {
   // a
   EXPECT_THAT(can_store_result.tree_reasons->GetDocumentResult(),
               MatchesDocumentResult(
-                  NotStoredReasons(NotRestoredReason::kBlocklistedFeatures),
+                  NotRestoredReasons(NotRestoredReason::kBlocklistedFeatures),
                   BlockListedFeatures(
                       blink::scheduler::WebSchedulerTrackedFeature::kDummy)));
   // a->a
   EXPECT_THAT(
       can_store_result.tree_reasons->GetChildren().at(0)->GetDocumentResult(),
-      MatchesDocumentResult(NotStoredReasons(),
+      MatchesDocumentResult(NotRestoredReasons(),
                             BlockListedFeatures(BlockListedFeatures())));
   // a->b
   EXPECT_THAT(
       can_store_result.tree_reasons->GetChildren().at(1)->GetDocumentResult(),
       MatchesDocumentResult(
-          NotStoredReasons(NotRestoredReason::kBlocklistedFeatures),
+          NotRestoredReasons(NotRestoredReason::kBlocklistedFeatures),
           BlockListedFeatures(
               blink::scheduler::WebSchedulerTrackedFeature::kDummy)));
   // a->c
   EXPECT_THAT(
       can_store_result.tree_reasons->GetChildren().at(2)->GetDocumentResult(),
-      MatchesDocumentResult(NotStoredReasons(),
+      MatchesDocumentResult(NotRestoredReasons(),
                             BlockListedFeatures(BlockListedFeatures())));
 }
 
@@ -2641,7 +2641,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                     FROM_HERE);
   EXPECT_THAT(GetTreeResult()->GetDocumentResult(),
               MatchesDocumentResult(
-                  NotStoredReasons(NotRestoredReason::kJavaScriptExecution),
+                  NotRestoredReasons(NotRestoredReason::kJavaScriptExecution),
                   BlockListedFeatures()));
 }
 
@@ -2671,12 +2671,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectNotRestored({NotRestoredReason::kJavaScriptExecution}, {}, {}, {}, {},
                     FROM_HERE);
   // Main frame result in the tree is empty.
-  EXPECT_THAT(GetTreeResult()->GetDocumentResult(),
-              MatchesDocumentResult(NotStoredReasons(), BlockListedFeatures()));
+  EXPECT_THAT(
+      GetTreeResult()->GetDocumentResult(),
+      MatchesDocumentResult(NotRestoredReasons(), BlockListedFeatures()));
   // Subframe result in the tree contains the reason.
   EXPECT_THAT(GetTreeResult()->GetChildren().at(0)->GetDocumentResult(),
               MatchesDocumentResult(
-                  NotStoredReasons(NotRestoredReason::kJavaScriptExecution),
+                  NotRestoredReasons(NotRestoredReason::kJavaScriptExecution),
                   BlockListedFeatures()));
 }
 
@@ -2709,11 +2710,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectNotRestored({NotRestoredReason::kJavaScriptExecution}, {}, {}, {}, {},
                     FROM_HERE);
   // Main frame result in the tree is empty.
-  EXPECT_THAT(GetTreeResult()->GetDocumentResult(),
-              MatchesDocumentResult(NotStoredReasons(), BlockListedFeatures()));
+  EXPECT_THAT(
+      GetTreeResult()->GetDocumentResult(),
+      MatchesDocumentResult(NotRestoredReasons(), BlockListedFeatures()));
   // The first level subframe result in the tree is empty.
-  EXPECT_THAT(GetTreeResult()->GetChildren().at(0)->GetDocumentResult(),
-              MatchesDocumentResult(NotStoredReasons(), BlockListedFeatures()));
+  EXPECT_THAT(
+      GetTreeResult()->GetChildren().at(0)->GetDocumentResult(),
+      MatchesDocumentResult(NotRestoredReasons(), BlockListedFeatures()));
   // The second level subframe result in the tree contains the reason.
   EXPECT_THAT(GetTreeResult()
                   ->GetChildren()
@@ -2722,7 +2725,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                   .at(0)
                   ->GetDocumentResult(),
               MatchesDocumentResult(
-                  NotStoredReasons(NotRestoredReason::kJavaScriptExecution),
+                  NotRestoredReasons(NotRestoredReason::kJavaScriptExecution),
                   BlockListedFeatures()));
 }
 
@@ -2886,7 +2889,7 @@ IN_PROC_BROWSER_TEST_P(
                 ->GetController()
                 .GetBackForwardCache()
                 .CanStorePageNow(static_cast<RenderFrameHostImpl*>(main_frame));
-        EXPECT_TRUE(can_store_result.flattened_reasons.HasNotStoredReason(
+        EXPECT_TRUE(can_store_result.flattened_reasons.HasNotRestoredReason(
             BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating));
       }));
 

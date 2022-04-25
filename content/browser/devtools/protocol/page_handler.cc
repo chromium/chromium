@@ -1758,14 +1758,15 @@ MapDisableForRenderFrameHostReasonToType(
 
 std::unique_ptr<protocol::Array<Page::BackForwardCacheNotRestoredExplanation>>
 CreateNotRestoredExplanation(
-    const BackForwardCacheCanStoreDocumentResult::NotStoredReasons
-        not_stored_reasons,
+    const BackForwardCacheCanStoreDocumentResult::NotRestoredReasons
+        not_restored_reasons,
     const blink::scheduler::WebSchedulerTrackedFeatures blocklisted_features,
     const std::set<BackForwardCache::DisabledReason>& disabled_reasons) {
   auto reasons = std::make_unique<
       protocol::Array<Page::BackForwardCacheNotRestoredExplanation>>();
 
-  for (BackForwardCacheMetrics::NotRestoredReason reason : not_stored_reasons) {
+  for (BackForwardCacheMetrics::NotRestoredReason reason :
+       not_restored_reasons) {
     if (reason ==
         BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures) {
       DCHECK(!blocklisted_features.Empty());
@@ -1806,7 +1807,7 @@ std::unique_ptr<Page::BackForwardCacheNotRestoredExplanationTree>
 CreateNotRestoredExplanationTree(
     const BackForwardCacheCanStoreTreeResult& tree_result) {
   auto explanation = CreateNotRestoredExplanation(
-      tree_result.GetDocumentResult().not_stored_reasons(),
+      tree_result.GetDocumentResult().not_restored_reasons(),
       tree_result.GetDocumentResult().blocklisted_features(),
       tree_result.GetDocumentResult().disabled_reasons());
 
@@ -1845,7 +1846,7 @@ void PageHandler::BackForwardCacheNotUsed(
   std::string frame_id = ftn->devtools_frame_token().ToString();
 
   auto explanation = CreateNotRestoredExplanation(
-      result->not_stored_reasons(), result->blocklisted_features(),
+      result->not_restored_reasons(), result->blocklisted_features(),
       result->disabled_reasons());
 
   // TODO(crbug.com/1281855): |tree_result| should not be nullptr when |result|

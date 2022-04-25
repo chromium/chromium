@@ -139,17 +139,17 @@ void BackForwardCacheMetrics::DidCommitNavigation(
     // back/forward cache, the logged reasons must match the actual condition of
     // the navigation and other logged data.
     bool served_from_bfcache_not_match =
-        did_store && !page_store_result_->not_stored_reasons().Empty();
+        did_store && !page_store_result_->not_restored_reasons().Empty();
     bool browsing_instance_not_swapped_not_match =
-        page_store_result_->HasNotStoredReason(
+        page_store_result_->HasNotRestoredReason(
             NotRestoredReason::kBrowsingInstanceNotSwapped) &&
         DidSwapBrowsingInstance();
     bool disable_for_rfh_not_match =
-        page_store_result_->HasNotStoredReason(
+        page_store_result_->HasNotRestoredReason(
             NotRestoredReason::kDisableForRenderFrameHostCalled) &&
         page_store_result_->disabled_reasons().size() == 0;
     bool blocklisted_features_not_match =
-        page_store_result_->HasNotStoredReason(
+        page_store_result_->HasNotRestoredReason(
             NotRestoredReason::kBlocklistedFeatures) &&
         page_store_result_->blocklisted_features().Empty();
     if (served_from_bfcache_not_match ||
@@ -235,7 +235,7 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUkm(
   builder.SetBackForwardCache_IsServedFromBackForwardCache(
       navigation->IsServedFromBackForwardCache());
   builder.SetBackForwardCache_NotRestoredReasons(
-      page_store_result_->not_stored_reasons().ToEnumBitmask());
+      page_store_result_->not_restored_reasons().ToEnumBitmask());
 
   builder.SetBackForwardCache_BlocklistedFeatures(
       page_store_result_->blocklisted_features().ToEnumBitmask());
@@ -319,15 +319,15 @@ void BackForwardCacheMetrics::MarkNotRestoredWithReason(
     const BackForwardCacheCanStoreDocumentResult& can_store) {
   page_store_result_->AddReasonsFrom(can_store);
 
-  const BackForwardCacheCanStoreDocumentResult::NotStoredReasons&
-      not_stored_reasons = can_store.not_stored_reasons();
+  const BackForwardCacheCanStoreDocumentResult::NotRestoredReasons&
+      not_restored_reasons = can_store.not_restored_reasons();
 
-  if (not_stored_reasons.Has(NotRestoredReason::kRendererProcessKilled)) {
+  if (not_restored_reasons.Has(NotRestoredReason::kRendererProcessKilled)) {
     renderer_killed_timestamp_ = Now();
   }
-  if (!not_stored_reasons.Has(NotRestoredReason::kHTTPStatusNotOK) &&
-      !not_stored_reasons.Has(NotRestoredReason::kSchemeNotHTTPOrHTTPS) &&
-      not_stored_reasons.Has(NotRestoredReason::kNoResponseHead)) {
+  if (!not_restored_reasons.Has(NotRestoredReason::kHTTPStatusNotOK) &&
+      !not_restored_reasons.Has(NotRestoredReason::kSchemeNotHTTPOrHTTPS) &&
+      not_restored_reasons.Has(NotRestoredReason::kNoResponseHead)) {
     CaptureTraceForNavigationDebugScenario(
         DebugScenario::kDebugNoResponseHeadForHttpOrHttps);
     base::debug::DumpWithoutCrashing();
@@ -350,8 +350,8 @@ void BackForwardCacheMetrics::UpdateNotRestoredReasonsForNavigation(
 
   // This should not happen, but record this as an 'unknown' reason just in
   // case.
-  if (page_store_result_->not_stored_reasons().Empty() &&
-      new_blocking_reasons.not_stored_reasons().Empty() &&
+  if (page_store_result_->not_restored_reasons().Empty() &&
+      new_blocking_reasons.not_restored_reasons().Empty() &&
       !navigation->IsServedFromBackForwardCache()) {
     // TODO(altimin): Add a (D)CHECK here, but this code is reached in
     // unittests.
@@ -406,7 +406,7 @@ void BackForwardCacheMetrics::RecordMetricsForHistoryNavigationCommit(
   UMA_HISTOGRAM_ENUMERATION(
       "BackForwardCache.AllSites.HistoryNavigationOutcome", outcome);
 
-  for (NotRestoredReason reason : page_store_result_->not_stored_reasons()) {
+  for (NotRestoredReason reason : page_store_result_->not_restored_reasons()) {
     DCHECK(!navigation->IsServedFromBackForwardCache());
     if (back_forward_cache_allowed) {
       UMA_HISTOGRAM_ENUMERATION(
