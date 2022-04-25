@@ -22,6 +22,7 @@ namespace net {
 class CertVerifyResult;
 class CRLSet;
 class NetLogWithSource;
+class ChromeRootStoreData;
 
 // CertVerifier represents a service for verifying certificates.
 //
@@ -218,6 +219,15 @@ NET_EXPORT bool operator==(const CertVerifier::Config& lhs,
                            const CertVerifier::Config& rhs);
 NET_EXPORT bool operator!=(const CertVerifier::Config& lhs,
                            const CertVerifier::Config& rhs);
+
+// A CertVerifier that can update its CertVerifyProc while it is running.
+class NET_EXPORT CertVerifierWithUpdatableProc : public CertVerifier {
+ public:
+  // Update the CertVerifyProc with new ChromeRootStoreData.
+  virtual void UpdateChromeRootStoreData(
+      scoped_refptr<CertNetFetcher> cert_net_fetcher,
+      const ChromeRootStoreData* root_store_data) = 0;
+};
 
 }  // namespace net
 

@@ -38,6 +38,11 @@ class PKIMetadataComponentInstallerService final {
   // Reconfiguring happens on an asynchronous task.
   void ReconfigureAfterNetworkRestart();
 
+  // Configure Chrome Root Store data. This is separate from
+  // ReconfigureAfterNetworkRestart because Chrome Root Store updates don't
+  // go through the network service.
+  void ConfigureChromeRootStore();
+
   // Called when the component is ready to be installed.
   void OnComponentReady(base::FilePath install_dir);
 
@@ -72,7 +77,6 @@ class PKIMetadataComponentInstallerService final {
 
 // Component installer policy for the PKIMetadata component. This component
 // includes any dynamically updateable needed for PKI policies enforcement.
-// Initially this contains the Certificate Transparency log list.
 class PKIMetadataComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
   PKIMetadataComponentInstallerPolicy();

@@ -8,19 +8,59 @@
 #include "base/memory/ptr_util.h"
 #include "net/cert/internal/cert_errors.h"
 #include "net/cert/internal/parsed_certificate.h"
+#include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 
 namespace net {
 
 namespace {
-
 #include "net/data/ssl/chrome_root_store/chrome-root-store-inc.cc"
 }  // namespace
 
+ChromeRootStoreData::ChromeRootStoreData() = default;
+
+ChromeRootStoreData::~ChromeRootStoreData() = default;
+
+ChromeRootStoreData::ChromeRootStoreData(const ChromeRootStoreData& other) =
+    default;
+ChromeRootStoreData::ChromeRootStoreData(ChromeRootStoreData&& other) = default;
+ChromeRootStoreData& ChromeRootStoreData::operator=(
+    const ChromeRootStoreData& other) = default;
+ChromeRootStoreData& ChromeRootStoreData::operator=(
+    ChromeRootStoreData&& other) = default;
+
+absl::optional<ChromeRootStoreData>
+ChromeRootStoreData::CreateChromeRootStoreData(
+    const chrome_root_store::RootStore& proto) {
+  ChromeRootStoreData root_store_data;
+
+  for (auto& anchor : proto.trust_anchors()) {
+    if (anchor.der().empty()) {
+      LOG(ERROR) << "Error anchor with empty DER in update";
+      return absl::nullopt;
+    }
+
+    auto parsed = net::ParsedCertificate::Create(
+        net::x509_util::CreateCryptoBuffer(anchor.der()),
+        net::x509_util::DefaultParseCertificateOptions(), nullptr);
+    if (!parsed) {
+      LOG(ERROR) << "Error parsing cert for update";
+      return absl::nullopt;
+    }
+    root_store_data.anchors_.push_back(std::move(parsed));
+  }
+
+  root_store_data.version_ = proto.version_major();
+
+  return root_store_data;
+}
+
 TrustStoreChrome::TrustStoreChrome()
-    : TrustStoreChrome(kChromeRootCertList, /*certs_are_static=*/true) {}
+    : TrustStoreChrome(kChromeRootCertList,
+                       /*certs_are_static=*/true) {}
 
 TrustStoreChrome::TrustStoreChrome(base::span<const ChromeRootCertInfo> certs,
                                    bool certs_are_static) {
@@ -50,6 +90,12 @@ TrustStoreChrome::TrustStoreChrome(base::span<const ChromeRootCertInfo> certs,
   }
 }
 
+TrustStoreChrome::TrustStoreChrome(const ChromeRootStoreData& root_store_data) {
+  for (const auto& anchor : root_store_data.anchors()) {
+    trust_store_.AddTrustAnchor(anchor);
+  }
+}
+
 TrustStoreChrome::~TrustStoreChrome() = default;
 
 void TrustStoreChrome::SyncGetIssuersOf(const ParsedCertificate* cert,
@@ -73,6 +119,10 @@ std::unique_ptr<TrustStoreChrome> TrustStoreChrome::CreateTrustStoreForTesting(
   // Note: wrap_unique is used because the constructor is private.
   return base::WrapUnique(
       new TrustStoreChrome(certs, /*certs_are_static=*/false));
+}
+
+int64_t CompiledChromeRootStoreVersion() {
+  return kRootStoreVersion;
 }
 
 }  // namespace net

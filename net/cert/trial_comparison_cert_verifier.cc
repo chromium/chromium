@@ -517,17 +517,23 @@ void TrialComparisonCertVerifier::Job::Request::OnJobAborted() {
 
 TrialComparisonCertVerifier::TrialComparisonCertVerifier(
     scoped_refptr<CertVerifyProc> primary_verify_proc,
+    scoped_refptr<CertVerifyProcFactory> primary_verify_proc_factory,
     scoped_refptr<CertVerifyProc> trial_verify_proc,
+    scoped_refptr<CertVerifyProcFactory> trial_verify_proc_factory,
     ReportCallback report_callback)
     : report_callback_(std::move(report_callback)),
-      primary_verifier_(
-          std::make_unique<MultiThreadedCertVerifier>(primary_verify_proc)),
-      primary_reverifier_(
-          std::make_unique<MultiThreadedCertVerifier>(primary_verify_proc)),
-      trial_verifier_(
-          std::make_unique<MultiThreadedCertVerifier>(trial_verify_proc)),
-      revocation_trial_verifier_(
-          std::make_unique<MultiThreadedCertVerifier>(trial_verify_proc)) {
+      primary_verifier_(std::make_unique<MultiThreadedCertVerifier>(
+          primary_verify_proc,
+          primary_verify_proc_factory)),
+      primary_reverifier_(std::make_unique<MultiThreadedCertVerifier>(
+          primary_verify_proc,
+          primary_verify_proc_factory)),
+      trial_verifier_(std::make_unique<MultiThreadedCertVerifier>(
+          trial_verify_proc,
+          trial_verify_proc_factory)),
+      revocation_trial_verifier_(std::make_unique<MultiThreadedCertVerifier>(
+          trial_verify_proc,
+          trial_verify_proc_factory)) {
   CertVerifier::Config config;
   config.enable_rev_checking = true;
   revocation_trial_verifier_->SetConfig(config);
@@ -568,6 +574,23 @@ void TrialComparisonCertVerifier::SetConfig(const Config& config) {
   revocation_trial_verifier_->SetConfig(config_with_revocation);
 
   // Notify all in-process jobs that the underlying configuration has changed.
+  for (auto& job : jobs_) {
+    job->OnConfigChanged();
+  }
+}
+
+void TrialComparisonCertVerifier::UpdateChromeRootStoreData(
+    scoped_refptr<CertNetFetcher> cert_net_fetcher,
+    const ChromeRootStoreData* root_store_data) {
+  primary_verifier_->UpdateChromeRootStoreData(cert_net_fetcher,
+                                               root_store_data);
+  primary_reverifier_->UpdateChromeRootStoreData(cert_net_fetcher,
+                                                 root_store_data);
+  trial_verifier_->UpdateChromeRootStoreData(cert_net_fetcher, root_store_data);
+  revocation_trial_verifier_->UpdateChromeRootStoreData(
+      std::move(cert_net_fetcher), root_store_data);
+  // Treat a possible proc change as a configuration change. Notify all
+  // in-process jobs that the underlying configuration has changed.
   for (auto& job : jobs_) {
     job->OnConfigChanged();
   }

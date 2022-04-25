@@ -194,7 +194,13 @@ void MultiThreadedCertVerifier::InternalRequest::OnJobComplete(
 
 MultiThreadedCertVerifier::MultiThreadedCertVerifier(
     scoped_refptr<CertVerifyProc> verify_proc)
-    : verify_proc_(std::move(verify_proc)) {
+    : MultiThreadedCertVerifier(std::move(verify_proc), nullptr) {}
+
+MultiThreadedCertVerifier::MultiThreadedCertVerifier(
+    scoped_refptr<CertVerifyProc> verify_proc,
+    scoped_refptr<CertVerifyProcFactory> verify_proc_factory)
+    : verify_proc_(std::move(verify_proc)),
+      verify_proc_factory_(std::move(verify_proc_factory)) {
   // Guarantee there is always a CRLSet (this can be overridden via SetConfig).
   config_.crl_set = CRLSet::BuiltinCRLSet();
 }
@@ -231,6 +237,17 @@ int MultiThreadedCertVerifier::Verify(const RequestParams& params,
   request_list_.Append(request.get());
   *out_req = std::move(request);
   return ERR_IO_PENDING;
+}
+
+void MultiThreadedCertVerifier::UpdateChromeRootStoreData(
+    scoped_refptr<CertNetFetcher> cert_net_fetcher,
+    const ChromeRootStoreData* root_store_data) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // TODO(hchao): investigate to see if we can make this a DCHECK.
+  if (verify_proc_factory_) {
+    verify_proc_ = verify_proc_factory_->CreateCertVerifyProc(
+        std::move(cert_net_fetcher), root_store_data);
+  }
 }
 
 void MultiThreadedCertVerifier::SetConfig(const CertVerifier::Config& config) {

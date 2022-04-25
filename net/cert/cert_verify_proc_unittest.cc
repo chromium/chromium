@@ -80,6 +80,10 @@
 #include "net/cert/cert_verify_proc_win.h"
 #endif
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#include "net/cert/internal/trust_store_chrome.h"
+#endif
+
 // TODO(crbug.com/649017): Add tests that only certificates with
 // serverAuth are accepted.
 
@@ -209,9 +213,13 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
     case CERT_VERIFY_PROC_BUILTIN:
       return CreateCertVerifyProcBuiltin(std::move(cert_net_fetcher),
                                          CreateSslSystemTrustStore());
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
     case CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS:
-      return CreateCertVerifyProcBuiltin(std::move(cert_net_fetcher),
-                                         CreateSslSystemTrustStoreChromeRoot());
+      return CreateCertVerifyProcBuiltin(
+          std::move(cert_net_fetcher),
+          CreateSslSystemTrustStoreChromeRoot(
+              std::make_unique<net::TrustStoreChrome>()));
+#endif
     default:
       return nullptr;
   }

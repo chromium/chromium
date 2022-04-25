@@ -23,7 +23,8 @@ class CertVerifyResult;
 class CRLSet;
 class NetLogWithSource;
 class X509Certificate;
-typedef std::vector<scoped_refptr<X509Certificate> > CertificateList;
+class ChromeRootStoreData;
+typedef std::vector<scoped_refptr<X509Certificate>> CertificateList;
 
 // Class to perform certificate path building and verification for various
 // certificate uses. All methods of this class must be thread-safe, as they
@@ -216,6 +217,22 @@ class NET_EXPORT CertVerifyProc
   // Feature flag affecting the Legacy Symantec PKI deprecation, documented
   // at https://g.co/chrome/symantecpkicerts
   static const base::Feature kLegacySymantecPKIEnforcement;
+};
+
+// Factory for creating new CertVerifyProcs when they need to be updated.
+class NET_EXPORT CertVerifyProcFactory
+    : public base::RefCountedThreadSafe<CertVerifyProcFactory> {
+ public:
+  // Create a new CertVerifyProc that uses the passed in ChromeRootStoreData.
+  virtual scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
+      scoped_refptr<CertNetFetcher> cert_net_fetcher,
+      const ChromeRootStoreData* root_store_data) = 0;
+
+ protected:
+  virtual ~CertVerifyProcFactory() = default;
+
+ private:
+  friend class base::RefCountedThreadSafe<CertVerifyProcFactory>;
 };
 
 }  // namespace net

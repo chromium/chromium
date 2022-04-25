@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
+#include "services/cert_verifier/cert_verifier_service_factory.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
 
 namespace cert_verifier {
@@ -78,7 +79,7 @@ void ReconnectURLLoaderFactory(
 }  // namespace
 
 CertVerifierServiceImpl::CertVerifierServiceImpl(
-    std::unique_ptr<net::CertVerifier> verifier,
+    std::unique_ptr<net::CertVerifierWithUpdatableProc> verifier,
     mojo::PendingReceiver<mojom::CertVerifierService> receiver,
     scoped_refptr<CertNetFetcherURLLoader> cert_net_fetcher)
     : verifier_(std::move(verifier)),
@@ -117,6 +118,17 @@ void CertVerifierServiceImpl::EnableNetworkAccess(
         base::BindRepeating(&ReconnectURLLoaderFactory,
                             base::Owned(std::move(reconnect_cb))));
   }
+}
+
+void CertVerifierServiceImpl::SetCertVerifierServiceFactory(
+    base::WeakPtr<cert_verifier::CertVerifierServiceFactoryImpl>
+        service_factory_impl) {
+  service_factory_impl_ = std::move(service_factory_impl);
+}
+
+void CertVerifierServiceImpl::UpdateChromeRootStoreData(
+    const net::ChromeRootStoreData* root_store_data) {
+  verifier_->UpdateChromeRootStoreData(cert_net_fetcher_, root_store_data);
 }
 
 void CertVerifierServiceImpl::Verify(
@@ -175,6 +187,9 @@ void CertVerifierServiceImpl::Verify(
 }
 
 void CertVerifierServiceImpl::OnDisconnectFromService() {
+  if (service_factory_impl_) {
+    service_factory_impl_->RemoveService(this);
+  }
   delete this;
 }
 

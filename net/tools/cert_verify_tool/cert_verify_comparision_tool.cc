@@ -40,6 +40,10 @@
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
 #endif
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#include "net/cert/internal/trust_store_chrome.h"
+#endif
+
 namespace {
 std::string GetUserAgent() {
   return "cert_verify_comparison_tool/0.1";
@@ -132,11 +136,14 @@ std::unique_ptr<CertVerifyImpl> CreateCertVerifyImplFromName(
 #endif
 
   if (impl_name == "builtin") {
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
     return std::make_unique<CertVerifyImpl>(
         "CertVerifyProcBuiltin",
         net::CreateCertVerifyProcBuiltin(
             std::move(cert_net_fetcher),
-            net::CreateSslSystemTrustStoreChromeRoot()));
+            net::CreateSslSystemTrustStoreChromeRoot(
+                std::make_unique<net::TrustStoreChrome>())));
+#endif
   }
 
   std::cerr << "WARNING: Unrecognized impl: " << impl_name << "\n";

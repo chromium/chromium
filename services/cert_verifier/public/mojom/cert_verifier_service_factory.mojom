@@ -4,6 +4,7 @@
 
 module cert_verifier.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
 
@@ -68,6 +69,12 @@ struct CertVerifierCreationParams {
   TrialComparisonCertVerifierParams? trial_comparison_cert_verifier_params;
 };
 
+// Serialized copy of the Chrome Root store.
+struct ChromeRootStore {
+  // Serialized proto of type chrome_root_store::RootStore.
+  mojo_base.mojom.BigBuffer serialized_proto_root_store;
+};
+
 // Parent interface for the CertVerifierProcess. Hands out new
 // CertVerifierService's, which have their own underlying CertVerifier's
 // underneath.
@@ -76,4 +83,9 @@ interface CertVerifierServiceFactory {
   // cert_verifier::MojoCertVerifier.
   GetNewCertVerifier(pending_receiver<CertVerifierService> receiver,
                      CertVerifierCreationParams? creation_params);
+
+  // Updates the ChromeRootStore used by the CertVerifierServiceFactory with a
+  // new version.
+  [EnableIf=is_chrome_root_store_supported]
+  UpdateChromeRootStore(ChromeRootStore new_root_store);
 };

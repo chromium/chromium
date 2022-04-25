@@ -31,6 +31,9 @@ using testing::Return;
 
 namespace net {
 
+class ChromeRootStoreData;
+class CertNetFetcher;
+
 namespace {
 
 void FailTest(int /* result */) {
@@ -71,14 +74,33 @@ ACTION(SetCertVerifyRevokedResult) {
   result->cert_status = CERT_STATUS_REVOKED;
 }
 
+class SwapWithNewProcFactory : public CertVerifyProcFactory {
+ public:
+  explicit SwapWithNewProcFactory(scoped_refptr<CertVerifyProc> new_mock_proc)
+      : mock_verify_proc_(std::move(new_mock_proc)) {}
+
+  scoped_refptr<net::CertVerifyProc> CreateCertVerifyProc(
+      scoped_refptr<CertNetFetcher> cert_net_fetcher,
+      const ChromeRootStoreData* root_store_data) override {
+    return mock_verify_proc_;
+  }
+
+ protected:
+  ~SwapWithNewProcFactory() override = default;
+  scoped_refptr<CertVerifyProc> mock_verify_proc_;
+};
+
 }  // namespace
 
 class MultiThreadedCertVerifierTest : public TestWithTaskEnvironment {
  public:
   MultiThreadedCertVerifierTest()
       : mock_verify_proc_(base::MakeRefCounted<MockCertVerifyProc>()),
-        verifier_(
-            std::make_unique<MultiThreadedCertVerifier>(mock_verify_proc_)) {
+        mock_new_verify_proc_(base::MakeRefCounted<MockCertVerifyProc>()),
+        verifier_(std::make_unique<MultiThreadedCertVerifier>(
+            mock_verify_proc_,
+            base::MakeRefCounted<SwapWithNewProcFactory>(
+                mock_new_verify_proc_))) {
     EXPECT_CALL(*mock_verify_proc_, SupportsAdditionalTrustAnchors())
         .WillRepeatedly(Return(true));
     EXPECT_CALL(*mock_verify_proc_, VerifyInternal(_, _, _, _, _, _, _, _, _))
@@ -89,6 +111,8 @@ class MultiThreadedCertVerifierTest : public TestWithTaskEnvironment {
 
  protected:
   scoped_refptr<MockCertVerifyProc> mock_verify_proc_;
+  // The new verify_proc_ swapped in if the proc is updated.
+  scoped_refptr<MockCertVerifyProc> mock_new_verify_proc_;
   std::unique_ptr<MultiThreadedCertVerifier> verifier_;
 };
 
@@ -271,6 +295,63 @@ TEST_F(MultiThreadedCertVerifierTest, ConvertsConfigToFlags) {
 
     testing::Mock::VerifyAndClearExpectations(mock_verify_proc_.get());
   }
+}
+
+// Tests swapping in new Chrome Root Store Data.
+TEST_F(MultiThreadedCertVerifierTest, VerifyProcChangeChromeRootStore) {
+  base::FilePath certs_dir = GetTestCertsDirectory();
+  scoped_refptr<X509Certificate> test_cert(
+      ImportCertFromFile(certs_dir, "ok_cert.pem"));
+  ASSERT_TRUE(test_cert);
+
+  EXPECT_CALL(*mock_new_verify_proc_, VerifyInternal(_, _, _, _, _, _, _, _, _))
+      .WillRepeatedly(
+          DoAll(SetCertVerifyRevokedResult(), Return(ERR_CERT_REVOKED)));
+  verifier_->UpdateChromeRootStoreData(nullptr, nullptr);
+
+  CertVerifyResult verify_result;
+  TestCompletionCallback callback;
+  std::unique_ptr<CertVerifier::Request> request;
+  int error = verifier_->Verify(
+      CertVerifier::RequestParams(test_cert, "www.example.com", 0,
+                                  /*ocsp_response=*/std::string(),
+                                  /*sct_list=*/std::string()),
+      &verify_result, callback.callback(), &request, NetLogWithSource());
+  ASSERT_THAT(error, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request);
+  error = callback.WaitForResult();
+  EXPECT_TRUE(IsCertificateError(error));
+  EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
+
+  testing::Mock::VerifyAndClearExpectations(mock_verify_proc_.get());
+  testing::Mock::VerifyAndClearExpectations(mock_new_verify_proc_.get());
+}
+
+// Tests swapping out a new proc while a request is pending still uses
+// the old proc for the old request.
+TEST_F(MultiThreadedCertVerifierTest, VerifyProcChangeRequest) {
+  base::FilePath certs_dir = GetTestCertsDirectory();
+  scoped_refptr<X509Certificate> test_cert(
+      ImportCertFromFile(certs_dir, "ok_cert.pem"));
+  ASSERT_TRUE(test_cert);
+
+  CertVerifyResult verify_result;
+  TestCompletionCallback callback;
+  std::unique_ptr<CertVerifier::Request> request;
+  int error = verifier_->Verify(
+      CertVerifier::RequestParams(test_cert, "www.example.com", 0,
+                                  /*ocsp_response=*/std::string(),
+                                  /*sct_list=*/std::string()),
+      &verify_result, callback.callback(), &request, NetLogWithSource());
+  ASSERT_THAT(error, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request);
+  verifier_->UpdateChromeRootStoreData(nullptr, nullptr);
+  error = callback.WaitForResult();
+  EXPECT_TRUE(IsCertificateError(error));
+  EXPECT_THAT(error, IsError(ERR_CERT_COMMON_NAME_INVALID));
+
+  testing::Mock::VerifyAndClearExpectations(mock_verify_proc_.get());
+  testing::Mock::VerifyAndClearExpectations(mock_new_verify_proc_.get());
 }
 
 }  // namespace net

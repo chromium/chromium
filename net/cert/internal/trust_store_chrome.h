@@ -9,6 +9,8 @@
 #include "net/base/net_export.h"
 #include "net/cert/internal/trust_store.h"
 #include "net/cert/internal/trust_store_in_memory.h"
+#include "net/cert/root_store_proto_lite/root_store.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -16,16 +18,46 @@ struct ChromeRootCertInfo {
   base::span<const uint8_t> root_cert_der;
 };
 
+// ChromeRootStoreData is a container class that stores all of the Chrome Root
+// Store data in a single class.
+class NET_EXPORT ChromeRootStoreData {
+ public:
+  // CreateChromeRootStoreData converts |proto| into a usable
+  // ChromeRootStoreData object. Returns absl::nullopt if the passed in
+  // proto has errors in it (e.g. an unparsable DER-encoded certificate).
+  static absl::optional<ChromeRootStoreData> CreateChromeRootStoreData(
+      const chrome_root_store::RootStore& proto);
+  ~ChromeRootStoreData();
+
+  ChromeRootStoreData(const ChromeRootStoreData& other);
+  ChromeRootStoreData(ChromeRootStoreData&& other);
+  ChromeRootStoreData& operator=(const ChromeRootStoreData& other);
+  ChromeRootStoreData& operator=(ChromeRootStoreData&& other);
+
+  const ParsedCertificateList anchors() const { return anchors_; }
+
+ private:
+  ChromeRootStoreData();
+
+  ParsedCertificateList anchors_;
+  int64_t version_;
+};
+
 // TrustStoreChrome contains the Chrome Root Store, as described at
 // https://g.co/chrome/root-policy
 class NET_EXPORT TrustStoreChrome : public TrustStore {
  public:
-  // Creates a ChromeTrustStore that uses a copy of `certs`, instead of the
+  // Creates a TrustStoreChrome that uses a copy of `certs`, instead of the
   // default Chrome Root Store.
   static std::unique_ptr<TrustStoreChrome> CreateTrustStoreForTesting(
       base::span<const ChromeRootCertInfo> certs);
 
+  // Creates a TrustStoreChrome that uses the compiled in Chrome Root Store.
   TrustStoreChrome();
+
+  // Creates a TrustStoreChrome that uses the passed in anchors as
+  // the contents of the Chrome Root Store.
+  TrustStoreChrome(const ChromeRootStoreData& anchors);
   ~TrustStoreChrome() override;
 
   TrustStoreChrome(const TrustStoreChrome& other) = delete;
@@ -46,6 +78,10 @@ class NET_EXPORT TrustStoreChrome : public TrustStore {
                    bool certs_are_static);
   TrustStoreInMemory trust_store_;
 };
+
+// Returns the version # of the Chrome Root Store that was compiled into the
+// binary.
+NET_EXPORT int64_t CompiledChromeRootStoreVersion();
 
 }  // namespace net
 

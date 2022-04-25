@@ -3,5 +3,5 @@ include_rules = [
   "+net",
   "+mojo/public/cpp",
   "+services/network/public",
-  "+services/network/test"
+  "+services/network/test",
 ]

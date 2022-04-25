@@ -26,6 +26,7 @@
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/cert_verifier.h"
+#include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/x509_certificate.h"
 #include "net/log/net_log.h"
@@ -36,6 +37,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
+namespace net {
+class CertNetFetcher;
+class ChromeRootStoreData;
+}  // namespace net
+
 namespace cert_verifier {
 namespace {
 const int kExpectedNetError = net::ERR_CERT_INVALID;
@@ -45,7 +51,7 @@ scoped_refptr<net::X509Certificate> GetTestCert() {
   return net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
 }
 
-class DummyCertVerifier : public net::CertVerifier {
+class DummyCertVerifier : public net::CertVerifierWithUpdatableProc {
  public:
   struct DummyRequest : public net::CertVerifier::Request {
     ~DummyRequest() override {
@@ -97,6 +103,9 @@ class DummyCertVerifier : public net::CertVerifier {
     return net::ERR_IO_PENDING;
   }
   void SetConfig(const Config& config) override { config_ = config; }
+  void UpdateChromeRootStoreData(
+      scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
+      const net::ChromeRootStoreData* root_store_data) override {}
 
   void RespondToRequest(const net::CertVerifier::RequestParams& params) {
     auto it = dummy_requests_.find(params);

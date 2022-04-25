@@ -97,6 +97,13 @@ GetCertVerifierParams(cert_verifier::mojom::CertVerifierCreationParamsPtr
 CONTENT_EXPORT void SetCertVerifierServiceFactoryForTesting(
     cert_verifier::mojom::CertVerifierServiceFactory* service_factory);
 
+// Returns a pointer to the CertVerifierServiceFactory, creating / re-creating
+// it as needed.
+//
+// This method can only be called on the UI thread.
+CONTENT_EXPORT cert_verifier::mojom::CertVerifierServiceFactory*
+GetCertVerifierServiceFactory();
+
 // Convenience function to create a NetworkContext from the given set of
 // |params|. Any creation of network contexts should be done through this
 // function.

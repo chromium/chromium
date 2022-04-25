@@ -21,6 +21,7 @@ proto_library("root_store_proto_lite") {
 
   cc_generator_options = "lite=true:"
   visibility = [
+    "//net:net",
     "//services/cert_verifier:lib",
     "//services/cert_verifier:tests",
   ]

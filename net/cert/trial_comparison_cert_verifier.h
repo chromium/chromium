@@ -20,12 +20,16 @@
 
 namespace net {
 class CertVerifyProc;
+class CertVerifyProcFactory;
+class CertNetFetcher;
+class ChromeRootStoreData;
 
 // TrialComparisonCertVerifier is a CertVerifier that can be used to compare
 // the results between two different CertVerifyProcs. The results are reported
 // back to the caller via a ReportCallback, allowing the caller to further
 // examine the differences.
-class NET_EXPORT TrialComparisonCertVerifier : public CertVerifier {
+class NET_EXPORT TrialComparisonCertVerifier
+    : public CertVerifierWithUpdatableProc {
  public:
   using ReportCallback = base::RepeatingCallback<void(
       const std::string& hostname,
@@ -61,13 +65,12 @@ class NET_EXPORT TrialComparisonCertVerifier : public CertVerifier {
   // Note that there may be multiple calls to both |primary_verify_proc| and
   // |trial_verify_proc|, using different parameters to account for platform
   // differences.
-  //
-  // TODO(rsleevi): Make the types distinct, to guarantee that
-  // |primary_verify_proc| is a System CertVerifyProc, and |trial_verify_proc|
-  // is the Builtin CertVerifyProc.
-  TrialComparisonCertVerifier(scoped_refptr<CertVerifyProc> primary_verify_proc,
-                              scoped_refptr<CertVerifyProc> trial_verify_proc,
-                              ReportCallback report_callback);
+  TrialComparisonCertVerifier(
+      scoped_refptr<CertVerifyProc> primary_verify_proc,
+      scoped_refptr<CertVerifyProcFactory> primary_verify_proc_factory,
+      scoped_refptr<CertVerifyProc> trial_verify_proc,
+      scoped_refptr<CertVerifyProcFactory> trial_verify_proc_factory,
+      ReportCallback report_callback);
 
   TrialComparisonCertVerifier(const TrialComparisonCertVerifier&) = delete;
   TrialComparisonCertVerifier& operator=(const TrialComparisonCertVerifier&) =
@@ -85,6 +88,9 @@ class NET_EXPORT TrialComparisonCertVerifier : public CertVerifier {
              std::unique_ptr<Request>* out_req,
              const NetLogWithSource& net_log) override;
   void SetConfig(const Config& config) override;
+  void UpdateChromeRootStoreData(
+      scoped_refptr<CertNetFetcher> cert_net_fetcher,
+      const ChromeRootStoreData* root_store_data) override;
 
  private:
   class Job;
@@ -106,12 +112,12 @@ class NET_EXPORT TrialComparisonCertVerifier : public CertVerifier {
 
   CertVerifier::Config config_;
 
-  std::unique_ptr<CertVerifier> primary_verifier_;
-  std::unique_ptr<CertVerifier> primary_reverifier_;
-  std::unique_ptr<CertVerifier> trial_verifier_;
+  std::unique_ptr<CertVerifierWithUpdatableProc> primary_verifier_;
+  std::unique_ptr<CertVerifierWithUpdatableProc> primary_reverifier_;
+  std::unique_ptr<CertVerifierWithUpdatableProc> trial_verifier_;
   // Similar to |trial_verifier_|, except configured to always check
   // revocation information.
-  std::unique_ptr<CertVerifier> revocation_trial_verifier_;
+  std::unique_ptr<CertVerifierWithUpdatableProc> revocation_trial_verifier_;
 
   std::set<std::unique_ptr<Job>, base::UniquePtrComparator> jobs_;
 
