@@ -1055,9 +1055,9 @@ TEST_F(DisplayTest, DrawOcclusionWithNonCoveringDrawQuad) {
     // DrawQuad, so the size of quad_list remains unchanged after calling
     // RemoveOverdrawQuads.
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
   }
   SharedQuadState* shared_quad_state2 =
       frame.render_pass_list.front()->CreateAndAppendSharedQuadState();
@@ -1089,12 +1089,12 @@ TEST_F(DisplayTest, DrawOcclusionWithNonCoveringDrawQuad) {
     // which cannot be represented by a smaller rect (its visible_rect stays
     // the same).
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect2.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(1)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect2,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
   }
 
   // +------+                                +------+
@@ -1123,13 +1123,12 @@ TEST_F(DisplayTest, DrawOcclusionWithNonCoveringDrawQuad) {
     // screen is rect3 - rect1 U rect3 = (25, 100, 50x25), which updates its
     // visible_rect accordingly.
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(gfx::Rect(25, 100, 50, 25).ToString(),
-              frame.render_pass_list.front()
-                  ->quad_list.ElementAt(1)
-                  ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        gfx::Rect(25, 100, 50, 25),
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
   }
 
   //  +--+                                        +--+
@@ -1159,12 +1158,12 @@ TEST_F(DisplayTest, DrawOcclusionWithNonCoveringDrawQuad) {
     // cannot be represented by a smaller rect (its visible_rect stays the
     // same).
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect7.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect6.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(1)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect7,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect6,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
   }
 
   // +----+   +--+
@@ -1190,12 +1189,12 @@ TEST_F(DisplayTest, DrawOcclusionWithNonCoveringDrawQuad) {
     // after calling RemoveOverdrawQuads. The visible region of |quad2| on
     // screen is rect4 (150, 0, 50x50), its visible_rect stays the same.
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect4.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(1)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect4,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
   }
   // +-----++
   // |     ||
@@ -1223,12 +1222,12 @@ TEST_F(DisplayTest, DrawOcclusionWithNonCoveringDrawQuad) {
     // which cannot be represented by a smaller rect (its visible_rect stays the
     // same).
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect5.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(1)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect5,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
   }
 }
 
@@ -1278,12 +1277,12 @@ TEST_F(DisplayTest, DrawOcclusionWithSingleOverlapBehindDisjointedDrawQuads) {
     // third quad is removed from the |quad_list|, leaving the first and second
     // (defined by rects[1](150, 0, 150x150); the largest) quads intact.
     ASSERT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rects[0].ToString(), frame.render_pass_list.front()
-                                       ->quad_list.ElementAt(0)
-                                       ->visible_rect.ToString());
-    EXPECT_EQ(rects[1].ToString(), frame.render_pass_list.front()
-                                       ->quad_list.ElementAt(1)
-                                       ->visible_rect.ToString());
+    EXPECT_EQ(
+        rects[0],
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rects[1],
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
   }
 }
 
@@ -1334,12 +1333,12 @@ TEST_F(DisplayTest, DrawOcclusionWithMultipleOverlapBehindDisjointedDrawQuads) {
     // 0, 150x150)) quads, respectively, so both are removed from the
     // |quad_list|, leaving the first and and second quads intact.
     ASSERT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rects[0].ToString(), frame.render_pass_list.front()
-                                       ->quad_list.ElementAt(0)
-                                       ->visible_rect.ToString());
-    EXPECT_EQ(rects[1].ToString(), frame.render_pass_list.front()
-                                       ->quad_list.ElementAt(1)
-                                       ->visible_rect.ToString());
+    EXPECT_EQ(
+        rects[0],
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rects[1],
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
   }
 }
 
@@ -1385,9 +1384,9 @@ TEST_F(DisplayTest, CompositorFrameWithOverlapDrawQuad) {
     display_->RemoveOverdrawQuads(&frame);
     // |quad2| overlaps |quad1|, so |quad2| is removed from the |quad_list|.
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
   }
   //  +-----+
   //  | +-+ |
@@ -1410,9 +1409,9 @@ TEST_F(DisplayTest, CompositorFrameWithOverlapDrawQuad) {
     // |quad2| is hiding behind |quad1|, so |quad2| is removed from the
     // |quad_list|.
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
   }
 
   // +-----+
@@ -1436,9 +1435,9 @@ TEST_F(DisplayTest, CompositorFrameWithOverlapDrawQuad) {
     // |quad2| is behind |quad1| and aligns with the edge of |quad1|, so |quad2|
     // is removed from the |quad_list|.
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
   }
 
   // +-----++
@@ -1464,9 +1463,9 @@ TEST_F(DisplayTest, CompositorFrameWithOverlapDrawQuad) {
     // |quad2| is covered by |quad 1|, so |quad2| is removed from the
     // |quad_list|.
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
   }
 }
 
@@ -1527,9 +1526,9 @@ TEST_F(DisplayTest, CompositorFrameWithTransformer) {
     // |quad2| is now covered by |quad|. So the size of |quad_list| is reduced
     // by 1.
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
   }
 
   {
@@ -1550,9 +1549,9 @@ TEST_F(DisplayTest, CompositorFrameWithTransformer) {
     // |quad2| is now covered by |quad|. So the size of |quad_list| is reduced
     // by 1.
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
   }
 
   {
@@ -1575,9 +1574,9 @@ TEST_F(DisplayTest, CompositorFrameWithTransformer) {
     // |quad2| is now covered by |quad1|. So the size of |quad_list| is reduced
     // by 1.
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
   }
 
   {
@@ -1591,9 +1590,9 @@ TEST_F(DisplayTest, CompositorFrameWithTransformer) {
     // The compositor frame contains only one quad, so |quad_list| remains 1
     // after calling RemoveOverdrawQuads.
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
   }
 
   {
@@ -1618,12 +1617,12 @@ TEST_F(DisplayTest, CompositorFrameWithTransformer) {
     // Since visible region of |rect5| is not a rect, quad2::visible_rect stays
     // the same.
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect5.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(4)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect5,
+        frame.render_pass_list.front()->quad_list.ElementAt(4)->visible_rect);
   }
 
   {
@@ -1646,13 +1645,12 @@ TEST_F(DisplayTest, CompositorFrameWithTransformer) {
     // Since visible region of |rect5| is (12, 50, 25x12), quad2::visible_rect
     // updates accordingly.
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(gfx::Rect(12, 50, 25, 12).ToString(),
-              frame.render_pass_list.front()
-                  ->quad_list.ElementAt(4)
-                  ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        gfx::Rect(12, 50, 25, 12),
+        frame.render_pass_list.front()->quad_list.ElementAt(4)->visible_rect);
   }
 
   {
@@ -1675,12 +1673,12 @@ TEST_F(DisplayTest, CompositorFrameWithTransformer) {
     // Since visible region of |rect7| is not a rect, quad2::visible_rect stays
     // the same.
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect7.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(4)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect7,
+        frame.render_pass_list.front()->quad_list.ElementAt(4)->visible_rect);
   }
 
   {
@@ -1703,12 +1701,12 @@ TEST_F(DisplayTest, CompositorFrameWithTransformer) {
     // Since visible region of |rect8| is not a rect, quad2::visible_rect stays
     // the same.
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect8.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(4)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect8,
+        frame.render_pass_list.front()->quad_list.ElementAt(4)->visible_rect);
   }
 
   {
@@ -1731,12 +1729,12 @@ TEST_F(DisplayTest, CompositorFrameWithTransformer) {
     // Since visible region of |rect9| is not a rect, quad2::visible_rect stays
     // the same
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect10.ToString(), frame.render_pass_list.front()
-                                     ->quad_list.ElementAt(0)
-                                     ->visible_rect.ToString());
-    EXPECT_EQ(rect9.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(4)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect10,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect9,
+        frame.render_pass_list.front()->quad_list.ElementAt(4)->visible_rect);
   }
 }
 
@@ -1786,12 +1784,12 @@ TEST_F(DisplayTest, CompositorFrameWithEpsilonScaleTransform) {
     // draw occlusion algorithm.
     EXPECT_FALSE(zero_scale.GetInverse(&inverted));
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect.ToString(), frame.render_pass_list.front()
-                                   ->quad_list.ElementAt(0)
-                                   ->visible_rect.ToString());
-    EXPECT_EQ(rect.ToString(), frame.render_pass_list.front()
-                                   ->quad_list.ElementAt(1)
-                                   ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
   }
 
   {
@@ -1816,12 +1814,12 @@ TEST_F(DisplayTest, CompositorFrameWithEpsilonScaleTransform) {
                     epsilon_scale, rect)
                     .IsEmpty());
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect.ToString(), frame.render_pass_list.front()
-                                   ->quad_list.ElementAt(0)
-                                   ->visible_rect.ToString());
-    EXPECT_EQ(rect.ToString(), frame.render_pass_list.front()
-                                   ->quad_list.ElementAt(1)
-                                   ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
   }
 
   {
@@ -1843,9 +1841,9 @@ TEST_F(DisplayTest, CompositorFrameWithEpsilonScaleTransform) {
     // occlusion rect, so |quad2| is removed.
     EXPECT_TRUE(larger_epsilon_scale.GetInverse(&inverted));
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect.ToString(), frame.render_pass_list.front()
-                                   ->quad_list.ElementAt(0)
-                                   ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
   }
 }
 
@@ -1894,12 +1892,12 @@ TEST_F(DisplayTest, CompositorFrameWithNegativeScaleTransform) {
     //          |
     //          |
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect.ToString(), frame.render_pass_list.front()
-                                   ->quad_list.ElementAt(0)
-                                   ->visible_rect.ToString());
-    EXPECT_EQ(rect.ToString(), frame.render_pass_list.front()
-                                   ->quad_list.ElementAt(1)
-                                   ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
   }
 
   {
@@ -1926,12 +1924,12 @@ TEST_F(DisplayTest, CompositorFrameWithNegativeScaleTransform) {
     //          |    |
     //          |----+
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect.ToString(), frame.render_pass_list.front()
-                                   ->quad_list.ElementAt(0)
-                                   ->visible_rect.ToString());
-    EXPECT_EQ(rect.ToString(), frame.render_pass_list.front()
-                                   ->quad_list.ElementAt(1)
-                                   ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
   }
 
   {
@@ -1958,9 +1956,9 @@ TEST_F(DisplayTest, CompositorFrameWithNegativeScaleTransform) {
     //          |
     //          |
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect.ToString(), frame.render_pass_list.front()
-                                   ->quad_list.ElementAt(0)
-                                   ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
   }
 }
 
@@ -2012,12 +2010,12 @@ TEST_F(DisplayTest, CompositorFrameWithRotation) {
     // transform) and |quad2| becomes (75, 75 10x10). So |quad2| does not
     // intersect with |quad|. No changes in quads.
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect2.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(1)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect2,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
   }
 
   {
@@ -2036,9 +2034,9 @@ TEST_F(DisplayTest, CompositorFrameWithRotation) {
     // (53, 75 8x10) (after applying rotation transform). So |quad2| is behind
     // |quad|. |quad2| is removed from |quad_list|.
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
   }
 
   {
@@ -2058,12 +2056,12 @@ TEST_F(DisplayTest, CompositorFrameWithRotation) {
     // transform) and |quad2| becomes (50, 50, 25x100). So |quad2| does not
     // intersect with |quad|. No changes in quads.
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect3.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(2)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect3,
+        frame.render_pass_list.front()->quad_list.ElementAt(2)->visible_rect);
   }
 
   {
@@ -2084,12 +2082,12 @@ TEST_F(DisplayTest, CompositorFrameWithRotation) {
     // does not cover |rect3| initially, |quad| does not cover |quad2| in target
     // space.
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect3.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(2)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect3,
+        frame.render_pass_list.front()->quad_list.ElementAt(2)->visible_rect);
   }
 }
 
@@ -2137,12 +2135,12 @@ TEST_F(DisplayTest, CompositorFrameWithPerspective) {
     // long to define a enclosed rect to describe the occlusion region,
     // occlusion region is not defined and no changes in quads.
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(1)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
   }
 
   {
@@ -2161,9 +2159,9 @@ TEST_F(DisplayTest, CompositorFrameWithPerspective) {
     // an enclosing rect to describe |quad2|. |quad2| is hiding behind |quad|,
     // so it's removed from |quad_list|.
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
   }
 }
 
@@ -2204,12 +2202,12 @@ TEST_F(DisplayTest, CompositorFrameWithOpacityChange) {
     // Since the opacity of |rect2| is less than 1, |rect1| cannot occlude
     // |rect2| even though |rect2| is inside |rect1|.
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect2.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(1)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect2,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
   }
 
   {
@@ -2225,9 +2223,9 @@ TEST_F(DisplayTest, CompositorFrameWithOpacityChange) {
     display_->RemoveOverdrawQuads(&frame);
     // Repeat the above test and set the opacity of |rect1| to 1.
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
   }
 }
 
@@ -2267,12 +2265,12 @@ TEST_F(DisplayTest, CompositorFrameWithOpaquenessChange) {
     // Since the opaqueness of |rect2| is false, |rect1| cannot occlude
     // |rect2| even though |rect2| is inside |rect1|.
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect2.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(1)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect2,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
   }
 
   {
@@ -2288,9 +2286,9 @@ TEST_F(DisplayTest, CompositorFrameWithOpaquenessChange) {
     display_->RemoveOverdrawQuads(&frame);
     // Repeat the above test and set the opaqueness of |rect2| to true.
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
   }
 }
 
@@ -2338,12 +2336,10 @@ TEST_F(DisplayTest, CompositorFrameZTranslate) {
     // Since both |quad| and |quad2| are inside of a 3d object, DrawOcclusion
     // will not be applied to them.
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->rect.ToString());
-    EXPECT_EQ(rect2.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(1)
-                                    ->rect.ToString());
+    EXPECT_EQ(rect1,
+              frame.render_pass_list.front()->quad_list.ElementAt(0)->rect);
+    EXPECT_EQ(rect2,
+              frame.render_pass_list.front()->quad_list.ElementAt(1)->rect);
   }
 }
 
@@ -2394,12 +2390,12 @@ TEST_F(DisplayTest, CompositorFrameWithTranslateTransformer) {
     // |rect2| and |rect1| are disjoined as show in the first image. The size of
     // |quad_list| remains 2.
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect2.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(1)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect2,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
   }
 
   {
@@ -2424,9 +2420,9 @@ TEST_F(DisplayTest, CompositorFrameWithTranslateTransformer) {
     // translation transform. |quad2| will be covered by |quad|, so |quad_list|
     // size is reduced by 1.
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
   }
 
   {
@@ -2455,13 +2451,12 @@ TEST_F(DisplayTest, CompositorFrameWithTranslateTransformer) {
     // |quad2| is (100, 100, 100x20). So the visible region of |quad2| is
     // (150, 100, 50x20).
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(gfx::Rect(150, 100, 50, 20).ToString(),
-              frame.render_pass_list.front()
-                  ->quad_list.ElementAt(2)
-                  ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        gfx::Rect(150, 100, 50, 20),
+        frame.render_pass_list.front()->quad_list.ElementAt(2)->visible_rect);
   }
 }
 
@@ -2521,12 +2516,12 @@ TEST_F(DisplayTest, CompositorFrameWithCombinedSharedQuadState) {
     // |rect2|. |rect3| is covered by both |rect1| and |rect2|, so |rect3| is
     // removed from |quad_list|.
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect2.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(1)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect2,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
   }
 
   {
@@ -2548,16 +2543,15 @@ TEST_F(DisplayTest, CompositorFrameWithCombinedSharedQuadState) {
     // and |rect2|, is (0, 0, 160x60). Since visible region of rect 4 is
     // (160, 10, 30x30), |visible_rect| of |quad3| is updated.
     EXPECT_EQ(3u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect2.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(1)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(gfx::Rect(160, 10, 30, 30).ToString(),
-              frame.render_pass_list.front()
-                  ->quad_list.ElementAt(3)
-                  ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect2,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
+    EXPECT_EQ(
+        gfx::Rect(160, 10, 30, 30),
+        frame.render_pass_list.front()->quad_list.ElementAt(3)->visible_rect);
   }
 
   {
@@ -2577,16 +2571,15 @@ TEST_F(DisplayTest, CompositorFrameWithCombinedSharedQuadState) {
     // and |rect2|, is (0, 0, 160x60). Since visible region of rect 5 is
     // (10, 60, 120x50), |visible_rect| of |quad3| is updated.
     EXPECT_EQ(3u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect2.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(1)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(gfx::Rect(10, 60, 120, 50).ToString(),
-              frame.render_pass_list.front()
-                  ->quad_list.ElementAt(3)
-                  ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect2,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
+    EXPECT_EQ(
+        gfx::Rect(10, 60, 120, 50),
+        frame.render_pass_list.front()->quad_list.ElementAt(3)->visible_rect);
   }
 }
 
@@ -2699,15 +2692,15 @@ TEST_F(DisplayTest, CompositorFrameWithMultipleRenderPass) {
     // But |rect3| so |rect3| is to be removed from |quad_list|.
     EXPECT_EQ(2u, frame.render_pass_list.at(1)->quad_list.size());
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.at(1)
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect2.ToString(), frame.render_pass_list.at(1)
-                                    ->quad_list.ElementAt(1)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect3.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.at(1)->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect2,
+        frame.render_pass_list.at(1)->quad_list.ElementAt(1)->visible_rect);
+    EXPECT_EQ(
+        rect3,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
   }
 }
 
@@ -2770,12 +2763,12 @@ TEST_F(DisplayTest, CompositorFrameWithCoveredRenderPass) {
     // |quad_list|.
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
     EXPECT_EQ(1u, frame.render_pass_list.at(1)->quad_list.size());
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.at(1)
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.at(1)->quad_list.ElementAt(0)->visible_rect);
   }
 }
 
@@ -2823,9 +2816,9 @@ TEST_F(DisplayTest, CompositorFrameWithClip) {
     // |rect1| covers |rect2| as shown in the figure above, So the size of
     // |quad_list| is reduced by 1.
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
   }
 
   {
@@ -2851,12 +2844,12 @@ TEST_F(DisplayTest, CompositorFrameWithClip) {
     // (0, 0, 60x60) |quad| and |quad2| (50, 50, 25x25) don't intersect in the
     // target space. So no change is applied to quads.
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect2.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(2)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect2,
+        frame.render_pass_list.front()->quad_list.ElementAt(2)->visible_rect);
   }
 
   {
@@ -2881,13 +2874,12 @@ TEST_F(DisplayTest, CompositorFrameWithClip) {
     // visible region of |quad2| is (60, 50, 10x10). So |quad2| is updated
     // accordingly.
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(gfx::Rect(60, 50, 10, 10).ToString(),
-              frame.render_pass_list.front()
-                  ->quad_list.ElementAt(2)
-                  ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        gfx::Rect(60, 50, 10, 10),
+        frame.render_pass_list.front()->quad_list.ElementAt(2)->visible_rect);
   }
 }
 
@@ -2931,9 +2923,9 @@ TEST_F(DisplayTest, CompositorFrameWithCopyRequest) {
     // occlusion with copy_request on root RenderPass, |quad_list| reduces its
     // size by 1 after calling remove overdraw.
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
   }
 }
 
@@ -3009,18 +3001,18 @@ TEST_F(DisplayTest, CompositorFrameWithRenderPass) {
     // occlude each other. Since AggregatedRenderPassDrawQuad |r1| and |r2|
     // cannot be removed to reduce overdraw, |quad_list| remains unchanged.
     EXPECT_EQ(4u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect2.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(1)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect3.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(2)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect4.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(3)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect2,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
+    EXPECT_EQ(
+        rect3,
+        frame.render_pass_list.front()->quad_list.ElementAt(2)->visible_rect);
+    EXPECT_EQ(
+        rect4,
+        frame.render_pass_list.front()->quad_list.ElementAt(3)->visible_rect);
   }
 
   {
@@ -3057,18 +3049,18 @@ TEST_F(DisplayTest, CompositorFrameWithRenderPass) {
     // occlude each other. Since AggregatedRenderPassDrawQuad |r1| and |r2|
     // cannot be removed to reduce overdraw, |quad_list| remains unchanged.
     EXPECT_EQ(4u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect5.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(1)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect3.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(2)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect6.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(3)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect5,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
+    EXPECT_EQ(
+        rect3,
+        frame.render_pass_list.front()->quad_list.ElementAt(2)->visible_rect);
+    EXPECT_EQ(
+        rect6,
+        frame.render_pass_list.front()->quad_list.ElementAt(3)->visible_rect);
   }
 
   {
@@ -3104,15 +3096,15 @@ TEST_F(DisplayTest, CompositorFrameWithRenderPass) {
     // Since AggregatedRenderPassDrawQuad |r1| and |r2| cannot be removed to
     // reduce overdraw, |quad_list| is reduced by 1.
     EXPECT_EQ(3u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect5.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(1)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect3.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(2)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect5,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
+    EXPECT_EQ(
+        rect3,
+        frame.render_pass_list.front()->quad_list.ElementAt(2)->visible_rect);
   }
 }
 
@@ -3183,18 +3175,18 @@ TEST_F(DisplayTest, CompositorFrameWithMultipleDrawQuadInSharedQuadState) {
     // |visible_rect| of |shared_quad_state| is formed by 4 DrawQuads and it
     // covers the visible region of |shared_quad_state2|.
     EXPECT_EQ(4u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1_1.ToString(), frame.render_pass_list.front()
-                                      ->quad_list.ElementAt(0)
-                                      ->visible_rect.ToString());
-    EXPECT_EQ(rect1_2.ToString(), frame.render_pass_list.front()
-                                      ->quad_list.ElementAt(1)
-                                      ->visible_rect.ToString());
-    EXPECT_EQ(rect1_3.ToString(), frame.render_pass_list.front()
-                                      ->quad_list.ElementAt(2)
-                                      ->visible_rect.ToString());
-    EXPECT_EQ(rect1_4.ToString(), frame.render_pass_list.front()
-                                      ->quad_list.ElementAt(3)
-                                      ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1_1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect1_2,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
+    EXPECT_EQ(
+        rect1_3,
+        frame.render_pass_list.front()->quad_list.ElementAt(2)->visible_rect);
+    EXPECT_EQ(
+        rect1_4,
+        frame.render_pass_list.front()->quad_list.ElementAt(3)->visible_rect);
   }
 
   {
@@ -3219,22 +3211,21 @@ TEST_F(DisplayTest, CompositorFrameWithMultipleDrawQuadInSharedQuadState) {
     // partially covers the visible region of |shared_quad_state2|. The
     // |visible_rect| of |quad5| is updated.
     EXPECT_EQ(5u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1_1.ToString(), frame.render_pass_list.front()
-                                      ->quad_list.ElementAt(0)
-                                      ->visible_rect.ToString());
-    EXPECT_EQ(rect1_2.ToString(), frame.render_pass_list.front()
-                                      ->quad_list.ElementAt(1)
-                                      ->visible_rect.ToString());
-    EXPECT_EQ(rect1_3.ToString(), frame.render_pass_list.front()
-                                      ->quad_list.ElementAt(2)
-                                      ->visible_rect.ToString());
-    EXPECT_EQ(rect1_4.ToString(), frame.render_pass_list.front()
-                                      ->quad_list.ElementAt(3)
-                                      ->visible_rect.ToString());
-    EXPECT_EQ(gfx::Rect(100, 0, 30, 30).ToString(),
-              frame.render_pass_list.front()
-                  ->quad_list.ElementAt(5)
-                  ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1_1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect1_2,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
+    EXPECT_EQ(
+        rect1_3,
+        frame.render_pass_list.front()->quad_list.ElementAt(2)->visible_rect);
+    EXPECT_EQ(
+        rect1_4,
+        frame.render_pass_list.front()->quad_list.ElementAt(3)->visible_rect);
+    EXPECT_EQ(
+        gfx::Rect(100, 0, 30, 30),
+        frame.render_pass_list.front()->quad_list.ElementAt(5)->visible_rect);
   }
 
   {
@@ -3267,26 +3258,24 @@ TEST_F(DisplayTest, CompositorFrameWithMultipleDrawQuadInSharedQuadState) {
     // |visible_rect| of DrawQuads in |share_quad_state2| are updated to the
     // region shown on screen.
     EXPECT_EQ(6u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect2_1.ToString(), frame.render_pass_list.front()
-                                      ->quad_list.ElementAt(0)
-                                      ->visible_rect.ToString());
-    EXPECT_EQ(rect2_2.ToString(), frame.render_pass_list.front()
-                                      ->quad_list.ElementAt(1)
-                                      ->visible_rect.ToString());
-    EXPECT_EQ(rect2_3.ToString(), frame.render_pass_list.front()
-                                      ->quad_list.ElementAt(2)
-                                      ->visible_rect.ToString());
-    EXPECT_EQ(rect2_4.ToString(), frame.render_pass_list.front()
-                                      ->quad_list.ElementAt(3)
-                                      ->visible_rect.ToString());
-    EXPECT_EQ(gfx::Rect(0, 0, 20, 30).ToString(),
-              frame.render_pass_list.front()
-                  ->quad_list.ElementAt(5)
-                  ->visible_rect.ToString());
-    EXPECT_EQ(gfx::Rect(120, 0, 20, 30).ToString(),
-              frame.render_pass_list.front()
-                  ->quad_list.ElementAt(6)
-                  ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect2_1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect2_2,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
+    EXPECT_EQ(
+        rect2_3,
+        frame.render_pass_list.front()->quad_list.ElementAt(2)->visible_rect);
+    EXPECT_EQ(
+        rect2_4,
+        frame.render_pass_list.front()->quad_list.ElementAt(3)->visible_rect);
+    EXPECT_EQ(
+        gfx::Rect(0, 0, 20, 30),
+        frame.render_pass_list.front()->quad_list.ElementAt(5)->visible_rect);
+    EXPECT_EQ(
+        gfx::Rect(120, 0, 20, 30),
+        frame.render_pass_list.front()->quad_list.ElementAt(6)->visible_rect);
   }
 }
 
@@ -3354,12 +3343,12 @@ TEST_F(DisplayTest, CompositorFrameWithNonInvertibleTransform) {
     display_->RemoveOverdrawQuads(&frame);
     // |quad2| is removed because it is not shown on screen in the target space.
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
-    EXPECT_EQ(rect3.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(2)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        rect3,
+        frame.render_pass_list.front()->quad_list.ElementAt(2)->visible_rect);
   }
 
   {
@@ -3385,9 +3374,9 @@ TEST_F(DisplayTest, CompositorFrameWithNonInvertibleTransform) {
     // |quad3| follows an non-invertible transform and it's covered by the
     // occlusion rect. So |quad3| is removed from the |frame|.
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
   }
 }
 
@@ -3425,9 +3414,9 @@ TEST_F(DisplayTest, DrawOcclusionWithLargeDrawQuad) {
     // DrawQuad, so the size of quad_list remains unchanged after calling
     // RemoveOverdrawQuads.
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(rect1.ToString(), frame.render_pass_list.front()
-                                    ->quad_list.ElementAt(0)
-                                    ->visible_rect.ToString());
+    EXPECT_EQ(
+        rect1,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
   }
 }
 
@@ -3939,12 +3928,12 @@ TEST_F(DisplayTest, DrawOcclusionWithRoundedCornerDoesNotOcclude) {
 
     // Since none of the quads are culled, there should be 2 quads.
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(quad_rect.ToString(), frame.render_pass_list.front()
-                                        ->quad_list.ElementAt(0)
-                                        ->visible_rect.ToString());
-    EXPECT_EQ(quad_rect.ToString(), frame.render_pass_list.front()
-                                        ->quad_list.ElementAt(1)
-                                        ->visible_rect.ToString());
+    EXPECT_EQ(
+        quad_rect,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
+    EXPECT_EQ(
+        quad_rect,
+        frame.render_pass_list.front()->quad_list.ElementAt(1)->visible_rect);
   }
 }
 
@@ -3995,9 +3984,9 @@ TEST_F(DisplayTest, DrawOcclusionWithRoundedCornerDoesOcclude) {
     // no rounded corner, the later quad is culled. We should only have 1 quad
     // in the final list now.
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(quad_rect.ToString(), frame.render_pass_list.front()
-                                        ->quad_list.ElementAt(0)
-                                        ->visible_rect.ToString());
+    EXPECT_EQ(
+        quad_rect,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
   }
 }
 
@@ -4061,9 +4050,9 @@ TEST_F(DisplayTest, DrawOcclusionSplit) {
     EXPECT_EQ(4u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
     display_->RemoveOverdrawQuads(&frame);
     ASSERT_EQ(6u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(occluding_rect.ToString(), frame.render_pass_list.front()
-                                             ->quad_list.ElementAt(0)
-                                             ->visible_rect.ToString());
+    EXPECT_EQ(
+        occluding_rect,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
 
     // Computed the expected quads
     //  +--------------------------------+
@@ -4333,9 +4322,9 @@ TEST_F(DisplayTest, DrawOcclusionWithRoundedCornerPartialOcclude) {
     // no rounded corner, the later quad is culled. We should only have 1 quad
     // in the final list now.
     EXPECT_EQ(5u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    EXPECT_EQ(quad_rect.ToString(), frame.render_pass_list.front()
-                                        ->quad_list.ElementAt(0)
-                                        ->visible_rect.ToString());
+    EXPECT_EQ(
+        quad_rect,
+        frame.render_pass_list.front()->quad_list.ElementAt(0)->visible_rect);
 
     // For rounded rect of bounds (10, 10, 1000, 1000) and corner radius of 10,
     // the occluding rect for it would be (13, 13, 994, 994).
