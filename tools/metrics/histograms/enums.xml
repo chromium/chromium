@@ -62418,6 +62418,42 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="Model File Memory Mapped and Valid"/>
 </enum>
 
+<enum name="ModemfwdDlcInstallResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="dlcservice returned InvalidDlc error"/>
+  <int value="3" label="dlcservice returned Allocation error"/>
+  <int value="4" label="dlcservice returned NoImageFound error"/>
+  <int value="5" label="dlcservice returned NeedReboot error"/>
+  <int value="6" label="dlcservice returned Busy error"/>
+  <int value="7" label="Unexpected DLC state"/>
+  <int value="8" label="Timeout waiting for dlcservice"/>
+  <int value="9" label="Timeout waiting for DLC install"/>
+  <int value="10" label="Timeout waiting for INSTALLED state"/>
+  <int value="11" label="Failed on Install"/>
+  <int value="12" label="Failed on GetDlcState"/>
+  <int value="13" label="Unexpected empty DLC id"/>
+</enum>
+
+<enum name="ModemfwdDlcUninstallResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="dlcservice returned InvalidDlc error"/>
+  <int value="3" label="dlcservice returned Allocation error"/>
+  <int value="4" label="dlcservice returned NoImageFound error"/>
+  <int value="5" label="dlcservice returned NeedReboot error"/>
+  <int value="6" label="dlcservice returned Busy error"/>
+  <int value="7" label="Failed on GetExistingDlcs"/>
+  <int value="8" label="Failed on Purge"/>
+  <int value="9" label="Unexpected empty variant"/>
+</enum>
+
+<enum name="ModemfwdFWUpdateLocation">
+  <int value="0" label="rootfs"/>
+  <int value="1" label="DLC"/>
+  <int value="2" label="Fallback to rootfs"/>
+</enum>
+
 <enum name="ModuleBlocklistCacheReadResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failed to open the file"/>
