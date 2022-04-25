@@ -1818,6 +1818,13 @@ const char kOmniboxSpareRendererDescription[] =
     "When the omnibox is focused, start an empty spare renderer. This can "
     "speed up the load of the navigation from the omnibox.";
 
+const char kOmniboxRetainSuggestionsWithHeadersName[] =
+    "Retain complete set of suggestions with headers";
+const char kOmniboxRetainSuggestionsWithHeadersDescription[] =
+    "Given a list of suggestions, all suggestions for which a header metadata "
+    "is available will be retained as a whole and not be counted towards the "
+    "limit.";
+
 const char kOmniboxTabSwitchSuggestionsName[] =
     "Omnibox switch to tab suggestions";
 const char kOmniboxTabSwitchSuggestionsDescription[] =

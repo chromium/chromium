@@ -334,4 +334,9 @@ const base::Feature kReportAssistedQueryStats{"OmniboxReportAssistedQueryStats",
 extern const base::Feature kReportSearchboxStats{
     "OmniboxReportSearchboxStats", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, retains all suggestions with headers to be presented entirely.
+// Disabling the feature trims the suggestions list to the predefined limit.
+extern const base::Feature kRetainSuggestionsWithHeaders{
+    "OmniboxRetainSuggestionsWithHeaders", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace omnibox

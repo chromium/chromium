@@ -56186,6 +56186,7 @@ from previous Chrome versions.
   <int value="616609955" label="ActionableContentSettings:enabled"/>
   <int value="616660621" label="ImeInputLogicFst:disabled"/>
   <int value="617762656" label="FirstScrollLatencyMeasurement:enabled"/>
+  <int value="618407424" label="OmniboxRetainSuggestionsWithHeaders:enabled"/>
   <int value="618426510" label="WaylandScreenCoordinatesEnabled:disabled"/>
   <int value="618532343" label="DesktopPWAsLocalUpdating:disabled"/>
   <int value="620189062" label="TabFreeze:enabled"/>
@@ -56287,6 +56288,7 @@ from previous Chrome versions.
   <int value="673588373" label="OmniboxPedalSuggestions:disabled"/>
   <int value="674627327" label="MagnifierNewFocusFollowing:enabled"/>
   <int value="674788251" label="EnableNewBadgeOnMenuItems:enabled"/>
+  <int value="676353150" label="OmniboxRetainSuggestionsWithHeaders:disabled"/>
   <int value="677866592" label="ClickToCallUI:disabled"/>
   <int value="677883800" label="DiagnosticsAppNavigation:disabled"/>
   <int value="679931272" label="DcheckIsFatal:enabled"/>
