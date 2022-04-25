@@ -62,15 +62,15 @@ class InlineLoginHandlerChromeOS : public InlineLoginHandler {
   void MakeAvailableInArcAndCloseDialog(const base::Value::List& args);
   void HandleSkipWelcomePage(const base::Value::List& args);
   void OpenGuestWindowAndCloseDialog(const base::Value::List& args);
-  // Show a screen to inform the user that adding `email` as a Secondary Account
-  // is not allowed by `email`'s user policies.
-  // See `SecondaryGoogleAccountUsage` for details.
-  void ShowSigninBlockedErrorPage(const std::string& email,
-                                  const std::string& hosted_domain);
+  // Fires WebUIListener `show-signin-error-page` that would display an error
+  // page informing the reason of the account not being added as a Secondary
+  // account.
+  void ShowSigninErrorPage(const std::string& email,
+                           const std::string& hosted_domain);
 
   base::RepeatingClosure close_dialog_closure_;
   base::RepeatingCallback<void(const std::string&, const std::string&)>
-      show_signin_blocked_error_;
+      show_signin_error_;
   base::WeakPtrFactory<InlineLoginHandlerChromeOS> weak_factory_{this};
 };
 

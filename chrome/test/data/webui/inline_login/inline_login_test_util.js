@@ -29,12 +29,13 @@ export const fakeAuthExtensionDataWithEmail = {
 };
 
 /*
- * Fake data used for `show-signin-blocked-by-policy-page` web listener in
+ * Fake data used for `show-signin-error-page` web listener in
  * chrome/browser/resources/inline_login/inline_login_app.js.
  */
 export const fakeSigninBlockedByPolicyData = {
   email: 'john.doe@example.com',
   hostedDomain: 'example.com',
+  signinBlockedByPolicy: true,
 };
 
 export class TestAuthenticator extends EventTarget {

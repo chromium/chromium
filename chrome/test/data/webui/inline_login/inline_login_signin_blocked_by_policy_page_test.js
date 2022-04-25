@@ -79,8 +79,7 @@ suite(inline_login_signin_blocked_by_policy_page_test.suiteName, () => {
         // Fire web UI listener to switch the ui view to
         // `signinBlockedByPolicy`.
         webUIListenerCallback(
-            'show-signin-blocked-by-policy-page',
-            fakeSigninBlockedByPolicyData);
+            'show-signin-error-page', fakeSigninBlockedByPolicyData);
         assertEquals(
             inlineLoginComponent.View.signinBlockedByPolicy, getActiveViewId(),
             'Sing-in blocked by policy page should be shown');
@@ -107,8 +106,7 @@ suite(inline_login_signin_blocked_by_policy_page_test.suiteName, () => {
         // Fire web UI listener to switch the ui view to
         // `signinBlockedByPolicy`.
         webUIListenerCallback(
-            'show-signin-blocked-by-policy-page',
-            fakeSigninBlockedByPolicyData);
+            'show-signin-error-page', fakeSigninBlockedByPolicyData);
         assertEquals(
             inlineLoginComponent.View.signinBlockedByPolicy, getActiveViewId(),
             'Sing-in blocked by policy should be shown');
@@ -121,9 +119,11 @@ suite(inline_login_signin_blocked_by_policy_page_test.suiteName, () => {
         assertTrue(
             textBody.textContent.includes('example.com'),
             'Invalid hosted domain');
-        webUIListenerCallback(
-            'show-signin-blocked-by-policy-page',
-            {email: 'coyote@acme.com', hostedDomain: 'acme.com'});
+        webUIListenerCallback('show-signin-error-page', {
+          email: 'coyote@acme.com',
+          hostedDomain: 'acme.com',
+          signinBlockedByPolicy: true
+        });
         textBody = signinBlockedByPolicyPageComponent.shadowRoot.querySelector(
             '.secondary');
         assertTrue(
@@ -141,8 +141,7 @@ suite(inline_login_signin_blocked_by_policy_page_test.suiteName, () => {
         // Fire web UI listener to switch the ui view to
         // `signinBlockedByPolicy`.
         webUIListenerCallback(
-            'show-signin-blocked-by-policy-page',
-            fakeSigninBlockedByPolicyData);
+            'show-signin-error-page', fakeSigninBlockedByPolicyData);
 
         const okButton = inlineLoginComponent.$$('.next-button');
         // OK button and signin blocked by policy screen should be visible.

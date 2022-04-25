@@ -177,8 +177,7 @@ Polymer({
     this.addWebUIListener('close-dialog', () => this.closeDialog_());
     // <if expr="chromeos_ash">
     this.addWebUIListener(
-        'show-signin-blocked-by-policy-page',
-        data => this.signinBlockedByPolicyShowView_(data));
+        'show-signin-error-page', data => this.signinErrorShowView_(data));
     // </if>
   },
 
@@ -472,14 +471,22 @@ Polymer({
   // <if expr="chromeos_ash">
 
   /**
-   * Shows the sign-in blocked by policy screen.
-   * @param {{email:string, hostedDomain:string}} data parameters.
+   * Shows the sign-in blocked by policy screen if the user account is not
+   * allowed to sign-in. Or shows the sign-in error screen if any error occurred
+   * during the sign-in flow.
+   * @param {{email:string, hostedDomain:string, signinBlockedByPolicy:boolean}}
+   * data parameters.
    * @private
    */
-  signinBlockedByPolicyShowView_(data) {
-    this.set('email_', data.email);
-    this.set('hostedDomain_', data.hostedDomain);
-    this.switchView_(View.signinBlockedByPolicy);
+  signinErrorShowView_(data) {
+    if (data.signinBlockedByPolicy) {
+      this.set('email_', data.email);
+      this.set('hostedDomain_', data.hostedDomain);
+      this.switchView_(View.signinBlockedByPolicy);
+    } else {
+      this.switchView_(View.signinError);
+    }
+
     this.setFocusToWebview_();
   },
 

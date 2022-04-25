@@ -163,7 +163,7 @@ void SigninHelper::OnGetSecondaryGoogleAccountUsage(
   }
 
   if (status != SigninRestrictionPolicyFetcher::Status::kSuccess) {
-    // TODO(b/227166207): Display error something went wrong.
+    ShowSigninBlockedErrorPageAndExit(/*hosted_domain=*/std::string());
     return;
   }
 
