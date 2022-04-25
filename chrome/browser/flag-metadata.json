@@ -2688,11 +2688,6 @@
     "expiry_milestone": 89
   },
   {
-    "name": "enable-store-hours",
-    "owners": [ "meiliang@chromium.org" ],
-    "expiry_milestone": 97
-  },
-  {
     "name": "enable-suggested-files",
     "owners": [ "wrong", "tby" ],
     "expiry_milestone": 100

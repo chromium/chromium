@@ -5600,10 +5600,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCriticalPersistedTabDataDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCriticalPersistedTabData)},
 
-    {"enable-store-hours", flag_descriptions::kStoreHoursAndroidName,
-     flag_descriptions::kStoreHoursAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kStoreHoursAndroid)},
-
     {"suppress-toolbar-captures",
      flag_descriptions::kSuppressToolbarCapturesName,
      flag_descriptions::kSuppressToolbarCapturesDescription, kOsAndroid,
