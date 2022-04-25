@@ -24,6 +24,7 @@
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -126,10 +127,8 @@ StyleImage* CSSImageValue::CacheImage(
 
     FetchParameters params =
         PrepareFetch(document, image_request_behavior, cross_origin);
-    cached_image_ = MakeGarbageCollected<StyleFetchedImage>(
-        ImageResourceContent::Fetch(params, document.Fetcher()), document,
-        params.GetImageRequestBehavior() == FetchParameters::kDeferImageLoad,
-        origin_clean_ == OriginClean::kTrue, is_ad_related_, params.Url());
+    cached_image_ = document.GetStyleEngine().CacheStyleImage(
+        params, origin_clean_, is_ad_related_);
   }
   return cached_image_.Get();
 }
