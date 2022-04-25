@@ -901,6 +901,26 @@ TEST_F(ArcSessionImplTest, DisableUreadahead) {
       GetClient(arc_session.get())->last_start_params().disable_ureadahead);
 }
 
+// Test that validates TTS caching is not enabled by default.
+TEST_F(ArcSessionImplTest, TTSCachingByDefault) {
+  auto arc_session = CreateArcSession();
+  arc_session->StartMiniInstance();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(
+      GetClient(arc_session.get())->last_start_params().enable_tts_caching);
+}
+
+// Test that validates TTS caching is enabled.
+TEST_F(ArcSessionImplTest, TTSCachingEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(arc::kEnableTTSCaching, true /* use */);
+  auto arc_session = CreateArcSession();
+  arc_session->StartMiniInstance();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(
+      GetClient(arc_session.get())->last_start_params().enable_tts_caching);
+}
+
 // Test "<<" operator for ArcSessionImpl::State type.
 TEST_F(ArcSessionImplTest, StateTypeStreamOutput) {
   EXPECT_EQ(ConvertToString(ArcSessionImpl::State::NOT_STARTED), "NOT_STARTED");

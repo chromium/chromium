@@ -20,6 +20,7 @@ extern const base::Feature kDocumentsProviderUnknownSizeFeature;
 extern const base::Feature kEnableArcNearbyShare;
 extern const base::Feature kEnablePerVmCoreScheduling;
 extern const base::Feature kEnableThrottlingNotification;
+extern const base::Feature kEnableTTSCaching;
 extern const base::Feature kEnableUnifiedAudioFocusFeature;
 extern const base::Feature kEnableUnmanagedToManagedTransitionFeature;
 extern const base::Feature kEnableUsap;
