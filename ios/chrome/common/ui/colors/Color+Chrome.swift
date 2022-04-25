@@ -26,21 +26,6 @@ extension Color {
     return Color(kGroupedSecondaryBackgroundColor)
   }
 
-  /// The primary background color.
-  public static var cr_primaryBackground: Color {
-    return Color(kPrimaryBackgroundColor)
-  }
-
-  /// The secondary background color.
-  public static var cr_secondaryBackground: Color {
-    return Color(kSecondaryBackgroundColor)
-  }
-
-  /// The grey200 color.
-  public static var cr_grey200: Color {
-    return Color(kGrey200Color)
-  }
-
   /// The grey300 color.
   public static var cr_grey300: Color {
     return Color(kGrey300Color)
@@ -49,11 +34,6 @@ extension Color {
   /// The grey500 color
   public static var cr_grey500: Color {
     return Color(kGrey500Color)
-  }
-
-  /// The grey700 color
-  public static var cr_grey700: Color {
-    return Color(kGrey700Color)
   }
 
   /// The blue color.

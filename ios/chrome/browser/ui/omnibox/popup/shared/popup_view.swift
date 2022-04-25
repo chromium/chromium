@@ -4,6 +4,20 @@
 
 import SwiftUI
 
+/// A preference key which is meant to compute the minimum `minY` value of multiple elements.
+struct MinYPreferenceKey: PreferenceKey {
+  static var defaultValue: CGFloat? = nil
+  static func reduce(value: inout CGFloat?, nextValue: () -> CGFloat?) {
+    if let nextValue = nextValue() {
+      if let currentValue = value {
+        value = min(currentValue, nextValue)
+      } else {
+        value = nextValue
+      }
+    }
+  }
+}
+
 /// Utility which provides a way to treat the `simultaneousGesture` view modifier as a value.
 struct SimultaneousGestureModifier<T: Gesture>: ViewModifier {
   let gesture: T
@@ -43,60 +57,21 @@ struct AccessibilityIdentifierModifier: ViewModifier {
 struct PopupView: View {
   enum Dimensions {
     static let matchListRowInsets = EdgeInsets(.zero)
+    // Any scrolling offset outside of this range is not treated as user drag gesture.
+    static let acceptableScrollingOffsetDeltaRange = 1.5...10
+    // If distance between current and initial scrolling offset is less than this value,
+    // it is probably an automatic scroll-to-top so we do not consider it to be user drag gesture.
+    static let initialScrollingOffsetDifferenceThreshold: CGFloat = 0.1
+
     static let selfSizingListBottomMargin: CGFloat = 16
 
-    enum VariationOne {
-      static let pedalSectionSeparatorPadding = EdgeInsets(
-        top: 8.5, leading: 0, bottom: 4, trailing: 0)
-      static let visibleTopContentInset: CGFloat = 4
-      // This allows hiding floating section headers at the top of the list in variation one.
-      static let hiddenTopContentInset: CGFloat = -50
-    }
+    // Default height if no other header or footer. This spaces the sections
+    // out properly.
+    static let headerFooterHeight: CGFloat = 16
 
-    enum VariationTwo {
-      // Default height if no other header or footer. This spaces the sections
-      // out properly in variation two.
-      static let headerFooterHeight: CGFloat = 16
-
-      // Default list row insets. These are removed to inset the popup to the
-      // width of the omnibox.
-      static let defaultInset: CGFloat = 16
-    }
-  }
-
-  /// Applies custom list style according to UI variation.
-  struct ListStyleModifier: ViewModifier {
-    @Environment(\.popupUIVariation) var popupUIVariation: PopupUIVariation
-    func body(content: Content) -> some View {
-      switch popupUIVariation {
-      case .one:
-        content.listStyle(.plain)
-      case .two:
-        content.listStyle(.insetGrouped)
-      }
-    }
-  }
-
-  /// Calls `onScroll` when the user performs a drag gesture over the content of the list.
-  struct ListScrollDetectionModifier: ViewModifier {
-    let onScroll: () -> Void
-    func body(content: Content) -> some View {
-      content
-        // For some reason, without this, user interaction is not forwarded to the list.
-        .onTapGesture(perform: {})
-        // Long press gestures are dismissed and `onPressingChanged` called with
-        // `pressing` equal to `false` when the user performs a drag gesture
-        // over the content, hence why this works. `DragGesture` cannot be used
-        // here, even with a `simultaneousGesture` modifier, because it prevents
-        // swipe-to-delete from correctly triggering within the list.
-        .onLongPressGesture(
-          perform: {},
-          onPressingChanged: { pressing in
-            if !pressing {
-              onScroll()
-            }
-          })
-    }
+    // Default list row insets. These are removed to inset the popup to the
+    // width of the omnibox
+    static let defaultInset: CGFloat = 16
   }
 
   /// Custom modifier emulating `.environment(key, value)`.
@@ -129,9 +104,11 @@ struct PopupView: View {
   private let shouldSelfSize: Bool
   private let appearanceContainerType: UIAppearanceContainer.Type?
 
-  @Environment(\.colorScheme) var colorScheme: ColorScheme
   @Environment(\.popupUIVariation) var popupUIVariation: PopupUIVariation
-  @Environment(\.horizontalSizeClass) var sizeClass
+
+  /// Memory of scrolling offset, so as to be able to tell the difference between user drag gesture and automatic scroll-to-top on new matches
+  @State private var initialScrollingOffset: CGFloat? = nil
+  @State private var scrollingOffset: CGFloat? = nil
 
   /// The current height of the self-sizing list.
   @State private var selfSizingListHeight: CGFloat? = nil
@@ -145,7 +122,7 @@ struct PopupView: View {
     self.appearanceContainerType = appearanceContainerType
   }
 
-  func listContent(geometry: GeometryProxy) -> some View {
+  var listContent: some View {
     ForEach(Array(zip(model.sections.indices, model.sections)), id: \.0) {
       sectionIndex, section in
 
@@ -153,11 +130,10 @@ struct PopupView: View {
         ForEach(Array(zip(section.matches.indices, section.matches)), id: \.0) {
           matchIndex, match in
           let indexPath = IndexPath(row: matchIndex, section: sectionIndex)
-          let highlighted = indexPath == model.highlightedMatchIndexPath
 
           PopupMatchRowView(
             match: match,
-            isHighlighted: highlighted,
+            isHighlighted: indexPath == self.model.highlightedMatchIndexPath,
             selectionHandler: {
               model.delegate?.autocompleteResultConsumer(
                 model, didSelectRow: UInt(matchIndex), inSection: UInt(sectionIndex))
@@ -166,13 +142,11 @@ struct PopupView: View {
               model.delegate?.autocompleteResultConsumer(
                 model, didTapTrailingButtonForRow: UInt(matchIndex),
                 inSection: UInt(sectionIndex))
-            },
-            shouldDisplayCustomSeparator: (!highlighted && matchIndex < section.matches.count - 1)
+            }
           )
           .id(indexPath)
           .deleteDisabled(!match.supportsDeletion)
           .listRowInsets(Dimensions.matchListRowInsets)
-          .listRowBackground(Color.clear)
           .accessibilityElement(children: .contain)
           .accessibilityIdentifier(
             OmniboxPopupAccessibilityIdentifierHelper.accessibilityIdentifierForRow(at: indexPath))
@@ -184,16 +158,13 @@ struct PopupView: View {
           }
         }
 
-      let footerForVariationTwo = Spacer()
+      let footer = Spacer()
         // Use `leastNonzeroMagnitude` to remove the footer. Otherwise,
         // it uses a default height.
         .frame(height: CGFloat.leastNonzeroMagnitude)
         .listRowInsets(EdgeInsets())
 
-      Section(
-        header: header(for: section, at: sectionIndex, geometry: geometry),
-        footer: popupUIVariation == .one ? nil : footerForVariationTwo
-      ) {
+      Section(header: header(for: section), footer: footer) {
         sectionContents
       }
     }
@@ -204,9 +175,7 @@ struct PopupView: View {
     let commonListModifier = AccessibilityIdentifierModifier(
       identifier: kOmniboxPopupTableViewAccessibilityIdentifier
     )
-    .concat(ListScrollDetectionModifier(onScroll: onScroll))
     .concat(ScrollOnChangeModifier(value: $model.sections, action: onNewSections))
-    .concat(ListStyleModifier())
     .concat(EnvironmentValueModifier(\.defaultMinListHeaderHeight, 0))
 
     GeometryReader { geometry in
@@ -220,27 +189,32 @@ struct PopupView: View {
             bottomMargin: Dimensions.selfSizingListBottomMargin,
             listModifier: selfSizingListModifier,
             content: {
-              listContent(geometry: geometry)
+              listContent
+                .anchorPreference(key: MinYPreferenceKey.self, value: .bounds) { geometry[$0].minY }
             },
             emptySpace: {
               PopupEmptySpaceView()
             }
-          )
-          .frame(width: geometry.size.width, height: geometry.size.height)
-          .onPreferenceChange(SelfSizingListHeightPreferenceKey.self) { height in
-            selfSizingListHeight = height
-          }
+          ).frame(width: geometry.size.width, height: geometry.size.height)
+            .onPreferenceChange(SelfSizingListHeightPreferenceKey.self) { height in
+              selfSizingListHeight = height
+            }
         }
       } else {
         List {
-          listContent(geometry: geometry)
+          listContent
+            .anchorPreference(key: MinYPreferenceKey.self, value: .bounds) { geometry[$0].minY }
         }
-        // This fixes list section header internal representation from overlapping safe areas.
-        .padding([.leading, .trailing], 0.2)
         .background(listBackground)
         .modifier(commonListModifier)
         .ignoresSafeArea(.keyboard)
         .frame(width: geometry.size.width, height: geometry.size.height)
+      }
+    }
+    .onPreferenceChange(MinYPreferenceKey.self) { newScrollingOffset in
+      if let newScrollingOffset = newScrollingOffset {
+        onNewScrollingOffset(
+          oldScrollingOffset: scrollingOffset, newScrollingOffset: newScrollingOffset)
       }
     }
   }
@@ -250,43 +224,11 @@ struct PopupView: View {
   }
 
   @ViewBuilder
-  func header(for section: PopupMatchSection, at index: Int, geometry: GeometryProxy) -> some View {
+  func header(for section: PopupMatchSection) -> some View {
     if section.header.isEmpty {
-      if popupUIVariation == .one {
-        if index == 0 {
-          // Additional space between omnibox and top section.
-          let firstSectionHeader =
-            Color.cr_primaryBackground.frame(
-              width: geometry.size.width, height: -Dimensions.VariationOne.hiddenTopContentInset)
-          if #available(iOS 15.0, *) {
-            // Additional padding is added on iOS 15, which needs to be cancelled here.
-            firstSectionHeader.padding([.top, .bottom], -6)
-          } else {
-            firstSectionHeader
-          }
-        } else if index == 1 {
-          // Spacing and separator below the top (pedal) section is inserted as
-          // a header in the second section.
-          let separatorColor = (colorScheme == .dark) ? Color.cr_grey700 : Color.cr_grey200
-          let pedalSectionSeparator =
-            separatorColor
-            .frame(width: geometry.size.width, height: 0.5)
-            .padding(Dimensions.VariationOne.pedalSectionSeparatorPadding)
-            .background(Color.cr_primaryBackground)
-
-          if #available(iOS 15.0, *) {
-            pedalSectionSeparator.padding([.top, .bottom], -6)
-          } else {
-            pedalSectionSeparator
-          }
-        } else {
-          EmptyView()
-        }
-      } else {
-        Spacer()
-          .frame(height: Dimensions.VariationTwo.headerFooterHeight)
-          .listRowInsets(EdgeInsets())
-      }
+      Spacer()
+        .frame(height: Dimensions.headerFooterHeight)
+        .listRowInsets(EdgeInsets())
     } else {
       Text(section.header)
     }
@@ -297,37 +239,29 @@ struct PopupView: View {
   var omniboxPaddingModifier: some ViewModifier {
     let leadingSpace: CGFloat
     let trailingSpace: CGFloat
-    if sizeClass == .compact {
+    switch popupUIVariation {
+    case .one:
       leadingSpace = 0
       trailingSpace = 0
-    } else {
-      leadingSpace = model.omniboxLeadingSpace
-      trailingSpace = model.omniboxTrailingSpace
+    case .two:
+      leadingSpace = model.omniboxLeadingSpace - Dimensions.defaultInset
+      trailingSpace = model.omniboxTrailingSpace - Dimensions.defaultInset
     }
-    let inset: CGFloat =
-      (popupUIVariation == .one || sizeClass == .compact)
-      ? 0 : -Dimensions.VariationTwo.defaultInset
-    return PaddingModifier([.leading], leadingSpace + inset).concat(
-      PaddingModifier([.trailing], trailingSpace + inset))
+    return PaddingModifier([.leading], leadingSpace).concat(
+      PaddingModifier([.trailing], trailingSpace))
   }
 
   var listBackground: some View {
-    let backgroundColor: Color
     // iOS 14 + SwiftUI has a bug with dark mode colors in high contrast mode.
     // If no dark mode + high contrast color is provided, they are supposed to
     // default to the dark mode color. Instead, SwiftUI defaults to the light
     // mode color. This bug is fixed in iOS 15, but until then, a workaround
     // color with the dark mode + high contrast color specified is used.
     if #available(iOS 15, *) {
-      backgroundColor =
-        (popupUIVariation == .one) ? Color.cr_primaryBackground : Color.cr_groupedPrimaryBackground
+      return Color.cr_groupedSecondaryBackground.edgesIgnoringSafeArea(.all)
     } else {
-      backgroundColor =
-        (popupUIVariation == .one)
-        ? Color("primary_background_color_swiftui_ios14")
-        : Color("grouped_primary_background_color_swiftui_ios14")
+      return Color("grouped_primary_background_color_swiftui_ios14").edgesIgnoringSafeArea(.all)
     }
-    return backgroundColor.edgesIgnoringSafeArea(.all)
   }
 
   func onAppear() {
@@ -337,21 +271,6 @@ struct PopupView: View {
       ])
 
       listAppearance.backgroundColor = .clear
-      // Custom separators are provided, so the system ones are made invisible.
-      listAppearance.separatorColor = .clear
-      listAppearance.separatorStyle = .none
-      listAppearance.separatorInset = .zero
-
-      if #available(iOS 15.0, *) {
-        listAppearance.sectionHeaderTopPadding = 0
-      } else {
-        listAppearance.sectionFooterHeight = 0
-      }
-
-      if popupUIVariation == .one {
-        listAppearance.contentInset.top = Dimensions.VariationOne.hiddenTopContentInset
-        listAppearance.contentInset.top += Dimensions.VariationOne.visibleTopContentInset
-      }
 
       if shouldSelfSize {
         listAppearance.bounces = false
@@ -367,6 +286,28 @@ struct PopupView: View {
   func onNewSections(sections: [PopupMatchSection], scrollProxy: ScrollViewProxy) {
     // Scroll to the very top of the list.
     scrollProxy.scrollTo(IndexPath(row: 0, section: 0), anchor: UnitPoint(x: 0, y: -.infinity))
+  }
+
+  func onNewScrollingOffset(oldScrollingOffset: CGFloat?, newScrollingOffset: CGFloat) {
+    guard let initialScrollingOffset = initialScrollingOffset else {
+      initialScrollingOffset = newScrollingOffset
+      scrollingOffset = newScrollingOffset
+      return
+    }
+
+    guard let oldScrollingOffset = oldScrollingOffset else { return }
+
+    scrollingOffset = newScrollingOffset
+    // Scrolling offset variation is interpreted as drag gesture from user iff:
+    // 1. the variation is contained within an acceptable range
+    // 2. the new scrolling offset is not too close to the top of the list.
+    let scrollingOffsetDelta = abs(oldScrollingOffset - newScrollingOffset)
+    let distToInitialScrollingOffset = abs(newScrollingOffset - initialScrollingOffset)
+    if Dimensions.acceptableScrollingOffsetDeltaRange.contains(scrollingOffsetDelta)
+      && distToInitialScrollingOffset > Dimensions.initialScrollingOffsetDifferenceThreshold
+    {
+      onScroll()
+    }
   }
 }
 
