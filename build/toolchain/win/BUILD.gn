@@ -21,29 +21,6 @@ assert(is_win)
 # "environment.x86" and "environment.x64" to the build directory and return a
 # list to us.
 
-# This tool will is used as a wrapper for various commands below.
-tool_wrapper_path = rebase_path("tool_wrapper.py", root_build_dir)
-
-if (use_remoteexec) {
-  goma_prefix = ""
-  rbe_prefix = "${rbe_bin_dir}/rewrapper -cfg=${rbe_cc_cfg_file} -exec_root=${rbe_exec_root} "
-  clang_prefix = rbe_prefix
-} else if (use_goma) {
-  if (host_os == "win") {
-    goma_prefix = "$goma_dir/gomacc.exe "
-  } else {
-    goma_prefix = "$goma_dir/gomacc "
-  }
-  clang_prefix = goma_prefix
-} else {
-  goma_prefix = ""
-  if (cc_wrapper != "") {
-    clang_prefix = cc_wrapper + " "
-  } else {
-    clang_prefix = ""
-  }
-}
-
 # Copy the VS runtime DLL for the default toolchain to the root build directory
 # so things will run.
 if (current_toolchain == default_toolchain) {
@@ -61,11 +38,17 @@ if (current_toolchain == default_toolchain) {
               ])
 }
 
+# This tool will is used as a wrapper for various commands below.
+_tool_wrapper_path =
+    rebase_path("//build/toolchain/win/tool_wrapper.py", root_build_dir)
+
 if (host_os == "win") {
-  clang_cl = "clang-cl.exe"
+  _exe = ".exe"
 } else {
-  clang_cl = "clang-cl"
+  _exe = ""
 }
+
+_clang_bin_path = rebase_path("$clang_base_path/bin", root_build_dir)
 
 # Parameters:
 #   environment: File name of environment file.
@@ -79,15 +62,65 @@ template("msvc_toolchain") {
     # passed to the build. They are ignored when this is the default toolchain.
     assert(defined(invoker.toolchain_args))
     toolchain_args = {
-      if (defined(invoker.toolchain_args)) {
-        forward_variables_from(invoker.toolchain_args, "*")
-      }
+      forward_variables_from(invoker.toolchain_args, "*")
 
       # This value needs to be passed through unchanged.
       host_toolchain = host_toolchain
 
       # Respect the global setting for whether rustc can make binaries.
       rustc_can_link = rustc_can_link
+    }
+
+    if (defined(toolchain_args.is_clang)) {
+      toolchain_is_clang = toolchain_args.is_clang
+    } else {
+      toolchain_is_clang = is_clang
+    }
+
+    # When the invoker has explicitly overridden use_goma or cc_wrapper in the
+    # toolchain args, use those values, otherwise default to the global one.
+    # This works because the only reasonable override that toolchains might
+    # supply for these values are to force-disable them.
+    if (defined(toolchain_args.use_remoteexec)) {
+      toolchain_uses_remoteexec = toolchain_args.use_remoteexec
+    } else {
+      toolchain_uses_remoteexec = use_remoteexec
+    }
+    if (defined(toolchain_args.use_goma)) {
+      toolchain_uses_goma = toolchain_args.use_goma
+    } else {
+      toolchain_uses_goma = use_goma
+    }
+    if (defined(toolchain_args.cc_wrapper)) {
+      toolchain_cc_wrapper = toolchain_args.cc_wrapper
+    } else {
+      toolchain_cc_wrapper = cc_wrapper
+    }
+    assert(!(toolchain_uses_remoteexec && toolchain_uses_goma),
+           "Goma and re-client can't be used together.")
+    assert(!(toolchain_cc_wrapper != "" && toolchain_uses_remoteexec),
+           "re-client and cc_wrapper can't be used together.")
+    assert(!(toolchain_cc_wrapper != "" && toolchain_uses_goma),
+           "Goma and cc_wrapper can't be used together.")
+
+    if (toolchain_uses_remoteexec) {
+      if (toolchain_is_clang) {
+        cl_prefix = "${rbe_bin_dir}/rewrapper -cfg=${rbe_cc_cfg_file} -exec_root=${rbe_exec_root} "
+      } else {
+        cl_prefix = ""
+      }
+    } else if (toolchain_uses_goma) {
+      cl_prefix = "${goma_dir}/gomacc${_exe} "
+    } else if (toolchain_cc_wrapper != "" && toolchain_is_clang) {
+      cl_prefix = toolchain_cc_wrapper + " "
+    } else {
+      cl_prefix = ""
+    }
+
+    cl = "${cl_prefix}${invoker.cl}"
+    if (host_os == "win") {
+      # Flip the slashes so that copy/paste of the command works.
+      cl = string_replace(cl, "/", "\\")
     }
 
     # Make these apply to all tools below.
@@ -99,19 +132,10 @@ template("msvc_toolchain") {
 
     env = invoker.environment
 
-    cl = invoker.cl
-
     if (use_lld) {
-      if (host_os == "win") {
-        lld_link = "lld-link.exe"
-      } else {
-        lld_link = "lld-link"
-      }
-      prefix = rebase_path("$clang_base_path/bin", root_build_dir)
-
       # lld-link includes a replacement for lib.exe that can produce thin
       # archives and understands bitcode (for lto builds).
-      link = "$prefix/$lld_link"
+      link = "${_clang_bin_path}/lld-link${_exe}"
       if (host_os == "win") {
         # Flip the slashes so that copy/paste of the commands works.
         link = string_replace(link, "/", "\\")
@@ -136,8 +160,7 @@ template("msvc_toolchain") {
           "${invoker.sys_include_flags} "  # Note trailing space.
     } else {
       # clang-cl doesn't need this env hoop, so omit it there.
-      assert((defined(toolchain_args.is_clang) && !toolchain_args.is_clang) ||
-             !is_clang)
+      assert(!toolchain_is_clang)
       env_wrapper = "ninja -t msvc -e $env -- "  # Note trailing space.
       sys_include_flags = ""
     }
@@ -150,7 +173,7 @@ template("msvc_toolchain") {
       # (it needs %LIB% set to find libraries), and to work around its bugs.
       # Note trailing space:
       linker_wrapper =
-          "$python_path $tool_wrapper_path link-wrapper $env False "
+          "$python_path $_tool_wrapper_path link-wrapper $env False "
       sys_lib_flags = ""
     }
 
@@ -161,7 +184,7 @@ template("msvc_toolchain") {
     }
 
     if (toolchain_use_clang_coverage) {
-      assert(toolchain_args.is_clang,
+      assert(toolchain_is_clang,
              "use_clang_coverage should only be used with Clang")
       if (defined(toolchain_args.coverage_instrumentation_input_file)) {
         toolchain_coverage_instrumentation_input_file =
@@ -187,7 +210,7 @@ template("msvc_toolchain") {
     }
 
     # Disabled with cc_wrapper because of https://github.com/mozilla/sccache/issues/1013
-    if (toolchain_args.is_clang && cc_wrapper == "") {
+    if (toolchain_is_clang && toolchain_cc_wrapper == "") {
       # This flag omits system includes from /showIncludes output, to reduce the
       # amount of data to parse and store in .ninja_deps. We do this on non-Windows too,
       # and already make sure rebuilds after win sdk / libc++ / clang header updates happen via
@@ -230,7 +253,7 @@ template("msvc_toolchain") {
     }
 
     tool("rc") {
-      command = "$python_path $tool_wrapper_path rc-wrapper $env rc.exe /nologo $sys_include_flags{{defines}} {{include_dirs}} /fo{{output}} {{source}}"
+      command = "$python_path $_tool_wrapper_path rc-wrapper $env rc.exe /nologo $sys_include_flags{{defines}} {{include_dirs}} /fo{{output}} {{source}}"
       depsformat = "msvc"
       outputs = [ "$object_subdir/{{source_name_part}}.res" ]
       description = "RC {{output}}"
@@ -240,9 +263,8 @@ template("msvc_toolchain") {
       is_msvc_assembler = true
 
       if (toolchain_args.current_cpu == "arm64") {
-        if (is_clang) {
-          prefix = rebase_path("$clang_base_path/bin", root_build_dir)
-          ml = "${clang_prefix}${prefix}/${clang_cl} --target=arm64-windows"
+        if (toolchain_is_clang) {
+          ml = "${cl_prefix}${_clang_bin_path}/clang-cl${_exe} --target=arm64-windows"
           if (host_os == "win") {
             # Flip the slashes so that copy/paste of the command works.
             ml = string_replace(ml, "/", "\\")
@@ -278,17 +300,17 @@ template("msvc_toolchain") {
           # TODO(https://crbug.com/762167): If we end up writing an llvm-ml64,
           # make sure it has deterministic output (maybe with /Brepro or
           # something) and remove this wrapper.
-          ml_py = rebase_path("ml.py", root_build_dir)
+          ml_py = rebase_path("//build/toolchain/win/ml.py", root_build_dir)
           ml = "$python_path $ml_py $ml"
         }
       }
-      if (toolchain_args.current_cpu != "arm64" || is_clang) {
-        command = "$python_path $tool_wrapper_path asm-wrapper $env $ml {{defines}} {{include_dirs}} {{asmflags}} {{source}}"
+      if (toolchain_args.current_cpu != "arm64" || toolchain_is_clang) {
+        command = "$python_path $_tool_wrapper_path asm-wrapper $env $ml {{defines}} {{include_dirs}} {{asmflags}} {{source}}"
       } else {
         # armasm64.exe does not support definitions passed via the command line.
         # (Fortunately, they're not needed for compiling the V8 snapshot, which
         # is the only time this assembler is required.)
-        command = "$python_path $tool_wrapper_path asm-wrapper $env $ml {{include_dirs}} {{asmflags}} {{source}}"
+        command = "$python_path $_tool_wrapper_path asm-wrapper $env $ml {{include_dirs}} {{asmflags}} {{source}}"
       }
 
       description = "ASM {{output}}"
@@ -491,7 +513,7 @@ template("win_toolchains") {
   assert(defined(invoker.toolchain_arch))
   toolchain_arch = invoker.toolchain_arch
 
-  win_toolchain_data = exec_script("setup_toolchain.py",
+  win_toolchain_data = exec_script("//build/toolchain/win/setup_toolchain.py",
                                    [
                                      visual_studio_path,
                                      windows_sdk_path,
@@ -506,9 +528,14 @@ template("win_toolchains") {
   # Chromium exclusively uses the win_clang_ toolchain below, but V8 and
   # WebRTC still use this MSVC toolchain in some cases.
   if (host_os == "win") {
-    msvc_toolchain(target_name) {
+    if (defined(invoker.cl_toolchain_prefix)) {
+      cl_toolchain_prefix = invoker.cl_toolchain_prefix
+    } else {
+      cl_toolchain_prefix = ""
+    }
+    msvc_toolchain(cl_toolchain_prefix + target_name) {
       environment = "environment." + toolchain_arch
-      cl = "${goma_prefix}\"${win_toolchain_data.vc_bin_dir}/cl.exe\""
+      cl = "\"${win_toolchain_data.vc_bin_dir}/cl.exe\""
 
       toolchain_args = {
         if (defined(invoker.toolchain_args)) {
@@ -522,17 +549,18 @@ template("win_toolchains") {
     }
   }
 
-  msvc_toolchain("win_clang_" + target_name) {
+  if (defined(invoker.clang_toolchain_prefix)) {
+    clang_toolchain_prefix = invoker.clang_toolchain_prefix
+  } else {
+    clang_toolchain_prefix = "win_clang_"
+  }
+  msvc_toolchain(clang_toolchain_prefix + target_name) {
     environment = "environment." + toolchain_arch
-    prefix = rebase_path("$clang_base_path/bin", root_build_dir)
-    cl = "${clang_prefix}$prefix/${clang_cl}"
+    cl = "${_clang_bin_path}/clang-cl${_exe}"
     _clang_lib_dir =
         rebase_path("$clang_base_path/lib/clang/$clang_version/lib/windows",
                     root_build_dir)
     if (host_os == "win") {
-      # Flip the slashes so that copy/paste of the command works.
-      cl = string_replace(cl, "/", "\\")
-
       # And to match the other -libpath flags.
       _clang_lib_dir = string_replace(_clang_lib_dir, "/", "\\")
     }
@@ -603,20 +631,21 @@ win_toolchains("nacl_win64") {
 if (target_os == "winuwp") {
   assert(target_cpu == "x64" || target_cpu == "x86" || target_cpu == "arm" ||
          target_cpu == "arm64")
-  store_cpu_toolchain_data = exec_script("setup_toolchain.py",
-                                         [
-                                           visual_studio_path,
-                                           windows_sdk_path,
-                                           visual_studio_runtime_dirs,
-                                           target_os,
-                                           target_cpu,
-                                           "environment.store_" + target_cpu,
-                                         ],
-                                         "scope")
+  store_cpu_toolchain_data =
+      exec_script("//build/toolchain/win/setup_toolchain.py",
+                  [
+                    visual_studio_path,
+                    windows_sdk_path,
+                    visual_studio_runtime_dirs,
+                    target_os,
+                    target_cpu,
+                    "environment.store_" + target_cpu,
+                  ],
+                  "scope")
 
   msvc_toolchain("uwp_" + target_cpu) {
     environment = "environment.store_" + target_cpu
-    cl = "${goma_prefix}\"${store_cpu_toolchain_data.vc_bin_dir}/cl.exe\""
+    cl = "\"${store_cpu_toolchain_data.vc_bin_dir}/cl.exe\""
     toolchain_args = {
       current_os = "winuwp"
       current_cpu = target_cpu
