@@ -294,12 +294,15 @@ scoped_refptr<ShapeResult> ShapeResultView::CreateShapeResult() const {
         part.NumGlyphs(), part.num_characters_);
     new_run->glyph_data_.CopyFromRange(part.range_);
     for (HarfBuzzRunGlyphData& glyph_data : new_run->glyph_data_) {
+      DCHECK_GE(glyph_data.character_index, part.offset_);
       glyph_data.character_index -= part.offset_;
+      DCHECK_LT(glyph_data.character_index, part.num_characters_);
     }
 
     new_run->start_index_ += char_index_offset_;
     new_run->width_ = part.width_;
     new_run->num_characters_ = part.num_characters_;
+    new_run->CheckConsistency();
     new_result->runs_.push_back(std::move(new_run));
   }
 
