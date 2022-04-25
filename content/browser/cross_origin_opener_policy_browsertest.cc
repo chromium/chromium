@@ -3400,8 +3400,14 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 }
 
 // This test is a reproducer for https://crbug.com/1305394.
+// This test is flaky on Mac: https://crbug.com/1319301
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CrossOriginIframeCoopBypass DISABLED_CrossOriginIframeCoopBypass
+#else
+#define MAYBE_CrossOriginIframeCoopBypass CrossOriginIframeCoopBypass
+#endif
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
-                       CrossOriginIframeCoopBypass) {
+                       MAYBE_CrossOriginIframeCoopBypass) {
   // This test requires that a cross-origin iframe be placed in its own
   // process. It is irrelevant without strict site isolation.
   if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites())
