@@ -389,15 +389,14 @@ void CardUnmaskPromptViews::InitIfNecessary() {
           .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
           .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
           .SetVisible(false)
+          .AddChildren(
+              views::Builder<views::Throbber>().CopyAddressTo(
+                  &progress_throbber_),
+              views::Builder<views::Label>()
+                  .CopyAddressTo(&overlay_label_)
+                  .SetText(l10n_util::GetStringUTF16(
+                      IDS_AUTOFILL_CARD_UNMASK_VERIFICATION_IN_PROGRESS)))
           .Build());
-
-  // TODO(crbug.com/1269126): Add view builder support to throbber and move
-  // adding children to construction of overlay above.
-  progress_throbber_ =
-      overlay_->AddChildView(std::make_unique<views::Throbber>());
-  overlay_label_ = overlay_->AddChildView(
-      std::make_unique<views::Label>(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_CARD_UNMASK_VERIFICATION_IN_PROGRESS)));
 }
 
 bool CardUnmaskPromptViews::ExpirationDateIsValid() const {
