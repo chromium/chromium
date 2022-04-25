@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/network/network_detailed_network_view.h"
+#include "ash/system/network/network_list_item_view.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -14,7 +15,8 @@ namespace ash {
 // Fake implementation of NetworkDetailedNetworkView.
 class ASH_EXPORT FakeNetworkDetailedNetworkView
     : public NetworkDetailedNetworkView,
-      public views::View {
+      public views::View,
+      public ViewClickListener {
  public:
   explicit FakeNetworkDetailedNetworkView(Delegate* delegate);
   FakeNetworkDetailedNetworkView(const FakeNetworkDetailedNetworkView&) =
@@ -23,9 +25,18 @@ class ASH_EXPORT FakeNetworkDetailedNetworkView
       const FakeNetworkDetailedNetworkView&) = delete;
   ~FakeNetworkDetailedNetworkView() override;
 
+  const NetworkListItemView* last_clicked_network_list_item() const {
+    return last_clicked_network_list_item_;
+  }
+
  private:
   // NetworkDetailedNetworkView:
   views::View* GetAsView() override;
+
+  // ViewClickListener:
+  void OnViewClicked(views::View* view) override;
+
+  NetworkListItemView* last_clicked_network_list_item_ = nullptr;
 };
 
 }  // namespace ash
