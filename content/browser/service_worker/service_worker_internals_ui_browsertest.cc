@@ -49,6 +49,156 @@ void ExpectUnregisterResultAndRun(bool expected,
   ASSERT_EQ(expected, actual);
   continuation.Run();
 }
+
+class ServiceWorkerObserver : public ServiceWorkerContextCoreObserver {
+ public:
+  explicit ServiceWorkerObserver(ServiceWorkerContextWrapper* context)
+      : context_(context) {}
+
+  void Init() { context_->AddObserver(this); }
+  void Wait() { run_loop_.Run(); }
+
+ protected:
+  void Quit() {
+    context_->RemoveObserver(this);
+    run_loop_.Quit();
+  }
+  raw_ptr<ServiceWorkerContextWrapper> context_;
+
+ private:
+  base::RunLoop run_loop_;
+};
+
+class SWStateObserver : public ServiceWorkerObserver,
+                        public base::RefCountedThreadSafe<SWStateObserver> {
+ public:
+  explicit SWStateObserver(ServiceWorkerContextWrapper* context,
+                           ServiceWorkerVersion::Status target)
+      : ServiceWorkerObserver(context), target_(target) {}
+
+  SWStateObserver(const SWStateObserver&) = delete;
+  SWStateObserver& operator=(const SWStateObserver&) = delete;
+
+  int64_t RegistrationID() { return registration_id_; }
+  int64_t VersionID() { return version_id_; }
+
+ protected:
+  using parent = ServiceWorkerObserver;
+
+  // ServiceWorkerContextCoreObserver overrides.
+  void OnVersionStateChanged(int64_t version_id,
+                             const GURL& scope,
+                             const blink::StorageKey& key,
+                             ServiceWorkerVersion::Status) override {
+    ASSERT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
+    const ServiceWorkerVersion* version =
+        parent::context_->GetLiveVersion(version_id);
+    if (version->status() == target_) {
+      version_id_ = version_id;
+      registration_id_ = version->registration_id();
+      parent::Quit();
+    }
+  }
+
+ private:
+  friend class base::RefCountedThreadSafe<SWStateObserver>;
+  ~SWStateObserver() override = default;
+
+  int64_t registration_id_ = blink::mojom::kInvalidServiceWorkerRegistrationId;
+  int64_t version_id_ = blink::mojom::kInvalidServiceWorkerVersionId;
+  const ServiceWorkerVersion::Status target_;
+};
+
+class SWOnStoppedObserver
+    : public ServiceWorkerObserver,
+      public base::RefCountedThreadSafe<SWOnStoppedObserver> {
+ public:
+  explicit SWOnStoppedObserver(ServiceWorkerContextWrapper* context)
+      : ServiceWorkerObserver(context) {}
+
+  SWOnStoppedObserver(const SWOnStoppedObserver&) = delete;
+  SWOnStoppedObserver& operator=(const SWOnStoppedObserver&) = delete;
+
+ protected:
+  using parent = ServiceWorkerObserver;
+
+  // ServiceWorkerContextCoreObserver overrides.
+  void OnStopped(int64_t version_id) override {
+    ASSERT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
+    const ServiceWorkerVersion* version =
+        parent::context_->GetLiveVersion(version_id);
+    ASSERT_EQ(version->running_status(), EmbeddedWorkerStatus::STOPPED);
+    parent::Quit();
+  }
+
+ private:
+  friend class base::RefCountedThreadSafe<SWOnStoppedObserver>;
+  ~SWOnStoppedObserver() override = default;
+};
+
+class SWOnStartedObserver
+    : public ServiceWorkerObserver,
+      public base::RefCountedThreadSafe<SWOnStartedObserver> {
+ public:
+  explicit SWOnStartedObserver(ServiceWorkerContextWrapper* context)
+      : ServiceWorkerObserver(context) {}
+
+  SWOnStartedObserver(const SWOnStartedObserver&) = delete;
+  SWOnStartedObserver& operator=(const SWOnStartedObserver&) = delete;
+
+ protected:
+  using parent = ServiceWorkerObserver;
+
+  // ServiceWorkerContextCoreObserver overrides.
+  void OnStarted(int64_t version_id,
+                 const GURL& scope,
+                 int process_id,
+                 const GURL& script_url,
+                 const blink::ServiceWorkerToken& token,
+                 const blink::StorageKey& key) override {
+    ASSERT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
+    const ServiceWorkerVersion* version =
+        parent::context_->GetLiveVersion(version_id);
+    ASSERT_EQ(version->running_status(), EmbeddedWorkerStatus::RUNNING);
+    parent::Quit();
+  }
+
+ private:
+  friend class base::RefCountedThreadSafe<SWOnStartedObserver>;
+  ~SWOnStartedObserver() override = default;
+};
+class SWOnRegistrationDeletedObserver
+    : public ServiceWorkerObserver,
+      public base::RefCountedThreadSafe<SWOnRegistrationDeletedObserver> {
+ public:
+  explicit SWOnRegistrationDeletedObserver(ServiceWorkerContextWrapper* context)
+      : ServiceWorkerObserver(context) {}
+
+  SWOnRegistrationDeletedObserver(const SWOnRegistrationDeletedObserver&) =
+      delete;
+  SWOnRegistrationDeletedObserver& operator=(
+      const SWOnRegistrationDeletedObserver&) = delete;
+
+  int64_t RegistrationID() { return registration_id_; }
+
+ protected:
+  using parent = ServiceWorkerObserver;
+
+  // ServiceWorkerContextCoreObserver overrides.
+  void OnRegistrationDeleted(int64_t registration_id,
+                             const GURL& scope,
+                             const blink::StorageKey& key) override {
+    ASSERT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
+    registration_id_ = registration_id;
+    parent::Quit();
+  }
+
+ private:
+  int64_t registration_id_ = blink::mojom::kInvalidServiceWorkerRegistrationId;
+  friend class base::RefCountedThreadSafe<SWOnRegistrationDeletedObserver>;
+  ~SWOnRegistrationDeletedObserver() override = default;
+};
+
 }  // namespace
 
 class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
@@ -152,11 +302,13 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
     GetActiveWindow()->Close();
     SetActiveWindow(shell());
   }
+  void TearDownWindow(Shell* window) {
+    SetActiveWindow(window);
+    GetActiveWindow()->Close();
+    SetActiveWindow(shell());
+  }
   void SetActiveWindow(Shell* window) { active_shell_ = window; }
   Shell* GetActiveWindow() { return active_shell_; }
-
-  // Registers a service worker and then tears down the process it used, for a
-  // clean slate going forward.
   void RegisterServiceWorker() {
     NavigateToServiceWorkerSetupPage();
     {
@@ -222,11 +374,24 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
 
       const observer = new MutationObserver(callback);
       observer.observe(elementToObserve, options);
-   )";
+    )";
     return ExecJs(
         web_contents()->GetMainFrame(),
         JsReplace(kScript, "^(.this.)?(", target, ")$", expected, title),
         EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1);
+  }
+
+  int ServiveWorkerCountFromInternalUI() {
+    return EvalJs(web_contents()->GetMainFrame(),
+                  R"(document.querySelectorAll(
+                    "div#serviceworker-list \
+                    > div:not([style='display: none;']) \
+                    > div:not([class='serviceworker-summary']) \
+                    > div.serviceworker-registration"
+                  ).length)",
+                  EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                  /*world_id=*/1)
+        .ExtractInt();
   }
 
   std::string GetServiceWorkerInfoFromInternalUI(int64_t registration_id,
@@ -267,12 +432,40 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
        }
      });
      result;
-   )";
+    )";
     return EvalJs(web_contents()->GetMainFrame(),
                   JsReplace(kScript, base::NumberToString(registration_id),
                             "^(.this.)?(", target, ")$"),
                   EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1)
         .ExtractString();
+  }
+
+  void TriggerServiceWorkerInternalUIOption(int64_t registration_id,
+                                            std::string option) {
+    static constexpr char kScript[] = R"(
+      var serviceworkers = document.querySelectorAll(
+        "div#serviceworker-list > div:not([style='display: none;'])\
+                  > div:not([class='serviceworker-summary']) > \
+                  div.serviceworker-registration"
+      );
+
+      serviceworkers.forEach((serviceworker) => {
+        Array.prototype.forEach.call(serviceworker.querySelectorAll("*"),
+        (node) => {
+          if (
+            node.attributes.jscontent &&
+            RegExp("registration_id").test(node.attributes.jscontent.value) &&
+            node.innerText == $1
+          ) {
+            serviceworker.querySelector("button."+$2).click();
+          }
+        });
+      });
+    )";
+    EXPECT_TRUE(ExecJs(
+        web_contents()->GetMainFrame(),
+        JsReplace(kScript, base::NumberToString(registration_id), option),
+        EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1));
   }
 
   enum InfoTag {
@@ -329,63 +522,12 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
   Shell* active_shell_ = shell();
 };
 
-class WorkerActivatedObserver
-    : public ServiceWorkerContextCoreObserver,
-      public base::RefCountedThreadSafe<WorkerActivatedObserver> {
- public:
-  explicit WorkerActivatedObserver(ServiceWorkerContextWrapper* context)
-      : context_(context) {}
-
-  WorkerActivatedObserver(const WorkerActivatedObserver&) = delete;
-  WorkerActivatedObserver& operator=(const WorkerActivatedObserver&) = delete;
-
-  void Init() { context_->AddObserver(this); }
-  // ServiceWorkerContextCoreObserver overrides.
-  void OnVersionStateChanged(int64_t version_id,
-                             const GURL& scope,
-                             const blink::StorageKey& key,
-                             ServiceWorkerVersion::Status) override {
-    ASSERT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
-    const ServiceWorkerVersion* version = context_->GetLiveVersion(version_id);
-    if (version->status() == ServiceWorkerVersion::ACTIVATED) {
-      context_->RemoveObserver(this);
-      version_id_ = version_id;
-      registration_id_ = version->registration_id();
-      run_loop_.Quit();
-    }
-  }
-  void Wait() { run_loop_.Run(); }
-
-  int64_t registration_id() { return registration_id_; }
-  int64_t version_id() { return version_id_; }
-
- private:
-  friend class base::RefCountedThreadSafe<WorkerActivatedObserver>;
-  ~WorkerActivatedObserver() override = default;
-
-  int64_t registration_id_ = blink::mojom::kInvalidServiceWorkerRegistrationId;
-  int64_t version_id_ = blink::mojom::kInvalidServiceWorkerVersionId;
-
-  base::RunLoop run_loop_;
-  raw_ptr<ServiceWorkerContextWrapper> context_;
-};
-
 // Tests
 IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
                        NoRegisteredServiceWorker) {
   ASSERT_TRUE(CreateNewWindow());
-
   NavigateToServiceWorkerInternalUI();
-
-  ASSERT_EQ(0, EvalJs(web_contents()->GetMainFrame(),
-                      R"(document.querySelectorAll(
-                 "div#serviceworker-list > div:not([style='display: none;'])\
-                 > div:not([class='serviceworker-summary'])\
-                 > div.serviceworker-registration"
-               ).length)",
-                      EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1)
-                   .ExtractInt());
-
+  ASSERT_EQ(0, ServiveWorkerCountFromInternalUI());
   TearDownWindow();
 }
 
@@ -394,22 +536,25 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
   Shell* sw_internal_ui_window = CreateNewWindow();
   NavigateToServiceWorkerInternalUI();
 
-  const std::u16string kTitle = u"Mutated";
+  // Register and wait for the service worker to populate on the internal UI.
+  const std::u16string kTitle = u"SW populated";
   TitleWatcher title_watcher(web_contents(), kTitle);
   SetMutationObserver("status", "ACTIVATED", kTitle);
 
   Shell* sw_registration_window = CreateNewWindow();
-  // Register and wait for activation.
-  auto observer = base::MakeRefCounted<WorkerActivatedObserver>(wrapper());
-  observer->Init();
+  auto sw_state_observer = base::MakeRefCounted<SWStateObserver>(
+      wrapper(), ServiceWorkerVersion::ACTIVATED);
+  sw_state_observer->Init();
   RegisterServiceWorker();
-  observer->Wait();
-  int64_t registration_id = observer->registration_id();
-  int64_t version_id = observer->version_id();
+  sw_state_observer->Wait();
+  int64_t registration_id = sw_state_observer->RegistrationID();
+  int64_t version_id = sw_state_observer->VersionID();
   ASSERT_EQ(1u, GetAllRegistrations().size())
       << "There should be exactly one registration";
 
   EXPECT_EQ(kTitle, title_watcher.WaitAndGetTitle());
+
+  // Assert populated service worker info.
   SetActiveWindow(sw_internal_ui_window);
   ASSERT_EQ(base::NumberToString(version_id),
             GetServiceWorkerInfoFromInternalUI(registration_id, "version_id"));
@@ -422,10 +567,127 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
       GetServiceWorkerInfoFromInternalUI(registration_id, "running_status"));
   ASSERT_EQ(GetServiceWorkerInfo(PROCESS_ID),
             GetServiceWorkerInfoFromInternalUI(registration_id, "process_id"));
-  UnRegisterServiceWorker();
 
-  TearDownWindow();
-  SetActiveWindow(sw_registration_window);
-  TearDownWindow();
+  // Leave a clean state.
+  UnRegisterServiceWorker();
+  TearDownWindow(sw_registration_window);
+  TearDownWindow(sw_internal_ui_window);
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
+                       StopStartSWReflectedOnInternalUI) {
+  Shell* sw_internal_ui_window = CreateNewWindow();
+  NavigateToServiceWorkerInternalUI();
+
+  // Register and wait for the service worker to populate on the internal UI.
+  const std::u16string kTitle = u"SW populated";
+  TitleWatcher title_watcher(web_contents(), kTitle);
+  SetMutationObserver("status", "ACTIVATED", kTitle);
+
+  Shell* sw_registration_window = CreateNewWindow();
+  auto sw_state_observer = base::MakeRefCounted<SWStateObserver>(
+      wrapper(), ServiceWorkerVersion::ACTIVATED);
+  sw_state_observer->Init();
+  RegisterServiceWorker();
+  sw_state_observer->Wait();
+  int64_t registration_id = sw_state_observer->RegistrationID();
+  ASSERT_EQ(1u, GetAllRegistrations().size())
+      << "There should be exactly one registration";
+
+  EXPECT_EQ(kTitle, title_watcher.WaitAndGetTitle());
+
+  // Assert running status.
+  SetActiveWindow(sw_internal_ui_window);
+  ASSERT_EQ("RUNNING", GetServiceWorkerInfoFromInternalUI(registration_id,
+                                                          "running_status"));
+  // Tests that a stopping service worker is reflected on internal UI.
+  const std::u16string kTitle2 = u"SW running_status: STOPPED";
+  TitleWatcher title_watcher2(web_contents(), kTitle2);
+  SetMutationObserver("running_status", "STOPPED", kTitle2);
+
+  wrapper()->StopAllServiceWorkers(base::DoNothing());
+
+  ASSERT_EQ(kTitle2, title_watcher2.WaitAndGetTitle());
+
+  // Tests that a starting service worker is reflected on internal UI.
+  const std::u16string kTitle3 = u"SW running_status: RUNNING";
+  TitleWatcher title_watcher_3(web_contents(), kTitle3);
+  SetMutationObserver("running_status", "RUNNING", kTitle3);
+
+  wrapper()->StartActiveServiceWorker(GetAllRegistrations().front().scope,
+                                      GetAllRegistrations().front().key,
+                                      base::DoNothing());
+
+  ASSERT_EQ(kTitle3, title_watcher_3.WaitAndGetTitle());
+
+  // Leave a clean state.
+  UnRegisterServiceWorker();
+  TearDownWindow(sw_registration_window);
+  TearDownWindow(sw_internal_ui_window);
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest, InternalUIOptions) {
+  Shell* sw_internal_ui_window = CreateNewWindow();
+  NavigateToServiceWorkerInternalUI();
+
+  // Register and wait for the service worker to populate on the internal UI.
+  const std::u16string kTitle = u"SW populated";
+  TitleWatcher title_watcher(web_contents(), kTitle);
+  SetMutationObserver("status", "ACTIVATED", kTitle);
+
+  Shell* sw_registration_window = CreateNewWindow();
+  auto sw_state_observer = base::MakeRefCounted<SWStateObserver>(
+      wrapper(), ServiceWorkerVersion::ACTIVATED);
+  sw_state_observer->Init();
+  RegisterServiceWorker();
+  sw_state_observer->Wait();
+  int64_t registration_id = sw_state_observer->RegistrationID();
+  ASSERT_EQ(1u, GetAllRegistrations().size())
+      << "There should be exactly one registration";
+
+  EXPECT_EQ(kTitle, title_watcher.WaitAndGetTitle());
+
+  // Test the stop option on the service worker internal UI.
+  SetActiveWindow(sw_internal_ui_window);
+  const std::u16string kTitle2 = u"SW running_status: STOPPED";
+  TitleWatcher title_watcher_2(web_contents(), kTitle2);
+  SetMutationObserver("running_status", "STOPPED", kTitle2);
+
+  auto sw_on_stopped_observer =
+      base::MakeRefCounted<SWOnStoppedObserver>(wrapper());
+  sw_on_stopped_observer->Init();
+  TriggerServiceWorkerInternalUIOption(registration_id, "stop");
+  sw_on_stopped_observer->Wait();
+
+  EXPECT_EQ(kTitle2, title_watcher_2.WaitAndGetTitle());
+
+  // Test the start option on the service worker internal UI.
+  SetActiveWindow(sw_internal_ui_window);
+  const std::u16string kTitle3 = u"SW running_status: RUNNING";
+  TitleWatcher title_watcher_3(web_contents(), kTitle3);
+  SetMutationObserver("running_status", "RUNNING", kTitle3);
+
+  auto sw_on_started_observer =
+      base::MakeRefCounted<SWOnStartedObserver>(wrapper());
+  sw_on_started_observer->Init();
+  TriggerServiceWorkerInternalUIOption(registration_id, "start");
+  sw_on_started_observer->Wait();
+
+  EXPECT_EQ(kTitle3, title_watcher_3.WaitAndGetTitle());
+
+  // Test the unregister option on the service worker internal UI.
+  SetActiveWindow(sw_internal_ui_window);
+  auto sw_on_registration_deleted_observer =
+      base::MakeRefCounted<SWOnRegistrationDeletedObserver>(wrapper());
+  sw_on_registration_deleted_observer->Init();
+  TriggerServiceWorkerInternalUIOption(registration_id, "unregister");
+  sw_on_registration_deleted_observer->Wait();
+
+  ASSERT_EQ(registration_id,
+            sw_on_registration_deleted_observer->RegistrationID());
+
+  // Leave a clean state.
+  TearDownWindow(sw_registration_window);
+  TearDownWindow(sw_internal_ui_window);
 }
 }  // namespace content

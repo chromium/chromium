@@ -178,6 +178,7 @@ base::Value::ListStorage GetRegistrationListValue(
                                    registration.key.origin().GetDebugString());
     registration_info.SetStringKey(
         "top_level_site", registration.key.top_level_site().Serialize());
+    registration_info.SetStringKey("storage_key", registration.key.Serialize());
     registration_info.SetStringKey(
         "registration_id", base::NumberToString(registration.registration_id));
     registration_info.SetBoolKey("navigation_preload_enabled",
@@ -650,15 +651,20 @@ void ServiceWorkerInternalsHandler::HandleUnregister(const ListValue* args) {
   absl::optional<int> partition_id = cmd_args.FindIntKey("partition_id");
   scoped_refptr<ServiceWorkerContextWrapper> context;
   const std::string* scope_string = cmd_args.FindStringKey("scope");
+  const std::string* storage_key_string = cmd_args.FindStringKey("storage_key");
   if (!partition_id || !GetServiceWorkerContext(*partition_id, &context) ||
-      !scope_string) {
+      !scope_string || !storage_key_string) {
     return;
   }
+
+  absl::optional<blink::StorageKey> storage_key =
+      blink::StorageKey::Deserialize(*storage_key_string);
 
   base::OnceCallback<void(blink::ServiceWorkerStatusCode)> callback =
       base::BindOnce(OperationCompleteCallback, weak_ptr_factory_.GetWeakPtr(),
                      callback_id);
-  UnregisterWithScope(context, GURL(*scope_string), std::move(callback));
+  UnregisterWithScope(context, GURL(*scope_string), storage_key.value(),
+                      std::move(callback));
 }
 
 void ServiceWorkerInternalsHandler::HandleStartWorker(const ListValue* args) {
@@ -673,20 +679,22 @@ void ServiceWorkerInternalsHandler::HandleStartWorker(const ListValue* args) {
     return;
 
   absl::optional<int> partition_id = cmd_args.FindIntKey("partition_id");
-
   scoped_refptr<ServiceWorkerContextWrapper> context;
   const std::string* scope_string = cmd_args.FindStringKey("scope");
+  const std::string* storage_key_string = cmd_args.FindStringKey("storage_key");
   if (!partition_id || !GetServiceWorkerContext(*partition_id, &context) ||
-      !scope_string) {
+      !scope_string || !storage_key_string) {
     return;
   }
+
+  absl::optional<blink::StorageKey> storage_key =
+      blink::StorageKey::Deserialize(*storage_key_string);
+
   base::OnceCallback<void(blink::ServiceWorkerStatusCode)> callback =
       base::BindOnce(OperationCompleteCallback, weak_ptr_factory_.GetWeakPtr(),
                      callback_id);
-  context->StartActiveServiceWorker(
-      GURL(*scope_string),
-      blink::StorageKey(url::Origin::Create(GURL(*scope_string))),
-      std::move(callback));
+  context->StartActiveServiceWorker(GURL(*scope_string), storage_key.value(),
+                                    std::move(callback));
 }
 
 void ServiceWorkerInternalsHandler::StopWorkerWithId(
@@ -711,6 +719,7 @@ void ServiceWorkerInternalsHandler::StopWorkerWithId(
 void ServiceWorkerInternalsHandler::UnregisterWithScope(
     scoped_refptr<ServiceWorkerContextWrapper> context,
     const GURL& scope,
+    blink::StorageKey& storage_key,
     ServiceWorkerInternalsHandler::StatusCallback callback) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -723,9 +732,9 @@ void ServiceWorkerInternalsHandler::UnregisterWithScope(
   // because that reduces a status code to boolean.
   // TODO(crbug.com/1199077): Update this when ServiceWorkerInternalsHandler
   // implements StorageKey.
-  context->context()->UnregisterServiceWorker(
-      scope, blink::StorageKey(url::Origin::Create(scope)),
-      /*is_immediate=*/false, std::move(callback));
+  context->context()->UnregisterServiceWorker(scope, storage_key,
+                                              /*is_immediate=*/false,
+                                              std::move(callback));
 }
 
 }  // namespace content

@@ -16,6 +16,7 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace base {
 class ListValue;
@@ -90,6 +91,7 @@ class ServiceWorkerInternalsHandler : public WebUIMessageHandler {
                         StatusCallback callback);
   void UnregisterWithScope(scoped_refptr<ServiceWorkerContextWrapper> context,
                            const GURL& scope,
+                           blink::StorageKey& storage_key,
                            StatusCallback callback) const;
 
   std::unordered_map<uintptr_t, std::unique_ptr<PartitionObserver>> observers_;
