@@ -192,6 +192,7 @@ static_library("performance_manager") {
   deps = [
     "//build:chromeos_buildflags",
     "//components/pref_registry:pref_registry",
+    "//components/prefs:prefs",
     "//third_party/blink/public/common:headers",
   ]
 
