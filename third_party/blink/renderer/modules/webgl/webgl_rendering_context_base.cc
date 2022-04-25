@@ -5172,6 +5172,33 @@ void WebGLRenderingContextBase::TexImageStaticBitmapImage(
     StaticBitmapImage* image,
     bool image_has_flip_y,
     bool allow_copy_via_gpu) {
+  // All calling functions check isContextLost, so a duplicate check is not
+  // needed here.
+  const char* func_name = GetTexImageFunctionName(params.function_id);
+
+  // Ensure that `image` is in the unpack color space.
+  scoped_refptr<StaticBitmapImage> color_converted_image;
+  {
+    const auto image_color_info = image->GetSkColorInfo();
+    const auto image_color_space = image_color_info.colorSpace()
+                                       ? image_color_info.refColorSpace()
+                                       : SkColorSpace::MakeSRGB();
+    const auto unpack_color_space =
+        PredefinedColorSpaceToSkColorSpace(unpack_color_space_);
+    if (!SkColorSpace::Equals(unpack_color_space.get(),
+                              image_color_space.get())) {
+      color_converted_image = image->ConvertToColorSpace(
+          unpack_color_space, image_color_info.colorType());
+      if (!color_converted_image) {
+        SynthesizeGLError(
+            GL_OUT_OF_MEMORY, func_name,
+            "ImageBitmap in unpack color space unexpectedly empty");
+        return;
+      }
+      image = color_converted_image.get();
+    }
+  }
+
   // Copy using the GPU, if possible.
   if (allow_copy_via_gpu && image->IsTextureBacked() &&
       CanUseTexImageViaGPU(params)) {
@@ -5180,11 +5207,8 @@ void WebGLRenderingContextBase::TexImageStaticBitmapImage(
     return;
   }
 
-  // All calling functions check isContextLost, so a duplicate check is not
-  // needed here.
-  const char* func_name = GetTexImageFunctionName(params.function_id);
-
-  // Apply orientation if necessary
+  // Apply orientation if necessary. This should be merged into the above
+  // color space conversion.
   PaintImage paint_image = image->PaintImageForCurrentFrame();
   if (!image->HasDefaultOrientation()) {
     paint_image = Image::ResizeAndOrientImage(
@@ -6154,38 +6178,20 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
     return;
   }
 
-  scoped_refptr<StaticBitmapImage> image = bitmap->BitmapImage();
-  DCHECK(image);
-
-  // Ensure that `image` is in the unpack color space.
-  const auto unpack_color_space =
-      PredefinedColorSpaceToSkColorSpace(unpack_color_space_);
-  const auto image_color_space = image->GetSkColorInfo().colorSpace()
-                                     ? image->GetSkColorInfo().refColorSpace()
-                                     : SkColorSpace::MakeSRGB();
-  const bool needs_color_conversion =
-      !SkColorSpace::Equals(unpack_color_space.get(), image_color_space.get());
-  if (needs_color_conversion) {
-    image = image->ConvertToColorSpace(unpack_color_space,
-                                       image->GetSkColorInfo().colorType());
-    if (!image) {
-      SynthesizeGLError(GL_OUT_OF_MEMORY, func_name,
-                        "ImageBitmap in unpack color space unexpectedly empty");
-      return;
-    }
-  }
+  auto static_bitmap_image = bitmap->BitmapImage();
+  DCHECK(static_bitmap_image);
 
   // When TexImage is called with an ImageBitmap, the values of UNPACK_FLIP_Y,
   // UNPACK_PREMULTIPLY_ALPHA, and UNPACK_COLORSPACE_CONVERSION are to be
   // ignored. Set `adjusted_params` such that no conversions will be made using
   // that state.
   params.unpack_premultiply_alpha =
-      image->GetSkColorInfo().alphaType() == kPremul_SkAlphaType;
+      static_bitmap_image->GetSkColorInfo().alphaType() == kPremul_SkAlphaType;
   params.unpack_flip_y = false;
   const bool image_has_flip_y = false;
   // TODO(kbr): make this work for sub-rectangles of ImageBitmaps.
   const bool can_copy_via_gpu = !selecting_sub_rectangle;
-  TexImageStaticBitmapImage(params, image.get(), image_has_flip_y,
+  TexImageStaticBitmapImage(params, static_bitmap_image.get(), image_has_flip_y,
                             can_copy_via_gpu);
 }
 
