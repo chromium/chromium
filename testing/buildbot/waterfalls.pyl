@@ -3050,6 +3050,7 @@
           'femu-additional-ram',
           'fuchsia-code-coverage',
           'isolate_profile_data',
+          'linux-bionic',
         ],
       },
       'fuchsia-fyi-arm64-dbg': {
