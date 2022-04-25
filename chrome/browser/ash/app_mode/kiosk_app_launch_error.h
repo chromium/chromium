@@ -34,7 +34,7 @@ class KioskAppLaunchError {
                                   // force-installed extensions.
     kExtensionsPolicyInvalid =
         15,  // The policy value of ExtensionInstallForcelist is invalid.
-    kCount,  // Count of all errors.
+    kMaxValue = kExtensionsPolicyInvalid,  // Max value of errors.
   };
 
   // Returns a message for given |error|.

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 
 #include "ash/components/login/auth/auth_status_consumer.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -23,7 +24,7 @@ constexpr char kKeyLaunchError[] = "launch_error";
 constexpr char kKeyCryptohomeFailure[] = "cryptohome_failure";
 
 // Error from the last kiosk launch.
-KioskAppLaunchError::Error s_last_error = KioskAppLaunchError::Error::kCount;
+absl::optional<KioskAppLaunchError::Error> s_last_error = absl::nullopt;
 
 }  // namespace
 
@@ -65,10 +66,6 @@ std::string KioskAppLaunchError::GetErrorMessage(Error error) {
     case Error::kExtensionsPolicyInvalid:
       return l10n_util::GetStringUTF8(
           IDS_KIOSK_APP_ERROR_EXTENSIONS_POLICY_INVALID);
-
-    case Error::kCount:
-      // Break onto the NOTREACHED() code path below.
-      break;
   }
 
   NOTREACHED() << "Unknown kiosk app launch error, error="
@@ -96,8 +93,8 @@ void KioskAppLaunchError::SaveCryptohomeFailure(
 
 // static
 KioskAppLaunchError::Error KioskAppLaunchError::Get() {
-  if (s_last_error != Error::kCount)
-    return s_last_error;
+  if (s_last_error)
+    return *s_last_error;
   s_last_error = Error::kNone;
   PrefService* local_state = g_browser_process->local_state();
   const base::Value* dict =
@@ -106,7 +103,7 @@ KioskAppLaunchError::Error KioskAppLaunchError::Get() {
   absl::optional<int> error = dict->FindIntKey(kKeyLaunchError);
   if (error.has_value()) {
     s_last_error = static_cast<KioskAppLaunchError::Error>(error.value());
-    return s_last_error;
+    return *s_last_error;
   }
 
   return Error::kNone;
@@ -120,11 +117,12 @@ void KioskAppLaunchError::RecordMetricAndClear() {
 
   absl::optional<int> error = dict_update->FindIntKey(kKeyLaunchError);
   if (error) {
-    UMA_HISTOGRAM_ENUMERATION("Kiosk.Launch.Error", static_cast<Error>(*error),
-                              Error::kCount);
+    base::UmaHistogramEnumeration("Kiosk.Launch.Error",
+                                  static_cast<Error>(*error));
   }
 
   dict_update->RemoveKey(kKeyLaunchError);
+  s_last_error = absl::nullopt;
 
   absl::optional<int> cryptohome_failure =
       dict_update->FindIntKey(kKeyCryptohomeFailure);

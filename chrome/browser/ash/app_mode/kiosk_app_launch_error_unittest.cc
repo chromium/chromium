@@ -100,15 +100,16 @@ TEST_F(KioskAppLaunchErrorTest, GetErrorMessage) {
 TEST_F(KioskAppLaunchErrorTest, SaveError) {
   // No launch error is stored before it is saved.
   EXPECT_EQ(GetKioskDictionary()->FindKey(kKeyLaunchError), nullptr);
-  KioskAppLaunchError::Save(KioskAppLaunchError::Error::kCount);
+  KioskAppLaunchError::Save(KioskAppLaunchError::Error::kUserCancel);
 
   // The launch error can be retrieved.
   absl::optional<int> out_error =
       GetKioskDictionary()->FindIntKey(kKeyLaunchError);
   EXPECT_TRUE(out_error.has_value());
   EXPECT_EQ(out_error.value(),
-            static_cast<int>(KioskAppLaunchError::Error::kCount));
-  EXPECT_EQ(KioskAppLaunchError::Get(), KioskAppLaunchError::Error::kCount);
+            static_cast<int>(KioskAppLaunchError::Error::kUserCancel));
+  EXPECT_EQ(KioskAppLaunchError::Get(),
+            KioskAppLaunchError::Error::kUserCancel);
 
   // The launch error is cleaned up after clear operation.
   KioskAppLaunchError::RecordMetricAndClear();
