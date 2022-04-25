@@ -136,10 +136,12 @@ export class PeerConnectionUpdateTable {
     const details = row.cells[1].childNodes[0];
     details.appendChild(valueContainer);
 
-    // Highlight ICE failures and failure callbacks.
+    // Highlight ICE/DTLS failures and failure callbacks.
     if ((update.type === 'iceconnectionstatechange' &&
          update.value === 'failed') ||
         (update.type === 'iceconnectionstatechange (legacy)' &&
+         update.value === 'failed') ||
+        (update.type === 'connectionstatechange' &&
          update.value === 'failed') ||
         update.type.indexOf('OnFailure') !== -1 ||
         update.type === 'addIceCandidateFailed') {
