@@ -454,8 +454,11 @@ group("gn_all") {
       "//third_party/breakpad:generate_test_dump",
       "//third_party/breakpad:minidump-2-core",
       "//tools/dump_process_memory:dump_process",
-      "//tools/memory/partition_allocator:all",
     ]
+  }
+
+  if (is_linux || is_chromeos || is_android || is_mac) {
+    deps += [ "//tools/memory/partition_allocator:all" ]
   }
 
   if (is_chromeos_ash) {

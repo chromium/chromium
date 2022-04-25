@@ -69,8 +69,8 @@ absl::optional<PageMapEntry> EntryAtAddress(int pagemap_fd, uintptr_t address) {
 
 class HeapDumper {
  public:
-  HeapDumper(pid_t pid, int mem_fd, int pagemap_fd)
-      : pid_(pid), mem_fd_(mem_fd), pagemap_fd_(pagemap_fd) {}
+  HeapDumper(pid_t pid, int pagemap_fd)
+      : pagemap_fd_(pagemap_fd), reader_(pid) {}
   ~HeapDumper() {
     for (const auto& p : super_pages_) {
       munmap(p.second, kSuperPageSize);
@@ -81,10 +81,10 @@ class HeapDumper {
   }
 
   bool FindRoot() {
-    root_address_ = FindRootAddress(pid_, mem_fd_);
+    root_address_ = FindRootAddress(reader_);
     CHECK(root_address_);
-    auto root = RawBuffer<PartitionRoot<ThreadSafe>>::ReadFromMemFd(
-        mem_fd_, root_address_);
+    auto root = RawBuffer<PartitionRoot<ThreadSafe>>::ReadFromProcessMemory(
+        reader_, root_address_);
     CHECK(root);
     root_ = *root;
 
@@ -128,9 +128,8 @@ class HeapDumper {
     uintptr_t extent_address =
         reinterpret_cast<uintptr_t>(root_.get()->first_extent);
     while (extent_address) {
-      auto extent =
-          RawBuffer<PartitionSuperPageExtentEntry<ThreadSafe>>::ReadFromMemFd(
-              mem_fd_, extent_address);
+      auto extent = RawBuffer<PartitionSuperPageExtentEntry<ThreadSafe>>::
+          ReadFromProcessMemory(reader_, extent_address);
       uintptr_t first_super_page_address = SuperPagesBeginFromExtent(
           reinterpret_cast<PartitionSuperPageExtentEntry<ThreadSafe>*>(
               extent_address));
@@ -148,7 +147,7 @@ class HeapDumper {
                  << " super pages.";
     for (uintptr_t super_page : super_pages) {
       char* local_super_page =
-          ReadAtSameAddressInLocalMemory(mem_fd_, super_page, kSuperPageSize);
+          reader_.ReadAtSameAddressInLocalMemory(super_page, kSuperPageSize);
       if (!local_super_page) {
         LOG(WARNING) << base::StringPrintf("Cannot read from super page 0x%lx",
                                            super_page);
@@ -387,12 +386,11 @@ class HeapDumper {
   }
 
  private:
-  static uintptr_t FindRootAddress(pid_t pid,
-                                   int mem_fd) NO_THREAD_SAFETY_ANALYSIS {
-    uintptr_t tcache_registry_address =
-        IndexThreadCacheNeedleArray(pid, mem_fd, 1);
-    auto registry = RawBuffer<ThreadCacheRegistry>::ReadFromMemFd(
-        mem_fd, tcache_registry_address);
+  static uintptr_t FindRootAddress(RemoteProcessMemoryReader& reader)
+      NO_THREAD_SAFETY_ANALYSIS {
+    uintptr_t tcache_registry_address = IndexThreadCacheNeedleArray(reader, 1);
+    auto registry = RawBuffer<ThreadCacheRegistry>::ReadFromProcessMemory(
+        reader, tcache_registry_address);
     if (!registry)
       return 0;
 
@@ -401,7 +399,8 @@ class HeapDumper {
     if (!tcache_address)
       return 0;
 
-    auto tcache = RawBuffer<ThreadCache>::ReadFromMemFd(mem_fd, tcache_address);
+    auto tcache =
+        RawBuffer<ThreadCache>::ReadFromProcessMemory(reader, tcache_address);
     if (!tcache)
       return 0;
 
@@ -409,10 +408,9 @@ class HeapDumper {
     return root_address;
   }
 
-  const pid_t pid_;
-  const int mem_fd_;
   const int pagemap_fd_;
   uintptr_t root_address_ = 0;
+  RemoteProcessMemoryReader reader_;
   RawBuffer<PartitionRoot<ThreadSafe>> root_ = {};
   std::map<uintptr_t, char*> super_pages_ = {};
 
@@ -436,10 +434,8 @@ int main(int argc, char** argv) {
   int pid = atoi(command_line->GetSwitchValueASCII("pid").c_str());
   LOG(WARNING) << "PID = " << pid;
 
-  auto mem_fd = partition_alloc::tools::OpenProcMem(pid);
   auto pagemap_fd = partition_alloc::tools::OpenPagemap(pid);
-  partition_alloc::tools::HeapDumper dumper{pid, mem_fd.get(),
-                                            pagemap_fd.get()};
+  partition_alloc::tools::HeapDumper dumper{pid, pagemap_fd.get()};
 
   {
     partition_alloc::tools::ScopedSigStopper stopper{pid};

@@ -17,7 +17,12 @@
 
 #include "base/files/file.h"
 #include "base/posix/eintr_wrapper.h"
+#include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_MAC)
+#include <mach/mach.h>
+#endif
 
 namespace partition_alloc::tools {
 
@@ -34,19 +39,37 @@ class ScopedSigStopper {
 base::ScopedFD OpenProcMem(pid_t pid);
 base::ScopedFD OpenPagemap(pid_t pid);
 
-// Reads remove process memory from |fd| at |address| into |buffer|.
-bool ReadMemory(int fd, unsigned long address, size_t size, char* buffer);
-
-// Creates a RW memory mapping at |address|, or returns nullptr.
 char* CreateMappingAtAddress(uintptr_t address, size_t size);
 
-// Reads page-aligned memory from a remote process pointed at by |fd| at
-// |address| in both address spaces, or returns nullptr.
-char* ReadAtSameAddressInLocalMemory(int fd,
-                                     unsigned long address,
-                                     size_t size);
+// Reads the memory of a remote process.
+class RemoteProcessMemoryReader {
+ public:
+  explicit RemoteProcessMemoryReader(pid_t pid);
+  ~RemoteProcessMemoryReader();
+  // Whether access to the remote process memory has been granted.
+  bool IsValid() const;
 
-uintptr_t IndexThreadCacheNeedleArray(pid_t pid, int mem_fd, size_t index);
+  // Returns true for success.
+  bool ReadMemory(uintptr_t remote_address, size_t size, char* buffer);
+  // Reads remote process memory at the *same* address in the current
+  // process. Local memory is mapped with mmap(). Returns nullptr in case of
+  // failure.
+  char* ReadAtSameAddressInLocalMemory(uintptr_t address, size_t size);
+  pid_t pid() const { return pid_; }
+
+ private:
+  const pid_t pid_;
+  bool is_valid_;
+
+#if BUILDFLAG(IS_LINUX)
+  base::ScopedFD mem_fd_;
+#elif BUILDFLAG(IS_MAC)
+  task_t task_;
+#endif
+};
+
+uintptr_t IndexThreadCacheNeedleArray(RemoteProcessMemoryReader& reader,
+                                      size_t index);
 
 // Allows to access an object copied from remote memory "as if" it were
 // local. Of course, dereferencing any pointer from within it will at best
@@ -58,11 +81,12 @@ class RawBuffer {
   const T* get() const { return reinterpret_cast<const T*>(buffer_); }
   char* get_buffer() { return buffer_; }
 
-  static absl::optional<RawBuffer<T>> ReadFromMemFd(int mem_fd,
-                                                    uintptr_t address) {
+  static absl::optional<RawBuffer<T>> ReadFromProcessMemory(
+      RemoteProcessMemoryReader& reader,
+      uintptr_t address) {
     RawBuffer<T> buf;
-    bool ok = ReadMemory(mem_fd, reinterpret_cast<unsigned long>(address),
-                         sizeof(T), buf.get_buffer());
+    bool ok = reader.ReadMemory(reinterpret_cast<unsigned long>(address),
+                                sizeof(T), buf.get_buffer());
     if (!ok)
       return absl::nullopt;
 

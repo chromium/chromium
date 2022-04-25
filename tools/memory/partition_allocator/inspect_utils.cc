@@ -6,10 +6,17 @@
 
 #include <sys/mman.h>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/debug/proc_maps_linux.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+
+#if BUILDFLAG(IS_MAC)
+#include <libproc.h>
+#include <mach/mach_traps.h>
+#include <mach/mach_vm.h>
+#endif
 
 namespace partition_alloc::tools {
 
@@ -20,24 +27,6 @@ base::ScopedFD OpenProcMem(pid_t pid) {
       << "Do you have 0 set in /proc/sys/kernel/yama/ptrace_scope?";
 
   return base::ScopedFD(fd);
-}
-
-base::ScopedFD OpenPagemap(pid_t pid) {
-  std::string path = base::StringPrintf("/proc/%d/pagemap", pid);
-  int fd = open(path.c_str(), O_RDONLY);
-  CHECK_NE(fd, -1)
-      << "Do you have 0 set in /proc/sys/kernel/yama/ptrace_scope?";
-
-  return base::ScopedFD(fd);
-}
-
-// Reads a remote process memory.
-bool ReadMemory(int fd, unsigned long address, size_t size, char* buffer) {
-  if (HANDLE_EINTR(pread(fd, buffer, size, address)) ==
-      static_cast<ssize_t>(size)) {
-    return true;
-  }
-  return false;
 }
 
 char* CreateMappingAtAddress(uintptr_t address, size_t size) {
@@ -55,7 +44,8 @@ char* CreateMappingAtAddress(uintptr_t address, size_t size) {
   }
   if (local_memory != reinterpret_cast<void*>(address)) {
     LOG(WARNING) << "Mapping successful, but not at the desired address. "
-                 << "Retry to get better luck with ASLR?";
+                 << "Retry to get better luck with ASLR? 0x" << std::hex
+                 << address << " " << local_memory << std::dec;
     munmap(local_memory, size);
     return nullptr;
   }
@@ -63,16 +53,53 @@ char* CreateMappingAtAddress(uintptr_t address, size_t size) {
   return reinterpret_cast<char*>(local_memory);
 }
 
-char* ReadAtSameAddressInLocalMemory(int fd,
-                                     unsigned long address,
-                                     size_t size) {
+RemoteProcessMemoryReader::RemoteProcessMemoryReader(pid_t pid) : pid_(pid) {
+#if BUILDFLAG(IS_LINUX)
+  mem_fd_ = OpenProcMem(pid_);
+  is_valid_ = mem_fd_.get() != -1;
+#elif BUILDFLAG(IS_MAC)
+  kern_return_t ret = task_for_pid(mach_task_self(), pid_, &task_);
+  is_valid_ = ret == KERN_SUCCESS;
+#endif
+}
+
+RemoteProcessMemoryReader::~RemoteProcessMemoryReader() = default;
+
+bool RemoteProcessMemoryReader::IsValid() const {
+  return is_valid_;
+}
+
+bool RemoteProcessMemoryReader::ReadMemory(uintptr_t remote_address,
+                                           size_t size,
+                                           char* buffer) {
+#if BUILDFLAG(IS_LINUX)
+  if (HANDLE_EINTR(pread(mem_fd_.get(), buffer, size,
+                         static_cast<off_t>(remote_address))) ==
+      static_cast<ssize_t>(size)) {
+    return true;
+  }
+  return false;
+
+#elif BUILDFLAG(IS_MAC)
+  mach_vm_size_t read_bytes = size;
+  kern_return_t ret = mach_vm_read_overwrite(
+      task_, remote_address, size, reinterpret_cast<mach_vm_address_t>(buffer),
+      &read_bytes);
+  CHECK_EQ(ret, KERN_SUCCESS);
+
+  return ret == KERN_SUCCESS;
+#endif
+}
+
+char* RemoteProcessMemoryReader::ReadAtSameAddressInLocalMemory(
+    uintptr_t address,
+    size_t size) {
   // Try to allocate data in the local address space.
   char* local_memory = CreateMappingAtAddress(address, size);
   if (!local_memory)
     return nullptr;
 
-  bool ok =
-      ReadMemory(fd, address, size, reinterpret_cast<char*>(local_memory));
+  bool ok = ReadMemory(address, size, reinterpret_cast<char*>(local_memory));
 
   if (!ok) {
     munmap(local_memory, size);
@@ -82,20 +109,35 @@ char* ReadAtSameAddressInLocalMemory(int fd,
   return reinterpret_cast<char*>(local_memory);
 }
 
-uintptr_t IndexThreadCacheNeedleArray(pid_t pid, int mem_fd, size_t index) {
+base::ScopedFD OpenPagemap(pid_t pid) {
+#if BUILDFLAG(IS_LINUX)
+  std::string path = base::StringPrintf("/proc/%d/pagemap", pid);
+  int fd = open(path.c_str(), O_RDONLY);
+  CHECK_NE(fd, -1)
+      << "Do you have 0 set in /proc/sys/kernel/yama/ptrace_scope?";
+
+  return base::ScopedFD(fd);
+#elif BUILDFLAG(IS_MAC)
+  return base::ScopedFD(-1);
+#endif
+}
+
+#if BUILDFLAG(IS_LINUX)
+uintptr_t IndexThreadCacheNeedleArray(RemoteProcessMemoryReader& reader,
+                                      size_t index) {
   std::vector<base::debug::MappedMemoryRegion> regions;
   DCHECK_LT(index, kThreadCacheNeedleArraySize);
 
   {
     // Ensures that the mappings are not going to change.
-    ScopedSigStopper stop{pid};
+    ScopedSigStopper stop{reader.pid()};
 
     // There are subtleties when trying to read this file, which we blissfully
     // ignore here. See //base/debug/proc_maps_linux.h for details. We don't use
     // it, since we don't read the maps for ourselves, and everything is already
     // extremely racy. At worst we have to retry.
     LOG(INFO) << "Opening /proc/PID/maps";
-    std::string path = base::StringPrintf("/proc/%d/maps", pid);
+    std::string path = base::StringPrintf("/proc/%d/maps", reader.pid());
     auto file = base::File(base::FilePath(path),
                            base::File::FLAG_OPEN | base::File::FLAG_READ);
     CHECK(file.IsValid());
@@ -135,9 +177,10 @@ uintptr_t IndexThreadCacheNeedleArray(pid_t pid, int mem_fd, size_t index) {
     for (uintptr_t address = region.start;
          address < region.end - sizeof(needle_array_candidate);
          address += sizeof(uintptr_t)) {
-      bool ok = ReadMemory(mem_fd, reinterpret_cast<unsigned long>(address),
-                           sizeof(needle_array_candidate),
-                           reinterpret_cast<char*>(needle_array_candidate));
+      bool ok =
+          reader.ReadMemory(reinterpret_cast<unsigned long>(address),
+                            sizeof(needle_array_candidate),
+                            reinterpret_cast<char*>(needle_array_candidate));
       if (!ok) {
         LOG(WARNING) << "Failed to read";
         continue;
@@ -155,5 +198,77 @@ uintptr_t IndexThreadCacheNeedleArray(pid_t pid, int mem_fd, size_t index) {
   LOG(ERROR) << "Failed to find the address";
   return 0;
 }
+
+#elif BUILDFLAG(IS_MAC)
+
+uintptr_t IndexThreadCacheNeedleArray(RemoteProcessMemoryReader& reader,
+                                      size_t index) {
+  task_t task;
+  kern_return_t ret = task_for_pid(mach_task_self(), reader.pid(), &task);
+  CHECK_EQ(ret, KERN_SUCCESS)
+      << "Is the binary signed? codesign --force --deep -s - "
+      << "out/Default/pa_tcache_inspect to sign it";
+
+  mach_vm_address_t address = 0;
+  mach_vm_size_t size = 0;
+
+  while (true) {
+    address += size;
+
+    vm_region_extended_info_data_t info;
+    mach_port_t object_name;
+    mach_msg_type_number_t count;
+
+    count = VM_REGION_EXTENDED_INFO_COUNT;
+    ret = mach_vm_region(task, &address, &size, VM_REGION_EXTENDED_INFO,
+                         reinterpret_cast<vm_region_info_t>(&info), &count,
+                         &object_name);
+    if (ret != KERN_SUCCESS) {
+      LOG(ERROR) << "Cannot read region";
+      return 0;
+    }
+
+    // The needle is in the .data region, which is mapped Copy On Write from the
+    // binary, and is Readable and Writable.
+    if (info.protection != (VM_PROT_READ | VM_PROT_WRITE) ||
+        (info.share_mode != SM_COW))
+      continue;
+
+    char buf[PATH_MAX];
+    int len = proc_regionfilename(reader.pid(), address, buf, sizeof(buf));
+    buf[len] = '\0';
+
+    // Should be in the framework, not the launcher binary.
+    if (len == 0 || !strstr(buf, "Chromium Framework"))
+      continue;
+
+    // We have a candidate, let's look into it.
+    LOG(INFO) << "Found a candidate region between " << std::hex << address
+              << " and " << address + size << std::dec << " (size = " << size
+              << ") path = " << buf;
+
+    // Scan the region, looking for the needles.
+    uintptr_t needle_array_candidate[kThreadCacheNeedleArraySize];
+    for (uintptr_t addr = address;
+         addr < address + size - sizeof(needle_array_candidate);
+         addr += sizeof(uintptr_t)) {
+      bool ok = reader.ReadMemory(
+          reinterpret_cast<unsigned long>(addr), sizeof(needle_array_candidate),
+          reinterpret_cast<char*>(needle_array_candidate));
+      if (!ok) {
+        LOG(WARNING) << "Failed to read";
+        continue;
+      }
+
+      if (needle_array_candidate[0] == kNeedle1 &&
+          needle_array_candidate[kThreadCacheNeedleArraySize - 1] == kNeedle2) {
+        LOG(INFO) << "Got it! Address = 0x" << std::hex
+                  << needle_array_candidate[index];
+        return needle_array_candidate[index];
+      }
+    }
+  }
+}
+#endif
 
 }  // namespace partition_alloc::tools

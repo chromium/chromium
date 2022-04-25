@@ -52,8 +52,8 @@ namespace {
 
 // Scans the process memory to look for the thread cache registry address. This
 // does not need symbols.
-uintptr_t FindThreadCacheRegistry(pid_t pid, int mem_fd) {
-  return IndexThreadCacheNeedleArray(pid, mem_fd, 1);
+uintptr_t FindThreadCacheRegistry(RemoteProcessMemoryReader& reader) {
+  return IndexThreadCacheNeedleArray(reader, 1);
 }
 
 // List all thread names for a given PID.
@@ -125,7 +125,7 @@ class ThreadCacheInspector {
     size_t size = 0;
   };
 
-  ThreadCacheInspector(uintptr_t registry_addr, int mem_fd, pid_t pid);
+  ThreadCacheInspector(uintptr_t registry_addr, pid_t pid);
   bool GetAllThreadCaches();
   size_t CachedMemory() const;
   uintptr_t GetRootAddress();
@@ -145,8 +145,8 @@ class ThreadCacheInspector {
 
  private:
   uintptr_t registry_addr_;
-  int mem_fd_;
   pid_t pid_;
+  RemoteProcessMemoryReader reader_;
   RawBuffer<ThreadCacheRegistry> registry_;
   std::vector<RawBuffer<ThreadCache>> thread_caches_;
 };
@@ -166,8 +166,8 @@ class PartitionRootInspector {
     std::vector<SlotSpanMetadata<ThreadSafe>> decommitted_slot_spans;
   };
 
-  PartitionRootInspector(uintptr_t root_addr, int mem_fd, pid_t pid)
-      : root_addr_(root_addr), mem_fd_(mem_fd), pid_(pid) {}
+  PartitionRootInspector(uintptr_t root_addr, pid_t pid)
+      : root_addr_(root_addr), pid_(pid), reader_(pid) {}
   // Returns true for success.
   bool GatherStatistics();
   const std::vector<BucketStats>& bucket_stats() const { return bucket_stats_; }
@@ -177,16 +177,14 @@ class PartitionRootInspector {
   void Update();
 
   uintptr_t root_addr_;
-  int mem_fd_;
   pid_t pid_;
+  RemoteProcessMemoryReader reader_;
   RawBuffer<PartitionRoot<ThreadSafe>> root_;
   std::vector<BucketStats> bucket_stats_;
 };
 
-ThreadCacheInspector::ThreadCacheInspector(uintptr_t registry_addr,
-                                           int mem_fd,
-                                           pid_t pid)
-    : registry_addr_(registry_addr), mem_fd_(mem_fd), pid_(pid) {}
+ThreadCacheInspector::ThreadCacheInspector(uintptr_t registry_addr, pid_t pid)
+    : registry_addr_(registry_addr), pid_(pid), reader_(pid) {}
 
 // NO_THREAD_SAFETY_ANALYSIS: Well, reading a running process' memory is not
 // really thread-safe.
@@ -196,16 +194,16 @@ bool ThreadCacheInspector::GetAllThreadCaches() NO_THREAD_SAFETY_ANALYSIS {
   // This is going to take a while, make sure that the metadata don't change.
   ScopedSigStopper stopper{pid_};
 
-  auto registry =
-      RawBuffer<ThreadCacheRegistry>::ReadFromMemFd(mem_fd_, registry_addr_);
+  auto registry = RawBuffer<ThreadCacheRegistry>::ReadFromProcessMemory(
+      reader_, registry_addr_);
   if (!registry.has_value())
     return false;
 
   registry_ = *registry;
   ThreadCache* head = registry_.get()->list_head_;
   while (head) {
-    auto tcache = RawBuffer<ThreadCache>::ReadFromMemFd(
-        mem_fd_, reinterpret_cast<uintptr_t>(head));
+    auto tcache = RawBuffer<ThreadCache>::ReadFromProcessMemory(
+        reader_, reinterpret_cast<uintptr_t>(head));
     if (!tcache.has_value()) {
       LOG(WARNING) << "Failed to read a ThreadCache";
       return false;
@@ -250,8 +248,8 @@ ThreadCacheInspector::AccumulateThreadCacheBuckets() {
 }
 
 void PartitionRootInspector::Update() {
-  auto root =
-      RawBuffer<PartitionRoot<ThreadSafe>>::ReadFromMemFd(mem_fd_, root_addr_);
+  auto root = RawBuffer<PartitionRoot<ThreadSafe>>::ReadFromProcessMemory(
+      reader_, root_addr_);
   if (root.has_value())
     root_ = *root;
 }
@@ -260,13 +258,13 @@ namespace {
 
 bool CopySlotSpanList(std::vector<SlotSpanMetadata<ThreadSafe>>& list,
                       uintptr_t head_address,
-                      int mem_fd) {
+                      RemoteProcessMemoryReader& reader) {
   absl::optional<RawBuffer<SlotSpanMetadata<ThreadSafe>>> metadata;
   for (uintptr_t slot_span_address = head_address; slot_span_address;
        slot_span_address =
            reinterpret_cast<uintptr_t>(metadata->get()->next_slot_span)) {
-    metadata = RawBuffer<SlotSpanMetadata<ThreadSafe>>::ReadFromMemFd(
-        mem_fd, slot_span_address);
+    metadata = RawBuffer<SlotSpanMetadata<ThreadSafe>>::ReadFromProcessMemory(
+        reader, slot_span_address);
     if (!metadata.has_value())
       return false;
     list.push_back(*metadata->get());
@@ -295,20 +293,20 @@ bool PartitionRootInspector::GatherStatistics() {
 
     bool ok = CopySlotSpanList(
         stats.active_slot_spans,
-        reinterpret_cast<uintptr_t>(bucket.active_slot_spans_head), mem_fd_);
+        reinterpret_cast<uintptr_t>(bucket.active_slot_spans_head), reader_);
     if (!ok)
       return false;
 
     ok = CopySlotSpanList(
         stats.empty_slot_spans,
-        reinterpret_cast<uintptr_t>(bucket.empty_slot_spans_head), mem_fd_);
+        reinterpret_cast<uintptr_t>(bucket.empty_slot_spans_head), reader_);
     if (!ok)
       return false;
 
     ok = CopySlotSpanList(
         stats.decommitted_slot_spans,
         reinterpret_cast<uintptr_t>(bucket.decommitted_slot_spans_head),
-        mem_fd_);
+        reader_);
     if (!ok)
       return false;
 
@@ -576,15 +574,15 @@ int main(int argc, char** argv) {
   base::FilePath json_filename =
       base::CommandLine::ForCurrentProcess()->GetSwitchValuePath("json");
 
-  auto mem_fd = partition_alloc::tools::OpenProcMem(pid);
   // Scan the memory.
+  partition_alloc::tools::RemoteProcessMemoryReader reader{pid};
   uintptr_t registry_address =
-      partition_alloc::tools::FindThreadCacheRegistry(pid, mem_fd.get());
+      partition_alloc::tools::FindThreadCacheRegistry(reader);
   CHECK(registry_address);
 
   LOG(INFO) << "Getting the thread cache registry";
   partition_alloc::tools::ThreadCacheInspector thread_cache_inspector{
-      registry_address, mem_fd.get(), pid};
+      registry_address, pid};
   std::map<base::PlatformThreadId, std::string> tid_to_name;
 
   size_t iter = 0;
@@ -599,7 +597,7 @@ int main(int argc, char** argv) {
       continue;
 
     partition_alloc::tools::PartitionRootInspector root_inspector{
-        thread_cache_inspector.GetRootAddress(), mem_fd.get(), pid};
+        thread_cache_inspector.GetRootAddress(), pid};
     bool has_bucket_stats = root_inspector.GatherStatistics();
 
     for (const auto& tcache : thread_cache_inspector.thread_caches()) {

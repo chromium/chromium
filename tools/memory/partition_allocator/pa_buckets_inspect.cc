@@ -42,8 +42,8 @@ using partition_alloc::internal::kNumBuckets;
 constexpr const char* kDumpName = "dump.dat";
 constexpr const char* kTmpDumpName = "dump.dat.tmp";
 
-uintptr_t FindAllocInfoAddress(pid_t pid, int mem_fd) {
-  return IndexThreadCacheNeedleArray(pid, mem_fd, 2);
+uintptr_t FindAllocInfoAddress(RemoteProcessMemoryReader& reader) {
+  return IndexThreadCacheNeedleArray(reader, 2);
 }
 
 void DisplayPerBucketData(
@@ -113,7 +113,7 @@ int main(int argc, char** argv) {
   int pid = atoi(argv[1]);
   uintptr_t registry_address = 0;
 
-  auto mem_fd = partition_alloc::tools::OpenProcMem(pid);
+  partition_alloc::tools::RemoteProcessMemoryReader reader{pid};
 
   if (argc == 3) {
     uint64_t address;
@@ -121,16 +121,14 @@ int main(int argc, char** argv) {
     registry_address = static_cast<uintptr_t>(address);
   } else {
     // Scan the memory.
-    registry_address =
-        partition_alloc::tools::FindAllocInfoAddress(pid, mem_fd.get());
+    registry_address = partition_alloc::tools::FindAllocInfoAddress(reader);
   }
 
   CHECK(registry_address);
 
   auto alloc_info = std::make_unique<AllocInfo>();
-  partition_alloc::tools::ReadMemory(mem_fd.get(), registry_address,
-                                     sizeof(AllocInfo),
-                                     reinterpret_cast<char*>(alloc_info.get()));
+  reader.ReadMemory(registry_address, sizeof(AllocInfo),
+                    reinterpret_cast<char*>(alloc_info.get()));
 
   size_t old_index = 0;
   size_t new_index = alloc_info->index;
@@ -163,9 +161,8 @@ int main(int argc, char** argv) {
     partition_alloc::tools::DisplayPerBucketData(live_allocs, alloc_info->index,
                                                  allocations_per_second);
 
-    partition_alloc::tools::ReadMemory(
-        mem_fd.get(), registry_address, sizeof(AllocInfo),
-        reinterpret_cast<char*>(alloc_info.get()));
+    reader.ReadMemory(registry_address, sizeof(AllocInfo),
+                      reinterpret_cast<char*>(alloc_info.get()));
     base::TimeTicks now = base::TimeTicks::Now();
     allocations_per_second = (alloc_info->index - old_index) /
                              (now - last_collection_time).InSecondsF();
