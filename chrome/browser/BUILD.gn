@@ -5004,6 +5004,7 @@ static_library("browser") {
       "//build:chromeos_buildflags",
       "//chrome/browser/apps/app_provisioning_service/proto",
       "//chrome/browser/apps/app_provisioning_service/proto:proto",
+      "//chrome/browser/ash",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/power/ml/smart_dim",
       "//chrome/browser/chromeos",
@@ -7925,6 +7926,7 @@ static_library("test_support") {
       "//ash/components/disks",
       "//ash/components/login/auth",
       "//ash/public/cpp",
+      "//chrome/browser/ash",
       "//chrome/test:test_support_ui",
       "//chromeos:test_support",
       "//chromeos/dbus",
@@ -7934,6 +7936,7 @@ static_library("test_support") {
       "//components/soda",
       "//components/user_manager:test_support",
       "//components/webapk:proto",
+      "//extensions:test_support",
       "//extensions/browser/api/messaging",
       "//ui/base:test_support",
       "//ui/base/ime/ash",
@@ -7972,12 +7975,6 @@ static_library("test_support") {
       "//components/crx_file",
       "//extensions/browser",
     ]
-    if (is_chromeos_ash) {
-      deps += [
-        "//chrome/browser/chromeos",
-        "//extensions:test_support",
-      ]
-    }
   }
 
   if (enable_library_cdms) {

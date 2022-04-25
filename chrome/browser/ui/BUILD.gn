@@ -3048,6 +3048,7 @@ static_library("ui") {
       "//ash/webui/web_applications",
       "//build:chromeos_buildflags",
       "//chrome/app:generated_resources",
+      "//chrome/browser/ash",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
       "//chrome/browser/chromeos",

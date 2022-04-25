@@ -27,7 +27,7 @@ source_set("bluetooth_internals") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/chromeos" ]
+    deps += [ "//chrome/browser/ash" ]
   }
 }
 

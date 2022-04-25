@@ -345,7 +345,7 @@ source_set("browser_tests") {
       "//ash/components/arc/session:session",
       "//ash/components/audio:audio",
       "//ash/components/cryptohome",
-      "//chrome/browser/chromeos",
+      "//chrome/browser/ash",
       "//chromeos/dbus/constants",
       "//chromeos/dbus/userdataauth",
       "//chromeos/services/assistant/public/cpp",
@@ -442,6 +442,7 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//chrome/browser/ash",
       "//chrome/browser/chromeos:test_support",
       "//chromeos/system:system",
     ]

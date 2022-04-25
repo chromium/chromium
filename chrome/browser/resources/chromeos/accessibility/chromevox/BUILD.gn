@@ -467,7 +467,8 @@ if (is_chromeos_ash) {
     deps = [
       "//ash",
       "//base",
-      "//chrome/browser/chromeos",
+      "//chrome/browser/ash",
+      "//chrome/browser/ash/crosapi",
       "//chrome/common",
     ]
     test_deps_js_outputs = get_target_outputs(":chromevox_test_deps_js")

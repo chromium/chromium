@@ -526,7 +526,7 @@ static_library("test_support") {
       "//ash/components/tpm:test_support",
       "//ash/constants",
       "//ash/public/cpp:test_support",
-      "//chrome/browser/chromeos",
+      "//chrome/browser/ash",
       "//chromeos/dbus/session_manager",
       "//chromeos/dbus/tpm_manager",
       "//chromeos/dbus/userdataauth",
@@ -544,6 +544,7 @@ static_library("test_support") {
       "//ash/components/cryptohome",
       "//ash/constants",
       "//chrome/browser/ash/crosapi",
+      "//chrome/browser/chromeos",
       "//chromeos/dbus",
       "//chromeos/dbus/power",
       "//chromeos/system",
@@ -2700,7 +2701,6 @@ if (!is_android) {
           "../browser/ui/views/extensions/request_file_system_dialog_browsertest.cc",
           "//third_party/liblouis/wasm/liblouis_wrapper_browsertest.cc",
         ]
-        deps += [ "//chrome/browser/chromeos" ]
         data_deps += [
           "//components/nacl/loader:nacl_helper",
           "//ppapi/native_client:irt",
@@ -3988,10 +3988,12 @@ if (!is_android) {
         "//ash/webui/shimless_rma",
         "//ash/webui/shortcut_customization_ui",
         "//ash/webui/web_applications/test:test_support",
+        "//chrome/browser/ash",
         "//chrome/browser/ash/crosapi",
         "//chrome/browser/ash/crosapi:test_support",
         "//chrome/browser/ash/system_extensions:browser_tests",
         "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
+        "//chrome/browser/chromeos",
         "//chrome/browser/chromeos:arc_test_support",
         "//chrome/browser/chromeos:dlp_policy_event_proto",
         "//chrome/browser/chromeos:key_permissions_proto",
@@ -7245,8 +7247,10 @@ test("unit_tests") {
       "//ash/strings",
       "//ash/webui/projector_app:test_support",
       "//ash/webui/projector_app/public/cpp",
+      "//chrome/browser/ash",
       "//chrome/browser/ash/crosapi:test_support",
       "//chrome/browser/ash/system_extensions:unit_tests",
+      "//chrome/browser/chromeos",
       "//chrome/browser/chromeos:test_support",
       "//chrome/browser/nearby_sharing/certificates:test_support",
       "//chrome/browser/nearby_sharing/certificates:unit_tests",
@@ -8776,7 +8780,7 @@ if (!is_android) {
         "//ash/public/cpp",
         "//ash/services/device_sync",
         "//ash/services/device_sync:test_support",
-        "//chrome/browser/chromeos",
+        "//chrome/browser/ash",
       ]
     } else {
       sources += [
@@ -10279,7 +10283,7 @@ if (is_chromeos_ash) {
       "//base",
       "//base/test:test_support",
       "//chrome/browser",
-      "//chrome/browser/chromeos",
+      "//chrome/browser/ash",
       "//components/exo/wayland:weston_test_stub",
       "//testing/gmock",
       "//testing/gtest",

@@ -1425,7 +1425,7 @@ group("dependencies") {
   if (is_chromeos_ash) {
     public_deps += [
       "//ash/constants",
-      "//chrome/browser/chromeos",
+      "//chrome/browser/ash",
       "//chromeos",
       "//chromeos/memory",
     ]

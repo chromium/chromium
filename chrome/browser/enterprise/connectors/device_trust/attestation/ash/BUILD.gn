@@ -3,7 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/features.gni")
+
+assert(is_chromeos_ash)
 
 source_set("ash") {
   sources = [ "ash_attestation_service.cc" ]
@@ -11,7 +12,7 @@ source_set("ash") {
   public = [ "ash_attestation_service.h" ]
 
   deps = [
-    "//chrome/browser/chromeos",
+    "//chrome/browser/ash",
     "//chrome/browser/enterprise/connectors/device_trust/common",
     "//chrome/browser/profiles:profile",
   ]

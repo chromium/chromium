@@ -42,7 +42,7 @@ source_set("system_extensions") {
     "//ash/constants",
     "//ash/webui/system_extensions_internals_ui/mojom",
     "//base",
-    "//chrome/browser/chromeos",
+    "//chrome/browser/ash",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common:buildflags",
