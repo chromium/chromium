@@ -266,7 +266,10 @@ TEST_P(NdkVideoEncoderAcceleratorTest, EncodeSeveralFrames) {
   Run();
   EXPECT_FALSE(error_.has_value());
   EXPECT_GE(outputs_.size(), total_frames_count);
-  EXPECT_TRUE(outputs_[key_frame_index].md.key_frame);
+  // Here we'd like to test that an output with at `key_frame_index`
+  // has a keyframe flag set to true, but because MediaCodec
+  // is unreliable in inserting keyframes at our request we can't test
+  // for it. In practice it usually works, just not always.
 
   for (auto& output : outputs_) {
     auto& mapping = id_to_buffer_[output.id]->GetMapping();
