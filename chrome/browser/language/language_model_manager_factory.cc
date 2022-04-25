@@ -32,7 +32,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "chrome/browser/language/android/jni_headers/LanguageBridge_jni.h"
+#include "chrome/browser/language/android/language_bridge.h"
 #endif
 
 namespace {
@@ -70,26 +70,6 @@ void RecordULPInitMetrics(Profile* profile,
   logger.RecordInitiationAcceptLanguagesULPOverlap(
       logger.ULPLanguagesInAcceptLanguagesRatio(accept_languages,
                                                 ulp_languages));
-}
-
-std::vector<std::string> JavaLanguageBridgeGetULPLanguagesWrapper(
-    std::string account_name) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> account_name_java =
-      base::android::ConvertUTF8ToJavaString(env, account_name);
-  base::android::ScopedJavaLocalRef<jobjectArray> languages_java =
-      Java_LanguageBridge_getULPLanguages(env, account_name_java);
-
-  const int num_langs = (*env).GetArrayLength(languages_java.obj());
-  std::vector<std::string> languages;
-  for (int i = 0; i < num_langs; i++) {
-    jstring language_name_java =
-        (jstring)(*env).GetObjectArrayElement(languages_java.obj(), i);
-    languages.emplace_back(
-        base::android::ConvertJavaStringToUTF8(env, language_name_java));
-  }
-
-  return languages;
 }
 
 void CreateAndAddULPLanguageModel(Profile* profile,
@@ -137,8 +117,8 @@ void PrepareLanguageModels(Profile* const profile,
   if (base::FeatureList::IsEnabled(language::kUseULPLanguagesInChrome)) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&JavaLanguageBridgeGetULPLanguagesWrapper,
-                       profile->GetProfileUserName()),
+        base::BindOnce(&language::LanguageBridge::GetULPLanguages,
+                     profile->GetProfileUserName()),
         base::BindOnce(&CreateAndAddULPLanguageModel, profile));
   }
 #endif

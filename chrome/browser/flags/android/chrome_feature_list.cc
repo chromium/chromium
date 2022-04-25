@@ -312,6 +312,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &paint_preview::kPaintPreviewDemo,
     &paint_preview::kPaintPreviewShowOnStartup,
     &language::kAppLanguagePrompt,
+    &language::kAppLanguagePromptULP,
     &language::kDetailedLanguageSettings,
     &language::kExplicitLanguageAsk,
     &language::kForceAppLanguagePrompt,

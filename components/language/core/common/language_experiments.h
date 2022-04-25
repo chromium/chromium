@@ -15,6 +15,9 @@ extern const base::Feature kExplicitLanguageAsk;
 // The feature that enables a second run prompt to select the app UI language on
 // Android.
 extern const base::Feature kAppLanguagePrompt;
+// When enabled does not show the AppLanguagePrompt to users whose base UI
+// language is their top ULP language.
+extern const base::Feature kAppLanguagePromptULP;
 // This feature forces the app UI prompt even if it has already been shown.
 extern const base::Feature kForceAppLanguagePrompt;
 
