@@ -52,14 +52,14 @@ bool UnionTraits<ReportIDDataView, AttributionReport::Id>::Read(
     ReportIDDataView data,
     AttributionReport::Id* out) {
   switch (data.tag()) {
-    case ReportIDDataView::Tag::EVENT_LEVEL_ID: {
+    case ReportIDDataView::Tag::kEventLevelId: {
       AttributionReport::EventLevelData::Id event_level_id;
       if (!data.ReadEventLevelId(&event_level_id))
         return false;
       *out = event_level_id;
       return true;
     }
-    case ReportIDDataView::Tag::AGGREGATABLE_ATTRIBUTION_ID: {
+    case ReportIDDataView::Tag::kAggregatableAttributionId: {
       AttributionReport::AggregatableAttributionData::Id
           aggregatable_attribution_id;
       if (!data.ReadAggregatableAttributionId(&aggregatable_attribution_id))
@@ -76,9 +76,9 @@ UnionTraits<ReportIDDataView, AttributionReport::Id>::GetTag(
     const AttributionReport::Id& id) {
   switch (AttributionReport::GetReportType(id)) {
     case AttributionReport::ReportType::kEventLevel:
-      return ReportIDDataView::Tag::EVENT_LEVEL_ID;
+      return ReportIDDataView::Tag::kEventLevelId;
     case AttributionReport::ReportType::kAggregatableAttribution:
-      return ReportIDDataView::Tag::AGGREGATABLE_ATTRIBUTION_ID;
+      return ReportIDDataView::Tag::kAggregatableAttributionId;
   }
 }
 
