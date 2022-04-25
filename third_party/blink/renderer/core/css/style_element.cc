@@ -225,6 +225,21 @@ void StyleElement::SetToPendingState(Document& document, Element& element) {
   document.GetStyleEngine().AddPendingSheet(element, pending_sheet_type_);
 }
 
+void StyleElement::BlockingAttributeChanged(Element& element) {
+  // If this is a dynamically inserted style element, and the `blocking`
+  // has changed so that the element is no longer render-blocking, then unblock
+  // rendering on this element. Note that Parser-inserted stylesheets are
+  // render-blocking by default, so removing `blocking=render` does not unblock
+  // rendering.
+  if (pending_sheet_type_ != PendingSheetType::kDynamicRenderBlocking)
+    return;
+  if (blocking() && blocking()->IsRenderBlocking())
+    return;
+  element.GetDocument().GetStyleEngine().RemovePendingSheet(
+      element, pending_sheet_type_);
+  pending_sheet_type_ = PendingSheetType::kNonBlocking;
+}
+
 void StyleElement::Trace(Visitor* visitor) const {
   visitor->Trace(sheet_);
 }

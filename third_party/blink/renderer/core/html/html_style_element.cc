@@ -59,6 +59,7 @@ void HTMLStyleElement::ParseAttribute(
     blocking_attribute_->DidUpdateAttributeValue(params.old_value,
                                                  params.new_value);
     blocking_attribute_->CountTokenUsage();
+    BlockingAttributeChanged(*this);
   } else {
     HTMLElement::ParseAttribute(params);
   }

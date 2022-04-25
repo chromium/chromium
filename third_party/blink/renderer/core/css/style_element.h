@@ -60,6 +60,7 @@ class CORE_EXPORT StyleElement : public GarbageCollectedMixin {
   void SetToPendingState(Document&, Element& element);
 
   void RemovedFrom(Element&, ContainerNode& insertion_point);
+  void BlockingAttributeChanged(Element&);
   ProcessingResult ProcessStyleSheet(Document&, Element&);
   ProcessingResult ChildrenChanged(Element&);
   ProcessingResult FinishParsingChildren(Element&);

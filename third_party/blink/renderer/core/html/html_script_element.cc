@@ -112,6 +112,11 @@ void HTMLScriptElement::ParseAttribute(
     blocking_attribute_->DidUpdateAttributeValue(params.old_value,
                                                  params.new_value);
     blocking_attribute_->CountTokenUsage();
+    if (GetDocument().GetRenderBlockingResourceManager() &&
+        !blocking_attribute_->IsRenderBlocking()) {
+      GetDocument().GetRenderBlockingResourceManager()->RemovePendingScript(
+          *this);
+    }
   } else {
     HTMLElement::ParseAttribute(params);
   }
