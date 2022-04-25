@@ -24,9 +24,10 @@ class BranchIntegrationTest(unittest.TestCase):
     self._temp_dir.cleanup()
 
   def _execute_branch_py(self, args):
-    return subprocess.run(
-        [BRANCH_PY, '--settings-json', self._settings_json] + (args or []),
-        text=True, capture_output=True)
+    cmd = [BRANCH_PY, '--settings-json', self._settings_json]
+    if os.name == 'nt':
+      cmd = ['vpython3.bat'] + cmd
+    return subprocess.run(cmd + (args or []), text=True, capture_output=True)
 
   def test_initialize_fails_when_missing_required_args(self):
     result = self._execute_branch_py(['initialize'])

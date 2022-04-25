@@ -24,10 +24,10 @@ class MilestonesIntgrationTest(unittest.TestCase):
     self._temp_dir.cleanup()
 
   def _execute_milestones_py(self, args):
-    return subprocess.run(
-        ([MILESTONES_PY, '--milestones-json', self._milestones_json] +
-         (args or [])),
-        text=True, capture_output=True)
+    cmd = [MILESTONES_PY, '--milestones-json', self._milestones_json]
+    if os.name == 'nt':
+      cmd = ['vpython3.bat'] + cmd
+    return subprocess.run((cmd + (args or [])), text=True, capture_output=True)
 
   def test_activate_fails_when_missing_required_args(self):
     result = self._execute_milestones_py(['activate'])

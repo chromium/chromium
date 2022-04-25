@@ -69,6 +69,8 @@ def parse_args(args=None, *, parser_type=None):
 
 
 def _execute(cmd):
+  if os.name == 'nt':
+    cmd = ['vpython3.bat'] + cmd
   try:
     subprocess.run(cmd,
                    check=True,

@@ -62,6 +62,8 @@ class BranchDayUnitTest(unittest.TestCase):
         self._branch_py, '--main-star', self._main_star, '--dev-star',
         self._dev_star
     ]
+    if os.name == 'nt':
+      cmd = ['vpython3.bat'] + cmd
     cmd += args or []
     return subprocess.run(cmd,
                           env=env,
@@ -80,11 +82,12 @@ class BranchDayUnitTest(unittest.TestCase):
             }
         })
     self.assertNotEqual(result.returncode, 0)
+    cmd = [self._milestones_py]
+    if os.name == 'nt':
+      cmd = ['vpython3.bat'] + cmd
     expected_output = '\n'.join([
-        'Executing {} failed'.format([
-            self._milestones_py, 'activate', '--milestone', 'XX', '--branch',
-            'YYYY'
-        ]),
+        'Executing {} failed'.format(
+            cmd + ['activate', '--milestone', 'XX', '--branch', 'YYYY']),
         'FAKE FAILURE STDOUT',
         'FAKE FAILURE STDERR',
         '',
