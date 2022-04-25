@@ -114,12 +114,15 @@ WebDocumentLoaderImpl::WebDocumentLoaderImpl(
     LocalFrame* frame,
     WebNavigationType navigation_type,
     std::unique_ptr<WebNavigationParams> navigation_params,
-    std::unique_ptr<PolicyContainer> policy_container)
-    : DocumentLoader(frame,
+    std::unique_ptr<PolicyContainer> policy_container,
+    std::unique_ptr<ExtraData> extra_data)
+    : DocumentLoader(base::PassKey<WebDocumentLoaderImpl>(),
+                     frame,
                      navigation_type,
                      std::move(navigation_params),
                      std::move(policy_container)),
-      response_wrapper_(DocumentLoader::GetResponse()) {}
+      response_wrapper_(DocumentLoader::GetResponse()),
+      extra_data_(std::move(extra_data)) {}
 
 WebDocumentLoaderImpl::~WebDocumentLoaderImpl() {
   // Verify that detachFromFrame() has been called.

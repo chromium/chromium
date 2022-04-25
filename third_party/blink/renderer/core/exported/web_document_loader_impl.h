@@ -54,7 +54,8 @@ class CORE_EXPORT WebDocumentLoaderImpl final : public DocumentLoader,
   WebDocumentLoaderImpl(LocalFrame*,
                         WebNavigationType navigation_type,
                         std::unique_ptr<WebNavigationParams> navigation_params,
-                        std::unique_ptr<PolicyContainer> policy_container);
+                        std::unique_ptr<PolicyContainer> policy_container,
+                        std::unique_ptr<ExtraData> extra_data);
   ~WebDocumentLoaderImpl() override;
 
   static WebDocumentLoaderImpl* FromDocumentLoader(DocumentLoader* loader) {

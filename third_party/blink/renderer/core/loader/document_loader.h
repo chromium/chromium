@@ -106,6 +106,7 @@ class PrefetchedSignedExchangeManager;
 class ResourceTimingInfo;
 class SerializedScriptValue;
 class SubresourceFilter;
+class WebDocumentLoaderImpl;
 class WebServiceWorkerNetworkProvider;
 
 namespace mojom {
@@ -123,10 +124,15 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
                                    public UseCounter,
                                    public WebNavigationBodyLoader::Client {
  public:
-  DocumentLoader(LocalFrame*,
+  // Do not create DocumentLoader directly.
+  // Use WebDocumentLoaderImpl's constructor to create it so that
+  // DocumentLoader can always be static_cast to WebDocumentLoaderImpl.
+  DocumentLoader(base::PassKey<WebDocumentLoaderImpl>,
+                 LocalFrame*,
                  WebNavigationType navigation_type,
                  std::unique_ptr<WebNavigationParams> navigation_params,
                  std::unique_ptr<PolicyContainer> policy_container);
+
   ~DocumentLoader() override;
 
   // Returns WebNavigationParams that can be used to clone DocumentLoader. Used

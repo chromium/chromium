@@ -36,6 +36,7 @@
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider_client.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_media_player.h"
+#include "third_party/blink/renderer/core/exported/web_document_loader_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/color_chooser.h"
@@ -126,9 +127,11 @@ DocumentLoader* EmptyLocalFrameClient::CreateDocumentLoader(
     std::unique_ptr<PolicyContainer> policy_container,
     std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) {
   DCHECK(frame);
-  return MakeGarbageCollected<DocumentLoader>(frame, navigation_type,
-                                              std::move(navigation_params),
-                                              std::move(policy_container));
+  WebDocumentLoaderImpl* document_loader =
+      MakeGarbageCollected<WebDocumentLoaderImpl>(
+          frame, navigation_type, std::move(navigation_params),
+          std::move(policy_container), std::move(extra_data));
+  return document_loader;
 }
 
 LocalFrame* EmptyLocalFrameClient::CreateFrame(const AtomicString&,
