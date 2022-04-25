@@ -4296,4 +4296,20 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   EXPECT_EQ(wallpaper_info, expected_wallpaper_info);
 }
 
+TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+       ResetToDefaultWhenLoadingInvalidWallpaper) {
+  SimulateUserLogin(account_id_1);
+
+  const WallpaperType type = GooglePhotosEnabled()
+                                 ? WallpaperType::kCount
+                                 : WallpaperType::kGooglePhotos;
+
+  WallpaperInfo info = {"fake_photo", WALLPAPER_LAYOUT_CENTER, type,
+                        base::Time::Now()};
+  controller_->SetUserWallpaperInfo(account_id_1, info);
+  controller_->ShowUserWallpaper(account_id_1);
+  RunAllTasksUntilIdle();
+
+  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kDefault);
+}
 }  // namespace ash
