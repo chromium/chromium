@@ -110,11 +110,4 @@ public interface BrowserStartupController {
      * See {@link org.chromium.content.browser.ServicificationStartupUma} for more details.
      */
     int getStartupMode(boolean startMinimalBrowser);
-
-    /**
-     * Used by Cast to skip library loading when starting the browser process.
-     * Note the expected behavior is maintained by //chromecast owners.
-     * @param disabled whether library loading should be disabled.
-     */
-    void setDisableLibraryLoadForCast(boolean disabled);
 }

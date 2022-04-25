@@ -105,9 +105,6 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
     // of enqueued callbacks have been executed.
     private boolean mStartupSuccess;
 
-    // Whether library loading is disabled.
-    private boolean mLibraryLoadDisabled;
-
     // Tests may inject a method to be run instead of calling ContentMain() in order for them to
     // initialize the C++ system via another means.
     private Runnable mContentMainCallbackForTests;
@@ -347,11 +344,6 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
                 mFullBrowserStartupDone, mMinimalBrowserStarted, startMinimalBrowser);
     }
 
-    @Override
-    public void setDisableLibraryLoadForCast(boolean disabled) {
-        mLibraryLoadDisabled = disabled;
-    }
-
     /**
      * Asserts that library process type is one of the supported types.
      * @param libraryProcessType the type of process the shared library is loaded. It must be
@@ -443,21 +435,19 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
         Log.d(TAG, "Initializing chromium process, singleProcess=%b", singleProcess);
         mPrepareToStartCompleted = true;
         try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped("prepareToStartBrowserProcess")) {
-            if (!mLibraryLoadDisabled) {
-                // This strictmode exception is to cover the case where the browser process is being
-                // started asynchronously but not in the main browser flow.  The main browser flow
-                // will trigger library loading earlier and this will be a no-op, but in the other
-                // cases this will need to block on loading libraries. This applies to tests and
-                // ManageSpaceActivity, which can be launched from Settings.
-                StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
-                try {
-                    // Normally Main.java will have already loaded the library asynchronously, we
-                    // only need to load it here if we arrived via another flow, e.g. bookmark
-                    // access & sync setup.
-                    LibraryLoader.getInstance().ensureInitialized();
-                } finally {
-                    StrictMode.setThreadPolicy(oldPolicy);
-                }
+            // This strictmode exception is to cover the case where the browser process is being
+            // started asynchronously but not in the main browser flow.  The main browser flow
+            // will trigger library loading earlier and this will be a no-op, but in the other
+            // cases this will need to block on loading libraries. This applies to tests and
+            // ManageSpaceActivity, which can be launched from Settings.
+            StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
+            try {
+                // Normally Main.java will have already loaded the library asynchronously, we
+                // only need to load it here if we arrived via another flow, e.g. bookmark
+                // access & sync setup.
+                LibraryLoader.getInstance().ensureInitialized();
+            } finally {
+                StrictMode.setThreadPolicy(oldPolicy);
             }
 
             // TODO(yfriedman): Remove dependency on a command line flag for this.

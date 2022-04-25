@@ -112,9 +112,6 @@ public class NativeBackgroundTaskTest {
             return 0 /*ServicificationStartupUma.ServicificationStartup.CHROME_COLD*/;
         }
 
-        @Override
-        public void setDisableLibraryLoadForCast(boolean disabled) {}
-
         public void setIsStartupSuccessfullyCompleted(boolean flag) {
             mStartupSucceeded = flag;
         }
