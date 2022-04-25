@@ -1149,17 +1149,18 @@ TEST_F(RealTimeUrlLookupServiceTest, TestShutdown_CallbackNotPostedOnShutdown) {
 
 TEST_F(RealTimeUrlLookupServiceTest, TestShutdown_CacheManagerReset) {
   GURL url("https://a.example.test/path1/path2");
-  // Post a task to cache_manager_ to cache the verdict.
-  MayBeCacheRealTimeUrlVerdict(url, RTLookupResponse::ThreatInfo::DANGEROUS,
-                               RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING,
-                               60, "a.example.test/path1/path2",
-                               RTLookupResponse::ThreatInfo::COVERING_MATCH);
 
   // Shutdown and delete depending objects.
   rt_service()->Shutdown();
   cache_manager_.reset();
   content_setting_map_->ShutdownOnUIThread();
   content_setting_map_.reset();
+
+  // Post a task to cache_manager_ to cache the verdict.
+  MayBeCacheRealTimeUrlVerdict(url, RTLookupResponse::ThreatInfo::DANGEROUS,
+                               RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING,
+                               60, "a.example.test/path1/path2",
+                               RTLookupResponse::ThreatInfo::COVERING_MATCH);
 
   // The task to cache_manager_ should be cancelled and not cause crash.
   task_environment_.RunUntilIdle();

@@ -203,6 +203,8 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
 
   std::unique_ptr<SafeBrowsingSyncObserver> sync_observer_;
 
+  bool is_shut_down_ = false;
+
   base::WeakPtrFactory<VerdictCacheManager> weak_factory_{this};
 
   static bool has_artificial_unsafe_url_;

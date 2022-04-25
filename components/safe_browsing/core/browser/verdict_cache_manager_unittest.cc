@@ -860,4 +860,27 @@ TEST_F(VerdictCacheManagerTest, TestClearTokenOnSyncStateChanged) {
   ASSERT_FALSE(token.has_token_value());
 }
 
+TEST_F(VerdictCacheManagerTest, TestShutdown) {
+  cache_manager_->Shutdown();
+  RTLookupResponse rt_response;
+  // Call to cache_manager after shutdown should not cause a crash.
+  cache_manager_->CacheRealTimeUrlVerdict(GURL("https://www.example.com/"),
+                                          rt_response, base::Time::Now());
+  RTLookupResponse::ThreatInfo out_rt_verdict;
+  cache_manager_->GetCachedRealTimeUrlVerdict(
+      GURL("https://www.example.com/path"), &out_rt_verdict);
+  LoginReputationClientResponse pg_response;
+  ReusedPasswordAccountType password_type;
+  cache_manager_->CachePhishGuardVerdict(
+      LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE, password_type,
+      pg_response, base::Time::Now());
+  cache_manager_->GetStoredPhishGuardVerdictCount(
+      LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE);
+  LoginReputationClientResponse out_pg_verdict;
+  cache_manager_->GetCachedPhishGuardVerdict(
+      GURL("https://www.example.com/path"),
+      LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE, password_type,
+      &out_pg_verdict);
+}
+
 }  // namespace safe_browsing

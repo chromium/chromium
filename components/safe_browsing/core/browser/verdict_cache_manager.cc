@@ -428,6 +428,11 @@ void VerdictCacheManager::Shutdown() {
   history_service_observation_.Reset();
   pref_change_registrar_.RemoveAll();
   sync_observer_.reset();
+
+  // Clear references to other KeyedServices.
+  content_settings_ = nullptr;
+
+  is_shut_down_ = true;
   weak_factory_.InvalidateWeakPtrs();
 }
 
@@ -438,6 +443,9 @@ void VerdictCacheManager::CachePhishGuardVerdict(
     ReusedPasswordAccountType password_type,
     const LoginReputationClientResponse& verdict,
     const base::Time& receive_time) {
+  if (is_shut_down_) {
+    return;
+  }
   DCHECK(content_settings_);
   DCHECK(trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE ||
          trigger_type == LoginReputationClientRequest::PASSWORD_REUSE_EVENT);
@@ -494,6 +502,9 @@ VerdictCacheManager::GetCachedPhishGuardVerdict(
     LoginReputationClientResponse* out_response) {
   DCHECK(trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE ||
          trigger_type == LoginReputationClientRequest::PASSWORD_REUSE_EVENT);
+  if (is_shut_down_) {
+    return LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED;
+  }
 
   std::string type_key =
       GetKeyOfTypeFromTriggerType(trigger_type, password_type);
@@ -505,6 +516,9 @@ VerdictCacheManager::GetCachedPhishGuardVerdict(
 
 size_t VerdictCacheManager::GetStoredPhishGuardVerdictCount(
     LoginReputationClientRequest::TriggerType trigger_type) {
+  if (is_shut_down_) {
+    return 0;
+  }
   DCHECK(content_settings_);
   DCHECK(trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE ||
          trigger_type == LoginReputationClientRequest::PASSWORD_REUSE_EVENT);
@@ -535,6 +549,9 @@ size_t VerdictCacheManager::GetStoredPhishGuardVerdictCount(
 }
 
 size_t VerdictCacheManager::GetStoredRealTimeUrlCheckVerdictCount() {
+  if (is_shut_down_) {
+    return 0;
+  }
   // If we have already computed this, return its value.
   if (stored_verdict_count_real_time_url_check_.has_value())
     return stored_verdict_count_real_time_url_check_.value();
@@ -558,6 +575,9 @@ void VerdictCacheManager::CacheRealTimeUrlVerdict(
     const GURL& url,
     const RTLookupResponse& verdict,
     const base::Time& receive_time) {
+  if (is_shut_down_) {
+    return;
+  }
   std::vector<std::string> visited_cache_expressions;
   for (const auto& threat_info : verdict.threat_info()) {
     // If |cache_expression_match_type| is unspecified, ignore this entry.
@@ -617,6 +637,9 @@ RTLookupResponse::ThreatInfo::VerdictType
 VerdictCacheManager::GetCachedRealTimeUrlVerdict(
     const GURL& url,
     RTLookupResponse::ThreatInfo* out_threat_info) {
+  if (is_shut_down_) {
+    return RTLookupResponse::ThreatInfo::VERDICT_TYPE_UNSPECIFIED;
+  }
   return GetMostMatchingCachedVerdictWithHostAndPathMatching<
       RTLookupResponse::ThreatInfo>(
       url, kRealTimeUrlCacheKey, content_settings_,
@@ -663,6 +686,9 @@ void VerdictCacheManager::ScheduleNextCleanUpAfterInterval(
 }
 
 void VerdictCacheManager::CleanUpExpiredVerdicts() {
+  if (is_shut_down_) {
+    return;
+  }
   DCHECK(content_settings_);
   SCOPED_UMA_HISTOGRAM_TIMER("SafeBrowsing.RT.CacheManager.CleanUpTime");
   CleanUpExpiredPhishGuardVerdicts();
@@ -842,6 +868,9 @@ bool VerdictCacheManager::RemoveExpiredRealTimeUrlCheckVerdicts(
 void VerdictCacheManager::RemoveContentSettingsOnURLsDeleted(
     bool all_history,
     const history::URLRows& deleted_rows) {
+  if (is_shut_down_) {
+    return;
+  }
   DCHECK(content_settings_);
 
   if (all_history) {
