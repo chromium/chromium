@@ -30,50 +30,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
-// This macro invokes the specified method on each observer, passing the
-// variable length arguments as the method's arguments, and removes the observer
-// from the list of observers if the given method returns STOP_OBSERVING.
-// TODO(https://crbug.com/1301880): Convert this macro to a templace method that
-// takes a closure to execute its own callback.
-#define INVOKE_AND_PRUNE_OBSERVERS(Method, ...)                              \
-  {                                                                          \
-    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),                       \
-                 "PageLoadMetricsObserver::" #Method);                       \
-    std::vector<std::unique_ptr<PageLoadMetricsObserver>> forward_observers; \
-    for (auto it = observers_.begin(); it != observers_.end();) {            \
-      switch ((*it)->Method(__VA_ARGS__)) {                                  \
-        case PageLoadMetricsObserver::CONTINUE_OBSERVING:                    \
-          ++it;                                                              \
-          break;                                                             \
-        case PageLoadMetricsObserver::STOP_OBSERVING:                        \
-          if ((*it)->GetObserverName())                                      \
-            observers_map_.erase((*it)->GetObserverName());                  \
-          it = observers_.erase(it);                                         \
-          break;                                                             \
-        case PageLoadMetricsObserver::FORWARD_OBSERVING:                     \
-          DCHECK((*it)->GetObserverName())                                   \
-              << "GetObserverName should be implemented";                    \
-          auto target_observer =                                             \
-              parent_tracker_                                                \
-                  ? parent_tracker_->FindObserver((*it)->GetObserverName())  \
-                  : nullptr;                                                 \
-          if (target_observer) {                                             \
-            forward_observers.emplace_back(                                  \
-                std::make_unique<PageLoadMetricsForwardObserver>(            \
-                    target_observer));                                       \
-          }                                                                  \
-          observers_map_.erase((*it)->GetObserverName());                    \
-          it = observers_.erase(it);                                         \
-          break;                                                             \
-      }                                                                      \
-    }                                                                        \
-    for (auto& observer : forward_observers) {                               \
-      DCHECK(observers_map_.find(observer->GetObserverName()) ==             \
-             observers_map_.end());                                          \
-      AddObserver(std::move(observer));                                      \
-    }                                                                        \
-  }
-
 namespace page_load_metrics {
 
 namespace internal {
@@ -265,20 +221,46 @@ PageLoadTracker::PageLoadTracker(
   embedder_interface_->RegisterObservers(this);
   if (navigation_handle->IsInPrerenderedMainFrame()) {
     DCHECK(!started_in_foreground_);
-    INVOKE_AND_PRUNE_OBSERVERS(OnPrerenderStart, navigation_handle,
-                               currently_committed_url);
+    InvokeAndPruneObservers("PageLoadMetricsObserver::OnPrerenderStart",
+                            base::BindRepeating(
+                                [](content::NavigationHandle* navigation_handle,
+                                   const GURL& currently_committed_url,
+                                   PageLoadMetricsObserver* observer) {
+                                  return observer->OnPrerenderStart(
+                                      navigation_handle,
+                                      currently_committed_url);
+                                },
+                                navigation_handle, currently_committed_url));
     base::UmaHistogramEnumeration(
         internal::kPageLoadPrerender2Event,
         internal::PageLoadPrerenderEvent::kNavigationInPrerenderedMainFrame);
     RecordPageType(internal::PageLoadTrackerPageType::kPrerenderPage);
   } else if (navigation_handle->GetNavigatingFrameType() ==
              content::FrameType::kFencedFrameRoot) {
-    INVOKE_AND_PRUNE_OBSERVERS(OnFencedFramesStart, navigation_handle,
-                               currently_committed_url);
+    InvokeAndPruneObservers("PageLoadMetricsObserver::OnFencedFramesStart",
+                            base::BindRepeating(
+                                [](content::NavigationHandle* navigation_handle,
+                                   const GURL& currently_committed_url,
+                                   PageLoadMetricsObserver* observer) {
+                                  return observer->OnFencedFramesStart(
+                                      navigation_handle,
+                                      currently_committed_url);
+                                },
+                                navigation_handle, currently_committed_url));
     RecordPageType(internal::PageLoadTrackerPageType::kFencedFramesPage);
   } else {
-    INVOKE_AND_PRUNE_OBSERVERS(OnStart, navigation_handle,
-                               currently_committed_url, started_in_foreground_);
+    InvokeAndPruneObservers(
+        "PageLoadMetricsObserver::OnStart",
+        base::BindRepeating(
+            [](content::NavigationHandle* navigation_handle,
+               const GURL& currently_committed_url, bool started_in_foreground,
+               PageLoadMetricsObserver* observer) {
+              return observer->OnStart(navigation_handle,
+                                       currently_committed_url,
+                                       started_in_foreground);
+            },
+            navigation_handle, currently_committed_url,
+            started_in_foreground_));
     RecordPageType(internal::PageLoadTrackerPageType::kPrimaryPage);
   }
 
@@ -351,7 +333,13 @@ void PageLoadTracker::PageHidden() {
     }
   }
   visibility_tracker_.OnHidden();
-  INVOKE_AND_PRUNE_OBSERVERS(OnHidden, metrics_update_dispatcher_.timing());
+  InvokeAndPruneObservers("PageLoadMetricsObserver::OnHidden",
+                          base::BindRepeating(
+                              [](const mojom::PageLoadTiming* timing,
+                                 PageLoadMetricsObserver* observer) {
+                                return observer->OnHidden(*timing);
+                              },
+                              &metrics_update_dispatcher_.timing()));
 }
 
 void PageLoadTracker::PageShown() {
@@ -369,7 +357,11 @@ void PageLoadTracker::PageShown() {
   }
 
   visibility_tracker_.OnShown();
-  INVOKE_AND_PRUNE_OBSERVERS(OnShown);
+  InvokeAndPruneObservers(
+      "PageLoadMetricsObserver::OnShown",
+      base::BindRepeating([](PageLoadMetricsObserver* observer) {
+        return observer->OnShown();
+      }));
 }
 
 void PageLoadTracker::SubFrameDeleted(int frame_tree_node_id) {
@@ -420,11 +412,20 @@ void PageLoadTracker::Commit(content::NavigationHandle* navigation_handle) {
     experimental_largest_contentful_paint_handler_.RecordMainFrameTreeNodeId(
         navigation_handle->GetFrameTreeNodeId());
   }
-
-  const std::string& mime_type =
-      navigation_handle->GetWebContents()->GetContentsMimeType();
-  INVOKE_AND_PRUNE_OBSERVERS(ShouldObserveMimeType, mime_type);
-  INVOKE_AND_PRUNE_OBSERVERS(OnCommit, navigation_handle);
+  InvokeAndPruneObservers(
+      "PageLoadMetricsObserver::ShouldObserveMimeType",
+      base::BindRepeating(
+          [](const std::string& mime_type, PageLoadMetricsObserver* observer) {
+            return observer->ShouldObserveMimeType(mime_type);
+          },
+          navigation_handle->GetWebContents()->GetContentsMimeType()));
+  InvokeAndPruneObservers("PageLoadMetricsObserver::OnCommit",
+                          base::BindRepeating(
+                              [](content::NavigationHandle* navigation_handle,
+                                 PageLoadMetricsObserver* observer) {
+                                return observer->OnCommit(navigation_handle);
+                              },
+                              navigation_handle));
 }
 
 void PageLoadTracker::DidActivatePrerenderedPage(
@@ -514,7 +515,13 @@ void PageLoadTracker::FailedProvisionalLoad(
 
 void PageLoadTracker::Redirect(content::NavigationHandle* navigation_handle) {
   url_ = navigation_handle->GetURL();
-  INVOKE_AND_PRUNE_OBSERVERS(OnRedirect, navigation_handle);
+  InvokeAndPruneObservers("PageLoadMetricsObserver::Redirect",
+                          base::BindRepeating(
+                              [](content::NavigationHandle* navigation_handle,
+                                 PageLoadMetricsObserver* observer) {
+                                return observer->OnRedirect(navigation_handle);
+                              },
+                              navigation_handle));
 }
 
 void PageLoadTracker::OnInputEvent(const blink::WebInputEvent& event) {
@@ -531,8 +538,14 @@ void PageLoadTracker::FlushMetricsOnAppEnterBackground() {
     app_entered_background_ = true;
   }
 
-  INVOKE_AND_PRUNE_OBSERVERS(FlushMetricsOnAppEnterBackground,
-                             metrics_update_dispatcher_.timing());
+  InvokeAndPruneObservers(
+      "PageLoadMetricsObserver::FlushMetricsOnAppEnterBackground",
+      base::BindRepeating(
+          [](const mojom::PageLoadTiming* timing,
+             PageLoadMetricsObserver* observer) {
+            return observer->FlushMetricsOnAppEnterBackground(*timing);
+          },
+          &metrics_update_dispatcher_.timing()));
 }
 
 void PageLoadTracker::OnLoadedResource(
@@ -1032,8 +1045,14 @@ void PageLoadTracker::OnEnterBackForwardCache() {
   // PageLoadMetricsUpdateDispatcher before the page is hidden to enable
   // recording metrics that requires the page to be in foreground before
   // entering BackForwardCache on navigation.
-  INVOKE_AND_PRUNE_OBSERVERS(OnEnterBackForwardCache,
-                             metrics_update_dispatcher_.timing());
+  InvokeAndPruneObservers(
+      "PageLoadMetricsObserver::OnEnterBackForwardCache",
+      base::BindRepeating(
+          [](const mojom::PageLoadTiming* timing,
+             PageLoadMetricsObserver* observer) {
+            return observer->OnEnterBackForwardCache(*timing);
+          },
+          &metrics_update_dispatcher_.timing()));
   metrics_update_dispatcher_.UpdateLayoutShiftNormalizationForBfcache();
   metrics_update_dispatcher_
       .UpdateResponsivenessMetricsNormalizationForBfcache();
@@ -1102,6 +1121,46 @@ void PageLoadTracker::SetPageMainFrame(content::RenderFrameHost* rfh) {
 
 base::WeakPtr<PageLoadTracker> PageLoadTracker::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+void PageLoadTracker::InvokeAndPruneObservers(
+    const char* trace_name,
+    PageLoadTracker::InvokeCallback callback) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"), trace_name);
+  std::vector<std::unique_ptr<PageLoadMetricsObserver>> forward_observers;
+  for (auto it = observers_.begin(); it != observers_.end();) {
+    auto policy = callback.Run(it->get());
+    switch (policy) {
+      case PageLoadMetricsObserver::CONTINUE_OBSERVING:
+        ++it;
+        break;
+      case PageLoadMetricsObserver::STOP_OBSERVING:
+        if ((*it)->GetObserverName())
+          observers_map_.erase((*it)->GetObserverName());
+        it = observers_.erase(it);
+        break;
+      case PageLoadMetricsObserver::FORWARD_OBSERVING:
+        DCHECK((*it)->GetObserverName())
+            << "GetObserverName should be implemented";
+        auto target_observer =
+            parent_tracker_
+                ? parent_tracker_->FindObserver((*it)->GetObserverName())
+                : nullptr;
+        if (target_observer) {
+          forward_observers.emplace_back(
+              std::make_unique<PageLoadMetricsForwardObserver>(
+                  target_observer));
+        }
+        observers_map_.erase((*it)->GetObserverName());
+        it = observers_.erase(it);
+        break;
+    }
+  }
+  for (auto& observer : forward_observers) {
+    DCHECK(observers_map_.find(observer->GetObserverName()) ==
+           observers_map_.end());
+    AddObserver(std::move(observer));
+  }
 }
 
 }  // namespace page_load_metrics

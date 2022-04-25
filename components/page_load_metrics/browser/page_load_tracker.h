@@ -437,6 +437,11 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   absl::optional<base::TimeDelta> DurationSinceNavigationStartForTime(
       const absl::optional<base::TimeTicks>& time) const;
 
+  using InvokeCallback =
+      base::RepeatingCallback<PageLoadMetricsObserver::ObservePolicy(
+          PageLoadMetricsObserver*)>;
+  void InvokeAndPruneObservers(const char* trace_name, InvokeCallback callback);
+
   // Whether we stopped tracking this navigation after it was initiated. We may
   // stop tracking a navigation if it doesn't meet the criteria for tracking
   // metrics in DidFinishNavigation.
