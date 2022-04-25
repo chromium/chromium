@@ -4448,9 +4448,14 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   delay = run_time - Time::Now();
 
   base::TimeDelta one_hour = base::Hours(1);
-  // Leave a little wiggle room.
-  EXPECT_GE(delay, one_hour - base::Minutes(1));
-  EXPECT_LE(delay, one_hour + base::Minutes(1));
+
+  // The cache check does not happen when the feature is disabled, since the
+  // local `WallpaperInfo` is rejected.
+  if (GooglePhotosEnabled()) {
+    // Leave a little wiggle room.
+    EXPECT_GE(delay, one_hour - base::Minutes(1));
+    EXPECT_LE(delay, one_hour + base::Minutes(1));
+  }
 }
 
 TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
@@ -4754,4 +4759,20 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   }
 }
 
+TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+       ResetToDefaultWhenLoadingInvalidWallpaper) {
+  SimulateUserLogin(account_id_1);
+
+  const WallpaperType type = GooglePhotosEnabled()
+                                 ? WallpaperType::kCount
+                                 : WallpaperType::kGooglePhotos;
+
+  WallpaperInfo info = {"fake_photo", WALLPAPER_LAYOUT_CENTER, type,
+                        base::Time::Now()};
+  controller_->SetUserWallpaperInfo(account_id_1, info);
+  controller_->ShowUserWallpaper(account_id_1);
+  RunAllTasksUntilIdle();
+
+  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kDefault);
+}
 }  // namespace ash

@@ -668,13 +668,22 @@ bool GetWallpaperInfo(const AccountId& account_id,
   if (!location || !layout || !type || !date_string)
     return false;
 
+  if (type.value() >= static_cast<int>(WallpaperType::kCount))
+    return false;
+
+  WallpaperType wallpaper_type = static_cast<WallpaperType>(type.value());
+  if (!features::IsWallpaperGooglePhotosIntegrationEnabled() &&
+      wallpaper_type == WallpaperType::kGooglePhotos) {
+    return false;
+  }
+
   int64_t date_val;
   if (!base::StringToInt64(*date_string, &date_val))
     return false;
 
   info->location = *location;
   info->layout = static_cast<WallpaperLayout>(layout.value());
-  info->type = static_cast<WallpaperType>(type.value());
+  info->type = wallpaper_type;
   info->date = base::Time::FromInternalValue(date_val);
   PopulateOnlineWallpaperInfo(info, *info_dict);
   return true;
@@ -3151,7 +3160,11 @@ base::TimeDelta WallpaperControllerImpl::GetTimeToNextDailyRefreshUpdate()
 void WallpaperControllerImpl::OnUpdateWallpaperTimerExpired() {
   WallpaperInfo info;
   auto account_id = GetActiveAccountId();
-  GetLocalWallpaperInfo(account_id, &info);
+  if (!GetLocalWallpaperInfo(account_id, &info)) {
+    LOG(ERROR) << "Timer to update wallpaper expired, but the current "
+               << "wallpaper info is missing or invalid.";
+    return;
+  }
   switch (info.type) {
     case WallpaperType::kDaily:
       UpdateDailyRefreshWallpaper();
@@ -3297,6 +3310,10 @@ void WallpaperControllerImpl::HandleOnlineWallpaperInfoSyncedIn(
 void WallpaperControllerImpl::HandleGooglePhotosWallpaperInfoSyncedIn(
     const AccountId& account_id,
     const WallpaperInfo& info) {
+  if (!features::IsWallpaperGooglePhotosIntegrationEnabled()) {
+    NOTREACHED();
+    return;
+  }
   SetGooglePhotosWallpaper(
       GooglePhotosWallpaperParams(account_id, info.location, info.layout,
                                   /*preview_mode=*/false),
