@@ -44,7 +44,8 @@ void PrintManager::DidPrintDocument(mojom::DidPrintDocumentParamsPtr params,
 
 void PrintManager::ShowInvalidPrinterSettingsError() {}
 
-void PrintManager::PrintingFailed(int32_t cookie) {
+void PrintManager::PrintingFailed(int32_t cookie,
+                                  mojom::PrintFailureReason reason) {
   // Note: Not redundant with cookie checks in the same method in other parts of
   // the class hierarchy.
   if (!IsValidCookie(cookie))

@@ -739,13 +739,14 @@ void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
                                 render_frame_host->GetGlobalId()));
 }
 
-void PrintViewManagerBase::PrintingFailed(int32_t cookie) {
+void PrintViewManagerBase::PrintingFailed(int32_t cookie,
+                                          mojom::PrintFailureReason reason) {
   // Note: Not redundant with cookie checks in the same method in other parts of
   // the class hierarchy.
   if (!IsValidCookie(cookie))
     return;
 
-  PrintManager::PrintingFailed(cookie);
+  PrintManager::PrintingFailed(cookie, reason);
 
 #if !BUILDFLAG(IS_ANDROID)  // Android does not implement this function.
   ShowPrintErrorDialog();

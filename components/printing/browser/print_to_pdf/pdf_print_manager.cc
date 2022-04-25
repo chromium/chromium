@@ -176,8 +176,12 @@ void PdfPrintManager::ShowInvalidPrinterSettingsError() {
   ReleaseJob(INVALID_PRINTER_SETTINGS);
 }
 
-void PdfPrintManager::PrintingFailed(int32_t cookie) {
-  ReleaseJob(PRINTING_FAILED);
+void PdfPrintManager::PrintingFailed(
+    int32_t cookie,
+    printing::mojom::PrintFailureReason reason) {
+  ReleaseJob(reason == printing::mojom::PrintFailureReason::kInvalidPageRange
+                 ? PAGE_COUNT_EXCEEDED
+                 : PRINTING_FAILED);
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)

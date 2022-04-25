@@ -2100,7 +2100,8 @@ void PrintRenderFrameHelper::DidFinishPrinting(PrintingResult result) {
 
     case FAIL_PRINT:
       if (notify_browser_of_print_failure_ && print_pages_params_) {
-        GetPrintManagerHost()->PrintingFailed(cookie);
+        GetPrintManagerHost()->PrintingFailed(
+            cookie, mojom::PrintFailureReason::kGeneralFailure);
       }
       break;
 

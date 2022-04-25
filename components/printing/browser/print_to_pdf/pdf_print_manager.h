@@ -74,7 +74,8 @@ class PdfPrintManager : public printing::PrintManager,
   void ScriptedPrint(printing::mojom::ScriptedPrintParamsPtr params,
                      ScriptedPrintCallback callback) override;
   void ShowInvalidPrinterSettingsError() override;
-  void PrintingFailed(int32_t cookie) override;
+  void PrintingFailed(int32_t cookie,
+                      printing::mojom::PrintFailureReason reason) override;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void UpdatePrintSettings(int32_t cookie,
                            base::Value::Dict job_settings,

@@ -109,7 +109,8 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   void ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
                      ScriptedPrintCallback callback) override;
   void ShowInvalidPrinterSettingsError() override;
-  void PrintingFailed(int32_t cookie) override;
+  void PrintingFailed(int32_t cookie,
+                      mojom::PrintFailureReason reason) override;
 
   // Adds and removes observers for `PrintViewManagerBase` events. The order in
   // which notifications are sent to observers is undefined. Observers must be
