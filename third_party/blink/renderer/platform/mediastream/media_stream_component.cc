@@ -76,8 +76,10 @@ MediaStreamComponent::MediaStreamComponent(
   platform_track_ = std::move(platform_track);
 }
 
-MediaStreamComponent* MediaStreamComponent::Clone() const {
-  auto* cloned_component = MakeGarbageCollected<MediaStreamComponent>(Source());
+MediaStreamComponent* MediaStreamComponent::Clone(
+    std::unique_ptr<MediaStreamTrackPlatform> cloned_platform_track) const {
+  auto* cloned_component = MakeGarbageCollected<MediaStreamComponent>(
+      Source(), std::move(cloned_platform_track));
   cloned_component->SetEnabled(enabled_);
   cloned_component->SetMuted(muted_);
   cloned_component->SetContentHint(content_hint_);
