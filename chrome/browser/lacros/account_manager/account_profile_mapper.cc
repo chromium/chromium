@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "components/account_manager_core/account.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
 
@@ -636,13 +637,30 @@ bool AccountProfileMapper::ShouldDeleteProfile(
     return false;
   }
 
-  return primary_account_deleted;
+  // Secondary profile.
+  if (!base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles)) {
+    return primary_account_deleted;
+  }
+
+  // If non syncing profiles enabled, only delete syncing managed profile.
+  // For non managed profiles, the SigninManager will signout the profile if
+  // there is no refresh token for the primary account as soon as the profile is
+  // loaded. The profile may not signout if the account has been re-added to the
+  // OS and `MigrateOldProfiles` re-inserted the Gaia Id before the profile is
+  // loaded.
+  return primary_account_deleted && entry->IsAuthenticated() &&
+         AccountInfo::IsManaged(entry->GetHostedDomain());
 }
 
 void AccountProfileMapper::MigrateOldProfiles() {
   for (ProfileAttributesEntry* entry :
        profile_attributes_storage_->GetAllProfilesAttributes()) {
     // Populate missing Gaia Ids.
+    // Note: If `kLacrosNonSyncingProfiles` is enabled, this code might
+    // re-insert the Gaia id of a profile that has not been loaded since its
+    // primary account removal from the OS (AuthInfo did not re-set).
+    // The account will be removed later if it does not exist in the OS in
+    // `RemoveStaleAccounts`.
     std::string primary_gaia_id = entry->GetGAIAId();
     if (!primary_gaia_id.empty()) {
       base::flat_set<std::string> gaia_ids = entry->GetGaiaIds();

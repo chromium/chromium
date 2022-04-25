@@ -430,13 +430,16 @@ class AccountProfileMapperTest : public testing::Test {
   }
 
   void SetPrimaryAccountForProfile(const base::FilePath& profile_path,
-                                   const std::string& primary_gaia_id) {
+                                   const std::string& primary_gaia_id,
+                                   bool is_consented_primary_account = true,
+                                   bool is_managed = false) {
     ProfileAttributesStorage* storage = attributes_storage();
     ProfileAttributesEntry* entry =
         storage->GetProfileAttributesWithPath(profile_path);
     ASSERT_TRUE(entry);
-    entry->SetAuthInfo(primary_gaia_id, u"Test",
-                       /*is_consented_primary_account=*/true);
+    entry->SetAuthInfo(primary_gaia_id, u"Test", is_consented_primary_account);
+    if (is_managed)
+      entry->SetHostedDomain("managed.com");
   }
 
  private:
@@ -819,10 +822,14 @@ TEST_F(AccountProfileMapperTest, ObserveAccountReadded) {
   CompleteFacadeGetAccountsGaia({"A", "B"});
 }
 
-// Tests that a secondary profile gets deleted after its primary account is
+// Tests that a secondary profile gets deleted after its sync account is
 // removed from the system.
 // A secondary account of the deleted profile remains unassigned.
 TEST_F(AccountProfileMapperTest, RemovePrimaryAccountFromSecondaryProfile) {
+  // Delete this test after non syncing profiles full launch.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kLacrosNonSyncingProfiles);
   base::FilePath other_path = GetProfilePath("Other");
   AccountProfileMapper* mapper =
       CreateMapper({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
@@ -838,8 +845,8 @@ TEST_F(AccountProfileMapperTest, RemovePrimaryAccountFromSecondaryProfile) {
       .WaitForProfileBeingDeleted(other_path);
 }
 
-// Tests that a secondary profile gets deleted after its primary account is
-// removed from the system.
+// Tests that a managed syncing secondary profile gets deleted after its primary
+// account is removed from the system.
 // A secondary account of the deleted profile stays unassigned.
 TEST_F(AccountProfileMapperTest,
        RemovePrimaryAccountFromSecondaryProfile_MultipleProfiles) {
@@ -847,7 +854,9 @@ TEST_F(AccountProfileMapperTest,
   base::FilePath third_path = GetProfilePath("Third");
   AccountProfileMapper* mapper = CreateMapper(
       {{main_path(), {"A"}}, {second_path, {"B", "C"}}, {third_path, {"D"}}});
-  SetPrimaryAccountForProfile(second_path, "B");
+  SetPrimaryAccountForProfile(second_path, "B",
+                              /*is_consented_primary_account=*/true,
+                              /*is_managed=*/true);
   TestMapperUpdateGaia(
       mapper,
       /*accounts_in_facade=*/{"A", "C", "D"},
@@ -865,7 +874,9 @@ TEST_F(AccountProfileMapperTest, LocalProfileNotRemoved) {
   base::FilePath third_path = GetProfilePath("Third");
   AccountProfileMapper* mapper = CreateMapper(
       {{main_path(), {"A"}}, {second_path, {"B"}}, {third_path, {}}});
-  SetPrimaryAccountForProfile(second_path, "B");
+  SetPrimaryAccountForProfile(second_path, "B",
+                              /*is_consented_primary_account=*/true,
+                              /*is_managed=*/true);
   TestMapperUpdateGaia(mapper,
                        /*accounts_in_facade=*/{"A"},
                        /*expected_accounts_upserted=*/{},
@@ -873,9 +884,6 @@ TEST_F(AccountProfileMapperTest, LocalProfileNotRemoved) {
                        /*expected_accounts_in_prefs=*/
                        {{main_path(), {"A"}}, {third_path, {}}});
 
-  // TODO(https://crbug.com/1260291): Revisit this once non-syncing profiles are
-  // allowed.
-  // Second profile was deleted because it lost its primary account.
   ProfileAttributesStorageTestObserver(attributes_storage())
       .WaitForProfileBeingDeleted(second_path);
 
@@ -883,46 +891,137 @@ TEST_F(AccountProfileMapperTest, LocalProfileNotRemoved) {
   EXPECT_TRUE(attributes_storage()->GetProfileAttributesWithPath(third_path));
 }
 
-// Tests that a secondary profile gets deleted after its primary account was
-// removed from the system before startup.
+// Tests that a managed syncing profile gets deleted after its sync account
+// is removed from the system. A secondary account of the deleted profile stays
+// unassigned.
+TEST_F(AccountProfileMapperTest,
+       RemovePrimaryAccount_ManagedSecondaryProfile_Syncing) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kLacrosNonSyncingProfiles};
+
+  base::FilePath second_path = GetProfilePath("Second");
+  AccountProfileMapper* mapper =
+      CreateMapper({{main_path(), {"A"}}, {second_path, {"B"}}});
+  SetPrimaryAccountForProfile(second_path, "B",
+                              /*is_consented_primary_account=*/true,
+                              /*is_managed=*/true);
+  TestMapperUpdateGaia(mapper,
+                       /*accounts_in_facade=*/{"A"},
+                       /*expected_accounts_upserted=*/{},
+                       /*expected_accounts_removed=*/{{second_path, {"B"}}},
+                       /*expected_accounts_in_prefs=*/
+                       {{main_path(), {"A"}}});
+
+  ProfileAttributesStorageTestObserver(attributes_storage())
+      .WaitForProfileBeingDeleted(second_path);
+}
+
+// Tests that a managed non syncing profile does not get deleted after its
+// primary account is removed from the system.
+TEST_F(AccountProfileMapperTest,
+       RemovePrimaryAccount_ManagedSecondaryProfile_NotSyncing) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kLacrosNonSyncingProfiles};
+
+  base::FilePath second_path = GetProfilePath("Second");
+  AccountProfileMapper* mapper =
+      CreateMapper({{main_path(), {"A"}}, {second_path, {"B"}}});
+  SetPrimaryAccountForProfile(second_path, "B",
+                              /*is_consented_primary_account=*/false,
+                              /*is_managed=*/true);
+  TestMapperUpdateGaia(mapper,
+                       /*accounts_in_facade=*/{"A"},
+                       /*expected_accounts_upserted=*/{},
+                       /*expected_accounts_removed=*/{{second_path, {"B"}}},
+                       /*expected_accounts_in_prefs=*/
+                       {{main_path(), {"A"}}, {second_path, {}}});
+
+  base::RunLoop().RunUntilIdle();
+  // Only managed syncing profiles are deleted.
+  EXPECT_TRUE(attributes_storage()->GetProfileAttributesWithPath(second_path));
+}
+
+// Tests that a consumer profile does not get deleted after its sync account
+// is removed from the system.
+TEST_F(AccountProfileMapperTest,
+       RemovePrimaryAccount_ConsumerSecondaryProfile) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kLacrosNonSyncingProfiles};
+
+  base::FilePath second_path = GetProfilePath("Second");
+  base::FilePath third_path = GetProfilePath("Third");
+  AccountProfileMapper* mapper = CreateMapper(
+      {{main_path(), {"A"}}, {second_path, {"B", "C"}}, {third_path, {"D"}}});
+  SetPrimaryAccountForProfile(second_path, "B");
+  TestMapperUpdateGaia(
+      mapper,
+      /*accounts_in_facade=*/{"A", "C", "D"},
+      /*expected_accounts_upserted=*/{},
+      /*expected_accounts_removed=*/{{second_path, {"B"}}},
+      /*expected_accounts_in_prefs=*/
+      {{main_path(), {"A"}}, {second_path, {"C"}}, {third_path, {"D"}}});
+
+  base::RunLoop().RunUntilIdle();
+  // Only managed syncing profiles are deleted.
+  // The `SigninManager` will detect as soon the second profile is loaded that
+  // its primary account does not have a refresh token and will completely
+  // signout the profile.
+  EXPECT_TRUE(attributes_storage()->GetProfileAttributesWithPath(second_path));
+  EXPECT_TRUE(attributes_storage()->GetProfileAttributesWithPath(third_path));
+}
+
+// Tests that a manged syncing secondary profile gets deleted after its sync
+// account was removed from the system before startup.
 // A secondary account of the deleted profile gets moved to the primary profile
 // since local state doesn't contain lacros accounts and there is only one
 // profile left.
 TEST_F(
     AccountProfileMapperTest,
     RemovePrimaryAccountFromSecondaryProfile_AtInitialization_EmptyLocalState) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kLacrosNonSyncingProfiles};
   base::FilePath other_path = GetProfilePath("Other");
   CreateMapperNonInitialized({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
   // Clean local state.
   SetLacrosAccountsInLocalState({});
-  SetPrimaryAccountForProfile(other_path, "B");
+  SetPrimaryAccountForProfile(other_path, "B",
+                              /*is_consented_primary_account=*/true,
+                              /*is_managed=*/true);
   CompleteFacadeGetAccountsGaia({"A", "C"});
   VerifyAccountsInPrefs({{main_path(), {"A", "C"}}});
   ProfileAttributesStorageTestObserver(attributes_storage())
       .WaitForProfileBeingDeleted(other_path);
 }
 
-// Tests that a secondary profile gets deleted after its primary account was
-// removed from the system before startup.
+// Tests that a managed secondary profile gets deleted after its sync account
+//  was removed from the system before startup.
 // A secondary account of the deleted profile remains unassigned.
 TEST_F(AccountProfileMapperTest,
        RemovePrimaryAccountFromSecondaryProfile_AtInitialization) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kLacrosNonSyncingProfiles};
   base::FilePath other_path = GetProfilePath("Other");
   CreateMapperNonInitialized({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
-  SetPrimaryAccountForProfile(other_path, "B");
+  SetPrimaryAccountForProfile(other_path, "B",
+                              /*is_consented_primary_account=*/true,
+                              /*is_managed=*/true);
   CompleteFacadeGetAccountsGaia({"A", "C"});
   VerifyAccountsInPrefs({{main_path(), {"A"}}, {base::FilePath(), {"C"}}});
   ProfileAttributesStorageTestObserver(attributes_storage())
       .WaitForProfileBeingDeleted(other_path);
 }
 
-// Tests that a secondary profile doesn't get deleted after its secondary
-// account is removed from the system.
+// Tests that a managed syncing secondary profile doesn't get deleted after its
+// secondary account is removed from the system.
 TEST_F(AccountProfileMapperTest, RemoveSecondaryAccountFromSecondaryProfile) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kLacrosNonSyncingProfiles};
   base::FilePath other_path = GetProfilePath("Other");
   AccountProfileMapper* mapper =
       CreateMapper({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
-  SetPrimaryAccountForProfile(other_path, "B");
+  SetPrimaryAccountForProfile(other_path, "B",
+                              /*is_consented_primary_account=*/true,
+                              /*is_managed=*/true);
   TestMapperUpdateGaia(mapper,
                        /*accounts_in_facade=*/{"A", "B"},
                        /*expected_accounts_upserted=*/{},
@@ -934,8 +1033,12 @@ TEST_F(AccountProfileMapperTest, RemoveSecondaryAccountFromSecondaryProfile) {
 // Tests that the primary profile doesn't get deleted even after its primary
 // account is removed from the system.
 TEST_F(AccountProfileMapperTest, RemovePrimaryAccountFromPrimaryProfile) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kLacrosNonSyncingProfiles};
   AccountProfileMapper* mapper = CreateMapper({{main_path(), {"A", "B"}}});
-  SetPrimaryAccountForProfile(main_path(), "A");
+  SetPrimaryAccountForProfile(main_path(), "A",
+                              /*is_consented_primary_account=*/true,
+                              /*is_managed=*/true);
   TestMapperUpdateGaia(mapper,
                        /*accounts_in_facade=*/{"B"},
                        /*expected_accounts_upserted=*/{},
@@ -945,10 +1048,7 @@ TEST_F(AccountProfileMapperTest, RemovePrimaryAccountFromPrimaryProfile) {
 }
 
 // Tests removing all accounts from a secondary profile (User signed out from
-// chrome) before initialization.
-// TODO(crbug.com/1260291): Update this comment when secondary profiles are
-// not deleted when their primary account is removed from the OS to reflect that
-// RemoveAllAccounts would also be called in this case.
+// chrome or primary account removed from the OS) before initialization.
 TEST_F(AccountProfileMapperTest,
        RemoveAllAccountsFromSecondaryProfile_BeforeInitialization) {
   base::FilePath other_path = GetProfilePath("Other");
@@ -1063,15 +1163,15 @@ TEST_F(
   base::FilePath other_path = GetProfilePath("Other");
   AccountProfileMapper* mapper = CreateMapperNonInitialized(
       {{main_path(), {"A"}}, {other_path, {"B", "C"}}});
-  SetPrimaryAccountForProfile(other_path, "B");
+  SetPrimaryAccountForProfile(other_path, "B",
+                              /*is_consented_primary_account=*/true,
+                              /*is_managed=*/true);
   MockAccountProfileMapperObserver mock_observer;
   base::ScopedObservation<AccountProfileMapper, AccountProfileMapper::Observer>
       observation{&mock_observer};
   observation.Observe(mapper);
   ExpectOnAccountRemoved(&mock_observer, {});
   mapper->RemoveAllAccounts(other_path);
-  // Removing the primary account will delete the profile.
-  // TODO(crbug.com/1260291): Rely on managed profile.
   CompleteFacadeGetAccountsGaia({"A", "C"});
   VerifyAccountsInPrefs({{main_path(), {"A"}}, {base::FilePath(), {"C"}}});
   ProfileAttributesStorageTestObserver(attributes_storage())
