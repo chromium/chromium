@@ -256,12 +256,12 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
   void GeneratedKey(KeystoreBinaryResultPtr result) {
     using Tag = KeystoreBinaryResult::Tag;
     switch (result->which()) {
-      case Tag::ERROR:
+      case Tag::kError:
         next_step_ = Step::DONE;
         std::move(callback_).Run(std::string() /* no public key */,
                                  result->get_error());
         break;
-      case Tag::BLOB:
+      case Tag::kBlob:
         public_key_spki_der_ = BlobToStr(result->get_blob());
         break;
     }
@@ -550,11 +550,11 @@ class ExtensionPlatformKeysService::SignTask : public Task {
 
   void DidSign(KeystoreBinaryResultPtr result) {
     switch (result->which()) {
-      case KeystoreBinaryResult::Tag::ERROR:
+      case KeystoreBinaryResult::Tag::kError:
         std::move(callback_).Run(/*signature=*/std::string(),
                                  result->get_error());
         break;
-      case KeystoreBinaryResult::Tag::BLOB:
+      case KeystoreBinaryResult::Tag::kBlob:
         const std::vector<uint8_t>& blob = result->get_blob();
         std::move(callback_).Run(
             /*signature=*/BlobToStr(blob),
