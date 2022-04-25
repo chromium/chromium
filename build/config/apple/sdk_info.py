@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -131,42 +132,35 @@ def CreateXcodeSymlinkAt(src, dst):
   return updated_value
 
 
-if __name__ == '__main__':
+def main():
   doctest.testmod()
 
   parser = argparse.ArgumentParser()
-  parser.add_argument("--developer_dir", dest="developer_dir", required=False)
-  parser.add_argument("--get_sdk_info",
-                      action="store_true",
-                      dest="get_sdk_info",
+  parser.add_argument('--developer_dir')
+  parser.add_argument('--get_sdk_info',
+                      action='store_true',
                       default=False,
-                      help="Returns SDK info in addition to xcode info.")
-  parser.add_argument("--get_machine_info",
-                      action="store_true",
-                      dest="get_machine_info",
+                      help='Returns SDK info in addition to xcode info.')
+  parser.add_argument('--get_machine_info',
+                      action='store_true',
                       default=False,
-                      help="Returns machine info in addition to xcode info.")
-  parser.add_argument("--create_symlink_at",
-                      action="store",
-                      dest="create_symlink_at",
-                      help="Create symlink of SDK at given location and "
-                      "returns the symlinked paths as SDK info instead "
-                      "of the original location.")
-  args, unknownargs = parser.parse_known_args()
+                      help='Returns machine info in addition to xcode info.')
+  parser.add_argument('--create_symlink_at',
+                      help='Create symlink of SDK at given location and '
+                      'returns the symlinked paths as SDK info instead '
+                      'of the original location.')
+  parser.add_argument('platform',
+                      choices=['iphoneos', 'iphonesimulator', 'macosx'])
+  args = parser.parse_args()
   if args.developer_dir:
     os.environ['DEVELOPER_DIR'] = args.developer_dir
-
-  if len(unknownargs) != 1:
-    sys.stderr.write('usage: %s [iphoneos|iphonesimulator|macosx]\n' %
-                     os.path.basename(sys.argv[0]))
-    sys.exit(1)
 
   settings = {}
   if args.get_machine_info:
     FillMachineOSBuild(settings)
   FillXcodeVersion(settings, args.developer_dir)
   if args.get_sdk_info:
-    FillSDKPathAndVersion(settings, unknownargs[0], settings['xcode_version'])
+    FillSDKPathAndVersion(settings, args.platform, settings['xcode_version'])
 
   for key in sorted(settings):
     value = settings[key]
@@ -175,3 +169,7 @@ if __name__ == '__main__':
     if isinstance(value, basestring_compat):
       value = '"%s"' % value
     print('%s=%s' % (key, value))
+
+
+if __name__ == '__main__':
+  sys.exit(main())
