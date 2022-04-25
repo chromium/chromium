@@ -60,8 +60,14 @@ UIColor* DimColorIncognito() {
 #pragma mark - NSObject
 
 - (NSString*)description {
-  return [NSString
-      stringWithFormat:@"%@ (%@)", self.text.string, self.detailText.string];
+  NSString* description = [NSString
+      stringWithFormat:@"<%@ %p> %@ (%@)", self.class, self,
+                       self.text.string, self.detailText.string];
+  if (self.pedalData) {
+    description =
+        [description stringByAppendingFormat:@" P:[%@]", self.pedalData.title];
+  }
+  return description;
 }
 
 #pragma mark AutocompleteSuggestion
