@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -16,7 +15,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.blink.mojom.DisplayMode;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
@@ -142,18 +140,6 @@ public class ShortcutHelper {
             boolean isIconAdaptive, int source, String iconUrl) {
         Intent shortcutIntent = createShortcutIntent(url, id, source);
         sDelegate.addShortcutToHomescreen(id, userTitle, icon, isIconAdaptive, shortcutIntent);
-    }
-
-    /**
-     * Shows toast notifying user that a WebAPK install is already in progress when user tries to
-     * queue a new install for the same WebAPK.
-     */
-    @SuppressWarnings("unused")
-    @CalledByNative
-    private static void showWebApkInstallInProgressToast() {
-        Context applicationContext = ContextUtils.getApplicationContext();
-        String toastText = applicationContext.getString(R.string.webapk_install_in_progress);
-        WebappsUtils.showToast(toastText);
     }
 
     /**

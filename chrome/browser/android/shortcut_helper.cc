@@ -134,11 +134,6 @@ void ShortcutHelper::AddToLauncherWithSkBitmap(
   AddShortcutWithSkBitmap(info, webapp_id, icon_bitmap, is_icon_maskable);
 }
 
-void ShortcutHelper::ShowWebApkInstallInProgressToast() {
-  Java_ShortcutHelper_showWebApkInstallInProgressToast(
-      base::android::AttachCurrentThread());
-}
-
 // static
 void ShortcutHelper::StoreWebappSplashImage(const std::string& webapp_id,
                                             const SkBitmap& splash_image) {

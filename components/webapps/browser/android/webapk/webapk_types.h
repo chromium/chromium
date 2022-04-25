@@ -73,6 +73,12 @@ enum class WebApkInstallResult {
   NOT_ENOUGH_SPACE = 8,
   ICON_HASHER_ERROR = 9,
   RESULT_MAX = 10,
+
+  // Indicates that the WebAPK is currently already being installed and the new
+  // install will be aborted. Used when the install was initiated through the
+  // WebApkInstallCoordinator-service to propagate the status to the connecting
+  // client.
+  INSTALL_ALREADY_IN_PROGRESS = 11,
 };
 
 }  // namespace webapps

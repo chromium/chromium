@@ -200,6 +200,12 @@
       <message name="IDS_IMAGE_ZOOM_CONTENT_DESCRIPTION" desc="The content description string for the screenshot in the image zoom view.">
         Screenshot. Tap to close.
       </message>
+      <message name="IDS_WEBAPK_INSTALL_IN_PROGRESS" desc="Indicates that an installation for the WebAPK for the specific website is already in progress.">
+        Still adding previous site
+      </message>
+      <message name="IDS_WEBAPK_INSTALL_FAILED" desc="Indicates that a WebAPK has not been added to Home screen.">
+        Failed to install
+      </message>
     </messages>
   </release>
 </grit>

@@ -43,10 +43,6 @@ class ShortcutHelper {
       bool is_icon_maskable,
       webapps::InstallableStatusCode installable_status);
 
-  // Shows toast notifying user that a WebAPK install is already in progress
-  // when user tries to queue a new install for the same WebAPK.
-  static void ShowWebApkInstallInProgressToast();
-
   // Stores the webapp splash screen in the WebappDataStorage associated with
   // |webapp_id|.
   static void StoreWebappSplashImage(const std::string& webapp_id,

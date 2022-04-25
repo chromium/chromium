@@ -14,7 +14,10 @@
 #include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
 #include "components/webapps/browser/android/webapk/webapk_proto_builder.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
+#include "components/webapps/browser/android/webapps_utils.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -96,7 +99,10 @@ void WebApkInstallScheduler::ScheduleWithChrome(
 }
 
 void WebApkInstallScheduler::OnResult(webapps::WebApkInstallResult result) {
-  // TODO(swestphal): Handle install failure case (follow up CL).
+  // Toasts have to be called on the UI thread, but the
+  // WebApkInstallSchedulerClient already makes sure that the callback, which is
+  // triggered by the Chrome-service, is invoked on the UI thread.
+  webapps::WebappsUtils::ShowWebApkInstallResultToast(result);
   delete this;
 }
 

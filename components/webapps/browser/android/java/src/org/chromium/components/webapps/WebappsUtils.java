@@ -121,6 +121,21 @@ public class WebappsUtils {
     }
 
     /**
+     * Shows toast notifying user of the result of a WebAPK install if the installation was not
+     * successful.
+     */
+    @SuppressWarnings("unused")
+    @CalledByNative
+    private static void showWebApkInstallResultToast(@WebApkInstallResult int result) {
+        Context applicationContext = ContextUtils.getApplicationContext();
+        if (result == WebApkInstallResult.INSTALL_ALREADY_IN_PROGRESS) {
+            showToast(applicationContext.getString(R.string.webapk_install_in_progress));
+        } else if (result != WebApkInstallResult.SUCCESS) {
+            showToast(applicationContext.getString(R.string.webapk_install_failed));
+        }
+    }
+
+    /**
      * Utility method to check if a shortcut can be added to the home screen.
      * @return if a shortcut can be added to the home screen under the current profile.
      */
