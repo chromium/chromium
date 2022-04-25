@@ -6556,6 +6556,80 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, ErrorDocuments) {
   EXPECT_TRUE(child_b->IsErrorDocument());
 }
 
+// Tests that a popup that is opened by a subframe inherits the subframe's
+// origin, instead of the main frame's origin.
+// Regression test for https://crbug.com/1311820 and https://crbug.com/1291764.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       PopupOpenedBySubframeHasCorrectOrigin) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  // Navigate to a page with a cross-site iframe.
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* child = root->child_at(0);
+
+  // Verify that the main frame & subframe origin differs.
+  url::Origin a_origin = url::Origin::Create(main_url);
+  url::Origin b_origin = url::Origin::Create(child->current_url());
+  EXPECT_EQ(a_origin, root->current_frame_host()->GetLastCommittedOrigin());
+  EXPECT_EQ(b_origin, child->current_frame_host()->GetLastCommittedOrigin());
+  EXPECT_NE(a_origin, b_origin);
+
+  {
+    // From the subframe, open a popup that stays on the initial empty
+    // document.
+    WebContentsAddedObserver popup_observer;
+    ASSERT_TRUE(ExecJs(child, "var w = window.open('/nocontent');"));
+    WebContentsImpl* popup =
+        static_cast<WebContentsImpl*>(popup_observer.GetWebContents());
+    FrameTreeNode* popup_frame = popup->GetMainFrame()->frame_tree_node();
+
+    // The popup should inherit the subframe's origin. Before the fix for
+    // https://crbug.com/1311820, the popup used to inherit the main frame's
+    // origin instead.
+    EXPECT_EQ(b_origin,
+              popup_frame->current_frame_host()->GetLastCommittedOrigin());
+    EXPECT_EQ(b_origin.Serialize(), EvalJs(popup_frame, "self.origin"));
+
+    // Try calling document.open() on the popup from itself.
+    // This used to cause a renderer kill as the browser used to notice the
+    // current origin & process lock mismatched when the document.open()
+    // notification IPC arrives.
+    EXPECT_EQ(GURL("about:blank"), EvalJs(popup_frame, "location.href"));
+    EXPECT_TRUE(ExecJs(popup_frame, "document.open()"));
+    EXPECT_EQ(GURL("about:blank"), EvalJs(popup_frame, "location.href"));
+
+    // Try updating the URL of the popup to the opener subframe's URL by
+    // calling document.open() on the popup from the opener subframe.
+    // This used to cause a renderer kill as the browser used to expect that
+    // the popup frame can only update to URLs under `a_origin`, while the
+    // new URL is under `b_origin`. See also https://crbug.com/1291764.
+    EXPECT_TRUE(ExecJs(child, "w.document.open()"));
+    EXPECT_EQ(child->current_url().spec(),
+              EvalJs(popup_frame, "location.href"));
+  }
+
+  {
+    // From the subframe, open a popup that stays on the initial empty
+    // document, and specify 'noopener' to sever the opener relationship.
+    WebContentsAddedObserver popup_observer;
+    ASSERT_TRUE(
+        ExecJs(child, "var w = window.open('/nocontent', '', 'noopener');"));
+    WebContentsImpl* popup =
+        static_cast<WebContentsImpl*>(popup_observer.GetWebContents());
+    FrameTreeNode* popup_frame = popup->GetMainFrame()->frame_tree_node();
+    EXPECT_EQ(nullptr, EvalJs(popup_frame, "window.opener"));
+
+    // The popup should use a new opaque origin, instead of the subframe's
+    // origin.
+    EXPECT_NE(b_origin,
+              popup_frame->current_frame_host()->GetLastCommittedOrigin());
+    EXPECT_TRUE(
+        popup_frame->current_frame_host()->GetLastCommittedOrigin().opaque());
+    EXPECT_EQ("null", EvalJs(popup_frame, "self.origin"));
+  }
+}
+
 class RenderFrameHostImplAvoidUnnecessaryBeforeUnloadBrowserTest
     : public RenderFrameHostImplBeforeUnloadBrowserTest {
  public:
