@@ -201,7 +201,7 @@ class SystemTrustStoreMac : public SystemTrustStore {
 
  private:
   static constexpr TrustStoreMac::TrustImplType kDefaultTrustImpl =
-      TrustStoreMac::TrustImplType::kDomainCache;
+      TrustStoreMac::TrustImplType::kLruCache;
 
   static TrustStoreMac::TrustImplType ParamToTrustImplType(int param) {
     switch (param) {
