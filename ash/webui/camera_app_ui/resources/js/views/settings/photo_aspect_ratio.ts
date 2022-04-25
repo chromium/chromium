@@ -21,6 +21,8 @@ import * as util from './util.js';
 export class PhotoAspectRatioSettings extends BaseSettings {
   private readonly menu: HTMLElement;
 
+  private focusedDeviceId: string|null = null;
+
   constructor(readonly cameraManager: CameraManager) {
     super(ViewName.PHOTO_ASPECT_RATIO_SETTINGS);
 
@@ -84,11 +86,16 @@ export class PhotoAspectRatioSettings extends BaseSettings {
 
     if (!input.checked) {
       input.addEventListener('click', (event) => {
+        this.focusedDeviceId = deviceId;
         this.cameraManager.setPrefPhotoAspectRatioSet(
             deviceId, option.aspectRatioSet);
         event.preventDefault();
       });
     }
     this.menu.appendChild(optionElement);
+
+    if (input.checked && this.focusedDeviceId === deviceId) {
+      input.focus();
+    }
   }
 }

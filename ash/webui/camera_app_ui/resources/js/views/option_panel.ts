@@ -50,7 +50,8 @@ export class OptionPanel extends View {
 
       const input = dom.getFrom(item, 'input', HTMLInputElement);
       const stateEnabled = state.get(targetState);
-      input.checked = isDisableOption ? !stateEnabled : stateEnabled;
+      const checked = isDisableOption ? !stateEnabled : stateEnabled;
+      input.checked = checked;
       input.addEventListener('change', () => {
         if (input.checked) {
           triggerButton.setAttribute('i18n-aria', ariaLabel);
@@ -68,6 +69,10 @@ export class OptionPanel extends View {
 
       this.observers.set(targetState, observer);
       this.container.appendChild(item);
+
+      if (checked) {
+        input.focus();
+      }
     }
     util.setupI18nElements(this.panel);
   }

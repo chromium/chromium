@@ -23,6 +23,8 @@ import * as util from './util.js';
 export class PhotoResolutionSettings extends BaseSettings {
   private readonly menu: HTMLElement;
 
+  private focusedDeviceId: string|null = null;
+
   constructor(readonly cameraManager: CameraManager) {
     super(ViewName.PHOTO_RESOLUTION_SETTINGS);
 
@@ -95,11 +97,16 @@ export class PhotoResolutionSettings extends BaseSettings {
 
     if (!input.checked) {
       input.addEventListener('click', (event) => {
+        this.focusedDeviceId = deviceId;
         this.cameraManager.setPrefPhotoResolutionLevel(
             deviceId, option.resolutionLevel);
         event.preventDefault();
       });
     }
     this.menu.appendChild(optionElement);
+
+    if (input.checked && this.focusedDeviceId === deviceId) {
+      input.focus();
+    }
   }
 }

@@ -60,19 +60,36 @@ function showFocus(el: HTMLElement) {
   ringCSSStyle.setProperty('left', `${(uiRect.left + uiRect.right) / 2}px`);
 }
 
+function setup(el: HTMLElement): void {
+  el.addEventListener('focus', () => showFocus(el));
+  if (el === document.activeElement) {
+    showFocus(el);
+  }
+}
+
+/**
+ * Setup the focus listener for given nodes recursively. If a parent node is
+ * setup, no setup will be applied to its children nodes.
+ */
+function setupForNodes(nodes: NodeList): void {
+  for (const node of nodes) {
+    if (!(node instanceof HTMLElement)) {
+      continue;
+    }
+    if (node.hasAttribute('tabindex')) {
+      setup(node);
+      continue;
+    }
+    setupForNodes(node.childNodes);
+  }
+}
+
 /**
  * Initializes DOM elements and observers used for focus ring.
  */
 export function initialize(): void {
   ring = dom.get('#focus-ring', HTMLElement);
   ringCSSStyle = cssStyle('#focus-ring');
-
-  function setup(el: HTMLElement) {
-    el.addEventListener('focus', () => showFocus(el));
-    if (el === document.activeElement) {
-      showFocus(el);
-    }
-  }
 
   for (const el of dom.getAll('[tabindex]', HTMLElement)) {
     setup(el);
@@ -82,14 +99,7 @@ export function initialize(): void {
       assert(mutation.type === 'childList');
       // Only the newly added nodes with [tabindex] are considered here. So
       // simply adding class attribute on existing element will not work.
-      for (const node of mutation.addedNodes) {
-        if (!(node instanceof HTMLElement)) {
-          continue;
-        }
-        if (node.hasAttribute('tabindex')) {
-          setup(node);
-        }
-      }
+      setupForNodes(mutation.addedNodes);
     }
   });
   observer.observe(document.body, {
