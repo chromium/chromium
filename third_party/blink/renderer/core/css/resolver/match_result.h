@@ -26,13 +26,11 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/cascade_layer_map.h"
-#include "third_party/blink/renderer/core/css/resolver/cascade_expansion.h"
-#include "third_party/blink/renderer/core/css/resolver/cascade_filter.h"
+#include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_origin.h"
-#include "third_party/blink/renderer/core/css/resolver/cascade_priority.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
-#include "third_party/blink/renderer/core/css/selector_checker.h"
+#include "third_party/blink/renderer/core/dom/tree_scope.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
