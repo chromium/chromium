@@ -273,7 +273,7 @@ std::vector<std::vector<T>> FlattenedPermutations(
 class MockContentAutofillDriver : public ContentAutofillDriver {
  public:
   explicit MockContentAutofillDriver(content::RenderFrameHost* rfh)
-      : ContentAutofillDriver(rfh) {}
+      : ContentAutofillDriver(rfh, /*autofill_router=*/nullptr) {}
 
   LocalFrameToken token() { return Token(render_frame_host()); }
 

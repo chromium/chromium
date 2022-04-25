@@ -87,6 +87,9 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver,
       AutofillManager::AutofillManagerFactoryCallback
           autofill_manager_factory_callback);
 
+  std::unique_ptr<ContentAutofillDriver> CreateDriver(
+      content::RenderFrameHost* rfh);
+
   const raw_ptr<AutofillClient> client_;
   std::string app_locale_;
   BrowserAutofillManager::AutofillDownloadManagerState enable_download_manager_;

@@ -159,9 +159,6 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
     return true;
   }
 
-  // Mocked mojom::AutofillAgent methods:
-  MOCK_METHOD(void, EnableHeavyFormDataScraping, (), (override));
-
  private:
   void CallDone() {
     if (!quit_closure_.is_null())
@@ -231,6 +228,8 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
     CallDone();
   }
 
+  void EnableHeavyFormDataScraping() override {}
+
   void FillPasswordSuggestion(const std::u16string& username,
                               const std::u16string& password) override {}
 
@@ -299,18 +298,11 @@ class MockAutofillClient : public TestAutofillClient {};
 class TestContentAutofillDriver : public ContentAutofillDriver {
  public:
   TestContentAutofillDriver(content::RenderFrameHost* rfh,
-                            AutofillClient* client,
-                            ContentAutofillRouter* router)
-      : ContentAutofillDriver(
-            rfh,
-            client,
-            kAppLocale,
-            router,
-            kDownloadState,
-            AutofillManager::AutofillManagerFactoryCallback()) {
-    std::unique_ptr<MockBrowserAutofillManager> autofill_manager(
-        new MockBrowserAutofillManager(this, client));
-    SetBrowserAutofillManager(std::move(autofill_manager));
+                            ContentAutofillRouter* router,
+                            AutofillClient* client)
+      : ContentAutofillDriver(rfh, router) {
+    set_browser_autofill_manager(
+        std::make_unique<MockBrowserAutofillManager>(this, client));
   }
   ~TestContentAutofillDriver() override = default;
 
@@ -348,8 +340,8 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness,
     test_autofill_client_ = std::make_unique<MockAutofillClient>();
     router_ = std::make_unique<ContentAutofillRouter>();
     driver_ = std::make_unique<TestContentAutofillDriver>(
-        web_contents()->GetMainFrame(), test_autofill_client_.get(),
-        router_.get());
+        web_contents()->GetMainFrame(), router_.get(),
+        test_autofill_client_.get());
 
     blink::AssociatedInterfaceProvider* remote_interfaces =
         web_contents()->GetMainFrame()->GetRemoteAssociatedInterfaces();
@@ -499,7 +491,7 @@ TEST_P(ContentAutofillDriverTest,
           content::RenderFrameHostTester::For(child_rfh)->AppendChild(
               "grandchild"));
   auto grandchild_driver = std::make_unique<TestContentAutofillDriver>(
-      grandchild_rfh, test_autofill_client_.get(), router_.get());
+      grandchild_rfh, router_.get(), test_autofill_client_.get());
   ASSERT_TRUE(child_rfh->GetLastCommittedURL().IsAboutBlank());
   ASSERT_TRUE(grandchild_rfh->GetLastCommittedURL().IsAboutBlank());
 
@@ -685,33 +677,6 @@ TEST_P(ContentAutofillDriverTest, PreviewFieldWithValue) {
   EXPECT_TRUE(
       fake_agent_.GetString16PreviewFieldWithValue(field, &output_value));
   EXPECT_EQ(input_value, output_value);
-}
-
-TEST_P(ContentAutofillDriverTest, EnableHeavyFormDataScraping) {
-  struct TestCase {
-    version_info::Channel channel;
-    bool heavy_scraping_enabled;
-  } kTestCases[] = {{version_info::Channel::CANARY, true},
-                    {version_info::Channel::DEV, true},
-                    {version_info::Channel::UNKNOWN, false},
-                    {version_info::Channel::BETA, false},
-                    {version_info::Channel::STABLE, false}};
-
-  for (auto test_case : kTestCases) {
-    SCOPED_TRACE(testing::Message()
-                 << "channel: "
-                 << version_info::GetChannelString(test_case.channel));
-    test_autofill_client_->set_channel_for_testing(test_case.channel);
-    EXPECT_CALL(fake_agent_, EnableHeavyFormDataScraping())
-        .Times(test_case.heavy_scraping_enabled ? 1 : 0);
-
-    std::unique_ptr<ContentAutofillDriver> driver(new TestContentAutofillDriver(
-        web_contents()->GetMainFrame(), test_autofill_client_.get(),
-        router_.get()));
-
-    base::RunLoop().RunUntilIdle();
-    testing::Mock::VerifyAndClearExpectations(&fake_agent_);
-  }
 }
 
 INSTANTIATE_TEST_SUITE_P(ContentAutofillDriverTest,

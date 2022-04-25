@@ -19,11 +19,15 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
 
 using testing::_;
+using testing::AtLeast;
 using testing::Between;
 
 namespace autofill {
@@ -33,6 +37,75 @@ namespace {
 class MockAutofillClient : public TestAutofillClient {
  public:
   MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason), (override));
+};
+
+class MockAutofillAgent : public mojom::AutofillAgent {
+ public:
+  void BindPendingReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
+    receivers_.Add(this, mojo::PendingAssociatedReceiver<mojom::AutofillAgent>(
+                             std::move(handle)));
+  }
+
+  MOCK_METHOD(void, TriggerReparse, (), (override));
+  MOCK_METHOD(void,
+              FillOrPreviewForm,
+              (int32_t id,
+               const FormData& form,
+               mojom::RendererFormDataAction action),
+              (override));
+  MOCK_METHOD(void,
+              FieldTypePredictionsAvailable,
+              (const std::vector<FormDataPredictions>& forms),
+              (override));
+  MOCK_METHOD(void, ClearSection, (), (override));
+  MOCK_METHOD(void, ClearPreviewedForm, (), (override));
+  MOCK_METHOD(void,
+              FillFieldWithValue,
+              (FieldRendererId field, const std::u16string& value),
+              (override));
+  MOCK_METHOD(void,
+              PreviewFieldWithValue,
+              (FieldRendererId field, const ::std::u16string& value),
+              (override));
+  MOCK_METHOD(void,
+              SetSuggestionAvailability,
+              (FieldRendererId field, mojom::AutofillState type),
+              (override));
+  MOCK_METHOD(void,
+              AcceptDataListSuggestion,
+              (FieldRendererId field, const ::std::u16string& value),
+              (override));
+  MOCK_METHOD(void,
+              FillPasswordSuggestion,
+              (const ::std::u16string& username,
+               const ::std::u16string& password),
+              (override));
+  MOCK_METHOD(void,
+              PreviewPasswordSuggestion,
+              (const ::std::u16string& username,
+               const ::std::u16string& password),
+              (override));
+  MOCK_METHOD(void, SetUserGestureRequired, (bool required), (override));
+  MOCK_METHOD(void, SetSecureContextRequired, (bool required), (override));
+  MOCK_METHOD(void, SetFocusRequiresScroll, (bool require), (override));
+  MOCK_METHOD(void, SetQueryPasswordSuggestion, (bool query), (override));
+  MOCK_METHOD(void,
+              GetElementFormAndFieldDataForDevToolsNodeId,
+              (int32_t backend_node_id,
+               GetElementFormAndFieldDataForDevToolsNodeIdCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              SetAssistantKeyboardSuppressState,
+              (bool suppress),
+              (override));
+  MOCK_METHOD(void, EnableHeavyFormDataScraping, (), (override));
+  MOCK_METHOD(void,
+              SetFieldsEligibleForManualFilling,
+              (const std::vector<FieldRendererId>& fields),
+              (override));
+
+ private:
+  mojo::AssociatedReceiverSet<mojom::AutofillAgent> receivers_;
 };
 
 }  // namespace
@@ -50,10 +123,18 @@ class ContentAutofillDriverFactoryTest
         BrowserAutofillManager::AutofillDownloadManagerState::
             ENABLE_AUTOFILL_DOWNLOAD_MANAGER,
         AutofillManager::AutofillManagerFactoryCallback());
+
+    blink::AssociatedInterfaceProvider* remote_interfaces =
+        web_contents()->GetMainFrame()->GetRemoteAssociatedInterfaces();
+    remote_interfaces->OverrideBinderForTesting(
+        mojom::AutofillAgent::Name_,
+        base::BindRepeating(&MockAutofillAgent::BindPendingReceiver,
+                            base::Unretained(&agent_)));
+
     // One call of HideAutofillPopup() comes from ContentAutofillDriverFactory,
-    // the second one from BrowserAutofillManager::Reset(). One of them may be
-    // redundant.
-    EXPECT_CALL(client_, HideAutofillPopup(_)).Times(Between(1, 2));
+    // the second one from BrowserAutofillManager::Reset(). Additional
+    // navigations cause additional calls.
+    EXPECT_CALL(client_, HideAutofillPopup(_)).Times(AtLeast(1));
     NavigateMainFrame("https://a.com/");
   }
 
@@ -69,6 +150,7 @@ class ContentAutofillDriverFactoryTest
 
  protected:
   MockAutofillClient client_;
+  MockAutofillAgent agent_;
   std::unique_ptr<ContentAutofillDriverFactory> factory_;
 };
 
@@ -138,7 +220,7 @@ class ContentAutofillDriverFactoryTest_WithTwoFrames_PickOne
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(,
+INSTANTIATE_TEST_SUITE_P(ContentAutofillDriverFactoryTest,
                          ContentAutofillDriverFactoryTest_WithTwoFrames_PickOne,
                          testing::Bool());
 
@@ -191,7 +273,7 @@ class ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    ,
+    ContentAutofillDriverFactoryTest,
     ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
     testing::Combine(testing::Bool(), testing::Bool()));
 
@@ -351,5 +433,38 @@ TEST_P(ContentAutofillDriverFactoryFencedFramesTest,
 INSTANTIATE_TEST_SUITE_P(ContentAutofillDriverFactoryTest,
                          ContentAutofillDriverFactoryFencedFramesTest,
                          testing::Bool());
+
+struct AgentSetupParam {
+  version_info::Channel channel;
+  bool heavy_scraping_enabled;
+};
+
+class ContentAutofillDriverFactoryTestAgentSetup
+    : public ContentAutofillDriverFactoryTest,
+      public ::testing::WithParamInterface<AgentSetupParam> {
+ public:
+  void SetUp() override {
+    client_.set_channel_for_testing(GetParam().channel);
+    ContentAutofillDriverFactoryTest::SetUp();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ContentAutofillDriverFactoryTest,
+    ContentAutofillDriverFactoryTestAgentSetup,
+    testing::Values(AgentSetupParam{version_info::Channel::CANARY, true},
+                    AgentSetupParam{version_info::Channel::DEV, true},
+                    AgentSetupParam{version_info::Channel::UNKNOWN, false},
+                    AgentSetupParam{version_info::Channel::BETA, false},
+                    AgentSetupParam{version_info::Channel::STABLE, false}));
+
+TEST_P(ContentAutofillDriverFactoryTestAgentSetup,
+       EnableHeavyFormDataScraping) {
+  EXPECT_CALL(agent_, EnableHeavyFormDataScraping())
+      .Times(GetParam().heavy_scraping_enabled ? 1 : 0);
+  NavigateMainFrame("https://b.com/");
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&agent_);
+}
 
 }  // namespace autofill

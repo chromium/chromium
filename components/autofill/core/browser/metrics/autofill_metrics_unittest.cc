@@ -11362,10 +11362,9 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateNone) {
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->OnFormsSeen(/*updated_forms=*/forms,
                                          /*removed_forms=*/{});
-  autofill_driver_->SetBrowserAutofillManager(
+  autofill_driver_->set_browser_autofill_manager(
       std::move(browser_autofill_manager_));
-  static_cast<ContentAutofillDriver*>(autofill_driver_.get())
-      ->ReportAutofillWebOTPMetrics(false);
+  autofill_driver_->ReportAutofillWebOTPMetrics(false);
   histogram_tester.ExpectBucketCount("Autofill.WebOTP.PhonePlusWebOTPPlusOTC",
                                      PhoneCollectionMetricState::kNone, 1);
   histogram_tester.ExpectTotalCount("Autofill.WebOTP.PhonePlusWebOTPPlusOTC",
@@ -11382,7 +11381,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateOTC) {
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->OnFormsSeen(/*updated_forms=*/forms,
                                          /*removed_forms=*/{});
-  autofill_driver_->SetBrowserAutofillManager(
+  autofill_driver_->set_browser_autofill_manager(
       std::move(browser_autofill_manager_));
   static_cast<ContentAutofillDriver*>(autofill_driver_.get())
       ->ReportAutofillWebOTPMetrics(false);
@@ -11397,7 +11396,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateWebOTP) {
   // If WebOTP is used, even if there is no form on the page we still need to
   // report it.
   base::HistogramTester histogram_tester;
-  autofill_driver_->SetBrowserAutofillManager(
+  autofill_driver_->set_browser_autofill_manager(
       std::move(browser_autofill_manager_));
   static_cast<ContentAutofillDriver*>(autofill_driver_.get())
       ->ReportAutofillWebOTPMetrics(true);
@@ -11417,7 +11416,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateWebOTPPlusOTC) {
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->OnFormsSeen(/*updated_forms=*/forms,
                                          /*removed_forms=*/{});
-  autofill_driver_->SetBrowserAutofillManager(
+  autofill_driver_->set_browser_autofill_manager(
       std::move(browser_autofill_manager_));
   static_cast<ContentAutofillDriver*>(autofill_driver_.get())
       ->ReportAutofillWebOTPMetrics(true);
@@ -11438,7 +11437,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStatePhone) {
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->OnFormsSeen(/*updated_forms=*/forms,
                                          /*removed_forms=*/{});
-  autofill_driver_->SetBrowserAutofillManager(
+  autofill_driver_->set_browser_autofill_manager(
       std::move(browser_autofill_manager_));
   static_cast<ContentAutofillDriver*>(autofill_driver_.get())
       ->ReportAutofillWebOTPMetrics(false);
@@ -11459,7 +11458,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStatePhonePlusOTC) {
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->OnFormsSeen(/*updated_forms=*/forms,
                                          /*removed_forms=*/{});
-  autofill_driver_->SetBrowserAutofillManager(
+  autofill_driver_->set_browser_autofill_manager(
       std::move(browser_autofill_manager_));
   static_cast<ContentAutofillDriver*>(autofill_driver_.get())
       ->ReportAutofillWebOTPMetrics(false);
@@ -11480,7 +11479,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStatePhonePlusWebOTP) {
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->OnFormsSeen(/*updated_forms=*/forms,
                                          /*removed_forms=*/{});
-  autofill_driver_->SetBrowserAutofillManager(
+  autofill_driver_->set_browser_autofill_manager(
       std::move(browser_autofill_manager_));
   static_cast<ContentAutofillDriver*>(autofill_driver_.get())
       ->ReportAutofillWebOTPMetrics(true);
@@ -11504,7 +11503,7 @@ TEST_F(AutofillMetricsTest,
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->OnFormsSeen(/*updated_forms=*/forms,
                                          /*removed_forms=*/{});
-  autofill_driver_->SetBrowserAutofillManager(
+  autofill_driver_->set_browser_autofill_manager(
       std::move(browser_autofill_manager_));
   static_cast<ContentAutofillDriver*>(autofill_driver_.get())
       ->ReportAutofillWebOTPMetrics(true);
@@ -11532,7 +11531,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateLoggedToUKM) {
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->OnFormsSeen(/*updated_forms=*/forms,
                                          /*removed_forms=*/{});
-  autofill_driver_->SetBrowserAutofillManager(
+  autofill_driver_->set_browser_autofill_manager(
       std::move(browser_autofill_manager_));
   static_cast<ContentAutofillDriver*>(autofill_driver_.get())
       ->ReportAutofillWebOTPMetrics(/* Document uses WebOTP */ true);

@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
   // hidden. This can happen if the web_contents are destroyed before the popup
   // is hidden. See http://crbug.com/232475
   autofill_manager_->SetExternalDelegateForTest(nullptr);
-  autofill_driver_->SetBrowserAutofillManager(nullptr);
+  autofill_driver_->set_autofill_manager(nullptr);
 }
 
 // crbug.com/965025

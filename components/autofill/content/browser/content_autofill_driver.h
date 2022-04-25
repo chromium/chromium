@@ -32,10 +32,8 @@ class RenderFrameHost;
 
 namespace autofill {
 
-class AutofillClient;
 class AutofillableData;
 class ContentAutofillRouter;
-class LogManager;
 
 // Use <Phone><WebOTP><OTC> as the bit pattern to identify the metrics state.
 enum class PhoneCollectionMetricState {
@@ -132,17 +130,33 @@ class ContentAutofillDriver : public AutofillDriver,
   static ContentAutofillDriver* GetForRenderFrameHost(
       content::RenderFrameHost* render_frame_host);
 
-  ContentAutofillDriver(
-      content::RenderFrameHost* render_frame_host,
-      AutofillClient* client,
-      const std::string& app_locale,
-      ContentAutofillRouter* autofill_router,
-      AutofillManager::AutofillDownloadManagerState enable_download_manager,
-      AutofillManager::AutofillManagerFactoryCallback
-          autofill_manager_factory_callback);
+  // Partially constructs the ContentAutofillDriver. The ContentAutofillDriver
+  // needs an AutofillManager that should be set via set_autofill_manager() (for
+  // Android Autofill) or set_browser_autofill_manager (for Chromium).
+  // Outside of unittests, ContentAutofillDriverFactory is instantiated and set
+  // up by the ContentAutofillDriverFactory.
+  ContentAutofillDriver(content::RenderFrameHost* render_frame_host,
+                        ContentAutofillRouter* autofill_router);
   ContentAutofillDriver(const ContentAutofillDriver&) = delete;
   ContentAutofillDriver& operator=(const ContentAutofillDriver&) = delete;
   ~ContentAutofillDriver() override;
+
+  void set_autofill_manager(std::unique_ptr<AutofillManager> autofill_manager) {
+    browser_autofill_manager_ = nullptr;
+    autofill_manager_ = std::move(autofill_manager);
+  }
+
+  void set_browser_autofill_manager(
+      std::unique_ptr<BrowserAutofillManager> autofill_manager) {
+    browser_autofill_manager_ = autofill_manager.get();
+    autofill_manager_ = std::move(autofill_manager);
+  }
+
+  AutofillManager* autofill_manager() { return autofill_manager_.get(); }
+
+  BrowserAutofillManager* browser_autofill_manager() {
+    return browser_autofill_manager_;
+  }
 
   void BindPendingReceiver(
       mojo::PendingAssociatedReceiver<mojom::AutofillDriver> pending_receiver);
@@ -332,11 +346,6 @@ class ContentAutofillDriver : public AutofillDriver,
   // navigation occurs in that specific frame.
   void DidNavigateFrame(content::NavigationHandle* navigation_handle);
 
-  BrowserAutofillManager* browser_autofill_manager() {
-    return browser_autofill_manager_;
-  }
-  AutofillManager* autofill_manager() { return autofill_manager_.get(); }
-
   content::RenderFrameHost* render_frame_host() { return render_frame_host_; }
 
   const mojo::AssociatedRemote<mojom::AutofillAgent>& GetAutofillAgent();
@@ -359,10 +368,6 @@ class ContentAutofillDriver : public AutofillDriver,
       const content::RenderWidgetHost::KeyPressEventCallback& handler);
   void UnsetKeyPressHandlerImpl();
 
-  // Sets the manager to |manager|. Takes ownership of |manager|.
-  void SetBrowserAutofillManager(
-      std::unique_ptr<BrowserAutofillManager> manager);
-
   // Reports whether a document collects phone numbers, uses one time code, uses
   // WebOTP. There are cases that the reporting is not expected:
   //   1. some unit tests do not set necessary members,
@@ -373,10 +378,6 @@ class ContentAutofillDriver : public AutofillDriver,
   // |render_frame_host_| is not set.
   void MaybeReportAutofillWebOTPMetrics();
   void ReportAutofillWebOTPMetrics(bool document_used_webotp);
-
- protected:
-  // Constructor for TestAutofillDriver.
-  explicit ContentAutofillDriver(content::RenderFrameHost* rfh = nullptr);
 
  private:
   friend class ContentAutofillDriverTestApi;
@@ -419,19 +420,17 @@ class ContentAutofillDriver : public AutofillDriver,
 
   // AutofillManager instance via which this object drives the shared Autofill
   // code.
-  std::unique_ptr<AutofillManager> autofill_manager_;
+  std::unique_ptr<AutofillManager> autofill_manager_ = nullptr;
 
   // The pointer to autofill_manager_ if it is BrowserAutofillManager instance.
   // TODO: unify autofill_manager_ and browser_autofill_manager_ to a single
   // pointer to a common root.
-  raw_ptr<BrowserAutofillManager> browser_autofill_manager_;
+  raw_ptr<BrowserAutofillManager> browser_autofill_manager_ = nullptr;
 
   // Pointer to an implementation of InternalAuthenticator.
   std::unique_ptr<webauthn::InternalAuthenticator> authenticator_impl_;
 
   content::RenderWidgetHost::KeyPressEventCallback key_press_handler_;
-
-  const raw_ptr<LogManager> log_manager_;
 
   mojo::AssociatedReceiver<mojom::AutofillDriver> receiver_{this};
 

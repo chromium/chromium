@@ -146,15 +146,14 @@ class MockAutofillManagerInjector : public content::WebContentsObserver {
         ContentAutofillDriverFactory::FromWebContents(web_contents());
     AutofillClient* client = driver_factory->client();
     ContentAutofillDriver* driver = driver_factory->DriverForFrame(rfh);
-    std::unique_ptr<T> mock_autofill_manager =
-        std::make_unique<T>(driver, client, rfh);
-    driver->SetBrowserAutofillManager(std::move(mock_autofill_manager));
+    driver->set_browser_autofill_manager(
+        std::make_unique<T>(driver, client, rfh));
   }
 };
 
 class AutofillTest : public InProcessBrowserTest {
  protected:
-  AutofillTest() {}
+  AutofillTest() = default;
 
   void SetUpOnMainThread() override {
     // Don't want Keychain coming up on Mac.

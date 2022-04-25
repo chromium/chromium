@@ -44,53 +44,11 @@
 
 namespace autofill {
 
-namespace {
-
-bool ShouldEnableHeavyFormDataScraping(const version_info::Channel channel) {
-  switch (channel) {
-    case version_info::Channel::CANARY:
-    case version_info::Channel::DEV:
-      return true;
-    case version_info::Channel::STABLE:
-    case version_info::Channel::BETA:
-    case version_info::Channel::UNKNOWN:
-      return false;
-  }
-  NOTREACHED();
-  return false;
-}
-
-}  // namespace
-
 ContentAutofillDriver::ContentAutofillDriver(
     content::RenderFrameHost* render_frame_host,
-    AutofillClient* client,
-    const std::string& app_locale,
-    ContentAutofillRouter* autofill_router,
-    AutofillManager::AutofillDownloadManagerState enable_download_manager,
-    AutofillManager::AutofillManagerFactoryCallback
-        autofill_manager_factory_callback)
+    ContentAutofillRouter* autofill_router)
     : render_frame_host_(render_frame_host),
-      autofill_router_(autofill_router),
-      browser_autofill_manager_(nullptr),
-      log_manager_(client->GetLogManager()) {
-  // AutofillManager isn't used if provider is valid, Autofill provider is
-  // currently used by Android WebView only.
-  if (autofill_manager_factory_callback) {
-    autofill_manager_ = autofill_manager_factory_callback.Run(
-        this, client, app_locale, enable_download_manager);
-    GetAutofillAgent()->SetUserGestureRequired(false);
-    GetAutofillAgent()->SetSecureContextRequired(true);
-    GetAutofillAgent()->SetFocusRequiresScroll(false);
-    GetAutofillAgent()->SetQueryPasswordSuggestion(true);
-  } else {
-    SetBrowserAutofillManager(std::make_unique<BrowserAutofillManager>(
-        this, client, app_locale, enable_download_manager));
-  }
-  if (client && ShouldEnableHeavyFormDataScraping(client->GetChannel())) {
-    GetAutofillAgent()->EnableHeavyFormDataScraping();
-  }
-}
+      autofill_router_(autofill_router) {}
 
 ContentAutofillDriver::~ContentAutofillDriver() {
   if (autofill_router_)  // Can be nullptr only in tests.
@@ -648,18 +606,6 @@ void ContentAutofillDriver::DidNavigateFrame(
     autofill_router_->UnregisterDriver(this);
   autofill_manager_->Reset();
 }
-
-void ContentAutofillDriver::SetBrowserAutofillManager(
-    std::unique_ptr<BrowserAutofillManager> manager) {
-  autofill_manager_ = std::move(manager);
-  browser_autofill_manager_ =
-      static_cast<BrowserAutofillManager*>(autofill_manager_.get());
-}
-
-ContentAutofillDriver::ContentAutofillDriver(content::RenderFrameHost* rfh)
-    : render_frame_host_(rfh),
-      browser_autofill_manager_(nullptr),
-      log_manager_(nullptr) {}
 
 const mojo::AssociatedRemote<mojom::AutofillAgent>&
 ContentAutofillDriver::GetAutofillAgent() {

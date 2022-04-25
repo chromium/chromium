@@ -59,10 +59,6 @@ using ::testing::StrictMock;
 namespace autofill {
 namespace {
 
-const char kAppLocale[] = "en-US";
-const BrowserAutofillManager::AutofillDownloadManagerState kDownloadState =
-    BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER;
-
 class MockAutofillClient : public autofill::TestAutofillClient {
  public:
   MockAutofillClient() : prefs_(autofill::test::PrefServiceForTesting()) {}
@@ -84,13 +80,7 @@ class MockAutofillDriver : public ContentAutofillDriver {
   MockAutofillDriver(content::RenderFrameHost* rfh,
                      MockAutofillClient* client,
                      ContentAutofillRouter* router)
-      : ContentAutofillDriver(
-            rfh,
-            client,
-            kAppLocale,
-            router,
-            kDownloadState,
-            AutofillManager::AutofillManagerFactoryCallback()) {}
+      : ContentAutofillDriver(rfh, router) {}
 
   MockAutofillDriver(MockAutofillDriver&) = delete;
   MockAutofillDriver& operator=(MockAutofillDriver&) = delete;
@@ -256,7 +246,6 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
       autofill_popup_controller_->DoHide();
 
     external_delegate_.reset();
-    autofill_manager_.reset();
     autofill_driver_.reset();
     autofill_router_.reset();
 
@@ -311,7 +300,6 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<MockAutofillClient> autofill_client_;
   std::unique_ptr<ContentAutofillRouter> autofill_router_;
   std::unique_ptr<NiceMock<MockAutofillDriver>> autofill_driver_;
-  std::unique_ptr<MockBrowserAutofillManager> autofill_manager_;
   std::unique_ptr<NiceMock<MockAutofillExternalDelegate>> external_delegate_;
   std::unique_ptr<NiceMock<MockAutofillPopupView>> autofill_popup_view_;
   raw_ptr<NiceMock<TestAutofillPopupController>> autofill_popup_controller_ =
@@ -336,13 +324,14 @@ class AutofillPopupControllerAccessibilityUnitTest
     autofill_driver_ = std::make_unique<NiceMock<MockAutofillDriver>>(
         web_contents()->GetMainFrame(), autofill_client_.get(),
         autofill_router_.get());
+    autofill_driver_->set_browser_autofill_manager(
+        std::make_unique<MockBrowserAutofillManager>(autofill_driver_.get(),
+                                                     autofill_client_.get()));
     // Fake that |driver| has queried a form.
     ContentAutofillRouterTestApi(autofill_router_.get())
         .set_last_queried_source(autofill_driver_.get());
-    autofill_manager_ = std::make_unique<MockBrowserAutofillManager>(
-        autofill_driver_.get(), autofill_client_.get());
     return std::make_unique<NiceMock<MockAutofillExternalDelegate>>(
-        autofill_manager_.get(), autofill_driver_.get());
+        autofill_driver_->browser_autofill_manager(), autofill_driver_.get());
   }
 
  protected:
