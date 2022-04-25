@@ -1084,9 +1084,12 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
                        IsWebGLContextType(attrib_helper.context_type),
                    "missing GL_ANGLE_webgl_compatibility");
   FAIL_INIT_IF_NOT(feature_info_->feature_flags().angle_request_extension,
-                   "missing  GL_ANGLE_request_extension");
+                   "missing GL_ANGLE_request_extension");
   FAIL_INIT_IF_NOT(feature_info_->feature_flags().khr_debug,
                    "missing GL_KHR_debug");
+  FAIL_INIT_IF_NOT(!attrib_helper.fail_if_major_perf_caveat ||
+                       !feature_info_->feature_flags().is_swiftshader_for_webgl,
+                   "fail_if_major_perf_caveat + swiftshader");
   FAIL_INIT_IF_NOT(!attrib_helper.enable_oop_rasterization,
                    "oop rasterization not supported");
   FAIL_INIT_IF_NOT(!IsES31ForTestingContextType(attrib_helper.context_type) ||
