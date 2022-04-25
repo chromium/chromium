@@ -132,6 +132,10 @@
     "META": {"sizes": {"includes": [50]}},
     "includes": [1380],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/profile_internals/resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
+    "includes": [1385],
+  },
   "chrome/browser/resources/chromeos/app_icon/app_icon_resources.grd": {
     "structures": [1390],
   },
