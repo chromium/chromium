@@ -233,10 +233,6 @@ TEST_F(HyphenationTest, English) {
   Vector<wtf_size_t, 8> locations = hyphenation->HyphenLocations("hyphenation");
   EXPECT_THAT(locations, testing::AnyOf(ElementsAreArray({6, 2}),
                                         ElementsAreArray({7, 6, 2})));
-
-  // Avoid hyphenating capitalized words.
-  locations = hyphenation->HyphenLocations("Hyphenation");
-  EXPECT_EQ(locations.size(), 0u);
 }
 
 TEST_F(HyphenationTest, German) {
@@ -252,10 +248,6 @@ TEST_F(HyphenationTest, German) {
       hyphenation->HyphenLocations("konsonantien");
   EXPECT_THAT(locations, ElementsAreArray({8, 5, 3}));
 
-  // Hyphenate capitalized words if German.
-  locations = hyphenation->HyphenLocations("Konsonantien");
-  EXPECT_THAT(locations, ElementsAreArray({8, 5, 3}));
-
   // Test words with non-ASCII (> U+0080) characters.
   locations = hyphenation->HyphenLocations(
       "B"
@@ -264,5 +256,21 @@ TEST_F(HyphenationTest, German) {
   EXPECT_THAT(locations, ElementsAreArray({4}));
 }
 #endif
+
+#if defined(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_MAC)
+TEST_F(HyphenationTest, CapitalizedWords) {
+  // Avoid hyphenating capitalized words for "en".
+  if (scoped_refptr<Hyphenation> en = GetHyphenation("en-us")) {
+    Vector<wtf_size_t, 8> locations = en->HyphenLocations("Hyphenation");
+    EXPECT_EQ(locations.size(), 0u);
+  }
+
+  // Hyphenate capitalized words if German.
+  if (scoped_refptr<Hyphenation> de = GetHyphenation("de-1996")) {
+    Vector<wtf_size_t, 8> locations = de->HyphenLocations("Konsonantien");
+    EXPECT_NE(locations.size(), 0u);
+  }
+}
+#endif  // defined(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_MAC)
 
 }  // namespace blink

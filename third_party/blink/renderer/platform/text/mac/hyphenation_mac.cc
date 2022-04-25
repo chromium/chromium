@@ -68,8 +68,7 @@ scoped_refptr<Hyphenation> Hyphenation::PlatformGetHyphenation(
     return nullptr;
   scoped_refptr<Hyphenation> hyphenation(
       base::AdoptRef(new HyphenationCF(locale_cf)));
-  if (locale.StartsWithIgnoringASCIICase("de"))
-    hyphenation->hyphenate_capitalized_word_ = true;
+  hyphenation->Initialize(locale);
   return hyphenation;
 }
 

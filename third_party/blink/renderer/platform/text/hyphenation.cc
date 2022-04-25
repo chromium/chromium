@@ -8,6 +8,12 @@
 
 namespace blink {
 
+void Hyphenation::Initialize(const AtomicString& locale) {
+  // TODO(crbug.com/1318385): How to control hyphenating capitalized words is
+  // still under discussion. https://github.com/w3c/csswg-drafts/issues/5157
+  hyphenate_capitalized_word_ = !locale.StartsWithIgnoringASCIICase("en");
+}
+
 wtf_size_t Hyphenation::FirstHyphenLocation(const StringView& text,
                                             wtf_size_t after_index) const {
   Vector<wtf_size_t, 8> hyphen_locations = HyphenLocations(text);

@@ -36,6 +36,8 @@ class PLATFORM_EXPORT Hyphenation : public RefCounted<Hyphenation> {
   static const unsigned kMinimumSuffixLength = 2;
 
  protected:
+  void Initialize(const AtomicString& locale);
+
   bool ShouldHyphenateWord(const StringView& word) const {
     if (word.IsEmpty())
       return false;
