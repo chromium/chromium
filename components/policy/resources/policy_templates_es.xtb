@@ -590,6 +590,16 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1654087023995670109">Forzar el modo Invitados en el navegador</translation>
 <translation id="1655229863189977773">Establecer tamaño de caché de disco en bytes</translation>
 <translation id="165769015320654523">Concede permiso automáticamente a estos sitios para que se conecten a dispositivos HID con los IDs de proveedor y producto facilitados.</translation>
+<translation id="1661930501743720282">Esta política controla la visibilidad de los recorridos en la página del historial de Chrome.
+
+      Si se habilita esta política, los recorridos serán visibles en chrome://history/journeys.
+
+      Si se inhabilita esta política, los recorridos no serán visibles en chrome://history/journeys.
+
+      Si no se establece esta política, los recorridos serán visibles en chrome://history/journeys de forma predeterminada y los usuarios podrán cambiar la visibilidad de los recorridos.
+
+      Ten en cuenta que si la política <ph name="OPTIMIZATION_GUIDE_FETCHING_ENABLED_POLICY_NAME" /> se inhabilita y <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> se habilita o no se establece, los recorridos seguirán estando disponibles en chrome://history/journeys, pero es posible que no aparezcan en el omnibox y que sean menos relevantes para el usuario.
+      </translation>
 <translation id="166427968280387991">Servidor proxy</translation>
 <translation id="1669584285557771729">Si se asigna un valor a esta política, permite controlar el tipo de lupa que se habilita.
 

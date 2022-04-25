@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
 <translation id="1113173431709655881">ကင်မရာမုဒ်</translation>
+<translation id="1153190633558910465">အကွက်ပိတ်ရန်</translation>
 <translation id="1175958423215084756">လင့်ခ်တွေ့ရှိသည်။ <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">၉၀ ဒီဂရီ နာရီလက်တံအတိုင်း လှည့်ရန်</translation>
 <translation id="1276998909102132017">ပြခန်းပုံများ</translation>
 <translation id="1300209025925956156">သင့်မှတ်တမ်းဖိုင်ကို စကင်ဖတ်ခြင်း</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />။ ကြည့်ရန် Search + ‘ဘယ်ညွှန်မြား’ နှိပ်ပါ။</translation>
+<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">ပရင့်</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> ကို ပလတ်ဖြုတ်ထားသည်။</translation>
 <translation id="1473110567575736769">၃ စက္ကန့် အချိန်တိုင်းစက်</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">တိုင်မာကြာချိန်</translation>
 <translation id="2050339315714019657">ဒေါင်လိုက်</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> ကို ရွေးထားသည်</translation>
+<translation id="2134029355740465625">ဗီဒီယို ဆက်တင်များ</translation>
 <translation id="2144806332417375165">စိတ်ကြိုက် ဗီဒီယို သတ်မှတ်ချက်များ</translation>
 <translation id="2175927920773552910">QR ကုဒ်</translation>
 <translation id="2271433936731426666">အရွယ်အစားအပြည့် ဗီဒီယိုလျှပ်တစ်ပြက်ရိုက်ချက် ဖွင့်ရန်</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">အနောက်ကင်မရာ</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />s</translation>
 <translation id="2761536921376153655">ရှာဖွေမှုပုံစံ</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">မှန်အစမ်းကြည့်ရန်</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ကို ပလတ်တပ်ထားသည်။</translation>
 <translation id="2968794441791257519">ကင်မရာဖြင့်ရိုက်ကူးထားသော ဓာတ်ပုံနှင့် ဗီဒီယိုများကို 'ဒေါင်းလုဒ်များ' ဖိုင်တွဲသို့ ရွှေ့ပါမည်။ ၎င်းတို့ကို Files ထဲတွင် ဝင်သုံးနိုင်ပါသည်။
 
@@ -52,6 +57,8 @@
 <translation id="3240426699337459095">လင့်ခ်ကူးယူပြီးပါပြီ</translation>
 <translation id="3259149966178251584">ကင်မရာ ပုံရိပ်ပြတ်သားကိန်း</translation>
 <translation id="3305962767867348165">ပြင်ဆင်ရန်</translation>
+<translation id="3354465018370944241">ဓာတ်ပုံဆက်တင်များ</translation>
+<translation id="3411958449466169012">အချိန်တိုင်းကိရိယာ ပိတ်ရန်</translation>
 <translation id="3448774564454087943">ဗီဒီယိုအလွန်တိုသဖြင့် သိမ်းမထားပါ</translation>
 <translation id="346539236881580388">ပြန်ရိုက်ရန်</translation>
 <translation id="3517926952904427380">ထောင်လိုက်ဓာတ်ပုံ ရိုက်၍မရပါ</translation>
@@ -63,9 +70,12 @@
 <translation id="3810838688059735925">ဗီဒီယို</translation>
 <translation id="3838931309141338733">ဘားကုဒ်ကို စကင်ဖတ်ရန်</translation>
 <translation id="3892148308691398805">စာသား မိတ္တူကူးရန်</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">ရိုက်ကူးမှု ခဏရပ်ရန်</translation>
 <translation id="4121305183798804752">စာရွက်စာတမ်းကို တွေ့ထားသည်</translation>
+<translation id="414641094616694804">ဤကင်မရာတွင် ပုံရိပ်ပြတ်သားကိန်းကို မပြောင်းနိုင်ပါ</translation>
 <translation id="4269820728363426813">လင့် လိပ်စာ ကူးယူရန်</translation>
+<translation id="4281620174117014503">အလယ်အလတ် ပုံရိပ်ပြတ်သားကိန်း</translation>
 <translation id="4329152592498422850">စတုရန်းမုဒ် ဓာတ်ပုံရိုက်ရန်အတွက် ပြောင်းရန်</translation>
 <translation id="4383571725254449280">စွမ်းဆောင်ရည် မှတ်တမ်းများကို ပုံနှိပ်ရန်</translation>
 <translation id="4445542136948522167">ဓာတ်ပုံရိုက်ခြင်း ရပ်တန့်ရန်</translation>
@@ -74,12 +84,15 @@
 <translation id="4628948037717959914">ဓာတ်ပုံ</translation>
 <translation id="4649291346448517080">ဖိုင်ကို သိမ်း၍မရပါ</translation>
 <translation id="4695379108709712600">အပေါ် ဦးတည်ချက်အတိုင်း ရွေ့နေသည်</translation>
+<translation id="4705093842003735294">ပုံရိပ်ပြတ်သားကိန်း အပြည့်</translation>
 <translation id="4890010094662541459">၃ x ၃</translation>
 <translation id="491895758387112773">ဗီဒီယိုရိုက်ကူးမှုကို စနစ်အမျိုးမျိုးတွင် ထုတ်လွှင့်ခြင်း</translation>
+<translation id="5034763830503483128">ဓာတ်ပုံ အချိုးအစား</translation>
 <translation id="5057360777601936059">သင့်ကင်မရာကို လောလောဆယ်မရနိုင်ပါ။ 
         ကင်မရာကို စနစ်တကျ ချိတ်ဆက်ထားခြင်းရှိမရှိ စစ်ပါ။</translation>
 <translation id="5163387177077603948">ဦးတည်ချက်အမှန်အတိုင်း ရွေ့နေသည်</translation>
 <translation id="520537883758714667">မှတ်တမ်းဖိုင်ကို ယခု စကင်ဖတ်နိုင်ပါပြီ</translation>
+<translation id="5235304959032763950">၁၆x၉</translation>
 <translation id="5266635337630551423">မှတ်တမ်း၏ ဘယ်ဘက်ထောင့်ထိပ်</translation>
 <translation id="5317780077021120954">သိမ်းရန်</translation>
 <translation id="5320594929574852403">ဘယ်ဘက် ဦးတည်ချက်အတိုင်း ရွေ့နေသည်</translation>
@@ -94,6 +107,7 @@
 <translation id="5916664084637901428">ဖွင့်ရန်</translation>
 <translation id="5975083100439434680">ဇူးမ်ဖြုတ်ရန်</translation>
 <translation id="5976160379964388480">အခြားများ</translation>
+<translation id="603973421174355542">HD အပြည့်</translation>
 <translation id="6073451960410192870">ကူးယူမှု ရပ်ရန်</translation>
 <translation id="6197807149213783179">မက်တာဒေတာကို သိမ်းရန်</translation>
 <translation id="6233780560267770709">အလျား ၃၊​ အနံ ၃</translation>
@@ -104,6 +118,7 @@
 သင့်အကြံပြုချက်သည် ရုပ်ပုံ (သို့) ဗီဒီယိုအရည်အသွေးနှင့် ပတ်သက်ပါက နမူနာဓာတ်ပုံ (သို့) ဗီဒီယိုကို ပူးတွဲပေးပြီး ဘာမှားနေသည်ကို ဖော်ပြပါ။ (ဥပမာ ဓာတ်ပုံ အလွန်မှောင်နေသည် (သို့) အရာဝတ္ထု ဆုံချက်မပြတ်ပါ။)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> မီဂါပစ်ဆယ်</translation>
 <translation id="6527303717912515753">မျှဝေရန်</translation>
+<translation id="6631515515009660915">မှန်ပိတ်ရန်</translation>
 <translation id="6652737148136672975">ထောင့်နေရာသို့ မြားကီးများဖြင့် ရွှေ့နိုင်သည်</translation>
 <translation id="667999046851023355">စာတမ်း</translation>
 <translation id="6681668084120808868">ဓါတ်ပုံရိုက်</translation>
@@ -114,6 +129,7 @@
 <translation id="698156982839284926">၃ စက္ကန့်</translation>
 <translation id="712848772518857951"><ph name="COUNT" /> ခုကို ဖယ်ရှားလိုသည်မှာ သေချာပါသလား။</translation>
 <translation id="7134221860976209830">၁၀ စက္ကန့် အချိန်တိုင်းစက်</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">ဖမ်းယူမှုပုံစံ</translation>
 <translation id="7243947652761655814">ဗီဒီယို ပုံရိပ်ပြတ်သားကိန်း</translation>
 <translation id="7337660886763914220">ဖိုင်စနစ် အမှားများ။</translation>
@@ -146,9 +162,11 @@
 <translation id="8815966864175525708">ဒေါင်လိုက် ဓာတ်ပုံရိုက်ရန်အတွက် ပြောင်းရန်</translation>
 <translation id="8828441885228359828">ဆက်လက်ရိုက်ကူးရန်</translation>
 <translation id="8870695351537079478">စတင်ရိုက်ကူး၍ မရပါ</translation>
+<translation id="8880167521484863515">၄x၃</translation>
 <translation id="8903921497873541725">ချဲ့ကြည့်ပါ</translation>
 <translation id="9045010116236796332">မှတ်တမ်းဖိုင်၏ ဘေးအစွန်းအားလုံးကို ဘောင်အတွင်းထားပါ</translation>
 <translation id="9045155556724273246">၁၀ စက္ကန့်</translation>
 <translation id="906331135292332864">ပုံကို စီမံဆောင်ရွက်နေသည်...</translation>
+<translation id="922762992951083513">မှန်ဖွင့်ရန်</translation>
 <translation id="945522503751344254">အကြံပြုချက် ပေးပို့မည်</translation>
 </translationbundle>

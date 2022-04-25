@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
 <translation id="1113173431709655881">Режим на камера</translation>
+<translation id="1153190633558910465">Исклучи мрежа</translation>
 <translation id="1175958423215084756">Препознаен е линк. <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">Ротирајте 90 степени во насока на стрелките на часовникот</translation>
 <translation id="1276998909102132017">Слики од галеријата</translation>
 <translation id="1300209025925956156">Скенирајте го документот</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Search + стрелка налево за пристап.</translation>
+<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">Печати</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> е исклучена.</translation>
 <translation id="1473110567575736769">Тајмер од 3 секунди</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">Времетраење на тајмерот</translation>
 <translation id="2050339315714019657">Портрет</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> е активна</translation>
+<translation id="2134029355740465625">Поставки за видео</translation>
 <translation id="2144806332417375165">Приспособени видеопараметри</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2271433936731426666">Овозможете слика на состојбата на видеото со целосна големина</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">Задна камера</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> сек.</translation>
 <translation id="2761536921376153655">Тип скенирање</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">Преглед на отсликување</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> е приклучена.</translation>
 <translation id="2968794441791257519">Фотографиите и видеата снимени со камерата ќе се преместат во папката „Преземања“. До нив може да пристапувате од „Датотеки“.
 
@@ -52,6 +57,8 @@
 <translation id="3240426699337459095">Врската е копирана</translation>
 <translation id="3259149966178251584">Резолуција на камерата</translation>
 <translation id="3305962767867348165">Поправи</translation>
+<translation id="3354465018370944241">Поставки за фотографија</translation>
+<translation id="3411958449466169012">Исклучен тајмер</translation>
 <translation id="3448774564454087943">Видеото не се зачува бидејќи е прекратко</translation>
 <translation id="346539236881580388">Фотографирај пак</translation>
 <translation id="3517926952904427380">Не може да фотографира во портрет</translation>
@@ -63,9 +70,12 @@
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3838931309141338733">Скенирајте го бар-кодот</translation>
 <translation id="3892148308691398805">Копирај текст</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Паузирај го снимањето</translation>
 <translation id="4121305183798804752">Откриен е документ</translation>
+<translation id="414641094616694804">Камерава не може да ја промени резолуцијата</translation>
 <translation id="4269820728363426813">Копирај ја адресата на линкот</translation>
+<translation id="4281620174117014503">Резолуција на аудиовизуелни содржини</translation>
 <translation id="4329152592498422850">Префрли на фотографирање во квадратна форма</translation>
 <translation id="4383571725254449280">Евиденција за изведба на печатењето</translation>
 <translation id="4445542136948522167">Сопри го фотографирањето</translation>
@@ -74,12 +84,15 @@
 <translation id="4628948037717959914">Фотографија</translation>
 <translation id="4649291346448517080">Не може да се зачува датотеката</translation>
 <translation id="4695379108709712600">Се преместува нагоре</translation>
+<translation id="4705093842003735294">Полна резолуција</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Видеоснимање за мултипреноси</translation>
+<translation id="5034763830503483128">Сооднос на фотографија</translation>
 <translation id="5057360777601936059">Камерата е недостапна во моментов.
         Проверете дали камерата е правилно поврзана.</translation>
 <translation id="5163387177077603948">Се преместува надесно</translation>
 <translation id="520537883758714667">Отсега е достапно скенирање документи</translation>
+<translation id="5235304959032763950">16 на 9</translation>
 <translation id="5266635337630551423">Горен лев агол на документот</translation>
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5320594929574852403">Се преместува налево</translation>
@@ -94,6 +107,7 @@
 <translation id="5916664084637901428">Вклучено</translation>
 <translation id="5975083100439434680">Одзумирај</translation>
 <translation id="5976160379964388480">Други</translation>
+<translation id="603973421174355542">Full HD</translation>
 <translation id="6073451960410192870">Сопри со снимање</translation>
 <translation id="6197807149213783179">Зачувувај метаподатоци</translation>
 <translation id="6233780560267770709">3 на 3</translation>
@@ -104,6 +118,7 @@
 Ако повратните информации се за квалитетот на сликата или видеото, прикачете пример од фотографија или видео и опишете што не е во ред. (На пример, фотографијата е претемна или предметот не е во фокус.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" /> x <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> мегапиксели</translation>
 <translation id="6527303717912515753">Сподели</translation>
+<translation id="6631515515009660915">Исклучено е отсликување</translation>
 <translation id="6652737148136672975">Поместете ја положбата на аголот со копчињата со стрелки</translation>
 <translation id="667999046851023355">Документ</translation>
 <translation id="6681668084120808868">Фотографирај</translation>
@@ -114,6 +129,7 @@
 <translation id="698156982839284926">3 секунди</translation>
 <translation id="712848772518857951">Дали навистина сакате да отстраните <ph name="COUNT" /> ставки?</translation>
 <translation id="7134221860976209830">Тајмер од 10 секунди</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Тип снимка</translation>
 <translation id="7243947652761655814">Видеорезолуција</translation>
 <translation id="7337660886763914220">Грешки во системот со датотеки.</translation>
@@ -146,9 +162,11 @@
 <translation id="8815966864175525708">Префрли за фотографирање во портрет</translation>
 <translation id="8828441885228359828">Продолжи со снимање</translation>
 <translation id="8870695351537079478">Не може да се започне со снимање</translation>
+<translation id="8880167521484863515">4 на 3</translation>
 <translation id="8903921497873541725">Зумирај</translation>
 <translation id="9045010116236796332">Поставете ги сите рабови на документот во кадарот</translation>
 <translation id="9045155556724273246">10 секунди</translation>
 <translation id="906331135292332864">Сликата се обработува…</translation>
+<translation id="922762992951083513">Вклучено е отсликување</translation>
 <translation id="945522503751344254">Испратете повратни информации</translation>
 </translationbundle>

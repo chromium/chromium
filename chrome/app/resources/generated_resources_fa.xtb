@@ -134,6 +134,7 @@
 <translation id="1125550662859510761">‏‎<ph name="WIDTH" /> × <ph name="HEIGHT" />‎ به‌نظر می‌رسد (داخلی)</translation>
 <translation id="1126809382673880764">‏دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک از شما محافظت نمی‌کند. درصورت موجود بودن، همچنان ویژگی حفاظتی «مرور ایمن» را در سرویس‌های دیگر Google مثل Gmail و «جستجو» دریافت می‌کنید.</translation>
 <translation id="1128591060186966949">ویرایش موتور جستجو</translation>
+<translation id="1129420403709586868">مشاهده رسانه و عکس‌های تلفن</translation>
 <translation id="1129850422003387628">مدیریت برنامه‌ها</translation>
 <translation id="113050636487300043">نام و زمینه رنگی انتخاب کنید تا نمایه‌ها را از یکدیگر متمایز کنید</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - بخشی از گروه <ph name="GROUP_NAME" /></translation>
@@ -211,6 +212,7 @@
 <translation id="1195558154361252544">اعلان‌ها به‌طور خودکار برای همه سایت‌ها، به‌جز آن‌هایی که مجاز کرده‌اید، مسدود می‌شوند</translation>
 <translation id="1197088940767939838">نارنجی</translation>
 <translation id="1197199342062592414">بیایید شروع کنیم</translation>
+<translation id="11978075283960463">داده‌های ذخیره‌شده در برنامه: <ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">غیرفعال کردن</translation>
 <translation id="119944043368869598">پاک کردن همه</translation>
 <translation id="1199814941632954229">گواهینامه‌ها درحال به‌تأیید رسیدن برای این نمایه‌های دارای مجوز هستند</translation>
@@ -419,6 +421,7 @@
 <translation id="1414648216875402825">شما نسخه ناپایداری از <ph name="PRODUCT_NAME" /> را به‌روزرسانی می‌کنید که حاوی قابلیت‌های در حال توسعه است. خرابی‌ها و اشکال‌های غیرمنتظره‌ای رخ خواهد داد. لطفاُ با احتیاط ادامه دهید.</translation>
 <translation id="1415708812149920388">دسترسی برای خواندن محتوای بریده‌دان امکان‌پذیر نیست</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (شناسه برنامه افزودنی «<ph name="EXTENSION_ID" />») در این نوع جلسه مجاز نیست.</translation>
+<translation id="1418552618736477642">اعلان‌ها و برنامه‌ها</translation>
 <translation id="1418954524306642206">‏در سیستم فایل مرور کنید و PPD چاپگرتان را تعیین کنید</translation>
 <translation id="1420834118113404499">مجوزهای رسانه</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> جهت مجاز کردن مرتبط‌سازی</translation>
@@ -2035,6 +2038,7 @@
 <translation id="2897878306272793870">آیا می‌خواهید برگه‌های <ph name="TAB_COUNT" /> باز شوند؟</translation>
 <translation id="2900477968385519153">جستجوی صفحه‌نمایش با <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">فایل از قابلیت‌های پشتیبانی‌نشده استفاده می‌کند</translation>
+<translation id="2901348420151309559">عکس‌ها و برنامه‌های اخیر</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> نتوانست با این چاپگر ارتباط برقرار کند. مطمئن شوید چاپگر روشن است و دوباره امتحان کنید.</translation>
 <translation id="2902265136119311513">مرور به‌عنوان مهمان</translation>
 <translation id="2902312830803030883">کنش‌های بیشتر</translation>
@@ -2247,6 +2251,7 @@
 <translation id="3108931485517391283">دریافت نمی‌شود</translation>
 <translation id="3109724472072898302">جمع شده</translation>
 <translation id="311214366526552035">درهرصورت بارگیری شود</translation>
+<translation id="3112292765614504292">اندازه برنامه: <ph name="APP_SIZE" /></translation>
 <translation id="311394601889664316">به سایت‌ها اجازه داده نشود فایل‌ها یا پوشه‌های درون دستگاه را ویرایش کنند</translation>
 <translation id="3115147772012638511">منتظر حافظهٔ پنهان...</translation>
 <translation id="3115580024857770654">کوچک کردن همه موارد</translation>
@@ -2460,6 +2465,7 @@
 <translation id="3348038390189153836">دستگاه قابل حذف ردیابی شد</translation>
 <translation id="3348131053948466246">‏اموجی پیشنهاد شد. برای پیمایش کردن، کلید بالا یا پایین را فشار دهید و برای درج کردن، کلید Enter (ورود) را فشار دهید.</translation>
 <translation id="3349933790966648062">مصرف حافظه</translation>
+<translation id="335153035108712532">لازم نیست این گذرواژه را به‌خاطر بسپارید. این گذرواژه در <ph name="GOOGLE_PASSWORD_MANAGER" /> برای <ph name="EMAIL" /> ذخیره خواهد شد.</translation>
 <translation id="3354972872297836698">با دستگاه <ph name="DEVICE_NAME" /> مرتبط نشد، دستگاه را برای امتحان مجدد انتخاب کنید</translation>
 <translation id="3355936511340229503">خطای اتصال</translation>
 <translation id="3356469410714175391">(کارت مجازی فعال است)</translation>
@@ -3955,6 +3961,7 @@
 <translation id="4837128290434901661">‏به «جستجوی Google» تغییر می‌دهید؟</translation>
 <translation id="4837926214103741331">مجاز به استفاده از این دستگاه نیستید. لطفاً برای دریافت اجازه ورود به سیستم با مالک دستگاه تماس بگیرید.</translation>
 <translation id="4837952862063191349">برای باز کردن قفل و بازیابی داده‌های محلی‌تان، لطفاً گذرواژه <ph name="DEVICE_TYPE" /> قدیمی‌تان را وارد کنید.</translation>
+<translation id="4838170306476614339">مشاهده عکس‌ها، رسانه، و اعلان‌های تلفن</translation>
 <translation id="4838836835474292213">دسترسی برای خواندن محتوای بریده‌دان مجاز شد</translation>
 <translation id="4838907349371614303">گذرواژه به‌روزرسانی شد</translation>
 <translation id="4839303808932127586">ذ&amp;خیره فایل ویدیوی به‌عنوان...</translation>
@@ -4068,6 +4075,7 @@
 <translation id="4941074198479265146">‏سایت‌ها معمولاً برای ارائه ویژگی‌های مربوط به ایجاد و ویرایش موسیقی به دستگاه‌های MIDI متصل می‌شوند</translation>
 <translation id="4941246025622441835">هنگام ثبت‌نام دستگاه برای مدیریت سازمانی، از این درخواست دستگاه استفاده کنید:</translation>
 <translation id="4941627891654116707">اندازه قلم</translation>
+<translation id="4941963255146903244">مشاهده عکس‌ها، رسانه، و برنامه‌های تلفن</translation>
 <translation id="494286511941020793">راهنمای پیکربندی پراکسی</translation>
 <translation id="4943368462779413526">فوتبال</translation>
 <translation id="4943691134276646401">«<ph name="CHROME_EXTENSION_NAME" />» می‌خواهد به یک درگاه سریالی متصل شود</translation>
@@ -5927,6 +5935,7 @@
 <translation id="6813907279658683733">تمام صفحه</translation>
 <translation id="6817174620439930047">‏اگر سایتی می‌خواهد از پیام‌های انحصاری سیستم برای دسترسی به دستگاه‌های MIDI استفاده کند سؤال شود (توصیه می‌شود)</translation>
 <translation id="6818198425579322765">زبان صفحه موردنظر برای ترجمه</translation>
+<translation id="6818547713623251698">مشاهده عکس‌ها، رسانه، اعلان‌ها، و برنامه‌های تلفن</translation>
 <translation id="6818802132960437751">مجهز به محافظ دربرابر ویروس</translation>
 <translation id="6823174134746916417">کلیک با یک ضربه روی صفحه لمسی</translation>
 <translation id="6824564591481349393">کپی آدرس &amp;ایمیل</translation>
@@ -6836,6 +6845,7 @@
 <translation id="7721258531237831532">سازمانتان به نمایه نیاز دارد</translation>
 <translation id="7722040605881499779">فضای لازم برای به‌روزرسانی: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">برش</translation>
+<translation id="7726391492136714301">مشاهده اعلان‌ها و برنامه‌های تلفن</translation>
 <translation id="7728465250249629478">تغییر زبان دستگاه</translation>
 <translation id="7728570244950051353">صفحه قفل از حالت خواب</translation>
 <translation id="7728668285692163452">تغییر کانال بعداً اعمال خواهد شد</translation>
@@ -7166,6 +7176,7 @@
 <translation id="8037357227543935929">درخواست (پیش‌فرض)</translation>
 <translation id="803771048473350947">فایل</translation>
 <translation id="8041089156583427627">ارسال بازخورد</translation>
+<translation id="8041267120753677077">جاری‌سازی برنامه‌های تلفن</translation>
 <translation id="8042142357103597104">ماتی نوشتار</translation>
 <translation id="8042331986490021244">‏گذرواژه‌هایتان قبل‌از ذخیره شدن در «مدیر گذرواژه Google» در دستگاهتان رمزگذاری می‌شوند</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> پاسخ نمی‌دهد</translation>
@@ -7395,6 +7406,7 @@
 <translation id="825238165904109940">همیشه نشانی‌های وب کامل نشان داده شود</translation>
 <translation id="8252569384384439529">درحال بارگذاری…</translation>
 <translation id="8253198102038551905">روی «+» کلیک کنید تا مشخصات شبکه را دریافت کنید</translation>
+<translation id="8255212965098517578">عکس‌ها، اعلان‌ها، و برنامه‌های اخیر</translation>
 <translation id="8256319818471787266">سرزنده</translation>
 <translation id="8257950718085972371">ادامه مسدود کردن دسترسی به دوربین</translation>
 <translation id="8260864402787962391">ماوس</translation>

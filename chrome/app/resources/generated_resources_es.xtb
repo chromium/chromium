@@ -132,6 +132,7 @@
 <translation id="1125550662859510761">Resolución de <ph name="WIDTH" />x<ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1126809382673880764">No te protege frente a descargas, extensiones ni sitios web peligrosos. Seguirás disfrutando de protección con la función Navegación segura, si está disponible, en otros servicios de Google, como Gmail y la Búsqueda.</translation>
 <translation id="1128591060186966949">Editar motor de búsqueda</translation>
+<translation id="1129420403709586868">Consulta las fotos y el contenido multimedia de tu teléfono</translation>
 <translation id="1129850422003387628">Gestionar aplicaciones</translation>
 <translation id="113050636487300043">Elige un nombre y un tema de color para diferenciar entre perfiles</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" />: parte del grupo <ph name="GROUP_NAME" /></translation>
@@ -208,6 +209,7 @@
 <translation id="1195558154361252544">Las notificaciones se bloquean automáticamente en todos los sitios, excepto en los que las permitas.</translation>
 <translation id="1197088940767939838">Naranja</translation>
 <translation id="1197199342062592414">En marcha</translation>
+<translation id="11978075283960463">Datos almacenados en la aplicación: <ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">Desactivar</translation>
 <translation id="119944043368869598">Borrar todo</translation>
 <translation id="1199814941632954229">Se están aprovisionando certificados para estos perfiles de certificado</translation>
@@ -416,6 +418,7 @@
 <translation id="1414648216875402825">Vas a actualizar a una versión inestable de <ph name="PRODUCT_NAME" /> que incluye funciones que están en desarrollo. Se producirán fallos y errores inesperados. Utiliza esta versión con precaución.</translation>
 <translation id="1415708812149920388">Se ha denegado el acceso de lectura al portapapeles</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID de extensión "<ph name="EXTENSION_ID" />") no se puede utilizar en este tipo de sesión.</translation>
+<translation id="1418552618736477642">Notificaciones y aplicaciones</translation>
 <translation id="1418954524306642206">Navega y selecciona el archivo PPD de tu impresora</translation>
 <translation id="1420834118113404499">Licencias de contenido multimedia</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> para permitir la vinculación</translation>
@@ -1983,6 +1986,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2897878306272793870">¿Seguro que quieres abrir <ph name="TAB_COUNT" /> pestañas?</translation>
 <translation id="2900477968385519153">Buscar en la pantalla con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">El archivo utiliza funciones no admitidas</translation>
+<translation id="2901348420151309559">Fotos y aplicaciones recientes</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> no ha podido establecer comunicación con la impresora. Comprueba que la impresora esté conectada e inténtalo de nuevo.</translation>
 <translation id="2902265136119311513">Navegar como invitado</translation>
 <translation id="2902312830803030883">Más acciones</translation>
@@ -2195,6 +2199,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3108931485517391283">Error al recibir</translation>
 <translation id="3109724472072898302">Contraído</translation>
 <translation id="311214366526552035">Descargar de todos modos</translation>
+<translation id="3112292765614504292">Tamaño de la aplicación: <ph name="APP_SIZE" /></translation>
 <translation id="311394601889664316">No permitir que los sitios editen archivos ni carpetas de tu dispositivo</translation>
 <translation id="3115147772012638511">Esperando caché...</translation>
 <translation id="3115580024857770654">Ocultar todo</translation>
@@ -2404,6 +2409,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3348038390189153836">Se ha detectado un dispositivo extraíble.</translation>
 <translation id="3348131053948466246">Emoji sugerido. Pulsa arriba o abajo para desplazarte, e Intro para insertarlo.</translation>
 <translation id="3349933790966648062">Uso de memoria</translation>
+<translation id="335153035108712532">No tendrás que recordar esta contraseña. Se guardará en el <ph name="GOOGLE_PASSWORD_MANAGER" /> de <ph name="EMAIL" />.</translation>
 <translation id="3354972872297836698">No se ha podido emparejar con el dispositivo <ph name="DEVICE_NAME" />; selecciona el dispositivo para volver a intentarlo</translation>
 <translation id="3355936511340229503">Error de conexión</translation>
 <translation id="3356469410714175391">(Tarjeta virtual habilitada)</translation>
@@ -3891,6 +3897,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4837128290434901661">¿Cambiar de nuevo a la Búsqueda de Google?</translation>
 <translation id="4837926214103741331">No tienes autorización para utilizar este dispositivo. Ponte en contacto con su propietario para obtener permiso de inicio de sesión.</translation>
 <translation id="4837952862063191349">Para desbloquear y restaurar tus datos locales, introduce la antigua contraseña de tu <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4838170306476614339">Consulta las fotos, el contenido multimedia y las notificaciones de tu teléfono</translation>
 <translation id="4838836835474292213">Se ha permitido el acceso de lectura al portapapeles</translation>
 <translation id="4838907349371614303">Contraseña actualizada</translation>
 <translation id="4839303808932127586">Gu&amp;ardar vídeo como...</translation>
@@ -4004,6 +4011,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4941074198479265146">Los sitios se suelen conectar a dispositivos MIDI para usarlos en funciones como crear y editar música.</translation>
 <translation id="4941246025622441835">Utiliza esta solicitud de dispositivo al registrar el dispositivo para la administración empresarial:</translation>
 <translation id="4941627891654116707">Tamaño de fuente</translation>
+<translation id="4941963255146903244">Consulta las fotos, el contenido multimedia y las aplicaciones de tu teléfono</translation>
 <translation id="494286511941020793">Ayuda para la configuración de proxy</translation>
 <translation id="4943368462779413526">Balón de fútbol</translation>
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" solicita conectarse a un puerto serie</translation>
@@ -5855,6 +5863,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6813907279658683733">Toda la pantalla</translation>
 <translation id="6817174620439930047">Preguntar cuando un sitio web quiera utilizar mensajes exclusivos del sistema para acceder a los dispositivos MIDI (recomendado)</translation>
 <translation id="6818198425579322765">Idioma de la página que quieres traducir</translation>
+<translation id="6818547713623251698">Consulta las fotos, el contenido multimedia, las notificaciones y las aplicaciones de tu teléfono</translation>
 <translation id="6818802132960437751">Protección antivirus integrada</translation>
 <translation id="6823174134746916417">Tocar para hacer clic en el panel táctil</translation>
 <translation id="6824564591481349393">Copiar &amp;dirección de correo electrónico</translation>
@@ -6758,6 +6767,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7721258531237831532">Tu organización debe tener un perfil</translation>
 <translation id="7722040605881499779">Espacio necesario para la actualización: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">Cortar</translation>
+<translation id="7726391492136714301">Consulta las notificaciones y aplicaciones de tu teléfono</translation>
 <translation id="7728465250249629478">Cambiar idioma del dispositivo</translation>
 <translation id="7728570244950051353">Bloquear pantalla desde el modo de suspensión</translation>
 <translation id="7728668285692163452">El cambio del canal se aplicará más tarde</translation>
@@ -7088,6 +7098,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8037357227543935929">Preguntar (predeterminado)</translation>
 <translation id="803771048473350947">Archivo</translation>
 <translation id="8041089156583427627">Enviar</translation>
+<translation id="8041267120753677077">Emite aplicaciones de tu teléfono</translation>
 <translation id="8042142357103597104">Opacidad del texto</translation>
 <translation id="8042331986490021244">Tus contraseñas se cifran en tu dispositivo antes de guardarse en el gestor de contraseñas de Google</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> no responde.</translation>
@@ -7316,6 +7327,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="825238165904109940">Mostrar siempre URL completas</translation>
 <translation id="8252569384384439529">Subiendo...</translation>
 <translation id="8253198102038551905">Haz clic en + para consultar las propiedades de la red</translation>
+<translation id="8255212965098517578">Fotos, notificaciones y aplicaciones recientes</translation>
 <translation id="8256319818471787266">Perrito</translation>
 <translation id="8257950718085972371">Seguir bloqueando el acceso a la cámara</translation>
 <translation id="8260864402787962391">Ratón</translation>

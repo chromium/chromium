@@ -80,6 +80,7 @@
 <translation id="1312604459020188865">Јачина на сигналот: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Секогаш прикажувај ја полицата</translation>
 <translation id="1316811122439383437">Tote: неодамнешни снимања на екранот, преземања и закачени датотеки</translation>
+<translation id="132346741904777634">Камерата е поставена во горниот лев агол. Конфликт со површината на системот.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> е поврзан</translation>
 <translation id="1341651618736211726">Прелевање</translation>
 <translation id="1346748346194534595">Надесно</translation>
@@ -163,6 +164,7 @@
 <translation id="1885785240814121742">Отклучи со отпечаток</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> не поддржува <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Резолуцијата е променета на <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Кликнете „Потврди“ за да ги задржите промените. Претходната поставка ќе се врати за <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1915307458270490472">Спушти</translation>
+<translation id="1918022425394817322">Камерата е поставена во горниот десен агол</translation>
 <translation id="1919743966458266018">Кратенката за отворање на управникот со задачи се промени. Користете <ph name="NEW_SHORTCUT" /> наместо <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Автоматско кликнување</translation>
 <translation id="1928739107511554905">За да го добиете ажурирањето, користете го екранот на допир за да го рестартирате Chromebook додека тастатурата е прикачена.</translation>
@@ -560,6 +562,7 @@
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> е преместена во папката <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Не е достапно</translation>
 <translation id="4303223480529385476">Прошири ја статусната област</translation>
+<translation id="4312840429157639164">Камерата е поставена во горниот десен агол. Конфликт со површината на системот.</translation>
 <translation id="4316910396681052118">СИТЕ АПЛИКАЦИИ</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Ја притиснавте кратенката од тастатура за висок контраст. Дали сакате да ја вклучите?</translation>
@@ -901,6 +904,7 @@
 <translation id="649452524636452238">PIN-код на паметна картичка</translation>
 <translation id="6495400115277918834">Започна „Слика во слика“, притиснете Alt + Shift + V за да фокусирате</translation>
 <translation id="6501401484702599040">Екранот се емитува на <ph name="RECEIVER_NAME" /></translation>
+<translation id="6515727200518652613">Врската со камерата се изгуби, се прави обид за повторно поврзување.</translation>
 <translation id="6520517963145875092">Изберете прозорец за да сликате</translation>
 <translation id="652139407789908527">Вашиот екран ќе остане затемнет подолго од вообичаено (до една минута) при ова ажурирање. Не притискајте го копчето за вклучување додека ажурирањето е во тек.</translation>
 <translation id="6528179044667508675">Не вознем.</translation>
@@ -919,6 +923,7 @@
 <translation id="6578407462441924264">Неименувана</translation>
 <translation id="6585808820553845416">Сесијата ќе заврши во <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597278316891651699">Камерата е поставена во долниот лев агол. Конфликт со површината на системот.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, управувана од администраторот</translation>
 <translation id="6612802754306526077">Избран е режимот на снимање на екранот</translation>
 <translation id="6614169507485700968">Вклучен е екранот за приватност</translation>
@@ -956,6 +961,7 @@
 <translation id="6801878137098616817">Изменето неодамна</translation>
 <translation id="6803622936009808957">Не можеа да се отсликаат екрани затоа што не се пронајдени поддржани резолуции. Наместо тоа, влеговме во проширен десктоп.</translation>
 <translation id="6818242057446442178">Назад за еден збор</translation>
+<translation id="6819327813400217281">Камерата е поставена во долниот лев агол</translation>
 <translation id="6820676911989879663">Направете пауза!</translation>
 <translation id="6827049576281411231">Затворете ја таблата со настани</translation>
 <translation id="6836499262298959512">Опасна датотека</translation>
@@ -984,6 +990,7 @@
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6981982820502123353">Пристапност</translation>
 <translation id="698231206551913481">Сите датотеки и локални податоци што се поврзани со корисников трајно ќе се избришат по неговото отстранување.</translation>
+<translation id="7005239792648594238">Отворете апликација за да започнете</translation>
 <translation id="7007983414944123363">Не може да се потврди PIN-кодот или лозинката. Обидете се повторно.</translation>
 <translation id="7014684956566476813">Поврзано со уред именуван „<ph name="DEVICE_NAME" />“</translation>
 <translation id="7015766095477679451">Вратете се во <ph name="COME_BACK_TIME" />.</translation>
@@ -998,6 +1005,7 @@
 <translation id="7045595904618419789">Стартувај ја лупата</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> се исклучи</translation>
 <translation id="7055910611768509537">Пенкалото не е користено подолго од една седмица</translation>
+<translation id="7061457967428964661">Преглед на камерата, притиснете Control + копчињата за стрелки за да го преместите прегледот во друг агол</translation>
 <translation id="7066646422045619941">Вашиот администратор ја оневозможил оваа мрежа</translation>
 <translation id="7067196344162293536">Автоматско ротирање</translation>
 <translation id="7068360136237591149">Отвори датотеки</translation>
@@ -1018,6 +1026,7 @@
 <translation id="718361511487535372">Отворете во „Календар на Google“</translation>
 <translation id="7188494361780961876">Менито е преместено во горниот лев агол на екранот.</translation>
 <translation id="7189412385142492784">Колку е оддалечена Венера</translation>
+<translation id="7198435252016571249">Камерата е поставена во долниот десен агол. Конфликт со површината на системот.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Треба да го рестартирате овој Chromebook за да се примени ажурирањето. Ова може да потрае 1 минута.</translation>
 <translation id="7256634071279256947">Заден микрофон</translation>
 <translation id="7258828758145722155">Изменето вчера</translation>
@@ -1082,9 +1091,11 @@
 <translation id="7593891976182323525">Search или Shift</translation>
 <translation id="7600875258240007829">Видете ги сите известувања</translation>
 <translation id="7607002721634913082">Паузирано</translation>
+<translation id="7611213136657090146">Камерата е поврзана повторно.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">Пенкало за означување</translation>
 <translation id="7633755430369750696">Прикажи поставки за „Споделување во близина“.</translation>
+<translation id="7634648064048557203">Камерата е поставена во долниот десен агол</translation>
 <translation id="7641938616688887143">Снимајте</translation>
 <translation id="7642647758716480637">Отвори ги поставките за <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (сопственик)</translation>
@@ -1097,6 +1108,7 @@
 <translation id="7662283695561029522">Допрете за конфигурирање</translation>
 <translation id="7670953955701272011">Отворете го датумов во „Календарот на Google“</translation>
 <translation id="7671610481353807627">Апликациите се подредени по боја</translation>
+<translation id="7684531502177797067">Влезот на камерата е поставен на <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Додајте нова мобилна мрежа</translation>
 <translation id="7720410380936703141">ОБИДЕТЕ СЕ ПОВТОРНО</translation>
@@ -1320,6 +1332,7 @@
 <translation id="9077404278023321866">Шаблони</translation>
 <translation id="9077515519330855811">Контроли за аудиовизуелни содржини. Сега е пуштено <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
+<translation id="9080073830732419341">Камерата е поставена во горниот лев агол</translation>
 <translation id="9080132581049224423">Повлечете нагоре за да појдете на почетен екран</translation>
 <translation id="9080206825613744995">Се користи микрофонот.</translation>
 <translation id="9084606467167974638">Промени ја позицијата на менито</translation>

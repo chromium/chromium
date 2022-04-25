@@ -136,6 +136,7 @@ Kodet e besimit përmirësojnë privatësinë në ueb dhe nuk mund të përdoren
 <translation id="1697284962337958118">Shto në</translation>
 <translation id="1702543251015153180">Të ndryshohen cilësimet e temës së errët?</translation>
 <translation id="1702907158640575240">Shfletues i menaxhuar</translation>
+<translation id="1710099199314114079">Ndërro ose mbyll skeda</translation>
 <translation id="1718835860248848330">Ora e fundit</translation>
 <translation id="1724977129262658800">Shkyçe për të modifikuar fjalëkalimin tënd</translation>
 <translation id="1726477445370128854">Mund të shfletosh dhe të kërkosh më shpejt kur Chrome ngarkon paraprakisht faqet që mendon se mund të vizitosh</translation>
@@ -946,6 +947,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6324997754869598316">(Gabim <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Ndaje nëpërmjet <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Enkriptimi</translation>
+<translation id="6340910702212418132"><ph name="BEGIN_NEW" />E re:<ph name="END_NEW" /> Menaxheri i fjalëkalimeve</translation>
 <translation id="6341580099087024258">Pyet ku të ruhen skedarët</translation>
 <translation id="6342069812937806050">Pikërisht tani</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> tjetër}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> të tjera}}</translation>
