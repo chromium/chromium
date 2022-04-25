@@ -259,8 +259,8 @@ class DemoSetupTestBase : public OobeBaseTest {
   // test environment.
   void SetFakeTimeForMultiTapDetector(base::Time fake_time) {
     const std::string query =
-        base::StrCat({"MultiTapDetector.FAKE_TIME_FOR_TESTS = new Date('",
-                      base::TimeToISO8601(fake_time), "');"});
+        base::StrCat({"MultiTapDetector.setFakeTimeForTests(new Date('",
+                      base::TimeToISO8601(fake_time), "'));"});
     test::ExecuteOobeJS(query);
   }
 
