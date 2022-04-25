@@ -1486,6 +1486,13 @@ void HttpNetworkTransaction::GenerateNetworkErrorLoggingReport(int rv) {
   details.user_agent = request_user_agent_;
   if (!remote_endpoint_.address().empty()) {
     details.server_ip = remote_endpoint_.address();
+  } else if (!connection_attempts_.empty()) {
+    // When we failed to connect to the server, `remote_endpoint_` is not set.
+    // In such case, we use the last endpoint address of `connection_attempts_`
+    // for the NEL report. This address information is important for the
+    // downgrade step to protect against port scan attack.
+    // https://www.w3.org/TR/network-error-logging/#generate-a-network-error-report
+    details.server_ip = connection_attempts_.back().endpoint.address();
   } else {
     details.server_ip = IPAddress();
   }

@@ -20330,16 +20330,14 @@ TEST_F(HttpNetworkTransactionNetworkErrorLoggingTest, CreateReportSuccess) {
 }
 
 TEST_F(HttpNetworkTransactionNetworkErrorLoggingTest,
-       CreateReportErrorAfterStart) {
+       CreateReportDNSErrorAfterStartSync) {
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   auto trans =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
 
-  MockConnect mock_connect(SYNCHRONOUS, ERR_NAME_NOT_RESOLVED);
-  StaticSocketDataProvider data;
-  data.set_connect_data(mock_connect);
-  session_deps_.socket_factory->AddSocketDataProvider(&data);
-
+  session_deps_.host_resolver->set_synchronous_mode(true);
+  session_deps_.host_resolver->rules()->AddRule(GURL(url_).host(),
+                                                ERR_NAME_NOT_RESOLVED);
   TestCompletionCallback callback;
 
   int rv = trans->Start(&request_, callback.callback(), NetLogWithSource());
@@ -20352,18 +20350,15 @@ TEST_F(HttpNetworkTransactionNetworkErrorLoggingTest,
               IPAddress() /* server_ip */);
 }
 
-// Same as above except the error is ASYNC
 TEST_F(HttpNetworkTransactionNetworkErrorLoggingTest,
-       CreateReportErrorAfterStartAsync) {
+       CreateReportDNSErrorAfterStartAsync) {
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   auto trans =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
 
-  MockConnect mock_connect(ASYNC, ERR_NAME_NOT_RESOLVED);
-  StaticSocketDataProvider data;
-  data.set_connect_data(mock_connect);
-  session_deps_.socket_factory->AddSocketDataProvider(&data);
-
+  session_deps_.host_resolver->set_synchronous_mode(false);
+  session_deps_.host_resolver->rules()->AddRule(GURL(url_).host(),
+                                                ERR_NAME_NOT_RESOLVED);
   TestCompletionCallback callback;
 
   int rv = trans->Start(&request_, callback.callback(), NetLogWithSource());
@@ -20374,6 +20369,53 @@ TEST_F(HttpNetworkTransactionNetworkErrorLoggingTest,
   ASSERT_EQ(1u, network_error_logging_service()->errors().size());
   CheckReport(0 /* index */, 0 /* status_code */, ERR_NAME_NOT_RESOLVED,
               IPAddress() /* server_ip */);
+}
+
+TEST_F(HttpNetworkTransactionNetworkErrorLoggingTest,
+       CreateReportErrorAfterStart) {
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+  auto trans =
+      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
+
+  MockConnect mock_connect(SYNCHRONOUS, ERR_CONNECTION_REFUSED);
+  StaticSocketDataProvider data;
+  data.set_connect_data(mock_connect);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  TestCompletionCallback callback;
+
+  int rv = trans->Start(&request_, callback.callback(), NetLogWithSource());
+  EXPECT_THAT(callback.GetResult(rv), IsError(ERR_CONNECTION_REFUSED));
+
+  trans.reset();
+
+  ASSERT_EQ(1u, network_error_logging_service()->errors().size());
+  CheckReport(0 /* index */, 0 /* status_code */, ERR_CONNECTION_REFUSED,
+              IPAddress::IPv4Localhost() /* server_ip */);
+}
+
+// Same as above except the error is ASYNC
+TEST_F(HttpNetworkTransactionNetworkErrorLoggingTest,
+       CreateReportErrorAfterStartAsync) {
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+  auto trans =
+      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
+
+  MockConnect mock_connect(ASYNC, ERR_CONNECTION_REFUSED);
+  StaticSocketDataProvider data;
+  data.set_connect_data(mock_connect);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  TestCompletionCallback callback;
+
+  int rv = trans->Start(&request_, callback.callback(), NetLogWithSource());
+  EXPECT_THAT(callback.GetResult(rv), IsError(ERR_CONNECTION_REFUSED));
+
+  trans.reset();
+
+  ASSERT_EQ(1u, network_error_logging_service()->errors().size());
+  CheckReport(0 /* index */, 0 /* status_code */, ERR_CONNECTION_REFUSED,
+              IPAddress::IPv4Localhost() /* server_ip */);
 }
 
 TEST_F(HttpNetworkTransactionNetworkErrorLoggingTest,
