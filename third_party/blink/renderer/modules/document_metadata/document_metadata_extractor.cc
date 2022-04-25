@@ -65,90 +65,97 @@ bool IsSupportedType(AtomicString type) {
   return type && elements.Contains(type);
 }
 
-void ExtractEntity(const JSONObject&, Entity&, int recursionLevel);
+void ExtractEntity(const JSONObject&, int recursion_level, Entity&);
 
 bool ParseRepeatedValue(const JSONArray& arr,
-                        Values& values,
-                        int recursionLevel) {
+                        int recursion_level,
+                        ValuesPtr& values) {
   if (arr.size() < 1) {
     return false;
   }
 
   const JSONValue::ValueType type = arr.at(0)->GetType();
   switch (type) {
+    case JSONValue::ValueType::kTypeNull:
+      return false;
     case JSONValue::ValueType::kTypeBoolean:
-      values.set_bool_values(Vector<bool>());
+      values = Values::NewBoolValues({});
       break;
     case JSONValue::ValueType::kTypeInteger:
-      values.set_long_values(Vector<int64_t>());
+      values = Values::NewLongValues({});
       break;
+    // App Indexing doesn't support double type, so just encode its decimal
+    // value as a string instead.
     case JSONValue::ValueType::kTypeDouble:
-      // App Indexing doesn't support double type, so just encode its decimal
-      // value as a string instead.
-      values.set_string_values(Vector<String>());
-      break;
     case JSONValue::ValueType::kTypeString:
-      values.set_string_values(Vector<String>());
+      values = Values::NewStringValues({});
       break;
     case JSONValue::ValueType::kTypeObject:
-      if (recursionLevel + 1 >= kMaxDepth) {
+      if (recursion_level + 1 >= kMaxDepth) {
         return false;
       }
-      values.set_entity_values(Vector<EntityPtr>());
+      values = Values::NewEntityValues({});
       break;
     case JSONArray::ValueType::kTypeArray:
       // App Indexing doesn't support nested arrays.
       return false;
-    default:
-      break;
   }
-  for (wtf_size_t j = 0; j < std::min(arr.size(), kMaxRepeatedSize); ++j) {
-    const JSONValue* innerVal = arr.at(j);
-    if (innerVal->GetType() != type) {
+
+  const wtf_size_t arr_size = std::min(arr.size(), kMaxRepeatedSize);
+  for (wtf_size_t i = 0; i < arr_size; ++i) {
+    const JSONValue* const element = arr.at(i);
+    if (element->GetType() != type) {
       // App Indexing doesn't support mixed types. If there are mixed
       // types in the parsed object, we will drop the property.
       return false;
     }
-    switch (innerVal->GetType()) {
+    switch (type) {
       case JSONValue::ValueType::kTypeBoolean: {
         bool v;
-        innerVal->AsBoolean(&v);
-        values.get_bool_values().push_back(v);
-      } break;
+        element->AsBoolean(&v);
+        values->get_bool_values().push_back(v);
+        continue;
+      }
       case JSONValue::ValueType::kTypeInteger: {
         int v;
-        innerVal->AsInteger(&v);
-        values.get_long_values().push_back(v);
-      } break;
+        element->AsInteger(&v);
+        values->get_long_values().push_back(v);
+        continue;
+      }
       case JSONValue::ValueType::kTypeDouble: {
         // App Indexing doesn't support double type, so just encode its decimal
         // value as a string instead.
         double v;
-        innerVal->AsDouble(&v);
+        element->AsDouble(&v);
         String s = String::Number(v);
         s.Truncate(kMaxStringLength);
-        values.get_string_values().push_back(s);
-      } break;
+        values->get_string_values().push_back(s);
+        continue;
+      }
       case JSONValue::ValueType::kTypeString: {
         String v;
-        innerVal->AsString(&v);
+        element->AsString(&v);
         v.Truncate(kMaxStringLength);
-        values.get_string_values().push_back(v);
-      } break;
-      case JSONValue::ValueType::kTypeObject:
-        values.get_entity_values().push_back(Entity::New());
-        ExtractEntity(*(JSONObject::Cast(innerVal)),
-                      *(values.get_entity_values().at(j)), recursionLevel + 1);
-        break;
-      default:
-        break;
+        values->get_string_values().push_back(v);
+        continue;
+      }
+      case JSONValue::ValueType::kTypeObject: {
+        auto entity = Entity::New();
+        ExtractEntity(*(JSONObject::Cast(element)), recursion_level + 1,
+                      *entity);
+        values->get_entity_values().push_back(std::move(entity));
+        continue;
+      }
+      case JSONValue::ValueType::kTypeNull:
+      case JSONValue::ValueType::kTypeArray:
+        CHECK(false);
     }
   }
   return true;
 }
 
-void ExtractEntity(const JSONObject& val, Entity& entity, int recursionLevel) {
-  if (recursionLevel >= kMaxDepth) {
+void ExtractEntity(const JSONObject& val, int recursion_level, Entity& entity) {
+  if (recursion_level >= kMaxDepth) {
     return;
   }
 
@@ -165,54 +172,52 @@ void ExtractEntity(const JSONObject& val, Entity& entity, int recursionLevel) {
     if (property->name == kJSONLDKeyType) {
       continue;
     }
-    property->values = Values::New();
 
-    bool addProperty = true;
+    bool add_property = true;
 
     switch (entry.second->GetType()) {
       case JSONValue::ValueType::kTypeBoolean: {
         bool v;
         val.GetBoolean(entry.first, &v);
-        property->values->set_bool_values({v});
+        property->values = Values::NewBoolValues({v});
       } break;
       case JSONValue::ValueType::kTypeInteger: {
         int v;
         val.GetInteger(entry.first, &v);
-        property->values->set_long_values({v});
+        property->values = Values::NewLongValues({v});
       } break;
       case JSONValue::ValueType::kTypeDouble: {
         double v;
         val.GetDouble(entry.first, &v);
         String s = String::Number(v);
         s.Truncate(kMaxStringLength);
-        property->values->set_string_values({s});
+        property->values = Values::NewStringValues({s});
       } break;
       case JSONValue::ValueType::kTypeString: {
         String v;
         val.GetString(entry.first, &v);
         v.Truncate(kMaxStringLength);
-        property->values->set_string_values({v});
+        property->values = Values::NewStringValues({v});
       } break;
       case JSONValue::ValueType::kTypeObject: {
-        if (recursionLevel + 1 >= kMaxDepth) {
-          addProperty = false;
+        if (recursion_level + 1 >= kMaxDepth) {
+          add_property = false;
           break;
         }
-        property->values->set_entity_values(Vector<EntityPtr>());
-        property->values->get_entity_values().push_back(Entity::New());
-
-        ExtractEntity(*(val.GetJSONObject(entry.first)),
-                      *(property->values->get_entity_values().at(0)),
-                      recursionLevel + 1);
+        Vector<EntityPtr> entities;
+        entities.push_back(Entity::New());
+        ExtractEntity(*(val.GetJSONObject(entry.first)), recursion_level + 1,
+                      *entities[0]);
+        property->values = Values::NewEntityValues(std::move(entities));
       } break;
       case JSONValue::ValueType::kTypeArray:
-        addProperty = ParseRepeatedValue(*(val.GetArray(entry.first)),
-                                         *(property->values), recursionLevel);
+        add_property = ParseRepeatedValue(*(val.GetArray(entry.first)),
+                                          recursion_level, property->values);
         break;
       default:
         break;
     }
-    if (addProperty)
+    if (add_property)
       entity.properties.push_back(std::move(property));
   }
 }
@@ -226,7 +231,7 @@ void ExtractTopLevelEntity(const JSONObject& val, Vector<EntityPtr>& entities) {
   if (!IsSupportedType(AtomicString(type))) {
     return;
   }
-  ExtractEntity(val, *entity, 0);
+  ExtractEntity(val, 0, *entity);
   entities.push_back(std::move(entity));
 }
 
