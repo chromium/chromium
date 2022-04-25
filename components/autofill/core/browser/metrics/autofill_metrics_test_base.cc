@@ -71,13 +71,13 @@ void AutofillMetricsBaseTest::SetUp() {
   browser_autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
       autofill_driver_.get(), &autofill_client_, personal_data_.get());
   auto external_delegate = std::make_unique<AutofillExternalDelegate>(
-      browser_autofill_manager_.get(), autofill_driver_.get());
+      &autofill_manager(), autofill_driver_.get());
   external_delegate_ = external_delegate.get();
-  browser_autofill_manager_->SetExternalDelegateForTest(
-      std::move(external_delegate));
+  autofill_manager().SetExternalDelegateForTest(std::move(external_delegate));
 
 #if !BUILDFLAG(IS_IOS)
-  browser_autofill_manager_->credit_card_access_manager()
+  autofill_manager()
+      .credit_card_access_manager()
       ->set_fido_authenticator_for_testing(
           std::make_unique<TestCreditCardFIDOAuthenticator>(
               autofill_driver_.get(), &autofill_client_));
@@ -99,7 +99,7 @@ void AutofillMetricsBaseTest::TearDown() {
 }
 
 void AutofillMetricsBaseTest::PurgeUKM() {
-  browser_autofill_manager_->Reset();
+  autofill_manager().Reset();
   test_ukm_recorder_->Purge();
   autofill_client_.InitializeUKMSources();
 }
@@ -135,7 +135,7 @@ void AutofillMetricsBaseTest::RecreateProfile(bool is_server) {
 
 void AutofillMetricsBaseTest::SetFidoEligibility(bool is_verifiable) {
   CreditCardAccessManager* access_manager =
-      browser_autofill_manager_->credit_card_access_manager();
+      autofill_manager().credit_card_access_manager();
 #if !BUILDFLAG(IS_IOS)
   static_cast<TestCreditCardFIDOAuthenticator*>(
       access_manager->GetOrCreateFIDOAuthenticator())
@@ -154,8 +154,8 @@ void AutofillMetricsBaseTest::OnDidGetRealPan(
     const std::string& real_pan,
     bool is_virtual_card) {
   payments::FullCardRequest* full_card_request =
-      browser_autofill_manager_->credit_card_access_manager_
-          ->GetOrCreateCVCAuthenticator()
+      autofill_manager()
+          .credit_card_access_manager_->GetOrCreateCVCAuthenticator()
           ->full_card_request_.get();
   DCHECK(full_card_request);
 
@@ -173,8 +173,8 @@ void AutofillMetricsBaseTest::OnDidGetRealPan(
 
 void AutofillMetricsBaseTest::OnDidGetRealPanWithNonHttpOkResponse() {
   payments::FullCardRequest* full_card_request =
-      browser_autofill_manager_->credit_card_access_manager_
-          ->GetOrCreateCVCAuthenticator()
+      autofill_manager()
+          .credit_card_access_manager_->GetOrCreateCVCAuthenticator()
           ->full_card_request_.get();
   DCHECK(full_card_request);
 
@@ -197,13 +197,13 @@ void AutofillMetricsBaseTest::OnCreditCardFetchingSuccessful(
                       : CreditCard::RecordType::MASKED_SERVER_CARD);
   credit_card_.SetNumber(real_pan);
 
-  browser_autofill_manager_->OnCreditCardFetched(
-      CreditCardFetchResult::kSuccess, &credit_card_, u"123");
+  autofill_manager().OnCreditCardFetched(CreditCardFetchResult::kSuccess,
+                                         &credit_card_, u"123");
 }
 
 void AutofillMetricsBaseTest::OnCreditCardFetchingFailed() {
-  browser_autofill_manager_->OnCreditCardFetched(
-      CreditCardFetchResult::kPermanentError, nullptr, u"");
+  autofill_manager().OnCreditCardFetched(CreditCardFetchResult::kPermanentError,
+                                         nullptr, u"");
 }
 
 void AutofillMetricsBaseTest::RecreateCreditCards(

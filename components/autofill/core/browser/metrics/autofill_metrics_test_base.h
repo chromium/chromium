@@ -74,6 +74,8 @@ class AutofillMetricsBaseTest : public testing::Test {
   // Purge recorded UKM metrics for running more tests.
   void PurgeUKM();
 
+  void CommitMetrics() { browser_autofill_manager_.reset(); }
+
   // Mocks a credit card fetching was completed. This mock starts from the
   // BrowserAutofillManager. Use these if your test does not depends on
   // OnDidGetRealPan but just need to mock the card fetching result (so that
@@ -81,6 +83,11 @@ class AutofillMetricsBaseTest : public testing::Test {
   void OnCreditCardFetchingSuccessful(const std::u16string& real_pan,
                                       bool is_virtual_card = false);
   void OnCreditCardFetchingFailed();
+
+  TestBrowserAutofillManager& autofill_manager() {
+    return static_cast<TestBrowserAutofillManager&>(
+        *browser_autofill_manager_.get());
+  }
 
   base::test::TaskEnvironment task_environment_;
   MockAutofillClient autofill_client_;
