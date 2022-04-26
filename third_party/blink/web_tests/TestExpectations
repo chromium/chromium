@@ -7725,3 +7725,7 @@ crbug.com/1319320 rootscroller/root-scroller-apply-filter-to-parent.html [ Failu
 
 # Sheriff 2022-04-25
 crbug.com/1319808 virtual/wbn-from-network/external/wpt/web-bundle/subresource-loading/script-reuse-web-bundle-resource.https.tentative.html [ Skip ]
+
+crbug.com/1267538 [ Linux ] http/tests/csspaint/border-color.html [ Failure Pass ]
+crbug.com/1267538 [ Mac ] http/tests/csspaint/border-color.html [ Failure Pass ]
+
