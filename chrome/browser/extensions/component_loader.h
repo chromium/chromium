@@ -191,7 +191,6 @@ class ComponentLoader {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void AddChromeApp();
   void AddFileManagerExtension();
-  void AddVideoPlayerExtension();
   void AddAudioPlayerExtension();
   void AddGalleryExtension();
   void AddImageLoaderExtension();

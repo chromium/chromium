@@ -1562,41 +1562,6 @@
     Artwork
   </message>
 
-<!-- Video Player -->
-  <message name="IDS_VIDEO_PLAYER_PLAY_THIS_COMPUTER" desc="In the video player app, message of menu item which is shown at the top of the list of Chromecasts. This menuitem is to play the video on this computer (locally), intead of on TVs with Chromecast.">
-    This computer
-  </message>
-  <message name="IDS_VIDEO_PLAYER_PLAYING_ON" desc="In the video player app, message is shown ahead of the name of the current chromecast which plays the video now. For example, if this message is 'Playing on' and the Chromecast name is 'Foocast', 'Playing on Foocast' is shown.">
-    Playing on
-  </message>
-  <message name="IDS_VIDEO_PLAYER_PLAY_ON" desc="In the video player app, message is shown above the list of cast devices. The user will select one of them to play the current video on selected device.">
-    Play on
-  </message>
-  <message name="IDS_VIDEO_PLAYER_VIDEO_FILE_UNSUPPORTED" desc="In the video player app, message informing that the video could not be played.">
-    This file could not be played.
-  </message>
-  <message name="IDS_VIDEO_PLAYER_VIDEO_FILE_UNSUPPORTED_FOR_CAST" desc="Error message which is shown when the video which an user tried to play is not supported by the current cast device.">
-    Sorry, this video is not supported by your cast device.
-  </message>
-  <message name="IDS_VIDEO_PLAYER_PLAYBACK_ERROR" desc="In the video player app, message informing that an error occurred while playing the movie.">
-    An error occurred. Click to restart from the beginning.
-  </message>
-  <message name="IDS_VIDEO_PLAYER_LOOPED_MODE" desc="In the video player app, message informing that the movie will be played in a loop.">
-    This video will keep playing until the cows come home.
-  </message>
-  <message name="IDS_VIDEO_PLAYER_FULL_SCREEN_BUTTON_LABEL" desc="Label for a button which is used to enter full screen mode in video player.">
-    Full screen
-  </message>
-  <message name="IDS_VIDEO_PLAYER_EXIT_FULL_SCREEN_BUTTON_LABEL" desc="Label for a button which is used to exit full screen mode in video player.">
-    Exit full screen
-  </message>
-  <message name="IDS_VIDEO_PLAYER_ENABLE_SUBTITLES_BUTTON_LABEL" desc="Label for a button which is used to enable subtitles in video player.">
-    Enable subtitles
-  </message>
-  <message name="IDS_VIDEO_PLAYER_DISABLE_SUBTITLES_BUTTON_LABEL" desc="Label for a button which is used to disable subtitles in video player.">
-    Disable subtitles
-  </message>
-
 <!-- Data Leak Prevention -->
   <message name="IDS_FILE_BROWSER_DLP_BLOCK_COPY_TOAST" desc="A toast informing the user that copying files is blocked by the administrator.">
     Pasting this file is blocked by your administrator

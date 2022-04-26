@@ -1324,14 +1324,6 @@ util.isSinglePartitionFormatEnabled = () => {
 };
 
 /**
- * Returns true if  flag is enabled.
- * @return {boolean}
- */
-util.isVideoPlayerJsModulesEnabled = () => {
-  return loadTimeData.getBoolean('VIDEO_PLAYER_JS_MODULES_ENABLED');
-};
-
-/**
  * Returns true if FilesExtractArchive flag is enabled.
  * @return {boolean}
  */
