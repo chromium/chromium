@@ -198,12 +198,13 @@ void FrameSequenceMetrics::Merge(
 
 bool FrameSequenceMetrics::HasEnoughDataForReporting() const {
   return impl_throughput_.frames_expected >= kMinFramesForThroughputMetric ||
-         main_throughput_.frames_expected >= kMinFramesForThroughputMetric;
+         main_throughput_.frames_expected >= kMinFramesForThroughputMetric ||
+         v2_.frames_expected >= kMinFramesForThroughputMetric;
 }
 
 bool FrameSequenceMetrics::HasDataLeftForReporting() const {
   return impl_throughput_.frames_expected > 0 ||
-         main_throughput_.frames_expected > 0;
+         main_throughput_.frames_expected > 0 || v2_.frames_expected > 0;
 }
 
 void FrameSequenceMetrics::AdoptTrace(FrameSequenceMetrics* adopt_from) {
