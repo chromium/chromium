@@ -77,6 +77,38 @@ TEST_F(StyleImageCacheTest, CustomPropertyURL) {
   EXPECT_EQ(initial_image, image_after_recalc);
 }
 
+TEST_F(StyleImageCacheTest, ComputedValueRelativePath) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #target1 { background-image: url(http://test.com/url.png) }
+      #target2 { background-image: url(url.png) }
+    </style>
+    <div id="target1"></div>
+    <div id="target2"></div>
+  )HTML");
+
+  Element* target1 = GetDocument().getElementById("target1");
+  Element* target2 = GetDocument().getElementById("target2");
+
+  // Resolves to the same absolute url. Can share StyleFetchedImage since the
+  // computed value is the absolute url.
+  EXPECT_EQ(target1->ComputedStyleRef().BackgroundLayers().GetImage(),
+            target2->ComputedStyleRef().BackgroundLayers().GetImage());
+
+  const CSSProperty& property =
+      CSSProperty::Get(CSSPropertyID::kBackgroundImage);
+  EXPECT_EQ(property
+                .CSSValueFromComputedStyle(target1->ComputedStyleRef(), nullptr,
+                                           false)
+                ->CssText(),
+            "url(\"http://test.com/url.png\")");
+  EXPECT_EQ(property
+                .CSSValueFromComputedStyle(target2->ComputedStyleRef(), nullptr,
+                                           false)
+                ->CssText(),
+            "url(\"http://test.com/url.png\")");
+}
+
 TEST_F(StyleImageCacheTest, WeakReferenceGC) {
   SetBodyInnerHTML(R"HTML(
     <style id="sheet">
