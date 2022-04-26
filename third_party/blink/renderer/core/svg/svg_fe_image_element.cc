@@ -49,10 +49,6 @@ SVGFEImageElement::SVGFEImageElement(Document& document)
 
 SVGFEImageElement::~SVGFEImageElement() = default;
 
-void SVGFEImageElement::Dispose() {
-  ClearImageResource();
-}
-
 void SVGFEImageElement::Trace(Visitor* visitor) const {
   visitor->Trace(preserve_aspect_ratio_);
   visitor->Trace(cached_image_);
@@ -93,6 +89,13 @@ void SVGFEImageElement::ClearImageResource() {
   if (!cached_image_)
     return;
   cached_image_->RemoveObserver(this);
+  cached_image_ = nullptr;
+}
+
+void SVGFEImageElement::Dispose() {
+  if (!cached_image_)
+    return;
+  cached_image_->DidRemoveObserver();
   cached_image_ = nullptr;
 }
 
