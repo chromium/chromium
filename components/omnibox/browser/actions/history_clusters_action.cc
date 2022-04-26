@@ -46,7 +46,7 @@ class HistoryClustersAction : public OmniboxAction {
                 base::EscapeQueryParamValue(query, /*use_plus=*/false)
                     .c_str()))) {
 #if BUILDFLAG(IS_ANDROID)
-    CreateOrUpdateJavaObject();
+    CreateOrUpdateJavaObject(query);
 #endif
   }
 
@@ -74,10 +74,11 @@ class HistoryClustersAction : public OmniboxAction {
     return j_omnibox_action_;
   }
 
-  void CreateOrUpdateJavaObject() {
-    j_omnibox_action_.Reset(BuildOmniboxPedal(
+  void CreateOrUpdateJavaObject(const std::string& query) {
+    j_omnibox_action_.Reset(BuildHistoryClustersAction(
         GetID(), strings_.hint, strings_.suggestion_contents,
-        strings_.accessibility_suffix, strings_.accessibility_hint, url_));
+        strings_.accessibility_suffix, strings_.accessibility_hint, url_,
+        query));
   }
 #endif
 

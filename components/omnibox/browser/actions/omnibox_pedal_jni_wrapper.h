@@ -13,4 +13,13 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxPedal(
     std::u16string accessibility_hint,
     GURL url);
 
+base::android::ScopedJavaGlobalRef<jobject> BuildHistoryClustersAction(
+    int id,
+    std::u16string hint,
+    std::u16string suggestion_contents,
+    std::u16string accessibility_suffix,
+    std::u16string accessibility_hint,
+    GURL url,
+    std::string query);
+
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_JNI_WRAPPER_H_
