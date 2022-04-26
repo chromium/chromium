@@ -124,7 +124,7 @@ const base::Feature kAutofillDisableFilling{"AutofillDisableFilling",
 // AutofillManager.
 // TODO(crbug.com/1215333): Remove the feature when the experiment is completed.
 const base::Feature kAutofillDisplaceRemovedForms{
-    "AutofillDisplaceRemovedForms", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AutofillDisplaceRemovedForms", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Kill switch for Autofill address import.
 const base::Feature kAutofillDisableAddressImport{
