@@ -17,6 +17,7 @@
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/crash/core/common/crash_key.h"
 #include "gpu/config/gpu_util.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -102,6 +103,9 @@ int CompareLexicalNumberStrings(
 bool StringMismatch(const std::string& input, const std::string& pattern) {
   if (input.empty() || pattern.empty())
     return false;
+  static crash_reporter::CrashKeyString<128> crash_key(
+      "StringMismatch::pattern");
+  crash_reporter::ScopedCrashKeyString scoped_crash_key(&crash_key, pattern);
   return !RE2::FullMatch(input, pattern);
 }
 
@@ -571,6 +575,10 @@ bool GpuControlList::Conditions::Contains(OsType target_os_type,
 bool GpuControlList::Entry::Contains(OsType target_os_type,
                                      const std::string& target_os_version,
                                      const GPUInfo& gpu_info) const {
+  static crash_reporter::CrashKeyString<8> crash_key(
+      "GpuControlList::Entry::id");
+  crash_reporter::ScopedCrashKeyString scoped_crash_key(
+      &crash_key, base::StringPrintf("%d", id));
   if (!conditions.Contains(target_os_type, target_os_version, gpu_info)) {
     return false;
   }
