@@ -243,28 +243,28 @@ void GetArrayAsVector(const std::string array[],
   }
 }
 
-// Builds a DictionaryValue from an array of the form {name1, value1, name2,
+// Builds a base::Value::Dict from an array of the form {name1, value1, name2,
 // value2, ...}. Values for the same key are grouped in a ListValue.
-std::unique_ptr<base::DictionaryValue> GetDictionaryFromArray(
+base::Value::Dict GetDictionaryFromArray(
     const std::vector<const std::string*>& array) {
   const size_t length = array.size();
   CHECK(length % 2 == 0);
 
-  std::unique_ptr<base::DictionaryValue> dictionary(new base::DictionaryValue);
+  base::Value::Dict dictionary;
   for (size_t i = 0; i < length; i += 2) {
     const std::string* name = array[i];
     const std::string* value = array[i+1];
-    if (base::Value* entry = dictionary->FindKey(*name)) {
+    if (base::Value* entry = dictionary.Find(*name)) {
       absl::optional<base::Value> entry_owned;
       switch (entry->type()) {
         case base::Value::Type::STRING: {
           // Replace the present string with a list.
           base::Value list(base::Value::Type::LIST);
           // No need to check again, we already verified the entry is there.
-          entry_owned = dictionary->ExtractKey(*name);
+          entry_owned = dictionary.Extract(*name);
           list.Append(std::move(*entry_owned));
           list.Append(*value);
-          dictionary->SetKey(*name, std::move(list));
+          dictionary.Set(*name, std::move(list));
           break;
         }
         case base::Value::Type::LIST:  // Just append to the list.
@@ -272,10 +272,10 @@ std::unique_ptr<base::DictionaryValue> GetDictionaryFromArray(
           break;
         default:
           NOTREACHED();  // We never put other Values here.
-          return nullptr;
+          return base::Value::Dict();
       }
     } else {
-      dictionary->SetStringPath(*name, *value);
+      dictionary.Set(*name, *value);
     }
   }
   return dictionary;
@@ -290,11 +290,9 @@ void MatchAndCheck(const std::vector<std::vector<const std::string*>>& tests,
                    const WebRequestInfo& request_info,
                    bool* result) {
   base::ListValue contains_headers;
-  for (size_t i = 0; i < tests.size(); ++i) {
-    std::unique_ptr<base::DictionaryValue> temp(
-        GetDictionaryFromArray(tests[i]));
-    ASSERT_TRUE(temp.get());
-    contains_headers.Append(std::move(temp));
+  for (const auto& test : tests) {
+    base::Value::Dict temp = GetDictionaryFromArray(test);
+    contains_headers.Append(base::Value(std::move(temp)));
   }
 
   std::string error;

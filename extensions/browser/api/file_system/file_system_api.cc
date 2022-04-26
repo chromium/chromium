@@ -359,15 +359,16 @@ void FileSystemEntryFunction::AddEntryToResult(const base::FilePath& path,
   bool success = result->GetList("entries", &entries);
   DCHECK(success);
 
-  std::unique_ptr<base::DictionaryValue> entry(new base::DictionaryValue());
-  entry->SetStringKey("fileSystemId", file_entry.filesystem_id);
-  entry->SetStringKey("baseName", file_entry.registered_name);
-  if (id_override.empty())
-    entry->SetStringKey("id", file_entry.id);
-  else
-    entry->SetStringKey("id", id_override);
-  entry->SetBoolKey("isDirectory", is_directory_);
-  entries->Append(std::move(entry));
+  base::Value::Dict entry;
+  entry.Set("fileSystemId", file_entry.filesystem_id);
+  entry.Set("baseName", file_entry.registered_name);
+  if (id_override.empty()) {
+    entry.Set("id", file_entry.id);
+  } else {
+    entry.Set("id", id_override);
+  }
+  entry.Set("isDirectory", is_directory_);
+  entries->Append(base::Value(std::move(entry)));
 }
 
 void FileSystemEntryFunction::HandleWritableFileError(

@@ -201,8 +201,7 @@ base::TimeDelta IdleManager::GetAutoLockDelay() const {
 }
 
 // static
-std::unique_ptr<base::Value> IdleManager::CreateIdleValue(
-    ui::IdleState idle_state) {
+base::Value IdleManager::CreateIdleValue(ui::IdleState idle_state) {
   const char* description;
 
   if (idle_state == ui::IDLE_STATE_ACTIVE) {
@@ -213,7 +212,7 @@ std::unique_ptr<base::Value> IdleManager::CreateIdleValue(
     description = keys::kStateLocked;
   }
 
-  return std::make_unique<base::Value>(description);
+  return base::Value(description);
 }
 
 void IdleManager::SetEventDelegateForTest(

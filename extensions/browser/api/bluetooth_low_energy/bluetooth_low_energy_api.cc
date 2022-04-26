@@ -737,11 +737,12 @@ void BluetoothLowEnergyGetDescriptorsFunction::DoWork() {
   // Manually construct the result instead of using
   // apibtle::GetDescriptors::Result::Create as it doesn't convert lists of
   // enums correctly.
-  std::unique_ptr<base::ListValue> result(new base::ListValue());
+  base::Value::List result;
   for (apibtle::Descriptor& descriptor : descriptor_list)
-    result->Append(apibtle::DescriptorToValue(&descriptor));
+    result.Append(base::Value::FromUniquePtrValue(
+        apibtle::DescriptorToValue(&descriptor)));
 
-  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+  Respond(OneArgument(base::Value(std::move(result))));
 }
 
 BluetoothLowEnergyReadCharacteristicValueFunction::

@@ -43,8 +43,7 @@ ExtensionFunction::ResponseAction IdleQueryStateFunction::Run() {
       IdleManagerFactory::GetForBrowserContext(browser_context())
           ->QueryState(threshold);
 
-  return RespondNow(OneArgument(
-      base::Value::FromUniquePtrValue(IdleManager::CreateIdleValue(state))));
+  return RespondNow(OneArgument(IdleManager::CreateIdleValue(state)));
 }
 
 void IdleQueryStateFunction::IdleStateCallback(ui::IdleState state) {

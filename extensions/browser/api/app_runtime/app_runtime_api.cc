@@ -71,7 +71,7 @@ void DispatchOnLaunchedEventImpl(
       ExtensionsBrowserClient::Get()->IsLoggedInAsPublicAccount());
 
   std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->Append(std::move(launch_data));
+  args->Append(base::Value::FromUniquePtrValue(std::move(launch_data)));
   auto event = std::make_unique<Event>(
       events::APP_RUNTIME_ON_LAUNCHED, app_runtime::OnLaunched::kEventName,
       std::move(*args).TakeListDeprecated(), context);

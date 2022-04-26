@@ -68,7 +68,7 @@ void AsyncApiFunction::AsyncWorkCompleted() {
 
 void AsyncApiFunction::SetResult(std::unique_ptr<base::Value> result) {
   results_ = std::make_unique<base::ListValue>();
-  results_->Append(std::move(result));
+  results_->Append(base::Value::FromUniquePtrValue(std::move(result)));
 }
 
 void AsyncApiFunction::SetResultList(std::unique_ptr<base::ListValue> results) {
