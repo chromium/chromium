@@ -37,12 +37,6 @@ TestWallpaperControllerClient::TestWallpaperControllerClient() {
 
 TestWallpaperControllerClient::~TestWallpaperControllerClient() = default;
 
-void TestWallpaperControllerClient::AddCollection(
-    const std::string& collection_id,
-    const std::vector<backdrop::Image>& images) {
-  variations_[collection_id] = images;
-}
-
 void TestWallpaperControllerClient::ResetCounts() {
   open_count_ = 0;
   close_preview_count_ = 0;
@@ -89,15 +83,13 @@ void TestWallpaperControllerClient::FetchDailyRefreshWallpaper(
     return;
   }
 
-  image_index_ = ++image_index_ % iter->second.size();
-  backdrop::Image image(iter->second.at(image_index_));
+  backdrop::Image image(iter->second.back());
   std::move(callback).Run(/*success=*/true, std::move(image));
 }
 
 void TestWallpaperControllerClient::FetchImagesForCollection(
     const std::string& collection_id,
     FetchImagesForCollectionCallback callback) {
-  fetch_images_for_collection_count_++;
   auto iter = variations_.find(collection_id);
   if (fetch_images_for_collection_fails_ || iter == variations_.end()) {
     std::move(callback).Run(/*success=*/false, std::vector<backdrop::Image>());

@@ -22,7 +22,6 @@
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/shell_observer.h"
-#include "ash/wallpaper/online_wallpaper_variant_info_fetcher.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_color_calculator_observer.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer_observer.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
@@ -117,9 +116,7 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Prefer to use to obtain an new instance unless injecting non-production
   // members i.e. in tests.
-  explicit WallpaperControllerImpl(
-      PrefService* local_state,
-      std::unique_ptr<OnlineWallpaperVariantInfoFetcher> fetcher);
+  explicit WallpaperControllerImpl(PrefService* local_state);
 
   WallpaperControllerImpl(const WallpaperControllerImpl&) = delete;
   WallpaperControllerImpl& operator=(const WallpaperControllerImpl&) = delete;
@@ -460,11 +457,6 @@ class ASH_EXPORT WallpaperControllerImpl
       const OnlineWallpaperParams& params,
       const base::flat_map<std::string, base::FilePath>& url_to_file_path_map);
 
-  // Handler to receive Fetch*Wallpaper variants callbacks.
-  void OnWallpaperVariantsFetched(WallpaperType type,
-                                  SetWallpaperCallback callback,
-                                  absl::optional<OnlineWallpaperParams> params);
-
   // Used as the callback of decoding wallpapers of type
   // `WallpaperType::kOnline`. Saves the image to local file if `save_file` is
   // true, and shows the wallpaper immediately if `params.account_id` is the
@@ -699,6 +691,20 @@ class ASH_EXPORT WallpaperControllerImpl
   // If the user has a Google Photos wallpaper set.
   bool IsGooglePhotosWallpaperSet() const;
 
+  // Callback from the client providing a url to a wallpaper from the user
+  // specified collection when daily refresh is enabled. If |success| is
+  // false, fetching the |image| failed, and should be tried again soon.
+  void SetDailyWallpaper(const AccountId& account_id,
+                         const std::string& collection_id,
+                         WallpaperLayout layout,
+                         RefreshWallpaperCallback callback,
+                         bool success,
+                         const backdrop::Image& image);
+
+  // Called after attempting to download and set a daily refresh wallpaper.
+  // On failure retry again in a while.
+  void OnSetDailyWallpaper(RefreshWallpaperCallback callback, bool success);
+
   // Starts a wall clock timer, to update the wallpaper 24 hours since the last
   // wallpaper was set.
   void StartDailyRefreshTimer();
@@ -747,6 +753,9 @@ class ASH_EXPORT WallpaperControllerImpl
   void HandleDailyWallpaperInfoSyncedIn(const AccountId& account_id,
                                         const WallpaperInfo& info);
 
+  void HandleOnlineWallpaperInfoSyncedIn(const AccountId& account_id,
+                                         const WallpaperInfo& info);
+
   void HandleGooglePhotosWallpaperInfoSyncedIn(const AccountId& account_id,
                                                const WallpaperInfo& info);
 
@@ -755,6 +764,15 @@ class ASH_EXPORT WallpaperControllerImpl
   void HandleSettingOnlineWallpaperFromWallpaperInfo(
       const AccountId& account_id,
       const WallpaperInfo& info);
+
+  // Find the variants for the online wallpaper with given |params.asset_id| and
+  // |params.collection_id| and determine the right variant to set based on the
+  // system's color mode.
+  void FindAndSetOnlineWallpaperVariants(
+      const OnlineWallpaperParams& params,
+      base::OnceCallback<void(bool)> callback,
+      bool success,
+      const std::vector<backdrop::Image>& images);
 
   bool locked_ = false;
 
@@ -773,9 +791,6 @@ class ASH_EXPORT WallpaperControllerImpl
   // Manages the states of the other windows when the wallpaper app window is
   // active.
   std::unique_ptr<WallpaperWindowStateManager> window_state_manager_;
-
-  // Delegate to resolve online wallpaper variants.
-  std::unique_ptr<OnlineWallpaperVariantInfoFetcher> variant_info_fetcher_;
 
   // The prominent colors extracted from the current wallpaper.
   // kInvalidWallpaperColor is used by default or if extracting colors fails.
