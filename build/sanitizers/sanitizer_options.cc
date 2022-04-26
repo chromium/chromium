@@ -52,6 +52,10 @@ const char kAsanDefaultOptions[] =
     "external_symbolizer_path=%d/../../third_party/llvm-build/Release+Asserts/"
     "bin/llvm-symbolizer";
 
+#elif BUILDFLAG(IS_ANDROID)
+const char* kAsanDefaultOptions =
+    // This causes out-of-memory errors on Android (crbug.com/1319387).
+    "detect_stack_use_after_return=0";
 #elif BUILDFLAG(IS_APPLE)
 const char* kAsanDefaultOptions =
     "check_printf=1 use_sigaltstack=1 strip_path_prefix=/../../ "
@@ -66,7 +70,7 @@ const char* kAsanDefaultOptions =
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE) || \
-    BUILDFLAG(IS_WIN)
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 // Allow NaCl to override the default asan options.
 extern const char* kAsanDefaultOptionsNaCl;
 __attribute__((weak)) const char* kAsanDefaultOptionsNaCl = nullptr;
