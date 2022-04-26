@@ -35,6 +35,7 @@ source_set("share") {
   if (is_android) {
     sources += [
       "bitmap_download_request.cc",
+      "crow_bridge.cc",
       "default_ranking_android.cc",
       "editor_screenshot_task.cc",
       "link_to_text_bridge.cc",
@@ -44,6 +45,7 @@ source_set("share") {
     deps += [
       ":jni_headers",
       "//chrome/browser/share/android:jni_headers",
+      "//components/history/core/browser:browser",
       "//components/ukm/content:content",
       "//ui/android",
       "//url:gurl_android",

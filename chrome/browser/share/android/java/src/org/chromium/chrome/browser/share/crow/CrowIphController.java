@@ -10,6 +10,7 @@ import android.view.View;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -23,6 +24,11 @@ import org.chromium.url.GURL;
  * Controls when the the Share Experiment IPH is shown.
  */
 public class CrowIphController {
+    // TODO(crbug/1314455): Adjust these numbers.
+    private static final int MIN_DAYS = 1;
+    private static final int MIN_VISITS = 1;
+    private static final int NUM_HISTORY_DAYS = 7;
+
     private final Activity mActivity;
     private final AppMenuHandler mAppMenuHandler;
     private final CurrentTabObserver mPageLoadObserver;
@@ -47,10 +53,10 @@ public class CrowIphController {
         mPageLoadObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
             @Override
             public void onPageLoadFinished(Tab tab, GURL url) {
-                if (tab.isShowingErrorPage() || !shouldShowCrowIph()) {
+                if (tab.isShowingErrorPage()) {
                     return;
                 }
-                showCrowIph();
+                maybeShowCrowIph(tab.getUrl());
             }
         });
     }
@@ -59,12 +65,19 @@ public class CrowIphController {
         mPageLoadObserver.destroy();
     }
 
-    private boolean shouldShowCrowIph() {
-        // TODO(crbug/1314455): Implement this.
-        return false;
+    private void maybeShowCrowIph(GURL url) {
+        // TODO(crbug/1314455): Finish implementing heuristics for showing the IPH.
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_CROW_BUTTON)) {
+            return;
+        }
+        CrowBridge.getVisitCountsToHost(url, NUM_HISTORY_DAYS, result -> {
+            if (result.dailyVisits >= MIN_DAYS && result.visits >= MIN_VISITS) {
+                requestShowCrowIph();
+            }
+        });
     }
 
-    private void showCrowIph() {
+    private void requestShowCrowIph() {
         mUserEducationHelper.requestShowIPH(
                 new IPHCommandBuilder(mActivity.getResources(), FeatureConstants.CROW_FEATURE,
                         // TODO(crbug/1314530): Fix IPH strings once they are finalized.
