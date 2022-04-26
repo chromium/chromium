@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_SYSTEM_CLOCK_FAKE_SYSTEM_CLOCK_CLIENT_H_
-#define CHROMEOS_DBUS_SYSTEM_CLOCK_FAKE_SYSTEM_CLOCK_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_SYSTEM_CLOCK_FAKE_SYSTEM_CLOCK_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_SYSTEM_CLOCK_FAKE_SYSTEM_CLOCK_CLIENT_H_
 
 #include <stdint.h>
 #include <vector>
 
 #include "base/observer_list.h"
-#include "chromeos/dbus/system_clock/system_clock_client.h"
+#include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "dbus/object_proxy.h"
 
-namespace chromeos {
+namespace ash {
 
 // A fake implementation of SystemClockClient. This class does nothing.
 class COMPONENT_EXPORT(SYSTEM_CLOCK) FakeSystemClockClient
@@ -51,6 +51,6 @@ class COMPONENT_EXPORT(SYSTEM_CLOCK) FakeSystemClockClient
   base::ObserverList<Observer>::Unchecked observers_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_SYSTEM_CLOCK_FAKE_SYSTEM_CLOCK_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SYSTEM_CLOCK_FAKE_SYSTEM_CLOCK_CLIENT_H_

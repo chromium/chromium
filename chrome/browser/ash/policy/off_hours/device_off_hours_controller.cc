@@ -30,7 +30,7 @@ namespace em = ::enterprise_management;
 DeviceOffHoursController::DeviceOffHoursController()
     : timer_(std::make_unique<base::WallClockTimer>()),
       clock_(base::DefaultClock::GetInstance()) {
-  auto* system_clock_client = chromeos::SystemClockClient::Get();
+  auto* system_clock_client = ash::SystemClockClient::Get();
   if (system_clock_client) {
     system_clock_client->AddObserver(this);
     system_clock_client->WaitForServiceToBeAvailable(
@@ -40,8 +40,8 @@ DeviceOffHoursController::DeviceOffHoursController()
 }
 
 DeviceOffHoursController::~DeviceOffHoursController() {
-  if (chromeos::SystemClockClient::Get())
-    chromeos::SystemClockClient::Get()->RemoveObserver(this);
+  if (ash::SystemClockClient::Get())
+    ash::SystemClockClient::Get()->RemoveObserver(this);
 }
 
 void DeviceOffHoursController::AddObserver(Observer* observer) {
@@ -174,7 +174,7 @@ void DeviceOffHoursController::SystemClockUpdated() {
   // current device time. Ask SystemClockClient to update information about the
   // system time synchronization with the network time asynchronously.
   // Information will be received by NetworkSynchronizationUpdated method.
-  chromeos::SystemClockClient::Get()->GetLastSyncInfo(
+  ash::SystemClockClient::Get()->GetLastSyncInfo(
       base::BindOnce(&DeviceOffHoursController::NetworkSynchronizationUpdated,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -183,7 +183,7 @@ void DeviceOffHoursController::SystemClockInitiallyAvailable(
     bool service_is_available) {
   if (!service_is_available)
     return;
-  chromeos::SystemClockClient::Get()->GetLastSyncInfo(
+  ash::SystemClockClient::Get()->GetLastSyncInfo(
       base::BindOnce(&DeviceOffHoursController::NetworkSynchronizationUpdated,
                      weak_ptr_factory_.GetWeakPtr()));
 }

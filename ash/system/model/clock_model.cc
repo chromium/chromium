@@ -14,17 +14,17 @@ namespace ash {
 
 ClockModel::ClockModel() : hour_clock_type_(base::GetHourClockType()) {
   // SystemClockClient may be null in tests.
-  if (chromeos::SystemClockClient::Get()) {
-    chromeos::SystemClockClient::Get()->AddObserver(this);
-    can_set_time_ = chromeos::SystemClockClient::Get()->CanSetTime();
+  if (SystemClockClient::Get()) {
+    SystemClockClient::Get()->AddObserver(this);
+    can_set_time_ = SystemClockClient::Get()->CanSetTime();
   }
   system::TimezoneSettings::GetInstance()->AddObserver(this);
 }
 
 ClockModel::~ClockModel() {
   // SystemClockClient may be null in tests.
-  if (chromeos::SystemClockClient::Get())
-    chromeos::SystemClockClient::Get()->RemoveObserver(this);
+  if (SystemClockClient::Get())
+    SystemClockClient::Get()->RemoveObserver(this);
   system::TimezoneSettings::GetInstance()->RemoveObserver(this);
 }
 

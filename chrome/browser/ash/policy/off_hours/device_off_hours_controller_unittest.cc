@@ -16,7 +16,7 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
-#include "chromeos/dbus/system_clock/system_clock_client.h"
+#include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 
 namespace policy::off_hours {
@@ -144,7 +144,7 @@ class DeviceOffHoursControllerSimpleTest : public ash::DeviceSettingsTestBase {
 
   void SetUp() override {
     ash::DeviceSettingsTestBase::SetUp();
-    chromeos::SystemClockClient::InitializeFake();
+    ash::SystemClockClient::InitializeFake();
     system_clock_client()->SetServiceIsAvailable(false);
 
     device_settings_service_->SetDeviceOffHoursControllerForTesting(
@@ -152,7 +152,7 @@ class DeviceOffHoursControllerSimpleTest : public ash::DeviceSettingsTestBase {
   }
 
   void TearDown() override {
-    chromeos::SystemClockClient::Shutdown();
+    ash::SystemClockClient::Shutdown();
     ash::DeviceSettingsTestBase::TearDown();
   }
 
@@ -170,8 +170,8 @@ class DeviceOffHoursControllerSimpleTest : public ash::DeviceSettingsTestBase {
         .guest_mode_enabled();
   }
 
-  chromeos::SystemClockClient::TestInterface* system_clock_client() {
-    return chromeos::SystemClockClient::Get()->GetTestInterface();
+  ash::SystemClockClient::TestInterface* system_clock_client() {
+    return ash::SystemClockClient::Get()->GetTestInterface();
   }
 
   DeviceOffHoursController* device_off_hours_controller() {

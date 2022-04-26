@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_SYSTEM_CLOCK_SYSTEM_CLOCK_CLIENT_H_
-#define CHROMEOS_DBUS_SYSTEM_CLOCK_SYSTEM_CLOCK_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_SYSTEM_CLOCK_SYSTEM_CLOCK_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_SYSTEM_CLOCK_SYSTEM_CLOCK_CLIENT_H_
 
 #include <stdint.h>
 
@@ -15,7 +15,7 @@ namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // SystemClockClient is used to communicate with the system clock. This class is
 // safe to use from multiple processes (e.g. Chrome + Ash).
@@ -96,11 +96,11 @@ class COMPONENT_EXPORT(SYSTEM_CLOCK) SystemClockClient {
   virtual ~SystemClockClient();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when //chromeos/dbus moved to ash.
-namespace ash {
-using ::chromeos::SystemClockClient;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_SYSTEM_CLOCK_SYSTEM_CLOCK_CLIENT_H_
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::SystemClockClient;
+}
+
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SYSTEM_CLOCK_SYSTEM_CLOCK_CLIENT_H_

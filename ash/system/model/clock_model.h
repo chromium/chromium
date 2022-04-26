@@ -8,14 +8,14 @@
 #include "ash/components/settings/timezone_settings.h"
 #include "base/i18n/time_formatting.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/system_clock/system_clock_client.h"
+#include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 
 namespace ash {
 
 class ClockObserver;
 
 // Model to notify system clock and related configuration change.
-class ClockModel : public chromeos::SystemClockClient::Observer,
+class ClockModel : public SystemClockClient::Observer,
                    public system::TimezoneSettings::Observer {
  public:
   ClockModel();
@@ -44,7 +44,7 @@ class ClockModel : public chromeos::SystemClockClient::Observer,
   // is changed.
   void NotifyRefreshClock();
 
-  // chromeos::SystemClockClient::Observer:
+  // SystemClockClient::Observer:
   void SystemClockUpdated() override;
   void SystemClockCanSetTimeChanged(bool can_set_time) override;
 

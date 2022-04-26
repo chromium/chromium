@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/child_accounts/time_limit_notifier.h"
 #include "chrome/browser/ash/child_accounts/usage_time_limit_processor.h"
 #include "chrome/browser/ash/child_accounts/usage_time_state_notifier.h"
-#include "chromeos/dbus/system_clock/system_clock_client.h"
+#include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -147,7 +147,7 @@ class ScreenTimeController
   // system::TimezoneSettings::Observer:
   void TimezoneChanged(const icu::TimeZone& timezone) override;
 
-  // chromeos::SystemClockClient::Observer:
+  // SystemClockClient::Observer:
   void SystemClockUpdated() override;
 
   content::BrowserContext* context_;

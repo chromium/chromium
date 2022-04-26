@@ -4,11 +4,11 @@
 
 #include <utility>
 
-#include "chromeos/dbus/system_clock/fake_system_clock_client.h"
 #include "base/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chromeos/ash/components/dbus/system_clock/fake_system_clock_client.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeSystemClockClient::FakeSystemClockClient() = default;
 
@@ -74,4 +74,4 @@ SystemClockClient::TestInterface* FakeSystemClockClient::GetTestInterface() {
   return this;
 }
 
-}  // namespace chromeos
+}  // namespace ash

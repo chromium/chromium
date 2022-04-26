@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/system_clock/system_clock_client.h"
+#include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 
 #include <stdint.h>
 
@@ -12,13 +12,13 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/system_clock/fake_system_clock_client.h"
+#include "chromeos/ash/components/dbus/system_clock/fake_system_clock_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -223,4 +223,4 @@ SystemClockClient* SystemClockClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

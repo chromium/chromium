@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/system_clock/system_clock_sync_observation.h"
+#include "chromeos/ash/components/dbus/system_clock/system_clock_sync_observation.h"
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/system_clock/system_clock_client.h"
+#include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 
 namespace ash {
 
@@ -32,7 +32,7 @@ SystemClockSyncObservation::SystemClockSyncObservation(
                        base::BindOnce(&SystemClockSyncObservation::OnTimeout,
                                       weak_ptr_factory_.GetWeakPtr()));
 
-  system_clock_client_observation_.Observe(chromeos::SystemClockClient::Get());
+  system_clock_client_observation_.Observe(SystemClockClient::Get());
   system_clock_client_->WaitForServiceToBeAvailable(
       base::BindOnce(&SystemClockSyncObservation::OnSystemClockServiceAvailable,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -84,7 +84,7 @@ void SystemClockSyncObservation::RunCallbackWithResult(bool result) {
   std::move(callback_).Run(result);
 }
 
-// chromeos::SystemClockClient::Observer:
+// SystemClockClient::Observer:
 void SystemClockSyncObservation::SystemClockUpdated() {
   system_clock_client_->GetLastSyncInfo(
       base::BindOnce(&SystemClockSyncObservation::OnLastSyncInfo,

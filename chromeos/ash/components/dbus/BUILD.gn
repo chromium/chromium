@@ -22,6 +22,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/rmad:rmad_proto",
     "//chromeos/ash/components/dbus/rmad:test_support",
     "//chromeos/ash/components/dbus/services:unit_tests",
+    "//chromeos/ash/components/dbus/system_clock:unit_tests",
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/session_manager",
     "//components/account_id",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_SYSTEM_CLOCK_SYSTEM_CLOCK_SYNC_OBSERVATION_H_
-#define CHROMEOS_DBUS_SYSTEM_CLOCK_SYSTEM_CLOCK_SYNC_OBSERVATION_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_SYSTEM_CLOCK_SYSTEM_CLOCK_SYNC_OBSERVATION_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_SYSTEM_CLOCK_SYSTEM_CLOCK_SYNC_OBSERVATION_H_
 
 #include <memory>
 
@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "chromeos/dbus/system_clock/system_clock_client.h"
+#include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -93,4 +93,4 @@ class COMPONENT_EXPORT(SYSTEM_CLOCK) SystemClockSyncObservation
 
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_SYSTEM_CLOCK_SYSTEM_CLOCK_SYNC_OBSERVATION_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SYSTEM_CLOCK_SYSTEM_CLOCK_SYNC_OBSERVATION_H_

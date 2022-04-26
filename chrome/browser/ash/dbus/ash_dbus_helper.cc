@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
 #include "chromeos/ash/components/dbus/rmad/rmad_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
+#include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "chromeos/ash/components/dbus/system_proxy/system_proxy_client.h"
 #include "chromeos/ash/components/dbus/typecd/typecd_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
@@ -54,7 +55,6 @@
 #include "chromeos/dbus/resourced/resourced_client.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
 #include "chromeos/dbus/userdataauth/arc_quota_client.h"
@@ -145,7 +145,7 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::SeneschalClient>(bus);
   InitializeDBusClient<chromeos::SessionManagerClient>(bus);
   InitializeDBusClient<SpacedClient>(bus);
-  InitializeDBusClient<chromeos::SystemClockClient>(bus);
+  InitializeDBusClient<SystemClockClient>(bus);
   InitializeDBusClient<SystemProxyClient>(bus);
   InitializeDBusClient<chromeos::TpmManagerClient>(bus);
   InitializeDBusClient<TypecdClient>(bus);
@@ -210,7 +210,7 @@ void ShutdownDBus() {
   TypecdClient::Shutdown();
   chromeos::TpmManagerClient::Shutdown();
   SystemProxyClient::Shutdown();
-  chromeos::SystemClockClient::Shutdown();
+  SystemClockClient::Shutdown();
   SpacedClient::Shutdown();
   chromeos::SessionManagerClient::Shutdown();
   chromeos::SeneschalClient::Shutdown();

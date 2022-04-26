@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/system_clock/system_clock_sync_observation.h"
+#include "chromeos/ash/components/dbus/system_clock/system_clock_sync_observation.h"
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chromeos/dbus/system_clock/fake_system_clock_client.h"
-#include "chromeos/dbus/system_clock/system_clock_client.h"
+#include "chromeos/ash/components/dbus/system_clock/fake_system_clock_client.h"
+#include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,7 +34,7 @@ class SystemClockSyncObservationTest : public testing::Test {
       const SystemClockSyncObservationTest& other) = delete;
 
  protected:
-  chromeos::FakeSystemClockClient fake_system_clock_client_;
+  FakeSystemClockClient fake_system_clock_client_;
 
  private:
   base::test::TaskEnvironment task_environment_;
