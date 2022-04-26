@@ -9,7 +9,6 @@
 #include "ash/webui/os_feedback_ui/backend/os_feedback_delegate.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
 #include "base/bind.h"
-#include "base/logging.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "url/gurl.h"
@@ -39,10 +38,7 @@ void FeedbackServiceProvider::GetFeedbackContext(
 
 void FeedbackServiceProvider::SendReport(ReportPtr report,
                                          SendReportCallback callback) {
-  // TODO(xiangdongkong): Implement send report logic.
-  VLOG(2) << report->include_system_logs_and_histograms;
-
-  std::move(callback).Run(SendReportStatus::kSuccess);
+  feedback_delegate_->SendReport(std::move(report), std::move(callback));
 }
 
 void FeedbackServiceProvider::BindInterface(

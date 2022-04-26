@@ -156,6 +156,7 @@ source_set("chromeos") {
     "//ash/webui/media_app_ui:buildflags",
     "//ash/webui/os_feedback_ui",
     "//ash/webui/os_feedback_ui/backend",
+    "//ash/webui/os_feedback_ui/mojom",
     "//ash/webui/personalization_app",
     "//ash/webui/personalization_app/mojom",
     "//ash/webui/personalization_app/proto",

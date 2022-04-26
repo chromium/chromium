@@ -4,6 +4,8 @@
 
 #include "ash/webui/os_feedback_ui/backend/feedback_service_provider.h"
 
+#include <utility>
+
 #include "ash/webui/os_feedback_ui/backend/os_feedback_delegate.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom-test-utils.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
@@ -44,6 +46,11 @@ class TestOsFeedbackDelegate : public OsFeedbackDelegate {
 
   absl::optional<std::string> GetSignedInUserEmail() const override {
     return kSignedInUserEmail;
+  }
+
+  void SendReport(os_feedback_ui::mojom::ReportPtr report,
+                  SendReportCallback callback) override {
+    std::move(callback).Run(SendReportStatus::kSuccess);
   }
 };
 

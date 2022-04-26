@@ -7,11 +7,15 @@
 
 #include <string>
 
+#include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
 namespace ash {
+
+using SendReportCallback =
+    base::OnceCallback<void(os_feedback_ui::mojom::SendReportStatus)>;
 
 // A delegate which exposes browser functionality from //chrome to the OS
 // Feedback UI.
@@ -27,6 +31,9 @@ class OsFeedbackDelegate {
   // Returns the normalized email address of the signed-in user associated with
   // the browser context, if any.
   virtual absl::optional<std::string> GetSignedInUserEmail() const = 0;
+  // Collect data and send the report to Google.
+  virtual void SendReport(os_feedback_ui::mojom::ReportPtr report,
+                          SendReportCallback callback) = 0;
 };
 
 }  // namespace ash

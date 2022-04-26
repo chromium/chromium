@@ -14,6 +14,10 @@
 
 class Profile;
 
+namespace feedback {
+class FeedbackUploader;
+}  // namespace feedback
+
 namespace ash {
 
 class ChromeOsFeedbackDelegate : public OsFeedbackDelegate {
@@ -28,12 +32,17 @@ class ChromeOsFeedbackDelegate : public OsFeedbackDelegate {
   std::string GetApplicationLocale() override;
   absl::optional<GURL> GetLastActivePageUrl() override;
   absl::optional<std::string> GetSignedInUserEmail() const override;
+  void SendReport(os_feedback_ui::mojom::ReportPtr report,
+                  SendReportCallback callback) override;
+  void SetFeedbackUploaderForTesting(::feedback::FeedbackUploader* uploader);
 
  private:
   // TODO(xiangdongkong): make sure the profile_ cannot be destroyed while
   // operations are pending.
   raw_ptr<Profile> profile_;
   absl::optional<GURL> page_url_;
+
+  raw_ptr<::feedback::FeedbackUploader> feedback_uploader_for_testing_;
 };
 
 }  // namespace ash
