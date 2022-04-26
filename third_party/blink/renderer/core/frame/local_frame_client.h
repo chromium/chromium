@@ -231,12 +231,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       const Vector<String>& added_selectors,
       const Vector<String>& removed_selectors) = 0;
 
-  virtual DocumentLoader* CreateDocumentLoader(
-      LocalFrame*,
-      WebNavigationType,
-      std::unique_ptr<WebNavigationParams> navigation_params,
-      std::unique_ptr<PolicyContainer> policy_container,
-      std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) = 0;
+  virtual void DidCreateDocumentLoader(DocumentLoader*) = 0;
 
   virtual String UserAgentOverride() = 0;
   virtual String UserAgent() = 0;

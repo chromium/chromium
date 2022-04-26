@@ -176,7 +176,6 @@
 #include "third_party/blink/renderer/core/events/after_print_event.h"
 #include "third_party/blink/renderer/core/events/before_print_event.h"
 #include "third_party/blink/renderer/core/exported/web_dev_tools_agent_impl.h"
-#include "third_party/blink/renderer/core/exported/web_document_loader_impl.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -589,10 +588,6 @@ class PaintPreviewContext : public PrintContext {
     return true;
   }
 };
-
-static WebDocumentLoader* DocumentLoaderForDocLoader(DocumentLoader* loader) {
-  return loader ? WebDocumentLoaderImpl::FromDocumentLoader(loader) : nullptr;
-}
 
 // WebFrame -------------------------------------------------------------------
 
@@ -1140,7 +1135,7 @@ void WebLocalFrameImpl::ClearActiveFindMatchForTesting() {
 
 WebDocumentLoader* WebLocalFrameImpl::GetDocumentLoader() const {
   DCHECK(GetFrame());
-  return DocumentLoaderForDocLoader(GetFrame()->Loader().GetDocumentLoader());
+  return GetFrame()->Loader().GetDocumentLoader();
 }
 
 void WebLocalFrameImpl::EnableViewSourceMode(bool enable) {

@@ -29,8 +29,6 @@ blink_core_sources("exported") {
     "web_dev_tools_agent_impl.cc",
     "web_dev_tools_agent_impl.h",
     "web_document.cc",
-    "web_document_loader_impl.cc",
-    "web_document_loader_impl.h",
     "web_dom_activity_logger.cc",
     "web_dom_event.cc",
     "web_dom_message_event.cc",

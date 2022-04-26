@@ -3364,7 +3364,7 @@ void TestRunner::FinishTest() {
       spec = spec.substr(path_start);
 
     std::string mime_type =
-        web_frame->GetDocumentLoader()->GetResponse().MimeType().Utf8();
+        web_frame->GetDocumentLoader()->GetWebResponse().MimeType().Utf8();
 
     // In a text/plain document, and in a dumpAsText/ subdirectory, we generate
     // text results no matter what the test may previously have requested.

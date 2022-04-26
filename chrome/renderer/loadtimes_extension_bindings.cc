@@ -135,7 +135,7 @@ class LoadTimesExtensionWrapper : public v8::Extension {
     if (!document_loader) {
       return;
     }
-    const blink::WebURLResponse& response = document_loader->GetResponse();
+    const blink::WebURLResponse& response = document_loader->GetWebResponse();
     WebPerformance web_performance = frame->Performance();
     // Though request time now tends to be used to describe the time that the
     // request for the main resource was issued, when chrome.loadTimes() was

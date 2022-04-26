@@ -302,12 +302,7 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
   void DidStartLoading() override {}
   void DidStopLoading() override {}
 
-  DocumentLoader* CreateDocumentLoader(
-      LocalFrame*,
-      WebNavigationType,
-      std::unique_ptr<WebNavigationParams> navigation_params,
-      std::unique_ptr<PolicyContainer> policy_container,
-      std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) override;
+  void DidCreateDocumentLoader(DocumentLoader*) override {}
 
   String UserAgentOverride() override { return ""; }
   String UserAgent() override { return ""; }

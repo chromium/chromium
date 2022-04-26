@@ -66,7 +66,6 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/ignore_opens_during_unload_count_incrementer.h"
 #include "third_party/blink/renderer/core/events/page_transition_event.h"
-#include "third_party/blink/renderer/core/exported/web_document_loader_impl.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_anchor.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -271,7 +270,7 @@ void FrameLoader::Init(std::unique_ptr<PolicyContainer> policy_container) {
     navigation_params->sandbox_flags |= csp->sandbox;
   }
 
-  DocumentLoader* new_document_loader = Client()->CreateDocumentLoader(
+  DocumentLoader* new_document_loader = MakeGarbageCollected<DocumentLoader>(
       frame_, kWebNavigationTypeOther, std::move(navigation_params),
       std::move(policy_container), nullptr /* extra_data */);
 
@@ -1051,10 +1050,7 @@ void FrameLoader::CommitNavigation(
   if (commit_reason == CommitReason::kXSLT ||
       commit_reason == CommitReason::kJavascriptUrl) {
     DCHECK(!extra_data);
-    if (auto* old_document_loader =
-            static_cast<WebDocumentLoaderImpl*>(document_loader_.Get())) {
-      extra_data = old_document_loader->TakeExtraData();
-    }
+    extra_data = document_loader_->TakeExtraData();
   }
 
   // Create the OldDocumentInfoForCommit for the old document (that might be in
@@ -1150,7 +1146,7 @@ void FrameLoader::CommitNavigation(
   }
   // TODO(dgozman): get rid of provisional document loader and most of the code
   // below. We should probably call DocumentLoader::CommitNavigation directly.
-  DocumentLoader* new_document_loader = Client()->CreateDocumentLoader(
+  DocumentLoader* new_document_loader = MakeGarbageCollected<DocumentLoader>(
       frame_, navigation_type, std::move(navigation_params),
       std::move(policy_container), std::move(extra_data));
 

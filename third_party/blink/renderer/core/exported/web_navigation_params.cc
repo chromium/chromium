@@ -5,7 +5,6 @@
 #include "third_party/blink/public/web/web_navigation_params.h"
 
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
-#include "third_party/blink/renderer/core/exported/web_document_loader_impl.h"
 #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"

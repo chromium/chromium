@@ -158,16 +158,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void SelectorMatchChanged(const Vector<String>& added_selectors,
                             const Vector<String>& removed_selectors) override;
 
-  // Creates a WebDocumentLoaderImpl that is a DocumentLoader but also has:
-  // - storage to store an extra data that can be used by the content layer
-  // - wrapper methods to expose DocumentLoader's variables to the content
-  //   layer
-  DocumentLoader* CreateDocumentLoader(
-      LocalFrame*,
-      WebNavigationType,
-      std::unique_ptr<WebNavigationParams> navigation_params,
-      std::unique_ptr<PolicyContainer> policy_container,
-      std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) override;
+  void DidCreateDocumentLoader(DocumentLoader*) override;
 
   String UserAgentOverride() override;
   WTF::String UserAgent() override;

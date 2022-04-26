@@ -176,23 +176,15 @@ class FrameFetchContextSubresourceFilterTest : public FrameFetchContextTest {
     filtered_load_callback_counter_ = 0;
   }
 
-  void TearDown() override {
-    document->Loader()->SetSubresourceFilter(nullptr);
-    FrameFetchContextTest::TearDown();
-  }
-
   int GetFilteredLoadCallCount() const {
     return filtered_load_callback_counter_;
   }
 
   void SetFilterPolicy(WebDocumentSubresourceFilter::LoadPolicy policy,
                        bool is_associated_with_ad_subframe = false) {
-    document->Loader()->SetSubresourceFilter(
-        MakeGarbageCollected<SubresourceFilter>(
-            document->GetExecutionContext(),
-            std::make_unique<FixedPolicySubresourceFilter>(
-                policy, &filtered_load_callback_counter_,
-                is_associated_with_ad_subframe)));
+    document->Loader()->SetSubresourceFilter(new FixedPolicySubresourceFilter(
+        policy, &filtered_load_callback_counter_,
+        is_associated_with_ad_subframe));
   }
 
   absl::optional<ResourceRequestBlockedReason> CanRequest() {

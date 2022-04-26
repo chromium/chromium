@@ -77,12 +77,12 @@ class BLINK_EXPORT WebDocumentLoader {
   virtual WebString Referrer() const = 0;
 
   // Returns the response associated with this datasource.
-  virtual const WebURLResponse& GetResponse() const = 0;
+  virtual const WebURLResponse& GetWebResponse() const = 0;
 
   // When this datasource was created as a result of WebFrame::loadData,
   // there may be an associated unreachableURL.
   virtual bool HasUnreachableURL() const = 0;
-  virtual WebURL UnreachableURL() const = 0;
+  virtual WebURL UnreachableWebURL() const = 0;
 
   // Returns whether the navigation associated with this datasource is a
   // client redirect.

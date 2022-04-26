@@ -415,7 +415,7 @@ bool MaybeGetOverriddenURL(WebDocumentLoader* document_loader, GURL* output) {
   // URL". This case should never reach this point as it's handled above, where
   // we return the original data: URL instead.
   if (document_loader->HasUnreachableURL()) {
-    *output = document_loader->UnreachableURL();
+    *output = document_loader->UnreachableWebURL();
     return true;
   }
 
@@ -4667,7 +4667,7 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
     const blink::DocumentPolicyFeatureState& document_policy_header,
     const absl::optional<base::UnguessableToken>& embedding_token) {
   WebDocumentLoader* document_loader = frame_->GetDocumentLoader();
-  const WebURLResponse& response = document_loader->GetResponse();
+  const WebURLResponse& response = document_loader->GetWebResponse();
 
   DocumentState* document_state =
       DocumentState::FromDocumentLoader(frame_->GetDocumentLoader());
@@ -4767,7 +4767,7 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
 
     // Update contents MIME type for main frame.
     params->contents_mime_type =
-        document_loader->GetResponse().MimeType().Utf8();
+        document_loader->GetWebResponse().MimeType().Utf8();
 
     params->transition = transition;
     // Check that if we are in a fenced frame tree then we must have

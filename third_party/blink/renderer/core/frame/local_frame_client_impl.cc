@@ -66,7 +66,6 @@
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/exported/web_dev_tools_agent_impl.h"
-#include "third_party/blink/renderer/core/exported/web_document_loader_impl.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
@@ -188,8 +187,7 @@ WebContentCaptureClient* LocalFrameClientImpl::GetWebContentCaptureClient()
 void LocalFrameClientImpl::DidCommitDocumentReplacementNavigation(
     DocumentLoader* loader) {
   if (web_frame_->Client()) {
-    web_frame_->Client()->DidCommitDocumentReplacementNavigation(
-        WebDocumentLoaderImpl::FromDocumentLoader(loader));
+    web_frame_->Client()->DidCommitDocumentReplacementNavigation(loader);
   }
 }
 
@@ -770,20 +768,9 @@ void LocalFrameClientImpl::SelectorMatchChanged(
   }
 }
 
-DocumentLoader* LocalFrameClientImpl::CreateDocumentLoader(
-    LocalFrame* frame,
-    WebNavigationType navigation_type,
-    std::unique_ptr<WebNavigationParams> navigation_params,
-    std::unique_ptr<PolicyContainer> policy_container,
-    std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) {
-  DCHECK(frame);
-  WebDocumentLoaderImpl* document_loader =
-      MakeGarbageCollected<WebDocumentLoaderImpl>(
-          frame, navigation_type, std::move(navigation_params),
-          std::move(policy_container), std::move(extra_data));
-  if (web_frame_->Client())
-    web_frame_->Client()->DidCreateDocumentLoader(document_loader);
-  return document_loader;
+void LocalFrameClientImpl::DidCreateDocumentLoader(
+    DocumentLoader* document_loader) {
+  web_frame_->Client()->DidCreateDocumentLoader(document_loader);
 }
 
 String LocalFrameClientImpl::UserAgentOverride() {

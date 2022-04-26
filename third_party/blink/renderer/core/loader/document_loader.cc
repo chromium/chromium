@@ -248,6 +248,7 @@ void ApplyOriginPolicy(ContentSecurityPolicy* csp,
 
 struct SameSizeAsDocumentLoader
     : public GarbageCollected<SameSizeAsDocumentLoader>,
+      public WebDocumentLoader,
       public UseCounter,
       public WebNavigationBodyLoader::Client {
   Member<MHTMLArchive> archive;
@@ -272,6 +273,7 @@ struct SameSizeAsDocumentLoader
   Member<SubresourceFilter> subresource_filter;
   AtomicString original_referrer;
   ResourceResponse response;
+  mutable WrappedResourceResponse response_wrapper;
   WebFrameLoadType load_type;
   bool is_client_redirect;
   bool replaces_current_history_item;
@@ -337,6 +339,7 @@ struct SameSizeAsDocumentLoader
   bool anonymous;
   bool waiting_for_document_loader;
   bool waiting_for_code_cache;
+  std::unique_ptr<ExtraData> extra_data;
 };
 
 // Asserts size of DocumentLoader, so that whenever a new attribute is added to
@@ -348,11 +351,11 @@ ASSERT_SIZE(DocumentLoader, SameSizeAsDocumentLoader);
 }  // namespace
 
 DocumentLoader::DocumentLoader(
-    base::PassKey<WebDocumentLoaderImpl>,
     LocalFrame* frame,
     WebNavigationType navigation_type,
     std::unique_ptr<WebNavigationParams> navigation_params,
-    std::unique_ptr<PolicyContainer> policy_container)
+    std::unique_ptr<PolicyContainer> policy_container,
+    std::unique_ptr<ExtraData> extra_data)
     : params_(std::move(navigation_params)),
       policy_container_(std::move(policy_container)),
       url_(params_->url),
@@ -378,6 +381,7 @@ DocumentLoader::DocumentLoader(
                         : nullptr),
       original_referrer_(referrer_),
       response_(params_->response.ToResourceResponse()),
+      response_wrapper_(response_),
       load_type_(params_->frame_load_type),
       is_client_redirect_(params_->is_client_redirect),
       data_received_(false),
@@ -434,7 +438,8 @@ DocumentLoader::DocumentLoader(
           params_->is_cross_site_cross_browsing_context_group),
       navigation_api_back_entries_(params_->navigation_api_back_entries),
       navigation_api_forward_entries_(params_->navigation_api_forward_entries),
-      anonymous_(params_->anonymous) {
+      anonymous_(params_->anonymous),
+      extra_data_(std::move(extra_data)) {
   DCHECK(frame_);
 
   // TODO(dgozman): we should get rid of this boolean field, and make client
@@ -512,6 +517,8 @@ DocumentLoader::DocumentLoader(
       fenced_frame_reporting_->metadata.insert(destination, std::move(data));
     }
   }
+
+  frame_->Client()->DidCreateDocumentLoader(this);
 }
 
 std::unique_ptr<WebNavigationParams>
@@ -645,20 +652,15 @@ ResourceTimingInfo* DocumentLoader::GetNavigationTimingInfo() const {
   return navigation_timing_info_.get();
 }
 
-const AtomicString& DocumentLoader::OriginalReferrer() const {
+WebString DocumentLoader::OriginalReferrer() const {
   return original_referrer_;
-}
-
-void DocumentLoader::SetSubresourceFilter(
-    SubresourceFilter* subresource_filter) {
-  subresource_filter_ = subresource_filter;
 }
 
 const KURL& DocumentLoader::Url() const {
   return url_;
 }
 
-const AtomicString& DocumentLoader::HttpMethod() const {
+WebString DocumentLoader::HttpMethod() const {
   return http_method_;
 }
 
@@ -1583,6 +1585,7 @@ void DocumentLoader::DetachFromFrame(bool flush_microtask_queue) {
   if (!frame_)
     return;
 
+  extra_data_.reset();
   service_worker_network_provider_ = nullptr;
   WeakIdentifierMap<DocumentLoader>::NotifyObjectDestroyed(this);
   frame_ = nullptr;
@@ -1607,6 +1610,10 @@ bool DocumentLoader::WillLoadUrlAsEmpty(const KURL& url) {
   if (url.IsAboutSrcdocURL())
     return false;
   return SchemeRegistry::ShouldLoadURLSchemeAsEmptyDocument(url.Protocol());
+}
+
+bool WebDocumentLoader::WillLoadUrlAsEmpty(const WebURL& url) {
+  return DocumentLoader::WillLoadUrlAsEmpty(url);
 }
 
 void DocumentLoader::InitializeEmptyResponse() {
@@ -2991,6 +2998,46 @@ void DocumentLoader::SetCodeCacheHost(
     code_cache_host_ = std::make_unique<CodeCacheHost>(
         mojo::Remote<mojom::CodeCacheHost>(std::move(code_cache_host)));
   }
+}
+
+void DocumentLoader::SetSubresourceFilter(
+    WebDocumentSubresourceFilter* subresource_filter) {
+  DCHECK(subresource_filter);
+  subresource_filter_ = MakeGarbageCollected<SubresourceFilter>(
+      frame_->DomWindow(), base::WrapUnique(subresource_filter));
+}
+
+WebDocumentLoader::ExtraData* DocumentLoader::GetExtraData() const {
+  return extra_data_.get();
+}
+
+std::unique_ptr<WebDocumentLoader::ExtraData> DocumentLoader::TakeExtraData() {
+  return std::move(extra_data_);
+}
+
+void DocumentLoader::SetExtraData(std::unique_ptr<ExtraData> extra_data) {
+  extra_data_ = std::move(extra_data);
+}
+
+WebArchiveInfo DocumentLoader::GetArchiveInfo() const {
+  if (archive_ &&
+      archive_->LoadResult() == mojom::blink::MHTMLLoadResult::kSuccess) {
+    return {
+        archive_->LoadResult(),
+        archive_->MainResource()->Url(),
+        archive_->Date(),
+    };
+  }
+
+  // TODO(arthursonzogni): Returning MHTMLLoadResult::kSuccess when there are no
+  // archive is very misleading. Consider adding a new enum value to
+  // discriminate success versus no archive.
+  return {
+      archive_ ? archive_->LoadResult()
+               : mojom::blink::MHTMLLoadResult::kSuccess,
+      WebURL(),
+      base::Time(),
+  };
 }
 
 // static
