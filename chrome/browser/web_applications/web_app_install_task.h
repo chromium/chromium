@@ -60,7 +60,6 @@ class WebAppInstallTask : content::WebContentsObserver {
   using WebAppInstallFlow = WebAppInstallManager::WebAppInstallFlow;
 
   WebAppInstallTask(Profile* profile,
-                    WebAppInstallManager* install_manager,
                     WebAppInstallFinalizer* install_finalizer,
                     std::unique_ptr<WebAppDataRetriever> data_retriever,
                     WebAppRegistrar* registrar,
@@ -296,7 +295,6 @@ class WebAppInstallTask : content::WebContentsObserver {
       const DownloadedIconsHttpResults& icons_http_results);
 
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
-  raw_ptr<WebAppInstallManager> install_manager_;
   raw_ptr<WebAppInstallFinalizer> install_finalizer_;
   const raw_ptr<Profile> profile_;
   raw_ptr<WebAppRegistrar> registrar_;

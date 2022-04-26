@@ -192,8 +192,8 @@ class WebAppInstallTaskTest : public WebAppTest {
     data_retriever_ = static_cast<FakeDataRetriever*>(data_retriever.get());
 
     install_task_ = std::make_unique<WebAppInstallTask>(
-        profile(), &install_manager(), install_finalizer_.get(),
-        std::move(data_retriever), &registrar(), install_surface);
+        profile(), install_finalizer_.get(), std::move(data_retriever),
+        &registrar(), install_surface);
   }
 
   void SetInstallFinalizerForTesting() {
@@ -1213,9 +1213,8 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppWithParams_GuestProfile) {
                                              /*scope=*/GURL{});
 
   auto install_task = std::make_unique<WebAppInstallTask>(
-      guest_profile, &install_manager(), install_finalizer_.get(),
-      std::move(data_retriever), &registrar(),
-      webapps::WebappInstallSource::EXTERNAL_DEFAULT);
+      guest_profile, install_finalizer_.get(), std::move(data_retriever),
+      &registrar(), webapps::WebappInstallSource::EXTERNAL_DEFAULT);
 
   base::RunLoop run_loop;
   install_task->InstallWebAppWithParams(
@@ -1412,9 +1411,8 @@ TEST_F(WebAppInstallTaskTest, LoadAndRetrieveWebAppInstallInfoWithIcons) {
     url_loader().SetNextLoadUrlResult(url, WebAppUrlLoader::Result::kUrlLoaded);
 
     auto task = std::make_unique<WebAppInstallTask>(
-        profile(), &install_manager(), install_finalizer_.get(),
-        std::move(data_retriever), &registrar(),
-        webapps::WebappInstallSource::MENU_BROWSER_TAB);
+        profile(), install_finalizer_.get(), std::move(data_retriever),
+        &registrar(), webapps::WebappInstallSource::MENU_BROWSER_TAB);
 
     task->LoadAndRetrieveWebAppInstallInfoWithIcons(
         url, &url_loader(),

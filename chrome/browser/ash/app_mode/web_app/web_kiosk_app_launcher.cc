@@ -73,7 +73,6 @@ void WebKioskAppLauncher::ContinueWithNetworkReady() {
   DCHECK(!is_installed_);
   install_task_ = std::make_unique<web_app::WebAppInstallTask>(
       profile_,
-      /*install_manager=*/nullptr,
       /*install_finalizer=*/nullptr, data_retriever_factory_.Run(),
       /*registrar=*/nullptr, webapps::WebappInstallSource::MANAGEMENT_API);
   install_task_->LoadAndRetrieveWebAppInstallInfoWithIcons(

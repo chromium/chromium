@@ -114,7 +114,7 @@ void WebAppInstallManager::LoadWebAppAndCheckManifest(
   if (!started_)
     return;
 
-  auto task = std::make_unique<WebAppInstallTask>(profile_, this, finalizer_,
+  auto task = std::make_unique<WebAppInstallTask>(profile_, finalizer_,
                                                   data_retriever_factory_.Run(),
                                                   registrar_, install_surface);
 
@@ -136,7 +136,7 @@ void WebAppInstallManager::InstallWebAppFromManifest(
   if (!started_)
     return;
 
-  auto task = std::make_unique<WebAppInstallTask>(profile_, this, finalizer_,
+  auto task = std::make_unique<WebAppInstallTask>(profile_, finalizer_,
                                                   data_retriever_factory_.Run(),
                                                   registrar_, install_surface);
   task->InstallWebAppFromManifest(
@@ -156,7 +156,7 @@ void WebAppInstallManager::InstallWebAppFromManifestWithFallback(
   if (!started_)
     return;
 
-  auto task = std::make_unique<WebAppInstallTask>(profile_, this, finalizer_,
+  auto task = std::make_unique<WebAppInstallTask>(profile_, finalizer_,
                                                   data_retriever_factory_.Run(),
                                                   registrar_, install_surface);
   task->InstallWebAppFromManifestWithFallback(
@@ -178,7 +178,7 @@ void WebAppInstallManager::InstallSubApp(const AppId& parent_app_id,
   // app_id is made available.
 
   auto task = std::make_unique<WebAppInstallTask>(
-      profile_, this, finalizer_, data_retriever_factory_.Run(), registrar_,
+      profile_, finalizer_, data_retriever_factory_.Run(), registrar_,
       webapps::WebappInstallSource::SUB_APP);
 
   WebAppInstallParams params;
@@ -224,7 +224,7 @@ void WebAppInstallManager::InstallWebAppFromInfo(
   if (!started_)
     return;
 
-  auto task = std::make_unique<WebAppInstallTask>(profile_, this, finalizer_,
+  auto task = std::make_unique<WebAppInstallTask>(profile_, finalizer_,
                                                   data_retriever_factory_.Run(),
                                                   registrar_, install_surface);
   if (install_params) {
@@ -246,7 +246,7 @@ void WebAppInstallManager::InstallWebAppWithParams(
   if (!started_)
     return;
 
-  auto task = std::make_unique<WebAppInstallTask>(profile_, this, finalizer_,
+  auto task = std::make_unique<WebAppInstallTask>(profile_, finalizer_,
                                                   data_retriever_factory_.Run(),
                                                   registrar_, install_surface);
   task->InstallWebAppWithParams(
@@ -285,7 +285,7 @@ void WebAppInstallManager::EnqueueInstallAppFromSync(
   GURL start_url = web_application_info->start_url;
 
   auto task = std::make_unique<WebAppInstallTask>(
-      profile_, this, finalizer_, data_retriever_factory_.Run(), registrar_,
+      profile_, finalizer_, data_retriever_factory_.Run(), registrar_,
       webapps::WebappInstallSource::SYNC);
 
   task->ExpectAppId(sync_app_id);
@@ -433,7 +433,7 @@ void WebAppInstallManager::
 
   // Install failed. Do the fallback install from info fetching just icon URLs.
   auto task = std::make_unique<WebAppInstallTask>(
-      profile_, this, finalizer_, data_retriever_factory_.Run(), registrar_,
+      profile_, finalizer_, data_retriever_factory_.Run(), registrar_,
       webapps::WebappInstallSource::SYNC);
   // Set the expect app id for fallback install too. This can avoid duplicate
   // installs.

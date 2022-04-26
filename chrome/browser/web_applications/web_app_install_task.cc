@@ -22,7 +22,6 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_installation_utils.h"
@@ -165,13 +164,11 @@ mojo::Remote<crosapi::mojom::Arc>* GetArcRemoteWithMinVersion(
 
 WebAppInstallTask::WebAppInstallTask(
     Profile* profile,
-    WebAppInstallManager* install_manager,
     WebAppInstallFinalizer* install_finalizer,
     std::unique_ptr<WebAppDataRetriever> data_retriever,
     WebAppRegistrar* registrar,
     webapps::WebappInstallSource install_surface)
     : data_retriever_(std::move(data_retriever)),
-      install_manager_(install_manager),
       install_finalizer_(install_finalizer),
       profile_(profile),
       registrar_(registrar),
