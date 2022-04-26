@@ -90,10 +90,10 @@ struct TextSuggesterResult {
   [Stable, Extensible]
   enum Status {
     // Text suggestions generated successfully
-    [Default] OK = 0,
+    OK = 0,
     // There was an error while generating candidates, no candidates will be
     // returned with this result.
-    ERROR = 1,
+    [Default] ERROR = 1,
   };
 
   Status status@0;
