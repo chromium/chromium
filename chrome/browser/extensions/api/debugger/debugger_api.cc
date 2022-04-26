@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -201,6 +202,14 @@ bool ExtensionMayAttachToWebContents(const Extension& extension,
                                      Profile* extension_profile,
                                      WebContents& web_contents,
                                      std::string* error) {
+  security_interstitials::SecurityInterstitialTabHelper*
+      security_interstitial_tab_helper = security_interstitials::
+          SecurityInterstitialTabHelper::FromWebContents(&web_contents);
+  if (security_interstitial_tab_helper &&
+      security_interstitial_tab_helper->IsDisplayingInterstitial()) {
+    *error = debugger_api_constants::kRestrictedError;
+    return false;
+  }
   // This is *not* redundant to the checks below, as
   // web_contents.GetLastCommittedURL() may be different from
   // web_contents.GetMainFrame()->GetLastCommittedURL(), with the

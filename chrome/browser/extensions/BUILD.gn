@@ -794,6 +794,7 @@ static_library("extensions") {
     "//components/cbor:cbor",
     "//components/safe_browsing/content/browser",
     "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
+    "//components/security_interstitials/content:security_interstitial_page",
     "//components/site_engagement/core/mojom:mojo_bindings",
     "//components/webapps/browser",
 

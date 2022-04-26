@@ -36,9 +36,15 @@
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/prefs/pref_service.h"
+#include "components/security_interstitials/content/security_interstitial_controller_client.h"
+#include "components/security_interstitials/content/security_interstitial_page.h"
+#include "components/security_interstitials/content/security_interstitial_tab_helper.h"
+#include "components/security_interstitials/content/settings_page_helper.h"
+#include "components/security_interstitials/core/metrics_helper.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/extension.h"
@@ -69,6 +75,9 @@ class DebuggerApiTest : public ExtensionApiTest {
   // to succeed.
   testing::AssertionResult RunAttachFunction(const GURL& url,
                                              const std::string& expected_error);
+  testing::AssertionResult RunAttachFunction(
+      const content::WebContents* web_contents,
+      const std::string& expected_error);
 
   const Extension* extension() const { return extension_.get(); }
   base::CommandLine* command_line() const { return command_line_; }
@@ -116,9 +125,13 @@ void DebuggerApiTest::SetUpOnMainThread() {
 testing::AssertionResult DebuggerApiTest::RunAttachFunction(
     const GURL& url, const std::string& expected_error) {
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  return RunAttachFunction(browser()->tab_strip_model()->GetActiveWebContents(),
+                           expected_error);
+}
 
+testing::AssertionResult DebuggerApiTest::RunAttachFunction(
+    const content::WebContents* web_contents,
+    const std::string& expected_error) {
   // Attach by tabId.
   int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
   std::string debugee_by_tab = base::StringPrintf("{\"tabId\": %d}", tab_id);
@@ -227,6 +240,59 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        DebuggerNotAllowedOnFileUrlsWithoutAccess) {
   EXPECT_TRUE(RunExtensionTest("debugger_file_access")) << message_;
+}
+
+class TestInterstitialPage
+    : public security_interstitials::SecurityInterstitialPage {
+ public:
+  TestInterstitialPage(content::WebContents* web_contents,
+                       const GURL& request_url)
+      : SecurityInterstitialPage(
+            web_contents,
+            request_url,
+            std::make_unique<
+                security_interstitials::SecurityInterstitialControllerClient>(
+                web_contents,
+                CreateTestMetricsHelper(web_contents),
+                nullptr,
+                base::i18n::GetConfiguredLocale(),
+                GURL(),
+                /* settings_page_helper*/ nullptr)) {}
+
+  ~TestInterstitialPage() override = default;
+  void OnInterstitialClosing() override {}
+
+ protected:
+  void PopulateInterstitialStrings(base::Value* load_time_data) override {}
+
+  std::unique_ptr<security_interstitials::MetricsHelper>
+  CreateTestMetricsHelper(content::WebContents* web_contents) {
+    security_interstitials::MetricsHelper::ReportDetails report_details;
+    report_details.metric_prefix = "test_blocking_page";
+    return std::make_unique<security_interstitials::MetricsHelper>(
+        GURL(), report_details, nullptr);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
+                       DebuggerNotAllowedOnSecirutyInterstitials) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  std::unique_ptr<content::MockNavigationHandle> navigation_handle =
+      std::make_unique<content::MockNavigationHandle>(
+          GURL("https://google.com/"), web_contents->GetMainFrame());
+  navigation_handle->set_has_committed(true);
+  navigation_handle->set_is_same_document(false);
+  EXPECT_TRUE(RunAttachFunction(web_contents, ""));
+
+  security_interstitials::SecurityInterstitialTabHelper::AssociateBlockingPage(
+      navigation_handle.get(),
+      std::make_unique<TestInterstitialPage>(web_contents, GURL()));
+  security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+      web_contents)
+      ->DidFinishNavigation(navigation_handle.get());
+
+  EXPECT_TRUE(RunAttachFunction(web_contents, "Cannot attach to this target."));
 }
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
