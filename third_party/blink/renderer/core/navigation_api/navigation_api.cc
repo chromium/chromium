@@ -298,6 +298,8 @@ void NavigationApi::UpdateForNavigation(HistoryItem& item,
   // |entries_|. The navigation API considers this a no-op.
   if (entries_.IsEmpty())
     return;
+  // Temporary debugging for https://crbug.com/1319341
+  CHECK(GetSupplementable()->GetFrame());
 
   NavigationHistoryEntry* old_current = currentEntry();
 
@@ -323,6 +325,10 @@ void NavigationApi::UpdateForNavigation(HistoryItem& item,
     // to append.
     current_entry_index_++;
     for (wtf_size_t i = current_entry_index_; i < entries_.size(); i++) {
+      // Temporary debugging for https://crbug.com/1319341
+      CHECK(GetSupplementable()->GetFrame());
+      CHECK_EQ(GetSupplementable(), entries_[i]->DomWindow());
+      CHECK(!entries_[i]->key().IsNull());
       keys_to_indices_.erase(entries_[i]->key());
       disposed_entries.push_back(entries_[i]);
     }
@@ -340,6 +346,10 @@ void NavigationApi::UpdateForNavigation(HistoryItem& item,
     entries_[current_entry_index_] =
         MakeGarbageCollected<NavigationHistoryEntry>(GetSupplementable(),
                                                      &item);
+    // Temporary debugging for https://crbug.com/1319341
+    CHECK(GetSupplementable()->GetFrame());
+    CHECK_EQ(GetSupplementable(), entries_[current_entry_index_]->DomWindow());
+    CHECK(!entries_[current_entry_index_]->key().IsNull());
     keys_to_indices_.insert(entries_[current_entry_index_]->key(),
                             current_entry_index_);
   }
