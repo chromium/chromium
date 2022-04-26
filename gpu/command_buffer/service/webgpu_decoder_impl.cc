@@ -696,10 +696,10 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
       // Transition the image back to the desired end state. This is used for
       // transitioning the image to the external queue for Vulkan/GL interop.
-      if (scoped_read_access->end_state()) {
+      if (auto end_state = scoped_read_access->TakeEndState()) {
         if (!shared_context_state_->gr_context()->setBackendTextureState(
                 scoped_read_access->promise_image_texture()->backendTexture(),
-                *scoped_read_access->end_state())) {
+                *end_state)) {
           DLOG(ERROR) << "setBackendTextureState() failed.";
           return false;
         }
@@ -849,11 +849,10 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
       // Transition the image back to the desired end state. This is used for
       // transitioning the image to the external queue for Vulkan/GL interop.
-      if (scoped_write_access->end_state()) {
+      if (auto end_state = scoped_write_access->TakeEndState()) {
         // It's ok to pass in empty GrFlushInfo here since SignalSemaphores()
         // will populate it with semaphores and call GrDirectContext::flush.
-        scoped_write_access->surface()->flush(/*info=*/{},
-                                              scoped_write_access->end_state());
+        scoped_write_access->surface()->flush(/*info=*/{}, end_state.get());
       }
 
       SignalSemaphores(std::move(end_semaphores));

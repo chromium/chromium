@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_image_representation.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format_utils.h"
@@ -128,7 +129,22 @@ SharedImageRepresentationSkia::ScopedWriteAccess::ScopedWriteAccess(
       end_state_(std::move(end_state)) {}
 
 SharedImageRepresentationSkia::ScopedWriteAccess::~ScopedWriteAccess() {
+  if (end_state_) {
+    NOTREACHED() << "Before ending write access TakeEndState() must be called "
+                    "and the result passed to skia to make sure all layout and "
+                    "ownership transitions are done.";
+
+    static std::atomic_int count = 0;
+    if (count++ < 3)
+      base::debug::DumpWithoutCrashing();
+  }
+
   representation()->EndWriteAccess(std::move(surface_));
+}
+
+std::unique_ptr<GrBackendSurfaceMutableState>
+SharedImageRepresentationSkia::ScopedWriteAccess::TakeEndState() {
+  return std::move(end_state_);
 }
 
 std::unique_ptr<SharedImageRepresentationSkia::ScopedWriteAccess>
@@ -196,6 +212,15 @@ SharedImageRepresentationSkia::ScopedReadAccess::ScopedReadAccess(
       end_state_(std::move(end_state)) {}
 
 SharedImageRepresentationSkia::ScopedReadAccess::~ScopedReadAccess() {
+  if (end_state_) {
+    NOTREACHED() << "Before ending read access TakeEndState() must be called "
+                    "and the result passed to skia to make sure all layout and "
+                    "ownership transitions are done.";
+    static std::atomic_int count = 0;
+    if (count++ < 3)
+      base::debug::DumpWithoutCrashing();
+  }
+
   representation()->EndReadAccess();
 }
 
@@ -209,6 +234,11 @@ sk_sp<SkImage> SharedImageRepresentationSkia::ScopedReadAccess::CreateSkImage(
   return SkImage::MakeFromTexture(
       context, promise_image_texture_->backendTexture(), surface_origin,
       color_type, alpha_type, sk_color_space);
+}
+
+std::unique_ptr<GrBackendSurfaceMutableState>
+SharedImageRepresentationSkia::ScopedReadAccess::TakeEndState() {
+  return std::move(end_state_);
 }
 
 std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>

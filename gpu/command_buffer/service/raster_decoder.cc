@@ -302,6 +302,17 @@ class SharedImageProviderImpl final : public cc::SharedImageProvider {
     return sk_image;
   }
 
+  void ApplyEndAccessState() {
+    for (auto& accessor : read_accessors_) {
+      auto& scoped_access = accessor.second.scoped_read_access;
+      if (auto end_state = scoped_access->TakeEndState()) {
+        shared_context_state_->gr_context()->setBackendTextureState(
+            scoped_access->promise_image_texture()->backendTexture(),
+            *end_state);
+      }
+    }
+  }
+
  private:
   raw_ptr<SharedImageRepresentationFactory> shared_image_factory_;
   scoped_refptr<SharedContextState> shared_context_state_;
@@ -792,12 +803,13 @@ class RasterDecoderImpl final : public RasterDecoder,
 
   void FlushAndSubmitIfNecessary(
       SkSurface* surface,
+      std::unique_ptr<GrBackendSurfaceMutableState> TakeEndState,
       std::vector<GrBackendSemaphore> signal_semaphores) {
     bool sync_cpu = gpu::ShouldVulkanSyncCpuForSkiaSubmit(
         shared_context_state_->vk_context_provider());
     if (signal_semaphores.empty()) {
       if (surface) {
-        surface->flush();
+        surface->flush({}, TakeEndState.get());
       } else {
         gr_context()->flush();
       }
@@ -827,7 +839,7 @@ class RasterDecoderImpl final : public RasterDecoder,
 
     GrSemaphoresSubmitted result;
     if (surface)
-      result = surface->flush(flush_info);
+      result = surface->flush(flush_info, TakeEndState.get());
     else
       result = gr_context()->flush(flush_info);
     // If the |signal_semaphores| is empty, we can deferred the queue
@@ -2218,7 +2230,14 @@ void RasterDecoderImpl::DoCopySubTextureINTERNAL(
                           &paint, SkCanvas::kStrict_SrcRectConstraint);
   }
 
+  if (auto end_state = source_scoped_access->TakeEndState()) {
+    gr_context()->setBackendTextureState(
+        source_scoped_access->promise_image_texture()->backendTexture(),
+        *end_state);
+  }
+
   FlushAndSubmitIfNecessary(dest_scoped_access->surface(),
+                            dest_scoped_access->TakeEndState(),
                             std::move(end_semaphores));
   if (!dest_shared_image->IsCleared()) {
     dest_shared_image->SetClearedRect(new_cleared_rect);
@@ -2272,6 +2291,7 @@ bool RasterDecoderImpl::TryCopySubTextureINTERNALMemory(
   dest_scoped_access->surface()->writePixels(subset, xoffset, yoffset);
 
   FlushAndSubmitIfNecessary(dest_scoped_access->surface(),
+                            dest_scoped_access->TakeEndState(),
                             std::move(end_semaphores));
   if (!dest_shared_image->IsCleared()) {
     dest_shared_image->SetClearedRect(dest_cleared_rect);
@@ -2419,6 +2439,7 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
   }
 
   FlushAndSubmitIfNecessary(dest_scoped_access->surface(),
+                            dest_scoped_access->TakeEndState(),
                             std::move(end_semaphores));
   if (!dest_shared_image->IsCleared()) {
     dest_shared_image->SetClearedRect(
@@ -2455,7 +2476,12 @@ bool RasterDecoderImpl::DoWritePixelsINTERNALDirectTextureUpload(
       dest_scoped_access->promise_image_texture()->backendTexture(), &pixmap,
       /*levels=*/1, dest_shared_image->surface_origin(), nullptr, nullptr);
 
-  FlushAndSubmitIfNecessary(nullptr, std::move(end_semaphores));
+  if (dest_scoped_access->TakeEndState())
+    gr_context()->setBackendTextureState(
+        dest_scoped_access->promise_image_texture()->backendTexture(),
+        *dest_scoped_access->TakeEndState());
+
+  FlushAndSubmitIfNecessary(nullptr, nullptr, std::move(end_semaphores));
   if (written && !dest_shared_image->IsCleared()) {
     dest_shared_image->SetClearedRect(
         gfx::Rect(src_info.width(), src_info.height()));
@@ -2583,19 +2609,6 @@ void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
     DCHECK(wait_result);
   }
 
-  if (!end_semaphores.empty()) {
-    // Ask skia to signal |end_semaphores| here, since we will synchronized
-    // read pixels from the shared image.
-    GrFlushInfo flush_info = {
-        .fNumSemaphores = end_semaphores.size(),
-        .fSignalSemaphores = end_semaphores.data(),
-    };
-    AddVulkanCleanupTaskForSkiaFlush(
-        shared_context_state_->vk_context_provider(), &flush_info);
-    auto flush_result = shared_context_state_->gr_context()->flush(flush_info);
-    DCHECK(flush_result == GrSemaphoresSubmitted::kYes);
-  }
-
   auto sk_image =
       source_scoped_access->CreateSkImage(shared_context_state_->gr_context());
   if (!sk_image) {
@@ -2612,6 +2625,14 @@ void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
   } else {
     *result = 1;
   }
+
+  if (auto end_state = source_scoped_access->TakeEndState()) {
+    gr_context()->setBackendTextureState(
+        source_scoped_access->promise_image_texture()->backendTexture(),
+        *end_state);
+  }
+
+  FlushAndSubmitIfNecessary(nullptr, nullptr, std::move(end_semaphores));
 }
 
 namespace {
@@ -2676,12 +2697,13 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
   }
 
   std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
 
   // We don't use |end_semaphores| here because we're going to sync with
   // with the CPU later regardless.
   std::unique_ptr<SharedImageRepresentationSkia::ScopedReadAccess>
       source_scoped_access = source_shared_image->BeginScopedReadAccess(
-          &begin_semaphores, nullptr);
+          &begin_semaphores, &end_semaphores);
 
   if (!begin_semaphores.empty()) {
     bool result = shared_context_state_->gr_context()->wait(
@@ -2792,6 +2814,29 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
       kJPEG_Full_SkYUVColorSpace, SkColorSpace::MakeSRGB(), src_rect, dst_size,
       SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
       &OnReadYUVImagePixelsDone, &yuv_result);
+
+  if (auto end_state = source_scoped_access->TakeEndState()) {
+    gr_context()->setBackendTextureState(
+        source_scoped_access->promise_image_texture()->backendTexture(),
+        *end_state);
+  }
+
+  if (auto end_state = source_scoped_access->TakeEndState()) {
+    gr_context()->setBackendTextureState(
+        source_scoped_access->promise_image_texture()->backendTexture(),
+        *end_state);
+  }
+
+  if (!end_semaphores.empty()) {
+    GrFlushInfo flush_info = {
+        .fNumSemaphores = end_semaphores.size(),
+        .fSignalSemaphores = end_semaphores.data(),
+    };
+    AddVulkanCleanupTaskForSkiaFlush(
+        shared_context_state_->vk_context_provider(), &flush_info);
+    auto flush_result = shared_context_state_->gr_context()->flush(flush_info);
+    DCHECK(flush_result == GrSemaphoresSubmitted::kYes);
+  }
 
   // TODO(crbug.com/1023262): Eventually we should make this function truly
   // asynchronous by removing this flush and implementing a query that can
@@ -2981,6 +3026,7 @@ void RasterDecoderImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
   }
 
   FlushAndSubmitIfNecessary(dest_scoped_access->surface(),
+                            dest_scoped_access->TakeEndState(),
                             std::move(end_semaphores));
   if (!rgba_image->IsCleared() && drew_image) {
     rgba_image->SetCleared();
@@ -3059,7 +3105,9 @@ void RasterDecoderImpl::DoConvertRGBAToYUVAMailboxesINTERNAL(
   skia::BlitRGBAToYUVA(rgba_sk_image.get(), yuva_sk_surfaces, yuva_info);
 
   for (int i = 0; i < num_yuva_planes; ++i) {
-    FlushAndSubmitIfNecessary(yuva_scoped_access[i]->surface(), end_semaphores);
+    FlushAndSubmitIfNecessary(yuva_scoped_access[i]->surface(),
+                              yuva_scoped_access[i]->TakeEndState(),
+                              end_semaphores);
     if (!yuva_images[i]->IsCleared())
       yuva_images[i]->SetCleared();
   }
@@ -3437,8 +3485,18 @@ void RasterDecoderImpl::DoEndRasterCHROMIUM() {
     // hangs.
     gl::ScopedProgressReporter report_progress(
         shared_context_state_->progress_reporter());
-    FlushAndSubmitIfNecessary(sk_surface_, std::move(end_semaphores_));
-    end_semaphores_.clear();
+
+    // scoped_shared_image_write_ can be nullptr if sk_surface_ was set by
+    // SetUpForRasterCHROMIUMForTest.
+    if (scoped_shared_image_write_) {
+      paint_op_shared_image_provider_->ApplyEndAccessState();
+      FlushAndSubmitIfNecessary(sk_surface_,
+                                scoped_shared_image_write_->TakeEndState(),
+                                std::move(end_semaphores_));
+      end_semaphores_.clear();
+    } else {
+      DCHECK(end_semaphores_.empty());
+    }
   }
 
   shared_context_state_->UpdateSkiaOwnedMemorySize();

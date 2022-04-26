@@ -105,9 +105,8 @@ void OutputPresenter::Image::EndWriteSkia(bool force_flush) {
 
 void OutputPresenter::Image::PreGrContextSubmit() {
   DCHECK(scoped_skia_write_access_);
-  if (scoped_skia_write_access_->end_state()) {
-    scoped_skia_write_access_->surface()->flush(
-        {}, scoped_skia_write_access_->end_state());
+  if (auto end_state = scoped_skia_write_access_->TakeEndState()) {
+    scoped_skia_write_access_->surface()->flush({}, end_state.get());
   }
 }
 

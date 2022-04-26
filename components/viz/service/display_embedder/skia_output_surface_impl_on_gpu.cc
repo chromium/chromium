@@ -716,7 +716,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
       bool should_submit = !end_semaphores.empty();
 
       if (!FlushSurface(scoped_write->surface(), end_semaphores,
-                        scoped_write->end_state())) {
+                        scoped_write->TakeEndState())) {
         // TODO(penghuang): handle vulkan device lost.
         FailedSkiaFlush("CopyOutputRGBA dest_surface->flush()");
         return;
@@ -783,12 +783,13 @@ void SkiaOutputSurfaceImplOnGpu::RenderSurface(
 bool SkiaOutputSurfaceImplOnGpu::FlushSurface(
     SkSurface* surface,
     std::vector<GrBackendSemaphore>& end_semaphores,
-    const GrBackendSurfaceMutableState* end_state) {
+    std::unique_ptr<GrBackendSurfaceMutableState> end_state) {
   GrFlushInfo flush_info;
   flush_info.fNumSemaphores = end_semaphores.size();
   flush_info.fSignalSemaphores = end_semaphores.data();
   gpu::AddVulkanCleanupTaskForSkiaFlush(vulkan_context_provider_, &flush_info);
-  GrSemaphoresSubmitted flush_result = surface->flush(flush_info, end_state);
+  GrSemaphoresSubmitted flush_result =
+      surface->flush(flush_info, end_state.get());
   return flush_result == GrSemaphoresSubmitted::kYes || end_semaphores.empty();
 }
 
@@ -1051,7 +1052,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
     should_submit |= !plane_access_datas[i].end_semaphores.empty();
 
     if (!FlushSurface(plane_surfaces[i], plane_access_datas[i].end_semaphores,
-                      plane_access_datas[i].scoped_write->end_state())) {
+                      plane_access_datas[i].scoped_write->TakeEndState())) {
       // TODO(penghuang): handle vulkan device lost.
       FailedSkiaFlush("CopyOutputNV12 plane_surfaces[i]->flush()");
       return;
@@ -1063,7 +1064,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
   should_submit |= !end_semaphores.empty();
 
   if (!FlushSurface(scoped_write->surface(), end_semaphores,
-                    scoped_write->end_state())) {
+                    scoped_write->TakeEndState())) {
     // TODO(penghuang): handle vulkan device lost.
     FailedSkiaFlush("CopyOutputNV12 dest_surface->flush()");
     return;
@@ -1166,7 +1167,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
       scoped_access;
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
-  GrBackendSurfaceMutableState* end_state = nullptr;
+  std::unique_ptr<GrBackendSurfaceMutableState> end_state;
   if (from_framebuffer) {
     surface = scoped_output_device_paint_->sk_surface();
   } else {
@@ -1181,7 +1182,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
         &end_semaphores,
         gpu::SharedImageRepresentation::AllowUnclearedAccess::kNo);
     surface = scoped_access->surface();
-    end_state = scoped_access->end_state();
+    end_state = scoped_access->TakeEndState();
     if (!begin_semaphores.empty()) {
       auto result =
           surface->wait(begin_semaphores.size(), begin_semaphores.data(),
@@ -1289,11 +1290,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     }
   }
 
-  // Render pass images shouldn't have semaphores or need state transitions
-  // because they're never shared with other clients.
-  DCHECK(end_semaphores.empty());
-  DCHECK(!end_state);
-  if (!FlushSurface(surface, end_semaphores, end_state)) {
+  if (!FlushSurface(surface, end_semaphores, std::move(end_state))) {
     // TODO(penghuang): handle vulkan device lost.
     FailedSkiaFlush("surface->flush() failed.");
     return;
@@ -1340,8 +1337,9 @@ void SkiaOutputSurfaceImplOnGpu::BeginAccessImages(
     context->BeginAccessIfNecessary(
         context_state_.get(), shared_image_representation_factory_.get(),
         dependency_->GetMailboxManager(), begin_semaphores, end_semaphores);
-    if (context->end_access_state())
-      image_contexts_with_end_access_state_.emplace(context);
+    if (auto end_state = context->TakeAccessEndState())
+      image_contexts_with_end_access_state_.emplace(context,
+                                                    std::move(end_state));
 
     // Texture parameters can be modified by concurrent reads so reset them
     // before compositing from the texture. See https://crbug.com/1092080.
@@ -1356,11 +1354,10 @@ void SkiaOutputSurfaceImplOnGpu::BeginAccessImages(
 }
 
 void SkiaOutputSurfaceImplOnGpu::ResetStateOfImages() {
-  for (auto* context : image_contexts_with_end_access_state_) {
-    DCHECK(context->end_access_state());
+  for (auto& context : image_contexts_with_end_access_state_) {
     if (!gr_context()->setBackendTextureState(
-            context->promise_image_texture()->backendTexture(),
-            *context->end_access_state())) {
+            context.first->promise_image_texture()->backendTexture(),
+            *context.second)) {
       DLOG(ERROR) << "setBackendTextureState() failed.";
     }
   }
