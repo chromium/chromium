@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/test/scoped_feature_list.h"
@@ -29,6 +30,8 @@ namespace tracing {
 // Test producer client for data source tests.
 class TestProducerClient : public ProducerClient {
  public:
+  using PacketVector =
+      std::vector<std::unique_ptr<perfetto::protos::TracePacket>>;
   explicit TestProducerClient(std::unique_ptr<base::tracing::PerfettoTaskRunner>
                                   main_thread_task_runner,
                               bool log_only_main_thread = true);
@@ -55,10 +58,22 @@ class TestProducerClient : public ProducerClient {
   const perfetto::protos::ChromeMetadataPacket* GetProtoChromeMetadata(
       size_t packet_index = 0);
 
-  const std::vector<std::unique_ptr<perfetto::protos::TracePacket>>&
-  finalized_packets() const {
+  const PacketVector& finalized_packets() {
+    FlushPacketIfPossible();
     return finalized_packets_;
   }
+
+  // Serialize given trace packets and write the raw trace to the given file.
+  // Very handy for debugging when trace generated in a test needs to be
+  // exported, to understand it further with other tools.
+  // Sample usage : WriteTraceToFile("/tmp/trace.pb", finalized_packets());
+  static void WriteTraceToFile(const base::FilePath::StringType& filename,
+                               const PacketVector& packets);
+
+  static std::string SerializePacketsAsTrace(
+      const PacketVector& finalized_packets);
+
+  std::string GetSerializedTrace() const;
 
   int empty_finalized_packets_count() const {
     return empty_finalized_packets_count_;
@@ -68,15 +83,12 @@ class TestProducerClient : public ProducerClient {
   TestProducerClient& operator=(TestProducerClient&&) = delete;
 
  private:
-  std::vector<std::unique_ptr<perfetto::protos::TracePacket>>
-      finalized_packets_;
+  PacketVector finalized_packets_;
   // A count of finalized packets not added to |finalized_packets_| per being
   // empty.
   int empty_finalized_packets_count_ = 0;
-  std::vector<std::unique_ptr<perfetto::protos::TracePacket>>
-      legacy_metadata_packets_;
-  std::vector<std::unique_ptr<perfetto::protos::TracePacket>>
-      proto_metadata_packets_;
+  PacketVector legacy_metadata_packets_;
+  PacketVector proto_metadata_packets_;
   absl::optional<protozero::RootMessage<perfetto::protos::pbzero::TracePacket>>
       trace_packet_;
   protozero::ScatteredStreamWriterNullDelegate delegate_;
