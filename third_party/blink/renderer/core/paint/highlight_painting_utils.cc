@@ -98,11 +98,10 @@ Color HighlightThemeForegroundColor(const Document& document,
       if (RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()) {
         return previous_layer_color;
       } else {
-        // TODO(crbug.com/1295264): unstyled custom highlights should not change
-        // the foreground color, but for now the best we can do is defaulting to
-        // transparent (pre-HighlightOverlayPainting with double painting). The
-        // correct behaviour is to use the ‘color’ of the next topmost active
-        // highlight (equivalent to 'currentColor').
+        // TODO(crbug.com/1147859): Unstyled custom highlights should not be
+        // painted, so here we make the color default to transparent. When the
+        // highlight painting code is updated to match the spec, this should
+        // instead return the equivalent of 'currentColor'.
         return Color::kTransparent;
       }
     default:
