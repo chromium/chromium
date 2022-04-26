@@ -72,7 +72,7 @@ source_set("browser_tests_filters") {
     "//testing/buildbot/filters/mac.mac11-arm64-rel.browser_tests.filter",
     "//testing/buildbot/filters/mac.mac-rel.browser_tests.filter",
     "//testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter",
-    "//testing/buildbot/filters/pixel_browser_tests.filter",
+    "//testing/buildbot/filters/pixel_tests.filter",
     "//testing/buildbot/filters/webrtc_functional.browser_tests.filter",
     "//testing/buildbot/filters/win_backuprefptr_fyi.browser_tests.filter",
   ]
@@ -300,6 +300,7 @@ source_set("interactive_ui_tests_filters") {
   data = [
     "//testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter",
     "//testing/buildbot/filters/ozone-linux.interactive_ui_tests_wayland.filter",
+    "//testing/buildbot/filters/pixel_tests.filter",
   ]
 }
 

@@ -4615,9 +4615,21 @@
         'args': [
           '--browser-ui-tests-verify-pixels',
           '--enable-pixel-output-in-tests',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/pixel_browser_tests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/pixel_tests.filter',
         ],
         'test': 'browser_tests',
+        'mixins': [
+          'skia_gold_test',
+        ],
+      },
+      'pixel_interactive_ui_tests': {
+        'name': 'pixel_interactive_ui_tests',
+        'args': [
+          '--browser-ui-tests-verify-pixels',
+          '--enable-pixel-output-in-tests',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/pixel_tests.filter',
+        ],
+        'test': 'interactive_ui_tests',
         'mixins': [
           'skia_gold_test',
         ],
