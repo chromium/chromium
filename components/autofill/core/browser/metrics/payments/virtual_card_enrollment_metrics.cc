@@ -137,6 +137,21 @@ void LogVirtualCardEnrollBubbleLatencySinceUpstream(
       "Autofill.VirtualCardEnrollBubble.LatencySinceUpstream", latency);
 }
 
+void LogVirtualCardEnrollmentNotOfferedDueToMaxStrikes(
+    VirtualCardEnrollmentSource source) {
+  base::UmaHistogramEnumeration(
+      "Autofill.StrikeDatabase.VirtualCardEnrollmentNotOfferedDueToMaxStrikes",
+      source);
+}
+
+void LogVirtualCardEnrollmentNotOfferedDueToRequiredDelay(
+    VirtualCardEnrollmentSource source) {
+  base::UmaHistogramEnumeration(
+      "Autofill.StrikeDatabase."
+      "VirtualCardEnrollmentNotOfferedDueToRequiredDelay",
+      source);
+}
+
 std::string VirtualCardEnrollmentBubbleSourceToMetricSuffix(
     VirtualCardEnrollmentBubbleSource source) {
   switch (source) {

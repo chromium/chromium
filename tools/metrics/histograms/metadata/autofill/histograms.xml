@@ -227,6 +227,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".FidoAuthentication"
       summary="Fido authentication (Better Auth Project)"/>
   <variant name=".LocalCardMigration" summary="Local card migration"/>
+  <variant name=".VirtualCardEnrollment" summary="virtual card enrollment"/>
 </variants>
 
 <histogram
@@ -3135,6 +3136,41 @@ chromium-metrics-reviews@google.com.
       variants="AutofillStrikeDatabaseProjectType">
     <variant name=""/>
   </token>
+</histogram>
+
+<histogram name="Autofill.StrikeDatabase.StrikesPresentWhenVirtualCardEnrolled"
+    units="strikes" expires_after="2022-10-31">
+  <owner>jsaul@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the number of &quot;strikes&quot; a given card had when a user
+    successfully enrolled in a virtual card.
+  </summary>
+</histogram>
+
+<histogram
+    name="Autofill.StrikeDatabase.VirtualCardEnrollmentNotOfferedDueToMaxStrikes"
+    enum="AutofillVirtualCardEnrollmentSource" expires_after="2022-10-31">
+  <owner>jsaul@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records and emits true when virtual card enrollment is not offered due to
+    the candidate's strike count reaching maximum strikes.
+  </summary>
+</histogram>
+
+<histogram
+    name="Autofill.StrikeDatabase.VirtualCardEnrollmentNotOfferedDueToRequiredDelay"
+    enum="AutofillVirtualCardEnrollmentSource" expires_after="2022-10-31">
+  <owner>jsaul@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records and emits true when virtual card enrollment is not offered due to
+    the required delay not yet passing since candidate's last strike.
+  </summary>
 </histogram>
 
 <histogram name="Autofill.SubmittedCardState" enum="AutofillSubmittedCardState"

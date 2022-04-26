@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+
 #include <string>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -195,9 +197,12 @@ bool VirtualCardEnrollmentManager::ShouldBlockVirtualCardEnrollment(
     case VirtualCardEnrollmentStrikeDatabase::kMaxStrikeLimitReached:
       LogVirtualCardEnrollmentBubbleMaxStrikesLimitReached(
           virtual_card_enrollment_source);
+      LogVirtualCardEnrollmentNotOfferedDueToMaxStrikes(
+          virtual_card_enrollment_source);
       break;
     case VirtualCardEnrollmentStrikeDatabase::kRequiredLatencyNotPassed:
-      // TODO(crbug.com/1304328): Add logging to record this reason.
+      LogVirtualCardEnrollmentNotOfferedDueToRequiredDelay(
+          virtual_card_enrollment_source);
       break;
     case VirtualCardEnrollmentStrikeDatabase::kUnknown:
       NOTREACHED();
@@ -227,6 +232,12 @@ void VirtualCardEnrollmentManager::
         const std::string& instrument_id) {
   if (!GetVirtualCardEnrollmentStrikeDatabase())
     return;
+
+  // Before we remove the existing strikes for the card, log the strike number
+  // first.
+  base::UmaHistogramCounts1000(
+      "Autofill.StrikeDatabase.StrikesPresentWhenVirtualCardEnrolled",
+      GetVirtualCardEnrollmentStrikeDatabase()->GetStrikes(instrument_id));
 
   GetVirtualCardEnrollmentStrikeDatabase()->ClearStrikes(instrument_id);
 

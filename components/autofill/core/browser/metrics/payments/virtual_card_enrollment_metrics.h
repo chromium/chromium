@@ -138,6 +138,13 @@ void LogVirtualCardEnrollBubbleCardArtAvailable(
 void LogVirtualCardEnrollBubbleLatencySinceUpstream(
     const base::TimeDelta& latency);
 
+// Logs the reason from strikedatabase perspective why virtual card enrollment
+// is not offered.
+void LogVirtualCardEnrollmentNotOfferedDueToMaxStrikes(
+    VirtualCardEnrollmentSource source);
+void LogVirtualCardEnrollmentNotOfferedDueToRequiredDelay(
+    VirtualCardEnrollmentSource source);
+
 // Helper function used to convert VirtualCardEnrollmentBubbleSource enum to
 // name suffix.
 std::string VirtualCardEnrollmentBubbleSourceToMetricSuffix(
