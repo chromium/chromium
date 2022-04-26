@@ -4082,6 +4082,21 @@
             ]
         }
     ],
+    "IOSThumbstrip": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ExpandedTabStrip"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSUseUserDefaultsForExitedCleanlyBeacon": [
         {
             "platforms": [
