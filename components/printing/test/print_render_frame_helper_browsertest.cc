@@ -1867,8 +1867,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
   VerifyPrintPreviewGenerated(true);
   VerifyPagesPrinted(false);
 #if BUILDFLAG(ENABLE_TAGGED_PDF)
-  // TODO(crbug.com/1142851): Should be 2.
-  EXPECT_EQ(1, print_manager()->accessibility_tree_set_count());
+  EXPECT_EQ(2, print_manager()->accessibility_tree_set_count());
 #endif
 }
 

@@ -1707,6 +1707,13 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
     return CREATE_FAIL;
   }
 
+  // If tagged PDF exporting is enabled, we also need to capture an
+  // accessibility tree. AXTreeSnapshotter should stay alive through the end of
+  // the scope of printing, because text drawing commands are only annotated
+  // with a DOMNodeId if accessibility is enabled.
+  if (delegate_->ShouldGenerateTaggedPDF())
+    snapshotter_ = render_frame()->CreateAXTreeSnapshotter(ui::AXMode::kPDF);
+
   double scale_factor =
       GetScaleFactor(print_params.scale_factor,
                      /*is_pdf=*/!print_preview_context_.IsModifiable());
@@ -2590,13 +2597,6 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
 #endif
   const bool is_modifiable = print_preview_context_.IsModifiable();
   const bool has_selection = print_preview_context_.HasSelection();
-
-  // If tagged PDF exporting is enabled, we also need to capture an
-  // accessibility tree. AXTreeSnapshotter should stay alive through the end of
-  // the scope of printing, because text drawing commands are only annotated
-  // with a DOMNodeId if accessibility is enabled.
-  if (delegate_->ShouldGenerateTaggedPDF())
-    snapshotter_ = render_frame()->CreateAXTreeSnapshotter(ui::AXMode::kPDF);
 
   auto params = mojom::RequestPrintPreviewParams::New();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
