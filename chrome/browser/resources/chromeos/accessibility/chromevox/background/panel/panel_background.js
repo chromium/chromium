@@ -8,6 +8,9 @@
  */
 import {ISearch} from './i_search.js';
 
+// This class is imported for its side effects.
+import {PanelNodeMenuBackground} from './panel_node_menu_background.js';
+
 export class PanelBackground {
   /** @private */
   constructor() {

@@ -18,6 +18,8 @@ goog.require('Msgs');
 goog.require('Output');
 goog.require('Output');
 goog.require('PanelCommand');
+goog.require('PanelNodeMenuData');
+goog.require('PanelNodeMenuItemData');
 goog.require('QueueMode');
 goog.require('constants');
 goog.require('cursors.Cursor');

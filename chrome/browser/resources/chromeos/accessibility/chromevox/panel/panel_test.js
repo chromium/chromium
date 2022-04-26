@@ -123,9 +123,9 @@ TEST_F('ChromeVoxPanelTest', 'FormControlsMenu', async function() {
 });
 
 TEST_F('ChromeVoxPanelTest', 'SearchMenu', async function() {
-  const mockFeedback = this.createMockFeedback();
   await this.runWithLoadedTree(this.linksDoc);
   new PanelCommand(PanelCommandType.OPEN_MENUS).send();
+  const mockFeedback = this.createMockFeedback();
   await this.waitForMenu('panel_search_menu');
   await mockFeedback
       .expectSpeech('Search the menus', /Type to search the menus/)
