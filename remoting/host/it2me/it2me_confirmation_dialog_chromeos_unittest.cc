@@ -142,6 +142,19 @@ TEST_F(It2MeConfirmationDialogChromeOSTest, NotificationShouldBePersistent) {
 }
 
 TEST_F(It2MeConfirmationDialogChromeOSTest,
+       NotificationShouldBeShownInDoNotDisturbMode) {
+  dialog->Show(kTestingRemoteEmail, DoNothingCallback());
+
+  const message_center::Notification* notification = GetFirstNotification();
+  ASSERT_NE(notification, nullptr);
+
+  // Notifications are shown in do-not-disturb mode only if their warning level
+  // is `CRITICAL_WARNING`. See NotificationList::PushNotification().
+  ASSERT_EQ(notification->system_notification_warning_level(),
+            message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
+}
+
+TEST_F(It2MeConfirmationDialogChromeOSTest,
        NotificationShouldHaveConfirmAndCancelButton) {
   dialog->Show(kTestingRemoteEmail, DoNothingCallback());
 

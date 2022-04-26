@@ -120,10 +120,14 @@ void It2MeConfirmationDialogChromeOS::ShowConfirmationNotification(
               base::BindRepeating(&It2MeConfirmationDialogChromeOS::
                                       OnConfirmationNotificationResult,
                                   base::Unretained(this))),
-          GetIcon(), message_center::SystemNotificationWarningLevel::NORMAL);
+          GetIcon(),
+          // Warning level must be set to CRITICAL_WARNING to ensure this
+          // notification is always shown, even when the user enabled
+          // do-not-disturb mode.
+          message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
 
-  // Set system priority so the notification is always shown (even in
-  // do-not-disturb mode) and it will never time out.
+  // Set system priority so the notification is always shown and it will never
+  // time out.
   notification->SetSystemPriority();
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
