@@ -220,10 +220,14 @@ target(partition_alloc_target_type, "partition_alloc") {
     frameworks += [ "Security.framework" ]
   }
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   # Partition alloc is relatively hot (>1% of cycles for users of CrOS). Use speed-focused
   # optimizations for it.
-  configs -= [ "//build/config/compiler:default_optimization" ]
-  configs += [ "//build/config/compiler:optimize_speed" ]
+  if (!is_debug) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_speed" ]
+  }
 }
 
 # TODO(crbug.com/1151236): After making partition_alloc a standalone library,
