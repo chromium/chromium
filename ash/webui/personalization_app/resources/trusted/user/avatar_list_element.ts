@@ -298,11 +298,16 @@ export class AvatarList extends WithPersonalizationStore {
     }
   }
 
+  private camelToKebab_(className: string): string {
+    return className.replace(/[A-Z]/g, m => '-' + m.toLowerCase());
+  }
+
   private getOptionInnerContainerClass_(option: Option, image: UserImage|null):
       string {
+    const defaultClass = option ? option.class : 'image-container';
     return this.getAriaSelected_(option, image) === 'true' ?
-        `${option.class} selected-${option.id}` :
-        option.class;
+        `${defaultClass} selected-${this.camelToKebab_(option.id)}` :
+        defaultClass;
   }
 }
 
