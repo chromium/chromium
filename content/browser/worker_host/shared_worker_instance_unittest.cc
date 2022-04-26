@@ -28,7 +28,6 @@ class SharedWorkerInstanceTest : public testing::Test {
     return SharedWorkerInstance(
         script_url, blink::mojom::ScriptType::kClassic,
         network::mojom::CredentialsMode::kSameOrigin, name, storage_key,
-        network::mojom::IPAddressSpace::kPublic,
         blink::mojom::SharedWorkerCreationContextType::kNonsecure);
   }
 
@@ -263,22 +262,6 @@ TEST_F(SharedWorkerInstanceTest, MatchesTest_FileURLWorker) {
   EXPECT_FALSE(Matches(instance2, kFileURL, ""));
   // This should not match because file:// URL is treated as an opaque origin.
   EXPECT_FALSE(Matches(instance2, kFileURL, "name"));
-}
-
-TEST_F(SharedWorkerInstanceTest, AddressSpace) {
-  const network::mojom::IPAddressSpace kAddressSpaces[] = {
-      network::mojom::IPAddressSpace::kLocal,
-      network::mojom::IPAddressSpace::kPrivate,
-      network::mojom::IPAddressSpace::kPublic};
-  for (auto address_space : kAddressSpaces) {
-    SharedWorkerInstance instance(
-        GURL("http://example.com/w.js"), blink::mojom::ScriptType::kClassic,
-        network::mojom::CredentialsMode::kSameOrigin, "name",
-        blink::StorageKey::CreateFromStringForTesting("http://example.com/"),
-        address_space,
-        blink::mojom::SharedWorkerCreationContextType::kNonsecure);
-    EXPECT_EQ(address_space, instance.creation_address_space());
-  }
 }
 
 }  // namespace content

@@ -86,7 +86,6 @@ class SharedWorkerHostTest : public testing::Test {
         kWorkerUrl, blink::mojom::ScriptType::kClassic,
         network::mojom::CredentialsMode::kSameOrigin, "name",
         blink::StorageKey(url::Origin::Create(kWorkerUrl)),
-        network::mojom::IPAddressSpace::kPublic,
         blink::mojom::SharedWorkerCreationContextType::kSecure);
     auto host = std::make_unique<SharedWorkerHost>(
         &service_, instance, site_instance_,
@@ -381,7 +380,6 @@ TEST_F(SharedWorkerHostTest,
       network::mojom::CredentialsMode::kSameOrigin, "name",
       blink::StorageKey::CreateWithNonce(url::Origin::Create(kWorkerUrl),
                                          nonce),
-      network::mojom::IPAddressSpace::kPublic,
       blink::mojom::SharedWorkerCreationContextType::kSecure);
   auto host = std::make_unique<SharedWorkerHost>(
       &service_, instance, site_instance_,
@@ -425,7 +423,6 @@ TEST_F(SharedWorkerHostTestWithPNAEnabled,
       kWorkerUrl, blink::mojom::ScriptType::kClassic,
       network::mojom::CredentialsMode::kSameOrigin, "name",
       blink::StorageKey(url::Origin::Create(kWorkerUrl)),
-      network::mojom::IPAddressSpace::kPublic,
       blink::mojom::SharedWorkerCreationContextType::kSecure);
   network::CrossOriginEmbedderPolicy creator_cross_origin_embedder_policy;
   creator_cross_origin_embedder_policy.value =

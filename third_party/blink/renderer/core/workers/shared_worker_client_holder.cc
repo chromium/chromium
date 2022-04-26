@@ -115,7 +115,6 @@ void SharedWorkerClientHolder::Connect(
       mojo::Clone(worker->GetExecutionContext()
                       ->GetContentSecurityPolicy()
                       ->GetParsedPolicies()),
-      worker->GetExecutionContext()->AddressSpace(),
       mojom::blink::FetchClientSettingsObject::New(
           outside_fetch_client_settings_object->GetReferrerPolicy(),
           KURL(outside_fetch_client_settings_object->GetOutgoingReferrer()),

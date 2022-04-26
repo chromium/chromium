@@ -54,7 +54,6 @@ void ConnectToSharedWorker(
   blink::mojom::SharedWorkerInfoPtr info(blink::mojom::SharedWorkerInfo::New(
       url, std::move(options),
       std::vector<network::mojom::ContentSecurityPolicyPtr>(),
-      network::mojom::IPAddressSpace::kPublic,
       blink::mojom::FetchClientSettingsObject::New(
           network::mojom::ReferrerPolicy::kDefault, GURL(),
           blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade)));

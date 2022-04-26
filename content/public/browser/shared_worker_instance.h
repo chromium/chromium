@@ -10,7 +10,6 @@
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
-#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_creation_context_type.mojom.h"
@@ -35,7 +34,6 @@ class CONTENT_EXPORT SharedWorkerInstance {
       network::mojom::CredentialsMode credentials_mode,
       const std::string& name,
       const blink::StorageKey& storage_key,
-      network::mojom::IPAddressSpace creation_address_space,
       blink::mojom::SharedWorkerCreationContextType creation_context_type);
   SharedWorkerInstance(const SharedWorkerInstance& other);
   SharedWorkerInstance(SharedWorkerInstance&& other);
@@ -60,9 +58,6 @@ class CONTENT_EXPORT SharedWorkerInstance {
     return credentials_mode_;
   }
   const blink::StorageKey& storage_key() const { return storage_key_; }
-  network::mojom::IPAddressSpace creation_address_space() const {
-    return creation_address_space_;
-  }
   blink::mojom::SharedWorkerCreationContextType creation_context_type() const {
     return creation_context_type_;
   }
@@ -82,7 +77,6 @@ class CONTENT_EXPORT SharedWorkerInstance {
   // https://html.spec.whatwg.org/multipage/workers.html#concept-sharedworkerglobalscope-constructor-origin
   const blink::StorageKey storage_key_;
 
-  const network::mojom::IPAddressSpace creation_address_space_;
   const blink::mojom::SharedWorkerCreationContextType creation_context_type_;
 };
 
