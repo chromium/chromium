@@ -27,7 +27,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -94,7 +93,7 @@ void LogTabUnderAttempt(content::NavigationHandle* handle) {
   // previous navigation commit.
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
   ukm::SourceId opener_source_id =
-      ukm::GetSourceIdForWebContentsDocument(handle->GetWebContents());
+      handle->GetWebContents()->GetMainFrame()->GetPageUkmSourceId();
   if (opener_source_id != ukm::kInvalidSourceId && ukm_recorder) {
     ukm::builders::AbusiveExperienceHeuristic_TabUnder(opener_source_id)
         .SetDidTabUnder(true)

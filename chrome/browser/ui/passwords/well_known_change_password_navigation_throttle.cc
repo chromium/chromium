@@ -15,7 +15,6 @@
 #include "components/password_manager/core/browser/well_known_change_password_state.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
@@ -82,7 +81,7 @@ WellKnownChangePasswordNavigationThrottle::
     : NavigationThrottle(handle),
       request_url_(handle->GetURL()),
       source_id_(
-          ukm::GetSourceIdForWebContentsDocument(handle->GetWebContents())) {
+          handle->GetWebContents()->GetMainFrame()->GetPageUkmSourceId()) {
   // If this is a prerender navigation, we're only constructing the throttle
   // so it can cancel the prerender.
   if (handle->IsInPrerenderedMainFrame())
