@@ -24,6 +24,13 @@ BrailleCommandHandler.setEnabled = function(state) {
   BrailleCommandHandler.enabled_ = state;
 };
 
+chrome.runtime.onMessage.addListener(message => {
+  if (message.target === 'BrailleCommandHandler' &&
+      message.action === 'setEnabled') {
+    BrailleCommandHandler.setEnabled(message.value);
+  }
+});
+
 /**
  * Handles a braille command.
  * @param {!BrailleKeyEvent} evt
@@ -221,6 +228,3 @@ BrailleCommandHandler.onEditCommand_ = function(command) {
 
 /** @private {boolean} */
 BrailleCommandHandler.enabled_ = true;
-
-BridgeHelper.registerHandler(
-    'BrailleCommandHandler', 'setEnabled', BrailleCommandHandler.setEnabled);

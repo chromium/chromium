@@ -77,7 +77,6 @@ ChromeVoxLearnModeTest = class extends ChromeVoxNextE2ETest {
       chrome.runtime.sendMessage({
         target: 'LearnMode',
         action: 'onAccessibilityGesture',
-        context: 'test',
         args: [gesture]
       });
     };
@@ -134,6 +133,8 @@ TEST_F('ChromeVoxLearnModeTest', 'KeyboardInputRepeat', async function() {
 
 TEST_F('ChromeVoxLearnModeTest', 'Gesture', async function() {
   const [mockFeedback, evt] = await this.runOnLearnModePage();
+  chrome.runtime.sendMessage(
+      {target: 'LearnMode', action: 'clearTouchExploreOutputTime'});
   mockFeedback.call(doLearnModeGesture(Gesture.SWIPE_RIGHT1))
       .expectSpeechWithQueueMode(
           'Swipe one finger right', QueueMode.CATEGORY_FLUSH)
