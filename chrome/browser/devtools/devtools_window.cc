@@ -442,10 +442,6 @@ DevToolsWindow::~DevToolsWindow() {
   if (throttle_)
     throttle_->ResumeThrottle();
 
-  if (reattach_complete_callback_) {
-    std::move(reattach_complete_callback_).Run();
-  }
-
   life_stage_ = kClosing;
 
   UpdateBrowserWindow();
@@ -467,6 +463,13 @@ DevToolsWindow::~DevToolsWindow() {
   if (owned_main_web_contents_) {
     base::SequencedTaskRunnerHandle::Get()->DeleteSoon(
         FROM_HERE, std::move(owned_main_web_contents_));
+  }
+
+  // This should be run after we remove |this| from
+  // |g_devtools_window_instances| as |reattach_complete_callback| may try to
+  // access it.
+  if (reattach_complete_callback_) {
+    std::move(reattach_complete_callback_).Run();
   }
 }
 
