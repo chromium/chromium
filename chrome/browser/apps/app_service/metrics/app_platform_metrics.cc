@@ -144,7 +144,9 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
     case apps::AppType::kSystemWeb:
       return apps::AppTypeNameV2::kSystemWeb;
     case apps::AppType::kStandaloneBrowserChromeApp:
-      return apps::AppTypeNameV2::kStandaloneBrowserChromeApp;
+      return apps::IsLacrosBrowserWindow(profile, window)
+                 ? apps::AppTypeNameV2::kStandaloneBrowserChromeAppTab
+                 : apps::AppTypeNameV2::kStandaloneBrowserChromeAppWindow;
     case apps::AppType::kExtension:
       return apps::AppTypeNameV2::kExtension;
     case apps::AppType::kStandaloneBrowserExtension:
@@ -194,8 +196,14 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
       return apps::AppTypeNameV2::kBorealis;
     case apps::AppType::kSystemWeb:
       return apps::AppTypeNameV2::kSystemWeb;
-    case apps::AppType::kStandaloneBrowserChromeApp:
-      return apps::AppTypeNameV2::kStandaloneBrowserChromeApp;
+    case apps::AppType::kStandaloneBrowserChromeApp: {
+      apps::AppTypeName app_type_name =
+          apps::GetAppTypeNameForStandaloneBrowserChromeApp(profile, app_id,
+                                                            container);
+      return app_type_name == apps::AppTypeName::kStandaloneBrowser
+                 ? apps::AppTypeNameV2::kStandaloneBrowserChromeAppTab
+                 : apps::AppTypeNameV2::kStandaloneBrowserChromeAppWindow;
+    }
     case apps::AppType::kExtension:
       return apps::AppTypeNameV2::kExtension;
     case apps::AppType::kStandaloneBrowserExtension:
@@ -292,6 +300,10 @@ std::string GetAppTypeHistogramNameV2(apps::AppTypeNameV2 app_type_name) {
       return kExtensionHistogramName;
     case apps::AppTypeNameV2::kStandaloneBrowserExtension:
       return kStandaloneBrowserExtensionHistogramName;
+    case apps::AppTypeNameV2::kStandaloneBrowserChromeAppWindow:
+      return kStandaloneBrowserChromeAppWindowHistogramName;
+    case apps::AppTypeNameV2::kStandaloneBrowserChromeAppTab:
+      return kStandaloneBrowserChromeAppTabHistogramName;
   }
 }
 

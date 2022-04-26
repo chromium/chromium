@@ -65,13 +65,17 @@ enum class AppTypeNameV2 {
   kBorealis = 12,
   kSystemWeb = 13,
   kChromeBrowser = 14,
+  // Deprecated. Replaced by kStandaloneBrowserChromeAppWindow and
+  // kStandaloneBrowserChromeAppTab.
   kStandaloneBrowserChromeApp = 15,
   kExtension = 16,
   kStandaloneBrowserExtension = 17,
+  kStandaloneBrowserChromeAppWindow = 18,
+  kStandaloneBrowserChromeAppTab = 19,
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kStandaloneBrowserExtension,
+  kMaxValue = kStandaloneBrowserChromeAppTab,
 };
 
 extern const base::TimeDelta kMinDuration;
@@ -96,6 +100,10 @@ constexpr char kStandaloneBrowserChromeAppHistogramName[] =
 constexpr char kExtensionHistogramName[] = "Extension";
 constexpr char kStandaloneBrowserExtensionHistogramName[] =
     "StandaloneBrowserExtension";
+constexpr char kStandaloneBrowserChromeAppWindowHistogramName[] =
+    "StandaloneBrowserChromeAppWindow";
+constexpr char kStandaloneBrowserChromeAppTabHistogramName[] =
+    "StandaloneBrowserChromeAppTab";
 
 // Determines what app type a web app should be logged as based on its launch
 // container and app id. In particular, web apps in tabs are logged as part of
