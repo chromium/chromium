@@ -81,7 +81,7 @@ Vector<String> GetScriptUrlsFromCurrentStack(wtf_size_t unique_url_count) {
   int frame_count = stack_trace->GetFrameCount();
   for (int i = 0; i < frame_count; ++i) {
     v8::Local<v8::StackFrame> frame = stack_trace->GetFrame(isolate, i);
-    v8::Local<v8::String> script_name = frame->GetScriptNameOrSourceURL();
+    v8::Local<v8::String> script_name = frame->GetScriptName();
     if (script_name.IsEmpty() || !script_name->Length())
       continue;
     String url = ToCoreString(script_name);
