@@ -1099,6 +1099,14 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
       if (!cc->LastUpdateDate().is_null()) {
         DLOG_IF(WARNING, cc->LastUpdateDate() > Time::Now())
             << L"LastUpdateDate too recent";
+        // In order to anticipate the potential effects of the expiry limit in
+        // rfc6265bis, we need to check how long it's been since the cookie was
+        // refreshed (if LastUpdateDate is populated). We use 100 buckets for
+        // the highest reasonable granularity, set 1 day as the minimum and
+        // don't track over a 400 max (since these cookies will expire anyway).
+        UMA_HISTOGRAM_CUSTOM_COUNTS(
+            "Cookie.DaysSinceRefreshForRetrieval",
+            (base::Time::Now() - cc->LastUpdateDate()).InDays(), 1, 400, 100);
       }
       cookies.push_back(std::move(cc));
     } else {
