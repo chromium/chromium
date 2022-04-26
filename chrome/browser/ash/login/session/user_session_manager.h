@@ -64,6 +64,7 @@ class AuthStatusConsumer;
 class OnboardingUserActivityCounter;
 class StubAuthenticatorBuilder;
 class TokenHandleFetcher;
+class EasyUnlockNotificationController;
 
 namespace test {
 class UserSessionManagerTestApi;
@@ -673,6 +674,11 @@ class UserSessionManager
 
   std::unique_ptr<HelpAppNotificationController>
       help_app_notification_controller_;
+
+  // TODO(b/227674947): Eventually delete this after Sign in with Smart Lock has
+  // been removed and enough time has elapsed for users to be notified.
+  std::unique_ptr<EasyUnlockNotificationController>
+      easy_unlock_notification_controller_;
 
   bool token_handle_backfill_tried_for_testing_ = false;
 

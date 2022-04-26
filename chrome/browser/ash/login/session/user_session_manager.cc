@@ -64,6 +64,7 @@
 #include "chrome/browser/ash/login/chrome_restart_request.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
+#include "chrome/browser/ash/login/easy_unlock/easy_unlock_notification_controller.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/helper.h"
@@ -1934,6 +1935,13 @@ void UserSessionManager::ShowNotificationsIfNeeded(Profile* profile) {
       ->browser_policy_connector_ash()
       ->GetAdbSideloadingAllowanceModePolicyHandler()
       ->ShowAdbSideloadingPolicyChangeNotificationIfNeeded();
+
+  if (EasyUnlockNotificationController::ShouldShowSignInRemovedNotification(
+          profile)) {
+    easy_unlock_notification_controller_ =
+        std::make_unique<EasyUnlockNotificationController>(profile);
+    easy_unlock_notification_controller_->ShowSignInRemovedNotification();
+  }
 }
 
 void UserSessionManager::MaybeLaunchSettings(Profile* profile) {
@@ -2366,6 +2374,7 @@ void UserSessionManager::Shutdown() {
   token_observers_.clear();
   always_on_vpn_manager_.reset();
   u2f_notification_.reset();
+  easy_unlock_notification_controller_.reset();
   help_app_notification_controller_.reset();
   password_service_voted_.reset();
   password_was_saved_ = false;

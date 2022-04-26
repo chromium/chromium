@@ -4,15 +4,20 @@
 
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_notification_controller.h"
 
+#include "ash/components/proximity_auth/proximity_auth_pref_names.h"
 #include "ash/components/proximity_auth/screenlock_bridge.h"
+#include "ash/constants/ash_features.h"
 #include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -29,6 +34,9 @@ const char kEasyUnlockPairingChangeNotifierId[] =
 
 const char kEasyUnlockPairingChangeAppliedNotifierId[] =
     "easyunlock_notification_ids.pairing_change_applied";
+
+const char kSmartLockSignInRemovedNotifierId[] =
+    "easyunlock_notification_ids.sign_in_removed";
 
 // Convenience function for creating a Notification.
 std::unique_ptr<message_center::Notification> CreateNotification(
@@ -54,6 +62,39 @@ EasyUnlockNotificationController::EasyUnlockNotificationController(
     : profile_(profile) {}
 
 EasyUnlockNotificationController::~EasyUnlockNotificationController() {}
+
+// static
+bool EasyUnlockNotificationController::ShouldShowSignInRemovedNotification(
+    Profile* profile) {
+  if (!profile->GetPrefs()->GetBoolean(
+          proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled))
+    return false;
+
+  if (!base::FeatureList::IsEnabled(ash::features::kSmartLockSignInRemoved))
+    return false;
+
+  if (profile->GetPrefs()->GetBoolean(
+          prefs::kHasSeenSmartLockSignInRemovedNotification))
+    return false;
+
+  return true;
+}
+
+void EasyUnlockNotificationController::ShowSignInRemovedNotification() {
+  PrefService* pref_service = profile_->GetPrefs();
+  pref_service->SetBoolean(prefs::kHasSeenSmartLockSignInRemovedNotification,
+                           true);
+
+  ShowNotification(CreateNotification(
+      kSmartLockSignInRemovedNotifierId,
+      l10n_util::GetStringUTF16(
+          IDS_SMART_LOCK_SIGN_IN_REMOVED_NOTIFICATION_TITLE),
+      l10n_util::GetStringUTF16(
+          IDS_SMART_LOCK_SIGN_IN_REMOVED_NOTIFICATION_MESSAGE),
+      ui::ImageModel(), {},
+      new NotificationDelegate(kSmartLockSignInRemovedNotifierId,
+                               weak_ptr_factory_.GetWeakPtr())));
+}
 
 void EasyUnlockNotificationController::ShowChromebookAddedNotification() {
   message_center::RichNotificationData rich_notification_data;
@@ -139,6 +180,11 @@ void EasyUnlockNotificationController::LaunchEasyUnlockSettings() {
       profile_, chromeos::settings::mojom::kSmartLockSubpagePath);
 }
 
+void EasyUnlockNotificationController::LaunchMultiDeviceSettings() {
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+      profile_, chromeos::settings::mojom::kMultiDeviceFeaturesSubpagePath);
+}
+
 void EasyUnlockNotificationController::LockScreen() {
   proximity_auth::ScreenlockBridge::Get()->Lock();
 }
@@ -171,7 +217,13 @@ void EasyUnlockNotificationController::NotificationDelegate::Click(
     DCHECK_EQ(1, *button_index);
   }
 
-  notification_controller_->LaunchEasyUnlockSettings();
+  // The kSmartLockSignInRemoved flag removes the easy unlock settings page, so
+  // check flag to determine which route should be launched.
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockSignInRemoved)) {
+    notification_controller_->LaunchMultiDeviceSettings();
+  } else {
+    notification_controller_->LaunchEasyUnlockSettings();
+  }
 }
 
 }  // namespace ash
