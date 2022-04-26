@@ -74,12 +74,16 @@ void DocumentSpeculationRules::QueueUpdateSpeculationCandidates() {
     return;
 
   has_pending_update_ = true;
-  auto task_runner = GetSupplementable()->GetExecutionContext()->GetTaskRunner(
-      TaskType::kIdleTask);
-  task_runner->PostTask(
-      base::Location::Current(),
-      WTF::Bind(&DocumentSpeculationRules::UpdateSpeculationCandidates,
-                WrapWeakPersistent(this)));
+  ExecutionContext* execution_context =
+      GetSupplementable()->GetExecutionContext();
+  if (!execution_context)
+    return;
+
+  execution_context->GetTaskRunner(TaskType::kIdleTask)
+      ->PostTask(
+          base::Location::Current(),
+          WTF::Bind(&DocumentSpeculationRules::UpdateSpeculationCandidates,
+                    WrapWeakPersistent(this)));
 }
 
 void DocumentSpeculationRules::UpdateSpeculationCandidates() {
