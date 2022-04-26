@@ -38032,6 +38032,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4213" label="DeferredShapingDisabledByPositioned"/>
   <int value="4214" label="CapabilityDelegationOfFullscreenRequest"/>
   <int value="4215" label="SerialPortForget"/>
+  <int value="4216" label="CookieHasNotBeenRefreshedIn201To300Days"/>
+  <int value="4217" label="CookieHasNotBeenRefreshedIn301To350Days"/>
+  <int value="4218" label="CookieHasNotBeenRefreshedIn351To400Days"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

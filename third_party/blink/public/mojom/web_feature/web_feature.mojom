@@ -3534,6 +3534,9 @@ enum WebFeature {
   kDeferredShapingDisabledByPositioned = 4213,
   kCapabilityDelegationOfFullscreenRequest = 4214,
   kSerialPortForget = 4215,
+  kCookieHasNotBeenRefreshedIn201To300Days = 4216,
+  kCookieHasNotBeenRefreshedIn301To350Days = 4217,
+  kCookieHasNotBeenRefreshedIn351To400Days = 4218,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

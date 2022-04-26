@@ -224,6 +224,9 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kOpenWebDatabaseInsecureContext,
           WebFeature::kPrivateNetworkAccessIgnoredPreflightError,
           WebFeature::kWebBluetoothGetAvailability,
+          WebFeature::kCookieHasNotBeenRefreshedIn201To300Days,
+          WebFeature::kCookieHasNotBeenRefreshedIn301To350Days,
+          WebFeature::kCookieHasNotBeenRefreshedIn351To400Days,
       }));
   return *opt_in_features;
 }

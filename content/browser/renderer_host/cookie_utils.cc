@@ -120,6 +120,10 @@ void EmitCookieWarningsAndMetrics(
 
   bool partitioned_cookies_exist = false;
 
+  bool cookie_has_not_been_refreshed_in_201_to_300_days = false;
+  bool cookie_has_not_been_refreshed_in_301_to_350_days = false;
+  bool cookie_has_not_been_refreshed_in_351_to_400_days = false;
+
   for (const network::mojom::CookieOrLineWithAccessResultPtr& cookie :
        cookie_details->cookie_list) {
     if (ShouldReportDevToolsIssueForStatus(cookie->access_result.status)) {
@@ -217,6 +221,27 @@ void EmitCookieWarningsAndMetrics(
                                 cookie->access_result.status,
                                 cookie_details->url);
     }
+
+    // In order to anticipate the potential effects of the expiry limit in
+    // rfc6265bis, we need to check how long it's been since the cookie was
+    // refreshed (if LastUpdateDate is populated). These three buckets were
+    // picked so we could engage sites with some granularity around urgency.
+    // We ignore the space under 200 days as these cookies are not at risk
+    // of expiring and we ignore the space over 400 days as these cookies
+    // have already expired. Metrics will take 200 days from M103 to populate.
+    base::Time last_update_date =
+        cookie->cookie_or_line->is_cookie()
+            ? cookie->cookie_or_line->get_cookie().LastUpdateDate()
+            : base::Time();
+    if (!last_update_date.is_null()) {
+      int days_since_refresh = (base::Time::Now() - last_update_date).InDays();
+      cookie_has_not_been_refreshed_in_201_to_300_days |=
+          days_since_refresh > 200 && days_since_refresh <= 300;
+      cookie_has_not_been_refreshed_in_301_to_350_days |=
+          days_since_refresh > 300 && days_since_refresh <= 350;
+      cookie_has_not_been_refreshed_in_351_to_400_days |=
+          days_since_refresh > 350 && days_since_refresh <= 400;
+    }
   }
 
   if (samesite_treated_as_lax_cookies) {
@@ -288,6 +313,24 @@ void EmitCookieWarningsAndMetrics(
   if (partitioned_cookies_exist) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         rfh, blink::mojom::WebFeature::kPartitionedCookies);
+  }
+
+  if (cookie_has_not_been_refreshed_in_201_to_300_days) {
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        rfh,
+        blink::mojom::WebFeature::kCookieHasNotBeenRefreshedIn201To300Days);
+  }
+
+  if (cookie_has_not_been_refreshed_in_301_to_350_days) {
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        rfh,
+        blink::mojom::WebFeature::kCookieHasNotBeenRefreshedIn301To350Days);
+  }
+
+  if (cookie_has_not_been_refreshed_in_351_to_400_days) {
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        rfh,
+        blink::mojom::WebFeature::kCookieHasNotBeenRefreshedIn351To400Days);
   }
 }
 
