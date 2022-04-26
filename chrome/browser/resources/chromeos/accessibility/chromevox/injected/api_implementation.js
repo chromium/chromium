@@ -9,7 +9,6 @@
 
 goog.provide('ApiImplementation');
 
-goog.require('ChromeVox');
 goog.require('ContentExtensionBridge');
 goog.require('ScriptInstaller');
 
