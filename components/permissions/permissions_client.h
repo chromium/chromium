@@ -130,7 +130,7 @@ class PermissionsClient {
   using GetUkmSourceIdCallback =
       base::OnceCallback<void(absl::optional<ukm::SourceId>)>;
   virtual void GetUkmSourceId(content::BrowserContext* browser_context,
-                              const content::WebContents* web_contents,
+                              content::WebContents* web_contents,
                               const GURL& requesting_origin,
                               GetUkmSourceIdCallback callback);
 

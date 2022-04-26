@@ -56,7 +56,7 @@ bool PermissionsClient::IsCookieDeletionDisabled(
 #endif
 
 void PermissionsClient::GetUkmSourceId(content::BrowserContext* browser_context,
-                                       const content::WebContents* web_contents,
+                                       content::WebContents* web_contents,
                                        const GURL& requesting_origin,
                                        GetUkmSourceIdCallback callback) {
   std::move(callback).Run(absl::nullopt);

@@ -342,7 +342,7 @@ class PermissionUmaUtil {
 
   static void RecordPermissionUsage(ContentSettingsType permission_type,
                                     content::BrowserContext* browser_context,
-                                    const content::WebContents* web_contents,
+                                    content::WebContents* web_contents,
                                     const GURL& requesting_origin);
 
   static void RecordTimeElapsedBetweenGrantAndUse(ContentSettingsType type,
@@ -430,7 +430,7 @@ class PermissionUmaUtil {
       PermissionPromptDisposition ui_disposition,
       absl::optional<PermissionPromptDispositionReason> ui_reason,
       const GURL& requesting_origin,
-      const content::WebContents* web_contents,
+      content::WebContents* web_contents,
       content::BrowserContext* browser_context,
       absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
       absl::optional<bool> prediction_decision_held_back);

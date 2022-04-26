@@ -45,7 +45,7 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
                                 const GURL& origin) override;
 #endif
   void GetUkmSourceId(content::BrowserContext* browser_context,
-                      const content::WebContents* web_contents,
+                      content::WebContents* web_contents,
                       const GURL& requesting_origin,
                       GetUkmSourceIdCallback callback) override;
   permissions::IconId GetOverrideIconId(

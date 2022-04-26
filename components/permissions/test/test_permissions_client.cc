@@ -7,7 +7,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/ukm/content/source_url_recorder.h"
+#include "content/public/browser/web_contents.h"
 
 namespace permissions {
 namespace {
@@ -74,12 +74,12 @@ ObjectPermissionContextBase* TestPermissionsClient::GetChooserContext(
 
 void TestPermissionsClient::GetUkmSourceId(
     content::BrowserContext* browser_context,
-    const content::WebContents* web_contents,
+    content::WebContents* web_contents,
     const GURL& requesting_origin,
     GetUkmSourceIdCallback callback) {
   if (web_contents) {
     ukm::SourceId source_id =
-        ukm::GetSourceIdForWebContentsDocument(web_contents);
+        web_contents->GetMainFrame()->GetPageUkmSourceId();
     std::move(callback).Run(source_id);
   } else {
     std::move(callback).Run(absl::nullopt);
