@@ -13,19 +13,41 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace browsing_topics {
 
-BrowsingTopicsPageLoadDataTracker::~BrowsingTopicsPageLoadDataTracker() =
-    default;
+// Max number of context domains to keep track of per page load to limit in-use
+// memory. This should also be greater than
+// `kBrowsingTopicsMaxNumberOfApiUsageContextDomainsToStorePerPageLoad`.
+constexpr int kMaxNumberOfContextDomainsToMonitor = 1000;
+
+BrowsingTopicsPageLoadDataTracker::~BrowsingTopicsPageLoadDataTracker() {
+  if (observed_hashed_context_domains_.empty())
+    return;
+
+  // TODO(yaoxia): consider also recording metrics when the Chrome app goes into
+  // background, in which case the destructor may never be called.
+  ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
+  ukm::builders::BrowsingTopics_PageLoad builder(source_id_);
+
+  builder.SetTopicsRequestingContextDomainsCount(
+      ukm::GetExponentialBucketMinForCounts1000(
+          observed_hashed_context_domains_.size()));
+
+  builder.Record(ukm_recorder->Get());
+}
 
 BrowsingTopicsPageLoadDataTracker::BrowsingTopicsPageLoadDataTracker(
     content::Page& page)
     : content::PageUserData<BrowsingTopicsPageLoadDataTracker>(page),
       hashed_main_frame_host_(HashMainFrameHostForStorage(
-          page.GetMainDocument().GetLastCommittedOrigin().host())) {
+          page.GetMainDocument().GetLastCommittedOrigin().host())),
+      source_id_(page.GetMainDocument().GetPageUkmSourceId()) {
   DCHECK(page.IsPrimary());
 
   // TODO(yaoxia): consider dropping the permissions policy checks. We require
@@ -61,13 +83,29 @@ void BrowsingTopicsPageLoadDataTracker::OnBrowsingTopicsApiUsed(
         web_contents->GetLastCommittedURL());
   }
 
+  DCHECK_LE(
+      blink::features::
+          kBrowsingTopicsMaxNumberOfApiUsageContextDomainsToStorePerPageLoad
+              .Get(),
+      kMaxNumberOfContextDomainsToMonitor);
+
+  // Cap the number of context domains to keep track of per page load to limit
+  // in-use memory.
+  if (observed_hashed_context_domains_.size() >=
+      kMaxNumberOfContextDomainsToMonitor) {
+    return;
+  }
+
+  bool is_new_domain =
+      observed_hashed_context_domains_.insert(hashed_context_domain).second;
+
   // Ignore this context if we've already added it.
-  if (observed_hashed_context_domains_.count(hashed_context_domain))
+  if (!is_new_domain)
     return;
 
-  // Cap the number of context domains per page load. This is used to limit
+  // Cap the number of context domains to store to disk per page load to limit
   // disk memory usage.
-  if (observed_hashed_context_domains_.size() >=
+  if (observed_hashed_context_domains_.size() >
       static_cast<size_t>(
           blink::features::
               kBrowsingTopicsMaxNumberOfApiUsageContextDomainsToStorePerPageLoad
@@ -84,8 +122,6 @@ void BrowsingTopicsPageLoadDataTracker::OnBrowsingTopicsApiUsed(
       ->GetBrowsingTopicsSiteDataManager()
       ->OnBrowsingTopicsApiUsed(hashed_main_frame_host_,
                                 {hashed_context_domain}, base::Time::Now());
-
-  observed_hashed_context_domains_.insert(hashed_context_domain);
 }
 
 PAGE_USER_DATA_KEY_IMPL(BrowsingTopicsPageLoadDataTracker);

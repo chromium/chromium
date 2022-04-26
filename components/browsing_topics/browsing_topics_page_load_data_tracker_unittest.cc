@@ -12,12 +12,16 @@
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browsing_topics_test_util.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "content/test/test_render_view_host.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace browsing_topics {
 
@@ -37,6 +41,16 @@ class BrowsingTopicsPageLoadDataTrackerTest
   }
 
   ~BrowsingTopicsPageLoadDataTrackerTest() override = default;
+
+  void SetUp() override {
+    content::RenderViewHostTestHarness::SetUp();
+
+    // The test assumes pages gets deleted after navigation, triggering metrics
+    // recording. Disable back/forward cache to ensure that pages don't get
+    // preserved in the cache.
+    content::DisableBackForwardCacheForTesting(
+        web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+  }
 
   void TearDown() override {
     DCHECK(history_service_);
@@ -161,6 +175,89 @@ TEST_F(BrowsingTopicsPageLoadDataTrackerTest, TwoUsages) {
   EXPECT_EQ(api_usage_contexts[1].hashed_main_frame_host,
             HashMainFrameHostForStorage("foo.com"));
   EXPECT_EQ(api_usage_contexts[1].hashed_context_domain, HashedDomain(456));
+}
+
+TEST_F(BrowsingTopicsPageLoadDataTrackerTest, OneUsage_PageLoadUkm) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  NavigateToPage(GURL("https://foo.com"), /*publicly_routable=*/true,
+                 /*browsing_topics_permissions_policy_allowed=*/true,
+                 /*interest_cohort_permissions_policy_allowed=*/true);
+
+  GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
+      HashedDomain(123), history_service_.get());
+
+  NavigateToPage(GURL(url::kAboutBlankURL), /*publicly_routable=*/true,
+                 /*browsing_topics_permissions_policy_allowed=*/true,
+                 /*interest_cohort_permissions_policy_allowed=*/true);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::BrowsingTopics_PageLoad::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  ASSERT_EQ(1, ukm::GetExponentialBucketMinForCounts1000(1));
+
+  ukm_recorder.ExpectEntryMetric(entries.back(),
+                                 ukm::builders::BrowsingTopics_PageLoad::
+                                     kTopicsRequestingContextDomainsCountName,
+                                 1);
+}
+
+TEST_F(BrowsingTopicsPageLoadDataTrackerTest, OneThousandUsages_PageLoadUkm) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  NavigateToPage(GURL("https://foo.com"), /*publicly_routable=*/true,
+                 /*browsing_topics_permissions_policy_allowed=*/true,
+                 /*interest_cohort_permissions_policy_allowed=*/true);
+
+  for (int i = 0; i < 1000; ++i) {
+    GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
+        HashedDomain(i), history_service_.get());
+  }
+
+  NavigateToPage(GURL(url::kAboutBlankURL), /*publicly_routable=*/true,
+                 /*browsing_topics_permissions_policy_allowed=*/true,
+                 /*interest_cohort_permissions_policy_allowed=*/true);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::BrowsingTopics_PageLoad::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  ASSERT_EQ(943, ukm::GetExponentialBucketMinForCounts1000(1000));
+
+  ukm_recorder.ExpectEntryMetric(entries.back(),
+                                 ukm::builders::BrowsingTopics_PageLoad::
+                                     kTopicsRequestingContextDomainsCountName,
+                                 943);
+}
+
+TEST_F(BrowsingTopicsPageLoadDataTrackerTest, TwoThousandUsages_PageLoadUkm) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  NavigateToPage(GURL("https://foo.com"), /*publicly_routable=*/true,
+                 /*browsing_topics_permissions_policy_allowed=*/true,
+                 /*interest_cohort_permissions_policy_allowed=*/true);
+
+  for (int i = 0; i < 2000; ++i) {
+    GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
+        HashedDomain(i), history_service_.get());
+  }
+
+  NavigateToPage(GURL(url::kAboutBlankURL), /*publicly_routable=*/true,
+                 /*browsing_topics_permissions_policy_allowed=*/true,
+                 /*interest_cohort_permissions_policy_allowed=*/true);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::BrowsingTopics_PageLoad::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  ASSERT_EQ(943, ukm::GetExponentialBucketMinForCounts1000(1000));
+  ASSERT_EQ(1896, ukm::GetExponentialBucketMinForCounts1000(2000));
+
+  ukm_recorder.ExpectEntryMetric(entries.back(),
+                                 ukm::builders::BrowsingTopics_PageLoad::
+                                     kTopicsRequestingContextDomainsCountName,
+                                 943);
 }
 
 TEST_F(BrowsingTopicsPageLoadDataTrackerTest, DuplicateDomains) {

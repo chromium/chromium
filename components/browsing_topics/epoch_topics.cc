@@ -155,18 +155,24 @@ base::Value::Dict EpochTopics::ToDictValue() const {
 absl::optional<Topic> EpochTopics::TopicForSite(
     const std::string& top_domain,
     const HashedDomain& hashed_context_domain,
-    ReadOnlyHmacKey hmac_key) const {
+    ReadOnlyHmacKey hmac_key,
+    bool& output_is_true_topic,
+    bool& candidate_topic_filtered) const {
   return TopicForSiteHelper(top_domain, /*need_filtering=*/true,
                             /*allow_random_or_padded_topic=*/true,
-                            hashed_context_domain, hmac_key);
+                            hashed_context_domain, hmac_key,
+                            output_is_true_topic, candidate_topic_filtered);
 }
 
 absl::optional<Topic> EpochTopics::TopicForSiteForDisplay(
     const std::string& top_domain,
     ReadOnlyHmacKey hmac_key) const {
+  bool output_is_true_topic = false;
+  bool candidate_topic_filtered = false;
   return TopicForSiteHelper(top_domain, /*need_filtering=*/false,
                             /*allow_random_or_padded_topic=*/false,
-                            /*hashed_context_domain=*/{}, hmac_key);
+                            /*hashed_context_domain=*/{}, hmac_key,
+                            output_is_true_topic, candidate_topic_filtered);
 }
 
 void EpochTopics::ClearTopics() {
@@ -199,7 +205,12 @@ absl::optional<Topic> EpochTopics::TopicForSiteHelper(
     bool need_filtering,
     bool allow_random_or_padded_topic,
     const HashedDomain& hashed_context_domain,
-    ReadOnlyHmacKey hmac_key) const {
+    ReadOnlyHmacKey hmac_key,
+    bool& output_is_true_topic,
+    bool& candidate_topic_filtered) const {
+  DCHECK(!output_is_true_topic);
+  DCHECK(!candidate_topic_filtered);
+
   // The topics calculation failed, or the topics has been cleared.
   if (empty())
     return absl::nullopt;
@@ -241,8 +252,12 @@ absl::optional<Topic> EpochTopics::TopicForSiteHelper(
   // Only add the topic if the context has observed it before.
   if (need_filtering && !topic_and_observing_domains.hashed_domains().count(
                             hashed_context_domain)) {
+    candidate_topic_filtered = true;
     return absl::nullopt;
   }
+
+  if (top_topic_index < padded_top_topics_start_index_)
+    output_is_true_topic = true;
 
   return topic_and_observing_domains.topic();
 }

@@ -4632,6 +4632,177 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="BrowsingTopics.DocumentBrowsingTopicsApiResult">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    The document.browsingTopics() result and other metadata. Recorded whenever
+    document.browsingTopics() is invoked from a context. If the API returns more
+    than 3 topics (e.g. due to custom configuration FeatureParam), only the
+    first 3 topics will be recorded.
+  </summary>
+  <metric name="EmptyReason" enum="BrowsingTopicsEmptyApiResultReason">
+    <summary>
+      The reason why the API returns no topic. This metric won't be recorded if
+      the API returns any topic.
+    </summary>
+  </metric>
+  <metric name="ReturnedTopic0">
+    <summary>
+      The returned topic ID at index 0. This metric won't be recorded if the API
+      returns no topics.
+    </summary>
+  </metric>
+  <metric name="ReturnedTopic0IsTrueTopTopic" enum="Boolean">
+    <summary>
+      Whether `ReturnedTopic0` is a true top topic, as opposed to a randomly
+      padded topic. This metric won't be recorded if the API returns no topics.
+    </summary>
+  </metric>
+  <metric name="ReturnedTopic0ModelVersion">
+    <summary>
+      The version of the model used to calculate `ReturnedTopic0`. This metric
+      won't be recorded if the API returns no topics.
+    </summary>
+  </metric>
+  <metric name="ReturnedTopic0TaxonomyVersion">
+    <summary>
+      The version of the taxonomy applicable to `ReturnedTopic0`. This metric
+      won't be recorded if the API returns no topics.
+    </summary>
+  </metric>
+  <metric name="ReturnedTopic1">
+    <summary>
+      The returned topic ID at index 1. This metric won't be recorded if the API
+      returns no topics.
+    </summary>
+  </metric>
+  <metric name="ReturnedTopic1IsTrueTopTopic" enum="Boolean">
+    <summary>
+      Whether `ReturnedTopic1` is a true top topic, as opposed to a randomly
+      padded topic. This metric won't be recorded if the API returns no topics.
+    </summary>
+  </metric>
+  <metric name="ReturnedTopic1ModelVersion">
+    <summary>
+      The version of the model used to calculate `ReturnedTopic1`. This metric
+      won't be recorded if the API returns less than 2 topics.
+    </summary>
+  </metric>
+  <metric name="ReturnedTopic1TaxonomyVersion">
+    <summary>
+      The version of the taxonomy applicable to `ReturnedTopic1`. This metric
+      won't be recorded if the API returns less than 2 topics.
+    </summary>
+  </metric>
+  <metric name="ReturnedTopic2">
+    <summary>
+      The returned topic ID at index 2. This metric won't be recorded if the API
+      returns no topics.
+    </summary>
+  </metric>
+  <metric name="ReturnedTopic2IsTrueTopTopic" enum="Boolean">
+    <summary>
+      Whether `ReturnedTopic2` is a true top topic, as opposed to a randomly
+      padded topic. This metric won't be recorded if the API returns no topics.
+    </summary>
+  </metric>
+  <metric name="ReturnedTopic2ModelVersion">
+    <summary>
+      The version of the model used to calculate `ReturnedTopic2`. This metric
+      won't be recorded if the API returns less than 3 topics.
+    </summary>
+  </metric>
+  <metric name="ReturnedTopic2TaxonomyVersion">
+    <summary>
+      The version of the taxonomy applicable to `ReturnedTopic2`. This metric
+      won't be recorded if the API returns less than 3 topics.
+    </summary>
+  </metric>
+</event>
+
+<event name="BrowsingTopics.EpochTopicsCalculationResult">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    The epoch topics calculation result, including the top 5 topics and other
+    metadata. Recorded whenever the periodic (weekly) topics calculation has
+    finished. If the result has more than 5 topics (e.g. due to custom
+    configuration FeatureParam), only the first 5 topics will be recorded.
+  </summary>
+  <metric name="ModelVersion">
+    <summary>
+      The version of the model used to calculate the result topics. This metric
+      won't be recorded if the topics calculation failed in general.
+    </summary>
+  </metric>
+  <metric name="PaddedTopicsStartIndex">
+    <summary>
+      The start index of the randomly padded top topics. This metric won't be
+      recorded if the topics calculation failed in general. If all topics are
+      real, `PaddedTopicsStartIndex` will equal the feature param
+      `kBrowsingTopicsNumberOfTopTopicsPerEpoch`.
+    </summary>
+  </metric>
+  <metric name="TaxonomyVersion">
+    <summary>
+      The version of the taxonomy applicable to the result topics. This metric
+      won't be recorded if the topics calculation failed in general.
+    </summary>
+  </metric>
+  <metric name="TopTopic0">
+    <summary>
+      The top topic ID at index 0. This metric won't be recorded if the
+      candidate topic was blocked, or if the topics calculation failed in
+      general.
+    </summary>
+  </metric>
+  <metric name="TopTopic1">
+    <summary>
+      The top topic ID at index 1. This metric won't be recorded if the
+      candidate topic was blocked, or if the topics calculation failed in
+      general.
+    </summary>
+  </metric>
+  <metric name="TopTopic2">
+    <summary>
+      The top topic ID at index 2. This metric won't be recorded if the
+      candidate topic was blocked, or if the topics calculation failed in
+      general.
+    </summary>
+  </metric>
+  <metric name="TopTopic3">
+    <summary>
+      The top topic ID at index 3. This metric won't be recorded if the
+      candidate topic was blocked, or if the topics calculation failed in
+      general.
+    </summary>
+  </metric>
+  <metric name="TopTopic4">
+    <summary>
+      The top topic ID at index 4. This metric won't be recorded if the
+      candidate topic was blocked, or if the topics calculation failed in
+      general.
+    </summary>
+  </metric>
+</event>
+
+<event name="BrowsingTopics.PageLoad">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    PageLoad metrics for BrowsingTopics. Recorded when a page has Topics API
+    usages (that pass the user permission check), and the page is being
+    destroyed/navigated.
+  </summary>
+  <metric name="TopicsRequestingContextDomainsCount">
+    <summary>
+      The number of unique context domains have requested the topics. Rounded to
+      the nearest exponential bucket (with a bucket ratio of 1.15).
+    </summary>
+  </metric>
+</event>
+
 <event name="ChromeOSApp.InputEvent">
   <owner>nancylingwang@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>

@@ -40,14 +40,19 @@ class EpochTopics {
   base::Value::Dict ToDictValue() const;
 
   // Calculate the topic to expose on `top_domain` when requested by a context
-  // where the domain hash is `hashed_context_domain`. Return absl::nullopt when
-  // there are no topics (i.e. calculation failed, or the topics were cleared),
-  // or when the candidate topic is filtered due to the context has not observed
-  // the topic before. The `hmac_key` is the one used to hash the domains inside
+  // where the domain hash is `hashed_context_domain`. `output_is_true_topic`
+  // will indicate whether the returned topic (if any) is a true top topic.
+  // `candidate_topic_filtered` will indicate whether the empty result is due to
+  // the candicate topic is filtered. Return absl::nullopt when there are no
+  // topics (i.e. calculation failed, or the topics were cleared), or when the
+  // candidate topic is filtered due to the context has not observed the topic
+  // before. The `hmac_key` is the one used to hash the domains inside
   // `top_topics_and_observing_domains_` and `hashed_context_domain`.
   absl::optional<Topic> TopicForSite(const std::string& top_domain,
                                      const HashedDomain& hashed_context_domain,
-                                     ReadOnlyHmacKey hmac_key) const;
+                                     ReadOnlyHmacKey hmac_key,
+                                     bool& output_is_true_topic,
+                                     bool& candidate_topic_filtered) const;
 
   // Similar to `TopicForSite`, but this does not apply the filtering based on a
   // calling context, and only returns a topic if the candidate topic is a true
@@ -93,7 +98,9 @@ class EpochTopics {
       bool need_filtering,
       bool allow_random_or_padded_topic,
       const HashedDomain& hashed_context_domain,
-      ReadOnlyHmacKey hmac_key) const;
+      ReadOnlyHmacKey hmac_key,
+      bool& output_is_true_topic,
+      bool& candidate_topic_filtered) const;
 
   // The top topics for this epoch, and the context domains that observed each
   // topic across

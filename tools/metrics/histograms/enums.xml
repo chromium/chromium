@@ -11609,6 +11609,13 @@ Called by update_bad_message_reasons.py.-->
       label="Failure: taxonomy version not supported in the Chrome binary"/>
 </enum>
 
+<enum name="BrowsingTopicsEmptyApiResultReason">
+  <int value="0" label="State not ready"/>
+  <int value="1" label="Access disallowed by settings"/>
+  <int value="2" label="No candicate topics"/>
+  <int value="3" label="Candicate topics filtered"/>
+</enum>
+
 <enum name="BubbleDismissalReason">
   <obsolete>
     Deprecated 12/2020 as it is no longer used for analysis.
