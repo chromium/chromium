@@ -167,7 +167,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
       const base::android::JavaRef<jobject>& jrender_frame_host_android);
 #endif
 
-  ~RenderFrameHost() override {}
+  ~RenderFrameHost() override = default;
 
   // Returns the route id for this frame.
   virtual int GetRoutingID() const = 0;
