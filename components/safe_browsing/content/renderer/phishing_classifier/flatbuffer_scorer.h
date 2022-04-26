@@ -51,7 +51,8 @@ class FlatBufferModelScorer : public Scorer {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   void ApplyVisualTfLiteModel(
       const SkBitmap& bitmap,
-      base::OnceCallback<void(std::vector<double>)> callback) const override;
+      base::OnceCallback<void(base::flat_map<std::string, double>)> callback)
+      const override;
 #endif
 
   int model_version() const override;

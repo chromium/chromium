@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -138,7 +139,7 @@ class PhishingClassifier {
   // Callback when the visual TFLite model has been applied, and returned a list
   // of scores.
   void OnVisualTfLiteModelDone(std::unique_ptr<ClientPhishingRequest> verdict,
-                               std::vector<double> result);
+                               base::flat_map<std::string, double> result);
 
   // Helper method to run the DoneCallback and clear the state.
   void RunCallback(const ClientPhishingRequest& verdict);

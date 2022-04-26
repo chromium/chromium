@@ -316,23 +316,27 @@ void PhishingClassifier::VisualExtractionFinished(bool success) {
 
 void PhishingClassifier::OnVisualTfLiteModelDone(
     std::unique_ptr<ClientPhishingRequest> verdict,
-    std::vector<double> result) {
-  if (static_cast<int>(result.size()) > scorer_->tflite_thresholds().size()) {
-    // Model is misconfigured, so bail out.
-    RunFailureCallback();
-    return;
-  }
-
+    base::flat_map<std::string, double> result) {
   verdict->set_tflite_model_version(scorer_->tflite_model_version());
-  for (size_t i = 0; i < result.size(); i++) {
+  for (const TfLiteModelMetadata::Threshold& label_and_threshold :
+       scorer_->tflite_thresholds()) {
     ClientPhishingRequest::CategoryScore* category =
         verdict->add_tflite_model_scores();
-    category->set_label(scorer_->tflite_thresholds().at(i).label());
-    category->set_value(result[i]);
+    category->set_label(label_and_threshold.label());
 
-    if (result[i] >= scorer_->tflite_thresholds().at(i).threshold()) {
-      verdict->set_is_phishing(true);
-      verdict->set_is_tflite_match(true);
+    auto it = result.find(label_and_threshold.label());
+    if (it == result.end()) {
+      // Model is misconfigured, so bail out. The class names from
+      // `visual_model.tflite` should exactly match the threshold labels in
+      // `client_model.pb`
+      RunFailureCallback();
+      return;
+    } else {
+      category->set_value(it->second);
+      if (it->second >= label_and_threshold.threshold()) {
+        verdict->set_is_phishing(true);
+        verdict->set_is_tflite_match(true);
+      }
     }
   }
 

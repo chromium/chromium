@@ -128,7 +128,8 @@ class MockScorer : public Scorer {
   MOCK_CONST_METHOD2(
       ApplyVisualTfLiteModel,
       void(const SkBitmap& bitmap,
-           base::OnceCallback<void(std::vector<double>)> callback));
+           base::OnceCallback<void(base::flat_map<std::string, double>)>
+               callback));
   MOCK_CONST_METHOD0(model_version, int());
   MOCK_CONST_METHOD0(HasVisualTfLiteModel, bool());
   MOCK_CONST_METHOD0(find_page_word_callback,
