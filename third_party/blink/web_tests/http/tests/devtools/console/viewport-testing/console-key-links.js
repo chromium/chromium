@@ -164,7 +164,7 @@
 
     if (!activeElement)
       return;
-    var element = document.deepActiveElement();
+    var element = Platform.DOMUtilities.deepActiveElement(document);
     if (!element) {
       TestRunner.addResult('null');
       return;

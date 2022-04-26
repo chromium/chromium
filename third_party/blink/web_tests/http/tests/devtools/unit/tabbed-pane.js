@@ -32,21 +32,21 @@
   }
 
   function right() {
-    var element = document.deepActiveElement();
+    var element = Platform.DOMUtilities.deepActiveElement(document);
     if (element)
       element.dispatchEvent(TestRunner.createKeyEvent('ArrowRight'));
     dumpFocus();
   }
 
   function left() {
-    var element = document.deepActiveElement();
+    var element = Platform.DOMUtilities.deepActiveElement(document);
     if (element)
       element.dispatchEvent(TestRunner.createKeyEvent('ArrowLeft'));
     dumpFocus();
   }
 
   function enter() {
-    var element = document.deepActiveElement();
+    var element = Platform.DOMUtilities.deepActiveElement(document);
     if (element)
       element.dispatchEvent(TestRunner.createKeyEvent('Enter'));
     dumpFocus();
@@ -54,7 +54,7 @@
 
 
   function dumpFocus() {
-    var element = document.deepActiveElement();
+    var element = Platform.DOMUtilities.deepActiveElement(document);
     if (!element) {
       TestRunner.addResult("null");
       return;

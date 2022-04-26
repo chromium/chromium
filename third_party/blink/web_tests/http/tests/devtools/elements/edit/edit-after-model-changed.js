@@ -38,7 +38,7 @@
   }
 
   function dumpFocus() {
-    const element = document.deepActiveElement();
+    const element = Platform.DOMUtilities.deepActiveElement(document);
     TestRunner.addResult(`Active element: ${element.tagName}, ${element.className}`);
   }
 })();

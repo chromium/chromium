@@ -91,7 +91,7 @@
   TestRunner.completeTest();
 
   function dumpFocus() {
-    var focused = document.deepActiveElement();
+    var focused = Platform.DOMUtilities.deepActiveElement(document);
     var id = focused ? focused.id : '';
     TestRunner.addResult(id ? id + ' Focused' : 'No focus');
   }

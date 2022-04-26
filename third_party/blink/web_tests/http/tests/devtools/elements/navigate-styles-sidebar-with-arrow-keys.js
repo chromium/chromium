@@ -71,7 +71,7 @@
 
   function dumpState() {
     TestRunner.addResult('Editing: ' + UI.isEditing())
-    TestRunner.addResult(document.deepActiveElement().textContent);
+    TestRunner.addResult(Platform.DOMUtilities.deepActiveElement(document).textContent);
     TestRunner.addResult('');
   }
 

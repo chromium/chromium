@@ -126,7 +126,7 @@
       TestRunner.addResult(`Is group expanded: ${expanded ? 'YES' : 'NO'}`);
     }
 
-    var element = document.deepActiveElement();
+    var element = Platform.DOMUtilities.deepActiveElement(document);
     if (!element) {
       TestRunner.addResult('null');
       return;

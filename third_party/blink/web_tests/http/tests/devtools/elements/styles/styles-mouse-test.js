@@ -69,7 +69,7 @@
       TestRunner.addResult('Not editing');
       return;
     }
-    TestRunner.addResult('Editing: "' + TestRunner.textContentWithoutStyles(document.deepActiveElement()) + '"');
+    TestRunner.addResult('Editing: "' + TestRunner.textContentWithoutStyles(Platform.DOMUtilities.deepActiveElement(document)) + '"');
   }
 
   function mouseDown(element, offset = 0) {
