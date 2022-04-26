@@ -1636,6 +1636,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.PeerConnection.SdpComplexUsage.CreateAnswer"
     enum="PeerConnectionSdpUsageCategory" expires_after="2022-05-07">
+  <obsolete>
+    Removed 04/2022.
+  </obsolete>
   <owner>hbos@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1648,6 +1651,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.PeerConnection.SdpComplexUsage.CreateOffer"
     enum="PeerConnectionSdpUsageCategory" expires_after="2022-05-07">
+  <obsolete>
+    Removed 04/2022.
+  </obsolete>
   <owner>hbos@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1660,6 +1666,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.PeerConnection.SdpComplexUsage.SetLocalAnswer"
     enum="PeerConnectionSdpUsageCategory" expires_after="2022-05-07">
+  <obsolete>
+    Removed 04/2022.
+  </obsolete>
   <owner>hbos@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1673,6 +1682,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.PeerConnection.SdpComplexUsage.SetLocalOffer"
     enum="PeerConnectionSdpUsageCategory" expires_after="2022-05-07">
+  <obsolete>
+    Removed 04/2022.
+  </obsolete>
   <owner>hbos@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1686,6 +1698,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.PeerConnection.SdpComplexUsage.SetRemoteAnswer"
     enum="PeerConnectionSdpUsageCategory" expires_after="2022-05-07">
+  <obsolete>
+    Removed 04/2022.
+  </obsolete>
   <owner>hbos@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1699,6 +1714,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.PeerConnection.SdpComplexUsage.SetRemoteOffer"
     enum="PeerConnectionSdpUsageCategory" expires_after="2022-05-07">
+  <obsolete>
+    Removed 04/2022.
+  </obsolete>
   <owner>hbos@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>

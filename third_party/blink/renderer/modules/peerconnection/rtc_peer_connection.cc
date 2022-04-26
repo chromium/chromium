@@ -637,29 +637,6 @@ RTCSetSessionDescriptionOperation GetRTCVoidRequestOperationType(
 const char kOnlySupportedInUnifiedPlanMessage[] =
     "This operation is only supported in 'unified-plan'.";
 
-SdpUsageCategory DeduceSdpUsageCategory(
-    const ParsedSessionDescription& parsed_sdp,
-    bool sdp_semantics_specified,
-    webrtc::SdpSemantics sdp_semantics) {
-  auto sdp_format = DeduceSdpFormat(parsed_sdp);
-  if (!sdp_format)
-    return SdpUsageCategory::kUnknown;
-  switch (*sdp_format) {
-    case SdpFormat::kSimple:
-      return SdpUsageCategory::kSafe;
-    case SdpFormat::kComplexPlanB:
-      return (sdp_semantics_specified &&
-              sdp_semantics == webrtc::SdpSemantics::kPlanB)
-                 ? SdpUsageCategory::kSafe
-                 : SdpUsageCategory::kUnsafe;
-    case SdpFormat::kComplexUnifiedPlan:
-      return (sdp_semantics_specified &&
-              sdp_semantics == webrtc::SdpSemantics::kUnifiedPlan)
-                 ? SdpUsageCategory::kSafe
-                 : SdpUsageCategory::kUnsafe;
-  }
-}
-
 RTCPeerConnection::EventWrapper::EventWrapper(Event* event,
                                               BoolFunction function)
     : event_(event), setup_function_(std::move(function)) {}
@@ -1408,42 +1385,6 @@ void RTCPeerConnection::UpdateIceConnectionState() {
   ChangeIceConnectionState(new_state);
 }
 
-void RTCPeerConnection::ReportSetSdpUsage(
-    SetSdpOperationType operation_type,
-    const ParsedSessionDescription& parsed_sdp) const {
-  if (!parsed_sdp.description()) {
-    LOG(ERROR) << "ReportSetSdpUsage called on SDP that failed parsing";
-    return;
-  }
-  SdpUsageCategory sdp_usage = DeduceSdpUsageCategory(
-      parsed_sdp, sdp_semantics_specified_, sdp_semantics_);
-  if (parsed_sdp.description()->GetType() == webrtc::SdpType::kOffer) {
-    switch (operation_type) {
-      case SetSdpOperationType::kSetLocalDescription:
-        UMA_HISTOGRAM_ENUMERATION(
-            "WebRTC.PeerConnection.SdpComplexUsage.SetLocalOffer", sdp_usage);
-        break;
-      case SetSdpOperationType::kSetRemoteDescription:
-        UMA_HISTOGRAM_ENUMERATION(
-            "WebRTC.PeerConnection.SdpComplexUsage.SetRemoteOffer", sdp_usage);
-        break;
-    }
-  } else if (parsed_sdp.description()->GetType() == webrtc::SdpType::kAnswer ||
-             parsed_sdp.description()->GetType() ==
-                 webrtc::SdpType::kPrAnswer) {
-    switch (operation_type) {
-      case SetSdpOperationType::kSetLocalDescription:
-        UMA_HISTOGRAM_ENUMERATION(
-            "WebRTC.PeerConnection.SdpComplexUsage.SetLocalAnswer", sdp_usage);
-        break;
-      case SetSdpOperationType::kSetRemoteDescription:
-        UMA_HISTOGRAM_ENUMERATION(
-            "WebRTC.PeerConnection.SdpComplexUsage.SetRemoteAnswer", sdp_usage);
-        break;
-    }
-  }
-}
-
 ScriptPromise RTCPeerConnection::setLocalDescription(
     ScriptState* script_state) {
   DCHECK(script_state->ContextIsValid());
@@ -1490,7 +1431,6 @@ ScriptPromise RTCPeerConnection::setLocalDescription(
       ParsedSessionDescription::Parse(session_description_init->type(), sdp);
   if (session_description_init->type() != V8RTCSdpType::Enum::kRollback) {
     RecordSdpCategoryAndMaybeEmitWarnings(parsed_sdp);
-    ReportSetSdpUsage(SetSdpOperationType::kSetLocalDescription, parsed_sdp);
 
     DOMException* exception = checkSdpForStateErrors(
         ExecutionContext::From(script_state), parsed_sdp);
@@ -1553,7 +1493,6 @@ ScriptPromise RTCPeerConnection::setLocalDescription(
   if (!session_description_init->hasType() ||
       session_description_init->type() != V8RTCSdpType::Enum::kRollback) {
     RecordSdpCategoryAndMaybeEmitWarnings(parsed_sdp);
-    ReportSetSdpUsage(SetSdpOperationType::kSetLocalDescription, parsed_sdp);
   }
   ExecutionContext* context = ExecutionContext::From(script_state);
   UseCounter::Count(context, WebFeature::kRTCPeerConnectionSetLocalDescription);
@@ -1622,7 +1561,6 @@ ScriptPromise RTCPeerConnection::setRemoteDescription(
   if (!session_description_init->hasType() ||
       session_description_init->type() != V8RTCSdpType::Enum::kRollback) {
     RecordSdpCategoryAndMaybeEmitWarnings(parsed_sdp);
-    ReportSetSdpUsage(SetSdpOperationType::kSetRemoteDescription, parsed_sdp);
   }
   if (signaling_state_ ==
       webrtc::PeerConnectionInterface::SignalingState::kClosed) {
@@ -1672,7 +1610,6 @@ ScriptPromise RTCPeerConnection::setRemoteDescription(
   if (!session_description_init->hasType() ||
       session_description_init->type() != V8RTCSdpType::Enum::kRollback) {
     RecordSdpCategoryAndMaybeEmitWarnings(parsed_sdp);
-    ReportSetSdpUsage(SetSdpOperationType::kSetRemoteDescription, parsed_sdp);
   }
   ExecutionContext* context = ExecutionContext::From(script_state);
   UseCounter::Count(context,
@@ -2872,20 +2809,10 @@ void RTCPeerConnection::RegisterTrack(MediaStreamTrack* track) {
 }
 
 void RTCPeerConnection::NoteSdpCreated(const RTCSessionDescription& desc) {
-  // TODO(https://bugs.webrtc.org/12215): Don't re-parse the description here,
-  // it's passed in as a parsed structure into
-  // CreateSessionDescriptionRequest::OnSuccess.
-  SdpUsageCategory sdp_usage = DeduceSdpUsageCategory(
-      ParsedSessionDescription::Parse(desc.type(), desc.sdp()),
-      sdp_semantics_specified_, sdp_semantics_);
   if (desc.type() == "offer") {
     last_offer_ = desc.sdp();
-    UMA_HISTOGRAM_ENUMERATION(
-        "WebRTC.PeerConnection.SdpComplexUsage.CreateOffer", sdp_usage);
   } else if (desc.type() == "answer") {
     last_answer_ = desc.sdp();
-    UMA_HISTOGRAM_ENUMERATION(
-        "WebRTC.PeerConnection.SdpComplexUsage.CreateAnswer", sdp_usage);
   }
 }
 

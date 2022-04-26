@@ -94,27 +94,6 @@ class V8VoidFunction;
 
 extern const char kOnlySupportedInUnifiedPlanMessage[];
 
-// This enum is used to track usage of SDP during the transition of the default
-// "sdpSemantics" value from "Plan B" to "Unified Plan". Usage refers to
-// operations such as createOffer(), createAnswer(), setLocalDescription() and
-// setRemoteDescription(). "Complex" SDP refers to SDP that is not compatible
-// between SDP formats. Usage of SDP falls into two categories: "safe" and
-// "unsafe". Applications with unsafe usage are predicted to break when the
-// default changes. This includes complex SDP usage and relying on the default
-// sdpSemantics. kUnknown is used if the SDP format could not be deduced, such
-// as if SDP could not be parsed.
-enum class SdpUsageCategory {
-  kSafe = 0,
-  kUnsafe = 1,
-  kUnknown = 2,
-  kMaxValue = kUnknown,
-};
-
-MODULES_EXPORT SdpUsageCategory
-DeduceSdpUsageCategory(const ParsedSessionDescription& parsed_sdp,
-                       bool sdp_semantics_specified,
-                       webrtc::SdpSemantics sdp_semantics);
-
 class MODULES_EXPORT RTCPeerConnection final
     : public EventTargetWithInlineData,
       public RTCPeerConnectionHandlerClient,
@@ -313,15 +292,14 @@ class MODULES_EXPORT RTCPeerConnection final
   DEFINE_ATTRIBUTE_EVENT_LISTENER(datachannel, kDatachannel)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(icecandidateerror, kIcecandidateerror)
 
-  // Utility to note result of CreateOffer / CreateAnswer
+  // Called in response to CreateOffer / CreateAnswer to update `last_offer_` or
+  // `last_answer_`.
   void NoteSdpCreated(const RTCSessionDescription&);
   // Utility to report SDP usage of setLocalDescription / setRemoteDescription.
   enum class SetSdpOperationType {
     kSetLocalDescription,
     kSetRemoteDescription,
   };
-  void ReportSetSdpUsage(SetSdpOperationType operation_type,
-                         const ParsedSessionDescription& parsed_sdp) const;
 
   // MediaStreamObserver
   void OnStreamAddTrack(MediaStream*, MediaStreamTrack*) override;
