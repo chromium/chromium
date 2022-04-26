@@ -121,17 +121,23 @@ TEST_F(DlpReportingManagerTest, MetricsReported) {
   manager_.ReportEvent(kCompanyPattern,
                        DlpRulesManager::Restriction::kScreenshot,
                        DlpRulesManager::Level::kReport);
+  manager_.ReportEvent(kCompanyPattern,
+                       DlpRulesManager::Restriction::kUnknownRestriction,
+                       DlpRulesManager::Level::kWarn);
 
-  EXPECT_EQ(events_.size(), 2u);
+  EXPECT_EQ(events_.size(), 3u);
   histogram_tester.ExpectUniqueSample(
       GetDlpHistogramPrefix() + dlp::kReportedEventStatus,
-      reporting::error::Code::OK, 2);
+      reporting::error::Code::OK, 3);
   histogram_tester.ExpectUniqueSample(
       GetDlpHistogramPrefix() + dlp::kReportedBlockLevelRestriction,
       DlpRulesManager::Restriction::kPrinting, 1);
   histogram_tester.ExpectUniqueSample(
       GetDlpHistogramPrefix() + dlp::kReportedReportLevelRestriction,
       DlpRulesManager::Restriction::kScreenshot, 1);
+  histogram_tester.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kReportedWarnLevelRestriction,
+      DlpRulesManager::Restriction::kUnknownRestriction, 1);
 }
 
 // TODO(crbug.com/1262948): Enable and modify for lacros.
