@@ -11,25 +11,32 @@
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "chrome/browser/ash/login/helper.h"
+#include "chrome/browser/ash/login/profile_auth_data.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/login/ui/oobe_dialog_size_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/base_lock_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/confirm_password_change_handler.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_captive_portal_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_dialog.h"
+#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_handler.h"
+#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_start_reauth_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -188,8 +195,10 @@ void LockScreenStartReauthDialog::OnDialogClosed(
 }
 
 void LockScreenStartReauthDialog::DismissLockScreenNetworkDialog() {
-  if (lock_screen_network_dialog_)
+  if (is_network_dialog_visible_ && lock_screen_network_dialog_) {
+    is_network_dialog_visible_ = false;
     lock_screen_network_dialog_->Dismiss();
+  }
 }
 
 void LockScreenStartReauthDialog::DismissLockScreenCaptivePortalDialog() {
@@ -249,6 +258,13 @@ LockScreenStartReauthDialog::LockScreenStartReauthDialog()
           base::MakeRefCounted<chromeos::NetworkStateInformer>()) {
   network_state_informer_->Init();
   scoped_observation_.Observe(network_state_informer_.get());
+
+  registrar_.Add(this, chrome::NOTIFICATION_AUTH_NEEDED,
+                 content::NotificationService::AllSources());
+  registrar_.Add(this, chrome::NOTIFICATION_AUTH_SUPPLIED,
+                 content::NotificationService::AllSources());
+  registrar_.Add(this, chrome::NOTIFICATION_AUTH_CANCELLED,
+                 content::NotificationService::AllSources());
 }
 
 LockScreenStartReauthDialog::~LockScreenStartReauthDialog() {
@@ -260,17 +276,31 @@ LockScreenStartReauthDialog::~LockScreenStartReauthDialog() {
 
 void LockScreenStartReauthDialog::UpdateState(
     NetworkError::ErrorReason reason) {
+  if (is_proxy_auth_in_progress_)
+    return;
+
   const NetworkStateInformer::State state = network_state_informer_->state();
 
   if (state == NetworkStateInformer::OFFLINE) {
     ShowLockScreenNetworkDialog();
   } else if (state == NetworkStateInformer::CAPTIVE_PORTAL) {
     ShowLockScreenCaptivePortalDialog();
+  } else if (state == NetworkStateInformer::PROXY_AUTH_REQUIRED) {
+    if (is_network_dialog_visible_) {
+      should_reload_gaia_ = true;
+    }
   } else {
     DismissLockScreenCaptivePortalDialog();
-    if (is_network_dialog_visible_ && lock_screen_network_dialog_) {
-      is_network_dialog_visible_ = false;
-      lock_screen_network_dialog_->Close();
+    DismissLockScreenNetworkDialog();
+  }
+  if (should_reload_gaia_) {
+    DismissLockScreenNetworkDialog();
+    LockScreenReauthHandler* reauth_handler =
+        static_cast<LockScreenStartReauthUI*>(webui()->GetController())
+            ->GetMainHandler();
+    if (reauth_handler->IsAuthenticatorLoaded({})) {
+      reauth_handler->ReloadGaia();
+      should_reload_gaia_ = false;
     }
   }
 }
@@ -306,6 +336,76 @@ void LockScreenStartReauthDialog::AddObserver(
 void LockScreenStartReauthDialog::RemoveObserver(
     web_modal::ModalDialogHostObserver* observer) {
   modal_dialog_host_observer_list_.RemoveObserver(observer);
+}
+
+void LockScreenStartReauthDialog::TransferHttpAuthCaches() {
+  content::StoragePartition* webview_storage_partition =
+      login::SigninPartitionManager::Factory::GetForBrowserContext(profile_)
+          ->GetCurrentStoragePartition();
+  if (webview_storage_partition) {
+    // Transfer auth cache to system network context. This allows to preserve
+    // proxy credentials between different unlock attempts.
+    webview_storage_partition->GetNetworkContext()
+        ->SaveHttpAuthCacheProxyEntries(
+            base::BindOnce(&ash::TransferHttpAuthCacheToSystemNetworkContext,
+                           base::DoNothing()));
+
+    const user_manager::User* user =
+        user_manager::UserManager::Get()->GetActiveUser();
+    Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
+    // Transfer auth cache to the active user's profile so that there is no need
+    // to enter them again after unlocking the device.
+    ash::ProfileAuthData::TransferHttpAuthCacheProxyEntries(
+        base::DoNothing(), webview_storage_partition,
+        profile->GetDefaultStoragePartition());
+  }
+}
+
+void LockScreenStartReauthDialog::Observe(
+    int type,
+    const content::NotificationSource& source,
+    const content::NotificationDetails& details) {
+  switch (type) {
+    case chrome::NOTIFICATION_AUTH_NEEDED: {
+      is_proxy_auth_in_progress_ = true;
+      break;
+    }
+    case chrome::NOTIFICATION_AUTH_SUPPLIED: {
+      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&LockScreenStartReauthDialog::ReenableNetworkUpdates,
+                         weak_factory_.GetWeakPtr()),
+          ash::kProxyAuthTimeout);
+
+      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&LockScreenStartReauthDialog::TransferHttpAuthCaches,
+                         weak_factory_.GetWeakPtr()),
+          ash::kAuthCacheTransferDelayMs);
+      g_dialog->Focus();
+      break;
+    }
+    case chrome::NOTIFICATION_AUTH_CANCELLED: {
+      ReenableNetworkUpdates();
+      should_reload_gaia_ = true;
+      // If proxy authentication is canceled we disconnect from current network
+      // and it triggers offline state which leads to us showing network screen
+      // through `LockScreenStartReauthDialog::UpdateState`.
+      const std::string network_path = NetworkHandler::Get()
+                                           ->network_state_handler()
+                                           ->DefaultNetwork()
+                                           ->path();
+      NetworkHandler::Get()->network_connection_handler()->DisconnectNetwork(
+          network_path, base::DoNothing(), network_handler::ErrorCallback());
+      break;
+    }
+    default:
+      NOTREACHED() << "Unexpected notification " << type;
+  }
+}
+
+void LockScreenStartReauthDialog::ReenableNetworkUpdates() {
+  is_proxy_auth_in_progress_ = false;
 }
 
 }  // namespace chromeos

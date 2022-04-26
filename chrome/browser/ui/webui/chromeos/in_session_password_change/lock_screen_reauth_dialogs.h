@@ -15,6 +15,8 @@
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
+#include "content/public/browser/notification_observer.h"
+#include "content/public/browser/notification_registrar.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
 namespace chromeos {
@@ -26,7 +28,8 @@ class LockScreenStartReauthDialog
     : public BaseLockDialog,
       public NetworkStateInformer::NetworkStateInformerObserver,
       public ChromeWebModalDialogManagerDelegate,
-      public web_modal::WebContentsModalDialogHost {
+      public web_modal::WebContentsModalDialogHost,
+      public content::NotificationObserver {
  public:
   LockScreenStartReauthDialog();
   LockScreenStartReauthDialog(LockScreenStartReauthDialog const&) = delete;
@@ -86,10 +89,23 @@ class LockScreenStartReauthDialog
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
+  // content::NotificationObserver:
+  void Observe(int type,
+               const content::NotificationSource& source,
+               const content::NotificationDetails& details) override;
+
+  // Copies proxy authentication details that were entered in the lock screen
+  // profile to system network context and to the profile of active user.
+  void TransferHttpAuthCaches();
+
+  void ReenableNetworkUpdates();
+
   void OnCaptivePortalDialogReadyForTesting();
 
   scoped_refptr<chromeos::NetworkStateInformer> network_state_informer_;
   bool is_network_dialog_visible_ = false;
+  bool is_proxy_auth_in_progress_ = false;
+  bool should_reload_gaia_ = false;
 
   base::ScopedObservation<NetworkStateInformer, NetworkStateInformerObserver>
       scoped_observation_{this};
@@ -98,6 +114,8 @@ class LockScreenStartReauthDialog
   Profile* profile_ = nullptr;
 
   std::unique_ptr<LockScreenCaptivePortalDialog> captive_portal_dialog_;
+
+  content::NotificationRegistrar registrar_;
 
   // Callbacks that are used to notify tests that the corresponding dialog is
   // loaded.

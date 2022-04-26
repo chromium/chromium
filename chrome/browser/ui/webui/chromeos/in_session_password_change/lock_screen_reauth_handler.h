@@ -25,6 +25,8 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
 
   void ShowPasswordChangedScreen();
 
+  void ReloadGaia();
+
   // WebUI message handlers.
   void HandleInitialize(const base::Value::List&);
   void HandleCompleteAuthentication(const base::Value::List&);

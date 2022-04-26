@@ -318,6 +318,10 @@ void LockScreenReauthHandler::ShowPasswordChangedScreen() {
   CallJavascriptFunction(std::string(kMainElement) + "passwordChanged");
 }
 
+void LockScreenReauthHandler::ReloadGaia() {
+  CallJavascriptFunction(std::string(kMainElement) + "reloadAuthenticator");
+}
+
 void LockScreenReauthHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "initialize",

@@ -14,6 +14,8 @@
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "chrome/browser/ash/login/users/test_users.h"
+#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/dbus/shill/fake_shill_manager_client.h"
 #include "chromeos/network/network_connection_handler.h"
@@ -23,9 +25,11 @@
 #include "chromeos/network/network_state_test_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/spawned_test_server/spawned_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -347,6 +351,91 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerAndHideCaptivePortalDialog) {
   // Close all dialogs at the end of the test - otherwise these tests crash
   reauth_dialog_helper->ClickCloseNetworkButton();
   reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
+}
+
+// Sets up proxy server which requires authentication.
+class ProxyAuthLockscreenWebUiTest : public LockscreenWebUiTest {
+ public:
+  ProxyAuthLockscreenWebUiTest()
+      : proxy_server_(net::SpawnedTestServer::TYPE_BASIC_AUTH_PROXY,
+                      base::FilePath()),
+        login_handler_(nullptr) {}
+
+  ProxyAuthLockscreenWebUiTest(const ProxyAuthLockscreenWebUiTest&) = delete;
+  ProxyAuthLockscreenWebUiTest& operator=(const ProxyAuthLockscreenWebUiTest&) =
+      delete;
+
+  ~ProxyAuthLockscreenWebUiTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    LockscreenWebUiTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(::switches::kProxyServer,
+                                    proxy_server_.host_port_pair().ToString());
+  }
+
+  void SetUpOnMainThread() override {
+    LockscreenWebUiTest::SetUpOnMainThread();
+    // Proxy authentication will be required as soon as we request any url from
+    // lock screen's webview. This observer will notice it and allow us to
+    // access corresponding `LoginHandler` object.
+    auth_needed_observer_ =
+        std::make_unique<content::WindowedNotificationObserver>(
+            chrome::NOTIFICATION_AUTH_NEEDED,
+            base::BindRepeating(&ProxyAuthLockscreenWebUiTest::OnAuthRequested,
+                                base::Unretained(this)));
+  }
+
+  void SetUp() override {
+    proxy_server_.set_redirect_connect_to_localhost(true);
+    ASSERT_TRUE(proxy_server_.Start());
+    LockscreenWebUiTest::SetUp();
+  }
+
+  void WaitForLoginHandler() { auth_needed_observer_->Wait(); }
+
+  LoginHandler* login_handler() const { return login_handler_; }
+
+ private:
+  bool OnAuthRequested(const content::NotificationSource& /* source */,
+                       const content::NotificationDetails& details) {
+    login_handler_ =
+        content::Details<LoginNotificationDetails>(details)->handler();
+    return true;
+  }
+
+  net::SpawnedTestServer proxy_server_;
+  std::unique_ptr<content::WindowedNotificationObserver> auth_needed_observer_;
+  // Used for proxy server authentication.
+  LoginHandler* login_handler_;
+};
+
+// TODO(andreydav@): Investigate why we never get
+// `NetworkStateInformer::PROXY_AUTH_REQUIRED` state from
+// `NetworkStateInformer::UpdateState()` with current test setup. This prevents
+// us from writing tests where we would switch to to a network behind proxy on a
+// network screen or where we would cancel proxy auth to choose another network.
+IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest, ProxyAuth) {
+  Login();
+
+  LOG(INFO) << "ScreenLockerTester().Lock()";
+  // Lock the screen and trigger the lock screen SAML reauth dialog.
+  ScreenLockerTester().Lock();
+  LOG(INFO) << "LockScreenReauthDialogTestHelper::ShowDialogAndWait()";
+  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+      LockScreenReauthDialogTestHelper::ShowDialogAndWait();
+  ASSERT_TRUE(reauth_dialog_helper);
+
+  reauth_dialog_helper->ForceSamlRedirect();
+
+  reauth_dialog_helper->WaitForVerifyAccountScreen();
+  reauth_dialog_helper->ClickVerifyButton();
+
+  reauth_dialog_helper->WaitForSamlScreen();
+  reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
+
+  // Appearance of login handler means that proxy authentication was requested
+  WaitForLoginHandler();
+  ASSERT_TRUE(login_handler());
 }
 
 }  // namespace ash

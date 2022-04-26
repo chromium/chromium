@@ -36,6 +36,7 @@
 #include "chrome/browser/ash/login/hwid_checker.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/lock_screen_utils.h"
+#include "chrome/browser/ash/login/profile_auth_data.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
@@ -99,10 +100,6 @@ namespace {
 // Timeout to delay first notification about offline state for a
 // current network.
 constexpr base::TimeDelta kOfflineTimeout = base::Seconds(1);
-
-// Timeout to delay first notification about offline state when authenticating
-// to a proxy.
-constexpr base::TimeDelta kProxyAuthTimeout = base::Seconds(5);
 
 // Timeout used to prevent infinite connecting to a flaky network.
 constexpr base::TimeDelta kConnectingTimeout = base::Seconds(60);
@@ -422,7 +419,7 @@ void SigninScreenHandler::Observe(int type,
             base::BindOnce(
                 &SigninScreenHandler::ReenableNetworkStateUpdatesAfterProxyAuth,
                 weak_factory_.GetWeakPtr()),
-            kProxyAuthTimeout);
+            ash::kProxyAuthTimeout);
       }
       break;
     }

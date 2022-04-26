@@ -17,7 +17,7 @@ class LockScreenStartReauthUI : public ui::WebDialogUI {
   explicit LockScreenStartReauthUI(content::WebUI* web_ui);
   ~LockScreenStartReauthUI() override;
 
-  LockScreenReauthHandler* GetMainHandlerForTests() { return main_handler_; }
+  LockScreenReauthHandler* GetMainHandler() { return main_handler_; }
 
  private:
   // The main message handler.

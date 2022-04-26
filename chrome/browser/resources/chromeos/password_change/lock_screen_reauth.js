@@ -206,6 +206,15 @@ Polymer({
   },
 
   /**
+   * Reloads the page.
+   */
+  reloadAuthenticator() {
+    this.signinFrame_.clearData({since: 0}, clearDataType, () => {
+      this.authenticator_.resetStates();
+    });
+  },
+
+  /**
    * @return {!Element}
    * @private
    */

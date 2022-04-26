@@ -91,7 +91,7 @@ bool LockScreenReauthDialogTestHelper::ShowDialogAndWaitImpl() {
     ADD_FAILURE() << "Could not retrieve LockScreenStartReauthUI";
     return false;
   }
-  main_handler_ = reauth_webui_controller_->GetMainHandlerForTests();
+  main_handler_ = reauth_webui_controller_->GetMainHandler();
   if (!main_handler_) {
     ADD_FAILURE() << "Could not retrieve LockScreenReauthHandler";
     return false;

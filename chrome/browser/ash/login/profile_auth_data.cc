@@ -7,6 +7,9 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/unguessable_token.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "components/google/core/common/google_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -30,19 +33,6 @@ void OnTargetHttpAuthCacheProxyEntriesSaved(
     const base::UnguessableToken& cache_key) {
   to_partition->GetNetworkContext()->LoadHttpAuthCacheProxyEntries(
       cache_key, completion_callback);
-}
-
-// Starts tranferring `from_partition`'s http auth cache's proxy entries into
-// `to_partition`.
-void TransferHttpAuthCacheProxyEntries(
-    base::RepeatingClosure completion_callback,
-    content::StoragePartition* from_partition,
-    content::StoragePartition* to_partition) {
-  // `to_partition` will outlive the call to `completion_callback`.
-  // See ProfileAuthData::Transfer.
-  from_partition->GetNetworkContext()->SaveHttpAuthCacheProxyEntries(
-      base::BindOnce(&OnTargetHttpAuthCacheProxyEntriesSaved,
-                     completion_callback, base::Unretained(to_partition)));
 }
 
 // Given a `cookie` set during login, returns true if the cookie may have been
@@ -178,6 +168,15 @@ void TransferCookies(base::RepeatingClosure completion_callback,
 
 }  // namespace
 
+void TransferHttpAuthCacheToSystemNetworkContext(
+    base::RepeatingClosure completion_callback,
+    const base::UnguessableToken& cache_key) {
+  network::mojom::NetworkContext* system_network_context =
+      g_browser_process->system_network_context_manager()->GetContext();
+  system_network_context->LoadHttpAuthCacheProxyEntries(cache_key,
+                                                        completion_callback);
+}
+
 void ProfileAuthData::Transfer(
     content::StoragePartition* from_partition,
     content::StoragePartition* to_partition,
@@ -200,6 +199,17 @@ void ProfileAuthData::Transfer(
   TransferCookies(task_completion_callback, from_partition, to_partition,
                   transfer_auth_cookies_on_first_login,
                   transfer_saml_auth_cookies_on_subsequent_login);
+}
+
+void ProfileAuthData::TransferHttpAuthCacheProxyEntries(
+    base::RepeatingClosure completion_callback,
+    content::StoragePartition* from_partition,
+    content::StoragePartition* to_partition) {
+  // `to_partition` will outlive the call to `completion_callback`.
+  // See ProfileAuthData::Transfer.
+  from_partition->GetNetworkContext()->SaveHttpAuthCacheProxyEntries(
+      base::BindOnce(&OnTargetHttpAuthCacheProxyEntriesSaved,
+                     completion_callback, base::Unretained(to_partition)));
 }
 
 }  // namespace ash
