@@ -13,8 +13,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/task_features.h"
 #include "base/task/thread_pool/task.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
@@ -27,6 +29,7 @@ namespace {
 
 constexpr TimeDelta kLongerDelay = Hours(3);
 constexpr TimeDelta kLongDelay = Hours(1);
+constexpr TimeDelta kLeeway = PendingTask::kDefaultLeeway;
 
 class MockCallback {
  public:
@@ -42,6 +45,15 @@ Task ConstructMockedTask(testing::StrictMock<MockCallback>& mock_task,
                          TimeDelta delay) {
   Task task(FROM_HERE, BindOnce(&MockCallback::Run, Unretained(&mock_task)),
             now, delay);
+  return task;
+}
+
+Task ConstructMockedTask(testing::StrictMock<MockCallback>& mock_task,
+                         TimeTicks now,
+                         TimeTicks delayed_run_time,
+                         subtle::DelayPolicy delay_policy) {
+  Task task(FROM_HERE, BindOnce(&MockCallback::Run, Unretained(&mock_task)),
+            now, delayed_run_time, kLeeway, delay_policy);
   return task;
 }
 
@@ -152,6 +164,34 @@ TEST_F(ThreadPoolDelayedTaskManagerTest, DelayedTaskRunsAfterDelay) {
   service_thread_task_runner_->FastForwardBy(kLongDelay);
 }
 
+// Verify that a delayed task posted with kFlexiblePreferEarly delay policy
+// is forwarded within the leeway period preceding the deadline.
+TEST_F(ThreadPoolDelayedTaskManagerTest,
+       DelayedTaskRunsAtTime_FlexiblePreferEarly) {
+  const TimeDelta kUnalignedLongDelay = kLongDelay + Milliseconds(1);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kAlignWakeUps);
+  delayed_task_manager_.Start(service_thread_task_runner_);
+
+  TimeTicks now = service_thread_task_runner_->NowTicks();
+  Task task =
+      ConstructMockedTask(mock_callback_, now, now + kUnalignedLongDelay,
+                          base::subtle::DelayPolicy::kFlexiblePreferEarly);
+
+  // Send |task| to the DelayedTaskManager.
+  delayed_task_manager_.AddDelayedTask(std::move(task), BindOnce(&PostTaskNow),
+                                       nullptr);
+
+  // The task isn't forwarded before the earliest run time is reached.
+  service_thread_task_runner_->FastForwardBy(kUnalignedLongDelay - kLeeway -
+                                             Milliseconds(1));
+  testing::Mock::VerifyAndClear(&mock_callback_);
+
+  // Fast-forward time. Expect the task to be forwarded to PostTaskNow().
+  EXPECT_CALL(mock_callback_, Run());
+  service_thread_task_runner_->FastForwardBy(kLeeway + Milliseconds(1));
+}
+
 // Verify that a delayed task added after Start() is forwarded when it is
 // canceled, even if its delay hasn't expired.
 TEST_F(ThreadPoolDelayedTaskManagerTest, DelayedTaskRunsAfterCancelled) {
@@ -226,6 +266,43 @@ TEST_F(ThreadPoolDelayedTaskManagerTest, DelayedTasksRunAfterDelay) {
   EXPECT_CALL(mock_callback_b, Run());
   service_thread_task_runner_->FastForwardBy(Hours(1));
   testing::Mock::VerifyAndClear(&mock_callback_b);
+}
+
+// Verify that multiple delayed tasks are forwarded respecting the order
+// prescibed by their latest deadline.
+TEST_F(ThreadPoolDelayedTaskManagerTest,
+       DelayedTasksRunAtTime_MixedDelayPolicy) {
+  delayed_task_manager_.Start(service_thread_task_runner_);
+
+  TimeTicks now = service_thread_task_runner_->NowTicks();
+  testing::StrictMock<MockCallback> mock_callback_a;
+  Task task_a =
+      ConstructMockedTask(mock_callback_a, now, now + Milliseconds(8),
+                          base::subtle::DelayPolicy::kFlexibleNoSooner);
+
+  testing::StrictMock<MockCallback> mock_callback_b;
+  Task task_b =
+      ConstructMockedTask(mock_callback_b, now, now + Milliseconds(10),
+                          base::subtle::DelayPolicy::kPrecise);
+
+  // Send tasks to the DelayedTaskManager.
+  delayed_task_manager_.AddDelayedTask(std::move(task_a),
+                                       BindOnce(&PostTaskNow), nullptr);
+  delayed_task_manager_.AddDelayedTask(std::move(task_b),
+                                       BindOnce(&PostTaskNow), nullptr);
+
+  // The task doesn't run before the delay has completed.
+  service_thread_task_runner_->FastForwardBy(Milliseconds(10) -
+                                             Milliseconds(1));
+
+  // Run tasks that are ripe for execution on the service thread. Don't expect
+  // any call to PostTaskNow().
+  service_thread_task_runner_->RunUntilIdle();
+
+  // Fast-forward time. Expect |task_b| and |task_b| to be forwarded.
+  EXPECT_CALL(mock_callback_b, Run());
+  EXPECT_CALL(mock_callback_a, Run());
+  service_thread_task_runner_->FastForwardBy(Milliseconds(1));
 }
 
 TEST_F(ThreadPoolDelayedTaskManagerTest, PostTaskDuringStart) {

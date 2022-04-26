@@ -125,6 +125,8 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
   DCHECK(!started_);
 
   internal::InitializeThreadPrioritiesFeature();
+  PooledSequencedTaskRunner::InitializeFeatures();
+  task_leeway_.store(kTaskLeewayParam.Get(), std::memory_order_relaxed);
 
   disable_job_yield_ = FeatureList::IsEnabled(kDisableJobYield);
   disable_fair_scheduling_ = FeatureList::IsEnabled(kDisableFairJobScheduling);
@@ -256,7 +258,8 @@ bool ThreadPoolImpl::PostDelayedTask(const Location& from_here,
   AssertNoExtensionInTraits(traits);
   // Post |task| as part of a one-off single-task Sequence.
   return PostTaskWithSequence(
-      Task(from_here, std::move(task), TimeTicks::Now(), delay),
+      Task(from_here, std::move(task), TimeTicks::Now(), delay,
+           task_leeway_.load(std::memory_order_relaxed)),
       MakeRefCounted<Sequence>(traits, nullptr,
                                TaskSourceExecutionMode::kParallel));
 }

@@ -46,8 +46,7 @@ TimeTicks WakeUpRunTime(const WakeUp& wake_up) {
   if (g_align_wake_ups.load(std::memory_order_relaxed)) {
     TimeTicks aligned_run_time = wake_up.earliest_time().SnappedToNextTick(
         TimeTicks(), g_task_leeway.load(std::memory_order_relaxed));
-    if (aligned_run_time <= wake_up.latest_time())
-      return aligned_run_time;
+    return std::min(aligned_run_time, wake_up.latest_time());
   }
   return wake_up.time;
 }

@@ -157,6 +157,10 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   bool disable_job_yield_ = false;
   bool disable_fair_scheduling_ = false;
   std::atomic<bool> disable_job_update_priority_{false};
+  // Leeway value applied to delayed tasks. An atomic is used here because the
+  // value is queried from multiple threads when tasks are posted cross-thread,
+  // which can race with its initialization.
+  std::atomic<TimeDelta> task_leeway_{PendingTask::kDefaultLeeway};
 
   // Whether this TaskScheduler was started. Access controlled by
   // |sequence_checker_|.

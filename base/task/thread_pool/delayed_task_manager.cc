@@ -8,7 +8,9 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_features.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool/task.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -36,8 +38,11 @@ DelayedTaskManager::DelayedTask& DelayedTaskManager::DelayedTask::operator=(
 
 bool DelayedTaskManager::DelayedTask::operator>(
     const DelayedTask& other) const {
-  return std::tie(task.delayed_run_time, task.sequence_num) >
-         std::tie(other.task.delayed_run_time, other.task.sequence_num);
+  TimeTicks latest_delayed_run_time = task.latest_delayed_run_time();
+  TimeTicks other_latest_delayed_run_time =
+      other.task.latest_delayed_run_time();
+  return std::tie(latest_delayed_run_time, task.sequence_num) >
+         std::tie(other_latest_delayed_run_time, other.task.sequence_num);
 }
 
 bool DelayedTaskManager::DelayedTask::IsScheduled() const {
@@ -68,6 +73,8 @@ void DelayedTaskManager::Start(
     DCHECK(!service_thread_task_runner_);
     service_thread_task_runner_ = std::move(service_thread_task_runner);
     process_ripe_tasks_time = GetTimeToScheduleProcessRipeTasksLockRequired();
+    align_wake_ups_ = FeatureList::IsEnabled(kAlignWakeUps);
+    task_leeway_ = kTaskLeewayParam.Get();
   }
   ScheduleProcessRipeTasksOnServiceThread(process_ripe_tasks_time);
 }
@@ -108,7 +115,7 @@ void DelayedTaskManager::ProcessRipeTasks() {
     // sequence now rather than in the future, to minimize CPU wake ups and save
     // power.
     while (!delayed_task_queue_.empty() &&
-           (delayed_task_queue_.top().task.delayed_run_time <= now ||
+           (delayed_task_queue_.top().task.earliest_delayed_run_time() <= now ||
             !delayed_task_queue_.top().task.task.MaybeValid())) {
       // The const_cast on top is okay since the DelayedTask is
       // transactionally being popped from |delayed_task_queue_| right after
@@ -144,6 +151,14 @@ TimeTicks DelayedTaskManager::GetTimeToScheduleProcessRipeTasksLockRequired() {
   if (ripest_delayed_task.IsScheduled())
     return TimeTicks::Max();
   ripest_delayed_task.SetScheduled();
+
+  if (align_wake_ups_) {
+    TimeTicks aligned_run_time =
+        ripest_delayed_task.task.earliest_delayed_run_time().SnappedToNextTick(
+            TimeTicks(), task_leeway_);
+    return std::min(aligned_run_time,
+                    ripest_delayed_task.task.latest_delayed_run_time());
+  }
   return ripest_delayed_task.task.delayed_run_time;
 }
 

@@ -27,12 +27,16 @@ struct BASE_EXPORT Task : public PendingTask {
   Task(const Location& posted_from,
        OnceClosure task,
        TimeTicks queue_time,
-       TimeDelta delay);
+       TimeDelta delay,
+       TimeDelta leeway = TimeDelta());
   // |delayed_run_time| is the time when the task should be run.
   Task(const Location& posted_from,
        OnceClosure task,
        TimeTicks queue_time,
-       TimeTicks delayed_run_time);
+       TimeTicks delayed_run_time,
+       TimeDelta leeway = TimeDelta(),
+       subtle::DelayPolicy delay_policy =
+           subtle::DelayPolicy::kFlexibleNoSooner);
 
   // Task is move-only to avoid mistakes that cause reference counts to be
   // accidentally bumped.

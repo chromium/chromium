@@ -6,9 +6,24 @@
 
 #include "base/sequence_token.h"
 #include "base/task/default_delayed_task_handle_delegate.h"
+#include "base/task/task_features.h"
 
 namespace base {
 namespace internal {
+
+namespace {
+
+// Leeway value applied to delayed tasks. An atomic is used here because the
+// value is queried from multiple threads when tasks are posted cross-thread,
+// which can race with its initialization.
+std::atomic<TimeDelta> g_task_leeway{PendingTask::kDefaultLeeway};
+
+}  // namespace
+
+// static
+void PooledSequencedTaskRunner::InitializeFeatures() {
+  g_task_leeway.store(kTaskLeewayParam.Get(), std::memory_order_relaxed);
+}
 
 PooledSequencedTaskRunner::PooledSequencedTaskRunner(
     const TaskTraits& traits,
@@ -29,7 +44,8 @@ bool PooledSequencedTaskRunner::PostDelayedTask(const Location& from_here,
     return false;
   }
 
-  Task task(from_here, std::move(closure), TimeTicks::Now(), delay);
+  Task task(from_here, std::move(closure), TimeTicks::Now(), delay,
+            g_task_leeway.load(std::memory_order_relaxed));
 
   // Post the task as part of |sequence_|.
   return pooled_task_runner_delegate_->PostTaskWithSequence(std::move(task),
@@ -47,7 +63,8 @@ bool PooledSequencedTaskRunner::PostDelayedTaskAt(
     return false;
   }
 
-  Task task(from_here, std::move(closure), TimeTicks::Now(), delayed_run_time);
+  Task task(from_here, std::move(closure), TimeTicks::Now(), delayed_run_time,
+            g_task_leeway.load(std::memory_order_relaxed), delay_policy);
 
   // Post the task as part of |sequence_|.
   return pooled_task_runner_delegate_->PostTaskWithSequence(std::move(task),

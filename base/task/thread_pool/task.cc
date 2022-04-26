@@ -20,17 +20,26 @@ AtomicSequenceNumber g_sequence_nums_for_tracing;
 Task::Task(const Location& posted_from,
            OnceClosure task,
            TimeTicks queue_time,
-           TimeDelta delay)
+           TimeDelta delay,
+           TimeDelta leeway)
     : Task(posted_from,
            std::move(task),
            queue_time,
-           delay.is_zero() ? TimeTicks() : queue_time + delay) {}
+           delay.is_zero() ? TimeTicks() : queue_time + delay,
+           leeway) {}
 
 Task::Task(const Location& posted_from,
            OnceClosure task,
            TimeTicks queue_time,
-           TimeTicks delayed_run_time)
-    : PendingTask(posted_from, std::move(task), queue_time, delayed_run_time) {
+           TimeTicks delayed_run_time,
+           TimeDelta leeway,
+           subtle::DelayPolicy delay_policy)
+    : PendingTask(posted_from,
+                  std::move(task),
+                  queue_time,
+                  delayed_run_time,
+                  leeway,
+                  delay_policy) {
   // ThreadPoolImpl doesn't use |sequence_num| but tracing (toplevel.flow)
   // relies on it being unique. While this subtle dependency is a bit
   // overreaching, ThreadPoolImpl is the only task system that doesn't use

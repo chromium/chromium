@@ -10,6 +10,7 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/location.h"
+#include "base/task/delay_policy.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -22,12 +23,16 @@ enum class Nestable : uint8_t {
 // Contains data about a pending task. Stored in TaskQueue and DelayedTaskQueue
 // for use by classes that queue and execute tasks.
 struct BASE_EXPORT PendingTask {
+  static constexpr TimeDelta kDefaultLeeway = Milliseconds(8);
+
   PendingTask();
-  PendingTask(const Location& posted_from, OnceClosure task);
   PendingTask(const Location& posted_from,
               OnceClosure task,
-              TimeTicks queue_time,
-              TimeTicks delayed_run_time);
+              TimeTicks queue_time = TimeTicks(),
+              TimeTicks delayed_run_time = TimeTicks(),
+              TimeDelta leeway = TimeDelta(),
+              subtle::DelayPolicy delay_policy =
+                  subtle::DelayPolicy::kFlexibleNoSooner);
   PendingTask(PendingTask&& other);
   ~PendingTask();
 
@@ -36,6 +41,9 @@ struct BASE_EXPORT PendingTask {
   // Returns the time at which this task should run. This is |delayed_run_time|
   // for a delayed task, |queue_time| otherwise.
   base::TimeTicks GetDesiredExecutionTime() const;
+
+  TimeTicks earliest_delayed_run_time() const;
+  TimeTicks latest_delayed_run_time() const;
 
   // The task to run.
   OnceClosure task;
@@ -53,6 +61,13 @@ struct BASE_EXPORT PendingTask {
 
   // The time when the task should be run. This is null for an immediate task.
   base::TimeTicks delayed_run_time;
+
+  // |leeway| and |delay_policy| determine the preferred time range for running
+  // the delayed task. A larger leeway provides more freedom to run the task at
+  // an optimal time for power consumption. These fields are ignored for an
+  // immediate (non-delayed) task.
+  TimeDelta leeway;
+  subtle::DelayPolicy delay_policy = subtle::DelayPolicy::kFlexibleNoSooner;
 
   // Chain of symbols of the parent tasks which led to this one being posted.
   static constexpr size_t kTaskBacktraceLength = 4;

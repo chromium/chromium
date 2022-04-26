@@ -128,6 +128,9 @@ class BASE_EXPORT DelayedTaskManager {
 
   IntrusiveHeap<DelayedTask, std::greater<>> delayed_task_queue_
       GUARDED_BY(queue_lock_);
+
+  bool align_wake_ups_ GUARDED_BY(queue_lock_) = false;
+  TimeDelta task_leeway_ GUARDED_BY(queue_lock_){PendingTask::kDefaultLeeway};
 };
 
 }  // namespace internal

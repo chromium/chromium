@@ -30,6 +30,10 @@ class BASE_EXPORT PooledSequencedTaskRunner
   PooledSequencedTaskRunner& operator=(const PooledSequencedTaskRunner&) =
       delete;
 
+  // Initializes the state of all the sequence manager features. Must be invoked
+  // after FeatureList initialization.
+  static void InitializeFeatures();
+
   // UpdateableSequencedTaskRunner:
   bool PostDelayedTask(const Location& from_here,
                        OnceClosure closure,
