@@ -221,7 +221,7 @@ void PerFrameContentTranslateDriver::InitiateTranslationIfReload(
   if (response_code == 0 || response_code == net::HTTP_INTERNAL_SERVER_ERROR)
     return;
 
-  if (!navigation_handle->IsInPrimaryMainFrame() &&
+  if (!navigation_handle->IsInMainFrame() &&
       translate_manager()->GetLanguageState()->translation_declined()) {
     // Some sites (such as Google map) may trigger sub-frame navigations
     // when the user interacts with the page.  We don't want to show a new
@@ -267,14 +267,14 @@ void PerFrameContentTranslateDriver::InitiateTranslationIfReload(
 // content::WebContentsObserver methods
 void PerFrameContentTranslateDriver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // Continue to process the navigation unless it is in prerendering.
-  // It should be kept in sync with the implementation in
-  // ContentTranslateDriver::DidFinishNavigation.
-  if (navigation_handle->GetRenderFrameHost()->GetLifecycleState() ==
-          content::RenderFrameHost::LifecycleState::kPrerendering ||
-      !navigation_handle->HasCommitted()) {
+  if (!navigation_handle->HasCommitted())
     return;
-  }
+
+  // Continue to process the navigation only if it is for frames in the primary
+  // page. It should be kept in sync with the implementation in
+  // ContentTranslateDriver::DidFinishNavigation.
+  if (!navigation_handle->GetRenderFrameHost()->GetPage().IsPrimary())
+    return;
 
   InitiateTranslationIfReload(navigation_handle);
 
