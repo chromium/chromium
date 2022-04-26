@@ -311,11 +311,13 @@ void PdfPrinterHandler::FileSelected(const base::FilePath& path,
   download_prefs->SetSaveFilePath(path.DirName());
   sticky_settings_->SaveInPrefs(profile_->GetPrefs());
   print_to_pdf_path_ = path;
+  select_file_dialog_.reset();
   PostPrintToPdfTask();
 }
 
 void PdfPrinterHandler::FileSelectionCanceled(void* params) {
   std::move(print_callback_).Run(base::Value("PDFPrintCanceled"));
+  select_file_dialog_.reset();
 }
 
 void PdfPrinterHandler::SetPdfSavedClosureForTesting(
@@ -476,6 +478,10 @@ void PdfPrinterHandler::OnGotUniqueFileName(const base::FilePath& path) {
 
 void PdfPrinterHandler::OnDirectorySelected(const base::FilePath& filename,
                                             const base::FilePath& directory) {
+  // Early return if the select file dialog is already active.
+  if (select_file_dialog_)
+    return;
+
   base::FilePath path = directory.Append(filename);
 
   // Prompts the user to select the file.
