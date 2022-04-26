@@ -49,6 +49,23 @@ class DlpReportingManagerTest : public testing::Test {
   }
 
  protected:
+  void ReportEventAndCheckComponent(
+      DlpRulesManager::Component rule_component,
+      DlpPolicyEventDestination_Component event_component,
+      unsigned int event_number) {
+    manager_.ReportEvent(kCompanyPattern, rule_component,
+                         DlpRulesManager::Restriction::kClipboard,
+                         DlpRulesManager::Level::kBlock);
+
+    ASSERT_EQ(events_.size(), event_number + 1);
+    EXPECT_EQ(events_[event_number].source().url(), kCompanyPattern);
+    EXPECT_FALSE(events_[event_number].destination().has_url());
+    EXPECT_EQ(events_[event_number].destination().component(), event_component);
+    EXPECT_EQ(events_[event_number].restriction(),
+              DlpPolicyEvent_Restriction_CLIPBOARD);
+    EXPECT_EQ(events_[event_number].mode(), DlpPolicyEvent_Mode_BLOCK);
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void ReportEventAndCheckUser(user_manager::UserManager* user_manager,
                                const AccountId& account_id,
@@ -101,17 +118,21 @@ TEST_F(DlpReportingManagerTest, ReportEventWithUrlDst) {
 }
 
 TEST_F(DlpReportingManagerTest, ReportEventWithComponentDst) {
-  manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Component::kArc,
-                       DlpRulesManager::Restriction::kClipboard,
-                       DlpRulesManager::Level::kBlock);
-
-  EXPECT_EQ(events_.size(), 1u);
-  EXPECT_EQ(events_[0].source().url(), kCompanyPattern);
-  EXPECT_FALSE(events_[0].destination().has_url());
-  EXPECT_EQ(events_[0].destination().component(),
-            DlpPolicyEventDestination_Component_ARC);
-  EXPECT_EQ(events_[0].restriction(), DlpPolicyEvent_Restriction_CLIPBOARD);
-  EXPECT_EQ(events_[0].mode(), DlpPolicyEvent_Mode_BLOCK);
+  ReportEventAndCheckComponent(DlpRulesManager::Component::kArc,
+                               DlpPolicyEventDestination_Component_ARC, 0u);
+  ReportEventAndCheckComponent(DlpRulesManager::Component::kCrostini,
+                               DlpPolicyEventDestination_Component_CROSTINI,
+                               1u);
+  ReportEventAndCheckComponent(DlpRulesManager::Component::kPluginVm,
+                               DlpPolicyEventDestination_Component_PLUGIN_VM,
+                               2u);
+  ReportEventAndCheckComponent(DlpRulesManager::Component::kUsb,
+                               DlpPolicyEventDestination_Component_USB, 3u);
+  ReportEventAndCheckComponent(DlpRulesManager::Component::kDrive,
+                               DlpPolicyEventDestination_Component_DRIVE, 4u);
+  ReportEventAndCheckComponent(
+      DlpRulesManager::Component::kUnknownComponent,
+      DlpPolicyEventDestination_Component_UNDEFINED_COMPONENT, 5u);
 }
 
 TEST_F(DlpReportingManagerTest, MetricsReported) {
