@@ -20,7 +20,7 @@ function output(src, txt) {
   } else {
     domAutomationController.send(txt);
   }
-  console.log(txt);
+  console.warn(txt);
 }
 
 /**

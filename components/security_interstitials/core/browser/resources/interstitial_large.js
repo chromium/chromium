@@ -135,7 +135,7 @@ function setupEvents() {
           break;
 
         default:
-          throw 'Invalid interstitial type';
+          throw new Error('Invalid interstitial type');
       }
     });
   }
@@ -234,7 +234,7 @@ function setupEvents() {
   }
 
   if (lookalike) {
-    console.log(
+    console.warn(
         'Chrome has determined that ' +
         loadTimeData.getString('lookalikeRequestHostname') +
         ' could be fake or fraudulent.\n\n' +

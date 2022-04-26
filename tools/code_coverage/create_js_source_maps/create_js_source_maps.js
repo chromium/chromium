@@ -47,7 +47,7 @@ function addMapping(map, sourceFileName, originalLine, generatedLine, verbose) {
     },
   };
   if (verbose) {
-    console.log(mapping);
+    console.info(mapping);
   }
   map.addMapping(mapping);
 }
@@ -80,7 +80,7 @@ function processOneFile(inputFileName, verbose) {
     for (const removal of line.matchAll(GRIT_REMOVED_LINES_REGEX)) {
       const removedLines = Number.parseInt(removal[1], 10);
       if (verbose) {
-        console.log(`Found grit-removed-lines:${removedLines} on line ${
+        console.info(`Found grit-removed-lines:${removedLines} on line ${
             generatedLine}`);
       }
       originalLine += removedLines;

@@ -234,7 +234,7 @@ function announceStatus(text) {
 function resetAllFlags() {
   chrome.send('resetAllFlags');
   FlagSearch.getInstance().clearSearch();
-  announceStatus(loadTimeData.getString("reset-acknowledged"));
+  announceStatus(loadTimeData.getString('reset-acknowledged'));
   showRestartToast(true);
   requestExperimentalFeaturesData();
 }

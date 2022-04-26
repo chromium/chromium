@@ -5,7 +5,7 @@
 suite('SettingsDialog', function() {
   test('Theme Selection', function() {
     const body = document.body;
-    const queryString = "input[type='radio']:checked";
+    const queryString = 'input[type=\'radio\']:checked';
     chai.assert(body.classList.contains('light'));
     chai.assert.equal(document.querySelector(queryString).value, 'light');
 

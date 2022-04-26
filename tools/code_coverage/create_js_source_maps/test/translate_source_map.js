@@ -42,6 +42,6 @@ const sourceMap = JSON.parse(fs.readFileSync(argv.source_map));
   const consumer = await new SourceMapConsumer(sourceMap);
   const result =
       consumer.originalPositionFor({line: argv.line, column: argv.column});
-  console.log(JSON.stringify(result));
+  console.info(JSON.stringify(result));
   consumer.destroy();
 }());

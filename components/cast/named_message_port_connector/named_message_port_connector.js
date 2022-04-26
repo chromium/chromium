@@ -9,7 +9,7 @@ if (!window['cast']) {
    * @const
    */
   // eslint-disable-next-line no-var
-  var cast = new Object;
+  var cast = new Object();
 }
 
 if (!cast['__platform__']) {

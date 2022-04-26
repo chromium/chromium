@@ -12,7 +12,7 @@ function renovation_wikipedia() {
   for (let i = 0; i < elems.length; ++i) {
     // If a block was already expanded, re-adding the 'open-block'
     // class will do nothing; no need to check if it's there already.
-    elems.item(i).className += " open-block";
+    elems.item(i).className += ' open-block';
   }
 
   // Now we force the page to load images inside the expanded

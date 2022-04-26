@@ -699,7 +699,7 @@ AutomationNodeImpl.prototype = {
     }
 
     if (data.length !== 4) {
-      throw 'Internal encoding error for caret bounds.';
+      throw Error('Internal encoding error for caret bounds.');
     }
 
     return {left: data[0], top: data[1], width: data[2], height: data[3]};
@@ -1087,7 +1087,7 @@ AutomationNodeImpl.prototype = {
     const standardActions = GetStandardActions(this.treeID, this.id);
     if (!standardActions ||
         !standardActions.find(item => action == item)) {
-      throw 'Inapplicable action for node: ' + action;
+      throw Error('Inapplicable action for node: ' + action);
     }
     this.performAction_(action);
   },

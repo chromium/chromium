@@ -26,7 +26,7 @@ function output(src, txt) { // eslint-disable-line no-unused-vars
   }
   txt = src + ': ' + txt;
   print(txt);
-  console.log(txt);
+  console.warn(txt);
   if (window.domAutomationController) {
     window.domAutomationController.send(txt);
   }

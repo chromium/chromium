@@ -302,7 +302,7 @@ function populateThreadIds(sources) {
 
   for (const id of options) {
     if (!currentOptions.has(id)) {
-      const option = document.createElement("option");
+      const option = document.createElement('option');
       option.textContent = id;
       option.setAttribute('value', id);
       threadIdSelect.add(option);

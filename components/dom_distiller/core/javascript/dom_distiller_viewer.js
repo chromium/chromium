@@ -433,9 +433,9 @@ class Pincher {
 // eslint-disable-next-line no-var
 var pincher, fontSizeSlider;
 if (navigator.userAgent.toLowerCase().indexOf('android') > -1) {
-  pincher = new Pincher;
+  pincher = new Pincher();
 } else {
-  fontSizeSlider = new FontSizeSlider;
+  fontSizeSlider = new FontSizeSlider();
 }
 
 function useFontScaling(scale) {
