@@ -5381,44 +5381,6 @@
             ]
         }
     ],
-    "PageInfoAboutThisSite": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_211116",
-                    "params": {
-                        "ShowSampleContent": "false"
-                    },
-                    "enable_features": [
-                        "PageInfoAboutThisSite"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows",
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_211116",
-                    "params": {
-                        "ShowSampleContent": "false"
-                    },
-                    "enable_features": [
-                        "OptimizationHintsFetchingAnonymousDataConsent",
-                        "PageInfoAboutThisSite"
-                    ]
-                }
-            ]
-        }
-    ],
     "PageInfoDiscoverabilityTimeout": [
         {
             "platforms": [
