@@ -567,7 +567,12 @@ test("components_unittests") {
     deps += [ "//components/pwg_encoder:unit_tests" ]
   }
 
-  # TODO(crbug / 1056278): Enable this on Fuchsia
+  if (safe_browsing_mode != 0) {
+    deps += [ "//components/safe_browsing/content/common:unit_tests" ]
+  }
+
+  # TODO(crbug / 1056278): Enable this on Fuchsia and merge with the above
+  # conditional.
   if (safe_browsing_mode != 0 && !is_fuchsia) {
     deps += [
       "//components/safe_browsing/content/browser/download:unittests",

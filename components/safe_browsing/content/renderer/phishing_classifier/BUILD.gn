@@ -39,6 +39,7 @@ source_set("phishing_classifier") {
       "//components/paint_preview/common",
       "//components/safe_browsing:buildflags",
       "//components/safe_browsing/content/common:interfaces",
+      "//components/safe_browsing/content/common:visual_utils",
       "//components/safe_browsing/content/renderer",
       "//components/safe_browsing/core/common",
       "//components/safe_browsing/core/common/fbs:client_model",

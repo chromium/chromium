@@ -219,6 +219,7 @@ source_set("client_side_detection") {
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/variations",
+    "//components/zoom:zoom",
     "//content/public/browser",
     "//google_apis:google_apis",
     "//net:net",
@@ -226,4 +227,12 @@ source_set("client_side_detection") {
     "//services/network/public/cpp",
     "//url:url",
   ]
+
+  if (safe_browsing_mode != 0) {
+    deps += [ "//components/safe_browsing/content/common:visual_utils" ]
+  }
+
+  if (is_android) {
+    deps += [ "//ui/android" ]
+  }
 }

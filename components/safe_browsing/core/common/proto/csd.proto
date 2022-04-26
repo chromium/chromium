@@ -211,7 +211,11 @@ message ClientPhishingRequest {
   // Whether the TFLite model believed the page was phishy.
   optional bool is_tflite_match = 25;
 
-  // next available tag number: 26.
+  // Visual features of the current page. Only filled in for extended reporting
+  // users.
+  optional VisualFeatures visual_features = 26;
+
+  // next available tag number: 27.
 }
 
 message ClientPhishingResponse {
@@ -504,32 +508,7 @@ message LoginReputationClientResponse {
 
 // This message encapsulates all the visual features of the current page.
 message VisualFeatures {
-  // One bin in a color histogram.
-  message ColorHistogramBin {
-    // The average x-coordinate of the pixels in this bin.
-    optional float centroid_x = 1;
-
-    // The average y-coordinate of the pixels in this bin.
-    optional float centroid_y = 2;
-
-    // The quantized R-value for this bin.
-    optional int32 quantized_r = 3;
-
-    // The quantized G-value for this bin.
-    optional int32 quantized_g = 4;
-
-    // The quantized B-value for this bin.
-    optional int32 quantized_b = 5;
-
-    // The normalized weight of this bin.
-    optional float weight = 6;
-  }
-
-  // Represents the color histogram of a login page.
-  message ColorHistogram { repeated ColorHistogramBin bins = 1; }
-
-  // Color histogram of the current page.
-  optional ColorHistogram color_histogram = 1;
+  reserved 1;
 
   // Represents the blurred, downsampled image of the login page.
   message BlurredImage {

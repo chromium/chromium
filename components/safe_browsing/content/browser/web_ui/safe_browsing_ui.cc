@@ -974,6 +974,20 @@ std::string SerializeClientDownloadResponse(const ClientDownloadResponse& cdr) {
   return request_serialized;
 }
 
+base::Value SerializeVisualFeatures(const VisualFeatures& visual_features) {
+  base::Value image_dict(base::Value::Type::DICTIONARY);
+  const VisualFeatures::BlurredImage& image = visual_features.image();
+  image_dict.SetIntKey("width", image.width());
+  image_dict.SetIntKey("height", image.height());
+  image_dict.SetStringKey(
+      "data",
+      base::Base64Encode(base::as_bytes(base::make_span(image.data()))));
+
+  base::Value visual_dict(base::Value::Type::DICTIONARY);
+  visual_dict.SetKey("blurred_image", base::Value(std::move(image_dict)));
+  return visual_dict;
+}
+
 std::string SerializeClientPhishingRequest(
     const ClientPhishingRequestAndToken& cprat) {
   const ClientPhishingRequest& cpr = cprat.request;
@@ -1028,6 +1042,11 @@ std::string SerializeClientPhishingRequest(
     tflite_scores.push_back(std::move(score_value));
   }
   dict.SetKey("tflite_model_scores", base::Value(std::move(tflite_scores)));
+
+  if (cpr.has_visual_features()) {
+    dict.SetKey("visual_features",
+                SerializeVisualFeatures(cpr.visual_features()));
+  }
 
   base::Value* request_tree = &dict;
   std::string request_serialized;
@@ -1627,6 +1646,11 @@ std::string SerializePGPing(
     request_dict.SetKey(
         "referring_app_info",
         SerializeReferringAppInfo(request.referring_app_info()));
+  }
+
+  if (request.has_visual_features()) {
+    request_dict.SetKey("visual_features",
+                        SerializeVisualFeatures(request.visual_features()));
   }
 
   request_dict.SetKey("scoped_oauth_token",

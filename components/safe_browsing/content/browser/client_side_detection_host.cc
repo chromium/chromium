@@ -25,11 +25,13 @@
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
+#include "components/safe_browsing/content/common/visual_utils.h"
 #include "components/safe_browsing/core/browser/db/allowlist_checker_client.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
+#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -37,6 +39,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/ip_endpoint.h"
@@ -44,6 +47,10 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/android/view_android.h"
+#endif
 
 using content::BrowserThread;
 using content::WebContents;
@@ -555,6 +562,34 @@ void ClientSideDetectionHost::PhishingDetectionDone(
       base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
                                  base::BindOnce(&WriteFeaturesToDisk, *verdict,
                                                 GetDebugFeatureDirectory()));
+    }
+
+#if BUILDFLAG(IS_ANDROID)
+    gfx::Size size;
+    content::RenderWidgetHostView* view =
+        web_contents()->GetRenderWidgetHostView();
+    if (view) {
+      gfx::SizeF viewport = view->GetNativeView()->viewport_size();
+      size = gfx::Size(static_cast<int>(viewport.width()),
+                       static_cast<int>(viewport.height()));
+    }
+    bool can_extract_visual_features = visual_utils::CanExtractVisualFeatures(
+        IsExtendedReportingEnabled(*delegate_->GetPrefs()),
+        web_contents()->GetBrowserContext()->IsOffTheRecord(), size);
+#else
+    gfx::Size size;
+    content::RenderWidgetHostView* view =
+        web_contents()->GetRenderWidgetHostView();
+    if (view) {
+      size = view->GetVisibleViewportSize();
+    }
+    bool can_extract_visual_features = visual_utils::CanExtractVisualFeatures(
+        IsExtendedReportingEnabled(*delegate_->GetPrefs()),
+        web_contents()->GetBrowserContext()->IsOffTheRecord(), size,
+        zoom::ZoomController::GetZoomLevelForWebContents(web_contents()));
+#endif
+    if (!can_extract_visual_features) {
+      verdict->clear_visual_features();
     }
 
     if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&

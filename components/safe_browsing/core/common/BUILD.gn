@@ -59,14 +59,6 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url:url",
   ]
-
-  if (safe_browsing_mode == 1) {
-    sources += [ "visual_utils_unittest.cc" ]
-    deps += [
-      ":common",
-      "//ui/gfx:color_utils",
-    ]
-  }
 }
 
 source_set("common") {
@@ -97,17 +89,6 @@ source_set("common") {
     "//services/network/public/mojom",
     "//url/ipc:url_ipc",
   ]
-
-  if (safe_browsing_mode == 1 || safe_browsing_mode == 2) {
-    sources += [
-      "visual_utils.cc",
-      "visual_utils.h",
-    ]
-    deps += [
-      "//components/safe_browsing/core/common/proto:client_model_proto",
-      "//ui/gfx:color_utils",
-    ]
-  }
 
   public_deps = [ ":interfaces" ]
 }

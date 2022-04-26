@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CORE_COMMON_VISUAL_UTILS_H_
-#define COMPONENTS_SAFE_BROWSING_CORE_COMMON_VISUAL_UTILS_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_COMMON_VISUAL_UTILS_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_COMMON_VISUAL_UTILS_H_
 
 #include <string>
 
@@ -11,22 +11,9 @@
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/size.h"
 
-namespace safe_browsing {
-namespace visual_utils {
-
-using QuantizedColor = uint32_t;
-
-// Utility methods for working with QuantizedColors.
-QuantizedColor SkColorToQuantizedColor(SkColor color);
-int GetQuantizedR(QuantizedColor color);
-int GetQuantizedG(QuantizedColor color);
-int GetQuantizedB(QuantizedColor color);
-
-// Computes the color histogram for the image. This buckets the pixels according
-// to their QuantizedColor, then reports their weight and centroid.
-bool GetHistogramForImage(const SkBitmap& image,
-                          VisualFeatures::ColorHistogram* histogram);
+namespace safe_browsing::visual_utils {
 
 // Computes the BlurredImage for the given input image. This involves
 // downsampling the image to a certain fixed resolution, then blurring
@@ -41,10 +28,22 @@ bool GetBlurredImage(const SkBitmap& image,
 std::unique_ptr<SkBitmap> BlockMeanAverage(const SkBitmap& image,
                                            int block_size);
 
-// Returns the hash used to compare blurred images.
-std::string GetHashFromBlurredImage(VisualFeatures::BlurredImage blurred_image);
+// Whether we can extract visual features from a page with a given size and zoom
+// level.
+#if BUILDFLAG(IS_ANDROID)
+bool CanExtractVisualFeatures(bool is_extended_reporting,
+                              bool is_off_the_record,
+                              gfx::Size size);
+#else
+bool CanExtractVisualFeatures(bool is_extended_reporting,
+                              bool is_off_the_record,
+                              gfx::Size size,
+                              double zoom_level);
+#endif
 
-}  // namespace visual_utils
-}  // namespace safe_browsing
+// Extract a VisualFeatures proto from the given `bitmap`.
+std::unique_ptr<VisualFeatures> ExtractVisualFeatures(const SkBitmap& bitmap);
 
-#endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_VISUAL_UTILS_H_
+}  // namespace safe_browsing::visual_utils
+
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_COMMON_VISUAL_UTILS_H_

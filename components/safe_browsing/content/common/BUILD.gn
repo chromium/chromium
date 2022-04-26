@@ -83,4 +83,33 @@ if (safe_browsing_mode != 0) {
       "//testing/gtest:gtest",
     ]
   }
+
+  source_set("visual_utils") {
+    sources = [
+      "visual_utils.cc",
+      "visual_utils.h",
+    ]
+
+    deps = [
+      "//components/safe_browsing:buildflags",
+      "//components/safe_browsing/core/common:common",
+      "//components/safe_browsing/core/common/proto:client_model_proto",
+      "//components/safe_browsing/core/common/proto:csd_proto",
+      "//ui/gfx:color_utils",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "visual_utils_unittest.cc" ]
+
+    deps = [
+      ":visual_utils",
+      "//base/test:test_support",
+      "//components/safe_browsing/core/common",
+      "//testing/gmock:gmock",
+      "//testing/gtest:gtest",
+      "//ui/gfx:color_utils",
+    ]
+  }
 }

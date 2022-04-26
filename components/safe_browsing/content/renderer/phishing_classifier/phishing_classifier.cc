@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -25,11 +26,13 @@
 #include "cc/paint/skia_paint_canvas.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/content/common/visual_utils.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_dom_feature_extractor.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_term_feature_extractor.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_url_feature_extractor.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
@@ -244,10 +247,26 @@ void PhishingClassifier::ExtractVisualFeatures() {
 void PhishingClassifier::OnPlaybackDone(std::unique_ptr<SkBitmap> bitmap) {
   if (bitmap) {
     bitmap_ = std::move(bitmap);
-    VisualExtractionFinished(/*success=*/true);
+    if (base::FeatureList::IsEnabled(kVisualFeaturesInCsppPings)) {
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE,
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+          base::BindOnce(&visual_utils::ExtractVisualFeatures, *bitmap_),
+          base::BindOnce(&PhishingClassifier::OnVisualFeaturesExtracted,
+                         weak_factory_.GetWeakPtr()));
+    } else {
+      VisualExtractionFinished(/*success=*/true);
+    }
   } else {
     VisualExtractionFinished(/*success=*/false);
   }
+}
+
+void PhishingClassifier::OnVisualFeaturesExtracted(
+    std::unique_ptr<VisualFeatures> visual_features) {
+  visual_features_ = std::move(visual_features);
+  VisualExtractionFinished(/*success=*/true);
 }
 
 void PhishingClassifier::VisualExtractionFinished(bool success) {
@@ -282,6 +301,9 @@ void PhishingClassifier::VisualExtractionFinished(bool success) {
   bool is_dom_match = (score >= scorer_->threshold_probability());
   verdict->set_is_phishing(is_dom_match);
   verdict->set_is_dom_match(is_dom_match);
+  if (visual_features_) {
+    verdict->mutable_visual_features()->Swap(visual_features_.get());
+  }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   scorer_->ApplyVisualTfLiteModel(

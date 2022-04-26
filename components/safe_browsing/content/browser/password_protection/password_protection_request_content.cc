@@ -18,7 +18,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "components/safe_browsing/core/common/visual_utils.h"
+#include "components/safe_browsing/content/common/visual_utils.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -35,51 +35,7 @@ namespace {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 // The maximum time to wait for DOM features to be collected, in milliseconds.
 const int kDomFeatureTimeoutMs = 3000;
-
-// Parameters chosen to ensure privacy is preserved by visual features.
-#if BUILDFLAG(IS_ANDROID)
-const int kMinWidthForVisualFeatures = 258;
-const int kMinHeightForVisualFeatures = 258;
-#else
-const int kMinWidthForVisualFeatures = 576;
-const int kMinHeightForVisualFeatures = 576;
-#endif
-
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-// Parameters chosen to ensure privacy is preserved by visual features.
-const float kMaxZoomForVisualFeatures = 2.0;
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
-
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-std::unique_ptr<VisualFeatures> ExtractVisualFeatures(
-    const SkBitmap& screenshot) {
-  auto features = std::make_unique<VisualFeatures>();
-  visual_utils::GetHistogramForImage(screenshot,
-                                     features->mutable_color_histogram());
-  visual_utils::GetBlurredImage(screenshot, features->mutable_image());
-  return features;
-}
-#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-
-int GetMinWidthForVisualFeatures() {
-  if (base::FeatureList::IsEnabled(kVisualFeaturesSizes)) {
-    return base::GetFieldTrialParamByFeatureAsInt(
-        kVisualFeaturesSizes, "min_width", kMinWidthForVisualFeatures);
-  }
-
-  return kMinWidthForVisualFeatures;
-}
-
-int GetMinHeightForVisualFeatures() {
-  if (base::FeatureList::IsEnabled(kVisualFeaturesSizes)) {
-    return base::GetFieldTrialParamByFeatureAsInt(
-        kVisualFeaturesSizes, "min_height", kMinHeightForVisualFeatures);
-  }
-
-  return kMinHeightForVisualFeatures;
-}
 
 }  // namespace
 
@@ -264,21 +220,26 @@ void PasswordProtectionRequestContent::MaybeCollectVisualFeatures() {
   }
 #endif
 
-  bool can_collect_visual_features =
-      trigger_type() == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE &&
-      password_protection_service()->IsExtendedReporting() &&
-      !password_protection_service()->IsIncognito() &&
-      request_proto_->content_area_width() >= GetMinWidthForVisualFeatures() &&
-      request_proto_->content_area_height() >= GetMinHeightForVisualFeatures();
-#if !BUILDFLAG(IS_ANDROID)
-  can_collect_visual_features &=
-      zoom::ZoomController::GetZoomLevelForWebContents(web_contents_) <=
-      kMaxZoomForVisualFeatures;
+  bool can_extract_visual_features =
+#if BUILDFLAG(IS_ANDROID)
+      visual_utils::CanExtractVisualFeatures(
+          password_protection_service()->IsExtendedReporting(),
+          password_protection_service()->IsIncognito(),
+          gfx::Size(request_proto_->content_area_width(),
+                    request_proto_->content_area_height()));
+#else
+      visual_utils::CanExtractVisualFeatures(
+          password_protection_service()->IsExtendedReporting(),
+          password_protection_service()->IsIncognito(),
+          gfx::Size(request_proto_->content_area_width(),
+                    request_proto_->content_area_height()),
+          zoom::ZoomController::GetZoomLevelForWebContents(web_contents_));
 #endif
 
   // Once the DOM features are collected, either collect visual features, or go
   // straight to sending the ping.
-  if (can_collect_visual_features) {
+  if (trigger_type() == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE &&
+      can_extract_visual_features) {
     CollectVisualFeatures();
   } else {
     SendRequest();
@@ -310,7 +271,7 @@ void PasswordProtectionRequestContent::OnScreenshotTaken(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&ExtractVisualFeatures, screenshot),
+      base::BindOnce(&visual_utils::ExtractVisualFeatures, screenshot),
       base::BindOnce(
           &PasswordProtectionRequestContent::OnVisualFeatureCollectionDone,
           AsWeakPtr()));
