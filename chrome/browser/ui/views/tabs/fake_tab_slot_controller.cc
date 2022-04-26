@@ -4,16 +4,19 @@
 
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
 
+#include "chrome/browser/ui/views/tabs/tab_container.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+
+FakeTabSlotController::FakeTabSlotController(
+    TabStripController* tab_strip_controller)
+    : tab_strip_controller_(tab_strip_controller) {}
+
 const ui::ListSelectionModel& FakeTabSlotController::GetSelectionModel() const {
   return selection_model_;
 }
 
 Tab* FakeTabSlotController::tab_at(int index) const {
-  return nullptr;
-}
-
-int FakeTabSlotController::GetActiveIndex() const {
-  return 0;
+  return tab_container_->GetTabAtModelIndex(index);
 }
 
 bool FakeTabSlotController::ToggleTabGroupCollapsedState(
@@ -123,27 +126,27 @@ float FakeTabSlotController::GetHoverOpacityForRadialHighlight() const {
 
 std::u16string FakeTabSlotController::GetGroupTitle(
     const tab_groups::TabGroupId& group_id) const {
-  return std::u16string();
+  return tab_strip_controller_->GetGroupTitle(group_id);
 }
 
 std::u16string FakeTabSlotController::GetGroupContentString(
     const tab_groups::TabGroupId& group) const {
-  return std::u16string();
+  return tab_strip_controller_->GetGroupContentString(group);
 }
 
 tab_groups::TabGroupColorId FakeTabSlotController::GetGroupColorId(
     const tab_groups::TabGroupId& group_id) const {
-  return tab_groups::TabGroupColorId();
+  return tab_strip_controller_->GetGroupColorId(group_id);
 }
 
 bool FakeTabSlotController::IsGroupCollapsed(
     const tab_groups::TabGroupId& group) const {
-  return false;
+  return tab_strip_controller_->IsGroupCollapsed(group);
 }
 
 absl::optional<int> FakeTabSlotController::GetLastTabInGroup(
     const tab_groups::TabGroupId& group) const {
-  return absl::nullopt;
+  return tab_strip_controller_->GetLastTabInGroup(group);
 }
 
 SkColor FakeTabSlotController::GetPaintedGroupColor(

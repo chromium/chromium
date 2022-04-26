@@ -60,9 +60,6 @@ void TabGroupViews::OnGroupVisualsChanged() {
 
   header_->VisualsChanged();
   underline_->SchedulePaint();
-  const int active_index = tab_slot_controller_->GetActiveIndex();
-  if (active_index != TabStripModel::kNoTab)
-    tab_slot_controller_->tab_at(active_index)->SchedulePaint();
 }
 
 gfx::Rect TabGroupViews::GetBounds() const {

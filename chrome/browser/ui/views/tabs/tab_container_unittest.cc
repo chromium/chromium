@@ -43,20 +43,23 @@ class TabContainerTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
 
     tab_strip_controller_ = std::make_unique<FakeBaseTabStripController>();
-    tab_slot_controller_ = std::make_unique<FakeTabSlotController>();
+    tab_slot_controller_ =
+        std::make_unique<FakeTabSlotController>(tab_strip_controller_.get());
 
     std::unique_ptr<TabContainer> tab_container =
         std::make_unique<TabContainer>(
             tab_strip_controller_.get(), nullptr /*hover_card_controller*/,
             nullptr /*drag_context*/, tab_slot_controller_.get(),
             nullptr /*scroll_contents_view*/);
-    tab_container->SetAvailableWidthCallback(
-        base::BindRepeating([]() { return 500; }));
-    tab_container->SetBounds(0, 0, 500, GetLayoutConstant(TAB_HEIGHT));
-    tab_container->Layout();
+    tab_container->SetAvailableWidthCallback(base::BindRepeating(
+        [](TabContainerTest* test) { return test->tab_container_width_; },
+        this));
 
     widget_ = CreateTestWidget();
+    SetTabContainerWidth(1000);
     tab_container_ = widget_->SetContentsView(std::move(tab_container));
+
+    tab_slot_controller_->set_tab_container(tab_container_);
   }
 
   void TearDown() override {
@@ -143,6 +146,13 @@ class TabContainerTest : public ChromeViewsTestBase {
       AddTabToGroup(index, new_group.value());
   }
 
+  std::vector<TabGroupViews*> ListGroupViews() const {
+    std::vector<TabGroupViews*> result;
+    for (auto const& group_view_pair : tab_container_->group_views())
+      result.push_back(group_view_pair.second.get());
+    return result;
+  }
+
   // Returns all TabSlotViews in the order that they have as ViewChildren of
   // TabContainer. This should match the actual order that they appear in
   // visually.
@@ -205,10 +215,18 @@ class TabContainerTest : public ChromeViewsTestBase {
     return tab->HitTestPoint(point_in_tab_coords);
   }
 
+  void SetTabContainerWidth(int width) {
+    tab_container_width_ = width;
+    widget_->SetSize(
+        gfx::Size(tab_container_width_, GetLayoutConstant(TAB_HEIGHT)));
+  }
+
   std::unique_ptr<FakeBaseTabStripController> tab_strip_controller_;
   std::unique_ptr<FakeTabSlotController> tab_slot_controller_;
   raw_ptr<TabContainer> tab_container_;
   std::unique_ptr<views::Widget> widget_;
+
+  int tab_container_width_ = 0;
 };
 
 TEST_F(TabContainerTest, ExitsClosingModeAtStandardWidth) {
@@ -372,8 +390,6 @@ TEST_F(TabContainerTest, AccessibilityData) {
 }
 
 TEST_F(TabContainerTest, GetEventHandlerForOverlappingArea) {
-  tab_container_->SetSize(gfx::Size(1000, tab_container_->height()));
-
   Tab* left_tab = AddTab(0);
   Tab* active_tab = AddTab(1, absl::nullopt, TabActive::kActive);
   Tab* right_tab = AddTab(2);
@@ -429,8 +445,6 @@ TEST_F(TabContainerTest, GetEventHandlerForOverlappingArea) {
 }
 
 TEST_F(TabContainerTest, GetTooltipHandler) {
-  tab_container_->SetSize(gfx::Size(1000, tab_container_->height()));
-
   Tab* left_tab = AddTab(0);
   Tab* active_tab = AddTab(1, absl::nullopt, TabActive::kActive);
   Tab* right_tab = AddTab(2);
@@ -479,7 +493,7 @@ TEST_F(TabContainerTest, GetTooltipHandler) {
       (right_tab->x() + most_right_tab->bounds().right() + 1) / 2,
       right_tab->bounds().bottom() - 1);
 
-  // Sanity check that the point is in both active and left tab.
+  // Sanity check that the point is in both tabs.
   ASSERT_TRUE(IsPointInTab(right_tab, unactive_overlap));
   ASSERT_TRUE(IsPointInTab(most_right_tab, unactive_overlap));
 
@@ -490,4 +504,205 @@ TEST_F(TabContainerTest, GetTooltipHandler) {
   // Confirm that tab strip doe not return tooltip handler for points that
   // don't hit it.
   EXPECT_FALSE(tab_container_->GetTooltipHandlerForPoint(gfx::Point(-1, 2)));
+}
+
+TEST_F(TabContainerTest, GroupHeaderBasics) {
+  AddTab(0);
+
+  Tab* tab = tab_container_->GetTabAtModelIndex(0);
+  const int first_slot_x = tab->x();
+
+  tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
+  AddTabToGroup(0, group);
+  tab_container_->CompleteAnimationAndLayout();
+
+  std::vector<TabGroupViews*> views = ListGroupViews();
+  EXPECT_EQ(1u, views.size());
+  TabGroupHeader* header = views[0]->header();
+  EXPECT_EQ(first_slot_x, header->x());
+  EXPECT_GT(header->width(), 0);
+  EXPECT_EQ(header->bounds().right() - TabStyle::GetTabOverlap(), tab->x());
+  EXPECT_EQ(tab->height(), header->height());
+}
+
+TEST_F(TabContainerTest, GroupHeaderBetweenTabs) {
+  AddTab(0);
+  AddTab(1);
+  tab_container_->CompleteAnimationAndLayout();
+
+  const int second_slot_x = tab_container_->GetTabAtModelIndex(1)->x();
+
+  tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
+  AddTabToGroup(1, group);
+  tab_container_->CompleteAnimationAndLayout();
+
+  TabGroupHeader* header = ListGroupViews()[0]->header();
+  EXPECT_EQ(header->x(), second_slot_x);
+}
+
+TEST_F(TabContainerTest, GroupHeaderMovesRightWithTab) {
+  for (int i = 0; i < 4; i++)
+    AddTab(i);
+  tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
+  AddTabToGroup(1, group);
+  tab_container_->CompleteAnimationAndLayout();
+
+  MoveTab(1, 2);
+  tab_container_->CompleteAnimationAndLayout();
+
+  TabGroupHeader* header = ListGroupViews()[0]->header();
+  // Header is now left of tab 2.
+  EXPECT_LT(tab_container_->GetTabAtModelIndex(1)->x(), header->x());
+  EXPECT_LT(header->x(), tab_container_->GetTabAtModelIndex(2)->x());
+}
+
+TEST_F(TabContainerTest, GroupHeaderMovesLeftWithTab) {
+  for (int i = 0; i < 4; i++)
+    AddTab(i);
+  tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
+  AddTabToGroup(2, group);
+  tab_container_->CompleteAnimationAndLayout();
+
+  MoveTab(2, 1);
+  tab_container_->CompleteAnimationAndLayout();
+
+  TabGroupHeader* header = ListGroupViews()[0]->header();
+  // Header is now left of tab 1.
+  EXPECT_LT(tab_container_->GetTabAtModelIndex(0)->x(), header->x());
+  EXPECT_LT(header->x(), tab_container_->GetTabAtModelIndex(1)->x());
+}
+
+TEST_F(TabContainerTest, GroupHeaderDoesntMoveReorderingTabsInGroup) {
+  for (int i = 0; i < 4; i++)
+    AddTab(i);
+  tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
+  AddTabToGroup(1, group);
+  AddTabToGroup(2, group);
+  tab_container_->CompleteAnimationAndLayout();
+
+  TabGroupHeader* header = ListGroupViews()[0]->header();
+  const int initial_header_x = header->x();
+  Tab* tab1 = tab_container_->GetTabAtModelIndex(1);
+  const int initial_tab_1_x = tab1->x();
+  Tab* tab2 = tab_container_->GetTabAtModelIndex(2);
+  const int initial_tab_2_x = tab2->x();
+
+  MoveTab(1, 2);
+  tab_container_->CompleteAnimationAndLayout();
+
+  // Header has not moved.
+  EXPECT_EQ(initial_header_x, header->x());
+  EXPECT_EQ(initial_tab_1_x, tab2->x());
+  EXPECT_EQ(initial_tab_2_x, tab1->x());
+}
+
+TEST_F(TabContainerTest, GroupHeaderMovesOnRegrouping) {
+  for (int i = 0; i < 3; i++)
+    AddTab(i);
+  tab_groups::TabGroupId group0 = tab_groups::TabGroupId::GenerateNew();
+  AddTabToGroup(0, group0);
+  tab_groups::TabGroupId group1 = tab_groups::TabGroupId::GenerateNew();
+  AddTabToGroup(1, group1);
+  AddTabToGroup(2, group1);
+  tab_container_->CompleteAnimationAndLayout();
+
+  std::vector<TabGroupViews*> views = ListGroupViews();
+  auto views_it =
+      std::find_if(views.begin(), views.end(), [&group1](TabGroupViews* view) {
+        return view->header()->group() == group1;
+      });
+  ASSERT_TRUE(views_it != views.end());
+  TabGroupViews* group1_views = *views_it;
+
+  // Change groups in a way so that the header should swap with the tab, without
+  // an explicit MoveTab call.
+  MoveTabIntoGroup(1, group0);
+  tab_container_->CompleteAnimationAndLayout();
+
+  // Header is now right of tab 1.
+  EXPECT_LT(tab_container_->GetTabAtModelIndex(1)->x(),
+            group1_views->header()->x());
+  EXPECT_LT(group1_views->header()->x(),
+            tab_container_->GetTabAtModelIndex(2)->x());
+}
+
+TEST_F(TabContainerTest, UngroupedTabMovesLeftOfHeader) {
+  for (int i = 0; i < 2; i++)
+    AddTab(i);
+  tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
+  AddTabToGroup(0, group);
+  tab_container_->CompleteAnimationAndLayout();
+
+  MoveTab(1, 0);
+  tab_container_->CompleteAnimationAndLayout();
+
+  // Header is right of tab 0.
+  TabGroupHeader* header = ListGroupViews()[0]->header();
+  EXPECT_LT(tab_container_->GetTabAtModelIndex(0)->x(), header->x());
+  EXPECT_LT(header->x(), tab_container_->GetTabAtModelIndex(1)->x());
+}
+
+TEST_F(TabContainerTest, DeleteTabGroupViewsWhenEmpty) {
+  AddTab(0);
+  AddTab(1);
+  tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
+  AddTabToGroup(0, group);
+  AddTabToGroup(1, group);
+  RemoveTabFromGroup(0);
+
+  EXPECT_EQ(1u, ListGroupViews().size());
+  RemoveTabFromGroup(1);
+  EXPECT_EQ(0u, ListGroupViews().size());
+}
+
+TEST_F(TabContainerTest, GroupUnderlineBasics) {
+  AddTab(0);
+  tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
+  AddTabToGroup(0, group);
+  tab_container_->CompleteAnimationAndLayout();
+
+  std::vector<TabGroupViews*> views = ListGroupViews();
+  EXPECT_EQ(1u, views.size());
+  // Update underline manually in the absence of a real Paint cycle.
+  views[0]->UpdateBounds();
+
+  const TabGroupUnderline* underline = views[0]->underline();
+  EXPECT_EQ(underline->x(), TabGroupUnderline::GetStrokeInset());
+  EXPECT_GT(underline->width(), 0);
+  EXPECT_EQ(underline->bounds().right(),
+            tab_container_->GetTabAtModelIndex(0)->bounds().right() -
+                TabGroupUnderline::GetStrokeInset());
+  EXPECT_EQ(underline->height(), TabGroupUnderline::kStrokeThickness);
+
+  // Endpoints are different if the last grouped tab is active.
+  AddTab(1, absl::nullopt, TabActive::kActive);
+  MoveTabIntoGroup(1, group);
+  tab_container_->CompleteAnimationAndLayout();
+  views[0]->UpdateBounds();
+
+  EXPECT_EQ(underline->x(), TabGroupUnderline::GetStrokeInset());
+  EXPECT_EQ(underline->bounds().right(),
+            tab_container_->GetTabAtModelIndex(1)->bounds().right() +
+                TabGroupUnderline::kStrokeThickness);
+}
+
+TEST_F(TabContainerTest, GroupHighlightBasics) {
+  AddTab(0);
+
+  tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
+  AddTabToGroup(0, group);
+  tab_container_->CompleteAnimationAndLayout();
+
+  std::vector<TabGroupViews*> views = ListGroupViews();
+  EXPECT_EQ(1u, views.size());
+
+  // The highlight bounds match the group view bounds. Grab this manually
+  // here, since there isn't a real paint cycle to trigger OnPaint().
+  gfx::Rect bounds = views[0]->GetBounds();
+  EXPECT_EQ(bounds.x(), 0);
+  EXPECT_GT(bounds.width(), 0);
+  EXPECT_EQ(bounds.right(),
+            tab_container_->GetTabAtModelIndex(0)->bounds().right());
+  EXPECT_EQ(bounds.height(),
+            tab_container_->GetTabAtModelIndex(0)->bounds().height());
 }

@@ -500,9 +500,9 @@ void TabContainer::OnGroupMoved(const tab_groups::TabGroupId& group) {
 void TabContainer::OnGroupClosed(const tab_groups::TabGroupId& group) {
   bounds_animator().StopAnimatingView(group_views().at(group).get()->header());
   layout_helper()->RemoveGroupHeader(group);
+  group_views().erase(group);
 
   StartBasicAnimation();
-  group_views().erase(group);
 }
 
 void TabContainer::UpdateTabGroupVisuals(tab_groups::TabGroupId group_id) {

@@ -54,9 +54,6 @@ class TabSlotController {
   // Returns the tab at |index|.
   virtual Tab* tab_at(int index) const = 0;
 
-  // Returns the index of the active tab.
-  virtual int GetActiveIndex() const = 0;
-
   // Selects the tab. |event| is the event that causes |tab| to be selected.
   virtual void SelectTab(Tab* tab, const ui::Event& event) = 0;
 

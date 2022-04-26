@@ -10,13 +10,20 @@
 #include "ui/base/models/list_selection_model.h"
 #include "ui/gfx/color_palette.h"
 
+class TabContainer;
+class TabStripController;
+
 class FakeTabSlotController : public TabSlotController {
  public:
-  FakeTabSlotController() = default;
+  explicit FakeTabSlotController(
+      TabStripController* tab_strip_controller_ = nullptr);
   FakeTabSlotController(const FakeTabSlotController&) = delete;
   FakeTabSlotController& operator=(const FakeTabSlotController&) = delete;
   ~FakeTabSlotController() override = default;
 
+  void set_tab_container(TabContainer* tab_container) {
+    tab_container_ = tab_container;
+  }
   void set_active_tab(Tab* tab) { active_tab_ = tab; }
   void set_paint_throbber_to_layer(bool value) {
     paint_throbber_to_layer_ = value;
@@ -24,7 +31,6 @@ class FakeTabSlotController : public TabSlotController {
 
   const ui::ListSelectionModel& GetSelectionModel() const override;
   Tab* tab_at(int index) const override;
-  int GetActiveIndex() const override;
   void SelectTab(Tab* tab, const ui::Event& event) override {}
   void ExtendSelectionTo(Tab* tab) override {}
   void ToggleSelected(Tab* tab) override {}
@@ -104,6 +110,8 @@ class FakeTabSlotController : public TabSlotController {
   }
 
  private:
+  raw_ptr<TabStripController> tab_strip_controller_;
+  raw_ptr<TabContainer> tab_container_;
   ui::ListSelectionModel selection_model_;
   raw_ptr<Tab> active_tab_ = nullptr;
   bool paint_throbber_to_layer_ = true;

@@ -185,6 +185,9 @@ class TabStrip : public views::View,
     return tab_container_->group_views().at(id).get()->header();
   }
 
+  // Returns the active index, or kNoTab if no tab is active.
+  int GetActiveIndex() const;
+
   // Returns the index of the specified view in the model coordinate system, or
   // -1 if view is closing or not a tab.
   int GetModelIndexOf(const TabSlotView* view) const;
@@ -233,10 +236,9 @@ class TabStrip : public views::View,
   // on drop.
   bool WantsToReceiveAllDragEvents() const;
 
-  // TabController:
+  // TabSlotController:
   const ui::ListSelectionModel& GetSelectionModel() const override;
   Tab* tab_at(int index) const override;
-  int GetActiveIndex() const override;
   void SelectTab(Tab* tab, const ui::Event& event) override;
   void ExtendSelectionTo(Tab* tab) override;
   void ToggleSelected(Tab* tab) override;

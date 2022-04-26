@@ -52,6 +52,7 @@ void FakeBaseTabStripController::MoveTab(int from_index, int to_index) {
   if (tab_strip_)
     tab_strip_->MoveTab(from_index, to_index, TabRendererData());
 }
+
 void FakeBaseTabStripController::MoveGroup(const tab_groups::TabGroupId& group,
                                            int to_index) {}
 
