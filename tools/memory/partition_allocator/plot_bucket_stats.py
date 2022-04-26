@@ -90,7 +90,7 @@ def main():
 
   args = parser.parse_args()
   data = ParseJson(args.json)
-  PlotData(data, args.output)
+  PlotData(data, args.output_prefix)
 
 
 if __name__ == '__main__':

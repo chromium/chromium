@@ -8,8 +8,10 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
+#include "base/check_op.h"
 #include "base/debug/proc_maps_linux.h"
 #include "base/logging.h"
+#include "base/memory/page_size.h"
 #include "base/strings/stringprintf.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -85,7 +87,33 @@ bool RemoteProcessMemoryReader::ReadMemory(uintptr_t remote_address,
   kern_return_t ret = mach_vm_read_overwrite(
       task_, remote_address, size, reinterpret_cast<mach_vm_address_t>(buffer),
       &read_bytes);
-  CHECK_EQ(ret, KERN_SUCCESS);
+  if (ret != KERN_SUCCESS) {
+    // Try to read page by page.
+    //
+    // It seems that mach_vm_read() doesn't work when the target mapping is not
+    // readable. Since superpages always have at least a couple of guard pages,
+    // we need to read page by page.
+    size_t page_count = size / base::GetPageSize();
+    CHECK_EQ(0u, size % base::GetPageSize());
+
+    size_t read_pages = 0;
+    size_t page_size = base::GetPageSize();
+    for (size_t i = 0; i < page_count; i++) {
+      size_t offset = i * page_size;
+      auto target_address =
+          reinterpret_cast<mach_vm_address_t>(buffer + offset);
+      auto source_address = remote_address + offset;
+
+      ret = mach_vm_read_overwrite(task_, source_address, page_size,
+                                   target_address, &read_bytes);
+      if (ret == KERN_SUCCESS)
+        read_pages++;
+    }
+
+    LOG(WARNING) << "Couldn't read all pages. Page count = " << page_count
+                 << " Read count = " << read_pages;
+    return read_pages != 0;
+  }
 
   return ret == KERN_SUCCESS;
 #endif

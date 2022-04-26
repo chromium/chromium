@@ -127,8 +127,9 @@ def PlotSuperPageCompressionData(data: dict, output_filename: str):
         value = cmap(page['compressed'] / page['uncompressed'])[:3]
       data_np[superpage_index, index] = value
 
-  overall_compression_ratio = (100. * total_compressed_size /
-                               total_uncompressed_size)
+  overall_compression_ratio = (
+      100. * total_compressed_size /
+      (total_uncompressed_size)) if total_uncompressed_size else 0
   plt.figure(figsize=(20, len(address_to_superpage)))
   plt.imshow(data_np, aspect=8)
   plt.title('Super page compression ratio map - Ratio = %.1f%% '
@@ -152,8 +153,7 @@ def PlotSuperPageCompressionData(data: dict, output_filename: str):
   plt.savefig(output_filename, bbox_inches='tight')
 
 
-def _PlotFragmentationCommon(bucket_to_allocated: dict[int, list],
-                             output_filename: str):
+def _PlotFragmentationCommon(bucket_to_allocated: dict, output_filename: str):
   slot_sizes = sorted(bucket_to_allocated.keys())
   allocated = []
   waste = []
@@ -190,8 +190,7 @@ def _PlotFragmentationCommon(bucket_to_allocated: dict[int, list],
   plt.savefig(output_filename, bbox_inches='tight')
 
 
-def _AdjustSizes(data: dict, bucket_sizes: list[int],
-                 adjustment_size: int) -> dict[int, list]:
+def _AdjustSizes(data: dict, bucket_sizes: list, adjustment_size: int) -> dict:
   requested_sizes = []
   for slot_span in data:
     requested_sizes += slot_span['allocated_sizes']
@@ -211,15 +210,14 @@ def _AdjustSizes(data: dict, bucket_sizes: list[int],
   return bucket_to_allocated
 
 
-def PlotSimulatedFragmentationData(data: dict, bucket_sizes: list[int],
+def PlotSimulatedFragmentationData(data: dict, bucket_sizes: list,
                                    output_filename: str):
   # No adjustment, want to check waste without any padding.
   bucket_to_allocated = _AdjustSizes(data, bucket_sizes, 0)
   _PlotFragmentationCommon(bucket_to_allocated, output_filename)
 
 
-def PlotFragmentationData(data: dict, bucket_sizes: list[int],
-                          output_filename: str):
+def PlotFragmentationData(data: dict, bucket_sizes: list, output_filename: str):
   # "Before allocation" takes only 4 bytes, but the instrumentation added
   # expands this to 8 bytes. To reconstruct what it would have been without it,
   # take the requested size and add 4 bytes to it.
@@ -227,7 +225,7 @@ def PlotFragmentationData(data: dict, bucket_sizes: list[int],
   _PlotFragmentationCommon(bucket_to_allocated, output_filename)
 
 
-def PlotDelta(data: dict, bucket_sizes: list[int], output_filename: str):
+def PlotDelta(data: dict, bucket_sizes: list, output_filename: str):
   bucket_to_allocated_brp = _AdjustSizes(data, bucket_sizes, _BRP_OVERHEAD)
   bucket_to_allocated_no_brp = _AdjustSizes(data, bucket_sizes, 0)
   slot_sizes = sorted(bucket_to_allocated_no_brp)
