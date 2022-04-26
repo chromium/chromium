@@ -123,6 +123,7 @@
 }
 
 - (void)stop {
+  [self.identityChooserCoordinator stop];
   self.delegate = nil;
   self.viewController = nil;
   [self.mediator disconnect];
