@@ -162,7 +162,7 @@ suite('NewTabPageDiscountConsentCartTest', () => {
       });
 
   function buildFaviconUrl(merchantUrl: string): string {
-    return 'chrome://favicon2/?size=24&scale_factor=1x&show_fallback_monogram=&page_url=' +
+    return 'chrome://favicon2/?size=20&scale_factor=1x&show_fallback_monogram=&page_url=' +
         encodeURIComponent(merchantUrl);
   }
 
