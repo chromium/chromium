@@ -27418,7 +27418,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'default': True,
       'example_value': True,
       'id': 981,
-      'caption': '''Control the URL parameter filter feature.''',
+      'caption': '''Control the URL parameter filter feature''',
       'tags': [],
       'desc': '''When enabled or not set, the URL parameter filter may remove some parameters when a user selects "Open Link in Incognito Window" from the context menu.
       When disabled, no filtering is performed.
