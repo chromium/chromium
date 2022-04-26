@@ -30,6 +30,7 @@
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
+#include "content/browser/attribution_reporting/attribution_cookie_checker_impl.h"
 #include "content/browser/attribution_reporting/attribution_default_random_generator.h"
 #include "content/browser/attribution_reporting/attribution_insecure_random_generator.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
@@ -48,6 +49,10 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/attribution_simulator_input_parser.h"
+#include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_access_result.h"
+#include "net/cookies/cookie_options.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
@@ -64,6 +69,10 @@ base::Time GetEventTime(const AttributionSimulationEventAndValue& event) {
 
     base::Time operator()(const AttributionTriggerAndTime& trigger) {
       return trigger.time;
+    }
+
+    base::Time operator()(const AttributionSimulatorCookie& cookie) {
+      return cookie.cookie.CreationDate();
     }
   };
 
@@ -227,15 +236,20 @@ class SentReportAccumulator : public AttributionReportSender {
 class AttributionEventHandler : public AttributionObserver {
  public:
   AttributionEventHandler(AttributionManagerImpl* manager,
+                          StoragePartitionImpl* storage_partition,
                           const AttributionReportJsonConverter& json_converter,
                           base::Value::List& rejected_sources,
                           base::Value::List& rejected_triggers,
                           base::Value::List& replaced_event_level_reports)
       : manager_(manager),
+        storage_partition_(storage_partition),
         json_converter_(json_converter),
         rejected_sources_(rejected_sources),
         rejected_triggers_(rejected_triggers),
         replaced_event_level_reports_(replaced_event_level_reports) {
+    DCHECK(manager_);
+    DCHECK(storage_partition_);
+
     observation_.Observe(manager);
   }
 
@@ -253,14 +267,44 @@ class AttributionEventHandler : public AttributionObserver {
   // For use with `absl::visit()`.
   void operator()(StorableSource source) {
     manager_->MaybeEnqueueEventForTesting(std::move(source));
+    FlushCookies();
   }
 
   // For use with `absl::visit()`.
   void operator()(AttributionTriggerAndTime trigger) {
     manager_->MaybeEnqueueEventForTesting(std::move(trigger.trigger));
+    FlushCookies();
+  }
+
+  // For use with `absl::visit()`.
+  void operator()(AttributionSimulatorCookie cookie) {
+    DCHECK(!input_values_.empty());
+    input_values_.pop_front();
+
+    base::RunLoop run_loop;
+    storage_partition_->GetCookieManagerForBrowserProcess()->SetCanonicalCookie(
+        cookie.cookie, cookie.source_url,
+        net::CookieOptions::MakeAllInclusive(),
+        base::BindLambdaForTesting([&](net::CookieAccessResult r) {
+          // TODO(apaseltiner): Consider surfacing `r` in output.
+          run_loop.Quit();
+        }));
+    run_loop.Run();
   }
 
  private:
+  // Ensure that cookies are checked at the intended time. If this were
+  // instead only done after the loop, events would be enqueued at the correct
+  // timestamp but earlier cookie checks, which are async, could complete at
+  // later times, which will happen in the real browser but which would make
+  // the simulator nondeterministic.
+  void FlushCookies() {
+    base::RunLoop run_loop;
+    storage_partition_->GetCookieManagerForBrowserProcess()->FlushCookieStore(
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   // AttributionObserver:
 
   void OnSourceHandled(const StorableSource& source,
@@ -360,7 +404,8 @@ class AttributionEventHandler : public AttributionObserver {
   base::ScopedObservation<AttributionManagerImpl, AttributionObserver>
       observation_{this};
 
-  base::raw_ptr<AttributionManagerImpl> manager_;
+  const base::raw_ptr<AttributionManagerImpl> manager_;
+  const base::raw_ptr<StoragePartitionImpl> storage_partition_;
   const AttributionReportJsonConverter& json_converter_;
 
   base::Value::List& rejected_sources_;
@@ -417,6 +462,14 @@ base::Value RunAttributionSimulation(
   auto* storage_partition = static_cast<StoragePartitionImpl*>(
       browser_context.GetDefaultStoragePartition());
 
+  std::unique_ptr<AttributionCookieChecker> cookie_checker;
+  if (options.skip_debug_cookie_checks) {
+    cookie_checker = std::make_unique<AlwaysSetCookieChecker>();
+  } else {
+    cookie_checker =
+        std::make_unique<AttributionCookieCheckerImpl>(storage_partition);
+  }
+
   auto manager = AttributionManagerImpl::CreateForTesting(
       user_data_directory,
       /*max_pending_events=*/std::numeric_limits<size_t>::max(),
@@ -424,7 +477,7 @@ base::Value RunAttributionSimulation(
       AttributionStorageDelegateImpl::CreateForTesting(
           options.noise_mode, options.delay_mode, std::move(rng),
           options.randomized_response_rates),
-      std::make_unique<AlwaysSetCookieChecker>(),
+      std::move(cookie_checker),
       std::make_unique<SentReportAccumulator>(
           event_level_reports, debug_event_level_reports, aggregatable_reports,
           debug_aggregatable_reports, json_converter),
@@ -433,9 +486,9 @@ base::Value RunAttributionSimulation(
   base::Value::List rejected_sources;
   base::Value::List rejected_triggers;
   base::Value::List replaced_event_level_reports;
-  AttributionEventHandler handler(manager.get(), json_converter,
-                                  rejected_sources, rejected_triggers,
-                                  replaced_event_level_reports);
+  AttributionEventHandler handler(
+      manager.get(), storage_partition, json_converter, rejected_sources,
+      rejected_triggers, replaced_event_level_reports);
 
   storage_partition->GetAggregationService()->SetPublicKeysForTesting(
       GURL(kPrivacySandboxAggregationServiceTrustedServerUrlParam.Get()),

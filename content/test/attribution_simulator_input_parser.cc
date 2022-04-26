@@ -27,6 +27,7 @@
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "net/cookies/canonical_cookie.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -112,6 +113,15 @@ class AttributionSimulatorInputParser {
     if (!EnsureDictionary(input))
       return absl::nullopt;
 
+    static constexpr char kKeyCookies[] = "cookies";
+    if (base::Value* cookies = input.FindKey(kKeyCookies)) {
+      auto context = PushContext(kKeyCookies);
+      ParseList(
+          std::move(*cookies),
+          base::BindRepeating(&AttributionSimulatorInputParser::ParseCookie,
+                              base::Unretained(this)));
+    }
+
     static constexpr char kKeySources[] = "sources";
     if (base::Value* sources = input.FindKey(kKeySources)) {
       auto context = PushContext(kKeySources);
@@ -177,6 +187,47 @@ class AttributionSimulatorInputParser {
       callback.Run(std::forward<T>(value));
       index++;
     }
+  }
+
+  void ParseCookie(base::Value&& cookie) {
+    if (!EnsureDictionary(cookie))
+      return;
+
+    const base::Value::Dict& dict = cookie.GetDict();
+
+    base::Time time = ParseTime(dict, kTimestampKey);
+
+    static constexpr char kKeyUrl[] = "url";
+    GURL url = ParseURL(dict, kKeyUrl);
+    if (!url.is_valid()) {
+      auto context = PushContext(kKeyUrl);
+      *Error() << "must be a valid URL";
+    }
+
+    static constexpr char kKeySetCookie[] = "Set-Cookie";
+    const std::string* line = dict.FindString(kKeySetCookie);
+    if (!line) {
+      auto context = PushContext(kKeySetCookie);
+      *Error() << "must be present";
+      return;
+    }
+
+    std::unique_ptr<net::CanonicalCookie> canonical_cookie =
+        net::CanonicalCookie::Create(url, *line, time,
+                                     /*server_time=*/absl::nullopt,
+                                     /*cookie_partition_key=*/absl::nullopt);
+    if (!canonical_cookie)
+      *Error() << "invalid cookie";
+
+    if (has_error_)
+      return;
+
+    events_.emplace_back(
+        AttributionSimulatorCookie{
+            .cookie = std::move(*canonical_cookie),
+            .source_url = std::move(url),
+        },
+        std::move(cookie));
   }
 
   void ParseSource(base::Value&& source) {
@@ -311,14 +362,18 @@ class AttributionSimulatorInputParser {
     return event_triggers;
   }
 
+  GURL ParseURL(const base::Value::Dict& dict, base::StringPiece key) const {
+    if (const std::string* v = dict.FindString(key))
+      return GURL(*v);
+
+    return GURL();
+  }
+
   url::Origin ParseOrigin(const base::Value::Dict& dict,
                           base::StringPiece key) {
     auto context = PushContext(key);
 
-    url::Origin origin;
-
-    if (const std::string* v = dict.FindString(key))
-      origin = url::Origin::Create(GURL(*v));
+    auto origin = url::Origin::Create(ParseURL(dict, key));
 
     if (!network::IsOriginPotentiallyTrustworthy(origin))
       *Error() << "must be a valid, secure origin";

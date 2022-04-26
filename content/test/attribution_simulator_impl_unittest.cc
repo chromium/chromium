@@ -104,6 +104,11 @@ void ParseOptions(const base::Value& dict,
           AttributionReportTimeFormat::kSecondsSinceUnixEpoch;
     }
   }
+
+  if (absl::optional<bool> skip_debug_cookie_checks =
+          dict.FindBoolKey("skip_debug_cookie_checks")) {
+    options.skip_debug_cookie_checks = *skip_debug_cookie_checks;
+  }
 }
 
 class AttributionSimulatorImplTest

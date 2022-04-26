@@ -13,8 +13,10 @@
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "net/cookies/canonical_cookie.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -23,8 +25,14 @@ struct AttributionTriggerAndTime {
   base::Time time;
 };
 
-using AttributionSimulationEvent =
-    absl::variant<StorableSource, AttributionTriggerAndTime>;
+struct AttributionSimulatorCookie {
+  net::CanonicalCookie cookie;
+  GURL source_url;
+};
+
+using AttributionSimulationEvent = absl::variant<StorableSource,
+                                                 AttributionTriggerAndTime,
+                                                 AttributionSimulatorCookie>;
 
 // The value is the raw JSON associated with the event.
 using AttributionSimulationEventAndValue =

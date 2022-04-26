@@ -10,6 +10,7 @@
 
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
+#include "base/time/time_override.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
@@ -17,6 +18,8 @@
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -33,6 +36,18 @@ bool operator==(const AttributionTriggerAndTime& a,
 std::ostream& operator<<(std::ostream& out,
                          const AttributionTriggerAndTime& t) {
   return out << "{time=" << t.time << ",trigger=" << t.trigger << "}";
+}
+
+bool operator==(const AttributionSimulatorCookie& a,
+                const AttributionSimulatorCookie& b) {
+  return a.cookie.HasEquivalentDataMembers(b.cookie) &&
+         a.source_url == b.source_url;
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionSimulatorCookie& c) {
+  return out << "{source_url=" << c.source_url
+             << ",cookie=" << c.cookie.DebugString() << "}";
 }
 
 namespace {
@@ -392,6 +407,53 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceAndTriggerParses) {
   EXPECT_THAT(ParseAttributionSimulationInput(std::move(value), kOffsetTime,
                                               error_stream),
               Optional(SizeIs(2)));
+  EXPECT_THAT(error_stream.str(), IsEmpty());
+}
+
+TEST(AttributionSimulatorInputParserTest, ValidCookieParses) {
+  // `net::CanonicalCookie::Create()` sets
+  // `net::CanonicalCookie::LastUpdateDate()` to `base::Time::Now()`, so
+  // override it here to make the test deterministic.
+  base::subtle::ScopedTimeClockOverrides time_override(
+      /*time_override=*/[]() { return kOffsetTime + base::Seconds(1); },
+      /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  constexpr char kJson[] = R"json({"cookies": [
+    {
+      "timestamp": 1643235574,
+      "url": "https://r.test/x",
+      "Set-Cookie": "a=b; Secure; Max-Age=5"
+    }
+  ]})json";
+
+  const base::Time expected_creation_time =
+      kOffsetTime + base::Seconds(1643235574);
+
+  base::Value value = base::test::ParseJson(kJson);
+  std::ostringstream error_stream;
+  EXPECT_THAT(
+      ParseAttributionSimulationInput(std::move(value), kOffsetTime,
+                                      error_stream),
+      Optional(ElementsAre(Pair(
+          AttributionSimulatorCookie{
+              .cookie = *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+                  /*name=*/"a",
+                  /*value=*/"b",
+                  /*domain=*/"r.test",
+                  /*path=*/"/",
+                  /*creation=*/expected_creation_time,
+                  /*expiration=*/expected_creation_time + base::Seconds(5),
+                  /*last_access=*/expected_creation_time,
+                  /*last_updated=*/kOffsetTime + base::Seconds(1),
+                  /*secure=*/true,
+                  /*httponly=*/false,
+                  /*same_site=*/net::CookieSameSite::UNSPECIFIED,
+                  /*priority=*/net::CookiePriority::COOKIE_PRIORITY_DEFAULT,
+                  /*same_party=*/false),
+              .source_url = GURL("https://r.test/x"),
+          },
+          _))));
   EXPECT_THAT(error_stream.str(), IsEmpty());
 }
 
@@ -804,6 +866,38 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
           "destination_origin": " https://a.d1.test",
           "Attribution-Reporting-Register-Aggregatable-Trigger-Data": []
         }]})json",
+    },
+    {
+        R"(["cookies"][0]["timestamp"]: must be an integer number of seconds)",
+        R"json({"cookies": [{}]})json",
+    },
+    {
+        R"(["cookies"][0]["url"]: must be a valid URL)",
+        R"json({"cookies": [{
+        "timestamp": 1643235576
+      }]})json",
+    },
+    {
+        R"(["cookies"][0]["url"]: must be a valid URL)",
+        R"json({"cookies": [{
+        "timestamp": 1643235576,
+        "url": "!!!"
+      }]})json",
+    },
+    {
+        R"(["cookies"][0]["Set-Cookie"]: must be present)",
+        R"json({"cookies": [{
+        "timestamp": 1643235576,
+        "url": "https://r.test"
+      }]})json",
+    },
+    {
+        R"(["cookies"][0]: invalid cookie)",
+        R"json({"cookies": [{
+        "timestamp": 1643235576,
+        "url": "https://r.test",
+        "Set-Cookie": ""
+      }]})json",
     }};
 
 INSTANTIATE_TEST_SUITE_P(AttributionSimulatorInputParserInvalidInputs,

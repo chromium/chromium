@@ -143,6 +143,21 @@ JSON schema for the input of the simulator.
         "d": []
       }
     }
+  ],
+
+  // List of zero or more cookies to store, for use with debug keys.
+  "cookies": [
+    {
+      // Required time at which to store the cookie in seconds since the
+      // UNIX epoch.
+      "timestamp": 123,
+
+      // Required URL for which to store the cookie.
+      "url": "https://r.test",
+
+      // Required string specifying the cookie to store.
+      "Set-Cookie": "ar_debug=1; SameSite=None; Secure; HttpOnly"
+    }
   ]
 }
 ```

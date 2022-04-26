@@ -23,24 +23,6 @@
         }
       ],
       "Attribution-Reporting-Trigger-Debug-Key": "333"
-    },
-    {
-      "timestamp": 1643235575,
-      "reporting_origin": "https://r.test",
-      "destination_origin": "https://d.test",
-      "Attribution-Reporting-Register-Event-Trigger": [
-        {
-          "trigger_data": "6"
-        }
-      ],
-      "Attribution-Reporting-Trigger-Debug-Key": "444"
-    }
-  ],
-  "cookies": [
-    {
-      "timestamp": 1643235571,
-      "url": "https://r.test/cookie",
-      "Set-Cookie": "ar_debug=1; SameSite=None; Secure; HttpOnly; Max-Age=4"
     }
   ]
 }

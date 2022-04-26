@@ -55,6 +55,13 @@ struct AttributionSimulationOptions {
   // These fields normally encode a random GUID or the absolute time and
   // therefore are sources of nondeterminism in the output.
   bool remove_assembled_report = false;
+
+  // If true, skips debug-cookie checks when determining whether to clear debug
+  // keys from source and trigger registrations.
+  //
+  // If false, the simulation input must specify cookie state in order for
+  // debug keys to work.
+  bool skip_debug_cookie_checks = false;
 };
 
 // Simulates the Attribution Reporting API for a single user on sources and
