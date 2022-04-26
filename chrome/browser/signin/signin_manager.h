@@ -78,6 +78,10 @@ class SigninManager : public KeyedService,
   // valid UPA.
   CoreAccountInfo ComputeUnconsentedPrimaryAccountInfo() const;
 
+  // Checks wheter |account| is a valid account that can be used as an
+  // unconsented primary account.
+  bool IsValidUnconsentedPrimaryAccount(const CoreAccountInfo& account) const;
+
   // KeyedService implementation.
   void Shutdown() override;
 

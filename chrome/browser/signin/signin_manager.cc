@@ -157,14 +157,8 @@ CoreAccountInfo SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
     AccountInfo account_info =
         identity_manager_->FindExtendedAccountInfoByAccountId(
             cookie_accounts[0].id);
-
-    // Verify the first account in cookies has a refresh token that is valid.
-    bool error_state =
-        account_info.IsEmpty() ||
-        identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
-            account_info.account_id);
-
-    return error_state ? CoreAccountInfo() : account_info;
+    return IsValidUnconsentedPrimaryAccount(account_info) ? account_info
+                                                          : CoreAccountInfo();
   }
 
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin))
@@ -173,27 +167,24 @@ CoreAccountInfo SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
   // If cookies or tokens are not loaded, it is not possible to fully compute
   // the unconsented primary account. However, if the current unconsented
   // primary account is no longer valid, it has to be removed.
-  CoreAccountId current_account =
-      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-
-  if (!identity_manager_->HasAccountWithRefreshToken(current_account)) {
-    // Tokens are loaded, but the current UPA doesn't have a refresh token.
-    // Clear the current UPA.
-    return CoreAccountInfo();
-  }
-
-  if (cookie_info.accounts_are_fresh) {
-    if (cookie_accounts.empty() || cookie_accounts[0].id != current_account) {
-      // The current UPA is not the first in fresh cookies. It needs to be
-      // cleared.
-      return CoreAccountInfo();
-    }
-  }
-
-  // No indication that the current UPA is invalid, return current UPA.
-  return identity_manager_->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kSignin);
+  CoreAccountInfo current_primary_account =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  return IsValidUnconsentedPrimaryAccount(current_primary_account)
+             ? current_primary_account
+             : CoreAccountInfo();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+}
+
+bool SigninManager::IsValidUnconsentedPrimaryAccount(
+    const CoreAccountInfo& account) const {
+  DCHECK(identity_manager_->AreRefreshTokensLoaded());
+  if (account.IsEmpty())
+    return false;
+
+  const CoreAccountId& account_id = account.account_id;
+  return identity_manager_->HasAccountWithRefreshToken(account_id) &&
+         !identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+             account_id);
 }
 
 void SigninManager::Shutdown() {

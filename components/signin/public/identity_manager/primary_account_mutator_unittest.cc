@@ -518,14 +518,6 @@ TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent_DiceConsistency) {
                            RemoveAccountExpectation::kKeepAll);
 }
 
-// Test that revoking the sync consent when DICE account consistency is
-// enabled clears the primary account if it uin auth error state.
-TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent_DiceConsistency_AuthError) {
-  RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kDice,
-                           RemoveAccountExpectation::kRemoveAll,
-                           AuthExpectation::kAuthError);
-}
-
 #else  //! BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(PrimaryAccountMutatorTest, CROS_ASH_RevokeSyncConsent) {

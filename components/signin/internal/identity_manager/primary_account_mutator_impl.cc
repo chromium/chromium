@@ -96,21 +96,7 @@ bool PrimaryAccountMutatorImpl::CanTransitionFromSyncToSigninConsentLevel()
     const {
   switch (account_consistency_) {
     case AccountConsistencyMethod::kDice:
-      // If DICE is enabled, then adding and removing accounts is handled from
-      // the Google web services. This means that the user needs to be signed
-      // in to the their Google account on the web in order to be able to sign
-      // out of that accounts. As in most cases, the Google auth cookies are
-      // are derived from the refresh token, which means that the user is signed
-      // out of their Google account on the web when the primary account is in
-      // an auth error. It is therefore important to clear all accounts when
-      // the user revokes their sync consent for a primary account that is in
-      // an auth error as otherwise the user will not be able to remove it from
-      // Chrome.
-      //
-      // TODO(msarda): The logic in this function is platform specific and we
-      // should consider moving it to |SigninManager|.
-      return !token_service_->RefreshTokenHasError(
-          primary_account_manager_->GetPrimaryAccountId(ConsentLevel::kSync));
+      return true;
     case AccountConsistencyMethod::kMirror:
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       return true;

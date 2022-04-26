@@ -851,6 +851,34 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignoutAllAccounts) {
   WaitForReconcilorUnblockedCount(1);
 }
 
+// Checks that the Dice signout flow works and deletes all tokens.
+IN_PROC_BROWSER_TEST_F(DiceBrowserTest, RevokeSyncAccountInAuthErrorState) {
+  // Start from a signed-in state.
+  SetupSignedInAccounts(signin::ConsentLevel::kSync);
+
+  // Signout from main account.
+  SignOutWithDice(kMainAccount);
+
+  // Check that the user is in error state.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  ASSERT_TRUE(
+      GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
+  ASSERT_TRUE(
+      GetIdentityManager()->HasAccountWithRefreshTokenInPersistentErrorState(
+          GetMainAccountID()));
+
+  // Revoking the sync consent should clear the primary account as it is in
+  // an permanent auth error state.
+  RevokeSyncConsent(GetIdentityManager());
+
+  // Updating the primary is done asynchronously. Wait for the update to happen.
+  WaitForPrimaryAccount(GetIdentityManager(), signin::ConsentLevel::kSignin,
+                        CoreAccountId());
+  EXPECT_FALSE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+}
+
 // Checks that Dice request header is not set from request from WebUI.
 // See https://crbug.com/428396
 #if BUILDFLAG(IS_WIN)

@@ -273,6 +273,25 @@ void ClearPrimaryAccount(IdentityManager* identity_manager) {
 #endif
 }
 
+void WaitForPrimaryAccount(IdentityManager* identity_manager,
+                           ConsentLevel consent_level,
+                           const CoreAccountId& account_id) {
+  if (identity_manager->GetPrimaryAccountId(consent_level) == account_id)
+    return;
+
+  base::RunLoop run_loop;
+  TestIdentityManagerObserver primary_account_observer(identity_manager);
+  primary_account_observer.SetOnPrimaryAccountChangedCallback(base::BindOnce(
+      [](IdentityManager* identity_manager, ConsentLevel consent_level,
+         const CoreAccountId& account_id, base::RunLoop* run_loop,
+         PrimaryAccountChangeEvent event) {
+        if (identity_manager->GetPrimaryAccountId(consent_level) == account_id)
+          run_loop->Quit();
+      },
+      identity_manager, consent_level, account_id, &run_loop));
+  run_loop.Run();
+}
+
 AccountInfo MakeAccountAvailable(IdentityManager* identity_manager,
                                  const std::string& email) {
   AccountTrackerService* account_tracker_service =
