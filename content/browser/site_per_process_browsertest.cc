@@ -12132,7 +12132,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // //mojo/core/channel_fuchsia.cc
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_RenderFrameProxyNotRecreatedDuringProcessShutdown \
-  RenderFrameProxyNotRecreatedDuringProcessShutdown
+  DISABLED_RenderFrameProxyNotRecreatedDuringProcessShutdown
 #else
 #define MAYBE_RenderFrameProxyNotRecreatedDuringProcessShutdown \
   RenderFrameProxyNotRecreatedDuringProcessShutdown
