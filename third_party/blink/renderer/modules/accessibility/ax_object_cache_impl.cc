@@ -59,7 +59,6 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
-#include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -493,6 +492,12 @@ bool IsNodeRelevantForAccessibility(const Node* node,
   }
 
   if (node->IsTextNode()) {
+    // Children of an <iframe> tag will always be replaced by a new Document,
+    // either loaded from the iframe src or empty. In fact, we don't even parse
+    // them and they are treated like one text node. Consider irrelevant.
+    if (AXObject::IsFrame(node->parentElement()))
+      return false;
+
     // Layout has more info available to determine if whitespace is relevant.
     // If display-locked, layout object may be missing or stale:
     // Assume that all display-locked text nodes are relevant.
@@ -508,12 +513,6 @@ bool IsNodeRelevantForAccessibility(const Node* node,
       DCHECK(node->IsInShadowTree());
       return false;
     }
-
-    // Children of an <iframe> tag will always be replaced by a new Document,
-    // either loaded from the iframe src or empty. In fact, we don't even parse
-    // them and they are treated like one text node. Consider irrelevant.
-    if (IsA<HTMLIFrameElement>(node->parentElement()))
-      return false;
 
     // If unrendered and in <canvas>, consider even whitespace relevant.
     // TODO(aleventhal) Consider including all text, even unrendered whitespace,
@@ -604,7 +603,7 @@ bool IsNodeRelevantForAccessibility(const Node* node,
     // that is a child of the frame. In the case where descendants are allowed,
     // they will be in a different document, and therefore this loop will not
     // reach the frame/iframe.
-    if (IsA<HTMLFrameElementBase>(ancestor))
+    if (AXObject::IsFrame(ancestor))
       return false;
     // Objects inside an SVG <style> are irrelevant.
     // However, when can this condition be reached?

@@ -1251,10 +1251,8 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     return RoleFromLayoutObjectOrNode();
 
   // Treat <iframe>, <frame> and <fencedframe> the same.
-  if (IsA<HTMLIFrameElement>(*GetNode()) || IsA<HTMLFrameElement>(*GetNode()) ||
-      IsA<HTMLFencedFrameElement>(*GetNode())) {
+  if (IsFrame(GetNode()))
     return ax::mojom::blink::Role::kIframe;
-  }
 
   // There should only be one banner/contentInfo per page. If header/footer are
   // being used within an article or section then it should not be exposed as

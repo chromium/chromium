@@ -4243,7 +4243,7 @@ ax::mojom::blink::Role AXObject::DetermineAriaRoleAttribute() const {
   // It also states user agents should ignore the presentational role if
   // the element has global ARIA states and properties.
   if (ui::IsPresentational(role)) {
-    if (IsA<HTMLIFrameElement>(*GetNode()) || IsA<HTMLFrameElement>(*GetNode()))
+    if (IsFrame(GetNode()))
       return ax::mojom::blink::Role::kIframePresentational;
     if ((GetElement() && GetElement()->SupportsFocus()) ||
         HasAriaAttribute(true /* does_undo_role_presentation */)) {
@@ -5848,6 +5848,24 @@ bool AXObject::IsARIAInput(ax::mojom::blink::Role aria_role) {
          aria_role == ax::mojom::blink::Role::kSwitch ||
          aria_role == ax::mojom::blink::Role::kSearchBox ||
          aria_role == ax::mojom::blink::Role::kTextFieldWithComboBox;
+}
+
+// static
+bool AXObject::IsFrame(const Node* node) {
+  auto* frame_owner = DynamicTo<HTMLFrameOwnerElement>(node);
+  if (!frame_owner)
+    return false;
+  switch (frame_owner->OwnerType()) {
+    case FrameOwnerElementType::kIframe:
+    case FrameOwnerElementType::kFrame:
+    case FrameOwnerElementType::kFencedframe:
+      return true;
+    case FrameOwnerElementType::kObject:
+    case FrameOwnerElementType::kEmbed:
+    case FrameOwnerElementType::kPortal:
+    case FrameOwnerElementType::kNone:
+      return false;
+  }
 }
 
 // static

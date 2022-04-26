@@ -1279,6 +1279,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // TODO(accessibility) Move these to a static helper util class.
   static bool IsARIAControl(ax::mojom::blink::Role);
   static bool IsARIAInput(ax::mojom::blink::Role);
+  static bool IsFrame(const Node*);
   static bool HasARIAOwns(Element* element);
   // Is this a widget that requires container widget.
   bool IsSubWidget() const;

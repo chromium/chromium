@@ -2029,6 +2029,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityFencedFrameScrollable) {
+  RunHtmlTest(FILE_PATH_LITERAL("fencedframe-scrollable.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityIframeScrollable) {
   RunHtmlTest(FILE_PATH_LITERAL("iframe-scrollable.html"));
 }
