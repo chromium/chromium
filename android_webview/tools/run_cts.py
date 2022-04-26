@@ -99,7 +99,7 @@ def GetCTSModuleNames(arch, cts_release):
   return [os.path.basename(r['apk']) for r in test_runs]
 
 
-def GetTestRunFilterArg(args, test_run):
+def GetTestRunFilterArg(args, test_run, arch=None):
   """ Merges json file filters with cmdline filters using
       test_filter.InitializeFilterFromArgs
   """
@@ -107,19 +107,27 @@ def GetTestRunFilterArg(args, test_run):
   # Convert cmdline filters to test-filter style
   filter_string = test_filter.InitializeFilterFromArgs(args)
 
+  # Get all the filters for either include or exclude patterns
+  # and filter where an architecture is provided and does not match
+  # The architecture is used when tests only fail on one architecture
+  def getTestRunFilters(key):
+    filters = test_run.get(key, [])
+    return [
+        filter_["match"] for filter_ in filters
+        if 'arch' not in filter_ or filter_['arch'] == arch
+    ]
+
   # Only add inclusion filters if there's not already one specified, since
   # they would conflict, see test_filter.ConflictingPositiveFiltersException.
   if not test_filter.HasPositivePatterns(filter_string):
-    includes = test_run.get("includes", [])
+    patterns = getTestRunFilters("includes")
     filter_string = test_filter.AppendPatternsToFilter(
-        filter_string,
-        positive_patterns=[i["match"] for i in includes])
+        filter_string, positive_patterns=patterns)
 
   if args.skip_expected_failures:
-    excludes = test_run.get("excludes", [])
+    patterns = getTestRunFilters("excludes")
     filter_string = test_filter.AppendPatternsToFilter(
-        filter_string,
-        negative_patterns=[e["match"] for e in excludes])
+        filter_string, negative_patterns=patterns)
 
   if filter_string:
     return [TEST_FILTER_OPT + '=' + filter_string]
@@ -221,7 +229,7 @@ def RunAllCTSTests(args, arch, cts_release, test_runner_args):
         continue
 
       iter_test_runner_args = test_runner_args + GetTestRunFilterArg(
-          args, cts_test_run)
+          args, cts_test_run, arch)
 
       if json_results_file:
         with tempfile.NamedTemporaryFile() as iteration_json_file:

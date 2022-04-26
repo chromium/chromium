@@ -27,6 +27,7 @@ Android release basis by editing
           "excludes": [
             {
               "match": "<class#testcase (wildcard supported) expression of test to skip>",
+              "arch": "<the architecture to skip for, optional, eg: x86 - if not provided, will match all architectures>",
               "_bug_id": "<bug reference comment, optional>"
             }
           ]
@@ -35,7 +36,8 @@ Android release basis by editing
           "apk": "location of the test apk in the cts zip file",
           "includes": [
             {
-              "match": "<class#testcase (wildcard supported) expression of test to run>"
+              "match": "<class#testcase (wildcard supported) expression of test to run>",
+              "arch": "<the architecture to include for, optional, eg: arm64 - if not provided, will match all architectures>",
             }
           ]
         }
@@ -53,6 +55,10 @@ please adjust them accordingly.
 
 *** note
 **Note:** If includes nor excludes are specified, all tests in the apk will run.
+***
+
+*** note
+**Note:** The supported architectures for filtering are arm64 and x86
 ***
 
 ## Disabling/Skipping tests
