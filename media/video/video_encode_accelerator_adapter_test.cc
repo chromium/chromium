@@ -338,6 +338,32 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, InitializationError) {
   EXPECT_EQ(outputs_count, 0);
 }
 
+TEST_F(VideoEncodeAcceleratorAdapterTest, EncodingError) {
+  VideoEncoder::Options options;
+  options.frame_size = gfx::Size(640, 480);
+  int outputs_count = 0;
+  auto pixel_format = PIXEL_FORMAT_I420;
+  VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
+      [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
+        outputs_count++;
+      });
+
+  VideoEncoder::EncoderStatusCB expect_error_done_cb =
+      base::BindLambdaForTesting(
+          [&](EncoderStatus s) { EXPECT_FALSE(s.is_ok()); });
+
+  adapter()->Initialize(profile_, options, std::move(output_cb),
+                        ValidatingStatusCB());
+
+  vea()->SetWillEncodingSucceed(false);
+
+  auto frame =
+      CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(1));
+  adapter()->Encode(frame, true, std::move(expect_error_done_cb));
+  RunUntilIdle();
+  EXPECT_EQ(outputs_count, 0);
+}
+
 TEST_P(VideoEncodeAcceleratorAdapterTest, TwoFramesResize) {
   VideoEncoder::Options options;
   options.frame_size = gfx::Size(640, 480);
