@@ -40,6 +40,8 @@ class AudioBus;
 class BaseAudioContext;
 class DOMArrayBuffer;
 class ScriptPromiseResolver;
+class ExceptionContext;
+class ExceptionState;
 
 // AsyncAudioDecoder asynchronously decodes audio file data from a
 // DOMArrayBuffer in the background thread. Upon successful decoding, a
@@ -66,7 +68,8 @@ class AsyncAudioDecoder {
                    V8DecodeSuccessCallback*,
                    V8DecodeErrorCallback*,
                    ScriptPromiseResolver*,
-                   BaseAudioContext*);
+                   BaseAudioContext*,
+                   ExceptionState&);
 
  private:
   AudioBuffer* CreateAudioBufferFromAudioBus(AudioBus*);
@@ -77,13 +80,15 @@ class AsyncAudioDecoder {
       V8DecodeErrorCallback*,
       ScriptPromiseResolver*,
       BaseAudioContext*,
-      scoped_refptr<base::SingleThreadTaskRunner>);
+      scoped_refptr<base::SingleThreadTaskRunner>,
+      const ExceptionContext&);
   static void NotifyComplete(DOMArrayBuffer* audio_data,
                              V8DecodeSuccessCallback*,
                              V8DecodeErrorCallback*,
                              AudioBus*,
                              ScriptPromiseResolver*,
-                             BaseAudioContext*);
+                             BaseAudioContext*,
+                             const ExceptionContext&);
 };
 
 }  // namespace blink

@@ -295,9 +295,6 @@ ScriptPromise AudioContext::suspendContext(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-
   suspended_by_user_ = true;
 
   // Stop rendering now.
@@ -305,14 +302,12 @@ ScriptPromise AudioContext::suspendContext(ScriptState* script_state,
     SuspendRendering();
   }
 
-  // Since we don't have any way of knowing when the hardware actually stops,
-  // we'll just resolve the promise now.
-  resolver->Resolve();
-
   // Probe reports the suspension only when the promise is resolved.
   probe::DidSuspendAudioContext(GetDocument());
 
-  return promise;
+  // Since we don't have any way of knowing when the hardware actually stops,
+  // we'll just resolve the promise now.
+  return ScriptPromise::CastUndefined(script_state);
 }
 
 ScriptPromise AudioContext::resumeContext(ScriptState* script_state,

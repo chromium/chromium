@@ -169,7 +169,8 @@ class MODULES_EXPORT BaseAudioContext
   void HandleDecodeAudioData(AudioBuffer*,
                              ScriptPromiseResolver*,
                              V8DecodeSuccessCallback*,
-                             V8DecodeErrorCallback*);
+                             V8DecodeErrorCallback*,
+                             ExceptionContext);
 
   AudioListener* listener() { return listener_; }
 

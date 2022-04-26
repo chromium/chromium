@@ -65,8 +65,8 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
 
   ScriptPromise startOfflineRendering(ScriptState*, ExceptionState&);
 
-  ScriptPromise suspendContext(ScriptState*, double);
-  ScriptPromise resumeContext(ScriptState*);
+  ScriptPromise suspendContext(ScriptState*, double, ExceptionState&);
+  ScriptPromise resumeContext(ScriptState*, ExceptionState&);
 
   void RejectPendingResolvers() override;
 
