@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/autofill_assistant/browser/assistant_field_trial_util.h"
+#include "components/autofill_assistant/browser/dependencies_util.h"
 #include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -50,8 +51,9 @@ DependenciesChrome::CreateFieldTrialUtil() const {
   return std::make_unique<AssistantFieldTrialUtilChrome>();
 }
 
-VariationsService* DependenciesChrome::GetVariationsService() const {
-  return g_browser_process->variations_service();
+std::string DependenciesChrome::GetCountryCode() const {
+  return dependencies_util::GetCountryCode(
+      g_browser_process->variations_service());
 }
 
 PersonalDataManager* DependenciesChrome::GetPersonalDataManager() const {

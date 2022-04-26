@@ -33,7 +33,6 @@
 #include "components/password_manager/content/browser/password_change_success_tracker_factory.h"
 #include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
-#include "components/variations/service/variations_service.h"
 #include "components/version_info/android/channel_getter.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -559,12 +558,7 @@ std::string ClientAndroid::GetLocale() const {
 }
 
 std::string ClientAndroid::GetCountryCode() const {
-  variations::VariationsService* variations_service =
-      dependencies_->GetVariationsService();
-  // Use fallback "ZZ" if no country is available.
-  if (!variations_service || variations_service->GetLatestCountry().empty())
-    return "ZZ";
-  return base::ToUpperASCII(variations_service->GetLatestCountry());
+  return dependencies_->GetCountryCode();
 }
 
 DeviceContext ClientAndroid::GetDeviceContext() const {

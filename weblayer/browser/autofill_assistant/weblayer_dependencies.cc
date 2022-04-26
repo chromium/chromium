@@ -5,6 +5,7 @@
 #include "weblayer/browser/autofill_assistant/weblayer_dependencies.h"
 
 #include "base/android/jni_string.h"
+#include "components/autofill_assistant/browser/dependencies_util.h"
 #include "weblayer/browser/autofill_assistant/weblayer_assistant_field_trial_util.h"
 #include "weblayer/browser/feature_list_creator.h"
 #include "weblayer/browser/java/jni/WebLayerAssistantStaticDependencies_jni.h"
@@ -61,9 +62,9 @@ std::string WebLayerDependencies::GetSignedInEmail(
   return email.is_null() ? "" : ConvertJavaStringToUTF8(email);
 }
 
-variations::VariationsService* WebLayerDependencies::GetVariationsService()
-    const {
-  return FeatureListCreator::GetInstance()->variations_service();
+std::string WebLayerDependencies::GetCountryCode() const {
+  return autofill_assistant::dependencies_util::GetCountryCode(
+      FeatureListCreator::GetInstance()->variations_service());
 }
 
 ::autofill_assistant::AnnotateDomModelService*

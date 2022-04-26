@@ -29,7 +29,7 @@ class DependenciesChrome : public Dependencies {
   std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil()
       const override;
 
-  variations::VariationsService* GetVariationsService() const override;
+  std::string GetCountryCode() const override;
 
   autofill::PersonalDataManager* GetPersonalDataManager() const override;
 

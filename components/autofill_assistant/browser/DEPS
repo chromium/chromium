@@ -39,5 +39,11 @@ specific_include_rules = {
     "+components/prefs",
     "+components/safe_browsing/core/common",
     "+third_party/blink/public/common/features.h",
-  ]
+  ],
+  'dependencies_util.h': [
+      '+components/variations/service/variations_service.h',
+   ],
+   'dependencies_util.cc': [
+      '+components/variations/service/variations_service.h',
+   ],
 }
