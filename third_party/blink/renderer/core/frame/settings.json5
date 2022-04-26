@@ -1054,11 +1054,5 @@
       initial: true,
       type: "bool",
     },
-    // LitePage origin the subresources such as images should be redirected to
-    // when the kSubresourceRedirect feature is enabled.
-    {
-      name: "LitePageSubresourceRedirectOrigin",
-      type: "String",
-    },
   ],
 }
