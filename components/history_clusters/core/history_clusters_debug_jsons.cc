@@ -87,6 +87,11 @@ std::string GetDebugJSONForClusters(
         debug_entities.Append(std::move(debug_entity));
       }
       debug_visit.SetKey("entities", std::move(debug_entities));
+      if (!visit.annotated_visit.content_annotations.search_terms.empty()) {
+        debug_visit.SetStringKey(
+            "search_terms",
+            visit.annotated_visit.content_annotations.search_terms);
+      }
       debug_visit.SetDoubleKey("site_engagement_score", visit.engagement_score);
 
       base::ListValue debug_duplicate_visits;
