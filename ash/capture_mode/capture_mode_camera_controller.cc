@@ -274,7 +274,9 @@ gfx::Size CalculatePreviewInitialSize() {
     const int shorter_side = std::min(work_area.width(), work_area.height());
     max_shorter_side = std::max(max_shorter_side, shorter_side);
   }
-  return gfx::Size(max_shorter_side, max_shorter_side);
+  const int preview_diameter =
+      max_shorter_side / capture_mode::kCaptureSurfaceShortSideDivider;
+  return gfx::Size(preview_diameter, preview_diameter);
 }
 
 // Returns the appropriate `message_id` for ChromeVox alert on setting camera
