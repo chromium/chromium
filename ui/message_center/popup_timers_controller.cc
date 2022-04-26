@@ -119,29 +119,37 @@ void PopupTimersController::OnNotificationUpdated(const std::string& id) {
     return;
   }
 
+  // Group child notifications are contained in a parent popup, we must reset
+  // the parent popup's timer when they are displayed or updated.
+  auto* notification = message_center_->FindNotificationById(id);
+  const std::string& popup_id =
+      notification->group_child()
+          ? message_center_->FindParentNotification(notification)->id()
+          : id;
+
   auto iter = popup_notifications.begin();
   for (; iter != popup_notifications.end(); ++iter) {
-    if ((*iter)->id() == id)
+    if ((*iter)->id() == popup_id)
       break;
   }
 
   if (iter == popup_notifications.end() || (*iter)->never_timeout()) {
-    CancelTimer(id);
+    CancelTimer(popup_id);
     return;
   }
 
-  auto timer = popup_timers_.find(id);
+  auto timer = popup_timers_.find(popup_id);
   // The timer must already have been started and not be running. Relies on
   // the invariant that |popup_timers_| only contains timers that have been
   // started.
   bool was_paused = timer != popup_timers_.end() && !timer->second->IsRunning();
-  CancelTimer(id);
-  StartTimer(id, GetTimeoutForNotification(*iter));
+  CancelTimer(popup_id);
+  StartTimer(popup_id, GetTimeoutForNotification(*iter));
 
   // If a timer was paused before, pause it afterwards as well.
   // See crbug.com/710298
   if (was_paused) {
-    popup_timers_.find(id)->second->Pause();
+    popup_timers_.find(popup_id)->second->Pause();
   }
 }
 
