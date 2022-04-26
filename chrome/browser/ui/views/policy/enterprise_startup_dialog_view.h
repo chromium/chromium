@@ -82,7 +82,7 @@ class EnterpriseStartupDialogImpl : public EnterpriseStartupDialog,
   bool IsShowing() override;
 
   // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
   // The dialog_view_ is owned by itself.

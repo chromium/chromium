@@ -266,12 +266,13 @@ void EnterpriseStartupDialogImpl::DisplayErrorMessage(
   if (dialog_view_)
     dialog_view_->DisplayErrorMessage(error_message, accept_button);
 }
+
 bool EnterpriseStartupDialogImpl::IsShowing() {
   return dialog_view_;
 }
 
 // views::WidgetObserver:
-void EnterpriseStartupDialogImpl::OnWidgetClosing(views::Widget* widget) {
+void EnterpriseStartupDialogImpl::OnWidgetDestroying(views::Widget* widget) {
   dialog_view_->RemoveWidgetObserver(this);
   dialog_view_ = nullptr;
 }
