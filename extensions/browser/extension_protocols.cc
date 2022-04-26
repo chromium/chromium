@@ -616,10 +616,14 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
   // encountering an error and communicating the error to the the `client_`).
   void DeleteThis() { delete this; }
 
+  void CompleteRequestAndDeleteThis(int status) {
+    client_->OnComplete(network::URLLoaderCompletionStatus(status));
+    DeleteThis();
+  }
+
   void Start() {
     if (browser_context_->ShutdownStarted()) {
-      client_->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
-      DeleteThis();
+      CompleteRequestAndDeleteThis(net::ERR_FAILED);
       return;
     }
 
@@ -638,9 +642,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
             render_process_id_, browser_context_->IsOffTheRecord(),
             extension.get(), incognito_enabled, enabled_extensions,
             *process_map)) {
-      client_->OnComplete(
-          network::URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_CLIENT));
-      DeleteThis();
+      CompleteRequestAndDeleteThis(net::ERR_BLOCKED_BY_CLIENT);
       return;
     }
 
@@ -648,8 +650,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
     if (!GetDirectoryForExtensionURL(
             request_.url, extension_id, extension.get(),
             registry->disabled_extensions(), &directory_path)) {
-      client_->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
-      DeleteThis();
+      CompleteRequestAndDeleteThis(net::ERR_FAILED);
       return;
     }
 
@@ -704,8 +705,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
                 base::as_bytes(
                     base::make_span(bitmap_data->data(), bitmap_data->size())));
     } else {
-      client_->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
-      DeleteThis();
+      CompleteRequestAndDeleteThis(net::ERR_FAILED);
     }
   }
 
@@ -717,15 +717,13 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
     if (mojo::CreateDataPipe(size, producer_handle, consumer_handle) !=
         MOJO_RESULT_OK) {
-      client_->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
-      DeleteThis();
+      CompleteRequestAndDeleteThis(net::ERR_FAILED);
       return;
     }
     MojoResult result = producer_handle->WriteData(contents.data(), &size,
                                                    MOJO_WRITE_DATA_FLAG_NONE);
     if (result != MOJO_RESULT_OK || size < contents.size()) {
-      client_->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
-      DeleteThis();
+      CompleteRequestAndDeleteThis(net::ERR_FAILED);
       return;
     }
 
@@ -737,8 +735,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
       client_->OnStartLoadingResponseBody(std::move(consumer_handle));
     }
 
-    client_->OnComplete(network::URLLoaderCompletionStatus(net::OK));
-    DeleteThis();
+    CompleteRequestAndDeleteThis(net::OK);
   }
 
   void LoadExtension(scoped_refptr<const Extension> extension,
@@ -837,9 +834,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
     // files there are internal implementation details that should not be
     // considered part of the extension.
     if (base::FilePath(kMetadataFolder).IsParent(relative_path)) {
-      client_->OnComplete(
-          network::URLLoaderCompletionStatus(net::ERR_FILE_NOT_FOUND));
-      DeleteThis();
+      CompleteRequestAndDeleteThis(net::ERR_FILE_NOT_FOUND);
       return;
     }
 
@@ -862,9 +857,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
         extension_id = new_extension_id;
         relative_path = base::FilePath::FromUTF8Unsafe(new_relative_path);
       } else {
-        client_->OnComplete(
-            network::URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_CLIENT));
-        DeleteThis();
+        CompleteRequestAndDeleteThis(net::ERR_BLOCKED_BY_CLIENT);
         return;
       }
     }
