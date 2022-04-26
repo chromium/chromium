@@ -49,7 +49,11 @@ android_library("js_sandbox_java") {
 
   deps = [
     ":js_sandbox_aidl_java",
+    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+    "//third_party/android_deps:com_google_guava_listenablefuture_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_concurrent_concurrent_futures_java",
+    "//third_party/androidx:androidx_core_core_java",
   ]
 }
 

@@ -34,7 +34,10 @@ public class AwJsIsolate implements AutoCloseable {
         // This should be at the end of the constructor.
     }
 
-    /** Evaluates the Javascript code and calls the callback with the result of the execution. */
+    /**
+     * Evaluates the Javascript code and calls the callback with the result of the execution.
+     * TODO(crbug.com/1297672): Add timeouts for requests.
+     */
     public void evaluateJavascript(String code, ExecutionCallback callback) {
         if (mJsIsolateStub == null) {
             throw new IllegalStateException(

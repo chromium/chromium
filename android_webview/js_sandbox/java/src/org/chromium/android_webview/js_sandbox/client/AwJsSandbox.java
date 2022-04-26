@@ -9,19 +9,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.webkit.WebView;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.concurrent.futures.CallbackToFutureAdapter;
+import androidx.core.content.ContextCompat;
+
+import com.google.common.util.concurrent.ListenableFuture;
 
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolate;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxService;
 
-/**
- * Sandbox that can execute JS in a safe environment. TODO(crbug.com/1297672): Evaluate the thread
- * safety of this class and enforce ThreadChecker if needed. Refer crrev.com/c/3466074.
- */
+import java.util.concurrent.Executor;
+
+import javax.annotation.concurrent.GuardedBy;
+
+/** Sandbox that can execute JS in a safe environment. This class is thread safe. */
 public class AwJsSandbox implements AutoCloseable {
     // TODO(crbug.com/1297672): Add capability to this class to support spawning
     // different processes as needed. This might require that we have a static
@@ -30,75 +36,116 @@ public class AwJsSandbox implements AutoCloseable {
     private static final String TAG = "AwJsSandbox";
     private static final String JS_SANDBOX_SERVICE_NAME =
             "org.chromium.android_webview.js_sandbox.service.JsSandboxService0";
+    private Object mLock = new Object();
 
+    @GuardedBy("mLock")
     private IJsSandboxService mJsSandboxService;
-    private ConnectionSetup mConnection;
+
+    private final ConnectionSetup mConnection;
 
     static class ConnectionSetup implements ServiceConnection {
-        private ReadyCallback mReadyCallback;
+        private CallbackToFutureAdapter.Completer mCompleter;
         private AwJsSandbox mAwJsSandbox;
         private Context mContext;
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             IJsSandboxService jsSandboxService = IJsSandboxService.Stub.asInterface(service);
-            // We are calling this from the main looper for now.
             mAwJsSandbox = new AwJsSandbox(this, jsSandboxService);
-            mReadyCallback.createdConnectedInstance(mAwJsSandbox);
+            mCompleter.set(mAwJsSandbox);
+            mCompleter = null;
+        }
+
+        // TODO(crbug.com/1297672): We need to track evaluateJavascript requests to fail them when
+        // onServiceDisconnected is called.
+        // TODO(crbug.com/1297672): We may want an explicit way to signal to the client that the
+        // process crashed (like onRenderProcessGone in WebView), without them having to first call
+        // one of the methods and have it fail.
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            unbindAndSetException(
+                    new RuntimeException("AwJsSandbox internal error: onServiceDisconnected()"));
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName name) {
-            mAwJsSandbox.close();
+        public void onBindingDied(ComponentName name) {
+            unbindAndSetException(
+                    new RuntimeException("AwJsSandbox internal error: onBindingDead()"));
         }
 
-        ConnectionSetup(Context context, ReadyCallback callback) {
+        @Override
+        public void onNullBinding(ComponentName name) {
+            unbindAndSetException(
+                    new RuntimeException("AwJsSandbox internal error: onNullBinding()"));
+        }
+
+        private void unbindAndSetException(Exception e) {
+            mContext.unbindService(this);
+            if (mCompleter != null) {
+                mCompleter.setException(e);
+            }
+            mCompleter = null;
+        }
+
+        ConnectionSetup(Context context, CallbackToFutureAdapter.Completer completer) {
             mContext = context;
-            mReadyCallback = callback;
+            mCompleter = completer;
         }
-    }
-
-    /** Callback used to inform caller when a connected instance is ready. */
-    public interface ReadyCallback {
-        void createdConnectedInstance(AwJsSandbox awJsSandbox);
     }
 
     /**
-     * Use this method to create new instances that are connected to the service. The callback is
-     * called from the main looper (Looper.getMainLooper()). We only support creation of a single
-     * connected instance, we would need to add restrictions to enforce this.
+     * Use this method to create new instances that are connected to the service. We only support
+     * creation of a single connected instance, we would need to add restrictions to enforce this.
      *
      * @param context When the context is destroyed, the connection will be closed. Use an
      *         application
      *     context if the connection is expected to outlive a single activity/service.
-     * @param callback used to pass a callback function on creation of object.
      */
-    public static void newConnectedInstance(Context context, ReadyCallback callback) {
+    public static ListenableFuture<AwJsSandbox> newConnectedInstance(Context context) {
         PackageInfo systemWebViewPackage = WebView.getCurrentWebViewPackage();
         ComponentName compName =
                 new ComponentName(systemWebViewPackage.packageName, JS_SANDBOX_SERVICE_NAME);
         int flag = Context.BIND_AUTO_CREATE | Context.BIND_EXTERNAL_SERVICE;
-        bindToServiceWithCallback(context, compName, flag, callback);
+        return bindToServiceWithCallback(context, compName, flag);
     }
 
     @VisibleForTesting
-    public static void newConnectedInstanceForTesting(Context context, ReadyCallback callback) {
+    public static ListenableFuture<AwJsSandbox> newConnectedInstanceForTesting(Context context) {
         ComponentName compName = new ComponentName(context, JS_SANDBOX_SERVICE_NAME);
         int flag = Context.BIND_AUTO_CREATE;
-        bindToServiceWithCallback(context, compName, flag, callback);
+        return bindToServiceWithCallback(context, compName, flag);
     }
 
-    private static void bindToServiceWithCallback(
-            Context context, ComponentName compName, int flag, ReadyCallback callback) {
+    private static ListenableFuture<AwJsSandbox> bindToServiceWithCallback(
+            Context context, ComponentName compName, int flag) {
         Intent intent = new Intent();
         intent.setComponent(compName);
-        ConnectionSetup connectionSetup = new ConnectionSetup(context, callback);
-        boolean isBinding = context.bindService(intent, connectionSetup, flag);
-        if (!isBinding) {
-            throw new RuntimeException(
-                    "System couldn't find the sandbox service or client doesn't have "
-                    + "permission to bind to it " + intent);
-        }
+        return CallbackToFutureAdapter.getFuture(completer -> {
+            ConnectionSetup connectionSetup = new ConnectionSetup(context, completer);
+            try {
+                boolean isBinding = context.bindService(intent, connectionSetup, flag);
+                if (isBinding) {
+                    Executor mainExecutor;
+                    if (Build.VERSION.SDK_INT >= 28) {
+                        mainExecutor = context.getMainExecutor();
+                    } else {
+                        mainExecutor = ContextCompat.getMainExecutor(context);
+                    }
+                    completer.addCancellationListener(
+                            () -> context.unbindService(connectionSetup), mainExecutor);
+                } else {
+                    context.unbindService(connectionSetup);
+                    completer.setException(
+                            new RuntimeException("bindService() returned false " + intent));
+                }
+            } catch (SecurityException e) {
+                context.unbindService(connectionSetup);
+                completer.setException(e);
+            }
+
+            // Debug string.
+            return "AwJsSandbox Future";
+        });
     }
 
     // We prevent direct initialitations of this class. Use AwJsSandbox.newConnectedInstance().
@@ -109,24 +156,28 @@ public class AwJsSandbox implements AutoCloseable {
 
     /** Creates an execution isolate within which JS can be executed multiple times. */
     public AwJsIsolate createIsolate() {
-        if (mJsSandboxService == null) {
-            throw new IllegalStateException(
-                    "Attempting to createIsolate on a service that isn't connected");
-        }
-        try {
-            IJsSandboxIsolate isolateStub = mJsSandboxService.createIsolate();
-            return new AwJsIsolate(isolateStub);
-        } catch (RemoteException e) {
-            throw e.rethrowAsRuntimeException();
+        synchronized (mLock) {
+            if (mJsSandboxService == null) {
+                throw new IllegalStateException(
+                        "Attempting to createIsolate on a service that isn't connected");
+            }
+            try {
+                IJsSandboxIsolate isolateStub = mJsSandboxService.createIsolate();
+                return new AwJsIsolate(isolateStub);
+            } catch (RemoteException e) {
+                throw e.rethrowAsRuntimeException();
+            }
         }
     }
 
     @Override
     public void close() {
-        if (mJsSandboxService == null) {
-            return;
+        synchronized (mLock) {
+            if (mJsSandboxService == null) {
+                return;
+            }
+            mConnection.mContext.unbindService(mConnection);
+            mJsSandboxService = null;
         }
-        mConnection.mContext.unbindService(mConnection);
-        mJsSandboxService = null;
     }
 }
