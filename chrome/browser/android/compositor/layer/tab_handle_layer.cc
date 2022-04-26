@@ -20,6 +20,7 @@
 namespace android {
 
 const char TAB_WIDTH_SMALL[] = "108";
+const char TAB_WIDTH_MEDIUM[] = "156";
 const char TAB_STRIP_IMPROVEMENTS_FEATURE_PARAMETER[] = "min_tab_width";
 
 // static
@@ -136,13 +137,15 @@ void TabHandleLayer::SetProperties(
   const float padding_left = tab_handle_resource->padding().x();
 
   float close_width = close_button_->bounds().width();
-  // For the 108dp min_tab_width experiment, if close button is not shown, fill
+  // For the min_tab_width experiments, if close button is not shown, fill
   // the remaining space with the title text
   if (base::FeatureList::IsEnabled(chrome::android::kTabStripImprovements)) {
     std::string tab_width_param = base::GetFieldTrialParamValueByFeature(
         chrome::android::kTabStripImprovements,
         TAB_STRIP_IMPROVEMENTS_FEATURE_PARAMETER);
-    if (tab_width_param == TAB_WIDTH_SMALL && close_button_alpha == 0.f)
+    bool is_tab_width_experiment = (tab_width_param == TAB_WIDTH_SMALL ||
+                                    tab_width_param == TAB_WIDTH_MEDIUM);
+    if (is_tab_width_experiment && close_button_alpha == 0.f)
       close_width = 0.f;
   }
 
