@@ -169,6 +169,11 @@ void MediaPlayerBridge::SetVideoSurface(gl::ScopedJavaSurface surface) {
 }
 
 void MediaPlayerBridge::SetPlaybackRate(double playback_rate) {
+  if (!prepared_) {
+    pending_playback_rate_ = playback_rate;
+    return;
+  }
+
   if (j_media_player_bridge_.is_null())
     return;
 
@@ -480,6 +485,11 @@ void MediaPlayerBridge::OnMediaPrepared() {
   if (pending_play_) {
     StartInternal();
     pending_play_ = false;
+  }
+
+  if (pending_playback_rate_) {
+    SetPlaybackRate(pending_playback_rate_.value());
+    pending_playback_rate_.reset();
   }
 }
 
