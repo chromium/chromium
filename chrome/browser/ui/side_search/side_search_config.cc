@@ -12,6 +12,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/common/url_utils.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
@@ -52,7 +53,7 @@ void ApplyDSEConfiguration(Profile* profile, SideSearchConfig& config) {
                    ->IsSideSearchSupportedForDefaultSearchProvider() &&
                !template_url_service
                     ->IsSearchResultsPageFromDefaultSearchProvider(url) &&
-               url.spec() != chrome::kChromeUINewTabURL;
+               !content::HasWebUIScheme(url);
       },
       base::Unretained(profile)));
 
