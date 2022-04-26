@@ -1,0 +1,7 @@
+{
+  "extends": "../../../../tools/typescript/tsconfig_base.json",
+  "compilerOptions": {
+    "noUnusedLocals": false,
+    "strictPropertyInitialization": false
+  }
+}

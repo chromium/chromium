@@ -10,6 +10,7 @@
 #include "chrome/grit/webui_gallery_resources.h"
 #include "chrome/grit/webui_gallery_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace {
@@ -22,6 +23,14 @@ content::WebUIDataSource* CreateWebuiGalleryUIHtmlSource(Profile* profile) {
       source,
       base::make_span(kWebuiGalleryResources, kWebuiGalleryResourcesSize),
       IDR_WEBUI_GALLERY_WEBUI_GALLERY_HTML);
+
+  source->DisableTrustedTypesCSP();
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameSrc, "frame-src 'self';");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameAncestors,
+      "frame-ancestors 'self';");
+
   return source;
 }
 

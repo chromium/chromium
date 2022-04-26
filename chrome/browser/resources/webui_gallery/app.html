@@ -1,0 +1,43 @@
+<style include="cr-nav-menu-item-style">
+  :host {
+    display: flex;
+    height: 100%;
+  }
+
+  #sidebar {
+    border-inline-end: 1px solid black;
+    box-sizing: border-box;
+    width: 256px;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  iframe {
+    border: none;
+    height: 100%;
+    width: 100%;
+  }
+
+  #main {
+    flex: 1;
+  }
+</style>
+<div id="sidebar">
+  <cr-menu-selector>
+    <iron-selector selectable="a"
+        attr-for-selected="href" on-iron-activate="onSelectorActivate_"
+        on-click="onLinkClick_" selected-attribute="selected">
+      <template is="dom-repeat" items="[[demos]]"
+          on-dom-change="onDomChange_" notify-dom-change>
+        <a role="menuitem" href="demos/[[item.url]]"
+            class="cr-nav-menu-item">[[item.name]]</a>
+      </template>
+    </iron-selector>
+  </cr-menu-selector>
+</div>
+
+<div id="main">
+  <iframe src="[[currentSrc_]]"></iframe>
+</div>
