@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/dom/range.h"
 
+#include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/character_data.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
@@ -1591,6 +1592,8 @@ void Range::expand(const String& unit, ExceptionState& exception_state) {
 }
 
 DOMRectList* Range::getClientRects() const {
+  owner_document_->GetDisplayLockDocumentState()
+      .UnlockShapingDeferredElements();
   DisplayLockUtilities::ScopedForcedUpdate force_locks(
       this, DisplayLockContext::ForcedPhase::kLayout);
   owner_document_->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
@@ -1714,6 +1717,8 @@ void Range::GetBorderAndTextQuads(Vector<gfx::QuadF>& quads) const {
 }
 
 gfx::RectF Range::BoundingRect() const {
+  owner_document_->GetDisplayLockDocumentState()
+      .UnlockShapingDeferredElements();
   absl::optional<DisplayLockUtilities::ScopedForcedUpdate> force_locks;
   if (!collapsed()) {
     force_locks = DisplayLockUtilities::ScopedForcedUpdate(

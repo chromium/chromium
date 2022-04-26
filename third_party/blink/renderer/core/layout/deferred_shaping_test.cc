@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -402,6 +403,56 @@ TEST_F(DeferredShapingTest, ElementGeometryContainingDeferred) {
   EXPECT_EQ(reference.height(), target.height());
   EXPECT_FALSE(IsDefer("target-child"));
   EXPECT_FALSE(IsLocked("target-child"));
+}
+
+TEST_F(DeferredShapingTest, RangeGetClientRects) {
+  SetBodyInnerHTML(R"HTML(<div style="height:1800px"></div>
+<p id="ancestor">IFC
+<span style="display:inline-block" id="previous">MMMM MMMM MMMM</sapn>
+<span id="target">inline</span>
+</p>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("previous"));
+  EXPECT_TRUE(IsLocked("previous"));
+  EXPECT_TRUE(IsDefer("ancestor"));
+  EXPECT_TRUE(IsLocked("ancestor"));
+
+  Element* target = GetElementById("target");
+  Range* range = GetDocument().createRange();
+  range->setStart(target, 0);
+  range->setEnd(target, 1);
+  // getClientRects() should unlock prior elements.
+  range->getClientRects();
+
+  EXPECT_FALSE(IsDefer("previous"));
+  EXPECT_FALSE(IsLocked("previous"));
+  EXPECT_FALSE(IsDefer("ancestor"));
+  EXPECT_FALSE(IsLocked("ancestor"));
+}
+
+TEST_F(DeferredShapingTest, RangeGetBoundingClientRect) {
+  SetBodyInnerHTML(R"HTML(<div style="height:1800px"></div>
+<p id="ancestor">IFC
+<span style="display:inline-block" id="previous">MMMM MMMM MMMM</sapn>
+<span id="target">inline</span>
+</p>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("previous"));
+  EXPECT_TRUE(IsLocked("previous"));
+  EXPECT_TRUE(IsDefer("ancestor"));
+  EXPECT_TRUE(IsLocked("ancestor"));
+
+  Element* target = GetElementById("target");
+  Range* range = GetDocument().createRange();
+  range->setStart(target, 0);
+  range->setEnd(target, 1);
+  // getBoundingClientRect() should unlock prior elements.
+  range->getBoundingClientRect();
+
+  EXPECT_FALSE(IsDefer("previous"));
+  EXPECT_FALSE(IsLocked("previous"));
+  EXPECT_FALSE(IsDefer("ancestor"));
+  EXPECT_FALSE(IsLocked("ancestor"));
 }
 
 TEST_F(DeferredShapingTest, NonLayoutNGBlockFlow) {
