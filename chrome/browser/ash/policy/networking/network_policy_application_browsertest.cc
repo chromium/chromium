@@ -27,6 +27,7 @@
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_policy_observer.h"
+#include "chromeos/system/fake_statistics_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -408,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   // Set up two services.
   shill_service_client_test_->AddService(
       kServiceWifi1, "wifi_orig_guid_1", "WifiOne", shill::kTypeWifi,
-      shill::kStateOnline, true /* add_to_visible */);
+      shill::kStateOnline, /*add_to_visible=*/true);
   shill_service_client_test_->SetServiceProperty(
       kServiceWifi1, shill::kSSIDProperty, base::Value("WifiOne"));
   shill_service_client_test_->SetServiceProperty(
@@ -417,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
 
   shill_service_client_test_->AddService(
       kServiceWifi2, "wifi_orig_guid_2", "WifiTwo", shill::kTypeWifi,
-      shill::kStateOnline, true /* add_to_visible */);
+      shill::kStateOnline, /*add_to_visible=*/true);
   shill_service_client_test_->SetServiceProperty(
       kServiceWifi2, shill::kSSIDProperty, base::Value("WifiTwo"));
   shill_service_client_test_->SetServiceProperty(
@@ -599,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   // Set up two services.
   shill_service_client_test_->AddService(
       kServiceWifi1, "wifi_orig_guid_1", "WifiOne", shill::kTypeWifi,
-      shill::kStateOnline, true /* add_to_visible */);
+      shill::kStateOnline, /*add_to_visible=*/true);
   shill_service_client_test_->SetServiceProperty(
       kServiceWifi1, shill::kSSIDProperty, base::Value("WifiOne"));
   shill_service_client_test_->SetServiceProperty(
@@ -608,7 +609,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
 
   shill_service_client_test_->AddService(
       kServiceWifi2, "wifi_orig_guid_2", "WifiTwo", shill::kTypeWifi,
-      shill::kStateOnline, true /* add_to_visible */);
+      shill::kStateOnline, /*add_to_visible=*/true);
   shill_service_client_test_->SetServiceProperty(
       kServiceWifi2, shill::kSSIDProperty, base::Value("WifiTwo"));
   shill_service_client_test_->SetServiceProperty(
@@ -690,7 +691,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, DoesNotWipeCertSettings) {
   // Set up a policy-managed EAP wifi with a certificate already selected.
   shill_service_client_test_->AddService(
       kServiceWifi1, "DeviceLevelWifiGuidOrig", "DeviceLevelWifiSsid",
-      shill::kTypeWifi, shill::kStateOnline, true /* add_to_visible */);
+      shill::kTypeWifi, shill::kStateOnline, /*add_to_visible=*/true);
   shill_service_client_test_->SetServiceProperty(
       kServiceWifi1, shill::kSSIDProperty, base::Value("DeviceLevelWifiSsid"));
   shill_service_client_test_->SetServiceProperty(
@@ -766,6 +767,215 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, DoesNotWipeCertSettings) {
   ASSERT_THAT(eap_key_id_watcher.GetValues(), ElementsAre(orig_eap_key_id));
   EXPECT_THAT(eap_identity_watcher.GetValues(),
               ElementsAre("identity_1", "identity_2"));
+}
+
+// Configures a device-wide network that uses variable expansions
+// (https://chromium.googlesource.com/chromium/src/+/main/components/onc/docs/onc_spec.md#string-expansions)
+// and then tests that these variables are replaced with their values in the
+// config pushed to shill.
+IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
+                       DevicePolicyProfileWideVariableExpansions) {
+  const std::string kSerialNumber = "test_serial";
+  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  fake_statistics_provider_.SetMachineStatistic(
+      chromeos::system::kSerialNumberKeyForTest, kSerialNumber);
+
+  shill_service_client_test_->AddService(
+      kServiceWifi1, "DeviceLevelWifiGuidOrig", "DeviceLevelWifiSsid",
+      shill::kTypeWifi, shill::kStateOnline, /*add_to_visible=*/true);
+  shill_service_client_test_->SetServiceProperty(
+      kServiceWifi1, shill::kSSIDProperty, base::Value("DeviceLevelWifiSsid"));
+  shill_service_client_test_->SetServiceProperty(
+      kServiceWifi1, shill::kSecurityClassProperty,
+      base::Value(shill::kSecurity8021x));
+
+  const char kDeviceONC1[] = R"(
+    {
+      "NetworkConfigurations": [
+        {
+          "GUID": "{DeviceLevelWifiGuid}",
+          "Name": "DeviceLevelWifiName",
+          "Type": "WiFi",
+          "WiFi": {
+             "AutoConnect": false,
+             "EAP":  {
+              "Outer": "EAP-TLS",
+              "ClientCertType": "Pattern",
+              "Identity": "${DEVICE_SERIAL_NUMBER}",
+              "ClientCertPattern": {
+                "Issuer": {
+                  "Organization": "Example Inc."
+                }
+              }
+             },
+             "SSID": "DeviceLevelWifiSsid",
+             "Security": "WPA-EAP"
+          }
+        }
+      ]
+    })";
+  {
+    ScopedNetworkPolicyApplicationObserver network_policy_application_observer;
+    SetDeviceOpenNetworkConfiguration(kDeviceONC1);
+    network_policy_application_observer.WaitPoliciesApplied(
+        /*userhash=*/std::string());
+  }
+
+  {
+    const base::Value* wifi_service_properties =
+        shill_service_client_test_->GetServiceProperties(kServiceWifi1);
+    ASSERT_TRUE(wifi_service_properties);
+    EXPECT_THAT(*wifi_service_properties,
+                DictionaryHasValue(shill::kGuidProperty,
+                                   base::Value("{DeviceLevelWifiGuid}")));
+    // Expect that the EAP.Identity has been replaced
+    const std::string* eap_identity =
+        wifi_service_properties->FindStringKey(shill::kEapIdentityProperty);
+    ASSERT_TRUE(eap_identity);
+    EXPECT_EQ(*eap_identity, kSerialNumber);
+
+    // TODO(b/209084821): Also test DEVICE_ASSET_ID when it's easily
+    // configurable in a browsertest.
+  }
+}
+
+// Configures a network that uses variable expansions with variables based on a
+// client certificate selected using a CertificatePattern.
+// The network is device-wide because that is easier to set up in the test.
+IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
+                       DevicePolicyCertBasedVariableExpansions) {
+  const char* kCertKeyFilename = "client_3.pk8";
+  const char* kCertFilename = "client_3.pem";
+  const char* kCertIssuerCommonName = "E CA";
+  const char* kIdentityPolicyValue =
+      "${CERT_SUBJECT_COMMON_NAME}/${CERT_SAN_UPN}/${CERT_SAN_EMAIL}";
+  const char* kExpectedIdentity =
+      "Client Cert F/santest@ad.corp.example.com/santest@example.com";
+  ASSERT_NO_FATAL_FAILURE(ImportCert(net::GetTestCertsDirectory(),
+                                     kCertFilename, kCertKeyFilename));
+
+  shill_service_client_test_->AddService(
+      kServiceWifi1, "DeviceLevelWifiGuidOrig", "DeviceLevelWifiSsid",
+      shill::kTypeWifi, shill::kStateOnline, /*add_to_visible=*/true);
+  shill_service_client_test_->SetServiceProperty(
+      kServiceWifi1, shill::kSSIDProperty, base::Value("DeviceLevelWifiSsid"));
+  shill_service_client_test_->SetServiceProperty(
+      kServiceWifi1, shill::kSecurityClassProperty,
+      base::Value(shill::kSecurity8021x));
+
+  std::string kDeviceONC1 =
+      base::StringPrintf(R"(
+    {
+      "NetworkConfigurations": [
+        {
+          "GUID": "{DeviceLevelWifiGuid}",
+          "Name": "DeviceLevelWifiName",
+          "Type": "WiFi",
+          "WiFi": {
+             "AutoConnect": false,
+             "EAP":  {
+              "Outer": "EAP-TLS",
+              "ClientCertType": "Pattern",
+              "Identity": "%s",
+              "ClientCertPattern": {
+                "Issuer": {
+                  "CommonName": "%s"
+                }
+              }
+             },
+             "SSID": "DeviceLevelWifiSsid",
+             "Security": "WPA-EAP"
+          }
+        }
+      ]
+    })",
+                         kIdentityPolicyValue, kCertIssuerCommonName);
+  {
+    ScopedNetworkPolicyApplicationObserver network_policy_application_observer;
+    SetDeviceOpenNetworkConfiguration(kDeviceONC1);
+    network_policy_application_observer.WaitPoliciesApplied(
+        /*userhash=*/std::string());
+  }
+
+  {
+    const base::Value* wifi_service_properties =
+        shill_service_client_test_->GetServiceProperties(kServiceWifi1);
+    ASSERT_TRUE(wifi_service_properties);
+    EXPECT_THAT(*wifi_service_properties,
+                DictionaryHasValue(shill::kGuidProperty,
+                                   base::Value("{DeviceLevelWifiGuid}")));
+    // Expect that the EAP.Identity has been replaced
+    const std::string* eap_identity =
+        wifi_service_properties->FindStringKey(shill::kEapIdentityProperty);
+    ASSERT_TRUE(eap_identity);
+    EXPECT_EQ(*eap_identity, kExpectedIdentity);
+  }
+}
+
+// Configures a user-specific network that uses variable expansions
+// (https://chromium.googlesource.com/chromium/src/+/main/components/onc/docs/onc_spec.md#string-expansions)
+// and then tests that these variables are replaced with their values in the
+// config pushed to shill.
+IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
+                       UserPolicyProfileWideVariableExpansions) {
+  shill_service_client_test_->AddService(
+      kServiceWifi1, "UserLevelWifiGuidOrig", "UserLevelWifiSsid",
+      shill::kTypeWifi, shill::kStateOnline, /*add_to_visible=*/true);
+  shill_service_client_test_->SetServiceProperty(
+      kServiceWifi1, shill::kSSIDProperty, base::Value("UserLevelWifiSsid"));
+  shill_service_client_test_->SetServiceProperty(
+      kServiceWifi1, shill::kSecurityClassProperty,
+      base::Value(shill::kSecurity8021x));
+
+  std::string user_hash = ash::ProfileHelper::GetUserIdHashByUserIdForTesting(
+      test_account_id_.GetUserEmail());
+  LoginUser(test_account_id_);
+  shill_profile_client_test_->AddProfile(kUserProfilePath, user_hash);
+
+  const char kUserONC1[] = R"(
+    {
+      "NetworkConfigurations": [
+        {
+          "GUID": "{UserLevelWifiGuid}",
+          "Name": "UserLevelWifiName",
+          "Type": "WiFi",
+          "WiFi": {
+             "AutoConnect": false,
+             "EAP":  {
+              "Outer": "EAP-TLS",
+              "ClientCertType": "Pattern",
+              "Identity": "${LOGIN_EMAIL}",
+              "ClientCertPattern": {
+                "Issuer": {
+                  "Organization": "Example Inc."
+                }
+              }
+             },
+             "SSID": "UserLevelWifiSsid",
+             "Security": "WPA-EAP"
+          }
+        }
+      ]
+    })";
+  {
+    ScopedNetworkPolicyApplicationObserver network_policy_application_observer;
+    SetUserOpenNetworkConfiguration(kUserONC1);
+    network_policy_application_observer.WaitPoliciesApplied(user_hash);
+  }
+
+  {
+    const base::Value* wifi_service_properties =
+        shill_service_client_test_->GetServiceProperties(kServiceWifi1);
+    ASSERT_TRUE(wifi_service_properties);
+    EXPECT_THAT(*wifi_service_properties,
+                DictionaryHasValue(shill::kGuidProperty,
+                                   base::Value("{UserLevelWifiGuid}")));
+    // Expect that the EAP.Identity has been replaced
+    const std::string* eap_identity =
+        wifi_service_properties->FindStringKey(shill::kEapIdentityProperty);
+    ASSERT_TRUE(eap_identity);
+    EXPECT_EQ(*eap_identity, test_account_id_.GetUserEmail());
+  }
 }
 
 }  // namespace policy
