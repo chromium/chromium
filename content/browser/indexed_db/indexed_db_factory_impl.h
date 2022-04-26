@@ -38,11 +38,7 @@
 namespace base {
 class FilePath;
 class SequencedTaskRunner;
-}  // namespace base
-
-namespace storage {
-struct BucketLocator;
-}  // namespace storage
+}
 
 namespace content {
 class IndexedDBBucketState;
@@ -72,12 +68,12 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
                        const base::FilePath& data_directory) override;
   void Open(const std::u16string& name,
             std::unique_ptr<IndexedDBPendingConnection> connection,
-            const storage::BucketLocator& bucket_locator,
+            const blink::StorageKey& storage_key,
             const base::FilePath& data_directory) override;
 
   void DeleteDatabase(const std::u16string& name,
                       scoped_refptr<IndexedDBCallbacks> callbacks,
-                      const storage::BucketLocator& bucket_locator,
+                      const blink::StorageKey& storage_key,
                       const base::FilePath& data_directory,
                       bool force_close) override;
 

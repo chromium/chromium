@@ -24,10 +24,6 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
-namespace storage {
-struct BucketLocator;
-}  // namespace storage
-
 namespace content {
 
 class IndexedDBBackingStore;
@@ -46,12 +42,12 @@ class CONTENT_EXPORT IndexedDBFactory {
                                const base::FilePath& data_directory) = 0;
   virtual void Open(const std::u16string& name,
                     std::unique_ptr<IndexedDBPendingConnection> connection,
-                    const storage::BucketLocator& bucket_locator,
+                    const blink::StorageKey& storage_key,
                     const base::FilePath& data_directory) = 0;
 
   virtual void DeleteDatabase(const std::u16string& name,
                               scoped_refptr<IndexedDBCallbacks> callbacks,
-                              const storage::BucketLocator& bucket_locator,
+                              const blink::StorageKey& storage_key,
                               const base::FilePath& data_directory,
                               bool force_close) = 0;
 

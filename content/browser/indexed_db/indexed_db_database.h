@@ -34,6 +34,7 @@
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 
 namespace blink {
@@ -56,8 +57,8 @@ struct IndexedDBValue;
 
 class CONTENT_EXPORT IndexedDBDatabase {
  public:
-  // Identifier is pair of (bucket_locator, database name).
-  using Identifier = std::pair<storage::BucketLocator, std::u16string>;
+  // Identifier is pair of (storage_key, database name).
+  using Identifier = std::pair<blink::StorageKey, std::u16string>;
   // Used to report irrecoverable backend errors. The second argument can be
   // null.
   using ErrorCallback =
@@ -76,9 +77,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
 
   int64_t id() const { return metadata_.id; }
   const std::u16string& name() const { return metadata_.name; }
-  const storage::BucketLocator& bucket_locator() const {
-    return identifier_.first;
-  }
+  const blink::StorageKey& storage_key() const { return identifier_.first; }
   const blink::IndexedDBDatabaseMetadata& metadata() const { return metadata_; }
 
   LeveledLockManager* transaction_lock_manager() { return lock_manager_; }

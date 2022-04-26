@@ -144,7 +144,7 @@ class IndexedDBFactoryTest : public testing::Test {
   // is no actual data in the database.
   std::tuple<std::unique_ptr<IndexedDBConnection>,
              scoped_refptr<MockIndexedDBDatabaseCallbacks>>
-  CreateConnectionForDatatabase(const storage::BucketLocator& bucket_locator,
+  CreateConnectionForDatatabase(const blink::StorageKey& storage_key,
                                 const std::u16string& name) {
     auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>();
     auto db_callbacks = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
@@ -161,7 +161,7 @@ class IndexedDBFactoryTest : public testing::Test {
       base::RunLoop loop;
       callbacks->CallOnUpgradeNeeded(
           base::BindLambdaForTesting([&]() { loop.Quit(); }));
-      factory()->Open(name, std::move(connection), bucket_locator,
+      factory()->Open(name, std::move(connection), storage_key,
                       context()->data_path());
       loop.Run();
     }
@@ -564,8 +564,6 @@ TEST_F(IndexedDBFactoryTest, ContextDestructionClosesConnections) {
   SetupContext();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = storage_key;
 
   auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>();
   auto db_callbacks = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
@@ -577,7 +575,7 @@ TEST_F(IndexedDBFactoryTest, ContextDestructionClosesConnections) {
       callbacks, db_callbacks,
       transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback));
-  factory()->Open(u"db", std::move(connection), bucket_locator,
+  factory()->Open(u"db", std::move(connection), storage_key,
                   context()->data_path());
   RunPostedTasks();
 
@@ -630,8 +628,6 @@ TEST_F(IndexedDBFactoryTest, ConnectionForceClose) {
   SetupContext();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = storage_key;
 
   auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>();
   auto db_callbacks = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
@@ -643,7 +639,7 @@ TEST_F(IndexedDBFactoryTest, ConnectionForceClose) {
       callbacks, db_callbacks,
       transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback));
-  factory()->Open(u"db", std::move(connection), bucket_locator,
+  factory()->Open(u"db", std::move(connection), storage_key,
                   context()->data_path());
   EXPECT_FALSE(callbacks->connection());
   RunPostedTasks();
@@ -664,8 +660,6 @@ TEST_F(IndexedDBFactoryTest, DatabaseForceCloseDuringUpgrade) {
   SetupContext();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = storage_key;
 
   auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>();
   auto db_callbacks = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
@@ -683,7 +677,7 @@ TEST_F(IndexedDBFactoryTest, DatabaseForceCloseDuringUpgrade) {
     base::RunLoop loop;
     callbacks->CallOnUpgradeNeeded(
         base::BindLambdaForTesting([&]() { loop.Quit(); }));
-    factory()->Open(u"db", std::move(connection), bucket_locator,
+    factory()->Open(u"db", std::move(connection), storage_key,
                     context()->data_path());
     loop.Run();
   }
@@ -704,8 +698,6 @@ TEST_F(IndexedDBFactoryTest, ConnectionCloseDuringUpgrade) {
   SetupContext();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = storage_key;
 
   auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>();
   auto db_callbacks = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
@@ -723,7 +715,7 @@ TEST_F(IndexedDBFactoryTest, ConnectionCloseDuringUpgrade) {
     base::RunLoop loop;
     callbacks->CallOnUpgradeNeeded(
         base::BindLambdaForTesting([&]() { loop.Quit(); }));
-    factory()->Open(u"db", std::move(connection), bucket_locator,
+    factory()->Open(u"db", std::move(connection), storage_key,
                     context()->data_path());
     loop.Run();
   }
@@ -744,13 +736,11 @@ TEST_F(IndexedDBFactoryTest, DatabaseForceCloseWithFullConnection) {
   SetupContext();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = storage_key;
 
   std::unique_ptr<IndexedDBConnection> connection;
   scoped_refptr<MockIndexedDBDatabaseCallbacks> db_callbacks;
   std::tie(connection, db_callbacks) =
-      CreateConnectionForDatatabase(bucket_locator, u"db");
+      CreateConnectionForDatatabase(storage_key, u"db");
 
   // Force close the database.
   connection->database()->ForceCloseAndRunTasks();
@@ -769,10 +759,8 @@ TEST_F(IndexedDBFactoryTest, DeleteDatabase) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = storage_key;
 
-  factory()->DeleteDatabase(u"db", callbacks, bucket_locator,
+  factory()->DeleteDatabase(u"db", callbacks, storage_key,
                             context()->data_path(),
                             /*force_close=*/false);
 
@@ -786,14 +774,12 @@ TEST_F(IndexedDBFactoryTest, DeleteDatabaseWithForceClose) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = storage_key;
   const std::u16string name = u"db";
 
   std::unique_ptr<IndexedDBConnection> connection;
   scoped_refptr<MockIndexedDBDatabaseCallbacks> db_callbacks;
   std::tie(connection, db_callbacks) =
-      CreateConnectionForDatatabase(bucket_locator, name);
+      CreateConnectionForDatatabase(storage_key, name);
 
   base::RunLoop run_loop;
   factory()->CallOnDatabaseDeletedForTesting(base::BindLambdaForTesting(
@@ -805,7 +791,7 @@ TEST_F(IndexedDBFactoryTest, DeleteDatabaseWithForceClose) {
   auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>(
       /*expect_connection=*/false);
 
-  factory()->DeleteDatabase(name, callbacks, bucket_locator,
+  factory()->DeleteDatabase(name, callbacks, storage_key,
                             context()->data_path(),
                             /*force_close=*/true);
 
@@ -900,8 +886,6 @@ TEST_F(IndexedDBFactoryTest, QuotaErrorOnDiskFull) {
           nullptr, mojo::NullAssociatedRemote(), context()->IDBTaskRunner());
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = storage_key;
   const std::u16string name(u"name");
   auto create_transaction_callback =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
@@ -909,7 +893,7 @@ TEST_F(IndexedDBFactoryTest, QuotaErrorOnDiskFull) {
       callbacks, dummy_database_callbacks,
       /*transaction_id=*/1, /*version=*/1,
       std::move(create_transaction_callback));
-  factory()->Open(name, std::move(connection), bucket_locator,
+  factory()->Open(name, std::move(connection), storage_key,
                   context()->data_path());
   EXPECT_TRUE(callbacks->error_called());
   base::RunLoop().RunUntilIdle();
@@ -959,8 +943,6 @@ TEST_F(IndexedDBFactoryTest, DatabaseFailedOpen) {
   SetupContext();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = storage_key;
   const std::u16string db_name(u"db");
   const int64_t transaction_id = 1;
 
@@ -982,7 +964,7 @@ TEST_F(IndexedDBFactoryTest, DatabaseFailedOpen) {
       base::RunLoop loop;
       callbacks->CallOnUpgradeNeeded(
           base::BindLambdaForTesting([&]() { loop.Quit(); }));
-      factory()->Open(db_name, std::move(connection), bucket_locator,
+      factory()->Open(db_name, std::move(connection), storage_key,
                       context()->data_path());
       loop.Run();
     }
@@ -1013,7 +995,7 @@ TEST_F(IndexedDBFactoryTest, DatabaseFailedOpen) {
     auto connection = std::make_unique<IndexedDBPendingConnection>(
         failed_open_callbacks, db_callbacks2,
         transaction_id, db_version, std::move(create_transaction_callback));
-    factory()->Open(db_name, std::move(connection), bucket_locator,
+    factory()->Open(db_name, std::move(connection), storage_key,
                     context()->data_path());
     EXPECT_TRUE(factory()->IsDatabaseOpen(storage_key, db_name));
     RunPostedTasks();
@@ -1047,7 +1029,7 @@ class DataLossCallbacks final : public MockIndexedDBCallbacks {
 
 TEST_F(IndexedDBFactoryTest, DataFormatVersion) {
   SetupContext();
-  auto try_open = [this](const storage::BucketLocator& bucket_locator,
+  auto try_open = [this](const blink::StorageKey& storage_key,
                          const IndexedDBDataFormatVersion& version) {
     base::AutoReset<IndexedDBDataFormatVersion> override_version(
         &IndexedDBDataFormatVersion::GetMutableCurrentForTesting(), version);
@@ -1075,7 +1057,7 @@ TEST_F(IndexedDBFactoryTest, DataFormatVersion) {
           base::BindLambdaForTesting([&]() { loop.Quit(); }));
 
       this->factory()->Open(u"test_db", std::move(pending_connection),
-                            bucket_locator, context()->data_path());
+                            storage_key, context()->data_path());
       loop.Run();
 
       // If an upgrade was requested, then commit the upgrade transaction.
@@ -1096,7 +1078,7 @@ TEST_F(IndexedDBFactoryTest, DataFormatVersion) {
       }
     }
     RunPostedTasks();
-    factory()->ForceClose(bucket_locator.storage_key, false);
+    factory()->ForceClose(storage_key, false);
     RunPostedTasks();
     return callbacks->data_loss();
   };
@@ -1114,12 +1096,10 @@ TEST_F(IndexedDBFactoryTest, DataFormatVersion) {
     SCOPED_TRACE(test.origin);
     const blink::StorageKey storage_key =
         blink::StorageKey::CreateFromStringForTesting(test.origin);
-    auto bucket_locator = storage::BucketLocator();
-    bucket_locator.storage_key = storage_key;
     ASSERT_EQ(blink::mojom::IDBDataLoss::None,
-              try_open(bucket_locator, test.open_version_1));
+              try_open(storage_key, test.open_version_1));
     EXPECT_EQ(test.expected_data_loss,
-              try_open(bucket_locator, test.open_version_2));
+              try_open(storage_key, test.open_version_2));
   }
 }
 

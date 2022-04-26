@@ -266,7 +266,7 @@ TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnDelete) {
                 std::make_unique<IndexedDBPendingConnection>(
                     open_callbacks, open_db_callbacks, host_transaction_id,
                     version, std::move(create_transaction_callback1)),
-                bucket_locator, context()->data_path());
+                kTestStorageKey, context()->data_path());
   EXPECT_TRUE(base::DirectoryExists(test_path));
 
   auto create_transaction_callback2 =
@@ -275,7 +275,7 @@ TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnDelete) {
                 std::make_unique<IndexedDBPendingConnection>(
                     closed_callbacks, closed_db_callbacks, host_transaction_id,
                     version, std::move(create_transaction_callback2)),
-                bucket_locator, context()->data_path());
+                kTestStorageKey, context()->data_path());
   RunPostedTasks();
   ASSERT_TRUE(closed_callbacks->connection());
   closed_callbacks->connection()->AbortTransactionsAndClose(
@@ -325,8 +325,6 @@ TEST_F(IndexedDBTest, DeleteFailsIfDirectoryLocked) {
 TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailure) {
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("http://test/");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = kTestStorageKey;
 
   auto* factory =
       static_cast<IndexedDBFactoryImpl*>(context()->GetIDBFactory());
@@ -341,7 +339,7 @@ TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailure) {
       callbacks, db_callbacks,
       transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback1));
-  factory->Open(u"db", std::move(connection), bucket_locator,
+  factory->Open(u"db", std::move(connection), kTestStorageKey,
                 context()->data_path());
   RunPostedTasks();
 
