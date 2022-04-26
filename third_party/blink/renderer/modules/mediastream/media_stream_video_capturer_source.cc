@@ -12,6 +12,7 @@
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
 #include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -178,12 +179,23 @@ void MediaStreamVideoCapturerSource::ChangeSourceImpl(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(device_capturer_factory_callback_);
 
-  if (state_ != kStarted) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAllowSourceSwitchOnPausedVideoMediaStream) &&
+      state_ != kStarted) {
     return;
   }
 
-  state_ = kStoppingForChangeSource;
-  source_->StopCapture();
+  if (state_ != kStarted && state_ != kStoppedForRestart) {
+    return;
+  }
+
+  if (state_ == kStarted) {
+    state_ = kStoppingForChangeSource;
+    source_->StopCapture();
+  } else {
+    DCHECK_EQ(state_, kStoppedForRestart);
+    state_ = kRestartingAfterSourceChange;
+  }
   SetDevice(new_device);
   source_ = device_capturer_factory_callback_.Run(new_device.session_id());
   source_->StartCapture(
@@ -245,7 +257,7 @@ void MediaStreamVideoCapturerSource::OnRunStateChanged(
     case kStoppingForRestart:
       source_->OnLog(
           "MediaStreamVideoCapturerSource sending OnStopForRestartDone");
-      state_ = is_running ? kStarted : kStopped;
+      state_ = is_running ? kStarted : kStoppedForRestart;
       OnStopForRestartDone(!is_running);
       break;
     case kStoppingForChangeSource:
@@ -256,12 +268,23 @@ void MediaStreamVideoCapturerSource::OnRunStateChanged(
         state_ = kStarted;
         capture_params_ = new_capture_params;
       } else {
-        state_ = kStopped;
+        state_ = kStoppedForRestart;
       }
       source_->OnLog("MediaStreamVideoCapturerSource sending OnRestartDone");
       OnRestartDone(is_running);
       break;
+    case kRestartingAfterSourceChange:
+      if (is_running) {
+        state_ = kStarted;
+        capture_params_ = new_capture_params;
+      } else {
+        state_ = kStoppedForRestart;
+      }
+      source_->OnLog("MediaStreamVideoCapturerSource sending OnRestartDone");
+      OnRestartBySourceSwitchDone(is_running);
+      break;
     case kStopped:
+    case kStoppedForRestart:
       break;
   }
 }

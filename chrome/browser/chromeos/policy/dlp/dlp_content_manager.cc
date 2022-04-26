@@ -262,6 +262,8 @@ void DlpContentManager::ScreenShareInfo::Resume() {
   DCHECK_EQ(state_, State::kPaused);
   // In case of a tab share try to update the source to the current WebContents
   // frame id in case it was navigated to a different page with another frame.
+  // Switching to a new source will resume the share so we don't need to do it
+  // here explicitly.
   if (media_id_.type == content::DesktopMediaID::TYPE_WEB_CONTENTS &&
       web_contents_ && source_callback_) {
     content::RenderFrameHost* main_frame = web_contents_->GetMainFrame();
@@ -271,9 +273,10 @@ void DlpContentManager::ScreenShareInfo::Resume() {
         content::DesktopMediaID::kNullId,
         content::WebContentsMediaCaptureId(main_frame->GetProcess()->GetID(),
                                            main_frame->GetRoutingID())));
+  } else {
+    state_change_callback_.Run(media_id_,
+                               blink::mojom::MediaStreamStateChange::PLAY);
   }
-  state_change_callback_.Run(media_id_,
-                             blink::mojom::MediaStreamStateChange::PLAY);
   state_ = State::kRunning;
 }
 

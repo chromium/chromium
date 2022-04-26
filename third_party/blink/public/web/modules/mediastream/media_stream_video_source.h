@@ -280,6 +280,12 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // and false if the source is stopped.
   void OnRestartDone(bool did_restart);
 
+  // This method should be called by implementations after an attempt to switch
+  // the device of this source (e.g., via ChangeSource()) if the source
+  // is in state STOPPED_FOR_RESTART. |did_restart| must be true if the
+  // source is running and false if the source is stopped.
+  void OnRestartBySourceSwitchDone(bool did_restart);
+
   // An implementation must immediately stop producing video frames after this
   // method has been called. After this method has been called,
   // MediaStreamVideoSource may be deleted.

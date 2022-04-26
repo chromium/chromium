@@ -18,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/token.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_video_device.h"
@@ -301,10 +302,25 @@ void MediaStreamVideoSource::OnRestartDone(bool did_restart) {
     state_ = STOPPED_FOR_RESTART;
   }
 
+  DCHECK(restart_callback_);
   RestartResult result =
       did_restart ? RestartResult::IS_RUNNING : RestartResult::IS_STOPPED;
   GetTaskRunner()->PostTask(FROM_HERE,
                             WTF::Bind(std::move(restart_callback_), result));
+}
+
+void MediaStreamVideoSource::OnRestartBySourceSwitchDone(bool did_restart) {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  DCHECK(base::FeatureList::IsEnabled(
+      features::kAllowSourceSwitchOnPausedVideoMediaStream));
+  if (state_ == ENDED)
+    return;
+  DCHECK_EQ(state_, STOPPED_FOR_RESTART);
+  if (did_restart) {
+    state_ = STARTED;
+    StartFrameMonitoring();
+    FinalizeAddPendingTracks(mojom::blink::MediaStreamRequestResult::OK);
+  }
 }
 
 void MediaStreamVideoSource::UpdateHasConsumers(MediaStreamVideoTrack* track,
@@ -383,7 +399,12 @@ void MediaStreamVideoSource::DoChangeSource(
   DVLOG(1) << "MediaStreamVideoSource::DoChangeSource: "
            << ", new device id = " << new_device.id
            << ", session id = " << new_device.session_id();
-  if (state_ != STARTED) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAllowSourceSwitchOnPausedVideoMediaStream) &&
+      state_ != STARTED) {
+    return;
+  }
+  if (state_ != STARTED && state_ != STOPPED_FOR_RESTART) {
     return;
   }
 

@@ -1453,5 +1453,9 @@ const base::FeatureParam<base::TimeDelta> kRecentBeginMainFrameCutoff = {
 const base::Feature kDecodeScriptSourceOffThread{
     "DecodeScriptSourceOffThread", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kAllowSourceSwitchOnPausedVideoMediaStream{
+    "AllowSourceSwitchOnPausedVideoMediaStream",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

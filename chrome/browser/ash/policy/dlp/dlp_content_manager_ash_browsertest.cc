@@ -1562,8 +1562,12 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
 
   // Start sharing unrestricted content.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), unrestricted_url));
+  // Although the share should be paused and resumed, DLP will only call
+  // state_change_cb_ once to pause it. When it's supposed to be resumed, it
+  // will call source_cb which also resumes the share after a successful source
+  // change.
   StartTabScreenShare(web_contents, blink::mojom::MediaStreamRequestResult::OK,
-                      /*state_change_times=*/2);
+                      /*state_change_times=*/1);
 
   // Navigate to reported content. Should emit a report event.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), reported_url));

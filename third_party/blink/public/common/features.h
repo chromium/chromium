@@ -739,6 +739,14 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // thread.
 BLINK_COMMON_EXPORT extern const base::Feature kDecodeScriptSourceOffThread;
 
+// If enabled, allows MediaStreamVideoSource objects to be restarted by a
+// successful source switch. Normally, switching the source would only allowed
+// on streams that are in started state. However, changing the source also first
+// stops the stream before performing the switch and sometimes it can be useful
+// to do a change directly on a paused stream.
+BLINK_COMMON_EXPORT extern const base::Feature
+    kAllowSourceSwitchOnPausedVideoMediaStream;
+
 }  // namespace features
 }  // namespace blink
 

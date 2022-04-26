@@ -113,7 +113,9 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
     kStarted,
     kStoppingForRestart,
     kStoppingForChangeSource,
+    kStoppedForRestart,
     kRestarting,
+    kRestartingAfterSourceChange,
     kStopped
   };
   State state_ = kStopped;
