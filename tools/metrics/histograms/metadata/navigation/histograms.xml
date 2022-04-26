@@ -1499,7 +1499,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 
 <histogram
     name="Prerender.Experimental.PrerenderCancelledInterface{PrerenderTriggerType}"
-    enum="PrerenderCancelledInterface" expires_after="2022-06-05">
+    enum="PrerenderCancelledInterface" expires_after="2022-12-05">
   <owner>nhiroki@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
   <owner>lingqi@chromium.org</owner>
@@ -1513,7 +1513,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 
 <histogram
     name="Prerender.Experimental.PrerenderCancelledUnknownInterface{PrerenderTriggerType}"
-    enum="PrerenderCancelledUnknownInterface" expires_after="2022-06-05">
+    enum="PrerenderCancelledUnknownInterface" expires_after="2022-12-05">
   <owner>nhiroki@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
   <owner>lingqi@chromium.org</owner>
@@ -1562,7 +1562,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 
 <histogram
     name="Prerender.Experimental.PrerenderHostFinalStatus{PrerenderTriggerType}"
-    enum="PrerenderHostFinalStatus" expires_after="2022-06-05">
+    enum="PrerenderHostFinalStatus" expires_after="2022-12-05">
   <owner>nhiroki@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
   <owner>lingqi@chromium.org</owner>
