@@ -278,7 +278,7 @@ void CloudPolicyClient::RegisterWithCertificate(
     const std::string& client_id,
     const std::string& pem_certificate_chain,
     const std::string& sub_organization,
-    SigningService* signing_service) {
+    std::unique_ptr<SigningService> signing_service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(signing_service);
   DCHECK(service_);
@@ -299,10 +299,12 @@ void CloudPolicyClient::RegisterWithCertificate(
     configuration->set_device_owner(sub_organization);
   }
 
-  signing_service->SignData(
+  SigningService* signing_service_ptr = signing_service.get();
+  signing_service_ptr->SignData(
       data.SerializeAsString(),
       base::BindOnce(&CloudPolicyClient::OnRegisterWithCertificateRequestSigned,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(signing_service)));
 }
 
 void CloudPolicyClient::RegisterWithToken(
@@ -333,8 +335,11 @@ void CloudPolicyClient::RegisterWithToken(
 }
 
 void CloudPolicyClient::OnRegisterWithCertificateRequestSigned(
+    std::unique_ptr<SigningService> signing_service,
     bool success,
     em::SignedData signed_data) {
+  signing_service.reset();
+
   if (!success) {
     const em::DeviceManagementResponse response;
     OnRegisterCompleted(nullptr, DM_STATUS_CANNOT_SIGN_REQUEST, 0, response);

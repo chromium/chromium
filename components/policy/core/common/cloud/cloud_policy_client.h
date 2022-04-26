@@ -235,11 +235,12 @@ class POLICY_EXPORT CloudPolicyClient {
   // |OnRegistrationStateChanged| or |OnClientError|.
   // TODO(crbug.com/1236148): Remove SigningService from CloudPolicyClient and
   // make callees sign their data themselves.
-  virtual void RegisterWithCertificate(const RegistrationParameters& parameters,
-                                       const std::string& client_id,
-                                       const std::string& pem_certificate_chain,
-                                       const std::string& sub_organization,
-                                       SigningService* signing_service);
+  virtual void RegisterWithCertificate(
+      const RegistrationParameters& parameters,
+      const std::string& client_id,
+      const std::string& pem_certificate_chain,
+      const std::string& sub_organization,
+      std::unique_ptr<SigningService> signing_service);
 
   // Attempts to enroll with the device management service using an enrollment
   // token. Results in a registration change or error notification.
@@ -646,6 +647,7 @@ class POLICY_EXPORT CloudPolicyClient {
 
   // This is called when a RegisterWithCertiifcate request has been signed.
   void OnRegisterWithCertificateRequestSigned(
+      std::unique_ptr<SigningService> signing_service,
       bool success,
       enterprise_management::SignedData signed_data);
 

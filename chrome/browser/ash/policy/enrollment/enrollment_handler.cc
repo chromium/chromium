@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/policy/core/dm_token_storage.h"
 #include "chrome/browser/ash/policy/dev_mode/dev_mode_policy_util.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
+#include "chrome/browser/ash/policy/enrollment/tpm_enrollment_key_signing_service.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/enrollment_status.h"
@@ -38,7 +39,6 @@
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
-#include "components/policy/core/common/cloud/signing_service.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
@@ -68,6 +68,14 @@ enum class EnrollmentAttestationBasedCertificateStatus {
   kUnknown = 2,
 
   kMaxValue = kUnknown,  // Must be the last.
+};
+
+class TpmEnrollmentKeySigningServiceProvider final
+    : public EnrollmentHandler::SigningServiceProvider {
+ public:
+  std::unique_ptr<SigningService> CreateSigningService() const override {
+    return std::make_unique<TpmEnrollmentKeySigningService>();
+  }
 };
 
 // UMAs for status of the first fetched enrollment certificate for registration
@@ -234,7 +242,6 @@ EnrollmentHandler::EnrollmentHandler(
     ash::InstallAttributes* install_attributes,
     ServerBackedStateKeysBroker* state_keys_broker,
     ash::attestation::AttestationFlow* attestation_flow,
-    std::unique_ptr<SigningService> signing_service,
     std::unique_ptr<CloudPolicyClient> client,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     ActiveDirectoryJoinDelegate* ad_join_delegate,
@@ -249,7 +256,8 @@ EnrollmentHandler::EnrollmentHandler(
       install_attributes_(install_attributes),
       state_keys_broker_(state_keys_broker),
       attestation_flow_(attestation_flow),
-      signing_service_(std::move(signing_service)),
+      signing_service_provider_(
+          std::make_unique<TpmEnrollmentKeySigningServiceProvider>()),
       client_(std::move(client)),
       background_task_runner_(background_task_runner),
       ad_join_delegate_(ad_join_delegate),
@@ -300,6 +308,11 @@ EnrollmentHandler::EnrollmentHandler(
 EnrollmentHandler::~EnrollmentHandler() {
   Stop();
   store_->RemoveObserver(this);
+}
+
+void EnrollmentHandler::SetSigningServiceProviderForTesting(
+    std::unique_ptr<SigningServiceProvider> signing_service_provider) {
+  signing_service_provider_ = std::move(signing_service_provider);
 }
 
 void EnrollmentHandler::StartEnrollment() {
@@ -578,9 +591,9 @@ void EnrollmentHandler::HandleRegistrationCertificateResult(
       break;
   }
 
-  client_->RegisterWithCertificate(*register_params_, client_id_,
-                                   pem_certificate_chain, sub_organization_,
-                                   signing_service_.get());
+  client_->RegisterWithCertificate(
+      *register_params_, client_id_, pem_certificate_chain, sub_organization_,
+      signing_service_provider_->CreateSigningService());
 }
 
 void EnrollmentHandler::StartOfflineDemoEnrollmentFlow() {

@@ -121,6 +121,21 @@ void CertCallbackSuccessWithExpiredCertificate(
   CertCallbackSuccess(std::move(callback), std::move(certificate));
 }
 
+class FakeSigningServiceProvider final
+    : public EnrollmentHandler::SigningServiceProvider {
+ public:
+  explicit FakeSigningServiceProvider(bool success) : success_(success) {}
+
+  std::unique_ptr<SigningService> CreateSigningService() const override {
+    auto service = std::make_unique<FakeSigningService>();
+    service->set_success(success_);
+    return service;
+  }
+
+ private:
+  bool success_;
+};
+
 class TestingDeviceCloudPolicyManagerAsh : public DeviceCloudPolicyManagerAsh {
  public:
   TestingDeviceCloudPolicyManagerAsh(
@@ -674,7 +689,6 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
     DMAuth auth =
         with_cert ? DMAuth::NoAuth() : DMAuth::FromOAuthToken("auth token");
 
-    auto fake_signing_service = std::make_unique<FakeSigningService>();
     auto client = CreateDeviceCloudPolicyClientAsh(
         &fake_statistics_provider_, &device_management_service_,
         test_url_loader_factory_.GetSafeWeakWrapper(),
@@ -682,8 +696,8 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
 
     enrollment_handler_ = std::make_unique<EnrollmentHandler>(
         store_, install_attributes_.get(), &state_keys_broker_,
-        &mock_attestation_flow_, std::move(fake_signing_service),
-        std::move(client), base::ThreadTaskRunnerHandle::Get(),
+        &mock_attestation_flow_, std::move(client),
+        base::ThreadTaskRunnerHandle::Get(),
         /*ad_join_delegate=*/nullptr, enrollment_config,
         policy::LicenseType::kEnterprise, std::move(auth),
         install_attributes_->GetDeviceId(),
@@ -692,6 +706,8 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
 
         base::BindOnce(&DeviceCloudPolicyManagerAshEnrollmentTest::Done,
                        base::Unretained(this)));
+    enrollment_handler_->SetSigningServiceProviderForTesting(
+        std::make_unique<FakeSigningServiceProvider>(/*success=*/true));
     enrollment_handler_->StartEnrollment();
     base::RunLoop().RunUntilIdle();
     Mock::VerifyAndClearExpectations(&device_management_service_);

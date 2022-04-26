@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/policy/core/policy_oauth2_token_fetcher.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_handler.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
-#include "chrome/browser/ash/policy/enrollment/tpm_enrollment_key_signing_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -206,8 +205,6 @@ void EnterpriseEnrollmentHelperImpl::DoEnroll(policy::DMAuth auth_data) {
   // attestation flow for testing.
   attestation::AttestationFlow* attestation_flow =
       connector->GetAttestationFlow();
-  auto signing_service =
-      std::make_unique<policy::TpmEnrollmentKeySigningService>();
   // DeviceDMToken callback is empty here because for device policies this
   // DMToken is already provided in the policy fetch requests.
   auto client = policy::CreateDeviceCloudPolicyClientAsh(
@@ -218,8 +215,7 @@ void EnterpriseEnrollmentHelperImpl::DoEnroll(policy::DMAuth auth_data) {
 
   enrollment_handler_ = std::make_unique<policy::EnrollmentHandler>(
       policy_manager->device_store(), InstallAttributes::Get(),
-      connector->GetStateKeysBroker(), attestation_flow,
-      std::move(signing_service), std::move(client),
+      connector->GetStateKeysBroker(), attestation_flow, std::move(client),
       policy::BrowserPolicyConnectorAsh::CreateBackgroundTaskRunner(),
       ad_join_delegate_, enrollment_config_, license_type_, auth_data_.Clone(),
       InstallAttributes::Get()->GetDeviceId(),
