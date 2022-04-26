@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_lacros.h"
 
-#include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host_linux.h"
+#include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host_lacros.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/native_browser_frame_factory.h"

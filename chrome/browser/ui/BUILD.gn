@@ -3924,7 +3924,7 @@ static_library("ui") {
       deps += [ "//ui/gfx/x" ]
     }
 
-    if (is_linux || is_chromeos_lacros) {
+    if (is_linux) {
       sources += [
         "views/frame/browser_desktop_window_tree_host_linux.cc",
         "views/frame/browser_desktop_window_tree_host_linux.h",

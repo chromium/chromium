@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_DESKTOP_WINDOW_TREE_HOST_LINUX_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host.h"
 #include "ui/views/linux_ui/device_scale_factor_observer.h"
 #include "ui/views/linux_ui/linux_ui.h"
@@ -19,7 +18,6 @@
 class BrowserFrame;
 class BrowserView;
 class DesktopBrowserFrameAuraLinux;
-class DesktopBrowserFrameLacros;
 enum class TabDragKind;
 
 namespace views {
@@ -90,17 +88,7 @@ class BrowserDesktopWindowTreeHostLinux
 
   BrowserView* browser_view_ = nullptr;
   BrowserFrame* browser_frame_ = nullptr;
-
-// TODO(crbug.com/1221374): Separate Lacros specific code into
-// browser_desktop_window_tree_host_lacros.cc.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  using DesktopBrowserFrameAuraPlatform = DesktopBrowserFrameLacros;
-#elif BUILDFLAG(IS_LINUX)
-  using DesktopBrowserFrameAuraPlatform = DesktopBrowserFrameAuraLinux;
-#else
-#error Unknown platform
-#endif
-  DesktopBrowserFrameAuraPlatform* native_frame_ = nullptr;
+  DesktopBrowserFrameAuraLinux* native_frame_ = nullptr;
 
 #if defined(USE_DBUS_MENU)
   // Each browser frame maintains its own menu bar object because the lower
