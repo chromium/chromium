@@ -7,6 +7,7 @@ import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
 
 polymer_element_files = [
+  "consumer_auto_update_toggle_dialog.js",
   "channel_switcher_dialog.js",
   "detailed_build_info.js",
   "edit_hostname_dialog.js",
@@ -20,6 +21,7 @@ js_type_check("closure_compile_module") {
   deps = [
     ":about_page_browser_proxy",
     ":channel_switcher_dialog",
+    ":consumer_auto_update_toggle_dialog",
     ":detailed_build_info",
     ":device_name_browser_proxy",
     ":device_name_util",
@@ -42,14 +44,22 @@ js_library("channel_switcher_dialog") {
   ]
 }
 
+js_library("consumer_auto_update_toggle_dialog") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 js_library("detailed_build_info") {
   deps = [
     ":about_page_browser_proxy",
     ":channel_switcher_dialog",
+    ":consumer_auto_update_toggle_dialog",
     ":device_name_util",
     ":edit_hostname_dialog",
     "..:deep_linking_behavior",
     "..:os_route",
+    "..:prefs_behavior",
     "..:route_observer_behavior",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

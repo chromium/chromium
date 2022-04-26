@@ -22,6 +22,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_member.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -172,10 +174,21 @@ class PreferencesTest : public testing::Test {
     current_input_method_.Init(
         prefs::kLanguageCurrentInputMethod, pref_service_);
     current_input_method_.SetValue("KeyboardB");
+    consumer_auto_update_toggle_.Init(::prefs::kConsumerAutoUpdateToggle,
+                                      g_browser_process->local_state());
+    consumer_auto_update_toggle_.SetValue(true);
 
     mock_manager_ = new input_method::MyMockInputMethodManager(
         &previous_input_method_, &current_input_method_);
     input_method::InitializeForTesting(mock_manager_);
+
+    if (!chromeos::DBusThreadManager::IsInitialized()) {
+      chromeos::DBusThreadManager::Initialize();
+    }
+    fake_update_engine_client_ = new chromeos::FakeUpdateEngineClient();
+    chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
+        std::unique_ptr<chromeos::UpdateEngineClient>(
+            fake_update_engine_client_));
 
     prefs_ = std::make_unique<Preferences>(mock_manager_);
   }
@@ -200,12 +213,14 @@ class PreferencesTest : public testing::Test {
   std::unique_ptr<Preferences> prefs_;
   StringPrefMember previous_input_method_;
   StringPrefMember current_input_method_;
+  BooleanPrefMember consumer_auto_update_toggle_;
 
   // Not owned.
   const user_manager::User* test_user_;
   TestingProfile* test_profile_;
   sync_preferences::TestingPrefServiceSyncable* pref_service_;
   input_method::MyMockInputMethodManager* mock_manager_;
+  chromeos::FakeUpdateEngineClient* fake_update_engine_client_;
 };
 
 TEST_F(PreferencesTest, TestUpdatePrefOnBrowserScreenDetails) {
@@ -215,6 +230,28 @@ TEST_F(PreferencesTest, TestUpdatePrefOnBrowserScreenDetails) {
   EXPECT_EQ("KeyboardA", previous_input_method_.GetValue());
   EXPECT_EQ("KeyboardB", current_input_method_.GetValue());
   EXPECT_EQ("KeyboardB", mock_manager_->last_input_method_id_);
+}
+
+TEST_F(PreferencesTest, TestConsumerAutoUpdateToggleOnSignals) {
+  InitPreferences();
+
+  auto CreateCAUFeatureStatus = [](bool enabled) {
+    update_engine::StatusResult status;
+    auto* feature = status.add_features();
+    feature->set_name(update_engine::kFeatureConsumerAutoUpdate);
+    feature->set_enabled(enabled);
+    return status;
+  };
+
+  consumer_auto_update_toggle_.SetValue(true);
+
+  fake_update_engine_client_->NotifyObserversThatStatusChanged(
+      CreateCAUFeatureStatus(false));
+  EXPECT_FALSE(consumer_auto_update_toggle_.GetValue());
+
+  fake_update_engine_client_->NotifyObserversThatStatusChanged(
+      CreateCAUFeatureStatus(true));
+  EXPECT_TRUE(consumer_auto_update_toggle_.GetValue());
 }
 
 class InputMethodPreferencesTest : public PreferencesTest,

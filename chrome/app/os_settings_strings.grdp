@@ -225,6 +225,24 @@
   <message name="IDS_SETTINGS_ABOUT_PAGE_FIRMWARE_UPDATES" desc="Text of the button for the surface which allows users to update all their peripheral firmwares in one place.">
     Firmware updates
   </message>
+  <message name="IDS_SETTINGS_ABOUT_PAGE_CONSUMER_AUTO_UPDATE_TOGGLE_TITLE" desc="Text of the auto update toggle feature.">
+    Updates
+  </message>
+  <message name="IDS_SETTINGS_ABOUT_PAGE_CONSUMER_AUTO_UPDATE_TOGGLE_DESCRIPTION" desc="Text of the auto update toggle feature description.">
+    Get the latest features and security improvements.
+  </message>
+  <message name="IDS_SETTINGS_ABOUT_PAGE_CONSUMER_AUTO_UPDATE_TOGGLE_DIALOG_TITLE" desc="Text of the auto update toggle feature dialog.">
+    Turn off automatic updates?
+  </message>
+  <message name="IDS_SETTINGS_ABOUT_PAGE_CONSUMER_AUTO_UPDATE_TOGGLE_DIALOG_DESCRIPTION" desc="Text of the auto update toggle feature dialog description.">
+    Your device may no longer work properly, and you may experience security and performance issues. Key features in your apps may also stop working when they become outdated and you’ll lose your right to make legal claims.
+  </message>
+  <message name="IDS_SETTINGS_ABOUT_PAGE_CONSUMER_AUTO_UPDATE_TOGGLE_TURN_OFF_BUTTON" desc="Text of the auto update toggle feature dialog turn off button.">
+    Turn off
+  </message>
+  <message name="IDS_SETTINGS_ABOUT_PAGE_CONSUMER_AUTO_UPDATE_TOGGLE_KEEP_UPDATES_BUTTON" desc="Text of the auto update toggle feature dialog keep update button.">
+    Keep updates
+  </message>
 
   <!-- People (OS settings) -->
   <message name="IDS_OS_SETTINGS_PROFILE_NAME" desc="Label with device account first name, showing which user is currently signed in.">

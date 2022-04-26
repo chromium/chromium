@@ -1627,7 +1627,7 @@ bool IsLauncherItemColorSyncEnabled() {
          base::FeatureList::IsEnabled(kLauncherItemColorSync);
 }
 
-bool IsConsumerAutoUpdateAllowed() {
+bool IsConsumerAutoUpdateToggleAllowed() {
   return base::FeatureList::IsEnabled(kConsumerAutoUpdateToggleAllowed);
 }
 

@@ -49,6 +49,9 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
+#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/update_engine/update_engine.pb.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/system/devicemode.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/drive/drive_pref_names.h"
@@ -119,6 +122,7 @@ Preferences::Preferences(input_method::InputMethodManager* input_method_manager)
 Preferences::~Preferences() {
   prefs_->RemoveObserver(this);
   user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
+  DBusThreadManager::Get()->GetUpdateEngineClient()->RemoveObserver(this);
 }
 
 // static
@@ -147,6 +151,7 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kDeviceI18nShortcutsEnabled, true);
   registry->RegisterBooleanPref(prefs::kChromadToCloudMigrationEnabled, false);
   registry->RegisterBooleanPref(prefs::kLoginScreenWebUILazyLoading, false);
+  registry->RegisterBooleanPref(::prefs::kConsumerAutoUpdateToggle, true);
 
   RegisterLocalStatePrefs(registry);
 }
@@ -587,6 +592,10 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
       prefs::kLocalStateDevicePeripheralDataAccessEnabled,
       g_browser_process->local_state(), callback);
 
+  consumer_auto_update_toggle_pref_.Init(::prefs::kConsumerAutoUpdateToggle,
+                                         g_browser_process->local_state(),
+                                         callback);
+
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(::prefs::kUserTimezone, callback);
   pref_change_registrar_.Add(::prefs::kResolveTimezoneByGeolocationMethod,
@@ -610,6 +619,14 @@ void Preferences::Init(Profile* profile, const user_manager::User* user) {
   InitUserPrefs(prefs);
 
   user_manager::UserManager::Get()->AddSessionStateObserver(this);
+
+  auto* update_engine_client =
+      DBusThreadManager::Get()->GetUpdateEngineClient();
+  update_engine_client->AddObserver(this);
+  update_engine_client->IsFeatureEnabled(
+      update_engine::kFeatureConsumerAutoUpdate,
+      base::BindOnce(&Preferences::OnIsConsumerAutoUpdateEnabled,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   UserSessionManager* session_manager = UserSessionManager::GetInstance();
   DCHECK(session_manager);
@@ -668,6 +685,10 @@ void Preferences::InitUserPrefsForTesting(
     input_method_manager_->SetState(ime_state);
 
   InitUserPrefs(prefs);
+
+  auto* update_engine_client =
+      DBusThreadManager::Get()->GetUpdateEngineClient();
+  update_engine_client->AddObserver(this);
 
   input_method_syncer_ =
       std::make_unique<input_method::InputMethodSyncer>(prefs, ime_state_);
@@ -1184,6 +1205,34 @@ void Preferences::ActiveUserChanged(user_manager::User* active_user) {
   if (active_user != user_)
     return;
   ApplyPreferences(REASON_ACTIVE_USER_CHANGED, "");
+}
+
+void Preferences::UpdateStatusChanged(
+    const update_engine::StatusResult& status) {
+  DVLOG(1) << "UpdateStatusChanged";
+  for (int i = 0; i < status.features_size(); ++i) {
+    const update_engine::Feature& feature = status.features(i);
+    bool enabled = feature.enabled();
+    DVLOG(1) << "Feature name=" << feature.name() << " enabled=" << enabled;
+    if (feature.name() == update_engine::kFeatureConsumerAutoUpdate) {
+      // Writes into this preference are only flushed by listening to
+      // platform side signals. This means Chrome side writes into this
+      // preference will not be visible outside of Chrome. This preference
+      // should be updated by making DBus calls into the platform side, which
+      // will signal out the true value of this preference as the true value is
+      // managed by the update_engine daemon.
+      consumer_auto_update_toggle_pref_.SetValue(enabled);
+    }
+  }
+}
+
+void Preferences::OnIsConsumerAutoUpdateEnabled(absl::optional<bool> enabled) {
+  DVLOG(1) << "OnIsConsumerAutoUpdateEnabled";
+  if (!enabled.has_value()) {
+    VLOG(1) << "Failed to retrieve consumer auto update feature value.";
+    return;
+  }
+  consumer_auto_update_toggle_pref_.SetValue(enabled.value());
 }
 
 }  // namespace ash

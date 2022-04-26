@@ -233,6 +233,17 @@ export class AboutPageBrowserProxy {
    * @return {!Promise<boolean>}
    */
   checkInternetConnection() {}
+
+  /** @return {!Promise<boolean>} */
+  isManagedAutoUpdateEnabled() {}
+
+  /** @return {!Promise<boolean>} */
+  isConsumerAutoUpdateEnabled() {}
+
+  /**
+   * @param {boolean} enable
+   */
+  setConsumerAutoUpdate(enable) {}
 }
 
 /**
@@ -325,6 +336,21 @@ export class AboutPageBrowserProxyImpl {
   /** @override */
   refreshTPMFirmwareUpdateStatus() {
     chrome.send('refreshTPMFirmwareUpdateStatus');
+  }
+
+  /** @override */
+  isManagedAutoUpdateEnabled() {
+    return sendWithPromise('isManagedAutoUpdateEnabled');
+  }
+
+  /** @override */
+  isConsumerAutoUpdateEnabled() {
+    return sendWithPromise('isConsumerAutoUpdateEnabled');
+  }
+
+  /** @override */
+  setConsumerAutoUpdate(enable) {
+    chrome.send('setConsumerAutoUpdate', [enable]);
   }
 
   /** @return {!AboutPageBrowserProxy} */

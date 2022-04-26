@@ -26,6 +26,9 @@ export class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
       'requestUpdate',
       'setChannel',
       'openFirmwareUpdatesPage',
+      'isManagedAutoUpdateEnabled',
+      'isConsumerAutoUpdateEnabled',
+      'setConsumerAutoUpdate',
     ]);
 
     /** @private {!UpdateStatus} */
@@ -62,6 +65,12 @@ export class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
       hasEndOfLife: false,
       aboutPageEndOfLifeMessage: '',
     };
+
+    /** @private {!boolean} */
+    this.managedAutoUpdateEnabled_ = true;
+
+    /** @private {!boolean} */
+    this.consumerAutoUpdateEnabled_ = true;
   }
 
   /** @param {!UpdateStatus} updateStatus */
@@ -80,6 +89,16 @@ export class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
       message: 'offline',
       connectionTypes: 'no internet',
     });
+  }
+
+  /** @param {boolean} enabled */
+  setManagedAutoUpdate(enabled) {
+    this.managedAutoUpdateEnabled_ = enabled;
+  }
+
+  /** @param {boolean} enabled */
+  resetConsumerAutoUpdate(enabled) {
+    this.consumerAutoUpdateEnabled_ = enabled;
   }
 
   /** @override */
@@ -220,5 +239,23 @@ export class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
   /** @override */
   openFirmwareUpdatesPage() {
     this.methodCalled('openFirmwareUpdatesPage');
+  }
+
+  /** @override */
+  isManagedAutoUpdateEnabled() {
+    this.methodCalled('isManagedAutoUpdateEnabled');
+    return Promise.resolve(this.managedAutoUpdateEnabled_);
+  }
+
+  /** @override */
+  isConsumerAutoUpdateEnabled() {
+    this.methodCalled('isConsumerAutoUpdateEnabled');
+    return Promise.resolve(this.consumerAutoUpdateEnabled_);
+  }
+
+  /** @override */
+  setConsumerAutoUpdate(enable) {
+    this.consumerAutoUpdateEnabled_ = enable;
+    this.methodCalled('setConsumerAutoUpdate');
   }
 }

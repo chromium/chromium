@@ -1,0 +1,23 @@
+<style include="settings-shared">
+  #warningSelector > :not(.iron-selected) {
+    display: none;
+  }
+</style>
+<cr-dialog id="dialog" close-text="$i18n{close}">
+  <div slot="title">$i18n{aboutConsumerAutoUpdateToggleDialogTitle}</div>
+  <div slot="body">$i18n{aboutConsumerAutoUpdateToggleDialogDescription}</div>
+  <div slot="button-container">
+    <cr-button
+      id="turnOffButton"
+      class="cancel-button"
+      on-click="onTurnOffTap_">
+      $i18n{aboutConsumerAutoUpdateToggleTurnOffButton}
+    </cr-button>
+    <cr-button
+      id="keepUpdatesButton"
+      class="action-button"
+      on-click="onKeepUpdatesTap_">
+      $i18n{aboutConsumerAutoUpdateToggleKeepUpdatesButton}
+    </cr-button>
+  </div>
+</cr-dialog>

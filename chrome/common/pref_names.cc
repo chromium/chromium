@@ -3452,4 +3452,8 @@ const char kOriginAgentClusterDefaultEnabled[] =
 const char kSCTAuditingHashdanceReportCount[] =
     "sct_auditing.hashdance_report_count";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kConsumerAutoUpdateToggle[] = "settings.consumer_auto_update_toggle";
+#endif
+
 }  // namespace prefs

@@ -8,7 +8,9 @@
 #include <string>
 
 #include "ash/public/mojom/cros_display_config.mojom.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/language_preferences.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"
@@ -42,7 +44,8 @@ class InputMethodSyncer;
 // the preferences. These include touchpad settings, etc.
 // When the preferences change, we change the settings to reflect the new value.
 class Preferences : public sync_preferences::PrefServiceSyncableObserver,
-                    public user_manager::UserManager::UserSessionStateObserver {
+                    public user_manager::UserManager::UserSessionStateObserver,
+                    public UpdateEngineClient::Observer {
  public:
   Preferences();
   explicit Preferences(
@@ -61,6 +64,7 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
   // |user| is the user owning this preferences.
   void Init(Profile* profile, const user_manager::User* user);
 
+  void InitPrefsForTesting(sync_preferences::PrefServiceSyncable* prefs);
   void InitUserPrefsForTesting(
       sync_preferences::PrefServiceSyncable* prefs,
       const user_manager::User* user,
@@ -125,6 +129,10 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
   // Overriden form user_manager::UserManager::UserSessionStateObserver.
   void ActiveUserChanged(user_manager::User* active_user) override;
 
+  // UpdateEngineClient::Observer implementation.
+  void UpdateStatusChanged(const update_engine::StatusResult& status) override;
+  void OnIsConsumerAutoUpdateEnabled(absl::optional<bool> enabled);
+
   sync_preferences::PrefServiceSyncable* prefs_;
 
   input_method::InputMethodManager* input_method_manager_;
@@ -172,6 +180,8 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
 
   BooleanPrefMember pci_data_access_enabled_pref_;
 
+  BooleanPrefMember consumer_auto_update_toggle_pref_;
+
   PrefChangeRegistrar pref_change_registrar_;
 
   // User owning these preferences.
@@ -186,6 +196,10 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
   std::unique_ptr<input_method::InputMethodSyncer> input_method_syncer_;
 
   mojo::Remote<mojom::CrosDisplayConfigController> cros_display_config_;
+
+  // Note: This should remain the last member so it'll be destroyed and
+  // invalidate its weak pointers before any other members are destroyed.
+  base::WeakPtrFactory<Preferences> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

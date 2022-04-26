@@ -10,9 +10,11 @@
 import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
 import '//resources/cr_elements/policy/cr_tooltip_icon.m.js';
+import '../../prefs/prefs.js';
 import '../../settings_shared_css.js';
 import '//resources/cr_components/localized_link/localized_link.js';
 import './channel_switcher_dialog.js';
+import './consumer_auto_update_toggle_dialog.js';
 import './edit_hostname_dialog.js';
 
 import {CrPolicyIndicatorType} from '//resources/cr_elements/policy/cr_policy_indicator_behavior.m.js';
@@ -26,6 +28,7 @@ import {loadTimeData} from '../../i18n_setup.js';
 import {Route} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, browserChannelToI18nId, ChannelInfo, VersionInfo} from './about_page_browser_proxy.js';
@@ -38,12 +41,14 @@ import {DeviceNameState} from './device_name_util.js';
  * @implements {I18nBehaviorInterface}
  * @implements {WebUIListenerBehaviorInterface}
  * @implements {DeepLinkingBehaviorInterface}
+ * @implements {PrefsBehaviorInterface}
  */
 const SettingsDetailedBuildInfoBase = mixinBehaviors(
     [
       DeepLinkingBehavior,
       WebUIListenerBehavior,
       I18nBehavior,
+      PrefsBehavior,
       RouteObserverBehavior,
     ],
     PolymerElement);
@@ -60,6 +65,12 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
 
   static get properties() {
     return {
+      /** Preferences state. */
+      prefs: {
+        type: Object,
+        notify: true,
+      },
+
       /** @private {!VersionInfo} */
       versionInfo_: Object,
 
@@ -80,6 +91,12 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
 
       /** @private */
       canChangeChannel_: Boolean,
+
+      /** @private */
+      isManagedAutoUpdateEnabled_: Boolean,
+
+      /** @private */
+      showConsumerAutoUpdateToggleDialog_: Boolean,
 
       eolMessageWithMonthAndYear: {
         type: String,
@@ -126,6 +143,18 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
         },
         readOnly: true,
       },
+
+      /**
+       * Whether or not the consumer auto update toggling is allowed.
+       * @private
+       */
+      isConsumerAutoUpdateTogglingAllowed_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isConsumerAutoUpdateTogglingAllowed');
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -143,6 +172,20 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
   ready() {
     super.ready();
     this.aboutPageBrowserProxy_.pageReady();
+
+    this.addEventListener('set-consumer-auto-update', e => {
+      this.aboutPageBrowserProxy_.setConsumerAutoUpdate(e.detail.item);
+    });
+
+    if (this.isManaged_) {
+      this.syncManagedAutoUpdateToggle_();
+    } else {
+      // This is to keep the Chrome pref in sync in case it becomes stale.
+      // For example, if users toggle the consumer auto update, but the settings
+      // page happened to crash/close before it got flushed out this would
+      // assure a sync between the Chrome pref and the platform pref.
+      this.syncConsumerAutoUpdateToggle_();
+    }
 
     this.aboutPageBrowserProxy_.getVersionInfo().then(versionInfo => {
       this.versionInfo_ = versionInfo;
@@ -198,6 +241,21 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
     });
   }
 
+  /** @private */
+  syncManagedAutoUpdateToggle_() {
+    this.aboutPageBrowserProxy_.isManagedAutoUpdateEnabled().then(
+        isManagedAutoUpdateEnabled => {
+          this.isManagedAutoUpdateEnabled_ = isManagedAutoUpdateEnabled;
+        });
+  }
+
+  /** @private */
+  syncConsumerAutoUpdateToggle_() {
+    this.aboutPageBrowserProxy_.isConsumerAutoUpdateEnabled().then(enabled => {
+      this.aboutPageBrowserProxy_.setConsumerAutoUpdate(enabled);
+    });
+  }
+
   /**
    * @param {!DeviceNameMetadata} data
    * @private
@@ -250,6 +308,14 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
    */
   shouldShowPolicyIndicator_() {
     return this.getDeviceNameIndicatorType_() !== CrPolicyIndicatorType.NONE;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowConsumerAutoUpdateToggle_() {
+    return !this.isManaged_;
   }
 
   /**
@@ -350,6 +416,45 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
     }
 
     navigator.clipboard.writeText(entries.join('\n'));
+  }
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onConsumerAutoUpdateToggled_(e) {
+    if (!this.isConsumerAutoUpdateTogglingAllowed_) {
+      return;
+    }
+    this.showDialogOrFlushConsumerAutoUpdateToggle();
+  }
+
+  /** @private */
+  onConsumerAutoUpdateToggledSettingsBox_() {
+    if (!this.isConsumerAutoUpdateTogglingAllowed_) {
+      return;
+    }
+    // Copy how cr-toggle negates the `checked` field.
+    this.setPrefValue(
+        'settings.consumer_auto_update_toggle',
+        !this.getPref('settings.consumer_auto_update_toggle').value);
+    this.showDialogOrFlushConsumerAutoUpdateToggle();
+  }
+
+  /** @private */
+  showDialogOrFlushConsumerAutoUpdateToggle() {
+    if (!this.getPref('settings.consumer_auto_update_toggle').value) {
+      // Only show dialog when turning the toggle off.
+      this.showConsumerAutoUpdateToggleDialog_ = true;
+      return;
+    }
+    // Turning the toggle on requires no dialog.
+    this.aboutPageBrowserProxy_.setConsumerAutoUpdate(true);
+  }
+
+  /** @private */
+  onConsumerAutoUpdateToggleDialogClosed_() {
+    this.showConsumerAutoUpdateToggleDialog_ = false;
   }
 
   /**

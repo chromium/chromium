@@ -525,6 +525,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_a11y_page/switch_access_subpage.js",
     "chromeos/os_a11y_page/tts_subpage.js",
     "chromeos/os_about_page/channel_switcher_dialog.js",
+    "chromeos/os_about_page/consumer_auto_update_toggle_dialog.js",
     "chromeos/os_about_page/detailed_build_info.js",
     "chromeos/os_about_page/edit_hostname_dialog.js",
     "chromeos/os_about_page/os_about_page.js",

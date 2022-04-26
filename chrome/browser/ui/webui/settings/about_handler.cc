@@ -70,6 +70,7 @@
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/user_manager/user_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/chromeos/devicetype_utils.h"
 #endif
 
@@ -334,6 +335,18 @@ void AboutHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "checkInternetConnection",
       base::BindRepeating(&AboutHandler::HandleCheckInternetConnection,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "isManagedAutoUpdateEnabled",
+      base::BindRepeating(&AboutHandler::HandleIsManagedAutoUpdateEnabled,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "isConsumerAutoUpdateEnabled",
+      base::BindRepeating(&AboutHandler::HandleIsConsumerAutoUpdateEnabled,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "setConsumerAutoUpdate",
+      base::BindRepeating(&AboutHandler::HandleSetConsumerAutoUpdate,
                           base::Unretained(this)));
 #endif
 #if BUILDFLAG(IS_MAC)
@@ -642,6 +655,49 @@ void AboutHandler::OnGetEndOfLifeInfo(
     response.SetStringKey("aboutPageEndOfLifeMessage", "");
   }
   ResolveJavascriptCallback(base::Value(callback_id), response);
+}
+
+void AboutHandler::HandleIsManagedAutoUpdateEnabled(
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const std::string& callback_id = args[0].GetString();
+  ResolveJavascriptCallback(
+      base::Value(callback_id),
+      base::Value(version_updater_->IsManagedAutoUpdateEnabled()));
+}
+
+void AboutHandler::HandleIsConsumerAutoUpdateEnabled(
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const std::string& callback_id = args[0].GetString();
+  const std::string& feature = update_engine::kFeatureConsumerAutoUpdate;
+  version_updater_->IsFeatureEnabled(
+      feature,
+      base::BindOnce(&AboutHandler::OnIsConsumerAutoUpdateEnabled,
+                     weak_factory_.GetWeakPtr(), callback_id, feature));
+}
+
+void AboutHandler::OnIsConsumerAutoUpdateEnabled(std::string callback_id,
+                                                 std::string feature,
+                                                 absl::optional<bool> enabled) {
+  if (!enabled.has_value()) {
+    LOG(ERROR) << "Failed to get feature value for " << feature
+               << " defaulting to enabled";
+    enabled = true;
+  }
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(enabled.value()));
+}
+
+void AboutHandler::HandleSetConsumerAutoUpdate(const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  if (!args[0].is_bool()) {
+    LOG(ERROR) << "Can't parse SetConsumerAutoUpdate() args";
+    return;
+  }
+  bool enable = args[0].GetBool();
+  const std::string& feature = update_engine::kFeatureConsumerAutoUpdate;
+  version_updater_->ToggleFeature(feature, enable);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

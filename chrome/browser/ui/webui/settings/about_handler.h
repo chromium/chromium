@@ -180,6 +180,19 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   // Callbacks for version_updater_->GetEolInfo calls.
   void OnGetEndOfLifeInfo(std::string callback_id,
                           chromeos::UpdateEngineClient::EolInfo eol_info);
+
+  // Get the managed auto update cros setting.
+  void HandleIsManagedAutoUpdateEnabled(const base::Value::List& args);
+
+  // Get the consumer auto update pref from update_engine.
+  void HandleIsConsumerAutoUpdateEnabled(const base::Value::List& args);
+
+  // Callbacks for version_updater_->IsConsumerAutoUpdateEnabled calls.
+  void OnIsConsumerAutoUpdateEnabled(std::string callback_id,
+                                     std::string feature,
+                                     absl::optional<bool> enabled);
+
+  void HandleSetConsumerAutoUpdate(const base::Value::List& args);
 #endif
 
   raw_ptr<Profile> profile_;
