@@ -171,13 +171,13 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* cache) override;
 
-  // Returns the browser id and the browser instance state for the tab's
-  // `update`. If there is no browser instance for the tab's `update`, the
-  // returned token of the browser id will be empty, and the state will be
-  // unknown.
-  void GetBrowserIdAndState(const InstanceUpdate& update,
-                            base::UnguessableToken& browser_id,
-                            InstanceState& state) const;
+  // Returns the browser instance app id, instance id and state for
+  // `browser_window`. If there is no browser instance, the returned token of
+  // the browser id and app id will be empty, and the state will be unknown.
+  void GetBrowserInstanceInfo(const aura::Window* browser_window,
+                              base::UnguessableToken& browser_id,
+                              std::string& browser_app_id,
+                              InstanceState& state) const;
 
   // Updates the browser window status when the web app tab `update` is
   // inactivated.

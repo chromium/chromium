@@ -725,15 +725,19 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
       // not changed, but the parent browser window is changed. So remove the
       // tab window instance from previous browser window, and add it to the new
       // browser window.
+      auto* browser_window =
+          app_type_name == apps::AppTypeName::kStandaloneBrowser
+              ? update.Window()
+              : update.Window()->GetToplevelWindow();
       browser_to_tab_list_.RemoveActivatedTab(update.InstanceId());
-      browser_to_tab_list_.AddActivatedTab(update.Window()->GetToplevelWindow(),
-                                           update.InstanceId(), update.AppId());
+      browser_to_tab_list_.AddActivatedTab(browser_window, update.InstanceId(),
+                                           update.AppId());
       InstanceState state;
       base::UnguessableToken browser_id;
-      GetBrowserIdAndState(update, browser_id, state);
+      std::string browser_app_id;
+      GetBrowserInstanceInfo(browser_window, browser_id, browser_app_id, state);
       if (browser_id) {
-        SetWindowInActivated(app_constants::kChromeAppId, browser_id,
-                             kInActivated);
+        SetWindowInActivated(browser_app_id, browser_id, kInActivated);
       }
     }
 
@@ -763,20 +767,22 @@ void AppPlatformMetrics::OnInstanceRegistryWillBeDestroyed(
   apps::InstanceRegistry::Observer::Observe(nullptr);
 }
 
-void AppPlatformMetrics::GetBrowserIdAndState(
-    const InstanceUpdate& update,
+void AppPlatformMetrics::GetBrowserInstanceInfo(
+    const aura::Window* browser_window,
     base::UnguessableToken& browser_id,
+    std::string& browser_app_id,
     InstanceState& state) const {
-  auto* browser_window = update.Window()->GetToplevelWindow();
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   DCHECK(proxy);
   browser_id = base::UnguessableToken();
+  browser_app_id = std::string();
   state = InstanceState::kUnknown;
   proxy->InstanceRegistry().ForInstancesWithWindow(
       browser_window, [&](const InstanceUpdate& browser_update) {
         if (browser_update.AppId() == app_constants::kChromeAppId ||
             browser_update.AppId() == app_constants::kLacrosAppId) {
           browser_id = browser_update.InstanceId();
+          browser_app_id = browser_update.AppId();
           state = browser_update.State();
         }
       });
@@ -803,14 +809,15 @@ void AppPlatformMetrics::UpdateBrowserWindowStatus(
   DCHECK(proxy);
   InstanceState state;
   base::UnguessableToken browser_id;
-  GetBrowserIdAndState(update, browser_id, state);
+  std::string browser_app_id;
+  GetBrowserInstanceInfo(browser_window, browser_id, browser_app_id, state);
   if (state & InstanceState::kActive) {
     // The browser window is activated, start calculating the browser window
     // running time.
     // TODO(crbug.com/1251501): Handle lacros window.
     SetWindowActivated(AppType::kChromeApp, AppTypeName::kChromeBrowser,
-                       AppTypeNameV2::kChromeBrowser,
-                       app_constants::kChromeAppId, browser_id);
+                       AppTypeNameV2::kChromeBrowser, browser_app_id,
+                       browser_id);
   }
 }
 
