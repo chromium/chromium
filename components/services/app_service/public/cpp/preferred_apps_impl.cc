@@ -225,7 +225,7 @@ void PreferredAppsImpl::ReadCompleted(std::string preferred_apps_string) {
       if (!preferred_apps_upgraded) {
         UpgradePreferredApps(preferred_apps);
       }
-      preferred_apps_list_.Init(preferred_apps);
+      preferred_apps_list_.Init(std::move(preferred_apps));
     }
   }
   if (!preferred_apps_upgraded) {

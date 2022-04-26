@@ -717,9 +717,8 @@ void AppServiceProxyBase::OnPreferredAppsChanged(
 
 void AppServiceProxyBase::InitializePreferredApps(
     std::vector<apps::mojom::PreferredAppPtr> mojom_preferred_apps) {
-  PreferredApps preferred_apps =
-      ConvertMojomPreferredAppsToPreferredApps(mojom_preferred_apps);
-  preferred_apps_list_.Init(preferred_apps);
+  preferred_apps_list_.Init(
+      ConvertMojomPreferredAppsToPreferredApps(mojom_preferred_apps));
 }
 
 apps::mojom::IntentFilterPtr AppServiceProxyBase::FindBestMatchingFilter(

@@ -24,8 +24,8 @@ void PreferredAppsList::Init() {
   initialized_ = true;
 }
 
-void PreferredAppsList::Init(PreferredApps& preferred_apps) {
-  preferred_apps_ = ClonePreferredApps(preferred_apps);
+void PreferredAppsList::Init(PreferredApps preferred_apps) {
+  preferred_apps_ = std::move(preferred_apps);
   auto iter = preferred_apps_.begin();
   while (iter != preferred_apps_.end()) {
     if (apps_util::IsSupportedLinkForApp((*iter)->app_id,

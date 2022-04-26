@@ -33,7 +33,7 @@ class PreferredAppsList : public PreferredAppsListHandle {
 
   // Initialize the preferred app with empty list or existing |preferred_apps|;
   void Init();
-  void Init(PreferredApps& preferred_apps);
+  void Init(PreferredApps preferred_apps);
 
   // Add a preferred app for an |intent_filter|, and returns a group of
   // |app_ids| that is no longer preferred app of their corresponding

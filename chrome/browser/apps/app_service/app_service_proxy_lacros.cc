@@ -616,7 +616,7 @@ void AppServiceProxyLacros::OnPreferredAppsChanged(
 
 void AppServiceProxyLacros::InitializePreferredApps(
     PreferredApps preferred_apps) {
-  preferred_apps_list_.Init(preferred_apps);
+  preferred_apps_list_.Init(std::move(preferred_apps));
 }
 
 }  // namespace apps

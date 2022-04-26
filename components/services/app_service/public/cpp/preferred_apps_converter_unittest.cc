@@ -59,10 +59,9 @@ TEST_F(PreferredAppsConverterTest, ConvertSimpleEntry) {
               converted_condition_values[0].FindIntKey(apps::kMatchTypeKey));
   }
 
-  auto preferred_apps_list = apps::ParseValueToPreferredApps(converted_value);
   preferred_apps.Init();
   EXPECT_EQ(absl::nullopt, preferred_apps.FindPreferredAppForUrl(filter_url));
-  preferred_apps.Init(preferred_apps_list);
+  preferred_apps.Init(apps::ParseValueToPreferredApps(converted_value));
   EXPECT_EQ(kAppId1, preferred_apps.FindPreferredAppForUrl(filter_url));
   GURL url_wrong_host = GURL("https://www.hahaha.com/");
   EXPECT_EQ(absl::nullopt,
