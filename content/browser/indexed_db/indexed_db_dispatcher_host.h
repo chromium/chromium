@@ -28,7 +28,11 @@
 namespace base {
 class SequencedTaskRunner;
 class TaskRunner;
-}  // namespace base
+}
+
+namespace blink {
+class StorageKey;
+}
 
 namespace content {
 class IndexedDBContextImpl;
@@ -93,7 +97,7 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
   // Create external objects from |objects| and store the results in
   // |mojo_objects|.  |mojo_objects| must be the same length as |objects|.
   void CreateAllExternalObjects(
-      const storage::BucketLocator& bucket_locator,
+      const blink::StorageKey& storage_key,
       const std::vector<IndexedDBExternalObject>& objects,
       std::vector<blink::mojom::IDBExternalObjectPtr>* mojo_objects);
 

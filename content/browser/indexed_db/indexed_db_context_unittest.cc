@@ -13,7 +13,6 @@
 #include "base/threading/thread.h"
 #include "base/time/default_clock.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
-#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
@@ -92,14 +91,10 @@ TEST_F(IndexedDBContextTest, DefaultBucketCreatedOnBindIndexedDB) {
   auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>(
       /*expect_connection=*/false);
   callbacks->CallOnInfoSuccess(base::BarrierClosure(2, loop.QuitClosure()));
-  auto example_bucket_locator = storage::BucketLocator();
-  example_bucket_locator.storage_key = example_storage_key_;
   indexed_db_context_->GetIDBFactory()->GetDatabaseInfo(
-      callbacks, example_bucket_locator, indexed_db_context_->data_path());
-  auto google_bucket_locator = storage::BucketLocator();
-  google_bucket_locator.storage_key = google_storage_key_;
+      callbacks, example_storage_key_, indexed_db_context_->data_path());
   indexed_db_context_->GetIDBFactory()->GetDatabaseInfo(
-      callbacks, google_bucket_locator, indexed_db_context_->data_path());
+      callbacks, google_storage_key_, indexed_db_context_->data_path());
   loop.Run();
 
   // Check default bucket exists for https://example.com.

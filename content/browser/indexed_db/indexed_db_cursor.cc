@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/trace_event/base_tracing.h"
-#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/indexed_db_callback_helpers.h"
 #include "content/browser/indexed_db/indexed_db_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
@@ -52,9 +51,9 @@ IndexedDBCursor::IndexedDBCursor(
     indexed_db::CursorType cursor_type,
     blink::mojom::IDBTaskType task_type,
     base::WeakPtr<IndexedDBTransaction> transaction)
-    : bucket_locator_(transaction->BackingStoreTransaction()
-                          ->backing_store()
-                          ->bucket_locator()),
+    : storage_key_(transaction->BackingStoreTransaction()
+                       ->backing_store()
+                       ->storage_key()),
       task_type_(task_type),
       cursor_type_(cursor_type),
       transaction_(std::move(transaction)),
@@ -129,7 +128,7 @@ leveldb::Status IndexedDBCursor::CursorAdvanceOperation(
   if (value) {
     mojo_value = IndexedDBValue::ConvertAndEraseValue(value);
     external_objects.swap(value->external_objects);
-    dispatcher_host->CreateAllExternalObjects(bucket_locator_, external_objects,
+    dispatcher_host->CreateAllExternalObjects(storage_key_, external_objects,
                                               &mojo_value->external_objects);
   } else {
     mojo_value = blink::mojom::IDBValue::New();
@@ -210,7 +209,7 @@ leveldb::Status IndexedDBCursor::CursorContinueOperation(
   if (value) {
     mojo_value = IndexedDBValue::ConvertAndEraseValue(value);
     external_objects.swap(value->external_objects);
-    dispatcher_host->CreateAllExternalObjects(bucket_locator_, external_objects,
+    dispatcher_host->CreateAllExternalObjects(storage_key_, external_objects,
                                               &mojo_value->external_objects);
   } else {
     mojo_value = blink::mojom::IDBValue::New();
@@ -338,7 +337,7 @@ leveldb::Status IndexedDBCursor::CursorPrefetchIterationOperation(
     mojo_values.push_back(
         IndexedDBValue::ConvertAndEraseValue(&found_values[i]));
     dispatcher_host->CreateAllExternalObjects(
-        bucket_locator_, found_values[i].external_objects,
+        storage_key_, found_values[i].external_objects,
         &mojo_values[i]->external_objects);
   }
 

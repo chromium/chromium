@@ -28,8 +28,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
-#include "components/services/storage/public/cpp/buckets/bucket_id.h"
-#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom-test-utils.h"
 #include "components/services/storage/public/mojom/indexed_db_control_test.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
@@ -275,13 +273,13 @@ class IndexedDBBrowserTest : public ContentBrowserTest,
   }
 
   // Synchronously writes to the IndexedDB database at the given storage_key.
-  void WriteToIndexedDB(const storage::BucketLocator& bucket_locator,
+  void WriteToIndexedDB(const blink::StorageKey& storage_key,
                         std::string key,
                         std::string value) {
     auto control_test = GetControlTest();
     base::RunLoop loop;
     control_test->WriteToIndexedDBForTesting(
-        bucket_locator, std::move(key), std::move(value), loop.QuitClosure());
+        storage_key, std::move(key), std::move(value), loop.QuitClosure());
     loop.Run();
   }
 
@@ -380,9 +378,6 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, NegativeDBSchemaVersion) {
   const GURL database_open_url = GetTestUrl("indexeddb", "database_test.html");
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey(url::Origin::Create(database_open_url));
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.id = storage::BucketId::FromUnsafeValue(1);
-  bucket_locator.storage_key = kTestStorageKey;
   // Create the database.
   SimpleTest(database_open_url);
   // -10, little endian.
@@ -399,7 +394,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, NegativeDBSchemaVersion) {
       }));
   loop.Run();
 
-  WriteToIndexedDB(bucket_locator, key, value);
+  WriteToIndexedDB(kTestStorageKey, key, value);
   // Crash the tab to ensure no old navigations are picked up.
   CrashTab(shell()->web_contents());
   SimpleTest(GetTestUrl("indexeddb", "open_bad_db.html"));
@@ -409,9 +404,6 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, NegativeDBDataVersion) {
   const GURL database_open_url = GetTestUrl("indexeddb", "database_test.html");
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey(url::Origin::Create(database_open_url));
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.id = storage::BucketId::FromUnsafeValue(1);
-  bucket_locator.storage_key = kTestStorageKey;
   // Create the database.
   SimpleTest(database_open_url);
   // -10, little endian.
@@ -428,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, NegativeDBDataVersion) {
       }));
   loop.Run();
 
-  WriteToIndexedDB(bucket_locator, key, value);
+  WriteToIndexedDB(kTestStorageKey, key, value);
   // Crash the tab to ensure no old navigations are picked up.
   CrashTab(shell()->web_contents());
   SimpleTest(GetTestUrl("indexeddb", "open_bad_db.html"));
@@ -1200,14 +1192,14 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, ShutdownWithRequests) {
 // This test is for https://crbug.com/1039446.
 class IndexedDBBrowserTestBlobKeyCorruption : public IndexedDBBrowserTest {
  public:
-  int64_t GetNextBlobNumber(const storage::BucketLocator& bucket_locator,
+  int64_t GetNextBlobNumber(const blink::StorageKey& storage_key,
                             int64_t database_id) {
     int64_t number;
 
     base::RunLoop loop;
     auto control_test = GetControlTest();
     control_test->GetNextBlobNumberForTesting(
-        bucket_locator, database_id,
+        storage_key, database_id,
         base::BindLambdaForTesting([&](int64_t next_blob_number) {
           number = next_blob_number;
           loop.Quit();
@@ -1216,14 +1208,14 @@ class IndexedDBBrowserTestBlobKeyCorruption : public IndexedDBBrowserTest {
     return number;
   }
 
-  base::FilePath PathForBlob(const storage::BucketLocator& bucket_locator,
+  base::FilePath PathForBlob(const blink::StorageKey& storage_key,
                              int64_t database_id,
                              int64_t blob_number) {
     base::FilePath path;
     base::RunLoop loop;
     auto control_test = GetControlTest();
     control_test->GetPathForBlobForTesting(
-        bucket_locator, database_id, blob_number,
+        storage_key, database_id, blob_number,
         base::BindLambdaForTesting([&](const base::FilePath& blob_path) {
           path = blob_path;
           loop.Quit();
@@ -1242,9 +1234,6 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestBlobKeyCorruption, LifecycleTest) {
               embedded_test_server()->InitializeAndListen());
   const blink::StorageKey kTestStorageKey = blink::StorageKey(
       url::Origin::Create(embedded_test_server()->base_url()));
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.id = storage::BucketId::FromUnsafeValue(1);
-  bucket_locator.storage_key = kTestStorageKey;
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       &StaticFileRequestHandler, s_indexeddb_test_prefix, this));
   embedded_test_server()->StartAcceptingConnections();
@@ -1253,12 +1242,12 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestBlobKeyCorruption, LifecycleTest) {
   std::string test_file =
       std::string(s_indexeddb_test_prefix) + "write_and_read_blob.html";
   SimpleTest(embedded_test_server()->GetURL(test_file));
-  int64_t next_blob_number = GetNextBlobNumber(bucket_locator, 1);
+  int64_t next_blob_number = GetNextBlobNumber(kTestStorageKey, 1);
 
   base::FilePath first_blob =
-      PathForBlob(bucket_locator, 1, next_blob_number - 1);
+      PathForBlob(kTestStorageKey, 1, next_blob_number - 1);
   base::FilePath corrupt_blob =
-      PathForBlob(bucket_locator, 1, next_blob_number);
+      PathForBlob(kTestStorageKey, 1, next_blob_number);
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     EXPECT_TRUE(base::PathExists(first_blob));

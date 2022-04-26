@@ -133,10 +133,8 @@ base::FilePath GetBlobFileNameForKey(const base::FilePath& path_base,
   return path;
 }
 
-std::string ComputeOriginIdentifier(
-    const storage::BucketLocator& bucket_locator) {
-  return storage::GetIdentifierFromOrigin(bucket_locator.storage_key.origin()) +
-         "@1";
+std::string ComputeOriginIdentifier(const blink::StorageKey& storage_key) {
+  return storage::GetIdentifierFromOrigin(storage_key.origin()) + "@1";
 }
 
 // TODO(ericu): Error recovery. If we persistently can't read the
@@ -628,7 +626,7 @@ bool IndexCursorOptions(
 IndexedDBBackingStore::IndexedDBBackingStore(
     Mode backing_store_mode,
     TransactionalLevelDBFactory* transactional_leveldb_factory,
-    const storage::BucketLocator& bucket_locator,
+    const blink::StorageKey& storage_key,
     const base::FilePath& blob_path,
     std::unique_ptr<TransactionalLevelDBDatabase> db,
     storage::mojom::BlobStorageContext* blob_storage_context,
@@ -639,13 +637,13 @@ IndexedDBBackingStore::IndexedDBBackingStore(
     scoped_refptr<base::SequencedTaskRunner> idb_task_runner)
     : backing_store_mode_(backing_store_mode),
       transactional_leveldb_factory_(transactional_leveldb_factory),
-      bucket_locator_(bucket_locator),
+      storage_key_(storage_key),
       blob_path_(backing_store_mode == Mode::kInMemory ? base::FilePath()
                                                        : blob_path),
       blob_storage_context_(blob_storage_context),
       file_system_access_context_(file_system_access_context),
       filesystem_proxy_(std::move(filesystem_proxy)),
-      origin_identifier_(ComputeOriginIdentifier(bucket_locator)),
+      origin_identifier_(ComputeOriginIdentifier(storage_key)),
       idb_task_runner_(std::move(idb_task_runner)),
       db_(std::move(db)),
       blob_files_cleaned_(std::move(blob_files_cleaned)) {
@@ -711,9 +709,7 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
     INTERNAL_READ_ERROR(SET_UP_METADATA);
     return s;
   }
-  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
-  indexed_db::ReportSchemaVersion(db_schema_version,
-                                  bucket_locator_.storage_key);
+  indexed_db::ReportSchemaVersion(db_schema_version, storage_key_);
   if (!found) {
     // Initialize new backing store.
     db_schema_version = indexed_db::kLatestKnownSchemaVersion;
@@ -793,10 +789,9 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
   s = db_->Write(write_batch.get());
   write_batch.reset();
   if (!s.ok()) {
-    // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
     indexed_db::ReportOpenStatus(
         indexed_db::INDEXED_DB_BACKING_STORE_OPEN_FAILED_METADATA_SETUP,
-        bucket_locator_.storage_key);
+        storage_key_);
     INTERNAL_WRITE_ERROR(SET_UP_METADATA);
     return s;
   }
@@ -804,11 +799,10 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
   if (clean_active_journal) {
     s = CleanUpBlobJournal(ActiveBlobJournalKey::Encode());
     if (!s.ok()) {
-      // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
       indexed_db::ReportOpenStatus(
           indexed_db::
               INDEXED_DB_BACKING_STORE_OPEN_FAILED_CLEANUP_JOURNAL_ERROR,
-          bucket_locator_.storage_key);
+          storage_key_);
     }
   }
 #if DCHECK_IS_ON()
@@ -3194,7 +3188,7 @@ Status IndexedDBBackingStore::MigrateToV5(LevelDBWriteBatch* write_batch) {
   const std::string schema_version_key = SchemaVersionKey::Encode();
   Status s;
 
-  if (bucket_locator_.storage_key.origin().host() != "docs.google.com") {
+  if (storage_key_.origin().host() != "docs.google.com") {
     s = ValidateBlobFiles(db_.get());
     if (!s.ok()) {
       INTERNAL_CONSISTENCY_ERROR(SET_UP_METADATA);

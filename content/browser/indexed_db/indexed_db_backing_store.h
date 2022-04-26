@@ -27,7 +27,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/services/storage/indexed_db/locks/leveled_lock.h"
-#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom-forward.h"
 #include "components/services/storage/public/mojom/file_system_access_context.mojom-forward.h"
@@ -39,18 +38,18 @@
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 #include "url/gurl.h"
 
 namespace base {
 class SequencedTaskRunner;
-}  // namespace base
+}
 
 namespace blink {
 class IndexedDBKeyRange;
 struct IndexedDBDatabaseMetadata;
-class StorageKey;
 }  // namespace blink
 
 namespace content {
@@ -389,7 +388,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   IndexedDBBackingStore(
       Mode backing_store_mode,
       TransactionalLevelDBFactory* transactional_leveldb_factory,
-      const storage::BucketLocator& bucket_locator,
+      const blink::StorageKey& storage_key,
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
       storage::mojom::BlobStorageContext* blob_storage_context,
@@ -408,9 +407,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   // operations or method calls on this object.
   leveldb::Status Initialize(bool clean_active_blob_journal);
 
-  const storage::BucketLocator& bucket_locator() const {
-    return bucket_locator_;
-  }
+  const blink::StorageKey& storage_key() const { return storage_key_; }
   base::SequencedTaskRunner* idb_task_runner() const {
     return idb_task_runner_.get();
   }
@@ -666,7 +663,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
 
   const Mode backing_store_mode_;
   const raw_ptr<TransactionalLevelDBFactory> transactional_leveldb_factory_;
-  const storage::BucketLocator bucket_locator_;
+  const blink::StorageKey storage_key_;
   const base::FilePath blob_path_;
 
   // IndexedDB can store blobs and File System Access handles. These mojo

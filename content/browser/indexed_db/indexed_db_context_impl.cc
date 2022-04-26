@@ -30,7 +30,6 @@
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
-#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_client_callback_wrapper.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
@@ -580,14 +579,14 @@ void IndexedDBContextImpl::HasV2SchemaCorruptionForTesting(
 }
 
 void IndexedDBContextImpl::WriteToIndexedDBForTesting(
-    const storage::BucketLocator& bucket_locator,
+    const blink::StorageKey& storage_key,
     const std::string& key,
     const std::string& value,
     base::OnceClosure callback) {
   IndexedDBBucketStateHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      GetIDBFactory()->GetOrOpenBucketFactory(bucket_locator, data_path(),
+      GetIDBFactory()->GetOrOpenBucketFactory(storage_key, data_path(),
                                               /*create_if_missing=*/true);
   CHECK(s.ok()) << s.ToString();
   CHECK(handle.IsHeld());
@@ -598,8 +597,7 @@ void IndexedDBContextImpl::WriteToIndexedDBForTesting(
   s = db->Put(key, &value_copy);
   CHECK(s.ok()) << s.ToString();
   handle.Release();
-  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
-  GetIDBFactory()->ForceClose(bucket_locator.storage_key, true);
+  GetIDBFactory()->ForceClose(storage_key, true);
   std::move(callback).Run();
 }
 
@@ -610,13 +608,13 @@ void IndexedDBContextImpl::GetBlobCountForTesting(
 }
 
 void IndexedDBContextImpl::GetNextBlobNumberForTesting(
-    const storage::BucketLocator& bucket_locator,
+    const blink::StorageKey& storage_key,
     int64_t database_id,
     GetNextBlobNumberForTestingCallback callback) {
   IndexedDBBucketStateHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      GetIDBFactory()->GetOrOpenBucketFactory(bucket_locator, data_path(),
+      GetIDBFactory()->GetOrOpenBucketFactory(storage_key, data_path(),
                                               /*create_if_missing=*/true);
   CHECK(s.ok()) << s.ToString();
   CHECK(handle.IsHeld());
@@ -640,14 +638,14 @@ void IndexedDBContextImpl::GetNextBlobNumberForTesting(
 }
 
 void IndexedDBContextImpl::GetPathForBlobForTesting(
-    const storage::BucketLocator& bucket_locator,
+    const blink::StorageKey& storage_key,
     int64_t database_id,
     int64_t blob_number,
     GetPathForBlobForTestingCallback callback) {
   IndexedDBBucketStateHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      GetIDBFactory()->GetOrOpenBucketFactory(bucket_locator, data_path(),
+      GetIDBFactory()->GetOrOpenBucketFactory(storage_key, data_path(),
                                               /*create_if_missing=*/true);
   CHECK(s.ok()) << s.ToString();
   CHECK(handle.IsHeld());

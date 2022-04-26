@@ -236,27 +236,21 @@ TEST_F(IndexedDBFactoryTest, BasicFactoryCreationAndTearDown) {
 
   const blink::StorageKey storage_key_1 =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator_1 = storage::BucketLocator();
-  bucket_locator_1.storage_key = storage_key_1;
   const blink::StorageKey storage_key_2 =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:82");
-  auto bucket_locator_2 = storage::BucketLocator();
-  bucket_locator_2.storage_key = storage_key_2;
 
   IndexedDBBucketStateHandle bucket_state1_handle;
   IndexedDBBucketStateHandle bucket_state2_handle;
   leveldb::Status s;
 
   std::tie(bucket_state1_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator_1,
-                                        context()->data_path(),
+      factory()->GetOrOpenBucketFactory(storage_key_1, context()->data_path(),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state1_handle.IsHeld()) << s.ToString();
   EXPECT_TRUE(s.ok()) << s.ToString();
 
   std::tie(bucket_state2_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator_2,
-                                        context()->data_path(),
+      factory()->GetOrOpenBucketFactory(storage_key_2, context()->data_path(),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state2_handle.IsHeld()) << s.ToString();
   EXPECT_TRUE(s.ok()) << s.ToString();
@@ -274,13 +268,12 @@ TEST_F(IndexedDBFactoryTest, CloseSequenceStarts) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = storage_key;
+
   IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(storage_key, context()->data_path(),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
   bucket_state_handle.Release();
@@ -300,13 +293,12 @@ TEST_F(IndexedDBFactoryTest, ImmediateClose) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = storage_key;
+
   IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(storage_key, context()->data_path(),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
   bucket_state_handle.Release();
@@ -324,15 +316,14 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = storage_key;
+
   IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
   // Open a connection & immediately release it to cause the closing sequence to
   // start.
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(storage_key, context()->data_path(),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
   bucket_state_handle.Release();
@@ -356,7 +347,7 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
   // Open a connection & immediately release it to cause the closing sequence to
   // start again.
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(storage_key, context()->data_path(),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
   bucket_state_handle.Release();
@@ -377,7 +368,7 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
 
   // Stop sweep by opening a connection.
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(storage_key, context()->data_path(),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
   EXPECT_FALSE(
@@ -403,7 +394,7 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
   //  Finally, move the clock forward so the storage key should allow a sweep.
   clock.Advance(IndexedDBBucketState::kMaxEarliestBucketSweepFromNow);
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(storage_key, context()->data_path(),
                                         /*create_if_missing=*/true);
   bucket_state_handle.Release();
   factory()->GetBucketFactory(storage_key)->close_timer()->FireNow();
@@ -425,15 +416,14 @@ TEST_F(IndexedDBFactoryTestWithMockTime, TombstoneSweeperTiming) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = storage_key;
+
   IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
   // Open a connection & immediately release it to cause the closing sequence to
   // start.
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(storage_key, context()->data_path(),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
 
@@ -464,15 +454,14 @@ TEST_F(IndexedDBFactoryTestWithMockTime, CompactionTaskTiming) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = storage_key;
+
   IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
   // Open a connection & immediately release it to cause the closing sequence to
   // start.
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(storage_key, context()->data_path(),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
 
@@ -506,15 +495,13 @@ TEST_F(IndexedDBFactoryTest, CompactionKillSwitchWorks) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = storage_key;
   IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
   // Open a connection & immediately release it to cause the closing sequence to
   // start.
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(storage_key, context()->data_path(),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
 
@@ -527,13 +514,12 @@ TEST_F(IndexedDBFactoryTest, InMemoryFactoriesStay) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = storage_key;
+
   IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(storage_key, context()->data_path(),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
   EXPECT_TRUE(StorageBucketFromHandle(bucket_state_handle)
@@ -562,13 +548,12 @@ TEST_F(IndexedDBFactoryTest, TooLongOrigin) {
   const blink::StorageKey too_long_storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://" + origin +
                                                     ":81/");
-  auto too_long_bucket_locator = storage::BucketLocator();
-  too_long_bucket_locator.storage_key = too_long_storage_key;
+
   IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(too_long_bucket_locator,
+      factory()->GetOrOpenBucketFactory(too_long_storage_key,
                                         context()->data_path(),
                                         /*create_if_missing=*/true);
   EXPECT_FALSE(bucket_state_handle.IsHeld());
@@ -605,13 +590,12 @@ TEST_F(IndexedDBFactoryTest, ContextDestructionClosesHandles) {
   SetupContext();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = storage_key;
+
   IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(storage_key, context()->data_path(),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
 
@@ -625,13 +609,12 @@ TEST_F(IndexedDBFactoryTest, FactoryForceClose) {
   SetupContext();
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = storage_key;
+
   IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(storage_key, context()->data_path(),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
 
@@ -846,10 +829,8 @@ TEST_F(IndexedDBFactoryTest, GetDatabaseNames_NoFactory) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = storage_key;
 
-  factory()->GetDatabaseInfo(callbacks, bucket_locator, context()->data_path());
+  factory()->GetDatabaseInfo(callbacks, storage_key, context()->data_path());
 
   EXPECT_TRUE(callbacks->info_called());
   // Don't create a factory if one doesn't exist.
@@ -864,17 +845,16 @@ TEST_F(IndexedDBFactoryTest, GetDatabaseNames_ExistingFactory) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = storage_key;
+
   IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
+      factory()->GetOrOpenBucketFactory(storage_key, context()->data_path(),
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
 
-  factory()->GetDatabaseInfo(callbacks, bucket_locator, context()->data_path());
+  factory()->GetDatabaseInfo(callbacks, storage_key, context()->data_path());
 
   EXPECT_TRUE(callbacks->info_called());
   EXPECT_TRUE(factory()->GetBucketFactory(storage_key));

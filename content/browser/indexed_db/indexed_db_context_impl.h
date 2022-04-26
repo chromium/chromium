@@ -40,16 +40,15 @@ class Clock;
 class FilePath;
 class SequencedTaskRunner;
 class Value;
-}  // namespace base
+}
 
 namespace blink {
 class StorageKey;
-}  // namespace blink
+}
 
 namespace storage {
-struct BucketLocator;
 class QuotaClientCallbackWrapper;
-}  // namespace storage
+}
 
 namespace content {
 class IndexedDBConnection;
@@ -123,18 +122,18 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void HasV2SchemaCorruptionForTesting(
       const blink::StorageKey& storage_key,
       HasV2SchemaCorruptionForTestingCallback callback) override;
-  void WriteToIndexedDBForTesting(const storage::BucketLocator& bucket_locator,
+  void WriteToIndexedDBForTesting(const blink::StorageKey& storage_key,
                                   const std::string& key,
                                   const std::string& value,
                                   base::OnceClosure callback) override;
   void GetBlobCountForTesting(const blink::StorageKey& storage_key,
                               GetBlobCountForTestingCallback callback) override;
   void GetNextBlobNumberForTesting(
-      const storage::BucketLocator& bucket_locator,
+      const blink::StorageKey& storage_key,
       int64_t database_id,
       GetNextBlobNumberForTestingCallback callback) override;
   void GetPathForBlobForTesting(
-      const storage::BucketLocator& bucket_locator,
+      const blink::StorageKey& storage_key,
       int64_t database_id,
       int64_t blob_number,
       GetPathForBlobForTestingCallback callback) override;
