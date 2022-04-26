@@ -6821,7 +6821,7 @@
         {
           'name': 'BlockPopups',
           'value': 2,
-          'caption': '''Do not allow any site to show popups''',
+          'caption': '''Do not allow any site to show pop-ups''',
         },
       ],
       'supported_on': [
@@ -6836,7 +6836,7 @@
       },
       'example_value': 1,
       'id': 52,
-      'caption': '''Default popups setting''',
+      'caption': '''Default pop-ups setting''',
       'tags': [],
       'desc': '''Setting the policy to 1 lets websites display pop-ups. Setting the policy to 2 denies pop-ups.
 
@@ -8549,7 +8549,7 @@
       },
       'example_value': ['https://www.example.com', '[*.]example.edu'],
       'id': 75,
-      'caption': '''Allow popups on these sites''',
+      'caption': '''Allow pop-ups on these sites''',
       'tags': [],
       'desc': '''Setting the policy lets you set a list of URL patterns that specify the sites that can open pop-ups.
 
@@ -8618,7 +8618,7 @@
       },
       'example_value': ['https://www.example.com', '[*.]example.edu'],
       'id': 76,
-      'caption': '''Block popups on these sites''',
+      'caption': '''Block pop-ups on these sites''',
       'tags': [],
       'desc': '''Setting the policy lets you set a list of URL patterns that specify the sites that can't open pop-ups.
 
@@ -9314,11 +9314,11 @@
       'items': [
         {
           'value': True,
-          'caption': 'Only allow popups opened with a target of <ph name="BLANK_PAGE_NAME">_blank</ph> to interact with the page that opened the popup if the opener page explicitly opts-in to such interaction',
+          'caption': 'Only allow pop-ups opened with a target of <ph name="BLANK_PAGE_NAME">_blank</ph> to interact with the page that opened the pop-up if the opener page explicitly opts-in to such interaction',
         },
         {
           'value': False,
-          'caption': 'Allow all popups opened with a target of <ph name="BLANK_PAGE_NAME">_blank</ph> to interact the page that requested to open the popup unless the opener page explicitly opts-out of such interaction ',
+          'caption': 'Allow all pop-ups opened with a target of <ph name="BLANK_PAGE_NAME">_blank</ph> to interact the page that requested to open the pop-up unless the opener page explicitly opts-out of such interaction ',
         },
       ],
       'deprecated': True,
@@ -9327,7 +9327,7 @@
       'id': 802,
       'caption': '''Do not set <ph name="WINDOW_OPENER_PROPERTY">window.opener</ph> for links targeting <ph name="BLANK_PAGE_NAME">_blank</ph>''',
       'tags': [],
-      'desc': '''Setting the policy to Disabled allows popups targeting <ph name="BLANK_PAGE_NAME">_blank</ph> to access (via JavaScript) the page that requested to open the popup.
+      'desc': '''Setting the policy to Disabled allows pop-ups targeting <ph name="BLANK_PAGE_NAME">_blank</ph> to access (via JavaScript) the page that requested to open the pop-up.
 
       Setting the policy to Enabled or leaving it unset causes the <ph name="WINDOW_OPENER_PROPERTY">window.opener</ph> property to be set to <ph name="NULL_VALUE">null</ph> unless the anchor specifies <ph name="REL_OPENER_ATTRIBUTE">rel="opener"</ph>.
 
@@ -23786,7 +23786,7 @@
       'default_for_enterprise_users': False,
       'example_value': False,
       'id': 533,
-      'caption': '''Allows a page to show popups during its unloading''',
+      'caption': '''Allows a page to show pop-ups during its unloading''',
       'tags': [],
       'desc': '''Setting the policy to True allows pages to show pop-ups while the pages unload.
 
@@ -31559,7 +31559,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     {
       'id': 12,
       'name': 'PopupsSettings',
-      'caption': '''Popups settings''',
+      'caption': '''Pop-ups settings''',
       'policies': [
         'DefaultPopupsSetting',
         'PopupsAllowedForUrls',
