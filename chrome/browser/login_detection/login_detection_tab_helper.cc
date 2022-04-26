@@ -13,7 +13,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_isolation/site_isolation_policy.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -59,7 +58,8 @@ LoginDetectionTabHelper::LoginDetectionTabHelper(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<LoginDetectionTabHelper>(*web_contents),
-      oauth_login_detector_(std::make_unique<OAuthLoginDetector>()) {
+      oauth_login_detector_(std::make_unique<OAuthLoginDetector>()),
+      ukm_source_id_(web_contents->GetMainFrame()->GetPageUkmSourceId()) {
   DCHECK(IsLoginDetectionFeatureEnabled());
 }
 
@@ -129,12 +129,15 @@ void LoginDetectionTabHelper::DidOpenAsPopUp(
   oauth_login_detector_->DidOpenAsPopUp(opener_navigation_url);
 }
 
+void LoginDetectionTabHelper::PrimaryPageChanged(content::Page& page) {
+  ukm_source_id_ = page.GetMainDocument().GetPageUkmSourceId();
+}
+
 void LoginDetectionTabHelper::WebContentsDestroyed() {
   if (auto signedin_site = oauth_login_detector_->GetPopUpLoginFlowSite()) {
     ProcessNewSignedInSite(*signedin_site);
     RecordLoginDetectionMetrics(
-        LoginDetectionType::kOauthPopUpFirstTimeLoginFlow,
-        ukm::GetSourceIdForWebContentsDocument(web_contents()));
+        LoginDetectionType::kOauthPopUpFirstTimeLoginFlow, ukm_source_id_);
   }
   oauth_login_detector_.reset();
 }
