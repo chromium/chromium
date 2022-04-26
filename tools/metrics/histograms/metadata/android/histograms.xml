@@ -4249,8 +4249,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Visibility.Global" enum="WebViewVisibility"
-    expires_after="2022-06-01">
+    expires_after="2023-04-19">
   <owner>idries@google.com</owner>
+  <owner>mvanouwerkerk@chromium.org</owner>
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -4265,8 +4266,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Visibility.PerWebView"
-    enum="WebViewVisibility" expires_after="2022-06-01">
+    enum="WebViewVisibility" expires_after="2023-04-19">
   <owner>idries@google.com</owner>
+  <owner>mvanouwerkerk@chromium.org</owner>
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
