@@ -159,9 +159,14 @@ class HeaderView : public views::View {
   METADATA_HEADER(HeaderView);
   HeaderView(base::RepeatingClosure callback, Browser* browser)
       : layout_(SetLayoutManager(std::make_unique<views::FlexLayout>())) {
+    constexpr int kHeaderHeight = 44;
+    SetPreferredSize(gfx::Size(0, kHeaderHeight));
+
+    constexpr int kHorizontalMargin = 8;
     layout_->SetOrientation(views::LayoutOrientation::kHorizontal)
         .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-        .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+        .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+        .SetInteriorMargin(gfx::Insets::VH(0, kHorizontalMargin));
 
     dse_image_view_ = AddChildView(std::make_unique<DseImageView>(browser));
     dse_image_view_->SetProperty(
@@ -245,9 +250,6 @@ class HeaderView : public views::View {
     if (feedback_button_)
       feedback_button_->UpdateIcon();
     close_button_->UpdateIcon();
-
-    layout_->SetInteriorMargin(
-        GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN));
   }
 
   raw_ptr<DseImageView> dse_image_view_ = nullptr;
