@@ -30,7 +30,6 @@ per-file *.gni=*
 per-file BUILD.gn=file://build/OWNERS
 # For lacros-qa-qualified-tracking-roller related changes:
 per-file LACROS_QA_QUALIFIED_VERSION=lacros-tracking-roller@chops-service-accounts.iam.gserviceaccount.com
-per-file LACROS_QA_QUALIFIED_VERSION=liaoyuke@chromium.org
 # TODO(https://crbug.com/1292666): remove the following line when
 # lacros-qa-qualified-tracking-roller is stable
 per-file LACROS_QA_QUALIFIED_VERSION=svenzheng@chromium.org
