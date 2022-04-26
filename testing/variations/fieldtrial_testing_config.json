@@ -7623,46 +7623,6 @@
             ]
         }
     ],
-    "UsernameFirstFlow": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UsernameFirstFlow"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UsernameFirstFlowFilling": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UsernameFirstFlowFilling"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8ConcurrentSparkplug": [
         {
             "platforms": [

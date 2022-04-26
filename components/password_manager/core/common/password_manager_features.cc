@@ -203,12 +203,14 @@ const base::Feature kUnifiedPasswordManagerDesktop = {
 // Enables support of sending votes on username first flow. The votes are sent
 // on single username forms and are based on user interaction with the save
 // prompt.
+// TODO(crbug.com/959776): Clean up code 2-3 milestones after the launch.
 const base::Feature kUsernameFirstFlow = {"UsernameFirstFlow",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables support of filling and saving on username first flow.
+// TODO(crbug.com/959776): Clean up code 2-3 milestones after the launch.
 const base::Feature kUsernameFirstFlowFilling = {
-    "UsernameFirstFlowFilling", base::FEATURE_DISABLED_BY_DEFAULT};
+    "UsernameFirstFlowFilling", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables support of sending additional votes on username first flow. The votes
 // are sent on single password forms and contain information about preceding
