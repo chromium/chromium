@@ -24,8 +24,10 @@ def Main():
   args = parser.parse_args()
 
   # Remove the output if it exists already.
-  if os.path.exists(args.output):
+  try:
     os.unlink(args.output)
+  except FileNotFoundError:
+    pass
 
   plist = plist_util.LoadPList(args.plist)
   package_type = plist['CFBundlePackageType']
@@ -47,8 +49,4 @@ def Main():
 
 
 if __name__ == '__main__':
-  # TODO(https://crbug.com/941669): Temporary workaround until all scripts use
-  # python3 by default.
-  if sys.version_info[0] < 3:
-    os.execvp('python3', ['python3'] + sys.argv)
   sys.exit(Main())

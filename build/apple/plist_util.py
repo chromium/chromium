@@ -12,11 +12,6 @@ import sys
 import tempfile
 import shlex
 
-if sys.version_info.major < 3:
-  basestring_compat = basestring
-else:
-  basestring_compat = str
-
 # Xcode substitutes variables like ${PRODUCT_NAME} or $(PRODUCT_NAME) when
 # compiling Info.plist. It also supports supports modifiers like :identifier
 # or :rfc1034identifier. SUBSTITUTION_REGEXP_LIST is a list of regular
@@ -89,46 +84,30 @@ def Interpolate(value, substitutions):
     return {k: Interpolate(v, substitutions) for k, v in value.items()}
   if isinstance(value, list):
     return [Interpolate(v, substitutions) for v in value]
-  if isinstance(value, basestring_compat):
+  if isinstance(value, str):
     return InterpolateString(value, substitutions)
   return value
 
 
 def LoadPList(path):
   """Loads Plist at |path| and returns it as a dictionary."""
-  if sys.version_info.major == 2:
-    fd, name = tempfile.mkstemp()
-    try:
-      subprocess.check_call(['plutil', '-convert', 'xml1', '-o', name, path])
-      with os.fdopen(fd, 'rb') as f:
-        return plistlib.readPlist(f)
-    finally:
-      os.unlink(name)
-  else:
-    with open(path, 'rb') as f:
-      return plistlib.load(f)
+  with open(path, 'rb') as f:
+    return plistlib.load(f)
 
 
 def SavePList(path, format, data):
   """Saves |data| as a Plist to |path| in the specified |format|."""
-  # The below does not replace the destination file but update it in place,
-  # so if more than one hardlink points to destination all of them will be
-  # modified. This is not what is expected, so delete destination file if
-  # it does exist.
-  if os.path.exists(path):
+  # The open() call does not replace the destination file but updates it
+  # in place, so if more than one hardlink points to destination all of them
+  # will be modified. This is not what is expected, so delete destination file
+  # if it does exist.
+  try:
     os.unlink(path)
-  if sys.version_info.major == 2:
-    fd, name = tempfile.mkstemp()
-    try:
-      with os.fdopen(fd, 'wb') as f:
-        plistlib.writePlist(data, f)
-      subprocess.check_call(['plutil', '-convert', format, '-o', path, name])
-    finally:
-      os.unlink(name)
-  else:
-    with open(path, 'wb') as f:
-      plist_format = {'binary1': plistlib.FMT_BINARY, 'xml1': plistlib.FMT_XML}
-      plistlib.dump(data, f, fmt=plist_format[format])
+  except FileNotFoundError:
+    pass
+  with open(path, 'wb') as f:
+    plist_format = {'binary1': plistlib.FMT_BINARY, 'xml1': plistlib.FMT_XML}
+    plistlib.dump(data, f, fmt=plist_format[format])
 
 
 def MergePList(plist1, plist2):
@@ -243,10 +222,6 @@ class SubstituteAction(Action):
 
 
 def Main():
-  # Cache this codec so that plistlib can find it. See
-  # https://crbug.com/1005190#c2 for more details.
-  codecs.lookup('utf-8')
-
   parser = argparse.ArgumentParser(description='manipulate plist files')
   subparsers = parser.add_subparsers()
 
@@ -258,8 +233,4 @@ def Main():
 
 
 if __name__ == '__main__':
-  # TODO(https://crbug.com/941669): Temporary workaround until all scripts use
-  # python3 by default.
-  if sys.version_info[0] < 3:
-    os.execvp('python3', ['python3'] + sys.argv)
   sys.exit(Main())

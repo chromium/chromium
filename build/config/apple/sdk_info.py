@@ -3,8 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import argparse
 import doctest
 import itertools
@@ -14,10 +12,6 @@ import re
 import subprocess
 import sys
 
-if sys.version_info.major < 3:
-  basestring_compat = basestring
-else:
-  basestring_compat = str
 
 # src directory
 ROOT_SRC_DIR = os.path.dirname(
@@ -27,15 +21,6 @@ ROOT_SRC_DIR = os.path.dirname(
 # This script prints information about the build system, the operating
 # system and the iOS or Mac SDK (depending on the platform "iphonesimulator",
 # "iphoneos" or "macosx" generally).
-
-
-def LoadPList(path):
-  """Loads Plist at |path| and returns it as a dictionary."""
-  # Cloned from //build/apple/plist_util.py.
-  if sys.version_info.major == 2:
-    return plistlib.readPlist(path)
-  with open(path, 'rb') as f:
-    return plistlib.load(f)
 
 
 def SplitVersion(version):
@@ -71,7 +56,8 @@ def FillXcodeVersion(settings, developer_dir):
   if developer_dir:
     xcode_version_plist_path = os.path.join(developer_dir,
                                             'Contents/version.plist')
-    version_plist = LoadPList(xcode_version_plist_path)
+    with open(xcode_version_plist_path, 'rb') as f:
+      version_plist = plistlib.load(f)
     settings['xcode_version'] = FormatVersion(
         version_plist['CFBundleShortVersionString'])
     settings['xcode_version_int'] = int(settings['xcode_version'], 10)
@@ -166,7 +152,7 @@ def main():
     value = settings[key]
     if args.create_symlink_at and '_path' in key:
       value = CreateXcodeSymlinkAt(value, args.create_symlink_at)
-    if isinstance(value, basestring_compat):
+    if isinstance(value, str):
       value = '"%s"' % value
     print('%s=%s' % (key, value))
 
