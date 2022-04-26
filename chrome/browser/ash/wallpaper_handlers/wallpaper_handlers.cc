@@ -591,16 +591,14 @@ void GooglePhotosFetcher<T>::AddRequestAndStartIfNecessary(
   signin::ScopeSet scopes;
   scopes.insert(GaiaConstants::kPhotosModuleOAuth2Scope);
 
-  DCHECK(token_fetchers_.find(service_url) == token_fetchers_.end());
-  token_fetchers_[service_url] =
-      std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          "wallpaper_google_photos_fetcher", identity_manager_, scopes,
-          base::BindOnce(
-              &GooglePhotosFetcher::OnTokenReceived,
-              base::Unretained(this), /*`this` owns `token_fetchers_`.*/
-              service_url, /*start_time=*/base::TimeTicks::Now()),
-          signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-          signin::ConsentLevel::kSignin);
+  auto fetcher = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
+      "wallpaper_google_photos_fetcher", identity_manager_, scopes,
+      signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+      signin::ConsentLevel::kSignin);
+  auto* fetcher_ptr = fetcher.get();
+  fetcher_ptr->Start(base::BindOnce(
+      &GooglePhotosFetcher::OnTokenReceived, weak_factory_.GetWeakPtr(),
+      std::move(fetcher), service_url, /*start_time=*/base::TimeTicks::Now()));
 }
 
 template <typename T>
@@ -611,6 +609,7 @@ absl::optional<base::Value> GooglePhotosFetcher<T>::CreateErrorResponse(
 
 template <typename T>
 void GooglePhotosFetcher<T>::OnTokenReceived(
+    std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> fetcher,
     const GURL& service_url,
     base::TimeTicks start_time,
     GoogleServiceAuthError error,
@@ -633,26 +632,27 @@ void GooglePhotosFetcher<T>::OnTokenReceived(
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                       "Bearer " + token_info.token);
 
-  DCHECK(url_loaders_.find(service_url) == url_loaders_.end());
-  url_loaders_[service_url] = network::SimpleURLLoader::Create(
-      std::move(resource_request), traffic_annotation_);
-  url_loaders_[service_url]->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+  auto loader = network::SimpleURLLoader::Create(std::move(resource_request),
+                                                 traffic_annotation_);
+  auto* loader_ptr = loader.get();
+  loader_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       profile_->GetURLLoaderFactory().get(),
       base::BindOnce(&GooglePhotosFetcher::OnJsonReceived,
-                     base::Unretained(this), /*`this` owns `url_loaders_`.*/
-                     service_url, start_time));
+                     weak_factory_.GetWeakPtr(), std::move(loader), service_url,
+                     start_time));
 }
 
 template <typename T>
 void GooglePhotosFetcher<T>::OnJsonReceived(
+    std::unique_ptr<network::SimpleURLLoader> loader,
     const GURL& service_url,
     base::TimeTicks start_time,
     std::unique_ptr<std::string> response_body) {
-  const int net_error = url_loaders_[service_url]->NetError();
+  const int net_error = loader->NetError();
   if (net_error != net::OK || !response_body) {
     LOG(ERROR) << "Google Photos API request to " << service_url.spec()
                << " failed.";
-    auto* response_info = url_loaders_[service_url]->ResponseInfo();
+    auto* response_info = loader->ResponseInfo();
     absl::optional<base::Value> error_response;
     if (response_info && response_info->headers) {
       LOG(ERROR) << "HTTP response code: "
@@ -703,9 +703,6 @@ void GooglePhotosFetcher<T>::OnResponseReady(
 
   for (auto& callback : pending_client_callbacks_[service_url])
     std::move(callback).Run(mojo::Clone(result));
-
-  token_fetchers_.erase(service_url);
-  url_loaders_.erase(service_url);
   pending_client_callbacks_.erase(service_url);
 }
 

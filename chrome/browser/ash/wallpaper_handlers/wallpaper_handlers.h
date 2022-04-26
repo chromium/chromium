@@ -181,11 +181,14 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
   virtual absl::optional<base::Value> CreateErrorResponse(int error_code);
 
  private:
-  void OnTokenReceived(const GURL& service_url,
-                       base::TimeTicks start_time,
-                       GoogleServiceAuthError error,
-                       signin::AccessTokenInfo token_info);
-  void OnJsonReceived(const GURL& service_url,
+  void OnTokenReceived(
+      std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> fetcher,
+      const GURL& service_url,
+      base::TimeTicks start_time,
+      GoogleServiceAuthError error,
+      signin::AccessTokenInfo token_info);
+  void OnJsonReceived(std::unique_ptr<network::SimpleURLLoader> loader,
+                      const GURL& service_url,
                       base::TimeTicks start_time,
                       std::unique_ptr<std::string> response_body);
   void OnResponseReady(const GURL& service_url,
@@ -208,15 +211,6 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
   // URL's callbacks are called and then removed when the download finishes,
   // successfully or in error.
   std::map<GURL, std::vector<ClientCallback>> pending_client_callbacks_;
-
-  // OAuth2 access token fetcher for each distinct query this fetcher has been
-  // asked to make. A URL's fetcher exists until its callbacks have been called.
-  std::map<GURL, std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>>
-      token_fetchers_;
-
-  // Used to download the client's desired information from the Google Photos
-  // service. A URL's loader exists until its callbacks have been called.
-  std::map<GURL, std::unique_ptr<network::SimpleURLLoader>> url_loaders_;
 
   base::WeakPtrFactory<GooglePhotosFetcher> weak_factory_{this};
 };
