@@ -2525,15 +2525,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Android.Bookmarks.BottomSheet.Open">
-  <owner>shaktisahu@chromium.org</owner>
-  <description>
-    User tapped on the star icon from the app menu to bookmark a page. This
-    resulted in opening the bookmarks bottom sheet that presents a list of
-    destination folders to choose from for saving the bookmark.
-  </description>
-</action>
-
 <action name="Android.ChromeHome.AcceptedSurvey">
   <obsolete>
     Deprecated 1/2018. Replaced with the
