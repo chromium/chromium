@@ -7995,11 +7995,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"enable-chrome-management-page-android",
-     flag_descriptions::kChromeManagementPageAndroidName,
-     flag_descriptions::kChromeManagementPageAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(policy::features::kChromeManagementPageAndroid)},
-
     {"context-menu-popup-style", flag_descriptions::kContextMenuPopupStyleName,
      flag_descriptions::kContextMenuPopupStyleDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kContextMenuPopupStyle)},

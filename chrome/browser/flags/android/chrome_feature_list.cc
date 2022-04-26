@@ -352,7 +352,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &password_manager::features::kUnifiedPasswordManagerAndroid,
     &password_manager::features::kPasswordEditDialogWithDetails,
     &performance_hints::features::kContextMenuPerformanceInfo,
-    &policy::features::kChromeManagementPageAndroid,
     &privacy_sandbox::kPrivacySandboxSettings3,
     &query_tiles::features::kQueryTiles,
     &query_tiles::features::kQueryTilesInNTP,

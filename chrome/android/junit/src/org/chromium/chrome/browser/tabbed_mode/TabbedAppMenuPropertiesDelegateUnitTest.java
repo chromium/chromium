@@ -81,7 +81,7 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.EnableFeatures({ChromeFeatureList.WEB_FEED, ChromeFeatureList.READ_LATER,
-        ChromeFeatureList.BOOKMARKS_REFRESH, ChromeFeatureList.CHROME_MANAGEMENT_PAGE})
+        ChromeFeatureList.BOOKMARKS_REFRESH})
 @Features.DisableFeatures({ChromeFeatureList.READ_LATER, ChromeFeatureList.SHOPPING_LIST})
 public class TabbedAppMenuPropertiesDelegateUnitTest {
     // Costants defining flags that determines multi-window menu items visibility.
@@ -230,7 +230,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 R.id.find_in_page_id, R.id.add_to_homescreen_id,
                 R.id.request_desktop_site_row_menu_id, R.id.auto_dark_web_contents_row_menu_id,
                 R.id.divider_line_id, R.id.preferences_id, R.id.help_id,
-                R.id.managed_by_divider_line_id, R.id.managed_by_standard_menu_id};
+                R.id.managed_by_divider_line_id, R.id.managed_by_menu_id};
         assertMenuItemsAreEqual(menu, expectedItems);
     }
 

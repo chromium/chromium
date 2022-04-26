@@ -1200,19 +1200,14 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     }
 
     protected void updateManagedByMenuItem(Menu menu, @Nullable Tab currentTab) {
-        MenuItem managedByMenuItem = menu.findItem(R.id.managed_by_menu_id);
         MenuItem managedByDividerLine = menu.findItem(R.id.managed_by_divider_line_id);
-        MenuItem managedByStandardMenuItem = menu.findItem(R.id.managed_by_standard_menu_id);
+        MenuItem managedByMenuItem = menu.findItem(R.id.managed_by_menu_id);
 
         boolean managedByMenuItemVisible =
                 currentTab != null && shouldShowManagedByMenuItem(currentTab);
-        boolean chromeManagementPageEnabled =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_MANAGEMENT_PAGE);
 
-        managedByMenuItem.setVisible(managedByMenuItemVisible && !chromeManagementPageEnabled);
-        managedByDividerLine.setVisible(managedByMenuItemVisible && chromeManagementPageEnabled);
-        managedByStandardMenuItem.setVisible(
-                managedByMenuItemVisible && chromeManagementPageEnabled);
+        managedByDividerLine.setVisible(managedByMenuItemVisible);
+        managedByMenuItem.setVisible(managedByMenuItemVisible);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

@@ -14,9 +14,6 @@
 namespace policy {
 namespace features {
 
-// Enable chrome://management page on Android.
-POLICY_EXPORT extern const base::Feature kChromeManagementPageAndroid;
-
 // Enable force installed Chrome apps policy migration.
 POLICY_EXPORT extern const base::Feature kDefaultChromeAppsMigration;
 

@@ -3148,13 +3148,6 @@ const char kEnableAutofillRefreshStyleName[] =
 const char kEnableAutofillRefreshStyleDescription[] =
     "Enable modernized style for Autofill on Android";
 
-const char kChromeManagementPageAndroidName[] =
-    "Enable chrome://management page on Android";
-const char kChromeManagementPageAndroidDescription[] =
-    "Enable chrome://management page on Android, which aims to inform the user "
-    "if their browser is managed by their employer along with other useful "
-    "information.";
-
 const char kEnableCommandLineOnNonRootedName[] =
     "Enable command line on non-rooted devices";
 const char kEnableCommandLineOnNoRootedDescription[] =

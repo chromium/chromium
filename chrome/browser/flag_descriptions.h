@@ -1768,9 +1768,6 @@ extern const char kAutofillManualFallbackAndroidDescription[];
 extern const char kEnableAutofillRefreshStyleName[];
 extern const char kEnableAutofillRefreshStyleDescription[];
 
-extern const char kChromeManagementPageAndroidName[];
-extern const char kChromeManagementPageAndroidDescription[];
-
 extern const char kEnableCommandLineOnNonRootedName[];
 extern const char kEnableCommandLineOnNoRootedDescription[];
 

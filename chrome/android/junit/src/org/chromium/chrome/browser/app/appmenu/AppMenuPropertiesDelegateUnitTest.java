@@ -204,7 +204,6 @@ public class AppMenuPropertiesDelegateUnitTest {
         setBookmarkItemRowEnabled(false);
         setReadingListItemRowEnabled(false);
         setShoppingListItemRowEnabled(false);
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.CHROME_MANAGEMENT_PAGE, true);
         FeatureList.setTestValues(mTestValues);
     }
 
@@ -233,11 +232,6 @@ public class AppMenuPropertiesDelegateUnitTest {
                     enabled);
         });
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.SHOPPING_LIST, enabled);
-    }
-
-    private void setChromeManagementPageEnabled(boolean enabled) {
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.CHROME_MANAGEMENT_PAGE, enabled);
-        FeatureList.setTestValues(mTestValues);
     }
 
     @After
@@ -415,7 +409,7 @@ public class AppMenuPropertiesDelegateUnitTest {
                 R.id.divider_line_id, R.id.share_row_menu_id, R.id.find_in_page_id,
                 R.id.translate_id, R.id.add_to_homescreen_id, R.id.request_desktop_site_row_menu_id,
                 R.id.auto_dark_web_contents_row_menu_id, R.id.divider_line_id, R.id.preferences_id,
-                R.id.help_id, R.id.managed_by_divider_line_id, R.id.managed_by_standard_menu_id};
+                R.id.help_id, R.id.managed_by_divider_line_id, R.id.managed_by_menu_id};
         assertMenuItemsAreEqual(menu, expectedItems);
     }
 
@@ -822,8 +816,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    public void managedByMenuItem_ChromeManagementPageDisabled() {
-        setChromeManagementPageEnabled(false);
+    public void managedByMenuItem_ChromeManagementPage() {
         setUpMocksForPageMenu();
         setMenuOptions(new MenuOptions().withShowAddToHomeScreen());
         doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowManagedByMenuItem(any(Tab.class));
@@ -833,34 +826,9 @@ public class AppMenuPropertiesDelegateUnitTest {
         mAppMenuPropertiesDelegate.prepareMenu(menu, null);
 
         MenuItem managedByMenuItem = menu.findItem(R.id.managed_by_menu_id);
-        MenuItem managedByStandardMenuItem = menu.findItem(R.id.managed_by_standard_menu_id);
 
         Assert.assertNotNull(managedByMenuItem);
         Assert.assertTrue(managedByMenuItem.isVisible());
-
-        Assert.assertNotNull(managedByStandardMenuItem);
-        Assert.assertTrue(!managedByStandardMenuItem.isVisible());
-    }
-
-    @Test
-    public void managedByMenuItem_ChromeManagementPageEnabled() {
-        setChromeManagementPageEnabled(true);
-        setUpMocksForPageMenu();
-        setMenuOptions(new MenuOptions().withShowAddToHomeScreen());
-        doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowManagedByMenuItem(any(Tab.class));
-
-        Assert.assertEquals(MenuGroup.PAGE_MENU, mAppMenuPropertiesDelegate.getMenuGroup());
-        Menu menu = createTestMenu();
-        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
-
-        MenuItem managedByMenuItem = menu.findItem(R.id.managed_by_menu_id);
-        MenuItem managedByStandardMenuItem = menu.findItem(R.id.managed_by_standard_menu_id);
-
-        Assert.assertNotNull(managedByMenuItem);
-        Assert.assertTrue(!managedByMenuItem.isVisible());
-
-        Assert.assertNotNull(managedByStandardMenuItem);
-        Assert.assertTrue(managedByStandardMenuItem.isVisible());
     }
 
     private void setUpMocksForPageMenu() {
