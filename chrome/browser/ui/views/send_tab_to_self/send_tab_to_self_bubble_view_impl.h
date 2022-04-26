@@ -35,8 +35,7 @@ class SendTabToSelfBubbleViewImpl : public SendTabToSelfBubbleView,
  public:
   // Bubble will be anchored to |anchor_view|.
   SendTabToSelfBubbleViewImpl(views::View* anchor_view,
-                              content::WebContents* web_contents,
-                              SendTabToSelfBubbleController* controller);
+                              content::WebContents* web_contents);
 
   SendTabToSelfBubbleViewImpl(const SendTabToSelfBubbleViewImpl&) = delete;
   SendTabToSelfBubbleViewImpl& operator=(const SendTabToSelfBubbleViewImpl&) =

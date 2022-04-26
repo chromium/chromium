@@ -250,11 +250,9 @@ ShowTranslateBubbleResult TestBrowserWindow::ShowTranslateBubble(
 }
 
 qrcode_generator::QRCodeGeneratorBubbleView*
-TestBrowserWindow::ShowQRCodeGeneratorBubble(
-    content::WebContents* contents,
-    qrcode_generator::QRCodeGeneratorBubbleController* controller,
-    const GURL& url,
-    bool show_back_button) {
+TestBrowserWindow::ShowQRCodeGeneratorBubble(content::WebContents* contents,
+                                             const GURL& url,
+                                             bool show_back_button) {
   return nullptr;
 }
 
@@ -266,18 +264,14 @@ SharingDialog* TestBrowserWindow::ShowSharingDialog(
 
 #if !BUILDFLAG(IS_ANDROID)
 sharing_hub::ScreenshotCapturedBubble*
-TestBrowserWindow::ShowScreenshotCapturedBubble(
-    content::WebContents* contents,
-    const gfx::Image& image,
-    sharing_hub::ScreenshotCapturedBubbleController* controller) {
+TestBrowserWindow::ShowScreenshotCapturedBubble(content::WebContents* contents,
+                                                const gfx::Image& image) {
   return nullptr;
 }
 #endif
 
 send_tab_to_self::SendTabToSelfBubbleView*
-TestBrowserWindow::ShowSendTabToSelfBubble(
-    content::WebContents* contents,
-    send_tab_to_self::SendTabToSelfBubbleController* controller) {
+TestBrowserWindow::ShowSendTabToSelfBubble(content::WebContents* contents) {
   return nullptr;
 }
 
@@ -287,8 +281,7 @@ views::Button* TestBrowserWindow::GetSharingHubIconButton() {
 }
 #else
 sharing_hub::SharingHubBubbleView* TestBrowserWindow::ShowSharingHubBubble(
-    content::WebContents* contents,
-    sharing_hub::SharingHubBubbleController* controller) {
+    content::WebContents* contents) {
   return nullptr;
 }
 #endif

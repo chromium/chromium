@@ -70,7 +70,6 @@ class Size;
 }
 
 namespace qrcode_generator {
-class QRCodeGeneratorBubbleController;
 class QRCodeGeneratorBubbleView;
 }  // namespace qrcode_generator
 
@@ -79,14 +78,11 @@ enum class AccessPoint;
 }
 
 namespace send_tab_to_self {
-class SendTabToSelfBubbleController;
 class SendTabToSelfBubbleView;
 }  // namespace send_tab_to_self
 
 namespace sharing_hub {
-class ScreenshotCapturedBubbleController;
 class ScreenshotCapturedBubble;
-class SharingHubBubbleController;
 class SharingHubBubbleView;
 }  // namespace sharing_hub
 
@@ -425,22 +421,18 @@ class BrowserWindow : public ui::BaseWindow {
   // Shows the Screenshot bubble.
   virtual sharing_hub::ScreenshotCapturedBubble* ShowScreenshotCapturedBubble(
       content::WebContents* contents,
-      const gfx::Image& image,
-      sharing_hub::ScreenshotCapturedBubbleController* controller) = 0;
+      const gfx::Image& image) = 0;
 
   // Shows the QR Code generator bubble. |url| is the URL for the initial code.
   virtual qrcode_generator::QRCodeGeneratorBubbleView*
-  ShowQRCodeGeneratorBubble(
-      content::WebContents* contents,
-      qrcode_generator::QRCodeGeneratorBubbleController* controller,
-      const GURL& url,
-      bool show_back_button) = 0;
+  ShowQRCodeGeneratorBubble(content::WebContents* contents,
+                            const GURL& url,
+                            bool show_back_button) = 0;
 
   // Shows the "send tab to self" bubble. This must only be called as a direct
   // result of user action.
   virtual send_tab_to_self::SendTabToSelfBubbleView* ShowSendTabToSelfBubble(
-      content::WebContents* contents,
-      send_tab_to_self::SendTabToSelfBubbleController* controller) = 0;
+      content::WebContents* contents) = 0;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns the PageActionIconView for the Sharing Hub.
@@ -449,8 +441,7 @@ class BrowserWindow : public ui::BaseWindow {
   // Shows the Sharing Hub bubble. This must only be called as a direct result
   // of user action.
   virtual sharing_hub::SharingHubBubbleView* ShowSharingHubBubble(
-      content::WebContents* contents,
-      sharing_hub::SharingHubBubbleController* controller) = 0;
+      content::WebContents* contents) = 0;
 #endif
 
   // Shows the translate bubble.

@@ -491,22 +491,18 @@ class BrowserView : public BrowserWindow,
   void ShowBookmarkBubble(const GURL& url, bool already_bookmarked) override;
   sharing_hub::ScreenshotCapturedBubble* ShowScreenshotCapturedBubble(
       content::WebContents* contents,
-      const gfx::Image& image,
-      sharing_hub::ScreenshotCapturedBubbleController* controller) override;
+      const gfx::Image& image) override;
   qrcode_generator::QRCodeGeneratorBubbleView* ShowQRCodeGeneratorBubble(
       content::WebContents* contents,
-      qrcode_generator::QRCodeGeneratorBubbleController* controller,
       const GURL& url,
       bool show_back_button) override;
   send_tab_to_self::SendTabToSelfBubbleView* ShowSendTabToSelfBubble(
-      content::WebContents* contents,
-      send_tab_to_self::SendTabToSelfBubbleController* controller) override;
+      content::WebContents* contents) override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   views::Button* GetSharingHubIconButton() override;
 #else
   sharing_hub::SharingHubBubbleView* ShowSharingHubBubble(
-      content::WebContents* contents,
-      sharing_hub::SharingHubBubbleController* controller) override;
+      content::WebContents* contents) override;
 #endif
   ShowTranslateBubbleResult ShowTranslateBubble(
       content::WebContents* contents,

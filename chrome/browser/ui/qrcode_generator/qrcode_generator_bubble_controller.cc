@@ -50,7 +50,7 @@ void QRCodeGeneratorBubbleController::ShowBubble(const GURL& url,
 
   bubble_shown_ = true;
   qrcode_generator_bubble_ = browser->window()->ShowQRCodeGeneratorBubble(
-      &GetWebContents(), this, url, show_back_button);
+      &GetWebContents(), url, show_back_button);
 
   UpdateIcon();
 }

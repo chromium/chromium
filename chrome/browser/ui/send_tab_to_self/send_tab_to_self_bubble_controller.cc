@@ -64,7 +64,7 @@ void SendTabToSelfBubbleController::ShowBubble(bool show_back_button) {
   bubble_shown_ = true;
   Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
   send_tab_to_self_bubble_view_ =
-      browser->window()->ShowSendTabToSelfBubble(&GetWebContents(), this);
+      browser->window()->ShowSendTabToSelfBubble(&GetWebContents());
 
   if (sharing_hub::SharingHubOmniboxEnabled(
           GetWebContents().GetBrowserContext())) {

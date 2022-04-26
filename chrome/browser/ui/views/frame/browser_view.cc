@@ -2290,11 +2290,11 @@ void BrowserView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
 }
 
 qrcode_generator::QRCodeGeneratorBubbleView*
-BrowserView::ShowQRCodeGeneratorBubble(
-    content::WebContents* contents,
-    qrcode_generator::QRCodeGeneratorBubbleController* controller,
-    const GURL& url,
-    bool show_back_button) {
+BrowserView::ShowQRCodeGeneratorBubble(content::WebContents* contents,
+                                       const GURL& url,
+                                       bool show_back_button) {
+  auto* controller =
+      qrcode_generator::QRCodeGeneratorBubbleController::Get(contents);
   base::OnceClosure on_closing = controller->GetOnBubbleClosedCallback();
   base::OnceClosure on_back_button_pressed;
   if (show_back_button) {
@@ -2302,14 +2302,13 @@ BrowserView::ShowQRCodeGeneratorBubble(
   }
 
   PageActionIconType icon_type =
-      sharing_hub::SharingHubOmniboxEnabled(contents->GetBrowserContext())
+      sharing_hub::SharingHubOmniboxEnabled(browser_->profile())
           ? PageActionIconType::kSharingHub
           : PageActionIconType::kQRCodeGenerator;
 
-  qrcode_generator::QRCodeGeneratorBubble* bubble =
-      new qrcode_generator::QRCodeGeneratorBubble(
-          toolbar_button_provider()->GetAnchorView(icon_type), contents,
-          std::move(on_closing), std::move(on_back_button_pressed), url);
+  auto* bubble = new qrcode_generator::QRCodeGeneratorBubble(
+      toolbar_button_provider()->GetAnchorView(icon_type), contents,
+      std::move(on_closing), std::move(on_back_button_pressed), url);
 
   PageActionIconView* icon_view =
       toolbar_button_provider()->GetPageActionIconView(icon_type);
@@ -2323,16 +2322,12 @@ BrowserView::ShowQRCodeGeneratorBubble(
 }
 
 sharing_hub::ScreenshotCapturedBubble*
-BrowserView::ShowScreenshotCapturedBubble(
-    content::WebContents* contents,
-    const gfx::Image& image,
-    sharing_hub::ScreenshotCapturedBubbleController* controller) {
-  sharing_hub::ScreenshotCapturedBubble* bubble =
-      new sharing_hub::ScreenshotCapturedBubble(
-          toolbar_button_provider()->GetAnchorView(
-              PageActionIconType::kSharingHub),
-          contents, image, browser_->profile(),
-          base::BindOnce(base::IgnoreResult(&Navigate)));
+BrowserView::ShowScreenshotCapturedBubble(content::WebContents* contents,
+                                          const gfx::Image& image) {
+  auto* bubble = new sharing_hub::ScreenshotCapturedBubble(
+      toolbar_button_provider()->GetAnchorView(PageActionIconType::kSharingHub),
+      contents, image, browser_->profile(),
+      base::BindOnce(base::IgnoreResult(&Navigate)));
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   bubble->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
@@ -2353,17 +2348,14 @@ SharingDialog* BrowserView::ShowSharingDialog(
 }
 
 send_tab_to_self::SendTabToSelfBubbleView* BrowserView::ShowSendTabToSelfBubble(
-    content::WebContents* web_contents,
-    send_tab_to_self::SendTabToSelfBubbleController* controller) {
+    content::WebContents* web_contents) {
   PageActionIconType icon_type =
-      sharing_hub::SharingHubOmniboxEnabled(web_contents->GetBrowserContext())
+      sharing_hub::SharingHubOmniboxEnabled(browser_->profile())
           ? PageActionIconType::kSharingHub
           : PageActionIconType::kSendTabToSelf;
 
-  send_tab_to_self::SendTabToSelfBubbleViewImpl* bubble =
-      new send_tab_to_self::SendTabToSelfBubbleViewImpl(
-          toolbar_button_provider()->GetAnchorView(icon_type), web_contents,
-          controller);
+  auto* bubble = new send_tab_to_self::SendTabToSelfBubbleViewImpl(
+      toolbar_button_provider()->GetAnchorView(icon_type), web_contents);
   PageActionIconView* icon_view =
       toolbar_button_provider()->GetPageActionIconView(icon_type);
   if (icon_view)
@@ -2382,13 +2374,10 @@ views::Button* BrowserView::GetSharingHubIconButton() {
 }
 #else
 sharing_hub::SharingHubBubbleView* BrowserView::ShowSharingHubBubble(
-    content::WebContents* web_contents,
-    sharing_hub::SharingHubBubbleController* controller) {
-  sharing_hub::SharingHubBubbleViewImpl* bubble =
-      new sharing_hub::SharingHubBubbleViewImpl(
-          toolbar_button_provider()->GetAnchorView(
-              PageActionIconType::kSharingHub),
-          web_contents, controller);
+    content::WebContents* web_contents) {
+  auto* bubble = new sharing_hub::SharingHubBubbleViewImpl(
+      toolbar_button_provider()->GetAnchorView(PageActionIconType::kSharingHub),
+      web_contents);
   PageActionIconView* icon_view =
       toolbar_button_provider()->GetPageActionIconView(
           PageActionIconType::kSharingHub);

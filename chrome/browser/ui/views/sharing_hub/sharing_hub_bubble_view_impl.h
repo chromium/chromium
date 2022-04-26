@@ -33,8 +33,7 @@ class SharingHubBubbleViewImpl : public SharingHubBubbleView,
  public:
   // Bubble will be anchored to |anchor_view|.
   SharingHubBubbleViewImpl(views::View* anchor_view,
-                           content::WebContents* web_contents,
-                           SharingHubBubbleController* controller);
+                           content::WebContents* web_contents);
 
   SharingHubBubbleViewImpl(const SharingHubBubbleViewImpl&) = delete;
   SharingHubBubbleViewImpl& operator=(const SharingHubBubbleViewImpl&) = delete;

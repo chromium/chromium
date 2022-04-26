@@ -63,13 +63,11 @@ class SendTabToSelfBubbleTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    // Owned by WebContents.
-    TestSendTabToSelfBubbleController* controller =
-        new TestSendTabToSelfBubbleController(web_contents);
-    web_contents->SetUserData(TestSendTabToSelfBubbleController::UserDataKey(),
-                              base::WrapUnique(controller));
+    web_contents->SetUserData(
+        TestSendTabToSelfBubbleController::UserDataKey(),
+        std::make_unique<TestSendTabToSelfBubbleController>(web_contents));
     BrowserView::GetBrowserViewForBrowser(browser())->ShowSendTabToSelfBubble(
-        web_contents, controller);
+        web_contents);
   }
 };
 

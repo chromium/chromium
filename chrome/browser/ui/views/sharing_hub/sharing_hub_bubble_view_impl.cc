@@ -39,15 +39,15 @@ constexpr int kActionButtonGroup = 0;
 
 SharingHubBubbleViewImpl::SharingHubBubbleViewImpl(
     views::View* anchor_view,
-    content::WebContents* web_contents,
-    SharingHubBubbleController* controller)
+    content::WebContents* web_contents)
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
-      controller_(controller) {
+      controller_(SharingHubBubbleController::CreateOrGetFromWebContents(
+          web_contents)) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   SetEnableArrowKeyTraversal(true);
-  DCHECK(controller);
+  DCHECK(controller_);
 }
 
 SharingHubBubbleViewImpl::~SharingHubBubbleViewImpl() = default;

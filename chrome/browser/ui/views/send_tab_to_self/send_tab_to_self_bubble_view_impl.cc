@@ -59,10 +59,11 @@ constexpr int kAccountAvatarSize = 24;
 
 SendTabToSelfBubbleViewImpl::SendTabToSelfBubbleViewImpl(
     views::View* anchor_view,
-    content::WebContents* web_contents,
-    SendTabToSelfBubbleController* controller)
+    content::WebContents* web_contents)
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
-      controller_(controller->AsWeakPtr()) {
+      controller_(SendTabToSelfBubbleController::CreateOrGetFromWebContents(
+                      web_contents)
+                      ->AsWeakPtr()) {
   DCHECK(controller_);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(

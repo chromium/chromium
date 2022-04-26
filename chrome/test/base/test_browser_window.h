@@ -29,17 +29,14 @@ class LocationBarTesting;
 class OmniboxView;
 
 namespace qrcode_generator {
-class QRCodeGeneratorBubbleController;
 class QRCodeGeneratorBubbleView;
 }  // namespace qrcode_generator
 
 namespace send_tab_to_self {
-class SendTabToSelfBubbleController;
 class SendTabToSelfBubbleView;
 }  // namespace send_tab_to_self
 
 namespace sharing_hub {
-class SharingHubBubbleController;
 class SharingHubBubbleView;
 }  // namespace sharing_hub
 
@@ -148,14 +145,12 @@ class TestBrowserWindow : public BrowserWindow {
   void ShowBookmarkBubble(const GURL& url, bool already_bookmarked) override {}
   qrcode_generator::QRCodeGeneratorBubbleView* ShowQRCodeGeneratorBubble(
       content::WebContents* contents,
-      qrcode_generator::QRCodeGeneratorBubbleController* controller,
       const GURL& url,
       bool show_back_button) override;
 #if !BUILDFLAG(IS_ANDROID)
   sharing_hub::ScreenshotCapturedBubble* ShowScreenshotCapturedBubble(
       content::WebContents* contents,
-      const gfx::Image& image,
-      sharing_hub::ScreenshotCapturedBubbleController* controller) override;
+      const gfx::Image& image) override;
   void ShowIntentPickerBubble(
       std::vector<apps::IntentPickerAppInfo> app_info,
       bool show_stay_in_chrome,
@@ -165,14 +160,12 @@ class TestBrowserWindow : public BrowserWindow {
       IntentPickerResponse callback) override {}
 #endif  //  !define(OS_ANDROID)
   send_tab_to_self::SendTabToSelfBubbleView* ShowSendTabToSelfBubble(
-      content::WebContents* contents,
-      send_tab_to_self::SendTabToSelfBubbleController* controller) override;
+      content::WebContents* contents) override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   views::Button* GetSharingHubIconButton() override;
 #else
   sharing_hub::SharingHubBubbleView* ShowSharingHubBubble(
-      content::WebContents* contents,
-      sharing_hub::SharingHubBubbleController* controller) override;
+      content::WebContents* contents) override;
 #endif
   ShowTranslateBubbleResult ShowTranslateBubble(
       content::WebContents* contents,

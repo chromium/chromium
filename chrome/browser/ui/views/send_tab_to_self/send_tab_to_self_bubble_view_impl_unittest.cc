@@ -77,7 +77,7 @@ class SendTabToSelfBubbleViewImplTest : public ChromeViewsTestBase {
                                base::WrapUnique(controller_.get()));
 
     bubble_ = new SendTabToSelfBubbleViewImpl(anchor_widget_->GetContentsView(),
-                                              nullptr, controller_.get());
+                                              web_contents_.get());
     views::BubbleDialogDelegateView::CreateBubble(bubble_);
   }
 
