@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/app_constants/constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -74,6 +75,7 @@ std::set<apps::AppTypeName>& GetAppTypeNameSet() {
     app_type_name_map->insert(apps::AppTypeName::kStandaloneBrowserChromeApp);
     app_type_name_map->insert(apps::AppTypeName::kExtension);
     app_type_name_map->insert(apps::AppTypeName::kStandaloneBrowserExtension);
+    app_type_name_map->insert(apps::AppTypeName::kStandaloneBrowserWebApp);
   }
   return *app_type_name_map;
 }
@@ -122,11 +124,14 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
     case apps::AppType::kWeb: {
       apps::AppTypeName app_type_name =
           apps::GetAppTypeNameForWebAppWindow(profile, app_id, window);
-      if (app_type_name == apps::AppTypeName::kChromeBrowser ||
-          app_type_name == apps::AppTypeName::kStandaloneBrowser) {
+      if (app_type_name == apps::AppTypeName::kChromeBrowser) {
         return apps::AppTypeNameV2::kWebTab;
+      } else if (app_type_name == apps::AppTypeName::kStandaloneBrowser) {
+        return apps::AppTypeNameV2::kStandaloneBrowserWebAppTab;
       } else if (app_type_name == apps::AppTypeName::kSystemWeb) {
         return apps::AppTypeNameV2::kSystemWeb;
+      } else if (web_app::IsWebAppsCrosapiEnabled()) {
+        return apps::AppTypeNameV2::kStandaloneBrowserWebAppWindow;
       } else {
         return apps::AppTypeNameV2::kWebWindow;
       }
@@ -175,11 +180,14 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
     case apps::AppType::kWeb: {
       apps::AppTypeName app_type_name =
           apps::GetAppTypeNameForWebApp(profile, app_id, container);
-      if (app_type_name == apps::AppTypeName::kChromeBrowser ||
-          app_type_name == apps::AppTypeName::kStandaloneBrowser) {
+      if (app_type_name == apps::AppTypeName::kChromeBrowser) {
         return apps::AppTypeNameV2::kWebTab;
+      } else if (app_type_name == apps::AppTypeName::kStandaloneBrowser) {
+        return apps::AppTypeNameV2::kStandaloneBrowserWebAppTab;
       } else if (app_type_name == apps::AppTypeName::kSystemWeb) {
         return apps::AppTypeNameV2::kSystemWeb;
+      } else if (web_app::IsWebAppsCrosapiEnabled()) {
+        return apps::AppTypeNameV2::kStandaloneBrowserWebAppWindow;
       } else {
         return apps::AppTypeNameV2::kWebWindow;
       }
@@ -304,6 +312,10 @@ std::string GetAppTypeHistogramNameV2(apps::AppTypeNameV2 app_type_name) {
       return kStandaloneBrowserChromeAppWindowHistogramName;
     case apps::AppTypeNameV2::kStandaloneBrowserChromeAppTab:
       return kStandaloneBrowserChromeAppTabHistogramName;
+    case apps::AppTypeNameV2::kStandaloneBrowserWebAppWindow:
+      return kStandaloneBrowserWebAppWindowHistogramName;
+    case apps::AppTypeNameV2::kStandaloneBrowserWebAppTab:
+      return kStandaloneBrowserWebAppTabHistogramName;
   }
 }
 

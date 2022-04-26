@@ -37,10 +37,11 @@ enum class AppTypeName {
   kStandaloneBrowserChromeApp = 13,
   kExtension = 14,
   kStandaloneBrowserExtension = 15,
+  kStandaloneBrowserWebApp = 16,
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kStandaloneBrowserExtension,
+  kMaxValue = kStandaloneBrowserWebApp,
 };
 
 // This is used for logging, so do not remove or reorder existing entries.
@@ -72,10 +73,12 @@ enum class AppTypeNameV2 {
   kStandaloneBrowserExtension = 17,
   kStandaloneBrowserChromeAppWindow = 18,
   kStandaloneBrowserChromeAppTab = 19,
+  kStandaloneBrowserWebAppWindow = 20,
+  kStandaloneBrowserWebAppTab = 21,
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kStandaloneBrowserChromeAppTab,
+  kMaxValue = kStandaloneBrowserWebAppTab,
 };
 
 extern const base::TimeDelta kMinDuration;
@@ -104,6 +107,12 @@ constexpr char kStandaloneBrowserChromeAppWindowHistogramName[] =
     "StandaloneBrowserChromeAppWindow";
 constexpr char kStandaloneBrowserChromeAppTabHistogramName[] =
     "StandaloneBrowserChromeAppTab";
+constexpr char kStandaloneBrowserWebAppHistogramName[] =
+    "StandaloneBrowserWebApp";
+constexpr char kStandaloneBrowserWebAppWindowHistogramName[] =
+    "StandaloneBrowserWebAppWindow";
+constexpr char kStandaloneBrowserWebAppTabHistogramName[] =
+    "StandaloneBrowserWebAppTab";
 
 // Determines what app type a web app should be logged as based on its launch
 // container and app id. In particular, web apps in tabs are logged as part of

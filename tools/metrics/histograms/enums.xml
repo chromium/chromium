@@ -3816,6 +3816,7 @@ Unknown properties are collapsed to zero. -->
   <int value="13" label="Chrome app opened in Standalone browser"/>
   <int value="14" label="Browser extension"/>
   <int value="15" label="Extension opened in Standalone browser"/>
+  <int value="16" label="Web app opened in Standalone browser"/>
 </enum>
 
 <enum name="AppTypeToMenuEntry">
@@ -3850,6 +3851,8 @@ Unknown properties are collapsed to zero. -->
   <int value="17" label="Extension opened in Standalone browser"/>
   <int value="18" label="Chrome apps opened in Standalone browser windows"/>
   <int value="19" label="Chrome apps opened in Standalone browser tabs"/>
+  <int value="20" label="Web apps opened in Standalone browser windows"/>
+  <int value="21" label="Web apps opened in Standalone browser tabs"/>
 </enum>
 
 <enum name="AppWillTerminateReceived">

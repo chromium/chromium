@@ -107,6 +107,12 @@ apps::AppTypeName GetAppTypeNameForChromeApp(
   return apps::AppTypeName::kChromeApp;
 }
 
+apps::AppTypeName GetWebAppTypeName() {
+  return web_app::IsWebAppsCrosapiEnabled()
+             ? apps::AppTypeName::kStandaloneBrowserWebApp
+             : apps::AppTypeName::kWeb;
+}
+
 }  // namespace
 
 namespace apps {
@@ -144,7 +150,7 @@ AppTypeName GetAppTypeNameForWebApp(Profile* profile,
 
   switch (container) {
     case apps::mojom::LaunchContainer::kLaunchContainerWindow:
-      return AppTypeName::kWeb;
+      return GetWebAppTypeName();
     case apps::mojom::LaunchContainer::kLaunchContainerTab:
       return default_type_name;
     default:
@@ -152,7 +158,7 @@ AppTypeName GetAppTypeNameForWebApp(Profile* profile,
   }
 
   return window_mode == WindowMode::kBrowser ? default_type_name
-                                             : AppTypeName::kWeb;
+                                             : GetWebAppTypeName();
 }
 
 AppTypeName GetAppTypeNameForStandaloneBrowserChromeApp(
@@ -270,7 +276,7 @@ AppTypeName GetAppTypeNameForWebAppWindow(Profile* profile,
 
   return IsLacrosBrowserWindow(profile, window)
              ? AppTypeName::kStandaloneBrowser
-             : AppTypeName::kWeb;
+             : GetWebAppTypeName();
 }
 
 AppTypeName GetAppTypeNameForWindow(Profile* profile,
@@ -348,6 +354,8 @@ std::string GetAppTypeHistogramName(apps::AppTypeName app_type_name) {
       return kExtensionHistogramName;
     case apps::AppTypeName::kStandaloneBrowserExtension:
       return kStandaloneBrowserExtensionHistogramName;
+    case apps::AppTypeName::kStandaloneBrowserWebApp:
+      return kStandaloneBrowserWebAppHistogramName;
   }
 }
 

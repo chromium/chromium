@@ -262,6 +262,11 @@ class AppPlatformMetricsServiceTest : public testing::Test,
             ->InstanceRegistry());
   }
 
+  AppTypeName GetWebAppTypeName() {
+    return IsLacrosPrimary() ? AppTypeName::kStandaloneBrowserWebApp
+                             : AppTypeName::kWeb;
+  }
+
   void InstallApps() {
     auto* proxy =
         apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get());
@@ -430,11 +435,12 @@ class AppPlatformMetricsServiceTest : public testing::Test,
             AppTypeName::kChromeApp),
         /*expected_count=*/0);
     histogram_tester_.ExpectTotalCount(
-        AppPlatformMetrics::GetAppsCountHistogramNameForTest(AppTypeName::kWeb),
+        AppPlatformMetrics::GetAppsCountHistogramNameForTest(
+            GetWebAppTypeName()),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kWeb, apps::InstallReason::kSync),
+            GetWebAppTypeName(), apps::InstallReason::kSync),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -495,11 +501,8 @@ class AppPlatformMetricsServiceTest : public testing::Test,
             AppTypeName::kSystemWeb, apps::InstallReason::kSystem),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
-        AppPlatformMetrics::GetAppsCountHistogramNameForTest(AppTypeName::kWeb),
-        /*expected_count=*/1);
-    histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kWeb, apps::InstallReason::kSubApp),
+            GetWebAppTypeName(), apps::InstallReason::kSubApp),
         /*expected_count=*/1);
   }
 
@@ -1945,7 +1948,8 @@ TEST_P(AppPlatformMetricsServiceTest,
 
   // Set time passed 2 hours to record the usage time AppKM.
   task_environment_.FastForwardBy(base::Minutes(115));
-  VerifyAppUsageTimeUkm(url, /*duration=*/300000, AppTypeName::kWeb);
+  VerifyAppUsageTimeUkm(url, /*duration=*/300000,
+                        AppTypeName::kStandaloneBrowserWebApp);
 }
 
 TEST_P(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
@@ -1960,7 +1964,7 @@ TEST_P(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
   VerifyInstalledAppsUkm(
       "app://s", AppTypeName::kSystemWeb, apps::mojom::InstallReason::kSystem,
       apps::mojom::InstallSource::kSystem, InstallTime::kInit);
-  VerifyInstalledAppsUkm("https://foo.com", AppTypeName::kWeb,
+  VerifyInstalledAppsUkm("https://foo.com", GetWebAppTypeName(),
                          apps::mojom::InstallReason::kSync,
                          apps::mojom::InstallSource::kSync, InstallTime::kInit);
   VerifyInstalledAppsUkm(
@@ -2123,10 +2127,12 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
   proxy->LaunchAppWithUrl(
       /*app_id=*/"w", ui::EventFlags::EF_NONE, GURL("https://boo.com/a"),
       apps::mojom::LaunchSource::kFromFileManager, nullptr);
-  VerifyAppsLaunchUkm("https://foo.com", AppTypeName::kWeb,
+  VerifyAppsLaunchUkm("https://foo.com", GetWebAppTypeName(),
                       apps::mojom::LaunchSource::kFromFileManager);
-  VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kWeb);
-  VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kWebWindow);
+  VerifyAppLaunchPerAppTypeHistogram(1, GetWebAppTypeName());
+  VerifyAppLaunchPerAppTypeV2Histogram(
+      1, IsLacrosPrimary() ? AppTypeNameV2::kStandaloneBrowserWebAppWindow
+                           : AppTypeNameV2::kWebWindow);
 
   // TODO(crbug.com/1253250): Register non-mojom apps and use
   // AppServiceProxy::LaunchAppWithParams to test launching.
@@ -2146,7 +2152,9 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
                         apps::mojom::LaunchSource::kFromTest);
     VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kChromeBrowser);
   }
-  VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kWebTab);
+  VerifyAppLaunchPerAppTypeV2Histogram(
+      1, IsLacrosPrimary() ? AppTypeNameV2::kStandaloneBrowserWebAppTab
+                           : AppTypeNameV2::kWebTab);
 
   proxy->BrowserAppLauncher()->LaunchAppWithParamsForTesting(
       apps::AppLaunchParams("s",
@@ -2349,8 +2357,8 @@ TEST_P(AppPlatformInputMetricsTest, StylusEvent) {
   app_platform_input_metrics()->OnFiveMinutes();
   VerifyNoUkm();
   app_platform_input_metrics()->OnTwoHours();
-  VerifyUkm("https://foo.com", AppTypeName::kWeb, /*event_count=*/1,
-            InputEventSource::kStylus);
+  VerifyUkm("https://foo.com", GetWebAppTypeName(),
+            /*event_count=*/1, InputEventSource::kStylus);
 }
 
 TEST_P(AppPlatformInputMetricsTest, TouchEvents) {
