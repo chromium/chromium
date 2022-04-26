@@ -104,9 +104,9 @@ void AsyncPolicyLoader::Reload(bool force) {
 
 bool AsyncPolicyLoader::ShouldFilterSensitivePolicies() {
 #if BUILDFLAG(IS_WIN)
-  DCHECK(management_service_);
-  return platform_management_trustworthiness_.value_or(
-             ManagementAuthorityTrustworthiness::NONE) <
+  DCHECK(platform_management_trustworthiness_);
+
+  return *platform_management_trustworthiness_ <
          ManagementAuthorityTrustworthiness::TRUSTED;
 #else
   return false;
@@ -127,7 +127,13 @@ std::unique_ptr<PolicyBundle> AsyncPolicyLoader::InitialLoad(
   // installing the watches can be detected.
   last_modification_time_ = LastModificationTime();
   schema_map_ = schema_map;
+  if (management_service_) {
+    DCHECK_EQ(management_service_, PlatformManagementService::GetInstance());
+    platform_management_trustworthiness_ =
+        management_service_->GetManagementAuthorityTrustworthiness();
+  }
   std::unique_ptr<PolicyBundle> bundle(Load());
+  platform_management_trustworthiness_.reset();
   // Filter out mismatching policies.
   schema_map_->FilterBundle(bundle.get(),
                             /*drop_invalid_component_policies=*/true);

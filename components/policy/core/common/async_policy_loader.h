@@ -101,6 +101,8 @@ class POLICY_EXPORT AsyncPolicyLoader {
   typedef base::RepeatingCallback<void(std::unique_ptr<PolicyBundle>)>
       UpdateCallback;
 
+  void ReloadInternal(bool force);
+
   // Used by the AsyncPolicyProvider to install the |update_callback_|.
   // Invoked on the background thread.
   void Init(scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner,
