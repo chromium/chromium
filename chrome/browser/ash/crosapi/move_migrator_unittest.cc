@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/crosapi/fake_migration_progress_tracker.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/model/blocking_model_type_store_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
@@ -52,6 +53,8 @@ constexpr int kDataSize = sizeof(kDataContent);
 // actual AppId here, so we can be sure that it won't be
 // included in `kExtensionsAshOnly`.
 constexpr char kMoveExtensionId[] = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+
+constexpr syncer::ModelType kAshSyncDataType = syncer::ModelType::UNSPECIFIED;
 
 constexpr int64_t kRequiredDiskSpaceForBot =
     browser_data_migrator_util::kBuffer * 2;
@@ -247,6 +250,46 @@ void SetUpPreferences(const base::FilePath& profile_path,
   ASSERT_TRUE(base::WriteFile(path, contents));
 }
 
+void SetUpSyncData(const base::FilePath& profile_path,
+                   bool ash = true,
+                   bool lacros = true) {
+  base::FilePath path =
+      profile_path.Append(browser_data_migrator_util::kSyncDataFilePath)
+          .Append(browser_data_migrator_util::kSyncDataLeveldbName);
+
+  leveldb_env::Options options;
+  options.create_if_missing = true;
+  std::unique_ptr<leveldb::DB> db;
+  leveldb::Status status = leveldb_env::OpenDB(options, path.value(), &db);
+  ASSERT_TRUE(status.ok());
+
+  leveldb::WriteBatch batch;
+  const syncer::ModelType lacros_dt =
+      browser_data_migrator_util::kLacrosSyncDataTypes[0];
+
+  if (ash) {
+    batch.Put(syncer::FormatDataPrefix(kAshSyncDataType) + kMoveExtensionId,
+              "ash_data");
+    batch.Put(syncer::FormatMetaPrefix(kAshSyncDataType) + kMoveExtensionId,
+              "ash_metadata");
+    batch.Put(syncer::FormatGlobalMetadataKey(kAshSyncDataType),
+              "ash_globalmetadata");
+  }
+  if (lacros) {
+    batch.Put(syncer::FormatDataPrefix(lacros_dt) + kMoveExtensionId,
+              "lacros_data");
+    batch.Put(syncer::FormatMetaPrefix(lacros_dt) + kMoveExtensionId,
+              "lacros_metadata");
+    batch.Put(syncer::FormatGlobalMetadataKey(lacros_dt),
+              "lacros_globalmetadata");
+  }
+
+  leveldb::WriteOptions write_options;
+  write_options.sync = true;
+  status = db->Write(write_options, &batch);
+  ASSERT_TRUE(status.ok());
+}
+
 void SetUpProfileDirectory(const base::FilePath& path) {
   // Setup `path` as below.
   // |- Bookmarks/
@@ -260,6 +303,7 @@ void SetUpProfileDirectory(const base::FilePath& path) {
   // |- Login Data/
   // |- Policy/
   // |- Preferences
+  // |- Sync Data/
   ASSERT_TRUE(base::CreateDirectory(path.Append(kCacheFilePath)));
   ASSERT_EQ(base::WriteFile(path.Append(kCacheFilePath).Append(kDataFilePath),
                             kDataContent, kDataSize),
@@ -290,6 +334,7 @@ void SetUpProfileDirectory(const base::FilePath& path) {
   SetUpExtensionState(path);
   SetUpIndexedDB(path);
   SetUpPreferences(path);
+  SetUpSyncData(path);
 }
 
 std::map<std::string, std::string> ReadLevelDB(const base::FilePath& path) {
@@ -537,8 +582,17 @@ TEST(MoveMigratorTest, SetupAshSplitDir) {
   // Check Preferences is present in both tmp_profile_dir and tmp_split_dir.
   path = tmp_split_dir.Append(chrome::kPreferencesFilename);
   EXPECT_TRUE(base::PathExists(path));
-  const base::FilePath lacros_path =
+  base::FilePath lacros_path =
       tmp_profile_dir.Append(chrome::kPreferencesFilename);
+  EXPECT_TRUE(base::PathExists(lacros_path));
+
+  // Check `Sync Data` is present in both tmp_profile_dir and tmp_split_dir.
+  path = tmp_split_dir.Append(browser_data_migrator_util::kSyncDataFilePath)
+             .Append(browser_data_migrator_util::kSyncDataLeveldbName);
+  EXPECT_TRUE(base::PathExists(path));
+  lacros_path =
+      tmp_profile_dir.Append(browser_data_migrator_util::kSyncDataFilePath)
+          .Append(browser_data_migrator_util::kSyncDataLeveldbName);
   EXPECT_TRUE(base::PathExists(lacros_path));
 }
 
@@ -626,6 +680,7 @@ class MoveMigratorMigrateTest : public ::testing::Test {
     // |- Login Data
     // |- Policy
     // |- Preferences
+    // |- Sync Data
     // |- lacros/First Run
     // |- lacros/Default/
     //     |- Bookmarks
@@ -635,6 +690,7 @@ class MoveMigratorMigrateTest : public ::testing::Test {
     //     |- Local Storage
     //     |- Policy
     //     |- Preferences
+    //     |- Sync Data
 
     const base::FilePath new_user_dir =
         original_profile_dir_.Append(browser_data_migrator_util::kLacrosDir);
@@ -756,6 +812,17 @@ class MoveMigratorMigrateTest : public ::testing::Test {
         new_profile_dir.Append(chrome::kPreferencesFilename);
     EXPECT_TRUE(base::PathExists(ash_preferences_path));
     EXPECT_TRUE(base::PathExists(lacros_preferences_path));
+
+    // Sync Data.
+    const base::FilePath ash_syncdata_path =
+        original_profile_dir_
+            .Append(browser_data_migrator_util::kSyncDataFilePath)
+            .Append(browser_data_migrator_util::kSyncDataLeveldbName);
+    const base::FilePath lacros_syncdata_path =
+        new_profile_dir.Append(browser_data_migrator_util::kSyncDataFilePath)
+            .Append(browser_data_migrator_util::kSyncDataLeveldbName);
+    EXPECT_TRUE(base::PathExists(ash_syncdata_path));
+    EXPECT_TRUE(base::PathExists(lacros_syncdata_path));
   }
 
   void TearDown() override { EXPECT_TRUE(scoped_temp_dir_.Delete()); }
@@ -802,11 +869,13 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveLacrosItems) {
   //     |- Local Storage
   //     |- Policy
   //     |- Preferences
+  //     |- Sync Data
   // |- move_migrator_split/
   //     |- Extensions
   //     |- IndexedDB
   //     |- Local Storage
   //     |- Preferences
+  //     |- Sync Data
 
   const base::FilePath tmp_user_dir =
       original_profile_dir_.Append(browser_data_migrator_util::kMoveTmpDir);
@@ -860,6 +929,10 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveLacrosItems) {
   SetUpPreferences(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
   SetUpPreferences(tmp_split_dir, /*ash=*/true, /*lacros=*/false);
 
+  // Sync Data has been split.
+  SetUpSyncData(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
+  SetUpSyncData(tmp_split_dir, /*ash=*/true, /*lacros=*/false);
+
   migrator_->Migrate();
   run_loop_->Run();
 
@@ -887,11 +960,13 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveSplitItems) {
   //     |- Local Storage
   //     |- Policy
   //     |- Preferences
+  //     |- Sync Data
   // |- move_migrator_split/
   //     |- Extensions
   //     |- IndexedDB
   //     |- Local Storage
   //     |- Preferences
+  //     |- Sync Data
 
   const base::FilePath tmp_user_dir =
       original_profile_dir_.Append(browser_data_migrator_util::kMoveTmpDir);
@@ -949,6 +1024,10 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveSplitItems) {
   SetUpPreferences(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
   SetUpPreferences(tmp_split_dir, /*ash=*/true, /*lacros=*/false);
 
+  // `Sync Data` has been split, but not yet moved to Ash profile dir.
+  SetUpSyncData(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
+  SetUpSyncData(tmp_split_dir, /*ash=*/true, /*lacros=*/false);
+
   migrator_->Migrate();
   run_loop_->Run();
 
@@ -969,6 +1048,8 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveTmpDir) {
   // |- Extensions
   // |- Local Storage
   // |- Policy
+  // |- Preferences
+  // |- Sync Data
   // |- move_migrator/First Run
   // |- move_migrator/Default/
   //     |- Bookmarks
@@ -976,6 +1057,8 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveTmpDir) {
   //     |- Extensions
   //     |- Local Storage
   //     |- Policy
+  //     |- Preferences
+  //     |- Sync Data
 
   const base::FilePath tmp_user_dir =
       original_profile_dir_.Append(browser_data_migrator_util::kMoveTmpDir);
@@ -1020,6 +1103,10 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveTmpDir) {
   // Preferences has been split.
   SetUpPreferences(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
   SetUpPreferences(original_profile_dir_, /*ash=*/true, /*lacros=*/false);
+
+  // `Sync Data` has been split.
+  SetUpSyncData(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
+  SetUpSyncData(original_profile_dir_, /*ash=*/true, /*lacros=*/false);
 
   migrator_->Migrate();
   run_loop_->Run();

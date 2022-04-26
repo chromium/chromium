@@ -30,21 +30,6 @@ const char kMetadataPrefix[] = "-md-";
 // Key for global metadata record.
 const char kGlobalMetadataKey[] = "-GlobalMetadata";
 
-// Formats key prefix for data records of |type|.
-std::string FormatDataPrefix(ModelType type) {
-  return std::string(GetModelTypeRootTag(type)) + kDataPrefix;
-}
-
-// Formats key prefix for metadata records of |type|.
-std::string FormatMetaPrefix(ModelType type) {
-  return std::string(GetModelTypeRootTag(type)) + kMetadataPrefix;
-}
-
-// Formats key for global metadata record of |type|.
-std::string FormatGlobalMetadataKey(ModelType type) {
-  return std::string(GetModelTypeRootTag(type)) + kGlobalMetadataKey;
-}
-
 class LevelDbMetadataChangeList : public MetadataChangeList {
  public:
   LevelDbMetadataChangeList(ModelType type,
@@ -146,6 +131,21 @@ class LevelDbWriteBatch : public BlockingModelTypeStoreImpl::WriteBatch {
 };
 
 }  // namespace
+
+// Formats key prefix for data records of |type|.
+std::string FormatDataPrefix(ModelType type) {
+  return std::string(GetModelTypeRootTag(type)) + kDataPrefix;
+}
+
+// Formats key prefix for metadata records of |type|.
+std::string FormatMetaPrefix(ModelType type) {
+  return std::string(GetModelTypeRootTag(type)) + kMetadataPrefix;
+}
+
+// Formats key for global metadata record of |type|.
+std::string FormatGlobalMetadataKey(ModelType type) {
+  return std::string(GetModelTypeRootTag(type)) + kGlobalMetadataKey;
+}
 
 BlockingModelTypeStoreImpl::BlockingModelTypeStoreImpl(
     ModelType type,

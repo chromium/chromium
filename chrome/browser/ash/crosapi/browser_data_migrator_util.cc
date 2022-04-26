@@ -20,6 +20,8 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
+#include "components/sync/base/model_type.h"
+#include "components/sync/model/blocking_model_type_store_impl.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 namespace ash::browser_data_migrator_util {
@@ -624,6 +626,19 @@ leveldb::Status GetExtensionKeys(leveldb::DB* db,
   return it->status();
 }
 
+// Given a key in Sync Data's leveldb, return true if (based on its prefix) its
+// data type is to be migrated to Lacros, false otherwise.
+bool IsLacrosSyncDataType(base::StringPiece key) {
+  for (auto type : kLacrosSyncDataTypes) {
+    if ((base::StartsWith(key, FormatDataPrefix(type)) ||
+         base::StartsWith(key, FormatMetaPrefix(type)) ||
+         key == FormatGlobalMetadataKey(type))) {
+      return true;
+    }
+  }
+  return false;
+}
+
 IndexedDBPaths GetIndexedDBPaths(const base::FilePath& profile_path,
                                  const char* extension_id) {
   const base::FilePath indexed_db_dir = profile_path.Append(kIndexedDBFilePath);
@@ -703,6 +718,84 @@ bool MigrateLevelDB(const base::FilePath& original_path,
   status = target_db->Write(write_options, &write_batch);
   if (!status.ok()) {
     PLOG(ERROR) << "Failure while writing into new leveldb: " << target_path;
+    return false;
+  }
+
+  return true;
+}
+
+bool MigrateSyncData(const base::FilePath& original_path,
+                     const base::FilePath& ash_target_path,
+                     const base::FilePath& lacros_target_path) {
+  // Open the original LevelDB database.
+  std::unique_ptr<leveldb::DB> original_db;
+  leveldb_env::Options options;
+  options.create_if_missing = false;
+  leveldb::Status status =
+      leveldb_env::OpenDB(options, original_path.value(), &original_db);
+  if (!status.ok()) {
+    PLOG(ERROR) << "Failure while opening original leveldb: " << original_path;
+    return false;
+  }
+
+  // Create a new LevelDB database to store entries that will stay in Ash.
+  std::unique_ptr<leveldb::DB> ash_target_db;
+  options.create_if_missing = true;
+  options.error_if_exists = true;
+  status =
+      leveldb_env::OpenDB(options, ash_target_path.value(), &ash_target_db);
+  if (!status.ok()) {
+    PLOG(ERROR) << "Failure while opening new leveldb: " << ash_target_path;
+    return false;
+  }
+
+  // Create a new LevelDB database to store entries that will migrate to Lacros.
+  std::unique_ptr<leveldb::DB> lacros_target_db;
+  status = leveldb_env::OpenDB(options, lacros_target_path.value(),
+                               &lacros_target_db);
+  if (!status.ok()) {
+    PLOG(ERROR) << "Failure while opening new leveldb: " << lacros_target_path;
+    return false;
+  }
+
+  // Split the key-value pairs between Ash and Lacros.
+  leveldb::WriteBatch ash_write_batch;
+  leveldb::WriteBatch lacros_write_batch;
+  // Iterate through all the elements of the leveldb database.
+  std::unique_ptr<leveldb::Iterator> it(
+      original_db->NewIterator(leveldb::ReadOptions()));
+  for (it->SeekToFirst(); it->Valid(); it->Next()) {
+    const std::string key = it->key().ToString();
+    std::string value;
+
+    status = original_db->Get(leveldb::ReadOptions(), key, &value);
+    if (!status.ok()) {
+      PLOG(ERROR) << "Failure while reading from original leveldb: "
+                  << original_path;
+      return false;
+    }
+
+    // TODO(andreaorru): decide whether copy is better in some cases (e.g. user
+    // consents).
+    if (IsLacrosSyncDataType(key))
+      lacros_write_batch.Put(key, value);
+    else
+      ash_write_batch.Put(key, value);
+  }
+
+  // Write everything in bulk.
+  leveldb::WriteOptions write_options;
+  write_options.sync = true;
+  status = ash_target_db->Write(write_options, &ash_write_batch);
+  if (!status.ok()) {
+    PLOG(ERROR) << "Failure while writing into new leveldb: "
+                << ash_target_path;
+    return false;
+  }
+  status = lacros_target_db->Write(write_options, &lacros_write_batch);
+  if (!status.ok()) {
+    PLOG(ERROR) << "Failure while writing into new leveldb: "
+                << lacros_target_path;
     return false;
   }
 

@@ -498,6 +498,25 @@ MoveMigrator::TaskResult MoveMigrator::SetupAshSplitDir(
     return {TaskStatus::kSetupAshDirMigratePreferencesFailed};
   }
 
+  // Split Sync Data.
+  if (base::PathExists(
+          original_profile_dir
+              .Append(browser_data_migrator_util::kSyncDataFilePath)
+              .Append(browser_data_migrator_util::kSyncDataLeveldbName))) {
+    if (!browser_data_migrator_util::MigrateSyncData(
+            original_profile_dir
+                .Append(browser_data_migrator_util::kSyncDataFilePath)
+                .Append(browser_data_migrator_util::kSyncDataLeveldbName),
+            tmp_split_dir.Append(browser_data_migrator_util::kSyncDataFilePath)
+                .Append(browser_data_migrator_util::kSyncDataLeveldbName),
+            tmp_profile_dir
+                .Append(browser_data_migrator_util::kSyncDataFilePath)
+                .Append(browser_data_migrator_util::kSyncDataLeveldbName))) {
+      LOG(ERROR) << "MigrateSyncData() failed";
+      return {TaskStatus::kSetupAshDirMigrateSyncDataFailed};
+    }
+  }
+
   return {TaskStatus::kSucceeded};
 }
 
@@ -773,6 +792,7 @@ MoveMigrator::ToBrowserDataMigratorMigrationResult(TaskResult result) {
     case TaskStatus::kSetupAshDirCreateDirFailed:
     case TaskStatus::kSetupAshDirCopyExtensionsFailed:
     case TaskStatus::kSetupAshDirCopyIndexedDBFailed:
+    case TaskStatus::kSetupAshDirMigrateSyncDataFailed:
       return {BrowserDataMigratorImpl::DataWipeResult::kSucceeded,
               {BrowserDataMigratorImpl::ResultKind::kFailed}};
   }
@@ -819,6 +839,7 @@ std::string MoveMigrator::TaskStatusToString(TaskStatus task_status) {
     MAPPING(SetupAshDirCreateDirFailed);
     MAPPING(SetupAshDirCopyExtensionsFailed);
     MAPPING(SetupAshDirCopyIndexedDBFailed);
+    MAPPING(SetupAshDirMigrateSyncDataFailed);
 #undef MAPPING
   }
 }

@@ -509,6 +509,7 @@ chromium-metrics-reviews@google.com.
     <variant name="SetupAshDirCreateSplitDirFailed"/>
     <variant name="SetupAshDirMigrateLevelDBForLocalStateFailed"/>
     <variant name="SetupAshDirMigrateLevelDBForStateFailed"/>
+    <variant name="SetupAshDirMigrateLevelDBForSyncDataFailed"/>
     <variant name="SetupAshDirMigratePreferencesFailed"/>
     <variant name="SetupLacrosDirCopyTargetItemsFailed"/>
     <variant name="SetupLacrosDirCreateTmpDirFailed"/>
