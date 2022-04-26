@@ -125,14 +125,14 @@ export class Store {
    * @param {DeferredAction} action
    */
   dispatchInternal_(action) {
-    action(this.reduce_.bind(this));
+    action(this.reduce.bind(this));
   }
 
   /**
    * @param {?Action} action
-   * @private
+   * @protected
    */
-  reduce_(action) {
+  reduce(action) {
     if (!action) {
       return;
     }

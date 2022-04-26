@@ -291,9 +291,6 @@ export class AppElement extends PolymerElement {
   private backgroundImageLoadStartEpoch_: number;
   private backgroundImageLoadStart_: number = 0;
 
-  // Suppress TypeScript's error TS2376 to intentionally allow calling
-  // performance.mark() before calling super().
-  // @ts-ignore:next-line
   constructor() {
     performance.mark('app-creation-start');
     super();

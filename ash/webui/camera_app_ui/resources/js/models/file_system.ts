@@ -105,7 +105,7 @@ async function initCameraDirectory(): Promise<DirectoryAccessEntry|null> {
       await idb.set(idb.KEY_CAMERA_DIRECTORY_HANDLE, dir);
       window.sessionStorage.setItem('IsConsumedHandle', 'true');
 
-      handle.signal(dir);
+      handle.signal(dir as FileSystemDirectoryHandle);
     });
   }
   const dir = await handle.wait();

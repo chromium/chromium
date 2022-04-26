@@ -156,9 +156,6 @@ export class LogoElement extends PolymerElement {
   private interactionLogUrl_: Url|null = null;
   private shareId_: string|null = null;
 
-  // Suppress TypeScript's error TS2376 to intentionally allow calling
-  // performance.mark() before calling super().
-  // @ts-ignore:next-line
   constructor() {
     performance.mark('logo-creation-start');
     super();

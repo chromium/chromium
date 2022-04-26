@@ -38,7 +38,7 @@ Local Modifications:
 Name: Typescript Compiler
 Short Name: typescript
 URL: https://www.npmjs.com/package/typescript
-Version: 4.5.4
+Version: 4.6.3
 License: Apache 2.0
 Security Critical: No. The compiler is not shipped with Chrome but code compiled using it is.
 

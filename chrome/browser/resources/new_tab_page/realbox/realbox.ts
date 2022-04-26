@@ -202,9 +202,6 @@ export class RealboxElement extends PolymerElement {
   private autocompleteResultChangedListenerId_: number|null = null;
   private autocompleteMatchImageAvailableListenerId_: number|null = null;
 
-  // Suppress TypeScript's error TS2376 to intentionally allow calling
-  // performance.mark() before calling super().
-  // @ts-ignore:next-line
   constructor() {
     performance.mark('realbox-creation-start');
     super();

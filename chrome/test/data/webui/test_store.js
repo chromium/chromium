@@ -62,10 +62,10 @@ export class TestStore extends Store {
   }
 
   /** @override */
-  reduce_(action) {
+  reduce(action) {
     this.lastAction_ = action;
     if (this.enableReducers_) {
-      this.storeImplClass.prototype.reduce_.call(this, action);
+      this.storeImplClass.prototype.reduce.call(this, action);
     }
     if (this.resolverMap_.has(action.name)) {
       this.resolverMap_.get(action.name).resolve(action);

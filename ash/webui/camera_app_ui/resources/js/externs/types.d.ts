@@ -25,17 +25,6 @@ interface InputDeviceCapabilities {
 // still in working draft stage.
 // https://wicg.github.io/file-system-access/
 
-// close() is only implemented in Chrome so it's not in upstream type
-// definitions. Ref:
-// https://github.com/microsoft/TypeScript-DOM-lib-generator/pull/827.
-interface WritableStream {
-  close(): Promise<void>;
-}
-
-interface FileSystemHandleBase {
-  readonly name: string;
-}
-
 type FileSystemWriteChunkType = Blob|BufferSource|string;
 
 interface FileSystemWritableFileStream extends WritableStream {
@@ -48,32 +37,14 @@ interface FileSystemCreateWritableOptions {
   keepExistingData?: boolean;
 }
 
-interface FileSystemFileHandle extends FileSystemHandleBase {
-  readonly kind: 'file';
+interface FileSystemFileHandle {
   createWritable(options?: FileSystemCreateWritableOptions):
       Promise<FileSystemWritableFileStream>;
-  getFile(): Promise<File>;
 }
 
-interface FileSystemGetDirectoryOptions {
-  create?: boolean;
-}
-
-interface FileSystemGetFileOptions {
-  create?: boolean;
-}
-
-interface FileSystemDirectoryHandle extends FileSystemHandleBase {
-  readonly kind: 'directory';
-  getDirectoryHandle(name: string, options?: FileSystemGetDirectoryOptions):
-      Promise<FileSystemDirectoryHandle>;
-  getFileHandle(name: string, options?: FileSystemGetFileOptions):
-      Promise<FileSystemFileHandle>;
-  removeEntry(name: string): Promise<void>;
+interface FileSystemDirectoryHandle {
   values(): IterableIterator<FileSystemHandle>;
 }
-
-type FileSystemHandle = FileSystemDirectoryHandle|FileSystemFileHandle;
 
 interface StorageManager {
   getDirectory(): Promise<FileSystemDirectoryHandle>;

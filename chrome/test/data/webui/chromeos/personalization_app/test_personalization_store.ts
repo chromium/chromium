@@ -20,13 +20,6 @@ export class TestPersonalizationStore extends TestStore {
     super(data, PersonalizationStore, emptyState(), reduce);
     this.actions_ = [];
     this.states_ = [];
-
-    // manually override `reduce_` method because it's private.
-    this['reduce_'] = (action: Action) => {
-      super['reduce_'](action);
-      this.actions_.push(action);
-      this.states_.push(this.data);
-    };
   }
 
   get actions() {
@@ -35,6 +28,12 @@ export class TestPersonalizationStore extends TestStore {
 
   get states() {
     return this.states_;
+  }
+
+  override reduce(action: Action) {
+    super.reduce(action);
+    this.actions_.push(action);
+    this.states_.push(this.data);
   }
 
   override replaceSingleton() {

@@ -157,7 +157,7 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
     const results = [];
     for await (const handle of this.handle.values()) {
       if (handle.kind === 'file') {
-        results.push(new FileAccessEntry(handle, this));
+        results.push(new FileAccessEntry(handle as FileSystemFileHandle, this));
       }
     }
     return results;
@@ -167,7 +167,8 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
     const results = [];
     for await (const handle of this.handle.values()) {
       if (handle.kind === 'directory') {
-        results.push(new DirectoryAccessEntryImpl(handle));
+        results.push(
+            new DirectoryAccessEntryImpl(handle as FileSystemDirectoryHandle));
       }
     }
     return results;
