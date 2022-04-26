@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "ash/components/geolocation/geoposition.h"
+#include "ash/shell.h"
 #include "ash/system/time/time_of_day.h"
 #include "base/bind.h"
 #include "base/logging.h"
@@ -16,8 +17,6 @@
 namespace ash {
 
 namespace {
-
-GeolocationController* g_geolocation_controller = nullptr;
 
 // Delay to wait for a response to our geolocation request, if we get a response
 // after which, we will consider the request a failure.
@@ -47,19 +46,18 @@ GeolocationController::GeolocationController(
   auto* timezone_settings = chromeos::system::TimezoneSettings::GetInstance();
   current_timezone_id_ = timezone_settings->GetCurrentTimezoneID();
   timezone_settings->AddObserver(this);
-  g_geolocation_controller = this;
 }
 
 GeolocationController::~GeolocationController() {
   chromeos::system::TimezoneSettings::GetInstance()->RemoveObserver(this);
-  DCHECK_EQ(g_geolocation_controller, this);
-  g_geolocation_controller = nullptr;
 }
 
 // static
 GeolocationController* GeolocationController::Get() {
-  DCHECK(g_geolocation_controller);
-  return g_geolocation_controller;
+  GeolocationController* controller =
+      ash::Shell::Get()->geolocation_controller();
+  DCHECK(controller);
+  return controller;
 }
 
 void GeolocationController::AddObserver(Observer* observer) {

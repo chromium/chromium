@@ -91,6 +91,12 @@ class ASH_EXPORT GeolocationController
 
   network::SharedURLLoaderFactory* GetFactoryForTesting() { return factory_; }
 
+  base::OneShotTimer* GetTimerForTesting() { return timer_.get(); }
+
+  bool HasObserverForTesting(const Observer* obs) const {
+    return observers_.HasObserver(obs);
+  }
+
   void SetTimerForTesting(std::unique_ptr<base::OneShotTimer> timer);
 
   void SetClockForTesting(base::Clock* clock);

@@ -36,11 +36,11 @@ class GeolocationControllerObserver : public GeolocationController::Observer {
   bool possible_change_in_timezone_ = false;
 };
 
-// Used for waiting for the geoposition to be responded from the server to all
-// observers.
+// Used for waiting for the geolocation controller to send geoposition fetched
+// from the server to all observers.
 class GeopositionResponsesWaiter : public GeolocationController::Observer {
  public:
-  GeopositionResponsesWaiter();
+  explicit GeopositionResponsesWaiter(GeolocationController* controller);
 
   GeopositionResponsesWaiter(const GeopositionResponsesWaiter&) = delete;
   GeopositionResponsesWaiter& operator=(const GeopositionResponsesWaiter&) =
@@ -54,6 +54,7 @@ class GeopositionResponsesWaiter : public GeolocationController::Observer {
   void OnGeopositionChanged(bool possible_change_in_timezone) override;
 
  private:
+  GeolocationController* const controller_;
   base::RunLoop run_loop_;
 };
 

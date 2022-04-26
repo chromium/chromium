@@ -18,12 +18,14 @@ void GeolocationControllerObserver::OnGeopositionChanged(
 // -----------------------------------------------------------------------------
 // GeopositionResponsesWaiter:
 
-GeopositionResponsesWaiter::GeopositionResponsesWaiter() {
-  GeolocationController::Get()->AddObserver(this);
+GeopositionResponsesWaiter::GeopositionResponsesWaiter(
+    GeolocationController* controller)
+    : controller_(controller) {
+  controller_->AddObserver(this);
 }
 
 GeopositionResponsesWaiter::~GeopositionResponsesWaiter() {
-  GeolocationController::Get()->RemoveObserver(this);
+  controller_->RemoveObserver(this);
 }
 
 void GeopositionResponsesWaiter::Wait() {
