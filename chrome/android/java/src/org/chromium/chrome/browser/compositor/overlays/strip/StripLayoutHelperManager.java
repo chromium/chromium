@@ -93,6 +93,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
     private final StripScrim mStripScrim;
     private boolean mBrowserScrimShowing;
+    private boolean mTabSwitcherActive;
     private ValueAnimator mScrimFadeAnimation;
 
     private TabStripSceneLayer mTabStripTreeProvider;
@@ -184,6 +185,18 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         public void onStartedShowing(@LayoutType int layoutType, boolean showToolbar) {
             if (layoutType != LayoutType.TAB_SWITCHER) return;
             updateScrimVisibility(true);
+        }
+
+        @Override
+        public void onFinishedShowing(int layoutType) {
+            if (layoutType != LayoutType.TAB_SWITCHER) return;
+            mTabSwitcherActive = true;
+        }
+
+        @Override
+        public void onFinishedHiding(int layoutType) {
+            if (layoutType != LayoutType.TAB_SWITCHER) return;
+            mTabSwitcherActive = false;
         }
 
         @Override
@@ -569,13 +582,14 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             @Override
             public void willCloseTab(Tab tab, boolean animate) {
                 if (!tab.isIncognito()) {
-                    getStripLayoutHelper(tab.isIncognito()).willCloseTab(tab.getId());
+                    getStripLayoutHelper(tab.isIncognito())
+                            .willCloseTab(tab.getId(), mTabSwitcherActive);
                 }
             }
 
             @Override
             public void willCloseAllTabs(boolean incognito) {
-                getStripLayoutHelper(incognito).willCloseAllTabs();
+                getStripLayoutHelper(incognito).willCloseAllTabs(mTabSwitcherActive);
                 updateModelSwitcherButton();
             }
 

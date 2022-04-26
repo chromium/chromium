@@ -31280,6 +31280,18 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabletTabStrip.UndoCloseTab">
+  <owner>gauravjj@google.com</owner>
+  <owner>skavuluru@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User clicked on the undo close tab snackbar to undo a tab closure on tablet
+    done from the tab strip. This does not include undo tab closures from the
+    grid tab switcher.
+  </description>
+</action>
+
 <action name="TabMediaIndicator_Clicked">
   <obsolete>Replaced with &quot;TabAlertIndicator_Clicked&quot;.</obsolete>
   <owner>miu@chromium.org</owner>
