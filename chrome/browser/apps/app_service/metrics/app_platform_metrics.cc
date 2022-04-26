@@ -114,7 +114,9 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
     case apps::AppType::kCrostini:
       return apps::AppTypeNameV2::kCrostini;
     case apps::AppType::kChromeApp:
-      return apps::IsAshBrowserWindow(window)
+      return app_id == app_constants::kChromeAppId
+                 ? apps::AppTypeNameV2::kChromeBrowser
+             : apps::IsAshBrowserWindow(window)
                  ? apps::AppTypeNameV2::kChromeAppTab
                  : apps::AppTypeNameV2::kChromeAppWindow;
     case apps::AppType::kWeb: {
@@ -563,7 +565,7 @@ std::string AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(
 
 std::string AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(
     AppTypeNameV2 app_type_name) {
-  return kAppsUsageTimeHistogramPrefix +
+  return kAppsUsageTimeHistogramPrefixV2 +
          GetAppTypeHistogramNameV2(app_type_name);
 }
 
