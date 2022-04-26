@@ -209,6 +209,15 @@ class AppsContainerView::ContinueContainer : public views::View {
       UpdateRecentAppsMargins();
   }
 
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    // The "show continue section" button appears directly over the wallpaper,
+    // so use a "base layer" color for its background.
+    show_continue_section_button_->SetBackgroundColor(
+        AshColorProvider::Get()->GetBaseLayerColor(
+            AshColorProvider::BaseLayerType::kTransparent40));
+  }
+
   bool HasRecentApps() const {
     return recent_apps_ && recent_apps_->GetVisible();
   }
