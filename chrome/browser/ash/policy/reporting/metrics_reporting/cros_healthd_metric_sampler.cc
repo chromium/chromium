@@ -71,13 +71,13 @@ void HandleBusResult(MetricCallback callback,
 
   if (!bus_result.is_null()) {
     switch (bus_result->which()) {
-      case cros_healthd::BusResult::Tag::ERROR: {
+      case cros_healthd::BusResult::Tag::kError: {
         DVLOG(1) << "cros_healthd: Error getting bus info: "
                  << bus_result->get_error()->msg;
         break;
       }
 
-      case cros_healthd::BusResult::Tag::BUS_DEVICES: {
+      case cros_healthd::BusResult::Tag::kBusDevices: {
         for (const auto& bus_device : bus_result->get_bus_devices()) {
           const auto& bus_info = bus_device->bus_info;
           if (metric_type == CrosHealthdMetricSampler::MetricType::kInfo) {
@@ -131,13 +131,13 @@ void HandleCpuResult(MetricCallback callback,
 
   if (!cpu_result.is_null()) {
     switch (cpu_result->which()) {
-      case cros_healthd::CpuResult::Tag::ERROR: {
+      case cros_healthd::CpuResult::Tag::kError: {
         DVLOG(1) << "cros_healthd: Error getting CPU info: "
                  << cpu_result->get_error()->msg;
         break;
       }
 
-      case cros_healthd::CpuResult::Tag::CPU_INFO: {
+      case cros_healthd::CpuResult::Tag::kCpuInfo: {
         const auto& cpu_info = cpu_result->get_cpu_info();
         if (cpu_info.is_null()) {
           DVLOG(1) << "Null CpuInfo from cros_healthd";
@@ -183,14 +183,14 @@ void HandleBootPerformanceResult(
   const auto& boot_performance_result = result->boot_performance_result;
   if (!boot_performance_result.is_null()) {
     switch (boot_performance_result->which()) {
-      case chromeos::cros_healthd::mojom::BootPerformanceResult::Tag::ERROR: {
+      case chromeos::cros_healthd::mojom::BootPerformanceResult::Tag::kError: {
         DVLOG(1) << "cros_healthd: Error getting Boot Performance info: "
                  << boot_performance_result->get_error()->msg;
         break;
       }
 
       case chromeos::cros_healthd::mojom::BootPerformanceResult::Tag::
-          BOOT_PERFORMANCE_INFO: {
+          kBootPerformanceInfo: {
         const auto& boot_performance_info =
             boot_performance_result->get_boot_performance_info();
         if (boot_performance_info.is_null()) {
@@ -232,13 +232,13 @@ void HandleAudioResult(MetricCallback callback,
 
   if (!audio_result.is_null()) {
     switch (audio_result->which()) {
-      case chromeos::cros_healthd::mojom::AudioResult::Tag::ERROR: {
+      case chromeos::cros_healthd::mojom::AudioResult::Tag::kError: {
         DVLOG(1) << "CrosHealthD: Error getting audio telemetry: "
                  << audio_result->get_error()->msg;
         break;
       }
 
-      case chromeos::cros_healthd::mojom::AudioResult::Tag::AUDIO_INFO: {
+      case chromeos::cros_healthd::mojom::AudioResult::Tag::kAudioInfo: {
         const auto& audio_info = audio_result->get_audio_info();
         if (audio_info.is_null()) {
           DVLOG(1) << "CrosHealthD: No audio info received";
@@ -274,13 +274,13 @@ void HandleMemoryResult(MetricCallback callback,
 
   if (!memory_result.is_null()) {
     switch (memory_result->which()) {
-      case cros_healthd::MemoryResult::Tag::ERROR: {
+      case cros_healthd::MemoryResult::Tag::kError: {
         DVLOG(1) << "cros_healthd: Error getting memory info: "
                  << memory_result->get_error()->msg;
         break;
       }
 
-      case cros_healthd::MemoryResult::Tag::MEMORY_INFO: {
+      case cros_healthd::MemoryResult::Tag::kMemoryInfo: {
         const auto& memory_info = memory_result->get_memory_info();
         if (memory_result.is_null()) {
           DVLOG(1) << "Null MemoryInfo from cros_healthd";
