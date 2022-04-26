@@ -1147,10 +1147,8 @@ const base::Feature kProjector{"Projector", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kProjectorManagedUser{"ProjectorManagedUser",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether to enable Projector annotator or marker tools.
-// The annotator tools are newer and based on the ink library.
-// The marker tools are older and based on fast ink.
-// We are deprecating the old marker tools in favor of the annotator tools.
+// Controls whether to enable Projector annotator tools.
+// The annotator tools are based on the ink library.
 const base::Feature kProjectorAnnotator{"ProjectorAnnotator",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
