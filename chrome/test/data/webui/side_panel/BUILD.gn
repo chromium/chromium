@@ -34,6 +34,8 @@ ts_library("build_ts") {
     "bookmarks/test_bookmarks_api_proxy.ts",
     "reading_list/reading_list_app_test.ts",
     "reading_list/test_reading_list_api_proxy.ts",
+    "read_anything/read_anything_app_test.ts",
+    "read_anything/test_read_anything_api_proxy.ts",
     "side_panel_app_test.ts",
   ]
   definitions = [

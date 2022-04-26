@@ -8,7 +8,7 @@ import {ContentNode} from './read_anything.mojom-webui.js';
 
 export class HeadingElement extends PolymerElement {
   static get is() {
-    return 'heading-element';
+    return 'read-anything-heading';
   }
 
   static get template() {
@@ -59,4 +59,11 @@ export class HeadingElement extends PolymerElement {
         this.contentNode.headingLevel < 1 || this.contentNode.headingLevel > 6;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'read-anything-heading': HeadingElement;
+  }
+}
+
 customElements.define(HeadingElement.is, HeadingElement);

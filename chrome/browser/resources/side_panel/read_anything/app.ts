@@ -9,7 +9,7 @@ import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ContentNode, ContentType} from './read_anything.mojom-webui.js';
-import {ReadAnythingApiProxy} from './read_anything_api_proxy.js';
+import {ReadAnythingApiProxy, ReadAnythingApiProxyImpl} from './read_anything_api_proxy.js';
 
 const ReadAnythingElementBase = WebUIListenerMixin(PolymerElement);
 
@@ -35,7 +35,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     };
   }
 
-  private apiProxy_: ReadAnythingApiProxy = ReadAnythingApiProxy.getInstance();
+  private apiProxy_: ReadAnythingApiProxy =
+      ReadAnythingApiProxyImpl.getInstance();
   private listenerIds_: number[];
   private content_: ContentNode[];
   private fontName_: string;
@@ -105,4 +106,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'read-anything-app': ReadAnythingElement;
+  }
+}
+
 customElements.define(ReadAnythingElement.is, ReadAnythingElement);

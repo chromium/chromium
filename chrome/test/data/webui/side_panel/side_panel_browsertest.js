@@ -75,3 +75,14 @@ var ReadingListAppTest = class extends SidePanelBrowserTest {
 TEST_F('ReadingListAppTest', 'All', function() {
   mocha.run();
 });
+
+var ReadAnythingAppTest = class extends SidePanelBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://read-later.top-chrome/test_loader.html?module=side_panel/read_anything/read_anything_app_test.js&host=webui-test';
+  }
+};
+
+TEST_F('ReadAnythingAppTest', 'All', function() {
+  mocha.run();
+});
