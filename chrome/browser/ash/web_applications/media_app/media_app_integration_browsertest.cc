@@ -104,9 +104,9 @@ class MediaAppIntegrationTest : public SystemWebAppIntegrationTest {
     feature_list_.InitAndEnableFeature(ash::features::kMediaAppHandlesPdf);
   }
 
-  void MediaAppLaunchWithFile(bool audio_enabled);
-  void MediaAppWithLaunchSystemWebAppAsync(bool audio_enabled);
-  void MediaAppEligibleOpenTask(bool audio_enabled);
+  void MediaAppLaunchWithFile();
+  void MediaAppWithLaunchSystemWebAppAsync();
+  void MediaAppEligibleOpenTask();
 
   // Helper to initiate a test by launching a single file.
   content::WebContents* LaunchWithOneTestFile(const char* file);
@@ -124,26 +124,6 @@ class MediaAppIntegrationWithFilesAppTest : public MediaAppIntegrationTest {
     file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile());
     MediaAppIntegrationTest::SetUpOnMainThread();
   }
-};
-
-class MediaAppIntegrationAudioEnabledTest : public MediaAppIntegrationTest {
- public:
-  MediaAppIntegrationAudioEnabledTest() {
-    feature_list_.InitAndEnableFeature(ash::features::kMediaAppHandlesAudio);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class MediaAppIntegrationAudioDisabledTest : public MediaAppIntegrationTest {
- public:
-  MediaAppIntegrationAudioDisabledTest() {
-    feature_list_.InitAndDisableFeature(ash::features::kMediaAppHandlesAudio);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class MediaAppIntegrationDarkLightModeEnabledTest
@@ -352,7 +332,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaApp) {
 
 // Test that the MediaApp successfully loads a file passed in on its launch
 // params. This exercises only web_applications logic.
-void MediaAppIntegrationTest::MediaAppLaunchWithFile(bool audio_enabled) {
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchWithFile) {
   WaitForTestSystemAppInstall();
   // Launch the App for the first time.
   content::WebContents* app = LaunchAppWithFile(web_app::SystemAppType::MEDIA,
@@ -362,42 +342,21 @@ void MediaAppIntegrationTest::MediaAppLaunchWithFile(bool audio_enabled) {
 
   EXPECT_EQ("800x600", WaitForImageAlt(app, kFilePng800x600));
 
-  // Launch with a different file.
-  if (audio_enabled) {
-    // Open file in new window.
-    app = LaunchAppWithFile(web_app::SystemAppType::MEDIA,
-                            TestFile(kFileJpeg640x480));
-  } else {
-    // Open file in same window.
-    LaunchAppWithFileWithoutWaiting(web_app::SystemAppType::MEDIA,
-                                    TestFile(kFileJpeg640x480));
-  }
+  // Launch with a different file in a new window.
+  app = LaunchAppWithFile(web_app::SystemAppType::MEDIA,
+                          TestFile(kFileJpeg640x480));
   Browser* second_browser = chrome::FindBrowserWithActiveWindow();
   PrepareAppForTest(app);
 
   EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
-  if (audio_enabled) {
-    EXPECT_NE(first_browser, second_browser);
-  } else {
-    EXPECT_EQ(first_browser, second_browser);
-  }
-}
-
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioEnabledTest,
-                       MediaAppLaunchWithFile) {
-  MediaAppLaunchWithFile(true);
-}
-
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioDisabledTest,
-                       MediaAppLaunchWithFile) {
-  MediaAppLaunchWithFile(false);
+  EXPECT_NE(first_browser, second_browser);
 }
 
 // Test that the MediaApp successfully loads a file using
 // LaunchSystemWebAppAsync. This exercises high level integration with SWA
 // platform (a different code path than MediaAppLaunchWithFile test).
-void MediaAppIntegrationTest::MediaAppWithLaunchSystemWebAppAsync(
-    bool audio_enabled) {
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
+                       MediaAppWithLaunchSystemWebAppAsync) {
   WaitForTestSystemAppInstall();
   // Launch the App for the first time.
   web_app::SystemAppLaunchParams audio_params;
@@ -416,25 +375,11 @@ void MediaAppIntegrationTest::MediaAppWithLaunchSystemWebAppAsync(
   web_app::LaunchSystemWebAppAsync(browser()->profile(),
                                    web_app::SystemAppType::MEDIA, image_params);
   web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
-  app = PrepareActiveBrowserForTest(audio_enabled ? 3 : 2);
+  app = PrepareActiveBrowserForTest(3);
   Browser* second_browser = chrome::FindBrowserWithActiveWindow();
 
   EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
-  if (audio_enabled) {
-    EXPECT_NE(first_browser, second_browser);
-  } else {
-    EXPECT_EQ(first_browser, second_browser);
-  }
-}
-
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioEnabledTest,
-                       MediaAppWithLaunchSystemWebAppAsync) {
-  MediaAppWithLaunchSystemWebAppAsync(true);
-}
-
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioDisabledTest,
-                       MediaAppWithLaunchSystemWebAppAsync) {
-  MediaAppWithLaunchSystemWebAppAsync(false);
+  EXPECT_NE(first_browser, second_browser);
 }
 
 // Test that the Media App launches a single window for images.
@@ -892,13 +837,11 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest, HandleRawFiles) {
 
 // Ensures that chrome://media-app is available as a file task for the ChromeOS
 // file manager and eligible for opening appropriate files / mime types.
-void MediaAppIntegrationTest::MediaAppEligibleOpenTask(bool audio_enabled) {
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppEligibleOpenTask) {
   std::vector<base::FilePath> file_paths;
   file_paths.push_back(TestFile(kFilePng800x600));
   file_paths.push_back(TestFile(kFileVideoVP9));
-  if (audio_enabled) {
-    file_paths.push_back(TestFile(kFileAudioOgg));
-  }
+  file_paths.push_back(TestFile(kFileAudioOgg));
 
   WaitForTestSystemAppInstall();
 
@@ -925,16 +868,6 @@ void MediaAppIntegrationTest::MediaAppEligibleOpenTask(bool audio_enabled) {
     EXPECT_EQ(file_manager::file_tasks::TASK_TYPE_WEB_APP,
               descriptor.task_type);
   }
-}
-
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioEnabledTest,
-                       MediaAppEligibleOpenTask) {
-  MediaAppEligibleOpenTask(true);
-}
-
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioDisabledTest,
-                       MediaAppEligibleOpenTask) {
-  MediaAppEligibleOpenTask(false);
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAllProfilesTest,
@@ -1150,7 +1083,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationDarkLightModeDisabledTest,
 
 // Ensures both the "audio" and "gallery" flavours of the MediaApp can be
 // launched at the same time when launched via the files app.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioEnabledTest,
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
                        FileOpenCanLaunchBothAudioAndImages) {
   base::HistogramTester histograms;
 
@@ -1193,7 +1126,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioEnabledTest,
 }
 
 // Ensures audio files opened in the media app successfully autoplay.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioEnabledTest, Autoplay) {
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, Autoplay) {
   content::WebContents* web_ui = LaunchWithOneTestFile(kFileAudioOgg);
 
   EXPECT_EQ(kFileAudioOgg, WaitForAudioTrackTitle(web_ui));
@@ -1218,7 +1151,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioEnabledTest, Autoplay) {
 
 // Ensures the autoplay on audio file launch updates the global media controls
 // with an appropriate media source name.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioEnabledTest, MediaControls) {
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaControls) {
   using absl::optional;
   class MediaControlsObserver
       : public media_session::mojom::MediaControllerObserver {
@@ -1484,12 +1417,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, GuestCanReadLocalFonts) {
   content::WebContents* web_ui = LaunchWithNoFiles();
   EXPECT_EQ("success", ExtractStringInGlobalScope(web_ui, script));
 }
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    MediaAppIntegrationAudioEnabledTest);
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    MediaAppIntegrationAudioDisabledTest);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     MediaAppIntegrationPdfDisabledTest);

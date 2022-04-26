@@ -44,21 +44,6 @@ var MediaAppUIGtestBrowserTest = class extends testing.Test {
 
 // js2gtest fixtures require var here (https://crbug.com/1033337).
 // eslint-disable-next-line no-var
-var MediaAppUIWithAudioGtestBrowserTest =
-    class extends MediaAppUIGtestBrowserTest {
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        ...super.featureList.enabled,
-        'ash::features::kMediaAppHandlesAudio',
-      ]
-    };
-  }
-};
-
-// js2gtest fixtures require var here (https://crbug.com/1033337).
-// eslint-disable-next-line no-var
 var MediaAppUIWithDarkLightModeGtestBrowserTest =
     class extends MediaAppUIGtestBrowserTest {
   /** @override */
@@ -144,9 +129,6 @@ TEST_F('MediaAppUIGtestBrowserTest', 'ConsistencyCheck', async () => {
     ...(/** @type {{testCaseBodies: Object}} */ (MediaAppUIGtestBrowserTest))
         .testCaseBodies,
     ...(/** @type {{testCaseBodies: Object}} */ (
-            MediaAppUIWithAudioGtestBrowserTest))
-        .testCaseBodies,
-    ...(/** @type {{testCaseBodies: Object}} */ (
             MediaAppUIWithDarkLightModeGtestBrowserTest))
         .testCaseBodies,
     ...(/** @type {{testCaseBodies: Object}} */ (
@@ -192,7 +174,7 @@ TEST_F('MediaAppUIGtestBrowserTest', 'MultipleFilesHaveTokens', () => {
   runMediaAppTest('MultipleFilesHaveTokens');
 });
 
-TEST_F('MediaAppUIWithAudioGtestBrowserTest', 'SingleAudioLaunch', () => {
+TEST_F('MediaAppUIGtestBrowserTest', 'SingleAudioLaunch', () => {
   runMediaAppTest('SingleAudioLaunch');
 });
 

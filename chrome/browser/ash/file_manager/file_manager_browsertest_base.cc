@@ -1839,10 +1839,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
   // Make sure to run the ARC storage UI toast tests.
   enabled_features.push_back(arc::kUsbStorageUIFeature);
 
-  // FileManager tests exist for the deprecated audio player app, which will be
-  // removed, along with the kMediaAppHandlesAudio flag at ~M100.
-  disabled_features.push_back(ash::features::kMediaAppHandlesAudio);
-
   if (options.files_swa) {
     enabled_features.push_back(chromeos::features::kFilesSWA);
   } else {

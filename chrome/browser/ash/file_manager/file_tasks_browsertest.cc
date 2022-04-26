@@ -173,22 +173,9 @@ class FileTasksBrowserTestBase
 class FileTasksBrowserTest : public FileTasksBrowserTestBase {
  public:
   FileTasksBrowserTest() {
-    // Enable Media App Audio, but no PDF support.
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kMediaAppHandlesAudio},
-        {ash::features::kMediaAppHandlesPdf});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class FileTasksBrowserTestNoAudio : public FileTasksBrowserTestBase {
- public:
-  FileTasksBrowserTestNoAudio() {
-    // Enable Media App without Audio support.
-    scoped_feature_list_.InitWithFeatures(
-        {}, {ash::features::kMediaAppHandlesAudio});
+    // Enable Media App without PDF support.
+    scoped_feature_list_.InitWithFeatures({},
+                                          {ash::features::kMediaAppHandlesPdf});
   }
 
  private:
@@ -216,18 +203,6 @@ class FileTasksBrowserTestWithPdf : public FileTasksBrowserTestBase {
 // populated via file sniffing, but tests in this file do not operate on real
 // files. We hard code MIME types that file sniffing obtained experimentally
 // from sample files.
-// The "deprecated" lists are those that use the old ChromeApps as handlers and
-// can be removed when those are gone.
-
-constexpr Expectation kAudioDeprecatedExpectations[] = {
-    {"amr", kAudioPlayerAppId, "application/octet-stream"},
-    {"flac", kAudioPlayerAppId},
-    {"m4a", kAudioPlayerAppId},
-    {"mp3", kAudioPlayerAppId},
-    {"oga", kAudioPlayerAppId},
-    {"ogg", kAudioPlayerAppId},
-    {"wav", kAudioPlayerAppId},
-};
 
 constexpr Expectation kAudioExpectations[] = {
     {"flac", kMediaAppId}, {"m4a", kMediaAppId}, {"mp3", kMediaAppId},
@@ -360,15 +335,6 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, DefaultHandlerChangeDetector) {
   expectations.insert(expectations.end(), std::begin(pdf_expectations),
                       std::end(pdf_expectations));
 
-  TestExpectationsAgainstDefaultTasks(expectations);
-}
-
-// Tests the default handlers that are different with Audio support disabled.
-IN_PROC_BROWSER_TEST_P(FileTasksBrowserTestNoAudio,
-                       AudioHandlerChangeDetector) {
-  std::vector<Expectation> expectations(
-      std::begin(kAudioDeprecatedExpectations),
-      std::end(kAudioDeprecatedExpectations));
   TestExpectationsAgainstDefaultTasks(expectations);
 }
 
@@ -609,9 +575,6 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
     FileTasksBrowserTestWithPdf);
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
-    FileTasksBrowserTestNoAudio);
 
 }  // namespace file_tasks
 }  // namespace file_manager

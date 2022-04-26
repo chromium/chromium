@@ -382,10 +382,11 @@ void ComponentLoader::AddFileManagerExtension() {
 }
 
 void ComponentLoader::AddAudioPlayerExtension() {
-  // TODO(b/189172062): Guard this with ShouldInstallObsoleteComponentExtension
-  // when the feature is on and stable.
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kMediaAppHandlesAudio)) {
+  // TODO(b/189172062): Delete this entirely around M106 when it has has a
+  // chance to be cleaned up.
+  if (extensions::ExtensionPrefs::Get(profile_)
+          ->ShouldInstallObsoleteComponentExtension(
+              file_manager::kAudioPlayerAppId)) {
     Add(IDR_AUDIO_PLAYER_MANIFEST,
         base::FilePath(FILE_PATH_LITERAL("audio_player")));
   }

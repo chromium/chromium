@@ -33,7 +33,7 @@ js_type_check("closure_compile") {
     ":metrics",
     ":my_files",
     ":office",
-    ":open_audio_files",
+    ":open_audio_media_app",
     ":open_image_media_app",
     ":open_media_app",
     ":open_sniffed_files",
@@ -252,9 +252,12 @@ js_library("office") {
   ]
 }
 
-js_library("open_audio_files") {
+js_library("open_audio_media_app") {
   testonly = true
-  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+  deps = [
+    ":open_media_app",
+    "//ui/file_manager/integration_tests:testcase",
+  ]
 }
 
 js_library("open_media_app") {

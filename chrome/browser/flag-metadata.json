@@ -3965,11 +3965,6 @@
     "expiry_milestone": 103
   },
   {
-    "name": "media-app-handles-audio",
-    "owners": [ "//ash/webui/media_app_ui/OWNERS" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "media-app-handles-pdf",
     "owners": [ "//ash/webui/media_app_ui/OWNERS" ],
     "expiry_milestone": 106

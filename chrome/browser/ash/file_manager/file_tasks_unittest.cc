@@ -300,31 +300,6 @@ TEST(FileManagerFileTasksTest, ChooseAndSetDefaultTask_FallbackHtmlTextApp) {
   EXPECT_TRUE(tasks[0].is_default);
 }
 
-// Test that Audio Player is chosen as default even if nothing is set in the
-// preferences.
-TEST(FileManagerFileTasksTest, ChooseAndSetDefaultTask_FallbackAudioPlayer) {
-  TestingPrefServiceSimple pref_service;
-  RegisterDefaultTaskPreferences(&pref_service);
-
-  // The Audio Player app was found for "sound.wav".
-  TaskDescriptor files_app_task(kAudioPlayerAppId, TASK_TYPE_FILE_HANDLER,
-                                "Audio Player");
-  std::vector<FullTaskDescriptor> tasks;
-  tasks.emplace_back(
-      files_app_task, "Audio Player", Verb::VERB_OPEN_WITH,
-      GURL("chrome://extension-icon/cjbfomnbifhcdnihkgipgfcihmgjfhbf/32/1"),
-      false /* is_default */, false /* is_generic_file_handler */,
-      false /* is_file_extension_match */);
-  std::vector<extensions::EntryInfo> entries;
-  entries.emplace_back(base::FilePath::FromUTF8Unsafe("sound.wav"), "audio/wav",
-                       false);
-
-  // The Audio Player app should be chosen as default, as it's a fallback file
-  // browser handler.
-  ChooseAndSetDefaultTask(pref_service, entries, &tasks);
-  EXPECT_TRUE(tasks[0].is_default);
-}
-
 // Test that Office Editing is chosen as default even if nothing is set in the
 // preferences.
 TEST(FileManagerFileTasksTest, ChooseAndSetDefaultTask_FallbackOfficeEditing) {

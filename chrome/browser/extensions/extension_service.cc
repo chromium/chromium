@@ -139,12 +139,13 @@ constexpr base::TimeDelta kUpdateIdleDelay = base::Seconds(5);
 // uninstalled.
 // Note: We preserve at least one entry here for continued testing coverage.
 const char* const kObsoleteComponentExtensionIds[] = {
-    // Obsolete since M91.
-    "nlkncpkkdoccmpiclbokaimcnedabhhm",  // Gallery
-    // The Video Player chrome app became obsolete in m93. This entry can be
-    // removed after references to kVideoPlayerAppId in component_loader.cc
-    // are removed (and it's no longer used for regression tests).
-    "jcgeabjmjgoblfofpppfkcoakmfobdko"  // Video Player
+    // The Video Player chrome app became obsolete in m93, but is preserved for
+    // continued test coverage.
+    "jcgeabjmjgoblfofpppfkcoakmfobdko",  // Video Player
+    // The Audio Player chrome app became obsolete in m97. This entry can be
+    // removed after references to kAudioPlayerAppId in component_loader.cc
+    // are removed.
+    "cjbfomnbifhcdnihkgipgfcihmgjfhbf"  // Audio Player
 };
 
 }  // namespace

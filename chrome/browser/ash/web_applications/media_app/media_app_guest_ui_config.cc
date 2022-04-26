@@ -29,9 +29,6 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
   PrefService* pref_service = profile->GetPrefs();
 
   source->AddString("appLocale", g_browser_process->GetApplicationLocale());
-  source->AddBoolean(
-      "audioHandler",
-      base::FeatureList::IsEnabled(chromeos::features::kMediaAppHandlesAudio));
   source->AddBoolean("pdfInInk", base::FeatureList::IsEnabled(
                                      chromeos::features::kMediaAppHandlesPdf));
   source->AddBoolean("pdfReadonly",

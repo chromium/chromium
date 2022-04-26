@@ -257,8 +257,7 @@ bool MediaSystemAppDelegate::ShouldShowInSearch() const {
 }
 
 bool MediaSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
-  return base::FeatureList::IsEnabled(
-      chromeos::features::kMediaAppHandlesAudio);
+  return true;
 }
 
 bool MediaSystemAppDelegate::ShouldReuseExistingWindow() const {

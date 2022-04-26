@@ -433,21 +433,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       TestCase("videoOpenDrive").MediaSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
-    OpenAudioFiles, /* open_audio_files.js */
+    OpenAudioMediaApp, /* open_audio_media_app.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("audioOpenCloseDownloads"),
-                      TestCase("audioOpenCloseDownloads").InGuestMode(),
-                      TestCase("audioOpenCloseDrive"),
-                      TestCase("audioOpenDownloads").InGuestMode(),
-                      TestCase("audioOpenDownloads"),
-                      TestCase("audioOpenDrive"),
-                      TestCase("audioAutoAdvanceDrive"),
-                      TestCase("audioRepeatAllModeMultipleFileDrive"),
-                      TestCase("audioNoRepeatModeSingleFileDrive"),
-                      TestCase("audioRepeatOneModeSingleFileDrive"),
-                      TestCase("audioRepeatAllModeSingleFileDrive"),
-                      TestCase("audioNoRepeatModeMultipleFileDrive"),
-                      TestCase("audioRepeatOneModeMultipleFileDrive")));
+    ::testing::Values(TestCase("audioOpenDownloads").MediaSwa().InGuestMode(),
+                      TestCase("audioOpenDownloads").MediaSwa(),
+                      TestCase("audioOpenDrive").MediaSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     OpenImageMediaApp, /* open_image_media_app.js */
@@ -830,8 +820,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewTabIndexText").FilesSwa(),
         TestCase("openQuickViewTabIndexHtml"),
         TestCase("openQuickViewTabIndexHtml").FilesSwa(),
-        TestCase("openQuickViewTabIndexAudio"),
-        TestCase("openQuickViewTabIndexAudio").FilesSwa(),
+        TestCase("openQuickViewTabIndexAudio").MediaSwa(),
+        TestCase("openQuickViewTabIndexAudio").MediaSwa().FilesSwa(),
         TestCase("openQuickViewTabIndexVideo").MediaSwa(),
         TestCase("openQuickViewTabIndexVideo").MediaSwa().FilesSwa(),
         TestCase("openQuickViewTabIndexDeleteDialog"),
