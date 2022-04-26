@@ -56,7 +56,7 @@ assert(!(is_win && is_asan && current_cpu == "x86"),
        "ASan is only supported in 64-bit builds on Windows.")
 
 if ((is_apple || is_win) && is_asan) {
-  if (is_mac) {
+  if (is_mac || (is_ios && target_environment == "catalyst")) {
     _clang_rt_dso_path = "darwin/libclang_rt.asan_osx_dynamic.dylib"
   } else if (is_ios) {
     _clang_rt_dso_path = "darwin/libclang_rt.asan_iossim_dynamic.dylib"
