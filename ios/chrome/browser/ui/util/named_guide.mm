@@ -136,8 +136,6 @@ NSString* const kActiveKeyPath = @"active";
   // hierarchy in an effort to minimize additional rendering costs.
   if (_constrainedFrameView)
     [self.owningView insertSubview:_constrainedFrameView atIndex:0];
-
-  [self updateConstraintsWithView:_constrainedFrameView];
 }
 
 #pragma mark - Public
@@ -206,6 +204,7 @@ NSString* const kActiveKeyPath = @"active";
   }
   self.constrainedFrameView.frame = self.constrainedFrame;
   self.constrainedFrameView.autoresizingMask = self.autoresizingMask;
+  [self updateConstraintsWithView:self.constrainedFrameView];
 }
 
 - (void)checkForInactiveConstraints {
