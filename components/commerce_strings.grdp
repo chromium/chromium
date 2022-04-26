@@ -23,5 +23,7 @@
     <message name="IDS_DISCOUNT_CONTEXTUAL_CONSENT_ACCEPTED_CONFIRMATION_DONE" desc="The text shown on the consent confirmation bubble bubble. User can click this button to close the bubble.">
       Done
     </message>
+    <message name="IDS_NATIVE_NTP_CART_DISCOUNT_CONSENT_TITLE" translateable="false" desc="The title shown on the native consent dialog for getting discount. Note: This is intentionally left blank. No translation is required."></message>
+    <message name="IDS_NATIVE_NTP_CART_DISCOUNT_CONSENT_BODY" translateable="false" desc="The actual consent descrition that shows in the native consent dialog. Note: This is intentionally left blank. No translation is required."></message>
   </if>
 </grit-part>
