@@ -1777,7 +1777,8 @@ void DocumentLoader::StartLoadingResponse() {
       parser_->AsScriptableDocumentParser();
   if (scriptable_parser) {
     auto cached_metadata_sender = CachedMetadataSender::Create(
-        response_, blink::mojom::CodeCacheType::kJavascript, requestor_origin_);
+        response_, blink::mojom::CodeCacheType::kJavascript,
+        frame_->DomWindow()->GetSecurityOrigin());
     cached_metadata_handler_ =
         MakeGarbageCollected<SourceKeyedCachedMetadataHandler>(
             WTF::TextEncoding(), std::move(cached_metadata_sender));
