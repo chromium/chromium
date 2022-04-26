@@ -3432,6 +3432,57 @@ TEST_F(ShelfViewGestureTapTest, MouseClickInterruptionAfterGestureLongPress) {
   EXPECT_EQ(views::InkDropState::HIDDEN, GetInkDropStateOfAppIcon1());
 }
 
+TEST_F(ShelfViewGestureTapTest,
+       PressEscapeKeyBeforeReleaseLongPressOnAppButton) {
+  const ShelfID id = AddAppShortcut();
+  auto item_delegate_owned =
+      std::make_unique<AsyncContextMenuShelfItemDelegate>();
+  AsyncContextMenuShelfItemDelegate* item_delegate = item_delegate_owned.get();
+  model_->ReplaceShelfItemDelegate(id, std::move(item_delegate_owned));
+
+  ShelfAppButton* app_button = GetButtonByID(id);
+  GetEventGenerator()->MoveTouch(app_button->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->PressTouch();
+
+  // Fast forward to generate the ET_GESTURE_SHOW_PRESS event.
+  task_environment()->FastForwardBy(base::Milliseconds(200));
+
+  // Fast forward to generate the ET_GESTURE_LONG_PRESS event to show the
+  // context menu.
+  task_environment()->FastForwardBy(base::Milliseconds(1000));
+  EXPECT_TRUE(item_delegate->HasPendingContextMenuCallback());
+
+  // Build a dummy context menu and show it.
+  {
+    auto menu_model = std::make_unique<ui::SimpleMenuModel>(nullptr);
+    menu_model->AddItem(203, u"item");
+    item_delegate->RunPendingContextMenuCallback(std::move(menu_model));
+    EXPECT_TRUE(shelf_view_->IsShowingMenuForView(app_button));
+  }
+
+  // Press Escape. The context menu should be closed.
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE);
+  EXPECT_FALSE(shelf_view_->IsShowingMenu());
+  EXPECT_FALSE(item_delegate->HasPendingContextMenuCallback());
+
+  // Release the gesture press. The context menu should show again.
+  GetEventGenerator()->ReleaseTouch();
+  task_environment()->FastForwardBy(base::Milliseconds(1000));
+  EXPECT_TRUE(item_delegate->HasPendingContextMenuCallback());
+  {
+    auto menu_model = std::make_unique<ui::SimpleMenuModel>(nullptr);
+    menu_model->AddItem(203, u"item");
+    item_delegate->RunPendingContextMenuCallback(std::move(menu_model));
+    EXPECT_TRUE(shelf_view_->IsShowingMenuForView(app_button));
+  }
+
+  // Verify that the ink drop of the app button for which the context menu shows
+  // for is activated.
+  EXPECT_EQ(
+      views::InkDropState::ACTIVATED,
+      views::InkDrop::Get(app_button)->GetInkDrop()->GetTargetInkDropState());
+}
+
 // Verifies the shelf app button's inkdrop behavior when the mouse click
 // occurs before gesture long press.
 TEST_F(ShelfViewGestureTapTest, MouseClickInterruptionBeforeGestureLongPress) {

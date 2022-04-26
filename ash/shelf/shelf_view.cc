@@ -1499,6 +1499,8 @@ void ShelfView::PrepareForDrag(Pointer pointer, const ui::LocatedEvent& event) {
   // a context menu just after drag starts.
   if (!context_menu_callback_.IsCancelled()) {
     context_menu_callback_.Cancel();
+    GetShelfAppButton(item_awaiting_response_)
+        ->OnContextMenuModelRequestCanceled();
     item_awaiting_response_ = ShelfID();
   }
 
