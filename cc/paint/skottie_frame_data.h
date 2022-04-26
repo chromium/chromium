@@ -28,7 +28,7 @@ struct CC_PAINT_EXPORT SkottieFrameData {
   PaintImage image;
   // Chromium version of SkSamplingOptions. Controls resampling quality if the
   // image needs to be resized when rendering.
-  PaintFlags::FilterQuality quality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kLow;
 };
 
 CC_PAINT_EXPORT bool operator==(const SkottieFrameData& frame_l,

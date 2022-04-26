@@ -741,11 +741,14 @@ void SerializeSkottieFrameData(const SkM44& current_ctm,
   // |scale_adjustment| is not ultimately used; Skottie handles image
   // scale adjustment internally when rastering.
   SkSize scale_adjustment = SkSize::MakeEmpty();
-  helper.Write(DrawImage(frame_data.image, /*use_dark_mode=*/false,
-                         SkIRect::MakeWH(frame_data.image.width(),
-                                         frame_data.image.height()),
-                         frame_data.quality, current_ctm),
-               &scale_adjustment);
+  DrawImage draw_image;
+  if (frame_data.image) {
+    draw_image = DrawImage(
+        frame_data.image, /*use_dark_mode=*/false,
+        SkIRect::MakeWH(frame_data.image.width(), frame_data.image.height()),
+        frame_data.quality, current_ctm);
+  }
+  helper.Write(draw_image, &scale_adjustment);
   helper.Write(frame_data.quality);
 }
 
@@ -1308,9 +1311,6 @@ absl::optional<SkottieFrameData> DeserializeSkottieFrameData(
     PaintOpDeserializer<DrawSkottieOp>& deserializer) {
   SkottieFrameData frame_data;
   deserializer.Read(&frame_data.image);
-  if (!frame_data.image)
-    return absl::nullopt;
-
   deserializer.Read(&frame_data.quality);
   return frame_data;
 }
@@ -1812,7 +1812,9 @@ SkottieWrapper::FrameDataFetchResult DrawSkottieOp::GetImageAssetForRaster(
     return SkottieWrapper::FrameDataFetchResult::NO_UPDATE;
 
   const SkottieFrameData& frame_data = images_iter->second;
-  if (params.image_provider) {
+  if (!frame_data.image) {
+    sk_image = nullptr;
+  } else if (params.image_provider) {
     // There is no use case for applying dark mode filters to skottie images
     // currently.
     DrawImage draw_image(
@@ -1832,8 +1834,6 @@ SkottieWrapper::FrameDataFetchResult DrawSkottieOp::GetImageAssetForRaster(
     if (!sk_image)
       sk_image = frame_data.image.GetSwSkImage();
   }
-  DCHECK(sk_image) << "Failed to fetch SkImage for Skottie image asset "
-                   << asset_id;
   sampling_out =
       PaintFlags::FilterQualityToSkSamplingOptions(frame_data.quality);
   return SkottieWrapper::FrameDataFetchResult::NEW_DATA_AVAILABLE;

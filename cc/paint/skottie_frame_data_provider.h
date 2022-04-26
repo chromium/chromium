@@ -32,6 +32,9 @@ class CC_PAINT_EXPORT SkottieFrameDataProvider {
   class CC_PAINT_EXPORT ImageAsset : public base::RefCounted<ImageAsset> {
    public:
     // Returns the image to use for an asset in a frame of a skottie animation.
+    // May return a blank SkottieFrameData instance with an empty |image|.
+    // Skottie handles this gracefully and simply skips the image asset while
+    // still rendering the rest of the frame.
     //
     // |t|: See skresources::ImageAsset::getFrame(). Same semantics. Specifies
     //      the frame of interest in the animation that's about to be rendered.

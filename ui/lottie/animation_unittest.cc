@@ -987,6 +987,26 @@ TEST_F(AnimationWithImageAssetsTest, PaintsAnimationImagesToCanvas) {
                               cc::HashSkottieResourceId("image_1"), frame_1)));
 }
 
+TEST_F(AnimationWithImageAssetsTest, GracefullyHandlesNullImages) {
+  AdvanceClock(base::Milliseconds(300));
+
+  animation_->Start(Animation::Style::kLoop);
+
+  display_list_->StartPaint();
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  display_list_->EndPaintOfUnpaired(gfx::Rect(animation_->GetOriginalSize()));
+
+  sk_sp<cc::PaintRecord> paint_record = display_list_->ReleaseAsRecord();
+  ASSERT_THAT(paint_record, NotNull());
+  ASSERT_THAT(paint_record->size(), Eq(1u));
+  const cc::DrawSkottieOp* op =
+      paint_record->GetOpAtForTesting<cc::DrawSkottieOp>(0);
+  ASSERT_THAT(op, NotNull());
+  EXPECT_THAT(op->images,
+              UnorderedElementsAre(Pair(cc::HashSkottieResourceId("image_0"),
+                                        cc::SkottieFrameData())));
+}
+
 TEST_F(AnimationWithImageAssetsTest, LoadsCorrectFrameTimestamp) {
   AdvanceClock(base::Milliseconds(300));
 

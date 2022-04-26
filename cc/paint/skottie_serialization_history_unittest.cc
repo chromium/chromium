@@ -21,6 +21,7 @@
 namespace cc {
 namespace {
 
+using ::testing::Contains;
 using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
@@ -85,6 +86,49 @@ TEST_F(SkottieSerializationHistoryTest, FilterNewSkottieFrameImages) {
       UnorderedElementsAre(Pair(
           HashSkottieResourceId("asset_b"),
           SkottieFrameData({image_4, PaintFlags::FilterQuality::kMedium}))));
+
+  history_.FilterNewSkottieFrameState(*skottie, images, empty_text_map);
+  EXPECT_THAT(images, IsEmpty());
+}
+
+TEST_F(SkottieSerializationHistoryTest, HandlesEmptyImages) {
+  auto skottie = CreateSkottieFromString(
+      CreateCustomLottieDataWith2Assets("asset_a", "asset_b"));
+  PaintImage blank_image;
+  PaintImage image_1 = CreateBitmapImage(gfx::Size(10, 10));
+  PaintImage image_2 = CreateBitmapImage(gfx::Size(20, 20));
+  ;
+
+  SkottieFrameDataMap images = {
+      {HashSkottieResourceId("asset_a"),
+       {blank_image, PaintFlags::FilterQuality::kMedium}},
+      {HashSkottieResourceId("asset_b"),
+       {image_2, PaintFlags::FilterQuality::kMedium}},
+  };
+  history_.FilterNewSkottieFrameState(*skottie, images, empty_text_map);
+  EXPECT_THAT(
+      images,
+      Contains(Pair(HashSkottieResourceId("asset_a"),
+                    SkottieFrameData(
+                        {blank_image, PaintFlags::FilterQuality::kMedium}))));
+
+  images = {{HashSkottieResourceId("asset_a"),
+             {image_1, PaintFlags::FilterQuality::kMedium}}};
+  history_.FilterNewSkottieFrameState(*skottie, images, empty_text_map);
+  EXPECT_THAT(
+      images,
+      Contains(Pair(
+          HashSkottieResourceId("asset_a"),
+          SkottieFrameData({image_1, PaintFlags::FilterQuality::kMedium}))));
+
+  images = {{HashSkottieResourceId("asset_a"),
+             {blank_image, PaintFlags::FilterQuality::kMedium}}};
+  history_.FilterNewSkottieFrameState(*skottie, images, empty_text_map);
+  EXPECT_THAT(
+      images,
+      Contains(Pair(HashSkottieResourceId("asset_a"),
+                    SkottieFrameData(
+                        {blank_image, PaintFlags::FilterQuality::kMedium}))));
 
   history_.FilterNewSkottieFrameState(*skottie, images, empty_text_map);
   EXPECT_THAT(images, IsEmpty());

@@ -91,9 +91,9 @@ class CC_PAINT_EXPORT SkottieWrapper
     // The callback's output parameters have not been filled and will be
     // ignored by SkottieWrapper. In this case, SkottieWrapper will reuse the
     // frame data that was most recently provided for the given asset (it caches
-    // this internally). If no frame data has ever been provided for this asset,
-    // a null image will be passed to Skottie's Animation during Seek(); this
-    // is acceptable if there's no rendering.
+    // this internally). Note it is acceptable to set |image_out| to a null
+    // SkImage; Skottie will simply skip the image asset while rendering the
+    // rest of the frame.
     NO_UPDATE,
   };
   // The callback's implementation must synchronously fill the output
