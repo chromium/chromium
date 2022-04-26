@@ -34,6 +34,7 @@ void ListenFilteredByPid(SimpleTestLogListener& listener) {
       std::make_unique<fuchsia::logger::LogFilterOptions>();
   options->filter_by_pid = true;
   options->pid = Process::Current().Pid();
+  options->min_severity = fuchsia::logger::LogLevelFilter::INFO;
   fuchsia::logger::LogPtr log =
       ComponentContextForProcess()->svc()->Connect<fuchsia::logger::Log>();
   listener.ListenToLog(log.get(), std::move(options));
