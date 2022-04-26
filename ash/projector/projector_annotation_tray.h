@@ -59,6 +59,9 @@ class ProjectorAnnotationTray : public TrayBackgroundView {
   // Returns the message ID of the accessible name for the color.
   int GetAccessibleNameForColor(SkColor color);
 
+  // Resets the tray to its default state.
+  void ResetTray();
+
   // Image view of the tray icon.
   views::ImageView* const image_view_;
 

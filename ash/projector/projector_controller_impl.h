@@ -71,6 +71,7 @@ class ASH_EXPORT ProjectorControllerImpl
   void OnToolSet(const AnnotatorTool& tool) override;
   void OnUndoRedoAvailabilityChanged(bool undo_available,
                                      bool redo_available) override;
+  void OnCanvasInitialized(bool success) override;
 
   // Create the screencast container directory. If there is an error, the
   // callback will be triggered with an empty FilePath.

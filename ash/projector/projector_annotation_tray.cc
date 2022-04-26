@@ -100,8 +100,7 @@ ProjectorAnnotationTray::ProjectorAnnotationTray(Shelf* shelf)
   image_view_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
-  // The default pen color upon creation is magenta.
-  current_pen_color_ = kProjectorMagentaPenColor;
+  ResetTray();
 }
 
 ProjectorAnnotationTray::~ProjectorAnnotationTray() = default;
@@ -232,8 +231,7 @@ void ProjectorAnnotationTray::OnThemeChanged() {
 void ProjectorAnnotationTray::HideAnnotationTray() {
   SetVisiblePreferred(false);
   UpdateIcon();
-  // Reset pen color to default color.
-  current_pen_color_ = kProjectorMagentaPenColor;
+  ResetTray();
 }
 
 void ProjectorAnnotationTray::ToggleAnnotator() {
@@ -293,6 +291,13 @@ int ProjectorAnnotationTray::GetAccessibleNameForColor(SkColor color) {
   }
   NOTREACHED();
   return IDS_RED_COLOR_BUTTON;
+}
+
+void ProjectorAnnotationTray::ResetTray() {
+  // Set current pen to default pen color
+  current_pen_color_ = kProjectorMagentaPenColor;
+  // Disable the tray icon. It is enabled once the ink canvas is initialized.
+  SetEnabled(false);
 }
 
 }  // namespace ash

@@ -37,6 +37,15 @@ export class TrustedAnnotatorClient extends PostMessageAPIClient {
     return this.callApiFn(
         'onUndoRedoAvailabilityChanged', [undoAvailable, redoAvailable]);
   }
+
+  /**
+   * Notifies the native UI that the canvas has initialized.
+   * @param {boolean} success
+   * @return {Promise}
+   */
+  onCanvasInitialized(success) {
+    return this.callApiFn('onCanvasInitialized', [success]);
+  }
 }
 
 /**
@@ -102,6 +111,9 @@ export class AnnotatorUntrustedCommFactory {
     elem.addUndoRedoListener((undoAvailable, redoAvailable) => {
       AnnotatorUntrustedCommFactory.client_.onUndoRedoAvailabilityChanged(
           undoAvailable, redoAvailable);
+    });
+    elem.addCanvasInitializationCallback((success) => {
+      AnnotatorUntrustedCommFactory.client_.onCanvasInitialized(success);
     });
   }
 

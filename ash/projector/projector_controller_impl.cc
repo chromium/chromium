@@ -283,6 +283,10 @@ void ProjectorControllerImpl::OnUndoRedoAvailabilityChanged(
   // Projector toolbar.
 }
 
+void ProjectorControllerImpl::OnCanvasInitialized(bool success) {
+  ui_controller_->OnCanvasInitialized(success);
+}
+
 void ProjectorControllerImpl::OnRecordingStarted(bool is_in_projector_mode) {
   if (!is_in_projector_mode) {
     OnNewScreencastPreconditionChanged();

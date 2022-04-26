@@ -162,6 +162,14 @@ void ProjectorUiController::ResetTools() {
   }
 }
 
+void ProjectorUiController::OnCanvasInitialized(bool success) {
+  auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
+                                        ->GetStatusAreaWidget()
+                                        ->projector_annotation_tray();
+  DCHECK(projector_annotation_tray);
+  projector_annotation_tray->SetEnabled(success);
+}
+
 void ProjectorUiController::OnProjectorSessionActiveStateChanged(bool active) {
   if (!active)
     ResetTools();

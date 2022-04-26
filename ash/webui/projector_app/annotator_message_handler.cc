@@ -30,6 +30,11 @@ void AnnotatorMessageHandler::RegisterMessages() {
           base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
+      "onCanvasInitialized",
+      base::BindRepeating(&AnnotatorMessageHandler::OnCanvasInitialized,
+                          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
       "onError", base::BindRepeating(&AnnotatorMessageHandler::OnError,
                                      base::Unretained(this)));
 }
@@ -66,6 +71,13 @@ void AnnotatorMessageHandler::OnUndoRedoAvailabilityChanged(
   DCHECK(args[1].is_bool());
   ProjectorController::Get()->OnUndoRedoAvailabilityChanged(args[0].GetBool(),
                                                             args[1].GetBool());
+}
+
+void AnnotatorMessageHandler::OnCanvasInitialized(
+    const base::Value::List& args) {
+  DCHECK_EQ(args.size(), 1u);
+  DCHECK(args[0].is_bool());
+  ProjectorController::Get()->OnCanvasInitialized(args[0].GetBool());
 }
 
 void AnnotatorMessageHandler::OnError(const base::Value::List& args) {

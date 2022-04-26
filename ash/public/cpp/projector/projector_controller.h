@@ -90,6 +90,8 @@ class ASH_PUBLIC_EXPORT ProjectorController {
   // Callback indicating availability of undo and redo functionalities.
   virtual void OnUndoRedoAvailabilityChanged(bool undo_available,
                                              bool redo_available) = 0;
+  // Called when the ink canvas has either succeeded or failed in initializing.
+  virtual void OnCanvasInitialized(bool success) = 0;
 };
 
 }  // namespace ash

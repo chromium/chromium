@@ -26,6 +26,13 @@ export class ProjectorBrowserProxy {
   onUndoRedoAvailabilityChanged(undoAvailable, redoAvailable) {}
 
   /**
+   * Notifies the embedder content that the canvas has either succeeded or
+   * failed to initialize.
+   * @param {boolean} success
+   */
+  onCanvasInitialized(success) {}
+
+  /**
    * Gets the list of primary and secondary accounts currently available on the
    * device.
    * @return {Promise<Array<!projectorApp.Account>>}
@@ -136,6 +143,11 @@ export class ProjectorBrowserProxyImpl {
   onUndoRedoAvailabilityChanged(undoAvailable, redoAvailable) {
     return chrome.send(
         'onUndoRedoAvailabilityChanged', [undoAvailable, redoAvailable]);
+  }
+
+  /** @override */
+  onCanvasInitialized(success) {
+    return chrome.send('onCanvasInitialized', [success]);
   }
 
   /** @override */

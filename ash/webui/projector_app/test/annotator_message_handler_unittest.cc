@@ -53,6 +53,12 @@ class AnnotatorMessageHandlerTest : public testing::Test {
     web_ui().HandleReceivedMessage("onUndoRedoAvailabilityChanged", &list_args);
   }
 
+  void SendCanvasInitialized(bool success) {
+    base::ListValue list_args;
+    list_args.Append(base::Value(success));
+    web_ui().HandleReceivedMessage("onCanvasInitialized", &list_args);
+  }
+
   content::TestWebUI& web_ui() { return web_ui_; }
   AnnotatorMessageHandler* handler() { return message_handler_.get(); }
   MockProjectorController& controller() { return controller_; }
@@ -111,6 +117,14 @@ TEST_F(AnnotatorMessageHandlerTest, UndoRedoAvailabilityChanged) {
 
   EXPECT_CALL(controller(), OnUndoRedoAvailabilityChanged(false, true));
   SendUndoRedoAvailableChanged(false, true);
+}
+
+TEST_F(AnnotatorMessageHandlerTest, CanvasInitialized) {
+  EXPECT_CALL(controller(), OnCanvasInitialized(true));
+  SendCanvasInitialized(true);
+
+  EXPECT_CALL(controller(), OnCanvasInitialized(false));
+  SendCanvasInitialized(false);
 }
 
 }  // namespace ash

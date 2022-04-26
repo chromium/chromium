@@ -70,6 +70,15 @@ projectorApp.AnnotatorApi.prototype.clear = function() {};
 projectorApp.AnnotatorApi.prototype.addUndoRedoListener = function(listener) {};
 
 /**
+ * Attaches the callback that should be executed when the canvas has succeeded
+ * or failed initialization.
+ * @param {function(boolean):undefined} callback Expects a boolean indicating if
+ *     canvas initialization has succeeded or failed.
+ */
+projectorApp.AnnotatorApi.prototype.addCanvasInitializationCallback = function(
+    callback) {};
+
+/**
  * Structure for Account information.
  * @record
  * @struct

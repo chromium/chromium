@@ -39,6 +39,7 @@ class AnnotatorMessageHandler : public content::WebUIMessageHandler {
  private:
   void OnToolSet(const base::Value::List& args);
   void OnUndoRedoAvailabilityChanged(const base::Value::List& args);
+  void OnCanvasInitialized(const base::Value::List& args);
   void OnError(const base::Value::List& args);
 };
 

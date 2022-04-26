@@ -74,6 +74,13 @@ class TrustedAnnotatorRequestHandler extends RequestHandler {
       return this.browserProxy_.onUndoRedoAvailabilityChanged(
           values[0], values[1]);
     });
+
+    this.registerMethod('onCanvasInitialized', (values) => {
+      if (!values || values.length != 1) {
+        return;
+      }
+      return this.browserProxy_.onCanvasInitialized(values[0]);
+    });
   }
 }
 

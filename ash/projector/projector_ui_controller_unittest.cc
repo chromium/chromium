@@ -229,4 +229,18 @@ TEST_F(ProjectorUiControllerTest, ShowSaveFailureNotification) {
                                       /*count=*/2);
 }
 
+TEST_F(ProjectorUiControllerTest, OnCanvasInitialized) {
+  auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
+                                        ->GetStatusAreaWidget()
+                                        ->projector_annotation_tray();
+
+  EXPECT_FALSE(projector_annotation_tray->GetEnabled());
+
+  controller_->OnCanvasInitialized(/*success=*/true);
+  EXPECT_TRUE(projector_annotation_tray->GetEnabled());
+
+  controller_->OnCanvasInitialized(/*success=*/false);
+  EXPECT_FALSE(projector_annotation_tray->GetEnabled());
+}
+
 }  // namespace ash
