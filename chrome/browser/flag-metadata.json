@@ -3311,8 +3311,8 @@
   },
   {
     "name": "font-access",
-    "owners": [ "cmp", "pwnall" ],
-    "expiry_milestone": 102
+    "owners": [ "dslee" ],
+    "expiry_milestone": 105
   },
   {
     "name": "force-color-profile",

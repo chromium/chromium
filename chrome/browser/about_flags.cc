@@ -6251,7 +6251,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(autofill::features::kAutofillCreditCardUploadFeedback)},
 
     {"font-access", flag_descriptions::kFontAccessAPIName,
-     flag_descriptions::kFontAccessAPIDescription, kOsAll,
+     flag_descriptions::kFontAccessAPIDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kFontAccess)},
 
     {"mouse-subframe-no-implicit-capture",
