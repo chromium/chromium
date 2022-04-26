@@ -557,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoPromptForActionMutation) {
 
   // Need to pay attention for a message that XHR has finished since there
   // is no navigation to wait for.
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(WebContents());
   BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
       "document.getElementById('username_action_mutation').value = 'temp';"
@@ -698,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   // Need to pay attention for a message that XHR has finished since there
   // is no navigation to wait for.
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(WebContents());
 
   // Verify that if XHR without navigation occurs and the form has been filled
   // out we try and save the password. Note that in general the submission
@@ -727,7 +727,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   // Need to pay attention for a message that XHR has finished since there
   // is no navigation to wait for.
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(WebContents());
 
   // Verify that if XHR without navigation occurs and the form has been filled
   // out we try and save the password. Note that in general the submission
@@ -757,7 +757,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   // Need to pay attention for a message that XHR has finished since there
   // is no navigation to wait for.
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(WebContents());
 
   // Verify that if XHR without navigation occurs and the form has NOT been
   // filled out we don't prompt.
@@ -783,7 +783,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Need to pay attention for a message that XHR has finished since there
   // is no navigation to wait for.
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(WebContents());
 
   // Verify that if XHR without navigation occurs and the form has NOT been
   // filled out we don't prompt.
@@ -826,7 +826,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   // Need to pay attention for a message that XHR has finished since there
   // is no navigation to wait for.
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(WebContents());
 
   // Verify that if XHR without navigation occurs and the form has been filled
   // out we try and save the password. Note that in general the submission
@@ -855,7 +855,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   // Need to pay attention for a message that Fetch has finished since there
   // is no navigation to wait for.
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(WebContents());
 
   // Verify that if Fetch without navigation occurs and the form has been filled
   // out we try and save the password. Note that in general the submission
@@ -886,7 +886,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Need to pay attention for a message that Fetch has finished since there
   // is no navigation to wait for.
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(WebContents());
 
   // Verify that if Fetch without navigation occurs and the form has NOT been
   // filled out we don't prompt.
@@ -912,7 +912,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Need to pay attention for a message that Fetch has finished since there
   // is no navigation to wait for.
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(WebContents());
 
   // Verify that if Fetch without navigation occurs and the form has NOT been
   // filled out we don't prompt.
@@ -2167,7 +2167,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   // Need to pay attention for a message that XHR has finished since there
   // is no navigation to wait for.
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(WebContents());
 
   BubbleObserver prompt_observer(WebContents());
   std::string fill_and_submit =
