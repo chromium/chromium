@@ -23,12 +23,15 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 namespace base {
 class SequencedTaskRunner;
 class TaskRunner;
+}
+
+namespace blink {
+class StorageKey;
 }
 
 namespace content {
@@ -51,7 +54,6 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
   ~IndexedDBDispatcherHost() override;
 
   void AddReceiver(
-      const blink::StorageKey& storage_key,
       absl::optional<storage::BucketLocator> bucket,
       mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver);
 

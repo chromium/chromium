@@ -213,13 +213,10 @@ IndexedDBDispatcherHost::~IndexedDBDispatcherHost() {
 }
 
 void IndexedDBDispatcherHost::AddReceiver(
-    const blink::StorageKey& storage_key,
     absl::optional<storage::BucketLocator> bucket,
     mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (bucket.has_value())
-    DCHECK_EQ(bucket->storage_key, storage_key);
   receivers_.Add(this, std::move(pending_receiver), bucket);
 }
 
@@ -280,22 +277,23 @@ void IndexedDBDispatcherHost::GetDatabaseInfo(
   // Return error if failed to retrieve bucket from the QuotaManager.
   if (!receivers_.current_context().has_value()) {
     auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-        this->AsWeakPtr(), blink::StorageKey(), std::move(pending_callbacks),
-        IDBTaskRunner());
+        this->AsWeakPtr(), storage::BucketLocator(),
+        std::move(pending_callbacks), IDBTaskRunner());
     IndexedDBDatabaseError error = IndexedDBDatabaseError(
         blink::mojom::IDBException::kUnknownError, u"Internal error.");
     callbacks->OnError(error);
     return;
   }
 
-  const auto storage_key = receivers_.current_context()->storage_key;
+  const auto& bucket_locator = *receivers_.current_context();
   auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-      this->AsWeakPtr(), storage_key, std::move(pending_callbacks),
+      this->AsWeakPtr(), bucket_locator, std::move(pending_callbacks),
       IDBTaskRunner());
 
   base::FilePath indexed_db_path = indexed_db_context_->data_path();
+  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   indexed_db_context_->GetIDBFactory()->GetDatabaseInfo(
-      std::move(callbacks), storage_key, indexed_db_path);
+      std::move(callbacks), bucket_locator.storage_key, indexed_db_path);
 }
 
 void IndexedDBDispatcherHost::Open(
@@ -312,26 +310,27 @@ void IndexedDBDispatcherHost::Open(
   // Return error if failed to retrieve bucket from the QuotaManager.
   if (!receivers_.current_context().has_value()) {
     auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-        this->AsWeakPtr(), blink::StorageKey(), std::move(pending_callbacks),
-        IDBTaskRunner());
+        this->AsWeakPtr(), storage::BucketLocator(),
+        std::move(pending_callbacks), IDBTaskRunner());
     IndexedDBDatabaseError error = IndexedDBDatabaseError(
         blink::mojom::IDBException::kUnknownError, u"Internal error.");
     callbacks->OnError(error);
     return;
   }
 
-  const auto storage_key = receivers_.current_context()->storage_key;
+  const auto& bucket_locator = *receivers_.current_context();
   auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-      this->AsWeakPtr(), storage_key, std::move(pending_callbacks),
+      this->AsWeakPtr(), bucket_locator, std::move(pending_callbacks),
       IDBTaskRunner());
   auto database_callbacks = base::MakeRefCounted<IndexedDBDatabaseCallbacks>(
       indexed_db_context_, std::move(database_callbacks_remote),
       IDBTaskRunner());
   base::FilePath indexed_db_path = indexed_db_context_->data_path();
 
-  auto create_transaction_callback =
-      base::BindOnce(&IndexedDBDispatcherHost::CreateAndBindTransactionImpl,
-                     AsWeakPtr(), std::move(transaction_receiver), storage_key);
+  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
+  auto create_transaction_callback = base::BindOnce(
+      &IndexedDBDispatcherHost::CreateAndBindTransactionImpl, AsWeakPtr(),
+      std::move(transaction_receiver), bucket_locator.storage_key);
   std::unique_ptr<IndexedDBPendingConnection> connection =
       std::make_unique<IndexedDBPendingConnection>(
           std::move(callbacks), std::move(database_callbacks), transaction_id,
@@ -339,8 +338,9 @@ void IndexedDBDispatcherHost::Open(
 
   // TODO(dgrogan): Don't let a non-existing database be opened (and therefore
   // created) if this origin is already over quota.
-  indexed_db_context_->GetIDBFactory()->Open(name, std::move(connection),
-                                             storage_key, indexed_db_path);
+  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
+  indexed_db_context_->GetIDBFactory()->Open(
+      name, std::move(connection), bucket_locator.storage_key, indexed_db_path);
 }
 
 void IndexedDBDispatcherHost::DeleteDatabase(
@@ -352,22 +352,24 @@ void IndexedDBDispatcherHost::DeleteDatabase(
   // Return error if failed to retrieve bucket from the QuotaManager.
   if (!receivers_.current_context().has_value()) {
     auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-        this->AsWeakPtr(), blink::StorageKey(), std::move(pending_callbacks),
-        IDBTaskRunner());
+        this->AsWeakPtr(), storage::BucketLocator(),
+        std::move(pending_callbacks), IDBTaskRunner());
     IndexedDBDatabaseError error = IndexedDBDatabaseError(
         blink::mojom::IDBException::kUnknownError, u"Internal error.");
     callbacks->OnError(error);
     return;
   }
 
-  const auto storage_key = receivers_.current_context()->storage_key;
+  const auto& bucket_locator = *receivers_.current_context();
   auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-      this->AsWeakPtr(), storage_key, std::move(pending_callbacks),
+      this->AsWeakPtr(), bucket_locator, std::move(pending_callbacks),
       IDBTaskRunner());
 
   base::FilePath indexed_db_path = indexed_db_context_->data_path();
+  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   indexed_db_context_->GetIDBFactory()->DeleteDatabase(
-      name, std::move(callbacks), storage_key, indexed_db_path, force_close);
+      name, std::move(callbacks), bucket_locator.storage_key, indexed_db_path,
+      force_close);
 }
 
 void IndexedDBDispatcherHost::AbortTransactionsAndCompactDatabase(
@@ -380,12 +382,13 @@ void IndexedDBDispatcherHost::AbortTransactionsAndCompactDatabase(
     return;
   }
 
-  const auto storage_key = receivers_.current_context()->storage_key;
+  const auto& bucket_locator = *receivers_.current_context();
   base::OnceCallback<void(leveldb::Status)> callback_on_io = base::BindOnce(
       &CallCompactionStatusCallbackOnIDBThread, std::move(mojo_callback));
 
+  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   indexed_db_context_->GetIDBFactory()->AbortTransactionsAndCompactDatabase(
-      std::move(callback_on_io), storage_key);
+      std::move(callback_on_io), bucket_locator.storage_key);
 }
 
 void IndexedDBDispatcherHost::AbortTransactionsForDatabase(
@@ -398,12 +401,13 @@ void IndexedDBDispatcherHost::AbortTransactionsForDatabase(
     return;
   }
 
-  const auto storage_key = receivers_.current_context()->storage_key;
+  const auto& bucket_locator = *receivers_.current_context();
   base::OnceCallback<void(leveldb::Status)> callback_on_io = base::BindOnce(
       &CallAbortStatusCallbackOnIDBThread, std::move(mojo_callback));
 
+  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   indexed_db_context_->GetIDBFactory()->AbortTransactionsForDatabase(
-      std::move(callback_on_io), storage_key);
+      std::move(callback_on_io), bucket_locator.storage_key);
 }
 
 void IndexedDBDispatcherHost::CreateAndBindTransactionImpl(

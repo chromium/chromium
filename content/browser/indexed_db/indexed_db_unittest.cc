@@ -16,6 +16,7 @@
 #include "base/time/default_clock.h"
 #include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom-test-utils.h"
 #include "content/browser/indexed_db/indexed_db_bucket_state.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
@@ -208,13 +209,13 @@ TEST_F(IndexedDBTest, SetForceKeepSessionState) {
 class ForceCloseDBCallbacks : public IndexedDBCallbacks {
  public:
   ForceCloseDBCallbacks(scoped_refptr<IndexedDBContextImpl> idb_context,
-                        const blink::StorageKey& storage_key)
+                        const storage::BucketLocator& bucket_locator)
       : IndexedDBCallbacks(nullptr,
-                           storage_key,
+                           bucket_locator,
                            mojo::NullAssociatedRemote(),
                            idb_context->IDBTaskRunner()),
         idb_context_(idb_context),
-        storage_key_(storage_key) {}
+        bucket_locator_(bucket_locator) {}
 
   ForceCloseDBCallbacks(const ForceCloseDBCallbacks&) = delete;
   ForceCloseDBCallbacks& operator=(const ForceCloseDBCallbacks&) = delete;
@@ -223,7 +224,8 @@ class ForceCloseDBCallbacks : public IndexedDBCallbacks {
   void OnSuccess(std::unique_ptr<IndexedDBConnection> connection,
                  const IndexedDBDatabaseMetadata& metadata) override {
     connection_ = std::move(connection);
-    idb_context_->ConnectionOpened(storage_key_, connection_.get());
+    idb_context_->ConnectionOpened(bucket_locator_.storage_key,
+                                   connection_.get());
   }
 
   IndexedDBConnection* connection() { return connection_.get(); }
@@ -233,22 +235,24 @@ class ForceCloseDBCallbacks : public IndexedDBCallbacks {
 
  private:
   scoped_refptr<IndexedDBContextImpl> idb_context_;
-  blink::StorageKey storage_key_;
+  storage::BucketLocator bucket_locator_;
   std::unique_ptr<IndexedDBConnection> connection_;
 };
 
 TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnDelete) {
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("http://test/");
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = kTestStorageKey;
 
   auto open_db_callbacks =
       base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   auto closed_db_callbacks =
       base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   auto open_callbacks =
-      base::MakeRefCounted<ForceCloseDBCallbacks>(context(), kTestStorageKey);
+      base::MakeRefCounted<ForceCloseDBCallbacks>(context(), bucket_locator);
   auto closed_callbacks =
-      base::MakeRefCounted<ForceCloseDBCallbacks>(context(), kTestStorageKey);
+      base::MakeRefCounted<ForceCloseDBCallbacks>(context(), bucket_locator);
   base::FilePath test_path = GetFilePathForTesting(kTestStorageKey);
 
   const int64_t host_transaction_id = 0;

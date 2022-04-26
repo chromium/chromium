@@ -86,12 +86,12 @@ class SafeCursorWrapper {
 
 IndexedDBCallbacks::IndexedDBCallbacks(
     base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
-    const blink::StorageKey& storage_key,
+    const storage::BucketLocator& bucket_locator,
     mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks> pending_callbacks,
     scoped_refptr<base::SequencedTaskRunner> idb_runner)
     : data_loss_(blink::mojom::IDBDataLoss::None),
       dispatcher_host_(std::move(dispatcher_host)),
-      storage_key_(storage_key),
+      bucket_locator_(bucket_locator),
       idb_runner_(std::move(idb_runner)) {
   DCHECK(idb_runner_->RunsTasksInCurrentSequence());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -177,7 +177,7 @@ void IndexedDBCallbacks::OnUpgradeNeeded(
   }
 
   auto database = std::make_unique<DatabaseImpl>(
-      std::move(wrapper.connection_), storage_key_, dispatcher_host_.get(),
+      std::move(wrapper.connection_), bucket_locator_, dispatcher_host_.get(),
       idb_runner_);
 
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_remote;
@@ -215,7 +215,7 @@ void IndexedDBCallbacks::OnSuccess(
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_remote;
   if (wrapper.connection_) {
     auto database = std::make_unique<DatabaseImpl>(
-        std::move(wrapper.connection_), storage_key_, dispatcher_host_.get(),
+        std::move(wrapper.connection_), bucket_locator_, dispatcher_host_.get(),
         idb_runner_);
     dispatcher_host_->AddDatabaseBinding(
         std::move(database),

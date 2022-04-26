@@ -12,11 +12,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 namespace base {
@@ -35,7 +35,7 @@ class IndexedDBDispatcherHost;
 class DatabaseImpl : public blink::mojom::IDBDatabase {
  public:
   explicit DatabaseImpl(std::unique_ptr<IndexedDBConnection> connection,
-                        const blink::StorageKey& storage_key,
+                        const storage::BucketLocator& storage_key,
                         IndexedDBDispatcherHost* dispatcher_host,
                         scoped_refptr<base::SequencedTaskRunner> idb_runner);
 
@@ -136,7 +136,7 @@ class DatabaseImpl : public blink::mojom::IDBDatabase {
   raw_ptr<IndexedDBDispatcherHost> dispatcher_host_;
   scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
   std::unique_ptr<IndexedDBConnection> connection_;
-  const blink::StorageKey storage_key_;
+  const storage::BucketLocator bucket_locator_;
   scoped_refptr<base::SequencedTaskRunner> idb_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);

@@ -226,7 +226,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // Binds receiver on bucket retrieval to ensure that a bucket always exists
   // for a storage key.
   void BindIndexedDBWithBucket(
-      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
       storage::QuotaErrorOr<storage::BucketInfo> result);
 

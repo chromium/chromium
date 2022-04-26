@@ -208,14 +208,14 @@ void IndexedDBContextImpl::Bind(
 
 void IndexedDBContextImpl::BindIndexedDB(
     const blink::StorageKey& storage_key,
+    // TODO(crbug.com/1315371): Allow custom bucket names.
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
   // Ensure default bucket exists for storage key on storage access and add
   // bind receiver on retrieval.
   quota_manager_proxy()->GetOrCreateBucket(
       storage_key, storage::kDefaultBucketName, idb_task_runner_,
       base::BindOnce(&IndexedDBContextImpl::BindIndexedDBWithBucket,
-                     weak_factory_.GetWeakPtr(), storage_key,
-                     std::move(receiver)));
+                     weak_factory_.GetWeakPtr(), std::move(receiver)));
 }
 
 void IndexedDBContextImpl::GetUsage(GetUsageCallback usage_callback) {
@@ -864,13 +864,13 @@ IndexedDBContextImpl::~IndexedDBContextImpl() {
 }
 
 void IndexedDBContextImpl::BindIndexedDBWithBucket(
-    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
     storage::QuotaErrorOr<storage::BucketInfo> result) {
-  absl::optional<storage::BucketLocator> bucket =
-      result.ok() ? absl::make_optional(result->ToBucketLocator())
-                  : absl::nullopt;
-  dispatcher_host_.AddReceiver(storage_key, bucket, std::move(receiver));
+  absl::optional<storage::BucketLocator> bucket = absl::nullopt;
+  if (result.ok()) {
+    bucket = absl::make_optional(result->ToBucketLocator());
+  }
+  dispatcher_host_.AddReceiver(bucket, std::move(receiver));
 }
 
 void IndexedDBContextImpl::ShutdownOnIDBSequence() {

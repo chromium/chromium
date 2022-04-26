@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 using blink::IndexedDBDatabaseMetadata;
 using blink::IndexedDBKey;
@@ -17,12 +17,12 @@ namespace content {
 
 MockIndexedDBCallbacks::MockIndexedDBCallbacks()
     : IndexedDBCallbacks(nullptr,
-                         blink::StorageKey(),
+                         storage::BucketLocator(),
                          mojo::NullAssociatedRemote(),
                          base::SequencedTaskRunnerHandle::Get()) {}
 MockIndexedDBCallbacks::MockIndexedDBCallbacks(bool expect_connection)
     : IndexedDBCallbacks(nullptr,
-                         blink::StorageKey(),
+                         storage::BucketLocator(),
                          mojo::NullAssociatedRemote(),
                          base::SequencedTaskRunnerHandle::Get()),
       expect_connection_(expect_connection) {}

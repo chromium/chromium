@@ -94,7 +94,7 @@ class CONTENT_EXPORT IndexedDBBucketState {
   // `earliest_global_sweep_time` and `earliest_global_compaction_time` are
   // expected to outlive this object.
   IndexedDBBucketState(
-      // TODO(crbug.com/1218100): This needs a BucketInfo
+      // TODO(crbug.com/1218100): This needs a BucketLocator
       blink::StorageKey storage_key,
       bool persist_for_incognito,
       base::Clock* clock,
