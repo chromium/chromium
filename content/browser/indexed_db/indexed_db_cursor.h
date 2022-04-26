@@ -15,8 +15,11 @@
 #include "content/browser/indexed_db/indexed_db_database.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
+
+namespace storage {
+struct BucketLocator;
+}  // namespace storage
 
 namespace content {
 
@@ -78,7 +81,7 @@ class IndexedDBCursor {
       IndexedDBTransaction* transaction);
 
  private:
-  const blink::StorageKey storage_key_;
+  const storage::BucketLocator bucket_locator_;
   blink::mojom::IDBTaskType task_type_;
   indexed_db::CursorType cursor_type_;
 

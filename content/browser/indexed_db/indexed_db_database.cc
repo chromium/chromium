@@ -76,9 +76,8 @@ std::vector<blink::mojom::IDBReturnValuePtr> CreateMojoValues(
   for (size_t i = 0; i < found_values.size(); ++i) {
     mojo_values.push_back(
         IndexedDBReturnValue::ConvertReturnValue(&found_values[i]));
-    // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
     dispatcher_host->CreateAllExternalObjects(
-        bucket_locator.storage_key, found_values[i].external_objects,
+        bucket_locator, found_values[i].external_objects,
         &mojo_values[i]->value->external_objects);
   }
   return mojo_values;
@@ -843,9 +842,8 @@ Status IndexedDBDatabase::GetOperation(
 
     blink::mojom::IDBReturnValuePtr mojo_value =
         IndexedDBReturnValue::ConvertReturnValue(&value);
-    // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
     dispatcher_host->CreateAllExternalObjects(
-        bucket_locator().storage_key, value.external_objects,
+        bucket_locator(), value.external_objects,
         &mojo_value->value->external_objects);
     std::move(callback).Run(
         blink::mojom::IDBDatabaseGetResult::NewValue(std::move(mojo_value)));
@@ -902,9 +900,8 @@ Status IndexedDBDatabase::GetOperation(
 
   blink::mojom::IDBReturnValuePtr mojo_value =
       IndexedDBReturnValue::ConvertReturnValue(&value);
-  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   dispatcher_host->CreateAllExternalObjects(
-      bucket_locator().storage_key, value.external_objects,
+      bucket_locator(), value.external_objects,
       &mojo_value->value->external_objects);
   std::move(callback).Run(
       blink::mojom::IDBDatabaseGetResult::NewValue(std::move(mojo_value)));
@@ -1404,9 +1401,8 @@ Status IndexedDBDatabase::BatchGetAllOperation(
     for (size_t j = 0; j < found_values.size(); ++j) {
       mojo_values.push_back(
           IndexedDBReturnValue::ConvertReturnValue(&found_values[j]));
-      // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
       dispatcher_host->CreateAllExternalObjects(
-          bucket_locator().storage_key, found_values[j].external_objects,
+          bucket_locator(), found_values[j].external_objects,
           &mojo_values[j]->value->external_objects);
     }
     all_mojo_values.push_back(std::move(mojo_values));
@@ -1510,9 +1506,7 @@ Status IndexedDBDatabase::OpenCursorOperation(
   }
 
   if (mojo_value) {
-    // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
-    dispatcher_host->CreateAllExternalObjects(bucket_locator.storage_key,
-                                              external_objects,
+    dispatcher_host->CreateAllExternalObjects(bucket_locator, external_objects,
                                               &mojo_value->external_objects);
   }
 

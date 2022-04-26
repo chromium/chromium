@@ -29,7 +29,7 @@ class MockIndexedDBFactory : public IndexedDBFactory {
                     const base::FilePath& data_directory));
   MOCK_METHOD3(GetDatabaseInfo,
                void(scoped_refptr<IndexedDBCallbacks> callbacks,
-                    const blink::StorageKey& storage_key,
+                    const storage::BucketLocator& bucket_locator,
                     const base::FilePath& data_directory));
   MOCK_METHOD4(OpenProxy,
                void(const std::u16string& name,

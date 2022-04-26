@@ -35,6 +35,7 @@
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/leveldb_write_batch.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom-test-utils.h"
 #include "content/browser/indexed_db/indexed_db_bucket_state.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
@@ -71,7 +72,7 @@ class TestableIndexedDBBackingStore : public IndexedDBBackingStore {
   TestableIndexedDBBackingStore(
       IndexedDBBackingStore::Mode backing_store_mode,
       TransactionalLevelDBFactory* leveldb_factory,
-      const blink::StorageKey& storage_key,
+      const storage::BucketLocator& bucket_locator,
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
       storage::mojom::BlobStorageContext* blob_storage_context,
@@ -82,7 +83,7 @@ class TestableIndexedDBBackingStore : public IndexedDBBackingStore {
       scoped_refptr<base::SequencedTaskRunner> idb_task_runner)
       : IndexedDBBackingStore(backing_store_mode,
                               leveldb_factory,
-                              storage_key,
+                              bucket_locator,
                               blob_path,
                               std::move(db),
                               blob_storage_context,
@@ -140,7 +141,7 @@ class TestIDBFactory : public IndexedDBFactoryImpl {
   std::unique_ptr<IndexedDBBackingStore> CreateBackingStore(
       IndexedDBBackingStore::Mode backing_store_mode,
       TransactionalLevelDBFactory* leveldb_factory,
-      const blink::StorageKey& storage_key,
+      const storage::BucketLocator& bucket_locator,
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
       storage::mojom::BlobStorageContext*,
@@ -154,7 +155,7 @@ class TestIDBFactory : public IndexedDBFactoryImpl {
     // than the versions that were passed in to this method. This way tests can
     // use a different context from what is stored in the IndexedDBContext.
     return std::make_unique<TestableIndexedDBBackingStore>(
-        backing_store_mode, leveldb_factory, storage_key, blob_path,
+        backing_store_mode, leveldb_factory, bucket_locator, blob_path,
         std::move(db), blob_storage_context_, file_system_access_context_,
         std::move(filesystem_proxy), std::move(blob_files_cleaned),
         std::move(report_outstanding_blobs), std::move(idb_task_runner));
@@ -336,6 +337,8 @@ class IndexedDBBackingStoreTest : public testing::Test {
   void CreateFactoryAndBackingStore() {
     const blink::StorageKey storage_key =
         blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
+    auto bucket_locator = storage::BucketLocator();
+    bucket_locator.storage_key = storage_key;
     idb_factory_ = std::make_unique<TestIDBFactory>(
         idb_context_.get(), blob_context_.get(),
         file_system_access_context_.get());
@@ -343,7 +346,7 @@ class IndexedDBBackingStoreTest : public testing::Test {
     leveldb::Status s;
     std::tie(bucket_state_handle_, s, std::ignore, data_loss_info_,
              std::ignore) =
-        idb_factory_->GetOrOpenBucketFactory(storage_key,
+        idb_factory_->GetOrOpenBucketFactory(bucket_locator,
                                              idb_context_->data_path(),
                                              /*create_if_missing=*/true);
     if (!bucket_state_handle_.IsHeld()) {

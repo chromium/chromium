@@ -68,7 +68,7 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
 
   // content::IndexedDBFactory overrides:
   void GetDatabaseInfo(scoped_refptr<IndexedDBCallbacks> callbacks,
-                       const blink::StorageKey& storage_key,
+                       const storage::BucketLocator& bucket_locator,
                        const base::FilePath& data_directory) override;
   void Open(const std::u16string& name,
             std::unique_ptr<IndexedDBPendingConnection> connection,
@@ -142,7 +142,7 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
              IndexedDBDatabaseError,
              IndexedDBDataLossInfo,
              /*was_cold_open=*/bool>
-  GetOrOpenBucketFactory(const blink::StorageKey& storage_key,
+  GetOrOpenBucketFactory(const storage::BucketLocator& bucket_locator,
                          const base::FilePath& data_directory,
                          bool create_if_missing);
 
@@ -159,7 +159,7 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
   virtual std::unique_ptr<IndexedDBBackingStore> CreateBackingStore(
       IndexedDBBackingStore::Mode backing_store_mode,
       TransactionalLevelDBFactory* leveldb_factory,
-      const blink::StorageKey& storage_key,
+      const storage::BucketLocator& bucket_locator,
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
       storage::mojom::BlobStorageContext* blob_storage_context,
@@ -201,7 +201,7 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
              IndexedDBDataLossInfo,
              bool /* is_disk_full */>
   OpenAndVerifyIndexedDBBackingStore(
-      const blink::StorageKey& storage_key,
+      const storage::BucketLocator& bucket_locator,
       base::FilePath data_directory,
       base::FilePath database_path,
       base::FilePath blob_path,

@@ -291,9 +291,8 @@ void IndexedDBDispatcherHost::GetDatabaseInfo(
       IDBTaskRunner());
 
   base::FilePath indexed_db_path = indexed_db_context_->data_path();
-  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   indexed_db_context_->GetIDBFactory()->GetDatabaseInfo(
-      std::move(callbacks), bucket_locator.storage_key, indexed_db_path);
+      std::move(callbacks), bucket_locator, indexed_db_path);
 }
 
 void IndexedDBDispatcherHost::Open(
@@ -445,7 +444,7 @@ void IndexedDBDispatcherHost::RemoveBoundReaders(const base::FilePath& path) {
 }
 
 void IndexedDBDispatcherHost::CreateAllExternalObjects(
-    const blink::StorageKey& storage_key,
+    const storage::BucketLocator& bucket_locator,
     const std::vector<IndexedDBExternalObject>& objects,
     std::vector<blink::mojom::IDBExternalObjectPtr>* mojo_objects) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -510,7 +509,7 @@ void IndexedDBDispatcherHost::CreateAllExternalObjects(
         } else {
           DCHECK(!blob_info.file_system_access_token().empty());
           file_system_access_context()->DeserializeHandle(
-              storage_key, blob_info.file_system_access_token(),
+              bucket_locator.storage_key, blob_info.file_system_access_token(),
               mojo_token.InitWithNewPipeAndPassReceiver());
         }
         mojo_object->get_file_system_access_token() = std::move(mojo_token);

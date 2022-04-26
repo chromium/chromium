@@ -42,7 +42,7 @@ class CONTENT_EXPORT IndexedDBFactory {
   virtual ~IndexedDBFactory() = default;
 
   virtual void GetDatabaseInfo(scoped_refptr<IndexedDBCallbacks> callbacks,
-                               const blink::StorageKey& storage_key,
+                               const storage::BucketLocator& bucket_locator,
                                const base::FilePath& data_directory) = 0;
   virtual void Open(const std::u16string& name,
                     std::unique_ptr<IndexedDBPendingConnection> connection,
