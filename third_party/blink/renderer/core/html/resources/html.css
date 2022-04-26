@@ -933,18 +933,14 @@ select:-internal-list-box optgroup {
    it breaks some WebUI menus. */
 select:-internal-list-box:focus option:checked,
 select:-internal-list-box:focus option:checked:hover {
-    /* TODO(crbug.com/1129658): The dark mode color here should be handled
-       within LayoutTheme::ActiveListBoxSelectionBackgroundColor(). */
-    background-color: -internal-light-dark(-internal-active-list-box-selection, #99C8FF) !important;
-    color: -internal-light-dark(-internal-active-list-box-selection-text, #3B3B3B) !important;
+    background-color: -internal-active-list-box-selection !important;
+    color: -internal-active-list-box-selection-text !important;
 }
 
 /* TODO(crbug.com/1244986): We should be able to remove !important here, but
    it breaks some WebUI menus. */
 select:-internal-list-box:focus option:checked:disabled {
-    /* TODO(crbug.com/1129658): The dark mode color here should be handled
-       within LayoutTheme::ActiveListBoxSelectionBackgroundColor(). */
-    background-color: -internal-light-dark(-internal-inactive-list-box-selection, rgba(59, 59, 59, 0.3)) !important;
+    background-color: -internal-inactive-list-box-selection !important;
 }
 
 /* option selected, list-box not focused */

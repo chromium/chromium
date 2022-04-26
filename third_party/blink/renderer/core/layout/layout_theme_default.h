@@ -48,6 +48,15 @@ class CORE_EXPORT LayoutThemeDefault : public LayoutTheme {
   Color PlatformInactiveSelectionForegroundColor(
       mojom::blink::ColorScheme color_scheme) const override;
 
+  Color PlatformActiveListBoxSelectionBackgroundColor(
+      mojom::blink::ColorScheme color_scheme) const override;
+  Color PlatformInactiveListBoxSelectionBackgroundColor(
+      mojom::blink::ColorScheme color_scheme) const override;
+  Color PlatformActiveListBoxSelectionForegroundColor(
+      mojom::blink::ColorScheme color_scheme) const override;
+  Color PlatformInactiveListBoxSelectionForegroundColor(
+      mojom::blink::ColorScheme color_scheme) const override;
+
   gfx::Size SliderTickSize() const override;
   int SliderTickOffsetFromTrackCenter() const override;
   void AdjustSliderThumbSize(ComputedStyle&) const override;
@@ -109,6 +118,10 @@ class CORE_EXPORT LayoutThemeDefault : public LayoutTheme {
   static Color active_selection_foreground_color_;
   static Color inactive_selection_background_color_;
   static Color inactive_selection_foreground_color_;
+  static Color active_list_box_selection_background_color_dark_mode_;
+  static Color active_list_box_selection_foreground_color_dark_mode_;
+  static Color inactive_list_box_selection_background_color_dark_mode_;
+  static Color inactive_list_box_selection_foreground_color_dark_mode_;
 
   ThemePainterDefault painter_;
   // Cached values for crbug.com/673754.
