@@ -20,6 +20,7 @@
 #include "chrome/browser/extensions/menu_manager_factory.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
 #include "chrome/browser/extensions/test_extension_prefs.h"
+#include "chrome/browser/feed/web_feed_tab_helper.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
@@ -33,6 +34,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
+#include "components/feed/feed_feature_list.h"
 #include "components/lens/lens_features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -765,6 +767,52 @@ TEST_F(RenderViewContextMenuPrefsTest,
   menu->Init();
 
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
+}
+
+TEST_F(RenderViewContextMenuPrefsTest, FollowOrUnfollow) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(feed::kWebUiFeed);
+
+  feed::WebFeedTabHelper::CreateForWebContents(web_contents());
+  feed::WebFeedTabHelper* web_feed_tab_helper =
+      feed::WebFeedTabHelper::FromWebContents(web_contents());
+
+  // "Follow site" should be added when the site for the page is not followed.
+  {
+    web_feed_tab_helper->SetWebFeedInfoForTesting(
+        web_contents()->GetLastCommittedURL(),
+        TabWebFeedFollowState::kNotFollowed, std::string());
+    content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+    TestRenderViewContextMenu menu(*web_contents()->GetMainFrame(), params);
+    menu.Init();
+    EXPECT_TRUE(menu.IsItemPresent(IDC_FOLLOW));
+    EXPECT_FALSE(menu.IsItemPresent(IDC_UNFOLLOW));
+  }
+
+  // "Unfollow site" should be added when the site for the page is followed.
+  {
+    web_feed_tab_helper->SetWebFeedInfoForTesting(
+        web_contents()->GetLastCommittedURL(), TabWebFeedFollowState::kFollowed,
+        std::string());
+    content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+    TestRenderViewContextMenu menu(*web_contents()->GetMainFrame(), params);
+    menu.Init();
+    EXPECT_FALSE(menu.IsItemPresent(IDC_FOLLOW));
+    EXPECT_TRUE(menu.IsItemPresent(IDC_UNFOLLOW));
+  }
+
+  // Neither "Follow site" nor "Unfollow site" should be added when the follow
+  // state of the site for the page is unknown.
+  {
+    web_feed_tab_helper->SetWebFeedInfoForTesting(
+        web_contents()->GetLastCommittedURL(), TabWebFeedFollowState::kUnknown,
+        std::string());
+    content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+    TestRenderViewContextMenu menu(*web_contents()->GetMainFrame(), params);
+    menu.Init();
+    EXPECT_FALSE(menu.IsItemPresent(IDC_FOLLOW));
+    EXPECT_FALSE(menu.IsItemPresent(IDC_FOLLOW));
+  }
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

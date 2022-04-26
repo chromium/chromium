@@ -237,7 +237,11 @@ class RenderViewContextMenu
 #endif
   void AppendSharedClipboardItem();
   void AppendRegionSearchItem();
-  void AppendQRCodeGeneratorItem(bool for_image, bool draw_icon);
+  bool AppendFollowUnfollowItem();
+  void AppendSendTabToSelfItem(bool add_separator);
+  bool AppendQRCodeGeneratorItem(bool for_image,
+                                 bool draw_icon,
+                                 bool add_separator);
 
   std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint(
       bool notify_if_restricted) const;

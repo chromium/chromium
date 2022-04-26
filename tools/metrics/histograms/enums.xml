@@ -79182,6 +79182,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="116" label="IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH"/>
   <int value="117" label="IDC_CONTENT_CONTEXT_RESHARELINKTOTEXT"/>
   <int value="118" label="IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING"/>
+  <int value="119" label="IDC_FOLLOW"/>
+  <int value="120" label="IDC_UNFOLLOW"/>
 </enum>
 
 <enum name="ReopenTabPromoStepAtDismissal">
