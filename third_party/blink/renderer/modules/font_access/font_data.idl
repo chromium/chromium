@@ -5,7 +5,7 @@
 // Returned by the async iterator FontIterator as the entry value.
 // https://wicg.github.io/local-font-access/
 [
-    Exposed=(Window,Worker),
+    Exposed=(Window),
     SecureContext,
     RuntimeEnabled=FontAccess,
     ImplementedAs=FontMetadata
