@@ -2868,7 +2868,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.{Store}BlacklistedSitesHiRes2{CustomPassphraseStatus}"
-    units="sites" expires_after="2022-05-01">
+    units="sites" expires_after="2022-11-01">
   <owner>kazinova@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
