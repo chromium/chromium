@@ -383,6 +383,9 @@ void ZeroStateDriveProvider::OnCacheUpdated() {
 }
 
 void ZeroStateDriveProvider::MaybeUpdateCache() {
+  if (!enabled_)
+    return;
+
   if (base::Time::Now() - kFirstUpdateDelay > construction_time_) {
     item_suggest_cache_.UpdateCache();
   }

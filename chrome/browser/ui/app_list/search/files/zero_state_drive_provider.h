@@ -94,7 +94,8 @@ class ZeroStateDriveProvider : public SearchProvider,
   // Requests an update from the ItemSuggestCache, but only if the call is long
   // enough after the provider was constructed. This helps ease resource
   // contention at login, and prevents the call from failing because Google auth
-  // tokens haven't been set up yet.
+  // tokens haven't been set up yet. If the productivity launcher is disabled,
+  // this does nothing.
   void MaybeUpdateCache();
 
   // We are intending to change the triggers of queries to ItemSuggest, but
