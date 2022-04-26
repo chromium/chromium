@@ -3768,6 +3768,7 @@ test("base_unittests") {
   if (use_allocator_shim) {
     sources += [
       "allocator/allocator_shim_unittest.cc",
+      "sampling_heap_profiler/poisson_allocation_sampler_unittest.cc",
       "sampling_heap_profiler/sampling_heap_profiler_unittest.cc",
     ]
 

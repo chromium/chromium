@@ -148,8 +148,15 @@ class BASE_EXPORT PoissonAllocationSampler {
   PoissonAllocationSampler();
   ~PoissonAllocationSampler() = delete;
 
-  static void InstallAllocatorHooksOnce();
+  // Installs allocator hooks if they weren't already installed. This is not
+  // static to ensure that allocator hooks can't be installed unless the
+  // PoissonAllocationSampler singleton exists.
+  void InstallAllocatorHooksOnce();
+
   static size_t GetNextSampleInterval(size_t base_interval);
+
+  // Return the set of sampled addresses. This is only valid to call after
+  // Init().
   static LockFreeAddressHashSet& sampled_addresses_set();
 
   void DoRecordAlloc(intptr_t accumulated_bytes,
@@ -174,6 +181,7 @@ class BASE_EXPORT PoissonAllocationSampler {
   friend class heap_profiling::HeapProfilerControllerTest;
   friend class NoDestructor<PoissonAllocationSampler>;
   friend class SamplingHeapProfilerTest;
+  FRIEND_TEST_ALL_PREFIXES(PoissonAllocationSamplerTest, MuteHooksWithoutInit);
   FRIEND_TEST_ALL_PREFIXES(SamplingHeapProfilerTest, HookedAllocatorMuted);
 };
 

@@ -402,7 +402,7 @@ PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::
   // Make sure hooks have been installed, so that the only order of operations
   // that needs to be handled is Install Hooks -> Remove Hooks For Testing ->
   // Reinstall Hooks.
-  PoissonAllocationSampler::InstallAllocatorHooksOnce();
+  PoissonAllocationSampler::Get()->InstallAllocatorHooksOnce();
 
   RemoveStandardAllocatorHooksForTesting();  // IN-TEST
 
@@ -438,7 +438,6 @@ void PoissonAllocationSampler::Init() {
   }();
 }
 
-// static
 void PoissonAllocationSampler::InstallAllocatorHooksOnce() {
   [[maybe_unused]] static bool hook_installed = [] {
     InstallStandardAllocatorHooks();
@@ -447,6 +446,9 @@ void PoissonAllocationSampler::InstallAllocatorHooksOnce() {
       // SetHooksInstallCallback already ran, so run the callback now.
       g_hooks_install_callback();
     }
+    // The allocator hooks use `g_sampled_address_set` so it had better be
+    // initialized.
+    DCHECK(g_sampled_addresses_set.load(std::memory_order_acquire));
     return true;
   }();
 }
