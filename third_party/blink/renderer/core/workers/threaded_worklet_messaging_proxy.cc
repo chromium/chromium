@@ -81,7 +81,7 @@ void ThreadedWorkletMessagingProxy::Initialize(
           window->GetReferrerPolicy(), window->GetSecurityOrigin(),
           window->IsSecureContext(), window->GetHttpsState(), worker_clients,
           frame_client->CreateWorkerContentSettingsClient(),
-          window->AddressSpace(),
+          absl::nullopt /* response_address_space */,
           OriginTrialContext::GetInheritedTrialFeatures(window).get(),
           base::UnguessableToken::Create(),
           std::make_unique<WorkerSettings>(window->GetFrame()->GetSettings()),

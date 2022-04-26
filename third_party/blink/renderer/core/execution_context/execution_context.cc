@@ -530,10 +530,6 @@ void ExecutionContext::SetReferrerPolicy(
   policy_container_->UpdateReferrerPolicy(referrer_policy);
 }
 
-network::mojom::IPAddressSpace ExecutionContext::AddressSpace() const {
-  return policy_container_->GetIPAddressSpace();
-}
-
 void ExecutionContext::SetAddressSpace(
     network::mojom::blink::IPAddressSpace ip_address_space) {
   GetPolicyContainer()->SetIPAddressSpace(ip_address_space);

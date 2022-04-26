@@ -374,7 +374,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
       const String& message = g_empty_string,
       const String& source_file = g_empty_string) const {}
 
-  network::mojom::IPAddressSpace AddressSpace() const;
+  // TODO(https://crbug.com/1204028): Remove this, it is useless.
   void SetAddressSpace(network::mojom::blink::IPAddressSpace ip_address_space);
 
   HeapObserverSet<ContextLifecycleObserver>& ContextLifecycleObserverSet();

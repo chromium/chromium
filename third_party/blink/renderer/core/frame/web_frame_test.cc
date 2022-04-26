@@ -7885,40 +7885,6 @@ TEST_F(WebFrameTest, PushStateStartsAndStops) {
   EXPECT_EQ(client.StopLoadingCount(), 2);
 }
 
-TEST_F(WebFrameTest, IPAddressSpace) {
-  frame_test_helpers::WebViewHelper web_view_helper;
-  WebViewImpl* web_view =
-      web_view_helper.InitializeAndLoad("data:text/html,ip_address_space");
-
-  network::mojom::IPAddressSpace values[] = {
-      network::mojom::IPAddressSpace::kUnknown,
-      network::mojom::IPAddressSpace::kLocal,
-      network::mojom::IPAddressSpace::kPrivate,
-      network::mojom::IPAddressSpace::kPublic};
-
-  for (auto value : values) {
-    auto params = std::make_unique<WebNavigationParams>();
-    params->url = url_test_helpers::ToKURL("about:blank");
-    params->navigation_timings.navigation_start = base::TimeTicks::Now();
-    params->navigation_timings.fetch_start = base::TimeTicks::Now();
-    params->is_browser_initiated = true;
-    MockPolicyContainerHost mock_policy_container_host;
-    params->policy_container = std::make_unique<WebPolicyContainer>(
-        WebPolicyContainerPolicies(),
-        mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
-    params->policy_container->policies.ip_address_space = value;
-    params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
-    web_view_helper.LocalMainFrame()->CommitNavigation(std::move(params),
-                                                       nullptr);
-    frame_test_helpers::PumpPendingRequestsForFrameToLoad(
-        web_view_helper.LocalMainFrame());
-
-    ExecutionContext* context =
-        web_view->MainFrameImpl()->GetFrame()->DomWindow();
-    EXPECT_EQ(value, context->AddressSpace());
-  }
-}
-
 TEST_F(WebFrameTest,
        CommitSynchronousNavigationForAboutBlankAndCheckStorageKeyNonce) {
   frame_test_helpers::WebViewHelper web_view_helper;

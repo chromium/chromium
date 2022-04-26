@@ -163,6 +163,8 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   // Worker script response's address space. This is valid only when the worker
   // script is fetched on the main thread (i.e., when
   // |off_main_thread_fetch_option| is kDisabled).
+  //
+  // TODO(https://crbug.com/1204028): Remove this field, it is useless.
   absl::optional<network::mojom::IPAddressSpace> response_address_space;
 
   base::UnguessableToken parent_devtools_token;

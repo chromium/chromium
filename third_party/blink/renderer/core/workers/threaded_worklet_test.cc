@@ -216,7 +216,7 @@ class ThreadedWorkletMessagingProxyForTest
             GetExecutionContext()->IsSecureContext(),
             GetExecutionContext()->GetHttpsState(), worker_clients,
             nullptr /* content_settings_client */,
-            GetExecutionContext()->AddressSpace(),
+            absl::nullopt /* response_address_space */,
             OriginTrialContext::GetInheritedTrialFeatures(GetExecutionContext())
                 .get(),
             base::UnguessableToken::Create(), std::move(worker_settings),
