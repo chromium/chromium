@@ -31,6 +31,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "content/public/browser/webui_config_map.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -54,17 +55,7 @@ namespace content {
 
 namespace {
 
-class WebUIImplBrowserTest : public ContentBrowserTest {
- protected:
-  ui::TestUntrustedWebUIControllerFactory& untrusted_factory() {
-    return untrusted_factory_;
-  }
-
- private:
-  ui::TestUntrustedWebUIControllerFactory untrusted_factory_;
-  content::ScopedWebUIControllerFactoryRegistration
-      untrusted_factory_registration_{&untrusted_factory_};
-};
+using WebUIImplBrowserTest = ContentBrowserTest;
 
 // TODO(crbug.com/154571): Shared workers are not available on Android.
 #if !BUILDFLAG(IS_ANDROID)
@@ -253,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest,
 // SiteInstance swap.
 IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnFromChromeToUntrusted) {
   WebContents* web_contents = shell()->web_contents();
-  untrusted_factory().add_web_ui_config(
+  content::WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>("test-host"));
 
   const GURL web_ui_url(GetWebUIURL(kChromeUIHistogramHost));
@@ -285,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnFromChromeToUntrusted) {
 // SiteInstance swap.
 IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnFromUntrustedToChrome) {
   WebContents* web_contents = shell()->web_contents();
-  untrusted_factory().add_web_ui_config(
+  content::WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>("test-host"));
 
   ASSERT_TRUE(NavigateToURL(web_contents,
@@ -404,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(WebUIRequiringGestureBrowserTest,
 
 // Verify that we can successfully navigate to a chrome-untrusted:// URL.
 IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, UntrustedSchemeLoads) {
-  untrusted_factory().add_web_ui_config(
+  content::WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>("test-host"));
 
   const GURL untrusted_url(GetChromeUntrustedUIURL("test-host/title2.html"));
@@ -457,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, CoopCoepPolicies) {
   TestUntrustedDataSourceHeaders headers;
   headers.cross_origin_opener_policy =
       network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
-  untrusted_factory().add_web_ui_config(
+  content::WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>("isolated", headers));
 
   const GURL isolated_url(GetChromeUntrustedUIURL("isolated/title2.html"));
@@ -598,7 +589,7 @@ class WebUIWorkerTest : public ContentBrowserTest {
     headers.script_src = "worker-src chrome-untrusted://untrusted;";
     headers.no_trusted_types = true;
 
-    untrusted_factory().add_web_ui_config(
+    content::WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
         std::make_unique<ui::TestUntrustedWebUIConfig>("untrusted", headers));
     if (allow_embedded_frame) {
       AddUntrustedDataSource(shell()->web_contents()->GetBrowserContext(),
@@ -617,17 +608,10 @@ class WebUIWorkerTest : public ContentBrowserTest {
                   EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */);
   }
 
-  ui::TestUntrustedWebUIControllerFactory& untrusted_factory() {
-    return untrusted_factory_;
-  }
-
  private:
   TestWebUIControllerFactory factory_;
   content::ScopedWebUIControllerFactoryRegistration factory_registration_{
       &factory_};
-  ui::TestUntrustedWebUIControllerFactory untrusted_factory_;
-  content::ScopedWebUIControllerFactoryRegistration
-      untrusted_factory_registration_{&untrusted_factory_};
 };
 
 class WebUIDedicatedWorkerTest : public WebUIWorkerTest,

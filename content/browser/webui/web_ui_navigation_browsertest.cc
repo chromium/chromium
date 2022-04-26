@@ -13,6 +13,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/webui_config_map.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
@@ -70,10 +71,6 @@ class WebUINavigationBrowserTest : public ContentBrowserTest {
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
-  }
-
-  ui::TestUntrustedWebUIControllerFactory& untrusted_factory() {
-    return untrusted_factory_;
   }
 
   // Verify that a document running in a process that has WebUI bindings,
@@ -203,9 +200,6 @@ class WebUINavigationBrowserTest : public ContentBrowserTest {
  private:
   TestWebUIControllerFactory factory_;
   ScopedWebUIControllerFactoryRegistration factory_registration_{&factory_};
-  ui::TestUntrustedWebUIControllerFactory untrusted_factory_;
-  ScopedWebUIControllerFactoryRegistration untrusted_factory_registration_{
-      &untrusted_factory_};
 };
 
 // Verify that a chrome: scheme document can add iframes with web content, as
@@ -269,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   // Add an untrusted WebUI with no iframe restrictions.
   TestUntrustedDataSourceHeaders headers;
   headers.child_src = "child-src * data:;";
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>("test-host", headers));
 
   GURL main_frame_url(GetChromeUntrustedUIURL("test-host/title1.html"));
@@ -343,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
                        WebFrameInChromeUntrustedSchemeDisallowedByCSP) {
   // Add an untrusted WebUI which disallows iframes by default.
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>("test-host"));
   GURL main_frame_url(GetChromeUntrustedUIURL("test-host/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
@@ -382,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
     // Add a DataSource for chrome-untrusted:// that can be iframe'd.
     TestUntrustedDataSourceHeaders headers;
     headers.no_xfo = true;
-    untrusted_factory().add_web_ui_config(
+    WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
         std::make_unique<ui::TestUntrustedWebUIConfig>("test-iframe-host",
                                                        headers));
     GURL untrusted_url(GetChromeUntrustedUIURL("test-iframe-host/title1.html"));
@@ -448,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(
 
   TestUntrustedDataSourceHeaders headers;
   headers.no_xfo = true;
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>("test-iframe-host",
                                                      headers));
 
@@ -640,7 +634,7 @@ IN_PROC_BROWSER_TEST_F(
   // Add a DataSource for chrome-untrusted:// that can be iframe'd.
   TestUntrustedDataSourceHeaders headers;
   headers.no_xfo = true;
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>("test-host", headers));
   GURL untrusted_url(GetChromeUntrustedUIURL("test-host/title1.html"));
 
@@ -690,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
 
   // Add a DataSource for the chrome-untrusted:// iframe with frame ancestor
   // chrome://web-ui.
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>("test-host", headers));
   GURL untrusted_url(GetChromeUntrustedUIURL("test-host/title1.html"));
   TestNavigationObserver observer(shell()->web_contents());
@@ -790,7 +784,7 @@ IN_PROC_BROWSER_TEST_F(
 
   TestUntrustedDataSourceHeaders headers;
   headers.no_xfo = false;
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>("test-iframe-host",
                                                      headers));
   GURL untrusted_url(GetChromeUntrustedUIURL("test-iframe-host/title1.html"));
@@ -981,7 +975,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   IsolationContext isolation_context(browser_context);
 
   // Add a DataSource which disallows iframes by default.
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>("test-host"));
   GURL chrome_untrusted_url(GetChromeUntrustedUIURL("test-host/title1.html"));
   auto expected_site_info = SiteInfo::CreateForTesting(

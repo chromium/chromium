@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/webui_config_map.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -28,17 +29,10 @@ class ChromeWebUINavigationBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-  ui::TestUntrustedWebUIControllerFactory& untrusted_factory() {
-    return untrusted_factory_;
-  }
-
  private:
   content::TestWebUIControllerFactory factory_;
   content::ScopedWebUIControllerFactoryRegistration factory_registration_{
       &factory_};
-  ui::TestUntrustedWebUIControllerFactory untrusted_factory_;
-  content::ScopedWebUIControllerFactoryRegistration
-      untrusted_factory_registration_{&untrusted_factory_};
 };
 
 // Verify that a browser check stops websites from embeding chrome:// iframes.
@@ -98,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(
   content::TestNavigationObserver observer(web_contents);
   content::TestUntrustedDataSourceHeaders headers;
   headers.no_xfo = true;
-  untrusted_factory().add_web_ui_config(
+  content::WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>("test-iframe-host",
                                                      headers));
 

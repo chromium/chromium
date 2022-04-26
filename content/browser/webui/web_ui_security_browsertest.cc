@@ -22,6 +22,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/browser/webui_config_map.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
@@ -51,22 +52,16 @@ class WebUISecurityTest : public ContentBrowserTest {
   WebUISecurityTest& operator=(const WebUISecurityTest&) = delete;
 
   TestWebUIControllerFactory* factory() { return &factory_; }
-  ui::TestUntrustedWebUIControllerFactory& untrusted_factory() {
-    return untrusted_factory_;
-  }
 
  private:
   TestWebUIControllerFactory factory_;
   ScopedWebUIControllerFactoryRegistration factory_registration_{&factory_};
-  ui::TestUntrustedWebUIControllerFactory untrusted_factory_;
-  ScopedWebUIControllerFactoryRegistration untrusted_factory_registration_{
-      &untrusted_factory_};
 };
 
 // Verify chrome-untrusted:// have no bindings.
 IN_PROC_BROWSER_TEST_F(WebUISecurityTest, UntrustedNoBindings) {
   auto* web_contents = shell()->web_contents();
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>("test-host"));
 
   const GURL untrusted_url(GetChromeUntrustedUIURL("test-host/title1.html"));
@@ -452,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
                        DisallowResourceRequestToChromeUntrusted) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL web_url(embedded_test_server()->GetURL("/title2.html"));
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>("test-host"));
 
   EXPECT_TRUE(NavigateToURL(shell(), web_url));
@@ -622,7 +617,7 @@ EvalJsResult PerformFetch(Shell* shell,
 IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
                        DisallowWebPageFetchRequestToChromeUntrusted) {
   const GURL untrusted_url = GURL("chrome-untrusted://test/title1.html");
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url.host()));
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -653,7 +648,7 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
 // Verify a chrome-untrusted:// document can fetch itself.
 IN_PROC_BROWSER_TEST_F(WebUISecurityTest, ChromeUntrustedFetchRequestToSelf) {
   const GURL untrusted_url = GURL("chrome-untrusted://test/title1.html");
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url.host()));
 
   EXPECT_TRUE(NavigateToURL(shell(), untrusted_url));
@@ -668,7 +663,7 @@ IN_PROC_BROWSER_TEST_F(
     WebUISecurityTest,
     DisallowCrossOriginFetchRequestToChromeUntrustedByDefault) {
   const GURL untrusted_url1 = GURL("chrome-untrusted://test1/title1.html");
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url1.host()));
 
   const GURL untrusted_url2 = GURL("chrome-untrusted://test2/title2.html");
@@ -714,7 +709,7 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
   TestUntrustedDataSourceHeaders headers;
   headers.default_src = "default-src chrome-untrusted://test2;";
   const GURL untrusted_url1 = GURL("chrome-untrusted://test1/title1.html");
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url1.host(),
                                                      headers));
 
@@ -737,7 +732,7 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
   TestUntrustedDataSourceHeaders headers;
   headers.default_src = "default-src chrome://webui;";
   const GURL untrusted_url = GURL("chrome-untrusted://test1/title1.html");
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url.host(),
                                                      headers));
 
@@ -792,7 +787,7 @@ EvalJsResult PerformXHRRequest(Shell* shell, const GURL& xhr_url) {
 IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
                        DisallowWebPageXHRRequestToChromeUntrusted) {
   const GURL untrusted_url = GURL("chrome-untrusted://test/title1.html");
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url.host()));
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL web_url = embedded_test_server()->GetURL("/title2.html");
@@ -811,7 +806,7 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
 IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
                        AllowChromeUntrustedXHRRequestToSelf) {
   const GURL untrusted_url = GURL("chrome-untrusted://test/title1.html");
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url.host()));
 
   EXPECT_TRUE(NavigateToURL(shell(), untrusted_url));
@@ -825,7 +820,7 @@ IN_PROC_BROWSER_TEST_F(
     WebUISecurityTest,
     DisallowCrossOriginXHRRequestToChromeUntrustedByDefault) {
   const GURL untrusted_url1 = GURL("chrome-untrusted://test1/title1.html");
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url1.host()));
 
   const GURL untrusted_url2 = GURL("chrome-untrusted://test2/");
@@ -856,7 +851,7 @@ IN_PROC_BROWSER_TEST_F(
   TestUntrustedDataSourceHeaders headers;
   headers.default_src = "default-src chrome-untrusted://test2;";
   const GURL untrusted_url1 = GURL("chrome-untrusted://test1/title1.html");
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url1.host(),
                                                      headers));
 
@@ -876,7 +871,7 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
   TestUntrustedDataSourceHeaders headers;
   headers.default_src = "default-src chrome://webui;";
   const GURL untrusted_url = GURL("chrome-untrusted://test1/title1.html");
-  untrusted_factory().add_web_ui_config(
+  WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
       std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url.host(),
                                                      headers));
 
