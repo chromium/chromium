@@ -98,14 +98,35 @@ class FakeBinaryUploadService : public BinaryUploadService {
       if (should_automatically_authorize_)
         ReturnAuthorizedResponse();
     } else {
+      Request* request_raw = request.get();
       std::string file = request->filename();
-      if (file.empty()) {
-        request->FinishRequest(prepared_text_result_, prepared_text_response_);
-      } else {
-        ASSERT_TRUE(prepared_file_results_.count(file));
-        ASSERT_TRUE(prepared_file_responses_.count(file));
-        request->FinishRequest(prepared_file_results_[file],
-                               prepared_file_responses_[file]);
+      switch (request->analysis_connector()) {
+        case AnalysisConnector::FILE_ATTACHED:
+          ASSERT_FALSE(file.empty());
+          ASSERT_TRUE(prepared_file_results_.count(file));
+          ASSERT_TRUE(prepared_file_responses_.count(file));
+          request->FinishRequest(prepared_file_results_[file],
+                                 prepared_file_responses_[file]);
+          break;
+        case AnalysisConnector::BULK_DATA_ENTRY:
+          request->FinishRequest(prepared_text_result_,
+                                 prepared_text_response_);
+          break;
+        case AnalysisConnector::PRINT:
+          // Since this path is only used for prints that are too large, calling
+          // GetRequestData should then call FinishRequest with FILE_TOO_LARGE.
+          request_raw->GetRequestData(base::BindOnce(
+              [](std::unique_ptr<BinaryUploadService::Request> request,
+                 BinaryUploadService::Result result,
+                 BinaryUploadService::Request::Data data) {
+                ASSERT_EQ(result, BinaryUploadService::Result::FILE_TOO_LARGE);
+                request->FinishRequest(result, ContentAnalysisResponse());
+              },
+              std::move(request)));
+          break;
+        case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
+        case AnalysisConnector::FILE_DOWNLOADED:
+          NOTREACHED();
       }
     }
   }
@@ -878,6 +899,68 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
             called = true;
           }),
       safe_browsing::DeepScanAccessPoint::UPLOAD);
+
+  run_loop.Run();
+  EXPECT_TRUE(called);
+}
+
+IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
+                       BlockLargePages) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Set up delegate and upload service.
+  EnableUploadsScanningAndReporting();
+  constexpr char kBlockLargePagesPref[] = R"({
+    "service_provider": "google",
+    "enable": [
+      {
+        "url_list": ["*"],
+        "tags": ["dlp"]
+      }
+    ],
+    "block_until_verdict": 1,
+    "block_large_files": %s
+  })";
+  safe_browsing::SetAnalysisConnector(
+      browser()->profile()->GetPrefs(), PRINT,
+      base::StringPrintf(kBlockLargePagesPref, bool_setting_value()),
+      machine_scope());
+
+  ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create));
+
+  FakeBinaryUploadServiceStorage()->SetAuthorized(true);
+
+  // Create the large page.
+  ContentAnalysisDelegate::Data data;
+  constexpr int64_t kLargeSize = 51 * 1024 * 1024;
+  base::MappedReadOnlyRegion page =
+      base::ReadOnlySharedMemoryRegion::Create(kLargeSize);
+  memset(page.mapping.memory(), 'a', kLargeSize);
+  data.page = std::move(page.region);
+
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(browser()->profile(),
+                                                 GURL(kTestUrl), &data, PRINT));
+
+  bool called = false;
+  base::RunLoop run_loop;
+  SetQuitClosure(run_loop.QuitClosure());
+
+  // Start test.
+  ContentAnalysisDelegate::CreateForWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      base::BindLambdaForTesting(
+          [this, &called](const ContentAnalysisDelegate::Data& data,
+                          const ContentAnalysisDelegate::Result& result) {
+            ASSERT_TRUE(result.paths_results.empty());
+            ASSERT_TRUE(result.text_results.empty());
+            ASSERT_EQ(result.page_result, expected_result());
+
+            called = true;
+          }),
+      safe_browsing::DeepScanAccessPoint::PRINT);
+
+  FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
 
   run_loop.Run();
   EXPECT_TRUE(called);

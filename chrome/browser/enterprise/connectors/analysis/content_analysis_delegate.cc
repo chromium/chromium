@@ -523,7 +523,10 @@ void ContentAnalysisDelegate::PageRequestCallback(
   //    CalculateEventResult(data_.settings, result_.page_result, should_warn));
 
   if (!result_.page_result) {
-    if (should_warn) {
+    if (result == BinaryUploadService::Result::FILE_TOO_LARGE) {
+      UpdateFinalResult(ContentAnalysisDelegateBase::FinalResult::LARGE_FILES,
+                        tag);
+    } else if (should_warn) {
       page_warning_ = true;
       page_response_ = std::move(response);
       UpdateFinalResult(ContentAnalysisDelegateBase::FinalResult::WARNING, tag);
