@@ -119,7 +119,7 @@ bool MaybeDisallowFetchForDocWrittenScript(FetchParameters& params,
   if (!settings)
     return false;
 
-  if (!document.GetFrame() || !document.GetFrame()->IsMainFrame())
+  if (!document.IsInOutermostMainFrame())
     return false;
 
   // Only block synchronously loaded (parser blocking) scripts.
