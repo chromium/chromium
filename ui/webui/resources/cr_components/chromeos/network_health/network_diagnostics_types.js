@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-lite.js';
+import {RoutineResult, RoutineType} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js';
 
 /**
  * @fileoverview
@@ -13,7 +12,7 @@ import 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/ne
 /**
  * A routine response from the Network Diagnostics mojo service.
  * @typedef {{
- *   result: chromeos.networkDiagnostics.mojom.RoutineResult,
+ *   result: RoutineResult,
  * }}
  */
 export let RoutineResponse;
@@ -23,12 +22,12 @@ export let RoutineResponse;
  * routine, and it's transient state.
  * @typedef {{
  *   name: string,
- *   type: !chromeos.networkDiagnostics.mojom.RoutineType,
+ *   type: !RoutineType,
  *   group: !RoutineGroup,
  *   func: function(),
  *   running: boolean,
  *   resultMsg: string,
- *   result: ?chromeos.networkDiagnostics.mojom.RoutineResult,
+ *   result: ?RoutineResult,
  * }}
  */
 export let Routine;

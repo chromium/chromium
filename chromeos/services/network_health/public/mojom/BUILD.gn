@@ -14,4 +14,7 @@ mojom("mojom") {
     "//chromeos/services/network_config/public/mojom:network_types",
     "//mojo/public/mojom/base",
   ]
+
+  webui_module_path =
+      "chrome://resources/mojo/chromeos/services/network_health/public/mojom"
 }

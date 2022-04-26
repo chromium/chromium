@@ -10,6 +10,11 @@
       resource_path="mojo/chromeos/services/network_health/public/mojom/network_health.mojom-lite.js"
       use_base_dir="false"
       type="BINDATA" />
+  <include name="IDR_NETWORK_HEALTH_MOJOM_WEBUI_JS"
+      file="${mojom_root}/mojom-webui/chromeos/services/network_health/public/mojom/network_health.mojom-webui.js"
+      resource_path="mojo/chromeos/services/network_health/public/mojom/network_health.mojom-webui.js"
+      use_base_dir="false"
+      type="BINDATA" />
   <include name="IDR_NETWORK_DIAGNOSTICS_MOJOM_HTML"
       file="${mojom_root}/chromeos/services/network_health/public/mojom/network_diagnostics.mojom.html"
       resource_path="mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom.html"
@@ -18,6 +23,11 @@
   <include name="IDR_NETWORK_DIAGNOSTICS_MOJOM_LITE_JS"
       file="${mojom_root}/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-lite.js"
       resource_path="mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-lite.js"
+      use_base_dir="false"
+      type="BINDATA" />
+  <include name="IDR_NETWORK_DIAGNOSTICS_MOJOM_WEBUI_JS"
+      file="${mojom_root}/mojom-webui/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js"
+      resource_path="mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js"
       use_base_dir="false"
       type="BINDATA" />
 </grit-part>

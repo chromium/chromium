@@ -7,7 +7,7 @@ import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags = default_closure_args + [ "browser_resolver_prefix_replacements=\"chrome://connectivity-diagnostics/=../../ash/webui/connectivity_diagnostics/resources/\"" ]
+  closure_flags = default_closure_args + mojom_js_args + [ "browser_resolver_prefix_replacements=\"chrome://connectivity-diagnostics/=../../ash/webui/connectivity_diagnostics/resources/\"" ]
   deps = [
     ":fake_network_diagnostics_routines",
     ":network_diagnostics_test",
@@ -21,6 +21,7 @@ js_library("network_diagnostics_test") {
     ":fake_network_diagnostics_routines",
     ":network_health_test_utils",
     "../../..:chai_assert",
+    "//chromeos/services/network_health/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/network_health:mojo_interface_provider",
     "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics",
@@ -32,6 +33,7 @@ js_library("routine_group_test") {
   deps = [
     ":network_health_test_utils",
     "../../..:chai_assert",
+    "//chromeos/services/network_health/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics",
   ]
@@ -39,13 +41,17 @@ js_library("routine_group_test") {
 }
 
 js_library("network_health_test_utils") {
-  deps = [ "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics" ]
+  deps = [
+    "//chromeos/services/network_health/public/mojom:mojom_webui_js",
+    "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics",
+  ]
 }
 
 js_library("fake_network_diagnostics_routines") {
   deps = [
     ":network_health_test_utils",
     "../../..:chai_assert",
+    "//chromeos/services/network_health/public/mojom:mojom_webui_js",
     "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics",
   ]
 }

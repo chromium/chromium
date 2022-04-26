@@ -15,6 +15,7 @@ preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
+  closure_flags = default_closure_args + mojom_js_args
   deps = [ ":connectivity_diagnostics" ]
 }
 

@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js';
-import 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_health.mojom-lite.js';
 import '../../../cr_elements/shared_style_css.m.js';
 import '../network/network_shared_css.m.js';
 
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {NetworkType, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {Network, NetworkHealthService, NetworkHealthServiceRemote, NetworkHealthState, NetworkState, UInt32Value} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_health.mojom-webui.js';
 
 import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
 import {OncMojo} from '../network/onc_mojo.m.js';
@@ -34,14 +33,14 @@ Polymer({
   /**
    * Network Health State object.
    * @private
-   * @type {chromeos.networkHealth.mojom.NetworkHealthState}
+   * @type {NetworkHealthState}
    */
   networkHealthState_: null,
 
   /**
    * Network Health mojo remote.
    * @private
-   * @type {?chromeos.networkHealth.mojom.NetworkHealthServiceRemote}
+   * @type {?NetworkHealthServiceRemote}
    */
   networkHealth_: null,
 
@@ -54,8 +53,7 @@ Polymer({
 
   /** @override */
   created() {
-    this.networkHealth_ =
-        chromeos.networkHealth.mojom.NetworkHealthService.getRemote();
+    this.networkHealth_ = NetworkHealthService.getRemote();
   },
 
   /** @override */
@@ -81,26 +79,26 @@ Polymer({
   /**
    * Returns a string for the given NetworkState.
    * @private
-   * @param {chromeos.networkHealth.mojom.NetworkState} state
+   * @param {NetworkState} state
    * @return {string}
    */
   getNetworkStateString_(state) {
     switch (state) {
-      case chromeos.networkHealth.mojom.NetworkState.kUninitialized:
+      case NetworkState.kUninitialized:
         return this.i18n('NetworkHealthStateUninitialized');
-      case chromeos.networkHealth.mojom.NetworkState.kDisabled:
+      case NetworkState.kDisabled:
         return this.i18n('NetworkHealthStateDisabled');
-      case chromeos.networkHealth.mojom.NetworkState.kProhibited:
+      case NetworkState.kProhibited:
         return this.i18n('NetworkHealthStateProhibited');
-      case chromeos.networkHealth.mojom.NetworkState.kNotConnected:
+      case NetworkState.kNotConnected:
         return this.i18n('NetworkHealthStateNotConnected');
-      case chromeos.networkHealth.mojom.NetworkState.kConnecting:
+      case NetworkState.kConnecting:
         return this.i18n('NetworkHealthStateConnecting');
-      case chromeos.networkHealth.mojom.NetworkState.kPortal:
+      case NetworkState.kPortal:
         return this.i18n('NetworkHealthStatePortal');
-      case chromeos.networkHealth.mojom.NetworkState.kConnected:
+      case NetworkState.kConnected:
         return this.i18n('NetworkHealthStateConnected');
-      case chromeos.networkHealth.mojom.NetworkState.kOnline:
+      case NetworkState.kOnline:
         return this.i18n('NetworkHealthStateOnline');
     }
 
@@ -112,13 +110,10 @@ Polymer({
    * Returns a boolean flag to show the PortalState attribute. The information
    * is not meaningful in all cases and should be hidden to prevent confusion.
    * @private
-   * @param {chromeos.networkHealth.mojom.Network} network
+   * @param {Network} network
    * @return {boolean}
    */
   showPortalState_(network) {
-    const NetworkState = chromeos.networkHealth.mojom.NetworkState;
-    const PortalState = chromeos.networkConfig.mojom.PortalState;
-
     if (network.state === NetworkState.kOnline &&
         network.portalState === PortalState.kOnline) {
       return false;
@@ -141,7 +136,7 @@ Polymer({
   /**
    * Returns a string for the given PortalState.
    * @private
-   * @param {chromeos.networkConfig.mojom.PortalState} state
+   * @param {PortalState} state
    * @return {string}
    */
   getPortalStateString_(state) {
@@ -151,7 +146,7 @@ Polymer({
   /**
    * Returns a string for the given NetworkType.
    * @private
-   * @param {chromeos.networkConfig.mojom.NetworkType} type
+   * @param {NetworkType} type
    * @return {string}
    */
   getNetworkTypeString_(type) {
@@ -161,20 +156,20 @@ Polymer({
   /**
    * Returns a icon for the given NetworkType.
    * @private
-   * @param {chromeos.networkConfig.mojom.NetworkType} type
+   * @param {NetworkType} type
    * @return {string}
    */
   getNetworkTypeIcon_(type) {
     switch (type) {
-      case chromeos.networkConfig.mojom.NetworkType.kEthernet:
+      case NetworkType.kEthernet:
         return TechnologyIcons.ETHERNET;
-      case chromeos.networkConfig.mojom.NetworkType.kWiFi:
+      case NetworkType.kWiFi:
         return TechnologyIcons.WIFI;
-      case chromeos.networkConfig.mojom.NetworkType.kVPN:
+      case NetworkType.kVPN:
         return TechnologyIcons.VPN;
-      case chromeos.networkConfig.mojom.NetworkType.kTether:
-      case chromeos.networkConfig.mojom.NetworkType.kMobile:
-      case chromeos.networkConfig.mojom.NetworkType.kCellular:
+      case NetworkType.kTether:
+      case NetworkType.kMobile:
+      case NetworkType.kCellular:
         return TechnologyIcons.CELLULAR;
       default:
         return '';
@@ -184,7 +179,7 @@ Polymer({
   /**
    * Returns a string for the given signal strength.
    * @private
-   * @param {?chromeos.networkHealth.mojom.UInt32Value} signalStrength
+   * @param {?UInt32Value} signalStrength
    * @return {string}
    */
   getSignalStrengthString_(signalStrength) {
@@ -194,15 +189,13 @@ Polymer({
   /**
    * Returns a boolean flag if the open to settings link should be shown.
    * @private
-   * @param {chromeos.networkHealth.mojom.Network} network
+   * @param {Network} network
    * @return {boolean}
    */
   showSettingsLink_(network) {
     const validStates = [
-      chromeos.networkHealth.mojom.NetworkState.kConnected,
-      chromeos.networkHealth.mojom.NetworkState.kConnecting,
-      chromeos.networkHealth.mojom.NetworkState.kPortal,
-      chromeos.networkHealth.mojom.NetworkState.kOnline
+      NetworkState.kConnected, NetworkState.kConnecting, NetworkState.kPortal,
+      NetworkState.kOnline
     ];
     return validStates.includes(network.state);
   },
@@ -210,7 +203,7 @@ Polymer({
   /**
    * Returns a URL for the network's settings page.
    * @private
-   * @param {chromeos.networkHealth.mojom.Network} network
+   * @param {Network} network
    * @return {string}
    */
   getNetworkUrl_(network) {
@@ -229,7 +222,7 @@ Polymer({
 
   /**
    * Returns a boolean flag if the routine type should be expanded.
-   * @param {chromeos.networkConfig.mojom.NetworkType} type
+   * @param {NetworkType} type
    * @private
    */
   getTypeExpanded_(type) {

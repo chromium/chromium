@@ -67,6 +67,7 @@ grit("resources") {
 
 js_type_check("closure_compile") {
   is_polymer3 = true
+  closure_flags = default_closure_args + mojom_js_args
   deps = [
     ":network_logs_ui",
     ":network_state_ui",

@@ -9,6 +9,7 @@ assert(is_chromeos, "Only ChromeOS components belong here.")
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
+  closure_flags = default_closure_args + mojom_js_args
   deps = [
     ":mojo_interface_provider",
     ":network_diagnostics",
@@ -20,12 +21,15 @@ js_type_check("closure_compile_module") {
 }
 
 js_library("mojo_interface_provider") {
-  deps = [ "//chromeos/services/network_health/public/mojom:mojom_js_library_for_compile" ]
+  deps = [
+    "//chromeos/services/network_health/public/mojom:mojom_js_library_for_compile",
+    "//chromeos/services/network_health/public/mojom:mojom_webui_js",
+  ]
 }
 
 js_library("network_health_summary") {
   deps = [
-    "//chromeos/services/network_health/public/mojom:mojom_js_library_for_compile",
+    "//chromeos/services/network_health/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -42,21 +46,21 @@ js_library("network_diagnostics") {
     ":mojo_interface_provider",
     ":network_diagnostics_types",
     ":routine_group",
-    "//chromeos/services/network_health/public/mojom:mojom_js_library_for_compile",
+    "//chromeos/services/network_health/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 
 js_library("network_diagnostics_types") {
-  deps = [ "//chromeos/services/network_health/public/mojom:mojom_js_library_for_compile" ]
+  deps = [ "//chromeos/services/network_health/public/mojom:mojom_webui_js" ]
 }
 
 js_library("routine_group") {
   deps = [
     ":network_diagnostics_types",
     ":network_health_container",
-    "//chromeos/services/network_health/public/mojom:mojom_js_library_for_compile",
+    "//chromeos/services/network_health/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]

@@ -7,6 +7,7 @@ import 'chrome://resources/cr_components/chromeos/network_health/network_diagnos
 
 import {setNetworkDiagnosticsServiceForTesting} from 'chrome://resources/cr_components/chromeos/network_health/mojo_interface_provider.js';
 import {Icons} from 'chrome://resources/cr_components/chromeos/network_health/network_diagnostics_types.js';
+import {RoutineVerdict} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js';
 
 import {assertEquals, assertFalse, assertGT, assertNotReached, assertTrue} from '../../../chai_assert.js';
 import {flushTasks, isVisible} from '../../../test_util.js';
@@ -36,7 +37,7 @@ suite('NetworkDiagnosticsTest', () => {
     networkDiagnostics = null;
   });
 
-  /** @param {!chromeos.networkDiagnostics.mojom.RoutineVerdict} verdict */
+  /** @param {!RoutineVerdict} verdict */
   function setFakeVerdict(verdict) {
     fakeNetworkDiagnostics_.setFakeVerdict(verdict);
   }
@@ -73,19 +74,19 @@ suite('NetworkDiagnosticsTest', () => {
 
   /**
    * Checks that all the routine groups' verdicts match the |verdict| param
-   * @param {!chromeos.networkDiagnostics.mojom.RoutineVerdict} verdict
+   * @param {!RoutineVerdict} verdict
    */
   function checkRoutinesVerdict(verdict) {
     for (const group of getRoutineGroups()) {
       const icon = group.$$('.routine-icon');
       switch (verdict) {
-        case chromeos.networkDiagnostics.mojom.RoutineVerdict.kNoProblem:
+        case RoutineVerdict.kNoProblem:
           assertEquals(getIconFromSrc(icon.src), Icons.TEST_PASSED);
           break;
-        case chromeos.networkDiagnostics.mojom.RoutineVerdict.kNotRun:
+        case RoutineVerdict.kNotRun:
           assertEquals(getIconFromSrc(icon.src), Icons.TEST_NOT_RUN);
           break;
-        case chromeos.networkDiagnostics.mojom.RoutineVerdict.kProblem:
+        case RoutineVerdict.kProblem:
           assertEquals(getIconFromSrc(icon.src), Icons.TEST_FAILED);
           break;
         default:
@@ -96,7 +97,7 @@ suite('NetworkDiagnosticsTest', () => {
 
   /**
    * Checks that all the routine groups' problems match the |verdict| param
-   * @param {!chromeos.networkDiagnostics.mojom.RoutineVerdict} verdict
+   * @param {!RoutineVerdict} verdict
    */
   async function checkRoutinesProblems(verdict) {
     for (const group of getRoutineGroups()) {
@@ -110,12 +111,12 @@ suite('NetworkDiagnosticsTest', () => {
         const parts = msg.split(': ');
 
         switch (verdict) {
-          case chromeos.networkDiagnostics.mojom.RoutineVerdict.kNoProblem:
+          case RoutineVerdict.kNoProblem:
             assertEquals(parts.length, 1);
             assertEquals(
                 parts[0], networkDiagnostics.i18n('NetworkDiagnosticsPassed'));
             break;
-          case chromeos.networkDiagnostics.mojom.RoutineVerdict.kProblem:
+          case RoutineVerdict.kProblem:
             assertGT(parts.length, 0);
             assertEquals(
                 parts[0], networkDiagnostics.i18n('NetworkDiagnosticsFailed'));
@@ -124,7 +125,7 @@ suite('NetworkDiagnosticsTest', () => {
               assertGT(parts[1].length, 0);
             }
             break;
-          case chromeos.networkDiagnostics.mojom.RoutineVerdict.kNotRun:
+          case RoutineVerdict.kNotRun:
             assertEquals(parts.length, 1);
             assertEquals(
                 parts[0], networkDiagnostics.i18n('NetworkDiagnosticsNotRun'));
@@ -146,9 +147,7 @@ suite('NetworkDiagnosticsTest', () => {
   });
 
   // Tests running the routines with each expect result.
-  [chromeos.networkDiagnostics.mojom.RoutineVerdict.kNoProblem,
-   chromeos.networkDiagnostics.mojom.RoutineVerdict.kNotRun,
-   chromeos.networkDiagnostics.mojom.RoutineVerdict.kProblem]
+  [RoutineVerdict.kNoProblem, RoutineVerdict.kNotRun, RoutineVerdict.kProblem]
       .forEach(verdict => {
         test('RoutinesRun' + verdict, async () => {
           setFakeVerdict(verdict);
