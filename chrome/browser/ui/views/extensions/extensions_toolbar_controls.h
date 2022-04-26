@@ -10,9 +10,11 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
+#include "content/public/browser/web_contents.h"
 
 class ExtensionsToolbarButton;
 class ExtensionsRequestAccessButton;
+class ToolbarActionViewController;
 
 class ExtensionsToolbarControls : public ToolbarIconContainerView {
  public:
@@ -44,7 +46,8 @@ class ExtensionsToolbarControls : public ToolbarIconContainerView {
 
   // Updates `request_access_button_` visibility and content based on the given
   // `count_requesting_extensions`.
-  void UpdateRequestAccessButton(int count_requesting_extensions);
+  void UpdateRequestAccessButton(
+      std::vector<ToolbarActionViewController*> extensions_requesting_access);
 
   // Resets the layout since layout animation does not handle host view
   // visibility changing. This should be called after any visibility changes.

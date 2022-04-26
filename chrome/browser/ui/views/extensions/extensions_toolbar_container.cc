@@ -109,7 +109,7 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
                         browser,
                         this,
                         ExtensionsToolbarButton::ButtonType::kSiteAccess),
-                    std::make_unique<ExtensionsRequestAccessButton>())
+                    std::make_unique<ExtensionsRequestAccessButton>(browser_))
               : nullptr),
       display_mode_(display_mode) {
   // The container shouldn't show unless / until we have extensions available.
@@ -879,11 +879,12 @@ void ExtensionsToolbarContainer::UpdateControlsVisibility() {
   // `SiteInteraction::kPending` includes extensions with activeTab, that can
   // request access to restricted or non-restricted sites. Need to update the
   // method to not take into account activeTab extensions.
-  int count_requesting_extensions = std::count_if(
-      actions_.begin(), actions_.end(), [web_contents](const auto& action) {
-        return action->IsRequestingSiteAccess(web_contents);
-      });
-  extensions_controls_->UpdateRequestAccessButton(count_requesting_extensions);
+  std::vector<ToolbarActionViewController*> extensions_requesting_access;
+  for (const auto& action : actions_) {
+    if (action->IsRequestingSiteAccess(web_contents))
+      extensions_requesting_access.push_back(action.get());
+  }
+  extensions_controls_->UpdateRequestAccessButton(extensions_requesting_access);
 }
 
 BEGIN_METADATA(ExtensionsToolbarContainer, ToolbarIconContainerView)
