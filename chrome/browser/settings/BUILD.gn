@@ -12,7 +12,6 @@ android_library("java") {
     "//components/browser_ui/settings/android:java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
-    "//third_party/androidx:androidx_fragment_fragment_java",
   ]
 }
 
@@ -34,7 +33,6 @@ android_library("javatests") {
     "//chrome/test/android:chrome_java_test_support",
     "//components/browser_ui/settings/android:java",
     "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/android_deps:espresso_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/android_support_test_runner:rules_java",

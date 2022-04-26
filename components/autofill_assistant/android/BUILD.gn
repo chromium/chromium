@@ -36,16 +36,15 @@ android_library("java") {
     "//components/version_info/android:version_constants_java",
     "//content/public/android:content_java",
     "//mojo/public/java:bindings_java",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/android_deps:com_android_support_support_annotations_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_gridlayout_gridlayout_java",
-    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
@@ -335,7 +334,6 @@ android_library("autofill_assistant_public_java") {
   deps = [
     ":animated_poodle_resources",
     "//base:base_java",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//ui/android:ui_java",
   ]
@@ -359,7 +357,6 @@ android_library("autofill_assistant_public_impl_java") {
   deps = [
     ":animated_poodle_resources",
     "//base:base_java",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//ui/android:ui_java",
   ]

@@ -51,7 +51,6 @@ android_library("java") {
 android_resources("java_resources") {
   deps = [
     ":java_strings_grd",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
     "//ui/android:ui_java_resources",
   ]
   sources = [

@@ -133,7 +133,6 @@ android_resources("remoting_android_client_java_resources") {
   deps = [
     ":credits_resources_raw",
     "//remoting/resources:strings_java",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
   ]
 }
 

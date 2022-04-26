@@ -434,7 +434,16 @@ android_resources("cronet_sample_apk_resources") {
     "sample/res/values/strings.xml",
   ]
   android_manifest = "sample/AndroidManifest.xml"
-  deps = [ "//third_party/android_deps:android_support_v7_appcompat_java" ]
+  deps = [
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_drawerlayout_drawerlayout_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_interpolator_interpolator_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
+    "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",
+    "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
+  ]
 }
 
 android_library("cronet_sample_apk_java") {
@@ -448,8 +457,9 @@ android_library("cronet_sample_apk_java") {
     ":cronet_sample_apk_resources",
     ":package_api_java",
     ":package_impl_native_java",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java",
   ]
 }
 
@@ -786,7 +796,6 @@ if (!is_component_build) {
       "//third_party/junit",
     ]
 
-    enable_multidex = false
     if (!is_java_debug) {
       proguard_enabled = true
       proguard_configs = [ "sample/javatests/proguard.cfg" ]

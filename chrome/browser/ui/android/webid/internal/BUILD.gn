@@ -51,7 +51,6 @@ android_resources("java_resources") {
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/widget/android:java_resources",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
     "//ui/android:ui_java_resources",
   ]
   sources = [

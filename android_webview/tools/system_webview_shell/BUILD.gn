@@ -62,10 +62,10 @@ android_library("system_webview_shell_apk_java") {
   deps = [
     ":system_webview_shell_apk_resources",
     "//base:base_java",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_savedstate_savedstate_java",
     "//third_party/androidx:androidx_webkit_webkit_java",
   ]
@@ -109,7 +109,6 @@ android_resources("system_webview_shell_apk_resources") {
     "apk/res/values/styles.xml",
     "apk/res/xml/network_security_config.xml",
   ]
-  deps = [ "//third_party/android_deps:android_support_v7_appcompat_java" ]
 }
 
 instrumentation_test_apk("system_webview_shell_page_cycler_apk") {

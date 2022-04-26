@@ -45,8 +45,9 @@ android_library("weblayer_shell_java") {
     "$google_play_services_package:google_play_services_base_java",
     "//base:base_java",
     "//components/strictmode/android:java",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
     "//weblayer/public/java",
   ]
   sources = [

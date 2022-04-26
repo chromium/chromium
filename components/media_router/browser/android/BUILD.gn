@@ -19,12 +19,11 @@ android_library("java") {
     "//components/browser_ui/media/android:java",
     "//content/public/android:content_java",
     "//services/media_session/public/cpp/android:media_session_java",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/android_media:android_media_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_collection_collection_java",
-    "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_media_media_java",
     "//third_party/androidx:androidx_mediarouter_mediarouter_java",
   ]
   sources = [

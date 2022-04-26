@@ -87,9 +87,14 @@ android_library("java") {
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",
     "//services/device/public/java:device_feature_list_java",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_utils_java",
     "//url:gurl_java",
@@ -169,6 +174,5 @@ android_resources("java_resources") {
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
     "//components/permissions/android:java_resources",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
   ]
 }

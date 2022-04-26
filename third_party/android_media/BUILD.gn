@@ -11,10 +11,7 @@ android_resources("android_media_resources") {
     "java/res/layout/media_controller.xml",
     "java/res/values/colors.xml",
   ]
-  deps = [
-    "//third_party/android_deps:android_support_v7_appcompat_java",
-    "//third_party/androidx:androidx_mediarouter_mediarouter_java",
-  ]
+  deps = [ "//third_party/androidx:androidx_mediarouter_mediarouter_java" ]
 }
 
 android_library("android_media_java") {
@@ -23,7 +20,7 @@ android_library("android_media_java") {
       [ "java/src/org/chromium/third_party/android/media/MediaController.java" ]
   deps = [
     ":android_media_resources",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/androidx:androidx_media_media_java",
     "//third_party/androidx:androidx_mediarouter_mediarouter_java",
   ]
 }

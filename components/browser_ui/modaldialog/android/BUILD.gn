@@ -18,8 +18,8 @@ android_library("java") {
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_java",
   ]
   resources_package = "org.chromium.components.browser_ui.modaldialog"
@@ -63,7 +63,6 @@ android_library("javatests") {
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit:junit",

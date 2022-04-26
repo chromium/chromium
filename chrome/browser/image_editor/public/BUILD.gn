@@ -10,7 +10,6 @@ android_library("java") {
   deps = [
     "//base:base_java",
     "//chrome/browser/share:java",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }
