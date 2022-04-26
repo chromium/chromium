@@ -24,7 +24,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/system_proxy/system_proxy_client.h"
+#include "chromeos/ash/components/dbus/system_proxy/system_proxy_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state.h"

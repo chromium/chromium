@@ -70,7 +70,7 @@
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chromeos/dbus/system_proxy/system_proxy_client.h"
+#include "chromeos/ash/components/dbus/system_proxy/system_proxy_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::BrowserThread;
@@ -1294,12 +1294,12 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                        SystemProxyClearsUserCredentials) {
   ash::SystemProxyManager::Get()->SetSystemProxyEnabledForTest(true);
-  EXPECT_EQ(0, chromeos::SystemProxyClient::Get()
+  EXPECT_EQ(0, ash::SystemProxyClient::Get()
                    ->GetTestInterface()
                    ->GetClearUserCredentialsCount());
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_PASSWORDS);
 
-  EXPECT_EQ(1, chromeos::SystemProxyClient::Get()
+  EXPECT_EQ(1, ash::SystemProxyClient::Get()
                    ->GetTestInterface()
                    ->GetClearUserCredentialsCount());
 }

@@ -14,7 +14,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/services/service_provider_test_helper.h"
-#include "chromeos/dbus/system_proxy/system_proxy_client.h"
+#include "chromeos/ash/components/dbus/system_proxy/system_proxy_client.h"
 #include "chromeos/network/network_handler_test_helper.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"

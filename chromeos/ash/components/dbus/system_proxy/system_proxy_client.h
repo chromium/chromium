@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_SYSTEM_PROXY_SYSTEM_PROXY_CLIENT_H_
-#define CHROMEOS_DBUS_SYSTEM_PROXY_SYSTEM_PROXY_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_SYSTEM_PROXY_SYSTEM_PROXY_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_SYSTEM_PROXY_SYSTEM_PROXY_CLIENT_H_
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "chromeos/dbus/system_proxy/system_proxy_service.pb.h"
+#include "chromeos/ash/components/dbus/system_proxy/system_proxy_service.pb.h"
 #include "dbus/object_proxy.h"
 
 namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // SystemProxyClient is used to communicate with the org.chromium.SystemProxy
 // service. All method should be called from the origin thread (UI thread) which
@@ -117,11 +117,6 @@ class COMPONENT_EXPORT(SYSTEM_PROXY) SystemProxyClient {
   virtual ~SystemProxyClient();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::SystemProxyClient;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_SYSTEM_PROXY_SYSTEM_PROXY_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SYSTEM_PROXY_SYSTEM_PROXY_CLIENT_H_

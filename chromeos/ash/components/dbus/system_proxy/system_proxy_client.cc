@@ -1,7 +1,7 @@
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "chromeos/dbus/system_proxy/system_proxy_client.h"
+#include "chromeos/ash/components/dbus/system_proxy/system_proxy_client.h"
 
 #include <utility>
 
@@ -10,14 +10,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/dbus/system_proxy/fake_system_proxy_client.h"
+#include "chromeos/ash/components/dbus/system_proxy/fake_system_proxy_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/system_proxy/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 SystemProxyClient* g_instance = nullptr;
@@ -263,4 +263,4 @@ SystemProxyClient* SystemProxyClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

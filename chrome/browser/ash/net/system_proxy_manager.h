@@ -13,7 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
-#include "chromeos/dbus/system_proxy/system_proxy_service.pb.h"
+#include "chromeos/ash/components/dbus/system_proxy/system_proxy_service.pb.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/content_browser_client.h"

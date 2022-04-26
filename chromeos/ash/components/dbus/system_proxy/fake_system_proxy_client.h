@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_SYSTEM_PROXY_FAKE_SYSTEM_PROXY_CLIENT_H_
-#define CHROMEOS_DBUS_SYSTEM_PROXY_FAKE_SYSTEM_PROXY_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_SYSTEM_PROXY_FAKE_SYSTEM_PROXY_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_SYSTEM_PROXY_FAKE_SYSTEM_PROXY_CLIENT_H_
 
-#include "chromeos/dbus/system_proxy/system_proxy_client.h"
-#include "chromeos/dbus/system_proxy/system_proxy_service.pb.h"
+#include "chromeos/ash/components/dbus/system_proxy/system_proxy_client.h"
+#include "chromeos/ash/components/dbus/system_proxy/system_proxy_service.pb.h"
 #include "dbus/object_proxy.h"
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeSystemProxyClient
     : public SystemProxyClient,
@@ -59,6 +59,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeSystemProxyClient
   SystemProxyClient::AuthenticationRequiredCallback auth_required_callback_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_SYSTEM_PROXY_FAKE_SYSTEM_PROXY_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_SYSTEM_PROXY_FAKE_SYSTEM_PROXY_CLIENT_H_

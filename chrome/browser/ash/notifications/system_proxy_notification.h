@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/system_proxy/system_proxy_service.pb.h"
+#include "chromeos/ash/components/dbus/system_proxy/system_proxy_service.pb.h"
 
 namespace message_center {
 class Notification;

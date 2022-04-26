@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/system_proxy/fake_system_proxy_client.h"
+#include "chromeos/ash/components/dbus/system_proxy/fake_system_proxy_client.h"
 
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/dbus/system_proxy/system_proxy_service.pb.h"
+#include "chromeos/ash/components/dbus/system_proxy/system_proxy_service.pb.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeSystemProxyClient::FakeSystemProxyClient() = default;
 
@@ -92,4 +92,4 @@ void FakeSystemProxyClient::SendWorkerActiveSignal(
       FROM_HERE, base::BindOnce(worker_active_callback_, details));
 }
 
-}  // namespace chromeos
+}  // namespace ash
