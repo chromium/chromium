@@ -25,7 +25,6 @@ class WeakWrapperSharedURLLoaderFactory;
 
 namespace safe_browsing {
 class SafeBrowsingDatabaseManager;
-class UrlCheckerDelegate;
 }  // namespace safe_browsing
 
 // This class must be created on the UI thread.
@@ -44,7 +43,8 @@ class SafeBrowsingServiceImpl : public SafeBrowsingService {
   void ShutDown() override;
   std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl> CreateUrlChecker(
       network::mojom::RequestDestination request_destination,
-      web::WebState* web_state) override;
+      web::WebState* web_state,
+      SafeBrowsingClient* client) override;
   bool CanCheckUrl(const GURL& url) const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> GetDatabaseManager()
@@ -148,9 +148,6 @@ class SafeBrowsingServiceImpl : public SafeBrowsingService {
   // the IO thread.
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
       safe_browsing_db_manager_;
-
-  // Delegate for SafeBrowsingUrlCheckerImpl instances.
-  scoped_refptr<safe_browsing::UrlCheckerDelegate> url_checker_delegate_;
 
   // This watches for changes to the Safe Browsing opt-out preference.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

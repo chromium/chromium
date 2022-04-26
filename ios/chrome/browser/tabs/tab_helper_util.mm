@@ -60,6 +60,7 @@
 #import "ios/chrome/browser/reading_list/offline_page_tab_helper.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/reading_list_web_state_observer.h"
+#import "ios/chrome/browser/safe_browsing/safe_browsing_client_factory.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_query_manager.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_tab_helper.h"
 #import "ios/chrome/browser/search_engines/search_engine_tab_helper.h"
@@ -92,6 +93,7 @@
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_helper.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #include "ios/web/common/features.h"
@@ -141,8 +143,10 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     BreadcrumbManagerTabHelper::CreateForWebState(web_state);
   }
 
-  SafeBrowsingQueryManager::CreateForWebState(web_state);
-  SafeBrowsingTabHelper::CreateForWebState(web_state);
+  SafeBrowsingClient* client =
+      SafeBrowsingClientFactory::GetForBrowserState(browser_state);
+  SafeBrowsingQueryManager::CreateForWebState(web_state, client);
+  SafeBrowsingTabHelper::CreateForWebState(web_state, client);
   SafeBrowsingUrlAllowList::CreateForWebState(web_state);
   SafeBrowsingUnsafeResourceContainer::CreateForWebState(web_state);
 

@@ -10,7 +10,6 @@
 #include "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_query_manager.h"
 #include "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
-#include "ios/components/security_interstitials/safe_browsing/safe_browsing_client_factory.h"
 #import "ios/components/security_interstitials/safe_browsing/unsafe_resource_util.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -27,7 +26,8 @@ namespace {
 // displayed later when the do-not-proceed signal triggers an error page.  Must
 // be called on the UI thread.
 void HandleBlockingPageRequestOnUIThread(
-    const security_interstitials::UnsafeResource resource) {
+    const security_interstitials::UnsafeResource resource,
+    base::WeakPtr<SafeBrowsingClient> client) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
   // Send do-not-proceed signal if the WebState has been destroyed.
@@ -38,10 +38,7 @@ void HandleBlockingPageRequestOnUIThread(
     return;
   }
 
-  SafeBrowsingClient* safe_browsing_client =
-      SafeBrowsingClientFactory::GetForBrowserState(
-          web_state->GetBrowserState());
-  if (safe_browsing_client->ShouldBlockUnsafeResource(resource)) {
+  if (client && client->ShouldBlockUnsafeResource(resource)) {
     RunUnsafeResourceCallback(resource, /*proceed=*/false,
                               /*showed_interstitial=*/false);
     return;
@@ -76,8 +73,10 @@ void HandleBlockingPageRequestOnUIThread(
 #pragma mark - UrlCheckerDelegateImpl
 
 UrlCheckerDelegateImpl::UrlCheckerDelegateImpl(
-    scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager)
+    scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager,
+    base::WeakPtr<SafeBrowsingClient> client)
     : database_manager_(std::move(database_manager)),
+      client_(client),
       threat_types_(safe_browsing::CreateSBThreatTypeSet(
           {safe_browsing::SB_THREAT_TYPE_URL_MALWARE,
            safe_browsing::SB_THREAT_TYPE_URL_PHISHING,
@@ -99,7 +98,7 @@ void UrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
   // can proceed.
   web::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&HandleBlockingPageRequestOnUIThread, resource));
+      base::BindOnce(&HandleBlockingPageRequestOnUIThread, resource, client_));
 }
 
 void UrlCheckerDelegateImpl::

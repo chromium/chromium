@@ -25,11 +25,18 @@ namespace web {
 class NavigationItem;
 }
 
+class SafeBrowsingClient;
+
 // A tab helper that uses Safe Browsing to check whether URLs that are being
 // navigated to are unsafe.
 class SafeBrowsingTabHelper
     : public web::WebStateUserData<SafeBrowsingTabHelper> {
  public:
+  static void CreateForWebState(web::WebState* web_state,
+                                SafeBrowsingClient* client);
+
+  SafeBrowsingTabHelper(web::WebState* web_state, SafeBrowsingClient* client);
+
   ~SafeBrowsingTabHelper() override;
 
   SafeBrowsingTabHelper(const SafeBrowsingTabHelper&) = delete;
@@ -45,7 +52,7 @@ class SafeBrowsingTabHelper
   class PolicyDecider : public web::WebStatePolicyDecider,
                         public base::SupportsWeakPtr<PolicyDecider> {
    public:
-    PolicyDecider(web::WebState* web_state);
+    PolicyDecider(web::WebState* web_state, SafeBrowsingClient* client);
     ~PolicyDecider() override;
 
     // Returns whether |query| is still relevant.  May return false if
@@ -145,6 +152,8 @@ class SafeBrowsingTabHelper
 
     // The URL check query manager.
     SafeBrowsingQueryManager* query_manager_;
+    // The safe browsing client.
+    SafeBrowsingClient* client_ = nullptr;
     // The pending query for the main frame navigation, if any.
     absl::optional<MainFrameUrlQuery> pending_main_frame_query_;
     // The previous query for main frame, navigation, if any. This is tracked
@@ -205,8 +214,6 @@ class SafeBrowsingTabHelper
     base::ScopedObservation<web::WebState, web::WebStateObserver>
         scoped_observation_{this};
   };
-
-  explicit SafeBrowsingTabHelper(web::WebState* web_state);
 
   PolicyDecider policy_decider_;
   QueryObserver query_observer_;

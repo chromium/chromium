@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/components/security_interstitials/safe_browsing/safe_browsing_client_factory.h"
+#import "ios/chrome/browser/safe_browsing/safe_browsing_client_factory.h"
 
 #import <memory>
 

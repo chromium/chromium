@@ -5,6 +5,7 @@
 #ifndef IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_SAFE_BROWSING_CLIENT_H_
 #define IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_SAFE_BROWSING_CLIENT_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace safe_browsing {
@@ -25,6 +26,8 @@ class SafeBrowsingService;
 // Abstract interface to be implemented by clients of ios safe browsing.
 class SafeBrowsingClient : public KeyedService {
  public:
+  // Returns this as a weak pointer.
+  virtual base::WeakPtr<SafeBrowsingClient> AsWeakPtr() = 0;
   // Gets the safe browsing service for this client. Must not be nullptr.
   virtual SafeBrowsingService* GetSafeBrowsingService() = 0;
   // Gets the real time url look up service. Clients may return nullptr.

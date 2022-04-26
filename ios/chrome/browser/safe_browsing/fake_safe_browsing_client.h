@@ -16,6 +16,9 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
   FakeSafeBrowsingClient();
   ~FakeSafeBrowsingClient() override;
 
+  // SafeBrowsingClient implementation.
+  base::WeakPtr<SafeBrowsingClient> AsWeakPtr() override;
+
   // Controls the return value of |ShouldBlockUnsafeResource|.
   void set_should_block_unsafe_resource(bool should_block_unsafe_resource) {
     should_block_unsafe_resource_ = should_block_unsafe_resource;
@@ -54,6 +57,9 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
   safe_browsing::RealTimeUrlLookupService* lookup_service_ = nullptr;
   bool main_frame_cancellation_decided_called_ = false;
   bool sub_frame_cancellation_decided_called_ = false;
+
+  // Must be last.
+  base::WeakPtrFactory<FakeSafeBrowsingClient> weak_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_FAKE_SAFE_BROWSING_CLIENT_H_

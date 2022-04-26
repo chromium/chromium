@@ -6,7 +6,10 @@
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_URL_CHECKER_DELEGATE_IMPL_H_
 
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
+
+class SafeBrowsingClient;
 
 namespace safe_browsing {
 class SafeBrowsingDatabaseManager;
@@ -18,7 +21,8 @@ class UrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
  public:
   UrlCheckerDelegateImpl(
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
-          database_manager);
+          database_manager,
+      base::WeakPtr<SafeBrowsingClient> client);
 
   UrlCheckerDelegateImpl(const UrlCheckerDelegateImpl&) = delete;
   UrlCheckerDelegateImpl& operator=(const UrlCheckerDelegateImpl&) = delete;
@@ -60,6 +64,7 @@ class UrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
   safe_browsing::BaseUIManager* GetUIManager() override;
 
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
+  base::WeakPtr<SafeBrowsingClient> client_;
   safe_browsing::SBThreatTypeSet threat_types_;
 };
 

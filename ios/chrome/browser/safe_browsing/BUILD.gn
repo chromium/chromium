@@ -19,6 +19,7 @@ source_set("safe_browsing") {
     "real_time_url_lookup_service_factory.mm",
     "safe_browsing_blocking_page.h",
     "safe_browsing_blocking_page.mm",
+    "safe_browsing_client_factory.h",
     "safe_browsing_client_factory.mm",
     "safe_browsing_client_impl.h",
     "safe_browsing_client_impl.mm",

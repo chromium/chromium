@@ -25,6 +25,8 @@ namespace web {
 class NavigationItem;
 }
 
+class SafeBrowsingClient;
+
 // A helper object that manages the Safe Browsing URL queries for a single
 // WebState.
 class SafeBrowsingQueryManager
@@ -83,6 +85,12 @@ class SafeBrowsingQueryManager
     virtual void SafeBrowsingQueryManagerDestroyed(
         SafeBrowsingQueryManager* manager) {}
   };
+
+  static void CreateForWebState(web::WebState* web_state,
+                                SafeBrowsingClient* client);
+
+  SafeBrowsingQueryManager(web::WebState* web_state,
+                           SafeBrowsingClient* client);
 
   ~SafeBrowsingQueryManager() override;
 
@@ -154,14 +162,14 @@ class SafeBrowsingQueryManager
         active_url_checkers_;
   };
 
-  explicit SafeBrowsingQueryManager(web::WebState* web_state);
-
   // Used as the completion callback for URL queries executed by
   // |url_checker_client_|.
   void UrlCheckFinished(const Query query, bool proceed, bool show_error_page);
 
   // The WebState whose URL queries are being managed.
   web::WebState* web_state_ = nullptr;
+  // The safe browsing client.
+  SafeBrowsingClient* client_ = nullptr;
   // The checker client.  Used to communicate with the database on the IO
   // thread.
   std::unique_ptr<UrlCheckerClient> url_checker_client_;

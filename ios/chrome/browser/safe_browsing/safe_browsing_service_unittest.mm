@@ -34,7 +34,6 @@
 #include "components/unified_consent/unified_consent_service.h"
 #import "ios/chrome/browser/safe_browsing/fake_safe_browsing_client.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_query_manager.h"
-#import "ios/components/security_interstitials/safe_browsing/safe_browsing_client_factory.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -60,9 +59,12 @@ const char kMalwarePage[] = "https://unsafe.test/malware.html";
 class TestUrlCheckerClient {
  public:
   TestUrlCheckerClient(SafeBrowsingService* safe_browsing_service,
-                       web::BrowserState* browser_state)
-      : safe_browsing_service_(safe_browsing_service) {
-    SafeBrowsingQueryManager::CreateForWebState(&web_state_);
+                       web::BrowserState* browser_state,
+                       SafeBrowsingClient* safe_browsing_client)
+      : safe_browsing_service_(safe_browsing_service),
+        safe_browsing_client_(safe_browsing_client) {
+    SafeBrowsingQueryManager::CreateForWebState(&web_state_,
+                                                safe_browsing_client_);
     SafeBrowsingUrlAllowList::CreateForWebState(&web_state_);
     SafeBrowsingUnsafeResourceContainer::CreateForWebState(&web_state_);
     web_state_.SetBrowserState(browser_state);
@@ -78,7 +80,8 @@ class TestUrlCheckerClient {
   void CheckUrl(const GURL& url) {
     result_pending_ = true;
     url_checker_ = safe_browsing_service_->CreateUrlChecker(
-        network::mojom::RequestDestination::kDocument, &web_state_);
+        network::mojom::RequestDestination::kDocument, &web_state_,
+        safe_browsing_client_);
     web::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&TestUrlCheckerClient::CheckUrlOnIOThread,
                                   base::Unretained(this), url));
@@ -87,7 +90,8 @@ class TestUrlCheckerClient {
   void CheckSubFrameUrl(const GURL& url) {
     result_pending_ = true;
     url_checker_ = safe_browsing_service_->CreateUrlChecker(
-        network::mojom::RequestDestination::kIframe, &web_state_);
+        network::mojom::RequestDestination::kIframe, &web_state_,
+        safe_browsing_client_);
     web::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&TestUrlCheckerClient::CheckUrlOnIOThread,
                                   base::Unretained(this), url));
@@ -132,6 +136,7 @@ class TestUrlCheckerClient {
   SafeBrowsingService* safe_browsing_service_;
   web::FakeWebState web_state_;
   std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl> url_checker_;
+  SafeBrowsingClient* safe_browsing_client_;
 };
 
 }  // namespace
@@ -169,12 +174,7 @@ class SafeBrowsingServiceTest : public PlatformTest {
         /*safe_browsing_metrics_collector=*/nullptr);
     base::RunLoop().RunUntilIdle();
 
-    // Set up the test safe browsing client factory.
-    SafeBrowsingClientFactory::GetInstance()->SetTestingFactory(
-        browser_state_.get(),
-        base::BindRepeating(
-            &SafeBrowsingServiceTest::CreateFakeSafeBrowsingClient,
-            base::Unretained(this)));
+    SetupUrlLookupService();
   }
 
   SafeBrowsingServiceTest(const SafeBrowsingServiceTest&) = delete;
@@ -229,6 +229,7 @@ class SafeBrowsingServiceTest : public PlatformTest {
   scoped_refptr<SafeBrowsingService> safe_browsing_service_;
   std::unique_ptr<web::FakeBrowserState> browser_state_;
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
+  FakeSafeBrowsingClient safe_browsing_client_;
 
  private:
   void MarkUrlAsMalwareOnIOThread(const GURL& bad_url) {
@@ -252,12 +253,7 @@ class SafeBrowsingServiceTest : public PlatformTest {
     v4_get_hash_factory_->AddToFullHashCache(full_hash_info);
   }
 
-  // Creates a fake safe browsing client and injects other fakes needed to
-  // control lookup service.
-  std::unique_ptr<KeyedService> CreateFakeSafeBrowsingClient(
-      web::BrowserState* context) {
-    std::unique_ptr<FakeSafeBrowsingClient> client =
-        std::make_unique<FakeSafeBrowsingClient>();
+  void SetupUrlLookupService() {
     host_content_settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
         pref_service_.get(), /*is_off_the_record=*/false,
         /*store_last_modified=*/false, /*restore_session=*/false);
@@ -277,8 +273,8 @@ class SafeBrowsingServiceTest : public PlatformTest {
         /*is_off_the_record=*/false,
         /*variations_service=*/nullptr,
         /*referrer_chain_provider=*/nullptr);
-    client->set_real_time_url_lookup_service(lookup_service_.get());
-    return client;
+    safe_browsing_client_.set_real_time_url_lookup_service(
+        lookup_service_.get());
   }
 
   base::ScopedTempDir temp_dir_;
@@ -298,7 +294,7 @@ TEST_F(SafeBrowsingServiceTest, SafeAndUnsafePages) {
   // Verify that queries to the Safe Browsing database owned by
   // SafeBrowsingService receive responses.
   TestUrlCheckerClient client(safe_browsing_service_.get(),
-                              browser_state_.get());
+                              browser_state_.get(), &safe_browsing_client_);
   GURL safe_url = GURL(kSafePage);
   client.CheckUrl(safe_url);
   EXPECT_TRUE(client.result_pending());
@@ -328,7 +324,7 @@ TEST_F(SafeBrowsingServiceTest, SafeAndUnsafePages) {
 // expected.
 TEST_F(SafeBrowsingServiceTest, RealTimeSafeAndUnsafePages) {
   TestUrlCheckerClient client(safe_browsing_service_.get(),
-                              browser_state_.get());
+                              browser_state_.get(), &safe_browsing_client_);
 
   // Wait for an initial result to make sure the Safe Browsing database has
   // been initialized, before calling into functions that mark URLs as safe
@@ -373,7 +369,7 @@ TEST_F(SafeBrowsingServiceTest,
   feature_list.InitAndEnableFeature(safe_browsing::kEnhancedProtection);
 
   TestUrlCheckerClient client(safe_browsing_service_.get(),
-                              browser_state_.get());
+                              browser_state_.get(), &safe_browsing_client_);
 
   // Wait for an initial result to make sure the Safe Browsing database has
   // been initialized, before calling into functions that mark URLs as safe

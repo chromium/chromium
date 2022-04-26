@@ -9,7 +9,6 @@
 #include "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/chrome/browser/safe_browsing/fake_safe_browsing_client.h"
 #import "ios/chrome/browser/safe_browsing/fake_safe_browsing_service.h"
-#import "ios/components/security_interstitials/safe_browsing/safe_browsing_client_factory.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -86,17 +85,9 @@ class SafeBrowsingQueryManagerTest
         navigation_item_id_(
             GetParam() == network::mojom::RequestDestination::kDocument ? -1
                                                                         : 0) {
-    SafeBrowsingQueryManager::CreateForWebState(web_state_.get());
+    SafeBrowsingQueryManager::CreateForWebState(web_state_.get(), &client_);
     manager()->AddObserver(&observer_);
     web_state_->SetBrowserState(browser_state_.get());
-
-    // Set up the test safe browsing client factory.
-    SafeBrowsingClientFactory::GetInstance()->SetTestingFactory(
-        browser_state_.get(),
-        base::BindRepeating(
-            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<FakeSafeBrowsingClient>();
-            }));
   }
 
   SafeBrowsingQueryManager* manager() {
@@ -109,6 +100,7 @@ class SafeBrowsingQueryManagerTest
   std::unique_ptr<web::FakeWebState> web_state_;
   std::string http_method_;
   int navigation_item_id_ = 0;
+  FakeSafeBrowsingClient client_;
 };
 
 // Tests a query for a safe URL.
@@ -220,14 +212,6 @@ class WebStateDestroyingQueryManagerObserver
       : browser_state_(new web::FakeBrowserState()),
         web_state_(std::make_unique<web::FakeWebState>()) {
     web_state_->SetBrowserState(browser_state_.get());
-
-    // Set up the test safe browsing client factory.
-    SafeBrowsingClientFactory::GetInstance()->SetTestingFactory(
-        browser_state_.get(),
-        base::BindRepeating(
-            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<FakeSafeBrowsingClient>();
-            }));
   }
   ~WebStateDestroyingQueryManagerObserver() override {}
 
@@ -262,7 +246,8 @@ class SafeBrowsingQueryManagerWebStateDestructionTest
         navigation_item_id_(
             GetParam() == network::mojom::RequestDestination::kDocument ? -1
                                                                         : 0) {
-    SafeBrowsingQueryManager::CreateForWebState(observer_.web_state());
+    SafeBrowsingQueryManager::CreateForWebState(observer_.web_state(),
+                                                &client_);
     manager()->AddObserver(&observer_);
   }
 
@@ -274,6 +259,7 @@ class SafeBrowsingQueryManagerWebStateDestructionTest
   WebStateDestroyingQueryManagerObserver observer_;
   std::string http_method_;
   int navigation_item_id_ = 0;
+  FakeSafeBrowsingClient client_;
 };
 
 // Tests that a query for a safe URL doesn't cause a crash.

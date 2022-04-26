@@ -16,7 +16,6 @@
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #include "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
-#include "ios/components/security_interstitials/safe_browsing/safe_browsing_client_factory.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_error.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -64,8 +63,19 @@ GURL GetCanonicalizedUrl(const GURL& url) {
 
 #pragma mark - SafeBrowsingTabHelper
 
-SafeBrowsingTabHelper::SafeBrowsingTabHelper(web::WebState* web_state)
-    : policy_decider_(web_state),
+// static
+void SafeBrowsingTabHelper::CreateForWebState(web::WebState* web_state,
+                                              SafeBrowsingClient* client) {
+  if (FromWebState(web_state))
+    return;
+
+  web_state->SetUserData(UserDataKey(), std::make_unique<SafeBrowsingTabHelper>(
+                                            web_state, client));
+}
+
+SafeBrowsingTabHelper::SafeBrowsingTabHelper(web::WebState* web_state,
+                                             SafeBrowsingClient* client)
+    : policy_decider_(web_state, client),
       query_observer_(web_state, &policy_decider_),
       navigation_observer_(web_state, &policy_decider_) {}
 
@@ -75,9 +85,11 @@ WEB_STATE_USER_DATA_KEY_IMPL(SafeBrowsingTabHelper)
 
 #pragma mark - SafeBrowsingTabHelper::PolicyDecider
 
-SafeBrowsingTabHelper::PolicyDecider::PolicyDecider(web::WebState* web_state)
+SafeBrowsingTabHelper::PolicyDecider::PolicyDecider(web::WebState* web_state,
+                                                    SafeBrowsingClient* client)
     : web::WebStatePolicyDecider(web_state),
-      query_manager_(SafeBrowsingQueryManager::FromWebState(web_state)) {}
+      query_manager_(SafeBrowsingQueryManager::FromWebState(web_state)),
+      client_(client) {}
 
 SafeBrowsingTabHelper::PolicyDecider::~PolicyDecider() = default;
 
@@ -135,11 +147,8 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   // Allow navigations for URLs that cannot be checked by the service.
   GURL request_url = GetCanonicalizedUrl(net::GURLWithNSURL(request.URL));
-  SafeBrowsingClient* safe_browsing_client =
-      SafeBrowsingClientFactory::GetForBrowserState(
-          web_state()->GetBrowserState());
   SafeBrowsingService* safe_browsing_service =
-      safe_browsing_client->GetSafeBrowsingService();
+      client_->GetSafeBrowsingService();
   if (!safe_browsing_service->CanCheckUrl(request_url)) {
     return std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
@@ -224,11 +233,8 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowResponse(
     web::WebStatePolicyDecider::ResponseInfo response_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   // Allow navigations for URLs that cannot be checked by the service.
-  SafeBrowsingClient* safe_browsing_client =
-      SafeBrowsingClientFactory::GetForBrowserState(
-          web_state()->GetBrowserState());
   SafeBrowsingService* safe_browsing_service =
-      safe_browsing_client->GetSafeBrowsingService();
+      client_->GetSafeBrowsingService();
   GURL response_url = GetCanonicalizedUrl(net::GURLWithNSURL(response.URL));
   if (!safe_browsing_service->CanCheckUrl(response_url)) {
     return std::move(callback).Run(
@@ -348,12 +354,8 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlQueryDecided(
     }
   }
 
-  SafeBrowsingClient* safe_browsing_client =
-      SafeBrowsingClientFactory::GetForBrowserState(
-          web_state()->GetBrowserState());
   if (decision.ShouldCancelNavigation()) {
-    safe_browsing_client->OnMainFrameUrlQueryCancellationDecided(web_state(),
-                                                                 url);
+    client_->OnMainFrameUrlQueryCancellationDecided(web_state(), url);
   }
 }
 
@@ -378,14 +380,10 @@ void SafeBrowsingTabHelper::PolicyDecider::OnSubFrameUrlQueryDecided(
   }
   sub_frame_query.response_callbacks.clear();
 
-  SafeBrowsingClient* safe_browsing_client =
-      SafeBrowsingClientFactory::GetForBrowserState(
-          web_state()->GetBrowserState());
   bool should_display_error = false;
   if (decision.ShouldCancelNavigation()) {
     should_display_error =
-        safe_browsing_client->OnSubFrameUrlQueryCancellationDecided(web_state(),
-                                                                    url);
+        client_->OnSubFrameUrlQueryCancellationDecided(web_state(), url);
   }
 
   // Error pages are only shown for cancelled main frame navigations, so

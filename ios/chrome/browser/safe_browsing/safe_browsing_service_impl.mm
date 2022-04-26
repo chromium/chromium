@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/safe_browsing/url_checker_delegate_impl.h"
 #import "ios/components/cookie_util/cookie_util.h"
 #include "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
-#include "ios/components/security_interstitials/safe_browsing/safe_browsing_client_factory.h"
 #import "ios/net/cookies/system_cookie_store.h"
 #import "ios/web/common/user_agent.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -59,9 +58,6 @@ void SafeBrowsingServiceImpl::Initialize(
       safe_browsing_data_path, web::GetUIThreadTaskRunner({}),
       web::GetIOThreadTaskRunner({}),
       safe_browsing::ExtendedReportingLevelCallback());
-
-  url_checker_delegate_ =
-      base::MakeRefCounted<UrlCheckerDelegateImpl>(safe_browsing_db_manager_);
 
   io_thread_enabler_ =
       base::MakeRefCounted<IOThreadEnabler>(safe_browsing_db_manager_);
@@ -113,19 +109,19 @@ void SafeBrowsingServiceImpl::ShutDown() {
 std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>
 SafeBrowsingServiceImpl::CreateUrlChecker(
     network::mojom::RequestDestination request_destination,
-    web::WebState* web_state) {
-  SafeBrowsingClient* safe_browsing_client =
-      SafeBrowsingClientFactory::GetForBrowserState(
-          web_state->GetBrowserState());
+    web::WebState* web_state,
+    SafeBrowsingClient* client) {
   safe_browsing::RealTimeUrlLookupService* url_lookup_service =
-      safe_browsing_client->GetRealTimeUrlLookupService();
-
+      client->GetRealTimeUrlLookupService();
   bool can_perform_full_url_lookup =
       url_lookup_service && url_lookup_service->CanPerformFullURLLookup();
   bool can_realtime_check_subresource_url =
       url_lookup_service && url_lookup_service->CanCheckSubresourceURL();
+  scoped_refptr<safe_browsing::UrlCheckerDelegate> url_checker_delegate =
+      base::MakeRefCounted<UrlCheckerDelegateImpl>(safe_browsing_db_manager_,
+                                                   client->AsWeakPtr());
   return std::make_unique<safe_browsing::SafeBrowsingUrlCheckerImpl>(
-      request_destination, url_checker_delegate_, web_state->GetWeakPtr(),
+      request_destination, url_checker_delegate, web_state->GetWeakPtr(),
       can_perform_full_url_lookup, can_realtime_check_subresource_url,
       web::GetUIThreadTaskRunner({}),
       url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr);

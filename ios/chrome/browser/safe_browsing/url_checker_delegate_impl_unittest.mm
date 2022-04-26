@@ -13,7 +13,6 @@
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "ios/chrome/browser/safe_browsing/fake_safe_browsing_client.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_query_manager.h"
-#import "ios/components/security_interstitials/safe_browsing/safe_browsing_client_factory.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/public/test/fakes/fake_browser_state.h"
@@ -53,7 +52,9 @@ class UrlCheckerDelegateImplTest : public PlatformTest {
  public:
   UrlCheckerDelegateImplTest()
       : browser_state_(std::make_unique<web::FakeBrowserState>()),
-        delegate_(base::MakeRefCounted<UrlCheckerDelegateImpl>(nullptr)),
+        delegate_(
+            base::MakeRefCounted<UrlCheckerDelegateImpl>(nullptr,
+                                                         client_.AsWeakPtr())),
         item_(web::NavigationItem::Create()),
         web_state_(std::make_unique<web::FakeWebState>()) {
     // Set up the WebState.
@@ -64,13 +65,7 @@ class UrlCheckerDelegateImplTest : public PlatformTest {
     // Construct the allow list and unsafe resource container.
     SafeBrowsingUnsafeResourceContainer::CreateForWebState(web_state_.get());
     SafeBrowsingUrlAllowList::CreateForWebState(web_state_.get());
-    SafeBrowsingQueryManager::CreateForWebState(web_state_.get());
-    // Set up the test safe browsing client factory.
-    SafeBrowsingClientFactory::GetInstance()->SetTestingFactory(
-        browser_state_.get(),
-        base::BindRepeating(
-            &UrlCheckerDelegateImplTest::CreateFakeSafeBrowsingClient,
-            base::Unretained(this)));
+    SafeBrowsingQueryManager::CreateForWebState(web_state_.get(), &client_);
   }
   ~UrlCheckerDelegateImplTest() override = default;
 
@@ -107,24 +102,14 @@ class UrlCheckerDelegateImplTest : public PlatformTest {
                       : nullptr;
   }
 
-  // Creates a fake SafeBrowsingClient and configures whether or not it should
-  // block an unsafe resource.
-  std::unique_ptr<KeyedService> CreateFakeSafeBrowsingClient(
-      web::BrowserState* context) {
-    std::unique_ptr<FakeSafeBrowsingClient> service =
-        std::make_unique<FakeSafeBrowsingClient>();
-    service->set_should_block_unsafe_resource(should_block_unsafe_resource_);
-    return service;
-  }
-
  protected:
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::IO_MAINLOOP};
   std::unique_ptr<web::FakeBrowserState> browser_state_;
+  FakeSafeBrowsingClient client_;
   scoped_refptr<safe_browsing::UrlCheckerDelegate> delegate_;
   std::unique_ptr<web::NavigationItem> item_;
   std::unique_ptr<web::FakeWebState> web_state_;
-  bool should_block_unsafe_resource_ = false;
 };
 
 // Tests that the delegate does not allow unsafe resources to proceed and does
@@ -157,7 +142,7 @@ TEST_F(UrlCheckerDelegateImplTest, DontProceedIfBlockedByClient) {
   UnsafeResource resource = CreateUnsafeResource(&callback_state);
 
   // Make client block unsafe resource.
-  should_block_unsafe_resource_ = true;
+  client_.set_should_block_unsafe_resource(true);
 
   // Instruct the delegate to display the blocking page.
   delegate_->StartDisplayingBlockingPageHelper(resource, /*method=*/"",

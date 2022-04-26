@@ -14,6 +14,7 @@
 #include "url/gurl.h"
 
 class PrefService;
+class SafeBrowsingClient;
 
 namespace base {
 class FilePath;
@@ -57,7 +58,8 @@ class SafeBrowsingService
   // SafeBrowsingDatabaseManager owned by this service.
   virtual std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>
   CreateUrlChecker(network::mojom::RequestDestination request_destination,
-                   web::WebState* web_state) = 0;
+                   web::WebState* web_state,
+                   SafeBrowsingClient* client) = 0;
 
   // Returns true if |url| has a scheme that is handled by Safe Browsing.
   virtual bool CanCheckUrl(const GURL& url) const = 0;

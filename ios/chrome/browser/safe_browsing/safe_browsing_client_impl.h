@@ -16,7 +16,10 @@ class SafeBrowsingClientImpl : public SafeBrowsingClient {
       safe_browsing::RealTimeUrlLookupService* lookup_service,
       PrerenderService* prerender_service);
 
+  ~SafeBrowsingClientImpl() override;
+
   // SafeBrowsingClient implementation.
+  base::WeakPtr<SafeBrowsingClient> AsWeakPtr() override;
   SafeBrowsingService* GetSafeBrowsingService() override;
   safe_browsing::RealTimeUrlLookupService* GetRealTimeUrlLookupService()
       override;
@@ -30,6 +33,9 @@ class SafeBrowsingClientImpl : public SafeBrowsingClient {
  private:
   safe_browsing::RealTimeUrlLookupService* lookup_service_;
   PrerenderService* prerender_service_;
+
+  // Must be last.
+  base::WeakPtrFactory<SafeBrowsingClientImpl> weak_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_CLIENT_IMPL_H_

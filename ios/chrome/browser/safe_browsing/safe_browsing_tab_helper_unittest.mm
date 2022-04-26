@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/safe_browsing/fake_safe_browsing_client.h"
 #import "ios/chrome/browser/safe_browsing/fake_safe_browsing_service.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_query_manager.h"
-#import "ios/components/security_interstitials/safe_browsing/safe_browsing_client_factory.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_error.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -41,19 +40,14 @@ class SafeBrowsingTabHelperTest
   SafeBrowsingTabHelperTest()
       : task_environment_(web::WebTaskEnvironment::IO_MAINLOOP),
         browser_state_(std::make_unique<web::FakeBrowserState>()) {
-    SafeBrowsingQueryManager::CreateForWebState(&web_state_);
-    SafeBrowsingTabHelper::CreateForWebState(&web_state_);
+    SafeBrowsingQueryManager::CreateForWebState(&web_state_, &client_);
+    SafeBrowsingTabHelper::CreateForWebState(&web_state_, &client_);
     SafeBrowsingUrlAllowList::CreateForWebState(&web_state_);
     SafeBrowsingUnsafeResourceContainer::CreateForWebState(&web_state_);
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager_ = navigation_manager.get();
     web_state_.SetNavigationManager(std::move(navigation_manager));
     web_state_.SetBrowserState(browser_state_.get());
-    SafeBrowsingClientFactory::GetInstance()->SetTestingFactory(
-        browser_state_.get(),
-        base::BindRepeating(
-            &SafeBrowsingTabHelperTest::CreateFakeSafeBrowsingClient,
-            base::Unretained(this)));
   }
 
   // Whether Safe Browsing decisions arrive before calls to
@@ -136,15 +130,6 @@ class SafeBrowsingTabHelperTest
     web_state_.OnNavigationRedirected(&context);
   }
 
-  // Returns a FakeSafeBrowsingClient.
-  std::unique_ptr<KeyedService> CreateFakeSafeBrowsingClient(
-      web::BrowserState* context) {
-    std::unique_ptr<FakeSafeBrowsingClient> service =
-        std::make_unique<FakeSafeBrowsingClient>();
-    client_ = service.get();
-    return service;
-  }
-
   // Stores an UnsafeResource for |url| in the query manager.  It is expected
   // that an UnsafeResource is stored before check completion for unsafe URLs
   // that show an error page.
@@ -163,7 +148,7 @@ class SafeBrowsingTabHelperTest
   std::unique_ptr<web::FakeBrowserState> browser_state_;
   web::FakeWebState web_state_;
   web::FakeNavigationManager* navigation_manager_ = nullptr;
-  FakeSafeBrowsingClient* client_ = nullptr;
+  FakeSafeBrowsingClient client_;
 };
 
 // Tests the case of a single navigation request and response, for a URL that is
@@ -948,15 +933,15 @@ TEST_P(SafeBrowsingTabHelperTest, UnsafeMainFrameRequestNotifiesClient) {
 
   // When |unsafe_url| is determined to be unsafe, the client should be
   // notified.
-  EXPECT_FALSE(client_->main_frame_cancellation_decided_called());
+  EXPECT_FALSE(client_.main_frame_cancellation_decided_called());
   if (SafeBrowsingDecisionArrivesBeforeResponse()) {
     base::RunLoop().RunUntilIdle();
-    EXPECT_TRUE(client_->main_frame_cancellation_decided_called());
+    EXPECT_TRUE(client_.main_frame_cancellation_decided_called());
   } else {
     web::WebStatePolicyDecider::PolicyDecision response_decision =
         ShouldAllowResponseUrl(unsafe_url);
     EXPECT_TRUE(response_decision.ShouldCancelNavigation());
-    EXPECT_TRUE(client_->main_frame_cancellation_decided_called());
+    EXPECT_TRUE(client_.main_frame_cancellation_decided_called());
   }
 }
 
@@ -972,15 +957,15 @@ TEST_P(SafeBrowsingTabHelperTest, UnsafeSubframeRequestNotifiesClient) {
 
   // When |unsafe_url| is determined to be unsafe, the client should be
   // notified.
-  EXPECT_FALSE(client_->sub_frame_cancellation_decided_called());
+  EXPECT_FALSE(client_.sub_frame_cancellation_decided_called());
   if (SafeBrowsingDecisionArrivesBeforeResponse()) {
     base::RunLoop().RunUntilIdle();
-    EXPECT_TRUE(client_->sub_frame_cancellation_decided_called());
+    EXPECT_TRUE(client_.sub_frame_cancellation_decided_called());
   } else {
     web::WebStatePolicyDecider::PolicyDecision response_decision =
         ShouldAllowResponseUrl(unsafe_url, /*for_main_frame=*/false);
     EXPECT_TRUE(response_decision.ShouldCancelNavigation());
-    EXPECT_TRUE(client_->sub_frame_cancellation_decided_called());
+    EXPECT_TRUE(client_.sub_frame_cancellation_decided_called());
   }
 }
 
@@ -990,14 +975,14 @@ TEST_P(SafeBrowsingTabHelperTest, SafeMainFrameRequestDoesNotNotifyClient) {
 
   EXPECT_TRUE(ShouldAllowRequestUrl(safe_url).ShouldAllowNavigation());
 
-  EXPECT_FALSE(client_->main_frame_cancellation_decided_called());
+  EXPECT_FALSE(client_.main_frame_cancellation_decided_called());
   if (SafeBrowsingDecisionArrivesBeforeResponse())
     base::RunLoop().RunUntilIdle();
 
   web::WebStatePolicyDecider::PolicyDecision response_decision =
       ShouldAllowResponseUrl(safe_url);
   EXPECT_TRUE(response_decision.ShouldAllowNavigation());
-  EXPECT_FALSE(client_->main_frame_cancellation_decided_called());
+  EXPECT_FALSE(client_.main_frame_cancellation_decided_called());
 }
 
 // Tests that client is not notified when a sub frame URL is safe.
@@ -1008,14 +993,14 @@ TEST_P(SafeBrowsingTabHelperTest, SafeSubframeRequestDoesNotNotifyClient) {
   EXPECT_TRUE(ShouldAllowRequestUrl(safe_url, /*for_main_frame=*/false)
                   .ShouldAllowNavigation());
 
-  EXPECT_FALSE(client_->sub_frame_cancellation_decided_called());
+  EXPECT_FALSE(client_.sub_frame_cancellation_decided_called());
   if (SafeBrowsingDecisionArrivesBeforeResponse())
     base::RunLoop().RunUntilIdle();
 
   web::WebStatePolicyDecider::PolicyDecision response_decision =
       ShouldAllowResponseUrl(safe_url, /*for_main_frame=*/false);
   EXPECT_TRUE(response_decision.ShouldAllowNavigation());
-  EXPECT_FALSE(client_->sub_frame_cancellation_decided_called());
+  EXPECT_FALSE(client_.sub_frame_cancellation_decided_called());
 }
 
 INSTANTIATE_TEST_SUITE_P(

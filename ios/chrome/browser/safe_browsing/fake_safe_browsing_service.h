@@ -32,7 +32,8 @@ class FakeSafeBrowsingService : public SafeBrowsingService {
   void ShutDown() override;
   std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl> CreateUrlChecker(
       network::mojom::RequestDestination request_destination,
-      web::WebState* web_state) override;
+      web::WebState* web_state,
+      SafeBrowsingClient* client) override;
   bool CanCheckUrl(const GURL& url) const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> GetDatabaseManager()

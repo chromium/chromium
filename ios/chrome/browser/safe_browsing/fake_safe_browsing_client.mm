@@ -16,6 +16,10 @@ FakeSafeBrowsingClient::FakeSafeBrowsingClient()
 
 FakeSafeBrowsingClient::~FakeSafeBrowsingClient() = default;
 
+base::WeakPtr<SafeBrowsingClient> FakeSafeBrowsingClient::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 SafeBrowsingService* FakeSafeBrowsingClient::GetSafeBrowsingService() {
   return safe_browsing_service_.get();
 }

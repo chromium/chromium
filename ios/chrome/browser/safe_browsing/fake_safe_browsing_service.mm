@@ -26,7 +26,8 @@ class FakeSafeBrowsingUrlCheckerImpl
       network::mojom::RequestDestination request_destination)
       : SafeBrowsingUrlCheckerImpl(request_destination,
                                    base::MakeRefCounted<UrlCheckerDelegateImpl>(
-                                       /*database_manager=*/nullptr),
+                                       /*database_manager=*/nullptr,
+                                       /*client=*/nullptr),
                                    base::WeakPtr<web::WebState>(),
                                    /*real_time_lookup_enabled=*/false,
                                    /*can_rt_check_subresource_url=*/false,
@@ -75,7 +76,8 @@ void FakeSafeBrowsingService::ShutDown() {
 std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>
 FakeSafeBrowsingService::CreateUrlChecker(
     network::mojom::RequestDestination request_destination,
-    web::WebState* web_state) {
+    web::WebState* web_state,
+    SafeBrowsingClient* client) {
   return std::make_unique<FakeSafeBrowsingUrlCheckerImpl>(request_destination);
 }
 
