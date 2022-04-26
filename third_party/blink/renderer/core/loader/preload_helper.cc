@@ -350,7 +350,8 @@ Resource* PreloadHelper::PreloadIfNeeded(
   // supported preload destinations, not just the destinations that support SRI
   // in the first place.
   if (resource_type == ResourceType::kScript ||
-      resource_type == ResourceType::kCSSStyleSheet) {
+      resource_type == ResourceType::kCSSStyleSheet ||
+      resource_type == ResourceType::kFont) {
     if (!integrity_attr.IsEmpty()) {
       IntegrityMetadataSet metadata_set;
       SubresourceIntegrity::ParseIntegrityAttribute(

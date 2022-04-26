@@ -337,7 +337,8 @@ class TokenPreloadScanner::StartTagScanner {
     // TODO(crbug.com/981419): Honor the integrity attribute value for all
     // supported preload destinations, not just the destinations that support
     // SRI in the first place.
-    if (type == ResourceType::kScript || type == ResourceType::kCSSStyleSheet) {
+    if (type == ResourceType::kScript || type == ResourceType::kCSSStyleSheet ||
+        type == ResourceType::kFont) {
       request->SetIntegrityMetadata(integrity_metadata_);
     }
 
