@@ -3,6 +3,7 @@
 // // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/version_info/channel.h"
@@ -31,8 +32,15 @@ class FaviconApiTest : public ExtensionApiTest {
   ScopedCurrentChannel current_cnannel_{version_info::Channel::CANARY};
 };
 
+// TODO(crbug.com/1319934): Test is flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Extension DISABLED_Extension
+#else
+#define MAYBE_Extension Extension
+#endif
+
 // Fetch favicon from an extension with the correct permission.
-IN_PROC_BROWSER_TEST_F(FaviconApiTest, Extension) {
+IN_PROC_BROWSER_TEST_F(FaviconApiTest, MAYBE_Extension) {
   // Cache the favicon by loading a test page, then fetch the favicon.
   GURL page_url = embedded_test_server()->GetURL(
       "www.example.com", "/extensions/favicon/test_file.html");
