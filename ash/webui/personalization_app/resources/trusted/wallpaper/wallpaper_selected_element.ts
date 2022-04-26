@@ -195,6 +195,9 @@ export class WallpaperSelected extends WithPersonalizationStore {
     if (!image) {
       return this.i18n('unknownImageAttribution');
     }
+    if (image.type === WallpaperType.kDefault) {
+      return this.i18n('defaultWallpaper');
+    }
     if (isNonEmptyArray(image.attribution)) {
       const title = image.attribution[0];
       return dailyRefreshCollectionId ?
@@ -335,6 +338,9 @@ export class WallpaperSelected extends WithPersonalizationStore {
     if (!image) {
       return this.i18n('currentlySet') + ' ' +
           this.i18n('unknownImageAttribution');
+    }
+    if (image.type === WallpaperType.kDefault) {
+      return `${this.i18n('currentlySet')} ${this.i18n('defaultWallpaper')}`;
     }
     if (isNonEmptyArray(image.attribution)) {
       return dailyRefreshCollectionId ?

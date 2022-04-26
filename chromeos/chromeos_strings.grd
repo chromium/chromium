@@ -2075,6 +2075,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_WALLPAPER_LABEL" desc="Label for wallpaper element in personalization hub">
         Wallpaper
       </message>
+      <message name="IDS_PERSONALIZATION_APP_DEFAULT_WALLPAPER" desc="Label for the device default wallpaper">
+        Default Wallpaper
+      </message>
       <message name="IDS_PERSONALIZATION_APP_BACK_BUTTON" desc="Aria label for the back button to return to a prior page">
         Back to <ph name="PAGE_NAME">$1<ex>Wallpaper</ex></ph>
       </message>

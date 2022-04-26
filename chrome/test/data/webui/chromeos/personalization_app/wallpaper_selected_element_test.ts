@@ -7,7 +7,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {Paths, WallpaperLayout, WallpaperSelected, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
+import {CurrentWallpaper, Paths, WallpaperLayout, WallpaperSelected, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -293,5 +293,26 @@ suite('WallpaperSelectedTest', function() {
     assertDeepEquals(
         await wallpaperProvider.whenCalled('setCurrentWallpaperLayout'),
         WallpaperLayout.kCenter);
+  });
+
+  test('shows attribution for device default wallpaper', async () => {
+    const currentSelected: CurrentWallpaper = {
+      url: {url: 'url'},
+      attribution: ['testing attribution'],
+      layout: WallpaperLayout.kStretch,
+      type: WallpaperType.kDefault,
+      key: 'key',
+    };
+    personalizationStore.data.wallpaper.currentSelected = currentSelected;
+
+    wallpaperSelectedElement =
+        initElement(WallpaperSelected, {path: Paths.CollectionImages});
+    await waitAfterNextRender(wallpaperSelectedElement);
+
+    assertEquals(
+        wallpaperSelectedElement.i18n('defaultWallpaper'),
+        wallpaperSelectedElement.shadowRoot!.getElementById(
+                                                'imageTitle')!.innerText,
+        'default wallpaper attribution is shown');
   });
 });

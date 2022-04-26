@@ -60,6 +60,7 @@ void AddStrings(content::WebUIDataSource* source) {
       {"personalizationTitle",
        IDS_PERSONALIZATION_APP_PERSONALIZATION_HUB_TITLE},
       {"wallpaperLabel", IDS_PERSONALIZATION_APP_WALLPAPER_LABEL},
+      {"defaultWallpaper", IDS_PERSONALIZATION_APP_DEFAULT_WALLPAPER},
       {"back", IDS_PERSONALIZATION_APP_BACK_BUTTON},
       {"currentlySet", IDS_PERSONALIZATION_APP_CURRENTLY_SET},
       {"myImagesLabel", IDS_PERSONALIZATION_APP_MY_IMAGES},
