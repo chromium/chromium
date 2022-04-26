@@ -430,6 +430,31 @@ struct NetworkConfiguration {
   // True if the network has been autodetected by the platform as a metered
   // network or if the user explicitly marked the network as metered in the UI.
   [MinVersion=14] bool is_metered;
+
+  // Routes of destinations for the host network in CIDR format. If null/empty,
+  // all (both IPv4 and IPv6) destinations are assumed to go through the host
+  // network. As long as there is at least one destination in the list,
+  // regardless of IPv4 or IPv6 family, then no default destinations for any
+  // IPv* family are assumed anymore.
+  //
+  // For example:
+  //   [ ] => Implies 0.0.0.0/0 and ::/0
+  //   [ 10.8.0.5/32 ] => 10.8.0.5/32 for IPv4, no IPv6
+  //   [ 2001:DB8::/32 ] => 2001:DB8::/32 for IPv6, no IPv4
+  //   [ 10.8.0.5/32, ::/0 ] => 10.8.0.5/32 for IPv4, all IPv6
+  //   [ 2001:DB88::/32, 0.0.0.0/0 ] => 2001::DB8::/32 for IPv6, all IPv4
+  //
+  // If the same destination is present in include_routes and exclude_routes,
+  // then exclude_routes will take precedence and the destination will be
+  // excluded from the host network.
+  [MinVersion=15] array<string>? include_routes;
+
+  // Routes of destinations to exclude for the host network in CIDR format. If
+  // null/empty, it is assumed no destinations are excluded. If the same
+  // destination is present in include_routes and exclude_routes, then
+  // exclude_routes will take precedence and the destination will be excluded
+  // from the host network.
+  [MinVersion=15] array<string>? exclude_routes;
 };
 
 // Describes a Wifi network configuration that ARC has requested the host to

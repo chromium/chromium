@@ -276,6 +276,28 @@ void AddIpConfiguration(arc::mojom::NetworkConfiguration* network,
   const int mtu = shill_ipconfig->FindIntPath(shill::kMtuProperty).value_or(0);
   if (mtu > 0)
     network->host_mtu = mtu;
+
+  if (const auto* include_routes_list =
+          shill_ipconfig->FindListKey(shill::kIncludedRoutesProperty)) {
+    for (const auto& include_routes_value :
+         include_routes_list->GetListDeprecated()) {
+      const std::string& include_route = include_routes_value.GetString();
+      if (!include_route.empty()) {
+        network->include_routes->push_back(include_route);
+      }
+    }
+  }
+
+  if (const auto* exclude_routes_list =
+          shill_ipconfig->FindListKey(shill::kExcludedRoutesProperty)) {
+    for (const auto& exclude_routes_value :
+         exclude_routes_list->GetListDeprecated()) {
+      const std::string& exclude_route = exclude_routes_value.GetString();
+      if (!exclude_route.empty()) {
+        network->exclude_routes->push_back(exclude_route);
+      }
+    }
+  }
 }
 
 arc::mojom::NetworkConfigurationPtr TranslateNetworkProperties(
@@ -286,6 +308,8 @@ arc::mojom::NetworkConfigurationPtr TranslateNetworkProperties(
   mojo->host_ipv6_global_addresses = std::vector<std::string>();
   mojo->host_search_domains = std::vector<std::string>();
   mojo->host_dns_addresses = std::vector<std::string>();
+  mojo->include_routes = std::vector<std::string>();
+  mojo->exclude_routes = std::vector<std::string>();
   mojo->connection_state =
       TranslateConnectionState(network_state->connection_state());
   mojo->guid = network_state->guid();
