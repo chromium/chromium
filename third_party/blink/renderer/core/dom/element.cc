@@ -4632,14 +4632,22 @@ void Element::ChildrenChanged(const ChildrenChange& change) {
 
   if (!change.ByParser() && change.IsChildElementChange()) {
     Element* changed_element = To<Element>(change.sibling_changed);
+    bool removed = change.type == ChildrenChangeType::kElementRemoved;
     CheckForSiblingStyleChanges(
-        change.type == ChildrenChangeType::kElementRemoved
-            ? kSiblingElementRemoved
-            : kSiblingElementInserted,
+        removed ? kSiblingElementRemoved : kSiblingElementInserted,
         changed_element, change.sibling_before_change,
         change.sibling_after_change);
-    GetDocument().GetStyleEngine().SubtreeInsertedOrRemoved(
-        this, change.sibling_before_change, *changed_element);
+    if (removed) {
+      GetDocument()
+          .GetStyleEngine()
+          .ScheduleInvalidationsForHasPseudoAffectedByRemoval(
+              this, change.sibling_before_change, *changed_element);
+    } else {
+      GetDocument()
+          .GetStyleEngine()
+          .ScheduleInvalidationsForHasPseudoAffectedByInsertion(
+              this, change.sibling_before_change, *changed_element);
+    }
   }
 
   if (ShadowRoot* shadow_root = GetShadowRoot())
@@ -4651,8 +4659,10 @@ void Element::FinishParsingChildren() {
   CheckForEmptyStyleChange(this, this);
   CheckForSiblingStyleChanges(kFinishedParsingChildren, nullptr, lastChild(),
                               nullptr);
-  GetDocument().GetStyleEngine().ElementInsertedOrRemoved(parentElement(),
-                                                          lastChild(), *this);
+  GetDocument()
+      .GetStyleEngine()
+      .ScheduleInvalidationsForHasPseudoAffectedByInsertion(parentElement(),
+                                                            lastChild(), *this);
 }
 
 AttrNodeList* Element::GetAttrNodeList() {
@@ -5312,14 +5322,20 @@ void Element::SetAncestorsOrAncestorSiblingsAffectedByHas() {
   EnsureElementRareData().SetAncestorsOrAncestorSiblingsAffectedByHas();
 }
 
-bool Element::SiblingsAffectedByHas() const {
+unsigned Element::GetSiblingsAffectedByHasFlags() const {
   if (HasRareData())
-    return GetElementRareData()->SiblingsAffectedByHas();
+    return GetElementRareData()->GetSiblingsAffectedByHasFlags();
   return false;
 }
 
-void Element::SetSiblingsAffectedByHas() {
-  EnsureElementRareData().SetSiblingsAffectedByHas();
+bool Element::HasSiblingsAffectedByHasFlags(unsigned flags) const {
+  if (HasRareData())
+    return GetElementRareData()->HasSiblingsAffectedByHasFlags(flags);
+  return false;
+}
+
+void Element::SetSiblingsAffectedByHasFlags(unsigned flags) {
+  EnsureElementRareData().SetSiblingsAffectedByHasFlags(flags);
 }
 
 bool Element::AffectedByPseudoInHas() const {

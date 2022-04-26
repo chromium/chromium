@@ -986,7 +986,28 @@ namespace {
 
 bool PossiblyAffectingHasState(Element& element) {
   return element.AncestorsOrAncestorSiblingsAffectedByHas() ||
-         element.SiblingsAffectedByHas();
+         element.GetSiblingsAffectedByHasFlags();
+}
+
+bool InsertionOrRemovalPossiblyAffectHasStateOfAncestorsOrAncestorSiblings(
+    Element* parent) {
+  // Only if the parent of the inserted element or subtree has the
+  // AncestorsOrAncestorSiblingsAffectedByHas or
+  // SiblingsAffectedByHasForSiblingDescendantRelationship flag set, the
+  // inserted element or subtree possibly affect the :has() state on its (or the
+  // subtree root's) ancestors.
+  return parent && (parent->AncestorsOrAncestorSiblingsAffectedByHas() ||
+                    parent->HasSiblingsAffectedByHasFlags(
+                        SiblingsAffectedByHasFlags::
+                            kFlagForSiblingDescendantRelationship));
+}
+
+bool InsertionOrRemovalPossiblyAffectHasStateOfPreviousSiblings(
+    Element* previous_sibling) {
+  // Only if the previous sibling of the inserted element or subtree has the
+  // SiblingsAffectedByHas flag set, the inserted element or subtree possibly
+  // affect the :has() state on its (or the subtree root's) previous siblings.
+  return previous_sibling && previous_sibling->GetSiblingsAffectedByHasFlags();
 }
 
 inline Element* SelfOrPreviousSibling(Node* node) {
@@ -1013,7 +1034,7 @@ void StyleEngine::InvalidateAncestorsOrSiblingsAffectedByHasInternal(
 
   while (element) {
     traverse_ancestors |= element->AncestorsOrAncestorSiblingsAffectedByHas();
-    traverse_siblings = element->SiblingsAffectedByHas();
+    traverse_siblings = element->GetSiblingsAffectedByHasFlags();
 
     const ComputedStyle* style = element->GetComputedStyle();
 
@@ -1060,7 +1081,7 @@ void StyleEngine::InvalidateAncestorsOrSiblingsAffectedByHasForPseudoChange(
       changed_element.AncestorsOrAncestorSiblingsAffectedByHas()
           ? changed_element.parentElement()
           : nullptr,
-      changed_element.SiblingsAffectedByHas()
+      changed_element.GetSiblingsAffectedByHasFlags()
           ? ElementTraversal::PreviousSibling(changed_element)
           : nullptr);
 }
@@ -1078,7 +1099,7 @@ void StyleEngine::InvalidateAncestorsOrSiblingsAffectedByHas(
       changed_element.AncestorsOrAncestorSiblingsAffectedByHas()
           ? changed_element.parentElement()
           : nullptr,
-      changed_element.SiblingsAffectedByHas()
+      changed_element.GetSiblingsAffectedByHasFlags()
           ? ElementTraversal::PreviousSibling(changed_element)
           : nullptr);
 }
@@ -1509,9 +1530,10 @@ void StyleEngine::ScheduleCustomElementInvalidations(
                                                          *document_);
 }
 
-void StyleEngine::ElementInsertedOrRemoved(Element* parent,
-                                           Node* node_before_change,
-                                           Element& element) {
+void StyleEngine::ScheduleInvalidationsForHasPseudoAffectedByInsertion(
+    Element* parent,
+    Node* node_before_change,
+    Element& inserted_element) {
   if (!RuntimeEnabledFeatures::CSSPseudoHasEnabled() || !parent)
     return;
 
@@ -1522,40 +1544,96 @@ void StyleEngine::ElementInsertedOrRemoved(Element* parent,
   if (!features.NeedsHasInvalidation())
     return;
 
-  if (features.NeedsHasInvalidationForElement(element)) {
-    InvalidateAncestorsOrSiblingsAffectedByHas(
-        parent, SelfOrPreviousSibling(node_before_change));
-  } else if (features.NeedsHasInvalidationForPseudoStateChange()) {
-    InvalidateAncestorsOrSiblingsAffectedByHasForPseudoChange(
-        parent, SelfOrPreviousSibling(node_before_change));
+  Element* previous_sibling = SelfOrPreviousSibling(node_before_change);
+
+  bool possibly_affecting_has_state = false;
+  bool descendants_possibly_affecting_has_state = false;
+
+  if (InsertionOrRemovalPossiblyAffectHasStateOfPreviousSiblings(
+          previous_sibling)) {
+    inserted_element.SetSiblingsAffectedByHasFlags(
+        previous_sibling->GetSiblingsAffectedByHasFlags());
+    possibly_affecting_has_state = true;
+    descendants_possibly_affecting_has_state =
+        inserted_element.HasSiblingsAffectedByHasFlags(
+            SiblingsAffectedByHasFlags::kFlagForSiblingDescendantRelationship);
   }
-}
+  if (InsertionOrRemovalPossiblyAffectHasStateOfAncestorsOrAncestorSiblings(
+          parent)) {
+    inserted_element.SetAncestorsOrAncestorSiblingsAffectedByHas();
+    possibly_affecting_has_state = true;
+    descendants_possibly_affecting_has_state = true;
+  }
 
-void StyleEngine::SubtreeInsertedOrRemoved(Element* parent,
-                                           Node* node_before_change,
-                                           Element& subtree_root) {
-  if (!RuntimeEnabledFeatures::CSSPseudoHasEnabled() || !parent)
-    return;
+  if (!possibly_affecting_has_state)
+    return;  // Inserted subtree will not affect :has() state
 
-  if (ShouldSkipInvalidationFor(*parent))
-    return;
+  if (descendants_possibly_affecting_has_state) {
+    bool needs_has_invalidation_for_inserted_subtree =
+        features.NeedsHasInvalidationForElement(inserted_element);
 
-  const RuleFeatureSet& features = GetRuleFeatureSet();
-  if (!features.NeedsHasInvalidation())
-    return;
+    // Do not stop subtree traversal early so that all the descendants have the
+    // AncestorsOrAncestorSiblingsAffectedByHas flag set.
+    for (Element& element : ElementTraversal::DescendantsOf(inserted_element)) {
+      element.SetAncestorsOrAncestorSiblingsAffectedByHas();
+      if (!needs_has_invalidation_for_inserted_subtree &&
+          features.NeedsHasInvalidationForElement(element)) {
+        needs_has_invalidation_for_inserted_subtree = true;
+      }
+    }
 
-  for (Element& element :
-       ElementTraversal::InclusiveDescendantsOf(subtree_root)) {
-    if (features.NeedsHasInvalidationForElement(element)) {
-      InvalidateAncestorsOrSiblingsAffectedByHas(
-          parent, SelfOrPreviousSibling(node_before_change));
+    if (needs_has_invalidation_for_inserted_subtree) {
+      InvalidateAncestorsOrSiblingsAffectedByHas(parent, previous_sibling);
+      return;
+    }
+  } else {
+    if (features.NeedsHasInvalidationForElement(inserted_element)) {
+      InvalidateAncestorsOrSiblingsAffectedByHas(parent, previous_sibling);
       return;
     }
   }
 
   if (features.NeedsHasInvalidationForPseudoStateChange()) {
-    InvalidateAncestorsOrSiblingsAffectedByHasForPseudoChange(
-        parent, SelfOrPreviousSibling(node_before_change));
+    InvalidateAncestorsOrSiblingsAffectedByHasForPseudoChange(parent,
+                                                              previous_sibling);
+  }
+}
+
+void StyleEngine::ScheduleInvalidationsForHasPseudoAffectedByRemoval(
+    Element* parent,
+    Node* node_before_change,
+    Element& removed_element) {
+  if (!RuntimeEnabledFeatures::CSSPseudoHasEnabled() || !parent)
+    return;
+
+  if (ShouldSkipInvalidationFor(*parent))
+    return;
+
+  const RuleFeatureSet& features = GetRuleFeatureSet();
+  if (!features.NeedsHasInvalidation())
+    return;
+
+  Element* previous_sibling = SelfOrPreviousSibling(node_before_change);
+
+  if (!InsertionOrRemovalPossiblyAffectHasStateOfAncestorsOrAncestorSiblings(
+          parent) &&
+      !InsertionOrRemovalPossiblyAffectHasStateOfPreviousSiblings(
+          previous_sibling)) {
+    // Removed element will not affect :has() state
+    return;
+  }
+
+  for (Element& element :
+       ElementTraversal::InclusiveDescendantsOf(removed_element)) {
+    if (features.NeedsHasInvalidationForElement(element)) {
+      InvalidateAncestorsOrSiblingsAffectedByHas(parent, previous_sibling);
+      return;
+    }
+  }
+
+  if (features.NeedsHasInvalidationForPseudoStateChange()) {
+    InvalidateAncestorsOrSiblingsAffectedByHasForPseudoChange(parent,
+                                                              previous_sibling);
   }
 }
 

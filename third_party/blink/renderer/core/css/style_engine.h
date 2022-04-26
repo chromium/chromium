@@ -397,12 +397,14 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                                         InvalidationScope =
                                             kInvalidateCurrentScope);
   void ScheduleCustomElementInvalidations(HashSet<AtomicString> tag_names);
-  void ElementInsertedOrRemoved(Element* parent,
-                                Node* node_before_change,
-                                Element& element);
-  void SubtreeInsertedOrRemoved(Element* parent,
-                                Node* node_before_change,
-                                Element& subtree_root);
+  void ScheduleInvalidationsForHasPseudoAffectedByInsertion(
+      Element* parent,
+      Node* node_before_change,
+      Element& element);
+  void ScheduleInvalidationsForHasPseudoAffectedByRemoval(
+      Element* parent,
+      Node* node_before_change,
+      Element& element);
 
   void NodeWillBeRemoved(Node&);
   void ChildrenRemoved(ContainerNode& parent);

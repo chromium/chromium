@@ -270,7 +270,6 @@ class HasArgumentSubtreeIterator {
   bool AtEnd() const { return !current_; }
   bool AtFixedDepth() const { return depth_ == context_.DepthLimit(); }
   bool UnderDepthLimit() const { return depth_ <= context_.DepthLimit(); }
-  bool AtSiblingOfHasScope() const { return depth_ == 0; }
   inline int Depth() const { return depth_; }
   inline Element* ScopeElement() const { return has_scope_element_; }
   inline const HasArgumentMatchContext& Context() const { return context_; }
@@ -283,30 +282,6 @@ class HasArgumentSubtreeIterator {
   int depth_{0};
   Element* current_{nullptr};
   Element* traversal_end_{nullptr};
-};
-
-// Iterator class to traverse siblings, ancestors and ancestor siblings of the
-// HasArgumentSubtreeIterator's current element until reach to the scope
-// element.
-// This iterator is used to set the 'AncestorsOrAncestorSiblingsAffectedByHas'
-// or 'SiblingsAffectedByHas' flags of those elements before returning early
-// from the ':has()' argument subtree traversal.
-class AffectedByHasIterator {
-  STACK_ALLOCATED();
-
- public:
-  explicit AffectedByHasIterator(HasArgumentSubtreeIterator&);
-  void operator++();
-  Element* CurrentElement() const { return current_; }
-  bool AtEnd() const;
-  bool AtSiblingOfHasScope() const { return depth_ == 0; }
-
- private:
-  inline bool NeedsTraverseSiblings();
-
-  const HasArgumentSubtreeIterator& iterator_at_matched_;
-  int depth_;
-  Element* current_;
 };
 
 }  // namespace blink

@@ -9,21 +9,118 @@ namespace blink {
 
 // Flags for :has() invalidation.
 //
-// - affected_by_non_subject_has :
-//     Indicates that this element may match a non-subject :has() selector,
-//     which means we need to schedule descendant and sibling invalidation
-//     sets on this element when the :has() state changes.
+// The flags can be categorized 3 types.
 //
-// - ancestors_or_ancestor_siblings_affected_by_has
-//     Indicates that this element possibly matches any of the :has()
-//     subselectors, and we need to traverse ancestors or siblings of ancestors
-//     to find the elements affected by subject or non-subject :has() state
-//     change.
+// 1. Flags for the elements that a :has() pseudo class have been tested on.
+//    (The elements that can be affected by a :has() pseudo class state change)
 //
-// - siblings_affected_by_has
-//     Indicates that this element possibly matches any of the :has()
-//     subselectors, and we need to traverse siblings to find the elements
-//     affected by subject or non-subject :has() state change.
+//    - AffectedBySubjectHas (defined at computed style extra flags)
+//        Indicates that this element may match a subject :has() selector, which
+//        means we need to invalidate the element when the :has() state changes.
+//    - AffectedByNonSubjectHas
+//        Indicates that this element may match a non-subject :has() selector,
+//        which means we need to schedule descendant and sibling invalidation
+//        sets on this element when the :has() state changes.
+//    - AffectedByPseudosInHas
+//        Indicates that this element can be affected by the state change of the
+//        pseudo class in the :has() argument selector. For every pseudo state
+//        change mutation, if an element doesn't have the flag set, the element
+//        will not be invalidated or scheduled on even if the element has the
+//        AffectedBySubjectHas or AffectedByNonSubjectHas flag set.
+//
+//    SelectorChecker::CheckPseudoClass() set the flags on an element when it
+//    checks a :has() pseudo class on the element.
+//
+// 2. Flags for the elements that a :has() argument selector can be tested on.
+//    (The elements that can affect a :has() pseudo class state)
+//
+//    - SiblingsAffectedByHas :
+//        Indicates that this element possibly matches any of the :has()
+//        subselectors, and we need to traverse siblings to find the elements
+//        affected by subject or non-subject :has() state change.
+//        The SiblingsAffectedByHas consists of two flags.
+//        - SiblingsAffectedByHasForSiblingRelationship
+//            Indicates that the `:has()` subselector is to check the sibling
+//            relationship. The subselector starts with a direct or indirect
+//            sibling combinator and it doesn't have any descendant or child
+//            combinator(s).
+//        - SiblingsAffectedByHasForSiblingDescendantRelationship
+//            Indicates that the `:has()` subselector is to check the sibling-
+//            descendant relationship. The subselector starts with a direct or
+//            indirect sibling combinator and it has descendant or child
+//            combinator(s).
+//    - AncestorsOrAncestorSiblingsAffectedByHas :
+//        Indicates that this element possibly matches any of the :has()
+//        subselectors, and we need to traverse ancestors or siblings of
+//        ancestors to find the elements affected by subject or non-subject
+//        :has() state change.
+//
+//    SelectorChecker::CheckPseudoHas() set the flags on some elements when it
+//    checks the :has() argument selectors. (StyleEngine also set the flags
+//    on the elements to be inserted if the inserted elements possibly affecting
+//    a :has() state change)
+//
+//    Before starting the subtree traversal for checking the :has() argument
+//    selector, the SelectorChecker::CheckPseudoHas() set the flags on the
+//    :has() scope element or its next siblings (The :has() scope element should
+//    have the flags set so that the StyleEngine can determine whether an
+//    inserted element is possibly affecting :has() state).
+//
+//    If the :has() argument selector starts with child or descendant
+//    combinator, the :has() scope element will have the
+//    AncestorsOrAncestorSiblingsAffectedByHas flag set. If the :has() argument
+//    starts with sibling combinators, the :has() scope element and its next
+//    siblings will have the SiblingsAffectedByHas flag set.
+//
+//    If the :has() argument selector checks descendant or sibling descendant
+//    relationship (child or descendant combinator exists in the argument), for
+//    every elements in the argument checking traversal, the
+//    AncestorsOrAncestorSiblingsAffectedByHas flag will be set so that the
+//    StyleEngine can traverse to ancestors for :has() invalidation.
+//
+//    StyleEngine tries to find the elements affected by :has() by traversing
+//    siblings or ancestors of a mutated element only when an element has the
+//    xxx-affected-by-has flags set. If an element doesn't have those flags set,
+//    then the StyleEngine will stop the traversal at the element.
+//
+//    HasArgumentSubtreeIterator traverses the subtree in the reversed DOM tree
+//    order to prevent duplicated subtree traversal caused by the multiple
+//    elements affected by :has(). If there is an argument matched element in
+//    the traversal, it returns early because the :has() pseudo class matches.
+//
+//    Due to the traversal order and the early returning, the :has()
+//    invalidation traversal can be broken when the :has() argument selector
+//    matches on an element because the ancestors or previous siblings of the
+//    element will not have the AncestorsOrAncestorSiblingsAffectedByHas flag
+//    set.
+//
+//    To prevent the problem, when the :has() argument matches on an element,
+//    the SelectorChecker::CheckPseudoHas traverses to siblings, ancestors or
+//    ancestor siblings of the argument matched element and set the
+//    AncestorsOrAncestorSiblingsAffectedByHas flag on the elements until reach
+//    to the scope element or scope sibling element.
+//
+// 3. Flags for the elements that the particular pseudo classes in the :has()
+//    argument selector can be tested on.
+//    (The elements that can affect a :has() pseudo class state by their own
+//     state change for the particular pseudo classes)
+//
+//    - AncestorsOrSiblingsAffectedByHoverInHas :
+//        Indicates that this element may matched a :hover inside :has().
+//    - AncestorsOrSiblingsAffectedByActiveInHas :
+//        Indicates that this element may matched a :active inside :has().
+//    - AncestorsOrSiblingsAffectedByFocusInHas :
+//        Indicates that this element may matched a :focus inside :has().
+//    - AncestorsOrSiblingsAffectedByFocusVisibleInHas :
+//        Indicates that this element may matched a :focus-visible inside
+//        :has().
+//
+//    SelectorChecker::CheckPseudoClass check the flags on an element when it
+//    checks the pseudo classes on the element.
+//
+// Similar to the DynamicRestyleFlags in the ContainerNode, these flags will
+// never be reset. (except the AffectedBySubjectHas flag which is defined at
+// the computed style extra flags)
 //
 // Example 1) Subject :has() (has only descendant relationship)
 //  <style> .a:has(.b) {...} </style>
@@ -56,8 +153,8 @@ namespace blink {
 //    <div class=a>  <!-- AffectedBySubjectHas (computed style extra flag) -->
 //      <div></div>
 //    </div>
-//    <div></div>    <!-- SiblingsAffectedByHas -->
-//    <div></div>    <!-- SiblingsAffectedByHas -->
+//    <div></div>    <!-- SiblingsAffectedByHasForSiblingRelationship -->
+//    <div></div>    <!-- SiblingsAffectedByHasForSiblingRelationship -->
 //  </div>
 //
 //
@@ -67,18 +164,26 @@ namespace blink {
 //    <div></div>
 //    <div class=a>  <!-- AffectedBySubjectHas (computed style extra flag) -->
 //    </div>
-//    <div>          <!-- SiblingsAffectedByHas -->
+//    <div>     <!-- SiblingsAffectedByHasForSiblingDescendantRelationship -->
 //      <div></div>  <!-- AncestorsOrAncestorSiblingsAffectedByHas -->
 //      <div></div>  <!-- AncestorsOrAncestorSiblingsAffectedByHas -->
 //    </div>
 //  </div>
+
+enum SiblingsAffectedByHasFlags : unsigned {
+  kFlagForSiblingRelationship = 1 << 0,
+  kFlagForSiblingDescendantRelationship = 1 << 1,
+
+  kNoSiblingsAffectedByHasFlags = 0,
+};
+
 struct HasInvalidationFlags {
   unsigned affected_by_non_subject_has : 1;
-  unsigned ancestors_or_ancestor_siblings_affected_by_has : 1;
-  unsigned siblings_affected_by_has : 1;
-
-  // Dynamic restyle flags for :has()
   unsigned affected_by_pseudos_in_has : 1;
+
+  unsigned siblings_affected_by_has : 2;
+  unsigned ancestors_or_ancestor_siblings_affected_by_has : 1;
+
   unsigned ancestors_or_siblings_affected_by_hover_in_has : 1;
   unsigned ancestors_or_siblings_affected_by_active_in_has : 1;
   unsigned ancestors_or_siblings_affected_by_focus_in_has : 1;
@@ -86,9 +191,9 @@ struct HasInvalidationFlags {
 
   HasInvalidationFlags()
       : affected_by_non_subject_has(false),
-        ancestors_or_ancestor_siblings_affected_by_has(false),
-        siblings_affected_by_has(false),
         affected_by_pseudos_in_has(false),
+        siblings_affected_by_has(0),
+        ancestors_or_ancestor_siblings_affected_by_has(false),
         ancestors_or_siblings_affected_by_hover_in_has(false),
         ancestors_or_siblings_affected_by_active_in_has(false),
         ancestors_or_siblings_affected_by_focus_in_has(false),

@@ -1557,12 +1557,8 @@ bool RuleFeatureSet::NeedsHasInvalidationForElement(Element& element) const {
     }
   }
 
-  for (const Attribute& attribute : element.Attributes()) {
-    if (NeedsHasInvalidationForAttribute(attribute.GetName()))
-      return true;
-  }
-
-  return NeedsHasInvalidationForTagName(element.LocalNameForSelectorMatching());
+  return !attributes_in_has_argument_.IsEmpty() ||
+         NeedsHasInvalidationForTagName(element.LocalNameForSelectorMatching());
 }
 
 bool RuleFeatureSet::NeedsHasInvalidationForPseudoClass(

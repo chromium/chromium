@@ -179,11 +179,14 @@ class ElementSuperRareData : public GarbageCollected<ElementSuperRareData> {
     has_invalidation_flags_.ancestors_or_ancestor_siblings_affected_by_has =
         true;
   }
-  bool SiblingsAffectedByHas() const {
+  unsigned GetSiblingsAffectedByHasFlags() const {
     return has_invalidation_flags_.siblings_affected_by_has;
   }
-  void SetSiblingsAffectedByHas() {
-    has_invalidation_flags_.siblings_affected_by_has = true;
+  bool HasSiblingsAffectedByHasFlags(unsigned flags) const {
+    return has_invalidation_flags_.siblings_affected_by_has & flags;
+  }
+  void SetSiblingsAffectedByHasFlags(unsigned flags) {
+    has_invalidation_flags_.siblings_affected_by_has |= flags;
   }
   bool AffectedByPseudoInHas() const {
     return has_invalidation_flags_.affected_by_pseudos_in_has;
@@ -427,8 +430,14 @@ class ElementRareData final : public NodeRareData {
   void SetAncestorsOrAncestorSiblingsAffectedByHas() {
     EnsureSuperRareData().SetAncestorsOrAncestorSiblingsAffectedByHas();
   }
-  bool SiblingsAffectedByHas() const {
-    return super_rare_data_ ? super_rare_data_->SiblingsAffectedByHas() : false;
+  unsigned GetSiblingsAffectedByHasFlags() const {
+    return super_rare_data_ ? super_rare_data_->GetSiblingsAffectedByHasFlags()
+                            : kNoSiblingsAffectedByHasFlags;
+  }
+  bool HasSiblingsAffectedByHasFlags(unsigned flags) const {
+    return super_rare_data_
+               ? super_rare_data_->HasSiblingsAffectedByHasFlags(flags)
+               : false;
   }
   bool AffectedByPseudoInHas() const {
     return super_rare_data_ ? super_rare_data_->AffectedByPseudoInHas() : false;
@@ -436,8 +445,8 @@ class ElementRareData final : public NodeRareData {
   void SetAffectedByPseudoInHas() {
     EnsureSuperRareData().SetAffectedByPseudoInHas();
   }
-  void SetSiblingsAffectedByHas() {
-    EnsureSuperRareData().SetSiblingsAffectedByHas();
+  void SetSiblingsAffectedByHasFlags(unsigned flags) {
+    EnsureSuperRareData().SetSiblingsAffectedByHasFlags(flags);
   }
   bool AncestorsOrSiblingsAffectedByHoverInHas() const {
     return super_rare_data_

@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/dom/element_data.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
+#include "third_party/blink/renderer/core/dom/has_invalidation_flags.h"
 #include "third_party/blink/renderer/core/dom/names_map.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -1080,8 +1081,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void SetAffectedByNonSubjectHas();
   bool AncestorsOrAncestorSiblingsAffectedByHas() const;
   void SetAncestorsOrAncestorSiblingsAffectedByHas();
-  bool SiblingsAffectedByHas() const;
-  void SetSiblingsAffectedByHas();
+  unsigned GetSiblingsAffectedByHasFlags() const;
+  bool HasSiblingsAffectedByHasFlags(unsigned flags) const;
+  void SetSiblingsAffectedByHasFlags(unsigned flags);
   bool AffectedByPseudoInHas() const;
   void SetAffectedByPseudoInHas();
   bool AncestorsOrSiblingsAffectedByHoverInHas() const;
