@@ -9,7 +9,7 @@
   }
 
   cr-button {
-    border-radius: 20px;
+    border: 0;
   }
 
   .sku-warning {
@@ -20,11 +20,6 @@
     font-weight: var(--shimless-regular-font-weight);
     line-height: var(--shimless-warning-line-height);
     max-width: 400px;
-  }
-
-  iron-icon {
-    height: 10px;
-    width: 50px;
   }
 
   cr-input {
@@ -47,6 +42,23 @@
   cr-input,
   .md-select {
     width: 336px;
+  }
+  
+  #skuIconContainer {
+    align-items: center;
+    display: inline-flex;
+    vertical-align: middle;
+  }
+
+  #infoIcon {
+    display: inline-block;
+    height: 18px;
+    margin-inline-start: 6px;
+    width: 18px;
+  }
+
+  #tooltipContent {
+    line-height: var(--shimless-instructions-line-height);
   }
 </style>
 
@@ -135,29 +147,31 @@
           </cr-button>
         </div>
       </div>
-      <div>
+      <div id="skuIconContainer">
         <label id="skuLabel" class="cr-form-field-label">
           [[i18n('confirmDeviceInfoSkuLabel')]]
         </label>
-        <div class="input-holder">
-          <select id="skuSelect" class="md-select"
-              on-change="onSelectedSkuChange_" aria-labelledby="skuLabel"
-              disabled="[[allButtonsDisabled]]">
-            <template is="dom-repeat" items="[[skus_]]" as="sku">
-              <option value="[[sku]]">
-                [[sku]]
-              </option>
-            </template>
-          </select>
-          <cr-button id="resetSku" on-click="onResetSkuButtonClicked_"
-              disabled="[[disableResetSku_]]">
-            [[i18n('confirmDeviceInfoResetButtonLabel')]]
-          </cr-button>
-        </div>
+        <iron-icon icon="shimless-icon:info" id="infoIcon"
+            class="cr-form-field-label">
+        </iron-icon>
+        <paper-tooltip for="infoIcon">
+          <div id="tooltipContent">[[i18n('confirmDeviceInfoSkuWarning')]]</div> 
+        </paper-tooltip>
       </div>
-      <div class="sku-warning">
-        <iron-icon icon="shimless-icon:warning"></iron-icon>
-        [[i18n('confirmDeviceInfoSkuWarning')]]
+      <div class="input-holder">
+        <select id="skuSelect" class="md-select"
+            on-change="onSelectedSkuChange_" aria-labelledby="skuLabel"
+            disabled="[[allButtonsDisabled]]">
+          <template is="dom-repeat" items="[[skus_]]" as="sku">
+            <option value="[[sku]]">
+              [[sku]]
+            </option>
+          </template>
+        </select>
+        <cr-button id="resetSku" on-click="onResetSkuButtonClicked_"
+            disabled="[[disableResetSku_]]">
+          [[i18n('confirmDeviceInfoResetButtonLabel')]]
+        </cr-button>
       </div>
     </div>
   </div>
