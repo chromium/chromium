@@ -2221,6 +2221,7 @@ interface FileSystemFileHandle : FileSystemHandle
     method constructor
     method createWritable
     method getFile
+    method move
 interface FileSystemHandle
     attribute @@toStringTag
     getter kind
