@@ -642,12 +642,20 @@ body.timer-10s #open-timer-panel {
   background-image: url(/images/camera_button_timer_off.svg);
 }
 
+body.scan #open-timer-panel {
+  display: none;
+}
+
 body.grid #open-grid-panel {
   background-image: url(/images/camera_button_grid_on.svg);
 }
 
 #open-grid-panel {
   background-image: url(/images/camera_button_grid_off.svg);
+}
+
+body.scan #open-grid-panel {
+  display: none;
 }
 
 body.mirror #open-mirror-panel {
@@ -658,7 +666,7 @@ body.mirror #open-mirror-panel {
   background-image: url(/images/camera_button_mirror_off.svg);
 }
 
-body:is(.scan) #open-mirror-panel:disabled {
+body.scan #open-mirror-panel:disabled {
   display: none;
 }
 
@@ -1238,9 +1246,9 @@ html[dir=rtl] .menu-header .icon {
   background-image: url(/images/settings_timer_duration.svg);
 }
 
-body.no-resolution-settings #settings-photo-aspect-ratio,
-body.no-resolution-settings #settings-photo-resolution,
-body.no-resolution-settings #settings-video-resolution {
+body.scan #settings-photo-aspect-ratio,
+body.scan #settings-photo-resolution,
+body.scan #settings-video-resolution {
   display: none;
 }
 

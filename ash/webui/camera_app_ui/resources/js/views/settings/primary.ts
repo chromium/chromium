@@ -110,6 +110,7 @@ export class PrimarySettings extends BaseSettings {
       this.photoAspectRatioSettings,
       this.videoResolutionSettings,
     ];
+
     cameraManager.registerCameraUI({
       onCameraUnavailable: () => {
         for (const setting of cameraSettings) {
@@ -126,7 +127,6 @@ export class PrimarySettings extends BaseSettings {
         if (devices === null) {
           return;
         }
-        state.set(state.State.NO_RESOLUTION_SETTINGS, false);
       },
     });
 

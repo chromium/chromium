@@ -40,7 +40,6 @@ export enum State {
   MIRROR = 'mirror',
   MODE_SWITCHING = 'mode-switching',
   MULTI_CAMERA = 'multi-camera',
-  NO_RESOLUTION_SETTINGS = 'no-resolution-settings',
   PLAYING_RESULT_VIDEO = 'playing-result-video',
   PRINT_PERFORMANCE_LOGS = 'print-performance-logs',
   RECORD_TYPE_GIF = 'record-type-gif',

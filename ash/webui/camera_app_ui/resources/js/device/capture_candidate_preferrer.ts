@@ -171,7 +171,12 @@ export class CaptureCandidatePreferrer {
     if (mode === Mode.VIDEO) {
       return this.getVideoCandidates(deviceId);
     } else {
-      return this.getPhotoCandidates(deviceId);
+      const candidates = this.getPhotoCandidates(deviceId);
+      if (mode === Mode.SCAN) {
+        candidates.sort(
+            (c1, c2) => (c2.resolution?.mp ?? 0) - (c1.resolution?.mp ?? 0));
+      }
+      return candidates;
     }
   }
 
