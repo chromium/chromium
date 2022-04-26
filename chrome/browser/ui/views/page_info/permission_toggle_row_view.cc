@@ -93,8 +93,9 @@ void PermissionToggleRowView::InitForUserSource(bool should_show_spacer_view) {
   auto toggle_button = std::make_unique<views::ToggleButton>(
       base::BindRepeating(&PermissionToggleRowView::OnToggleButtonPressed,
                           base::Unretained(this)));
-  toggle_button->SetPreferredSize({toggle_button->GetPreferredSize().width(),
-                                   row_view_->GetFirstLineHeight()});
+  toggle_button->SetPreferredSize(
+      gfx::Size(toggle_button->GetPreferredSize().width(),
+                row_view_->GetFirstLineHeight()));
   toggle_button->SetProperty(views::kMarginsKey,
                              gfx::Insets::VH(0, icon_label_spacing));
   toggle_button->SetAccessibleName(l10n_util::GetStringFUTF16(
@@ -125,7 +126,7 @@ void PermissionToggleRowView::InitForUserSource(bool should_show_spacer_view) {
     // permissions to align toggles.
     if (should_show_spacer_view) {
       auto spacer_view = std::make_unique<views::View>();
-      spacer_view->SetPreferredSize({icon_size, icon_size});
+      spacer_view->SetPreferredSize(gfx::Size(icon_size, icon_size));
       spacer_view_ = row_view_->AddControl(std::move(spacer_view));
     } else {
       toggle_button_->SetProperty(

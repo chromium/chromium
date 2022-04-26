@@ -71,12 +71,12 @@ class ButtonLayoutTest
   // Adds one or two child views of widths specified by the test parameters.
   void AddChildViews() {
     auto view = std::make_unique<views::View>();
-    view->SetPreferredSize({button_1_width_, kButtonHeight});
+    view->SetPreferredSize(gfx::Size(button_1_width_, kButtonHeight));
     host()->AddChildView(view.release());
 
     if (has_two_buttons()) {
       view = std::make_unique<views::View>();
-      view->SetPreferredSize({button_2_width_, kButtonHeight});
+      view->SetPreferredSize(gfx::Size(button_2_width_, kButtonHeight));
       host()->AddChildView(view.release());
     }
   }

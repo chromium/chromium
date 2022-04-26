@@ -1134,7 +1134,7 @@ TEST_F(ScrollViewTest, ClipHeightToScrollbarUsesWidth) {
 // Verifies ClipHeightTo() updates the ScrollView's preferred size.
 TEST_F(ScrollViewTest, ClipHeightToUpdatesPreferredSize) {
   auto contents_view = std::make_unique<View>();
-  contents_view->SetPreferredSize({100, 100});
+  contents_view->SetPreferredSize(gfx::Size(100, 100));
   scroll_view_->SetContents(std::move(contents_view));
   EXPECT_FALSE(scroll_view_->is_bounded());
 

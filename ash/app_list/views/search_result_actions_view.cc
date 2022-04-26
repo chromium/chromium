@@ -127,7 +127,7 @@ SearchResultImageButton::SearchResultImageButton(
       },
       this));
 
-  SetPreferredSize({GetButtonSize(), GetButtonSize()});
+  SetPreferredSize(gfx::Size(GetButtonSize(), GetButtonSize()));
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
 

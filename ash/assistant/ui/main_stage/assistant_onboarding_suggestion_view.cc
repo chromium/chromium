@@ -223,7 +223,7 @@ void AssistantOnboardingSuggestionView::InitLayout(
   // Icon.
   icon_ = AddChildView(std::make_unique<views::ImageView>());
   icon_->SetImageSize({kIconSizeDip, kIconSizeDip});
-  icon_->SetPreferredSize({kIconSizeDip, kIconSizeDip});
+  icon_->SetPreferredSize(gfx::Size(kIconSizeDip, kIconSizeDip));
 
   url_ = suggestion.icon_url;
   if (!assistant::util::IsResourceLinkType(url_, ResourceLinkType::kIcon) &&

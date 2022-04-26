@@ -43,7 +43,7 @@ DeviceChooserContentView::DeviceChooserContentView(
     : chooser_controller_(std::move(chooser_controller)) {
   chooser_controller_->set_view(this);
 
-  SetPreferredSize({402, 320});
+  SetPreferredSize(gfx::Size(402, 320));
 
   if (chooser_controller_->ShouldShowSelectAllCheckbox()) {
     SetLayoutManager(std::make_unique<views::BoxLayout>(

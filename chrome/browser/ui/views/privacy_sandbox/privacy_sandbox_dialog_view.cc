@@ -89,7 +89,7 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
   auto height = dialog_type == PrivacySandboxService::DialogType::kConsent
                     ? kDefaultConsentDialogHeight
                     : kDefaultNoticeDialogHeight;
-  web_view_->SetPreferredSize({width, height});
+  web_view_->SetPreferredSize(gfx::Size(width, height));
 
   PrivacySandboxDialogUI* web_ui = web_view_->GetWebContents()
                                        ->GetWebUI()

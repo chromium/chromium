@@ -188,7 +188,8 @@ std::unique_ptr<views::ImageView> CreateDropTargetIcon() {
   auto icon = std::make_unique<views::ImageView>();
   icon->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   icon->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
-  icon->SetPreferredSize({kHoldingSpaceIconSize, kHoldingSpaceIconSize});
+  icon->SetPreferredSize(
+      gfx::Size(kHoldingSpaceIconSize, kHoldingSpaceIconSize));
   icon->SetPaintToLayer();
   icon->layer()->SetFillsBoundsOpaquely(false);
   return icon;

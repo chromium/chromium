@@ -26,7 +26,7 @@ constexpr gfx::Insets kButtonPadding{0};
 ProjectorButton::ProjectorButton(views::Button::PressedCallback callback,
                                  const std::u16string& name)
     : ToggleImageButton(callback), name_(name) {
-  SetPreferredSize({kProjectorButtonSize, kProjectorButtonSize});
+  SetPreferredSize(gfx::Size(kProjectorButtonSize, kProjectorButtonSize));
   SetBorder(views::CreateEmptyBorder(kButtonPadding));
 
   // Rounded background.

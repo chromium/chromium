@@ -92,7 +92,7 @@ class OmniboxResultSelectionIndicator : public views::View {
 
   explicit OmniboxResultSelectionIndicator(OmniboxResultView* result_view)
       : result_view_(result_view) {
-    SetPreferredSize({kStrokeThickness, 0});
+    SetPreferredSize(gfx::Size(kStrokeThickness, 0));
   }
 
   // views::View:
@@ -542,7 +542,7 @@ void OmniboxResultView::UpdateRemoveSuggestionVisibility() {
 
 void OmniboxResultView::SetWidths() {
   keyword_view_->SetPreferredSize(
-      {width(), keyword_view_->CalculatePreferredSize().height()});
+      gfx::Size(width(), keyword_view_->CalculatePreferredSize().height()));
 
   InvalidateLayout();
 }

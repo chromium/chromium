@@ -377,9 +377,9 @@ MediaNotificationViewModernImpl::MediaNotificationViewModernImpl(
       auto labels_container = std::make_unique<views::View>();
 
       labels_container->SetPreferredSize(
-          {kLabelsContainerBaseSize.width() -
-               kNotificationControlsInsets.width(),
-           kLabelsContainerBaseSize.height()});
+          gfx::Size(kLabelsContainerBaseSize.width() -
+                        kNotificationControlsInsets.width(),
+                    kLabelsContainerBaseSize.height()));
 
       auto* labels_container_layout_manager =
           labels_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
