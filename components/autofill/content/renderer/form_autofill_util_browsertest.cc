@@ -245,7 +245,7 @@ TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
     FormFieldData::LabelSource label_source =
         FormFieldData::LabelSource::kUnknown;
     std::u16string label;
-    InferLabelForElementForTesting(form_target, &label, &label_source);
+    InferLabelForElementForTesting(form_target, label, label_source);
     EXPECT_EQ(test_case.expected_label, label);
   }
 }
@@ -287,7 +287,7 @@ TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
         FormFieldData::LabelSource::kUnknown;
     std::u16string label;
     EXPECT_TRUE(autofill::form_util::InferLabelForElementForTesting(
-        form_target, &label, &label_source));
+        form_target, label, label_source));
     EXPECT_EQ(kLabelSourceExpectedLabel, label);
     EXPECT_EQ(test_case.label_source, label_source);
   }

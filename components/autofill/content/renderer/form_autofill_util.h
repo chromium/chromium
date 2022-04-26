@@ -343,8 +343,8 @@ std::u16string FindChildTextWithIgnoreListForTesting(
     const blink::WebNode& node,
     const std::set<blink::WebNode>& divs_to_skip);
 bool InferLabelForElementForTesting(const blink::WebFormControlElement& element,
-                                    std::u16string* label,
-                                    FormFieldData::LabelSource* label_source);
+                                    std::u16string& label,
+                                    FormFieldData::LabelSource& label_source);
 
 // Returns the form element by unique renderer id. Returns the null element if
 // there is no form with the |form_renderer_id|.
