@@ -1202,6 +1202,8 @@ void View::Paint(const PaintInfo& parent_paint_info) {
 
 void View::SetBackground(std::unique_ptr<Background> b) {
   background_ = std::move(b);
+  if (background_ && GetWidget())
+    background_->OnViewThemeChanged(this);
   SchedulePaint();
 }
 

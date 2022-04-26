@@ -95,6 +95,10 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // Returns true when the label should be visible.
   virtual bool ShouldShowLabel() const;
 
+  // Call to have the icon label paint over a solid background when the label
+  // text is shown.
+  void SetPaintLabelOverSolidBackground(bool paint_label_over_solid_backround);
+
   void SetLabel(const std::u16string& label);
   void SetFontList(const gfx::FontList& font_list);
 
@@ -127,6 +131,9 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
   // Sets the label text and background colors.
   void UpdateLabelColors();
+
+  // Update the icon label's background if necessary.
+  void UpdateBackground();
 
   // Returns true when the separator should be visible.
   virtual bool ShouldShowSeparator() const;
@@ -258,6 +265,12 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // This is used to offset the label animation by the current width (e.g. the
   // icon). Set before animation begins in AnimateIn().
   int grow_animation_starting_width_ = 0;
+
+  // Controls whether the icon label should be painted over a solid background
+  // when the label text is showing.
+  // TODO(tluk): Remove the opt-in after UX has conslusively decided how icon
+  // labels should be painted when the label text is shown.
+  bool paint_label_over_solid_backround_ = false;
 
   // Virtual view, used for announcing changes to the state of this view. A
   // virtual child of this view.

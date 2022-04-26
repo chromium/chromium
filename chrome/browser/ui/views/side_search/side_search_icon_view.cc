@@ -37,6 +37,7 @@ SideSearchIconView::SideSearchIconView(
   SetLabel(l10n_util::GetStringUTF16(
       IDS_TOOLTIP_SIDE_SEARCH_TOOLBAR_BUTTON_NOT_ACTIVATED));
   SetUpForInOutAnimation();
+  SetPaintLabelOverSolidBackground(true);
 }
 
 SideSearchIconView::~SideSearchIconView() = default;
