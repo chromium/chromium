@@ -5,18 +5,25 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_REMOTE_FRAME_VIEW_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_REMOTE_FRAME_VIEW_H_
 
-#include "cc/paint/paint_canvas.h"
+#include "base/check.h"
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink.h"
-#include "third_party/blink/renderer/core/dom/document_lifecycle.h"
+#include "third_party/blink/renderer/core/frame/embedded_content_view.h"
 #include "third_party/blink/renderer/core/frame/frame_view.h"
 #include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
+#include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace cc {
 class PaintCanvas;
+}
+
+namespace gfx {
+class Vector2d;
 }
 
 namespace blink {
