@@ -2228,20 +2228,21 @@ void RasterDecoderImpl::DoCopySubTextureINTERNAL(
     canvas->drawImageRect(source_image, gfx::RectToSkRect(source_rect),
                           gfx::RectToSkRect(dest_rect), SkSamplingOptions(),
                           &paint, SkCanvas::kStrict_SrcRectConstraint);
-  }
 
-  if (auto end_state = source_scoped_access->TakeEndState()) {
-    gr_context()->setBackendTextureState(
-        source_scoped_access->promise_image_texture()->backendTexture(),
-        *end_state);
+    if (auto end_state = source_scoped_access->TakeEndState()) {
+      gr_context()->setBackendTextureState(
+          source_scoped_access->promise_image_texture()->backendTexture(),
+          *end_state);
+    }
+
+    if (!dest_shared_image->IsCleared()) {
+      dest_shared_image->SetClearedRect(new_cleared_rect);
+    }
   }
 
   FlushAndSubmitIfNecessary(dest_scoped_access->surface(),
                             dest_scoped_access->TakeEndState(),
                             std::move(end_semaphores));
-  if (!dest_shared_image->IsCleared()) {
-    dest_shared_image->SetClearedRect(new_cleared_rect);
-  }
 }
 
 bool RasterDecoderImpl::TryCopySubTextureINTERNALMemory(
