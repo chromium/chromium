@@ -84,12 +84,13 @@ void OutputPresenter::Image::EndWriteSkia(bool force_flush) {
   // The Flush now takes place in finishPaintCurrentBuffer on the CPU side.
   // check if end_semaphores is not empty then flush here
   DCHECK(scoped_skia_write_access_);
-  if (!end_semaphores_.empty() || force_flush) {
+  auto end_state = scoped_skia_write_access_->TakeEndState();
+  if (!end_semaphores_.empty() || end_state || force_flush) {
     GrFlushInfo flush_info = {
         .fNumSemaphores = end_semaphores_.size(),
         .fSignalSemaphores = end_semaphores_.data(),
     };
-    scoped_skia_write_access_->surface()->flush(flush_info);
+    scoped_skia_write_access_->surface()->flush(flush_info, end_state.get());
     auto* direct_context = scoped_skia_write_access_->surface()
                                ->recordingContext()
                                ->asDirectContext();

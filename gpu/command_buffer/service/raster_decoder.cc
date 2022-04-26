@@ -2476,10 +2476,10 @@ bool RasterDecoderImpl::DoWritePixelsINTERNALDirectTextureUpload(
       dest_scoped_access->promise_image_texture()->backendTexture(), &pixmap,
       /*levels=*/1, dest_shared_image->surface_origin(), nullptr, nullptr);
 
-  if (dest_scoped_access->TakeEndState())
+  if (auto end_state = dest_scoped_access->TakeEndState())
     gr_context()->setBackendTextureState(
         dest_scoped_access->promise_image_texture()->backendTexture(),
-        *dest_scoped_access->TakeEndState());
+        *end_state);
 
   FlushAndSubmitIfNecessary(nullptr, nullptr, std::move(end_semaphores));
   if (written && !dest_shared_image->IsCleared()) {
