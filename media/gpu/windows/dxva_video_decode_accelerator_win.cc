@@ -1552,10 +1552,11 @@ bool DXVAVideoDecodeAccelerator::InitDecoder(VideoCodecProfile profile) {
     RETURN_ON_HR_FAILURE(hr, "Failed to pass D3D manager to decoder", false);
   }
 
-  if (!gl::GLSurfaceEGL::IsPixelFormatFloatSupported())
+  if (!gl::GLSurfaceEGL::GetGLDisplayEGL()->IsPixelFormatFloatSupported())
     use_fp16_ = false;
 
-  EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
+  EGLDisplay egl_display =
+      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
 
   while (true) {
     std::vector<EGLint> config_attribs = {EGL_BUFFER_SIZE,  32,
@@ -1661,7 +1662,8 @@ bool DXVAVideoDecodeAccelerator::CheckDecoderDxvaSupport() {
   }
 
   use_keyed_mutex_ =
-      use_dx11_ && gl::GLSurfaceEGL::HasEGLExtension("EGL_ANGLE_keyed_mutex");
+      use_dx11_ && gl::GLSurfaceEGL::GetGLDisplayEGL()->HasEGLExtension(
+                       "EGL_ANGLE_keyed_mutex");
 
   if (!use_dx11_ ||
       !gl::g_driver_egl.ext.b_EGL_ANGLE_stream_producer_d3d_texture ||

@@ -59,7 +59,8 @@ void ChoosePlatformCustomAlphaAndBufferSize(EGLint* alpha_size,
                                             EGLint* buffer_size) {
   // If we're using ANGLE_NULL, we may not have a display, in which case we
   // can't use XVisualManager.
-  if (gl::GLSurfaceEGL::GetNativeDisplay() != EGL_DEFAULT_DISPLAY) {
+  if (gl::GLSurfaceEGL::GetGLDisplayEGL()->GetNativeDisplay() !=
+      EGL_DEFAULT_DISPLAY) {
     uint8_t depth;
     XVisualManager::GetInstance()->ChooseVisualForWindow(true, nullptr, &depth,
                                                          nullptr, nullptr);

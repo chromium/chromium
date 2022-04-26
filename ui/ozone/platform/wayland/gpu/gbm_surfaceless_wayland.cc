@@ -117,7 +117,7 @@ GbmSurfacelessWayland::GbmSurfacelessWayland(
       buffer_manager_(buffer_manager),
       widget_(widget),
       has_implicit_external_sync_(
-          HasEGLExtension("EGL_ARM_implicit_external_sync")),
+          GetGLDisplayEGL()->HasEGLExtension("EGL_ARM_implicit_external_sync")),
       solid_color_buffers_holder_(std::make_unique<SolidColorBufferHolder>()),
       weak_factory_(this) {
   buffer_manager_->RegisterSurface(widget_, this);

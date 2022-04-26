@@ -113,7 +113,7 @@ GLenum TargetGetterFromGLTarget(GLint gl_target) {
 GLImageIOSurfaceEGL::GLImageIOSurfaceEGL(const gfx::Size& size,
                                          unsigned internalformat)
     : GLImageIOSurface(size, internalformat),
-      display_(GLSurfaceEGL::GetHardwareDisplay()),
+      display_(GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay()),
       pbuffer_(EGL_NO_SURFACE),
       dummy_config_(nullptr),
       texture_target_(EGL_TEXTURE_RECTANGLE_ANGLE),

@@ -127,7 +127,7 @@ GpuFeatureStatus GetAndroidSurfaceControlFeatureStatus(
   // synchronization, this is based on Android native fence sync
   // support. If that is unavailable, i.e. on emulator or SwiftShader,
   // don't claim SurfaceControl support.
-  if (!gl::GLSurfaceEGL::IsAndroidNativeFenceSyncSupported())
+  if (!gl::GLSurfaceEGL::GetGLDisplayEGL()->IsAndroidNativeFenceSyncSupported())
     return kGpuFeatureStatusDisabled;
 
   DCHECK(gfx::SurfaceControl::IsSupported());

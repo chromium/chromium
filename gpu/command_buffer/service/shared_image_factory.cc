@@ -256,7 +256,8 @@ SharedImageFactory::SharedImageFactory(
     }
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
-    bool egl_ext_supported = gl::GLSurfaceEGL::HasEGLExtension("EGL_KHR_image");
+    bool egl_ext_supported =
+        gl::GLSurfaceEGL::GetGLDisplayEGL()->HasEGLExtension("EGL_KHR_image");
     bool glx_ext_supported = false;
 #if defined(USE_OZONE)
 #if BUILDFLAG(OZONE_PLATFORM_X11)

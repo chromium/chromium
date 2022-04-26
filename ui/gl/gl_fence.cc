@@ -98,7 +98,8 @@ void GLFence::Invalidate() {
 
 bool GLFence::IsGpuFenceSupported() {
 #if defined(USE_GL_FENCE_ANDROID_NATIVE_FENCE_SYNC)
-  return gl::GLSurfaceEGL::IsAndroidNativeFenceSyncSupported();
+  return gl::GLSurfaceEGL::GetGLDisplayEGL()
+      ->IsAndroidNativeFenceSyncSupported();
 #elif BUILDFLAG(IS_WIN)
   return gl::GLFenceWin::IsSupported();
 #else

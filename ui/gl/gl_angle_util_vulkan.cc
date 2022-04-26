@@ -12,13 +12,14 @@
 namespace gl {
 namespace {
 EGLDeviceEXT GetEGLDeviceFromANGLE() {
-  EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
+  EGLDisplay egl_display =
+      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
   if (egl_display == EGL_NO_DISPLAY) {
     LOG(ERROR) << "Failed to retrieve EGLDisplay";
     return nullptr;
   }
 
-  if (!gl::GLSurfaceEGL::IsEGLQueryDeviceSupported()) {
+  if (!gl::GLSurfaceEGL::GetGLDisplayEGL()->IsEGLQueryDeviceSupported()) {
     LOG(ERROR) << "EGL_EXT_device_query not supported";
     return nullptr;
   }

@@ -31,7 +31,8 @@ ScopedAppGLStateRestore::ScopedAppGLStateRestore(CallMode mode,
   g_current_instance = this;
 
   TRACE_EVENT0("android_webview", "AppGLStateSave");
-  if (gl::GLSurfaceEGL::IsANGLEExternalContextAndSurfaceSupported()) {
+  if (gl::GLSurfaceEGL::GetGLDisplayEGL()
+          ->IsANGLEExternalContextAndSurfaceSupported()) {
     impl_ = std::make_unique<internal::ScopedAppGLStateRestoreImplAngle>(
         mode, save_restore);
   } else {

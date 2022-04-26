@@ -141,7 +141,7 @@ scoped_refptr<GLSurface> CreateOffscreenGLSurfaceWithFormat(
 #if defined(USE_EGL)
     case kGLImplementationEGLGLES2:
     case kGLImplementationEGLANGLE:
-      if (GLSurfaceEGL::IsEGLSurfacelessContextSupported() &&
+      if (GLSurfaceEGL::GetGLDisplayEGL()->IsEGLSurfacelessContextSupported() &&
           size.width() == 0 && size.height() == 0) {
         return InitializeGLSurfaceWithFormat(new SurfacelessEGL(size), format);
       } else {

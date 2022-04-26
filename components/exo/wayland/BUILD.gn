@@ -722,6 +722,7 @@ if (ozone_platform_drm) {
       "//ui/gfx:gfx",
       "//ui/gfx/linux:drm",
       "//ui/gfx/linux:gbm",
+      "//ui/gl",
     ]
   }
 

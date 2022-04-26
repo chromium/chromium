@@ -317,7 +317,8 @@ void WaylandBufferManagerGpu::DestroyBuffer(uint32_t buffer_id) {
 GbmDevice* WaylandBufferManagerGpu::GetGbmDevice() {
   // Wayland won't support wl_drm or zwp_linux_dmabuf without this extension.
   if (!supports_dmabuf_ ||
-      (!gl::GLSurfaceEGL::HasEGLExtension("EGL_EXT_image_dma_buf_import") &&
+      (!gl::GLSurfaceEGL::GetGLDisplayEGL()->HasEGLExtension(
+           "EGL_EXT_image_dma_buf_import") &&
        !use_fake_gbm_device_for_test_)) {
     supports_dmabuf_ = false;
     return nullptr;

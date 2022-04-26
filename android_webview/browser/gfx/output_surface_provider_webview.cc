@@ -119,8 +119,8 @@ void OutputSurfaceProviderWebView::InitializeContext() {
   // If EGL supports EGL_ANGLE_external_context_and_surface, then we will create
   // an ANGLE context for the current native GL context.
   const bool is_angle =
-      !enable_vulkan_ &&
-      gl::GLSurfaceEGL::IsANGLEExternalContextAndSurfaceSupported();
+      !enable_vulkan_ && gl::GLSurfaceEGL::GetGLDisplayEGL()
+                             ->IsANGLEExternalContextAndSurfaceSupported();
 
   GLSurfaceContextPair real_context;
   if (enable_vulkan_) {

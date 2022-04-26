@@ -67,7 +67,8 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
 
   scoped_refptr<gl::GLSurface> CreateOffscreenGLSurface(
       const gfx::Size& size) override {
-    if (gl::GLSurfaceEGL::IsEGLSurfacelessContextSupported() &&
+    if (gl::GLSurfaceEGL::GetGLDisplayEGL()
+            ->IsEGLSurfacelessContextSupported() &&
         size.width() == 0 && size.height() == 0) {
       return InitializeGLSurface(new gl::SurfacelessEGL(size));
     } else {

@@ -128,7 +128,7 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
 
   // Always prefer to use EGL_KHR_no_config_context so that all surfaces and
   // contexts are compatible
-  if (!GLSurfaceEGL::IsEGLNoConfigContextSupported()) {
+  if (!GLSurfaceEGL::GetGLDisplayEGL()->IsEGLNoConfigContextSupported()) {
     config_ = compatible_surface->GetConfig();
     EGLint config_renderable_type = 0;
     if (!eglGetConfigAttrib(display_, config_, EGL_RENDERABLE_TYPE,
@@ -156,7 +156,8 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
 
   // EGL_KHR_create_context allows requesting both a major and minor context
   // version
-  if (GLSurfaceEGL::HasEGLExtension("EGL_KHR_create_context")) {
+  if (GLSurfaceEGL::GetGLDisplayEGL()->HasEGLExtension(
+          "EGL_KHR_create_context")) {
     context_attributes.push_back(EGL_CONTEXT_MAJOR_VERSION);
     context_attributes.push_back(context_client_major_version);
 
@@ -174,7 +175,8 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
 
   bool is_swangle = IsSoftwareGLImplementation(GetGLImplementationParts());
 
-  if (GLSurfaceEGL::IsCreateContextRobustnessSupported() || is_swangle) {
+  if (GLSurfaceEGL::GetGLDisplayEGL()->IsCreateContextRobustnessSupported() ||
+      is_swangle) {
     DVLOG(1) << "EGL_EXT_create_context_robustness supported.";
     context_attributes.push_back(EGL_CONTEXT_OPENGL_ROBUST_ACCESS_EXT);
     context_attributes.push_back(
@@ -184,7 +186,8 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
           EGL_CONTEXT_OPENGL_RESET_NOTIFICATION_STRATEGY_EXT);
       context_attributes.push_back(EGL_LOSE_CONTEXT_ON_RESET_EXT);
 
-      if (GLSurfaceEGL::IsRobustnessVideoMemoryPurgeSupported()) {
+      if (GLSurfaceEGL::GetGLDisplayEGL()
+              ->IsRobustnessVideoMemoryPurgeSupported()) {
         context_attributes.push_back(
             EGL_GENERATE_RESET_ON_VIDEO_MEMORY_PURGE_NV);
         context_attributes.push_back(EGL_TRUE);
@@ -202,7 +205,8 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
     return false;
   }
 
-  if (GLSurfaceEGL::IsCreateContextBindGeneratesResourceSupported()) {
+  if (GLSurfaceEGL::GetGLDisplayEGL()
+          ->IsCreateContextBindGeneratesResourceSupported()) {
     context_attributes.push_back(EGL_CONTEXT_BIND_GENERATES_RESOURCE_CHROMIUM);
     context_attributes.push_back(attribs.bind_generates_resource ? EGL_TRUE
                                                                  : EGL_FALSE);
@@ -210,7 +214,8 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
     DCHECK(attribs.bind_generates_resource);
   }
 
-  if (GLSurfaceEGL::IsCreateContextWebGLCompatabilitySupported()) {
+  if (GLSurfaceEGL::GetGLDisplayEGL()
+          ->IsCreateContextWebGLCompatabilitySupported()) {
     context_attributes.push_back(EGL_CONTEXT_WEBGL_COMPATIBILITY_ANGLE);
     context_attributes.push_back(
         attribs.webgl_compatibility_context ? EGL_TRUE : EGL_FALSE);
@@ -218,7 +223,7 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
     DCHECK(!attribs.webgl_compatibility_context);
   }
 
-  if (GLSurfaceEGL::IsEGLContextPrioritySupported()) {
+  if (GLSurfaceEGL::GetGLDisplayEGL()->IsEGLContextPrioritySupported()) {
     // Medium priority is the default, only set the attribute if
     // a different priority is requested.
     if (attribs.context_priority == ContextPriorityLow) {
@@ -232,7 +237,7 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
     }
   }
 
-  if (GLSurfaceEGL::IsDisplayTextureShareGroupSupported()) {
+  if (GLSurfaceEGL::GetGLDisplayEGL()->IsDisplayTextureShareGroupSupported()) {
     context_attributes.push_back(EGL_DISPLAY_TEXTURE_SHARE_GROUP_ANGLE);
     context_attributes.push_back(
         attribs.global_texture_share_group ? EGL_TRUE : EGL_FALSE);
@@ -240,7 +245,8 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
     DCHECK(!attribs.global_texture_share_group);
   }
 
-  if (GLSurfaceEGL::IsDisplaySemaphoreShareGroupSupported()) {
+  if (GLSurfaceEGL::GetGLDisplayEGL()
+          ->IsDisplaySemaphoreShareGroupSupported()) {
     context_attributes.push_back(EGL_DISPLAY_SEMAPHORE_SHARE_GROUP_ANGLE);
     context_attributes.push_back(
         attribs.global_semaphore_share_group ? EGL_TRUE : EGL_FALSE);
@@ -248,13 +254,14 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
     DCHECK(!attribs.global_semaphore_share_group);
   }
 
-  if (GLSurfaceEGL::IsCreateContextClientArraysSupported()) {
+  if (GLSurfaceEGL::GetGLDisplayEGL()->IsCreateContextClientArraysSupported()) {
     // Disable client arrays if the context supports it
     context_attributes.push_back(EGL_CONTEXT_CLIENT_ARRAYS_ENABLED_ANGLE);
     context_attributes.push_back(EGL_FALSE);
   }
 
-  if (GLSurfaceEGL::IsRobustResourceInitSupported() || is_swangle) {
+  if (GLSurfaceEGL::GetGLDisplayEGL()->IsRobustResourceInitSupported() ||
+      is_swangle) {
     context_attributes.push_back(EGL_ROBUST_RESOURCE_INITIALIZATION_ANGLE);
     context_attributes.push_back(
         (attribs.robust_resource_initialization || is_swangle) ? EGL_TRUE
@@ -263,7 +270,7 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
     DCHECK(!attribs.robust_resource_initialization);
   }
 
-  if (GLSurfaceEGL::HasEGLExtension(
+  if (GLSurfaceEGL::GetGLDisplayEGL()->HasEGLExtension(
           "EGL_ANGLE_create_context_backwards_compatible")) {
     // Request a specific context version. The Passthrough command decoder
     // relies on the returned context being the exact version it requested.
@@ -271,7 +278,7 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
     context_attributes.push_back(EGL_FALSE);
   }
 
-  if (GLSurfaceEGL::IsANGLEPowerPreferenceSupported()) {
+  if (GLSurfaceEGL::GetGLDisplayEGL()->IsANGLEPowerPreferenceSupported()) {
     GpuPreference pref = attribs.gpu_preference;
     pref = GLSurface::AdjustGpuPreference(pref);
     switch (pref) {
@@ -291,7 +298,8 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
     }
   }
 
-  if (GLSurfaceEGL::IsANGLEExternalContextAndSurfaceSupported()) {
+  if (GLSurfaceEGL::GetGLDisplayEGL()
+          ->IsANGLEExternalContextAndSurfaceSupported()) {
     if (attribs.angle_create_from_external_context) {
       context_attributes.push_back(EGL_EXTERNAL_CONTEXT_ANGLE);
       context_attributes.push_back(EGL_TRUE);
@@ -302,7 +310,8 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
     }
   }
 
-  if (GLSurfaceEGL::IsANGLEContextVirtualizationSupported()) {
+  if (GLSurfaceEGL::GetGLDisplayEGL()
+          ->IsANGLEContextVirtualizationSupported()) {
     context_attributes.push_back(EGL_CONTEXT_VIRTUALIZATION_GROUP_ANGLE);
     context_attributes.push_back(
         static_cast<EGLint>(attribs.angle_context_virtualization_group_number));
@@ -319,7 +328,8 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
   // If EGL_KHR_no_config_context is in use and context creation failed,
   // it might indicate that an unsupported ES version was requested. Try
   // falling back to a lower version.
-  if (!context_ && GLSurfaceEGL::IsEGLNoConfigContextSupported() &&
+  if (!context_ &&
+      GLSurfaceEGL::GetGLDisplayEGL()->IsEGLNoConfigContextSupported() &&
       eglGetError() == EGL_BAD_MATCH) {
     // Set up the list of versions to try: 3.1 -> 3.0 -> 2.0
     std::vector<std::pair<EGLint, EGLint>> candidate_versions;
@@ -378,7 +388,7 @@ YUVToRGBConverter* GLContextEGL::GetYUVToRGBConverter(
   // contexts aren't supported since support for surfaceless EGL contexts is
   // required in order to properly release YUVToRGBConverter objects (see
   // GLContextEGL::ReleaseYUVToRGBConvertersAndBackpressureFences())
-  if (!GLSurfaceEGL::IsEGLSurfacelessContextSupported()) {
+  if (!GLSurfaceEGL::GetGLDisplayEGL()->IsEGLSurfacelessContextSupported()) {
     return nullptr;
   }
 
@@ -392,7 +402,7 @@ YUVToRGBConverter* GLContextEGL::GetYUVToRGBConverter(
 }
 
 void GLContextEGL::SetVisibility(bool visibility) {
-  if (GLSurfaceEGL::IsANGLEPowerPreferenceSupported()) {
+  if (GLSurfaceEGL::GetGLDisplayEGL()->IsANGLEPowerPreferenceSupported()) {
     // It doesn't matter whether this context was explicitly allocated
     // with a power preference - ANGLE will take care of any default behavior.
     if (visibility) {
@@ -549,7 +559,7 @@ unsigned int GLContextEGL::CheckStickyGraphicsResetStatusImpl() {
   DCHECK(g_current_gl_driver);
   const ExtensionsGL& ext = g_current_gl_driver->ext;
   if ((graphics_reset_status_ == GL_NO_ERROR) &&
-      GLSurfaceEGL::IsCreateContextRobustnessSupported() &&
+      GLSurfaceEGL::GetGLDisplayEGL()->IsCreateContextRobustnessSupported() &&
       (ext.b_GL_KHR_robustness || ext.b_GL_EXT_robustness ||
        ext.b_GL_ARB_robustness)) {
     graphics_reset_status_ = glGetGraphicsResetStatusARB();

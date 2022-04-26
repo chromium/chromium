@@ -39,8 +39,9 @@ GLImageD3D::GLImageD3D(const gfx::Size& size,
 
 GLImageD3D::~GLImageD3D() {
   if (egl_image_ != EGL_NO_IMAGE_KHR) {
-    if (eglDestroyImageKHR(GLSurfaceEGL::GetHardwareDisplay(), egl_image_) ==
-        EGL_FALSE) {
+    if (eglDestroyImageKHR(
+            GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay(),
+            egl_image_) == EGL_FALSE) {
       DLOG(ERROR) << "Error destroying EGLImage: "
                   << ui::GetLastEGLErrorString();
     }
@@ -57,8 +58,8 @@ bool GLImageD3D::Initialize() {
                             static_cast<EGLint>(plane_index_),
                             EGL_NONE};
   egl_image_ =
-      eglCreateImageKHR(GLSurfaceEGL::GetHardwareDisplay(), EGL_NO_CONTEXT,
-                        EGL_D3D11_TEXTURE_ANGLE,
+      eglCreateImageKHR(GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay(),
+                        EGL_NO_CONTEXT, EGL_D3D11_TEXTURE_ANGLE,
                         static_cast<EGLClientBuffer>(texture_.Get()), attribs);
   if (egl_image_ == EGL_NO_IMAGE_KHR) {
     LOG(ERROR) << "Error creating EGLImage: " << ui::GetLastEGLErrorString();

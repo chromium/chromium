@@ -81,7 +81,7 @@ scoped_refptr<GLSurface> CreateOffscreenGLSurfaceWithFormat(
   TRACE_EVENT0("gpu", "gl::init::CreateOffscreenGLSurface");
   switch (GetGLImplementation()) {
     case kGLImplementationEGLANGLE:
-      if (GLSurfaceEGL::IsEGLSurfacelessContextSupported() &&
+      if (GLSurfaceEGL::GetGLDisplayEGL()->IsEGLSurfacelessContextSupported() &&
           size.width() == 0 && size.height() == 0) {
         return InitializeGLSurfaceWithFormat(new SurfacelessEGL(size), format);
       } else {

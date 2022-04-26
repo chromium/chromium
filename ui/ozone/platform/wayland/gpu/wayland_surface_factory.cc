@@ -104,7 +104,7 @@ scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateSurfacelessViewGLSurface(
 
 scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateOffscreenGLSurface(
     const gfx::Size& size) {
-  if (gl::GLSurfaceEGL::IsEGLSurfacelessContextSupported() &&
+  if (gl::GLSurfaceEGL::GetGLDisplayEGL()->IsEGLSurfacelessContextSupported() &&
       size.width() == 0 && size.height() == 0) {
     return gl::InitializeGLSurface(new gl::SurfacelessEGL(size));
   } else {

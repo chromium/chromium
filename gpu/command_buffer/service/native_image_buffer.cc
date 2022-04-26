@@ -56,7 +56,8 @@ class NativeImageBufferEGL : public NativeImageBuffer {
 
 scoped_refptr<NativeImageBufferEGL> NativeImageBufferEGL::Create(
     GLuint texture_id) {
-  EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
+  EGLDisplay egl_display =
+      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
   EGLContext egl_context = eglGetCurrentContext();
 
   DCHECK_NE(EGL_NO_CONTEXT, egl_context);

@@ -23,7 +23,7 @@ namespace gl {
 
 #if defined(USE_EGL)
 std::string DriverEGL::GetPlatformExtensions() {
-  EGLDisplay display = GLSurfaceEGL::GetHardwareDisplay();
+  EGLDisplay display = GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
   if (display == EGL_NO_DISPLAY)
     return "";
   const char* str = eglQueryString(display, EGL_EXTENSIONS);

@@ -17,13 +17,14 @@ namespace gl {
 void* QueryDeviceObjectFromANGLE(int object_type) {
   TRACE_EVENT0("gpu", "QueryDeviceObjectFromANGLE");
 
-  EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
+  EGLDisplay egl_display =
+      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
   if (egl_display == EGL_NO_DISPLAY) {
     DVLOG(1) << "Failed to retrieve EGLDisplay";
     return nullptr;
   }
 
-  if (!gl::GLSurfaceEGL::IsEGLQueryDeviceSupported()) {
+  if (!gl::GLSurfaceEGL::GetGLDisplayEGL()->IsEGLQueryDeviceSupported()) {
     DVLOG(1) << "EGL_EXT_device_query not supported";
     return nullptr;
   }

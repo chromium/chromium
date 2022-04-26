@@ -47,7 +47,8 @@ std::unique_ptr<CompositorGpuThread> CompositorGpuThread::Create(
   // currently always enables this extension, we are adding DCHECK() to ensure
   // that instead of enabling/disabling DrDc based on the extension.
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE)
-    DCHECK(gl::GLSurfaceEGL::IsANGLEContextVirtualizationSupported());
+    DCHECK(gl::GLSurfaceEGL::GetGLDisplayEGL()
+               ->IsANGLEContextVirtualizationSupported());
 #endif
 
   scoped_refptr<VulkanContextProvider> vulkan_context_provider;

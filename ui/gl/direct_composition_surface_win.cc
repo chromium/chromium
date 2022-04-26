@@ -427,7 +427,7 @@ void DirectCompositionSurfaceWin::InitializeOneOff() {
 
   // EGL_KHR_no_config_context surface compatibility is required to be able to
   // MakeCurrent with the default pbuffer surface.
-  if (!GLSurfaceEGL::IsEGLNoConfigContextSupported()) {
+  if (!GLSurfaceEGL::GetGLDisplayEGL()->IsEGLNoConfigContextSupported()) {
     DLOG(ERROR) << "EGL_KHR_no_config_context not supported";
     return;
   }

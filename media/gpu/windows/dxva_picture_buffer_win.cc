@@ -65,7 +65,8 @@ class GLImagePbuffer : public DummyGLImage {
 
  private:
   ~GLImagePbuffer() override {
-    EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
+    EGLDisplay egl_display =
+        gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
 
     eglReleaseTexImage(egl_display, surface_, EGL_BACK_BUFFER);
 
@@ -171,7 +172,8 @@ bool PbufferPictureBuffer::Initialize(const DXVAVideoDecodeAccelerator& decoder,
   RETURN_ON_FAILURE(!picture_buffer_.service_texture_ids().empty(),
                     "No service texture ids provided", false);
 
-  EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
+  EGLDisplay egl_display =
+      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
   EGLint use_rgb = 1;
   eglGetConfigAttrib(egl_display, egl_config, EGL_BIND_TO_TEXTURE_RGB,
                      &use_rgb);
@@ -368,7 +370,8 @@ bool PbufferPictureBuffer::CopySurfaceComplete(
     RETURN_ON_FAILURE(result == S_OK, "Could not acquire sync mutex", false);
   }
 
-  EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
+  EGLDisplay egl_display =
+      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
   eglBindTexImage(egl_display, decoding_surface_, EGL_BACK_BUFFER);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -398,7 +401,8 @@ PbufferPictureBuffer::~PbufferPictureBuffer() {
 bool PbufferPictureBuffer::ReusePictureBuffer() {
   DCHECK_NE(UNUSED, state_);
   DCHECK(decoding_surface_);
-  EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
+  EGLDisplay egl_display =
+      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
   eglReleaseTexImage(egl_display, decoding_surface_, EGL_BACK_BUFFER);
 
   decoder_surface_.Reset();
@@ -423,7 +427,8 @@ bool EGLStreamPictureBuffer::Initialize() {
   RETURN_ON_FAILURE(picture_buffer_.service_texture_ids().size() >= 2,
                     "Not enough texture ids provided", false);
 
-  EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
+  EGLDisplay egl_display =
+      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
   const EGLint stream_attributes[] = {
       EGL_CONSUMER_LATENCY_USEC_KHR,
       0,
@@ -468,7 +473,8 @@ bool EGLStreamPictureBuffer::Initialize() {
 
 bool EGLStreamPictureBuffer::ReusePictureBuffer() {
   DCHECK_NE(UNUSED, state_);
-  EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
+  EGLDisplay egl_display =
+      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
 
   if (stream_) {
     EGLBoolean result = eglStreamConsumerReleaseKHR(egl_display, stream_);
@@ -491,7 +497,8 @@ bool EGLStreamPictureBuffer::BindSampleToTexture(
   shared_images_.resize(picture_buffer_.service_texture_ids().size());
 
   current_d3d_sample_ = sample;
-  EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
+  EGLDisplay egl_display =
+      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
 
   Microsoft::WRL::ComPtr<IMFMediaBuffer> output_buffer;
   HRESULT hr = current_d3d_sample_->GetBufferByIndex(0, &output_buffer);
@@ -547,7 +554,8 @@ bool EGLStreamDelayedCopyPictureBuffer::Initialize(
   RETURN_ON_FAILURE(picture_buffer_.service_texture_ids().size() >= 2,
                     "Not enough texture ids provided", false);
 
-  EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
+  EGLDisplay egl_display =
+      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
   const EGLint stream_attributes[] = {
       EGL_CONSUMER_LATENCY_USEC_KHR,
       0,
@@ -662,7 +670,8 @@ bool EGLStreamCopyPictureBuffer::Initialize(
   RETURN_ON_FAILURE(picture_buffer_.service_texture_ids().size() >= 2,
                     "Not enough texture ids provided", false);
 
-  EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
+  EGLDisplay egl_display =
+      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
   const EGLint stream_attributes[] = {
       EGL_CONSUMER_LATENCY_USEC_KHR,
       0,
@@ -784,7 +793,8 @@ bool EGLStreamCopyPictureBuffer::CopySurfaceComplete(
       EGL_D3D_TEXTURE_SUBRESOURCE_ID_ANGLE, 0, EGL_NONE,
   };
 
-  EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
+  EGLDisplay egl_display =
+      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
 
   EGLBoolean result = eglStreamPostD3DTextureANGLE(
       egl_display, stream_, static_cast<void*>(angle_copy_texture_.Get()),
@@ -803,7 +813,8 @@ bool EGLStreamCopyPictureBuffer::CopySurfaceComplete(
 
 bool EGLStreamCopyPictureBuffer::ReusePictureBuffer() {
   DCHECK_NE(UNUSED, state_);
-  EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
+  EGLDisplay egl_display =
+      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
 
   if (state_ == IN_CLIENT) {
     HRESULT hr = egl_keyed_mutex_->ReleaseSync(++keyed_mutex_value_);
