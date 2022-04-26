@@ -384,9 +384,11 @@ class KioskAppsButton : public views::MenuButton,
 
   void ConfigureKioskCallbacks(
       const base::RepeatingCallback<void(const KioskAppMenuEntry&)>& launch_app,
-      const base::RepeatingClosure& on_show_menu) {
+      const base::RepeatingClosure& on_show_menu,
+      const base::RepeatingClosure& on_close_menu) {
     launch_app_callback_ = launch_app;
     on_show_menu_ = on_show_menu;
+    on_close_menu_ = on_close_menu;
   }
 
   bool HasApps() const { return !kiosk_apps_.empty(); }
@@ -441,6 +443,8 @@ class KioskAppsButton : public views::MenuButton,
 
   void OnMenuWillShow(SimpleMenuModel* source) override { on_show_menu_.Run(); }
 
+  void MenuClosed(SimpleMenuModel* source) override { on_close_menu_.Run(); }
+
   bool IsCommandIdChecked(int command_id) const override { return false; }
 
   bool IsCommandIdEnabled(int command_id) const override { return true; }
@@ -455,6 +459,7 @@ class KioskAppsButton : public views::MenuButton,
  private:
   base::RepeatingCallback<void(const KioskAppMenuEntry&)> launch_app_callback_;
   base::RepeatingClosure on_show_menu_;
+  base::RepeatingClosure on_close_menu_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
   std::vector<KioskAppMenuEntry> kiosk_apps_;
 
@@ -727,6 +732,11 @@ void LoginShelfView::OnKioskMenuShown(
   on_kiosk_menu_shown.Run();
 }
 
+void LoginShelfView::OnKioskMenuclosed() {
+  if (kiosk_instruction_bubble_)
+    kiosk_instruction_bubble_->GetWidget()->Show();
+}
+
 void LoginShelfView::SetKioskApps(
     const std::vector<KioskAppMenuEntry>& kiosk_apps) {
   kiosk_apps_button_->SetApps(kiosk_apps);
@@ -740,7 +750,13 @@ void LoginShelfView::SetKioskApps(
 void LoginShelfView::ConfigureKioskCallbacks(
     const base::RepeatingCallback<void(const KioskAppMenuEntry&)>& launch_app,
     const base::RepeatingClosure& on_show_menu) {
-  kiosk_apps_button_->ConfigureKioskCallbacks(launch_app, on_show_menu);
+  const auto show_kiosk_menu_callback =
+      base::BindRepeating(&LoginShelfView::OnKioskMenuShown,
+                          weak_ptr_factory_.GetWeakPtr(), on_show_menu);
+  const auto close_kiosk_menu_callback = base::BindRepeating(
+      &LoginShelfView::OnKioskMenuclosed, weak_ptr_factory_.GetWeakPtr());
+  kiosk_apps_button_->ConfigureKioskCallbacks(
+      launch_app, show_kiosk_menu_callback, close_kiosk_menu_callback);
 }
 
 void LoginShelfView::SetLoginDialogState(OobeDialogState state) {

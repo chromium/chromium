@@ -218,6 +218,7 @@ class ASH_EXPORT LoginShelfView : public views::View,
 
   // Helper function which calls on_kiosk_menu_shown when kiosk menu is shown.
   void OnKioskMenuShown(const base::RepeatingClosure& on_kiosk_menu_shown);
+  void OnKioskMenuclosed();
 
   OobeDialogState dialog_state_ = OobeDialogState::HIDDEN;
   bool allow_guest_ = true;
