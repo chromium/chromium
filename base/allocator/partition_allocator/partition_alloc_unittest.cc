@@ -24,6 +24,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/rand_util.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_cookie.h"
@@ -35,7 +36,6 @@
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/callback.h"
-#include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
@@ -158,7 +158,9 @@ void AllocateRandomly(
     int flags) {
   std::vector<void*> allocations(count, nullptr);
   for (size_t i = 0; i < count; ++i) {
-    const size_t size = kTestSizes[base::RandGenerator(kTestSizesCount)];
+    const size_t size =
+        kTestSizes[partition_alloc::internal::base::RandGenerator(
+            kTestSizesCount)];
     allocations[i] = root->AllocWithFlags(flags, size, nullptr);
     EXPECT_NE(nullptr, allocations[i]) << " size: " << size << " i: " << i;
   }

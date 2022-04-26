@@ -9,10 +9,10 @@
 #include <atomic>
 #include <vector>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/rand_util.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/starscan/metadata_allocator.h"
 #include "base/compiler_specific.h"
-#include "base/rand_util.h"
 
 namespace partition_alloc::internal {
 
@@ -38,8 +38,8 @@ class RacefulWorklist {
     explicit RandomizedView(RacefulWorklist& worklist)
         : worklist_(worklist), offset_(0) {
       if (worklist.data_.size() > 0)
-        offset_ =
-            static_cast<size_t>(base::RandGenerator(worklist.data_.size()));
+        offset_ = static_cast<size_t>(
+            internal::base::RandGenerator(worklist.data_.size()));
     }
 
     RandomizedView(const RandomizedView&) = delete;

@@ -6,8 +6,8 @@
 
 #include <type_traits>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/rand_util.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
-#include "base/rand_util.h"
 
 namespace partition_alloc {
 
@@ -29,15 +29,15 @@ class RandomGenerator {
   ::partition_alloc::internal::Lock lock_ = {};
   bool initialized_ GUARDED_BY(lock_) = false;
   union {
-    base::InsecureRandomGenerator instance_ GUARDED_BY(lock_);
-    uint8_t instance_buffer_[sizeof(base::InsecureRandomGenerator)] GUARDED_BY(
-        lock_) = {};
+    internal::base::InsecureRandomGenerator instance_ GUARDED_BY(lock_);
+    uint8_t instance_buffer_[sizeof(
+        internal::base::InsecureRandomGenerator)] GUARDED_BY(lock_) = {};
   };
 
-  base::InsecureRandomGenerator* GetGenerator()
+  internal::base::InsecureRandomGenerator* GetGenerator()
       EXCLUSIVE_LOCKS_REQUIRED(lock_) {
     if (!initialized_) {
-      new (instance_buffer_) base::InsecureRandomGenerator();
+      new (instance_buffer_) internal::base::InsecureRandomGenerator();
       initialized_ = true;
     }
     return &instance_;

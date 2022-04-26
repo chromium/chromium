@@ -41,7 +41,6 @@ constexpr TimeDelta Milliseconds(T n);
 template <typename T>
 constexpr TimeDelta Microseconds(T n);
 
-BASE_EXPORT uint64_t RandGenerator(uint64_t range);
 BASE_EXPORT std::string StringPrintf(const char* format, ...);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -105,7 +104,6 @@ using ::base::NoDestructor;
 using ::base::PlatformThread;
 using ::base::PlatformThreadHandle;
 using ::base::PlatformThreadRef;
-using ::base::RandGenerator;
 using ::base::Seconds;
 using ::base::StringPrintf;
 using ::base::TimeDelta;

@@ -31,7 +31,6 @@ include_rules = [
     "+base/no_destructor.h",
     "+base/posix/eintr_wrapper.h",
     "+base/process/memory.h",
-    "+base/rand_util.h",
     "+base/strings/stringprintf.h",
     "+base/system/sys_info.h",
     "+base/test/bind.h",
@@ -50,4 +49,5 @@ include_rules = [
     "+testing/gmock/include/gmock/gmock.h",
     "+testing/gtest/include/gtest/gtest.h",
     "+testing/perf/perf_result_reporter.h",
+    "+third_party/lss/linux_syscall_support.h",
 ]
