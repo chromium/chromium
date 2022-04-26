@@ -6,7 +6,9 @@
 group("wpt_tests_isolate") {
   testonly = true
   data = [
+    # Include the test runner.
     "//testing/scripts/wpt_common.py",
+    "//testing/scripts/run_wpt_tests.py",
 
     # WPT tooling
     "//third_party/wpt_tools/",
@@ -51,11 +53,6 @@ group("wpt_tests_isolate") {
   ]
   if (is_win) {
     data_deps += [ "//build/win:copy_cdb_to_output" ]
-  }
-  if (is_android) {
-    data += [ "//testing/scripts/wpt_android_lib.py" ]
-  } else {
-    data += [ "//testing/scripts/run_wpt_tests.py" ]
   }
 }
 

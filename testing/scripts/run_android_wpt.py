@@ -26,25 +26,11 @@ Here's the mapping [isolate script flag] : [wpt flag]
 # run_wpt_tests.py script.
 
 import json
-import os
 import sys
 
 import common
 
-from wpt_android_lib import WPTAndroidAdapter
-
-SRC_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
-
-BUILD_ANDROID = os.path.join(SRC_DIR, 'build', 'android')
-BLINK_TOOLS_DIR = os.path.join(
-    SRC_DIR, 'third_party', 'blink', 'tools')
-
-if BLINK_TOOLS_DIR not in sys.path:
-  sys.path.append(BLINK_TOOLS_DIR)
-
-if BUILD_ANDROID not in sys.path:
-  sys.path.append(BUILD_ANDROID)
+from run_wpt_tests import WPTAdapter
 
 
 # This is not really a "script test" so does not need to manually add
@@ -54,7 +40,7 @@ def main_compile_targets(args):
 
 
 def main():
-    adapter = WPTAndroidAdapter()
+    adapter = WPTAdapter()
     return adapter.run_test()
 
 

@@ -4,6 +4,7 @@
 
 import argparse
 import glob
+import logging
 import os
 import sys
 
@@ -26,6 +27,8 @@ if TYP_DIR not in sys.path:
 from blinkpy.common.host import Host
 from blinkpy.common.path_finder import PathFinder
 
+logger = logging.getLogger(__name__)
+
 
 class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
     """The base class for script adapters that use wptrunner to execute web
@@ -38,6 +41,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         self._parser = self._override_options(self._parser)
         if not host:
             host = Host()
+        self.host = host
         self.fs = host.filesystem
         self.path_finder = PathFinder(self.fs)
         self.port = host.port_factory.get()
@@ -163,7 +167,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         self.options.isolated_script_test_output = default_value
 
     def generate_test_output_args(self, output):
-        return ['--log-chromium', output]
+        return ['--log-chromium=%s' % output]
 
     def _resolve_tests_from_isolate_filter(self, test_filter):
         """Resolve an isolated script-style filter string into lists of tests.
@@ -258,14 +262,13 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
 
     @property
     def rest_args(self):
-        wpt_args = super(BaseWptScriptAdapter, self).rest_args
+        unknown_args = super(BaseWptScriptAdapter, self).rest_args
 
         rest_args = list(self._wpt_run_args)
         rest_args.extend([
             # By default, wpt will treat unexpected passes as errors, so we
             # disable that to be consistent with Chromium CI.
             '--no-fail-on-unexpected-pass',
-            self.wpt_product_name(),
             '--no-pause-after-test',
             '--no-capture-stdio',
             '--no-manifest-download',
@@ -291,7 +294,22 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
                 '--webdriver-arg="--log-path=-"',
             ])
 
-        rest_args.extend(wpt_args)
+        rest_args.append(self.wpt_product_name())
+        # We pass through unknown args as late as possible so that they can
+        # override earlier options. It also allows users to pass test names as
+        # positional args, which must not have option strings between them.
+        for unknown_arg in unknown_args:
+            # crbug/1274933#c14: Some developers had used the end-of-options
+            # marker '--' to pass through arguments to wptrunner.
+            # crrev.com/c/3573284 makes this no longer necessary.
+            if unknown_arg == '--':
+                logger.warning(
+                    'Unrecognized options will automatically fall through '
+                    'to wptrunner.')
+                logger.warning(
+                    "There is no need to use the end-of-options marker '--'.")
+            else:
+                rest_args.append(unknown_arg)
         return rest_args
 
     def do_post_test_run_tasks(self):
@@ -301,7 +319,6 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         command = [
             self.select_python_executable(),
             os.path.join(BLINK_TOOLS_DIR, 'wpt_process_results.py'),
-            '--verbose',
             '--target',
             self.options.target,
             '--web-tests-dir',
@@ -312,6 +329,8 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             '--wpt-results',
             self.wpt_output,
         ]
+        if self.options.verbose:
+            command.append('--verbose')
         if self.wptreport:
             command.extend(['--wpt-report', self.wptreport])
         common.run_command(command)

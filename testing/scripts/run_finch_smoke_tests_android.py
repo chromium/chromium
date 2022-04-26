@@ -69,7 +69,7 @@ from py_utils.tempfile_ext import NamedTemporaryDirectory
 from skia_gold_infra.finch_skia_gold_properties import FinchSkiaGoldProperties
 from skia_gold_infra import finch_skia_gold_session_manager
 from skia_gold_infra import finch_skia_gold_utils
-from wpt_android_lib import add_emulator_args, get_device
+from run_wpt_tests import add_emulator_args, get_device
 
 LOGCAT_FILTERS = [
   'chromium:v',
@@ -229,6 +229,11 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
                         default='stable',
                         choices=['dev', 'canary', 'beta', 'stable'],
                         help='Finch seed release channel')
+    parser.add_argument('-j',
+                        '--processes',
+                        type=lambda processes: max(0, int(processes)),
+                        default=1,
+                        help='Number of emulator to run.')
     # Add arguments used by Skia Gold.
     FinchSkiaGoldProperties.AddCommandLineArguments(parser)
     add_emulator_args(parser)
