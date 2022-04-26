@@ -10142,5 +10142,150 @@ class LayerTreeHostTestNoCommitDeadlock : public LayerTreeHostTest {
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestNoCommitDeadlock);
+
+// In real site, problem happened like this
+// 1. commit
+// 2. tiling is delayed, so NotifyReadyToActivate is not triggered
+// 3. Draw is called and NotifyReadyToActivate is triggered
+//    during PrepareDraw() by TileManager's CheckForCompletedTask().
+// 4. pending_tree()::UpdateDrawProperties() is called after PrepareDraw(),
+//    and tiling is recreated if transform is changed
+// 5. Activation happen right after the Draw
+//    So tiling with empty tiles will be activated to active tree.
+class LayerTreeHostTestDelayRecreateTiling
+    : public LayerTreeHostTestWithHelper {
+ public:
+  LayerTreeHostTestDelayRecreateTiling() {}
+
+  void SetupTree() override {
+    client_.set_fill_with_nonsolid_color(true);
+    scoped_refptr<FakePictureLayer> root_layer =
+        FakePictureLayer::Create(&client_);
+    root_layer->SetBounds(gfx::Size(150, 150));
+    root_layer->SetIsDrawable(true);
+
+    layer_on_main_ =
+        CreateAndAddFakePictureLayer(gfx::Size(30, 30), root_layer.get());
+
+    // initial transform to force transform node
+    gfx::Transform transform;
+    transform.Scale(2.0f, 1.0f);
+    layer_on_main_->SetTransform(transform);
+
+    layer_tree_host()->SetRootLayer(root_layer);
+
+    LayerTreeHostTest::SetupTree();
+    client_.set_bounds(root_layer->bounds());
+
+    layer_id_ = layer_on_main_->id();
+  }
+
+  void WillCommit(const CommitState&) override {
+    TransformTree& transform_tree =
+        layer_tree_host()->property_trees()->transform_tree_mutable();
+    TransformNode* node =
+        transform_tree.Node(layer_on_main_->transform_tree_index());
+
+    gfx::Transform transform;
+    transform.Scale(2.0f, 1.0f);
+    transform.Translate(0.0f, 0.8f);
+
+    switch (layer_tree_host()->SourceFrameNumber()) {
+      case 1:
+        // in frame1, translation changed and animation start
+        transform_tree.OnTransformAnimated(layer_on_main_->element_id(),
+                                           transform);
+        node->has_potential_animation = true;
+        break;
+      case 3:
+        // animation finished
+        node->has_potential_animation = false;
+        transform_tree.set_needs_update(true);
+        break;
+    }
+  }
+
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
+    FakePictureLayerImpl* layer_impl = static_cast<FakePictureLayerImpl*>(
+        host_impl->pending_tree()->LayerById(layer_id_));
+
+    TransformTree& transform_tree =
+        host_impl->pending_tree()->property_trees()->transform_tree_mutable();
+    TransformNode* node =
+        transform_tree.Node(layer_impl->transform_tree_index());
+
+    if (host_impl->pending_tree()->source_frame_number() == 2) {
+      // delay Activation for this pending tree
+      host_impl->BlockNotifyReadyToActivateForTesting(true);
+
+      // to reproduce problem, conditions to recreate tiling should be changed
+      // after commitcomplete
+      // e.g., transform change, animation status change
+      // commitcomplete -> beginimpl -> draw (pending's updatedrawproperties)
+      // in beginimpl, scroll can be handled, so transform can be changed
+      // in draw, UpdateAnimationState can change animation status
+      node->has_potential_animation = false;
+      transform_tree.set_needs_update(true);
+      host_impl->pending_tree()->set_needs_update_draw_properties();
+
+      // to make sure Draw happen
+      host_impl->SetNeedsRedraw();
+    }
+  }
+
+  DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
+                                   LayerTreeHostImpl::FrameData* frame_data,
+                                   DrawResult draw_result) override {
+    if (host_impl->pending_tree() &&
+        host_impl->pending_tree()->source_frame_number() == 2) {
+      host_impl->BlockNotifyReadyToActivateForTesting(false, false);
+      // BlockNotifyReadyToActivateForTesting(false) call NotifyReadyToActivate,
+      // but NotifyReadyToActivate should be called directly instead of PostTask
+      // because it should called inside PrepareToDraw()
+      host_impl->NotifyReadyToActivate();
+    }
+    return draw_result;
+  }
+
+  void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
+    FakePictureLayerImpl* layer_impl = static_cast<FakePictureLayerImpl*>(
+        host_impl->active_tree()->LayerById(layer_id_));
+
+    gfx::AxisTransform2d tiling_transform =
+        layer_impl->HighResTiling()->raster_transform();
+
+    switch (host_impl->active_tree()->source_frame_number()) {
+      case 0:
+        PostSetNeedsCommitToMainThread();
+        break;
+      case 1:
+        PostSetNeedsCommitToMainThread();
+        break;
+      case 2:
+        // translation is changed in frame2, but recreating tiling should not
+        // happen because ReadyToActivate is true
+        ASSERT_EQ(tiling_transform.scale(), gfx::Vector2dF(2.0f, 1.0f));
+        ASSERT_EQ(tiling_transform.translation(), gfx::Vector2dF(0, 0));
+        PostSetNeedsCommitToMainThread();
+        break;
+      case 3:
+        // in next commit, the new tiling with new translation is generated
+        ASSERT_EQ(tiling_transform.scale(), gfx::Vector2dF(2.0f, 1.0f));
+        ASSERT_EQ(tiling_transform.translation(), gfx::Vector2dF(0, 0.8f));
+        EndTest();
+    }
+  }
+
+ protected:
+  FakeContentLayerClient client_;
+  // to access layer information in main and impl
+  int layer_id_;
+  // to access layer information in main's WillCommit()
+  scoped_refptr<FakePictureLayer> layer_on_main_;
+};
+MULTI_THREAD_TEST_F(LayerTreeHostTestDelayRecreateTiling);
+
 }  // namespace
 }  // namespace cc

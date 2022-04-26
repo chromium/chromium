@@ -20,6 +20,10 @@ void FakeLayerTreeHostImplClient::NotifyReadyToActivate() {
   ready_to_activate_ = true;
 }
 
+bool FakeLayerTreeHostImplClient::IsReadyToActivate() {
+  return ready_to_activate();
+}
+
 void FakeLayerTreeHostImplClient::NotifyReadyToDraw() {
   ready_to_draw_ = true;
 }

@@ -165,6 +165,7 @@ class CC_EXPORT LayerTreeImpl {
       const scoped_refptr<DisplayItemList>& display_list);
   TargetColorParams GetTargetColorParams(
       gfx::ContentColorUsage content_color_usage) const;
+  bool IsReadyToActivate() const;
 
   // Tree specific methods exposed to layer-impl tree.
   // ---------------------------------------------------------------------------

@@ -1243,6 +1243,11 @@ bool PictureLayerImpl::CanRecreateHighResTilingForLCDTextAndRasterTransform(
   if (lcd_text_disallowed_reason_ == LCDTextDisallowedReason::kNoText &&
       high_res.raster_transform().scale() == raster_contents_scale_)
     return false;
+  // If ReadyToActivate() is already scheduled, recreating tiling should be
+  // delayed until the activation is executed. Otherwise the tiles in viewport
+  // will be deleted.
+  if (layer_tree_impl()->IsReadyToActivate())
+    return false;
   return true;
 }
 

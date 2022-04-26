@@ -277,15 +277,18 @@ class LayerTreeHostImplForTesting : public LayerTreeHostImpl {
     test_hooks_->NotifyAllTileTasksCompleted(this);
   }
 
-  void BlockNotifyReadyToActivateForTesting(bool block) override {
+  void BlockNotifyReadyToActivateForTesting(bool block,
+                                            bool notify_if_blocked) override {
     CHECK(task_runner_provider()->ImplThreadTaskRunner())
         << "Not supported for single-threaded mode.";
     block_notify_ready_to_activate_for_testing_ = block;
     if (!block && notify_ready_to_activate_was_blocked_) {
-      task_runner_provider_->ImplThreadTaskRunner()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&LayerTreeHostImplForTesting::NotifyReadyToActivate,
-                         base::Unretained(this)));
+      if (notify_if_blocked) {
+        task_runner_provider_->ImplThreadTaskRunner()->PostTask(
+            FROM_HERE,
+            base::BindOnce(&LayerTreeHostImplForTesting::NotifyReadyToActivate,
+                           base::Unretained(this)));
+      }
       notify_ready_to_activate_was_blocked_ = false;
     }
   }

@@ -2895,4 +2895,8 @@ bool LayerTreeImpl::HasDocumentTransitionRequests() const {
   return !document_transition_requests_.empty();
 }
 
+bool LayerTreeImpl::IsReadyToActivate() const {
+  return host_impl_->IsReadyToActivate();
+}
+
 }  // namespace cc

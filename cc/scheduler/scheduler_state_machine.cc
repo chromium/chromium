@@ -1469,6 +1469,10 @@ bool SchedulerStateMachine::NotifyReadyToActivate() {
   return true;
 }
 
+bool SchedulerStateMachine::IsReadyToActivate() {
+  return pending_tree_is_ready_for_activation_;
+}
+
 void SchedulerStateMachine::NotifyReadyToDraw() {
   active_tree_is_ready_to_draw_ = true;
 }

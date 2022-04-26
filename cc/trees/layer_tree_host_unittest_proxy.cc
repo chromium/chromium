@@ -387,7 +387,7 @@ class LayerTreeHostProxyTestCommitWaitsForActivationMFBA
         // case above). We unblock activate to allow this main frame to commit.
         auto unblock = base::BindOnce(
             &LayerTreeHostImpl::BlockNotifyReadyToActivateForTesting,
-            base::Unretained(impl), false);
+            base::Unretained(impl), false, true);
         // Post the unblock instead of doing it immediately so that the main
         // frame is fully processed by the compositor thread, and it has a full
         // opportunity to wrongly unblock the main thread.

@@ -107,6 +107,10 @@ void Scheduler::NotifyReadyToActivate() {
   ProcessScheduledActions();
 }
 
+bool Scheduler::IsReadyToActivate() {
+  return state_machine_.IsReadyToActivate();
+}
+
 void Scheduler::NotifyReadyToDraw() {
   // Future work might still needed for crbug.com/352894.
   state_machine_.NotifyReadyToDraw();

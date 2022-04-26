@@ -386,6 +386,11 @@ void ProxyImpl::NotifyReadyToActivate() {
   scheduler_->NotifyReadyToActivate();
 }
 
+bool ProxyImpl::IsReadyToActivate() {
+  DCHECK(IsImplThread());
+  return scheduler_->IsReadyToActivate();
+}
+
 void ProxyImpl::NotifyReadyToDraw() {
   TRACE_EVENT0("cc", "ProxyImpl::NotifyReadyToDraw");
   DCHECK(IsImplThread());

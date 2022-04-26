@@ -119,6 +119,7 @@ class LayerTreeHostImplClient {
   virtual void DidReceiveCompositorFrameAckOnImplThread() = 0;
   virtual void OnCanDrawStateChanged(bool can_draw) = 0;
   virtual void NotifyReadyToActivate() = 0;
+  virtual bool IsReadyToActivate() = 0;
   virtual void NotifyReadyToDraw() = 0;
   // Please call these 2 functions through
   // LayerTreeHostImpl's SetNeedsRedraw() and SetNeedsOneBeginImplFrame().
@@ -481,8 +482,11 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   // When blocking, this prevents client_->NotifyReadyToActivate() from being
   // called. When disabled, it calls client_->NotifyReadyToActivate()
-  // immediately if any notifications had been blocked while blocking.
-  virtual void BlockNotifyReadyToActivateForTesting(bool block);
+  // immediately if any notifications had been blocked while blocking and
+  // notify_if_blocked is true.
+  virtual void BlockNotifyReadyToActivateForTesting(
+      bool block,
+      bool notify_if_blocked = true);
 
   // Prevents notifying the |client_| when an impl side invalidation request is
   // made. When unblocked, the disabled request will immediately be called.
@@ -878,6 +882,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   base::flat_set<viz::FrameSinkId> GetFrameSinksToThrottleForTesting() const {
     return throttle_decider_.ids();
   }
+
+  bool IsReadyToActivate() const;
 
  protected:
   LayerTreeHostImpl(

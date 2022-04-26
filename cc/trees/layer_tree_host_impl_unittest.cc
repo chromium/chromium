@@ -215,6 +215,11 @@ class LayerTreeHostImplTest : public testing::Test,
     did_notify_ready_to_activate_ = true;
     host_impl_->ActivateSyncTree();
   }
+  bool IsReadyToActivate() override {
+    // in NotifyReadyToActivate(), call ActivateSyncTree() directly
+    // so this is always false
+    return false;
+  }
   void NotifyReadyToDraw() override {}
   void SetNeedsRedrawOnImplThread() override { did_request_redraw_ = true; }
   void SetNeedsOneBeginImplFrameOnImplThread() override {

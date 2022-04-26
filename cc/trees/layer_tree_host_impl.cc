@@ -1732,7 +1732,9 @@ void LayerTreeHostImpl::EvictTexturesForTesting() {
   UpdateTileManagerMemoryPolicy(ManagedMemoryPolicy(0));
 }
 
-void LayerTreeHostImpl::BlockNotifyReadyToActivateForTesting(bool block) {
+void LayerTreeHostImpl::BlockNotifyReadyToActivateForTesting(
+    bool block,
+    bool notify_if_blocked) {
   NOTREACHED();
 }
 
@@ -5132,6 +5134,10 @@ void LayerTreeHostImpl::RequestInvalidationForAnimatedImages() {
   // before a new tree is activated.
   bool needs_first_draw_on_activation = true;
   client_->NeedsImplSideInvalidation(needs_first_draw_on_activation);
+}
+
+bool LayerTreeHostImpl::IsReadyToActivate() const {
+  return client_->IsReadyToActivate();
 }
 
 base::WeakPtr<LayerTreeHostImpl> LayerTreeHostImpl::AsWeakPtr() {

@@ -132,6 +132,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // pending_tree, call this method to notify that this pending tree is ready to
   // be activated, that is to be copied to the active tree.
   void NotifyReadyToActivate();
+  bool IsReadyToActivate();
   void NotifyReadyToDraw();
   void SetBeginFrameSource(viz::BeginFrameSource* source);
 

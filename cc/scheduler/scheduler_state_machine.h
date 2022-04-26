@@ -287,6 +287,7 @@ class CC_EXPORT SchedulerStateMachine {
   // the notification received updated the state for the current pending tree,
   // if any.
   bool NotifyReadyToActivate();
+  bool IsReadyToActivate();
 
   // Indicates the active tree's visible tiles are ready to be drawn.
   void NotifyReadyToDraw();

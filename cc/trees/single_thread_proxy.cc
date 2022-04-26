@@ -444,6 +444,13 @@ void SingleThreadProxy::NotifyReadyToActivate() {
     scheduler_on_impl_thread_->NotifyReadyToActivate();
 }
 
+bool SingleThreadProxy::IsReadyToActivate() {
+  DCHECK(!task_runner_provider_->HasImplThread() ||
+         task_runner_provider_->IsImplThread());
+  return scheduler_on_impl_thread_ &&
+         scheduler_on_impl_thread_->IsReadyToActivate();
+}
+
 void SingleThreadProxy::NotifyReadyToDraw() {
   DCHECK(!task_runner_provider_->HasImplThread() ||
          task_runner_provider_->IsImplThread());
