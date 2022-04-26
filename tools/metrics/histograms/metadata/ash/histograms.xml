@@ -1066,6 +1066,21 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
+<histogram name="Ash.CaptureModeController.ScreenRecordingLength"
+    units="seconds" expires_after="2022-09-09">
+  <obsolete>
+    Replaced with
+    Ash.CaptureModeController.ScreenRecordingLength.{TabletOrClamshell} in M99.
+  </obsolete>
+  <owner>afakhry@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the time of a successful video recording in capture mode. This
+    metric will not be recorded if a file was not successfully saved. The upper
+    limit of this histogram is 3 hours.
+  </summary>
+</histogram>
+
 <histogram
     name="Ash.CaptureModeController.ScreenRecordingLength.{TabletOrClamshell}"
     units="seconds" expires_after="2022-09-09">
