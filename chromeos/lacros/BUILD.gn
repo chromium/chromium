@@ -18,9 +18,11 @@ assert(!use_gtk)
 component("lacros") {
   defines = [ "IS_CHROMEOS_LACROS_IMPL" ]
   deps = [
+    ":lacros_paths",
     "//base",
     "//build:chromeos_buildflags",
     "//chromeos/crosapi/cpp",
+    "//chromeos/crosapi/cpp:crosapi_constants",
     "//chromeos/crosapi/mojom",
     "//chromeos/process_proxy",
     "//chromeos/startup",
@@ -39,6 +41,17 @@ component("lacros") {
     "native_theme_cache.h",
     "system_idle_cache.cc",
     "system_idle_cache.h",
+  ]
+}
+
+static_library("lacros_paths") {
+  deps = [
+    "//base",
+    "//chromeos/crosapi/cpp:crosapi_constants",
+  ]
+  sources = [
+    "lacros_paths.cc",
+    "lacros_paths.h",
   ]
 }
 

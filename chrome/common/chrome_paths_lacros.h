@@ -42,7 +42,6 @@ bool GetDriveFsMountPointPath(base::FilePath* result);
 bool GetRemovableMediaPath(base::FilePath* result);
 bool GetAndroidFilesPath(base::FilePath* result);
 bool GetLinuxFilesPath(base::FilePath* result);
-bool GetAshResourcesPath(base::FilePath* result);
 bool GetShareCachePath(base::FilePath* result);
 }  // namespace chrome
 

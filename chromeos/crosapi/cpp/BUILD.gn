@@ -12,8 +12,6 @@ config("crosapi_implementation") {
 component("cpp") {
   output_name = "crosapi_public_cpp"
   sources = [
-    "crosapi_constants.cc",
-    "crosapi_constants.h",
     "gurl_os_handler_utils.cc",
     "gurl_os_handler_utils.h",
     "keystore_service_util.cc",
@@ -23,6 +21,7 @@ component("cpp") {
   ]
   configs += [ ":crosapi_implementation" ]
   deps = [
+    ":crosapi_constants",
     "//base",
     "//chromeos/crosapi/mojom",
     "//mojo/public/cpp/bindings",
@@ -34,6 +33,14 @@ component("cpp") {
       "lacros_startup_state.h",
     ]
   }
+}
+
+static_library("crosapi_constants") {
+  sources = [
+    "crosapi_constants.cc",
+    "crosapi_constants.h",
+  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

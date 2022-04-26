@@ -695,6 +695,7 @@ static_library("ui") {
     deps += [
       "//chromeos/constants",
       "//chromeos/crosapi/cpp",
+      "//chromeos/crosapi/cpp:crosapi_constants",
     ]
   }
 
@@ -3105,6 +3106,7 @@ static_library("ui") {
       "//chromeos/components/string_matching",
       "//chromeos/constants",
       "//chromeos/crosapi/cpp",
+      "//chromeos/crosapi/cpp:crosapi_constants",
       "//chromeos/dbus",
       "//chromeos/dbus/audio",
       "//chromeos/dbus/cryptohome",

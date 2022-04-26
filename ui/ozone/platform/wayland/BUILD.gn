@@ -290,7 +290,7 @@ source_set("wayland") {
 
   if (is_chromeos_lacros) {
     deps += [
-      "//chromeos/crosapi/cpp",
+      "//chromeos/crosapi/cpp:crosapi_constants",
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
     ]
