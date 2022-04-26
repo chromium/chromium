@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   // Generate a few keyboard events and route them to currently focused frame.
   // We wait for replies to be sent back from the page, since keystrokes may
   // take time to propagate to the renderer's main thread.
-  content::DOMMessageQueue msg_queue;
+  content::DOMMessageQueue msg_queue(web_contents);
   std::string reply;
   SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('F'),
                    ui::DomCode::US_F, ui::VKEY_F, false, false, false, false);
@@ -307,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 
   // Helper to simulate a tab press and wait for a focus message.
   auto press_tab_and_wait_for_message = [web_contents](bool reverse) {
-    content::DOMMessageQueue msg_queue;
+    content::DOMMessageQueue msg_queue(web_contents);
     std::string reply;
     SimulateKeyPress(web_contents, ui::DomKey::TAB, ui::DomCode::TAB,
                      ui::VKEY_TAB, false, reverse /* shift */, false, false);
@@ -401,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 
   // Helper to simulate a tab press and wait for a focus message.
   auto press_tab_and_wait_for_message = [web_contents](bool reverse) {
-    content::DOMMessageQueue msg_queue;
+    content::DOMMessageQueue msg_queue(web_contents);
     std::string reply;
     SimulateKeyPress(web_contents, ui::DomKey::TAB, ui::DomCode::TAB,
                      ui::VKEY_TAB, false, reverse /* shift */, false, false);
@@ -543,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 
   // Helper to simulate a tab press and wait for a focus message.
   auto press_tab_and_wait_for_message = [web_contents](bool reverse) {
-    content::DOMMessageQueue msg_queue;
+    content::DOMMessageQueue msg_queue(web_contents);
     std::string reply;
     SimulateKeyPress(web_contents, ui::DomKey::TAB, ui::DomCode::TAB,
                      ui::VKEY_TAB, false, reverse /* shift */, false, false);
@@ -554,7 +554,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 
   auto click_element_and_wait_for_message =
       [web_contents](const gfx::Point& point) {
-        content::DOMMessageQueue msg_queue;
+        content::DOMMessageQueue msg_queue(web_contents);
 
         auto content_bounds = web_contents->GetContainerBounds();
         ui_controls::SendMouseMove(point.x() + content_bounds.x(),
@@ -777,7 +777,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   std::set<std::string> expected_events = {"main_frame", "child"};
   AddResizeListener(child, GetScreenSize());
   {
-    content::DOMMessageQueue queue;
+    content::DOMMessageQueue queue(web_contents);
     FullscreenNotificationObserver observer(browser());
     EXPECT_TRUE(ExecuteScript(child, "activateFullscreen()"));
     WaitForMultipleFullscreenEvents(expected_events, queue);
@@ -812,7 +812,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   // original size.
   AddResizeListener(child, original_child_size);
   {
-    content::DOMMessageQueue queue;
+    content::DOMMessageQueue queue(web_contents);
     FullscreenNotificationObserver observer(browser());
     EXPECT_TRUE(ExecuteScript(child, "exitFullscreen()"));
     WaitForMultipleFullscreenEvents(expected_events, queue);
@@ -876,7 +876,7 @@ void SitePerProcessInteractiveBrowserTest::FullscreenElementInABA(
   // (3) the browser has finished the fullscreen transition.
   std::set<std::string> expected_events = {"main_frame", "child", "grandchild"};
   {
-    content::DOMMessageQueue queue;
+    content::DOMMessageQueue queue(web_contents);
     FullscreenNotificationObserver fullscreen_observer(browser());
     EXPECT_TRUE(ExecuteScript(grandchild, "activateFullscreen()"));
     WaitForMultipleFullscreenEvents(expected_events, queue);
@@ -906,7 +906,7 @@ void SitePerProcessInteractiveBrowserTest::FullscreenElementInABA(
   // Now exit fullscreen from the subframe.
   AddResizeListener(grandchild, original_grandchild_size);
   {
-    content::DOMMessageQueue queue;
+    content::DOMMessageQueue queue(web_contents);
     FullscreenNotificationObserver fullscreen_observer(browser());
     switch (exit_method) {
       case FullscreenExitMethod::JS_CALL:
@@ -1037,7 +1037,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   // response, (2) |c_middle| is resized to fill the whole screen, and (3) the
   // browser finishes the fullscreen transition.
   {
-    content::DOMMessageQueue queue;
+    content::DOMMessageQueue queue(web_contents);
     FullscreenNotificationObserver fullscreen_observer(browser());
     EXPECT_TRUE(ExecuteScript(c_middle, "activateFullscreen()"));
     WaitForMultipleFullscreenEvents(expected_events, queue);
@@ -1077,7 +1077,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   // resized back to its original size.
   AddResizeListener(c_middle, c_middle_original_size);
   {
-    content::DOMMessageQueue queue;
+    content::DOMMessageQueue queue(web_contents);
     FullscreenNotificationObserver fullscreen_observer(browser());
     ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE,
                                                 false, false, false, false));
