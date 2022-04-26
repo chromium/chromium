@@ -347,24 +347,24 @@ static void GetCombinedEntropyUnrefined_MIPS32(const uint32_t X[],
 static void AddVector_MIPS32(const uint32_t* pa, const uint32_t* pb,
                              uint32_t* pout, int size) {
   uint32_t temp0, temp1, temp2, temp3, temp4, temp5, temp6, temp7;
-  const uint32_t end = ((size) / 4) * 4;
+  const int end = ((size) / 4) * 4;
   const uint32_t* const LoopEnd = pa + end;
   int i;
   ASM_START
   ADD_TO_OUT(0, 4, 8, 12, 1, pa, pb, pout)
   ASM_END_0
-  for (i = end; i < size; ++i) pout[i] = pa[i] + pb[i];
+  for (i = 0; i < size - end; ++i) pout[i] = pa[i] + pb[i];
 }
 
 static void AddVectorEq_MIPS32(const uint32_t* pa, uint32_t* pout, int size) {
   uint32_t temp0, temp1, temp2, temp3, temp4, temp5, temp6, temp7;
-  const uint32_t end = ((size) / 4) * 4;
+  const int end = ((size) / 4) * 4;
   const uint32_t* const LoopEnd = pa + end;
   int i;
   ASM_START
   ADD_TO_OUT(0, 4, 8, 12, 0, pa, pout, pout)
   ASM_END_1
-  for (i = end; i < size; ++i) pout[i] += pa[i];
+  for (i = 0; i < size - end; ++i) pout[i] += pa[i];
 }
 
 #undef ASM_END_1

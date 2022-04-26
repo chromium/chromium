@@ -976,15 +976,16 @@ static int GetBackwardReferences(int width, int height,
       const VP8LHashChain* const hash_chain_tmp =
           (lz77_types_best[i] == kLZ77Standard) ? hash_chain : &hash_chain_box;
       const int cache_bits = (i == 1) ? 0 : *cache_bits_best;
-      if (VP8LBackwardReferencesTraceBackwards(width, height, argb, cache_bits,
-                                               hash_chain_tmp, &refs[i],
-                                               refs_tmp)) {
-        double bit_cost_trace;
-        VP8LHistogramCreate(histo, refs_tmp, cache_bits);
-        bit_cost_trace = VP8LHistogramEstimateBits(histo);
-        if (bit_cost_trace < bit_costs_best[i]) {
-          BackwardRefsSwap(refs_tmp, &refs[i]);
-        }
+      double bit_cost_trace;
+      if (!VP8LBackwardReferencesTraceBackwards(width, height, argb, cache_bits,
+                                                hash_chain_tmp, &refs[i],
+                                                refs_tmp)) {
+        goto Error;
+      }
+      VP8LHistogramCreate(histo, refs_tmp, cache_bits);
+      bit_cost_trace = VP8LHistogramEstimateBits(histo);
+      if (bit_cost_trace < bit_costs_best[i]) {
+        BackwardRefsSwap(refs_tmp, &refs[i]);
       }
     }
 

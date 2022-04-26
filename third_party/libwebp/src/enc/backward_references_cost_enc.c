@@ -577,7 +577,7 @@ static int BackwardReferencesHashChainDistanceOnly(
       (CostModel*)WebPSafeCalloc(1ULL, cost_model_size);
   VP8LColorCache hashers;
   CostManager* cost_manager =
-      (CostManager*)WebPSafeMalloc(1ULL, sizeof(*cost_manager));
+      (CostManager*)WebPSafeCalloc(1ULL, sizeof(*cost_manager));
   int offset_prev = -1, len_prev = -1;
   double offset_cost = -1;
   int first_offset_is_constant = -1;  // initialized with 'impossible' value
