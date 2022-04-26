@@ -8,6 +8,8 @@ See https://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
+import os
+import tempfile
 
 USE_PYTHON3 = True
 
@@ -56,42 +58,35 @@ def _LintWPT(input_api, output_api):
     if not paths_in_wpt:
         return []
 
-    # When running git cl presubmit --all this presubmit may be asked to check
-    # ~65,000 files, leading to a command line that is over 7,000,000 characters.
-    # This goes past the Windows 8191 character cmd.exe limit and causes cryptic
-    # failures. To avoid these we break the command up into smaller pieces. The
-    # non-Windows limit is chosen so that the code that splits up commands will
-    # get some exercise on other platforms.
-    # Depending on how long the command is on Windows the error may be:
-    #     The command line is too long.
-    # Or it may be:
-    #     OSError: Execution failed with error: [WinError 206] The filename or
-    #     extension is too long.
-    # I suspect that the latter error comes from CreateProcess hitting its 32768
-    # character limit.
-    files_per_command = 25 if input_api.is_windows else 1000
-    results = []
-    for i in range(0, len(paths_in_wpt), files_per_command):
-        args = [
-            python3_command(input_api),
-            linter_path,
-            'lint',
-            '--repo-root=%s' % wpt_path,
-            '--ignore-glob=*-expected.txt',
-            '--ignore-glob=*DIR_METADATA',
-            '--ignore-glob=*OWNERS',
-        ] + paths_in_wpt[i:i + files_per_command]
+    # We have to set delete=False and then let the object go out of scope so
+    # that the file can be opened by name on Windows.
+    with tempfile.NamedTemporaryFile('w+', newline='', delete=False) as f:
+        for path in paths_in_wpt:
+            f.write('%s\n' % path)
+        paths_name = f.name
+    args = [
+        python3_command(input_api),
+        linter_path,
+        'lint',
+        '--repo-root=%s' % wpt_path,
+        '--ignore-glob=*-expected.txt',
+        '--ignore-glob=*DIR_METADATA',
+        '--ignore-glob=*OWNERS',
+        '--paths-file=%s' % paths_name,
+    ]
 
-        proc = input_api.subprocess.Popen(args,
-                                          stdout=input_api.subprocess.PIPE,
-                                          stderr=input_api.subprocess.PIPE)
-        stdout, stderr = proc.communicate()
+    proc = input_api.subprocess.Popen(args,
+                                      stdout=input_api.subprocess.PIPE,
+                                      stderr=input_api.subprocess.PIPE)
+    stdout, stderr = proc.communicate()
+    os.remove(paths_name)
 
-        if proc.returncode != 0:
-            results.append(
-                output_api.PresubmitError('wpt lint failed:',
-                                          long_text=stdout + stderr))
-    return results
+    if proc.returncode != 0:
+        return [
+            output_api.PresubmitError('wpt lint failed:',
+                                      long_text=stdout + stderr)
+        ]
+    return []
 
 
 def _DontModifyIDLFiles(input_api, output_api):
