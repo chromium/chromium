@@ -200,7 +200,6 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   const raw_ptr<views::Button> anchor_button_;
 
   // Component containers.
-  raw_ptr<views::View> heading_container_ = nullptr;
   raw_ptr<views::View> identity_info_container_ = nullptr;
   raw_ptr<views::View> sync_info_container_ = nullptr;
   raw_ptr<views::View> shortcut_features_container_ = nullptr;

@@ -937,8 +937,6 @@ void ProfileMenuViewBase::Reset() {
 
   // Create and add new component containers in the correct order.
   // First, add the parts of the current profile.
-  heading_container_ =
-      components->AddChildView(std::make_unique<views::View>());
   identity_info_container_ =
       components->AddChildView(std::make_unique<views::View>());
   shortcut_features_container_ =
