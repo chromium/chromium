@@ -381,9 +381,8 @@ void IndexedDBDispatcherHost::AbortTransactionsAndCompactDatabase(
   base::OnceCallback<void(leveldb::Status)> callback_on_io = base::BindOnce(
       &CallCompactionStatusCallbackOnIDBThread, std::move(mojo_callback));
 
-  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   indexed_db_context_->GetIDBFactory()->AbortTransactionsAndCompactDatabase(
-      std::move(callback_on_io), bucket_locator.storage_key);
+      std::move(callback_on_io), bucket_locator);
 }
 
 void IndexedDBDispatcherHost::AbortTransactionsForDatabase(
@@ -400,9 +399,8 @@ void IndexedDBDispatcherHost::AbortTransactionsForDatabase(
   base::OnceCallback<void(leveldb::Status)> callback_on_io = base::BindOnce(
       &CallAbortStatusCallbackOnIDBThread, std::move(mojo_callback));
 
-  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   indexed_db_context_->GetIDBFactory()->AbortTransactionsForDatabase(
-      std::move(callback_on_io), bucket_locator.storage_key);
+      std::move(callback_on_io), bucket_locator);
 }
 
 void IndexedDBDispatcherHost::CreateAndBindTransactionImpl(

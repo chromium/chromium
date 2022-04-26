@@ -52,21 +52,21 @@ class MockIndexedDBFactory : public IndexedDBFactory {
                     bool force_close));
   MOCK_METHOD2(AbortTransactionsAndCompactDatabaseProxy,
                void(base::OnceCallback<void(leveldb::Status)>* callback,
-                    const blink::StorageKey& storage_key));
+                    const storage::BucketLocator& bucket_locator));
   void AbortTransactionsAndCompactDatabase(
       base::OnceCallback<void(leveldb::Status)> callback,
-      const blink::StorageKey& storage_key) override {
+      const storage::BucketLocator& bucket_locator) override {
     base::OnceCallback<void(leveldb::Status)>* callback_ref = &callback;
-    AbortTransactionsAndCompactDatabaseProxy(callback_ref, storage_key);
+    AbortTransactionsAndCompactDatabaseProxy(callback_ref, bucket_locator);
   }
   MOCK_METHOD2(AbortTransactionsForDatabaseProxy,
                void(base::OnceCallback<void(leveldb::Status)>* callback,
-                    const blink::StorageKey& storage_key));
+                    const storage::BucketLocator& bucket_locator));
   void AbortTransactionsForDatabase(
       base::OnceCallback<void(leveldb::Status)> callback,
-      const blink::StorageKey& storage_key) override {
+      const storage::BucketLocator& bucket_locator) override {
     base::OnceCallback<void(leveldb::Status)>* callback_ref = &callback;
-    AbortTransactionsForDatabaseProxy(callback_ref, storage_key);
+    AbortTransactionsForDatabaseProxy(callback_ref, bucket_locator);
   }
 
   MOCK_METHOD1(HandleBackingStoreFailure,
@@ -82,9 +82,10 @@ class MockIndexedDBFactory : public IndexedDBFactory {
                void(const blink::StorageKey& storage_key,
                     bool delete_in_memory_store));
   MOCK_METHOD1(ForceSchemaDowngrade,
-               void(const blink::StorageKey& storage_key));
-  MOCK_METHOD1(HasV2SchemaCorruption,
-               V2SchemaCorruptionStatus(const blink::StorageKey& storage_key));
+               void(const storage::BucketLocator& bucket_locator));
+  MOCK_METHOD1(
+      HasV2SchemaCorruption,
+      V2SchemaCorruptionStatus(const storage::BucketLocator& bucket_locator));
   MOCK_METHOD0(ContextDestroyed, void());
 
   MOCK_METHOD1(BlobFilesCleaned, void(const blink::StorageKey& storage_key));
@@ -99,7 +100,7 @@ class MockIndexedDBFactory : public IndexedDBFactory {
                      base::Time(const blink::StorageKey& storage_key));
 
   MOCK_METHOD2(ReportOutstandingBlobs,
-               void(const blink::StorageKey& storage_key,
+               void(const storage::BucketLocator& bucket_locator,
                     bool blobs_outstanding));
 
   MOCK_METHOD1(NotifyIndexedDBListChanged,

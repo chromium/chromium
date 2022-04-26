@@ -538,32 +538,35 @@ void IndexedDBContextImpl::ResetCachesForTesting(base::OnceClosure callback) {
 }
 
 void IndexedDBContextImpl::ForceSchemaDowngradeForTesting(
-    const blink::StorageKey& storage_key,
+    const storage::BucketLocator& bucket_locator,
     ForceSchemaDowngradeForTestingCallback callback) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
 
-  if (is_incognito() || !HasBucket(storage_key)) {
+  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
+  if (is_incognito() || !HasBucket(bucket_locator.storage_key)) {
     std::move(callback).Run(false);
     return;
   }
 
   if (indexeddb_factory_.get()) {
-    indexeddb_factory_->ForceSchemaDowngrade(storage_key);
+    indexeddb_factory_->ForceSchemaDowngrade(bucket_locator);
     std::move(callback).Run(true);
     return;
   }
+  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   ForceCloseSync(
-      storage_key,
+      bucket_locator.storage_key,
       storage::mojom::ForceCloseReason::FORCE_SCHEMA_DOWNGRADE_INTERNALS_PAGE);
   std::move(callback).Run(false);
 }
 
 void IndexedDBContextImpl::HasV2SchemaCorruptionForTesting(
-    const blink::StorageKey& storage_key,
+    const storage::BucketLocator& bucket_locator,
     HasV2SchemaCorruptionForTestingCallback callback) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
 
-  if (is_incognito() || !HasBucket(storage_key)) {
+  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
+  if (is_incognito() || !HasBucket(bucket_locator.storage_key)) {
     std::move(callback).Run(
         storage::mojom::V2SchemaCorruptionStatus::CORRUPTION_UNKNOWN);
     return;
@@ -572,7 +575,7 @@ void IndexedDBContextImpl::HasV2SchemaCorruptionForTesting(
   if (indexeddb_factory_.get()) {
     std::move(callback).Run(
         static_cast<storage::mojom::V2SchemaCorruptionStatus>(
-            indexeddb_factory_->HasV2SchemaCorruption(storage_key)));
+            indexeddb_factory_->HasV2SchemaCorruption(bucket_locator)));
     return;
   }
   return std::move(callback).Run(

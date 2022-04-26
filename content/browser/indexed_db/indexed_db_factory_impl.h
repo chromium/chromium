@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_factory.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom-forward.h"
 #include "components/services/storage/public/mojom/file_system_access_context.mojom-forward.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
@@ -39,10 +40,6 @@ namespace base {
 class FilePath;
 class SequencedTaskRunner;
 }  // namespace base
-
-namespace storage {
-struct BucketLocator;
-}  // namespace storage
 
 namespace content {
 class IndexedDBBucketState;
@@ -83,10 +80,10 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
 
   void AbortTransactionsAndCompactDatabase(
       base::OnceCallback<void(leveldb::Status)> callback,
-      const blink::StorageKey& storage_key) override;
+      const storage::BucketLocator& bucket_locator) override;
   void AbortTransactionsForDatabase(
       base::OnceCallback<void(leveldb::Status)> callback,
-      const blink::StorageKey& storage_key) override;
+      const storage::BucketLocator& bucket_locator) override;
 
   void HandleBackingStoreFailure(const blink::StorageKey& storage_key) override;
   void HandleBackingStoreCorruption(
@@ -101,15 +98,16 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
   void ForceClose(const blink::StorageKey& storage_key,
                   bool delete_in_memory_store) override;
 
-  void ForceSchemaDowngrade(const blink::StorageKey& storage_key) override;
+  void ForceSchemaDowngrade(
+      const storage::BucketLocator& bucket_locator) override;
   V2SchemaCorruptionStatus HasV2SchemaCorruption(
-      const blink::StorageKey& storage_key) override;
+      const storage::BucketLocator& bucket_locator) override;
 
   // Called by the IndexedDBContext destructor so the factory can do cleanup.
   void ContextDestroyed() override;
 
   // Called by the IndexedDBActiveBlobRegistry.
-  void ReportOutstandingBlobs(const blink::StorageKey& storage_key,
+  void ReportOutstandingBlobs(const storage::BucketLocator& bucket_locator,
                               bool blobs_outstanding) override;
 
   // Called by IndexedDBBackingStore when blob files have been cleaned.
@@ -129,10 +127,10 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
   base::Time GetLastModified(
       const blink::StorageKey& storage_key) const override;
 
-  std::vector<blink::StorageKey> GetOpenBuckets() const;
+  std::vector<storage::BucketLocator> GetOpenBuckets() const;
 
   IndexedDBBucketState* GetBucketFactory(
-      const blink::StorageKey& storage_key) const;
+      const storage::BucketLocator& bucket_locator) const;
 
   // On an OK status, the factory handle is populated. Otherwise (when status is
   // not OK), the `IndexedDBDatabaseError` will be populated. If the status was
@@ -211,20 +209,21 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
       bool is_first_attempt,
       bool create_if_missing);
 
-  void RemoveBucketState(const blink::StorageKey& storage_key);
+  void RemoveBucketState(const storage::BucketLocator& bucket_locator);
 
   // Called when the database has been deleted on disk.
   void OnDatabaseDeleted(const blink::StorageKey& storage_key);
 
-  void MaybeRunTasksForBucket(const blink::StorageKey& storage_key);
+  void MaybeRunTasksForBucket(const storage::BucketLocator& bucket_locator);
   void RunTasksForBucket(base::WeakPtr<IndexedDBBucketState> bucket_state);
 
   // Testing helpers, so unit tests don't need to grovel through internal
   // state.
-  bool IsDatabaseOpen(const blink::StorageKey& storage_key,
+  bool IsDatabaseOpen(const storage::BucketLocator& bucket_locator,
                       const std::u16string& name) const;
-  bool IsBackingStoreOpen(const blink::StorageKey& storage_key) const;
-  bool IsBackingStorePendingClose(const blink::StorageKey& storage_key) const;
+  bool IsBackingStoreOpen(const storage::BucketLocator& bucket_locator) const;
+  bool IsBackingStorePendingClose(
+      const storage::BucketLocator& bucket_locator) const;
 
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
@@ -237,10 +236,15 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
   base::Time earliest_sweep_;
   base::Time earliest_compaction_;
 
-  base::flat_map<blink::StorageKey, std::unique_ptr<IndexedDBBucketState>>
+  base::flat_map<storage::BucketLocator, std::unique_ptr<IndexedDBBucketState>>
       factories_per_bucket_;
+  // TODO(crbug.com/1218100): We need to map the StorageKey in BucketLocator to
+  // the (for now) only matching BucketLocator. This is done because calls from
+  // IndexedDBContextImpl don't yet have the BucketLocator in all cases.
+  base::flat_map<blink::StorageKey, storage::BucketLocator>
+      storage_key_to_bucket_locator_;
 
-  std::set<blink::StorageKey> backends_opened_since_startup_;
+  std::set<storage::BucketLocator> backends_opened_since_startup_;
 
   OnDatabaseDeletedCallback call_on_database_deleted_for_testing_;
 

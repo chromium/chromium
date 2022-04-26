@@ -126,9 +126,9 @@ class IndexedDBTest : public testing::Test {
       // the deletion of the leveldb state. Once the states are no longer
       // around, delete all of the databases on disk.
       auto open_factory_buckets = factory->GetOpenBuckets();
-      for (const auto& storage_key : open_factory_buckets) {
+      for (const auto& bucket_locator : open_factory_buckets) {
         context_->ForceCloseSync(
-            storage_key,
+            bucket_locator.storage_key,
             storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN);
       }
       // All leveldb databases are closed, and they can be deleted.
@@ -350,14 +350,14 @@ TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailure) {
   // ConnectionOpened() is usually called by the dispatcher.
   context()->ConnectionOpened(kTestStorageKey, callbacks->connection());
 
-  EXPECT_TRUE(factory->IsBackingStoreOpen(kTestStorageKey));
+  EXPECT_TRUE(factory->IsBackingStoreOpen(bucket_locator));
 
   // Simulate the write failure.
   leveldb::Status status = leveldb::Status::IOError("Simulated failure");
   factory->HandleBackingStoreFailure(kTestStorageKey);
 
   EXPECT_TRUE(db_callbacks->forced_close_called());
-  EXPECT_FALSE(factory->IsBackingStoreOpen(kTestStorageKey));
+  EXPECT_FALSE(factory->IsBackingStoreOpen(bucket_locator));
 }
 
 TEST(LeveledLockManager, TestRangeDifferences) {
