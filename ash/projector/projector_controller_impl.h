@@ -43,6 +43,14 @@ class ASH_EXPORT ProjectorControllerImpl
   using CreateScreencastContainerFolderCallback = base::OnceCallback<void(
       const base::FilePath& screencast_file_path_no_extension)>;
 
+  // Callback that should be executed when the given `path` is deleted.
+  using OnPathDeletedCallback =
+      base::OnceCallback<void(const base::FilePath& path, bool success)>;
+
+  // Callback that should be executed when the given file `path` is saved.
+  using OnFileSavedCallback =
+      base::OnceCallback<void(const base::FilePath& path, bool success)>;
+
   ProjectorControllerImpl();
   ProjectorControllerImpl(const ProjectorControllerImpl&) = delete;
   ProjectorControllerImpl& operator=(const ProjectorControllerImpl&) = delete;
@@ -121,6 +129,8 @@ class ASH_EXPORT ProjectorControllerImpl
       std::unique_ptr<ProjectorUiController> ui_controller);
   void SetProjectorMetadataControllerForTest(
       std::unique_ptr<ProjectorMetadataController> metadata_controller);
+  void SetOnPathDeletedCallbackForTest(OnPathDeletedCallback callback);
+  void SetOnFileSavedCallbackForTest(OnFileSavedCallback callback);
 
   ProjectorUiController* ui_controller() { return ui_controller_.get(); }
   ProjectorSessionImpl* projector_session() { return projector_session_.get(); }
@@ -151,6 +161,12 @@ class ASH_EXPORT ProjectorControllerImpl
   // Saves the screencast including metadata.
   void SaveScreencast();
 
+  // Save the screencast thumbnail file.
+  void SaveThumbnailFile(const gfx::ImageSkia& thumbnail);
+
+  // Clean up the screencast container folder.
+  void CleanupContainerFolder();
+
   // Wrap up recording by saving the metadata file and stop the projector
   // session. This is no-op if speech recognition is not finished or DLP
   // restriction check is not completed.
@@ -176,6 +192,11 @@ class ASH_EXPORT ProjectorControllerImpl
   bool dlp_restriction_checked_completed_ = false;
   // Whether user deleted video file at DLP restriction check dialog.
   bool user_deleted_video_file_ = false;
+
+  // Currently, these callbacks are used by unit tests to verify file saved and
+  // directory deleted.
+  OnPathDeletedCallback on_path_deleted_callback_;
+  OnFileSavedCallback on_file_saved_callback_;
 
   base::WeakPtrFactory<ProjectorControllerImpl> weak_factory_{this};
 };

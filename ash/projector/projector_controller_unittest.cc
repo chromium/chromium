@@ -24,6 +24,7 @@
 #include "base/callback_forward.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
@@ -38,6 +39,7 @@
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
 namespace {
@@ -370,24 +372,37 @@ TEST_P(ProjectorOnDlpRestrictionCheckedAtVideoEndTest, WrapUpRecordingOnce) {
           // Verify that save metadata only triggered once.
           EXPECT_CALL(*mock_metadata_controller_, SaveMetadata(expected_path))
               .Times(1);
+          // Verify that thumbnail file is saved.
+          controller_->SetOnFileSavedCallbackForTest(base::BindLambdaForTesting(
+              [&](const base::FilePath& path, bool success) {
+                EXPECT_TRUE(success);
+                EXPECT_TRUE(base::PathExists(path));
+              }));
         } else {
           // Verify that save metadata is not triggered.
           EXPECT_CALL(*mock_metadata_controller_, SaveMetadata(_)).Times(0);
+          // Verify that Projector Folder is cleaned up.
+          controller_->SetOnPathDeletedCallbackForTest(
+              base::BindLambdaForTesting(
+                  [&](const base::FilePath& path, bool success) {
+                    EXPECT_TRUE(success);
+                    EXPECT_FALSE(base::PathExists(path));
+                  }));
         }
 
-        gfx::ImageSkia null_image;
+        auto image = gfx::test::CreateImageSkia(10, 10);
         if (wrap_up_by_speech_stopped) {
           controller_->OnDlpRestrictionCheckedAtVideoEnd(
               /*is_in_projector_mode=*/true,
               /*user_deleted_video_file=*/user_deleted_video_file,
-              /*thumbnail=*/null_image);
+              /*thumbnail=*/image);
           controller_->OnSpeechRecognitionStopped();
         } else {
           controller_->OnSpeechRecognitionStopped();
           controller_->OnDlpRestrictionCheckedAtVideoEnd(
               /*is_in_projector_mode=*/true,
               /*user_deleted_video_file=*/user_deleted_video_file,
-              /*thumbnail=*/null_image);
+              /*thumbnail=*/image);
         }
         runLoop.Quit();
       }));

@@ -18,12 +18,14 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
+#include "ui/gfx/image/image.h"
 
 namespace ash {
 
@@ -32,6 +34,8 @@ namespace {
 // String format of the screencast name.
 constexpr char kScreencastPathFmtStr[] =
     "Recording %d-%02d-%02d %02d.%02d.%02d";
+
+constexpr char kScreencastDefaultThumbnailFileName[] = "thumbnail.png";
 
 // Create directory. Returns true if saving succeeded, or false otherwise.
 bool CreateDirectory(const base::FilePath& path) {
@@ -51,6 +55,31 @@ bool CreateDirectory(const base::FilePath& path) {
   }
 
   return true;
+}
+
+// Writes the given `data` in a file with `path`. Returns true if saving
+// succeeded, or false otherwise.
+bool SaveFile(scoped_refptr<base::RefCountedMemory> data,
+              const base::FilePath& path) {
+  // `data` could be empty in unit tests.
+  if (!data)
+    return false;
+  const int size = static_cast<int>(data->size());
+  if (!size)
+    return false;
+
+  if (size != base::WriteFile(
+                  path, reinterpret_cast<const char*>(data->front()), size)) {
+    LOG(ERROR) << "Failed to save file: " << path;
+    return false;
+  }
+
+  return true;
+}
+
+scoped_refptr<base::RefCountedMemory> EncodeImage(
+    const gfx::ImageSkia& image_skia) {
+  return gfx::Image(image_skia).As1xPNGBytes();
 }
 
 std::string GetScreencastName() {
@@ -296,10 +325,9 @@ void ProjectorControllerImpl::OnDlpRestrictionCheckedAtVideoEnd(
   user_deleted_video_file_ = user_deleted_video_file;
 
   if (user_deleted_video_file) {
-    // TODO(b/228636099): Clean up recording folder since video file is
-    // deleted.
+    CleanupContainerFolder();
   } else {
-    // TODO(b/228650046): Save the thumbnail file.
+    SaveThumbnailFile(thumbnail);
   }
 
   // Try to wrap up recording. This can be no-op if speech recognition is not
@@ -317,12 +345,7 @@ void ProjectorControllerImpl::OnRecordingStartAborted() {
 
   // Delete the DriveFS path that might have been created for this aborted
   // session if any.
-  if (projector_session_->screencast_container_path()) {
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(base::GetDeletePathRecursivelyCallback(),
-                       *projector_session_->screencast_container_path()));
-  }
+  CleanupContainerFolder();
 
   projector_session_->Stop();
 
@@ -365,6 +388,16 @@ void ProjectorControllerImpl::SetProjectorUiControllerForTest(
 void ProjectorControllerImpl::SetProjectorMetadataControllerForTest(
     std::unique_ptr<ProjectorMetadataController> metadata_controller) {
   metadata_controller_ = std::move(metadata_controller);
+}
+
+void ProjectorControllerImpl::SetOnPathDeletedCallbackForTest(
+    OnPathDeletedCallback callback) {
+  on_path_deleted_callback_ = std::move(callback);
+}
+
+void ProjectorControllerImpl::SetOnFileSavedCallbackForTest(
+    OnFileSavedCallback callback) {
+  on_file_saved_callback_ = std::move(callback);
 }
 
 void ProjectorControllerImpl::OnAudioNodesChanged() {
@@ -442,6 +475,49 @@ void ProjectorControllerImpl::MaybeWrapUpRecording() {
   }
 
   projector_session_->Stop();
+}
+
+void ProjectorControllerImpl::SaveThumbnailFile(
+    const gfx::ImageSkia& thumbnail) {
+  auto screencast_container_path =
+      projector_session_->screencast_container_path();
+  if (!screencast_container_path.has_value())
+    return;
+
+  auto path =
+      screencast_container_path->Append(kScreencastDefaultThumbnailFileName);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&SaveFile, EncodeImage(thumbnail), path),
+      on_file_saved_callback_
+          ? base::BindOnce(std::move(on_file_saved_callback_), path)
+          : base::BindOnce([](bool success) {
+              if (!success) {
+                // Thumbnail is not a critical asset. Fail silently for now.
+                LOG(ERROR) << "Failed to save the thumbnail file.";
+              }
+            }));
+}
+
+void ProjectorControllerImpl::CleanupContainerFolder() {
+  auto screencast_container_path =
+      projector_session_->screencast_container_path();
+
+  if (!screencast_container_path.has_value())
+    return;
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&base::DeletePathRecursively, *screencast_container_path),
+      on_path_deleted_callback_
+          ? base::BindOnce(std::move(on_path_deleted_callback_),
+                           *screencast_container_path)
+          : base::BindOnce(
+                [](const base::FilePath& path, bool success) {
+                  if (!success)
+                    LOG(ERROR) << "Failed to delete the folder: " << path;
+                },
+                *screencast_container_path));
 }
 
 base::FilePath ProjectorControllerImpl::GetScreencastFilePathNoExtension()
