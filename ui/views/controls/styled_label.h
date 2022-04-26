@@ -69,9 +69,6 @@ class VIEWS_EXPORT StyledLabel : public View {
     // Tooltip for the range.
     std::u16string tooltip;
 
-    // If set, the whole range will be put on a single line.
-    bool disable_line_wrapping = false;
-
     // A custom view shown instead of the underlying text. Ownership of custom
     // views must be passed to StyledLabel via AddCustomView().
     raw_ptr<View> custom_view = nullptr;

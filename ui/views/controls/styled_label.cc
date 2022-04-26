@@ -48,7 +48,6 @@ StyledLabel::RangeStyleInfo StyledLabel::RangeStyleInfo::CreateForLink(
     Link::ClickedCallback callback) {
   RangeStyleInfo result;
   result.callback = std::move(callback);
-  result.disable_line_wrapping = true;
   result.text_style = style::STYLE_LINK;
   return result;
 }
@@ -460,11 +459,9 @@ void StyledLabel::CalculateLayout(int width) const {
           chunk = substrings[0];
         }
 
-        if (((custom_view &&
-              line_size.width() + custom_view->GetPreferredSize().width() >
-                  content_width) ||
-             (style_info.disable_line_wrapping &&
-              chunk.size() < range.length())) &&
+        if ((custom_view &&
+             line_size.width() + custom_view->GetPreferredSize().width() >
+                 content_width) &&
             position == range.start() && line_size.width() != 0) {
           // If the chunk should not be wrapped, try to fit it entirely on the
           // next line.

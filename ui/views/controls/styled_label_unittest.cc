@@ -270,54 +270,6 @@ TEST_F(StyledLabelTest, CreateLinks) {
   EXPECT_EQ(7u, styled()->children().size());
 }
 
-TEST_F(StyledLabelTest, DontBreakLinks) {
-  const std::string text("This is a test block of text, ");
-  const std::string link_text("and this should be a link");
-  InitStyledLabel(text + link_text);
-  styled()->AddStyleRange(
-      gfx::Range(text.size(), text.size() + link_text.size()),
-      StyledLabel::RangeStyleInfo::CreateForLink(base::RepeatingClosure()));
-
-  Label label(ASCIIToUTF16(text + link_text.substr(0, link_text.size() / 2)));
-  gfx::Size label_preferred_size = label.GetPreferredSize();
-  int pref_height = styled()->GetHeightForWidth(label_preferred_size.width());
-  EXPECT_EQ(label_preferred_size.height() * 2,
-            pref_height - styled()->GetInsets().height());
-
-  styled()->SetBounds(0, 0, label_preferred_size.width(), pref_height);
-  styled()->Layout();
-  ASSERT_EQ(2u, styled()->children().size());
-
-  // No additional insets should be added.
-  EXPECT_EQ(0, styled()->children()[0]->x());
-  // The Link shouldn't be offset.
-  EXPECT_EQ(0, styled()->children()[1]->x());
-}
-
-TEST_F(StyledLabelTest, StyledRangeWithDisabledLineWrapping) {
-  const std::string text("This is a test block of text, ");
-  const std::string unbreakable_text("and this should not be broken");
-  InitStyledLabel(text + unbreakable_text);
-  StyledLabel::RangeStyleInfo style_info;
-  style_info.disable_line_wrapping = true;
-  styled()->AddStyleRange(
-      gfx::Range(text.size(), text.size() + unbreakable_text.size()),
-      style_info);
-
-  Label label(ASCIIToUTF16(
-      text + unbreakable_text.substr(0, unbreakable_text.size() / 2)));
-  gfx::Size label_preferred_size = label.GetPreferredSize();
-  int pref_height = styled()->GetHeightForWidth(label_preferred_size.width());
-  EXPECT_EQ(label_preferred_size.height() * 2,
-            pref_height - styled()->GetInsets().height());
-
-  styled()->SetBounds(0, 0, label_preferred_size.width(), pref_height);
-  styled()->Layout();
-  ASSERT_EQ(2u, styled()->children().size());
-  EXPECT_EQ(0, styled()->children()[0]->x());
-  EXPECT_EQ(0, styled()->children()[1]->x());
-}
-
 TEST_F(StyledLabelTest, StyledRangeCustomFontUnderlined) {
   const std::string text("This is a test block of text, ");
   const std::string underlined_text("and this should be undelined");
@@ -480,7 +432,7 @@ TEST_F(StyledLabelTest, StyledRangeWithTooltip) {
 
   EXPECT_EQ(label_preferred_size.width(), styled()->width());
 
-  ASSERT_EQ(5u, styled()->children().size());
+  ASSERT_EQ(6u, styled()->children().size());
 
   // The labels shouldn't be offset to cater for focus rings.
   EXPECT_EQ(0, styled()->children()[0]->x());
@@ -490,7 +442,6 @@ TEST_F(StyledLabelTest, StyledRangeWithTooltip) {
             styled()->children()[1]->x());
   EXPECT_EQ(styled()->children()[2]->bounds().right(),
             styled()->children()[3]->x());
-  EXPECT_EQ(0, styled()->children()[4]->x());
 
   std::u16string tooltip =
       styled()->children()[1]->GetTooltipText(gfx::Point(1, 1));

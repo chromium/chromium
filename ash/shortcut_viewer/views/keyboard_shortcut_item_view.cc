@@ -175,7 +175,6 @@ KeyboardShortcutItemView::KeyboardShortcutItemView(
   const std::u16string separator_string = u"+ ";
   for (size_t i = 0; i < offsets.size(); ++i) {
     views::StyledLabel::RangeStyleInfo style_info;
-    style_info.disable_line_wrapping = true;
     const std::u16string& replacement_string = replacement_strings[i];
     std::unique_ptr<views::View> custom_view =
         replacement_string == separator_string

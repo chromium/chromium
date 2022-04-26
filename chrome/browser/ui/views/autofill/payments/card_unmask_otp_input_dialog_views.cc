@@ -282,7 +282,6 @@ void CardUnmaskOtpInputDialogViews::SetDialogFooter(bool enabled) {
             &CardUnmaskOtpInputDialogViews::OnNewCodeLinkClicked,
             weak_ptr_factory_.GetWeakPtr()));
   } else {
-    style_info.disable_line_wrapping = true;
     style_info.text_style = views::style::STYLE_DISABLED;
   }
   footer_label_->AddStyleRange(

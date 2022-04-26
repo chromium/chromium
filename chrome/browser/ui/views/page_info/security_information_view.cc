@@ -153,7 +153,6 @@ void SecurityInformationView::AddResetDecisionsLabel(
   views::StyledLabel::RangeStyleInfo link_style =
       views::StyledLabel::RangeStyleInfo::CreateForLink(
           reset_decisions_callback);
-  link_style.disable_line_wrapping = false;
 
   reset_cert_decisions_label->AddStyleRange(link_range, link_style);
   // Adjust this label's width to the width of the label above.

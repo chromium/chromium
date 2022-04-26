@@ -47,7 +47,6 @@ PasswordGenerationConfirmationView::PasswordGenerationConfirmationView(
         views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
             &PasswordGenerationConfirmationView::StyledLabelLinkClicked,
             base::Unretained(this)));
-    link_style.disable_line_wrapping = false;
     label->AddStyleRange(controller_.save_confirmation_link_range(),
                          link_style);
 
