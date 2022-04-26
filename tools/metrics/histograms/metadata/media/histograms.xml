@@ -254,9 +254,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.InputStreamDuration" units="ms"
-    expires_after="2022-06-05">
-  <owner>guidou@chromium.org</owner>
+    expires_after="2023-04-04">
   <owner>olka@chromium.org</owner>
+  <owner>saza@chromium.org</owner>
   <summary>
     This histogram measures the duration of every input stream, as seen from the
     renderer. It counts from when it has been successfully started, until it is
@@ -997,7 +997,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Render.OutputDeviceAuthorizationTime" units="ms"
-    expires_after="2022-06-05">
+    expires_after="2023-04-04">
   <owner>olka@chromium.org</owner>
   <owner>henrika@chromium.org</owner>
   <summary>
