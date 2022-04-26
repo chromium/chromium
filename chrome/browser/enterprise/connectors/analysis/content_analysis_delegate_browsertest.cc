@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <set>
+#include "build/build_config.h"
 
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -787,8 +788,14 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   EXPECT_TRUE(called);
 }
 
+// Flaky on linux: https://crbug.com/1299762.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_BlockLargeFiles DISABLED_BlockLargeFiles
+#else
+#define MAYBE_BlockLargeFiles BlockLargeFiles
+#endif
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
-                       BlockLargeFiles) {
+                       MAYBE_BlockLargeFiles) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Set up delegate and upload service.
