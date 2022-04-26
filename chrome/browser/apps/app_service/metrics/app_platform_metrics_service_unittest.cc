@@ -83,12 +83,16 @@ void SetSuspendImminent() {
       power_manager::SuspendImminent_Reason_OTHER);
 }
 
-apps::mojom::AppPtr MakeApp(const std::string& app_id,
-                            apps::mojom::AppType app_type,
-                            const std::string& publisher_id,
-                            apps::mojom::Readiness readiness,
-                            apps::mojom::InstallReason install_reason,
-                            apps::mojom::InstallSource install_source) {
+apps::mojom::AppPtr MakeApp(
+    const std::string& app_id,
+    apps::mojom::AppType app_type,
+    const std::string& publisher_id,
+    apps::mojom::Readiness readiness,
+    apps::mojom::InstallReason install_reason,
+    apps::mojom::InstallSource install_source,
+    apps::mojom::OptionalBool is_platform_app =
+        apps::mojom::OptionalBool::kUnknown,
+    apps::mojom::WindowMode window_mode = apps::mojom::WindowMode::kUnknown) {
   apps::mojom::AppPtr app = apps::mojom::App::New();
   app->app_id = app_id;
   app->app_type = app_type;
@@ -96,6 +100,8 @@ apps::mojom::AppPtr MakeApp(const std::string& app_id,
   app->readiness = readiness;
   app->install_reason = install_reason;
   app->install_source = install_source;
+  app->is_platform_app = is_platform_app;
+  app->window_mode = window_mode;
   return app;
 }
 
@@ -104,24 +110,33 @@ apps::AppPtr MakeApp(const std::string& app_id,
                      const std::string& publisher_id,
                      apps::Readiness readiness,
                      apps::InstallReason install_reason,
-                     apps::InstallSource install_source) {
+                     apps::InstallSource install_source,
+                     bool is_platform_app = false,
+                     WindowMode window_mode = WindowMode::kUnknown) {
   auto app = AppPublisher::MakeApp(app_type, app_id, readiness, publisher_id,
                                    install_reason, install_source);
   app->publisher_id = publisher_id;
+  app->is_platform_app = is_platform_app;
+  app->window_mode = window_mode;
   return app;
 }
 
-void AddMojomApp(apps::AppRegistryCache& cache,
-                 const std::string& app_id,
-                 apps::mojom::AppType app_type,
-                 const std::string& publisher_id,
-                 apps::mojom::Readiness readiness,
-                 apps::mojom::InstallReason install_reason,
-                 apps::mojom::InstallSource install_source,
-                 bool should_notify_initialized) {
+void AddMojomApp(
+    apps::AppRegistryCache& cache,
+    const std::string& app_id,
+    apps::mojom::AppType app_type,
+    const std::string& publisher_id,
+    apps::mojom::Readiness readiness,
+    apps::mojom::InstallReason install_reason,
+    apps::mojom::InstallSource install_source,
+    bool should_notify_initialized,
+    apps::mojom::OptionalBool is_platform_app =
+        apps::mojom::OptionalBool::kUnknown,
+    apps::mojom::WindowMode window_mode = apps::mojom::WindowMode::kUnknown) {
   std::vector<apps::mojom::AppPtr> deltas;
   deltas.push_back(MakeApp(app_id, app_type, publisher_id, readiness,
-                           install_reason, install_source));
+                           install_reason, install_source, is_platform_app,
+                           window_mode));
   cache.OnApps(std::move(deltas), app_type, should_notify_initialized);
 }
 
@@ -132,17 +147,21 @@ void AddApp(apps::AppRegistryCache& cache,
             apps::Readiness readiness,
             apps::InstallReason install_reason,
             apps::InstallSource install_source,
-            bool should_notify_initialized) {
+            bool should_notify_initialized,
+            bool is_platform_app = false,
+            WindowMode window_mode = WindowMode::kUnknown) {
   std::vector<apps::AppPtr> deltas;
   deltas.push_back(MakeApp(app_id, app_type, publisher_id, readiness,
-                           install_reason, install_source));
+                           install_reason, install_source, is_platform_app,
+                           window_mode));
   cache.OnApps(std::move(deltas), app_type, should_notify_initialized);
 
   AddMojomApp(cache, app_id, apps::ConvertAppTypeToMojomAppType(app_type),
               publisher_id, apps::ConvertReadinessToMojomReadiness(readiness),
               apps::ConvertInstallReasonToMojomInstallReason(install_reason),
               apps::ConvertInstallSourceToMojomInstallSource(install_source),
-              should_notify_initialized);
+              should_notify_initialized, GetMojomOptionalBool(is_platform_app),
+              ConvertWindowModeToMojomWindowMode(window_mode));
 }
 
 std::unique_ptr<KeyedService> TestingSyncFactoryFunction(
@@ -290,7 +309,7 @@ class AppPlatformMetricsServiceTest : public testing::Test,
            /*app_id=*/MuxId(profile(), kChromeAppId),
            AppType::kStandaloneBrowserChromeApp, "Vine", Readiness::kReady,
            InstallReason::kUser, InstallSource::kChromeWebStore,
-           true /* should_notify_initialized */);
+           true /* should_notify_initialized */, true /*is_platform_app*/);
 
     AddApp(cache,
            /*app_id=*/MuxId(profile(), kExtensionId),
@@ -347,13 +366,15 @@ class AppPlatformMetricsServiceTest : public testing::Test,
                      AppType app_type,
                      const std::string& publisher_id,
                      Readiness readiness,
-                     InstallSource install_source) {
+                     InstallSource install_source,
+                     bool is_platform_app = false,
+                     WindowMode window_mode = WindowMode::kUnknown) {
     auto* proxy =
         apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get());
     apps::AppRegistryCache& cache = proxy->AppRegistryCache();
     AddApp(cache, app_id, app_type, publisher_id, readiness,
            InstallReason::kUser, install_source,
-           false /* should_notify_initialized */);
+           false /* should_notify_initialized */, is_platform_app, window_mode);
   }
 
   void VerifyMetrics() {
@@ -1728,6 +1749,73 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmForWebAppsOpenInLacrosTabs) {
                         AppTypeName::kStandaloneBrowser);
 }
 
+TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmForStandaloneChromeApps) {
+  if (!IsLacrosPrimary()) {
+    return;
+  }
+
+  // Install Chrome apps (hosted apps) during the running time.
+  std::string kChromeAppId1 = "bb";
+  InstallOneApp(MuxId(profile(), kChromeAppId1),
+                AppType::kStandaloneBrowserChromeApp, "BB", Readiness::kReady,
+                InstallSource::kChromeWebStore,
+                /*is_platform_app=*/false, WindowMode::kBrowser);
+
+  const base::UnguessableToken instance_id0 = base::UnguessableToken::Create();
+  const base::UnguessableToken instance_id1 = base::UnguessableToken::Create();
+  const base::UnguessableToken instance_id2 = base::UnguessableToken::Create();
+
+  // Create a StandaloneBrowser window, and set it as activated for
+  // `kLacrosAppId`.
+  auto window1 = std::make_unique<aura::Window>(nullptr);
+  window1->Init(ui::LAYER_NOT_DRAWN);
+  ModifyInstance(instance_id0, app_constants::kLacrosAppId, window1.get(),
+                 kActiveInstanceState);
+  task_environment_.FastForwardBy(base::Minutes(5));
+
+  // Create a chrome app tab for `kChromeAppId1`, and set it as activated. We
+  // don't need to set the Lacros window as inactivated, because the activated
+  // chrome app tab can set the Lacros window as inactivated. And when the
+  // chrome app tabs are inactivated, the Lacros window can be set as activated.
+  ModifyInstance(instance_id1, MuxId(profile(), kChromeAppId1), window1.get(),
+                 kActiveInstanceState);
+  task_environment_.FastForwardBy(base::Minutes(4));
+
+  // The chrome app tab is inactivated, so the Lacros window is set as activated
+  // in code.
+  ModifyInstance(instance_id1, MuxId(profile(), kChromeAppId1), window1.get(),
+                 kInactiveInstanceState);
+  task_environment_.FastForwardBy(base::Minutes(5));
+
+  // Set the Lacros window as inactivated.
+  ModifyInstance(instance_id0, app_constants::kLacrosAppId, window1.get(),
+                 kInactiveInstanceState);
+
+  // Create a new window for `kChromeAppId`, and set it as activated.
+  auto window2 = std::make_unique<aura::Window>(nullptr);
+  window2->Init(ui::LAYER_NOT_DRAWN);
+  ModifyInstance(instance_id2, MuxId(profile(), kChromeAppId), window2.get(),
+                 kActiveInstanceState);
+  task_environment_.FastForwardBy(base::Minutes(20));
+
+  // Set the `kChromeAppId` window as inactivated.
+  ModifyInstance(instance_id2, MuxId(profile(), kChromeAppId), window2.get(),
+                 kInactiveInstanceState);
+
+  // Set time passed 2 hours to record the usage time AppKM.
+  task_environment_.FastForwardBy(base::Minutes(86));
+
+  // The Lacros window is activated for 5 minutes before the chrome app tab is
+  // created, and the Lacros window is set as activated for 5 minutes again when
+  // the chrome app tab is inactivated.
+  VerifyAppUsageTimeUkm(app_constants::kLacrosAppId, /*duration=*/600000,
+                        AppTypeName::kStandaloneBrowser);
+  VerifyAppUsageTimeUkm(kChromeAppId1, /*duration=*/240000,
+                        AppTypeName::kStandaloneBrowser);
+  VerifyAppUsageTimeUkm(kChromeAppId, /*duration=*/1200000,
+                        AppTypeName::kStandaloneBrowserChromeApp);
+}
+
 TEST_P(AppPlatformMetricsServiceTest,
        UsageTimeUkmForWebAppWithStandaloneLacrosWindow) {
   if (!IsLacrosPrimary()) {
@@ -1792,6 +1880,28 @@ TEST_P(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
                          apps::mojom::InstallReason::kUser,
                          apps::mojom::InstallSource::kPlayStore,
                          InstallTime::kRunning);
+
+  // Install Chrome apps (hosted apps) during the running time.
+  std::string kChromeAppId1 = "bb";
+  std::string kChromeAppId2 = "cc";
+  InstallOneApp(MuxId(profile(), kChromeAppId1),
+                AppType::kStandaloneBrowserChromeApp, "BB", Readiness::kReady,
+                InstallSource::kChromeWebStore,
+                /*is_platform_app=*/false, WindowMode::kBrowser);
+  InstallOneApp(MuxId(profile(), kChromeAppId2),
+                AppType::kStandaloneBrowserChromeApp, "CC", Readiness::kReady,
+                InstallSource::kChromeWebStore,
+                /*is_platform_app=*/false, WindowMode::kWindow);
+
+  // Verify Chrome apps (hosted apps) installed during the running time.
+  VerifyInstalledAppsUkm(
+      "app://" + kChromeAppId1, AppTypeName::kStandaloneBrowser,
+      apps::mojom::InstallReason::kUser,
+      apps::mojom::InstallSource::kChromeWebStore, InstallTime::kRunning);
+  VerifyInstalledAppsUkm(
+      "app://" + kChromeAppId2, AppTypeName::kStandaloneBrowserChromeApp,
+      apps::mojom::InstallReason::kUser,
+      apps::mojom::InstallSource::kChromeWebStore, InstallTime::kRunning);
 }
 
 TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
@@ -1854,6 +1964,43 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
   VerifyAppLaunchPerAppTypeV2Histogram(
       1, AppTypeNameV2::kStandaloneBrowserChromeApp);
 
+  // Install Chrome apps (hosted apps) during the running time.
+  std::string kChromeAppId1 = "bb";
+  std::string kChromeAppId2 = "cc";
+  InstallOneApp(MuxId(profile(), kChromeAppId1),
+                AppType::kStandaloneBrowserChromeApp, "BB", Readiness::kReady,
+                InstallSource::kChromeWebStore,
+                /*is_platform_app=*/false, WindowMode::kBrowser);
+  InstallOneApp(MuxId(profile(), kChromeAppId2),
+                AppType::kStandaloneBrowserChromeApp, "CC", Readiness::kReady,
+                InstallSource::kChromeWebStore,
+                /*is_platform_app=*/false, WindowMode::kWindow);
+
+  // Launch `kChromeAppId1`.
+  proxy->Launch(
+      /*app_id=*/MuxId(profile(), kChromeAppId1), ui::EventFlags::EF_NONE,
+      apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
+  // Verify `kChromeAppId1` launching as kStandaloneBrowser.
+  VerifyAppsLaunchUkm("app://" + kChromeAppId1, AppTypeName::kStandaloneBrowser,
+                      apps::mojom::LaunchSource::kFromChromeInternal);
+  VerifyAppLaunchPerAppTypeHistogram(2 /*launch kLacrosAppId + kChromeAppId1*/,
+                                     AppTypeName::kStandaloneBrowser);
+  VerifyAppLaunchPerAppTypeV2Histogram(
+      2, AppTypeNameV2::kStandaloneBrowserChromeApp);
+
+  // Launch `kChromeAppId2` in a Lacros window tab.
+  proxy->Launch(
+      /*app_id=*/MuxId(profile(), kChromeAppId2), ui::EventFlags::EF_NONE,
+      apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
+  // Verify `kChromeAppId2` launching as kStandaloneBrowserChromeApp.
+  VerifyAppsLaunchUkm("app://" + kChromeAppId2,
+                      AppTypeName::kStandaloneBrowserChromeApp,
+                      apps::mojom::LaunchSource::kFromChromeInternal);
+  VerifyAppLaunchPerAppTypeHistogram(2 /*Launch kChromeAppId + kChromeAppId2*/,
+                                     AppTypeName::kStandaloneBrowserChromeApp);
+  VerifyAppLaunchPerAppTypeV2Histogram(
+      3, AppTypeNameV2::kStandaloneBrowserChromeApp);
+
   proxy->Launch(
       /*app_id=*/MuxId(profile(), kExtensionId), ui::EventFlags::EF_NONE,
       apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
@@ -1883,8 +2030,9 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
   if (IsLacrosPrimary()) {
     VerifyAppsLaunchUkm("https://foo2.com", AppTypeName::kStandaloneBrowser,
                         apps::mojom::LaunchSource::kFromTest);
-    VerifyAppLaunchPerAppTypeHistogram(2 /*Launch `kStandaloneBrowser` + `w2`*/,
-                                       AppTypeName::kStandaloneBrowser);
+    VerifyAppLaunchPerAppTypeHistogram(
+        3 /*Launch kLacrosAppId + kChromeAppId1 + `w2`*/,
+        AppTypeName::kStandaloneBrowser);
   } else {
     VerifyAppsLaunchUkm("https://foo2.com", AppTypeName::kChromeBrowser,
                         apps::mojom::LaunchSource::kFromTest);

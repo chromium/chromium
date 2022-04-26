@@ -153,6 +153,44 @@ AppTypeName GetAppTypeNameForWebApp(Profile* profile,
                                              : AppTypeName::kWeb;
 }
 
+AppTypeName GetAppTypeNameForStandaloneBrowserChromeApp(
+    Profile* profile,
+    const std::string& app_id,
+    apps::mojom::LaunchContainer container) {
+  AppTypeName app_type_name = AppTypeName::kStandaloneBrowser;
+  WindowMode window_mode = WindowMode::kUnknown;
+  AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache().ForOneApp(
+      app_id, [&app_type_name, &window_mode](const AppUpdate& update) {
+        DCHECK(update.AppType() == AppType::kStandaloneBrowserChromeApp);
+
+        // For platform apps, app type name is kStandaloneBrowserChromeApp;
+        if (update.IsPlatformApp().value_or(false)) {
+          app_type_name = AppTypeName::kStandaloneBrowserChromeApp;
+          return;
+        }
+
+        window_mode = update.WindowMode();
+      });
+
+  if (app_type_name == AppTypeName::kStandaloneBrowserChromeApp) {
+    return app_type_name;
+  }
+
+  switch (container) {
+    case apps::mojom::LaunchContainer::kLaunchContainerWindow:
+      return AppTypeName::kStandaloneBrowserChromeApp;
+    case apps::mojom::LaunchContainer::kLaunchContainerTab:
+      return AppTypeName::kStandaloneBrowser;
+    case apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated:
+    case apps::mojom::LaunchContainer::kLaunchContainerNone:
+      break;
+  }
+  return window_mode == WindowMode::kWindow ||
+                 window_mode == WindowMode::kTabbedWindow
+             ? AppTypeName::kStandaloneBrowserChromeApp
+             : AppTypeName::kStandaloneBrowser;
+}
+
 bool IsAshBrowserWindow(aura::Window* window) {
   Browser* browser = chrome::FindBrowserWithWindow(window->GetToplevelWindow());
   if (!browser || browser->is_type_app() || browser->is_type_app_popup()) {
@@ -256,7 +294,9 @@ AppTypeName GetAppTypeNameForWindow(Profile* profile,
     case AppType::kSystemWeb:
       return apps::AppTypeName::kSystemWeb;
     case AppType::kStandaloneBrowserChromeApp:
-      return apps::AppTypeName::kStandaloneBrowserChromeApp;
+      return IsLacrosBrowserWindow(profile, window)
+                 ? AppTypeName::kStandaloneBrowser
+                 : AppTypeName::kStandaloneBrowserChromeApp;
     case AppType::kExtension:
       return apps::AppTypeName::kExtension;
     case AppType::kStandaloneBrowserExtension:
@@ -391,7 +431,8 @@ AppTypeName GetAppTypeName(Profile* profile,
     case AppType::kSystemWeb:
       return apps::AppTypeName::kSystemWeb;
     case AppType::kStandaloneBrowserChromeApp:
-      return apps::AppTypeName::kStandaloneBrowserChromeApp;
+      return GetAppTypeNameForStandaloneBrowserChromeApp(profile, app_id,
+                                                         container);
     case AppType::kExtension:
       return apps::AppTypeName::kExtension;
     case AppType::kStandaloneBrowserExtension:

@@ -104,6 +104,14 @@ AppTypeName GetAppTypeNameForWebApp(Profile* profile,
                                     const std::string& app_id,
                                     apps::mojom::LaunchContainer container);
 
+// Determines what app type a chrome app in Lacros should be logged as based on
+// its launch container and app id. In particular, chrome apps in Lacros tabs
+// are logged as part of Lacros browser.
+AppTypeName GetAppTypeNameForStandaloneBrowserChromeApp(
+    Profile* profile,
+    const std::string& app_id,
+    apps::mojom::LaunchContainer container);
+
 // Returns false if |window| is a Chrome app window or a standalone web app
 // window. Otherwise, return true.
 bool IsAshBrowserWindow(aura::Window* window);
