@@ -168,7 +168,7 @@ source_set("blink_perf_tests_sources") {
   visibility = [ "*" ]
   testonly = true
 
-  sources = [ "tests/run_all_tests.cc" ]
+  sources = [ "tests/run_all_perftests.cc" ]
 
   deps = [
     ":controller",
