@@ -723,6 +723,54 @@ TEST(IdentifiabilityStudyStateStandaloneTest, CheapSurfaces) {
   EXPECT_LE(selected_surfaces, kMaxSelectedSurfaces);
 }
 
+TEST(IdentifiabilityStudyStateStandaloneTest, NoAllowedTypes) {
+  constexpr auto kExpectedSurfaceCount = 20;
+
+  test::ScopedPrivacyBudgetConfig::Parameters parameters;
+  parameters.active_surface_budget = kTestingActiveSurfaceBudget;
+  parameters.expected_surface_count = kExpectedSurfaceCount;
+  parameters.allowed_random_types = {
+      blink::IdentifiableSurface::Type::kWebFeature};
+  test::ScopedPrivacyBudgetConfig config(parameters);
+
+  TestingPrefServiceSimple pref_service;
+  prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
+  test_utils::InspectableIdentifiabilityStudyState state(&pref_service);
+  // Invoking ShouldRecordSurface() for kExpectedSurfaceCount surfaces should
+  // result in at least
+  unsigned selected_surfaces =
+      SimulateSurfaceSelectionRound(state, kExpectedSurfaceCount);
+  // We only allow kWebFeature, but SimulateSurfaceSelectionRound is trying to
+  // add kGenericFontLookup surfaces
+  const unsigned int expected_surfaces = 0;
+  EXPECT_EQ(selected_surfaces, expected_surfaces);
+}
+
+TEST(IdentifiabilityStudyStateStandaloneTest, OnlyAllowedTypes) {
+  constexpr auto kExpectedSurfaceCount = 20;
+
+  test::ScopedPrivacyBudgetConfig::Parameters parameters;
+  parameters.active_surface_budget = kTestingActiveSurfaceBudget;
+  parameters.expected_surface_count = kExpectedSurfaceCount;
+  parameters.allowed_random_types = {
+      blink::IdentifiableSurface::Type::kGenericFontLookup,
+      blink::IdentifiableSurface::Type::kWebFeature};
+  test::ScopedPrivacyBudgetConfig config(parameters);
+
+  TestingPrefServiceSimple pref_service;
+  prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
+  test_utils::InspectableIdentifiabilityStudyState state(&pref_service);
+  // Invoking ShouldRecordSurface() for kExpectedSurfaceCount surfaces should
+  // result in at least
+  unsigned selected_surfaces =
+      SimulateSurfaceSelectionRound(state, kExpectedSurfaceCount);
+  // We allow kWebFeature and kGenericFontLookup types, and
+  // SimulateSurfaceSelectionRound is trying to add kGenericFontLookup surfaces
+  // so we should sample at least one surface
+  const unsigned int min_expected_surfaces = 1;
+  EXPECT_GT(selected_surfaces, min_expected_surfaces);
+}
+
 TEST(IdentifiabilityStudyStateStandaloneTest, SomeSetOfGroups) {
   // Number of test groups. Arbitrary.
   constexpr unsigned kTestGroupCount = 80;

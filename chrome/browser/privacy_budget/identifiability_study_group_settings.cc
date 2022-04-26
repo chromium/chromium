@@ -29,7 +29,8 @@ IdentifiabilityStudyGroupSettings::InitFromFeatureParams() {
                   features::kIdentifiabilityStudyExpectedSurfaceCount.Get(),
                   features::kIdentifiabilityStudyActiveSurfaceBudget.Get(),
                   features::kIdentifiabilityStudyBlocks.Get(),
-                  features::kIdentifiabilityStudyBlockWeights.Get());
+                  features::kIdentifiabilityStudyBlockWeights.Get(),
+                  features::kIdentifiabilityStudyAllowedRandomTypes.Get());
 }
 
 // static
@@ -38,12 +39,14 @@ IdentifiabilityStudyGroupSettings IdentifiabilityStudyGroupSettings::InitFrom(
     int expected_surface_count,
     int surface_budget,
     const std::string& blocks,
-    const std::string& blocks_weights) {
+    const std::string& blocks_weights,
+    const std::string& allowed_random_types) {
   return IdentifiabilityStudyGroupSettings(
       enabled, !blocks.empty(), expected_surface_count, surface_budget,
       DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceBlocks>(blocks),
-      DecodeIdentifiabilityFieldTrialParam<std::vector<double>>(
-          blocks_weights));
+      DecodeIdentifiabilityFieldTrialParam<std::vector<double>>(blocks_weights),
+      DecodeIdentifiabilityFieldTrialParam<
+          std::vector<blink::IdentifiableSurface::Type>>(allowed_random_types));
 }
 
 IdentifiabilityStudyGroupSettings::IdentifiabilityStudyGroupSettings(
@@ -52,7 +55,8 @@ IdentifiabilityStudyGroupSettings::IdentifiabilityStudyGroupSettings(
     int expected_surface_count,
     int surface_budget,
     IdentifiableSurfaceBlocks blocks,
-    std::vector<double> blocks_weights)
+    std::vector<double> blocks_weights,
+    std::vector<blink::IdentifiableSurface::Type> allowed_random_types)
     : enabled_(enabled),
       is_using_assigned_block_sampling_(is_using_assigned_block_sampling),
       expected_surface_count_(base::clamp<int>(
@@ -64,7 +68,8 @@ IdentifiabilityStudyGroupSettings::IdentifiabilityStudyGroupSettings(
           0,
           features::kMaxIdentifiabilityStudyActiveSurfaceBudget)),
       blocks_(std::move(blocks)),
-      blocks_weights_(std::move(blocks_weights)) {
+      blocks_weights_(std::move(blocks_weights)),
+      allowed_random_types_(std::move(allowed_random_types)) {
   bool validates = Validate();
   UmaHistogramFinchConfigValidation(validates);
   if (!validates)
@@ -130,4 +135,10 @@ const std::vector<double>& IdentifiabilityStudyGroupSettings::blocks_weights()
     const {
   DCHECK(is_using_assigned_block_sampling_);
   return blocks_weights_;
+}
+
+const std::vector<blink::IdentifiableSurface::Type>&
+IdentifiabilityStudyGroupSettings::allowed_random_types() const {
+  DCHECK(!is_using_assigned_block_sampling_);
+  return allowed_random_types_;
 }

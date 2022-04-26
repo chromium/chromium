@@ -86,6 +86,11 @@ bool IdentifiabilityStudyState::ShouldRecordSurface(
   if (settings_.is_using_assigned_block_sampling())
     return false;
 
+  if ((settings_.allowed_random_types().size() > 0) &&
+      (!base::Contains(settings_.allowed_random_types(), surface.GetType()))) {
+    return false;
+  }
+
   if (!CanAddOneMoreActiveSurface())
     return false;
 

@@ -84,6 +84,22 @@ extern const base::FeatureParam<std::string> kIdentifiabilityStudyBlockedTypes;
 // Parameter type: int
 extern const base::FeatureParam<int> kIdentifiabilityStudyExpectedSurfaceCount;
 
+// Surface types allowed in the random assignment. If the parameter is empty or
+// invalid all types can be sampled. This does not have any effect on meta
+// surfaces (type 7), which are sampled in any case.
+//
+// Parameter name: "AllowedRandomTypes"
+// Parameter type: Comma separated list of decimal integers, each of which
+//     represents an IdentifiableSurface::Type.
+//
+// When specifying these values on the command-line, the commas should be
+// escaped using URL encoding. I.e. '1,2' -> '1%2C2'.
+//
+// E.g.:
+//  * "1, 2" : Matches all surfaces with types kWebFeature and kCanvasReadback.
+extern const base::FeatureParam<std::string>
+    kIdentifiabilityStudyAllowedRandomTypes;
+
 // Largest meaningful surface count. Based on observed data. In very rare cases
 // the overall number of surfaces will exceed this limit, but based on prior
 // measurements these cases account for a tiny fraction of the entire

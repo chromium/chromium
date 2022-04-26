@@ -22,6 +22,9 @@ const base::FeatureParam<std::string> kIdentifiabilityStudyBlockedMetrics = {
 const base::FeatureParam<std::string> kIdentifiabilityStudyBlockedTypes = {
     &kIdentifiabilityStudy, "BlockedTypes", ""};
 
+const base::FeatureParam<std::string> kIdentifiabilityStudyAllowedRandomTypes =
+    {&kIdentifiabilityStudy, "AllowedRandomTypes", ""};
+
 const base::FeatureParam<int> kIdentifiabilityStudyExpectedSurfaceCount = {
     &kIdentifiabilityStudy, "Rho", 0};
 

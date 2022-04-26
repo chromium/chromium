@@ -24,7 +24,8 @@ class IdentifiabilityStudyGroupSettings {
       int expected_surface_count,
       int surface_budget,
       const std::string& blocks,
-      const std::string& blocks_weights);
+      const std::string& blocks_weights,
+      const std::string& allowed_random_types);
 
   IdentifiabilityStudyGroupSettings(const IdentifiabilityStudyGroupSettings&) =
       delete;
@@ -46,17 +47,21 @@ class IdentifiabilityStudyGroupSettings {
 
   const IdentifiableSurfaceBlocks& blocks() const;
   const std::vector<double>& blocks_weights() const;
+  const std::vector<blink::IdentifiableSurface::Type>& allowed_random_types()
+      const;
 
   int expected_surface_count() const { return expected_surface_count_; }
   int surface_budget() const { return surface_budget_; }
 
  private:
-  IdentifiabilityStudyGroupSettings(bool enabled,
-                                    bool is_using_assigned_block_sampling_,
-                                    int surface_count,
-                                    int surface_budget,
-                                    IdentifiableSurfaceBlocks blocks,
-                                    std::vector<double> blocks_weights);
+  IdentifiabilityStudyGroupSettings(
+      bool enabled,
+      bool is_using_assigned_block_sampling_,
+      int surface_count,
+      int surface_budget,
+      IdentifiableSurfaceBlocks blocks,
+      std::vector<double> blocks_weights,
+      std::vector<blink::IdentifiableSurface::Type> allowed_random_types);
 
   bool Validate();
   bool ValidateAssignedBlockSampling();
@@ -74,6 +79,10 @@ class IdentifiabilityStudyGroupSettings {
   const IdentifiableSurfaceBlocks blocks_;
 
   const std::vector<double> blocks_weights_;
+
+  // Surface types to sample from when random surface sampling is enabled. If
+  // this vector is empty all surface types are allowed to be sampled.
+  const std::vector<blink::IdentifiableSurface::Type> allowed_random_types_;
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_BUDGET_IDENTIFIABILITY_STUDY_GROUP_SETTINGS_H_

@@ -14,7 +14,7 @@ class IdentifiabilityStudyGroupSettingsTest : public testing::Test {
 
 TEST_F(IdentifiabilityStudyGroupSettingsTest, Disabled) {
   auto settings =
-      IdentifiabilityStudyGroupSettings::InitFrom(false, 10, 40, "", "");
+      IdentifiabilityStudyGroupSettings::InitFrom(false, 10, 40, "", "", "");
   EXPECT_FALSE(settings.enabled());
   histogram_tester.ExpectUniqueSample(
       "PrivacyBudget.Identifiability.FinchConfigValidationResult", true, 1);
@@ -22,7 +22,7 @@ TEST_F(IdentifiabilityStudyGroupSettingsTest, Disabled) {
 
 TEST_F(IdentifiabilityStudyGroupSettingsTest, DisabledBySurfaceCountZero) {
   auto settings =
-      IdentifiabilityStudyGroupSettings::InitFrom(true, 0, 40, "", "");
+      IdentifiabilityStudyGroupSettings::InitFrom(true, 0, 40, "", "", "");
   EXPECT_FALSE(settings.enabled());
   histogram_tester.ExpectUniqueSample(
       "PrivacyBudget.Identifiability.FinchConfigValidationResult", false, 1);
@@ -30,18 +30,23 @@ TEST_F(IdentifiabilityStudyGroupSettingsTest, DisabledBySurfaceCountZero) {
 
 TEST_F(IdentifiabilityStudyGroupSettingsTest, ValidRandomSurfaceSampling) {
   auto settings =
-      IdentifiabilityStudyGroupSettings::InitFrom(true, 10, 40, "", "");
+      IdentifiabilityStudyGroupSettings::InitFrom(true, 10, 40, "", "", "1,4");
   EXPECT_TRUE(settings.enabled());
   EXPECT_FALSE(settings.is_using_assigned_block_sampling());
   EXPECT_EQ(10, settings.expected_surface_count());
   EXPECT_EQ(40, settings.surface_budget());
+  const std::vector<blink::IdentifiableSurface::Type> expected_allowed_types{
+      blink::IdentifiableSurface::Type::kWebFeature,
+      blink::IdentifiableSurface::Type::kGenericFontLookup};
+  EXPECT_EQ(expected_allowed_types, settings.allowed_random_types());
+
   histogram_tester.ExpectUniqueSample(
       "PrivacyBudget.Identifiability.FinchConfigValidationResult", true, 1);
 }
 
 TEST_F(IdentifiabilityStudyGroupSettingsTest, ValidAssignedBlockSampling) {
   auto settings = IdentifiabilityStudyGroupSettings::InitFrom(
-      true, 0, 0, "1;2,3;4,5;6", "1,1,1");
+      true, 0, 0, "1;2,3;4,5;6", "1,1,1", "");
   EXPECT_TRUE(settings.enabled());
   EXPECT_TRUE(settings.is_using_assigned_block_sampling());
   histogram_tester.ExpectUniqueSample(
@@ -50,7 +55,7 @@ TEST_F(IdentifiabilityStudyGroupSettingsTest, ValidAssignedBlockSampling) {
 
 TEST_F(IdentifiabilityStudyGroupSettingsTest, InvalidNegativeWeight) {
   auto settings = IdentifiabilityStudyGroupSettings::InitFrom(
-      true, 0, 0, "1;2,3;4,5;6", "-1,1,1");
+      true, 0, 0, "1;2,3;4,5;6", "-1,1,1", "");
   EXPECT_FALSE(settings.enabled());
   histogram_tester.ExpectUniqueSample(
       "PrivacyBudget.Identifiability.FinchConfigValidationResult", false, 1);
@@ -58,7 +63,7 @@ TEST_F(IdentifiabilityStudyGroupSettingsTest, InvalidNegativeWeight) {
 
 TEST_F(IdentifiabilityStudyGroupSettingsTest, InvalidSurfaceTooLikely) {
   auto settings = IdentifiabilityStudyGroupSettings::InitFrom(
-      true, 0, 0, "1;2,1;4,5;6", "1,1,1");
+      true, 0, 0, "1;2,1;4,5;6", "1,1,1", "");
   EXPECT_FALSE(settings.enabled());
   histogram_tester.ExpectUniqueSample(
       "PrivacyBudget.Identifiability.FinchConfigValidationResult", false, 1);

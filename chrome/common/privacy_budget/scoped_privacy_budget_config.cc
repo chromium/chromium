@@ -79,6 +79,12 @@ void ScopedPrivacyBudgetConfig::Apply(const Parameters& parameters) {
          EncodeIdentifiabilityFieldTrialParam(parameters.blocked_types)});
   }
 
+  if (!parameters.allowed_random_types.empty()) {
+    ftp.insert({features::kIdentifiabilityStudyAllowedRandomTypes.name,
+                EncodeIdentifiabilityFieldTrialParam(
+                    parameters.allowed_random_types)});
+  }
+
   ftp.insert({features::kIdentifiabilityStudyExpectedSurfaceCount.name,
               base::NumberToString(parameters.expected_surface_count)});
 

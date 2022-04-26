@@ -60,6 +60,7 @@ class ScopedPrivacyBudgetConfig {
     SurfaceSetEquivalentClassesList equivalence_classes;
     IdentifiableSurfaceBlocks blocks;
     std::vector<double> block_weights;
+    std::vector<blink::IdentifiableSurface::Type> allowed_random_types;
   };
 
   enum Presets {
