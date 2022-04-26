@@ -337,9 +337,8 @@ void IndexedDBDispatcherHost::Open(
 
   // TODO(dgrogan): Don't let a non-existing database be opened (and therefore
   // created) if this origin is already over quota.
-  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
-  indexed_db_context_->GetIDBFactory()->Open(
-      name, std::move(connection), bucket_locator.storage_key, indexed_db_path);
+  indexed_db_context_->GetIDBFactory()->Open(name, std::move(connection),
+                                             bucket_locator, indexed_db_path);
 }
 
 void IndexedDBDispatcherHost::DeleteDatabase(
@@ -365,10 +364,8 @@ void IndexedDBDispatcherHost::DeleteDatabase(
       IDBTaskRunner());
 
   base::FilePath indexed_db_path = indexed_db_context_->data_path();
-  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   indexed_db_context_->GetIDBFactory()->DeleteDatabase(
-      name, std::move(callbacks), bucket_locator.storage_key, indexed_db_path,
-      force_close);
+      name, std::move(callbacks), bucket_locator, indexed_db_path, force_close);
 }
 
 void IndexedDBDispatcherHost::AbortTransactionsAndCompactDatabase(

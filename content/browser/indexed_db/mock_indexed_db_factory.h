@@ -39,14 +39,15 @@ class MockIndexedDBFactory : public IndexedDBFactory {
   // Googlemock can't deal with move-only types, so *Proxy() is a workaround.
   void Open(const std::u16string& name,
             std::unique_ptr<IndexedDBPendingConnection> connection,
-            const blink::StorageKey& storage_key,
+            const storage::BucketLocator& bucket_locator,
             const base::FilePath& data_directory) override {
-    OpenProxy(name, connection.get(), storage_key, data_directory);
+    OpenProxy(name, connection.get(), bucket_locator.storage_key,
+              data_directory);
   }
   MOCK_METHOD5(DeleteDatabase,
                void(const std::u16string& name,
                     scoped_refptr<IndexedDBCallbacks> callbacks,
-                    const blink::StorageKey& storage_key,
+                    const storage::BucketLocator& bucket_locator,
                     const base::FilePath& data_directory,
                     bool force_close));
   MOCK_METHOD2(AbortTransactionsAndCompactDatabaseProxy,
