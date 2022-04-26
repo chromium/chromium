@@ -55,6 +55,7 @@ PACKAGE_FILTER = set([
     "libpangocairo-1.0-0",
     "libstdc++6",
     "libuuid1",
+    "libwayland-client0",
     "libx11-6",
     "libx11-xcb1",
     "libxcb1",

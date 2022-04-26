@@ -44,3 +44,6 @@ libcurl.so.4()(64bit)
 
 # For OS integration.
 xdg-utils
+
+# For ANGLE with Wayland support
+libwayland-client
