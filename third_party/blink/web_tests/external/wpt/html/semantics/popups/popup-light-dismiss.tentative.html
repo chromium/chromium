@@ -20,68 +20,28 @@
 <div popup=popup id=p2 anchor=b2>
   <span id=inside2>Inside popup 2</span>
 </div>
-
-<button id=b3 togglepopup=p3>Popup 3 - button 3
-  <div popup=popup id=p4>Inside popup 4</div>
-</button>
-<div popup=popup id=p3>Inside popup 3</div>
-<button id=b4 popup=p3>Popup 3 - button 4
-  <div popup=popup id=p5>Inside popup 5</div>
-</button>
-
-<div popup=popup id=p6>Inside popup 6
-  <div style="height:2000px;background:lightgreen"></div>
-  Bottom of popup6
-</div>
-<button popup=p6>Popup 6</button>
-
-<my-element id="myElement">
-  <template shadowroot="open">
-    <button id=b7 onclick='showPopup7()'>Popup7</button>
-    <div popup=popup id=p7 anchor=b7 style="top: 100px;">
-      <p>Popup content.</p>
-      <input id="inside7" type="text" placeholder="some text">
-    </div>
-  </template>
-</my-element>
-
-<div popup=popup id=p8 anchor=p8anchor>
-  <button>Button</button>
-  <span id=inside8after>Inside popup 8 after button</span>
-</div>
-<button id=p8anchor>Popup8 anchor (no action)</button>
-
-<div popup=popup id=p9>
-  <button>Button</button>
-  <span id=inside9after>Inside popup 9 after button</span>
-</div>
-<button id=b9after togglepopup='p9'>Popup 9</button>
-
-
+<button id=after_p1>Next control after popup1</button>
 <style>
-  #p1 { top:50px; }
-  #p2 { top:50px; left:250px; }
-  #p3 { top:150px;}
-  #p4 { top:150px; left:250px;}
-  #p5 { top:250px;}
-  #p6 {
-    top: 50px;
-    left:150px;
-    width: 300px;
-    height: 300px;
-    overflow-y: scroll;
-  }
-  popup { border: 5px solid red; }
+  #p1 {top: 50px;}
+  #p2 {top: 120px;}
 </style>
-
-
 <script>
-  function clickOn(element) {
+  function spinEventLoop() {
+    return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  }
+  async function clickOn(element) {
     const actions = new test_driver.Actions();
-    return actions.pointerMove(0, 0, {origin: element})
-      .pointerDown({button: actions.ButtonType.LEFT})
-      .pointerUp({button: actions.ButtonType.LEFT})
-      .send();
+    await spinEventLoop();
+    await actions.pointerMove(0, 0, {origin: element})
+        .pointerDown({button: actions.ButtonType.LEFT})
+        .pointerUp({button: actions.ButtonType.LEFT})
+        .send();
+    await spinEventLoop();
+  }
+  async function sendTab() {
+    await spinEventLoop();
+    await new test_driver.send_keys(document.body,'\uE004'); // Tab
+    await spinEventLoop();
   }
 
   const popup1 = document.querySelector('#p1');
@@ -92,19 +52,8 @@
   const outside = document.querySelector('#outside');
   const inside1 = document.querySelector('#inside1');
   const inside2 = document.querySelector('#inside2');
-  const button3 = document.querySelector('#b3');
-  const button4 = document.querySelector('#b4');
-  const popup3 = document.querySelector('#p3');
-  const popup4 = document.querySelector('#p4');
-  const popup5 = document.querySelector('#p5');
-  const popup6 = document.querySelector('#p6');
-  const button7 = document.querySelector('#myElement').shadowRoot.querySelector('#b7');
-  const popup7 = document.querySelector('#myElement').shadowRoot.querySelector('#p7');
-  const inside7 = document.querySelector('#myElement').shadowRoot.querySelector('#inside7');
+  const afterp1 = document.querySelector('#after_p1');
 
-  function showPopup7() {
-    popup7.showPopup();
-  }
   let popup1HideCount = 0;
   popup1.addEventListener('hide',(e) => {
     ++popup1HideCount;
@@ -115,15 +64,11 @@
     ++popup2HideCount;
     e.preventDefault(); // 'hide' should not be cancellable.
   });
-  function spinEventLoop() {
-    return new Promise(resolve => requestAnimationFrame(resolve));
-  }
-
   promise_test(async () => {
     assert_false(popup1.matches(':popup-open'));
     popup1.showPopup();
-    let p1HideCount = popup1HideCount;
     assert_true(popup1.matches(':popup-open'));
+    let p1HideCount = popup1HideCount;
     await clickOn(outside);
     assert_false(popup1.matches(':popup-open'));
     assert_equals(popup1HideCount,p1HideCount+1);
@@ -132,6 +77,7 @@
   promise_test(async () => {
     assert_false(popup1.matches(':popup-open'));
     popup1.showPopup();
+    await spinEventLoop();
     p1HideCount = popup1HideCount;
     await clickOn(inside1);
     assert_true(popup1.matches(':popup-open'));
@@ -144,8 +90,8 @@
     popup1.showPopup();
     await clickOn(inside1After);
     assert_true(popup1.matches(':popup-open'));
-    await new test_driver.send_keys(document.body,'\uE004'); // Tab
-    assert_equals(document.activeElement,button3,'Focus should move to a button outside the popup');
+    await sendTab();
+    assert_equals(document.activeElement,afterp1,'Focus should move to a button outside the popup');
     assert_false(popup1.matches(':popup-open'));
   },'Moving focus outside the popup will dismiss the popup');
 
@@ -191,27 +137,6 @@
   },'Clicking on anchor element (that isn\'t an invoking element) shouldn\'t close its popup');
 
   promise_test(async () => {
-    await clickOn(button3);
-    assert_true(popup3.matches(':popup-open'),'invoking element should open popup');
-    popup4.showPopup();
-    assert_true(popup4.matches(':popup-open'));
-    assert_true(popup3.matches(':popup-open'));
-    popup3.hidePopup(); // Cleanup
-    assert_false(popup3.matches(':popup-open'));
-  },'An invoking element should be part of the ancestor chain');
-
-  promise_test(async () => {
-    await clickOn(button3);
-    assert_true(popup3.matches(':popup-open'));
-    assert_false(popup4.matches(':popup-open'));
-    assert_false(popup5.matches(':popup-open'));
-    popup5.showPopup();
-    assert_true(popup5.matches(':popup-open'));
-    assert_false(popup3.matches(':popup-open'));
-    popup5.hidePopup();
-  },'An invoking element that was not used to invoke the popup should NOT be part of the ancestor chain');
-
-  promise_test(async () => {
     popup1.showPopup();
     popup2.showPopup(); // Popup1 is an ancestral element for popup2.
     assert_true(popup1.matches(':popup-open'));
@@ -228,7 +153,66 @@
     popup1.hidePopup();
     assert_false(popup2.matches(':popup-open'));
   },'Dragging from an open popup outside an open popup should leave the popup open');
+</script>
 
+<button id=b3 togglepopup=p3>Popup 3 - button 3
+  <div popup=popup id=p4>Inside popup 4</div>
+</button>
+<div popup=popup id=p3>Inside popup 3</div>
+<button id=b4 togglepopup=p3>Popup 3 - button 4
+  <div popup=popup id=p5>Inside popup 5</div>
+</button>
+<style>
+  #p3 {top:100px;}
+  #p4 {top:200px;}
+  #p5 {top:200px;}
+</style>
+<script>
+  const popup3 = document.querySelector('#p3');
+  const popup4 = document.querySelector('#p4');
+  const popup5 = document.querySelector('#p5');
+  const button3 = document.querySelector('#b3');
+  promise_test(async () => {
+    await clickOn(button3);
+    assert_true(popup3.matches(':popup-open'),'invoking element should open popup');
+    popup4.showPopup();
+    assert_true(popup4.matches(':popup-open'));
+    assert_true(popup3.matches(':popup-open'));
+    popup3.hidePopup(); // Cleanup
+    assert_false(popup3.matches(':popup-open'));
+    assert_false(popup4.matches(':popup-open'));
+  },'An invoking element should be part of the ancestor chain');
+
+  promise_test(async () => {
+    await clickOn(button3);
+    assert_true(popup3.matches(':popup-open'));
+    assert_false(popup4.matches(':popup-open'));
+    assert_false(popup5.matches(':popup-open'));
+    popup5.showPopup();
+    assert_true(popup3.matches(':popup-open'));
+    assert_false(popup4.matches(':popup-open'));
+    assert_true(popup5.matches(':popup-open'));
+    popup3.hidePopup();
+    assert_false(popup3.matches(':popup-open'));
+    assert_false(popup4.matches(':popup-open'));
+    assert_false(popup5.matches(':popup-open'));
+  },'An invoking element that was not used to invoke the popup can still be part of the ancestor chain');
+</script>
+
+<div popup=popup id=p6>Inside popup 6
+  <div style="height:2000px;background:lightgreen"></div>
+  Bottom of popup6
+</div>
+<button togglepopup=p6>Popup 6</button>
+<style>
+  #p6 {
+    width: 300px;
+    height: 300px;
+    overflow-y: scroll;
+  }
+</style>
+<script>
+  const popup6 = document.querySelector('#p6');
   promise_test(async () => {
     popup6.showPopup();
     assert_equals(popup6.scrollTop,0,'popup6 should start non-scrolled');
@@ -239,7 +223,24 @@
     assert_equals(popup6.scrollTop,50,'popup6 should be scrolled');
     popup6.hidePopup();
   },'Scrolling within a popup should not close the popup');
+</script>
 
+<my-element id="myElement">
+  <template shadowroot="open">
+    <button id=b7 onclick='showPopup7()'>Popup7</button>
+    <div popup=popup id=p7 anchor=b7 style="top: 100px;">
+      <p>Popup content.</p>
+      <input id="inside7" type="text" placeholder="some text">
+    </div>
+  </template>
+</my-element>
+<script>
+  const button7 = document.querySelector('#myElement').shadowRoot.querySelector('#b7');
+  const popup7 = document.querySelector('#myElement').shadowRoot.querySelector('#p7');
+  const inside7 = document.querySelector('#myElement').shadowRoot.querySelector('#inside7');
+  function showPopup7() {
+    popup7.showPopup();
+  }
   promise_test(async () => {
     button7.click();
     assert_true(popup7.matches(':popup-open'),'invoking element should open popup');
@@ -255,7 +256,14 @@
     await clickOn(outside);
     assert_false(popup7.matches(':popup-open'));
   },'Clicking outside a shadow DOM popup should close that popup');
+</script>
 
+<div popup=popup id=p8 anchor=p8anchor>
+  <button>Button</button>
+  <span id=inside8after>Inside popup 8 after button</span>
+</div>
+<button id=p8anchor>Popup8 anchor (no action)</button>
+<script>
   promise_test(async () => {
     const popup8 = document.querySelector('#p8');
     const inside8After = document.querySelector('#inside8after');
@@ -264,12 +272,19 @@
     popup8.showPopup();
     await clickOn(inside8After);
     assert_true(popup8.matches(':popup-open'));
-    await new test_driver.send_keys(document.body,'\uE004'); // Tab
+    await sendTab();
     assert_equals(document.activeElement,popup8Anchor,'Focus should move to the anchor element');
     assert_true(popup8.matches(':popup-open'),'popup should stay open');
     popup8.hidePopup();
   },'Moving focus back to the anchor element should not dismiss the popup');
+</script>
 
+<div popup=popup id=p9>
+  <button>Button</button>
+  <span id=inside9after>Inside popup 9 after button</span>
+</div>
+<button id=b9after togglepopup='p9'>Popup 9</button>
+<script>
   promise_test(async () => {
     const popup9 = document.querySelector('#p9');
     const inside9After = document.querySelector('#inside9after');
@@ -278,7 +293,7 @@
     popup9Invoker.click(); // Trigger via the button
     await clickOn(inside9After);
     assert_true(popup9.matches(':popup-open'));
-    await new test_driver.send_keys(document.body,'\uE004'); // Tab
+    await sendTab();
     assert_equals(document.activeElement,popup9Invoker,'Focus should move to the invoking element');
     assert_true(popup9.matches(':popup-open'),'popup should stay open');
     popup9.hidePopup();
@@ -292,9 +307,84 @@
     popup9.showPopup(); // Trigger directly
     await clickOn(inside9After);
     assert_true(popup9.matches(':popup-open'));
-    await new test_driver.send_keys(document.body,'\uE004'); // Tab
+    await sendTab();
     assert_equals(document.activeElement,popup9Invoker,'Focus should move to the invoking element');
-    assert_false(popup9.matches(':popup-open'),'popup should close - triggering element was not used');
-  },'Moving focus back to the inactive trigger element should dismiss the popup');
+    assert_true(popup9.matches(':popup-open'),'popup should stay open - even though the trigger wasn\'t used, it points to this popup');
+  },'Moving focus back to an inactive trigger element should also *not* dismiss the popup');
+</script>
 
+
+<!-- Convoluted ancestor relationship -->
+<div popup=popup id=convoluted_p1>Popup 1
+  <div id=convoluted_anchor>Anchor
+    <button togglepopup=convoluted_p2>Open Popup 2</button>
+    <div popup=popup id=convoluted_p4><p>Popup 4</p></div>
+  </div>
+</div>
+<div popup=popup id=convoluted_p2>Popup 2
+  <button togglepopup=convoluted_p3>Open Popup 3</button>
+</div>
+<div popup=popup id=convoluted_p3 anchor=convoluted_anchor>Popup 3
+  <button togglepopup=convoluted_p4>Open Popup 4</button>
+</div>
+<button onclick="convoluted_p1.showPopup()">Open convoluted popup</button>
+<style>
+  #convoluted_p1 {top:50px;}
+  #convoluted_p2 {top:150px;}
+  #convoluted_p3 {top:250px;}
+  #convoluted_p4 {top:350px;}
+</style>
+<script>
+const convPopup1 = document.querySelector('#convoluted_p1');
+const convPopup2 = document.querySelector('#convoluted_p2');
+const convPopup3 = document.querySelector('#convoluted_p3');
+const convPopup4 = document.querySelector('#convoluted_p4');
+promise_test(async () => {
+  convPopup1.showPopup(); // Programmatically open p1
+  assert_true(convPopup1.matches(':popup-open'));
+  convPopup1.querySelector('button').click(); // Click to invoke p2
+  assert_true(convPopup1.matches(':popup-open'));
+  assert_true(convPopup2.matches(':popup-open'));
+  convPopup2.querySelector('button').click(); // Click to invoke p3
+  assert_true(convPopup1.matches(':popup-open'));
+  assert_true(convPopup2.matches(':popup-open'));
+  assert_true(convPopup3.matches(':popup-open'));
+  convPopup3.querySelector('button').click(); // Click to invoke p4
+  assert_true(convPopup1.matches(':popup-open'));
+  assert_true(convPopup2.matches(':popup-open'));
+  assert_true(convPopup3.matches(':popup-open'));
+  assert_true(convPopup4.matches(':popup-open'));
+  convPopup4.firstElementChild.click(); // Click within p4
+  assert_true(convPopup1.matches(':popup-open'));
+  assert_true(convPopup2.matches(':popup-open'));
+  assert_true(convPopup3.matches(':popup-open'));
+  assert_true(convPopup4.matches(':popup-open'));
+  convPopup1.hidePopup();
+  assert_false(convPopup1.matches(':popup-open'));
+  assert_false(convPopup2.matches(':popup-open'));
+  assert_false(convPopup3.matches(':popup-open'));
+  assert_false(convPopup4.matches(':popup-open'));
+},'Ensure circular/convoluted ancestral relationships are functional');
+
+promise_test(async () => {
+  convPopup1.showPopup(); // Programmatically open p1
+  convPopup1.querySelector('button').click(); // Click to invoke p2
+  assert_true(convPopup1.matches(':popup-open'));
+  assert_true(convPopup2.matches(':popup-open'));
+  assert_false(convPopup3.matches(':popup-open'));
+  assert_false(convPopup4.matches(':popup-open'));
+  convPopup4.showPopup(); // Programmatically open p4
+  assert_true(convPopup1.matches(':popup-open'),'popup1 stays open because it is a DOM ancestor of popup4');
+  assert_false(convPopup2.matches(':popup-open'),'popup2 closes because it isn\'t connected to popup4 via active invokers');
+  assert_true(convPopup4.matches(':popup-open'));
+  convPopup4.firstElementChild.click(); // Click within p4
+  assert_true(convPopup1.matches(':popup-open'),'nothing changes');
+  assert_false(convPopup2.matches(':popup-open'));
+  assert_true(convPopup4.matches(':popup-open'));
+  convPopup1.hidePopup();
+  assert_false(convPopup1.matches(':popup-open'));
+  assert_false(convPopup2.matches(':popup-open'));
+  assert_false(convPopup3.matches(':popup-open'));
+  assert_false(convPopup4.matches(':popup-open'));
+},'Ensure circular/convoluted ancestral relationships are functional, with a direct showPopup()');
 </script>

@@ -45,6 +45,10 @@ class HTMLButtonElement final : public HTMLFormControlElement {
                          mojom::blink::FocusType,
                          InputDeviceCapabilities*) override;
 
+  // Retrieves the element pointed to by the 'togglepopup' content attribute,
+  // if that element a) exists, and b) is a valid Popup element.
+  Element* togglePopupElement() const;
+
  private:
   enum Type { kSubmit, kReset, kButton };
 
@@ -60,10 +64,6 @@ class HTMLButtonElement final : public HTMLFormControlElement {
   bool IsPresentationAttribute(const QualifiedName&) const override;
   void DefaultEventHandler(Event&) override;
   bool HasActivationBehavior() const override;
-
-  // Retrieves the element pointed to by the 'togglepopup' content attribute,
-  // if that element a) exists, and b) is a valid Popup element.
-  Element* togglePopupElement() const;
 
   void AppendToFormData(FormData&) override;
 
