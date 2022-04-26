@@ -35,8 +35,7 @@ export class LearnMode {
     chrome.accessibilityPrivate.onAccessibilityGesture.addListener(
         LearnMode.onAccessibilityGesture);
     chrome.accessibilityPrivate.setKeyboardListener(true, true);
-    chrome.runtime.sendMessage(
-        {target: 'BrailleCommandHandler', action: 'setEnabled', value: false});
+    await BackgroundBridge.BrailleCommandHandler.setEnabled(false);
     chrome.runtime.sendMessage(
         {target: 'GestureCommandHandler', action: 'setEnabled', value: false});
 
@@ -52,6 +51,11 @@ export class LearnMode {
         return;
       }
 
+      if (message['context'] === 'test') {
+        // Zero out the min touch explore time for tests.
+        LearnMode.MIN_TOUCH_EXPLORE_OUTPUT_TIME_MS_ = 0;
+      }
+
       switch (message['action']) {
         case 'onKeyDown':
         case 'onKeyUp':
@@ -59,8 +63,6 @@ export class LearnMode {
         case 'onBrailleKeyEvent':
           LearnMode[message['action']].apply(LearnMode, message['args']);
           break;
-        case 'clearTouchExploreOutputTime':
-          LearnMode.MIN_TOUCH_EXPLORE_OUTPUT_TIME_MS_ = 0;
       }
     });
   }
@@ -289,7 +291,7 @@ export class LearnMode {
   }
 
   /** @private */
-  static resetListeners_() {
+  static async resetListeners_() {
     window.backgroundWindow.removeEventListener(
         'keydown', LearnMode.onKeyDown, true);
     window.backgroundWindow.removeEventListener(
@@ -301,8 +303,7 @@ export class LearnMode {
     chrome.accessibilityPrivate.onAccessibilityGesture.removeListener(
         LearnMode.onAccessibilityGesture);
     chrome.accessibilityPrivate.setKeyboardListener(true, false);
-    chrome.runtime.sendMessage(
-        {target: 'BrailleCommandHandler', action: 'setEnabled', value: true});
+    await BackgroundBridge.BrailleCommandHandler.setEnabled(true);
     chrome.runtime.sendMessage(
         {target: 'GestureCommandHandler', action: 'setEnabled', value: true});
   }
@@ -324,9 +325,9 @@ export class LearnMode {
   }
 
   /** @private */
-  static close_() {
+  static async close_() {
     LearnMode.output(Msgs.getMsg('learn_mode_outtro'));
-    LearnMode.resetListeners_();
+    await LearnMode.resetListeners_();
     window.close();
   }
 }

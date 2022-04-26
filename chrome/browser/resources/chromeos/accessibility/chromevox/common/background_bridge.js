@@ -27,6 +27,14 @@ BackgroundBridge.BrailleBackground = {
   },
 };
 
+BackgroundBridge.BrailleCommandHandler = {
+  /** @param {boolean} enabled */
+  async setEnabled(enabled) {
+    return BridgeHelper.sendMessage(
+        'BrailleCommandHandler', 'setEnabled', enabled);
+  },
+};
+
 BackgroundBridge.ChromeVoxPrefs = {
   /**
    * Get the prefs (not including keys).
