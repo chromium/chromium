@@ -17,8 +17,6 @@ namespace blink {
 class ShadowList;
 
 struct CORE_EXPORT TextPaintStyle {
-  STACK_ALLOCATED();
-
  public:
   Color current_color;
   Color fill_color;

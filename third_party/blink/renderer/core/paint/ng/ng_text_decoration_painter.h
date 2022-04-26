@@ -45,6 +45,12 @@ class CORE_EXPORT NGTextDecorationPainter {
       NGHighlightPainter::SelectionPaintState* selection);
   ~NGTextDecorationPainter();
 
+  // Sets the given optional to a new TextDecorationInfo with the decorations
+  // that need to be painted, or nullopt if decorations should not be painted.
+  void UpdateDecorationInfo(absl::optional<TextDecorationInfo>&,
+                            const ComputedStyle&,
+                            const TextPaintStyle&);
+
   enum Phase { kOriginating, kSelection };
   void Begin(Phase phase);
   void PaintExceptLineThrough();

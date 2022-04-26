@@ -323,8 +323,8 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
                                              rotated_box, selection);
   NGHighlightPainter highlight_painter(
       fragment_paint_info, text_painter, decoration_painter, paint_info,
-      cursor_, *cursor_.CurrentItem(), physical_box.offset, style, selection,
-      is_printing);
+      cursor_, *cursor_.CurrentItem(), rotation, rotated_box,
+      physical_box.offset, style, text_style, selection, is_printing);
 
   if (svg_inline_text) {
     NGTextPainter::SvgTextPaintState& svg_state = text_painter.SetSvgState(
@@ -397,7 +397,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
 
   if (LIKELY(!highlight_painter.Selection() &&
              (!RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled() ||
-              highlight_painter.Layers().size() == 1))) {
+              highlight_painter.LayerCount() == 1))) {
     // Fast path: just paint the text, including its shadows.
     decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
     decoration_painter.PaintExceptLineThrough();
@@ -418,11 +418,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     DCHECK(RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled());
     // New slow path: paint suppressing text proper where highlighted, then
     // paint each highlight overlay, suppressing unless topmost highlight.
-    // TODO(crbug.com/1147859) suppress for ::selection too (regression)
-    decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
-    decoration_painter.PaintExceptLineThrough();
     highlight_painter.PaintOriginatingText(text_style, node_id, auto_dark_mode);
-    decoration_painter.PaintOnlyLineThrough();
 
     highlight_painter.PaintHighlightOverlays(
         text_style, node_id, auto_dark_mode, paint_marker_backgrounds,
