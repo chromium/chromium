@@ -2534,7 +2534,7 @@ void WebViewImpl::DispatchPageshow(base::TimeTicks navigation_start) {
     if (frame->DomWindow() && frame->DomWindow()->IsLocalDOMWindow()) {
       frame->DomWindow()->ToLocalDOMWindow()->DispatchPersistedPageshowEvent(
           navigation_start);
-      if (frame->IsMainFrame()) {
+      if (frame->IsOutermostMainFrame()) {
         UMA_HISTOGRAM_BOOLEAN(
             "BackForwardCache.MainFrameHasPageshowListenersOnRestore",
             frame->DomWindow()->ToLocalDOMWindow()->HasEventListeners(
