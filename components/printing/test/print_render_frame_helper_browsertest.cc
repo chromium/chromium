@@ -30,6 +30,7 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/page_range.h"
 #include "printing/print_job_constants.h"
+#include "printing/printing_utils.h"
 #include "printing/units.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -999,11 +1000,14 @@ class PrintRenderFrameHelperPreviewTest
   void VerifyPrintPreviewGenerated(bool expect_generated) {
     ASSERT_EQ(expect_generated, preview_ui()->IsMetafileReadyForPrinting());
     if (preview_ui()->IsMetafileReadyForPrinting()) {
-      EXPECT_NE(nullptr, preview_ui()->did_preview_document_params());
+      ASSERT_TRUE(preview_ui()->did_preview_document_params());
       const auto& param = *preview_ui()->did_preview_document_params();
       EXPECT_NE(0, param.document_cookie);
       EXPECT_NE(0U, param.expected_pages_count);
-      EXPECT_NE(0U, param.content->metafile_data_region.GetSize());
+
+      auto mapped = param.content->metafile_data_region.Map();
+      ASSERT_TRUE(mapped.IsValid());
+      EXPECT_TRUE(LooksLikePdf(mapped.GetMemoryAsSpan<const char>()));
     }
   }
 
