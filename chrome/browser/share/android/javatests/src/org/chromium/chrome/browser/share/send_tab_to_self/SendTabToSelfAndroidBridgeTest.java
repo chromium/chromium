@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import static org.mockito.AdditionalAnswers.answerVoid;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
@@ -116,26 +115,6 @@ public class SendTabToSelfAndroidBridgeTest {
         verify(mNativeMock).getAllGuids(eq(mProfile), any(List.class));
         Assert.assertEquals(3, actual.size());
         Assert.assertArrayEquals(new String[] {"one", "two", "three"}, actual.toArray());
-    }
-
-    @Test
-    @SmallTest
-    public void testGetEntryByGUID() {
-        SendTabToSelfEntry expected = new SendTabToSelfEntry(GUID, URL, TITLE, SHARE_TIME_MS,
-                NAVIGATION_TIME_MS, DEVICE_NAME, TARGET_DEVICE_SYNC_CACHE_GUID);
-        when(mNativeMock.getEntryByGUID(eq(mProfile), anyString())).thenReturn(expected);
-        // Note that the GUID passed in this function does not match the GUID of the returned entry.
-        // This is okay because the purpose of the test is to make sure that the JNI layer passes
-        // the entry returned by the native code. The native code does the actual matching of
-        // the GUID but since that is mocked out and not the purpose of the test, this is fine.
-        SendTabToSelfEntry actual = SendTabToSelfAndroidBridge.getEntryByGUID(mProfile, "guid");
-        Assert.assertEquals(expected.guid, actual.guid);
-        Assert.assertEquals(expected.url, actual.url);
-        Assert.assertEquals(expected.title, actual.title);
-        Assert.assertEquals(expected.sharedTime, actual.sharedTime);
-        Assert.assertEquals(expected.originalNavigationTime, actual.originalNavigationTime);
-        Assert.assertEquals(expected.deviceName, actual.deviceName);
-        Assert.assertEquals(expected.targetDeviceSyncCacheGuid, actual.targetDeviceSyncCacheGuid);
     }
 
     @Test

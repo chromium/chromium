@@ -10,7 +10,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/send_tab_to_self/android_notification_handler.h"
-#include "chrome/browser/android/send_tab_to_self/send_tab_to_self_entry_bridge.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler_registry.h"
@@ -106,9 +105,9 @@ static void JNI_SendTabToSelfAndroidBridge_DeleteAllEntries(
   model->DeleteAllEntries();
 }
 
-// Adds a new entry with the specified parameters. Returns the persisted
-// version which contains additional information such as GUID.
-static ScopedJavaLocalRef<jobject> JNI_SendTabToSelfAndroidBridge_AddEntry(
+// Adds a new entry with the specified parameters. Returns whether the
+// the persistent entry in the bridge was created.
+static jboolean JNI_SendTabToSelfAndroidBridge_AddEntry(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     const JavaParamRef<jstring>& j_url,
@@ -122,39 +121,8 @@ static ScopedJavaLocalRef<jobject> JNI_SendTabToSelfAndroidBridge_AddEntry(
   base::Time navigation_time = base::Time::FromJavaTime(j_navigation_time);
 
   SendTabToSelfModel* model = GetModel(j_profile);
-  if (!model->IsReady()) {
-    return nullptr;
-  }
-
-  const SendTabToSelfEntry* persisted_entry = model->AddEntry(
-      GURL(url), title, navigation_time, target_device_sync_cache_guid);
-
-  if (persisted_entry == nullptr) {
-    return nullptr;
-  }
-  return CreateJavaSendTabToSelfEntry(env, persisted_entry);
-}
-
-// Returns the entry associated with a GUID. May return nullptr if none is
-// found.
-static ScopedJavaLocalRef<jobject>
-JNI_SendTabToSelfAndroidBridge_GetEntryByGUID(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
-    const JavaParamRef<jstring>& j_guid) {
-  SendTabToSelfModel* model = GetModel(j_profile);
-  if (!model->IsReady()) {
-    return nullptr;
-  }
-
-  const std::string guid = ConvertJavaStringToUTF8(env, j_guid);
-  const SendTabToSelfEntry* found_entry = model->GetEntryByGUID(guid);
-
-  if (found_entry == nullptr) {
-    return nullptr;
-  }
-
-  return CreateJavaSendTabToSelfEntry(env, found_entry);
+  return model->IsReady() && model->AddEntry(GURL(url), title, navigation_time,
+                                             target_device_sync_cache_guid);
 }
 
 // Deletes the entry associated with the passed in GUID.
