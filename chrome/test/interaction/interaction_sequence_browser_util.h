@@ -168,6 +168,52 @@ class InteractionSequenceBrowserUtil : private content::WebContentsObserver,
   // Returns whether the given value is "truthy" in the Javascript sense.
   static bool IsTruthy(const base::Value& value);
 
+  // Takes a screenshot based on the contents of `element` and compares with
+  // Skia Gold. Not all element types may be supported. On platforms where
+  // screenshots are unsupported or flaky, may trivially return true.
+  //
+  // If `element` is a TrackedElementWebPage that corresponds to a tab, the tab
+  // must be the active tab in the browser window.
+  //
+  // The name of the screenshot will be composed as follows:
+  //   TestFixture_TestName[_screenshot_name]_baseline
+  // If you are taking more than one screenshot per test, then `screenshot_name`
+  // must be specified and unique within the test; otherwise you may leave it
+  // empty.
+  //
+  // IMPORTANT USAGE NOTES:
+  //
+  // In order to actually take screenshots:
+  // - Your test must be in browser_tests rather than interactive_ui_tests
+  // - Your test must be included in pixel_browser_tests.filter
+  //
+  // Note that test in browser_tests (when not running in the
+  // pixel_browser_tests CQ task) may run at the same time as other tests, which
+  // can result in flakiness for interaction tests (especially if mouse
+  // position, window activation, or occlusion could change the behavior of a
+  // test). So if you need to both test complex interaction and take screenshots
+  // you have several options:
+  //  1. Make a detailed test for interactive_ui_tests and one or more simple
+  //     tests that just verify the UI visuals in browser_tests (downside: code
+  //     duplication)
+  //  2. Put a test in browser_tests that only runs when the command line flag
+  //     for pixel tests is set (downside: won't run on platforms that don't
+  //     support pixel tests)
+  //  3. Put the full test in browser_tests and harden it against activation and
+  //     focus changes, mouse position, etc. - e.g. by using things like
+  //     BubbleDialogDelegate::PreventCloseOnDeactivate() (downside: more
+  //     complicated test, still potential for flaking)
+  //
+  // In general, if (3) is possible and you can be sure your test won't flake,
+  // it's probably the best choice, followed by (1) if you can't guarantee
+  // stability in non-single-process tests.
+  //
+  // We are currently considering enabling pixel tests in interactive_ui_tests,
+  // which would solve the problem by providing a single safe place for both.
+  static bool CompareScreenshot(ui::TrackedElement* element,
+                                const std::string& screenshot_name,
+                                const std::string& baseline);
+
   // Allow access to the associated WebContents.
   content::WebContents* web_contents() const {
     return WebContentsObserver::web_contents();

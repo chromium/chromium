@@ -100,6 +100,7 @@ IN_PROC_BROWSER_TEST_F(
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(AppMenuModel::kDownloadsMenuItem)
+                       .SetMustRemainVisible(false)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence*,
                                ui::TrackedElement* element) {
