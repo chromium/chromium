@@ -134,12 +134,17 @@ void PasswordStore::UpdateLoginWithPrimaryKey(
   // TODO(crbug.com/1223022): Re-evaluate this once all places that call
   // UpdateLoginWithPrimaryKey() have properly set the |password_issues|
   // field.
-  if (new_form.username_value != old_primary_key.username_value ||
-      new_form.password_value != old_primary_key.password_value) {
-    // If the password or the username changes, the password issues aren't valid
+  if (new_form.password_value != old_primary_key.password_value) {
+    // If the password changes, the password issues aren't valid
     // any more. Make sure they are cleared before storing the new form.
-    new_form_with_correct_password_issues.password_issues =
-        base::flat_map<InsecureType, InsecurityMetadata>();
+    new_form_with_correct_password_issues.password_issues.clear();
+  } else if (new_form.username_element != old_primary_key.username_element) {
+    // If the username changed then the phished and leaked issues aren't valid
+    // any more. Make sure they are erased before storing the new form.
+    new_form_with_correct_password_issues.password_issues.erase(
+        InsecureType::kLeaked);
+    new_form_with_correct_password_issues.password_issues.erase(
+        InsecureType::kPhished);
   }
 
   auto barrier_callback =

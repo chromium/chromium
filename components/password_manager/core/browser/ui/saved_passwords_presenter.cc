@@ -203,9 +203,10 @@ bool SavedPasswordsPresenter::EditSavedPasswords(
 
       if (username_changed) {
         new_form.username_value = new_username;
-        // TODO(crbug/1318450): not all password issues should be
-        // cleared on username change.
-        new_form.password_issues.clear();
+        // Phished and leaked issues are no longer relevant on username change.
+        // Weak and reused issues are still relevant.
+        new_form.password_issues.erase(InsecureType::kPhished);
+        new_form.password_issues.erase(InsecureType::kLeaked);
         // Changing username requires deleting old form and adding new one. So
         // the different API should be called.
         store.UpdateLoginWithPrimaryKey(new_form, old_form);
