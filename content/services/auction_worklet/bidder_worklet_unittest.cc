@@ -140,12 +140,12 @@ class BidderWorkletTest : public testing::Test {
 
     interest_group_ads_.clear();
     interest_group_ads_.emplace_back(blink::InterestGroup::Ad(
-        GURL("https://response.test/"), absl::nullopt /* metadata */));
+        GURL("https://response.test/"), /*metadata=*/absl::nullopt));
 
     interest_group_ad_components_.reset();
     interest_group_ad_components_.emplace();
     interest_group_ad_components_->emplace_back(blink::InterestGroup::Ad(
-        GURL("https://ad_component.test/"), absl::nullopt /* metadata */));
+        GURL("https://ad_component.test/"), /*metadata=*/absl::nullopt));
 
     daily_update_url_.reset();
 
@@ -683,7 +683,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueBid) {
   // Bids <= 0.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:0, render:"https://response.test/"})",
-      mojom::BidderWorkletBidPtr() /* expected_bid */);
+      /*expected_bid=*/mojom::BidderWorkletBidPtr());
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:-10, render:"https://response.test/"})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
@@ -2115,7 +2115,7 @@ TEST_F(BidderWorkletTest, GenerateBidAds) {
   // Adding an ad with a corresponding `renderUrl` should result in success.
   // Also check the `interestGroup.ads` field passed to Javascript.
   interest_group_ads_.emplace_back(blink::InterestGroup::Ad(
-      GURL("https://response2.test/"), R"(["metadata"])" /* metadata */));
+      GURL("https://response2.test/"), /*metadata=*/R"(["metadata"])"));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: interestGroup.ads, bid:1, render:"https://response2.test/"})",
       mojom::BidderWorkletBid::New(
@@ -3307,10 +3307,10 @@ TEST_F(BidderWorkletTest, BasicDevToolsDebug) {
   AddJavascriptResponse(&url_loader_factory_, GURL(kUrl2), bid_script);
 
   auto worklet1 =
-      CreateWorklet(GURL(kUrl1), true /* pause_for_debugger_on_start */);
+      CreateWorklet(GURL(kUrl1), /*pause_for_debugger_on_start=*/true);
   GenerateBid(worklet1.get());
   auto worklet2 =
-      CreateWorklet(GURL(kUrl2), true /* pause_for_debugger_on_start */);
+      CreateWorklet(GURL(kUrl2), /*pause_for_debugger_on_start=*/true);
   GenerateBid(worklet2.get());
 
   mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent1, agent2;
@@ -3318,9 +3318,9 @@ TEST_F(BidderWorkletTest, BasicDevToolsDebug) {
   worklet2->ConnectDevToolsAgent(agent2.BindNewEndpointAndPassReceiver());
 
   TestDevToolsAgentClient debug1(std::move(agent1), "123",
-                                 true /* use_binary_protocol */);
+                                 /*use_binary_protocol=*/true);
   TestDevToolsAgentClient debug2(std::move(agent2), "456",
-                                 true /* use_binary_protocol */);
+                                 /*use_binary_protocol=*/true);
 
   debug1.RunCommandAndWaitForResult(
       TestDevToolsAgentClient::Channel::kMain, 1, "Runtime.enable",
@@ -3445,14 +3445,14 @@ TEST_F(BidderWorkletTest, InstrumentationBreakpoints) {
       CreateReportWinScript(R"(sendReportTo("https://foo.test"))"));
 
   auto worklet =
-      CreateWorklet(GURL(kUrl), true /* pause_for_debugger_on_start */);
+      CreateWorklet(GURL(kUrl), /*pause_for_debugger_on_start=*/true);
   GenerateBid(worklet.get());
 
   mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent;
   worklet->ConnectDevToolsAgent(agent.BindNewEndpointAndPassReceiver());
 
   TestDevToolsAgentClient debug(std::move(agent), "123",
-                                true /* use_binary_protocol */);
+                                /*use_binary_protocol=*/true);
 
   debug.RunCommandAndWaitForResult(
       TestDevToolsAgentClient::Channel::kMain, 1, "Runtime.enable",

@@ -297,7 +297,7 @@ v8::Local<v8::Context> AuctionV8Helper::CreateContext(
     v8::Handle<v8::ObjectTemplate> global_template) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8::Local<v8::Context> context =
-      v8::Context::New(isolate(), nullptr /* extensions */, global_template);
+      v8::Context::New(isolate(), /*extensions=*/nullptr, global_template);
   auto result =
       context->Global()->Delete(context, CreateStringFromLiteral("Date"));
   DCHECK(!result.IsNothing());

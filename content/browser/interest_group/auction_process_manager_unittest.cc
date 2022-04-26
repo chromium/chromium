@@ -266,64 +266,64 @@ TEST_P(AuctionProcessManagerTest, LimitExceeded) {
   };
 
   const Operation kOperationList[] = {
-      {Operation::Op::kRequestHandles, GetMaxProcesses() /* num_handles*/,
-       absl::nullopt /* index */,
-       GetMaxProcesses() /* expected_total_handles */},
+      {Operation::Op::kRequestHandles, /*num_handles=*/GetMaxProcesses(),
+       /*index=*/absl::nullopt,
+       /*expected_total_handles=*/GetMaxProcesses()},
 
       // Check destroying intermediate, last, and first handle when there are no
       // queued requests. Keep exactly GetMaxProcesses() requests, to ensure
       // there are in fact first, last, and intermediate requests (as long as
       // GetMaxProcesses() is at least 3).
-      {Operation::Op::kDestroyHandle, absl::nullopt /* num_handles*/,
-       1u /* index */, GetMaxProcesses() - 1 /* expected_total_handles */},
-      {Operation::Op::kRequestHandles, 1 /* num_handles*/,
-       absl::nullopt /* index */,
-       GetMaxProcesses() /* expected_total_handles */},
-      {Operation::Op::kDestroyHandle, absl::nullopt /* num_handles*/,
-       0u /* index */, GetMaxProcesses() - 1 /* expected_total_handles */},
-      {Operation::Op::kRequestHandles, 1 /* num_handles*/,
-       absl::nullopt /* index */,
-       GetMaxProcesses() /* expected_total_handles */},
-      {Operation::Op::kDestroyHandle, absl::nullopt /* num_handles*/,
-       GetMaxProcesses() - 1 /* index */,
-       GetMaxProcesses() - 1 /* expected_total_handles */},
-      {Operation::Op::kRequestHandles, 1 /* num_handles*/,
-       absl::nullopt /* index */,
-       GetMaxProcesses() /* expected_total_handles */},
+      {Operation::Op::kDestroyHandle, /*num_handles=*/absl::nullopt,
+       /*index=*/1u, /*expected_total_handles=*/GetMaxProcesses() - 1},
+      {Operation::Op::kRequestHandles, /*num_handles=*/1,
+       /*index=*/absl::nullopt,
+       /*expected_total_handles=*/GetMaxProcesses()},
+      {Operation::Op::kDestroyHandle, /*num_handles=*/absl::nullopt,
+       /*index=*/0u, /*expected_total_handles=*/GetMaxProcesses() - 1},
+      {Operation::Op::kRequestHandles, /*num_handles=*/1,
+       /*index=*/absl::nullopt,
+       /*expected_total_handles=*/GetMaxProcesses()},
+      {Operation::Op::kDestroyHandle, /*num_handles=*/absl::nullopt,
+       /*index=*/GetMaxProcesses() - 1,
+       /*expected_total_handles=*/GetMaxProcesses() - 1},
+      {Operation::Op::kRequestHandles, /*num_handles=*/1,
+       /*index=*/absl::nullopt,
+       /*expected_total_handles=*/GetMaxProcesses()},
 
       // Queue 3 more requests, but delete the last and first of them, to test
       // deleting queued requests.
-      {Operation::Op::kRequestHandles, 3 /* num_handles*/,
-       absl::nullopt /* index */,
-       GetMaxProcesses() + 3 /* expected_total_handles */},
-      {Operation::Op::kDestroyHandle, absl::nullopt /* num_handles*/,
-       GetMaxProcesses() /* index */,
-       GetMaxProcesses() + 2 /* expected_total_handles */},
-      {Operation::Op::kDestroyHandle, absl::nullopt /* num_handles*/,
-       GetMaxProcesses() + 1 /* index */,
-       GetMaxProcesses() + 1 /* expected_total_handles */},
+      {Operation::Op::kRequestHandles, /*num_handles=*/3,
+       /*index=*/absl::nullopt,
+       /*expected_total_handles=*/GetMaxProcesses() + 3},
+      {Operation::Op::kDestroyHandle, /*num_handles=*/absl::nullopt,
+       /*index=*/GetMaxProcesses(),
+       /*expected_total_handles=*/GetMaxProcesses() + 2},
+      {Operation::Op::kDestroyHandle, /*num_handles=*/absl::nullopt,
+       /*index=*/GetMaxProcesses() + 1,
+       /*expected_total_handles=*/GetMaxProcesses() + 1},
 
       // Request 4 more processes.
-      {Operation::Op::kRequestHandles, 4 /* num_handles*/,
-       absl::nullopt /* index */,
-       GetMaxProcesses() + 5 /* expected_total_handles */},
+      {Operation::Op::kRequestHandles, /*num_handles=*/4,
+       /*index=*/absl::nullopt,
+       /*expected_total_handles=*/GetMaxProcesses() + 5},
 
       // Destroy the first handle and the first pending in the queue immediately
       // afterwards. The next pending request should get a process.
       {Operation::Op::kDestroyHandleAndNextInQueue,
-       absl::nullopt /* num_handles*/, 0u /* index */,
-       GetMaxProcesses() + 3 /* expected_total_handles */},
+       /*num_handles=*/absl::nullopt, /*index=*/0u,
+       /*expected_total_handles=*/GetMaxProcesses() + 3},
 
       // Destroy three more requests that have been asssigned processes, being
       // sure to destroy the first, last, and some request request with nether,
       // amongst requests with assigned processes.
-      {Operation::Op::kDestroyHandle, absl::nullopt /* num_handles*/,
-       GetMaxProcesses() - 1 /* index */,
-       GetMaxProcesses() + 2 /* expected_total_handles */},
-      {Operation::Op::kDestroyHandle, absl::nullopt /* num_handles*/,
-       0u /* index */, GetMaxProcesses() + 1 /* expected_total_handles */},
-      {Operation::Op::kDestroyHandle, absl::nullopt /* num_handles*/,
-       1u /* index */, GetMaxProcesses() /* expected_total_handles */},
+      {Operation::Op::kDestroyHandle, /*num_handles=*/absl::nullopt,
+       /*index=*/GetMaxProcesses() - 1,
+       /*expected_total_handles=*/GetMaxProcesses() + 2},
+      {Operation::Op::kDestroyHandle, /*num_handles=*/absl::nullopt,
+       /*index=*/0u, /*expected_total_handles=*/GetMaxProcesses() + 1},
+      {Operation::Op::kDestroyHandle, /*num_handles=*/absl::nullopt,
+       /*index=*/1u, /*expected_total_handles=*/GetMaxProcesses()},
   };
 
   struct ProcessHandleData {

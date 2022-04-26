@@ -88,7 +88,7 @@ class AuctionDownloaderTest : public testing::Test {
 TEST_F(AuctionDownloaderTest, NetworkError) {
   network::URLLoaderCompletionStatus status;
   status.error_code = net::ERR_FAILED;
-  url_loader_factory_.AddResponse(url_, nullptr /* head */, kAsciiResponseBody,
+  url_loader_factory_.AddResponse(url_, /*head=*/nullptr, kAsciiResponseBody,
                                   status);
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ(

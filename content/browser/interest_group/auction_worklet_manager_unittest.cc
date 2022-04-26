@@ -1489,7 +1489,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletUrlRequestProtection) {
     mojo::PendingRemote<network::mojom::URLLoader> receiver;
     mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
     bidder_worklet->url_loader_factory()->CreateLoaderAndStart(
-        receiver.InitWithNewPipeAndPassReceiver(), 0 /*request_id=*/,
+        receiver.InitWithNewPipeAndPassReceiver(), /*request_id=*/0,
         /*options=*/0, request, client.InitWithNewPipeAndPassRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
     bidder_worklet->url_loader_factory().FlushForTesting();
@@ -1550,7 +1550,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletUrlRequestProtection) {
     mojo::PendingRemote<network::mojom::URLLoader> receiver;
     mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
     seller_worklet->url_loader_factory()->CreateLoaderAndStart(
-        receiver.InitWithNewPipeAndPassReceiver(), 0 /*request_id=*/,
+        receiver.InitWithNewPipeAndPassReceiver(), /*request_id=*/0,
         /*options=*/0, request, client.InitWithNewPipeAndPassRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
     seller_worklet->url_loader_factory().FlushForTesting();

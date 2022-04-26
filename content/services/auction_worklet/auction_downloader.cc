@@ -160,20 +160,20 @@ void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
           net::ErrorToString(simple_url_loader->NetError()).c_str());
     }
     std::move(auction_downloader_callback_)
-        .Run(nullptr /* body */, nullptr /* headers */, error_msg);
+        .Run(/*body=*/nullptr, /*headers=*/nullptr, error_msg);
   } else if (!simple_url_loader->ResponseInfo()->headers ||
              !simple_url_loader->ResponseInfo()->headers->GetNormalizedHeader(
                  "X-Allow-FLEDGE", &allow_fledge) ||
              !base::EqualsCaseInsensitiveASCII(allow_fledge, "true")) {
     std::move(auction_downloader_callback_)
-        .Run(nullptr /* body */, nullptr /* headers */,
+        .Run(/*body=*/nullptr, /*headers=*/nullptr,
              base::StringPrintf(
                  "Rejecting load of %s due to lack of X-Allow-FLEDGE: true.",
                  source_url_.spec().c_str()));
   } else if (!MimeTypeIsConsistent(mime_type_,
                                    simple_url_loader->ResponseInfo())) {
     std::move(auction_downloader_callback_)
-        .Run(nullptr /* body */, nullptr /* headers */,
+        .Run(/*body=*/nullptr, /*headers=*/nullptr,
              base::StringPrintf(
                  "Rejecting load of %s due to unexpected MIME type.",
                  source_url_.spec().c_str()));
@@ -181,7 +181,7 @@ void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
              !IsAllowedCharset(simple_url_loader->ResponseInfo()->charset,
                                *body)) {
     std::move(auction_downloader_callback_)
-        .Run(nullptr /* body */, nullptr /* headers */,
+        .Run(/*body=*/nullptr, /*headers=*/nullptr,
              base::StringPrintf(
                  "Rejecting load of %s due to unexpected charset.",
                  source_url_.spec().c_str()));
@@ -190,7 +190,7 @@ void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
     std::move(auction_downloader_callback_)
         .Run(std::move(body),
              std::move(simple_url_loader->ResponseInfo()->headers),
-             absl::nullopt /* error_msg */);
+             /*error_msg=*/absl::nullopt);
   }
 }
 
@@ -204,7 +204,7 @@ void AuctionDownloader::OnRedirect(
   simple_url_loader_.reset();
 
   std::move(auction_downloader_callback_)
-      .Run(nullptr /* body */, nullptr /* headers */,
+      .Run(/*body=*/nullptr, /*headers=*/nullptr,
            base::StringPrintf("Unexpected redirect on %s.",
                               source_url_.spec().c_str()));
 }

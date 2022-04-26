@@ -352,8 +352,8 @@ void BidderWorklet::V8State::ReportWin(
                              &args) ||
       !v8_helper_->AppendJsonValue(context, seller_signals_json, &args)) {
     PostReportWinCallbackToUserThread(
-        std::move(callback), absl::nullopt /* report_url */,
-        /*ad_beacon_map=*/{}, std::vector<std::string>() /* errors */);
+        std::move(callback), /*report_url=*/absl::nullopt,
+        /*ad_beacon_map=*/{}, /*errors=*/std::vector<std::string>());
     return;
   }
 
@@ -383,8 +383,8 @@ void BidderWorklet::V8State::ReportWin(
        !browser_signals_dict.Set("dataVersion",
                                  bidding_signals_data_version.value()))) {
     PostReportWinCallbackToUserThread(
-        std::move(callback), absl::nullopt /* report_url */,
-        /*ad_beacon_map=*/{}, std::vector<std::string>() /* errors */);
+        std::move(callback), /*report_url=*/absl::nullopt,
+        /*ad_beacon_map=*/{}, /*errors=*/std::vector<std::string>());
     return;
   }
   args.push_back(browser_signals);
@@ -400,7 +400,7 @@ void BidderWorklet::V8State::ReportWin(
                       errors_out)
           .IsEmpty()) {
     PostReportWinCallbackToUserThread(
-        std::move(callback), absl::nullopt /* report_url */,
+        std::move(callback), /*report_url=*/absl::nullopt,
         /*ad_beacon_map=*/{}, std::move(errors_out));
     return;
   }

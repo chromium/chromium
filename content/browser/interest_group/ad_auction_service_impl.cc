@@ -463,11 +463,11 @@ AdAuctionServiceImpl::GetTrustedURLLoaderFactory() {
         render_frame_host()->GetSiteInstance()->GetBrowserContext(),
         render_frame_host(), render_frame_host()->GetProcess()->GetID(),
         ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-        url::Origin(), absl::nullopt /* navigation_id */,
+        url::Origin(), /*navigation_id=*/absl::nullopt,
         ukm::SourceIdObj::FromInt64(render_frame_host()->GetPageUkmSourceId()),
-        &factory_receiver, nullptr /* header_client */,
-        nullptr /* bypass_redirect_checks */, nullptr /* disable_secure_dns */,
-        nullptr /* factory_override */);
+        &factory_receiver, /*header_client=*/nullptr,
+        /*bypass_redirect_checks=*/nullptr, /*disable_secure_dns=*/nullptr,
+        /*factory_override=*/nullptr);
 
     render_frame_host()
         ->GetStoragePartition()

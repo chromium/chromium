@@ -109,7 +109,7 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::Test {
     int options = network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
                   network::mojom::kURLLoadOptionSniffMimeType;
     remote_url_loader_factory_->CreateLoaderAndStart(
-        receiver.InitWithNewPipeAndPassReceiver(), 0 /* request_id_ */, options,
+        receiver.InitWithNewPipeAndPassReceiver(), /*request_id=*/0, options,
         request, client.InitWithNewPipeAndPassRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
