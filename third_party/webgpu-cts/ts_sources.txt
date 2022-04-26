@@ -282,7 +282,6 @@ src/webgpu/shader/execution/expression/call/builtin/countTrailingZeros.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/extractBits.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/firstLeadingBit.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/firstTrailingBit.spec.ts
-src/webgpu/shader/execution/expression/call/builtin/float_built_functions.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/floor.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/fract.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/insertBits.spec.ts
