@@ -86,7 +86,7 @@ def CheckTODO(input_api, output_api):
         todo.append(filename)
 
   if todo:
-    return [output_api.PresubmitError(
+    return [output_api.PresubmitPromptWarning(
         'TODOs found in stable public PPAPI files:',
         long_text='\n'.join(todo))]
   return []
