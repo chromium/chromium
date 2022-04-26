@@ -19,10 +19,10 @@ component("constants") {
   ]
 }
 
-source_set("shared_lib") {
+source_set("decoder") {
   sources = [
-    "ime_shared_lib.cc",
-    "ime_shared_lib.h",
+    "ime_decoder.cc",
+    "ime_decoder.h",
   ]
 
   deps = [
@@ -49,7 +49,7 @@ source_set("lib") {
 
   deps = [
     ":constants",
-    ":shared_lib",
+    ":decoder",
     "//ash/constants",
     "//ash/services/ime/public/cpp:rulebased",
     "//ash/services/ime/public/cpp/shared_lib:interfaces",
@@ -66,7 +66,7 @@ source_set("sandbox_hook") {
 
   deps = [
     ":constants",
-    ":shared_lib",
+    ":decoder",
     "//base",
     "//sandbox/linux:sandbox_services",
     "//sandbox/policy",
@@ -84,7 +84,7 @@ source_set("services_unittests") {
     ":lib",
     ":test_support",
     "//ash/constants",
-    "//ash/services/ime:shared_lib",
+    "//ash/services/ime:decoder",
     "//ash/services/ime/public/mojom",
     "//base",
     "//base/test:test_support",

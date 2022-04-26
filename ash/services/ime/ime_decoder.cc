@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/services/ime/ime_shared_lib.h"
+#include "ash/services/ime/ime_decoder.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/services/ime/constants.h"
@@ -16,18 +16,18 @@ namespace ime {
 
 namespace {
 
-const char kCrosImeSharedLib[] = "libimedecoder.so";
+const char kCrosImeDecoderLib[] = "libimedecoder.so";
 
 // TODO(b/161491092): Add test image path based on value of
 // "CHROMEOS_RELEASE_TRACK" from `base::SysInfo::GetLsbReleaseValue`.
-// Returns ImeSharedLib path based on the run time env.
-base::FilePath GetImeSharedLibPath() {
+// Returns ImeDecoderLib path based on the run time env.
+base::FilePath GetImeDecoderLibPath() {
 #if defined(__x86_64__) || defined(__aarch64__)
   base::FilePath lib_path("/usr/lib64");
 #else
   base::FilePath lib_path("/usr/lib");
 #endif
-  lib_path = lib_path.Append(kCrosImeSharedLib);
+  lib_path = lib_path.Append(kCrosImeDecoderLib);
   return lib_path;
 }
 
@@ -54,15 +54,15 @@ void ImeLoggerBridge(int severity, const char* message) {
 
 }  // namespace
 
-ImeSharedLibImpl::ImeSharedLibImpl() = default;
+ImeDecoderImpl::ImeDecoderImpl() = default;
 
-absl::optional<ImeSharedLib::EntryPoints>
-ImeSharedLibImpl::MaybeLoadThenReturnEntryPoints() {
+absl::optional<ImeDecoder::EntryPoints>
+ImeDecoderImpl::MaybeLoadThenReturnEntryPoints() {
   if (entry_points_) {
     return entry_points_;
   }
 
-  base::FilePath path = GetImeSharedLibPath();
+  base::FilePath path = GetImeDecoderLibPath();
 
   // Add dlopen flags (RTLD_LAZY | RTLD_NODELETE) later.
   base::ScopedNativeLibrary library = base::ScopedNativeLibrary(path);
@@ -77,12 +77,12 @@ ImeSharedLibImpl::MaybeLoadThenReturnEntryPoints() {
           library.GetFunctionPointer(kInitProtoModeFnName)),
       .close_proto_mode = reinterpret_cast<CloseProtoModeFn>(
           library.GetFunctionPointer(kCloseProtoModeFnName)),
-      .supports = reinterpret_cast<ImeSharedLibSupportsFn>(
-          library.GetFunctionPointer(kImeSharedLibSupportsFnName)),
-      .activate_ime = reinterpret_cast<ImeSharedLibActivateImeFn>(
-          library.GetFunctionPointer(kImeSharedLibActivateImeFnName)),
-      .process = reinterpret_cast<ImeSharedLibProcessFn>(
-          library.GetFunctionPointer(kImeSharedLibProcessFnName)),
+      .supports = reinterpret_cast<ImeDecoderSupportsFn>(
+          library.GetFunctionPointer(kImeDecoderSupportsFnName)),
+      .activate_ime = reinterpret_cast<ImeDecoderActivateImeFn>(
+          library.GetFunctionPointer(kImeDecoderActivateImeFnName)),
+      .process = reinterpret_cast<ImeDecoderProcessFn>(
+          library.GetFunctionPointer(kImeDecoderProcessFnName)),
       .init_mojo_mode = reinterpret_cast<InitMojoModeFn>(
           library.GetFunctionPointer(kInitMojoModeFnName)),
       .close_mojo_mode = reinterpret_cast<CloseMojoModeFn>(
@@ -120,10 +120,10 @@ ImeSharedLibImpl::MaybeLoadThenReturnEntryPoints() {
   return entry_points_;
 }
 
-ImeSharedLibImpl::~ImeSharedLibImpl() = default;
+ImeDecoderImpl::~ImeDecoderImpl() = default;
 
-ImeSharedLibImpl* ImeSharedLibImpl::GetInstance() {
-  static base::NoDestructor<ImeSharedLibImpl> instance;
+ImeDecoderImpl* ImeDecoderImpl::GetInstance() {
+  static base::NoDestructor<ImeDecoderImpl> instance;
   return instance.get();
 }
 

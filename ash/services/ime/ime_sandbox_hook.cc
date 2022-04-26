@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "ash/services/ime/constants.h"
-#include "ash/services/ime/ime_shared_lib.h"
+#include "ash/services/ime/ime_decoder.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -77,7 +77,7 @@ bool ImePreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
   // TODO(crbug.com/1217513): This is not ideal, as it means rule-based
   // input methods will unnecessarily load the IME decoder shared library.
   // Either remove this line, or use a separate sandbox for rule-based.
-  ImeSharedLibImpl::GetInstance()->MaybeLoadThenReturnEntryPoints();
+  ImeDecoderImpl::GetInstance()->MaybeLoadThenReturnEntryPoints();
   instance->EngageNamespaceSandboxIfPossible();
   return true;
 }

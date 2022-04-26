@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SERVICES_IME_IME_SHARED_LIB_H_
-#define ASH_SERVICES_IME_IME_SHARED_LIB_H_
+#ifndef ASH_SERVICES_IME_IME_DECODER_H_
+#define ASH_SERVICES_IME_IME_DECODER_H_
 
 #include "ash/services/ime/public/cpp/shared_lib/interfaces.h"
 
@@ -26,16 +26,15 @@ typedef void (*InitProtoModeFn)(ImeCrosPlatform* platform);
 inline constexpr char kCloseProtoModeFnName[] = "CloseProtoMode";
 typedef void (*CloseProtoModeFn)();
 
-inline constexpr char kImeSharedLibSupportsFnName[] = "ImeSharedLibSupports";
-typedef bool (*ImeSharedLibSupportsFn)(const char* ime_spec);
+inline constexpr char kImeDecoderSupportsFnName[] = "ImeDecoderSupports";
+typedef bool (*ImeDecoderSupportsFn)(const char* ime_spec);
 
-inline constexpr char kImeSharedLibActivateImeFnName[] =
-    "ImeSharedLibActivateIme";
-typedef bool (*ImeSharedLibActivateImeFn)(const char* ime_spec,
-                                          ImeClientDelegate* delegate);
+inline constexpr char kImeDecoderActivateImeFnName[] = "ImeDecoderActivateIme";
+typedef bool (*ImeDecoderActivateImeFn)(const char* ime_spec,
+                                        ImeClientDelegate* delegate);
 
-inline constexpr char kImeSharedLibProcessFnName[] = "ImeSharedLibProcess";
-typedef void (*ImeSharedLibProcessFn)(const uint8_t* data, size_t size);
+inline constexpr char kImeDecoderProcessFnName[] = "ImeDecoderProcess";
+typedef void (*ImeDecoderProcessFn)(const uint8_t* data, size_t size);
 
 inline constexpr char kInitMojoModeFnName[] = "InitMojoMode";
 typedef void (*InitMojoModeFn)(ImeCrosPlatform* platform);
@@ -61,11 +60,12 @@ typedef bool (*IsInputMethodConnectedFn)();
 
 // END: Signatures of "C" API entry points of CrOS 1P IME shared lib.
 
-// This class manages the dynamic loading of CrOS 1P IME shared lib.so
-// and facilitates access to it's "C" API entry points.
-class ImeSharedLib {
+// TODO(b/214153032): Rename to ImeSharedLib to better reflect what this
+// represents. This class manages the dynamic loading of CrOS 1P IME shared lib
+// .so, and facilitates access to its "C" API entry points.
+class ImeDecoder {
  public:
-  virtual ~ImeSharedLib() = default;
+  virtual ~ImeDecoder() = default;
 
   // Function pointers to "C" API entry points of the loaded IME shared library.
   // See ash/services/ime/public/cpp/shared_lib/interfaces.h for API specs.
@@ -77,9 +77,9 @@ class ImeSharedLib {
     // indicate they only pertain to the IME shared lib's ProtoMode. While it's
     // "hard" to rename corresponding "C" API functions due to cross-repo
     // backward compat requirements, these are local and rename is feasible.
-    ImeSharedLibSupportsFn supports;
-    ImeSharedLibActivateImeFn activate_ime;
-    ImeSharedLibProcessFn process;
+    ImeDecoderSupportsFn supports;
+    ImeDecoderActivateImeFn activate_ime;
+    ImeDecoderProcessFn process;
 
     InitMojoModeFn init_mojo_mode;
     CloseMojoModeFn close_mojo_mode;
@@ -99,23 +99,26 @@ class ImeSharedLib {
   virtual absl::optional<EntryPoints> MaybeLoadThenReturnEntryPoints() = 0;
 };
 
-// ImeSharedLib is implemented as a singleton and is initialized before 'ime'
+// A proxy class for the IME decoder.
+// ImeDecoder is implemented as a singleton and is initialized before 'ime'
 // sandbox is engaged.
-class ImeSharedLibImpl : public ImeSharedLib {
+// TODO(b/214153032): Rename to ImeSharedLibImpl, as soon as ImeDecoder is
+// renamed to ImeSharedLib, to better reflect what this represents.
+class ImeDecoderImpl : public ImeDecoder {
  public:
-  // Gets the singleton ImeSharedLibImpl.
-  static ImeSharedLibImpl* GetInstance();
+  // Gets the singleton ImeDecoderImpl.
+  static ImeDecoderImpl* GetInstance();
 
-  ImeSharedLibImpl(const ImeSharedLibImpl&) = delete;
-  ImeSharedLibImpl& operator=(const ImeSharedLibImpl&) = delete;
+  ImeDecoderImpl(const ImeDecoderImpl&) = delete;
+  ImeDecoderImpl& operator=(const ImeDecoderImpl&) = delete;
 
   absl::optional<EntryPoints> MaybeLoadThenReturnEntryPoints() override;
 
  private:
-  friend class base::NoDestructor<ImeSharedLibImpl>;
+  friend class base::NoDestructor<ImeDecoderImpl>;
 
-  explicit ImeSharedLibImpl();
-  ~ImeSharedLibImpl() override;
+  explicit ImeDecoderImpl();
+  ~ImeDecoderImpl() override;
 
   // Result of IME decoder DSO initialization.
   absl::optional<base::ScopedNativeLibrary> library_;
@@ -126,4 +129,4 @@ class ImeSharedLibImpl : public ImeSharedLib {
 }  // namespace ime
 }  // namespace ash
 
-#endif  // ASH_SERVICES_IME_IME_SHARED_LIB_H_
+#endif  // ASH_SERVICES_IME_IME_DECODER_H_
