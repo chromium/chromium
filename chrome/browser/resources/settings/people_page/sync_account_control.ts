@@ -349,6 +349,17 @@ export class SettingsSyncAccountControlElement extends
         this.syncStatus.statusAction !== StatusAction.NO_ACTION;
   }
 
+  private shouldAllowAccountSwitch_(): boolean {
+    // <if expr="chromeos_lacros">
+    if (!loadTimeData.getBoolean('isSecondaryUser')) {
+      // Sync account can't be changed in the main profile, it is always the
+      // device account.
+      return false;
+    }
+    // </if>
+    return !this.syncStatus.signedIn;
+  }
+
   private handleStoredAccounts_(accounts: Array<StoredAccount>) {
     this.storedAccounts_ = accounts;
   }
