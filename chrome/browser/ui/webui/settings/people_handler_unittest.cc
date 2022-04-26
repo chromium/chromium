@@ -38,6 +38,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -1278,7 +1279,7 @@ TEST(PeopleHandlerDiceUnifiedConsentTest, StoredAccountsList) {
   auto account_1 = identity_test_env->MakeAccountAvailable("a@gmail.com");
   auto account_2 = identity_test_env->MakeAccountAvailable("b@gmail.com");
   identity_test_env->SetPrimaryAccount(account_1.email,
-                                       signin::ConsentLevel::kSync);
+                                       signin::ConsentLevel::kSignin);
 
   PeopleHandler handler(profile.get());
   base::Value accounts = handler.GetStoredAccountsList();
@@ -1315,6 +1316,9 @@ TEST(PeopleHandlerMainProfile, Signout) {
                                                  ConsentLevel::kSync);
   ASSERT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
 
+  identity_test_env->MakeAccountAvailable("a@gmail.com");
+  EXPECT_EQ(2U, identity_manager->GetAccountsWithRefreshTokens().size());
+
   PeopleHandler handler(profile.get());
   base::Value::List args;
   args.Append(base::Value(/*delete_profile=*/false));
@@ -1322,22 +1326,114 @@ TEST(PeopleHandlerMainProfile, Signout) {
 
   EXPECT_FALSE(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
+  // Signout should only revoke sync consent and not change any accounts.
+  EXPECT_EQ(2U, identity_manager->GetAccountsWithRefreshTokens().size());
 }
 
-TEST_F(PeopleHandlerTest, SignoutWhenSyncing) {
-  auto account_1 = identity_test_env()->MakeAccountAvailable("a@gmail.com");
-  auto account_2 = identity_test_env()->MakeAccountAvailable("b@gmail.com");
-  identity_test_env()->SetPrimaryAccount(account_1.email,
-                                         signin::ConsentLevel::kSync);
-  EXPECT_EQ(2U, identity_manager()->GetAccountsWithRefreshTokens().size());
+TEST(PeopleHandlerSecondaryProfile, SignoutWhenSyncing) {
+  content::BrowserTaskEnvironment task_environment;
 
-  CreatePeopleHandler();
+  TestingProfile::Builder builder;
+  builder.SetIsMainProfile(false);
+
+  std::unique_ptr<TestingProfile> profile =
+      IdentityTestEnvironmentProfileAdaptor::
+          CreateProfileForIdentityTestEnvironment(
+              builder, signin::AccountConsistencyMethod::kMirror);
+
+  auto identity_test_env_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
+  auto* identity_test_env = identity_test_env_adaptor->identity_test_env();
+  auto* identity_manager = identity_test_env->identity_manager();
+
+  auto account_1 = identity_test_env->MakeAccountAvailable("a@gmail.com");
+  auto account_2 = identity_test_env->MakeAccountAvailable("b@gmail.com");
+  identity_test_env->SetPrimaryAccount(account_1.email,
+                                       signin::ConsentLevel::kSync);
+  EXPECT_EQ(2U, identity_manager->GetAccountsWithRefreshTokens().size());
+
+  PeopleHandler handler(profile.get());
   base::Value::List args;
   args.Append(base::Value(/*delete_profile=*/false));
-  handler_->HandleSignout(args);
-  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
-  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-  EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
+  handler.HandleSignout(args);
+  EXPECT_FALSE(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
+  EXPECT_FALSE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
+  EXPECT_TRUE(identity_manager->GetAccountsWithRefreshTokens().empty());
+}
+
+TEST(PeopleHandlerMainProfile, GetStoredAccountsList) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kLacrosNonSyncingProfiles};
+  content::BrowserTaskEnvironment task_environment;
+
+  TestingProfile::Builder builder;
+  builder.SetIsMainProfile(true);
+
+  std::unique_ptr<TestingProfile> profile =
+      IdentityTestEnvironmentProfileAdaptor::
+          CreateProfileForIdentityTestEnvironment(
+              builder, signin::AccountConsistencyMethod::kMirror);
+
+  auto identity_test_env_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
+  auto* identity_test_env = identity_test_env_adaptor->identity_test_env();
+  auto* identity_manager = identity_test_env->identity_manager();
+
+  identity_test_env->MakePrimaryAccountAvailable("user@gmail.com",
+                                                 ConsentLevel::kSignin);
+  ASSERT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
+
+  identity_test_env->MakeAccountAvailable("a@gmail.com");
+  EXPECT_EQ(2U, identity_manager->GetAccountsWithRefreshTokens().size());
+
+  PeopleHandler handler(profile.get());
+  base::Value accounts = handler.GetStoredAccountsList();
+
+  ASSERT_TRUE(accounts.is_list());
+  base::Value::List& accounts_list = accounts.GetList();
+
+  ASSERT_EQ(1u, accounts_list.size());
+  ASSERT_TRUE(accounts_list[0].FindKey("email"));
+  EXPECT_EQ("user@gmail.com", accounts_list[0].FindKey("email")->GetString());
+}
+
+TEST(PeopleHandlerSecondaryProfile, GetStoredAccountsList) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kLacrosNonSyncingProfiles};
+
+  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
+  content::BrowserTaskEnvironment task_environment;
+
+  TestingProfile::Builder builder;
+  builder.SetIsMainProfile(false);
+
+  std::unique_ptr<TestingProfile> profile =
+      IdentityTestEnvironmentProfileAdaptor::
+          CreateProfileForIdentityTestEnvironment(
+              builder, signin::AccountConsistencyMethod::kMirror);
+
+  auto identity_test_env_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
+  auto* identity_test_env = identity_test_env_adaptor->identity_test_env();
+  auto* identity_manager = identity_test_env->identity_manager();
+
+  auto account_1 = identity_test_env->MakeAccountAvailable("a@gmail.com");
+  auto account_2 = identity_test_env->MakeAccountAvailable("b@gmail.com");
+  identity_test_env->SetPrimaryAccount(account_2.email,
+                                       signin::ConsentLevel::kSignin);
+  EXPECT_EQ(2U, identity_manager->GetAccountsWithRefreshTokens().size());
+
+  PeopleHandler handler(profile.get());
+  base::Value accounts = handler.GetStoredAccountsList();
+
+  ASSERT_TRUE(accounts.is_list());
+  base::Value::List& accounts_list = accounts.GetList();
+
+  ASSERT_EQ(2u, accounts_list.size());
+  ASSERT_TRUE(accounts_list[0].FindKey("email"));
+  ASSERT_TRUE(accounts_list[1].FindKey("email"));
+  EXPECT_EQ(account_2.email, accounts_list[0].FindKey("email")->GetString());
+  EXPECT_EQ(account_1.email, accounts_list[1].FindKey("email")->GetString());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

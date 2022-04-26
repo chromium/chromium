@@ -121,7 +121,10 @@ class PeopleHandler : public SettingsPageUIHandler,
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, TurnOffSync);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, GetStoredAccountsList);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerMainProfile, Signout);
-  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, SignoutWhenSyncing);
+  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerSecondaryProfile, SignoutWhenSyncing);
+  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerMainProfile, GetStoredAccountsList);
+  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerSecondaryProfile,
+                           GetStoredAccountsList);
 
   // SettingsPageUIHandler implementation.
   void RegisterMessages() override;

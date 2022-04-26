@@ -68,6 +68,7 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
+#include "components/signin/public/base/signin_switches.h"
 #endif
 
 using content::WebContents;
@@ -452,8 +453,17 @@ void PeopleHandler::OnExtendedAccountInfoRemoved(const AccountInfo& info) {
 
 base::Value PeopleHandler::GetStoredAccountsList() {
   base::Value accounts(base::Value::Type::LIST);
+  bool populate_accounts_list = false;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_)) {
+  populate_accounts_list =
+      AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  populate_accounts_list =
+      base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles) &&
+      !profile_->IsMainProfile();
+#endif
+
+  if (populate_accounts_list) {
     // If dice is enabled, show all the accounts.
     for (const auto& account : signin_ui_util::GetOrderedAccountsForDisplay(
              profile_, /*restrict_to_accounts_eligible_for_sync=*/true)) {
@@ -461,13 +471,14 @@ base::Value PeopleHandler::GetStoredAccountsList() {
     }
     return accounts;
   }
-#endif
+
   // Guest mode does not have a primary account (or an IdentityManager).
   if (profile_->IsGuestSession())
     return base::Value(base::Value::Type::LIST);
   // If DICE is disabled for this profile or unsupported on this platform (e.g.
-  // Chrome OS), then show only the primary account, whether or not that account
-  // has consented to sync.
+  // Chrome OS) or Lacros main profile (sync with a different account than the
+  // device account is not allowed), then show only the primary account,
+  // whether or not that account has consented to sync.
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   AccountInfo primary_account_info = identity_manager->FindExtendedAccountInfo(
       identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin));
