@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Test for the 'secure-payment-confirmation' payment method authentication - user rejects case</title>
+<title>Test for the 'secure-payment-confirmation' payment method authentication - requires user activation</title>
 <link rel="help" href="https://w3c.github.io/secure-payment-confirmation/sctn-authentication">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -17,7 +17,7 @@ promise_test(async t => {
     return window.test_driver.remove_virtual_authenticator(authenticator);
   });
 
-  await window.test_driver.set_spc_transaction_mode("autoreject");
+  await window.test_driver.set_spc_transaction_mode("autoaccept");
   t.add_cleanup(() => {
     return window.test_driver.set_spc_transaction_mode("none");
   });
@@ -43,7 +43,6 @@ promise_test(async t => {
     }
   }], PAYMENT_DETAILS);
 
-  await test_driver.bless('user activation');
-  return promise_rejects_dom(t, "NotAllowedError", request.show());
-}, 'Rejected SPC authentication');
+  return promise_rejects_dom(t, "SecurityError", request.show());
+}, 'SPC authentication not allowed without a user activation');
 </script>

@@ -43,6 +43,7 @@ promise_test(async t => {
     }
   }], PAYMENT_DETAILS);
 
+  await test_driver.bless('user activation');
   const responsePromise = request.show();
 
   const response = await responsePromise;
