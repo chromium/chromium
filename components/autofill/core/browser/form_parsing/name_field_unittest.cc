@@ -82,6 +82,18 @@ TEST_F(NameFieldTest, NameSurname) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
+TEST_F(NameFieldTest, NameSurnameWithMiddleName) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableNameSurenameParsing);
+
+  AddTextFormFieldData("name", "name", NAME_FIRST);
+  AddTextFormFieldData("middlename", "middlename", NAME_MIDDLE);
+  AddTextFormFieldData("surename", "surname", NAME_LAST);
+
+  ClassifyAndVerify(ParseResult::PARSED);
+}
+
 TEST_F(NameFieldTest, NameSurname_DE) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(

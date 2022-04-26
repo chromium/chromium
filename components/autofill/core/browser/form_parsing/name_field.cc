@@ -333,7 +333,8 @@ FirstLastNameField::ParseNameSurnameLabelSequence(
 
   base::span<const MatchPatternRef> name_specific_patterns =
       GetMatchPatterns("NAME_GENERIC", page_language, prediction_source);
-
+  base::span<const MatchPatternRef> middle_name_patterns =
+      GetMatchPatterns("MIDDLE_NAME", page_language, prediction_source);
   base::span<const MatchPatternRef> last_name_patterns =
       GetMatchPatterns("LAST_NAME", page_language, prediction_source);
   // Check that the field should not be ignored.
@@ -358,10 +359,14 @@ FirstLastNameField::ParseNameSurnameLabelSequence(
     return nullptr;
 
   if (ParseField(scanner, kNameGenericRe, name_specific_patterns,
-                 &v->first_name_, {log_manager, "kNameGenericRe"}) &&
-      ParseField(scanner, kLastNameRe, last_name_patterns, &v->last_name_,
-                 {log_manager, "kLastNameRe"})) {
-    return v;
+                 &v->first_name_, {log_manager, "kNameGenericRe"})) {
+    // Check for an optional middle name field.
+    ParseField(scanner, kMiddleNameRe, middle_name_patterns, &v->middle_name_,
+               {log_manager, "kMiddleNameRe"});
+    if (ParseField(scanner, kLastNameRe, last_name_patterns, &v->last_name_,
+                   {log_manager, "kLastNameRe"})) {
+      return v;
+    }
   }
 
   scanner->Rewind();
