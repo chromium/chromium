@@ -383,6 +383,10 @@ class ASH_EXPORT CaptureModeCameraController
   // of the resize button will be updated based on it.
   bool is_camera_preview_collapsed_ = false;
 
+  // True if it's the first time to update the camera preview's bounds after
+  // it's created.
+  bool is_first_bounds_update_ = false;
+
   // Valid only during recording to track the number of camera disconnections
   // while recording is in progress.
   absl::optional<int> in_recording_camera_disconnections_;

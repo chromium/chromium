@@ -71,6 +71,8 @@ constexpr base::TimeDelta kCameraPreviewFadeOutDuration =
 constexpr base::TimeDelta kCameraPreviewFadeInDuration =
     base::Milliseconds(150);
 
+constexpr float kCameraPreviewScaleUpFactor = 0.8f;
+
 // Defines a map type to map a camera model ID (or display name) to the number
 // of cameras of that model that are currently connected.
 using ModelIdToCountMap = std::map<std::string, int>;
@@ -528,15 +530,19 @@ void CaptureModeCameraController::MaybeUpdatePreviewWidget(bool animate) {
       !confine_bounds.IsEmpty() &&
       (camera_preview_widget_->GetNativeWindow()->parent()->GetId() !=
        kShellWindowId_UnparentedContainer);
-  const bool did_visibility_change = SetCameraPreviewVisibility(
-      size_specs.should_be_visible, should_animate_visibility);
 
   // We don't need to update the bounds if the widget is hidden.
+  // Also notice we should update the bounds before updating the visibility
+  // since when `is_first_bounds_update_` is true, we should apply the scale up
+  // animation which requires the bounds are set first to the camera preview.
   const bool did_bounds_change =
       size_specs.should_be_visible &&
       SetCameraPreviewBounds(
           CalculatePreviewWidgetTargetBounds(confine_bounds, size_specs.size),
           animate);
+
+  const bool did_visibility_change = SetCameraPreviewVisibility(
+      size_specs.should_be_visible, should_animate_visibility);
 
   if (controller->IsActive() && (did_visibility_change || did_bounds_change)) {
     controller->capture_mode_session()
@@ -806,7 +812,14 @@ void CaptureModeCameraController::RefreshCameraPreview() {
     layer->SetFillsBoundsOpaquely(false);
     layer->SetMasksToBounds(true);
 
+    // Set `is_first_bounds_update_` to true here right after it's recreated.
+    // And set it back to false after camera preview is parented and updated to
+    // the correct bounds and with correct visibility. The value of
+    // `is_first_bounds_update_` will be used in `FadeInCameraPreview`, if it's
+    // true, scale up animation will be applied to show camera preview.
+    is_first_bounds_update_ = true;
     MaybeReparentPreviewWidget();
+    is_first_bounds_update_ = false;
   }
 
   DCHECK(camera_preview_view_);
@@ -1016,12 +1029,27 @@ void CaptureModeCameraController::FadeInCameraPreview() {
   if (layer->opacity() == 1.f)
     layer->SetOpacity(0.f);
 
-  views::AnimationBuilder()
-      .SetPreemptionStrategy(
-          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .Once()
-      .SetDuration(kCameraPreviewFadeInDuration)
-      .SetOpacity(layer, 1.f, gfx::Tween::LINEAR);
+  if (is_first_bounds_update_) {
+    layer->SetTransform(capture_mode_util::GetScaleTransformAboutCenter(
+        layer, kCameraPreviewScaleUpFactor));
+  }
+
+  views::AnimationBuilder builder;
+  auto& animation_sequence_block =
+      builder
+          .SetPreemptionStrategy(
+              ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+          .Once()
+          .SetDuration(kCameraPreviewFadeInDuration)
+          .SetOpacity(layer, 1.f, gfx::Tween::LINEAR);
+
+  // We should only set transform here if `is_first_bounds_update_` is true,
+  // otherwise, it may mess up with the snap animation in
+  // `SetCameraPreviewBounds`.
+  if (is_first_bounds_update_) {
+    animation_sequence_block.SetTransform(layer, gfx::Transform(),
+                                          gfx::Tween::ACCEL_20_DECEL_100);
+  }
 }
 
 void CaptureModeCameraController::FadeOutCameraPreview() {
