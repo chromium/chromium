@@ -10,7 +10,6 @@
 goog.provide('BackgroundBridge');
 
 goog.require('BridgeHelper');
-goog.require('PanelNodeMenuData');
 
 BackgroundBridge.BrailleBackground = {
   /**
@@ -79,27 +78,5 @@ BackgroundBridge.PanelBackground = {
 
   async setRangeToISearchNode() {
     return BridgeHelper.sendMessage('PanelBackground', 'setRangeToISearchNode');
-  },
-};
-
-BackgroundBridge.PanelNodeMenuBackground = {
-  /**
-   * @param {string=} opt_activateMenuTitle
-   * @return {!Promise<!Array<!PanelNodeMenuData>>}
-   */
-  async createAllPanelNodeMenuData(opt_activateMenuTitle) {
-    return BridgeHelper.sendMessage(
-        'PanelNodeMenuBackground', 'createAllPanelNodeMenuData',
-        opt_activateMenuTitle);
-  },
-
-  /**
-   * @param {number} menuId
-   * @param {number} callbackId
-   */
-  async performMenuActionCallback(menuId, callbackId) {
-    return BridgeHelper.sendMessage(
-        'PanelNodeMenuBackground', 'performMenuActionCallback',
-        {menuId, callbackId});
   },
 };

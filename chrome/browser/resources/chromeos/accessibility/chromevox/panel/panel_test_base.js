@@ -31,7 +31,6 @@ ChromeVoxPanelTestBase = class extends ChromeVoxNextE2ETest {
    * chrome.extension.getViews for it.
    */
   getPanel() {
-    assertNotNullNorUndefined(this.getPanelWindow().Panel);
     return this.getPanelWindow().Panel;
   }
 };

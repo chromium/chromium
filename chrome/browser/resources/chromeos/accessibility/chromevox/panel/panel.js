@@ -279,7 +279,7 @@ export class Panel extends PanelInterface {
   /**
    * Open / show the ChromeVox Menus.
    * @param {Event=} opt_event An optional event that triggered this.
-   * @param {string=} opt_activateMenuTitle Title msg id of menu to open.
+   * @param {*=} opt_activateMenuTitle Title msg id of menu to open.
    */
   static onOpenMenus(opt_event, opt_activateMenuTitle) {
     // If the menu was already open, close it now and exit early.
@@ -503,11 +503,24 @@ export class Panel extends PanelInterface {
             Panel.onClose();
           });
 
-      const nodeMenuData =
-          await BackgroundBridge.PanelNodeMenuBackground
-              .createAllPanelNodeMenuData(opt_activateMenuTitle);
-      for (const data of nodeMenuData) {
-        Panel.nodeMenus_[data.menuId] = Panel.addNodeMenu(data);
+      const roleListMenuMapping = [
+        {menuTitle: 'role_heading', predicate: AutomationPredicate.heading},
+        {menuTitle: 'role_landmark', predicate: AutomationPredicate.landmark},
+        {menuTitle: 'role_link', predicate: AutomationPredicate.link}, {
+          menuTitle: 'panel_menu_form_controls',
+          predicate: AutomationPredicate.formField
+        },
+        {menuTitle: 'role_table', predicate: AutomationPredicate.table}
+      ];
+
+      for (let i = 0; i < roleListMenuMapping.length; ++i) {
+        const menuTitle = roleListMenuMapping[i].menuTitle;
+        const predicate = roleListMenuMapping[i].predicate;
+        // Create node menus asynchronously (because it may require
+        // searching a long document) unless that's the specific menu the
+        // user requested.
+        const async = (menuTitle !== opt_activateMenuTitle);
+        Panel.addNodeMenu(menuTitle, node, predicate, async);
       }
 
       if (node && node.standardActions) {
@@ -745,12 +758,15 @@ export class Panel extends PanelInterface {
   }
 
   /**
-   * Create a new node menu with the given data and add it to the menu bar.
-   * @param {!PanelNodeMenuData} data
-   * @return {!PanelNodeMenu}
+   * Create a new node menu with the given name and add it to the menu bar.
+   * @param {string} menuMsg The msg id of the new menu to add.
+   * @param {!chrome.automation.AutomationNode} node
+   * @param {AutomationPredicate.Unary} pred
+   * @param {boolean} defer If true, defers populating the menu.
+   * @return {PanelMenu} The menu just created.
    */
-  static addNodeMenu(data) {
-    const menu = new PanelNodeMenu(data);
+  static addNodeMenu(menuMsg, node, pred, defer) {
+    const menu = new PanelNodeMenu(menuMsg, node, pred, defer);
     $('menu-bar').appendChild(menu.menuBarItemElement);
     menu.menuBarItemElement.addEventListener('mouseover', function() {
       Panel.activateMenu(menu, true /* activateFirstItem */);
@@ -1296,8 +1312,6 @@ Panel.ACTION_TO_MSG_ID = {
   showContextMenu: 'show_context_menu'
 };
 
-/** @private {!Array<!PanelNodeMenu>} */
-Panel.nodeMenus_ = [];
 
 /**
  * @private {string}
@@ -1343,7 +1357,3 @@ window.addEventListener('hashchange', function() {
 function $(id) {
   return document.getElementById(id);
 }
-
-BridgeHelper.registerHandler(
-    /* target= */ 'Panel', 'addPanelNodeMenuItems',
-    ({menuId, itemArray}) => Panel.nodeMenus_[menuId].addMenuItems(itemArray));

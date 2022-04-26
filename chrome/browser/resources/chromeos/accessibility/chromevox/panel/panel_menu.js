@@ -311,24 +311,27 @@ export class PanelMenu {
 
 
 export class PanelNodeMenu extends PanelMenu {
-  /** @param {!PanelNodeMenuData} data */
-  constructor(data) {
-    super(data.title);
+  /**
+   * @param {string} menuMsg The msg id of the menu.
+   * @param {chrome.automation.AutomationNode} node ChromeVox's current
+   *     position.
+   * @param {AutomationPredicate.Unary} pred Filter to use on the document.
+   * @param {boolean} async If true, populates the menu asynchronously by
+   *     posting a task after searching each chunk of nodes.
+   */
+  constructor(menuMsg, node, pred, async) {
+    super(menuMsg);
+    /** @private {AutomationNode} */
+    this.node_ = node;
+    /** @private {AutomationPredicate.Unary} */
+    this.pred_ = pred;
+    /** @private {boolean} */
+    this.async_ = async;
+    /** @private {AutomationTreeWalker|undefined} */
+    this.walker_;
     /** @private {number} */
-    this.id_ = data.menuId;
-  }
-
-  /** @param {!Array<!PanelNodeMenuItemData>} dataArray */
-  addMenuItems(dataArray) {
-    for (const data of dataArray) {
-      this.addMenuItem(
-          data.title, '', '', '',
-          () => BackgroundBridge.PanelNodeMenuBackground
-                    .performMenuActionCallback(this.id_, data.callbackId));
-      if (data.isActive) {
-        this.activeIndex_ = this.items_.length - 1;
-      }
-    }
+    this.nodeCount_ = 0;
+    this.populate_();
   }
 
   /** @override */
@@ -341,7 +344,98 @@ export class PanelNodeMenu extends PanelMenu {
       this.activateItem(index);
     }
   }
+
+  /**
+   * Create the AutomationTreeWalker and kick off the search to find
+   * nodes that match the predicate for this menu.
+   * @private
+   */
+  populate_() {
+    if (!this.node_) {
+      this.finish_();
+      return;
+    }
+
+    const root = AutomationUtil.getTopLevelRoot(this.node_);
+    if (!root) {
+      this.finish_();
+      return;
+    }
+
+    this.walker_ = new AutomationTreeWalker(root, constants.Dir.FORWARD, {
+      visit(node) {
+        return !AutomationPredicate.shouldIgnoreNode(node);
+      }
+    });
+    this.nodeCount_ = 0;
+    this.findMoreNodes_();
+  }
+
+  /**
+   * Iterate over nodes from the tree walker. If a node matches the
+   * predicate, add an item to the menu.
+   *
+   * If |this.async_| is true, then after MAX_NODES_BEFORE_ASYNC nodes
+   * have been scanned, call setTimeout to defer searching. This frees
+   * up the main event loop to keep the panel menu responsive, otherwise
+   * it basically freezes up until all of the nodes have been found.
+   * @private
+   */
+  findMoreNodes_() {
+    while (this.walker_.next().node) {
+      const node = this.walker_.node;
+      if (this.pred_(node)) {
+        const output = new Output();
+        const range = cursors.Range.fromNode(node);
+        output.withoutHints();
+        output.withSpeech(range, range, OutputEventType.NAVIGATE);
+        const label = output.toString();
+        this.addMenuItem(label, '', '', '', (function() {
+                           const savedNode = node;
+                           return function() {
+                             chrome.extension.getBackgroundPage()
+                                 .ChromeVoxState.instance['navigateToRange'](
+                                     cursors.Range.fromNode(savedNode));
+                           };
+                         }()));
+
+        if (node === this.node_ && !this.async_) {
+          this.activeIndex_ = this.items_.length - 1;
+        }
+      }
+
+      if (this.async_) {
+        this.nodeCount_++;
+        if (this.nodeCount_ >= PanelNodeMenu.MAX_NODES_BEFORE_ASYNC) {
+          this.nodeCount_ = 0;
+          window.setTimeout(this.findMoreNodes_.bind(this), 0);
+          return;
+        }
+      }
+    }
+    this.finish_();
+  }
+
+  /**
+   * Called when we've finished searching for nodes. If no matches were
+   * found, adds an item to the menu indicating none were found.
+   * @private
+   */
+  finish_() {
+    if (!this.items_.length) {
+      this.addMenuItem(
+          Msgs.getMsg('panel_menu_item_none'), '', '', '', function() {});
+    }
+  }
 }
+
+/**
+ * The number of nodes to search before posting a task to finish
+ * searching.
+ * @const {number}
+ */
+PanelNodeMenu.MAX_NODES_BEFORE_ASYNC = 100;
+
 
 /**
  * Implements a menu that allows users to dynamically search the contents of the
