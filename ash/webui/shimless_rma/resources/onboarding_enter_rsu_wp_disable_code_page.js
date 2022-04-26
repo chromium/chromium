@@ -13,7 +13,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {QrCode, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
-import {enableNextButton} from './shimless_rma_util.js';
+import {dispatchNextButtonClick, enableNextButton} from './shimless_rma_util.js';
 
 // The size of each tile in pixels.
 const QR_CODE_TILE_SIZE = 5;
@@ -188,6 +188,16 @@ export class OnboardingEnterRsuWpDisableCodePage extends
     // Set to false whenever the user changes the code to remove the red invalid
     // warning.
     this.rsuCodeInvalid_ = false;
+  }
+
+  /**
+   * @param {!Event} event
+   * @protected
+   */
+  onKeyDown_(event) {
+    if (event.key === 'Enter') {
+      dispatchNextButtonClick(this);
+    }
   }
 
   /**

@@ -64,6 +64,17 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
     return flushTasks();
   }
 
+  /**
+   * @param {string} inputSelector
+   * @return {!Promise}
+   */
+  function pressEnter(inputSelector) {
+    const rsuCodeInput = component.shadowRoot.querySelector(inputSelector);
+    rsuCodeInput.value = '12345678';
+    rsuCodeInput.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    return flushTasks();
+  }
+
   test('EnterRsuWpDisableCodePageInitializes', async () => {
     await initializeEnterRsuWpDisableCodePage('rsu challenge', '');
     const rsuCodeComponent = component.shadowRoot.querySelector('#rsuCode');
@@ -163,5 +174,18 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
 
     await flushTasks();
     assertFalse(rsuCodeInput.invalid);
+  });
+
+  test('EnterRsuWpDisableCodePagePressEnterkey', async () => {
+    await initializeEnterRsuWpDisableCodePage(
+        /*challenge=*/ '', /*hwid=*/ '');
+
+    let nextButtonEventFired = false;
+    component.addEventListener('click-next-button', (e) => {
+      nextButtonEventFired = true;
+    });
+    await pressEnter('#rsuCode');
+
+    assertTrue(nextButtonEventFired);
   });
 }

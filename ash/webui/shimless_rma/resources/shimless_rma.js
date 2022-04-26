@@ -388,6 +388,15 @@ export class ShimlessRma extends ShimlessRmaBase {
     };
 
     /**
+     * The nextButtonCallback_ callback is used by the landing page to simulate
+     * the next button being clicked.
+     * @private {?Function}
+     */
+    this.nextButtonCallback_ = (e) => {
+      this.onNextButtonClicked_();
+    };
+
+    /**
      * The setNextButtonLabelCallback callback is used by page elements to set
      * the text label for the 'Next' button.
      * @private {?Function}
@@ -411,6 +420,7 @@ export class ShimlessRma extends ShimlessRmaBase {
     window.addEventListener(
         'enable-all-buttons', this.enableAllButtonsCallback_);
     window.addEventListener('click-cancel-button', this.cancelButtonCallback_);
+    window.addEventListener('click-next-button', this.nextButtonCallback_);
   }
 
   /** @override */
@@ -427,6 +437,7 @@ export class ShimlessRma extends ShimlessRmaBase {
         'enable-all-buttons', this.enableAllButtonsCallback_);
     window.removeEventListener(
         'click-cancel-button', this.cancelButtonCallback_);
+    window.removeEventListener('click-next-button', this.nextButtonCallback_);
   }
 
   /** @override */

@@ -62,6 +62,7 @@
       <cr-input
           id="rsuCode"
           value="{{rsuCode_}}"
+          on-keydown="onKeyDown_"
           maxlength="[[rsuCodeExpectedLength_]]"
           invalid="[[rsuCodeInvalid_]]"
           disabled="[[allButtonsDisabled]]">

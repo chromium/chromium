@@ -64,3 +64,14 @@ export function executeThenTransitionState(element, fn) {
       {bubbles: true, composed: true, detail: fn},
       ));
 }
+
+/**
+ * Dispatches an event to click the next button.
+ * @param {!HTMLElement} element
+ */
+export function dispatchNextButtonClick(element) {
+  element.dispatchEvent(new CustomEvent('click-next-button', {
+    bubbles: true,
+    composed: true,
+  }));
+}
