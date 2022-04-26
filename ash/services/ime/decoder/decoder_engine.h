@@ -5,7 +5,7 @@
 #ifndef ASH_SERVICES_IME_DECODER_DECODER_ENGINE_H_
 #define ASH_SERVICES_IME_DECODER_DECODER_ENGINE_H_
 
-#include "ash/services/ime/ime_decoder.h"
+#include "ash/services/ime/ime_shared_lib.h"
 #include "ash/services/ime/public/cpp/shared_lib/interfaces.h"
 #include "ash/services/ime/public/mojom/input_engine.mojom.h"
 #include "ash/services/ime/public/mojom/input_method.mojom.h"
@@ -29,8 +29,9 @@ namespace ime {
 // shared lib, to facilitate accessing an IME engine therein via ProtoMode.
 class DecoderEngine : public mojom::InputChannel {
  public:
-  explicit DecoderEngine(ImeCrosPlatform* platform,
-                         absl::optional<ImeDecoder::EntryPoints> entry_points);
+  explicit DecoderEngine(
+      ImeCrosPlatform* platform,
+      absl::optional<ImeSharedLib::EntryPoints> entry_points);
 
   DecoderEngine(const DecoderEngine&) = delete;
   DecoderEngine& operator=(const DecoderEngine&) = delete;
@@ -49,7 +50,7 @@ class DecoderEngine : public mojom::InputChannel {
                       ProcessMessageCallback callback) override;
 
  private:
-  absl::optional<ImeDecoder::EntryPoints> decoder_entry_points_;
+  absl::optional<ImeSharedLib::EntryPoints> decoder_entry_points_;
   mojo::ReceiverSet<mojom::InputChannel> decoder_channel_receivers_;
 };
 

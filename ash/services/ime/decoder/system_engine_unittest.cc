@@ -21,7 +21,7 @@ constexpr char kImeSpec[] = "xkb:us::eng";
 class TestDecoderState;
 
 // The fake decoder state has to be available globally because
-// ImeDecoder::EntryPoints is a list of stateless C functions, so the only way
+// ImeSharedLib::EntryPoints is a list of stateless C functions, so the only way
 // to have a stateful fake is to have a global reference to it.
 TestDecoderState* g_test_decoder_state = nullptr;
 
@@ -78,10 +78,10 @@ class TestDecoderState {
   mojo::Remote<mojom::InputMethodHost> input_method_host;
 };
 
-ImeDecoder::EntryPoints CreateDecoderEntryPoints(TestDecoderState* state) {
+ImeSharedLib::EntryPoints CreateDecoderEntryPoints(TestDecoderState* state) {
   g_test_decoder_state = state;
 
-  ImeDecoder::EntryPoints entry_points = {
+  ImeSharedLib::EntryPoints entry_points = {
       .init_proto_mode = [](ImeCrosPlatform* platform) {},
       .close_proto_mode = []() {},
       .supports = [](const char* ime_spec) { return true; },
@@ -168,7 +168,7 @@ class SystemEngineTest : public testing::Test {
 
 TEST_F(SystemEngineTest, BindRequestConnectsInputMethod) {
   TestDecoderState state;
-  ImeDecoder::EntryPoints entry_points = CreateDecoderEntryPoints(&state);
+  ImeSharedLib::EntryPoints entry_points = CreateDecoderEntryPoints(&state);
   SystemEngine engine(/*platform=*/nullptr, entry_points);
 
   mojo::Remote<mojom::InputMethod> input_method;
@@ -184,7 +184,7 @@ TEST_F(SystemEngineTest, BindRequestConnectsInputMethod) {
 
 TEST_F(SystemEngineTest, CanSendMessagesAfterBinding) {
   TestDecoderState state;
-  ImeDecoder::EntryPoints entry_points = CreateDecoderEntryPoints(&state);
+  ImeSharedLib::EntryPoints entry_points = CreateDecoderEntryPoints(&state);
   SystemEngine engine(/*platform=*/nullptr, entry_points);
 
   mojo::Remote<mojom::InputMethod> input_method;
@@ -203,7 +203,7 @@ TEST_F(SystemEngineTest, CanSendMessagesAfterBinding) {
 
 TEST_F(SystemEngineTest, CanReceiveMessagesAfterBinding) {
   TestDecoderState state;
-  ImeDecoder::EntryPoints entry_points = CreateDecoderEntryPoints(&state);
+  ImeSharedLib::EntryPoints entry_points = CreateDecoderEntryPoints(&state);
   SystemEngine engine(/*platform=*/nullptr, entry_points);
 
   mojo::Remote<mojom::InputMethod> input_method;

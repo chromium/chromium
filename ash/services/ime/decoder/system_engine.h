@@ -5,7 +5,7 @@
 #ifndef ASH_SERVICES_IME_DECODER_SYSTEM_ENGINE_H_
 #define ASH_SERVICES_IME_DECODER_SYSTEM_ENGINE_H_
 
-#include "ash/services/ime/ime_decoder.h"
+#include "ash/services/ime/ime_shared_lib.h"
 #include "ash/services/ime/public/cpp/shared_lib/interfaces.h"
 #include "ash/services/ime/public/mojom/connection_factory.mojom.h"
 #include "ash/services/ime/public/mojom/input_engine.mojom.h"
@@ -30,7 +30,7 @@ namespace ime {
 class SystemEngine {
  public:
   explicit SystemEngine(ImeCrosPlatform* platform,
-                        absl::optional<ImeDecoder::EntryPoints> entry_points);
+                        absl::optional<ImeSharedLib::EntryPoints> entry_points);
 
   SystemEngine(const SystemEngine&) = delete;
   SystemEngine& operator=(const SystemEngine&) = delete;
@@ -49,7 +49,7 @@ class SystemEngine {
   bool IsConnected();
 
  private:
-  absl::optional<ImeDecoder::EntryPoints> decoder_entry_points_;
+  absl::optional<ImeSharedLib::EntryPoints> decoder_entry_points_;
 };
 
 }  // namespace ime
