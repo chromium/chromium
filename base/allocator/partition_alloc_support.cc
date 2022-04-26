@@ -46,6 +46,7 @@ namespace {
 
 #if defined(PA_ALLOW_PCSCAN)
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
 constexpr const char* ScannerIdToTracingString(
     internal::StatsCollector::ScannerId id) {
   switch (id) {
@@ -77,6 +78,7 @@ constexpr const char* MutatorIdToTracingString(
       __builtin_unreachable();
   }
 }
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 // Inject TRACE_EVENT_BEGIN/END, TRACE_COUNTER1, and UmaHistogramTimes.
 class StatsReporterImpl final : public partition_alloc::StatsReporter {
