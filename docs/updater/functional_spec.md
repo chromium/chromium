@@ -14,7 +14,13 @@ copy of the updater as a resource, extracts it, and triggers installation of the
 updater / an app. The metainstaller is downloaded by the user and can be run
 from any directory.
 
-TODO(crbug.com/1035895): Document tagging.
+The metainstaller may have a tag attached to it. The tag is a piece of unsigned
+data from which the metainstaller extracts the ID of the application to be
+installed, along with the application's brand code, usage-stats opt-in status,
+and any additional parameters to be associated with the application.
+
+On Windows, the tag is embedded in one of the certificates in the metainstaller
+PE.
 
 ### Elevation (Windows)
 The metainstaller parses its tag and re-launches itself at high integrity if
@@ -30,7 +36,10 @@ TODO(crbug.com/1035895): Document the standalone installer.
 
 TODO(crbug.com/1035895): Document bundled installers.
 
-TODO(crbug.com/1035895): Document bundling the updater on macOS.
+Applications on macOS frequently install via "drag-install", and then install 
+the updater using a standalone installer on the application's first-run. The
+updater app can be embedded in a macOS application bundle as a helper and then
+invoked with appropriate command line arguments to install itself.
 
 ## Updater
 The updater is installed at:
@@ -54,7 +63,8 @@ process is determined by command-line arguments:
     *   --handoff=...
         *   As --tag.
     *   --install-from-out-dir
-        *   TODO(crbug.com/1035895): Document
+        *   If specified, the program searches for an updater.runtime_deps file
+        *   and copies all such files to the install directory.
 *   --uninstall
     *   Uninstall all versions of the updater.
 *   --uninstall-self
@@ -121,13 +131,104 @@ Additionally, the mode may be modified by combining it with:
 ### Installation
 TODO(crbug.com/1035895): Document UI/UX
 
-TODO(crbug.com/1035895): Document installer APIs
+#### Installer APIs
+As part of installing or updating an application, the updater will execute the
+application's installer. The API for the application installer is platform-
+specific.
 
-TODO(crbug.com/1035895): Document shim installation
+The macOS API is [defined here](installer_api_mac.md).
 
-TODO(crbug.com/1035895): Document handoff
+TODO(crbug.com/1035895): Document Windows installer APIs
 
-TODO(crbug.com/1035895): Document relevant enterprise policies.
+#### Backward-Compatible Updater Shims
+To maintain backwards compatibility with
+[Omaha](https://github.com/google/omaha) and
+[Keystone](https://code.google.com/archive/p/update-engine/), the updater
+installs small versions of those programs that implement a subset of their APIs.
+
+##### Keystone Shims
+The updater installs a Keystone-like application that contains these shims:
+
+1.  The Keystone app executable.
+1.  The ksadmin helper executable.
+2.  The ksinstall helper executable.
+3.  The Keystone Agent helper app executable.
+
+Both the Keystone and Keystone Agent executables simply exit immediately when
+run.
+
+The ksinstall executable expects to be called with `--uninstall` and possibly
+`--system`. If so, it deletes the Keystone shim (but not the overall updater)
+from the file system. Otherwise, it exits with a non-zero exit code.
+
+The ksadmin shim is frequently called by applications and handles a variety of
+command lines:
+
+*   --delete, -d
+    *   Delete a ticket.
+    *   Accepts -P.
+*   --install, -i
+    *   Check for and apply updates.
+*   --ksadmin-version, -k
+    *   Print the version of ksadmin.
+*   --print
+    *   An alias for --print-tickets.
+*   --print-tag, -G
+    *   Print a ticket's tag.
+    *   Accepts -P.
+*   --print-tickets, -p
+    *   Print all tickets.
+    *   Accepts -P.
+*   --register, -r
+    *   Register a new ticket or update an existing one.
+    *   Accepts -P, -v, -x, -e, -a, -K, -H, -g.
+
+Some of these actions accept parameters:
+
+*   --brand-key, -b plistKeyName
+    *   Set the brand code key. Use with -P and -B. Value must be empty or
+        KSBrandID.
+*   --brand-path, -B pathToPlist
+    *   Set the brand code path. Use with -P and -b.
+*   --productid, -P id
+    *   Specifies the application ID.
+*   --system-store, -S
+    *   Use the system-scope updater, even if not running as root.
+    *   Not all operations can be performed with -S if not running as root.
+*   --tag, -g ap
+    *   Set the application's additional parameters. Use with -P.
+*   --tag-key, -K plistKeyName
+    *   Set the additional parameters path key. Use with -P and -H.
+*   --tag-path, -H pathToPlist
+    *   Set the tag path. Use with -P and -K.
+*   --user-initiated, -F
+    *   Set foreground priority for this operation.
+*   --user-store, -U
+    *   Use a per-user ticket store, even if running as root.
+*   --version, -v version
+    *   Set the application's version. Use with -P.
+*   --version-key, -e plistKeyName
+    *   Set the version path key. Use with -P and -a.
+*   --version-path, -a pathToPlist
+    *   Set the version path. Use with -P and -e.
+*   --xcpath, -x PATH
+    *   Set a path to use as an existence checker.
+
+##### Omaha Shims
+On Windows, the updater replaces Omaha's files with a copy of the updater, and
+keeps the Omaha registry entry
+(`CLIENTS/{430FD4D0-B729-4F61-AA34-91526481799D}`) up-to-date with the latest
+`pv` value. Additionally, the updater replaces the Omaha uninstall command line
+with its own.
+
+#### Enterprise Policies
+Enterprise policies can prevent the installation of applications:
+*   A per-application setting may specify whether an application is installable.
+*   If no per-application setting specifies otherwise, the default install
+    policy is used.
+*   If the default install policy is unset, the application may be installed.
+
+Refer to chrome/updater/protos/omaha\_settings.proto for more details.
 
 #### Dynamic Install Parameters
 
@@ -303,24 +404,83 @@ The updater will not delete this file.
 part of pings to the update server.
 
 ## Updates
-TODO(crbug.com/1035895): Document server API (Omaha Protocol).
+The updater communicates with update servers using the
+[Omaha Protocol](protocol_3_1.md).
 
-TODO(crbug.com/1035895): Document supported update formats.
+### Update Formats
+The updater accepts updates packaged as CRX₃ files. All files must be signed
+with a publisher key. The corresponding public key is hardcoded into the
+updater.
 
+### Differential Updates
 TODO(crbug.com/1035895): Document differential updates.
 
-TODO(crbug.com/1035895): Document update timing.
+### Update Timing
+The updater runs periodic tasks every hour, checking its own status, detecting
+application uninstalls, and potential checking for updates (if it has been at
+least 5 hours since the last update check).
 
-TODO(crbug.com/1035895): Document on-demand APIs.
+TODO(crbug.com/1035895): Does the updater run at user login on Windows?
 
-TODO(crbug.com/1035895): Document registration APIs.
+### On-Demand Updates
+The updater exposes an RPC interface for any user to trigger an update check.
+The update can be triggered by any user on the system, even in the system scope.
 
-TODO(crbug.com/1035895): Document activity API.
+The caller provides the ID of the item to update, the install data index to
+request, the priority, whether a same-version update (repair) is permitted, and
+callbacks to monitor the progress and completion of the operation.
 
+Regardless of the normal update check timing, the update check will be attempted
+immediately.
+
+### App Registration
+The updater exposes an RPC interface for users to register an application with
+the updater. Unlike on-demand updates, cross-user application registration is
+not permitted.
+
+If the application is already installed, it should be registered with the
+version present on disk. If it has not yet been installed, a version of 0
+should be used.
+
+### App Activity Reporting
+Applications can report whether they are actively used or not through the
+updater. Update servers can then aggregate this information to produce user
+counts.
+
+Windows:
+*   When active, the application sets
+    HKCU\SOFTWARE\{Company}\Update\ClientState\{AppID} → dr (REG_SZ): 1.
+    *   Note: both user-scoped and system-scoped updaters use HKCU.
+*   When reporting active use, the updater will reset the value to 0.
+
+macOS:
+*   The application touches
+    ~/Library/{Company}/{Company}SoftwareUpdate/Actives/{APPID}.
+*   The updater deletes the file when reporting active use.
+
+### EULA/ToS Acceptance
 TODO(crbug.com/1035895): Document EULA signals.
 
-TODO(crbug.com/1035895): Document usage-stats opt-in signals.
+### Usage Stats Acceptance
+The updater may upload its crash reports and send usage stats if and only if
+any piece of software it manages is permitted to send usage stats.
 
+Windows:
+*   Applications enable usage stats by writing:
+    `HKCU\SOFTWARE\{Company}\Update\ClientState\{APPID}` → usagestats (DWORD): 1
+    or
+    `HKLM\SOFTWARE\{Company}\Update\ClientStateMedium\{APPID}` → usagestats
+    (DWORD): 1
+*   Applications rescind this permission by writing a value of 0.
+
+macOS:
+*   Application enable usage stats by setting `IsUploadEnabled` to true for a
+    crashpad database maintained in a "Crashpad" subdirectory of their
+    application data directory.
+*   The updater will search the file system for Crashpad directories belonging
+    to {Company}.
+
+### Enterprise Policies
 TODO(crbug.com/1035895): Document relevant enterprise policies.
 
 ### Telemetry
@@ -331,29 +491,27 @@ does not send such a ping for its own installation.
 When the updater updates an application (including itself) it will send an
 event with `"eventtype": 3` indicating the outcome of update operation.
 
-## Services
-TODO(crbug.com/1035895): Document app commands.
+When the updater detects the uninstallation of an application, it will send an
+event with `"eventtype": 4` to notify the server of the uninstallation.
 
+When the updater attempts to download a file, it will send an event with
+`"eventtype": 14` describing the parameters and outcome of the download.
+
+Multiple events associated with an update session are bundled together into a
+single request.
+
+## Services
+
+### Crash Reporting
 TODO(crbug.com/1035895): Document updater crash reporting.
 
-## Uninstallation
-TODO(crbug.com/1035895): Document uninstallation APIs.
-
-TODO(crbug.com/1035895): Document updater self-uninstallation.
-
-## Associated Tools
-TODO(crbug.com/1035895): Document external constant overrides (test build only).
-
-TODO(crbug.com/1035895): Document tagging tools.
-
-## Application Commands
-
+### Application Commands
 The Application Command feature allows installed Updater-managed products to
 pre-register and later run command lines in the format
 `c:\path-to-exe\exe.exe {params}` (elevated for system applications). `{params}`
 is optional and can also include replaceable parameters substituted at runtime.
 
-### Registration
+#### Registration
 App commands are registered in the registry with the following formats:
 
 * New command layout format:
@@ -372,7 +530,7 @@ Example `{command format}`: `c:\path-to\echo.exe %1 %2 %3 StaticParam4`
 As shown above, `{command format}` needs to be the complete path to an
 executable followed by optional parameters.
 
-### Usage
+#### Usage
 Once registered, commands may be invoked using the `execute` method in the
 `IAppCommandWeb` interface.
 
@@ -414,10 +572,7 @@ using the `status` method of `IAppCommandWeb`. When the status is
 `COMMAND_STATUS_COMPLETE`, the `exitCode` method can be used to get the process
 exit code.
 
-### Command-Line Format
-
-Some rules to follow for the command line:
-
+#### Command-Line Format
 * for system applications, the executable path must be in a secure location such
 as `%ProgramFiles%` for security, since it will be run elevated.
 * placeholders are not permitted in the executable path.
@@ -429,4 +584,49 @@ respectively, a command format of:
   `echo.exe %1 %%2 %%%2`
 becomes the command line
   `echo.exe AA %2 %BB`
+
+## Uninstallation
+On Mac and Linux, if the application was registered with an existence path
+checker and no file at that path exists (or if the file at that path is owned
+by another user), the updater will consider the application uninstalled, send
+the ping, and cease trying to keep it up to date.
+
+On Windows, if the ClientState entry for for the application is deleted, the
+app is considered uninstalled.
+
+On Windows, the updater registers a "UninstallCmdLine" under the
+`Software\{Company}\Updater` key. This command line can be invoked by
+application uninstallers to cause the updater to immediately update its
+registrations. The updater will also check for uninstallations in every periodic
+task execution.
+
+When the last registered application is uninstalled, the updater will uninstall
+itself. The updater will also uninstall itself if it has started 24 times but
+never had a product (besides itself) registered for updates.
+
+The updater uninstaller removes all updater files, registry keys, RPC hooks,
+scheduled tasks, and so forth from the file system, except that it leaves a
+small log file in its data directory.
+
+## Associated Tools
+
+### External Constants Overrides
+Building the updater produces both a production-ready updater executable and a
+version of the executable used for the purposes of testing. The test executable
+is identical to the production one except that it allows cetain constants to be
+overridden by the execution environment:
+
+*   `url`: Update check & ping-back URL.
+*   `use_cup`: Whether CUP is used at all.
+*   `cup_public_key`: An unarmored PEM-encoded ASN.1 SubjectPublicKeyInfo with
+    the ecPublicKey algorithm and containing a named elliptic curve.
+
+Windows: these overrides exist in registry, under
+`HKLM\Software\{Company}\Update\Clients\ClientState\UpdateDev`.
+
+macOS: these overrides exist in user defaults, in the `{MAC_BUNDLE_IDENTIFIER}`
+suite. For system installs, the defaults are those of the root user.
+
+### Tagging Tools
+TODO(crbug.com/1035895): Document tagging tools.
 

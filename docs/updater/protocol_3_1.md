@@ -1,5 +1,3 @@
-# Omaha Protocol (V3.1)
-This document describes version 3.1 of the Omaha Client-Server Protocol.
 Previous versions are described at:
  * [Version 3](https://github.com/google/omaha/blob/master/doc/ServerProtocolV3.md)
  * [Version 2](https://github.com/google/omaha/blob/master/doc/ServerProtocolV2.md)
@@ -426,6 +424,8 @@ data from the server. The server maintains a map of index values to data
 contents, and can supply them if requested. This is used during installation to
 transmit alternate branding or seeded configurations to the application. `data`
 objects have the following members:
+ *   `name`: The type of data lookup to perform. The only known supported value
+      is "install". Default: "".
  *   `index`: The key to look up on the server. Default: "".
 
 #### `disabled` Objects (Update Check Request)
@@ -570,8 +570,10 @@ in the response. It has the following members:
 #### `data` Objects (Update Check Response)
 Each data object in the response represents an answer to a data request from the
 client. It has the following members:
+ *   `name`: The requested data name from `request.app.data.name`, echoed back
+     to the client.
  *   `index`: The requested data index from `request.app.data.index`, echoed
-     back to the client.
+     back to the client, if valid.
  *   `status`: The outcome of the data lookup. Default: "ok". Known values:
      *   "ok": This tag contains the appropriate data response, even if such a
          response is the empty string.
@@ -580,7 +582,7 @@ client. It has the following members:
      *   "error-nodata": The data request was understood, but the server does
          not have a value for the requested entry. (This is distinct from having
          a zero-length value.)
- *   `value`: The value of the requested data index.
+ *   `#text`: The value of the requested data index.
 
 #### `updatecheck` Objects (Update Check Response)
 An updatecheck response object contains whether or not there is an update
