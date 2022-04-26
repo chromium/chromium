@@ -141,6 +141,7 @@ source_set("popup_ui") {
     "resources:omnibox_suggestion_answer_icon_dark_color",
     "resources:omnibox_suggestion_icon_color",
     "resources:omnibox_suggestion_icon_dark_color",
+    "resources:primary_background_color_swiftui_ios14",
     "//base",
     "//components/omnibox/common",
     "//ios/chrome/app/strings:ios_strings_grit",
