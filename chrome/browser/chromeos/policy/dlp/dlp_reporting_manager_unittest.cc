@@ -185,4 +185,26 @@ TEST_F(DlpReportingManagerTest, UserType) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+TEST_F(DlpReportingManagerTest, CreateEventWithUnknownRestriction) {
+  DlpPolicyEvent event = policy::CreateDlpPolicyEvent(
+      kCompanyPattern, DlpRulesManager::Restriction::kUnknownRestriction,
+      DlpRulesManager::Level::kNotSet);
+  EXPECT_EQ(event.source().url(), kCompanyPattern);
+  EXPECT_FALSE(event.has_destination());
+  EXPECT_EQ(event.restriction(),
+            DlpPolicyEvent_Restriction_UNDEFINED_RESTRICTION);
+  EXPECT_EQ(event.mode(), DlpPolicyEvent_Mode_UNDEFINED_MODE);
+}
+
+TEST_F(DlpReportingManagerTest, CreateEventForFilesRestriction) {
+  DlpPolicyEvent event = policy::CreateDlpPolicyEvent(
+      kCompanyPattern, DlpRulesManager::Restriction::kFiles,
+      DlpRulesManager::Level::kAllow);
+  EXPECT_EQ(event.source().url(), kCompanyPattern);
+  EXPECT_FALSE(event.has_destination());
+  EXPECT_EQ(event.restriction(),
+            DlpPolicyEvent_Restriction_UNDEFINED_RESTRICTION);
+  EXPECT_EQ(event.mode(), DlpPolicyEvent_Mode_UNDEFINED_MODE);
+}
+
 }  // namespace policy
