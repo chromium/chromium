@@ -76,14 +76,17 @@ class BASE_EXPORT UnsafeSharedMemoryRegion {
   // access. The mapped address is guaranteed to have an alignment of
   // at least |subtle::PlatformSharedMemoryRegion::kMapMinimumAlignment|.
   // Returns a valid WritableSharedMemoryMapping instance on success, invalid
-  // otherwise.
-  WritableSharedMemoryMapping Map() const;
+  // otherwise. A custom |SharedMemoryMapper| for mapping (and later unmapping)
+  // the region can be provided using the optional |mapper| parameter.
+  WritableSharedMemoryMapping Map(SharedMemoryMapper* mapper = nullptr) const;
 
   // Same as above, but maps only |size| bytes of the shared memory region
   // starting with the given |offset|. |offset| must be aligned to value of
   // |SysInfo::VMAllocationGranularity()|. Returns an invalid mapping if
   // requested bytes are out of the region limits.
-  WritableSharedMemoryMapping MapAt(uint64_t offset, size_t size) const;
+  WritableSharedMemoryMapping MapAt(uint64_t offset,
+                                    size_t size,
+                                    SharedMemoryMapper* mapper = nullptr) const;
 
   // Whether the underlying platform handle is valid.
   bool IsValid() const;

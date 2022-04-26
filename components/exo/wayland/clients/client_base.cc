@@ -28,6 +28,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/platform_shared_memory_region.h"
+#include "base/memory/shared_memory_mapper.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
@@ -123,9 +124,11 @@ ClientBase* CastToClientBase(void* data) {
 class MemfdMemoryMapping : public base::SharedMemoryMapping {
  public:
   MemfdMemoryMapping(base::span<uint8_t> mapped_span)
-      : base::SharedMemoryMapping(mapped_span,
-                                  mapped_span.size(),
-                                  base::UnguessableToken::Create()) {}
+      : base::SharedMemoryMapping(
+            mapped_span,
+            mapped_span.size(),
+            base::UnguessableToken::Create(),
+            base::SharedMemoryMapper::GetDefaultInstance()) {}
 };
 
 void RegistryHandler(void* data,

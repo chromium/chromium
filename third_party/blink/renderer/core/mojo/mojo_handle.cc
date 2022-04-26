@@ -259,18 +259,31 @@ MojoReadDataResult* MojoHandle::readData(
 MojoMapBufferResult* MojoHandle::mapBuffer(unsigned offset,
                                            unsigned num_bytes) {
   MojoMapBufferResult* result_dict = MojoMapBufferResult::Create();
-  void* data = nullptr;
-  MojoResult result =
-      MojoMapBuffer(handle_.get().value(), offset, num_bytes, nullptr, &data);
-  result_dict->setResult(result);
-  if (result == MOJO_RESULT_OK) {
-    ArrayBufferContents contents(
-        data, num_bytes, [](void* buffer, size_t length, void* alloc_data) {
-          MojoResult result = MojoUnmapBuffer(buffer);
-          DCHECK_EQ(result, MOJO_RESULT_OK);
-        });
+
+  // We need to extract the underlying shared memory region to map it as array
+  // buffer contents. However, as we don't know what kind of shared memory
+  // region is currently backing the buffer, we unwrap it to the underlying
+  // platform shared memory region. We also don't want to duplicate the region,
+  // and so need to perform a small dance here to first unwrap, and later
+  // re-wrap the MojoSharedBuffer to/from a //base shared memory region.
+  mojo::SharedBufferHandle buffer_handle(handle_.release().value());
+  auto region = mojo::UnwrapPlatformSharedMemoryRegion(
+      mojo::ScopedSharedBufferHandle(buffer_handle));
+
+  if (region.IsValid()) {
+    ArrayBufferContents contents(region, offset, num_bytes);
+    result_dict->setResult(MOJO_RESULT_OK);
     result_dict->setBuffer(DOMArrayBuffer::Create(contents));
+  } else {
+    result_dict->setResult(MOJO_RESULT_UNKNOWN);
   }
+
+  // 2nd part of the dance: we now need to wrap the shared memory region into a
+  // mojo handle again.
+  mojo::ScopedSharedBufferHandle mojo_buffer =
+      mojo::WrapPlatformSharedMemoryRegion(std::move(region));
+  handle_.reset(mojo::Handle(mojo_buffer.release().value()));
+
   return result_dict;
 }
 

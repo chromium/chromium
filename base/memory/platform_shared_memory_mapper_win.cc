@@ -23,8 +23,7 @@ size_t GetMemorySectionSize(void* address) {
 }
 }  // namespace
 
-// static
-absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::MapInternal(
+absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
     subtle::PlatformSharedMemoryHandle handle,
     bool write_allowed,
     uint64_t offset,
@@ -49,8 +48,7 @@ absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::MapInternal(
                    GetMemorySectionSize(address));
 }
 
-// static
-void PlatformSharedMemoryMapper::UnmapInternal(span<uint8_t> mapping) {
+void PlatformSharedMemoryMapper::Unmap(span<uint8_t> mapping) {
   if (!UnmapViewOfFile(mapping.data()))
     DPLOG(ERROR) << "UnmapViewOfFile";
 }

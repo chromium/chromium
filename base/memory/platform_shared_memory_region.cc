@@ -47,7 +47,8 @@ PlatformSharedMemoryRegion::PassPlatformHandle() {
 
 absl::optional<span<uint8_t>> PlatformSharedMemoryRegion::MapAt(
     uint64_t offset,
-    size_t size) const {
+    size_t size,
+    SharedMemoryMapper* mapper) const {
   if (!IsValid())
     return absl::nullopt;
 
@@ -66,9 +67,11 @@ absl::optional<span<uint8_t>> PlatformSharedMemoryRegion::MapAt(
 
   RecordMappingWasBlockedHistogram(/*blocked=*/false);
 
+  if (!mapper)
+    mapper = SharedMemoryMapper::GetDefaultInstance();
+
   bool write_allowed = mode_ != Mode::kReadOnly;
-  auto result = PlatformSharedMemoryMapper::Map(GetPlatformHandle(),
-                                                write_allowed, offset, size);
+  auto result = mapper->Map(GetPlatformHandle(), write_allowed, offset, size);
 
   if (result.has_value()) {
     DCHECK(IsAligned(result.value().data(), kMapMinimumAlignment));

@@ -6,36 +6,21 @@
 #define BASE_MEMORY_PLATFORM_SHARED_MEMORY_MAPPER_H_
 
 #include "base/base_export.h"
-#include "base/containers/span.h"
-#include "base/memory/platform_shared_memory_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-#include <stdint.h>
+#include "base/memory/shared_memory_mapper.h"
 
 namespace base {
 
-// Static class responsible for the platform-specific logic to map a shared
-// memory region into the virtual address space of the process.
-class BASE_EXPORT PlatformSharedMemoryMapper {
+// Default implementation of the SharedMemoryMapper interface. Implements the
+// platform-specific logic for mapping shared memory regions into the virtual
+// address space of the process.
+class PlatformSharedMemoryMapper : public SharedMemoryMapper {
  public:
-  PlatformSharedMemoryMapper() = delete;
+  absl::optional<span<uint8_t>> Map(subtle::PlatformSharedMemoryHandle handle,
+                                    bool write_allowed,
+                                    uint64_t offset,
+                                    size_t size) override;
 
-  static absl::optional<span<uint8_t>> Map(
-      subtle::PlatformSharedMemoryHandle handle,
-      bool write_allowed,
-      uint64_t offset,
-      size_t size);
-
-  static void Unmap(span<uint8_t> mapping);
-
- private:
-  static absl::optional<span<uint8_t>> MapInternal(
-      subtle::PlatformSharedMemoryHandle handle,
-      bool write_allowed,
-      uint64_t offset,
-      size_t size);
-
-  static void UnmapInternal(span<uint8_t> mapping);
+  void Unmap(span<uint8_t> mapping) override;
 };
 
 }  // namespace base
