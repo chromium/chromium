@@ -213,70 +213,6 @@ class AttributionsBrowserTest : public ContentBrowserTest {
     loop.Run();
   }
 
-  void CreateAndClickSource(WebContents* web_contents,
-                            const GURL& href,
-                            const GURL& attribution_src) {
-    CreateAndClickSourceInFrame(web_contents, web_contents->GetMainFrame(),
-                                href, attribution_src,
-                                /*target=*/"_top");
-  }
-
-  WebContents* CreateAndClickPopupSource(WebContents* web_contents,
-                                         const GURL& href,
-                                         const GURL& attribution_src,
-                                         const std::string& target) {
-    return CreateAndClickSourceInFrame(nullptr, web_contents->GetMainFrame(),
-                                       href, attribution_src, target);
-  }
-
-  WebContents* CreateAndClickSourceInFrame(WebContents* web_contents,
-                                           RenderFrameHost* rfh,
-                                           const GURL& href,
-                                           const GURL& attribution_src,
-                                           const std::string& target) {
-    EXPECT_TRUE(ExecJs(rfh, JsReplace(R"(
-    createAttributionSrcAnchor({id: 'link',
-                        url: $1,
-                        attributionsrc: $2,
-                        target: $3});)",
-                                      href, attribution_src, target)));
-
-    MockAttributionObserver source_observer;
-    base::ScopedObservation<AttributionManager, AttributionObserver>
-        observation(&source_observer);
-    observation.Observe(attribution_manager());
-
-    base::RunLoop loop;
-    bool received = false;
-    EXPECT_CALL(source_observer,
-                OnSourceHandled(_, StorableSource::Result::kSuccess))
-        .WillOnce([&]() {
-          received = true;
-          loop.Quit();
-        });
-
-    WebContents* popup_contents = nullptr;
-    if (!web_contents) {
-      ShellAddedObserver new_shell_observer;
-      TestNavigationObserver observer(nullptr);
-      observer.StartWatchingNewWebContents();
-      EXPECT_TRUE(ExecJs(rfh, "simulateClick('link');"));
-      popup_contents = new_shell_observer.GetShell()->web_contents();
-      observer.Wait();
-    } else {
-      TestNavigationObserver observer(web_contents);
-      EXPECT_TRUE(ExecJs(rfh, "simulateClick('link');"));
-      observer.Wait();
-    }
-
-    // If the source wasn't processed, wait to ensure we handle events in test
-    // order. See https://crbug.com/1309173.
-    if (!received)
-      loop.Run();
-
-    return popup_contents;
-  }
-
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 
@@ -295,8 +231,8 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
            "report-event-attribution"),
-      /*attribution_destination=*/"https://d.test",
-      /*source_event_id=*/"5", /*source_type=*/"navigation",
+      /*attribution_destination=*/"https://b.test",
+      /*source_event_id=*/"1", /*source_type=*/"navigation",
       /*trigger_data=*/"7", https_server());
   ASSERT_TRUE(https_server()->Start());
 
@@ -307,11 +243,19 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   // Create an anchor tag with impression attributes and click the link. By
   // default the target is set to "_top".
   GURL conversion_url = https_server()->GetURL(
-      "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
-  GURL register_source_url = https_server()->GetURL(
-      "a.test", "/attribution_reporting/register_source_headers.html");
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace(R"(
+    createImpressionTag({id: 'link',
+                        url: $1,
+                        data: '1',
+                        destination: $2});)",
+                       conversion_url, url::Origin::Create(conversion_url))));
 
-  CreateAndClickSource(web_contents(), conversion_url, register_source_url);
+  TestNavigationObserver observer(web_contents());
+  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
+  observer.Wait();
 
   GURL register_trigger_url = https_server()->GetURL(
       "a.test", "/attribution_reporting/register_trigger_headers.html");
@@ -400,8 +344,8 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
            "report-event-attribution"),
-      /*attribution_destination=*/"https://d.test",
-      /*source_event_id=*/"5", /*source_type=*/"navigation",
+      /*attribution_destination=*/"https://b.test",
+      /*source_event_id=*/"1", /*source_type=*/"navigation",
       /*trigger_data=*/"7", https_server());
   ASSERT_TRUE(https_server()->Start());
 
@@ -416,15 +360,24 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   NavigateIframeToURL(web_contents(), "test_iframe", subframe_url);
   RenderFrameHost* subframe = ChildFrameAt(web_contents()->GetMainFrame(), 0);
 
-  GURL conversion_url = https_server()->GetURL(
-      "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
-  GURL register_source_url = https_server()->GetURL(
-      "a.test", "/attribution_reporting/register_source_headers.html");
-
   // Create an impression tag in the subframe and target a popup window.
-  auto* popup_contents = CreateAndClickSourceInFrame(
-      /*web-contents=*/nullptr, subframe, conversion_url, register_source_url,
-      /*target=*/"new_frame");
+  GURL conversion_url = https_server()->GetURL(
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
+  EXPECT_TRUE(ExecJs(subframe, JsReplace(R"(
+    createImpressionTag({id: 'link',
+                        url: $1,
+                        data: '1',
+                        destination: $2,
+                        target: 'new_frame'});)",
+                                         conversion_url,
+                                         url::Origin::Create(conversion_url))));
+
+  ShellAddedObserver new_shell_observer;
+  TestNavigationObserver observer(nullptr);
+  observer.StartWatchingNewWebContents();
+  EXPECT_TRUE(ExecJs(subframe, "simulateClick('link');"));
+  WebContents* popup_contents = new_shell_observer.GetShell()->web_contents();
+  observer.Wait();
 
   GURL register_trigger_url = https_server()->GetURL(
       "a.test", "/attribution_reporting/register_trigger_headers.html");
@@ -439,8 +392,8 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
            "report-event-attribution"),
-      /*attribution_destination=*/"https://d.test",
-      /*source_event_id=*/"5", /*source_type=*/"navigation",
+      /*attribution_destination=*/"https://b.test",
+      /*source_event_id=*/"1", /*source_type=*/"navigation",
       /*trigger_data=*/"7", https_server());
   ASSERT_TRUE(https_server()->Start());
 
@@ -449,13 +402,23 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
 
   GURL conversion_url = https_server()->GetURL(
-      "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
-  GURL register_source_url = https_server()->GetURL(
-      "a.test", "/attribution_reporting/register_source_headers.html");
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
 
   // target="_blank" navs are rel="noopener" by default.
-  CreateAndClickPopupSource(web_contents(), conversion_url, register_source_url,
-                            /*target=*/"_blank");
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace(R"(
+    createImpressionTag({id: 'link',
+                        url: $1,
+                        data: '1',
+                        destination: $2,
+                        target: '_blank'});)",
+                       conversion_url, url::Origin::Create(conversion_url))));
+
+  TestNavigationObserver observer(nullptr);
+  observer.StartWatchingNewWebContents();
+  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
+  observer.Wait();
 
   GURL register_trigger_url = https_server()->GetURL(
       "a.test", "/attribution_reporting/register_trigger_headers.html");
@@ -470,26 +433,39 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
                        ImpressionConversionSameDomain_ReportSent) {
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
-      GURL("https://d.test/.well-known/attribution-reporting/"
+      GURL("https://a.test/.well-known/attribution-reporting/"
            "report-event-attribution"),
-      /*attribution_destination=*/"https://d.test",
-      /*source_event_id=*/"5", /*source_type=*/"navigation",
+      /*attribution_destination=*/"https://b.test",
+      /*source_event_id=*/"1", /*source_type=*/"navigation",
       /*trigger_data=*/"7", https_server());
   ASSERT_TRUE(https_server()->Start());
 
   GURL impression_url = https_server()->GetURL(
-      "d.test", "/attribution_reporting/page_with_impression_creator.html");
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
 
+  // Create an anchor tag with impression attributes and click the link. By
+  // default the target is set to "_top".
   GURL conversion_url = https_server()->GetURL(
-      "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
-  GURL register_source_url = https_server()->GetURL(
-      "d.test", "/attribution_reporting/register_source_headers.html");
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
+  GURL conversion_dest_url = https_server()->GetURL(
+      "sub.b.test",
+      "/attribution_reporting/page_with_conversion_redirect.html");
+  EXPECT_TRUE(ExecJs(
+      web_contents(),
+      JsReplace(R"(
+    createImpressionTag({id: 'link',
+                        url: $1,
+                        data: '1',
+                        destination: $2});)",
+                conversion_url, url::Origin::Create(conversion_dest_url))));
 
-  CreateAndClickSource(web_contents(), conversion_url, register_source_url);
+  TestNavigationObserver observer(web_contents());
+  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
+  observer.Wait();
 
   GURL register_trigger_url = https_server()->GetURL(
-      "d.test", "/attribution_reporting/register_trigger_headers.html");
+      "a.test", "/attribution_reporting/register_trigger_headers.html");
   EXPECT_TRUE(ExecJs(web_contents(), JsReplace("createAttributionSrcImg($1);",
                                                register_trigger_url)));
 
@@ -503,8 +479,8 @@ IN_PROC_BROWSER_TEST_F(
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
            "report-event-attribution"),
-      /*attribution_destination=*/"https://d.test",
-      /*source_event_id=*/"5", /*source_type=*/"navigation",
+      /*attribution_destination=*/"https://b.test",
+      /*source_event_id=*/"1", /*source_type=*/"navigation",
       /*trigger_data=*/"7", https_server());
   ASSERT_TRUE(https_server()->Start());
 
@@ -512,20 +488,32 @@ IN_PROC_BROWSER_TEST_F(
       "a.test", "/attribution_reporting/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
 
-  GURL conversion_url = https_server()->GetURL(
-      "sub.d.test",
+  // Create an anchor tag with impression attributes and click the link. By
+  // default the target is set to "_top".
+  GURL conversion_landing_url = https_server()->GetURL(
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
+  GURL conversion_dest_url = https_server()->GetURL(
+      "sub.b.test",
       "/attribution_reporting/page_with_conversion_redirect.html");
-  GURL register_source_url = https_server()->GetURL(
-      "a.test", "/attribution_reporting/register_source_headers.html");
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace(R"(
+    createImpressionTag({id: 'link',
+                        url: $1,
+                        data: '1',
+                        destination: $2});)",
+                               conversion_landing_url,
+                               url::Origin::Create(conversion_dest_url))));
 
-  CreateAndClickSource(web_contents(), conversion_url, register_source_url);
+  TestNavigationObserver observer(web_contents());
+  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
+  observer.Wait();
 
   // Navigate to a same domain origin that is different than the landing page
   // for the click and convert there. A report should still be sent.
-  GURL other_conversion_url = https_server()->GetURL(
-      "other.d.test",
+  GURL conversion_url = https_server()->GetURL(
+      "other.b.test",
       "/attribution_reporting/page_with_conversion_redirect.html");
-  EXPECT_TRUE(NavigateToURL(web_contents(), other_conversion_url));
+  EXPECT_TRUE(NavigateToURL(web_contents(), conversion_url));
 
   GURL register_trigger_url = https_server()->GetURL(
       "a.test", "/attribution_reporting/register_trigger_headers.html");
@@ -539,54 +527,10 @@ IN_PROC_BROWSER_TEST_F(
     AttributionsBrowserTest,
     MultipleImpressionsPerConversion_ReportSentWithAttribution) {
   ExpectedReportWaiter expected_report(
-      GURL("https://b.test/.well-known/attribution-reporting/"
+      GURL("https://d.test/.well-known/attribution-reporting/"
            "report-event-attribution"),
-      /*attribution_destination=*/"https://d.test",
+      /*attribution_destination=*/"https://b.test",
       /*source_event_id=*/"2", /*source_type=*/"navigation",
-      /*trigger_data=*/"7", https_server());
-  ASSERT_TRUE(https_server()->Start());
-
-  GURL first_impression_url = https_server()->GetURL(
-      "a.test", "/attribution_reporting/page_with_impression_creator.html");
-  EXPECT_TRUE(NavigateToURL(web_contents(), first_impression_url));
-
-  GURL second_impression_url = https_server()->GetURL(
-      "c.test", "/attribution_reporting/page_with_impression_creator.html");
-  Shell* shell2 =
-      Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
-                             GURL(), nullptr, gfx::Size(100, 100));
-  EXPECT_TRUE(NavigateToURL(shell2->web_contents(), second_impression_url));
-
-  GURL conversion_url = https_server()->GetURL(
-      "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
-  GURL register_source_url = https_server()->GetURL(
-      "b.test", "/attribution_reporting/register_source_headers.html");
-
-  CreateAndClickSource(shell()->web_contents(), conversion_url,
-                       register_source_url);
-
-  GURL register_source_url_2 = https_server()->GetURL(
-      "b.test", "/attribution_reporting/register_source_headers_2.html");
-  CreateAndClickSource(shell2->web_contents(), conversion_url,
-                       register_source_url_2);
-
-  GURL register_trigger_url = https_server()->GetURL(
-      "b.test", "/attribution_reporting/register_trigger_headers.html");
-  EXPECT_TRUE(ExecJs(
-      shell2, JsReplace("createAttributionSrcImg($1);", register_trigger_url)));
-
-  expected_report.WaitForReport();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    AttributionsBrowserTest,
-    MultipleImpressionsPerConversion_ReportSentWithHighestPriority) {
-  // Report will be sent for the impression with highest priority.
-  ExpectedReportWaiter expected_report(
-      GURL("https://b.test/.well-known/attribution-reporting/"
-           "report-event-attribution"),
-      /*attribution_destination=*/"https://d.test",
-      /*source_event_id=*/"3", /*source_type=*/"navigation",
       /*trigger_data=*/"7", https_server());
   ASSERT_TRUE(https_server()->Start());
 
@@ -603,21 +547,94 @@ IN_PROC_BROWSER_TEST_F(
 
   // Register impressions from both windows.
   GURL conversion_url = https_server()->GetURL(
-      "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
-  GURL register_source_url = https_server()->GetURL(
-      "b.test",
-      "/attribution_reporting/register_source_headers_high_priority.html");
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
+  url::Origin reporting_origin =
+      url::Origin::Create(https_server()->GetURL("d.test", "/"));
+  std::string impression_js = R"(
+    createImpressionTag({id: 'link',
+                        url: $1,
+                        data: $2,
+                        destination: $3,
+                        reportOrigin: $4});)";
 
-  CreateAndClickSource(shell()->web_contents(), conversion_url,
-                       register_source_url);
+  TestNavigationObserver first_nav_observer(shell()->web_contents());
+  EXPECT_TRUE(
+      ExecJs(shell(),
+             JsReplace(impression_js, conversion_url, "1" /* impression_data */,
+                       url::Origin::Create(conversion_url), reporting_origin)));
+  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
+  first_nav_observer.Wait();
 
-  GURL register_source_url_2 = https_server()->GetURL(
-      "b.test", "/attribution_reporting/register_source_headers.html");
-  CreateAndClickSource(shell2->web_contents(), conversion_url,
-                       register_source_url_2);
+  TestNavigationObserver second_nav_observer(shell2->web_contents());
+  EXPECT_TRUE(
+      ExecJs(shell2,
+             JsReplace(impression_js, conversion_url, "2" /* impression_data */,
+                       url::Origin::Create(conversion_url), reporting_origin)));
+  EXPECT_TRUE(ExecJs(shell2, "simulateClick('link');"));
+  second_nav_observer.Wait();
 
   GURL register_trigger_url = https_server()->GetURL(
-      "b.test", "/attribution_reporting/register_trigger_headers.html");
+      "d.test", "/attribution_reporting/register_trigger_headers.html");
+  EXPECT_TRUE(ExecJs(
+      shell2, JsReplace("createAttributionSrcImg($1);", register_trigger_url)));
+
+  expected_report.WaitForReport();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AttributionsBrowserTest,
+    MultipleImpressionsPerConversion_ReportSentWithHighestPriority) {
+  // Report will be sent for the impression with highest priority.
+  ExpectedReportWaiter expected_report(
+      GURL("https://d.test/.well-known/attribution-reporting/"
+           "report-event-attribution"),
+      /*attribution_destination=*/"https://b.test",
+      /*source_event_id=*/"1", /*source_type=*/"navigation",
+      /*trigger_data=*/"7", https_server());
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL first_impression_url = https_server()->GetURL(
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), first_impression_url));
+
+  GURL second_impression_url = https_server()->GetURL(
+      "c.test", "/attribution_reporting/page_with_impression_creator.html");
+  Shell* shell2 =
+      Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
+                             GURL(), nullptr, gfx::Size(100, 100));
+  EXPECT_TRUE(NavigateToURL(shell2->web_contents(), second_impression_url));
+
+  // Register impressions from both windows.
+  GURL conversion_url = https_server()->GetURL(
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
+  url::Origin reporting_origin =
+      url::Origin::Create(https_server()->GetURL("d.test", "/"));
+  std::string impression_js = R"(
+    createImpressionTag({id: 'link',
+                        url: $1,
+                        data: $2,
+                        destination: $3,
+                        reportOrigin: $4,
+                        priority: $5});)";
+
+  TestNavigationObserver first_nav_observer(shell()->web_contents());
+  EXPECT_TRUE(ExecJs(shell(), JsReplace(impression_js, conversion_url,
+                                        "1" /* impression_data */,
+                                        url::Origin::Create(conversion_url),
+                                        reporting_origin, 10 /* priority */)));
+  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
+  first_nav_observer.Wait();
+
+  TestNavigationObserver second_nav_observer(shell2->web_contents());
+  EXPECT_TRUE(ExecJs(shell2, JsReplace(impression_js, conversion_url,
+                                       "2" /* impression_data */,
+                                       url::Origin::Create(conversion_url),
+                                       reporting_origin, 5 /* priority */)));
+  EXPECT_TRUE(ExecJs(shell2, "simulateClick('link');"));
+  second_nav_observer.Wait();
+
+  GURL register_trigger_url = https_server()->GetURL(
+      "d.test", "/attribution_reporting/register_trigger_headers.html");
   EXPECT_TRUE(ExecJs(
       shell2, JsReplace("createAttributionSrcImg($1);", register_trigger_url)));
 
@@ -792,6 +809,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
 
   EXPECT_TRUE(ExecJs(
       web_contents(),
+
       JsReplace(R"(createAndClickAttributionSrcAnchor({url: $1,
                                       attributionsrc: $2});)",
                 https_server()->GetURL(
@@ -820,15 +838,15 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   ExpectedReportWaiter expected_report1(
       GURL("https://a.test/.well-known/attribution-reporting/"
            "report-event-attribution"),
-      /*attribution_destination=*/"https://d.test",
-      /*source_event_id=*/"5", /*source_type=*/"navigation",
+      /*attribution_destination=*/"https://b.test",
+      /*source_event_id=*/"1", /*source_type=*/"navigation",
       /*trigger_data=*/"1", https_server());
   // 12 below is sanitized to 4 here by `SanitizeTriggerData()`.
   ExpectedReportWaiter expected_report2(
       GURL("https://a.test/.well-known/attribution-reporting/"
            "report-event-attribution"),
-      /*attribution_destination=*/"https://d.test",
-      /*source_event_id=*/"5", /*source_type=*/"navigation",
+      /*attribution_destination=*/"https://b.test",
+      /*source_event_id=*/"1", /*source_type=*/"navigation",
       /*trigger_data=*/"7", https_server());
   ASSERT_TRUE(https_server()->Start());
 
@@ -836,12 +854,22 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
       "a.test", "/attribution_reporting/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
 
+  // Create an anchor tag with impression attributes and click the link. By
+  // default the target is set to "_top".
   GURL conversion_url = https_server()->GetURL(
-      "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
-  GURL register_source_url = https_server()->GetURL(
-      "a.test", "/attribution_reporting/register_source_headers.html");
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace(R"(
+    createImpressionTag({id: 'link',
+                        url: $1,
+                        data: '1',
+                        destination: $2});)",
+                       conversion_url, url::Origin::Create(conversion_url))));
 
-  CreateAndClickSource(web_contents(), conversion_url, register_source_url);
+  TestNavigationObserver observer(web_contents());
+  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
+  observer.Wait();
 
   GURL register_trigger_with_dedup_url = https_server()->GetURL(
       "a.test", "/attribution_reporting/register_trigger_headers_dedup.html");
