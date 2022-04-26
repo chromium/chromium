@@ -12,6 +12,13 @@
 #include "third_party/webrtc/api/task_queue/task_queue_factory.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
 
+namespace blink {
+
+RTC_EXPORT base::TaskTraits TaskQueuePriority2Traits(
+    webrtc::TaskQueueFactory::Priority priority);
+
+}  // namespace blink
+
 // Creates factory for webrtc::TaskQueueBase backed by base::SequencedTaskRunner
 // Tested by
 // /third_party/blink/renderer/platform/peerconnection/task_queue_factory_test.cc

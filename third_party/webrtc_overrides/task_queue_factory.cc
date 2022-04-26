@@ -92,8 +92,6 @@ void WebrtcTaskQueue::PostDelayedTask(std::unique_ptr<webrtc::QueuedTask> task,
       base::subtle::DelayPolicy::kPrecise);
 }
 
-namespace {
-
 base::TaskTraits TaskQueuePriority2Traits(
     webrtc::TaskQueueFactory::Priority priority) {
   // The content/renderer/media/webrtc/rtc_video_encoder.* code
@@ -118,6 +116,8 @@ base::TaskTraits TaskQueuePriority2Traits(
 #endif
   }
 }
+
+namespace {
 
 class WebrtcTaskQueueFactory final : public webrtc::TaskQueueFactory {
  public:
