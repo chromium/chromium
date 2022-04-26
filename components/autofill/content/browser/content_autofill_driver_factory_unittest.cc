@@ -114,31 +114,43 @@ class MockAutofillAgent : public mojom::AutofillAgent {
 class ContentAutofillDriverFactoryTest
     : public content::RenderViewHostTestHarness {
  public:
-  ContentAutofillDriverFactoryTest() = default;
+  explicit ContentAutofillDriverFactoryTest(
+      version_info::Channel channel = version_info::Channel::UNKNOWN)
+      : channel_(channel) {}
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
-    factory_ = ContentAutofillDriverFactoryTestApi::Create(
-        web_contents(), &client_, "en_US",
-        BrowserAutofillManager::AutofillDownloadManagerState::
-            ENABLE_AUTOFILL_DOWNLOAD_MANAGER,
-        AutofillManager::AutofillManagerFactoryCallback());
 
+    client_ = std::make_unique<MockAutofillClient>();
+    client_->set_channel_for_testing(channel_);
+
+    agent_ = std::make_unique<MockAutofillAgent>();
     blink::AssociatedInterfaceProvider* remote_interfaces =
         web_contents()->GetMainFrame()->GetRemoteAssociatedInterfaces();
     remote_interfaces->OverrideBinderForTesting(
         mojom::AutofillAgent::Name_,
         base::BindRepeating(&MockAutofillAgent::BindPendingReceiver,
-                            base::Unretained(&agent_)));
+                            base::Unretained(agent_.get())));
 
-    // One call of HideAutofillPopup() comes from ContentAutofillDriverFactory,
-    // the second one from BrowserAutofillManager::Reset(). Additional
-    // navigations cause additional calls.
-    EXPECT_CALL(client_, HideAutofillPopup(_)).Times(AtLeast(1));
-    NavigateMainFrame("https://a.com/");
+    factory_ = ContentAutofillDriverFactoryTestApi::Create(
+        web_contents(), client_.get(), "en_US",
+        BrowserAutofillManager::AutofillDownloadManagerState::
+            ENABLE_AUTOFILL_DOWNLOAD_MANAGER,
+        AutofillManager::AutofillManagerFactoryCallback());
+  }
+
+  void TearDown() override {
+    factory_.reset();
+    client_.reset();
+    agent_.reset();
+    content::RenderViewHostTestHarness::TearDown();
   }
 
   void NavigateMainFrame(base::StringPiece url) {
+    // One call of HideAutofillPopup() comes from ContentAutofillDriverFactory.
+    // A second one may come from BrowserAutofillManager::Reset().
+    EXPECT_CALL(*client_, HideAutofillPopup(PopupHidingReason::kNavigation))
+        .Times(Between(1, 2));
     content::NavigationSimulator::CreateBrowserInitiated(GURL(url),
                                                          web_contents())
         ->Commit();
@@ -149,12 +161,14 @@ class ContentAutofillDriverFactoryTest
   }
 
  protected:
-  MockAutofillClient client_;
-  MockAutofillAgent agent_;
+  version_info::Channel channel_;
+  std::unique_ptr<MockAutofillAgent> agent_;
+  std::unique_ptr<MockAutofillClient> client_;
   std::unique_ptr<ContentAutofillDriverFactory> factory_;
 };
 
 TEST_F(ContentAutofillDriverFactoryTest, MainDriver) {
+  NavigateMainFrame("https://a.com/");
   ContentAutofillDriver* main_driver = factory_test_api().GetDriver(main_rfh());
   EXPECT_TRUE(main_driver);
   EXPECT_EQ(factory_test_api().num_drivers(), 1u);
@@ -168,14 +182,8 @@ TEST_F(ContentAutofillDriverFactoryTest, MainDriver) {
 class ContentAutofillDriverFactoryTest_WithTwoFrames
     : public ContentAutofillDriverFactoryTest {
  public:
-  void SetUp() override {
-    ContentAutofillDriverFactoryTest::SetUp();
-    CHECK(main_rfh());
-    NavigateChildFrame("https://b.com/");
-    CHECK(child_rfh_);
-  }
-
   void NavigateChildFrame(base::StringPiece url) {
+    CHECK(main_rfh());
     if (!child_rfh_) {
       child_rfh_ = content::RenderFrameHostTester::For(main_rfh())
                        ->AppendChild(std::string("child"));
@@ -191,6 +199,8 @@ class ContentAutofillDriverFactoryTest_WithTwoFrames
 };
 
 TEST_F(ContentAutofillDriverFactoryTest_WithTwoFrames, TwoDrivers) {
+  NavigateMainFrame("https://a.com/");
+  NavigateChildFrame("https://b.com/");
   ASSERT_TRUE(main_rfh());
   ASSERT_TRUE(child_rfh());
   ContentAutofillDriver* main_driver = factory_->DriverForFrame(main_rfh());
@@ -227,6 +237,8 @@ INSTANTIATE_TEST_SUITE_P(ContentAutofillDriverFactoryTest,
 // Tests that a driver is removed in RenderFrameDeleted().
 TEST_P(ContentAutofillDriverFactoryTest_WithTwoFrames_PickOne,
        RenderFrameDeleted) {
+  NavigateMainFrame("https://a.com/");
+  NavigateChildFrame("https://b.com/");
   ASSERT_TRUE(picked_rfh() == main_rfh() || picked_rfh() == child_rfh());
   ContentAutofillDriver* main_driver = factory_->DriverForFrame(main_rfh());
   ContentAutofillDriver* child_driver = factory_->DriverForFrame(child_rfh());
@@ -243,7 +255,8 @@ TEST_P(ContentAutofillDriverFactoryTest_WithTwoFrames_PickOne,
 
 // Tests that OnVisibilityChanged() hides the popup.
 TEST_F(ContentAutofillDriverFactoryTest, TabHidden) {
-  EXPECT_CALL(client_, HideAutofillPopup(PopupHidingReason::kTabGone));
+  NavigateMainFrame("https://a.com/");
+  EXPECT_CALL(*client_, HideAutofillPopup(PopupHidingReason::kTabGone));
   factory_->OnVisibilityChanged(content::Visibility::HIDDEN);
 }
 
@@ -281,17 +294,10 @@ INSTANTIATE_TEST_SUITE_P(
 // router.
 TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
        SameDocumentNavigation) {
+  NavigateMainFrame("https://a.com/");
   content::RenderFrameHost* orig_rfh = main_rfh();
   ContentAutofillDriver* orig_driver = factory_->DriverForFrame(orig_rfh);
-
-  // One call of HideAutofillPopup() comes from ContentAutofillDriverFactory,
-  // the second one from BrowserAutofillManager::Reset(). One of them may be
-  // redundant.
-  EXPECT_CALL(client_, HideAutofillPopup(PopupHidingReason::kNavigation))
-      .Times(Between(1, 2));
-
   NavigateMainFrame("https://a.com/#same-site");
-
   ASSERT_EQ(orig_rfh, main_rfh());
   EXPECT_EQ(factory_test_api().GetDriver(orig_rfh), orig_driver);
   EXPECT_EQ(factory_test_api().num_drivers(), 1u);
@@ -307,6 +313,7 @@ TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
 // afterwards.
 TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
        SameOriginNavigation) {
+  NavigateMainFrame("https://a.com/");
   content::RenderFrameHost* orig_rfh = main_rfh();
   ContentAutofillDriver* orig_driver = factory_->DriverForFrame(orig_rfh);
 
@@ -314,14 +321,7 @@ TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
   // AutofillManager::Reset(), which is blocked by ContentAutofillDriver's use
   // of the factory callback.
 
-  // One call of HideAutofillPopup() comes from ContentAutofillDriverFactory,
-  // the second one from BrowserAutofillManager::Reset(). One of them may be
-  // redundant.
-  EXPECT_CALL(client_, HideAutofillPopup(PopupHidingReason::kNavigation))
-      .Times(Between(1, 2));
-
   NavigateMainFrame("https://a.com/after-navigation");
-
   EXPECT_EQ(factory_test_api().GetDriver(orig_rfh), orig_driver);
   // If BFCache is enabled, there will be 2 drivers as the old document is still
   // around.
@@ -332,6 +332,7 @@ TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
 // cross-origin navigation.
 TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
        CrossOriginNavigation) {
+  NavigateMainFrame("https://a.com/");
   content::RenderFrameHost* orig_rfh = main_rfh();
   content::GlobalRenderFrameHostId orig_rfh_id = orig_rfh->GetGlobalId();
   ContentAutofillDriver* orig_driver = factory_->DriverForFrame(orig_rfh);
@@ -339,12 +340,6 @@ TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
   ASSERT_EQ(orig_rfh, main_rfh());
   EXPECT_EQ(factory_test_api().GetDriver(orig_rfh), orig_driver);
   EXPECT_EQ(factory_test_api().num_drivers(), 1u);
-
-  // One call of HideAutofillPopup() comes from ContentAutofillDriverFactory,
-  // the second one from BrowserAutofillManager::Reset(). One of them may be
-  // redundant.
-  EXPECT_CALL(client_, HideAutofillPopup(PopupHidingReason::kNavigation))
-      .Times(Between(1, 2));
 
   NavigateMainFrame("https://different-origin-after-navigation.com/");
 
@@ -364,11 +359,11 @@ TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
 // Fixture for testing that Autofill is enabled in fenced frames unless
 // AutofillEnableWithinFencedFrame is enabled. The bool parameter
 // enables/disables that feature.
-class ContentAutofillDriverFactoryFencedFramesTest
-    : public content::RenderViewHostTestHarness,
+class ContentAutofillDriverFactoryTest_FencedFrames
+    : public ContentAutofillDriverFactoryTest,
       public ::testing::WithParamInterface<bool> {
  public:
-  ContentAutofillDriverFactoryFencedFramesTest() {
+  ContentAutofillDriverFactoryTest_FencedFrames() {
     std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled;
     std::vector<base::Feature> disabled;
     enabled.push_back(
@@ -381,57 +376,34 @@ class ContentAutofillDriverFactoryFencedFramesTest
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
   }
 
-  ~ContentAutofillDriverFactoryFencedFramesTest() override = default;
-
-  void SetUp() override {
-    content::RenderViewHostTestHarness::SetUp();
-    factory_ = ContentAutofillDriverFactoryTestApi::Create(
-        web_contents(), &client_, "en_US",
-        BrowserAutofillManager::AutofillDownloadManagerState::
-            ENABLE_AUTOFILL_DOWNLOAD_MANAGER,
-        AutofillManager::AutofillManagerFactoryCallback());
-  }
-
-  void NavigateAndCommitInFrame(const std::string& url,
-                                content::RenderFrameHost* rfh) {
-    auto navigation =
-        content::NavigationSimulator::CreateRendererInitiated(GURL(url), rfh);
-    // These tests simulate loading events manually.
-    navigation->SetKeepLoading(true);
-    navigation->Start();
-    navigation->Commit();
-  }
+  ~ContentAutofillDriverFactoryTest_FencedFrames() override = default;
 
   bool autofill_enabled_in_fencedframe() const { return GetParam(); }
 
-  ContentAutofillDriverFactory& factory() { return *factory_; }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  TestAutofillClient client_;
-  std::unique_ptr<ContentAutofillDriverFactory> factory_;
 };
 
-TEST_P(ContentAutofillDriverFactoryFencedFramesTest,
+TEST_P(ContentAutofillDriverFactoryTest_FencedFrames,
        DisableAutofillWithinFencedFrame) {
-  NavigateAndCommitInFrame("http://test.org", main_rfh());
+  NavigateMainFrame("http://test.org");
   content::RenderFrameHost* fenced_frame_root =
       content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
   content::RenderFrameHost* fenced_frame_subframe =
       content::RenderFrameHostTester::For(fenced_frame_root)
           ->AppendChild("iframe");
-  EXPECT_NE(nullptr, factory().DriverForFrame(main_rfh()));
+  EXPECT_NE(nullptr, factory_->DriverForFrame(main_rfh()));
   if (autofill_enabled_in_fencedframe()) {
-    EXPECT_NE(nullptr, factory().DriverForFrame(fenced_frame_root));
-    EXPECT_NE(nullptr, factory().DriverForFrame(fenced_frame_subframe));
+    EXPECT_NE(nullptr, factory_->DriverForFrame(fenced_frame_root));
+    EXPECT_NE(nullptr, factory_->DriverForFrame(fenced_frame_subframe));
   } else {
-    EXPECT_EQ(nullptr, factory().DriverForFrame(fenced_frame_root));
-    EXPECT_EQ(nullptr, factory().DriverForFrame(fenced_frame_subframe));
+    EXPECT_EQ(nullptr, factory_->DriverForFrame(fenced_frame_root));
+    EXPECT_EQ(nullptr, factory_->DriverForFrame(fenced_frame_subframe));
   }
 }
 
 INSTANTIATE_TEST_SUITE_P(ContentAutofillDriverFactoryTest,
-                         ContentAutofillDriverFactoryFencedFramesTest,
+                         ContentAutofillDriverFactoryTest_FencedFrames,
                          testing::Bool());
 
 struct AgentSetupParam {
@@ -439,32 +411,30 @@ struct AgentSetupParam {
   bool heavy_scraping_enabled;
 };
 
-class ContentAutofillDriverFactoryTestAgentSetup
+class ContentAutofillDriverFactoryTest_AgentSetup
     : public ContentAutofillDriverFactoryTest,
       public ::testing::WithParamInterface<AgentSetupParam> {
  public:
-  void SetUp() override {
-    client_.set_channel_for_testing(GetParam().channel);
-    ContentAutofillDriverFactoryTest::SetUp();
-  }
+  ContentAutofillDriverFactoryTest_AgentSetup()
+      : ContentAutofillDriverFactoryTest(GetParam().channel) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(
     ContentAutofillDriverFactoryTest,
-    ContentAutofillDriverFactoryTestAgentSetup,
+    ContentAutofillDriverFactoryTest_AgentSetup,
     testing::Values(AgentSetupParam{version_info::Channel::CANARY, true},
                     AgentSetupParam{version_info::Channel::DEV, true},
                     AgentSetupParam{version_info::Channel::UNKNOWN, false},
                     AgentSetupParam{version_info::Channel::BETA, false},
                     AgentSetupParam{version_info::Channel::STABLE, false}));
 
-TEST_P(ContentAutofillDriverFactoryTestAgentSetup,
+TEST_P(ContentAutofillDriverFactoryTest_AgentSetup,
        EnableHeavyFormDataScraping) {
-  EXPECT_CALL(agent_, EnableHeavyFormDataScraping())
+  EXPECT_CALL(*agent_, EnableHeavyFormDataScraping())
       .Times(GetParam().heavy_scraping_enabled ? 1 : 0);
-  NavigateMainFrame("https://b.com/");
+  NavigateMainFrame("https://a.com/");
   base::RunLoop().RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(&agent_);
+  testing::Mock::VerifyAndClearExpectations(agent_.get());
 }
 
 }  // namespace autofill
