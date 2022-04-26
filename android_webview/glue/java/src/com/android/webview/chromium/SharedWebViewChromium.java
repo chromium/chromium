@@ -13,7 +13,6 @@ import org.chromium.android_webview.ScriptHandler;
 import org.chromium.android_webview.WebMessageListener;
 import org.chromium.android_webview.WebViewChromiumRunQueue;
 import org.chromium.base.ThreadUtils;
-import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 
 import java.util.concurrent.Callable;
@@ -106,18 +105,18 @@ public class SharedWebViewChromium {
         return mAwContents.createMessageChannel();
     }
 
-    public void postMessageToMainFrame(final MessagePayload messagePayload,
-            final String targetOrigin, final MessagePort[] sentPorts) {
+    public void postMessageToMainFrame(
+            final String message, final String targetOrigin, final MessagePort[] sentPorts) {
         if (checkNeedsPost()) {
             mRunQueue.addTask(new Runnable() {
                 @Override
                 public void run() {
-                    postMessageToMainFrame(messagePayload, targetOrigin, sentPorts);
+                    postMessageToMainFrame(message, targetOrigin, sentPorts);
                 }
             });
             return;
         }
-        mAwContents.postMessageToMainFrame(messagePayload, targetOrigin, sentPorts);
+        mAwContents.postMessageToMainFrame(message, targetOrigin, sentPorts);
     }
 
     public void addWebMessageListener(final String jsObjectName, final String[] allowedOriginRules,

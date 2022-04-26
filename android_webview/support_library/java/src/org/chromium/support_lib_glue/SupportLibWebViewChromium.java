@@ -68,9 +68,7 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
         WebMessageBoundaryInterface messageBoundaryInterface =
                 BoundaryInterfaceReflectionUtil.castToSuppLibClass(
                         WebMessageBoundaryInterface.class, message);
-        mSharedWebViewChromium.postMessageToMainFrame(
-                SupportLibWebMessagePayloadAdapter.fromWebMessageBoundaryInterface(
-                        messageBoundaryInterface),
+        mSharedWebViewChromium.postMessageToMainFrame(messageBoundaryInterface.getData(),
                 targetOrigin.toString(),
                 SupportLibWebMessagePortAdapter.toMessagePorts(
                         messageBoundaryInterface.getPorts()));
