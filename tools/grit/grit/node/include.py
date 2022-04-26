@@ -55,7 +55,6 @@ class IncludeNode(base.Node):
                               and <include>.
        compress:              The format to compress the data with, e.g. 'gzip'
                               or 'false' if data should not be compressed.
-       skip_minify:           If true, skips minifying the node's contents.
        skip_in_resource_map:  If true, do not add to the resource map.
     """
     return {
@@ -69,7 +68,6 @@ class IncludeNode(base.Node):
         'allowexternalscript': 'false',
         'relativepath': 'false',
         'use_base_dir': 'true',
-        'skip_minify': 'false',
         'skip_in_resource_map': 'false',
         'resource_path': '',
     }
@@ -111,10 +109,9 @@ class IncludeNode(base.Node):
     else:
       data = util.ReadFile(filename, util.BINARY)
 
-    if self.attrs['skip_minify'] != 'true':
-      # Note that the minifier will only do anything if a minifier command
-      # has been set in the command line.
-      data = minifier.Minify(data, filename)
+    # Note that the minifier will only do anything if a minifier command
+    # has been set in the command line.
+    data = minifier.Minify(data, filename)
 
     # Include does not care about the encoding, because it only returns binary
     # data.
