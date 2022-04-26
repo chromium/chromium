@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <limits>
 #include <vector>
 
 #include "base/component_export.h"
