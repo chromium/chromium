@@ -31,10 +31,16 @@ class PolymorphismTest: XCTestCase {
     // MakeShape() creates a Triangle and returns the object as a Shape*.
     // let shape = MakeShape(10, 10)
 
-    // DOES NOT WORK: executes the Shape implementations of these methods, not
-    // the Triangle versions, so both return 0 and thus fail the comparision.
-    // XCTAssertEqual(shape!.pointee.Area(), 50)
+    // DOES NOT WORK: executes the Shape implementation, not the Triangle
+    // version, and thus fails the comparision (0 != 3)
     // XCTAssertEqual(shape!.pointee.NumberOfSides(), 3)
   }
 
+  func testPureVirtualMethods_noCompile() throws {
+    // MakeShape() creates a Triangle and returns the object as a Shape*.
+    // let shape = MakeShape(10, 10)
+
+    // DOES NOT COMPILE: undefined symbol Shape::Area() for lld.
+    // XCTAssertEqual(shape!.pointee.Area(), 50)
+  }
 }

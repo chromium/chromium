@@ -8,9 +8,9 @@
 class Shape {
  public:
   Shape(int width, int height) : width_(width), height_(height) {}
-  ~Shape() {}
+  virtual ~Shape() {}
 
-  virtual int Area() { return 0; }
+  virtual int Area() = 0;
   virtual int NumberOfSides() { return 0; }
 
   // Virtual or not, this cannot be called on inherited classes unless it
@@ -25,7 +25,7 @@ class Shape {
 class Rectangle : public Shape {
  public:
   Rectangle(int width, int height) : Shape(width, height) {}
-  ~Rectangle() {}
+  virtual ~Rectangle() {}
 
   virtual int Area() { return width_ * height_; }
   virtual int NumberOfSides() { return 4; }
@@ -34,7 +34,7 @@ class Rectangle : public Shape {
 class Square : public Rectangle {
  public:
   Square(int size) : Rectangle(size, size) {}
-  ~Square() {}
+  virtual ~Square() {}
 
   // Even though these should not be necessary, they are. Without them, calling
   // these methods on a Square object results in a compiler error.
@@ -45,7 +45,7 @@ class Square : public Rectangle {
 class Triangle : public Shape {
  public:
   Triangle(int width, int height) : Shape(width, height) {}
-  ~Triangle() {}
+  virtual ~Triangle() {}
 
   virtual int Area() { return (width_ * height_) / 2; }
   virtual int NumberOfSides() { return 3; }
