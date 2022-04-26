@@ -14,10 +14,10 @@ namespace printing {
 
 namespace {
 
-bool g_generate_tagged_pdfs = false;
-
 class PrintRenderFrameHelperDelegate : public PrintRenderFrameHelper::Delegate {
  public:
+  explicit PrintRenderFrameHelperDelegate(bool generate_tagged_pdfs)
+      : generate_tagged_pdfs_(generate_tagged_pdfs) {}
   ~PrintRenderFrameHelperDelegate() override = default;
 
   blink::WebElement GetPdfElement(blink::WebLocalFrame* frame) override {
@@ -30,25 +30,26 @@ class PrintRenderFrameHelperDelegate : public PrintRenderFrameHelper::Delegate {
     return false;
 #endif
   }
-  bool ShouldGenerateTaggedPDF() override { return g_generate_tagged_pdfs; }
+  bool ShouldGenerateTaggedPDF() override { return generate_tagged_pdfs_; }
   bool OverridePrint(blink::WebLocalFrame* frame) override { return false; }
+
+ private:
+  const bool generate_tagged_pdfs_;
 };
 
 }  // namespace
 
-PrintTestContentRendererClient::PrintTestContentRendererClient() = default;
+PrintTestContentRendererClient::PrintTestContentRendererClient(
+    bool generate_tagged_pdfs)
+    : generate_tagged_pdfs_(generate_tagged_pdfs) {}
 
 PrintTestContentRendererClient::~PrintTestContentRendererClient() = default;
-
-// static
-void PrintTestContentRendererClient::SetGenerateTaggedPDFs(bool generate) {
-  g_generate_tagged_pdfs = generate;
-}
 
 void PrintTestContentRendererClient::RenderFrameCreated(
     content::RenderFrame* render_frame) {
   new PrintRenderFrameHelper(
-      render_frame, std::make_unique<PrintRenderFrameHelperDelegate>());
+      render_frame,
+      std::make_unique<PrintRenderFrameHelperDelegate>(generate_tagged_pdfs_));
 }
 
 }  // namespace printing

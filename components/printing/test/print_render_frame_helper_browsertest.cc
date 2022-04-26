@@ -508,18 +508,6 @@ class TestPrintManagerHost
   mojo::AssociatedReceiver<mojom::PrintManagerHost> receiver_{this};
 };
 
-class ScopedGenerateTaggedPDF {
- public:
-  ScopedGenerateTaggedPDF() {
-    PrintTestContentRendererClient::SetGenerateTaggedPDFs(true);
-  }
-  ScopedGenerateTaggedPDF(const ScopedGenerateTaggedPDF&) = delete;
-  ScopedGenerateTaggedPDF& operator=(const ScopedGenerateTaggedPDF&) = delete;
-  ~ScopedGenerateTaggedPDF() {
-    PrintTestContentRendererClient::SetGenerateTaggedPDFs(false);
-  }
-};
-
 }  // namespace
 
 class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
@@ -534,7 +522,7 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
  protected:
   // content::RenderViewTest:
   content::ContentRendererClient* CreateContentRendererClient() override {
-    return new PrintTestContentRendererClient();
+    return new PrintTestContentRendererClient(/*generate_tagged_pdfs=*/false);
   }
 
   void SetUp() override {
@@ -1801,44 +1789,28 @@ TEST_F(PrintRenderFrameHelperPreviewTest, WindowPrintBeforePrintAfterPrint) {
   ExpectOneBeforeOneAfterPrintEvent();
 }
 
-TEST_F(PrintRenderFrameHelperPreviewTest,
-       PrintPreviewRerenderWithNoTaggedPDFGeneration) {
-  LoadHTML(kHelloWorldHTML);
+class PrintRenderFrameHelperTaggedPreviewTest
+    : public PrintRenderFrameHelperPreviewTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PrintRenderFrameHelperTaggedPreviewTest() = default;
+  PrintRenderFrameHelperTaggedPreviewTest(
+      const PrintRenderFrameHelperTaggedPreviewTest&) = delete;
+  PrintRenderFrameHelperTaggedPreviewTest& operator=(
+      const PrintRenderFrameHelperTaggedPreviewTest&) = delete;
+  ~PrintRenderFrameHelperTaggedPreviewTest() override = default;
 
-  OnPrintPreview();
+  // content::RenderViewTest:
+  content::ContentRendererClient* CreateContentRendererClient() override {
+    return new PrintTestContentRendererClient(GenerateTaggedPDFs());
+  }
 
-  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
-  VerifyDidPreviewPage(true, 0);
-  VerifyPreviewPageCount(1);
-  VerifyDefaultPageLayout(540, 720, 36, 36, 36, 36, false);
-  VerifyPrintPreviewCancelled(false);
-  VerifyPrintPreviewFailed(false);
-  VerifyPrintPreviewGenerated(true);
-  VerifyPagesPrinted(false);
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
-  EXPECT_EQ(0, print_manager()->accessibility_tree_set_count());
-#endif
+  bool GenerateTaggedPDFs() const { return GetParam(); }
+  bool ExpectsSetAccessibilityTreeCalls() const { return GenerateTaggedPDFs(); }
+};
 
-  print_settings().SetIntKey(kSettingScaleFactor, 200);
-  OnPrintPreviewRerender();
-
-  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
-  VerifyDidPreviewPage(true, 0);
-  VerifyPreviewPageCount(1);
-  VerifyDefaultPageLayout(540, 720, 36, 36, 36, 36, false);
-  VerifyPrintPreviewCancelled(false);
-  VerifyPrintPreviewFailed(false);
-  VerifyPrintPreviewGenerated(true);
-  VerifyPagesPrinted(false);
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
-  EXPECT_EQ(0, print_manager()->accessibility_tree_set_count());
-#endif
-}
-
-TEST_F(PrintRenderFrameHelperPreviewTest,
+TEST_P(PrintRenderFrameHelperTaggedPreviewTest,
        PrintPreviewRerenderGeneratesTaggedPDF) {
-  ScopedGenerateTaggedPDF generate_tagged_pdf;
-
   LoadHTML(kHelloWorldHTML);
 
   OnPrintPreview();
@@ -1852,7 +1824,10 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
   VerifyPrintPreviewGenerated(true);
   VerifyPagesPrinted(false);
 #if BUILDFLAG(ENABLE_TAGGED_PDF)
-  EXPECT_EQ(1, print_manager()->accessibility_tree_set_count());
+  int expected_accessibility_tree_set_count =
+      ExpectsSetAccessibilityTreeCalls() ? 1 : 0;
+  EXPECT_EQ(expected_accessibility_tree_set_count,
+            print_manager()->accessibility_tree_set_count());
 #endif
 
   print_settings().SetIntKey(kSettingScaleFactor, 200);
@@ -1867,9 +1842,16 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
   VerifyPrintPreviewGenerated(true);
   VerifyPagesPrinted(false);
 #if BUILDFLAG(ENABLE_TAGGED_PDF)
-  EXPECT_EQ(2, print_manager()->accessibility_tree_set_count());
+  expected_accessibility_tree_set_count =
+      ExpectsSetAccessibilityTreeCalls() ? 2 : 0;
+  EXPECT_EQ(expected_accessibility_tree_set_count,
+            print_manager()->accessibility_tree_set_count());
 #endif
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrintRenderFrameHelperTaggedPreviewTest,
+                         testing::Bool());
 
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
