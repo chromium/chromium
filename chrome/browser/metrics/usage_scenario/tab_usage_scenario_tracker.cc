@@ -6,7 +6,6 @@
 
 #include "base/containers/contains.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

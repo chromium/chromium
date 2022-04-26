@@ -11,7 +11,6 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/prefs/pref_service.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -156,7 +155,7 @@ void ReaderModeIconView::OnExecuting(
   content::WebContents* contents = GetWebContents();
   if (!contents || IsDistilledPage(contents->GetLastCommittedURL()))
     return;
-  ukm::SourceId source_id = ukm::GetSourceIdForWebContentsDocument(contents);
+  ukm::SourceId source_id = contents->GetMainFrame()->GetPageUkmSourceId();
   ukm::builders::ReaderModeActivated(source_id)
       .SetActivatedViaOmnibox(true)
       .Record(ukm::UkmRecorder::Get());
@@ -172,7 +171,7 @@ void ReaderModeIconView::OnResult(
 
   if (result.is_last) {
     ukm::SourceId source_id =
-        ukm::GetSourceIdForWebContentsDocument(web_contents);
+        web_contents->GetMainFrame()->GetPageUkmSourceId();
     ukm::builders::ReaderModeReceivedDistillability(source_id)
         .SetIsPageDistillable(result.is_distillable)
         .Record(ukm::UkmRecorder::Get());

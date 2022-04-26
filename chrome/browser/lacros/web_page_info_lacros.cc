@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "ui/aura/window.h"
 
 namespace crosapi {
@@ -30,7 +29,7 @@ mojom::WebPageInfoPtr PopulateWebPageInfoFromBrowser(const Browser* browser) {
   if (!contents)
     return nullptr;
 
-  ukm::SourceId source_id = ukm::GetSourceIdForWebContentsDocument(contents);
+  ukm::SourceId source_id = contents->GetMainFrame()->GetPageUkmSourceId();
   if (source_id == ukm::kInvalidSourceId)
     return nullptr;
 

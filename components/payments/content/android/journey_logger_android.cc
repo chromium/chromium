@@ -7,7 +7,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/payments/content/android/jni_headers/JourneyLogger_jni.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/web_contents.h"
 
 namespace payments {
@@ -198,7 +197,7 @@ static jlong JNI_JourneyLogger_InitJourneyLoggerAndroid(
       content::WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);  // Verified in Java before invoking this function.
   return reinterpret_cast<jlong>(new JourneyLoggerAndroid(
-      jis_incognito, ukm::GetSourceIdForWebContentsDocument(web_contents)));
+      jis_incognito, web_contents->GetMainFrame()->GetPageUkmSourceId()));
 }
 
 }  // namespace payments

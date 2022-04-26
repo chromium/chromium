@@ -15,7 +15,6 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "chrome/android/chrome_jni_headers/ShortcutHelper_jni.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/web_contents.h"
@@ -102,8 +101,7 @@ void RecordAddToHomeScreenUKM(
   if (!web_contents)
     return;
 
-  ukm::SourceId source_id =
-      ukm::GetSourceIdForWebContentsDocument(web_contents);
+  ukm::SourceId source_id = web_contents->GetMainFrame()->GetPageUkmSourceId();
   ukm::builders::Webapp_AddToHomeScreen(source_id)
       .SetDisplayMode(static_cast<int>(info.display))
       .SetShortcutReason(static_cast<int>(installable_status))

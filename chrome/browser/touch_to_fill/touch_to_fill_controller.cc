@@ -22,7 +22,6 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "components/url_formatter/elide_url.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -111,8 +110,9 @@ TouchToFillController::TouchToFillController(
     scoped_refptr<device_reauth::BiometricAuthenticator> authenticator)
     : password_client_(password_client),
       authenticator_(std::move(authenticator)),
-      source_id_(ukm::GetSourceIdForWebContentsDocument(
-          password_client->web_contents())) {}
+      source_id_(password_client->web_contents()
+                     ->GetMainFrame()
+                     ->GetPageUkmSourceId()) {}
 
 TouchToFillController::~TouchToFillController() {
   if (authenticator_) {

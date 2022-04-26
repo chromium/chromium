@@ -56,7 +56,6 @@
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -421,7 +420,7 @@ void PageInfo::RecordPageInfoAction(PageInfoAction action) {
 
   if (web_contents_) {
     ukm::builders::PageInfoBubble(
-        ukm::GetSourceIdForWebContentsDocument(web_contents_.get()))
+        web_contents_->GetMainFrame()->GetPageUkmSourceId())
         .SetActionTaken(action)
         .Record(ukm::UkmRecorder::Get());
   }

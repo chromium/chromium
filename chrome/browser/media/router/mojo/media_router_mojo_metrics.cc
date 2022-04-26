@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -30,8 +29,7 @@ void MediaRouterMojoMetrics::RecordMediaRouteControllerCreationResult(
 // static
 void MediaRouterMojoMetrics::RecordTabMirroringMetrics(
     content::WebContents* web_contents) {
-  ukm::SourceId source_id =
-      ukm::GetSourceIdForWebContentsDocument(web_contents);
+  ukm::SourceId source_id = web_contents->GetMainFrame()->GetPageUkmSourceId();
   WebContentsAudioState audio_state = WebContentsAudioState::kWasNeverAudible;
   if (web_contents->IsCurrentlyAudible()) {
     audio_state = WebContentsAudioState::kIsCurrentlyAudible;
@@ -48,8 +46,7 @@ void MediaRouterMojoMetrics::RecordTabMirroringMetrics(
 void MediaRouterMojoMetrics::RecordSiteInitiatedMirroringStarted(
     content::WebContents* web_contents,
     const MediaSource& media_source) {
-  ukm::SourceId source_id =
-      ukm::GetSourceIdForWebContentsDocument(web_contents);
+  ukm::SourceId source_id = web_contents->GetMainFrame()->GetPageUkmSourceId();
   auto cast_source = CastMediaSource::FromMediaSource(media_source);
   if (cast_source) {
     ukm::builders::MediaRouter_SiteInitiatedMirroringStarted(source_id)

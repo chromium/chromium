@@ -17,7 +17,6 @@
 #include "components/assist_ranker/predictor_config_definitions.h"
 #include "components/assist_ranker/proto/ranker_example.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/web_contents.h"
 
 namespace content {
@@ -50,7 +49,7 @@ void ContextualSearchRankerLoggerImpl::SetupLoggingAndRanker(
   if (!web_contents)
     return;
 
-  source_id_ = ukm::GetSourceIdForWebContentsDocument(web_contents);
+  source_id_ = web_contents->GetMainFrame()->GetPageUkmSourceId();
   SetupRankerPredictor(*web_contents);
   // Start building example data based on features to be gathered and logged.
   ranker_example_ = std::make_unique<assist_ranker::RankerExample>();

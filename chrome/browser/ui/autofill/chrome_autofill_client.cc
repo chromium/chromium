@@ -72,7 +72,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/translate/core/browser/translate_manager.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/service/variations_service.h"
 #include "components/webauthn/content/browser/internal_authenticator_impl.h"
@@ -198,7 +197,7 @@ ukm::UkmRecorder* ChromeAutofillClient::GetUkmRecorder() {
 }
 
 ukm::SourceId ChromeAutofillClient::GetUkmSourceId() {
-  return ukm::GetSourceIdForWebContentsDocument(web_contents());
+  return web_contents()->GetMainFrame()->GetPageUkmSourceId();
 }
 
 AddressNormalizer* ChromeAutofillClient::GetAddressNormalizer() {

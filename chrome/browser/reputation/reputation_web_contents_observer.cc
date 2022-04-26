@@ -19,7 +19,6 @@
 #include "components/lookalikes/core/features.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/security_state/core/security_state.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/common/page_visibility_state.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -178,7 +177,7 @@ void ReputationWebContentsObserver::DidFinishNavigation(
 
 void ReputationWebContentsObserver::OnVisibilityChanged(
     content::Visibility visibility) {
-  MaybeShowSafetyTip(ukm::GetSourceIdForWebContentsDocument(web_contents()),
+  MaybeShowSafetyTip(web_contents()->GetMainFrame()->GetPageUkmSourceId(),
                      /*called_from_visibility_check=*/true,
                      /*record_ukm_if_tip_not_shown=*/false);
 }

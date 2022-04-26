@@ -13,7 +13,6 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -176,7 +175,7 @@ void SoundContentSettingObserver::RecordSiteMutedUKM() {
   logged_site_muted_ukm_ = true;
 
   ukm::builders::Media_SiteMuted(
-      ukm::GetSourceIdForWebContentsDocument(web_contents()))
+      web_contents()->GetMainFrame()->GetPageUkmSourceId())
       .SetMuteReason(GetSiteMutedReason())
       .Record(ukm::UkmRecorder::Get());
 }

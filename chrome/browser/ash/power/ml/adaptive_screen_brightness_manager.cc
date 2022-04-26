@@ -27,7 +27,6 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "components/prefs/pref_service.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -88,7 +87,7 @@ const std::pair<ukm::SourceId, bool> GetActiveTabData() {
     DCHECK(tab_strip_model);
     content::WebContents* contents = tab_strip_model->GetActiveWebContents();
     if (contents) {
-      tab_id = ukm::GetSourceIdForWebContentsDocument(contents);
+      tab_id = contents->GetMainFrame()->GetPageUkmSourceId();
       has_form_entry = FormInteractionTabHelper::FromWebContents(contents)
                            ->had_form_interaction();
     }

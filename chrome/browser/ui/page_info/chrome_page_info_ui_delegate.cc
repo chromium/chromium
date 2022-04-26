@@ -20,7 +20,6 @@
 #include "components/permissions/permission_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -101,7 +100,7 @@ ChromePageInfoUiDelegate::GetAboutThisSiteInfo() {
   if (auto* service =
           AboutThisSiteServiceFactory::GetForProfile(GetProfile())) {
     return service->GetAboutThisSiteInfo(
-        site_url_, ukm::GetSourceIdForWebContentsDocument(web_contents_));
+        site_url_, web_contents_->GetMainFrame()->GetPageUkmSourceId());
   }
   return absl::nullopt;
 }

@@ -31,7 +31,6 @@
 #include "components/autofill_assistant/browser/user_data_util.h"
 #include "components/autofill_assistant/browser/website_login_manager_impl.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
@@ -655,7 +654,7 @@ void CollectUserDataAction::UpdateMetrics(UserData* user_data) {
   if (!shown_to_user_) {
     shown_to_user_ = true;
     metrics_data_.source_id =
-        ukm::GetSourceIdForWebContentsDocument(delegate_->GetWebContents());
+        delegate_->GetWebContents()->GetMainFrame()->GetPageUkmSourceId();
     metrics_data_.user_data_source =
         ShouldUseBackendData(proto_.collect_user_data())
             ? Metrics::UserDataSource::BACKEND

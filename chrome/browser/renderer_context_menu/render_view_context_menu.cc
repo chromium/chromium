@@ -140,7 +140,6 @@
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_prefs.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -1151,7 +1150,7 @@ void RenderViewContextMenu::RecordUsedItem(int id) {
        lens::features::GetEnableUKMLoggingForImageSearch())) {
     // Enum id should correspond to the RenderViewContextMenuItem enum.
     ukm::SourceId source_id =
-        ukm::GetSourceIdForWebContentsDocument(source_web_contents_);
+        source_web_contents_->GetMainFrame()->GetPageUkmSourceId();
     ukm::builders::RenderViewContextMenu_Used(source_id)
         .SetSelectedMenuItem(enum_id)
         .Record(ukm::UkmRecorder::Get());

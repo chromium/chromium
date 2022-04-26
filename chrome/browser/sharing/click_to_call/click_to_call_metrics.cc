@@ -6,7 +6,6 @@
 
 #include <cctype>
 
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -21,8 +20,7 @@ void LogClickToCallUKM(content::WebContents* web_contents,
   if (!ukm_recorder)
     return;
 
-  ukm::SourceId source_id =
-      ukm::GetSourceIdForWebContentsDocument(web_contents);
+  ukm::SourceId source_id = web_contents->GetMainFrame()->GetPageUkmSourceId();
   if (source_id == ukm::kInvalidSourceId)
     return;
 

@@ -13,7 +13,6 @@
 #include "components/blocked_content/popup_tracker.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -103,7 +102,7 @@ void PopupOpenerTabHelper::MaybeLogPagePopupContentSettings() {
     return;
 
   const ukm::SourceId source_id =
-      ukm::GetSourceIdForWebContentsDocument(web_contents());
+      web_contents()->GetMainFrame()->GetPageUkmSourceId();
 
   // Do not record duplicate Popup.Page events for popups opened in succession
   // from the same opener.

@@ -21,7 +21,6 @@
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom-forward.h"
 #include "components/paint_preview/common/proto_validator.h"
 #include "components/paint_preview/common/version.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
@@ -317,8 +316,7 @@ void PaintPreviewClient::CapturePaintPreview(
   chromeVersion->set_build(CHROME_VERSION_BUILD);
   chromeVersion->set_patch(CHROME_VERSION_PATCH);
   document_data.callback = std::move(callback);
-  document_data.source_id =
-      ukm::GetSourceIdForWebContentsDocument(web_contents());
+  document_data.source_id = render_frame_host->GetPageUkmSourceId();
   document_data.accepted_tokens = CreateAcceptedTokenList(render_frame_host);
   auto token = render_frame_host->GetEmbeddingToken();
   if (token.has_value()) {

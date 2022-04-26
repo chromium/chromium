@@ -7,7 +7,6 @@
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/prefetch/prefetch_prefs.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -72,8 +71,7 @@ void AnchorElementPreloader::RecordUmaPreloadedTriggered(
 
 void AnchorElementPreloader::RecordUkmPreloadType(
     AnchorElementPreloaderType type) {
-  ukm::SourceId source_id = ukm::GetSourceIdForWebContentsDocument(
-      content::WebContents::FromRenderFrameHost(render_frame_host()));
+  ukm::SourceId source_id = render_frame_host()->GetPageUkmSourceId();
 
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
   ukm::builders::Preloading_AnchorInteraction(source_id)

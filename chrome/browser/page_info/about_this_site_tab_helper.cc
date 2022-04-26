@@ -14,7 +14,6 @@
 #include "components/page_info/core/about_this_site_service.h"
 #include "components/page_info/core/about_this_site_validation.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -150,7 +149,7 @@ AboutThisSiteTabHelper::HandleOptimizationGuideDecision(
 void AboutThisSiteTabHelper::ShowBanner(
     page_info::proto::BannerInfo banner_info) {
   ukm::SourceId source_id =
-      ukm::GetSourceIdForWebContentsDocument(web_contents());
+      web_contents()->GetMainFrame()->GetPageUkmSourceId();
   GURL url = web_contents()->GetLastCommittedURL();
   base::OnceClosure on_dimiss =
       base::BindOnce(&page_info::AboutThisSiteService::OnBannerDismissed,

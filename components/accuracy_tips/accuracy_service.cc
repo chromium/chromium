@@ -23,7 +23,6 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "components/unified_consent/pref_names.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -157,7 +156,7 @@ void AccuracyService::MaybeShowAccuracyTip(content::WebContents* web_contents) {
 
   if (disable_ui_) {
     return OnAccuracyTipClosed(
-        base::TimeTicks(), ukm::GetSourceIdForWebContentsDocument(web_contents),
+        base::TimeTicks(), web_contents->GetMainFrame()->GetPageUkmSourceId(),
         AccuracyTipInteraction::kDisabledByExperiment);
   }
 
@@ -174,7 +173,7 @@ void AccuracyService::MaybeShowAccuracyTip(content::WebContents* web_contents) {
       /*show_opt_out=*/show_opt_out,
       base::BindOnce(&AccuracyService::OnAccuracyTipClosed,
                      weak_factory_.GetWeakPtr(), base::TimeTicks::Now(),
-                     ukm::GetSourceIdForWebContentsDocument(web_contents)));
+                     web_contents->GetMainFrame()->GetPageUkmSourceId()));
   for (Observer& observer : observers_)
     observer.OnAccuracyTipShown();
 }

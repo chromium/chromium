@@ -6,7 +6,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "components/ukm/android/jni_headers/UkmRecorder_jni.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_entry_builder.h"
@@ -22,7 +21,7 @@ static void JNI_UkmRecorder_RecordEventWithBooleanMetric(
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
   const ukm::SourceId source_id =
-      ukm::GetSourceIdForWebContentsDocument(web_contents);
+      web_contents->GetMainFrame()->GetPageUkmSourceId();
   const std::string event_name(ConvertJavaStringToUTF8(env, j_event_name));
   ukm::UkmEntryBuilder builder(source_id, event_name);
   builder.SetMetric(ConvertJavaStringToUTF8(env, j_metric_name), true);
@@ -39,7 +38,7 @@ static void JNI_UkmRecorder_RecordEventWithIntegerMetric(
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
   const ukm::SourceId source_id =
-      ukm::GetSourceIdForWebContentsDocument(web_contents);
+      web_contents->GetMainFrame()->GetPageUkmSourceId();
   const std::string event_name(ConvertJavaStringToUTF8(env, j_event_name));
   ukm::UkmEntryBuilder builder(source_id, event_name);
   builder.SetMetric(ConvertJavaStringToUTF8(env, j_metric_name),

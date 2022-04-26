@@ -30,7 +30,6 @@
 #include "components/autofill_assistant/browser/trigger_scripts/dynamic_trigger_conditions.h"
 #include "components/autofill_assistant/browser/trigger_scripts/static_trigger_conditions.h"
 #include "components/autofill_assistant/browser/url_utils.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -180,7 +179,7 @@ Starter::Starter(content::WebContents* web_contents,
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<Starter>(*web_contents),
       current_ukm_source_id_(
-          ukm::GetSourceIdForWebContentsDocument(web_contents)),
+          web_contents->GetMainFrame()->GetPageUkmSourceId()),
       cached_failed_trigger_script_fetches_(
           GetOrCreateFailedTriggerScriptFetchesCache()),
       user_denylisted_domains_(kMaxUserDenylistedCacheSize),
@@ -426,7 +425,7 @@ void Starter::Init() {
              fetch_trigger_scripts_on_navigation_) {
     MaybeStartImplicitlyForUrl(
         web_contents()->GetLastCommittedURL(),
-        ukm::GetSourceIdForWebContentsDocument(web_contents()));
+        web_contents()->GetMainFrame()->GetPageUkmSourceId());
   }
 }
 

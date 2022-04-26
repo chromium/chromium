@@ -18,7 +18,6 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_heuristics_data.h"
 #include "components/search/ntp_features.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -280,7 +279,7 @@ void CommerceHintService::OnFormSubmit(const GURL& navigation_url,
   bool random = (bytes[0] >> 1) & 0x1;
   bool reported = report_truth ? is_purchase : random;
   ukm::builders::Shopping_FormSubmitted(
-      ukm::GetSourceIdForWebContentsDocument(&GetWebContents()))
+      GetWebContents().GetMainFrame()->GetPageUkmSourceId())
       .SetIsTransaction(reported)
       .Record(ukm::UkmRecorder::Get());
   base::UmaHistogramBoolean("Commerce.Carts.FormSubmitIsTransaction", reported);
@@ -296,7 +295,7 @@ void CommerceHintService::OnWillSendRequest(const GURL& navigation_url,
   bool random = (bytes[0] >> 1) & 0x1;
   bool reported = report_truth ? is_addtocart : random;
   ukm::builders::Shopping_WillSendRequest(
-      ukm::GetSourceIdForWebContentsDocument(&GetWebContents()))
+      GetWebContents().GetMainFrame()->GetPageUkmSourceId())
       .SetIsAddToCart(reported)
       .Record(ukm::UkmRecorder::Get());
   base::UmaHistogramBoolean("Commerce.Carts.XHRIsAddToCart", reported);

@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_view_host.h"
@@ -209,7 +208,7 @@ class TabActivityWatcher::WebContentsData
     creation_time_ = NowTicks();
 
     // A navigation may already have completed if this is a replacement tab.
-    ukm_source_id_ = ukm::GetSourceIdForWebContentsDocument(web_contents);
+    ukm_source_id_ = web_contents->GetMainFrame()->GetPageUkmSourceId();
 
     // When a tab is discarded, a new null_web_contents will be created (with
     // WasDiscarded set as true) applied as a replacement of the discarded tab.

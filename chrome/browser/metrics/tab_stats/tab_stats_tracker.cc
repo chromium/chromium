@@ -36,7 +36,6 @@
 #include "components/metrics/daily_event.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/visibility.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -293,7 +292,7 @@ class TabStatsTracker::WebContentsUsageObserver
                            TabStatsTracker* tab_stats_tracker)
       : content::WebContentsObserver(web_contents),
         tab_stats_tracker_(tab_stats_tracker),
-        ukm_source_id_(ukm::GetSourceIdForWebContentsDocument(web_contents)) {}
+        ukm_source_id_(web_contents->GetMainFrame()->GetPageUkmSourceId()) {}
 
   WebContentsUsageObserver(const WebContentsUsageObserver&) = delete;
   WebContentsUsageObserver& operator=(const WebContentsUsageObserver&) = delete;

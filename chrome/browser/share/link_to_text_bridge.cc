@@ -7,7 +7,6 @@
 #include "chrome/browser/share/android/jni_headers/LinkToTextBridge_jni.h"
 #include "components/shared_highlighting/core/common/disabled_sites.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "url/android/gurl_android.h"
 
@@ -20,7 +19,7 @@ ukm::SourceId GetSourceId(
     const base::android::JavaParamRef<jobject>& j_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
-  return ukm::GetSourceIdForWebContentsDocument(web_contents);
+  return web_contents->GetMainFrame()->GetPageUkmSourceId();
 }
 }  // namespace
 

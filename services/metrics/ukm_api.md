@@ -182,7 +182,7 @@ Prefer using `ukm::SourceId` if only the underlying int64 value is required to i
 The main method for getting an existing ID is by converting from the navigation ID:
 
 ```cpp
-ukm::SourceId source_id = GetSourceIdForWebContentsDocument(web_contents);
+ukm::SourceId source_id = render_frame_host->GetPageUkmSourceId();
 ukm::SourceId source_id = ukm::ConvertToSourceId(
     navigation_handle->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
 ```

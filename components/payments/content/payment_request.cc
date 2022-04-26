@@ -33,7 +33,6 @@
 #include "components/payments/core/payments_validators.h"
 #include "components/payments/core/url_util.h"
 #include "components/prefs/pref_service.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -89,7 +88,7 @@ PaymentRequest::PaymentRequest(
       spc_transaction_mode_(spc_transaction_mode),
       observer_for_testing_(observer_for_testing),
       journey_logger_(delegate_->IsOffTheRecord(),
-                      ukm::GetSourceIdForWebContentsDocument(web_contents())) {
+                      render_frame_host->GetPageUkmSourceId()) {
   payment_handler_host_ = std::make_unique<PaymentHandlerHost>(
       web_contents(), weak_ptr_factory_.GetWeakPtr());
 }

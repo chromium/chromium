@@ -13,7 +13,6 @@
 #include "components/page_info/core/about_this_site_service.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/android/browser_context_handle.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -37,8 +36,9 @@ JNI_PageInfoAboutThisSiteController_GetSiteInfo(
   if (!service)
     return nullptr;
   auto url = url::GURLAndroid::ToNativeGURL(env, j_url);
-  auto source_id = ukm::GetSourceIdForWebContentsDocument(
-      content::WebContents::FromJavaWebContents(j_webContents));
+  auto source_id = content::WebContents::FromJavaWebContents(j_webContents)
+                       ->GetMainFrame()
+                       ->GetPageUkmSourceId();
   auto info = service->GetAboutThisSiteInfo(*url, source_id);
   if (!info)
     return nullptr;

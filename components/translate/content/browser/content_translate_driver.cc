@@ -26,7 +26,6 @@
 #include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/translate/core/browser/translate_model_service.h"
 #include "components/translate/core/common/translate_metrics.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"
@@ -165,7 +164,7 @@ const GURL& ContentTranslateDriver::GetVisibleURL() {
 }
 
 ukm::SourceId ContentTranslateDriver::GetUkmSourceId() {
-  return ukm::GetSourceIdForWebContentsDocument(web_contents());
+  return web_contents()->GetMainFrame()->GetPageUkmSourceId();
 }
 
 bool ContentTranslateDriver::HasCurrentPage() {
