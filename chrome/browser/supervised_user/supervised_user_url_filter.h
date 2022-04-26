@@ -35,23 +35,22 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 // This class manages the filtering behavior for URLs, i.e. it tells callers
-// if a URL should be allowed, blocked or warned about. It uses information
+// if a URL should be allowed or blocked. It uses information
 // from multiple sources:
-//   * A default setting (allow, block or warn).
+//   * A default setting (allow or block).
 //   * User-specified manual overrides (allow or block) for either sites
 //     (hostnames) or exact URLs, which take precedence over the previous
 //     sources.
 class SupervisedUserURLFilter {
  public:
-  // TODO(crbug/1152622): Investigate whether FilteringBehavior::WARN is in
-  // use. If it is not in use, remove it.
   // A Java counterpart will be generated for this enum.
+  // Values are stored in prefs under kDefaultSupervisedUserFilteringBehavior.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.superviseduser
   enum FilteringBehavior {
-    ALLOW,
-    WARN,
-    BLOCK,
-    INVALID
+    ALLOW = 0,
+    // Deprecated, WARN = 1.
+    BLOCK = 2,
+    INVALID = 3,
   };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

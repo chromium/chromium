@@ -1556,7 +1556,7 @@ const char kDeletePrintJobHistoryAllowed[] =
 // An integer pref specifying the fallback behavior for sites outside of content
 // packs. One of:
 // 0: Allow (does nothing)
-// 1: Warn.
+// 1: Warn. [Deprecated]
 // 2: Block.
 const char kDefaultSupervisedUserFilteringBehavior[] =
     "profile.managed.default_filtering_behavior";

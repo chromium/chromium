@@ -75,8 +75,6 @@ std::string FilteringBehaviorToString(
   switch (behavior) {
     case SupervisedUserURLFilter::ALLOW:
       return "Allow";
-    case SupervisedUserURLFilter::WARN:
-      return "Warn";
     case SupervisedUserURLFilter::BLOCK:
       return "Block";
     case SupervisedUserURLFilter::INVALID:

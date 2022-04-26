@@ -259,8 +259,8 @@ bool SupervisedUserURLFilter::ShouldSkipParentManualAllowlistFiltering(
 // static
 SupervisedUserURLFilter::FilteringBehavior
 SupervisedUserURLFilter::BehaviorFromInt(int behavior_value) {
-  DCHECK_GE(behavior_value, ALLOW);
-  DCHECK_LE(behavior_value, BLOCK);
+  DCHECK(behavior_value == ALLOW || behavior_value == BLOCK)
+      << "SupervisedUserURLFilter value not supported: " << behavior_value;
   return static_cast<FilteringBehavior>(behavior_value);
 }
 
