@@ -836,6 +836,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SearchEngineSpecifics& proto) {
   VISIT(image_url_post_params);
   VISIT(new_tab_url);
   VISIT_ENUM(is_active);
+  VISIT(starter_pack_id);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SendTabToSelfSpecifics& proto) {

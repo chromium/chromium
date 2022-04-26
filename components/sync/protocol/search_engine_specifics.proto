@@ -92,4 +92,7 @@ message SearchEngineSpecifics {
   // Whether a search engine is 'active' and can be triggered via the omnibox by
   // typing in the relevant keyword.
   optional ActiveStatus is_active = 27;
+  // The ID associated with the starter pack engine.  This is set to 0 if not a
+  // starter pack engine.
+  optional int32 starter_pack_id = 28;
 }

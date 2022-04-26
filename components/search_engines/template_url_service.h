@@ -684,6 +684,9 @@ class TemplateURLService : public WebDataServiceConsumer,
   // Returns the TemplateURL corresponding to |prepopulated_id|, if any.
   TemplateURL* FindPrepopulatedTemplateURL(int prepopulated_id);
 
+  // Returns the TemplateURL corresponding to |starter_pack_id|, if any.
+  TemplateURL* FindStarterPackTemplateURL(int starter_pack_id);
+
   // Returns the TemplateURL associated with |extension_id|, if any.
   TemplateURL* FindTemplateURLForExtension(const std::string& extension_id,
                                            TemplateURL::Type type);

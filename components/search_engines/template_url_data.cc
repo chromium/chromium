@@ -16,18 +16,24 @@
 
 namespace {
 
-// Returns a GUID used for sync, which is random except for prepopulated search
+// Returns a GUID used for sync, which is random except for built-in search
 // engines. The latter benefit from using a deterministic GUID, to make sure
 // sync doesn't incur in duplicates for prepopulated engines.
-std::string GenerateGUID(int prepopulate_id) {
+std::string GenerateGUID(int prepopulate_id, int starter_pack_id) {
+  // We compute a GUID deterministically given |prepopulate_id| or
+  // |starter_pack_id|, using an arbitrary base GUID.
+  std::string guid;
   // IDs above 1000 are reserved for distribution custom engines.
-  if (prepopulate_id <= 0 || prepopulate_id > 1000)
-    return base::GenerateGUID();
+  if (prepopulate_id > 0 && prepopulate_id <= 1000) {
+    guid = base::StringPrintf("485bf7d3-0215-45af-87dc-538868%06d",
+                              prepopulate_id);
+  } else if (starter_pack_id > 0) {
+    guid = base::StringPrintf("ec205736-edd7-4022-a9a3-b431fc%06d",
+                              starter_pack_id);
+  } else {
+    guid = base::GenerateGUID();
+  }
 
-  // We compute a GUID deterministically given |prepopulate_id|, using an
-  // arbitrary base GUID.
-  std::string guid =
-      base::StringPrintf("485bf7d3-0215-45af-87dc-538868%06d", prepopulate_id);
   DCHECK(base::IsValidGUID(guid));
   return guid;
 }
@@ -91,7 +97,7 @@ TemplateURLData::TemplateURLData(const std::u16string& name,
       created_from_play_api(false),
       usage_count(0),
       prepopulate_id(prepopulate_id),
-      sync_guid(GenerateGUID(prepopulate_id)),
+      sync_guid(GenerateGUID(prepopulate_id, 0)),
       preconnect_to_search_url(preconnect_to_search_url),
       prefetch_likely_navigations(prefetch_likely_navigations) {
   SetShortName(name);
@@ -135,7 +141,7 @@ void TemplateURLData::SetURL(const std::string& url) {
 }
 
 void TemplateURLData::GenerateSyncGUID() {
-  sync_guid = GenerateGUID(prepopulate_id);
+  sync_guid = GenerateGUID(prepopulate_id, starter_pack_id);
 }
 
 size_t TemplateURLData::EstimateMemoryUsage() const {
