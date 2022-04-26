@@ -217,7 +217,7 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // circumstances, like hosted apps, different answers can be returned if we
   // are navigating an outermost main frame instead of an embedded frame.
   bool IsNavigationSameSite(const GURL& last_successful_url,
-                            const url::Origin last_committed_origin,
+                            const url::Origin& last_committed_origin,
                             bool for_outermost_main_frame,
                             const UrlInfo& dest_url_info);
 

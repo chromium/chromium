@@ -906,7 +906,7 @@ bool SiteInstanceImpl::IsOriginalUrlSameSite(
 
 bool SiteInstanceImpl::IsNavigationSameSite(
     const GURL& last_successful_url,
-    const url::Origin last_committed_origin,
+    const url::Origin& last_committed_origin,
     bool for_outermost_main_frame,
     const UrlInfo& dest_url_info) {
   if (GetSiteInfo().is_sandboxed() != dest_url_info.is_sandboxed)
