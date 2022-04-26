@@ -271,6 +271,8 @@ NotificationView::NotificationView(
   header_row->ConfigureLabelsStyle(font_list, text_view_padding, false);
   header_row->SetPreferredSize(header_row->GetPreferredSize() -
                                gfx::Size(GetInsets().width(), 0));
+  header_row->SetCallback(base::BindRepeating(
+      &NotificationView::HeaderRowPressed, base::Unretained(this)));
   header_row->AddChildView(CreateControlButtonsBuilder().Build());
 
   auto content_row = CreateContentRowBuilder()
@@ -650,6 +652,23 @@ void NotificationView::RemoveBackgroundAnimation() {
 std::vector<views::View*> NotificationView::GetChildrenForLayerAdjustment() {
   return {header_row(), block_all_button_, dont_block_button_,
           settings_done_button_};
+}
+
+void NotificationView::HeaderRowPressed() {
+  if (!IsExpandable() || !content_row()->GetVisible())
+    return;
+
+  // Tapping anywhere on |header_row_| can expand the notification, though only
+  // |expand_button| can be focused by TAB.
+  SetManuallyExpandedOrCollapsed(true);
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
+  SetExpanded(!IsExpanded());
+  // Check |this| is valid before continuing, because ToggleExpanded() might
+  // cause |this| to be deleted.
+  if (!weak_ptr)
+    return;
+  Layout();
+  SchedulePaint();
 }
 
 }  // namespace message_center

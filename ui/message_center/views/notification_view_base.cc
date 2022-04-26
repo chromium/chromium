@@ -453,10 +453,6 @@ NotificationViewBase::CreateHeaderRowBuilder() {
   auto header_row_builder = views::Builder<NotificationHeaderView>()
                                 .SetID(kHeaderRow)
                                 .CopyAddressTo(&header_row_);
-  if (!for_ash_notification_) {
-    header_row_builder.SetCallback(base::BindRepeating(
-        &NotificationViewBase::HeaderRowPressed, base::Unretained(this)));
-  }
   return header_row_builder;
 }
 
@@ -818,23 +814,6 @@ void NotificationViewBase::ReorderViewInLeftContent(views::View* view) {
   left_content_->ReorderChildView(view, left_content_count_++);
 }
 
-void NotificationViewBase::HeaderRowPressed() {
-  if (!IsExpandable() || !content_row_->GetVisible())
-    return;
-
-  // Tapping anywhere on |header_row_| can expand the notification, though only
-  // |expand_button| can be focused by TAB.
-  SetManuallyExpandedOrCollapsed(true);
-  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
-  ToggleExpanded();
-  // Check |this| is valid before continuing, because ToggleExpanded() might
-  // cause |this| to be deleted.
-  if (!weak_ptr)
-    return;
-  Layout();
-  SchedulePaint();
-}
-
 void NotificationViewBase::ActionButtonPressed(size_t index,
                                                const ui::Event& event) {
   const absl::optional<std::u16string>& placeholder =
@@ -867,10 +846,6 @@ bool NotificationViewBase::HasInlineReply(
 void NotificationViewBase::SetExpandButtonEnabled(bool enabled) {
   if (!for_ash_notification_)
     header_row_->SetExpandButtonEnabled(enabled);
-}
-
-void NotificationViewBase::ToggleExpanded() {
-  SetExpanded(!expanded_);
 }
 
 void NotificationViewBase::UpdateViewForExpandedState(bool expanded) {

@@ -180,6 +180,10 @@ class NotificationViewBaseTest : public views::ViewsTestBase,
     delete_on_preferred_size_changed_ = delete_on_preferred_size_changed;
   }
 
+  void ToggleExpanded() {
+    notification_view_->SetExpanded(!notification_view_->IsExpanded());
+  }
+
  protected:
   const gfx::Image CreateTestImage(int width, int height) const;
   const SkBitmap CreateBitmap(int width, int height) const;
@@ -389,7 +393,7 @@ TEST_F(NotificationViewBaseTest, UpdateButtonsStateTest) {
   notification->set_buttons(CreateButtons(0));
   notification_view()->CreateOrUpdateViews(*notification);
   // Expand, and add buttons.
-  notification_view()->ToggleExpanded();
+  ToggleExpanded();
   EXPECT_TRUE(notification_view()->expanded_);
   notification->set_buttons(CreateButtons(2));
   notification_view()->CreateOrUpdateViews(*notification);
@@ -433,7 +437,7 @@ TEST_F(NotificationViewBaseTest, UpdateButtonCountTest) {
 
   // Action buttons are hidden by collapsed state.
   if (!notification_view()->expanded_)
-    notification_view()->ToggleExpanded();
+    ToggleExpanded();
   EXPECT_TRUE(notification_view()->actions_row_->GetVisible());
 
   EXPECT_EQ(views::Button::STATE_NORMAL,
@@ -485,7 +489,7 @@ TEST_F(NotificationViewBaseTest, TestActionButtonClick) {
 
   // Action buttons are hidden by collapsed state.
   if (!notification_view()->expanded_)
-    notification_view()->ToggleExpanded();
+    ToggleExpanded();
   EXPECT_TRUE(notification_view()->actions_row_->GetVisible());
 
   // Now construct a mouse click event inside the boundary of the action button.
@@ -520,7 +524,7 @@ TEST_F(NotificationViewBaseTest, MAYBE_TestInlineReply) {
 
   // Action buttons are hidden by collapsed state.
   if (!notification_view()->expanded_)
-    notification_view()->ToggleExpanded();
+    ToggleExpanded();
   EXPECT_TRUE(notification_view()->actions_row_->GetVisible());
 
   // Now construct a mouse click event inside the boundary of the action button.
@@ -536,8 +540,8 @@ TEST_F(NotificationViewBaseTest, MAYBE_TestInlineReply) {
 
   // Toggling should hide the inline textfield.
   EXPECT_TRUE(notification_view()->inline_reply_->GetVisible());
-  notification_view()->ToggleExpanded();
-  notification_view()->ToggleExpanded();
+  ToggleExpanded();
+  ToggleExpanded();
   EXPECT_FALSE(notification_view()->inline_reply_->GetVisible());
 
   // Click the button again and the inline textfield should be focused.
@@ -609,7 +613,7 @@ TEST_F(NotificationViewBaseTest, TestInlineReplyRemovedByUpdate) {
 
   // Action buttons are hidden by collapsed state.
   if (!notification_view()->expanded_)
-    notification_view()->ToggleExpanded();
+    ToggleExpanded();
   EXPECT_TRUE(notification_view()->actions_row_->GetVisible());
 
   // Now construct a mouse click event inside the boundary of the action button.
@@ -656,7 +660,7 @@ TEST_F(NotificationViewBaseTest, TestInlineReplyActivateWithKeyPress) {
 
   // Action buttons are hidden by collapsed state.
   if (!notification_view()->expanded_)
-    notification_view()->ToggleExpanded();
+    ToggleExpanded();
 
   ui::test::EventGenerator generator(
       GetRootWindow(notification_view()->GetWidget()));
@@ -839,22 +843,6 @@ TEST_F(NotificationViewBaseTest, SnoozeButton) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-TEST_F(NotificationViewBaseTest, ManuallyExpandedOrCollapsed) {
-  // Test |manually_expanded_or_collapsed| being set when the toggle is done by
-  // user interaction.
-  EXPECT_FALSE(notification_view()->IsManuallyExpandedOrCollapsed());
-
-  // Construct a mouse click event inside the header.
-  gfx::Point done_cursor_location =
-      notification_view()->header_row_->GetBoundsInScreen().CenterPoint();
-  ui::test::EventGenerator generator(
-      GetRootWindow(notification_view()->GetWidget()));
-  generator.MoveMouseTo(done_cursor_location);
-  generator.ClickLeftButton();
-
-  EXPECT_TRUE(notification_view()->IsManuallyExpandedOrCollapsed());
-}
-
 TEST_F(NotificationViewBaseTest, UseImageAsIcon) {
   // TODO(tetsui): Remove duplicated integer literal in CreateOrUpdateIconView.
   const int kIconSize = 30;
@@ -871,12 +859,12 @@ TEST_F(NotificationViewBaseTest, UseImageAsIcon) {
   EXPECT_TRUE(notification_view()->right_content_->GetVisible());
 
   // Icon on the right side is still visible when expanded.
-  notification_view()->ToggleExpanded();
+  ToggleExpanded();
   EXPECT_TRUE(notification_view()->expanded_);
   EXPECT_TRUE(notification_view()->icon_view_->GetVisible());
   EXPECT_TRUE(notification_view()->right_content_->GetVisible());
 
-  notification_view()->ToggleExpanded();
+  ToggleExpanded();
   EXPECT_FALSE(notification_view()->expanded_);
 
   // Test notification with |use_image_for_icon| e.g. screenshot preview.
@@ -886,7 +874,7 @@ TEST_F(NotificationViewBaseTest, UseImageAsIcon) {
   EXPECT_TRUE(notification_view()->right_content_->GetVisible());
 
   // Icon on the right side is not visible when expanded.
-  notification_view()->ToggleExpanded();
+  ToggleExpanded();
   EXPECT_TRUE(notification_view()->expanded_);
   EXPECT_TRUE(notification_view()->icon_view_->GetVisible());
   EXPECT_FALSE(notification_view()->right_content_->GetVisible());
@@ -903,7 +891,7 @@ TEST_F(NotificationViewBaseTest, NotificationWithoutIcon) {
   EXPECT_FALSE(notification_view()->right_content_->GetVisible());
 
   // Toggling should not affect the icon.
-  notification_view()->ToggleExpanded();
+  ToggleExpanded();
   EXPECT_FALSE(notification_view()->icon_view_);
   EXPECT_FALSE(notification_view()->right_content_->GetVisible());
 }
@@ -999,7 +987,7 @@ TEST_F(NotificationViewBaseTest, TestClick) {
 
   // Collapse the notification if it's expanded.
   if (notification_view()->expanded_)
-    notification_view()->ToggleExpanded();
+    ToggleExpanded();
   EXPECT_FALSE(notification_view()->actions_row_->GetVisible());
 
   // Now construct a mouse click event 2 pixel inside from the bottom.
@@ -1023,7 +1011,7 @@ TEST_F(NotificationViewBaseTest, TestClickExpanded) {
 
   // Expand the notification if it's collapsed.
   if (!notification_view()->expanded_)
-    notification_view()->ToggleExpanded();
+    ToggleExpanded();
   EXPECT_FALSE(notification_view()->actions_row_->GetVisible());
 
   // Now construct a mouse click event 2 pixel inside from the bottom.
@@ -1061,7 +1049,7 @@ TEST_F(NotificationViewBaseTest, TestLongTitleAndMessage) {
       u"labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "
       u"exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.");
   UpdateNotificationViews(*notification);
-  notification_view()->ToggleExpanded();
+  ToggleExpanded();
 
   // Get the height of the message view with a short title.
   const int message_height = notification_view()->message_label_->height();

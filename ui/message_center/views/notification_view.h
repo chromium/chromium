@@ -71,6 +71,8 @@ class MESSAGE_CENTER_EXPORT NotificationView : public NotificationViewBase {
   // destroyed when the ink drop is visible.
   std::vector<views::View*> GetChildrenForLayerAdjustment();
 
+  void HeaderRowPressed();
+
   // Notification title, which is dynamically created inside view hierarchy.
   raw_ptr<views::Label> title_view_ = nullptr;
 
@@ -85,6 +87,8 @@ class MESSAGE_CENTER_EXPORT NotificationView : public NotificationViewBase {
   // Owned by views properties. Guaranteed to be not null for the lifetime of
   // |this| because views properties are the last thing cleaned up.
   raw_ptr<NotificationViewPathGenerator> highlight_path_generator_ = nullptr;
+
+  base::WeakPtrFactory<NotificationView> weak_ptr_factory_{this};
 };
 
 }  // namespace message_center

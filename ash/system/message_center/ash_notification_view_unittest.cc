@@ -409,6 +409,14 @@ TEST_F(AshNotificationViewTest, ExpandCollapseBehavior) {
       GetMessageLabelInExpandedState(notification_view())->GetVisible());
 }
 
+TEST_F(AshNotificationViewTest, ManuallyExpandedOrCollapsed) {
+  // Test |manually_expanded_or_collapsed| being set when the toggle is done by
+  // user interaction.
+  EXPECT_FALSE(notification_view()->IsManuallyExpandedOrCollapsed());
+  notification_view()->ToggleExpand();
+  EXPECT_TRUE(notification_view()->IsManuallyExpandedOrCollapsed());
+}
+
 TEST_F(AshNotificationViewTest, GroupedNotificationStartsCollapsed) {
   auto notification = CreateTestNotification();
   notification_view()->UpdateWithNotification(*notification);

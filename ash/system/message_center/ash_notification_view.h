@@ -55,7 +55,8 @@ class ASH_EXPORT AshNotificationView
   // collapse state.
   void AnimateGroupedChildExpandedCollapse(bool expanded);
 
-  // Toggle the expand state of the notification.
+  // Toggle the expand state of the notification. This function should only be
+  // used to handle user manually expand/collapse a notification.
   void ToggleExpand();
 
   // Called when a child notificaiton's preferred size changes.

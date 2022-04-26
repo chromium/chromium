@@ -225,6 +225,10 @@ class NotificationViewTest : public views::ViewObserver,
     return rect.size();
   }
 
+  void ToggleExpanded() {
+    notification_view_->SetExpanded(!notification_view_->IsExpanded());
+  }
+
   // Toggle inline settings with a dummy event.
   void ToggleInlineSettings() {
     notification_view_->ToggleInlineSettings(DummyEvent());
@@ -391,6 +395,22 @@ TEST_F(NotificationViewTest, LeftContentResizeForIcon) {
   EXPECT_LT(notification_view()->left_content_->width(), left_content_width);
 }
 
+TEST_F(NotificationViewTest, ManuallyExpandedOrCollapsed) {
+  // Test |manually_expanded_or_collapsed| being set when the toggle is done by
+  // user interaction.
+  EXPECT_FALSE(notification_view()->IsManuallyExpandedOrCollapsed());
+
+  // Construct a mouse click event inside the header.
+  gfx::Point done_cursor_location =
+      notification_view()->header_row_->GetBoundsInScreen().CenterPoint();
+  ui::test::EventGenerator generator(
+      GetRootWindow(notification_view()->GetWidget()));
+  generator.MoveMouseTo(done_cursor_location);
+  generator.ClickLeftButton();
+
+  EXPECT_TRUE(notification_view()->IsManuallyExpandedOrCollapsed());
+}
+
 TEST_F(NotificationViewTest, InlineSettingsNotBlock) {
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification->set_type(NOTIFICATION_TYPE_SIMPLE);
@@ -461,7 +481,7 @@ TEST_F(NotificationViewTest, TestAccentColor) {
 
   // Action buttons are hidden by collapsed state.
   if (!notification_view()->expanded_)
-    notification_view()->ToggleExpanded();
+    ToggleExpanded();
   EXPECT_TRUE(notification_view()->actions_row_->GetVisible());
 
   const auto* color_provider = notification_view()->GetColorProvider();
@@ -647,13 +667,13 @@ TEST_F(NotificationViewTest, ExpandLongMessage) {
   EXPECT_LT(0, collapsed_height);
   EXPECT_LT(0, collapsed_preferred_height);
 
-  notification_view()->ToggleExpanded();
+  ToggleExpanded();
   EXPECT_TRUE(notification_view()->expanded_);
   EXPECT_LT(collapsed_height, message_label()->height());
   EXPECT_LT(collapsed_preferred_height,
             notification_view()->GetPreferredSize().height());
 
-  notification_view()->ToggleExpanded();
+  ToggleExpanded();
   EXPECT_FALSE(notification_view()->expanded_);
   EXPECT_EQ(collapsed_height, message_label()->height());
   EXPECT_EQ(collapsed_preferred_height,
