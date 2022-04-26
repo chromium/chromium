@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/download/bubble/download_bubble_security_view.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -190,7 +192,9 @@ void DownloadBubbleSecurityView::AddIconAndText() {
 }
 
 void DownloadBubbleSecurityView::ProcessButtonClick(
-    DownloadCommands::Command command) {
+    DownloadCommands::Command command,
+    bool is_first_button) {
+  RecordWarningActionTime(is_first_button);
   // First open primary dialog, and then execute the command. If a deletion
   // happens leading to closure of the bubble, it will be called after primary
   // dialog is opened.
@@ -229,6 +233,20 @@ void DownloadBubbleSecurityView::UpdateButtons() {
   }
 }
 
+void DownloadBubbleSecurityView::RecordWarningActionTime(bool is_first_button) {
+  DCHECK(warning_time_.has_value());
+  // Example Histogram
+  // Download.Bubble.Subpage.DangerousFile.FirstButtonActionTime
+  std::string histogram = base::StrCat(
+      {"Download.Bubble.Subpage.",
+       download::GetDownloadDangerTypeString(
+           download_row_view_->model()->download()->GetDangerType()),
+       ".", is_first_button ? "First" : "Second", "ButtonActionTime"});
+  base::UmaHistogramMediumTimes(histogram,
+                                base::Time::Now() - (*warning_time_));
+  warning_time_ = absl::nullopt;
+}
+
 void DownloadBubbleSecurityView::AddButtons() {
   auto* button_row = AddChildView(std::make_unique<views::View>());
   button_row->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -248,7 +266,8 @@ void DownloadBubbleSecurityView::AddButtons() {
     auto* button =
         button_row->AddChildView(std::make_unique<views::MdTextButton>(
             base::BindRepeating(&DownloadBubbleSecurityView::ProcessButtonClick,
-                                base::Unretained(this), command),
+                                base::Unretained(this), command,
+                                /*is_first_button=*/true),
             std::u16string()));
     button->SetProperty(views::kMarginsKey, button_margin);
     return button;
@@ -265,6 +284,7 @@ void DownloadBubbleSecurityView::AddButtons() {
 
 void DownloadBubbleSecurityView::UpdateSecurityView(
     DownloadBubbleRowView* download_row_view) {
+  warning_time_ = absl::optional<base::Time>(base::Time::Now());
   download_row_view_ = download_row_view;
   DCHECK(download_row_view_->model());
   UpdateHeader();

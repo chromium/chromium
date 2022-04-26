@@ -5,6 +5,7 @@
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
 
 #include "base/files/file_path.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
@@ -308,11 +309,24 @@ std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetDownloadUIModels(
 }
 
 std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetMainView() {
-  return GetDownloadUIModels(/*is_main_view=*/true);
+  if (last_partial_view_shown_time_.has_value()) {
+    base::UmaHistogramLongTimes(
+        "Download.Bubble.PartialToFullViewLatency",
+        base::Time::Now() - (*last_partial_view_shown_time_));
+    last_partial_view_shown_time_ = absl::nullopt;
+  }
+  std::vector<DownloadUIModelPtr> list =
+      GetDownloadUIModels(/*is_main_view=*/true);
+  base::UmaHistogramCounts100("Download.Bubble.FullViewSize", list.size());
+  return list;
 }
 
 std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetPartialView() {
-  return GetDownloadUIModels(/*is_main_view=*/false);
+  last_partial_view_shown_time_ = absl::make_optional(base::Time::Now());
+  std::vector<DownloadUIModelPtr> list =
+      GetDownloadUIModels(/*is_main_view=*/false);
+  base::UmaHistogramCounts100("Download.Bubble.PartialViewSize", list.size());
+  return list;
 }
 
 void DownloadBubbleUIController::ProcessDownloadWarningButtonPress(

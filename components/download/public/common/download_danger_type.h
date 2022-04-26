@@ -5,10 +5,15 @@
 #ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_DANGER_TYPE_H_
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_DANGER_TYPE_H_
 
+#include "components/download/public/common/download_export.h"
+
 namespace download {
 
-// This enum is also used by histograms.  Do not change the ordering or remove
-// items.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Update histogram suffixes in
+// tools/metrics/histograms/metadata/histogram_suffixes_list.xml, and variants
+// in tools/metrics/histograms/metadata/download/histograms.xml on additions.
 enum DownloadDangerType {
   // The download is safe.
   DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS = 0,
@@ -89,6 +94,11 @@ enum DownloadDangerType {
   // ALWAYS ADD NEW VALUES BEFORE THIS ONE.
   DOWNLOAD_DANGER_TYPE_MAX
 };
+
+// Converts DownloadDangerType into their corresponding string, used only
+// for metrics.
+COMPONENTS_DOWNLOAD_EXPORT
+const char* GetDownloadDangerTypeString(const DownloadDangerType& danger_type);
 
 }  // namespace download
 
