@@ -81,7 +81,7 @@ class OsSettingsProvider
       apps::AppRegistryCache* cache) override;
 
   // mojom::SearchResultsObserver:
-  void OnSearchResultAvailabilityChanged() override;
+  void OnSearchResultsChanged() override;
 
  private:
   void OnSearchReturned(

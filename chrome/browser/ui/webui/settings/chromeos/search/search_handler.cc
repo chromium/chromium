@@ -91,7 +91,7 @@ void SearchHandler::Observe(
 
 void SearchHandler::OnRegistryUpdated() {
   for (auto& observer : observers_)
-    observer->OnSearchResultAvailabilityChanged();
+    observer->OnSearchResultsChanged();
 }
 
 std::vector<mojom::SearchResultPtr> SearchHandler::GenerateSearchResultsArray(
@@ -210,7 +210,7 @@ SearchHandler::AddSectionResultIfPossible(
 
   // Don't add a result for a parent section if it has the exact same text as
   // the child result, since this results in a broken-looking UI.
-  if (section_result->result_text == child_result->result_text)
+  if (section_result->text == child_result->text)
     return curr_position;
 
   return results->insert(curr_position + 1, std::move(section_result));
@@ -233,7 +233,7 @@ SearchHandler::AddSubpageResultIfPossible(
 
   // Don't add a result for a parent subpage if it has the exact same text as
   // the child result, since this results in a broken-looking UI.
-  if (subpage_result->result_text == child_result->result_text)
+  if (subpage_result->text == child_result->text)
     return curr_position;
 
   return results->insert(
@@ -289,8 +289,8 @@ mojom::SearchResultPtr SearchHandler::ResultToSearchResult(
   }
 
   return mojom::SearchResult::New(
-      /*result_text=*/l10n_util::GetStringUTF16(content_id),
-      /*canonical_result_text=*/
+      /*text=*/l10n_util::GetStringUTF16(content_id),
+      /*canonical_text=*/
       l10n_util::GetStringUTF16(concept->canonical_message_id), url,
       concept->icon, result.score, hierarchy_strings, concept->default_rank,
       /*was_generated_from_text_match=*/true, concept->type,

@@ -58,13 +58,13 @@ union SearchResultIdentifier {
 struct SearchResult {
   // String to be displayed as a result in the UI. Meant to be displayed
   // directly (i.e., not an ID but rather the actual text).
-  mojo_base.mojom.String16 result_text;
+  mojo_base.mojom.String16 text;
 
   // String for the "canonical" version of this result. Some search results use
   // alternate text (e.g., "Monitor" instead of "Display"). Note that it is
-  // often the case that |result_text| and |canonical_result_text| are the same
+  // often the case that |text| and |canonical_text| are the same
   // string.
-  mojo_base.mojom.String16 canonical_result_text;
+  mojo_base.mojom.String16 canonical_text;
 
   // The URL path containing the relevant setting, which may or may not contain
   // URL parameters. For example, the Wi-Fi list settings page is
@@ -110,7 +110,7 @@ interface SearchResultsObserver {
   // called whenever the user plugs in or unplugs a USB modem. Clients can use
   // this function to ensure that they do not show "stale" results which are no
   // longer actionable by the user.
-  OnSearchResultAvailabilityChanged();
+  OnSearchResultsChanged();
 };
 
 // Provides settings search results. Implemented in the browser process;

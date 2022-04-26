@@ -37,7 +37,7 @@ class FakeObserver : public mojom::SearchResultsObserver {
 
  private:
   // mojom::SearchResultsObserver:
-  void OnSearchResultAvailabilityChanged() override { ++num_calls_; }
+  void OnSearchResultsChanged() override { ++num_calls_; }
 
   size_t num_calls_ = 0;
   mojo::Receiver<mojom::SearchResultsObserver> receiver_{this};
@@ -74,8 +74,8 @@ const std::vector<SearchConcept>& GetPrintingSearchConcepts() {
 // Creates a result with some default values.
 mojom::SearchResultPtr CreateDummyResult() {
   return mojom::SearchResult::New(
-      /*result_text=*/std::u16string(),
-      /*canonical_result_text=*/std::u16string(), /*url=*/"",
+      /*text=*/std::u16string(),
+      /*canonical_text=*/std::u16string(), /*url=*/"",
       mojom::SearchResultIcon::kPrinter, /*relevance_score=*/0.5,
       /*hierarchy_strings=*/std::vector<std::u16string>(),
       mojom::SearchResultDefaultRank::kMedium,
@@ -221,9 +221,9 @@ TEST_F(SearchHandlerTest, AltTagMatch) {
 
   // Verify the result text and canonical restult text.
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_OS_SETTINGS_TAG_PRINTING_ALT2),
-            search_results[0]->result_text);
+            search_results[0]->text);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_OS_SETTINGS_TAG_PRINTING),
-            search_results[0]->canonical_result_text);
+            search_results[0]->canonical_text);
 }
 
 TEST_F(SearchHandlerTest, AllowParentResult) {
@@ -262,7 +262,7 @@ TEST_F(SearchHandlerTest, DefaultRank) {
   // it should be the *last* result returned even though it has a higher
   // relevance score.
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_OS_SETTINGS_TAG_PRINTING),
-            search_results[2]->result_text);
+            search_results[2]->text);
 }
 
 // Regression test for https://crbug.com/1090184.

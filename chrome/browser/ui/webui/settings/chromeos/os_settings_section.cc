@@ -54,8 +54,8 @@ std::string OsSettingsSection::ModifySearchResultUrl(
 mojom::SearchResultPtr OsSettingsSection::GenerateSectionSearchResult(
     double relevance_score) const {
   return mojom::SearchResult::New(
-      /*result_text=*/l10n_util::GetStringUTF16(GetSectionNameMessageId()),
-      /*canonical_result_text=*/
+      /*text=*/l10n_util::GetStringUTF16(GetSectionNameMessageId()),
+      /*canonical_text=*/
       l10n_util::GetStringUTF16(GetSectionNameMessageId()),
       ModifySearchResultUrl(mojom::SearchResultType::kSection,
                             {.section = GetSection()}, GetSectionPath()),

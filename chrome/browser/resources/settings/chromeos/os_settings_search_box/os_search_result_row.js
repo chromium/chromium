@@ -194,7 +194,7 @@ function longestCommonSubstrings(string1, string2) {
     computeResultText_() {
       // The C++ layer stores the text result as an array of 16 bit char codes,
       // so it must be converted to a JS String.
-      return String.fromCharCode.apply(null, this.searchResult.resultText.data);
+      return String.fromCharCode.apply(null, this.searchResult.text.data);
     },
 
     /**

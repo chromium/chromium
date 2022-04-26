@@ -213,9 +213,9 @@ Polymer({
   },
 
   /**
-   * Overrides chromeos.settings.mojom.SearchResultsObserverInterfaces
+   * Overrides chromeos.settings.mojom.SearchResultsObserverInterface
    */
-  onSearchResultAvailabilityChanged() {
+  onSearchResultsChanged() {
     this.fetchSearchResults_();
   },
 

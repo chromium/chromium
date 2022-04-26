@@ -37,9 +37,9 @@ export class FakeSettingsSearchHandler {
     this.observer_ = observer;
   }
 
-  simulateSearchResultAvailabilityChanged() {
+  simulateSearchResultsChanged() {
     if (this.observer_) {
-      this.observer_.onSearchResultAvailabilityChanged();
+      this.observer_.onSearchResultsChanged();
     }
   }
 }

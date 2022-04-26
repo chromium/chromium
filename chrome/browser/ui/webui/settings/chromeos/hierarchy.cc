@@ -202,8 +202,8 @@ Hierarchy::SubpageMetadata::~SubpageMetadata() = default;
 mojom::SearchResultPtr Hierarchy::SubpageMetadata::ToSearchResult(
     double relevance_score) const {
   return mojom::SearchResult::New(
-      /*result_text=*/l10n_util::GetStringUTF16(name_message_id_),
-      /*canonical_result_text=*/l10n_util::GetStringUTF16(name_message_id_),
+      /*text=*/l10n_util::GetStringUTF16(name_message_id_),
+      /*canonical_text=*/l10n_util::GetStringUTF16(name_message_id_),
       hierarchy_->ModifySearchResultUrl(
           section, mojom::SearchResultType::kSubpage, {.subpage = subpage_},
           unmodified_url_path_with_parameters_),
@@ -281,7 +281,7 @@ std::vector<std::u16string> Hierarchy::GenerateAncestorHierarchyStrings(
   hierarchy_strings.push_back(
       GetSubpageMetadata(*subpage_metadata.parent_subpage)
           .ToSearchResult(kDummyRelevanceScore)
-          ->result_text);
+          ->text);
   return hierarchy_strings;
 }
 
@@ -299,7 +299,7 @@ std::vector<std::u16string> Hierarchy::GenerateAncestorHierarchyStrings(
   hierarchy_strings.push_back(
       GetSubpageMetadata(*setting_metadata.primary.second)
           .ToSearchResult(kDummyRelevanceScore)
-          ->result_text);
+          ->text);
   return hierarchy_strings;
 }
 
@@ -308,9 +308,8 @@ std::vector<std::u16string> Hierarchy::GenerateHierarchyStrings(
   std::vector<std::u16string> hierarchy_strings;
   hierarchy_strings.push_back(
       l10n_util::GetStringUTF16(IDS_INTERNAL_APP_SETTINGS));
-  hierarchy_strings.push_back(GetSectionMetadata(section)
-                                  .ToSearchResult(kDummyRelevanceScore)
-                                  ->result_text);
+  hierarchy_strings.push_back(
+      GetSectionMetadata(section).ToSearchResult(kDummyRelevanceScore)->text);
   return hierarchy_strings;
 }
 

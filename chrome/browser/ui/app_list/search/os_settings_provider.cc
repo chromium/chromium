@@ -126,8 +126,8 @@ OsSettingsResult::OsSettingsResult(
   set_id(kOsSettingsResultPrefix + url_path_);
   SetCategory(Category::kSettings);
   set_relevance(relevance_score);
-  SetTitle(result->canonical_result_text);
-  SetTitleTags(CalculateTags(query, result->canonical_result_text));
+  SetTitle(result->canonical_text);
+  SetTitleTags(CalculateTags(query, result->canonical_text));
   SetResultType(ResultType::kOsSettings);
   SetDisplayType(DisplayType::kList);
   SetMetricsType(ash::OS_SETTINGS);
@@ -349,7 +349,7 @@ void OsSettingsProvider::OnAppRegistryCacheWillBeDestroyed(
   Observe(nullptr);
 }
 
-void OsSettingsProvider::OnSearchResultAvailabilityChanged() {
+void OsSettingsProvider::OnSearchResultsChanged() {
   if (last_query_.empty())
     return;
 
@@ -376,7 +376,7 @@ OsSettingsProvider::FilterResults(
     // results meeting extra requirements. Perform this check before checking
     // for duplicates to ensure a rejected alternate result doesn't preclude a
     // canonical result with a lower score from being shown.
-    if (result->result_text != result->canonical_result_text &&
+    if (result->text != result->canonical_text &&
         (!accept_alternate_matches_ ||
          query.size() < min_query_length_for_alternates_ ||
          result->relevance_score < min_score_for_alternates_)) {
