@@ -26,9 +26,13 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMECandidateWindowHandlerInterface {
  public:
   virtual ~IMECandidateWindowHandlerInterface() = default;
 
+  virtual void HideLookupTable() = 0;
+
   // Called when the IME updates the lookup table.
-  virtual void UpdateLookupTable(const ui::CandidateWindow& candidate_window,
-                                 bool visible) = 0;
+  // This will also show the lookup table if it is not already
+  // showing.
+  virtual void UpdateLookupTable(
+      const ui::CandidateWindow& candidate_window) = 0;
 
   // Called when the IME updates the preedit text. The |text| is given in
   // UTF-16 encoding.

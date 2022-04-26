@@ -1195,13 +1195,12 @@ void NativeInputMethodEngine::ImeObserver::UpdateCandidatesWindow(
     return;
   }
 
-  ui::CandidateWindow candidate_window;
   if (!window) {
-    candidate_window_handler->UpdateLookupTable(candidate_window,
-                                                /*visible=*/false);
+    candidate_window_handler->HideLookupTable();
     return;
   }
 
+  ui::CandidateWindow candidate_window;
   for (const auto& candidate : window->candidates) {
     ui::CandidateWindow::Entry entry;
     entry.value = base::UTF8ToUTF16(candidate->text);
@@ -1221,8 +1220,7 @@ void NativeInputMethodEngine::ImeObserver::UpdateCandidatesWindow(
   property.auxiliary_text = window->auxiliary_text.value_or("");
   candidate_window.SetProperty(property);
 
-  candidate_window_handler->UpdateLookupTable(candidate_window,
-                                              /*visible=*/true);
+  candidate_window_handler->UpdateLookupTable(candidate_window);
 }
 
 void NativeInputMethodEngine::ImeObserver::RecordUkm(mojom::UkmEntryPtr entry) {

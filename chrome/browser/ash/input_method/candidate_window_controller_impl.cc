@@ -95,20 +95,18 @@ void CandidateWindowControllerImpl::FocusStateChanged(bool is_focused) {
     candidate_window_view_->HidePreeditText();
 }
 
-void CandidateWindowControllerImpl::UpdateLookupTable(
-    const ui::CandidateWindow& candidate_window,
-    bool visible) {
+void CandidateWindowControllerImpl::HideLookupTable() {
   // If it's not visible, hide the lookup table and return.
-  if (!visible) {
-    if (candidate_window_view_)
-      candidate_window_view_->HideLookupTable();
-    if (infolist_window_)
-      infolist_window_->HideImmediately();
-    // TODO(nona): Introduce unittests for crbug.com/170036.
-    latest_infolist_entries_.clear();
-    return;
-  }
+  if (candidate_window_view_)
+    candidate_window_view_->HideLookupTable();
+  if (infolist_window_)
+    infolist_window_->HideImmediately();
+  // TODO(nona): Introduce unittests for crbug.com/170036.
+  latest_infolist_entries_.clear();
+}
 
+void CandidateWindowControllerImpl::UpdateLookupTable(
+    const ui::CandidateWindow& candidate_window) {
   if (!candidate_window_view_)
     InitCandidateWindowView();
   candidate_window_view_->UpdateCandidates(candidate_window);

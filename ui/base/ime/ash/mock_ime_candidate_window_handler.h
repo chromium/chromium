@@ -31,8 +31,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMECandidateWindowHandler
   ~MockIMECandidateWindowHandler() override;
 
   // IMECandidateWindowHandlerInterface override.
-  void UpdateLookupTable(const ui::CandidateWindow& candidate_window,
-                         bool visible) override;
+  void HideLookupTable() override;
+  void UpdateLookupTable(const ui::CandidateWindow& candidate_window) override;
   void UpdatePreeditText(const std::u16string& text,
                          uint32_t cursor_pos,
                          bool visible) override;

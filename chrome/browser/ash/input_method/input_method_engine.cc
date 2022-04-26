@@ -809,8 +809,13 @@ void InputMethodEngine::SetCandidateWindowProperty(
   if (IsActive()) {
     IMECandidateWindowHandlerInterface* cw_handler =
         ui::IMEBridge::Get()->GetCandidateWindowHandler();
-    if (cw_handler)
-      cw_handler->UpdateLookupTable(candidate_window_, window_visible_);
+    if (cw_handler) {
+      if (window_visible_) {
+        cw_handler->UpdateLookupTable(candidate_window_);
+      } else {
+        cw_handler->HideLookupTable();
+      }
+    }
   }
 }
 
@@ -824,8 +829,13 @@ bool InputMethodEngine::SetCandidateWindowVisible(bool visible,
   window_visible_ = visible;
   IMECandidateWindowHandlerInterface* cw_handler =
       ui::IMEBridge::Get()->GetCandidateWindowHandler();
-  if (cw_handler)
-    cw_handler->UpdateLookupTable(candidate_window_, window_visible_);
+  if (cw_handler) {
+    if (window_visible_) {
+      cw_handler->UpdateLookupTable(candidate_window_);
+    } else {
+      cw_handler->HideLookupTable();
+    }
+  }
   return true;
 }
 
@@ -863,8 +873,13 @@ bool InputMethodEngine::SetCandidates(
   if (IsActive()) {
     IMECandidateWindowHandlerInterface* cw_handler =
         ui::IMEBridge::Get()->GetCandidateWindowHandler();
-    if (cw_handler)
-      cw_handler->UpdateLookupTable(candidate_window_, window_visible_);
+    if (cw_handler) {
+      if (window_visible_) {
+        cw_handler->UpdateLookupTable(candidate_window_);
+      } else {
+        cw_handler->HideLookupTable();
+      }
+    }
   }
   return true;
 }
@@ -892,8 +907,13 @@ bool InputMethodEngine::SetCursorPosition(int context_id,
   candidate_window_.set_cursor_position(position->second);
   IMECandidateWindowHandlerInterface* cw_handler =
       ui::IMEBridge::Get()->GetCandidateWindowHandler();
-  if (cw_handler)
-    cw_handler->UpdateLookupTable(candidate_window_, window_visible_);
+  if (cw_handler) {
+    if (window_visible_) {
+      cw_handler->UpdateLookupTable(candidate_window_);
+    } else {
+      cw_handler->HideLookupTable();
+    }
+  }
   return true;
 }
 
