@@ -202,6 +202,10 @@ std::u16string MediaGalleriesPermissionController::GetAuxiliaryButtonText()
 
 // This is the 'Add Folder' button.
 void MediaGalleriesPermissionController::DidClickAuxiliaryButton() {
+  // Early return if the select file dialog is already active.
+  if (select_folder_dialog_)
+    return;
+
   base::FilePath default_path =
       extensions::file_system_api::GetLastChooseEntryDirectory(
           extensions::ExtensionPrefs::Get(GetProfile()), extension_->id());
@@ -275,6 +279,10 @@ content::WebContents* MediaGalleriesPermissionController::WebContents() {
   return web_contents_;
 }
 
+void MediaGalleriesPermissionController::FileSelectionCanceled(void* params) {
+  select_folder_dialog_.reset();
+}
+
 void MediaGalleriesPermissionController::FileSelected(
     const base::FilePath& path,
     int /*index*/,
@@ -301,6 +309,7 @@ void MediaGalleriesPermissionController::FileSelected(
     iter->second.selected = true;
     forgotten_galleries_.erase(gallery_id);
     dialog_->UpdateGalleries();
+    select_folder_dialog_.reset();
     return;
   }
 
@@ -311,6 +320,7 @@ void MediaGalleriesPermissionController::FileSelected(
         iter->second.pref_info.device_id == gallery.device_id) {
       iter->second.selected = true;
       dialog_->UpdateGalleries();
+      select_folder_dialog_.reset();
       return;
     }
   }
@@ -320,6 +330,7 @@ void MediaGalleriesPermissionController::FileSelected(
   // The old prefId is retained for blocklisted galleries.
   gallery.pref_id = GetDialogId(gallery.pref_id);
   new_galleries_[gallery.pref_id] = Entry(gallery, true);
+  select_folder_dialog_.reset();
   dialog_->UpdateGalleries();
 }
 
