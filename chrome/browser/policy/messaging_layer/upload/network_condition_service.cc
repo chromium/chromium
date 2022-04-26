@@ -23,6 +23,14 @@ uint64_t NetworkConditionService::GetUploadRate() const {
 
 // NetworkConditionService::NetworkConditionServiceImpl implementation.
 NetworkConditionService::NetworkConditionServiceImpl::
+    ~NetworkConditionServiceImpl() {
+  // We can access g_browser_process here because the destructor is guaranteed
+  // to be called from the UI thread.
+  g_browser_process->network_quality_tracker()
+      ->RemoveRTTAndThroughputEstimatesObserver(this);
+}
+
+NetworkConditionService::NetworkConditionServiceImpl::
     NetworkConditionServiceImpl() {
   // g_browser_process must be accessed from the UI thread
   content::GetUIThreadTaskRunner({})->PostTask(

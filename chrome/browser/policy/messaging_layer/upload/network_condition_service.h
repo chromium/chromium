@@ -41,8 +41,8 @@ class NetworkConditionService {
     // |NetworkConditionService| instance.
     static UniquePtr MakeUnique();
 
-    // Must be destroyed via |base::OnTaskRunnerDeleter|.
-    ~NetworkConditionServiceImpl() override = default;
+    // Must be destroyed via |base::OnTaskRunnerDeleter| on the UI thread.
+    ~NetworkConditionServiceImpl() override;
 
     // Get current upload rate.
     uint64_t GetUploadRate() const;
