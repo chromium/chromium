@@ -33,6 +33,8 @@
     const ws =
         new WebSocket('ws://localhost:8880/network_emulation?role=listener');
     ws.onopen = () => resolve(ws);
+    ws.onerror = () => testRunner.log('onerror: unexpected error in listener_ws');
+    ws.onclose = () => testRunner.log('onclose: unexpected close of listener_ws');
   });
   errorForLog = new Error();
 
