@@ -14,5 +14,21 @@
   ],
   "start_url": "/web_apps/site_b/basic.html",
   "scope": "/web_apps/site_b/",
-  "display": "minimal-ui"
+  "display": "minimal-ui",
+  "file_handlers": [
+    {
+      "action": "/web_apps/site_b/text_handler.html",
+      "name": "Plain Text",
+      "accept": {
+        "text/plain": [".txt", ".md", ".csv", ".text"]
+      }
+    },
+    {
+      "action": "/web_apps/site_b/image_handler.html",
+      "accept": {
+        "image/png": [".png"]
+      },
+      "launch_type": "multiple-clients"
+    }
+  ]
 }

@@ -20,7 +20,7 @@ The tables in this file are parsed as action templates for critical user journey
 
 | #Enum Name | Values (* = default) |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Site | SiteA* | SiteB | SiteC | SiteAFoo | SiteABar | SiteWco | kSiteIsolatedApp |  |
+| Site | SiteA* | SiteB | SiteC | SiteAFoo | SiteABar | SiteWco | SiteIsolatedApp |  |
 | InstallableSite | SiteA* | SiteB | SiteAFoo | SiteABar | SiteWco |  |  |
 | Scope | SiteARoot |  |  |  |
 | Title | SiteA | SiteAUpdated |  |  |  |  |  |
@@ -34,3 +34,5 @@ The tables in this file are parsed as action templates for critical user journey
 | Location | StartUrl | FileHandleUrlForTxt | FileHandleUrlForPng |  |  |  |  |
 | Number | One | Two |  |  |  |  |  |
 | FilesOptions | OneTextFile | MultipleTextFiles | OnePngFile | MultiplePngFiles | AllTestAndPngFiles |  |  |
+| AllowDenyOptions | Allow | Deny |
+| AskAgainOptions | AskAgain | Remember |

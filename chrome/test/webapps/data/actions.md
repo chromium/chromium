@@ -20,7 +20,7 @@ The tables in this file are parsed as action templates for critical user journey
 
 TODO(dmurph): Possibly this table up into markdown-header section.
 
-| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 123) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
+| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 128) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
 | --- | --- | --- | --- | --- | --- | --- |
 | # Badging |
 | check_app_badge_empty | Site |  | 2 | Not Implemented | Check that the 'badge' on the app icon is empty |  |
@@ -107,6 +107,8 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | check_user_cannot_set_run_on_os_login | Site |  | 111 | Implemented | Check user can't change the app's  run_on_os_login state.  |  |
 | check_window_closed |  |  | 23 | Implemented | The window was closed |  |
 | check_window_created |  |  | 24 | Implemented | A window was created. |  |
+| check_window_not_created |  |  | 127 | Not Implemented | A window was created. | P2 |
+| check_pwa_window_created | Site, Number |  | 123 | Implemented | A given number of windows were created for the given pwa. |  |
 | check_window_display_minimal |  |  | 25 | Implemented | Check that the window is a PWA window, and has minimal browser controls. |  |
 | check_window_display_standalone |  |  | 26 | Implemented | Check that the window is a PWA window, and has no browser controls. |  |
 | close_custom_toolbar |  |  | 27 | Implemented | Press the 'x' button on the custom toolbar that is towards the top of the WebApp window. |  |
@@ -142,12 +144,15 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | sync_turn_off |  |  | 41 | Implemented | Turn chrome sync off for "Apps": chrome://settings/syncSetup/advanced |  |
 | sync_turn_on |  |  | 42 | Implemented | Turn chrome sync on for "Apps": chrome://settings/syncSetup/advanced |  |
 | switch_incognito_profile |  |  | 73 | Not Implemented | Switch to using incognito mode | P2 |
-| check_site_handles_file | Site, FileExtension |  | 118 | Not Implemented |  |  |
 | # File handling |
+| check_site_handles_file | Site, FileExtension |  | 118 | Not Implemented |  |  |
+| check_site_not_handles_file | Site, FileExtension |  | 122 | Not Implemented |  |  |
 | check_file_handling_dialog | IsShown |  | 119 | Not Implemented |  |  |
 | launch_file | FilesOptions |  | 120 | Not Implemented |  |  |
-| accept_file_handling_dialog |  |  | 121 | Not Implemented |  |  |
-| deny_file_handling_dialog |  |  | 122 | Not Implemented |  |  |
+| file_handling_dialog | AllowDenyOptions, AskAgainOptions |  | 121 | Not Implemented |  |  |
+| check_files_loaded_in_site | Site, FilesOptions |  | 126 | Not Implemented | Check that the appropriate file contents have loaded in in PWA windows. |  |
+| add_file_handling_policy_approval | Site |  | 124 | Not Implemented |  |  |
+| remove_file_handling_policy_approval | Site |  | 125 | Not Implemented |  |  |
 | # Window Controls Overlay
 | check_window_controls_overlay_toggle | Site, IsShown |  | 112 | WIP |  |  |
 | check_window_controls_overlay | Site, IsOn |  | 113 | WIP |  |  |
