@@ -722,21 +722,24 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionDarkLightModeEnabledTest,
       frame_host->GetNativeView()->GetToplevelWindow();
 
   auto* color_provider = ash::ColorProvider::Get();
-  EXPECT_FALSE(color_provider->IsDarkModeEnabled());
-  SkColor light_active_color =
+  bool dark_mode_enabled = color_provider->IsDarkModeEnabled();
+  SkColor initial_active_color =
       dialog_window->GetProperty(chromeos::kFrameActiveColorKey);
-  SkColor light_inactive_color =
+  SkColor initial_inactive_color =
       dialog_window->GetProperty(chromeos::kFrameInactiveColorKey);
-  // Switch on dark mode.
   Profile* profile = chrome_test_utils::GetProfile(this);
   PrefService* prefs = profile->GetPrefs();
-  prefs->SetBoolean(ash::prefs::kDarkModeEnabled, true);
-  EXPECT_TRUE(color_provider->IsDarkModeEnabled());
-  // Check active/invactive color in Dark mode should be different.
+
+  // Switch the color mode.
+  prefs->SetBoolean(ash::prefs::kDarkModeEnabled, !dark_mode_enabled);
+  EXPECT_EQ(!dark_mode_enabled, color_provider->IsDarkModeEnabled());
+
+  // Active and invactive colors in the other mode should be different from the
+  // initial mode.
   EXPECT_NE(dialog_window->GetProperty(chromeos::kFrameActiveColorKey),
-            light_active_color);
+            initial_active_color);
   EXPECT_NE(dialog_window->GetProperty(chromeos::kFrameInactiveColorKey),
-            light_inactive_color);
+            initial_inactive_color);
 
   CloseDialog(DIALOG_BTN_CANCEL, owning_window);
 }
