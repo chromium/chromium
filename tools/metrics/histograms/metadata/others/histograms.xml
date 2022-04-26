@@ -4299,9 +4299,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DirectSockets.PermissionDeniedFailures"
-    enum="DirectSocketPermissionFailureType" expires_after="2022-06-07">
+    enum="DirectSocketPermissionFailureType" expires_after="2022-10-26">
   <owner>ericwilligers@chromium.org</owner>
   <owner>glenrob@chromium.org</owner>
+  <owner>greengrape@google.com</owner>
   <summary>
     Record how often each permission check (e.g. permissions policy, transient
     activation, user dialog, hostname resolving to non-public address, rate
@@ -4311,7 +4312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DirectSockets.TCPNetworkFailures" enum="NetErrorCodes"
-    expires_after="2022-06-07">
+    expires_after="2022-10-26">
   <owner>ericwilligers@chromium.org</owner>
   <owner>greengrape@google.com</owner>
   <summary>
@@ -4320,7 +4321,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DirectSockets.UDPNetworkFailures" enum="NetErrorCodes"
-    expires_after="2022-06-07">
+    expires_after="2022-10-26">
   <owner>ericwilligers@chromium.org</owner>
   <owner>greengrape@google.com</owner>
   <summary>
