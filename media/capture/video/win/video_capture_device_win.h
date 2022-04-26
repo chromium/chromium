@@ -161,6 +161,11 @@ class VideoCaptureDeviceWin : public VideoCaptureDevice,
 
   base::ThreadChecker thread_checker_;
 
+  // Used to guard between race checking capture state between the thread used
+  // in |thread_checker_| and a thread used in
+  // |SinkFilterObserver::SinkFilterObserver| callbacks.
+  base::Lock lock_;
+
   bool enable_get_photo_state_;
 
   absl::optional<int> camera_rotation_;
