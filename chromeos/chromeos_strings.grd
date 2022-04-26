@@ -2937,40 +2937,25 @@ Try tapping the mic to ask me anything.
         Calibration complete
       </message>
       <!-- OS update page -->
-      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_PAGE_TITLE" translateable="false" desc="Title of ChromeOS update page.">
-        Make sure ChromeOS is up to date
+      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_PAGE_TITLE" desc="Title of ChromeOS update page.">
+        Make sure Chrome OS is up to date
       </message>
-      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_UNQUALIFIED_COMPONENTS_TOP" translateable="false" desc="Description when components not qualified for ChromeOS are detected.">
-        <ph name="LINK_BEGIN">&lt;a id="unqualifiedComponentsLink"&gt;</ph>Unqualified components<ph name="LINK_END">&lt;/a&gt;</ph> found. To make sure all qualified componets are identified, update your ChromeOS to the latest version.
+      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_UNQUALIFIED_COMPONENTS_TOP" desc="Description when components not qualified for ChromeOS are detected.">
+        <ph name="LINK_BEGIN">&lt;a id="unqualifiedComponentsLink"&gt;</ph>Unqualified components<ph name="LINK_END">&lt;/a&gt;</ph> found. To make sure all qualified components are identified, update your Chrome OS to the latest version.
       </message>
-      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_UNQUALIFIED_COMPONENTS_BOTTOM" translateable="false" desc="Description when components not qualified for ChromeOS are detected.">
+      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_UNQUALIFIED_COMPONENTS_BOTTOM" desc="Description when components not qualified for ChromeOS are detected.">
         If you still see the issue after the update, it's possible the component is newly qualified and hasn't made it to the database yet.
       </message>
-      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_VERY_OUT_OF_DATE" translateable="false" desc="Description when the installed OS is too many versions behind the update.">
-        ChromeOS needs an additional update to get fully up to date
+      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_OUT_OF_DATE" desc="The instructions shown when there is a ChromeOS update available.">
+        Update to the latest version of Chrome OS for an optimized repair process
       </message>
-      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_OUT_OF_DATE" translateable="false" desc="The instructions shown when there is a ChromeOS update available.">
-        Update to the latest version of ChromeOS for an optimized repair process
-      </message>
-      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_NETWORK_UNAVAILABLE" translateable="false" desc="Notice that no network is available when attempting to update ChromeOS.">
-        To check if OS is up to date, connect to the internet in previous screen
-      </message>
-      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_FAILED_TO_START" translateable="false" desc="Notice when the call to update ChromeOS fails unexpectedly.">
-        Failed to start ChromeOS update.
-      </message>
-      <message name="IDS_SHIMLESS_RMA_CURRENT_VERSION" translateable="false" desc="Label that shows the current installed version of ChromeOS.">
-        Current version <ph name="VERSION_NUMBER">$1<ex>90.0.1234.56</ex></ph>
-      </message>
-      <message name="IDS_SHIMLESS_RMA_CURRENT_VERSION_OUT_OF_DATE" translateable="false" desc="Label that shows the when the currently installed version of ChromeOS is out of date.">
+      <message name="IDS_SHIMLESS_RMA_CURRENT_VERSION_OUT_OF_DATE" desc="Label that shows the when the currently installed version of ChromeOS is out of date.">
         Current version <ph name="VERSION_NUMBER">$1<ex>90.0.1234.56</ex></ph> is out of date
       </message>
-      <message name="IDS_SHIMLESS_RMA_CURRENT_VERSION_UP_TO_DATE" translateable="false" desc="Label that shows the when the currently installed version of ChromeOS is up to date.">
-        Current version <ph name="VERSION_NUMBER">$1<ex>90.0.1234.56</ex></ph> is up to date
-      </message>
-      <message name="IDS_SHIMLESS_RMA_UPDATE_VERSION_AND_RESTART" translateable="false" desc="Label for the button that updates the device to the latest version of ChromeOS then restarts the device.">
+      <message name="IDS_SHIMLESS_RMA_UPDATE_VERSION_AND_RESTART" desc="Label for the button that updates the device to the latest version of ChromeOS then restarts the device.">
         Update to <ph name="VERSION_NUMBER">$1</ph> &#38; restart
       </message>
-      <message name="IDS_SHIMLESS_RMA_UPDATING_OS_VERSION" translateable="false" desc="The message shown while updating the device's OS version.">
+      <message name="IDS_SHIMLESS_RMA_UPDATING_OS_VERSION" desc="The message shown while updating the device's OS version.">
         Updating OS version
       </message>
       <!-- Manually disable wp page -->
