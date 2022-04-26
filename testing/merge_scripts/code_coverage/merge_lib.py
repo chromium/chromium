@@ -70,7 +70,8 @@ def _get_profile_paths(input_dir,
   paths = []
   for dir_path, _sub_dirs, file_names in os.walk(input_dir):
     paths.extend([
-        os.path.join(dir_path, fn)
+        # Normalize to POSIX style paths for consistent results.
+        os.path.join(dir_path, fn).replace('\\', '/')
         for fn in file_names
         if fn.endswith(input_extension) and re.search(input_filename_pattern,fn)
     ])
