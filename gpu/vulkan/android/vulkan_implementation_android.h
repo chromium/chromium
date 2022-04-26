@@ -48,12 +48,13 @@ class COMPONENT_EXPORT(VULKAN_ANDROID) VulkanImplementationAndroid
                                      VkSemaphore vk_semaphore) override;
   VkExternalMemoryHandleTypeFlagBits GetExternalImageHandleType() override;
   bool CanImportGpuMemoryBuffer(
+      VulkanDeviceQueue* device_queue,
       gfx::GpuMemoryBufferType memory_buffer_type) override;
   std::unique_ptr<VulkanImage> CreateImageFromGpuMemoryHandle(
       VulkanDeviceQueue* device_queue,
       gfx::GpuMemoryBufferHandle gmb_handle,
       gfx::Size size,
-      VkFormat vk_formae) override;
+      VkFormat vk_format) override;
   bool GetSamplerYcbcrConversionInfo(
       const VkDevice& vk_device,
       base::android::ScopedHardwareBufferHandle ahb_handle,

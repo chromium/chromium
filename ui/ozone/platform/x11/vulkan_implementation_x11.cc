@@ -108,6 +108,7 @@ VulkanImplementationX11::GetOptionalDeviceExtensions() {
       VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME,
       VK_KHR_INCREMENTAL_PRESENT_EXTENSION_NAME,
       VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME,
+      VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME,
   };
 }
 
@@ -148,10 +149,14 @@ VulkanImplementationX11::GetExternalImageHandleType() {
 }
 
 bool VulkanImplementationX11::CanImportGpuMemoryBuffer(
+    gpu::VulkanDeviceQueue* device_queue,
     gfx::GpuMemoryBufferType memory_buffer_type) {
-  if (memory_buffer_type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP)
-    return true;
-  return false;
+  const auto& enabled_extensions = device_queue->enabled_extensions();
+  return gfx::HasExtension(enabled_extensions,
+                           VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME) &&
+         gfx::HasExtension(enabled_extensions,
+                           VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME) &&
+         memory_buffer_type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
 }
 
 std::unique_ptr<gpu::VulkanImage>

@@ -176,6 +176,7 @@ VulkanImplementationFlatland::GetExternalImageHandleType() {
 }
 
 bool VulkanImplementationFlatland::CanImportGpuMemoryBuffer(
+    gpu::VulkanDeviceQueue* device_queue,
     gfx::GpuMemoryBufferType memory_buffer_type) {
   return memory_buffer_type == gfx::NATIVE_PIXMAP;
 }

@@ -111,6 +111,7 @@ VulkanImplementationWin32::GetExternalImageHandleType() {
 }
 
 bool VulkanImplementationWin32::CanImportGpuMemoryBuffer(
+    VulkanDeviceQueue* device_queue,
     gfx::GpuMemoryBufferType memory_buffer_type) {
   return false;
 }
@@ -120,7 +121,7 @@ VulkanImplementationWin32::CreateImageFromGpuMemoryHandle(
     VulkanDeviceQueue* device_queue,
     gfx::GpuMemoryBufferHandle gmb_handle,
     gfx::Size size,
-    VkFormat vk_formae) {
+    VkFormat vk_format) {
   NOTIMPLEMENTED();
   return nullptr;
 }

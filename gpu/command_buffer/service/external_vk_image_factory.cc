@@ -150,9 +150,10 @@ std::unique_ptr<SharedImageBacking> ExternalVkImageFactory::CreateSharedImage(
 
 bool ExternalVkImageFactory::CanImportGpuMemoryBuffer(
     gfx::GpuMemoryBufferType memory_buffer_type) {
+  auto* device_queue = context_state_->vk_context_provider()->GetDeviceQueue();
   return context_state_->vk_context_provider()
              ->GetVulkanImplementation()
-             ->CanImportGpuMemoryBuffer(memory_buffer_type) ||
+             ->CanImportGpuMemoryBuffer(device_queue, memory_buffer_type) ||
          memory_buffer_type == gfx::SHARED_MEMORY_BUFFER;
 }
 

@@ -51,6 +51,7 @@ class VulkanImplementationScenic : public gpu::VulkanImplementation {
                                           VkSemaphore vk_semaphore) override;
   VkExternalMemoryHandleTypeFlagBits GetExternalImageHandleType() override;
   bool CanImportGpuMemoryBuffer(
+      gpu::VulkanDeviceQueue* device_queue,
       gfx::GpuMemoryBufferType memory_buffer_type) override;
   std::unique_ptr<gpu::VulkanImage> CreateImageFromGpuMemoryHandle(
       gpu::VulkanDeviceQueue* device_queue,

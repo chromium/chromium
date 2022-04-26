@@ -129,6 +129,7 @@ VulkanImplementationAndroid::GetExternalImageHandleType() {
 }
 
 bool VulkanImplementationAndroid::CanImportGpuMemoryBuffer(
+    VulkanDeviceQueue* device_queue,
     gfx::GpuMemoryBufferType memory_buffer_type) {
   return false;
 }
@@ -138,7 +139,7 @@ VulkanImplementationAndroid::CreateImageFromGpuMemoryHandle(
     VulkanDeviceQueue* device_queue,
     gfx::GpuMemoryBufferHandle gmb_handle,
     gfx::Size size,
-    VkFormat vk_formae) {
+    VkFormat vk_format) {
   // TODO(sergeyu): Move code from CreateVkImageAndImportAHB() here and remove
   // CreateVkImageAndImportAHB().
   NOTIMPLEMENTED();

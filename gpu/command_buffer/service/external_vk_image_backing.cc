@@ -253,8 +253,9 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
   auto* vulkan_implementation =
       context_state->vk_context_provider()->GetVulkanImplementation();
   auto resource_format = viz::GetResourceFormat(buffer_format);
-  if (vulkan_implementation->CanImportGpuMemoryBuffer(handle.type)) {
-    auto* device_queue = context_state->vk_context_provider()->GetDeviceQueue();
+  auto* device_queue = context_state->vk_context_provider()->GetDeviceQueue();
+  if (vulkan_implementation->CanImportGpuMemoryBuffer(device_queue,
+                                                      handle.type)) {
     VkFormat vk_format = ToVkFormat(resource_format);
     auto image = vulkan_implementation->CreateImageFromGpuMemoryHandle(
         device_queue, std::move(handle), size, vk_format);

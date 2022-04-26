@@ -130,10 +130,9 @@ VulkanImplementationHeadless::GetExternalImageHandleType() {
 }
 
 bool VulkanImplementationHeadless::CanImportGpuMemoryBuffer(
+    gpu::VulkanDeviceQueue* device_queue,
     gfx::GpuMemoryBufferType memory_buffer_type) {
-  if (memory_buffer_type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP)
-    return true;
-  return false;
+  return memory_buffer_type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
 }
 
 std::unique_ptr<gpu::VulkanImage>

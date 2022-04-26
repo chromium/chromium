@@ -232,9 +232,11 @@ bool SharedImageBackingFactoryOzone::IsSupported(
 
 bool SharedImageBackingFactoryOzone::CanImportGpuMemoryBufferToVulkan(
     gfx::GpuMemoryBufferType memory_buffer_type) {
+  auto* vk_device =
+      shared_context_state_->vk_context_provider()->GetDeviceQueue();
   return shared_context_state_->vk_context_provider()
       ->GetVulkanImplementation()
-      ->CanImportGpuMemoryBuffer(memory_buffer_type);
+      ->CanImportGpuMemoryBuffer(vk_device, memory_buffer_type);
 }
 
 }  // namespace gpu
