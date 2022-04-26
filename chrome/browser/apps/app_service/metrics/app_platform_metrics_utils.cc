@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 
+#include "ash/constants/app_types.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"
@@ -34,6 +35,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 
 namespace {
@@ -215,6 +217,11 @@ bool IsLacrosBrowserWindow(Profile* profile, aura::Window* window) {
   return ret;
 }
 
+bool IsLacrosWindow(aura::Window* window) {
+  return window->GetProperty(aura::client::kAppType) ==
+         static_cast<int>(ash::AppType::LACROS);
+}
+
 bool IsAppOpenedInTab(AppTypeName app_type_name, const std::string& app_id) {
   return (app_type_name == apps::AppTypeName::kChromeBrowser &&
           app_id != app_constants::kChromeAppId) ||
@@ -226,7 +233,10 @@ bool IsAppOpenedWithBrowserWindow(Profile* profile,
                                   AppType app_type,
                                   const std::string& app_id) {
   if (app_type == AppType::kWeb || app_type == AppType::kSystemWeb ||
-      app_type == AppType::kExtension) {
+      app_type == AppType::kExtension ||
+      app_type == AppType::kStandaloneBrowser ||
+      app_type == AppType::kStandaloneBrowserChromeApp ||
+      app_type == AppType::kStandaloneBrowserExtension) {
     return true;
   }
 

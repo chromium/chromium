@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
@@ -51,6 +52,7 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
@@ -2631,6 +2633,70 @@ TEST_P(AppPlatformInputMetricsTest, StandaloneBrowserExtension) {
   VerifyUkm("app://" + std::string(kExtensionId),
             AppTypeName::kStandaloneBrowserExtension, /*event_count=*/1,
             InputEventSource::kMouse);
+}
+
+TEST_P(AppPlatformInputMetricsTest, LacrosWindowAndWebAppAndChromeApp) {
+  if (!IsLacrosPrimary()) {
+    return;
+  }
+
+  window()->SetProperty(aura::client::kAppType,
+                        static_cast<int>(ash::AppType::LACROS));
+
+  const base::UnguessableToken instance_id0 = base::UnguessableToken::Create();
+  const base::UnguessableToken instance_id1 = base::UnguessableToken::Create();
+  const base::UnguessableToken instance_id2 = base::UnguessableToken::Create();
+
+  // Set window as activated for `kLacrosAppId`.
+  ModifyInstance(instance_id0, app_constants::kLacrosAppId, window(),
+                 kActiveInstanceState);
+  CreateInputEvent(InputEventSource::kMouse);
+  app_platform_input_metrics()->OnTwoHours();
+  // Verify 1 input metrics event for kMouse is recorded.
+  VerifyUkm("app://" + std::string(app_constants::kLacrosAppId),
+            AppTypeName::kStandaloneBrowser, /*event_count=*/1,
+            InputEventSource::kMouse);
+
+  // Set the web app tab1 as activated. We don't need to set the Lacros window
+  // as inactivated, because the activated web app tab can set the Lacros window
+  // as inactivated. And when the web app tabs are inactivated, the Lacros
+  // window can be set as activated.
+  const std::string web_app_id1 = "w";
+  const GURL url1 = GURL("https://foo.com");
+  task_environment_.FastForwardBy(base::Minutes(4));
+  ModifyInstance(instance_id1, web_app_id1, window(), kActiveInstanceState);
+  CreateInputEvent(InputEventSource::kMouse);
+  app_platform_input_metrics()->OnTwoHours();
+  // Verify 2 input metrics events are recorded.
+  VerifyUkm(2, url1.spec(), AppTypeName::kStandaloneBrowser,
+            /*event_count=*/1, InputEventSource::kMouse);
+
+  // Install a Chrome app (hosted app) during the running time.
+  std::string kChromeAppId1 = "bb";
+  InstallOneApp(MuxId(profile(), kChromeAppId1),
+                AppType::kStandaloneBrowserChromeApp, "BB", Readiness::kReady,
+                InstallSource::kChromeWebStore,
+                /*is_platform_app=*/false, WindowMode::kBrowser);
+  // Set the Chrome app tab as activated.
+  ModifyInstance(instance_id2, MuxId(profile(), kChromeAppId1), window(),
+                 kActiveInstanceState);
+  ModifyInstance(instance_id1, web_app_id1, window(), kInactiveInstanceState);
+  CreateInputEvent(InputEventSource::kStylus);
+  app_platform_input_metrics()->OnTwoHours();
+  // Verify 3 input metrics events are recorded.
+  VerifyUkm(3, "app://" + kChromeAppId1, AppTypeName::kStandaloneBrowser,
+            /*event_count=*/1, InputEventSource::kStylus);
+
+  // Set the Chrome app tab as inactivated, then the Lacros window should be set
+  // as activated in code.
+  ModifyInstance(instance_id2, MuxId(profile(), kChromeAppId1), window(),
+                 kInactiveInstanceState);
+  CreateInputEvent(InputEventSource::kKeyboard);
+  app_platform_input_metrics()->OnTwoHours();
+  // Verify 4 input metrics events are recorded.
+  VerifyUkm(4, "app://" + std::string(app_constants::kLacrosAppId),
+            AppTypeName::kStandaloneBrowser,
+            /*event_count=*/1, InputEventSource::kKeyboard);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
