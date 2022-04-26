@@ -13,6 +13,7 @@ import 'chrome://oobe/components/test_util.m.js';
 import 'chrome://oobe/test_api/test_api.m.js';
 import {i18nTemplate} from 'chrome://resources/js/i18n_template_no_process.m.js';
 import {commonScreensList, loginScreensList, oobeScreensList} from 'chrome://oobe/screens.js';
+import {MultiTapDetector} from './multi_tap_detector.m.js';
 // clang-format on
 
 /**
@@ -48,17 +49,25 @@ import {commonScreensList, loginScreensList, oobeScreensList} from 'chrome://oob
   }
 }
 
-function initializeDebugger() {
-  if (document.readyState === 'loading') {
-    return;
-  }
-  document.removeEventListener('DOMContentLoaded', initializeDebugger);
-  OobeDebugger.DebuggerUI.getInstance().register(document.body);
-}
-
 // Create the global values attached to `window` that are used
 // for accessing OOBE controls from the browser side.
 function prepareGlobalValues(globalValue) {
+  // '$(id)' is an alias for 'document.getElementById(id)'. It is defined
+  // in chrome://resources/js/util.m.js. If this function is not exposed
+  // via the global object, it would not be available to tests that inject
+  // JavaScript directly into the renderer.
+  window.$ = $;
+
+  window.MultiTapDetector = MultiTapDetector;
+
+  // Install a global error handler so stack traces are included in logs.
+  window.onerror = function(message, file, line, column, error) {
+    if (error && error.stack) {
+      console.error(error.stack);
+    }
+  };
+
+  // TODO(crbug.com/1229130) - Remove the necessity for these global objects.
   if (globalValue.cr == undefined) {
     globalValue.cr = {};
   }
@@ -74,6 +83,35 @@ function prepareGlobalValues(globalValue) {
   globalValue.Oobe = Oobe;
 }
 
+function initializeOobe() {
+  if (document.readyState === 'loading') {
+    return;
+  }
+  document.removeEventListener('DOMContentLoaded', initializeOobe);
+
+  // Initialize the on-screen debugger if present.
+  if (OobeDebugger.DebuggerUI) {
+    OobeDebugger.DebuggerUI.getInstance().register(document.body);
+  }
+
+  try {
+    Oobe.initialize();
+  } finally {
+    // TODO(crbug.com/712078): Do not set readyForTesting in case of that
+    // initialize() is failed. Currently, in some situation, initialize()
+    // raises an exception unexpectedly. It means testing APIs should not
+    // be called then. However, checking it here now causes bots failures
+    // unfortunately. So, as a short term workaround, here set
+    // readyForTesting even on failures, just to make test bots happy.
+    Oobe.readyForTesting = true;
+  }
+
+  // Mark initialization complete and wake any callers that might be waiting
+  // for OOBE to load.
+  cr.ui.Oobe.initializationComplete = true;
+  cr.ui.Oobe.initCallbacks.forEach(resolvePromise => resolvePromise());
+}
+
 (function (root) {
     i18nTemplate.process(document, loadTimeData);
     prepareGlobalValues(window);
@@ -83,14 +121,9 @@ function prepareGlobalValues(globalValue) {
     const isOobeFlow = loadTimeData.getBoolean('isOobeFlow');
     addScreensToMainContainer(isOobeFlow ? oobeScreensList : loginScreensList);
 
-    Oobe.initialize();
-
-    // Initialize the debugger if it has been defined.
-    if (OobeDebugger.DebuggerUI) {
-      if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', initializeDebugger);
-        } else {
-          initializeDebugger();
-      }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeOobe);
+      } else {
+        initializeOobe();
     }
 })(window);
