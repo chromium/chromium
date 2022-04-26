@@ -1956,70 +1956,57 @@ TEST(CertVerifyProcTest, SymantecCertsRejected) {
   }
 
   // Test that certificates from the legacy Symantec infrastructure issued
-  // after 2016-06-01 approriately accept or reject based on the base::Feature
-  // flag.
-  for (bool feature_flag_enabled : {false, true}) {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatureState(
-        CertVerifyProc::kLegacySymantecPKIEnforcement, feature_flag_enabled);
+  // after 2016-06-01 appropriately rejected.
+  scoped_refptr<X509Certificate> cert = CreateCertificateChainFromFile(
+      GetTestCertsDirectory(), "post_june_2016.pem",
+      X509Certificate::FORMAT_AUTO);
+  ASSERT_TRUE(cert);
 
-    scoped_refptr<X509Certificate> cert = CreateCertificateChainFromFile(
-        GetTestCertsDirectory(), "post_june_2016.pem",
-        X509Certificate::FORMAT_AUTO);
-    ASSERT_TRUE(cert);
+  scoped_refptr<CertVerifyProc> verify_proc;
+  int error = 0;
 
-    scoped_refptr<CertVerifyProc> verify_proc;
-    int error = 0;
+  // Test that a legacy Symantec certificate is rejected if the feature
+  // flag is enabled, and accepted if it is not.
+  CertVerifyResult symantec_result;
+  symantec_result.verified_cert = cert;
+  symantec_result.public_key_hashes.push_back(HashValue(kSymantecHashValue));
+  symantec_result.is_issued_by_known_root = true;
+  verify_proc = base::MakeRefCounted<MockCertVerifyProc>(symantec_result);
 
-    // Test that a legacy Symantec certificate is rejected if the feature
-    // flag is enabled, and accepted if it is not.
-    CertVerifyResult symantec_result;
-    symantec_result.verified_cert = cert;
-    symantec_result.public_key_hashes.push_back(HashValue(kSymantecHashValue));
-    symantec_result.is_issued_by_known_root = true;
-    verify_proc = base::MakeRefCounted<MockCertVerifyProc>(symantec_result);
+  CertVerifyResult test_result_1;
+  error = verify_proc->Verify(
+      cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
+      /*sct_list=*/std::string(), 0, CRLSet::BuiltinCRLSet().get(),
+      CertificateList(), &test_result_1, NetLogWithSource());
+  EXPECT_THAT(error, IsError(ERR_CERT_SYMANTEC_LEGACY));
+  EXPECT_TRUE(test_result_1.cert_status & CERT_STATUS_SYMANTEC_LEGACY);
 
-    CertVerifyResult test_result_1;
-    error = verify_proc->Verify(
-        cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
-        /*sct_list=*/std::string(), 0, CRLSet::BuiltinCRLSet().get(),
-        CertificateList(), &test_result_1, NetLogWithSource());
-    if (feature_flag_enabled) {
-      EXPECT_THAT(error, IsError(ERR_CERT_SYMANTEC_LEGACY));
-      EXPECT_TRUE(test_result_1.cert_status & CERT_STATUS_SYMANTEC_LEGACY);
-    } else {
-      EXPECT_THAT(error, IsOk());
-      EXPECT_FALSE(test_result_1.cert_status & CERT_STATUS_SYMANTEC_LEGACY);
-    }
+  // ... Unless the Symantec cert chains through a allowlisted intermediate.
+  CertVerifyResult allowlisted_result;
+  allowlisted_result.verified_cert = cert;
+  allowlisted_result.public_key_hashes.push_back(HashValue(kSymantecHashValue));
+  allowlisted_result.public_key_hashes.push_back(HashValue(kGoogleHashValue));
+  allowlisted_result.is_issued_by_known_root = true;
+  verify_proc = base::MakeRefCounted<MockCertVerifyProc>(allowlisted_result);
 
-    // ... Unless the Symantec cert chains through a allowlisted intermediate.
-    CertVerifyResult allowlisted_result;
-    allowlisted_result.verified_cert = cert;
-    allowlisted_result.public_key_hashes.push_back(
-        HashValue(kSymantecHashValue));
-    allowlisted_result.public_key_hashes.push_back(HashValue(kGoogleHashValue));
-    allowlisted_result.is_issued_by_known_root = true;
-    verify_proc = base::MakeRefCounted<MockCertVerifyProc>(allowlisted_result);
+  CertVerifyResult test_result_2;
+  error = verify_proc->Verify(
+      cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
+      /*sct_list=*/std::string(), 0, CRLSet::BuiltinCRLSet().get(),
+      CertificateList(), &test_result_2, NetLogWithSource());
+  EXPECT_THAT(error, IsOk());
+  EXPECT_FALSE(test_result_2.cert_status & CERT_STATUS_AUTHORITY_INVALID);
 
-    CertVerifyResult test_result_2;
-    error = verify_proc->Verify(
-        cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
-        /*sct_list=*/std::string(), 0, CRLSet::BuiltinCRLSet().get(),
-        CertificateList(), &test_result_2, NetLogWithSource());
-    EXPECT_THAT(error, IsOk());
-    EXPECT_FALSE(test_result_2.cert_status & CERT_STATUS_AUTHORITY_INVALID);
-
-    // ... Or the caller disabled enforcement of Symantec policies.
-    CertVerifyResult test_result_3;
-    error = verify_proc->Verify(
-        cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
-        /*sct_list=*/std::string(),
-        CertVerifyProc::VERIFY_DISABLE_SYMANTEC_ENFORCEMENT,
-        CRLSet::BuiltinCRLSet().get(), CertificateList(), &test_result_3,
-        NetLogWithSource());
-    EXPECT_THAT(error, IsOk());
-    EXPECT_FALSE(test_result_3.cert_status & CERT_STATUS_SYMANTEC_LEGACY);
-  }
+  // ... Or the caller disabled enforcement of Symantec policies.
+  CertVerifyResult test_result_3;
+  error = verify_proc->Verify(
+      cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
+      /*sct_list=*/std::string(),
+      CertVerifyProc::VERIFY_DISABLE_SYMANTEC_ENFORCEMENT,
+      CRLSet::BuiltinCRLSet().get(), CertificateList(), &test_result_3,
+      NetLogWithSource());
+  EXPECT_THAT(error, IsOk());
+  EXPECT_FALSE(test_result_3.cert_status & CERT_STATUS_SYMANTEC_LEGACY);
 }
 
 // Test that the certificate returned in CertVerifyResult is able to reorder

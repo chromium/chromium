@@ -213,10 +213,6 @@ class NET_EXPORT CertVerifyProc
   // requirement they expire within 7 years after the effective date of the BRs
   // (i.e. by 1 July 2019).
   static bool HasTooLongValidity(const X509Certificate& cert);
-
-  // Feature flag affecting the Legacy Symantec PKI deprecation, documented
-  // at https://g.co/chrome/symantecpkicerts
-  static const base::Feature kLegacySymantecPKIEnforcement;
 };
 
 // Factory for creating new CertVerifyProcs when they need to be updated.

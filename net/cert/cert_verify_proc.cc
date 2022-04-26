@@ -197,31 +197,6 @@ bool ExaminePublicKeys(const scoped_refptr<X509Certificate>& cert,
   return weak_key;
 }
 
-// See
-// https://security.googleblog.com/2017/09/chromes-plan-to-distrust-symantec.html
-// for more details.
-bool IsUntrustedSymantecCert(const X509Certificate& cert) {
-  const base::Time& start = cert.valid_start();
-  if (start.is_max() || start.is_null())
-    return true;
-
-  // Certificates issued on/after 2017-12-01 00:00:00 UTC are no longer
-  // trusted.
-  const base::Time kSymantecDeprecationDate =
-      base::Time::UnixEpoch() + base::Seconds(1512086400);
-  if (start >= kSymantecDeprecationDate)
-    return true;
-
-  // Certificates issued prior to 2016-06-01 00:00:00 UTC are no longer
-  // trusted.
-  const base::Time kFirstAcceptedCertDate =
-      base::Time::UnixEpoch() + base::Seconds(1464739200);
-  if (start < kFirstAcceptedCertDate)
-    return true;
-
-  return false;
-}
-
 void BestEffortCheckOCSP(const std::string& raw_response,
                          const X509Certificate& certificate,
                          OCSPVerifyResult* verify_result) {
@@ -715,12 +690,9 @@ int CertVerifyProc::Verify(X509Certificate* cert,
   // https://security.googleblog.com/2017/09/chromes-plan-to-distrust-symantec.html
   if (!(flags & VERIFY_DISABLE_SYMANTEC_ENFORCEMENT) &&
       IsLegacySymantecCert(verify_result->public_key_hashes)) {
-    if (base::FeatureList::IsEnabled(kLegacySymantecPKIEnforcement) ||
-        IsUntrustedSymantecCert(*verify_result->verified_cert)) {
-      verify_result->cert_status |= CERT_STATUS_SYMANTEC_LEGACY;
-      if (rv == OK || IsCertificateError(rv))
-        rv = MapCertStatusToNetError(verify_result->cert_status);
-    }
+    verify_result->cert_status |= CERT_STATUS_SYMANTEC_LEGACY;
+    if (rv == OK || IsCertificateError(rv))
+      rv = MapCertStatusToNetError(verify_result->cert_status);
   }
 
   // Flag certificates from publicly-trusted CAs that are issued to intranet
@@ -1036,9 +1008,5 @@ bool CertVerifyProc::HasTooLongValidity(const X509Certificate& cert) {
 
   return false;
 }
-
-// static
-const base::Feature CertVerifyProc::kLegacySymantecPKIEnforcement{
-    "LegacySymantecPKI", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace net
