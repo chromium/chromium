@@ -22,6 +22,7 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/pagination/pagination_controller.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -197,8 +198,9 @@ class PagedAppsGridView::BackgroundCardLayer : public ui::Layer,
 
     if (features::IsProductivityLauncherEnabled() && is_active_page_) {
       // Draw a border around the active page.
-      flags.setColor(SK_ColorWHITE);
-      flags.setAlpha(0x66);
+      const bool dark_mode = AshColorProvider::Get()->IsDarkModeEnabled();
+      flags.setColor(dark_mode ? SK_ColorWHITE : SK_ColorBLACK);
+      flags.setAlpha(dark_mode ? 0x29 /*16%*/ : 0x1F /*12%*/);
       flags.setStyle(cc::PaintFlags::kStroke_Style);
       flags.setStrokeWidth(kBackgroundCardBorderStrokeWidth);
       flags.setAntiAlias(true);

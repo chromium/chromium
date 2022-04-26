@@ -75,11 +75,9 @@ void GhostImageView::DoAnimation(bool hide) {
 void GhostImageView::OnPaint(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  // TODO(crbug.com/1255369): Get the highlight color from the ash color
-  // provider once it is implemented.
   flags.setColor(AshColorProvider::Get()->IsDarkModeEnabled()
                      ? gfx::kGoogleGrey200
-                     : gfx::kGoogleGrey700);
+                     : gfx::kGoogleGrey900);
   flags.setAlpha(kGhostColorOpacity);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(kGhostCircleStrokeWidth);
