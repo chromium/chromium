@@ -299,10 +299,6 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
 
   base::WeakPtr<PaymentRequestState> AsWeakPtr();
 
-  void set_is_show_user_gesture(bool is_show_user_gesture) {
-    is_show_user_gesture_ = is_show_user_gesture;
-  }
-
  private:
   // Fetches the Autofill Profiles for this user from the PersonalDataManager,
   // and stores copies of them, owned by this PaymentRequestState, in
@@ -415,9 +411,6 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   PaymentsProfileComparator profile_comparator_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  // Whether PaymentRequest.show() was invoked with a user gesture.
-  bool is_show_user_gesture_ = false;
 
   // If set to true, then both GetCanMakePaymentValue() and
   // GetHasEnrolledInstrumentValue() will return true, regardless of presence of

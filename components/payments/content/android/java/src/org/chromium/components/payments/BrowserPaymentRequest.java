@@ -123,10 +123,9 @@ public interface BrowserPaymentRequest {
      * Called when these conditions are satisfied: (1) show() has been called, (2) payment apps
      * are all queried, and (3) PaymentDetails is finalized.
      * @return The error if it fails; null otherwise.
-     * @param isUserGestureShow Whether PaymentRequest.show() was invoked with a user gesture.
      */
     @Nullable
-    default String onShowCalledAndAppsQueriedAndDetailsFinalized(boolean isUserGestureShow) {
+    default String onShowCalledAndAppsQueriedAndDetailsFinalized() {
         return null;
     }
 

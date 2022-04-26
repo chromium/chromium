@@ -46,8 +46,6 @@ class JniPaymentApp : public PaymentApp::Delegate {
 
   bool CanPreselect(JNIEnv* env);
 
-  bool IsUserGestureRequiredToSkipUi(JNIEnv* env);
-
   void InvokePaymentApp(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& jcallback);
 

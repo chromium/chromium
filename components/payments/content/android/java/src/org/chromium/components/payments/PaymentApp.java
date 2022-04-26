@@ -201,11 +201,6 @@ public abstract class PaymentApp extends EditableOption {
         return true;
     }
 
-    /** @return Whether skip-UI flow with this app requires a user gesture. */
-    public boolean isUserGestureRequiredToSkipUi() {
-        return true;
-    }
-
     /**
      * Invoke the payment app to retrieve the payment details.
      *

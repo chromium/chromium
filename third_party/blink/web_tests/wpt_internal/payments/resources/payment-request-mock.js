@@ -22,6 +22,7 @@ export class PaymentRequestMock {
   }
 
   show() {}
+  showNew() {}
   updateWith(details) {}
   onPaymentDetailsNotUpdated() {}
   abort() {}

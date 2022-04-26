@@ -129,7 +129,7 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     // Implements BrowserPaymentRequest:
     @Override
     @Nullable
-    public String onShowCalledAndAppsQueriedAndDetailsFinalized(boolean isUserGestureShow) {
+    public String onShowCalledAndAppsQueriedAndDetailsFinalized() {
         assert !mAvailableApps.isEmpty()
             : "triggerPaymentAppUiSkipIfApplicable() should be called only when there is any "
                 + "available app.";

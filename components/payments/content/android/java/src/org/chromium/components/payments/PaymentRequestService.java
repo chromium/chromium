@@ -111,9 +111,6 @@ public class PaymentRequestService
     /** Internal reason for why PaymentRequest.show() should be rejected. */
     private @AppCreationFailureReason int mRejectShowErrorReason = AppCreationFailureReason.UNKNOWN;
 
-    /** Whether PaymentRequest.show() was invoked with a user gesture. */
-    private boolean mIsUserGestureShow;
-
     // mClient is null only when it has closed.
     @Nullable
     private PaymentRequestClient mClient;
@@ -941,8 +938,7 @@ public class PaymentRequestService
                 return ErrorStrings.SPC_AUTHN_UI_SUPPRESSED;
             }
         }
-        return mBrowserPaymentRequest.onShowCalledAndAppsQueriedAndDetailsFinalized(
-                mIsUserGestureShow);
+        return mBrowserPaymentRequest.onShowCalledAndAppsQueriedAndDetailsFinalized();
     }
 
     private boolean isSecurePaymentConfirmationApplicable() {
@@ -1174,7 +1170,7 @@ public class PaymentRequestService
      * The component part of the {@link PaymentRequest#show} implementation. Check {@link
      * PaymentRequest#show} for the parameters' specification.
      */
-    /* package */ void show(boolean isUserGesture, boolean waitForUpdatedDetails) {
+    /* package */ void show(boolean waitForUpdatedDetails) {
         if (mBrowserPaymentRequest == null) return;
         assert mSpec != null;
         assert !mSpec.isDestroyed() : "mSpec is destroyed only after close().";
@@ -1199,7 +1195,6 @@ public class PaymentRequestService
         sShowingPaymentRequest = this;
         mJourneyLogger.recordCheckoutStep(CheckoutFunnelStep.SHOW_CALLED);
         mIsShowCalled = true;
-        mIsUserGestureShow = isUserGesture;
         mIsShowWaitingForUpdatedDetails = waitForUpdatedDetails;
 
         mJourneyLogger.setTriggerTime();
@@ -1275,10 +1270,7 @@ public class PaymentRequestService
                 && allApps.size() >= 1
                 && onlySingleAppCanProvideAllRequiredInformation(mSpec.getPaymentOptions(), allApps)
                 // Skip to payment app only if it can be pre-selected.
-                && selectedApp != null
-                // Skip to payment app only if user gesture is provided when it is required to
-                // skip-UI.
-                && (mIsUserGestureShow || !selectedApp.isUserGestureRequiredToSkipUi());
+                && selectedApp != null;
     }
 
     // Implements PaymentDetailsConverter.MethodChecker:

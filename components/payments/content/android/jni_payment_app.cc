@@ -120,11 +120,6 @@ bool JniPaymentApp::CanPreselect(JNIEnv* env) {
   return payment_app_->CanPreselect();
 }
 
-bool JniPaymentApp::IsUserGestureRequiredToSkipUi(JNIEnv* env) {
-  // All payment apps require a user gesture to skip UI by default.
-  return true;
-}
-
 void JniPaymentApp::InvokePaymentApp(JNIEnv* env,
                                      const JavaParamRef<jobject>& jcallback) {
   invoke_callback_ = jcallback;

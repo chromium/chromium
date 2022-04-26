@@ -32,6 +32,7 @@ class MockPaymentProvider : public payments::mojom::blink::PaymentRequest {
   void Show(bool is_user_gesture, bool wait_for_updated_details) override {
     NOTREACHED();
   }
+  void ShowNew(bool wait_for_updated_details) override { NOTREACHED(); }
   void Retry(
       payments::mojom::blink::PaymentValidationErrorsPtr errors) override {
     NOTREACHED();

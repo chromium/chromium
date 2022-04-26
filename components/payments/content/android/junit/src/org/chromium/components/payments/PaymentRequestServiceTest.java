@@ -65,7 +65,6 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     private boolean mWarnNoFaviconCalled;
     private boolean mIsClientClosed;
     private MojoException mConnectionError;
-    private boolean mIsUserGestureDefaultValue = true;
     private boolean mWaitForUpdatedDetailsDefaultValue;
     private PaymentAppService mPaymentAppService;
     private PaymentAppFactoryDelegate mPaymentAppFactoryDelegate;
@@ -115,11 +114,6 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
                     @Override
                     public void dismissInstrument() {}
-
-                    @Override
-                    public boolean isUserGestureRequiredToSkipUi() {
-                        return false;
-                    }
                 };
         Mockito.doReturn(app).when(mBrowserPaymentRequest).getSelectedPaymentApp();
         List<PaymentApp> apps = new ArrayList();
@@ -225,7 +219,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     }
 
     private void show(PaymentRequestService service) {
-        service.show(mIsUserGestureDefaultValue, mWaitForUpdatedDetailsDefaultValue);
+        service.show(mWaitForUpdatedDetailsDefaultValue);
     }
 
     private void updateWith(PaymentRequestService service) {
@@ -351,7 +345,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Feature({"Payments"})
     public void testNullDetailsFailsUpdateWith() {
         PaymentRequestService service = defaultBuilder().build();
-        service.show(mIsUserGestureDefaultValue, false);
+        service.show(false);
         assertNoError();
         service.updateWith(null);
         assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_DETAILS,
@@ -364,7 +358,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Feature({"Payments"})
     public void testDetailsWithIdFailsUpdateWith() {
         PaymentRequestService service = defaultBuilder().build();
-        service.show(mIsUserGestureDefaultValue, false);
+        service.show(false);
         PaymentDetails details = getDefaultPaymentDetailsUpdate();
         details.id = "testId";
         assertNoError();
@@ -379,7 +373,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Feature({"Payments"})
     public void testOnPaymentDetailsUpdatedIsInvoked() {
         PaymentRequestService service = defaultBuilder().build();
-        service.show(mIsUserGestureDefaultValue, false);
+        service.show(false);
         updateWith(service);
         assertNoError();
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
@@ -390,7 +384,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Feature({"Payments"})
     public void testNullDetailsFailsContinueShow() {
         PaymentRequestService service = defaultBuilder().build();
-        service.show(mIsUserGestureDefaultValue, true);
+        service.show(true);
         assertNoError();
         service.updateWith(null);
         assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_DETAILS, PaymentErrorReason.USER_CANCEL);
@@ -401,7 +395,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Feature({"Payments"})
     public void testDetailsWithIdFailsContinueShow() {
         PaymentRequestService service = defaultBuilder().build();
-        service.show(mIsUserGestureDefaultValue, true);
+        service.show(true);
         assertNoError();
         PaymentDetails details = getDefaultPaymentDetailsUpdate();
         details.id = "testId";
@@ -414,7 +408,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Feature({"Payments"})
     public void testContinueShowIsInvoked() {
         PaymentRequestService service = defaultBuilder().build();
-        service.show(mIsUserGestureDefaultValue, true);
+        service.show(true);
         updateWith(service);
         assertNoError();
         verifyContinuedShowWithUpdatedDetails(1);
@@ -625,10 +619,10 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         PaymentRequestService service = defaultBuilder().build();
         show(service);
         Mockito.verify(mBrowserPaymentRequest, Mockito.never())
-                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
+                .onShowCalledAndAppsQueriedAndDetailsFinalized();
         queryPaymentApps();
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
-                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
+                .onShowCalledAndAppsQueriedAndDetailsFinalized();
 
         verifyJourneyLoggerRecordedTransactionAmount();
     }
@@ -637,15 +631,15 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Feature({"Payments"})
     public void testWaitingForUpdatedDetailsDeterUiSkipMethod() {
         PaymentRequestService service = defaultBuilder().build();
-        service.show(mIsUserGestureDefaultValue, true);
+        service.show(true);
         Mockito.verify(mBrowserPaymentRequest, Mockito.never())
-                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
+                .onShowCalledAndAppsQueriedAndDetailsFinalized();
         queryPaymentApps();
         Mockito.verify(mBrowserPaymentRequest, Mockito.never())
-                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
+                .onShowCalledAndAppsQueriedAndDetailsFinalized();
         updateWith(service);
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
-                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
+                .onShowCalledAndAppsQueriedAndDetailsFinalized();
 
         verifyJourneyLoggerRecordedTransactionAmount();
     }
@@ -654,15 +648,15 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Feature({"Payments"})
     public void testQueryFinishCanTriggerUiSkipped() {
         PaymentRequestService service = defaultBuilder().build();
-        service.show(mIsUserGestureDefaultValue, true);
+        service.show(true);
         Mockito.verify(mBrowserPaymentRequest, Mockito.never())
-                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
+                .onShowCalledAndAppsQueriedAndDetailsFinalized();
         updateWith(service);
         Mockito.verify(mBrowserPaymentRequest, Mockito.never())
-                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
+                .onShowCalledAndAppsQueriedAndDetailsFinalized();
         queryPaymentApps();
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
-                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
+                .onShowCalledAndAppsQueriedAndDetailsFinalized();
 
         verifyJourneyLoggerRecordedTransactionAmount();
     }

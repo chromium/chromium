@@ -332,7 +332,7 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    public String onShowCalledAndAppsQueriedAndDetailsFinalized(boolean isUserGestureShow) {
+    public String onShowCalledAndAppsQueriedAndDetailsFinalized() {
         WindowAndroid windowAndroid = mDelegate.getWindowAndroid(mRenderFrameHost);
         if (windowAndroid == null) return ErrorStrings.WINDOW_NOT_FOUND;
         Context context = mDelegate.getContext(mRenderFrameHost);

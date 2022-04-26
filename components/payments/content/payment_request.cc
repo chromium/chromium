@@ -276,6 +276,10 @@ void PaymentRequest::Init(
 }
 
 void PaymentRequest::Show(bool is_user_gesture, bool wait_for_updated_details) {
+  ShowNew(wait_for_updated_details);
+}
+
+void PaymentRequest::ShowNew(bool wait_for_updated_details) {
   if (!IsInitialized()) {
     log_.Error(errors::kCannotShowWithoutInit);
     ResetAndDeleteThis();
@@ -320,8 +324,6 @@ void PaymentRequest::Show(bool is_user_gesture, bool wait_for_updated_details) {
     return;
   }
 
-  is_show_user_gesture_ = is_user_gesture;
-
   if (wait_for_updated_details) {
     // Put |spec_| into uninitialized state, so the UI knows to show a spinner.
     // This method does not block.
@@ -341,7 +343,6 @@ void PaymentRequest::Show(bool is_user_gesture, bool wait_for_updated_details) {
   if (!spec_->IsAppStoreBillingAlsoRequested())
     display_handle_->Show(weak_ptr_factory_.GetWeakPtr());
 
-  state_->set_is_show_user_gesture(is_show_user_gesture_);
   state_->AreRequestedMethodsSupported(
       base::BindOnce(&PaymentRequest::AreRequestedMethodsSupportedCallback,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -747,8 +748,7 @@ bool PaymentRequest::SatisfiesSkipUIConstraints() {
        delegate_->SkipUiForBasicCard()) &&
       base::FeatureList::IsEnabled(features::kWebPaymentsSingleAppUiSkip) &&
       base::FeatureList::IsEnabled(::features::kServiceWorkerPaymentApps) &&
-      is_show_user_gesture_ && state()->IsInitialized() &&
-      spec()->IsInitialized() &&
+      state()->IsInitialized() && spec()->IsInitialized() &&
       OnlySingleAppCanProvideAllRequiredInformation() &&
       // The available app should be preselectable.
       state()->selected_app() != nullptr;

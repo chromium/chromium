@@ -139,11 +139,6 @@ public class JniPaymentApp extends PaymentApp {
     }
 
     @Override
-    public boolean isUserGestureRequiredToSkipUi() {
-        return JniPaymentAppJni.get().isUserGestureRequiredToSkipUi(mNativeObject);
-    }
-
-    @Override
     public void invokePaymentApp(String id, String merchantName, String origin, String iframeOrigin,
             @Nullable byte[][] certificateChain, Map<String, PaymentMethodData> methodDataMap,
             PaymentItem total, List<PaymentItem> displayItems,
@@ -234,7 +229,6 @@ public class JniPaymentApp extends PaymentApp {
         String getCountryCode(long nativeJniPaymentApp);
         boolean canMakePayment(long nativeJniPaymentApp);
         boolean canPreselect(long nativeJniPaymentApp);
-        boolean isUserGestureRequiredToSkipUi(long nativeJniPaymentApp);
         void invokePaymentApp(long nativeJniPaymentApp, JniPaymentApp callback);
         void updateWith(long nativeJniPaymentApp, ByteBuffer responseByteBuffer);
         void onPaymentDetailsNotUpdated(long nativeJniPaymentApp);
