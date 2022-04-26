@@ -117,17 +117,32 @@ std::string Base64UrlEncode(const base::span<const uint8_t> input) {
 // Returns the App ID to use for the request, or absl::nullopt if the origin
 // is not authorized to use the provided value.
 absl::optional<std::string> ProcessAppIdExtension(
+    content::BrowserContext* browser_context,
     std::string appid,
-    const url::Origin& caller_origin) {
+    url::Origin caller_origin,
+    const blink::mojom::RemoteDesktopClientOverridePtr&
+        remote_desktop_client_override) {
   // The CryptoToken U2F extension checks the appid before calling the WebAuthn
   // API so there is no need to validate it here.
   if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
           caller_origin)) {
+    DCHECK(!remote_desktop_client_override);
     if (!GURL(appid).is_valid()) {
       DCHECK(false) << "cryptotoken request did not set a valid App ID";
       return absl::nullopt;
     }
     return appid;
+  }
+
+  if (remote_desktop_client_override) {
+    if (!GetContentClient()
+             ->browser()
+             ->GetWebAuthenticationDelegate()
+             ->OriginMayUseRemoteDesktopClientOverride(browser_context,
+                                                       caller_origin)) {
+      return absl::nullopt;
+    }
+    caller_origin = remote_desktop_client_override->origin;
   }
 
   // Step 1: "If the AppID is not an HTTPS URL, and matches the FacetID of the
@@ -738,8 +753,9 @@ void AuthenticatorCommon::MakeCredential(
 
   absl::optional<std::string> appid_exclude;
   if (options->appid_exclude) {
-    appid_exclude =
-        ProcessAppIdExtension(*options->appid_exclude, caller_origin);
+    appid_exclude = ProcessAppIdExtension(
+        GetRenderFrameHost()->GetBrowserContext(), *options->appid_exclude,
+        caller_origin, options->remote_desktop_client_override);
     if (!appid_exclude) {
       CompleteMakeCredentialRequest(
           blink::mojom::AuthenticatorStatus::INVALID_DOMAIN);
@@ -1101,7 +1117,9 @@ void AuthenticatorCommon::GetAssertion(
 
   if (options->appid) {
     requested_extensions_.insert(RequestExtension::kAppID);
-    app_id_ = ProcessAppIdExtension(*options->appid, caller_origin_);
+    app_id_ = ProcessAppIdExtension(GetRenderFrameHost()->GetBrowserContext(),
+                                    *options->appid, caller_origin_,
+                                    options->remote_desktop_client_override);
     if (!app_id_) {
       CompleteGetAssertionRequest(
           blink::mojom::AuthenticatorStatus::INVALID_DOMAIN);

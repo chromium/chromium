@@ -3421,6 +3421,9 @@ TEST_F(AuthenticatorContentBrowserClientWithCableFlagTest,
             AuthenticatorStatus::NOT_ALLOWED_ERROR);
 }
 
+// AuthenticatorImplRemoteDesktopClientOverrideTest exercises the
+// RemoteDesktopClientOverride extension, which is used by remote desktop
+// applications exercising requests on behalf of other origins.
 class AuthenticatorImplRemoteDesktopClientOverrideTest
     : public AuthenticatorContentBrowserClientTest {
  protected:
@@ -3429,15 +3432,21 @@ class AuthenticatorImplRemoteDesktopClientOverrideTest
   static constexpr char kOtherRdpOrigin[] = "https://myrdp.test";
   static constexpr char kExampleOrigin[] = "https://example.test";
   static constexpr char kExampleRpId[] = "example.test";
+  static constexpr char kExampleAppid[] = "https://example.test/appid.json";
   static constexpr char kOtherRpId[] = "other.test";
+  static constexpr char kOtherAppid[] = "https://other.test/appid.json";
 
   void SetUp() override {
     AuthenticatorContentBrowserClientTest ::SetUp();
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-        switches::kWebAuthRemoteDesktopSupport);
+    // Authorize `kCorpCrdOrigin` to exercise the extension. In //chrome, this
+    // is controlled by the `WebAuthenticationRemoteProxiedRequestsAllowed`
+    // enterprise policy.
     test_client_.GetTestWebAuthenticationDelegate()
         ->remote_desktop_client_override_origin =
         url::Origin::Create(GURL(kCorpCrdOrigin));
+    // Controls the Blink feature gating the extension.
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        switches::kWebAuthRemoteDesktopSupport);
   }
 
   base::test::ScopedCommandLine scoped_command_line_;
@@ -3446,6 +3455,9 @@ class AuthenticatorImplRemoteDesktopClientOverrideTest
 };
 
 TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, MakeCredential) {
+  // Verify that an authorized origin may use the extension. Regular RP ID
+  // processing applies, i.e. the origin override must be authorized to claim
+  // the specified RP ID.
   const struct TestCase {
     std::string local_origin;
     std::string remote_origin;
@@ -3477,6 +3489,9 @@ TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, MakeCredential) {
 }
 
 TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, GetAssertion) {
+  // Verify that an authorized origin may use the extension. Regular RP ID
+  // processing applies, i.e. the origin override must be authorized to claim
+  // the specified RP ID.
   const struct TestCase {
     std::string local_origin;
     std::string remote_origin;
@@ -3508,6 +3523,86 @@ TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, GetAssertion) {
     EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
               test.success ? AuthenticatorStatus::SUCCESS
                            : AuthenticatorStatus::NOT_ALLOWED_ERROR);
+  }
+}
+
+TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, MakeCredentialAppid) {
+  // Verify that origin overriding extends to the appidExclude extension. If the
+  // caller origin is authorized to use the extension, App ID processing is
+  // applied to the overridden origin.
+  const struct TestCase {
+    std::string local_origin;
+    std::string remote_origin;
+    std::string rp_id;
+    std::string app_id;
+    bool success;
+  } test_cases[] = {
+      {kCorpCrdOrigin, kExampleOrigin, kExampleRpId, kExampleAppid, true},
+      {kCorpCrdOrigin, kExampleOrigin, kExampleRpId, kOtherAppid, false},
+      {kOtherRdpOrigin, kExampleOrigin, kExampleRpId, kExampleAppid, false},
+      {kOtherRdpOrigin, kExampleOrigin, kExampleRpId, kOtherAppid, false},
+      {kExampleOrigin, kExampleOrigin, kExampleRpId, kExampleAppid, false},
+      {kExampleOrigin, kExampleOrigin, kExampleRpId, kOtherAppid, false},
+  };
+
+  for (const auto& test : test_cases) {
+    SCOPED_TRACE(testing::Message()
+                 << "local=" << test.local_origin
+                 << " remote=" << test.remote_origin << " rp=" << test.rp_id
+                 << " appid=" << test.app_id);
+    NavigateAndCommit(GURL(test.local_origin));
+
+    PublicKeyCredentialCreationOptionsPtr options =
+        GetTestPublicKeyCredentialCreationOptions();
+    options->relying_party.id = test.rp_id;
+    options->appid_exclude = test.app_id;
+    options->remote_desktop_client_override = RemoteDesktopClientOverride::New(
+        url::Origin::Create(GURL(test.remote_origin)), true);
+
+    auto result = AuthenticatorMakeCredential(std::move(options));
+    EXPECT_EQ(test.success, result.status == AuthenticatorStatus::SUCCESS);
+  }
+}
+
+TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, GetAssertionAppid) {
+  // Verify that origin overriding extends to the appid extension. If the
+  // caller origin is authorized to use the extension, App ID processing is
+  // applied to the overridden origin.
+  const struct TestCase {
+    std::string local_origin;
+    std::string remote_origin;
+    std::string rp_id;
+    std::string app_id;
+    bool success;
+  } test_cases[] = {
+      {kCorpCrdOrigin, kExampleOrigin, kExampleRpId, kExampleAppid, true},
+      {kCorpCrdOrigin, kExampleOrigin, kExampleRpId, kOtherAppid, false},
+      {kOtherRdpOrigin, kExampleOrigin, kExampleRpId, kExampleAppid, false},
+      {kOtherRdpOrigin, kExampleOrigin, kExampleRpId, kOtherAppid, false},
+      {kExampleOrigin, kExampleOrigin, kExampleRpId, kExampleAppid, false},
+      {kExampleOrigin, kExampleOrigin, kExampleRpId, kOtherAppid, false},
+  };
+
+  for (const auto& test : test_cases) {
+    SCOPED_TRACE(testing::Message()
+                 << "local=" << test.local_origin
+                 << " remote=" << test.remote_origin << " rp=" << test.rp_id
+                 << " appid=" << test.app_id);
+    ResetVirtualDevice();
+    NavigateAndCommit(GURL(test.local_origin));
+
+    PublicKeyCredentialRequestOptionsPtr options =
+        GetTestPublicKeyCredentialRequestOptions();
+    options->relying_party_id = test.rp_id;
+    options->appid = test.app_id;
+    options->remote_desktop_client_override = RemoteDesktopClientOverride::New(
+        url::Origin::Create(GURL(test.remote_origin)), true);
+
+    ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+        options->allow_credentials[0].id, test.rp_id));
+
+    auto result = AuthenticatorGetAssertion(std::move(options));
+    EXPECT_EQ(test.success, result.status == AuthenticatorStatus::SUCCESS);
   }
 }
 
