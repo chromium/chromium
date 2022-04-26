@@ -457,6 +457,14 @@
       ],
     },
   },
+  'fuchsia-test-pool': {
+    # This pool is dedicated to test the test infra of fuchsia in chromium.
+    'swarming': {
+      'dimensions': {
+        'pool': 'chromium.tests.fuchsia',
+      },
+    },
+  },
   'fuchsia_logs': {
     '$mixin_append': {
       'args': [

@@ -3067,6 +3067,22 @@
           'linux-focal',
         ],
       },
+      # A temporary builder to test the changes to the emulator arguments on
+      # arm64.
+      'fuchsia-fyi-arm64-emu-arg': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'test_suites': {
+          'gtest_tests': 'fuchsia_gtests',
+        },
+        'mixins': [
+          'arm64',
+          'docker',
+          'fuchsia-test-pool',
+          'linux-focal',
+        ],
+      },
       'fuchsia-fyi-arm64-femu': {
         'additional_compile_targets': [
           'all',

@@ -71,6 +71,14 @@ luci.notifier(
 )
 
 luci.notifier(
+    name = "cr-fuchsia-engprod",
+    on_status_change = True,
+    notify_emails = [
+        "chrome-fuchsia-engprod+builder-notification@google.com",
+    ],
+)
+
+luci.notifier(
     name = "cronet",
     on_occurrence = ["FAILURE", "INFRA_FAILURE"],
     notify_emails = [
