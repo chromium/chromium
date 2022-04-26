@@ -94,7 +94,7 @@ FONT_FILES = [
     [[CONTENT_SHELL_FONTS_DIR], 'Lohit-Tamil.ttf', None],
     [[CONTENT_SHELL_FONTS_DIR], 'MuktiNarrow.ttf', None],
     [[CONTENT_SHELL_FONTS_DIR], 'NotoColorEmoji.ttf', None],
-    [[CONTENT_SHELL_FONTS_DIR], 'NotoSansCJKjp-Regular.otf', None],
+    [[CONTENT_SHELL_FONTS_DIR], 'NotoSansCJK-VF.otf.ttc', None],
     [[CONTENT_SHELL_FONTS_DIR], 'NotoSansKhmer-Regular.ttf', None],
     [[CONTENT_SHELL_FONTS_DIR], 'NotoSansSymbols2-Regular.ttf', None],
     [[CONTENT_SHELL_FONTS_DIR], 'NotoSansTibetan-Regular.ttf', None],

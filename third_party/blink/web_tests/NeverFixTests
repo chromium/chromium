@@ -105,6 +105,8 @@ fast/harness/results.html [ Skip ]
 [ Win ] virtual/text-antialias/international/draw-complex-text-from-to.html [ Skip ]
 [ Mac ] svg/text/text-with-geometric-precision.svg [ Skip ]
 [ Win ] svg/text/text-with-geometric-precision.svg [ Skip ]
+[ Mac ] virtual/text-antialias/variable-system-font-matching.html [ Skip ]
+[ Win ] virtual/text-antialias/variable-system-font-matching.html [ Skip ]
 
 # Mac has different fallback behavior so that this test won't work there
 [ Mac ] virtual/text-antialias/font-cachekey.html [ Skip ]

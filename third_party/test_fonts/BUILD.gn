@@ -28,7 +28,7 @@ copy("test_fonts") {
     "test_fonts/Lohit-Tamil.ttf",
     "test_fonts/MuktiNarrow.ttf",
     "test_fonts/NotoColorEmoji.ttf",
-    "test_fonts/NotoSansCJKjp-Regular.otf",
+    "test_fonts/NotoSansCJK-VF.otf.ttc",
     "test_fonts/NotoSansKhmer-Regular.ttf",
     "test_fonts/NotoSansSymbols2-Regular.ttf",
     "test_fonts/NotoSansTibetan-Regular.ttf",
