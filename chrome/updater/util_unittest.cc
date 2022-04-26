@@ -33,12 +33,6 @@ TEST(Util, AppArgsAndAP) {
     EXPECT_STREQ(app_args->app_id.c_str(),
                  "8a69f345-c564-463c-aff1-a69d9e530f96");
     EXPECT_STREQ(app_args->app_name.c_str(), "TestApp");
-
-    // Test GetAPFromAppArgs.
-    EXPECT_STREQ(GetAPFromAppArgs("NonExistentAppId").c_str(), "");
-    EXPECT_STREQ(
-        GetAPFromAppArgs("8a69f345-c564-463c-aff1-a69d9e530f96").c_str(),
-        "TestAP");
   }
 }
 

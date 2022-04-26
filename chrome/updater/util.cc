@@ -209,11 +209,6 @@ absl::optional<tagging::AppArgs> GetAppArgs(const std::string& app_id) {
                                    : absl::nullopt;
 }
 
-std::string GetAPFromAppArgs(const std::string& app_id) {
-  const absl::optional<tagging::AppArgs> app_args = GetAppArgs(app_id);
-  return app_args ? app_args->ap : std::string();
-}
-
 std::string GetInstallDataIndexFromAppArgs(const std::string& app_id) {
   const absl::optional<tagging::AppArgs> app_args = GetAppArgs(app_id);
   return app_args ? app_args->install_data_index : std::string();

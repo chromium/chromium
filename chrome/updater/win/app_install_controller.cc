@@ -490,7 +490,12 @@ void AppInstallControllerImpl::DoInstallApp() {
 
   RegistrationRequest request;
   request.app_id = app_id_;
-  request.ap = GetAPFromAppArgs(app_id_);
+  absl::optional<tagging::AppArgs> app_args = GetAppArgs(app_id_);
+  absl::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
+  if (app_args)
+    request.ap = app_args->ap;
+  if (tag_args)
+    request.brand_code = tag_args->brand_code;
 
   update_service_->RegisterApp(
       request,
