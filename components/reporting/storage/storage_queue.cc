@@ -282,33 +282,20 @@ Status StorageQueue::SetGenerationId(const base::FilePath& full_name) {
 StatusOr<int64_t> StorageQueue::AddDataFile(
     const base::FilePath& full_name,
     const base::FileEnumerator::FileInfo& file_info) {
-  const auto extension = full_name.FinalExtension();
-  if (extension.empty()) {
-    return Status(error::INTERNAL,
-                  base::StrCat({"File has no extension: '",
-                                full_name.MaybeAsASCII(), "'"}));
-  }
-  int64_t file_sequencing_id = 0;
-  const bool success =
-      base::StringToInt64(extension.substr(1), &file_sequencing_id);
-  if (!success) {
-    return Status(error::INTERNAL,
-                  base::StrCat({"File extension does not parse: '",
-                                full_name.MaybeAsASCII(), "'"}));
-  }
-
+  ASSIGN_OR_RETURN(int64_t file_sequence_id,
+                   SingleFile::GetFileSequenceIdFromPath(full_name));
   RETURN_IF_ERROR(SetGenerationId(full_name));
 
   auto file_or_status = SingleFile::Create(full_name, file_info.GetSize());
   if (!file_or_status.ok()) {
     return file_or_status.status();
   }
-  if (!files_.emplace(file_sequencing_id, file_or_status.ValueOrDie()).second) {
+  if (!files_.emplace(file_sequence_id, file_or_status.ValueOrDie()).second) {
     return Status(error::ALREADY_EXISTS,
                   base::StrCat({"Sequencing id duplicated: '",
                                 full_name.MaybeAsASCII(), "'"}));
   }
-  return file_sequencing_id;
+  return file_sequence_id;
 }
 
 Status StorageQueue::EnumerateDataFiles(
@@ -693,21 +680,16 @@ Status StorageQueue::RestoreMetadata(
       options_.directory(),
       /*recursive=*/false, base::FileEnumerator::FILES,
       base::StrCat({METADATA_NAME, FILE_PATH_LITERAL(".*")}));
-  base::FilePath full_name;
-  while (full_name = dir_enum.Next(), !full_name.empty()) {
-    const auto extension = dir_enum.GetInfo().GetName().FinalExtension();
-    if (extension.empty()) {
+  for (auto full_name = dir_enum.Next(); !full_name.empty();
+       full_name = dir_enum.Next()) {
+    const auto file_sequence_id =
+        SingleFile::GetFileSequenceIdFromPath(dir_enum.GetInfo().GetName());
+    if (!file_sequence_id.ok()) {
       continue;
     }
-    int64_t sequencing_id = 0;
-    bool success = base::StringToInt64(
-        dir_enum.GetInfo().GetName().FinalExtension().substr(1),
-        &sequencing_id);
-    if (!success) {
-      continue;
-    }
+
     // Record file name and size. Ignore the result.
-    meta_files.emplace(sequencing_id,
+    meta_files.emplace(file_sequence_id.ValueOrDie(),
                        std::make_pair(full_name, dir_enum.GetInfo().GetSize()));
   }
   // See whether we have a match for next_sequencing_id_ - 1.
@@ -773,18 +755,13 @@ void StorageQueue::DeleteOutdatedMetadata(int64_t sequencing_id_to_keep) {
   DeleteFilesWarnIfFailed(
       dir_enum,
       base::BindRepeating(
-          [](int64_t sequencing_id_to_keep, const base::FilePath& full_name) {
-            const auto extension = full_name.FinalExtension();
-            if (extension.empty()) {
+          [](int64_t sequence_id_to_keep, const base::FilePath& full_name) {
+            const auto sequence_id =
+                SingleFile::GetFileSequenceIdFromPath(full_name);
+            if (!sequence_id.ok()) {
               return false;
             }
-            int64_t sequencing_id = 0;
-            bool success =
-                base::StringToInt64(extension.substr(1), &sequencing_id);
-            if (!success) {
-              return false;
-            }
-            if (sequencing_id >= sequencing_id_to_keep) {
+            if (sequence_id.ValueOrDie() >= sequence_id_to_keep) {
               return false;
             }
             return true;
@@ -1694,6 +1671,26 @@ StorageQueue::SingleFile::Create(const base::FilePath& filename, int64_t size) {
       new SingleFile(filename, size));
 }
 
+StatusOr<int64_t> StorageQueue::SingleFile::GetFileSequenceIdFromPath(
+    const base::FilePath& file_name) {
+  const auto extension = file_name.FinalExtension();
+  if (extension.empty() || extension == FILE_PATH_LITERAL(".")) {
+    return Status(error::INTERNAL,
+                  base::StrCat({"File has no extension: '",
+                                file_name.MaybeAsASCII(), "'"}));
+  }
+  int64_t file_sequence_id = 0;
+  const bool success =
+      base::StringToInt64(extension.substr(1), &file_sequence_id);
+  if (!success) {
+    return Status(error::INTERNAL,
+                  base::StrCat({"File extension does not parse: '",
+                                file_name.MaybeAsASCII(), "'"}));
+  }
+
+  return file_sequence_id;
+}
+
 StorageQueue::SingleFile::SingleFile(const base::FilePath& filename,
                                      int64_t size)
     : filename_(filename), size_(size) {}
@@ -1865,5 +1862,4 @@ StatusOr<uint32_t> StorageQueue::SingleFile::Append(base::StringPiece data) {
   }
   return actual_size;
 }
-
 }  // namespace reporting
