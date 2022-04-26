@@ -46,6 +46,8 @@ crbug.com/860117 [ Linux ] editing/pasteboard/drag-drop-iframe-refresh-crash.htm
 crbug.com/809609 [ Linux ] editing/pasteboard/drop-file-svg.html [ Pass Failure ]
 crbug.com/809609 [ Linux ] editing/inserting/insert_div_with_style.html [ Pass Failure ]
 
+crbug.com/1181667 [ Linux ] external/wpt/css/selectors/focus-visible-011.html [ Failure Pass ]
+
 # -----------------------------------------------------------------
 # Sheriff 2018-04-23
 # -----------------------------------------------------------------
