@@ -1491,6 +1491,14 @@ void V4L2VideoEncodeAccelerator::RequestEncodingParametersChangeTask(
   if (bitrate.mode() != Bitrate::Mode::kConstant)
     return;
 
+  // Set bitrate control to CBR
+  // Not all devices support multiple bitrate control algorithms,
+  // so this control can't be mandatory and therefore the return
+  // value is not checked.
+  device_->SetExtCtrls(V4L2_CID_MPEG_CLASS,
+                       {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_BITRATE_MODE,
+                                    V4L2_MPEG_VIDEO_BITRATE_MODE_CBR)});
+
   if (current_bitrate_ == bitrate.target_bps() &&
       current_framerate_ == framerate) {
     return;
