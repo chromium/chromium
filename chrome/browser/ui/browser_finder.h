@@ -92,6 +92,14 @@ Browser* FindLastActive();
 size_t GetTotalBrowserCount();
 
 // Returns the number of browsers with the Profile |profile|.
+// Note that:
+// 1. A profile may have non-browser windows. These are not counted.
+// 2. A profile may have child profiles that have windows.  Those are not
+//    counted. Thus, for example, a Guest profile (which is never displayed
+//    directly) will return 0. (For a Guest profile, only the child off-the-
+//    record profile is visible.)  Likewise, a parent profile with off-the-
+//    record (Incognito) child profiles that have windows will not count those
+//    child windows.
 size_t GetBrowserCount(Profile* profile);
 
 // Returns the number of tabbed browsers with the Profile |profile|.
