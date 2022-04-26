@@ -4008,6 +4008,8 @@ static_library("browser") {
       "metrics/first_web_contents_profiler_base.cc",
       "metrics/first_web_contents_profiler_base.h",
       "metrics/incognito_observer_desktop.cc",
+      "metrics/power/power_metrics.cc",
+      "metrics/power/power_metrics.h",
       "metrics/power/power_metrics_reporter.cc",
       "metrics/power/power_metrics_reporter.h",
       "metrics/power/usage_scenario.cc",

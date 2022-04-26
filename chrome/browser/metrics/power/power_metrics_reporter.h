@@ -5,14 +5,13 @@
 #ifndef CHROME_BROWSER_METRICS_POWER_POWER_METRICS_REPORTER_H_
 #define CHROME_BROWSER_METRICS_POWER_POWER_METRICS_REPORTER_H_
 
-#include <stdint.h>
 #include <memory>
 #include <utility>
 
-#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/power/battery_level_provider.h"
+#include "chrome/browser/metrics/power/power_metrics.h"
 #include "chrome/browser/metrics/power/usage_scenario.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_tracker.h"
@@ -94,26 +93,6 @@ class PowerMetricsReporter
   static int64_t GetBucketForSampleForTesting(base::TimeDelta value);
 
  protected:
-  // Any change to this enum should be reflected in the corresponding enums.xml
-  // and ukm.xml
-  enum class BatteryDischargeMode {
-    kDischarging = 0,
-    kPluggedIn = 1,
-    kStateChanged = 2,
-    kChargeLevelUnavailable = 3,
-    kNoBattery = 4,
-    kBatteryLevelIncreased = 5,
-    kInvalidInterval = 6,
-    kMacFullyCharged = 7,
-    kMaxValue = kMacFullyCharged
-  };
-
-  struct BatteryDischarge {
-    PowerMetricsReporter::BatteryDischargeMode mode;
-    // Discharge rate in 1/10000 of full capacity per minute.
-    absl::optional<int64_t> rate;
-  };
-
   static void ReportLongIntervalHistograms(
       const UsageScenarioDataStore::IntervalData& interval_data,
       const ProcessMonitor::Metrics& aggregated_process_metrics,
@@ -127,31 +106,10 @@ class PowerMetricsReporter
   );
 
 #if BUILDFLAG(IS_MAC)
-  static void ReportShortIntervalHistograms(
-      const char* scenario_suffix,
-      absl::optional<CoalitionResourceUsageRate> coalition_resource_usage_rate);
-
   // Emit trace event when CPU usage is high for 10 secondes or more.
   void MaybeEmitHighCPUTraceEvent(
       const ScenarioParams& short_interval_scenario_params,
       absl::optional<CoalitionResourceUsageRate> coalition_resource_usage_rate);
-#endif  // BUILDFLAG(IS_MAC)
-
-  // Report battery metrics to histograms with |suffixes|.
-  static void ReportBatteryHistograms(base::TimeDelta interval_duration,
-                                      BatteryDischarge battery_discharge,
-                                      const std::vector<const char*>& suffixes);
-
-  // Report aggregated process metrics to histograms with |suffixes|.
-  static void ReportAggregatedProcessMetricsHistograms(
-      const ProcessMonitor::Metrics& aggregated_process_metrics,
-      const std::vector<const char*>& suffixes);
-
-#if BUILDFLAG(IS_MAC)
-  // Report resource coalition metrics to histograms with |suffixes|.
-  static void ReportResourceCoalitionHistograms(
-      const power_metrics::CoalitionResourceUsageRate& rate,
-      const std::vector<const char*>& suffixes);
 #endif  // BUILDFLAG(IS_MAC)
 
  private:
