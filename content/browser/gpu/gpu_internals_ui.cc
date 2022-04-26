@@ -458,6 +458,8 @@ const char* D3dFeatureLevelToString(D3D_FEATURE_LEVEL level) {
       return "12_0";
     case D3D_FEATURE_LEVEL_12_1:
       return "12_1";
+    case D3D_FEATURE_LEVEL_12_2:
+      return "12_2";
     default:
       NOTREACHED();
       return "";

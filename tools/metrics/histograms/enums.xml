@@ -20824,6 +20824,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="10" label="11.1"/>
   <int value="11" label="12.0"/>
   <int value="12" label="12.1"/>
+  <int value="13" label="12.2"/>
 </enum>
 
 <enum name="D3D11InitializeResult">
@@ -20926,6 +20927,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="6" label="D3D_SHADER_MODEL_6_4"/>
   <int value="7" label="D3D_SHADER_MODEL_6_5"/>
   <int value="8" label="D3D_SHADER_MODEL_6_6"/>
+  <int value="9" label="D3D_SHADER_MODEL_6_7"/>
 </enum>
 
 <enum name="DailyEventIntervalType">

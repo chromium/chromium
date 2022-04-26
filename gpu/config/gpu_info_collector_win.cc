@@ -89,7 +89,8 @@ enum class D3D12ShaderModel {
   kD3DShaderModel_6_4 = 6,
   kD3DShaderModel_6_5 = 7,
   kD3DShaderModel_6_6 = 8,
-  kMaxValue = kD3DShaderModel_6_6,
+  kD3DShaderModel_6_7 = 9,
+  kMaxValue = kD3DShaderModel_6_7,
 };
 
 D3D12ShaderModel ConvertToHistogramShaderVersion(uint32_t version) {
@@ -112,6 +113,8 @@ D3D12ShaderModel ConvertToHistogramShaderVersion(uint32_t version) {
       return D3D12ShaderModel::kD3DShaderModel_6_5;
     case D3D_SHADER_MODEL_6_6:
       return D3D12ShaderModel::kD3DShaderModel_6_6;
+    case D3D_SHADER_MODEL_6_7:
+      return D3D12ShaderModel::kD3DShaderModel_6_7;
 
     default:
       NOTREACHED();
@@ -374,6 +377,8 @@ void GetGpuSupportedD3D12Version(uint32_t& d3d12_feature_level,
   // Query the maximum supported shader model version.
   if (d3d12_device) {
     D3D12_FEATURE_DATA_SHADER_MODEL shader_model_data = {};
+    // TODO(crbug.com/1312519): Setting the HighestShaderModel to 6_7 will cause
+    // failure in CheckFeatureSupport(). Use D3D_SHADER_MODEL_6_6 for now.
     shader_model_data.HighestShaderModel = D3D_SHADER_MODEL_6_6;
     if (SUCCEEDED(d3d12_device->CheckFeatureSupport(
             D3D12_FEATURE_SHADER_MODEL, &shader_model_data,
@@ -631,7 +636,9 @@ bool CollectD3D11FeatureInfo(D3D_FEATURE_LEVEL* d3d11_feature_level,
   if (!D3D11CreateDevice)
     return false;
 
-  // The order of feature levels to attempt to create in D3D CreateDevice
+  // The order of feature levels to attempt to create in D3D CreateDevice.
+  // TODO(crbug.com/1312519): Using 12_2 in kFeatureLevels[] will cause failure
+  // in D3D11CreateDevice(). Limit the highest feature to 12_1.
   const D3D_FEATURE_LEVEL kFeatureLevels[] = {
       D3D_FEATURE_LEVEL_12_1, D3D_FEATURE_LEVEL_12_0, D3D_FEATURE_LEVEL_11_1,
       D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0,
