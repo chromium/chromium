@@ -712,7 +712,8 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
 
     // For the browser window, if a tab of the browser is activated, we don't
     // need to calculate the browser window running time.
-    if (app_id == app_constants::kChromeAppId &&
+    if ((app_id == app_constants::kChromeAppId ||
+         app_id == app_constants::kLacrosAppId) &&
         browser_to_tab_list_.HasActivatedTab(update.Window())) {
       SetWindowInActivated(app_id, update.InstanceId(), kInActivated);
       return;
@@ -812,12 +813,18 @@ void AppPlatformMetrics::UpdateBrowserWindowStatus(
   std::string browser_app_id;
   GetBrowserInstanceInfo(browser_window, browser_id, browser_app_id, state);
   if (state & InstanceState::kActive) {
+    AppType app_type = AppType::kChromeApp;
+    AppTypeName app_type_name = AppTypeName::kChromeBrowser;
+    AppTypeNameV2 app_type_name_v2 = AppTypeNameV2::kChromeBrowser;
+    if (browser_app_id == app_constants::kLacrosAppId) {
+      app_type = AppType::kStandaloneBrowser;
+      app_type_name = AppTypeName::kStandaloneBrowser;
+      app_type_name_v2 = AppTypeNameV2::kStandaloneBrowser;
+    }
     // The browser window is activated, start calculating the browser window
     // running time.
-    // TODO(crbug.com/1251501): Handle lacros window.
-    SetWindowActivated(AppType::kChromeApp, AppTypeName::kChromeBrowser,
-                       AppTypeNameV2::kChromeBrowser, browser_app_id,
-                       browser_id);
+    SetWindowActivated(app_type, app_type_name, app_type_name_v2,
+                       browser_app_id, browser_id);
   }
 }
 

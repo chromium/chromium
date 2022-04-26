@@ -1691,10 +1691,11 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmForWebAppsOpenInLacrosTabs) {
                  kActiveInstanceState);
   task_environment_.FastForwardBy(base::Minutes(5));
 
-  // Create a web app tab for `web_app_id1`, and set it as activated.
+  // Create a web app tab for `web_app_id1`, and set it as activated. We don't
+  // need to set the Lacros window as inactivated, because the activated web app
+  // tab can set the Lacros window as inactivated. And when the web app tabs are
+  // inactivated, the Lacros window can be set as activated.
   ModifyInstance(instance_id1, web_app_id1, window.get(), kActiveInstanceState);
-  ModifyInstance(instance_id0, app_constants::kLacrosAppId, window.get(),
-                 kInactiveInstanceState);
   task_environment_.FastForwardBy(base::Minutes(4));
 
   // Create a web app tab for `web_app_id2`, and set it as activated.
@@ -1703,12 +1704,23 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmForWebAppsOpenInLacrosTabs) {
                  kInactiveInstanceState);
   task_environment_.FastForwardBy(base::Minutes(3));
 
+  // The web app tabs are inactivated, so the Lacros window is set as activated
+  // in code.
   ModifyInstance(instance_id2, web_app_id2, window.get(),
+                 kInactiveInstanceState);
+  task_environment_.FastForwardBy(base::Minutes(5));
+
+  // Set the Lacros window as inactivated.
+  ModifyInstance(instance_id0, app_constants::kLacrosAppId, window.get(),
                  kInactiveInstanceState);
 
   // Set time passed 2 hours to record the usage time AppKM.
   task_environment_.FastForwardBy(base::Minutes(108));
-  VerifyAppUsageTimeUkm(app_constants::kLacrosAppId, /*duration=*/300000,
+
+  // The Lacros window is activated for 5 minutes before web app tabs are
+  // created, and the Lacros window is set as activated for 5 minutes again when
+  // web app tabs are inactivated.
+  VerifyAppUsageTimeUkm(app_constants::kLacrosAppId, /*duration=*/600000,
                         AppTypeName::kStandaloneBrowser);
   VerifyAppUsageTimeUkm(url1, /*duration=*/240000,
                         AppTypeName::kStandaloneBrowser);

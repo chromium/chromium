@@ -178,8 +178,10 @@ bool IsLacrosBrowserWindow(Profile* profile, aura::Window* window) {
 }
 
 bool IsAppOpenedInTab(AppTypeName app_type_name, const std::string& app_id) {
-  return app_type_name == apps::AppTypeName::kChromeBrowser &&
-         app_id != app_constants::kChromeAppId;
+  return (app_type_name == apps::AppTypeName::kChromeBrowser &&
+          app_id != app_constants::kChromeAppId) ||
+         (app_type_name == apps::AppTypeName::kStandaloneBrowser &&
+          app_id != app_constants::kLacrosAppId);
 }
 
 bool IsAppOpenedWithBrowserWindow(Profile* profile,
