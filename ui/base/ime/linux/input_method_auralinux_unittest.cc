@@ -91,7 +91,8 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
   }
 
   TextInputType input_type() const { return input_type_; }
-  int input_flags() const { return input_flags_; }
+  TextInputMode input_mode() const { return input_mode_; }
+  uint32_t input_flags() const { return input_flags_; }
   bool should_do_learning() const { return should_do_learning_; }
 
  protected:
@@ -161,11 +162,13 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
     TestResult::GetInstance()->RecordAction(base::ASCIIToUTF16(re.str()));
   }
 
-  void SetContentType(TextInputType input_type,
-                      int input_flags,
+  void SetContentType(TextInputType type,
+                      TextInputMode mode,
+                      uint32_t flags,
                       bool should_do_learning) override {
-    input_type_ = input_type;
-    input_flags_ = input_flags;
+    input_type_ = type;
+    input_mode_ = mode;
+    input_flags_ = flags;
     should_do_learning_ = should_do_learning;
   }
 
@@ -178,7 +181,8 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
   bool focused_;
   gfx::Rect cursor_position_;
   TextInputType input_type_;
-  int input_flags_;
+  TextInputMode input_mode_;
+  uint32_t input_flags_;
   bool should_do_learning_;
 };
 

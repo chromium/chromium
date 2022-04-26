@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "base/strings/string_piece.h"
+#include "ui/base/ime/text_input_mode.h"
+#include "ui/base/ime/text_input_type.h"
 
 namespace gfx {
 class Rect;
@@ -101,8 +103,10 @@ class ZWPTextInputWrapper {
   virtual void SetCursorRect(const gfx::Rect& rect) = 0;
   virtual void SetSurroundingText(const std::string& text,
                                   const gfx::Range& selection_range) = 0;
-  virtual void SetContentType(uint32_t content_hint,
-                              uint32_t content_purpose) = 0;
+  virtual void SetContentType(ui::TextInputType type,
+                              ui::TextInputMode mode,
+                              uint32_t flags,
+                              bool should_do_learning) = 0;
 };
 
 }  // namespace ui

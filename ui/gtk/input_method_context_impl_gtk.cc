@@ -251,8 +251,9 @@ void InputMethodContextImplGtk::SetContextClientWindow(GdkWindow* window) {
   gdk_last_set_client_window_ = window;
 }
 
-void InputMethodContextImplGtk::SetContentType(ui::TextInputType input_type,
-                                               int input_flags,
+void InputMethodContextImplGtk::SetContentType(ui::TextInputType type,
+                                               ui::TextInputMode mode,
+                                               uint32_t flags,
                                                bool should_do_learning) {
   // Do nothing.
 }

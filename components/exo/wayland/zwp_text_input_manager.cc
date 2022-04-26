@@ -20,6 +20,7 @@
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/xkb_tracker.h"
 #include "ui/base/ime/utf_offset.h"
+#include "ui/base/wayland/wayland_server_input_types.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/ozone/layout/xkb/xkb_modifier_converter.h"
@@ -62,6 +63,8 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
   base::WeakPtr<WaylandTextInputDelegate> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
+
+  wl_resource* resource() { return text_input_; }
 
  private:
   wl_client* client() { return wl_resource_get_client(text_input_); }
@@ -271,6 +274,8 @@ class WaylandExtendedTextInput {
       delegate_->set_extended_text_input(nullptr);
   }
 
+  WaylandTextInputDelegate* delegate() { return delegate_.get(); }
+
  private:
   base::WeakPtr<WaylandTextInputDelegate> delegate_;
 };
@@ -478,8 +483,40 @@ void extended_text_input_destroy(wl_client* client, wl_resource* resource) {
   wl_resource_destroy(resource);
 }
 
+void extended_text_input_set_input_type(wl_client* client,
+                                        wl_resource* resource,
+                                        uint32_t input_type,
+                                        uint32_t input_mode,
+                                        uint32_t input_flags,
+                                        uint32_t learning_mode) {
+  auto* delegate =
+      GetUserDataAs<WaylandExtendedTextInput>(resource)->delegate();
+  if (!delegate)
+    return;
+
+  // If unknown value is passed, fall back to the default one.
+  auto ui_type =
+      ui::wayland::ConvertToTextInputType(
+          static_cast<zcr_extended_text_input_v1_input_type>(input_type))
+          .value_or(ui::TEXT_INPUT_TYPE_TEXT);
+  auto ui_mode =
+      ui::wayland::ConvertToTextInputMode(
+          static_cast<zcr_extended_text_input_v1_input_mode>(input_mode))
+          .value_or(ui::TEXT_INPUT_MODE_DEFAULT);
+  // Ignore unknown flags.
+  auto ui_flags = ui::wayland::ConvertToTextInputFlags(input_flags).first;
+  bool should_do_learning =
+      learning_mode == ZCR_EXTENDED_TEXT_INPUT_V1_LEARNING_MODE_ENABLED;
+
+  auto* text_input = GetUserDataAs<TextInput>(delegate->resource());
+  text_input->SetTypeModeFlags(ui_type, ui_mode, ui_flags, should_do_learning);
+}
+
 constexpr struct zcr_extended_text_input_v1_interface
-    extended_text_input_implementation = {extended_text_input_destroy};
+    extended_text_input_implementation = {
+        extended_text_input_destroy,
+        extended_text_input_set_input_type,
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 // text_input_extension_v1 interface:

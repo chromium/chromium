@@ -39,8 +39,9 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
   void Blur() override;
   void SetSurroundingText(const std::u16string& text,
                           const gfx::Range& selection_range) override;
-  void SetContentType(ui::TextInputType input_type,
-                      int input_flags,
+  void SetContentType(ui::TextInputType type,
+                      ui::TextInputMode mode,
+                      uint32_t flags,
                       bool should_do_learning) override;
   ui::VirtualKeyboardController* GetVirtualKeyboardController() override;
 

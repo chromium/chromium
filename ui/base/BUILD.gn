@@ -1212,6 +1212,11 @@ test("ui_base_unittests") {
       "//ui/lottie",
     ]
   }
+
+  # If the platform supports wayland, run wayland library unittests, too.
+  if (is_chromeos_ash || ozone_platform_wayland) {
+    deps += [ "//ui/base/wayland:unittests" ]
+  }
 }
 
 if (is_mac) {

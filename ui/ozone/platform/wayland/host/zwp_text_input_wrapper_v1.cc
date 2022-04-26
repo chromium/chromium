@@ -9,6 +9,7 @@
 
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
+#include "ui/base/wayland/wayland_client_input_types.h"
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
@@ -16,6 +17,71 @@
 
 namespace ui {
 namespace {
+
+// Converts Chrome's TextInputType into wayland's content_purpose.
+// Some of TextInputType values do not have clearly corresponding wayland value,
+// and they fallback to closer type.
+uint32_t InputTypeToContentPurpose(TextInputType input_type) {
+  switch (input_type) {
+    case TEXT_INPUT_TYPE_NONE:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+    case TEXT_INPUT_TYPE_TEXT:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+    case TEXT_INPUT_TYPE_PASSWORD:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_PASSWORD;
+    case TEXT_INPUT_TYPE_SEARCH:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+    case TEXT_INPUT_TYPE_EMAIL:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_EMAIL;
+    case TEXT_INPUT_TYPE_NUMBER:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NUMBER;
+    case TEXT_INPUT_TYPE_TELEPHONE:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_PHONE;
+    case TEXT_INPUT_TYPE_URL:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_URL;
+    case TEXT_INPUT_TYPE_DATE:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATE;
+    case TEXT_INPUT_TYPE_DATE_TIME:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATETIME;
+    case TEXT_INPUT_TYPE_DATE_TIME_LOCAL:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATETIME;
+    case TEXT_INPUT_TYPE_MONTH:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATE;
+    case TEXT_INPUT_TYPE_TIME:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_TIME;
+    case TEXT_INPUT_TYPE_WEEK:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATE;
+    case TEXT_INPUT_TYPE_TEXT_AREA:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+    case TEXT_INPUT_TYPE_CONTENT_EDITABLE:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+    case TEXT_INPUT_TYPE_DATE_TIME_FIELD:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATETIME;
+    case TEXT_INPUT_TYPE_NULL:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+  }
+}
+
+// Converts Chrome's TextInputType into wayland's content_hint.
+uint32_t InputFlagsToContentHint(int input_flags) {
+  uint32_t hint = 0;
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCOMPLETE_ON)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_AUTO_COMPLETION;
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCORRECT_ON)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_AUTO_CORRECTION;
+  // No good match. Fallback to AUTO_CORRECTION.
+  if (input_flags & TEXT_INPUT_FLAG_SPELLCHECK_ON)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_AUTO_CORRECTION;
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCAPITALIZE_CHARACTERS)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_UPPERCASE;
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCAPITALIZE_WORDS)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_TITLECASE;
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCAPITALIZE_SENTENCES)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_AUTO_CAPITALIZATION;
+  if (input_flags & TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_PASSWORD;
+  return hint;
+}
 
 // Parses the content of |array|, and creates a map of modifiers.
 // The content of array is just a concat of modifier names in c-style string
@@ -116,8 +182,29 @@ void ZWPTextInputWrapperV1::SetSurroundingText(
       obj_.get(), text.c_str(), selection_range.start(), selection_range.end());
 }
 
-void ZWPTextInputWrapperV1::SetContentType(uint32_t content_hint,
-                                           uint32_t content_purpose) {
+void ZWPTextInputWrapperV1::SetContentType(ui::TextInputType type,
+                                           ui::TextInputMode mode,
+                                           uint32_t flags,
+                                           bool should_do_learning) {
+  // If wayland compositor supports the extended version of set input type,
+  // use it to avoid loosing the info.
+  if (extended_obj_.get() &&
+      wl::get_version_of_object(extended_obj_.get()) >=
+          ZCR_EXTENDED_TEXT_INPUT_V1_SET_INPUT_TYPE_SINCE_VERSION) {
+    zcr_extended_text_input_v1_set_input_type(
+        extended_obj_.get(), ui::wayland::ConvertFromTextInputType(type),
+        ui::wayland::ConvertFromTextInputMode(mode),
+        ui::wayland::ConvertFromTextInputFlags(flags),
+        should_do_learning ? ZCR_EXTENDED_TEXT_INPUT_V1_LEARNING_MODE_ENABLED
+                           : ZCR_EXTENDED_TEXT_INPUT_V1_LEARNING_MODE_DISABLED);
+    return;
+  }
+
+  // Otherwise, fallback to the standard set_content_type.
+  uint32_t content_purpose = InputTypeToContentPurpose(type);
+  uint32_t content_hint = InputFlagsToContentHint(flags);
+  if (!should_do_learning)
+    content_hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_SENSITIVE_DATA;
   zwp_text_input_v1_set_content_type(obj_.get(), content_hint, content_purpose);
 }
 

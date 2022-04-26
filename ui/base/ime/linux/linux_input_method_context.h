@@ -5,10 +5,13 @@
 #ifndef UI_BASE_IME_LINUX_LINUX_INPUT_METHOD_CONTEXT_H_
 #define UI_BASE_IME_LINUX_LINUX_INPUT_METHOD_CONTEXT_H_
 
+#include <stdint.h>
+
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
+#include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
 
 namespace gfx {
@@ -46,8 +49,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContext {
                                   const gfx::Range& selection_range) = 0;
 
   // Tells the system IME the content type of the text input client is changed.
-  virtual void SetContentType(TextInputType input_type,
-                              int input_flags,
+  virtual void SetContentType(TextInputType type,
+                              TextInputMode mode,
+                              uint32_t flags,
                               bool should_do_learning) = 0;
 
   // Resets the context.  A client needs to call OnTextInputTypeChanged() again

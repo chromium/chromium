@@ -388,6 +388,7 @@ TEST_P(WaylandInputMethodContextTest, SetContentType) {
                              ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_URL))
       .Times(1);
   input_method_context_->SetContentType(TEXT_INPUT_TYPE_URL,
+                                        TEXT_INPUT_MODE_DEFAULT,
                                         TEXT_INPUT_FLAG_AUTOCOMPLETE_ON,
                                         /*should_do_learning=*/true);
   connection_->ScheduleFlush();
@@ -401,6 +402,7 @@ TEST_P(WaylandInputMethodContextTest, SetContentTypeWithoutLearning) {
                              ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_URL))
       .Times(1);
   input_method_context_->SetContentType(TEXT_INPUT_TYPE_URL,
+                                        TEXT_INPUT_MODE_DEFAULT,
                                         TEXT_INPUT_FLAG_AUTOCOMPLETE_ON,
                                         /*should_do_learning=*/false);
   connection_->ScheduleFlush();

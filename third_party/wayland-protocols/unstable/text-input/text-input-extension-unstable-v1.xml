@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zcr_text_input_extension_v1" version="1">
+  <interface name="zcr_text_input_extension_v1" version="2">
     <description summary="extends text_input to support richer operations">
       Allows a text_input to sends more variation of operations to support
       richer features, such as set_preedit_region.
@@ -54,9 +54,10 @@
       <arg name="id" type="new_id" interface="zcr_extended_text_input_v1"/>
       <arg name="text_input" type="object" interface="zwp_text_input_v1"/>
     </request>
+
   </interface>
 
-  <interface name="zcr_extended_text_input_v1" version="1">
+  <interface name="zcr_extended_text_input_v1" version="2">
     <description summary="extension of text_input protocol">
       The zcr_extended_text_input_v1 interface extends the text_input interface
       to support more rich operations on text_input.
@@ -81,6 +82,92 @@
       <arg name="index" type="int" />
       <arg name="length" type="uint" />
     </event>
+
+    <!-- Version 2 -->
+
+    <enum name="input_type" since="2">
+      <description summary="Chrome's TextInputType">
+        Wayland has its own input-type support, which is
+        zwp_text_input::content_purpose. However, it is not rich enough to
+        represent all Chrome's input types. This enum is introduced to keep
+        all entries so exo can understand it without any information loss.
+        See TextInputType's description for details about each entry.
+      </description>
+      <entry name="none" value="0" />
+      <entry name="text" value="1" />
+      <entry name="password" value="2" />
+      <entry name="search" value="3" />
+      <entry name="email" value="4" />
+      <entry name="number" value="5" />
+      <entry name="telephone" value="6" />
+      <entry name="url" value="7" />
+      <entry name="date" value="8" />
+      <entry name="date_time" value="9" />
+      <entry name="date_time_local" value="10" />
+      <entry name="month" value="11" />
+      <entry name="time" value="12" />
+      <entry name="week" value="13" />
+      <entry name="text_area" value="14" />
+      <entry name="content_editable" value="15" />
+      <entry name="date_time_field" value="16" />
+      <entry name="null" value="17" />
+    </enum>
+
+    <enum name="input_mode" since="2">
+      <description summary="Chrome's TextInputMode">
+        Similar to input_type defined above, this keeps Chrome's TextInputMode.
+        See TextInputMode's description for details for each entry.
+      </description>
+      <entry name="default" value="0" />
+      <entry name="none" value="1" />
+      <entry name="text" value="2" />
+      <entry name="tel" value="3" />
+      <entry name="url" value="4" />
+      <entry name="email" value="5" />
+      <entry name="numeric" value="6" />
+      <entry name="decimal" value="7" />
+      <entry name="search" value="8" />
+    </enum>
+
+    <enum name="input_flags" since="2">
+      <description summary="Chrome's TextInputFlags">
+        Similar to input_type defined above, this keeps Chrome's TextInputFlags,
+        because content_hint is not enough power to represent what Chrome wants.
+        See TextInputFlags' description for details for each entry.
+      </description>
+      <entry name="none" value="0" />
+      <entry name="autocomplete_on" value="1 &lt;&lt; 0" />
+      <entry name="autocomplete_off" value="1 &lt;&lt; 1" />
+      <entry name="autocorrect_on" value="1 &lt;&lt; 2" />
+      <entry name="autocorrect_off" value="1 &lt;&lt; 3" />
+      <entry name="spellcheck_on" value="1 &lt;&lt; 4" />
+      <entry name="spellcheck_off" value="1 &lt;&lt; 5" />
+      <entry name="autocapitalize_none" value="1 &lt;&lt; 6" />
+      <entry name="autocapitalize_characters" value="1 &lt;&lt; 7" />
+      <entry name="autocapitalize_words" value="1 &lt;&lt; 8" />
+      <entry name="autocapitalize_sentences" value="1 &lt;&lt; 9" />
+      <entry name="has_been_password" value="1 &lt;&lt; 10" />
+    </enum>
+
+    <enum name="learning_mode" since="2">
+      <description summary="Whether IME is allowed to learn" />
+      <entry name="disabled" value="0" />
+      <entry name="enabled" value="1" />
+    </enum>
+
+    <request name="set_input_type" since="2">
+      <description summary="Sets input type, mode and flags together">
+        In wayland, there's a concept that can be mapped to Chrome's
+        TextInputType, Mode and Flags. It can be set via
+        zwp_text_input::set_content_type. However, the variation is not rich
+        enough to represent Chrome's detailed behavior change. This API can be
+        used as a replacement of set_content_type.
+      </description>
+      <arg name="input_type" type="uint" enum="input_type" />
+      <arg name="input_mode" type="uint" enum="input_mode" />
+      <arg name="input_flags" type="uint" />
+      <arg name="learning_mode" type="uint" enum="learning_mode" />
+    </request>
 
   </interface>
 </protocol>

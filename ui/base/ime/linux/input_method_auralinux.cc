@@ -369,9 +369,15 @@ void InputMethodAuraLinux::UpdateContextFocusState() {
               text_input_type_ != TEXT_INPUT_TYPE_PASSWORD
           ? context_.get()
           : context_simple_.get();
-  int flags = client ? client->GetTextInputFlags() : TEXT_INPUT_FLAG_NONE;
-  context->SetContentType(text_input_type_, flags,
-                          client && client->ShouldDoLearning());
+  TextInputMode mode = TEXT_INPUT_MODE_DEFAULT;
+  int flags = TEXT_INPUT_FLAG_NONE;
+  bool should_do_learning = false;
+  if (client) {
+    mode = client->GetTextInputMode();
+    flags = client->GetTextInputFlags();
+    should_do_learning = client->ShouldDoLearning();
+  }
+  context->SetContentType(text_input_type_, mode, flags, should_do_learning);
 }
 
 void InputMethodAuraLinux::OnTextInputTypeChanged(TextInputClient* client) {
