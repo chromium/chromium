@@ -51,8 +51,14 @@
            role="alert" hidden>$i18n{attachFileToBig}</div>
     </div>
     <div id="attach-file-note" aria-hidden="true">$i18n{attachFileNote}</div>
+    <!-- User Consent -->
+    <div id="consent-container" class="checkbox-field-container">
+      <input id="consent-checkbox" type="checkbox"
+          aria-labelledby="consent-chk-label">
+      <label id="consent-chk-label">$i18n{consentCheckboxLabel}</label>
+    </div>
     <!-- Screenshot -->
-    <div id="screenshot-container" class="checkbox-field-container">
+    <div class="checkbox-field-container">
       <input id="screenshot-checkbox" type="checkbox"
              aria-labelledby="screenshot-chk-label">
       <label id="screenshot-chk-label">$i18n{screenshot}</label>

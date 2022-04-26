@@ -7691,6 +7691,9 @@ Check your passwords anytime in  <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google
         <message name="IDS_FEEDBACK_ANONYMOUS_EMAIL_OPTION" desc="Option in the drop down menu to let the user send the feedback report without attaching their email.">
           Do not include email address
         </message>
+        <message name="IDS_FEEDBACK_CONSENT_CHECKBOX_LABEL" desc="Checkbox for indicating whether the user agrees to be contacted back.">
+          We may email you for more information or updates
+        </message>
         <message name="IDS_FEEDBACK_SCREENSHOT_LABEL" desc="Label for the screenshot field if current screenshots are being shown">
           Include this screenshot and titles of open tabs
         </message>

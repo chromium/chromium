@@ -50,9 +50,6 @@ class FeedbackHelper {
     const ID = Math.round(Date.now() / 1000);
     const FLOW = feedbackInfo.flow;
 
-    if (!useSystemInfo) {
-      feedbackInfo.systemInformation = [];
-    }
     chrome.feedbackPrivate.sendFeedback(
         feedbackInfo, useSystemInfo, formOpenTime,
         function(result, landingPageType) {
@@ -407,6 +404,15 @@ function sendReport(): boolean {
       data: attachedFileBlob,
     };
   }
+
+  const consentCheckboxValue: boolean =
+      ($('consent-checkbox') as HTMLInputElement).checked;
+  feedbackInfo.systemInformation = [
+    {
+      key: 'feedbackUserCtlConsent',
+      value: String(consentCheckboxValue),
+    },
+  ];
 
   feedbackInfo.description = textarea.value;
   feedbackInfo.pageUrl = ($('page-url-text') as HTMLInputElement).value;
