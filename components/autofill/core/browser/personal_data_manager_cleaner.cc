@@ -174,14 +174,6 @@ void PersonalDataManagerCleaner::RemoveInaccessibleProfileValues() {
       // happen via UpdateProfile().
       AutofillProfile updated_profile = *profile;
       updated_profile.ClearFields(inaccessible_fields);
-      // Only log when fields were removed. Otherwise the metric is increased on
-      // every start-up and becomes meaningless for profile imports, where both
-      // cases are logged.
-      AutofillMetrics::LogRemovedSettingInaccessibleFields(true);
-      for (const ServerFieldType inaccessible_field : inaccessible_fields) {
-        AutofillMetrics::LogRemovedSettingInaccessibleField(country_code,
-                                                            inaccessible_field);
-      }
       personal_data_manager_->UpdateProfile(updated_profile);
     }
   }

@@ -461,8 +461,7 @@ void FormDataImporter::RemoveInaccessibleProfileValues(
     AutofillMetrics::LogRemovedSettingInaccessibleFields(
         !inaccessible_fields.empty());
     for (const ServerFieldType inaccessible_field : inaccessible_fields) {
-      AutofillMetrics::LogRemovedSettingInaccessibleField(
-          predicted_country_code, inaccessible_field);
+      AutofillMetrics::LogRemovedSettingInaccessibleField(inaccessible_field);
     }
   }
 }

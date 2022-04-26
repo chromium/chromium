@@ -2047,14 +2047,12 @@ class AutofillMetrics {
       int number_of_affected_fields,
       AutofillClient::SaveAddressProfileOfferUserDecision decision);
 
-  // Records if at least one setting-inaccessible field was removed on import.
+  // Logs if at least one setting-inaccessible field was removed on import.
   static void LogRemovedSettingInaccessibleFields(bool did_remove);
 
-  // Records that |field| was removed in a profile of |country| on import,
-  // because |field| is inaccessible in the |country|-specific settings.
-  static void LogRemovedSettingInaccessibleField(
-      const std::string& country_code,
-      ServerFieldType field);
+  // Logs that |field| was removed from a profile on import, because it is
+  // setting-inaccessible in the profile's country.
+  static void LogRemovedSettingInaccessibleField(ServerFieldType field);
 
   // Logs when the virtual card metadata for one card have been updated.
   static void LogVirtualCardMetadataSynced(bool existing_card);

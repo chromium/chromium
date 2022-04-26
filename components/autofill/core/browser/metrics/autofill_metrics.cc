@@ -3409,10 +3409,9 @@ void AutofillMetrics::LogRemovedSettingInaccessibleFields(bool did_remove) {
 
 // static
 void AutofillMetrics::LogRemovedSettingInaccessibleField(
-    const std::string& country_code,
     ServerFieldType field) {
   base::UmaHistogramEnumeration(
-      "Autofill.ProfileImport.InaccessibleFieldsRemoved." + country_code,
+      "Autofill.ProfileImport.InaccessibleFieldsRemoved.ByFieldType",
       ConvertSettingsVisibleFieldTypeForMetrics(field));
 }
 

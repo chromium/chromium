@@ -2339,6 +2339,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.ProfileImport.InaccessibleFieldsRemoved.ByFieldType"
+    enum="AutofillSettingsVisibleTypes" expires_after="2022-08-21">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Logs that a given field type was removed on import, due to being setting
+    inaccessible in the imported profile's country. Emitted on profile import.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.ProfileImport.InaccessibleFieldsRemoved.Total"
+    enum="Boolean" expires_after="2022-08-21">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Logs if at least one field was removed on import, due to being setting
+    inaccessible in the imported profile's country. Emitted on profile import.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ProfileImport.NewProfileDecision"
     enum="AutofillProfileImportDecision" expires_after="2022-10-23">
   <owner>koerber@google.com</owner>

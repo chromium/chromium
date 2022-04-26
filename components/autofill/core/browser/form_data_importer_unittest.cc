@@ -4261,7 +4261,7 @@ TEST_P(FormDataImporterTest, RemoveInaccessibleProfileValuesMetrics) {
       "Autofill.ProfileImport.InaccessibleFieldsRemoved.";
   histogram_tester.ExpectUniqueSample(metric + "Total", true, 1);
   histogram_tester.ExpectUniqueSample(
-      metric + "DE",
+      metric + "ByFieldType",
       AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kState, 1);
 }
 
