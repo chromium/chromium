@@ -831,7 +831,7 @@ Document::Document(const DocumentInit& initializer,
   }
 
   is_vertical_scroll_enforced_ =
-      GetFrame() && !GetFrame()->IsMainFrame() &&
+      GetFrame() && !GetFrame()->IsOutermostMainFrame() &&
       RuntimeEnabledFeatures::ExperimentalPoliciesEnabled() &&
       !dom_window_->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kVerticalScroll);
@@ -6885,7 +6885,7 @@ void Document::BatterySavingsMetaChanged() {
   if (!RuntimeEnabledFeatures::BatterySavingsMetaEnabled(GetExecutionContext()))
     return;
 
-  if (!IsInMainFrame())
+  if (!IsInOutermostMainFrame())
     return;
 
   UseCounter::Count(GetExecutionContext(), WebFeature::kBatterySavingsMeta);
@@ -6910,7 +6910,7 @@ void Document::BatterySavingsMetaChanged() {
 }
 
 void Document::SupportsReducedMotionMetaChanged() {
-  if (!IsInMainFrame())
+  if (!IsInOutermostMainFrame())
     return;
 
   auto* root_element = documentElement();
