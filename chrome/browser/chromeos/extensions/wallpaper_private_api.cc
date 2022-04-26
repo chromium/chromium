@@ -13,6 +13,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
@@ -393,7 +394,7 @@ WallpaperPrivateResetWallpaperFunction::Run() {
       user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
 
   WallpaperControllerClientImpl::Get()->SetDefaultWallpaper(
-      account_id, true /* show_wallpaper */);
+      account_id, true /* show_wallpaper */, base::DoNothing());
   return RespondNow(NoArguments());
 }
 

@@ -67,8 +67,10 @@ void TestWallpaperControllerClient::MaybeClosePreviewWallpaper() {
 
 void TestWallpaperControllerClient::SetDefaultWallpaper(
     const AccountId& account_id,
-    bool show_wallpaper) {
+    bool show_wallpaper,
+    base::OnceCallback<void(bool success)> callback) {
   set_default_wallpaper_count_++;
+  std::move(callback).Run(/*success=*/true);
 }
 
 void TestWallpaperControllerClient::MigrateCollectionIdFromChromeApp(

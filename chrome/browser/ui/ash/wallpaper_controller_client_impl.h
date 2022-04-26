@@ -63,8 +63,10 @@ class WallpaperControllerClientImpl
   // ash::WallpaperControllerClient:
   void OpenWallpaperPicker() override;
   void MaybeClosePreviewWallpaper() override;
-  void SetDefaultWallpaper(const AccountId& account_id,
-                           bool show_wallpaper) override;
+  void SetDefaultWallpaper(
+      const AccountId& account_id,
+      bool show_wallpaper,
+      ash::WallpaperController::SetWallpaperCallback callback) override;
   void MigrateCollectionIdFromChromeApp(
       const AccountId& account_id,
       base::OnceCallback<void(const std::string&)> result_callback) override;

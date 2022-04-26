@@ -269,7 +269,8 @@ class ASH_EXPORT WallpaperControllerImpl
   void SetGooglePhotosWallpaper(const GooglePhotosWallpaperParams& params,
                                 SetWallpaperCallback callback) override;
   void SetDefaultWallpaper(const AccountId& account_id,
-                           bool show_wallpaper) override;
+                           bool show_wallpaper,
+                           SetWallpaperCallback callback) override;
   void SetCustomizedDefaultWallpaperPaths(
       const base::FilePath& customized_default_small_path,
       const base::FilePath& customized_default_large_path) override;
@@ -422,7 +423,8 @@ class ASH_EXPORT WallpaperControllerImpl
   // |show_wallpaper| is true. Otherwise just save the defaut wallpaper to
   // cache.
   void SetDefaultWallpaperImpl(const AccountId& account_id,
-                               bool show_wallpaper);
+                               bool show_wallpaper,
+                               SetWallpaperCallback callback);
 
   // When kiosk app is running or policy is enforced, setting a user wallpaper
   // is not allowed.
@@ -540,6 +542,7 @@ class ASH_EXPORT WallpaperControllerImpl
   void OnDefaultWallpaperDecoded(const base::FilePath& path,
                                  WallpaperLayout layout,
                                  bool show_wallpaper,
+                                 SetWallpaperCallback callback,
                                  const gfx::ImageSkia& image);
 
   // Saves |image| to disk if the user's data is not ephemeral, or if it is a

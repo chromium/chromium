@@ -1164,7 +1164,7 @@ void WallpaperControllerImpl::StartDecodeFromPath(
     const base::FilePath& wallpaper_path) {
   if (wallpaper_path.empty()) {
     // Fallback to default if the path is empty.
-    SetDefaultWallpaperImpl(account_id, show_wallpaper);
+    SetDefaultWallpaperImpl(account_id, show_wallpaper, base::DoNothing());
     return;
   }
 
@@ -1369,10 +1369,14 @@ void WallpaperControllerImpl::SetGooglePhotosWallpaper(
   }
 }
 
-void WallpaperControllerImpl::SetDefaultWallpaper(const AccountId& account_id,
-                                                  bool show_wallpaper) {
-  if (!CanSetUserWallpaper(account_id))
+void WallpaperControllerImpl::SetDefaultWallpaper(
+    const AccountId& account_id,
+    bool show_wallpaper,
+    SetWallpaperCallback callback) {
+  if (!CanSetUserWallpaper(account_id)) {
+    std::move(callback).Run(/*success=*/false);
     return;
+  }
 
   update_wallpaper_timer_.Stop();
 
@@ -1381,8 +1385,12 @@ void WallpaperControllerImpl::SetDefaultWallpaper(const AccountId& account_id,
     LOG(ERROR) << "Initializing user wallpaper info fails. This should never "
                   "happen except in tests.";
   }
-  if (show_wallpaper)
-    SetDefaultWallpaperImpl(account_id, /*show_wallpaper=*/true);
+  if (show_wallpaper) {
+    SetDefaultWallpaperImpl(account_id, /*show_wallpaper=*/true,
+                            std::move(callback));
+  } else {
+    std::move(callback).Run(/*success=*/true);
+  }
 }
 
 void WallpaperControllerImpl::SetCustomizedDefaultWallpaperPaths(
@@ -1398,7 +1406,7 @@ void WallpaperControllerImpl::SetCustomizedDefaultWallpaperPaths(
 
   // Customized default wallpapers are subject to the same restrictions as other
   // default wallpapers, e.g. they should not be set during guest sessions.
-  SetDefaultWallpaperImpl(EmptyAccountId(), show_wallpaper);
+  SetDefaultWallpaperImpl(EmptyAccountId(), show_wallpaper, base::DoNothing());
 }
 
 void WallpaperControllerImpl::SetPolicyWallpaper(
@@ -1543,7 +1551,8 @@ void WallpaperControllerImpl::ShowUserWallpaper(const AccountId& account_id) {
   }
 
   if (info.type == WallpaperType::kDefault) {
-    SetDefaultWallpaperImpl(account_id, /*show_wallpaper=*/true);
+    SetDefaultWallpaperImpl(account_id, /*show_wallpaper=*/true,
+                            base::DoNothing());
     return;
   }
 
@@ -1593,7 +1602,8 @@ void WallpaperControllerImpl::ShowSigninWallpaper() {
   if (ShouldSetDevicePolicyWallpaper())
     SetDevicePolicyWallpaper();
   else
-    SetDefaultWallpaperImpl(EmptyAccountId(), /*show_wallpaper=*/true);
+    SetDefaultWallpaperImpl(EmptyAccountId(), /*show_wallpaper=*/true,
+                            base::DoNothing());
 }
 
 void WallpaperControllerImpl::ShowOneShotWallpaper(
@@ -1647,7 +1657,7 @@ void WallpaperControllerImpl::RemovePolicyWallpaper(
   // Removes the wallpaper info so that the user is no longer policy controlled,
   // otherwise setting default wallpaper is not allowed.
   RemoveUserWallpaperInfo(account_id);
-  SetDefaultWallpaper(account_id, show_wallpaper);
+  SetDefaultWallpaper(account_id, show_wallpaper, base::DoNothing());
 }
 
 void WallpaperControllerImpl::GetOfflineWallpaperList(
@@ -1935,7 +1945,8 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
 }
 
 void WallpaperControllerImpl::ShowDefaultWallpaperForTesting() {
-  SetDefaultWallpaperImpl(EmptyAccountId(), /*show_wallpaper=*/true);
+  SetDefaultWallpaperImpl(EmptyAccountId(), /*show_wallpaper=*/true,
+                          base::DoNothing());
 }
 
 void WallpaperControllerImpl::CreateEmptyWallpaperForTesting() {
@@ -2084,10 +2095,13 @@ void WallpaperControllerImpl::RemoveUserWallpaperImplWithFilesId(
 
 void WallpaperControllerImpl::SetDefaultWallpaperImpl(
     const AccountId& account_id,
-    bool show_wallpaper) {
+    bool show_wallpaper,
+    SetWallpaperCallback callback) {
   // There is no visible wallpaper in kiosk mode.
-  if (IsInKioskMode())
+  if (IsInKioskMode()) {
+    std::move(callback).Run(/*success=*/false);
     return;
+  }
 
   wallpaper_cache_map_.erase(account_id);
 
@@ -2129,12 +2143,13 @@ void WallpaperControllerImpl::SetDefaultWallpaperImpl(
   if (!cached_default_wallpaper_.image.isNull() &&
       cached_default_wallpaper_.file_path == file_path) {
     OnDefaultWallpaperDecoded(file_path, layout, show_wallpaper,
+                              std::move(callback),
                               cached_default_wallpaper_.image);
   } else {
     ReadAndDecodeWallpaper(
         base::BindOnce(&WallpaperControllerImpl::OnDefaultWallpaperDecoded,
                        weak_factory_.GetWeakPtr(), file_path, layout,
-                       show_wallpaper),
+                       show_wallpaper, std::move(callback)),
         file_path);
   }
 }
@@ -2319,7 +2334,9 @@ void WallpaperControllerImpl::OnGooglePhotosPhotoFetched(
       sequenced_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&DeleteGooglePhotosCache, params.account_id));
-      SetDefaultWallpaperImpl(params.account_id, /*show_wallpaper=*/true);
+      SetDefaultWallpaperImpl(params.account_id, /*show_wallpaper=*/true,
+                              base::DoNothing());
+      return;
     }
     std::move(callback).Run(false);
     return;
@@ -2352,7 +2369,8 @@ void WallpaperControllerImpl::OnDailyGooglePhotosPhotoFetched(
       if (success) {
         // If the request succeeded, but no photos came back, then the album is
         // empty or deleted. Reset to default as a fallback.
-        SetDefaultWallpaper(account_id, /*show_wallpaper=*/true);
+        SetDefaultWallpaper(account_id, /*show_wallpaper=*/true,
+                            base::DoNothing());
       } else {
         // If the request simply failed, retry in an hour.
         StartUpdateWallpaperTimer(base::Hours(1));
@@ -2529,7 +2547,7 @@ void WallpaperControllerImpl::SetWallpaperFromInfo(const AccountId& account_id,
     // `WallpaperType::kDefault` types. In unexpected cases, revert to default
     // wallpaper to fail safely. See crosbug.com/38429.
     LOG(ERROR) << "Wallpaper reverts to default unexpected.";
-    SetDefaultWallpaperImpl(account_id, show_wallpaper);
+    SetDefaultWallpaperImpl(account_id, show_wallpaper, base::DoNothing());
     return;
   }
 
@@ -2539,7 +2557,7 @@ void WallpaperControllerImpl::SetWallpaperFromInfo(const AccountId& account_id,
     // were created directly in local state (for testing). Ignore such
     // errors i.e. allow such type of debug configurations on the desktop.
     LOG(WARNING) << "User wallpaper info is empty: " << account_id.Serialize();
-    SetDefaultWallpaperImpl(account_id, show_wallpaper);
+    SetDefaultWallpaperImpl(account_id, show_wallpaper, base::DoNothing());
     return;
   }
 
@@ -2592,6 +2610,7 @@ void WallpaperControllerImpl::OnDefaultWallpaperDecoded(
     const base::FilePath& path,
     WallpaperLayout layout,
     bool show_wallpaper,
+    SetWallpaperCallback callback,
     const gfx::ImageSkia& image) {
   if (image.isNull()) {
     // Create a solid color wallpaper if the default wallpaper decoding fails.
@@ -2602,6 +2621,11 @@ void WallpaperControllerImpl::OnDefaultWallpaperDecoded(
     cached_default_wallpaper_.image = image;
     cached_default_wallpaper_.file_path = path;
   }
+
+  // Setting default wallpaper always succeeds even if the intended image failed
+  // decoding. Run the callback before doing the final step of showing the
+  // wallpaper to be consistent with other wallpaper controller methods.
+  std::move(callback).Run(/*success=*/true);
 
   if (show_wallpaper) {
     WallpaperInfo info(cached_default_wallpaper_.file_path.value(), layout,
@@ -2728,7 +2752,7 @@ void WallpaperControllerImpl::OnWallpaperDecoded(const AccountId& account_id,
   if (image.isNull()) {
     LOG(ERROR) << "Failed to decode user wallpaper at " << path.value()
                << " Falls back to default wallpaper. ";
-    SetDefaultWallpaperImpl(account_id, show_wallpaper);
+    SetDefaultWallpaperImpl(account_id, show_wallpaper, base::DoNothing());
     return;
   }
 
@@ -2913,7 +2937,8 @@ void WallpaperControllerImpl::OnDevicePolicyWallpaperDecoded(
   if (image.isNull()) {
     // If device policy wallpaper failed decoding, fall back to the default
     // wallpaper.
-    SetDefaultWallpaperImpl(EmptyAccountId(), /*show_wallpaper=*/true);
+    SetDefaultWallpaperImpl(EmptyAccountId(), /*show_wallpaper=*/true,
+                            base::DoNothing());
   } else {
     WallpaperInfo info = {device_policy_wallpaper_path_.value(),
                           WALLPAPER_LAYOUT_CENTER_CROPPED,
@@ -3314,7 +3339,7 @@ void WallpaperControllerImpl::HandleGooglePhotosStalenessCheck(
   if (!photo) {
     sequenced_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&DeleteGooglePhotosCache, account_id));
-    SetDefaultWallpaper(account_id, /*show_wallpaper=*/true);
+    SetDefaultWallpaper(account_id, /*show_wallpaper=*/true, base::DoNothing());
   } else {
     StartGooglePhotosStalenessTimer();
   }

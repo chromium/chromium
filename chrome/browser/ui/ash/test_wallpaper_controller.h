@@ -9,6 +9,7 @@
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "base/files/file_path.h"
 #include "base/observer_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
@@ -85,7 +86,8 @@ class TestWallpaperController : public ash::WallpaperController {
   void SetGooglePhotosWallpaper(const ash::GooglePhotosWallpaperParams& params,
                                 SetWallpaperCallback callback) override;
   void SetDefaultWallpaper(const AccountId& account_id,
-                           bool show_wallpaper) override;
+                           bool show_wallpaper,
+                           SetWallpaperCallback callback) override;
   void SetCustomizedDefaultWallpaperPaths(
       const base::FilePath& customized_default_small_path,
       const base::FilePath& customized_default_large_path) override;

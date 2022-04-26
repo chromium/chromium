@@ -153,7 +153,7 @@ void ArcWallpaperService::SetDefaultWallpaper() {
       UserManager::Get()->GetPrimaryUser();
   WallpaperControllerClientImpl::Get()->SetDefaultWallpaper(
       primary_user->GetAccountId(),
-      primary_user->is_active() /*show_wallpaper=*/);
+      primary_user->is_active() /*show_wallpaper=*/, base::DoNothing());
 }
 
 void ArcWallpaperService::GetWallpaper(GetWallpaperCallback callback) {

@@ -128,8 +128,11 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // |account_id|: The user's account id.
   // |show_wallpaper|: If false, don't show the new wallpaper now but only
   //                   update cache.
+  // |callback|: Called with a boolean to indicate success when the default
+  //             wallpaper is read and decoded.
   virtual void SetDefaultWallpaper(const AccountId& account_id,
-                                   bool show_wallpaper) = 0;
+                                   bool show_wallpaper,
+                                   SetWallpaperCallback callback) = 0;
 
   // Sets the paths of the customized default wallpaper to be used wherever a
   // default wallpaper is needed. If a default wallpaper is being shown, updates

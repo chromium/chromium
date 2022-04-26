@@ -97,9 +97,12 @@ void TestWallpaperController::SetOnlineWallpaperFromData(
   NOTIMPLEMENTED();
 }
 
-void TestWallpaperController::SetDefaultWallpaper(const AccountId& account_id,
-                                                  bool show_wallpaper) {
+void TestWallpaperController::SetDefaultWallpaper(
+    const AccountId& account_id,
+    bool show_wallpaper,
+    SetWallpaperCallback callback) {
   ++set_default_wallpaper_count_;
+  std::move(callback).Run(/*success=*/true);
 }
 
 void TestWallpaperController::SetCustomizedDefaultWallpaperPaths(
