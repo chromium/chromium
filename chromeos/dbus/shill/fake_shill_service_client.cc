@@ -681,6 +681,10 @@ void FakeShillServiceClient::ClearServices() {
 void FakeShillServiceClient::SetConnectBehavior(
     const std::string& service_path,
     const base::RepeatingClosure& behavior) {
+  if (!behavior) {
+    connect_behavior_.erase(service_path);
+    return;
+  }
   connect_behavior_[service_path] = behavior;
 }
 
