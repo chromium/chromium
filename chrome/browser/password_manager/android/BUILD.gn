@@ -176,7 +176,10 @@ junit_binary("password_manager_junit_tests") {
 }
 
 android_resources("java_resources") {
-  sources = [ "java/res/layout/confirmation_dialog_view.xml" ]
+  sources = [
+    "java/res/drawable/ic_vpn_key_blue.xml",
+    "java/res/layout/confirmation_dialog_view.xml",
+  ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
@@ -241,6 +244,7 @@ android_library("backend_interface_java") {
 android_library("password_manager_resource_provider_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerResourceProvider.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerResourceProviderFactory.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerResourceProviderImpl.java",
   ]
 

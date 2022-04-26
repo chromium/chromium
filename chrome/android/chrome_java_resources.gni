@@ -429,7 +429,6 @@ chrome_java_resources = [
   "java/res/drawable/ic_trending_down_black.xml",
   "java/res/drawable/ic_turn_off_sync_48dp.xml",
   "java/res/drawable/ic_tv_options_input_settings_rotated_grey.xml",
-  "java/res/drawable/ic_vpn_key_blue.xml",
   "java/res/drawable/ic_widgets.xml",
   "java/res/drawable/incognito_history_placeholder_image.xml",
   "java/res/drawable/incognito_switch_track.xml",

@@ -10,7 +10,7 @@ import androidx.annotation.DrawableRes;
  * Provides functions that choose the correct resource IDs for the password manager UI.
  * Upstream resources may be overridden by a downstream implementation.
  */
-interface PasswordManagerResourceProvider {
+public interface PasswordManagerResourceProvider {
     /**
      * Returns the drawable id to be displayed as a password manager key icon.
      *

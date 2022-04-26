@@ -288,7 +288,7 @@ void SaveUpdatePasswordMessageDelegate::DisplayUsernameConfirmDialog(
   password_edit_dialog_->Show(
       usernames, selected_username_index,
       passwords_state_.form_manager()->GetPendingCredentials().password_value,
-      origin, std::string());
+      origin, account_email_);
 }
 
 unsigned int SaveUpdatePasswordMessageDelegate::GetDisplayUsernames(

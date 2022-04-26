@@ -5508,6 +5508,18 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_MANAGEMENT_LEARN_MORE" desc="The learn more link on chrome://management page that provides more information about managed devices.">
         <ph name="BEGIN_LINK">&lt;LINK&gt;</ph>Learn More<ph name="END_LINK">&lt;/LINK&gt;</ph>
       </message>
+      <message name="IDS_PASSWORD_UPDATE_DIALOG_TITLE" desc="The title for the dialog asking if user wants to update password.">
+        Update password?
+      </message>
+      <message name="IDS_PASSWORD_EDIT_DIALOG_SYNCED_FOOTER_GOOGLE" desc="Footer for a dialog which allows users to see and edit passwords while saving/updating a new credential. Displayed for users who are syncing passwords.">
+        You can use saved passwords on any device. They're saved to Google Password Manager for <ph name="ACCOUNT">%1$s<ex>user@gmail.com</ex></ph>.
+      </message>
+      <message name="IDS_PASSWORD_EDIT_DIALOG_UNSYNCED_FOOTER_GOOGLE" desc="Footer for a dialog which allows users to see and edit passwords while saving/updating a new credential. Displayed for users who are not syncing passwords.">
+        Passwords are saved to Google Password Manager on this device
+      </message>
+      <message name="IDS_PASSWORD_EDIT_DIALOG_UNSYNCED_FOOTER" desc="Footer for a dialog which allows users to see and edit passwords while saving/updating a new credential. Displayed for users who are not syncing passwords.">
+        Passwords are saved to Password Manager on this device
+      </message>
     </messages>
   </release>
 </grit>

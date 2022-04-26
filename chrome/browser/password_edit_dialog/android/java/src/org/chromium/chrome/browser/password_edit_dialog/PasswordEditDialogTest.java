@@ -9,24 +9,34 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.Callback;
-import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.FeatureList;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
 /** Tests for password edit dialog. */
-@RunWith(BaseRobolectricTestRunner.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 public class PasswordEditDialogTest {
     private static final long NATIVE_PTR = 1;
     private static final String[] USERNAMES = {"user1", "user2", "user3"};
@@ -38,6 +48,9 @@ public class PasswordEditDialogTest {
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock
     private PasswordEditDialogCoordinator.Delegate mDelegateMock;
@@ -53,13 +66,36 @@ public class PasswordEditDialogTest {
 
     private PasswordEditDialogCoordinator mDialogCoordinator;
 
+    private boolean mIsDetailedViewFlagEnabled;
+    private boolean mIsSignedIn;
+
+    @Parameters
+    public static Collection<Object[]> data() {
+        return Arrays.asList(
+                new Object[][] {{/*isExtendedViewFlagEnabled=*/false, /*isSignedIn=*/false},
+                        {/*isExtendedViewFlagEnabled=*/false, /*isSignedIn=*/true},
+                        {/*isExtendedViewFlagEnabled=*/true, /*isSignedIn=*/false},
+                        {/*isExtendedViewFlagEnabled=*/true, /*isSignedIn=*/true}});
+    }
+
+    public PasswordEditDialogTest(boolean isDetailedViewFlagEnabled, boolean isSignedIn) {
+        mIsDetailedViewFlagEnabled = isDetailedViewFlagEnabled;
+        mIsSignedIn = isSignedIn;
+    }
+
+    @Before
+    public void setUp() {
+        FeatureList.setTestFeatures(Collections.singletonMap(
+                ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS, mIsDetailedViewFlagEnabled));
+        createAndShowDialog(mIsSignedIn);
+    }
+
     /**
      * Tests that properties of modal dialog and custom view are set correctly based on passed
      * parameters.
      */
     @Test
     public void testDialogProperties() {
-        createAndShowDialog(true);
         Mockito.verify(mModalDialogManagerMock)
                 .showDialog(mModalDialogModel, ModalDialogManager.ModalDialogType.TAB);
         Assert.assertThat("Usernames don't match",
@@ -68,25 +104,28 @@ public class PasswordEditDialogTest {
                 mDialogProperties.get(PasswordEditDialogProperties.SELECTED_USERNAME_INDEX));
         Assert.assertEquals("Password doesn't match", PASSWORD,
                 mDialogProperties.get(PasswordEditDialogProperties.PASSWORD));
-        // Non-empty account name should cause footer to be displayed.
-        Assert.assertNotNull(
-                "Footer is empty", mDialogProperties.get(PasswordEditDialogProperties.FOOTER));
-    }
-
-    /** Tests that the footer is not displayed for signed out user. */
-    @Test
-    public void testFooterForSignedOutUser() {
-        createAndShowDialog(false);
-        // Null account name passed to show() indicates that the user is not signed-in. Footer
-        // shouldn't displayed in this case.
-        Assert.assertNull(
-                "Footer is not empty", mDialogProperties.get(PasswordEditDialogProperties.FOOTER));
+        // Footer should be displayed only when UPM flag is on
+        if (mIsDetailedViewFlagEnabled) {
+            Assert.assertNotNull(
+                    "Footer is empty", mDialogProperties.get(PasswordEditDialogProperties.FOOTER));
+            Assert.assertNotNull("There should be a title icon",
+                    mModalDialogModel.get(ModalDialogProperties.TITLE_ICON));
+            if (mIsSignedIn) {
+                Assert.assertTrue("Footer should contain user account name",
+                        mDialogProperties.get(PasswordEditDialogProperties.FOOTER)
+                                .contains(ACCOUNT_NAME));
+            }
+        } else {
+            Assert.assertNull("Footer is not empty",
+                    mDialogProperties.get(PasswordEditDialogProperties.FOOTER));
+            Assert.assertNull("No title icon is expected",
+                    mModalDialogModel.get(ModalDialogProperties.TITLE_ICON));
+        }
     }
 
     /** Tests that the username selected in spinner gets reflected in the callback patameter. */
     @Test
     public void testUserSelection() {
-        createAndShowDialog(true);
         Callback<Integer> usernameSelectedCallback =
                 mDialogProperties.get(PasswordEditDialogProperties.USERNAME_SELECTED_CALLBACK);
         usernameSelectedCallback.onResult(SELECTED_USERNAME_INDEX);
@@ -106,7 +145,6 @@ public class PasswordEditDialogTest {
      */
     @Test
     public void testDialogDismissedFromNative() {
-        createAndShowDialog(true);
         mDialogCoordinator.dismiss();
         Mockito.verify(mDelegateMock, never()).onDialogAccepted(anyInt());
         Mockito.verify(mModalDialogManagerMock)
@@ -119,7 +157,6 @@ public class PasswordEditDialogTest {
      */
     @Test
     public void testDialogDismissedWithNegativeButton() {
-        createAndShowDialog(true);
         ModalDialogProperties.Controller dialogController =
                 mModalDialogModel.get(ModalDialogProperties.CONTROLLER);
         dialogController.onClick(mModalDialogModel, ModalDialogProperties.ButtonType.NEGATIVE);
