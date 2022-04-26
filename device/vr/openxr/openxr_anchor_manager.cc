@@ -193,20 +193,20 @@ OpenXrAnchorManager::GetXrLocationFromNativeOriginInformation(
     const gfx::Transform& native_origin_from_anchor,
     const std::vector<mojom::XRInputSourceStatePtr>& input_state) const {
   switch (native_origin_information.which()) {
-    case mojom::XRNativeOriginInformation::Tag::INPUT_SOURCE_SPACE_INFO:
+    case mojom::XRNativeOriginInformation::Tag::kInputSourceSpaceInfo:
       // Currently unimplemented as only anchors are supported and are never
       // created relative to input sources
       return absl::nullopt;
-    case mojom::XRNativeOriginInformation::Tag::REFERENCE_SPACE_TYPE:
+    case mojom::XRNativeOriginInformation::Tag::kReferenceSpaceType:
       return GetXrLocationFromReferenceSpace(openxr, current_stage_parameters,
                                              native_origin_information,
                                              native_origin_from_anchor);
-    case mojom::XRNativeOriginInformation::Tag::PLANE_ID:
-    case mojom::XRNativeOriginInformation::Tag::HAND_JOINT_SPACE_INFO:
-    case mojom::XRNativeOriginInformation::Tag::IMAGE_INDEX:
+    case mojom::XRNativeOriginInformation::Tag::kPlaneId:
+    case mojom::XRNativeOriginInformation::Tag::kHandJointSpaceInfo:
+    case mojom::XRNativeOriginInformation::Tag::kImageIndex:
       // Unsupported for now
       return absl::nullopt;
-    case mojom::XRNativeOriginInformation::Tag::ANCHOR_ID:
+    case mojom::XRNativeOriginInformation::Tag::kAnchorId:
       return XrLocation{
           GfxTransformToXrPose(native_origin_from_anchor),
           GetAnchorSpace(AnchorId(native_origin_information.get_anchor_id()))};

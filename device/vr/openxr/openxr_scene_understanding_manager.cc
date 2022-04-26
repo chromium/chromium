@@ -358,7 +358,7 @@ OpenXRSceneUnderstandingManager::GetMojoFromNativeOrigin(
     const gfx::Transform& mojo_from_viewer,
     const std::vector<mojom::XRInputSourceStatePtr>& input_state) {
   switch (native_origin_information.which()) {
-    case mojom::XRNativeOriginInformation::Tag::INPUT_SOURCE_SPACE_INFO:
+    case mojom::XRNativeOriginInformation::Tag::kInputSourceSpaceInfo:
       for (auto& input_source_state : input_state) {
         mojom::XRInputSourceSpaceInfo* input_source_space_info =
             native_origin_information.get_input_source_space_info().get();
@@ -368,17 +368,17 @@ OpenXRSceneUnderstandingManager::GetMojoFromNativeOrigin(
         }
       }
       return absl::nullopt;
-    case mojom::XRNativeOriginInformation::Tag::REFERENCE_SPACE_TYPE:
+    case mojom::XRNativeOriginInformation::Tag::kReferenceSpaceType:
       return GetMojoFromReferenceSpace(
           native_origin_information.get_reference_space_type(),
           mojo_from_viewer);
-    case mojom::XRNativeOriginInformation::Tag::PLANE_ID:
+    case mojom::XRNativeOriginInformation::Tag::kPlaneId:
       return absl::nullopt;
-    case mojom::XRNativeOriginInformation::Tag::ANCHOR_ID:
+    case mojom::XRNativeOriginInformation::Tag::kAnchorId:
       return absl::nullopt;
-    case mojom::XRNativeOriginInformation::Tag::HAND_JOINT_SPACE_INFO:
+    case mojom::XRNativeOriginInformation::Tag::kHandJointSpaceInfo:
       return absl::nullopt;
-    case mojom::XRNativeOriginInformation::Tag::IMAGE_INDEX:
+    case mojom::XRNativeOriginInformation::Tag::kImageIndex:
       return absl::nullopt;
   }
 }
