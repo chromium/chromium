@@ -722,7 +722,8 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedMultiple) {
 }
 
 // Tests the no password scraped flow.
-IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedNone) {
+// TODO(crbug.com/1315447): Disabled due to flakiness.
+IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, DISABLED_ScrapedNone) {
   base::HistogramTester histogram_tester;
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_no_passwords.html");
 
@@ -812,13 +813,8 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures,
 
 // Tests the password confirm flow when more than one password is scraped: show
 // error on the first failure and fatal error on the second failure.
-// TODO(crbug.com/1315447): Disabled for debug builds.
-#if !defined(NDEBUG)
-#define MAYBE_PasswordConfirmFlow DISABLED_PasswordConfirmFlow
-#else
-#define MAYBE_PasswordConfirmFlow PasswordConfirmFlow
-#endif
-IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, MAYBE_PasswordConfirmFlow) {
+// TODO(crbug.com/1315447): Disabled due to flakiness.
+IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, DISABLED_PasswordConfirmFlow) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_two_passwords.html");
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFirstUserCorpExampleComEmail);
