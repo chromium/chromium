@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -32,11 +32,11 @@ DESKTOP_PREFIXES = {
 
 
 def is_desktop_tag(tag):
-    return any(tag.lower().startswith(t) for t in DESKTOP_PREFIXES)
+  return any(tag.lower().startswith(t) for t in DESKTOP_PREFIXES)
 
 
 def is_mobile_tag(tag):
-    return any(tag.lower().startswith(t) for t in MOBILE_PREFIXES)
+  return any(tag.lower().startswith(t) for t in MOBILE_PREFIXES)
 
 
 def validate_story_names(benchmarks, test_expectations):
