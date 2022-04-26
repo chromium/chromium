@@ -365,6 +365,19 @@ class MODULES_EXPORT ManifestParser {
   absl::optional<mojom::blink::ManifestProtocolHandlerPtr> ParseProtocolHandler(
       const JSONObject* protocol_dictionary);
 
+  // Parses the 'start_url' field of the 'lock_screen' field of a Manifest,
+  // as defined in:
+  // https://github.com/WICG/lock-screen/
+  // Returns the parsed KURL if any, or an empty KURL if parsing failed.
+  KURL ParseLockScreenStartUrl(const JSONObject* lock_screen);
+
+  // Parses the 'lock_screen' field of a Manifest, as defined in:
+  // https://github.com/WICG/lock-screen/
+  // Returns a parsed ManifestLockScreenPtr, or nullptr if not present or
+  // parsing failed.
+  mojom::blink::ManifestLockScreenPtr ParseLockScreen(
+      const JSONObject* manifest);
+
   // Parses the 'new_note_url' field of the 'note_taking' field of a Manifest,
   // as defined in:
   // https://wicg.github.io/manifest-incubations/#dfn-new_note_url

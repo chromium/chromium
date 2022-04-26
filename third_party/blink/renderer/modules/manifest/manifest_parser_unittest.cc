@@ -3235,6 +3235,87 @@ TEST_F(ManifestParserTest, UrlHandlerParseRules) {
   }
 }
 
+TEST_F(ManifestParserTest, LockScreenParseRules) {
+  KURL manifest_url = KURL("https://foo.com/manifest.json");
+  KURL document_url = KURL("https://foo.com/index.html");
+
+  {
+    // Manifest does not contain a 'lock_screen' field.
+    auto& manifest = ParseManifest("{ }");
+    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_TRUE(manifest->lock_screen.is_null());
+  }
+
+  {
+    // 'lock_screen' is not an object.
+    auto& manifest = ParseManifest(R"( { "lock_screen": [ ] } )");
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("property 'lock_screen' ignored, type object expected.",
+              errors()[0]);
+    EXPECT_TRUE(manifest->lock_screen.is_null());
+  }
+
+  {
+    // Contains 'lock_screen' field but no start_url entry.
+    auto& manifest = ParseManifest(R"( { "lock_screen": { } } )");
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_FALSE(manifest->lock_screen.is_null());
+    EXPECT_TRUE(manifest->lock_screen->start_url.IsEmpty());
+  }
+
+  {
+    // 'start_url' entries must be valid URLs.
+    auto& manifest =
+        ParseManifest(R"({ "lock_screen": { "start_url": {} } } )");
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("property 'start_url' ignored, type string expected.",
+              errors()[0]);
+    ASSERT_FALSE(manifest->lock_screen.is_null());
+    EXPECT_TRUE(manifest->lock_screen->start_url.IsEmpty());
+  }
+
+  {
+    // 'start_url' entries must be within scope.
+    auto& manifest = ParseManifest(
+        R"({ "lock_screen": { "start_url": "https://bar.com" } } )");
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'start_url' ignored, should be within scope of the manifest.",
+        errors()[0]);
+    ASSERT_FALSE(manifest->lock_screen.is_null());
+    EXPECT_TRUE(manifest->lock_screen->start_url.IsEmpty());
+  }
+
+  {
+    // A valid lock_screen start_url entry.
+    auto& manifest = ParseManifestWithURLs(
+        R"({
+          "lock_screen": {
+            "start_url": "https://foo.com"
+          }
+        })",
+        manifest_url, document_url);
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_FALSE(manifest->lock_screen.is_null());
+    EXPECT_EQ("https://foo.com/", manifest->lock_screen->start_url.GetString());
+  }
+
+  {
+    // A valid lock_screen start_url entry, parsed relative to manifest URL.
+    auto& manifest = ParseManifestWithURLs(
+        R"({
+          "lock_screen": {
+            "start_url": "new_note"
+          }
+        })",
+        manifest_url, document_url);
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_FALSE(manifest->lock_screen.is_null());
+    EXPECT_EQ("https://foo.com/new_note",
+              manifest->lock_screen->start_url.GetString());
+  }
+}
+
 TEST_F(ManifestParserTest, NoteTakingParseRules) {
   KURL manifest_url = KURL("https://foo.com/manifest.json");
   KURL document_url = KURL("https://foo.com/index.html");

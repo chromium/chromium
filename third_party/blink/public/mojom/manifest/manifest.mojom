@@ -62,6 +62,11 @@ struct Manifest {
   // https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
   array<ManifestUrlHandler> url_handlers;
 
+  // TODO(crbug.com/1006642): This field is non-standard and part of an
+  // experiment. See:
+  // https://github.com/WICG/lock-screen/
+  ManifestLockScreen? lock_screen;
+
   // TODO(crbug.com/1185678): This field is non-standard and part of a manifest
   // incubation. See:
   // https://wicg.github.io/manifest-incubations/index.html#dfn-note_taking
@@ -187,6 +192,14 @@ struct ManifestUrlHandler {
   // If true, the application indicates that it wants to handle all subdomains
   // of |origin|. If false, the application only wants to handle |origin|.
   bool has_origin_wildcard;
+};
+
+// Structure representing lock screen capabilities.
+struct ManifestLockScreen {
+  // A URL for launching a special instance of the web application on the lock
+  // screen of a device. If valid, this web application is declaring itself
+  // capable of being used on the lock screen.
+  url.mojom.Url start_url;
 };
 
 // Structure representing note-taking application capabilities.
