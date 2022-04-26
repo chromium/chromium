@@ -3,14 +3,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os
-import sys
 import time
 import unittest
 
-# Add src/testing/ into sys.path for importing PRESUBMIT without pylint errors.
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from buildbot import PRESUBMIT
+import PRESUBMIT
 
 
 class PresubmitError:

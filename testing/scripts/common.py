@@ -18,8 +18,7 @@ import traceback
 logging.basicConfig(level=logging.INFO)
 
 # Add src/testing/ into sys.path for importing xvfb and test_env.
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 import test_env
 if sys.platform.startswith('linux'):
   import xvfb
@@ -65,8 +64,6 @@ CORRECT_ACL_VARIANTS = [
     'APPLICATION PACKAGE AUTHORITY' \
     '\\ALL RESTRICTED APPLICATION PACKAGES:(I)(OI)(CI)(RX)'
 ]
-
-# pylint: disable=useless-object-inheritance
 
 
 def set_lpac_acls(acl_dir, is_test_script=False):
@@ -234,7 +231,7 @@ def parse_common_test_results(json_results, test_separator='/'):
   passing_statuses = ('PASS', 'SLOW', 'NEEDSREBASELINE')
 
   for test, result in convert_trie_to_flat_paths(
-      json_results['tests']).items():
+      json_results['tests']).iteritems():
     key = 'unexpected_' if result.get('is_unexpected') else ''
     data = result['actual']
     actual_results = data.split()

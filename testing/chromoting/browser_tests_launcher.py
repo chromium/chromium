@@ -85,7 +85,7 @@ def LaunchBTCommand(args, command):
       retries += 1
       time.sleep(30)
       continue
-    if jids_used:
+    elif jids_used:
       print('JID used by test matched me2me host JID: %s' % host_jid)
     else:
       # There wasn't a mismatch and no JIDs were returned. If no JIDs were

@@ -257,10 +257,10 @@ def CommonChecks(input_api, output_api):
           json_data,
           f.AbsoluteLocalPath(),
           output_api.PresubmitError)
-      if result:
+      if len(result):
         return result
       result = CheckPretty(contents, f.LocalPath(), output_api.PresubmitError)
-      if result:
+      if len(result):
         return result
     except ValueError:
       return [

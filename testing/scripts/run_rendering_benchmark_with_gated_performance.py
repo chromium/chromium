@@ -26,12 +26,8 @@ import time
 
 import numpy as np
 
+import common
 import run_performance_tests
-
-# Add src/testing/ into sys.path for importing common without pylint errors.
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
-from scripts import common
 
 # AVG_ERROR_MARGIN determines how much more the value of frame times can be
 # compared to the recorded value (multiplier of upper limit).
@@ -43,9 +39,6 @@ AVG_ERROR_MARGIN = 1.1
 CI_ERROR_MARGIN = 1.5
 
 METRIC_NAME = 'frame_times'
-
-# pylint: disable=useless-object-inheritance
-
 
 class ResultRecorder(object):
   def __init__(self):
@@ -159,7 +152,7 @@ class RenderingRepresentativePerfTest(object):
     # least by 10 [AVG_ERROR_MARGIN] percent of upper limit, that would be
     # considered a failure. crbug.com/953895
     with open(
-      os.path.join(os.path.dirname(os.path.abspath(__file__)),
+      os.path.join(os.path.dirname(__file__),
       'representative_perf_test_data',
       'representatives_frame_times_upper_limit.json')
     ) as bound_data:
