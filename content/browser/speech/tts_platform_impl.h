@@ -28,7 +28,7 @@ class TtsPlatformImpl : public TtsPlatform {
   void ClearError() override;
   void SetError(const std::string& error) override;
   void Shutdown() override;
-  bool PreferEngineDelegateVoices() override;
+  void FinalizeVoiceOrdering(std::vector<VoiceData>& voices) override;
   void GetVoicesForBrowserContext(
       content::BrowserContext* browser_context,
       const GURL& source_url,

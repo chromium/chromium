@@ -62,10 +62,10 @@ class MockTtsPlatformImpl : public TtsPlatform {
   void GetVoices(std::vector<VoiceData>* out_voices) override {
     *out_voices = voices_;
   }
-  void GetVoicesForBrowserContext(
-      content::BrowserContext* browser_context,
-      const GURL& source_url,
-      std::vector<content::VoiceData>* out_voices) override {}
+  void GetVoicesForBrowserContext(content::BrowserContext* browser_context,
+                                  const GURL& source_url,
+                                  std::vector<VoiceData>* out_voices) override {
+  }
   void LoadBuiltInTtsEngine(BrowserContext* browser_context) override {}
   void WillSpeakUtteranceWithVoice(TtsUtterance* utterance,
                                    const VoiceData& voice_data) override {}
@@ -75,7 +75,7 @@ class MockTtsPlatformImpl : public TtsPlatform {
   const std::string& GetLastSpokenUtterance() { return last_spoken_utterance_; }
   void ClearLastSpokenUtterance() { last_spoken_utterance_ = ""; }
   void Shutdown() override {}
-  bool PreferEngineDelegateVoices() override { return false; }
+  void FinalizeVoiceOrdering(std::vector<VoiceData>& voices) override {}
 
  private:
   std::vector<VoiceData> voices_;

@@ -61,6 +61,5 @@ bool TtsPlatformImplLacros::IsSpeaking() {
   return false;
 }
 
-bool TtsPlatformImplLacros::PreferEngineDelegateVoices() {
-  return false;
-}
+void TtsPlatformImplLacros::FinalizeVoiceOrdering(
+    std::vector<content::VoiceData>& voices) {}

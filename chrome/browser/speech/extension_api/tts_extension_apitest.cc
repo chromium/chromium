@@ -132,7 +132,12 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
 
   void Shutdown() override {}
 
-  bool PreferEngineDelegateVoices() override { return true; }
+  void FinalizeVoiceOrdering(std::vector<content::VoiceData>& voices) override {
+    // Prefer non-native voices.
+    std::stable_partition(
+        voices.begin(), voices.end(),
+        [](const content::VoiceData& voice) { return !voice.native; });
+  }
 
   void GetVoicesForBrowserContext(
       content::BrowserContext* browser_context,

@@ -68,9 +68,8 @@ void WebTestTtsPlatform::SetError(const std::string& error) {}
 
 void WebTestTtsPlatform::Shutdown() {}
 
-bool WebTestTtsPlatform::PreferEngineDelegateVoices() {
-  return false;
-}
+void WebTestTtsPlatform::FinalizeVoiceOrdering(
+    std::vector<content::VoiceData>& voices) {}
 
 void WebTestTtsPlatform::GetVoicesForBrowserContext(
     content::BrowserContext* browser_context,

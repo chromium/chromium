@@ -57,8 +57,6 @@ void TtsPlatformImpl::SetError(const std::string& error) {
 
 void TtsPlatformImpl::Shutdown() {}
 
-bool TtsPlatformImpl::PreferEngineDelegateVoices() {
-  return false;
-}
+void TtsPlatformImpl::FinalizeVoiceOrdering(std::vector<VoiceData>& voices) {}
 
 }  // namespace content

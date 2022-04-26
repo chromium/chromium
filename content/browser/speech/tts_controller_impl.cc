@@ -330,11 +330,12 @@ void TtsControllerImpl::GetVoices(BrowserContext* browser_context,
                                   const GURL& source_url,
                                   std::vector<VoiceData>* out_voices) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (GetTtsPlatform()->PlatformImplSupported())
+  if (GetTtsPlatform()->PlatformImplSupported()) {
     GetTtsPlatform()->GetVoicesForBrowserContext(browser_context, source_url,
                                                  out_voices);
-  else
+  } else {
     GetVoicesInternal(browser_context, source_url, out_voices);
+  }
 #else
   GetVoicesInternal(browser_context, source_url, out_voices);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -347,36 +348,19 @@ void TtsControllerImpl::GetVoicesInternal(BrowserContext* browser_context,
   // if necessary.
   TtsPlatform* tts_platform = GetTtsPlatform();
 
-  std::vector<VoiceData> engine_delegate_voices;
-  if (browser_context && engine_delegate_ &&
-      engine_delegate_->IsBuiltInTtsEngineInitialized(browser_context)) {
-    engine_delegate_->GetVoices(browser_context, source_url,
-                                &engine_delegate_voices);
-  }
-
   DCHECK(tts_platform);
-  std::vector<VoiceData> platform_voices;
   // Ensure we have all built-in voices loaded. This is a no-op if already
   // loaded.
   tts_platform->LoadBuiltInTtsEngine(browser_context);
   if (TtsPlatformReady())
-    tts_platform->GetVoices(&platform_voices);
+    tts_platform->GetVoices(out_voices);
 
-  if (tts_platform->PreferEngineDelegateVoices()) {
-    out_voices->insert(out_voices->end(),
-                       std::make_move_iterator(engine_delegate_voices.begin()),
-                       std::make_move_iterator(engine_delegate_voices.end()));
-    out_voices->insert(out_voices->end(),
-                       std::make_move_iterator(platform_voices.begin()),
-                       std::make_move_iterator(platform_voices.end()));
-  } else {
-    out_voices->insert(out_voices->end(),
-                       std::make_move_iterator(platform_voices.begin()),
-                       std::make_move_iterator(platform_voices.end()));
-    out_voices->insert(out_voices->end(),
-                       std::make_move_iterator(engine_delegate_voices.begin()),
-                       std::make_move_iterator(engine_delegate_voices.end()));
+  if (browser_context && engine_delegate_ &&
+      engine_delegate_->IsBuiltInTtsEngineInitialized(browser_context)) {
+    engine_delegate_->GetVoices(browser_context, source_url, out_voices);
   }
+
+  tts_platform->FinalizeVoiceOrdering(*out_voices);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Append lacros voices after ash voices.
@@ -792,13 +776,26 @@ int TtsControllerImpl::GetMatchingVoice(TtsUtterance* utterance,
 
     // Prefer the utterance language.
     if (!voice.lang.empty() && !utterance->GetLang().empty()) {
+      std::string voice_language =
+          base::ToLowerASCII(l10n_util::GetLanguage(voice.lang));
+      std::string voice_country =
+          base::ToLowerASCII(l10n_util::GetCountry(voice.lang));
+      std::string utterance_language =
+          base::ToLowerASCII(l10n_util::GetLanguage(utterance->GetLang()));
+      std::string utterance_country =
+          base::ToLowerASCII(l10n_util::GetCountry(utterance->GetLang()));
+
       // An exact locale match is worth more than a partial match.
       // Convert locales to lowercase to handle cases like "en-us" vs. "en-US".
-      if (base::EqualsCaseInsensitiveASCII(voice.lang, utterance->GetLang())) {
+      // Cases where language and country match should score the same as an
+      // exact match.
+      if (voice_language == utterance_language &&
+          (voice_country == utterance_country ||
+           (utterance_country.empty() && voice_language == voice_country) ||
+           (voice_country.empty() &&
+            utterance_language == utterance_country))) {
         score += 128;
-      } else if (base::EqualsCaseInsensitiveASCII(
-                     l10n_util::GetLanguage(voice.lang),
-                     l10n_util::GetLanguage(utterance->GetLang()))) {
+      } else if (voice_language == utterance_language) {
         score += 64;
       }
     }

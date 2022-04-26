@@ -100,9 +100,8 @@ void SpeechMonitor::SetError(const std::string& error) {
 
 void SpeechMonitor::Shutdown() {}
 
-bool SpeechMonitor::PreferEngineDelegateVoices() {
-  return false;
-}
+void SpeechMonitor::FinalizeVoiceOrdering(
+    std::vector<content::VoiceData>& voices) {}
 
 double SpeechMonitor::CalculateUtteranceDelayMS() {
   std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();

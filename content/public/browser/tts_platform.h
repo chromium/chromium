@@ -94,9 +94,9 @@ class CONTENT_EXPORT TtsPlatform {
   // other methods may no-op.
   virtual void Shutdown() = 0;
 
-  // Returns whether TtsController should prefer voices from TtsEngineDelegate
-  // over those from this platform. Defaults to false.
-  virtual bool PreferEngineDelegateVoices() = 0;
+  // Given engine delegate and platform voices, returns the finalized voice
+  // ordering used by the controller when exposing voices to clients.
+  virtual void FinalizeVoiceOrdering(std::vector<VoiceData>& voices) = 0;
 };
 
 }  // namespace content

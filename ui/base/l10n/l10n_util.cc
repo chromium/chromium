@@ -379,6 +379,14 @@ std::string GetLanguage(const std::string& locale) {
   return std::string(locale, 0, hyphen_pos);
 }
 
+std::string GetCountry(const std::string& locale) {
+  const std::string::size_type hyphen_pos = locale.find('-');
+  if (hyphen_pos == std::string::npos)
+    return std::string();
+
+  return std::string(locale, hyphen_pos + 1);
+}
+
 // TODO(jshin): revamp this function completely to use a more systematic
 // and generic locale fallback based on ICU/CLDR.
 bool CheckAndResolveLocale(const std::string& locale,

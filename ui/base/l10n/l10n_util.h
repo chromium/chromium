@@ -26,6 +26,9 @@ namespace l10n_util {
 // Takes normalized locale as |locale|. Returns language part (before '-').
 COMPONENT_EXPORT(UI_BASE) std::string GetLanguage(const std::string& locale);
 
+// Takes normalized locale as |locale|. Returns country part (after '-').
+COMPONENT_EXPORT(UI_BASE) std::string GetCountry(const std::string& locale);
+
 // This method translates a generic locale name to one of the locally defined
 // ones. This method returns true if it succeeds.
 // If |perform_io| is false, this will not perform any I/O but may return false

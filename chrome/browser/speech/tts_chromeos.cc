@@ -12,6 +12,7 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/tts_platform.h"
 
@@ -147,8 +148,19 @@ bool TtsPlatformImplChromeOs::IsSpeaking() {
   return false;
 }
 
-bool TtsPlatformImplChromeOs::PreferEngineDelegateVoices() {
-  return true;
+void TtsPlatformImplChromeOs::FinalizeVoiceOrdering(
+    std::vector<content::VoiceData>& voices) {
+  // Move all Espeak voices to the end.
+  auto partition_point = std::stable_partition(
+      voices.begin(), voices.end(), [](const content::VoiceData& voice) {
+        return voice.engine_id !=
+               extension_misc::kEspeakSpeechSynthesisExtensionId;
+      });
+
+  // Move all native voices to the end, before Espeak voices.
+  std::stable_partition(
+      voices.begin(), partition_point,
+      [](const content::VoiceData& voice) { return !voice.native; });
 }
 
 // static
