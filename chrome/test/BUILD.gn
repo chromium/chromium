@@ -5124,6 +5124,7 @@ test("unit_tests") {
     "../browser/policy/messaging_layer/public/report_client_test_util.h",
     "../browser/policy/messaging_layer/public/report_client_unittest.cc",
     "../browser/policy/messaging_layer/upload/dm_server_upload_service_unittest.cc",
+    "../browser/policy/messaging_layer/upload/event_upload_size_controller_unittest.cc",
     "../browser/policy/messaging_layer/upload/network_condition_service_unittest.cc",
     "../browser/policy/messaging_layer/upload/record_handler_impl_unittest.cc",
     "../browser/policy/messaging_layer/upload/record_upload_request_builder_unittest.cc",
