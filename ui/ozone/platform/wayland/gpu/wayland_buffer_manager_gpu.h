@@ -169,6 +169,8 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
                            GbmSurfacelessWaylandCommitOverlaysCallbacksTest);
   FRIEND_TEST_ALL_PREFIXES(WaylandSurfaceFactoryTest,
                            GbmSurfacelessWaylandGroupOnSubmissionCallbacksTest);
+  FRIEND_TEST_ALL_PREFIXES(WaylandSurfaceFactoryCompositorV3,
+                           SurfaceDamageTest);
   FRIEND_TEST_ALL_PREFIXES(WaylandBufferManagerTest,
                            ExecutesTasksAfterInitialization);
   FRIEND_TEST_ALL_PREFIXES(WaylandOverlayManagerTest,

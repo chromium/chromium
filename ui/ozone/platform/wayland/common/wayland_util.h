@@ -73,6 +73,13 @@ gfx::Rect ApplyWaylandTransform(const gfx::Rect& rect,
                                 const gfx::Size& bounds,
                                 wl_output_transform transform);
 
+// |bounds| contains |rect|. ApplyWaylandTransform() returns the resulted
+// |rect| after transformation is applied to |bounds| containing |rect| as a
+// whole.
+gfx::RectF ApplyWaylandTransform(const gfx::RectF& rect,
+                                 const gfx::SizeF& bounds,
+                                 wl_output_transform transform);
+
 // Applies transformation to |size|.
 gfx::SizeF ApplyWaylandTransform(const gfx::SizeF& size,
                                  wl_output_transform transform);

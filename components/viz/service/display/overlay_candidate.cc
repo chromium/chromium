@@ -623,22 +623,28 @@ void OverlayCandidate::AssignDamage(
     inv.TransformRect(&transformed_damage);
     // The quad's |rect| is in content space. To get to buffer space we need
     // to remove the |rect|'s pixel offset.
-    // TODO(edcourtney) : Take into account UVs for transformed damage.
     auto buffer_damage_origin =
         transformed_damage.origin() - gfx::PointF(quad->rect.origin());
     transformed_damage.set_origin(
         gfx::PointF(buffer_damage_origin.x(), buffer_damage_origin.y()));
 
     if (!quad->rect.IsEmpty()) {
-      // A quad's |rect| is usually the same size as its buffer size with tile
-      // quads but can have scaling if it is a render pass or (more likely) a
-      // texture draw quad.
-      transformed_damage.Scale(
-          static_cast<float>(candidate->resource_size_in_pixels.width()) /
-              quad->rect.width(),
-          static_cast<float>(candidate->resource_size_in_pixels.height()) /
-              quad->rect.height());
+      // Normalize damage to be in UVs.
+      transformed_damage.Scale(1.0f / quad->rect.width(),
+                               1.0f / quad->rect.height());
     }
+
+    // The normalization above is not enough if the |uv_rect| is not 0,0-1x1.
+    // This is because texture uvs can effectively magnify damage.
+    if (!candidate->uv_rect.IsEmpty()) {
+      transformed_damage.Scale(candidate->uv_rect.width(),
+                               candidate->uv_rect.height());
+      transformed_damage.Offset(candidate->uv_rect.OffsetFromOrigin());
+    }
+
+    // Buffer damage is in texels not UVs so scale by resource size.
+    transformed_damage.Scale(candidate->resource_size_in_pixels.width(),
+                             candidate->resource_size_in_pixels.height());
   } else {
     // If not invertible, set to full damage.
     // TODO(https://crbug.com/1279965): |resource_size_in_pixels| might not be

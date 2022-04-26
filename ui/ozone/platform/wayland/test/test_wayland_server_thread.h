@@ -46,9 +46,11 @@ struct DisplayDeleter {
 // Server configuration related enums and structs.
 enum class ShellVersion { kV6, kStable };
 enum class PrimarySelectionProtocol { kNone, kGtk, kZwp };
+enum class CompositorVersion { kV3, kV4 };
 
 struct ServerConfig {
   ShellVersion shell_version = ShellVersion::kStable;
+  CompositorVersion compositor_version = CompositorVersion::kV4;
   PrimarySelectionProtocol primary_selection_protocol =
       PrimarySelectionProtocol::kNone;
 };
@@ -151,7 +153,12 @@ class TestWaylandServerThread : public base::Thread,
   base::WaitableEvent resume_event_;
 
   // Represent Wayland global objects
-  TestCompositor compositor_;
+  // Compositor version is selected dynamically by server config but version is
+  // actually set on construction thus both compositor version objects appear
+  // here.
+  // TODO(crbug.com/1315587): Refactor this pattern when required.
+  TestCompositor compositor_v4_;
+  TestCompositor compositor_v3_;
   TestSubCompositor sub_compositor_;
   TestViewporter viewporter_;
   TestAlphaCompositing alpha_compositing_;

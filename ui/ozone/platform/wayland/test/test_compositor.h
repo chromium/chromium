@@ -16,9 +16,7 @@ class MockSurface;
 // Manage wl_compositor object.
 class TestCompositor : public GlobalObject {
  public:
-  static constexpr uint32_t kVersion = 4;
-
-  TestCompositor();
+  explicit TestCompositor(uint32_t intended_version);
 
   TestCompositor(const TestCompositor&) = delete;
   TestCompositor& operator=(const TestCompositor&) = delete;
@@ -26,8 +24,10 @@ class TestCompositor : public GlobalObject {
   ~TestCompositor() override;
 
   void AddSurface(MockSurface* surface);
+  uint32_t GetVersion() { return version_; }
 
  private:
+  uint32_t version_;
   std::vector<MockSurface*> surfaces_;
 };
 

@@ -588,28 +588,28 @@ void WaylandSurface::ApplyPendingState() {
                              pending_state_.damage_px.back().width(),
                              pending_state_.damage_px.back().height());
   } else {
-    // Calculate the damage region in surface coordinates.
-    // The calculation for damage region relies on the assumption: The buffer is
-    // always attached at surface location (0, 0).
-    // It's possible to write logic that accounts for attaching buffer at other
-    // locations, but it's currently unnecessary.
+    gfx::RectF damage_uv =
+        gfx::ScaleRect(gfx::RectF(pending_state_.damage_px.back()),
+                       1.0f / pending_state_.buffer_size_px.width(),
+                       1.0f / pending_state_.buffer_size_px.height());
 
-    // Apply buffer_transform (wl_surface.set_buffer_transform).
-    gfx::Rect damage = wl::ApplyWaylandTransform(
-        pending_state_.damage_px.back(), pending_state_.buffer_size_px,
-        wl::ToWaylandTransform(pending_state_.buffer_transform));
-    // Apply buffer_scale (wl_surface.set_buffer_scale).
-    damage = gfx::ScaleToEnclosingRect(damage, 1.f / applying_surface_scale);
-    // Adjust coordinates to |viewport_src| (wp_viewport.set_source).
-    damage = wl::TranslateBoundsToParentCoordinates(
-        damage, gfx::ToEnclosingRect(viewport_src_dip));
-    // Apply viewport scale (wp_viewport.set_destination).
-    if (viewport_dst_dip != viewport_src_dip.size()) {
-      damage = gfx::ScaleToEnclosingRect(
-          damage, viewport_dst_dip.width() / viewport_src_dip.width(),
-          viewport_dst_dip.height() / viewport_src_dip.height());
+    if (!pending_state_.crop.IsEmpty()) {
+      damage_uv.Offset(-pending_state_.crop.OffsetFromOrigin());
+      damage_uv.Scale(1.0f / pending_state_.crop.width(),
+                      1.0f / pending_state_.crop.height());
     }
+    damage_uv.Intersect(gfx::RectF(1, 1));
 
+    gfx::RectF damage_uv_transformed = wl::ApplyWaylandTransform(
+        damage_uv, gfx::SizeF(1, 1),
+        wl::ToWaylandTransform(pending_state_.buffer_transform));
+
+    gfx::RectF damage_float =
+        gfx::ScaleRect(damage_uv_transformed, viewport_dst_dip.width(),
+                       viewport_dst_dip.height());
+    constexpr float kAcceptableSubDipDamageError = 0.001f;
+    gfx::Rect damage = gfx::ToEnclosingRectIgnoringError(
+        damage_float, kAcceptableSubDipDamageError);
     wl_surface_damage(surface_.get(), damage.x(), damage.y(), damage.width(),
                       damage.height());
   }
