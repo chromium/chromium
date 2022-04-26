@@ -26,6 +26,9 @@ const char kChannel[] = "channel";
 // this option is not compatible with any other installer options.
 const char kConfigureUserSettings[] = "configure-user-settings";
 
+// Create shortcuts with the installer operation arg.
+const char kCreateShortcuts[] = "create-shortcuts";
+
 // The version number of an update containing critical fixes, for which an
 // in-use Chrome should be restarted ASAP.
 const char kCriticalUpdateVersion[] = "critical-update-version";
@@ -81,6 +84,9 @@ const char kInstallArchive[] = "install-archive";
 
 // Specify the file path of Chrome initial preference file.
 const char kInstallerData[] = "installerdata";
+
+// What install level to create shortcuts for, if "create-shortcuts" is present.
+const char kInstallLevel[] = "install-level";
 
 // If present, specify file path to write logging info.
 const char kLogFile[] = "log-file";

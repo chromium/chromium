@@ -119,8 +119,9 @@ enum InstallStatus {
   DOWNGRADE_CLEANUP_UNKNOWN_OPERATION = 70,
   ROTATE_DTKEY_FAILED = 71,   // Failed to rotate device trust signing key.
   ROTATE_DTKEY_SUCCESS = 72,  // Successfully rotated device trust signing key.
-  MAX_INSTALL_STATUS = 73,    // When adding a new result, bump this and update
-                              // the SetupInstallResult enum in histograms.xml.
+  CREATE_SHORTCUTS_SUCCESS = 73,  // Successfully created Chrome shortcuts.
+  MAX_INSTALL_STATUS = 74,  // When adding a new result, bump this and update
+                            // the SetupInstallResult enum in enums.xml.
 };
 
 // The type of an update archive.
@@ -158,6 +159,7 @@ namespace switches {
 extern const char kAllowDowngrade[];
 extern const char kChannel[];
 extern const char kConfigureUserSettings[];
+extern const char kCreateShortcuts[];
 extern const char kCriticalUpdateVersion[];
 extern const char kDeleteOldVersions[];
 extern const char kDeleteProfile[];
@@ -172,6 +174,7 @@ extern const char kForceUninstall[];
 extern const char kInputFile[];
 extern const char kInstallArchive[];
 extern const char kInstallerData[];
+extern const char kInstallLevel[];
 extern const char kLogFile[];
 extern const char kMakeChromeDefault[];
 extern const char kMsi[];

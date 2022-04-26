@@ -896,12 +896,36 @@ installer::InstallStatus RegisterDevChrome(
   return status;
 }
 
+installer::InstallStatus CreateShortcutsInChildProc(
+    const InstallerState& installer_state,
+    const InitialPreferences& prefs,
+    installer::InstallShortcutLevel install_level,
+    installer::InstallShortcutOperation install_operation) {
+  // Create shortcut in a child process so that shell crashes don't make the
+  // install/update fail. Pass install operation on the command line since
+  // it can't be deduced by the child process;
+
+  // Creates shortcuts for Chrome.
+  const base::FilePath chrome_exe(
+      installer_state.target_path().Append(installer::kChromeExe));
+
+  // Install per-user shortcuts on user-level installs and all-users shortcuts
+  // on system-level installs. Note that Active Setup will take care of
+  // installing missing per-user shortcuts on system-level install (i.e.,
+  // quick launch, taskbar pin, and possibly deleted all-users shortcuts).
+  CreateOrUpdateShortcuts(chrome_exe, prefs, install_level, install_operation);
+  // TODO(): Plumb shortcut creation failure through and return a failure exit
+  // code.
+  return installer::CREATE_SHORTCUTS_SUCCESS;
+}
+
 // This method processes any command line options that make setup.exe do
 // various tasks other than installation (renaming chrome.exe, showing eula
 // among others). This function returns true if any such command line option
 // has been found and processed (so setup.exe should exit at that point).
 bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
                                     const base::CommandLine& cmd_line,
+                                    const InitialPreferences& prefs,
                                     int* exit_code) {
   installer::InstallerState* installer_state = &(modify_params.installer_state);
   installer::InstallationState* original_state =
@@ -970,7 +994,8 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
     if (installer_state->system_install()) {
       bool force =
           cmd_line.HasSwitch(installer::switches::kForceConfigureUserSettings);
-      installer::HandleActiveSetupForBrowser(*installer_state, force);
+      installer::HandleActiveSetupForBrowser(*installer_state, setup_exe,
+                                             force);
       status = installer::INSTALL_REPAIRED;
     } else {
       LOG(DFATAL)
@@ -1080,7 +1105,8 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
     const base::Version installed_version(
         base::UTF16ToUTF8(version_info->product_version()));
     if (installed_version.IsValid()) {
-      installer::HandleOsUpgradeForBrowser(*installer_state, installed_version);
+      installer::HandleOsUpgradeForBrowser(*installer_state, installed_version,
+                                           setup_exe);
       status = installer::INSTALL_REPAIRED;
     } else {
       LOG(DFATAL) << "Failed to extract product version from "
@@ -1181,6 +1207,29 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
             ? installer::ROTATE_DTKEY_SUCCESS
             : installer::ROTATE_DTKEY_FAILED;
 #endif
+  } else if (cmd_line.HasSwitch(installer::switches::kCreateShortcuts)) {
+    std::string install_op_arg =
+        cmd_line.GetSwitchValueASCII(installer::switches::kCreateShortcuts);
+    std::string shortcut_level_arg =
+        cmd_line.GetSwitchValueASCII(installer::switches::kInstallLevel);
+    int install_op;
+    int install_level_op;
+    if (!base::StringToInt(install_op_arg, &install_op) ||
+        install_op < installer::INSTALL_SHORTCUT_FIRST ||
+        install_op > installer::INSTALL_SHORTCUT_LAST) {
+      LOG(ERROR) << "Invalid shortcut operation " << install_op_arg;
+      *exit_code = installer::UNSUPPORTED_OPTION;
+    } else if (!base::StringToInt(shortcut_level_arg, &install_level_op) ||
+               install_level_op < installer::INSTALL_SHORTCUT_LEVEL_FIRST ||
+               install_level_op > installer::INSTALL_SHORTCUT_LEVEL_LAST) {
+      LOG(ERROR) << "Invalid shortcut level " << shortcut_level_arg;
+      *exit_code = installer::UNSUPPORTED_OPTION;
+    } else {
+      *exit_code = CreateShortcutsInChildProc(
+          *installer_state, prefs,
+          static_cast<installer::InstallShortcutLevel>(install_level_op),
+          static_cast<installer::InstallShortcutOperation>(install_op));
+    }
   } else {
     handled = false;
   }
@@ -1577,7 +1626,8 @@ int WINAPI wWinMain(HINSTANCE instance,
   };
 
   int exit_code = 0;
-  if (HandleNonInstallCmdLineOptions(modify_params, cmd_line, &exit_code)) {
+  if (HandleNonInstallCmdLineOptions(modify_params, cmd_line, prefs,
+                                     &exit_code)) {
     return exit_code;
   }
 

@@ -24,6 +24,7 @@ enum InstallShortcutOperation {
   // Create all shortcuts (potentially skipping those explicitly stated not to
   // be installed in the InstallShortcutPreferences).
   INSTALL_SHORTCUT_CREATE_ALL,
+  INSTALL_SHORTCUT_FIRST = INSTALL_SHORTCUT_CREATE_ALL,
   // Create each per-user shortcut (potentially skipping those explicitly stated
   // not to be installed in the InstallShortcutPreferences), but only if the
   // system-level equivalent of that shortcut is not present on the system.
@@ -31,15 +32,19 @@ enum InstallShortcutOperation {
   // Replace all shortcuts that still exist with the most recent version of
   // each individual shortcut.
   INSTALL_SHORTCUT_REPLACE_EXISTING,
+  INSTALL_SHORTCUT_LAST = INSTALL_SHORTCUT_REPLACE_EXISTING,
 };
 
 enum InstallShortcutLevel {
   // Install shortcuts for the current user only.
-  CURRENT_USER,
+  INSTALL_SHORTCUT_LEVEL_FIRST = 0,
+  CURRENT_USER = INSTALL_SHORTCUT_LEVEL_FIRST,
   // Install global shortcuts visible to all users. Note: the Quick Launch
   // and taskbar pin shortcuts are still installed per-user (as they have no
   // all-users version).
   ALL_USERS,
+  // Update if a shortcut level is added.
+  INSTALL_SHORTCUT_LEVEL_LAST = ALL_USERS,
 };
 
 // Creates chrome.VisualElementsManifest.xml in |src_path| if
@@ -84,15 +89,18 @@ void LaunchDeleteOldVersionsProcess(const base::FilePath& setup_path,
                                     const InstallerState& installer_state);
 
 // Performs installation-related tasks following an OS upgrade.
-// |chrome| The installed product (must be a browser).
-// |installed_version| the current version of this install.
+// `installer_state` The installer state.
+// `installed_version` the current version of this install.
+// `setup_path` path to setup.exe
 void HandleOsUpgradeForBrowser(const InstallerState& installer_state,
-                               const base::Version& installed_version);
+                               const base::Version& installed_version,
+                               const base::FilePath& setup_path);
 
 // Performs per-user installation-related tasks on Active Setup (ran on first
 // login for each user post system-level Chrome install). Shortcut creation is
-// skipped if the First Run beacon is present (unless |force| is set to true).
+// skipped if the First Run beacon is present (unless `force` is set to true).
 void HandleActiveSetupForBrowser(const InstallerState& installer_state,
+                                 const base::FilePath& setup_path,
                                  bool force);
 
 }  // namespace installer
