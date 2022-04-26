@@ -26,6 +26,8 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/app_constants/constants.h"
+#include "components/services/app_service/public/cpp/instance_registry.h"
+#include "components/services/app_service/public/cpp/instance_update.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_utils.h"
@@ -151,12 +153,28 @@ AppTypeName GetAppTypeNameForWebApp(Profile* profile,
                                              : AppTypeName::kWeb;
 }
 
-bool IsBrowser(aura::Window* window) {
+bool IsAshBrowserWindow(aura::Window* window) {
   Browser* browser = chrome::FindBrowserWithWindow(window->GetToplevelWindow());
   if (!browser || browser->is_type_app() || browser->is_type_app_popup()) {
     return false;
   }
   return true;
+}
+
+bool IsLacrosBrowserWindow(Profile* profile, aura::Window* window) {
+  if (!web_app::IsWebAppsCrosapiEnabled()) {
+    return false;
+  }
+
+  bool ret = false;
+  AppServiceProxyFactory::GetForProfile(profile)
+      ->InstanceRegistry()
+      .ForInstancesWithWindow(window, [&](const apps::InstanceUpdate& update) {
+        if (update.AppId() == app_constants::kLacrosAppId) {
+          ret = true;
+        }
+      });
+  return ret;
 }
 
 bool IsAppOpenedInTab(AppTypeName app_type_name, const std::string& app_id) {
@@ -189,18 +207,20 @@ bool IsAppOpenedWithBrowserWindow(Profile* profile,
 AppTypeName GetAppTypeNameForWebAppWindow(Profile* profile,
                                           const std::string& app_id,
                                           aura::Window* window) {
-  if (IsBrowser(window)) {
-    return apps::AppTypeName::kChromeBrowser;
+  if (IsAshBrowserWindow(window)) {
+    return AppTypeName::kChromeBrowser;
   }
 
   if (GetAppTypeNameForWebApp(
           profile, app_id,
           apps::mojom::LaunchContainer::kLaunchContainerNone) ==
-      apps::AppTypeName::kSystemWeb) {
-    return apps::AppTypeName::kSystemWeb;
+      AppTypeName::kSystemWeb) {
+    return AppTypeName::kSystemWeb;
   }
 
-  return apps::AppTypeName::kWeb;
+  return IsLacrosBrowserWindow(profile, window)
+             ? AppTypeName::kStandaloneBrowser
+             : AppTypeName::kWeb;
 }
 
 AppTypeName GetAppTypeNameForWindow(Profile* profile,
@@ -217,8 +237,8 @@ AppTypeName GetAppTypeNameForWindow(Profile* profile,
     case AppType::kCrostini:
       return apps::AppTypeName::kCrostini;
     case AppType::kChromeApp:
-      return IsBrowser(window) ? apps::AppTypeName::kChromeBrowser
-                               : apps::AppTypeName::kChromeApp;
+      return IsAshBrowserWindow(window) ? apps::AppTypeName::kChromeBrowser
+                                        : apps::AppTypeName::kChromeApp;
     case AppType::kWeb:
       return GetAppTypeNameForWebAppWindow(profile, app_id, window);
     case AppType::kMacOs:

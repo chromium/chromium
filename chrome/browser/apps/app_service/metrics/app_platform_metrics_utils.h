@@ -106,7 +106,11 @@ AppTypeName GetAppTypeNameForWebApp(Profile* profile,
 
 // Returns false if |window| is a Chrome app window or a standalone web app
 // window. Otherwise, return true.
-bool IsBrowser(aura::Window* window);
+bool IsAshBrowserWindow(aura::Window* window);
+
+// Returns true if `window` is a lacros browser window. Otherwise, return false
+// for non Lacros windows, or Lacros standalone app windows.
+bool IsLacrosBrowserWindow(Profile* profile, aura::Window* window);
 
 // Returns true if the app with |app_id| is opened as a tab in a browser window.
 // Otherwise, return false.

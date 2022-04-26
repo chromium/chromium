@@ -114,8 +114,9 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
     case apps::AppType::kCrostini:
       return apps::AppTypeNameV2::kCrostini;
     case apps::AppType::kChromeApp:
-      return apps::IsBrowser(window) ? apps::AppTypeNameV2::kChromeAppTab
-                                     : apps::AppTypeNameV2::kChromeAppWindow;
+      return apps::IsAshBrowserWindow(window)
+                 ? apps::AppTypeNameV2::kChromeAppTab
+                 : apps::AppTypeNameV2::kChromeAppWindow;
     case apps::AppType::kWeb: {
       apps::AppTypeName app_type_name =
           apps::GetAppTypeNameForWebAppWindow(profile, app_id, window);

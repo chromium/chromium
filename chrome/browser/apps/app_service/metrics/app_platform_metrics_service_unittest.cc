@@ -490,6 +490,18 @@ class AppPlatformMetricsServiceTest : public testing::Test,
         .CreateOrUpdateInstance(std::move(params));
   }
 
+  void ModifyInstance(const base::UnguessableToken& instance_id,
+                      const std::string& app_id,
+                      aura::Window* window,
+                      apps::InstanceState state) {
+    auto instance =
+        std::make_unique<apps::Instance>(app_id, instance_id, window);
+    instance->UpdateState(state, base::Time::Now());
+    apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get())
+        ->InstanceRegistry()
+        .OnInstance(std::move(instance));
+  }
+
   void ModifyWebAppInstance(const std::string& app_id,
                             aura::Window* window,
                             apps::InstanceState state) {
@@ -1654,6 +1666,79 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmForStandaloneBrowserApps) {
                         AppTypeName::kStandaloneBrowserChromeApp);
   VerifyAppUsageTimeUkm(kExtensionId, /*duration=*/180000,
                         AppTypeName::kStandaloneBrowserExtension);
+}
+
+TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmForWebAppsOpenInLacrosTabs) {
+  if (!IsLacrosPrimary()) {
+    return;
+  }
+
+  const base::UnguessableToken instance_id0 = base::UnguessableToken::Create();
+  const base::UnguessableToken instance_id1 = base::UnguessableToken::Create();
+  const base::UnguessableToken instance_id2 = base::UnguessableToken::Create();
+
+  const std::string web_app_id1 = "w";
+  const GURL url1 = GURL("https://foo.com");
+
+  const std::string web_app_id2 = "w2";
+  const GURL url2 = GURL("https://foo2.com");
+
+  // Create a StandaloneBrowser window, and set it as activated for
+  // `kLacrosAppId`.
+  auto window = std::make_unique<aura::Window>(nullptr);
+  window->Init(ui::LAYER_NOT_DRAWN);
+  ModifyInstance(instance_id0, app_constants::kLacrosAppId, window.get(),
+                 kActiveInstanceState);
+  task_environment_.FastForwardBy(base::Minutes(5));
+
+  // Create a web app tab for `web_app_id1`, and set it as activated.
+  ModifyInstance(instance_id1, web_app_id1, window.get(), kActiveInstanceState);
+  ModifyInstance(instance_id0, app_constants::kLacrosAppId, window.get(),
+                 kInactiveInstanceState);
+  task_environment_.FastForwardBy(base::Minutes(4));
+
+  // Create a web app tab for `web_app_id2`, and set it as activated.
+  ModifyInstance(instance_id2, web_app_id2, window.get(), kActiveInstanceState);
+  ModifyInstance(instance_id1, web_app_id1, window.get(),
+                 kInactiveInstanceState);
+  task_environment_.FastForwardBy(base::Minutes(3));
+
+  ModifyInstance(instance_id2, web_app_id2, window.get(),
+                 kInactiveInstanceState);
+
+  // Set time passed 2 hours to record the usage time AppKM.
+  task_environment_.FastForwardBy(base::Minutes(108));
+  VerifyAppUsageTimeUkm(app_constants::kLacrosAppId, /*duration=*/300000,
+                        AppTypeName::kStandaloneBrowser);
+  VerifyAppUsageTimeUkm(url1, /*duration=*/240000,
+                        AppTypeName::kStandaloneBrowser);
+  VerifyAppUsageTimeUkm(url2, /*duration=*/180000,
+                        AppTypeName::kStandaloneBrowser);
+}
+
+TEST_P(AppPlatformMetricsServiceTest,
+       UsageTimeUkmForWebAppWithStandaloneLacrosWindow) {
+  if (!IsLacrosPrimary()) {
+    return;
+  }
+
+  const base::UnguessableToken instance_id = base::UnguessableToken::Create();
+
+  const std::string web_app_id = "w";
+  const GURL url = GURL("https://foo.com");
+
+  // Create a StandaloneBrowser web app window, and set it as activated for
+  // `web_app_id`.
+  auto window = std::make_unique<aura::Window>(nullptr);
+  window->Init(ui::LAYER_NOT_DRAWN);
+  ModifyInstance(instance_id, web_app_id, window.get(), kActiveInstanceState);
+  task_environment_.FastForwardBy(base::Minutes(5));
+
+  ModifyInstance(instance_id, web_app_id, window.get(), kInactiveInstanceState);
+
+  // Set time passed 2 hours to record the usage time AppKM.
+  task_environment_.FastForwardBy(base::Minutes(115));
+  VerifyAppUsageTimeUkm(url, /*duration=*/300000, AppTypeName::kWeb);
 }
 
 TEST_P(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
