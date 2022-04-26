@@ -29,13 +29,8 @@
 
 namespace {
 
-// Returns the default configuration for Symbols.
-UIImageConfiguration* SymbolConfiguration() {
-  return [UIImageSymbolConfiguration
-      configurationWithPointSize:24
-                          weight:UIImageSymbolWeightMedium
-                           scale:UIImageSymbolScaleMedium];
-}
+// The size of the symbol image.
+NSInteger kSymbolImagePointSize = 24;
 
 }  // namespace
 
@@ -55,8 +50,8 @@ UIImageConfiguration* SymbolConfiguration() {
 - (ToolbarButton*)backButton {
   UIImage* backImage;
   if (base::FeatureList::IsEnabled(kUseSFSymbolsSamples)) {
-    backImage = [UIImage systemImageNamed:@"arrow.backward"
-                        withConfiguration:SymbolConfiguration()];
+    backImage =
+        DefaultSymbolWithPointSize(@"arrow.backward", kSymbolImagePointSize);
   } else {
     backImage = [UIImage imageNamed:@"toolbar_back"];
   }
@@ -76,8 +71,8 @@ UIImageConfiguration* SymbolConfiguration() {
 - (ToolbarButton*)forwardButton {
   UIImage* forwardImage;
   if (base::FeatureList::IsEnabled(kUseSFSymbolsSamples)) {
-    forwardImage = [UIImage systemImageNamed:@"arrow.forward"
-                           withConfiguration:SymbolConfiguration()];
+    forwardImage =
+        DefaultSymbolWithPointSize(@"arrow.forward", kSymbolImagePointSize);
   } else {
     forwardImage = [UIImage imageNamed:@"toolbar_forward"];
   }
@@ -98,8 +93,8 @@ UIImageConfiguration* SymbolConfiguration() {
 - (ToolbarTabGridButton*)tabGridButton {
   UIImage* tabGridImage;
   if (base::FeatureList::IsEnabled(kUseSFSymbolsSamples)) {
-    tabGridImage = CustomSymbolWithConfiguration(kSquareNumberSymbol,
-                                                 SymbolConfiguration());
+    tabGridImage =
+        CustomSymbolWithPointSize(kSquareNumberSymbol, kSymbolImagePointSize);
   } else {
     tabGridImage = [UIImage imageNamed:@"toolbar_switcher"];
   }
@@ -141,8 +136,8 @@ UIImageConfiguration* SymbolConfiguration() {
 - (ToolbarButton*)shareButton {
   UIImage* shareImage;
   if (base::FeatureList::IsEnabled(kUseSFSymbolsSamples)) {
-    shareImage = [UIImage systemImageNamed:@"square.and.arrow.up"
-                         withConfiguration:SymbolConfiguration()];
+    shareImage = DefaultSymbolWithPointSize(@"square.and.arrow.up",
+                                            kSymbolImagePointSize);
   } else {
     shareImage = [UIImage imageNamed:@"toolbar_share"];
   }
@@ -164,8 +159,8 @@ UIImageConfiguration* SymbolConfiguration() {
 - (ToolbarButton*)reloadButton {
   UIImage* reloadImage;
   if (base::FeatureList::IsEnabled(kUseSFSymbolsSamples)) {
-    reloadImage = CustomSymbolWithConfiguration(kArrowClockWiseSymbol,
-                                                SymbolConfiguration());
+    reloadImage =
+        CustomSymbolWithPointSize(kArrowClockWiseSymbol, kSymbolImagePointSize);
   } else {
     reloadImage = [UIImage imageNamed:@"toolbar_reload"];
   }
@@ -187,8 +182,7 @@ UIImageConfiguration* SymbolConfiguration() {
 - (ToolbarButton*)stopButton {
   UIImage* stopImage;
   if (base::FeatureList::IsEnabled(kUseSFSymbolsSamples)) {
-    stopImage = [UIImage systemImageNamed:@"xmark"
-                        withConfiguration:SymbolConfiguration()];
+    stopImage = DefaultSymbolWithPointSize(@"xmark", kSymbolImagePointSize);
   } else {
     stopImage = [UIImage imageNamed:@"toolbar_stop"];
   }
@@ -206,8 +200,7 @@ UIImageConfiguration* SymbolConfiguration() {
 - (ToolbarButton*)openNewTabButton {
   UIImage* newTabImage;
   if (base::FeatureList::IsEnabled(kUseSFSymbolsSamples)) {
-    newTabImage = [UIImage systemImageNamed:@"plus"
-                          withConfiguration:SymbolConfiguration()];
+    newTabImage = DefaultSymbolWithPointSize(@"plus", kSymbolImagePointSize);
   } else {
     newTabImage = [UIImage imageNamed:@"toolbar_new_tab_page"];
   }

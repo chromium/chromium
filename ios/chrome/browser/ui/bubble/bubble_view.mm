@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -147,8 +148,8 @@ UIView* BubbleArrowViewWithDirection(BubbleArrowDirection arrowDirection) {
 UIButton* BubbleCloseButton() {
   UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
       configurationWithScale:UIImageSymbolScaleMedium];
-  UIImage* buttonImage = [UIImage systemImageNamed:@"xmark"
-                                 withConfiguration:configuration];
+  UIImage* buttonImage =
+      DefaultSymbolWithConfiguration(@"xmark", configuration);
   // Computes the paddings to position the button's image. The button is
   // bigger than the image for accessibility purposes.
   const CGFloat closeButtonBottomPadding = kCloseButtonSize -

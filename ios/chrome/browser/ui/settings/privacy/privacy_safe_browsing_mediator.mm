@@ -12,6 +12,7 @@
 #include "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_constants.h"
@@ -36,12 +37,8 @@ typedef NSArray<TableViewItem*>* ItemArray;
 
 namespace {
 
-// Returns the default configuration for Symbols.
-UIImageConfiguration* SymbolConfiguration() {
-  return [UIImageSymbolConfiguration
-      configurationWithPointSize:20
-                          weight:UIImageSymbolWeightMedium];
-}
+// The size of the symbol image.
+NSInteger kSymbolImagePointSize = 20;
 
 // List of item types.
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -206,8 +203,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[SettingsImageDetailTextItem alloc] initWithType:type];
   detailItem.text = l10n_util::GetNSString(titleId);
   detailItem.detailText = l10n_util::GetNSString(detailText);
-  detailItem.image = [UIImage systemImageNamed:@"checkmark"
-                             withConfiguration:SymbolConfiguration()];
+  detailItem.image =
+      DefaultSymbolWithPointSize(@"checkmark", kSymbolImagePointSize);
   detailItem.imageViewTintColor = [self shouldItemTypeHaveCheckmark:type]
                                       ? [UIColor colorNamed:kBlueColor]
                                       : [UIColor clearColor];
@@ -235,8 +232,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     managedItem.detailTextColor =
         [[UIColor colorNamed:kTextSecondaryColor] colorWithAlphaComponent:0.4f];
   }
-  managedItem.image = [UIImage systemImageNamed:@"checkmark"
-                              withConfiguration:SymbolConfiguration()];
+  managedItem.image =
+      DefaultSymbolWithPointSize(@"checkmark", kSymbolImagePointSize);
   managedItem.tintColor = [self shouldItemTypeHaveCheckmark:type]
                               ? [UIColor colorNamed:kBlueColor]
                               : [UIColor clearColor];

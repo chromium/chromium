@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -32,6 +33,13 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+// The size of the symbol image.
+NSInteger kSymbolImagePointSize = 18;
+
+}  // namespace
 
 @interface BrowserActionFactory ()
 
@@ -199,8 +207,8 @@
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_TAB)
-                      image:[self configuredSymbolNamed:@"plus.square"
-                                           systemSymbol:YES]
+                      image:DefaultSymbolWithPointSize(@"plus.square",
+                                                       kSymbolImagePointSize)
                        type:MenuActionType::OpenNewTab
                       block:^{
                         [handler openURLInNewTab:[OpenNewTabCommand
@@ -234,13 +242,14 @@
 - (UIAction*)actionToCloseCurrentTab {
   __weak id<BrowserCommands> handler =
       static_cast<id<BrowserCommands>>(self.browser->GetCommandDispatcher());
-  UIAction* action = [self
-      actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_CLOSE_TAB)
-                image:[self configuredSymbolNamed:@"xmark" systemSymbol:YES]
-                 type:MenuActionType::CloseCurrentTabs
-                block:^{
-                  [handler closeCurrentTab];
-                }];
+  UIAction* action =
+      [self actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_CLOSE_TAB)
+                      image:DefaultSymbolWithPointSize(@"xmark",
+                                                       kSymbolImagePointSize)
+                       type:MenuActionType::CloseCurrentTabs
+                      block:^{
+                        [handler closeCurrentTab];
+                      }];
   action.attributes = UIMenuElementAttributesDestructive;
   return action;
 }
@@ -250,8 +259,8 @@
       self.browser->GetCommandDispatcher(), QRScannerCommands);
   return [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_QR_SCANNER)
-                image:[self configuredSymbolNamed:@"qrcode.viewfinder"
-                                     systemSymbol:YES]
+                image:DefaultSymbolWithPointSize(@"qrcode.viewfinder",
+                                                 kSymbolImagePointSize)
                  type:MenuActionType::ShowQRScanner
                 block:^{
                   [handler showQRScanner];
@@ -263,7 +272,7 @@
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   return [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_VOICE_SEARCH)
-                image:[self configuredSymbolNamed:@"mic" systemSymbol:YES]
+                image:DefaultSymbolWithPointSize(@"mic", kSymbolImagePointSize)
                  type:MenuActionType::StartVoiceSearch
                 block:^{
                   [handler startVoiceSearch];
@@ -275,8 +284,8 @@
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   UIAction* action = [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_SEARCH)
-                image:[self configuredSymbolNamed:@"magnifyingglass"
-                                     systemSymbol:YES]
+                image:DefaultSymbolWithPointSize(@"magnifyingglass",
+                                                 kSymbolImagePointSize)
                  type:MenuActionType::StartNewSearch
                 block:^{
                   OpenNewTabCommand* command =
@@ -341,9 +350,8 @@
 
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_TOOLS_MENU_SEARCH_COPIED_IMAGE)
-                         image:[self configuredSymbolNamed:@"doc.on.clipboard"
-                                              systemSymbol:YES]
-
+                         image:DefaultSymbolWithPointSize(@"doc.on.clipboard",
+                                                          kSymbolImagePointSize)
                           type:MenuActionType::SearchCopiedImage
                          block:^{
                            ClipboardRecentContent::GetInstance()
@@ -369,8 +377,8 @@
 
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_TOOLS_MENU_VISIT_COPIED_LINK)
-                         image:[self configuredSymbolNamed:@"doc.on.clipboard"
-                                              systemSymbol:YES]
+                         image:DefaultSymbolWithPointSize(@"doc.on.clipboard",
+                                                          kSymbolImagePointSize)
                           type:MenuActionType::VisitCopiedLink
                          block:^{
                            ClipboardRecentContent::GetInstance()
@@ -396,8 +404,8 @@
 
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_TOOLS_MENU_SEARCH_COPIED_TEXT)
-                         image:[self configuredSymbolNamed:@"doc.on.clipboard"
-                                              systemSymbol:YES]
+                         image:DefaultSymbolWithPointSize(@"doc.on.clipboard",
+                                                          kSymbolImagePointSize)
                           type:MenuActionType::SearchCopiedText
                          block:^{
                            ClipboardRecentContent::GetInstance()

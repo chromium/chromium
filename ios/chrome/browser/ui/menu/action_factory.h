@@ -21,11 +21,6 @@ class GURL;
 // |scenario|.
 - (instancetype)initWithScenario:(MenuScenario)scenario;
 
-// Returns a Symbol named |symbolName| configured to be used in a context menu.
-// |systemSymbol| is used to specify if it is a SFSymbol or a custom symbol.
-- (UIImage*)configuredSymbolNamed:(NSString*)symbolName
-                     systemSymbol:(BOOL)systemSymbol;
-
 // Creates a UIAction instance configured with the given |title| and |image|.
 // Upon execution, the action's |type| will be recorded and the |block| will be
 // run.

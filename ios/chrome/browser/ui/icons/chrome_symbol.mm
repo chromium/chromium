@@ -8,14 +8,56 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// Returns the default configuration with the given |pointSize|.
+UIImageConfiguration* DefaultSymbolConfigurationWithPointSize(
+    NSInteger pointSize) {
+  return [UIImageSymbolConfiguration
+      configurationWithPointSize:pointSize
+                          weight:UIImageSymbolWeightMedium
+                           scale:UIImageSymbolScaleMedium];
+}
+
+// Returns a symbol named |symbolName| configured with the given
+// |configuration|. |systemSymbol| is used to specify if it is a SFSymbol or a
+// custom symbol.
+
+UIImage* SymbolWithConfiguration(NSString* symbolName,
+                                 UIImageConfiguration* configuration,
+                                 BOOL systemSymbol) {
+  if (systemSymbol) {
+    return [UIImage systemImageNamed:symbolName
+                   withConfiguration:configuration];
+  }
+  return [UIImage imageNamed:symbolName
+                    inBundle:nil
+           withConfiguration:configuration];
+}
+
+}  // namespace
+
 NSString* const kArrowClockWiseSymbol = @"arrow_clockwise";
 NSString* const kIncognitoSymbol = @"incognito";
 NSString* const kSquareNumberSymbol = @"square_number";
 NSString* const kTranslateSymbol = @"translate";
 
+UIImage* DefaultSymbolWithConfiguration(NSString* symbolName,
+                                        UIImageConfiguration* configuration) {
+  return SymbolWithConfiguration(symbolName, configuration, true);
+}
+
 UIImage* CustomSymbolWithConfiguration(NSString* symbolName,
                                        UIImageConfiguration* configuration) {
-  return [UIImage imageNamed:symbolName
-                    inBundle:nil
-           withConfiguration:configuration];
+  return SymbolWithConfiguration(symbolName, configuration, false);
+}
+
+UIImage* DefaultSymbolWithPointSize(NSString* symbolName, NSInteger pointSize) {
+  return DefaultSymbolWithConfiguration(
+      symbolName, DefaultSymbolConfigurationWithPointSize(pointSize));
+}
+
+UIImage* CustomSymbolWithPointSize(NSString* symbolName, NSInteger pointSize) {
+  return CustomSymbolWithConfiguration(
+      symbolName, DefaultSymbolConfigurationWithPointSize(pointSize));
 }

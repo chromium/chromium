@@ -7,6 +7,7 @@
 #include "base/i18n/rtl.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
@@ -25,14 +26,6 @@
 #endif
 
 namespace {
-
-// Returns the default configuration for Symbols.
-UIImageConfiguration* SymbolConfiguration() {
-  return [UIImageSymbolConfiguration
-      configurationWithPointSize:18
-                          weight:UIImageSymbolWeightMedium
-                           scale:UIImageSymbolScaleMedium];
-}
 
 // Width of search field.
 const CGFloat kSearchFieldLarge = 432;
@@ -189,8 +182,7 @@ void configureVoiceSearchButton(UIButton* voiceSearchButton,
 
   UIImage* micImage;
   if (base::FeatureList::IsEnabled(kUseSFSymbolsSamples)) {
-    micImage = [[UIImage systemImageNamed:@"mic.fill"
-                        withConfiguration:SymbolConfiguration()]
+    micImage = [DefaultSymbolWithPointSize(@"mic.fill", 18)
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   } else {
     micImage = [[UIImage imageNamed:@"location_bar_voice"]

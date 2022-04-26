@@ -13,9 +13,22 @@ extern NSString* const kIncognitoSymbol;
 extern NSString* const kSquareNumberSymbol;
 extern NSString* const kTranslateSymbol;
 
+// Returns a SF symbol named |symbolName| configured with the given
+// |configuration|.
+UIImage* DefaultSymbolWithConfiguration(NSString* symbolName,
+                                        UIImageConfiguration* configuration);
+
 // Returns a custom symbol named |symbolName| configured with the given
 // |configuration|.
 UIImage* CustomSymbolWithConfiguration(NSString* symbolName,
                                        UIImageConfiguration* configuration);
+
+// Returns a SF symbol named |symbolName| configured with the default
+// configuration and the given |pointSize|.
+UIImage* DefaultSymbolWithPointSize(NSString* symbolName, NSInteger pointSize);
+
+// Returns a custom symbol named |symbolName| configured with the default
+// configuration and the given |pointSize|.
+UIImage* CustomSymbolWithPointSize(NSString* symbolName, NSInteger pointSize);
 
 #endif  // IOS_CHROME_BROWSER_UI_ICONS_CHROME_SYMBOL_H_
