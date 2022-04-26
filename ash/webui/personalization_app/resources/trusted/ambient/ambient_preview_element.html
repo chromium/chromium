@@ -228,10 +228,10 @@
             [[getAlbumDescription_(topicSource_, previewAlbums_)]]
           </span>
         </h2>
-        <div id="collageContainer" class$="[[getContainerClass_(previewAlbums_)]]">
-          <template is="dom-repeat" items="[[getCollageItems_(previewAlbums_)]]">
+        <div id="collageContainer" class$="[[getCollageContainerClass_(collageImages_)]]">
+          <template is="dom-repeat" items="[[collageImages_]]">
             <img class="collage-item" is="cr-auto-img"
-                auto-src="[[getPreviewImage_(item)]]" is-google-photos>
+                auto-src="[[item.url]]" is-google-photos>
           </template>
         </div>
       </template>

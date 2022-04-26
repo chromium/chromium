@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {AmbientModeAlbum, AnimationTheme, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
 
 /**
@@ -11,6 +12,7 @@ export interface AmbientState {
   albums: AmbientModeAlbum[]|null;
   ambientModeEnabled: boolean|null;
   animationTheme: AnimationTheme|null;
+  googlePhotosAlbumsPreviews: Url[]|null;
   temperatureUnit: TemperatureUnit|null;
   topicSource: TopicSource|null;
 }
@@ -20,6 +22,7 @@ export function emptyState(): AmbientState {
     albums: null,
     ambientModeEnabled: null,
     animationTheme: null,
+    googlePhotosAlbumsPreviews: null,
     temperatureUnit: null,
     topicSource: null,
   };

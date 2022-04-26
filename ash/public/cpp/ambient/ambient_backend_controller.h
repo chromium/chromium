@@ -15,6 +15,7 @@
 #include "base/callback_forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -107,6 +108,9 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
   using FetchWeatherCallback =
       base::OnceCallback<void(const absl::optional<WeatherInfo>& weather_info)>;
 
+  using GetGooglePhotosAlbumsPreviewCallback =
+      base::OnceCallback<void(const std::vector<GURL>& preview_urls)>;
+
   static AmbientBackendController* Get();
 
   AmbientBackendController();
@@ -151,6 +155,13 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
 
   // Fetch the weather information.
   virtual void FetchWeather(FetchWeatherCallback) = 0;
+
+  virtual void GetGooglePhotosAlbumsPreview(
+      const std::vector<std::string>& album_ids,
+      int preview_width,
+      int preview_height,
+      int num_previews,
+      GetGooglePhotosAlbumsPreviewCallback callback) = 0;
 
   // Get stock photo urls to cache in advance in case Ambient mode is started
   // without internet access.

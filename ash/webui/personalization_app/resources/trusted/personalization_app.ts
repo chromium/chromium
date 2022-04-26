@@ -50,7 +50,7 @@ export {CollectionsGrid} from '../untrusted/collections_grid.js';
 export {ImagesGrid} from '../untrusted/images_grid.js';
 export {AlbumList} from './ambient/album_list_element.js';
 export {AlbumsSubpage} from './ambient/albums_subpage_element.js';
-export {AmbientActionName, AmbientActions, SetAlbumsAction, setAlbumsAction, SetAlbumSelectedAction, setAlbumSelectedAction, SetAmbientModeEnabledAction, setAmbientModeEnabledAction, SetAnimationThemeAction, setAnimationThemeAction, SetTemperatureUnitAction, setTemperatureUnitAction, SetTopicSourceAction, setTopicSourceAction} from './ambient/ambient_actions.js';
+export {AmbientActionName, AmbientActions, SetAlbumsAction, setAlbumsAction, SetAlbumSelectedAction, setAlbumSelectedAction, SetAmbientModeEnabledAction, setAmbientModeEnabledAction, SetAnimationThemeAction, setAnimationThemeAction, SetGooglePhotosAlbumsPreviewsAction, setGooglePhotosAlbumsPreviewsAction, SetTemperatureUnitAction, setTemperatureUnitAction, SetTopicSourceAction, setTopicSourceAction} from './ambient/ambient_actions.js';
 export {setAmbientProviderForTesting} from './ambient/ambient_interface_provider.js';
 export {AmbientObserver} from './ambient/ambient_observer.js';
 export {AmbientPreview} from './ambient/ambient_preview_element.js';
@@ -92,6 +92,7 @@ export {GooglePhotosPhotosByAlbumId} from './wallpaper/google_photos_photos_by_a
 export {GooglePhotosPhotos, GooglePhotosPhotosRow, GooglePhotosPhotosSection} from './wallpaper/google_photos_photos_element.js';
 export {GooglePhotosZeroState} from './wallpaper/google_photos_zero_state_element.js';
 export {LocalImages} from './wallpaper/local_images_element.js';
+
 export * from './wallpaper/wallpaper_actions.js';
 export {WallpaperCollections} from './wallpaper/wallpaper_collections_element.js';
 export {cancelPreviewWallpaper, confirmPreviewWallpaper, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosPhotos, fetchLocalData, getDailyRefreshCollectionId, getLocalImages, initializeBackdropData, initializeGooglePhotosData, selectWallpaper, setCurrentWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './wallpaper/wallpaper_controller.js';

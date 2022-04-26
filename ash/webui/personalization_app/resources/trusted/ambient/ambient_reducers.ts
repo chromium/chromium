@@ -50,6 +50,17 @@ export function animationThemeReducer(
   }
 }
 
+export function googlePhotosAlbumsPreviewsReducer(
+    state: AmbientState['googlePhotosAlbumsPreviews'], action: Actions,
+    _: PersonalizationState): AmbientState['googlePhotosAlbumsPreviews'] {
+  switch (action.name) {
+    case AmbientActionName.SET_GOOGLE_PHOTOS_ALBUMS_PREVIEWS:
+      return action.previews;
+    default:
+      return state;
+  }
+}
+
 export function temperatureUnitReducer(
     state: AmbientState['temperatureUnit'], action: Actions,
     _: PersonalizationState): AmbientState['temperatureUnit'] {
@@ -77,6 +88,7 @@ export const ambientReducers:
       albums: albumsReducer,
       ambientModeEnabled: ambientModeEnabledReducer,
       animationTheme: animationThemeReducer,
+      googlePhotosAlbumsPreviews: googlePhotosAlbumsPreviewsReducer,
       temperatureUnit: temperatureUnitReducer,
       topicSource: topicSourceReducer,
     };

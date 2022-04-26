@@ -14,6 +14,7 @@ import '../../common/styles.js';
 import '../cros_button_style.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {isNonEmptyArray} from '../../common/utils.js';
 import {AmbientModeAlbum, TopicSource} from '../personalization_app.mojom-webui.js';
 import {logAmbientModeOptInUMA} from '../personalization_metrics_logger.js';
@@ -60,7 +61,17 @@ export class AmbientPreview extends WithPersonalizationStore {
       },
       loading_: {
         type: Boolean,
-        computed: 'computeLoading_(ambientModeEnabled_, albums_, topicSource_)',
+        computed:
+            'computeLoading_(ambientModeEnabled_, albums_, topicSource_, googlePhotosAlbumsPreviews_)',
+      },
+      googlePhotosAlbumsPreviews_: {
+        type: Array,
+        value: null,
+      },
+      collageImages_: {
+        type: Array,
+        computed:
+            'computeCollageImages_(topicSource_, previewAlbums_, googlePhotosAlbumsPreviews_)',
       }
     };
   }
@@ -73,6 +84,8 @@ export class AmbientPreview extends WithPersonalizationStore {
   private previewAlbums_: AmbientModeAlbum[]|null;
   private firstPreviewAlbum_: AmbientModeAlbum|null;
   private loading_: boolean;
+  private googlePhotosAlbumsPreviews_: Url[]|null;
+  private collageImages_: Url[];
 
   override ready() {
     super.ready();
@@ -84,13 +97,16 @@ export class AmbientPreview extends WithPersonalizationStore {
     this.watch(
         'ambientModeEnabled_', state => state.ambient.ambientModeEnabled);
     this.watch('albums_', state => state.ambient.albums);
+    this.watch(
+        'googlePhotosAlbumsPreviews_',
+        state => state.ambient.googlePhotosAlbumsPreviews);
     this.watch('topicSource_', state => state.ambient.topicSource);
     this.updateFromStore();
   }
 
   private computeLoading_(): boolean {
     return this.ambientModeEnabled_ === null || this.albums_ === null ||
-        this.topicSource_ === null;
+        this.topicSource_ === null || this.googlePhotosAlbumsPreviews_ === null;
   }
 
   /** Enable ambient mode and navigates to the ambient subpage. */
@@ -107,6 +123,34 @@ export class AmbientPreview extends WithPersonalizationStore {
   private onClickPreviewImage_(event: Event) {
     event.stopPropagation();
     PersonalizationRouter.instance().goToRoute(Paths.Ambient);
+  }
+
+  /**
+   * Return the array of images that form the collage.
+   * When topic source is Google Photos:
+   *   - if |googlePhotosAlbumsPreviews_| is non-empty but contains fewer than 4
+   *     images, only return one of them; otherwise return the first 4.
+   *   - if ||googlePhotosAlbumsPreviews_| is empty:
+   *        - if |previewAlbums_| contains fewer than 4 albums, return one of
+   *        their previews; otherwise return the first 4.
+   */
+  private computeCollageImages_(): Url[] {
+    switch (this.topicSource_) {
+      case TopicSource.kArtGallery:
+        return (this.previewAlbums_ || []).map(album => album.url);
+      case TopicSource.kGooglePhotos:
+        if (isNonEmptyArray(this.googlePhotosAlbumsPreviews_)) {
+          return this.googlePhotosAlbumsPreviews_.length < 4 ?
+              [this.googlePhotosAlbumsPreviews_[0]] :
+              this.googlePhotosAlbumsPreviews_.slice(0, 4);
+        }
+        if (isNonEmptyArray(this.previewAlbums_)) {
+          return this.previewAlbums_.length < 4 ?
+              [this.previewAlbums_[0].url] :
+              this.previewAlbums_.map(album => album.url).slice(0, 4);
+        }
+    }
+    return [];
   }
 
   private computePreviewAlbums_(): AmbientModeAlbum[]|null {
@@ -128,8 +172,8 @@ export class AmbientPreview extends WithPersonalizationStore {
                                                        '';
   }
 
-  private getContainerClass_(): string {
-    return `collage-${this.getCollageItems_().length}`;
+  private getCollageContainerClass_(): string {
+    return `collage-${this.collageImages_.length}`;
   }
 
   private getCollageItems_(): AmbientModeAlbum[] {

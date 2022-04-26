@@ -42,7 +42,9 @@ suite('AmbientPreviewTest', function() {
         personalizationStore.data.ambient.albums = ambientProvider.albums;
         personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;
         personalizationStore.data.ambient.ambientModeEnabled = false;
-        const ambientPreviewElement = initElement(AmbientPreview);
+        personalizationStore.data.ambient.googlePhotosAlbumsPreviews =
+            ambientProvider.googlePhotosAlbumsPreviews;
+        ambientPreviewElement = initElement(AmbientPreview);
         personalizationStore.notifyObservers();
         await waitAfterNextRender(ambientPreviewElement);
 
@@ -63,7 +65,9 @@ suite('AmbientPreviewTest', function() {
         personalizationStore.data.ambient.albums = ambientProvider.albums;
         personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;
         personalizationStore.data.ambient.ambientModeEnabled = false;
-        const ambientPreviewElement = initElement(AmbientPreview);
+        personalizationStore.data.ambient.googlePhotosAlbumsPreviews =
+            ambientProvider.googlePhotosAlbumsPreviews;
+        ambientPreviewElement = initElement(AmbientPreview);
         personalizationStore.notifyObservers();
         await waitAfterNextRender(ambientPreviewElement);
 

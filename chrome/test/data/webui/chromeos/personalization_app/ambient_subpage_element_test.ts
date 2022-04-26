@@ -8,6 +8,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {AlbumsSubpage, AmbientActionName, AmbientModeAlbum, AmbientObserver, AmbientSubpage, AnimationTheme, AnimationThemeItem, emptyState, Paths, PersonalizationRouter, SetAlbumsAction, SetAmbientModeEnabledAction, SetAnimationThemeAction, SetTemperatureUnitAction, SetTopicSourceAction, TemperatureUnit, TopicSource, TopicSourceItem, WallpaperGridItem} from 'chrome://personalization/trusted/personalization_app.js';
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
@@ -49,12 +50,15 @@ suite('AmbientSubpageTest', function() {
   async function displayMainSettings(
       topicSource: TopicSource|null, temperatureUnit: TemperatureUnit|null,
       ambientModeEnabled: boolean|null,
-      animationTheme = AnimationTheme.kSlideshow): Promise<AmbientSubpage> {
+      animationTheme = AnimationTheme.kSlideshow,
+      googlePhotosAlbumsPreviews: Url[] = []): Promise<AmbientSubpage> {
     personalizationStore.data.ambient.albums = ambientProvider.albums;
     personalizationStore.data.ambient.animationTheme = animationTheme;
     personalizationStore.data.ambient.topicSource = topicSource;
     personalizationStore.data.ambient.temperatureUnit = temperatureUnit;
     personalizationStore.data.ambient.ambientModeEnabled = ambientModeEnabled;
+    personalizationStore.data.ambient.googlePhotosAlbumsPreviews =
+        googlePhotosAlbumsPreviews;
     const ambientSubpage =
         initElement(AmbientSubpage, {path: Paths.Ambient, queryParams: {}});
     personalizationStore.notifyObservers();
@@ -454,7 +458,7 @@ suite('AmbientSubpageTest', function() {
         const reloadCalledPromise = new Promise<void>((resolve) => {
           PersonalizationRouter.reloadAtAmbient = resolve;
         });
-        let albumsSubpageElement = initElement(AlbumsSubpage);
+        const albumsSubpageElement = initElement(AlbumsSubpage);
         personalizationStore.data.ambient.ambientModeEnabled = false;
         personalizationStore.notifyObservers();
         await waitAfterNextRender(albumsSubpageElement);
@@ -679,6 +683,74 @@ suite('AmbientSubpageTest', function() {
     assertTrue(!!previewAlbumTitle);
     assertEquals('2', previewAlbumTitle.innerText.replace(/\s/g, ''));
   });
+
+  test(
+      'displays 4 image collage when there are enough photos in Google photos album',
+      async () => {
+        ambientSubpageElement = await displayMainSettings(
+            TopicSource.kGooglePhotos, TemperatureUnit.kFahrenheit,
+            /*ambientModeEnabled=*/ true);
+        personalizationStore.data.ambient.googlePhotosAlbumsPreviews =
+            ambientProvider.googlePhotosAlbumsPreviews;
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(ambientSubpageElement);
+
+        const ambientPreview =
+            ambientSubpageElement.shadowRoot!.querySelector('ambient-preview');
+        assertTrue(!!ambientPreview);
+
+        const collageImages =
+            ambientPreview.shadowRoot!.querySelectorAll<HTMLImageElement>(
+                '.collage-item');
+        assertTrue(!!collageImages);
+        assertEquals(4, collageImages.length);
+      });
+
+  test(
+      'displays 1 image collage when there are not enough photos in Google photos album',
+      async () => {
+        ambientSubpageElement = await displayMainSettings(
+            TopicSource.kGooglePhotos, TemperatureUnit.kFahrenheit,
+            /*ambientModeEnabled=*/ true);
+        personalizationStore.data.ambient.googlePhotosAlbumsPreviews = [
+          ambientProvider.googlePhotosAlbumsPreviews[0],
+          ambientProvider.googlePhotosAlbumsPreviews[1]
+        ];
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(ambientSubpageElement);
+
+        const ambientPreview =
+            ambientSubpageElement.shadowRoot!.querySelector('ambient-preview');
+        assertTrue(!!ambientPreview);
+
+        const collageImages =
+            ambientPreview.shadowRoot!.querySelectorAll<HTMLImageElement>(
+                '.collage-item');
+        assertTrue(!!collageImages);
+        assertEquals(1, collageImages.length);
+      });
+
+  test(
+      'displays preview urls from selected albums when there are zero preview photos in Google photos album',
+      async () => {
+        ambientSubpageElement = await displayMainSettings(
+            TopicSource.kGooglePhotos, TemperatureUnit.kFahrenheit,
+            /*ambientModeEnabled=*/ true);
+        personalizationStore.data.ambient.googlePhotosAlbumsPreviews = [];
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(ambientSubpageElement);
+
+        const ambientPreview =
+            ambientSubpageElement.shadowRoot!.querySelector('ambient-preview');
+        assertTrue(!!ambientPreview);
+
+        const collageImages =
+            ambientPreview.shadowRoot!.querySelectorAll<HTMLImageElement>(
+                '.collage-item');
+        assertTrue(!!collageImages);
+        assertEquals(1, collageImages.length);
+        assertTrue(collageImages[0]!.src.includes('test_url3'));
+      });
 
   test('displays zero state when ambient mode is disabled', async () => {
     ambientSubpageElement = await displayMainSettings(

@@ -474,6 +474,10 @@ interface AmbientObserver {
 
   // Notifies the JS side about the current albums.
   OnAlbumsChanged(array<AmbientModeAlbum> albums);
+
+  // Notifies the JS side about the previews of the selected Google Photos
+  // albums.
+  OnGooglePhotosAlbumsPreviewsFetched(array<url.mojom.Url> previews);
 };
 
 // Provides APIs to expose Ambient mode settings.

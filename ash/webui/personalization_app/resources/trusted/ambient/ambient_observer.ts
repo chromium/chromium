@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {AmbientModeAlbum, AmbientObserverInterface, AmbientObserverReceiver, AmbientProviderInterface, AnimationTheme, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
-import {setAlbumsAction, setAmbientModeEnabledAction, setAnimationThemeAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
+import {setAlbumsAction, setAmbientModeEnabledAction, setAnimationThemeAction, setGooglePhotosAlbumsPreviewsAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 
 /** @fileoverview listens for updates on color mode changes. */
@@ -61,5 +62,10 @@ export class AmbientObserver implements AmbientObserverInterface {
   onAlbumsChanged(albums: AmbientModeAlbum[]) {
     const store = PersonalizationStore.getInstance();
     store.dispatch(setAlbumsAction(albums));
+  }
+
+  onGooglePhotosAlbumsPreviewsFetched(previews: Url[]) {
+    const store = PersonalizationStore.getInstance();
+    store.dispatch(setGooglePhotosAlbumsPreviewsAction(previews));
   }
 }

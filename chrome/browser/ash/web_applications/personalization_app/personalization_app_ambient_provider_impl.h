@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/backoff_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace gfx {
 class ImageSkia;
@@ -110,6 +111,10 @@ class PersonalizationAppAmbientProviderImpl
   void OnAlbumPreviewImageDownloaded(const std::string& album_id,
                                      const gfx::ImageSkia& image);
 
+  void FetchGooglePhotosAlbumsPreviews(
+      const std::vector<std::string>& album_ids);
+  void OnGooglePhotosAlbumsPreviewsFetched(const std::vector<GURL>& preview_urls);
+
   ash::PersonalAlbum* FindPersonalAlbumById(const std::string& album_id);
 
   ash::ArtSetting* FindArtAlbumById(const std::string& album_id);
@@ -168,6 +173,8 @@ class PersonalizationAppAmbientProviderImpl
       read_weak_factory_{this};
   base::WeakPtrFactory<PersonalizationAppAmbientProviderImpl>
       album_preview_weak_factory_{this};
+  base::WeakPtrFactory<PersonalizationAppAmbientProviderImpl>
+      google_photos_albums_previews_weak_factory_{this};
   base::WeakPtrFactory<PersonalizationAppAmbientProviderImpl>
       recent_highlights_previews_weak_factory_{this};
 };

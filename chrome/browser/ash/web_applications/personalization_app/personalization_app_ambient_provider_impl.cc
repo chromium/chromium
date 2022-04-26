@@ -11,6 +11,7 @@
 
 #include "ash/constants/ambient_animation_theme.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_metrics.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
@@ -21,6 +22,7 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
@@ -49,6 +51,8 @@ constexpr int kBannerWidthPx = 160;
 constexpr int kBannerHeightPx = 160;
 
 constexpr int kMaxRetries = 3;
+
+constexpr char kRecentHighlightsPhotoContainerId[] = "RECENT_PHOTOS";
 
 constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
     0,          // Number of initial errors to ignore.
@@ -195,7 +199,13 @@ void PersonalizationAppAmbientProviderImpl::SetAlbumSelected(
       settings_->selected_album_ids.clear();
       for (const auto& personal_album : personal_albums_.albums) {
         if (personal_album.selected) {
-          settings_->selected_album_ids.emplace_back(personal_album.album_id);
+          std::string album_id = personal_album.album_id;
+
+          // Convert the fake album ID back to actual ID from IMAX so we can
+          // download the previews.
+          if (album_id == ash::kAmbientModeRecentHighlightsAlbumId)
+            album_id = kRecentHighlightsPhotoContainerId;
+          settings_->selected_album_ids.emplace_back(album_id);
         }
       }
 
@@ -265,6 +275,14 @@ void PersonalizationAppAmbientProviderImpl::OnTemperatureUnitChanged() {
 void PersonalizationAppAmbientProviderImpl::OnTopicSourceChanged() {
   if (!ambient_observer_remote_.is_bound())
     return;
+
+  // First, empty the WebUI store so it doesn't show the previously selected
+  // albums' previews. If |settings_->topic_source| is Google photos, refetch
+  // the previews because the selected albums may have changed. Otherwise, we
+  // fallback to the preview urls that comes with the albums.
+  OnGooglePhotosAlbumsPreviewsFetched(std::vector<GURL>());
+  if (settings_->topic_source == ash::AmbientModeTopicSource::kGooglePhotos)
+    FetchGooglePhotosAlbumsPreviews(settings_->selected_album_ids);
 
   ambient_observer_remote_->OnTopicSourceChanged(settings_->topic_source);
 }
@@ -557,6 +575,24 @@ void PersonalizationAppAmbientProviderImpl::OnAlbumPreviewImageDownloaded(
     return;
 }
 
+void PersonalizationAppAmbientProviderImpl::FetchGooglePhotosAlbumsPreviews(
+    const std::vector<std::string>& album_ids) {
+  DCHECK(!album_ids.empty());
+  google_photos_albums_previews_weak_factory_.InvalidateWeakPtrs();
+  ash::AmbientBackendController::Get()->GetGooglePhotosAlbumsPreview(
+      album_ids, kBannerWidthPx, kBannerHeightPx,
+      /*num_previews=*/4,
+      base::BindOnce(&PersonalizationAppAmbientProviderImpl::
+                         OnGooglePhotosAlbumsPreviewsFetched,
+                     google_photos_albums_previews_weak_factory_.GetWeakPtr()));
+}
+
+void PersonalizationAppAmbientProviderImpl::OnGooglePhotosAlbumsPreviewsFetched(
+    const std::vector<GURL>& preview_urls) {
+  DVLOG(4) << __func__ << " preview_urls_size=" << preview_urls.size();
+  ambient_observer_remote_->OnGooglePhotosAlbumsPreviewsFetched(preview_urls);
+}
+
 void PersonalizationAppAmbientProviderImpl::
     DownloadRecentHighlightsPreviewImages(
         const std::vector<std::string>& urls) {
@@ -622,6 +658,7 @@ void PersonalizationAppAmbientProviderImpl::ResetLocalSettings() {
   write_weak_factory_.InvalidateWeakPtrs();
   read_weak_factory_.InvalidateWeakPtrs();
   album_preview_weak_factory_.InvalidateWeakPtrs();
+  google_photos_albums_previews_weak_factory_.InvalidateWeakPtrs();
   recent_highlights_previews_weak_factory_.InvalidateWeakPtrs();
 
   settings_.reset();

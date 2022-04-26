@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {Action} from 'chrome://resources/js/cr/ui/store.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {AmbientModeAlbum, AnimationTheme, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
 
@@ -15,13 +16,15 @@ export enum AmbientActionName {
   SET_ALBUM_SELECTED = 'set_album_selected',
   SET_AMBIENT_MODE_ENABLED = 'set_ambient_mode_enabled',
   SET_ANIMATION_THEME = 'set_animation_theme',
+  SET_GOOGLE_PHOTOS_ALBUMS_PREVIEWS = 'set_google_photos_albums_previews',
   SET_TEMPERATURE_UNIT = 'set_temperature_unit',
   SET_TOPIC_SOURCE = 'set_topic_source',
 }
 
 export type AmbientActions =
     SetAlbumsAction|SetAlbumSelectedAction|SetAmbientModeEnabledAction|
-    SetAnimationThemeAction|SetTopicSourceAction|SetTemperatureUnitAction;
+    SetAnimationThemeAction|SetGooglePhotosAlbumsPreviewsAction|
+    SetTopicSourceAction|SetTemperatureUnitAction;
 
 export type SetAlbumsAction = Action&{
   name: AmbientActionName.SET_ALBUMS,
@@ -40,6 +43,11 @@ export type SetAmbientModeEnabledAction = Action&{
 export type SetAnimationThemeAction = Action&{
   name: AmbientActionName.SET_ANIMATION_THEME,
   animationTheme: AnimationTheme,
+};
+
+export type SetGooglePhotosAlbumsPreviewsAction = Action&{
+  name: AmbientActionName.SET_GOOGLE_PHOTOS_ALBUMS_PREVIEWS,
+  previews: Url[],
 };
 
 export type SetTemperatureUnitAction = Action&{
@@ -77,6 +85,14 @@ export function setAmbientModeEnabledAction(enabled: boolean):
 export function setAnimationThemeAction(animationTheme: AnimationTheme):
     SetAnimationThemeAction {
   return {name: AmbientActionName.SET_ANIMATION_THEME, animationTheme};
+}
+
+/**
+ * Sets the current value of Google Photos albums previews.
+ */
+export function setGooglePhotosAlbumsPreviewsAction(previews: Url[]):
+    SetGooglePhotosAlbumsPreviewsAction {
+  return {name: AmbientActionName.SET_GOOGLE_PHOTOS_ALBUMS_PREVIEWS, previews};
 }
 
 /**

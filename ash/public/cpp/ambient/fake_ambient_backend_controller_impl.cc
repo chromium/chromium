@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -164,6 +165,15 @@ void FakeAmbientBackendControllerImpl::FetchSettingsAndAlbums(
 void FakeAmbientBackendControllerImpl::FetchWeather(
     FetchWeatherCallback callback) {
   std::move(callback).Run(weather_info_);
+}
+
+void FakeAmbientBackendControllerImpl::GetGooglePhotosAlbumsPreview(
+    const std::vector<std::string>& album_ids,
+    int preview_width,
+    int preview_height,
+    int num_previews,
+    GetGooglePhotosAlbumsPreviewCallback callback) {
+  std::move(callback).Run({GURL("http://example.com/0")});
 }
 
 const std::array<const char*, 2>&

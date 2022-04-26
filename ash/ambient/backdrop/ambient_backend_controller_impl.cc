@@ -28,6 +28,7 @@
 #include "base/time/time.h"
 #include "chromeos/assistant/internal/ambient/backdrop_client_config.h"
 #include "chromeos/assistant/internal/proto/backdrop/backdrop.pb.h"
+#include "chromeos/assistant/internal/proto/backdrop/imax_service.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "net/base/load_flags.h"
@@ -653,6 +654,42 @@ void AmbientBackendControllerImpl::FetchSettingsAndAlbums(
                      weak_factory_.GetWeakPtr(), on_done));
 }
 
+void AmbientBackendControllerImpl::StartToGetGooglePhotosAlbumsPreview(
+    const std::vector<std::string>& album_ids,
+    int preview_width,
+    int preview_height,
+    int num_previews,
+    GetGooglePhotosAlbumsPreviewCallback callback,
+    const std::string& gaia_id,
+    const std::string& access_token) {
+  BackdropClientConfig::Request request =
+      backdrop_client_config_.CreateGetGooglePhotosAlbumsPreviewRequest(
+          gaia_id, access_token, album_ids, preview_width, preview_height,
+          num_previews);
+  std::unique_ptr<network::ResourceRequest> resource_request =
+      CreateResourceRequest(request);
+  auto backdrop_url_loader = std::make_unique<BackdropURLLoader>();
+  auto* loader_ptr = backdrop_url_loader.get();
+  loader_ptr->Start(
+      std::move(resource_request), request.body, NO_TRAFFIC_ANNOTATION_YET,
+      base::BindOnce(
+          &AmbientBackendControllerImpl::OnGetGooglePhotosAlbumsPreview,
+          weak_factory_.GetWeakPtr(), std::move(callback),
+          std::move(backdrop_url_loader)));
+}
+
+void AmbientBackendControllerImpl::GetGooglePhotosAlbumsPreview(
+    const std::vector<std::string>& album_ids,
+    int preview_width,
+    int preview_height,
+    int num_previews,
+    GetGooglePhotosAlbumsPreviewCallback callback) {
+  Shell::Get()->ambient_controller()->RequestAccessToken(base::BindOnce(
+      &AmbientBackendControllerImpl::StartToGetGooglePhotosAlbumsPreview,
+      weak_factory_.GetWeakPtr(), album_ids, preview_width, preview_height,
+      num_previews, std::move(callback)));
+}
+
 void AmbientBackendControllerImpl::OnSettingsFetched(
     base::RepeatingClosure on_done,
     const absl::optional<ash::AmbientSettings>& settings) {
@@ -670,6 +707,25 @@ void AmbientBackendControllerImpl::OnAlbumsFetched(
 void AmbientBackendControllerImpl::OnSettingsAndAlbumsFetched(
     OnSettingsAndAlbumsFetchedCallback callback) {
   std::move(callback).Run(settings_, std::move(personal_albums_));
+}
+
+void AmbientBackendControllerImpl::OnGetGooglePhotosAlbumsPreview(
+    GetGooglePhotosAlbumsPreviewCallback callback,
+    std::unique_ptr<BackdropURLLoader> backdrop_url_loader,
+    std::unique_ptr<std::string> response) {
+  DCHECK(backdrop_url_loader);
+
+  backdrop::GetGooglePhotosAlbumsPreviewResponse
+      get_google_photos_albums_preview_response;
+  if (!get_google_photos_albums_preview_response.ParseFromString(*response))
+    std::move(callback).Run(std::vector<GURL>());
+
+  std::vector<GURL> preview_urls;
+  for (const std::string& preview_url :
+       get_google_photos_albums_preview_response.preview_url()) {
+    preview_urls.push_back(GURL(preview_url));
+  }
+  std::move(callback).Run(preview_urls);
 }
 
 }  // namespace ash
