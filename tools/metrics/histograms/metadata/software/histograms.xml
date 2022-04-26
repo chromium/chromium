@@ -211,7 +211,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SoftwareReporter.MajorVersion" units="units"
-    expires_after="2022-08-21">
+    expires_after="2022-10-23">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

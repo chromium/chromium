@@ -73,7 +73,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioContext.HardwareSampleRate" units="Hz"
-    expires_after="2022-08-21">
+    expires_after="2022-10-23">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The hardware sample rate (in Hz) used by an AudioContext. Recorded for every
@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioContext.MaxChannelsAvailable" units="units"
-    expires_after="2022-06-30">
+    expires_after="2022-10-23">
   <owner>hongchan@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
   <summary>
@@ -126,7 +126,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioContextOptions.sampleRateRatio" units="units"
-    expires_after="2022-07-03">
+    expires_after="2022-10-23">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The ratio of the user-selected sample rate to the hardware sample rate of an
