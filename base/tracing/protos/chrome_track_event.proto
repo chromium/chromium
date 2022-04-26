@@ -681,6 +681,7 @@ message RendererMainThreadTaskExecution {
   optional bool frame_visible = 2;
   optional bool page_visible = 3;
   optional FrameType frame_type = 4;
+  optional bool is_ad_frame = 5;
 }
 
 message EventLatency {

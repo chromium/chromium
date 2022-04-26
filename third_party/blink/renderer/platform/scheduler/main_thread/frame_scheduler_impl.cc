@@ -760,6 +760,7 @@ void FrameSchedulerImpl::WriteIntoTrace(
                                              FRAME_TYPE_CROSS_ORIGIN_SUBFRAME
                                        : RendererMainThreadTaskExecution::
                                              FRAME_TYPE_SAME_ORIGIN_SUBFRAME);
+  proto->set_is_ad_frame(is_ad_frame_);
 }
 
 void FrameSchedulerImpl::SetPageVisibilityForTracing(
