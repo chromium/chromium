@@ -52,6 +52,13 @@ class TestPageLoadMetricsObserver : public PageLoadMetricsObserver {
     return CONTINUE_OBSERVING;
   }
 
+  // TODO(https://crbug.com/1317494): Audit and use appropriate policy.
+  ObservePolicy OnFencedFramesStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) override {
+    return STOP_OBSERVING;
+  }
+
   void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
                       const mojom::PageLoadTiming& timing) override {
     if (subframe_rfh) {
@@ -127,6 +134,13 @@ class FilteringPageLoadMetricsObserver : public PageLoadMetricsObserver {
     const bool should_ignore =
         handle->GetURL().spec().find("ignore-on-start") != std::string::npos;
     return should_ignore ? STOP_OBSERVING : CONTINUE_OBSERVING;
+  }
+
+  // TODO(https://crbug.com/1317494): Audit and use appropriate policy.
+  ObservePolicy OnFencedFramesStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) override {
+    return STOP_OBSERVING;
   }
 
   ObservePolicy OnCommit(content::NavigationHandle* handle) override {

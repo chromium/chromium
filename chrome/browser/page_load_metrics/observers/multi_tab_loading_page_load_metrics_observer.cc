@@ -48,6 +48,14 @@ MultiTabLoadingPageLoadMetricsObserver::OnStart(
                                             : STOP_OBSERVING;
 }
 
+// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+MultiTabLoadingPageLoadMetricsObserver::OnFencedFramesStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  return STOP_OBSERVING;
+}
+
 #define RECORD_HISTOGRAMS(suffix, sample)                                      \
   do {                                                                         \
     base::TimeDelta sample_value(sample);                                      \

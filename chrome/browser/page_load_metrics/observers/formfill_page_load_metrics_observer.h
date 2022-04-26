@@ -24,6 +24,9 @@ class FormfillPageLoadMetricsObserver
       const FormfillPageLoadMetricsObserver&) = delete;
 
   // page_load_metrics::PageLoadMetricsObserver
+  ObservePolicy OnFencedFramesStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) override;
   ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
   void OnFeaturesUsageObserved(
       content::RenderFrameHost* rfh,

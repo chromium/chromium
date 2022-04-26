@@ -34,6 +34,14 @@ ProtocolPageLoadMetricsObserver::OnStart(
   return started_in_foreground ? CONTINUE_OBSERVING : STOP_OBSERVING;
 }
 
+// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+ProtocolPageLoadMetricsObserver::OnFencedFramesStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  return STOP_OBSERVING;
+}
+
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 ProtocolPageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {

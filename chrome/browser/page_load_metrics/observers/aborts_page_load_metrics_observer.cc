@@ -260,6 +260,14 @@ bool ShouldTrackMetrics(
 
 AbortsPageLoadMetricsObserver::AbortsPageLoadMetricsObserver() {}
 
+// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+AbortsPageLoadMetricsObserver::OnFencedFramesStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  return STOP_OBSERVING;
+}
+
 void AbortsPageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   page_load_metrics::PageAbortInfo abort_info = GetPageAbortInfo(GetDelegate());

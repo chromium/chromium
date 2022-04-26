@@ -14,6 +14,14 @@ JavascriptFrameworksUkmObserver::JavascriptFrameworksUkmObserver() = default;
 
 JavascriptFrameworksUkmObserver::~JavascriptFrameworksUkmObserver() = default;
 
+// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+JavascriptFrameworksUkmObserver::OnFencedFramesStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  return STOP_OBSERVING;
+}
+
 void JavascriptFrameworksUkmObserver::OnLoadingBehaviorObserved(
     content::RenderFrameHost* rfh,
     int behavior_flag) {

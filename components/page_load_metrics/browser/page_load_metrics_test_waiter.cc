@@ -38,6 +38,10 @@ class WaiterMetricsObserver : public PageLoadMetricsObserver {
 
   ~WaiterMetricsObserver() override = default;
 
+  ObservePolicy OnFencedFramesStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) override;
+
   void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
                       const mojom::PageLoadTiming& timing) override;
 
@@ -470,6 +474,14 @@ void PageLoadMetricsTestWaiter::ResetExpectations() {
   expected_minimum_complete_resources_ = 0;
   expected_minimum_network_bytes_ = 0;
   expected_minimum_aggregate_cpu_time_ = base::TimeDelta();
+}
+
+// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+WaiterMetricsObserver::OnFencedFramesStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  return STOP_OBSERVING;
 }
 
 void WaiterMetricsObserver::OnTimingUpdate(

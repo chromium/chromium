@@ -403,6 +403,14 @@ UmaPageLoadMetricsObserver::UmaPageLoadMetricsObserver()
 
 UmaPageLoadMetricsObserver::~UmaPageLoadMetricsObserver() {}
 
+// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+UmaPageLoadMetricsObserver::OnFencedFramesStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  return STOP_OBSERVING;
+}
+
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 UmaPageLoadMetricsObserver::OnRedirect(
     content::NavigationHandle* navigation_handle) {

@@ -1567,6 +1567,13 @@ class MetricsWebContentsObserverNonPrimaryPageTest
         MetricsWebContentsObserverNonPrimaryPageTest* owner)
         : owner_(owner) {}
 
+    // TODO(https://crbug.com/1317494): Audit and use appropriate policy.
+    ObservePolicy OnFencedFramesStart(
+        content::NavigationHandle* navigation_handle,
+        const GURL& currently_committed_url) override {
+      return STOP_OBSERVING;
+    }
+
     ObservePolicy OnCommit(content::NavigationHandle* handle) override {
       committed_url_ = handle->GetURL();
       return CONTINUE_OBSERVING;

@@ -37,18 +37,26 @@ PrerenderPageLoadMetricsObserver::PrerenderPageLoadMetricsObserver() = default;
 PrerenderPageLoadMetricsObserver::~PrerenderPageLoadMetricsObserver() = default;
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
-PrerenderPageLoadMetricsObserver::OnPrerenderStart(
-    content::NavigationHandle* navigation_handle,
-    const GURL& currently_committed_url) {
-  return CONTINUE_OBSERVING;
-}
-
-page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PrerenderPageLoadMetricsObserver::OnStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url,
     bool started_in_foreground) {
   return STOP_OBSERVING;
+}
+
+// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+PrerenderPageLoadMetricsObserver::OnFencedFramesStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+PrerenderPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  return CONTINUE_OBSERVING;
 }
 
 void PrerenderPageLoadMetricsObserver::DidActivatePrerenderedPage(

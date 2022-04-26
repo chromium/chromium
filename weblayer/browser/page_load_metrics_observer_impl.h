@@ -16,6 +16,9 @@ class PageLoadMetricsObserverImpl
   ~PageLoadMetricsObserverImpl() override = default;
 
   // page_load_metrics::PageLoadMetricsObserver implementation:
+  ObservePolicy OnFencedFramesStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) override;
   ObservePolicy FlushMetricsOnAppEnterBackground(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   ObservePolicy OnHidden(

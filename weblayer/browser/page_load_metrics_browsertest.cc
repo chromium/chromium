@@ -25,6 +25,14 @@ class PageLoadMetricsObserver
   ~PageLoadMetricsObserver() override = default;
 
   // page_load_metrics::PageLoadMetricsObserver implementation:
+
+  // TODO(https://crbug.com/1317494): Audit and use appropriate policy.
+  ObservePolicy OnFencedFramesStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) override {
+    return STOP_OBSERVING;
+  }
+
   void OnFirstPaintInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override {
     on_first_paint_seen_ = true;
