@@ -11,11 +11,13 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_navigation_observer.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/window_open_disposition.h"
 
 class AutocompleteResult;
 class GURL;
 class SessionID;
+class SkBitmap;
 class TemplateURL;
 class TemplateURLService;
 struct AutocompleteMatch;
@@ -27,6 +29,7 @@ class BookmarkModel;
 
 namespace gfx {
 class Image;
+struct VectorIcon;
 }
 
 class OmniboxControllerEmitter;

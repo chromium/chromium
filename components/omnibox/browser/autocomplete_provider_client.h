@@ -9,14 +9,10 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/history/core/browser/keyword_id.h"
-#include "components/history/core/browser/top_sites.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
-#include "components/omnibox/browser/keyword_extensions_delegate.h"
-#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
-#include "components/omnibox/browser/shortcuts_backend.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 struct AutocompleteMatch;
@@ -26,8 +22,10 @@ class RemoteSuggestionsService;
 class DocumentSuggestionsService;
 class GURL;
 class InMemoryURLIndex;
+class KeywordExtensionsDelegate;
 class KeywordProvider;
 class OmniboxPedalProvider;
+class OmniboxTriggeredFeatureService;
 class PrefService;
 class ShortcutsBackend;
 class TabMatcher;
@@ -39,6 +37,7 @@ class BookmarkModel;
 namespace history {
 class HistoryService;
 class URLDatabase;
+class TopSites;
 }
 
 namespace history_clusters {

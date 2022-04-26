@@ -10,9 +10,11 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/history/core/browser/top_sites.h"
 #include "components/omnibox/browser/fake_tab_matcher.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
+#include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 
 namespace bookmarks {
@@ -25,7 +27,6 @@ class HistoryService;
 
 class InMemoryURLIndex;
 class PrefService;
-class ShortcutsBackend;
 class TestingPrefServiceSimple;
 
 // Fully operational AutocompleteProviderClient for usage in tests.

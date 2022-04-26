@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/query_tile_provider.h"
 
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/query_tiles/tile_service.h"

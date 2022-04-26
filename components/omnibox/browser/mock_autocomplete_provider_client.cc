@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
+
 MockAutocompleteProviderClient::MockAutocompleteProviderClient() {
   shared_factory_ =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(

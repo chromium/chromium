@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace {
