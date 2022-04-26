@@ -1722,14 +1722,20 @@ void RenderFrameImpl::CreateFrame(
 
   // We now have a WebLocalFrame for the new frame. The next step is to make
   // a RenderWidget (aka WebWidgetClient) for it, if it is a local root.
+  // TODO(crbug.com/419087): Can we merge this `is_main_frame` block with
+  // RenderFrameImpl::CreateMainFrame()?
   if (is_main_frame) {
     // Main frames are always local roots, so they should always have a
     // |widget_params| (and it always comes with a routing id).
     DCHECK(widget_params);
     DCHECK_NE(widget_params->routing_id, MSG_ROUTING_NONE);
 
-    // TODO(crbug.com/419087): Can we merge this code with
-    // RenderFrameImpl::CreateMainFrame()?
+    // TODO(bokan): Portals sometimes set this value on the WebFrameWidget from
+    // WebViewImpl::SetInsidePortal - can we remove that path? Even better,
+    // could the WebFrameWidget delegate to WebView/Page for this information?
+    // https://crbug.com/1316535.
+    bool is_for_nested_main_frame =
+        render_view->GetWebView()->IsFencedFrameRoot();
 
     // Non-owning pointer that is self-referencing and destroyed by calling
     // Close(). The RenderViewImpl has a RenderWidget already, but not a
@@ -1740,7 +1746,7 @@ void RenderFrameImpl::CreateFrame(
         std::move(widget_params->widget_host), std::move(widget_params->widget),
         viz::FrameSinkId(RenderThread::Get()->GetClientId(),
                          widget_params->routing_id),
-        /*is_for_nested_main_frame=*/false,
+        is_for_nested_main_frame,
         /*hidden=*/true);
     web_frame_widget->InitializeCompositing(
         agent_scheduling_group.agent_group_scheduler(),
