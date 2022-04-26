@@ -4,6 +4,7 @@
 
 #include "skia/public/mojom/image_info_mojom_traits.h"
 
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "mojo/public/cpp/bindings/array_data_view.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -20,6 +21,8 @@ SkImageInfo MakeSkImageInfo(SkColorType color_type,
                             int height,
                             mojo::ArrayDataView<float> color_transfer_function,
                             mojo::ArrayDataView<float> color_to_xyz_matrix) {
+  CHECK_GE(width, 0);
+  CHECK_GE(height, 0);
   sk_sp<SkColorSpace> color_space;
   if (!color_transfer_function.is_null() && !color_to_xyz_matrix.is_null()) {
     const float* data = color_transfer_function.data();
@@ -208,9 +211,16 @@ bool StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo>::Read(
   mojo::ArrayDataView<float> color_to_xyz_matrix;
   data.GetColorToXyzMatrixDataView(&color_to_xyz_matrix);
 
-  *info = MakeSkImageInfo(color_type, alpha_type, data.width(), data.height(),
-                          std::move(color_transfer_function),
-                          std::move(color_to_xyz_matrix));
+  // The ImageInfo wire types are uint32_t, but the Skia type uses int, and the
+  // values can't be negative.
+  auto width = base::MakeCheckedNum(data.width()).Cast<int>();
+  auto height = base::MakeCheckedNum(data.height()).Cast<int>();
+  if (!width.IsValid() || !height.IsValid())
+    return false;
+
+  *info = MakeSkImageInfo(
+      color_type, alpha_type, width.ValueOrDie(), height.ValueOrDie(),
+      std::move(color_transfer_function), std::move(color_to_xyz_matrix));
   return true;
 }
 
@@ -227,9 +237,16 @@ bool StructTraits<skia::mojom::BitmapN32ImageInfoDataView, SkImageInfo>::Read(
   mojo::ArrayDataView<float> color_to_xyz_matrix;
   data.GetColorToXyzMatrixDataView(&color_to_xyz_matrix);
 
-  *info = MakeSkImageInfo(kN32_SkColorType, alpha_type, data.width(),
-                          data.height(), std::move(color_transfer_function),
-                          std::move(color_to_xyz_matrix));
+  // The ImageInfo wire types are uint32_t, but the Skia type uses int, and the
+  // values can't be negative.
+  auto width = base::MakeCheckedNum(data.width()).Cast<int>();
+  auto height = base::MakeCheckedNum(data.height()).Cast<int>();
+  if (!width.IsValid() || !height.IsValid())
+    return false;
+
+  *info = MakeSkImageInfo(
+      kN32_SkColorType, alpha_type, width.ValueOrDie(), height.ValueOrDie(),
+      std::move(color_transfer_function), std::move(color_to_xyz_matrix));
   return true;
 }
 
