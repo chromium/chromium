@@ -182,6 +182,7 @@ android_library("javatests") {
     "java/src/org/chromium/chrome/browser/ui/signin/ConfirmManagedSyncDataDialogIntegrationTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/ConfirmSyncDataIntegrationTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SignOutDialogRenderTest.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/SigninPromoControllerRenderTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetRenderTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerDialogTest.java",
