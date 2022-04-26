@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+enum CrosWindowVisibilityState { "hidden", "shown" };
+
 interface CrosWindow {
   readonly attribute DOMString id;
 
@@ -11,7 +13,10 @@ interface CrosWindow {
   readonly attribute boolean isMaximized;
   readonly attribute boolean isMinimized;
   readonly attribute boolean isFocused;
-  readonly attribute boolean isVisible;
+  // visibilityState refers to the property of the window whether it's rendered.
+  // This is intrinsic to the window and separate from occlusion state which 
+  // refers to visibility relative to other windows.
+  readonly attribute CrosWindowVisibilityState visibilityState;
 
   readonly attribute DOMPoint origin;
   readonly attribute DOMRect bounds;

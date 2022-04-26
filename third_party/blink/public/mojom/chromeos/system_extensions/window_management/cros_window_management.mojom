@@ -7,6 +7,11 @@ module blink.mojom;
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
+enum VisibilityState {
+  kHidden,
+  kShown,
+};
+
 // Represents a Chrome OS window which can be manipulated by a Window Management
 // System Extension.
 struct CrosWindow {
@@ -23,7 +28,10 @@ struct CrosWindow {
   bool is_maximized;
   bool is_minimized;
   bool is_focused;
-  bool is_visible;
+  // visibilityState refers to the property of the window whether it's rendered.
+  // This is intrinsic to the window and separate from occlusion state which
+  // refers to visibility relative to other windows.
+  VisibilityState is_visible;
 };
 
 // Chrome OS Window Management API for System Extensions.

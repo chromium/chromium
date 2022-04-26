@@ -55,7 +55,9 @@ void WindowManagementImpl::GetAllWindows(GetAllWindowsCallback callback) {
         window->is_focused = target == aura::client::GetFocusClient(target)
                                            ->GetFocusedWindow()
                                            ->GetToplevelWindow();
-        window->is_visible = widget->IsVisible();
+        window->is_visible = widget->IsVisible()
+                                 ? blink::mojom::VisibilityState::kShown
+                                 : blink::mojom::VisibilityState::kHidden;
         windows.push_back(std::move(window));
       });
   std::move(callback).Run(std::move(windows));

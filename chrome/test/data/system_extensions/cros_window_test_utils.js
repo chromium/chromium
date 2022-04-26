@@ -75,7 +75,8 @@ async function focusAndTest() {
   {
     let [window] = await chromeos.windowManagement.windows();
     assert_true(window.isFocused, `focus() failed to set focus`);
-    assert_true(window.isVisible, `focus() should make window visible`);
+    assert_equals(
+        window.visibilityState, 'shown', `focus() should make window visible`);
   }
 }
 
@@ -91,6 +92,7 @@ async function assertWindowState(state) {
       `window should be in the ${state} state`);
   assert_equals(window.isFullscreen, state === "fullscreen",
       `window should be in the ${state} state`);
-  assert_equals(window.isVisible, !(state === "minimized"),
+  assert_equals(
+      window.visibilityState, state === 'minimized' ? 'hidden' : 'shown',
       `window should be in the ${state} state`);
 }

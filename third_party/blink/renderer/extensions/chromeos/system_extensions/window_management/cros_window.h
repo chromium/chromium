@@ -30,7 +30,7 @@ class CrosWindow : public ScriptWrappable {
   bool isMaximized();
   bool isMinimized();
   bool isFocused();
-  bool isVisible();
+  String visibilityState();
   DOMPoint* origin();
   DOMRect* bounds();
 
