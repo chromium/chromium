@@ -22,4 +22,45 @@ void WontCompile() {
 
 #endif
 
+#if defined(NCTEST_WRONG_REFCOUNT_BASE_CLASS)  // [r"fatal error: static_assert failed due to requirement 'std::is_base_of_v<base::Foo, base::Bar>' \"T implements RefCounted<U>, but U is not a base of T\.\""]
+
+class Foo : public base::RefCounted<Foo> {
+ private:
+  friend class base::RefCounted<Foo>;
+  ~Foo() {}
+};
+
+class Bar : public base::RefCounted<Foo> {
+ private:
+  friend class base::RefCounted<Bar>;
+  ~Bar() {}
+};
+
+void WontCompile() {
+  scoped_refptr<Bar> ptr;
+}
+
+#endif
+
+#if defined(NCTEST_WRONG_REFCOUNT_THREADSAFE_BASE_CLASS)  // [r"fatal error: static_assert failed due to requirement 'std::is_base_of_v<base::Foo, base::Bar>' \"T implements RefCountedThreadSafe<U>, but U is not a base of T\.\""]
+
+class Foo : public base::RefCountedThreadSafe<Foo> {
+ private:
+  friend class base::RefCountedThreadSafe<Foo>;
+  ~Foo() {}
+};
+
+class Bar : public base::RefCountedThreadSafe<Foo> {
+ private:
+  friend class base::RefCountedThreadSafe<Bar>;
+  ~Bar() {}
+};
+
+void WontCompile() {
+  scoped_refptr<Bar> ptr;
+}
+
+#endif
+
+
 }  // namespace base
