@@ -411,7 +411,8 @@ struct ConstInitExternalStorage {
 };
 
 template <typename Str>
-CordRepExternal ConstInitExternalStorage<Str>::value(Str::value);
+ABSL_CONST_INIT CordRepExternal
+    ConstInitExternalStorage<Str>::value(Str::value);
 
 enum {
   kMaxInline = 15,

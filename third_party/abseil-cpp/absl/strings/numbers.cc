@@ -757,8 +757,8 @@ struct LookupTables {
 //
 // uint128& operator/=(uint128) is not constexpr, so hardcode the resulting
 // array to avoid a static initializer.
-template<>
-const uint128 LookupTables<uint128>::kVmaxOverBase[] = {
+template <>
+ABSL_CONST_INIT const uint128 LookupTables<uint128>::kVmaxOverBase[] = {
     0,
     0,
     MakeUint128(9223372036854775807u, 18446744073709551615u),
@@ -809,8 +809,8 @@ const uint128 LookupTables<uint128>::kVmaxOverBase[] = {
 //
 // int128& operator/=(int128) is not constexpr, so hardcode the resulting array
 // to avoid a static initializer.
-template<>
-const int128 LookupTables<int128>::kVmaxOverBase[] = {
+template <>
+ABSL_CONST_INIT const int128 LookupTables<int128>::kVmaxOverBase[] = {
     0,
     0,
     MakeInt128(4611686018427387903, 18446744073709551615u),
@@ -862,8 +862,8 @@ const int128 LookupTables<int128>::kVmaxOverBase[] = {
 //
 // int128& operator/=(int128) is not constexpr, so hardcode the resulting array
 // to avoid a static initializer.
-template<>
-const int128 LookupTables<int128>::kVminOverBase[] = {
+template <>
+ABSL_CONST_INIT const int128 LookupTables<int128>::kVminOverBase[] = {
     0,
     0,
     MakeInt128(-4611686018427387904, 0u),
@@ -904,11 +904,11 @@ const int128 LookupTables<int128>::kVminOverBase[] = {
 };
 
 template <typename IntType>
-const IntType LookupTables<IntType>::kVmaxOverBase[] =
+ABSL_CONST_INIT const IntType LookupTables<IntType>::kVmaxOverBase[] =
     X_OVER_BASE_INITIALIZER(std::numeric_limits<IntType>::max());
 
 template <typename IntType>
-const IntType LookupTables<IntType>::kVminOverBase[] =
+ABSL_CONST_INIT const IntType LookupTables<IntType>::kVminOverBase[] =
     X_OVER_BASE_INITIALIZER(std::numeric_limits<IntType>::min());
 
 #undef X_OVER_BASE_INITIALIZER

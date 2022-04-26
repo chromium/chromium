@@ -642,6 +642,32 @@ absl_cc_test(
     GTest::gtest_main
 )
 
+# Internal-only target, do not depend on directly.
+absl_cc_library(
+  NAME
+    prefetch
+  HDRS
+    "internal/prefetch.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  LINKOPTS
+    ${ABSL_DEFAULT_LINKOPTS}
+  DEPS
+    absl::config
+)
+
+absl_cc_test(
+  NAME
+    prefetch_test
+  SRCS
+    "internal/prefetch_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::prefetch
+    GTest::gtest_main
+)
+
 absl_cc_test(
   NAME
     optimization_test

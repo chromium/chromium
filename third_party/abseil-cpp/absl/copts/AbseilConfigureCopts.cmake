@@ -1,8 +1,6 @@
 # See absl/copts/copts.py and absl/copts/generate_copts.py
 include(GENERATED_AbseilCopts)
 
-set(ABSL_LSAN_LINKOPTS "")
-set(ABSL_HAVE_LSAN OFF)
 set(ABSL_DEFAULT_LINKOPTS "")
 
 if (BUILD_SHARED_LIBS AND MSVC)
@@ -85,14 +83,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")  # MATCHES so we get both Clang an
   else()
     set(ABSL_DEFAULT_COPTS "${ABSL_LLVM_FLAGS}")
     set(ABSL_TEST_COPTS "${ABSL_LLVM_FLAGS};${ABSL_LLVM_TEST_FLAGS}")
-    if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-      # AppleClang doesn't have lsan
-      # https://developer.apple.com/documentation/code_diagnostics
-      if(NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3.5)
-        set(ABSL_LSAN_LINKOPTS "-fsanitize=leak")
-        set(ABSL_HAVE_LSAN ON)
-      endif()
-    endif()
   endif()
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   set(ABSL_DEFAULT_COPTS "${ABSL_MSVC_FLAGS}")

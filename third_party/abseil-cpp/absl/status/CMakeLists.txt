@@ -28,16 +28,17 @@ absl_cc_library(
   DEPS
     absl::atomic_hook
     absl::config
+    absl::cord
     absl::core_headers
     absl::function_ref
-    absl::raw_logging_internal
     absl::inlined_vector
-    absl::stacktrace
-    absl::symbolize
-    absl::strings
-    absl::cord
-    absl::str_format
     absl::optional
+    absl::raw_logging_internal
+    absl::stacktrace
+    absl::str_format
+    absl::strerror
+    absl::strings
+    absl::symbolize
   PUBLIC
 )
 

@@ -111,7 +111,7 @@ option(ABSL_BUILD_TESTING
   "If ON, Abseil will build all of Abseil's own tests." OFF)
 
 option(ABSL_USE_EXTERNAL_GOOGLETEST
-  "If ON, Abseil will assume that the targets for GoogleTest are already provided by the including project. This makes sense when Abseil is used with add_subproject." OFF)
+  "If ON, Abseil will assume that the targets for GoogleTest are already provided by the including project. This makes sense when Abseil is used with add_subdirectory." OFF)
 
 cmake_dependent_option(ABSL_FIND_GOOGLETEST
   "If ON, Abseil will use find_package(GTest) rather than assuming that GoogleTest is already provided by the including project."

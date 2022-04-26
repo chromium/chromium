@@ -69,7 +69,9 @@ ABSL_CONST_INIT
 std::atomic<const void *> VDSOSupport::vdso_base_(
     debugging_internal::ElfMemImage::kInvalidBase);
 
-std::atomic<VDSOSupport::GetCpuFn> VDSOSupport::getcpu_fn_(&InitAndGetCPU);
+ABSL_CONST_INIT std::atomic<VDSOSupport::GetCpuFn> VDSOSupport::getcpu_fn_(
+    &InitAndGetCPU);
+
 VDSOSupport::VDSOSupport()
     // If vdso_base_ is still set to kInvalidBase, we got here
     // before VDSOSupport::Init has been called. Call it now.

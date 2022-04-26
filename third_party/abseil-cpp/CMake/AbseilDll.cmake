@@ -26,6 +26,7 @@ set(ABSL_INTERNAL_DLL_FILES
   "base/internal/low_level_alloc.h"
   "base/internal/low_level_scheduling.h"
   "base/internal/per_thread_tls.h"
+  "base/internal/prefetch.h"
   "base/internal/pretty_function.h"
   "base/internal/raw_logging.cc"
   "base/internal/raw_logging.h"
@@ -90,7 +91,6 @@ set(ABSL_INTERNAL_DLL_FILES
   "debugging/failure_signal_handler.cc"
   "debugging/failure_signal_handler.h"
   "debugging/leak_check.h"
-  "debugging/leak_check_disable.cc"
   "debugging/stacktrace.cc"
   "debugging/stacktrace.h"
   "debugging/symbolize.cc"
@@ -345,6 +345,7 @@ set(ABSL_INTERNAL_DLL_FILES
   "types/internal/span.h"
   "types/variant.h"
   "utility/utility.h"
+  "debugging/leak_check.cc"
 )
 
 set(ABSL_INTERNAL_DLL_TARGETS
@@ -355,7 +356,6 @@ set(ABSL_INTERNAL_DLL_TARGETS
   "debugging_internal"
   "demangle_internal"
   "leak_check"
-  "leak_check_disable"
   "stack_consumption"
   "debugging"
   "hash"

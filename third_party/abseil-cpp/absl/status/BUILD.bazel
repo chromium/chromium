@@ -41,9 +41,9 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     deps = [
         "//absl/base:atomic_hook",
-        "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:raw_logging_internal",
+        "//absl/base:strerror",
         "//absl/container:inlined_vector",
         "//absl/debugging:stacktrace",
         "//absl/debugging:symbolize",

@@ -579,7 +579,7 @@ bool ParseDuration(absl::string_view dur_string, Duration* d);
 
 // AbslParseFlag()
 //
-// Parses a command-line flag string representation `text` into a a Duration
+// Parses a command-line flag string representation `text` into a Duration
 // value. Duration flags must be specified in a format that is valid input for
 // `absl::ParseDuration()`.
 bool AbslParseFlag(absl::string_view text, Duration* dst, std::string* error);

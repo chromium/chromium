@@ -131,35 +131,6 @@ absl_source_set("leak_check") {
   ]
 }
 
-absl_source_set("leak_check_disable") {
-  sources = [ "leak_check_disable.cc" ]
-  deps = [ "//third_party/abseil-cpp/absl/base:config" ]
-}
-
-if (is_lsan) {
-  absl_source_set("leak_check_api_enabled_for_testing") {
-    testonly = true
-    sources = [ "leak_check.cc" ]
-    public = [ "leak_check.h" ]
-    visibility = [ ":*" ]
-    deps = [
-      "//third_party/abseil-cpp/absl/base:config",
-      "//third_party/abseil-cpp/absl/base:core_headers",
-    ]
-  }
-} else {
-  absl_source_set("leak_check_api_disabled_for_testing") {
-    testonly = true
-    sources = [ "leak_check.cc" ]
-    public = [ "leak_check.h" ]
-    visibility = [ ":*" ]
-    deps = [
-      "//third_party/abseil-cpp/absl/base:config",
-      "//third_party/abseil-cpp/absl/base:core_headers",
-    ]
-  }
-}
-
 absl_source_set("stack_consumption") {
   testonly = true
   sources = [ "internal/stack_consumption.cc" ]

@@ -42,8 +42,8 @@ absl_source_set("test_util") {
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
     "//third_party/abseil-cpp/absl/time/internal/cctz:time_zone",
-    "//third_party/googletest:gtest",
     "//third_party/googletest:gmock",
+    "//third_party/googletest:gtest",
   ]
-  visibility = [ "//third_party/abseil-cpp/absl/time:*" ]
+  visibility = [ ":*" ]
 }

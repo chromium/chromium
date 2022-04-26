@@ -738,6 +738,19 @@ Status UnavailableError(absl::string_view message);
 Status UnimplementedError(absl::string_view message);
 Status UnknownError(absl::string_view message);
 
+// ErrnoToStatusCode()
+//
+// Returns the StatusCode for `error_number`, which should be an `errno` value.
+// See https://en.cppreference.com/w/cpp/error/errno_macros and similar
+// references.
+absl::StatusCode ErrnoToStatusCode(int error_number);
+
+// ErrnoToStatus()
+//
+// Convenience function that creates a `absl::Status` using an `error_number`,
+// which should be an `errno` value.
+Status ErrnoToStatus(int error_number, absl::string_view message);
+
 //------------------------------------------------------------------------------
 // Implementation details follow
 //------------------------------------------------------------------------------

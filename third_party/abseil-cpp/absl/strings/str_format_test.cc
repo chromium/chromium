@@ -719,6 +719,7 @@ TEST_F(FormatWrapperTest, ParsedFormat) {
 ABSL_NAMESPACE_END
 }  // namespace absl
 
+namespace {
 using FormatExtensionTest = ::testing::Test;
 
 struct Point {
@@ -750,6 +751,7 @@ TEST_F(FormatExtensionTest, AbslFormatConvertExample) {
   // FormatUntyped will return false for bad character.
   EXPECT_FALSE(absl::FormatUntyped(&actual, f1, {absl::FormatArg(p)}));
 }
+}  // namespace
 
 // Some codegen thunks that we can use to easily dump the generated assembly for
 // different StrFormat calls.

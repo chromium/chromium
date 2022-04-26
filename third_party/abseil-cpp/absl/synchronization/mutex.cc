@@ -2510,9 +2510,9 @@ void CondVar::Remove(PerThreadSynch *s) {
 // before calling Mutex::UnlockSlow(), the Mutex code might be re-entered (via
 // the logging code, or via a Condition function) and might potentially attempt
 // to block this thread.  That would be a problem if the thread were already on
-// a the condition variable waiter queue.  Thus, we use the waitp->cv_word
-// to tell the unlock code to call CondVarEnqueue() to queue the thread on the
-// condition variable queue just before the mutex is to be unlocked, and (most
+// a condition variable waiter queue.  Thus, we use the waitp->cv_word to tell
+// the unlock code to call CondVarEnqueue() to queue the thread on the condition
+// variable queue just before the mutex is to be unlocked, and (most
 // importantly) after any call to an external routine that might re-enter the
 // mutex code.
 static void CondVarEnqueue(SynchWaitParams *waitp) {

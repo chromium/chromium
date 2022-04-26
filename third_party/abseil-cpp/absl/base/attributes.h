@@ -213,6 +213,9 @@
 // https://gcc.gnu.org/gcc-4.8/changes.html
 #if ABSL_HAVE_ATTRIBUTE(no_sanitize_address)
 #define ABSL_ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__((no_sanitize_address))
+#elif defined(_MSC_VER) && _MSC_VER >= 1928
+// https://docs.microsoft.com/en-us/cpp/cpp/no-sanitize-address
+#define ABSL_ATTRIBUTE_NO_SANITIZE_ADDRESS __declspec(no_sanitize_address)
 #else
 #define ABSL_ATTRIBUTE_NO_SANITIZE_ADDRESS
 #endif
@@ -679,9 +682,18 @@
 // not compile (on supported platforms) unless the variable has a constant
 // initializer. This is useful for variables with static and thread storage
 // duration, because it guarantees that they will not suffer from the so-called
-// "static init order fiasco".  Prefer to put this attribute on the most visible
-// declaration of the variable, if there's more than one, because code that
-// accesses the variable can then use the attribute for optimization.
+// "static init order fiasco".
+//
+// This attribute must be placed on the initializing declaration of the
+// variable. Some compilers will give a -Wmissing-constinit warning when this
+// attribute is placed on some other declaration but missing from the
+// initializing declaration.
+//
+// In some cases (notably with thread_local variables), `ABSL_CONST_INIT` can
+// also be used in a non-initializing declaration to tell the compiler that a
+// variable is already initialized, reducing overhead that would otherwise be
+// incurred by a hidden guard variable. Thus annotating all declarations with
+// this attribute is recommended to potentially enhance optimization.
 //
 // Example:
 //
@@ -690,14 +702,19 @@
 //     ABSL_CONST_INIT static MyType my_var;
 //   };
 //
-//   MyType MyClass::my_var = MakeMyType(...);
+//   ABSL_CONST_INIT MyType MyClass::my_var = MakeMyType(...);
+//
+// For code or headers that are assured to only build with C++20 and up, prefer
+// just using the standard `constinit` keyword directly over this macro.
 //
 // Note that this attribute is redundant if the variable is declared constexpr.
-#if ABSL_HAVE_CPP_ATTRIBUTE(clang::require_constant_initialization)
+#if defined(__cpp_constinit) && __cpp_constinit >= 201907L
+#define ABSL_CONST_INIT constinit
+#elif ABSL_HAVE_CPP_ATTRIBUTE(clang::require_constant_initialization)
 #define ABSL_CONST_INIT [[clang::require_constant_initialization]]
 #else
 #define ABSL_CONST_INIT
-#endif  // ABSL_HAVE_CPP_ATTRIBUTE(clang::require_constant_initialization)
+#endif
 
 // ABSL_ATTRIBUTE_PURE_FUNCTION
 //

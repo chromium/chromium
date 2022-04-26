@@ -325,7 +325,6 @@ EXPORTS
     ??$Hours@H$0A@@absl@@YA?AVDuration@0@H@Z
     ??$Init@$0A@@CordRepBtreeNavigator@cord_internal@absl@@AAEPAUCordRep@12@PAVCordRepBtree@12@@Z
     ??$Init@H@FormatArgImpl@str_format_internal@absl@@AAEXABH@Z
-    ??$Invoke@A6AXXZ$$V@Callable@base_internal@absl@@SAXA6AXXZ@Z
     ??$InvokeFlush@V?$basic_ostream@DU?$char_traits@D@__1@std@@@__1@std@@@str_format_internal@absl@@YAXPAV?$basic_ostream@DU?$char_traits@D@__1@std@@@__1@std@@Vstring_view@1@@Z
     ??$InvokeFlush@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@str_format_internal@absl@@YAXPAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@Vstring_view@1@@Z
     ??$InvokeFlush@VBufferRawSink@str_format_internal@absl@@@str_format_internal@absl@@YAXPAVBufferRawSink@01@Vstring_view@1@@Z
@@ -616,7 +615,6 @@ EXPORTS
     ??$get@$0A@Vstring_view@absl@@V12@@__1@std@@YAABVstring_view@absl@@ABU?$pair@Vstring_view@absl@@V12@@01@@Z
     ??$get@Vstring_view@absl@@V12@@?$__get_pair@$00@__1@std@@SAABVstring_view@absl@@ABU?$pair@Vstring_view@absl@@V12@@12@@Z
     ??$get@Vstring_view@absl@@V12@@?$__get_pair@$0A@@__1@std@@SAABVstring_view@absl@@ABU?$pair@Vstring_view@absl@@V12@@12@@Z
-    ??$invoke@A6AXXZ$$V@base_internal@absl@@YAXA6AXXZ@Z
     ??$launder@$$CBU?$pair@$$CBV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@PBVImpl@time_zone@cctz@time_internal@absl@@@__1@std@@@__1@std@@YAPBU?$pair@$$CBV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@PBVImpl@time_zone@cctz@time_internal@absl@@@01@PBU201@@Z
     ??$launder@U?$pair@$$CBV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@PBVImpl@time_zone@cctz@time_internal@absl@@@__1@std@@@__1@std@@YAPAU?$pair@$$CBV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@PBVImpl@time_zone@cctz@time_internal@absl@@@01@PAU201@@Z
     ??$lower_bound@PBUTransition@cctz@time_internal@absl@@U1234@UByUnixTime@1234@@__1@std@@YAPBUTransition@cctz@time_internal@absl@@PBU2345@0ABU2345@UByUnixTime@2345@@Z
@@ -1587,6 +1585,8 @@ EXPORTS
     ?EquivTransitions@TimeZoneInfo@cctz@time_internal@absl@@ABE_NEE@Z
     ?Erase@?$Storage@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__1@std@@@inlined_vector_internal@absl@@QAEPAUPayload@status_internal@3@PBU453@0@Z
     ?ErasePayload@Status@absl@@QAE_NVstring_view@2@@Z
+    ?ErrnoToStatus@absl@@YA?AVStatus@1@HVstring_view@1@@Z
+    ?ErrnoToStatusCode@absl@@YA?AW4StatusCode@1@H@Z
     ?Eval@Condition@absl@@QBE_NXZ
     ?Excess@str_format_internal@absl@@YAIII@Z
     ?ExpectedChecksum@Cord@absl@@QBE?AV?$optional@I@2@XZ
@@ -2173,6 +2173,7 @@ EXPORTS
     ?StrCat@absl@@YA?AV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@ABVAlphaNum@1@00@Z
     ?StrCat@absl@@YA?AV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@ABVAlphaNum@1@0@Z
     ?StrCat@absl@@YA?AV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@ABVAlphaNum@1@@Z
+    ?StrError@base_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@H@Z
     ?StrReplaceAll@absl@@YA?AV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@Vstring_view@1@V?$initializer_list@U?$pair@Vstring_view@absl@@V12@@__1@std@@@4@@Z
     ?StrReplaceAll@absl@@YAHV?$initializer_list@U?$pair@Vstring_view@absl@@V12@@__1@std@@@std@@PAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@3@@Z
     ?StripAsciiWhitespace@absl@@YA?AVstring_view@1@V21@@Z
