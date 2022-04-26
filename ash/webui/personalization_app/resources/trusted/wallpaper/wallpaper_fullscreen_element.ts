@@ -11,13 +11,13 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../common/icons.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
 import {CurrentWallpaper, GooglePhotosPhoto, WallpaperImage, WallpaperLayout, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getWallpaperLayoutEnum} from '../utils.js';
-import {isFilePath} from '../utils.js';
+import {isFilePath, isGooglePhotosPhoto} from '../utils.js';
 
 import {setFullscreenEnabledAction} from './wallpaper_actions.js';
 import {cancelPreviewWallpaper, confirmPreviewWallpaper, selectWallpaper} from './wallpaper_controller.js';
@@ -88,7 +88,8 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
     this.watch<WallpaperFullscreen['showLayoutOptions_']>(
         'showLayoutOptions_',
         state => !!state.wallpaper.pendingSelected &&
-            !!(state.wallpaper.pendingSelected.hasOwnProperty('path')));
+            (isFilePath(state.wallpaper.pendingSelected) ||
+             isGooglePhotosPhoto(state.wallpaper.pendingSelected)));
     this.watch<WallpaperFullscreen['currentSelected_']>(
         'currentSelected_', state => state.wallpaper.currentSelected);
     this.watch<WallpaperFullscreen['pendingSelected_']>(
@@ -158,10 +159,10 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
   }
 
   private async onClickLayout_(event: MouseEvent) {
-    if (!isFilePath(this.pendingSelected_)) {
-      assertNotReached('pendingSelected must be a local image to set layout');
-      return;
-    }
+    assert(
+        isFilePath(this.pendingSelected_) ||
+            isGooglePhotosPhoto(this.pendingSelected_),
+        'pendingSelected must be a local image or a Google Photos image to set layout');
     const layout = getWallpaperLayoutEnum(
         (event.currentTarget as HTMLButtonElement).dataset['layout']!);
     await selectWallpaper(
