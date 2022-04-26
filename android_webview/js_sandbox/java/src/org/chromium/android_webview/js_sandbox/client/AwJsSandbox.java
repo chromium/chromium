@@ -163,7 +163,13 @@ public class AwJsSandbox implements AutoCloseable {
             }
             try {
                 IJsSandboxIsolate isolateStub = mJsSandboxService.createIsolate();
-                return new AwJsIsolate(isolateStub);
+                Executor mainExecutor;
+                if (Build.VERSION.SDK_INT >= 28) {
+                    mainExecutor = mConnection.mContext.getMainExecutor();
+                } else {
+                    mainExecutor = ContextCompat.getMainExecutor(mConnection.mContext);
+                }
+                return new AwJsIsolate(isolateStub, mainExecutor);
             } catch (RemoteException e) {
                 throw e.rethrowAsRuntimeException();
             }
