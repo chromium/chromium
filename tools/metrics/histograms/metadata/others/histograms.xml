@@ -13492,8 +13492,10 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="UserManager.LoginUserType" enum="UserType"
-    expires_after="2022-04-24">
+    expires_after="2023-04-05">
   <owner>achuith@chromium.org</owner>
+  <owner>antrim@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     The number of users of different types that log in to the system (Chrome
     OS).
@@ -13506,8 +13508,8 @@ should be kept until we use this API.  -->
 regressions. -->
 
   <owner>alemate@chromium.org</owner>
-  <owner>rsorokin@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>antrim@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     The time between one regular user logging out and a different regular user
     logging in (Chrome OS). Delays above thirty minutes or which span system
