@@ -207,4 +207,20 @@ TEST_F(DlpReportingManagerTest, CreateEventForFilesRestriction) {
   EXPECT_EQ(event.mode(), DlpPolicyEvent_Mode_UNDEFINED_MODE);
 }
 
+TEST_F(DlpReportingManagerTest, Timestamp) {
+  const base::Time lower_bound = base::Time::Now();
+
+  DlpPolicyEvent event = policy::CreateDlpPolicyEvent(
+      kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
+      DlpRulesManager::Level::kBlock);
+
+  ASSERT_TRUE(event.has_timestamp_micro());
+  const base::TimeDelta time_since_epoch =
+      base::Microseconds(event.timestamp_micro());
+  const base::Time upper_bound = base::Time::Now();
+
+  EXPECT_GE(base::Time::UnixEpoch() + time_since_epoch, lower_bound);
+  EXPECT_LE(base::Time::UnixEpoch() + time_since_epoch, upper_bound);
+}
+
 }  // namespace policy
