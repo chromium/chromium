@@ -193,7 +193,7 @@ class NewTabPageTest : public InProcessBrowserTest,
 };
 
 // TODO(crbug.com/1250156): NewTabPageTest.LandingPagePixelTest is flaky
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_LandingPagePixelTest DISABLED_LandingPagePixelTest
 #else
 #define MAYBE_LandingPagePixelTest LandingPagePixelTest

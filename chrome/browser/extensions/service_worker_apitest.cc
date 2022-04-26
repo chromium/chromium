@@ -2458,8 +2458,17 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, EventsAfterRestart) {
   EXPECT_TRUE(moved_tab_listener.WaitUntilSatisfied());
 }
 
+// TODO(crbug.com/1319942): Test flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PRE_WebRequestAfterRestart DISABLED_PRE_WebRequestAfterRestart
+#define MAYBE_WebRequestAfterRestart DISABLED_WebRequestAfterRestart
+#else
+#define MAYBE_PRE_WebRequestAfterRestart PRE_WebRequestAfterRestart
+#define MAYBE_WebRequestAfterRestart DISABLED_WebRequestAfterRestart
+#endif
+
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
-                       PRE_WebRequestAfterRestart) {
+                       MAYBE_PRE_WebRequestAfterRestart) {
   ExtensionTestMessageListener event_added_listener("listener-added", false);
 
   base::FilePath extension_path = test_data_dir_.AppendASCII("service_worker")
@@ -2474,7 +2483,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
 // After browser restarts, this test step ensures that navigating a tab fires
 // the webRequest listener.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
-                       WebRequestAfterRestart) {
+                       MAYBE_WebRequestAfterRestart) {
   ExtensionTestMessageListener event_added_listener("listener-added", false);
   EXPECT_TRUE(event_added_listener.WaitUntilSatisfied());
   // Navigate and expect the listener in the extension to be triggered.
