@@ -925,8 +925,8 @@
   'CROS_EVE_RELEASE_BETA': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '101.0.4951.32',
-      'cros_img': 'eve-release/R101-14588.51.0',
+      'cros_chrome_version': '101.0.4951.41',
+      'cros_img': 'eve-release/R101-14588.67.0',
     },
     'enabled': True,
     'identifier': 'EVE_RELEASE_BETA',
