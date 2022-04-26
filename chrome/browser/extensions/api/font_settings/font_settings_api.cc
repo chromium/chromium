@@ -159,10 +159,10 @@ void FontSettingsEventRouter::OnFontNamePrefChanged(
   }
   std::string font_name = pref->GetValue()->GetString();
   base::ListValue args;
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetStringKey(kFontIdKey, font_name);
-  dict->SetStringKey(kGenericFamilyKey, generic_family);
-  dict->SetStringKey(kScriptKey, script);
+  base::Value::Dict dict;
+  dict.Set(kFontIdKey, font_name);
+  dict.Set(kGenericFamilyKey, generic_family);
+  dict.Set(kScriptKey, script);
   args.Append(std::move(dict));
 
   extensions::preference_helpers::DispatchEventToExtensions(
@@ -181,8 +181,8 @@ void FontSettingsEventRouter::OnFontPrefChanged(
   CHECK(pref);
 
   base::ListValue args;
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->Set(key, base::Value::ToUniquePtrValue(pref->GetValue()->Clone()));
+  base::Value::Dict dict;
+  dict.Set(key, pref->GetValue()->Clone());
   args.Append(std::move(dict));
 
   extensions::preference_helpers::DispatchEventToExtensions(
@@ -296,7 +296,7 @@ void FontSettingsGetFontListFunction::FontListHasLoaded(
 
 ExtensionFunction::ResponseValue
 FontSettingsGetFontListFunction::CopyFontsToResult(base::ListValue* fonts) {
-  std::unique_ptr<base::ListValue> result(new base::ListValue());
+  base::Value::List result;
   for (const auto& entry : fonts->GetListDeprecated()) {
     if (!entry.is_list()) {
       NOTREACHED();
@@ -305,27 +305,21 @@ FontSettingsGetFontListFunction::CopyFontsToResult(base::ListValue* fonts) {
     const base::Value::ConstListView font_list_value =
         entry.GetListDeprecated();
 
-    if (font_list_value.size() < 2 || !font_list_value[0].is_string()) {
+    if (font_list_value.size() < 2 || !font_list_value[0].is_string() ||
+        !font_list_value[1].is_string()) {
       NOTREACHED();
       return Error("");
     }
     const std::string& name = font_list_value[0].GetString();
-
-    if (!font_list_value[1].is_string()) {
-      NOTREACHED();
-      return Error("");
-    }
     const std::string& localized_name = font_list_value[1].GetString();
 
-    std::unique_ptr<base::DictionaryValue> font_name(
-        new base::DictionaryValue());
-    font_name->Set(kFontIdKey, std::make_unique<base::Value>(name));
-    font_name->Set(kDisplayNameKey,
-                   std::make_unique<base::Value>(localized_name));
-    result->Append(std::move(font_name));
+    base::Value::Dict font_name;
+    font_name.Set(kFontIdKey, name);
+    font_name.Set(kDisplayNameKey, localized_name);
+    result.Append(std::move(font_name));
   }
 
-  return OneArgument(base::Value::FromUniquePtrValue(std::move(result)));
+  return OneArgument(base::Value(std::move(result)));
 }
 
 ExtensionFunction::ResponseAction ClearFontPrefExtensionFunction::Run() {

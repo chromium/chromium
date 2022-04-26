@@ -194,30 +194,30 @@ TEST_F(ExtensionSettingsFrontendTest,
       extension, settings::LOCAL, frontend_.get());
 
   // Sync storage should run out after ~100K.
-  std::unique_ptr<base::Value> kilobyte = settings_test_util::CreateKilobyte();
+  base::Value kilobyte = settings_test_util::CreateKilobyte();
   for (int i = 0; i < 100; ++i) {
-    sync_storage->Set(DEFAULTS, base::NumberToString(i), *kilobyte);
+    sync_storage->Set(DEFAULTS, base::NumberToString(i), kilobyte);
   }
 
   EXPECT_FALSE(
-      sync_storage->Set(DEFAULTS, "WillError", *kilobyte).status().ok());
+      sync_storage->Set(DEFAULTS, "WillError", kilobyte).status().ok());
 
   // Local storage shouldn't run out after ~100K.
   for (int i = 0; i < 100; ++i) {
-    local_storage->Set(DEFAULTS, base::NumberToString(i), *kilobyte);
+    local_storage->Set(DEFAULTS, base::NumberToString(i), kilobyte);
   }
 
   EXPECT_TRUE(
-      local_storage->Set(DEFAULTS, "WontError", *kilobyte).status().ok());
+      local_storage->Set(DEFAULTS, "WontError", kilobyte).status().ok());
 
   // Local storage should run out after ~5MB.
-  std::unique_ptr<base::Value> megabyte = settings_test_util::CreateMegabyte();
+  base::Value megabyte = settings_test_util::CreateMegabyte();
   for (int i = 0; i < 5; ++i) {
-    local_storage->Set(DEFAULTS, base::NumberToString(i), *megabyte);
+    local_storage->Set(DEFAULTS, base::NumberToString(i), megabyte);
   }
 
   EXPECT_FALSE(
-      local_storage->Set(DEFAULTS, "WillError", *megabyte).status().ok());
+      local_storage->Set(DEFAULTS, "WillError", megabyte).status().ok());
 }
 
 }  // namespace extensions

@@ -88,13 +88,13 @@ void ActivityLogAPI::StartOrStopListeningForExtensionActivities() {
 }
 
 void ActivityLogAPI::OnExtensionActivity(scoped_refptr<Action> activity) {
-  std::unique_ptr<base::ListValue> value(new base::ListValue());
+  base::Value::List value;
   ExtensionActivity activity_arg = activity->ConvertToExtensionActivity();
-  value->Append(activity_arg.ToValue());
+  value.Append(base::Value::FromUniquePtrValue(activity_arg.ToValue()));
   auto event = std::make_unique<Event>(
       events::ACTIVITY_LOG_PRIVATE_ON_EXTENSION_ACTIVITY,
       activity_log_private::OnExtensionActivity::kEventName,
-      std::move(*value).TakeListDeprecated(), browser_context_);
+      base::Value(std::move(value)).TakeListDeprecated(), browser_context_);
   EventRouter::Get(browser_context_)->BroadcastEvent(std::move(event));
 }
 

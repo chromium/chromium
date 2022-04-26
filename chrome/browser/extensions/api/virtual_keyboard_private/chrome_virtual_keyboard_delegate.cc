@@ -608,7 +608,7 @@ void ChromeVirtualKeyboardDelegate::DispatchConfigChangeEvent(
     return;
 
   auto event_args = std::make_unique<base::ListValue>();
-  event_args->Append(std::move(settings));
+  event_args->Append(base::Value::FromUniquePtrValue(std::move(settings)));
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::VIRTUAL_KEYBOARD_PRIVATE_ON_KEYBOARD_CONFIG_CHANGED,

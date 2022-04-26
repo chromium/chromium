@@ -17,6 +17,10 @@
 #include "extensions/browser/mock_extension_system.h"
 #include "extensions/common/extension.h"
 
+namespace base {
+class Value;
+}
+
 namespace value_store {
 class ValueStore;
 }
@@ -28,10 +32,10 @@ class StorageFrontend;
 namespace settings_test_util {
 
 // Creates a kilobyte of data.
-std::unique_ptr<base::Value> CreateKilobyte();
+base::Value CreateKilobyte();
 
 // Creates a megabyte of data.
-std::unique_ptr<base::Value> CreateMegabyte();
+base::Value CreateMegabyte();
 
 // Synchronously gets the storage area for an extension from |frontend|.
 value_store::ValueStore* GetStorage(

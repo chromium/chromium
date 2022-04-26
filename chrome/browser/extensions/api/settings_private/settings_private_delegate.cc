@@ -46,7 +46,7 @@ std::unique_ptr<base::Value> SettingsPrivateDelegate::GetAllPrefs() {
   for (const auto& it : keys) {
     std::unique_ptr<base::Value> pref = GetPref(it.first);
     if (!pref->is_none())
-      prefs->Append(std::move(pref));
+      prefs->Append(base::Value::FromUniquePtrValue(std::move(pref)));
   }
 
   return std::move(prefs);

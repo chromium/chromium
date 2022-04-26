@@ -229,9 +229,10 @@ void ExtensionActionAPI::DispatchExtensionActionClicked(
     ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
         ExtensionTabUtil::GetScrubTabBehavior(extension, context_type,
                                               web_contents);
-    args->Append(ExtensionTabUtil::CreateTabObject(
-                     web_contents, scrub_tab_behavior, extension)
-                     ->ToValue());
+    args->Append(base::Value::FromUniquePtrValue(
+        ExtensionTabUtil::CreateTabObject(web_contents, scrub_tab_behavior,
+                                          extension)
+            ->ToValue()));
 
     DispatchEventToExtension(web_contents->GetBrowserContext(),
                              extension_action.extension_id(), histogram_value,

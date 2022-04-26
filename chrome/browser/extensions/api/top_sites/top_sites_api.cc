@@ -37,22 +37,21 @@ ExtensionFunction::ResponseAction TopSitesGetFunction::Run() {
 
 void TopSitesGetFunction::OnMostVisitedURLsAvailable(
     const history::MostVisitedURLList& data) {
-  std::unique_ptr<base::ListValue> pages_value(new base::ListValue);
-  for (size_t i = 0; i < data.size(); i++) {
-    const history::MostVisitedURL& url = data[i];
+  base::Value::List pages_value;
+  for (const auto& url : data) {
     if (!url.url.is_empty()) {
-      std::unique_ptr<base::DictionaryValue> page_value(
-          new base::DictionaryValue());
-      page_value->SetStringKey("url", url.url.spec());
-      if (url.title.empty())
-        page_value->SetStringKey("title", url.url.spec());
-      else
-        page_value->SetStringKey("title", url.title);
-      pages_value->Append(std::move(page_value));
+      base::Value::Dict page_value;
+      page_value.Set("url", url.url.spec());
+      if (url.title.empty()) {
+        page_value.Set("title", url.url.spec());
+      } else {
+        page_value.Set("title", url.title);
+      }
+      pages_value.Append(std::move(page_value));
     }
   }
 
-  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(pages_value))));
+  Respond(OneArgument(base::Value(std::move(pages_value))));
 }
 
 }  // namespace extensions

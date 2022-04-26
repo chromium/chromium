@@ -23,18 +23,18 @@ namespace extensions {
 namespace settings_test_util {
 
 // Creates a kilobyte of data.
-std::unique_ptr<base::Value> CreateKilobyte() {
+base::Value CreateKilobyte() {
   std::string kilobyte_string(1024u, 'a');
-  return std::make_unique<base::Value>(std::move(kilobyte_string));
+  return base::Value(std::move(kilobyte_string));
 }
 
 // Creates a megabyte of data.
-std::unique_ptr<base::Value> CreateMegabyte() {
-  base::ListValue* megabyte = new base::ListValue();
+base::Value CreateMegabyte() {
+  base::Value::List megabyte;
   for (int i = 0; i < 1000; ++i) {
-    megabyte->Append(CreateKilobyte());
+    megabyte.Append(CreateKilobyte());
   }
-  return std::unique_ptr<base::Value>(megabyte);
+  return base::Value(std::move(megabyte));
 }
 
 // Intended as a StorageCallback from GetStorage.
