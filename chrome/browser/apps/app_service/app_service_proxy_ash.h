@@ -164,6 +164,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                                UninstallDialog* uninstall_dialog);
 
   // apps::AppServiceProxyBase overrides:
+  void InitializePreferredAppsForAllSubscribers() override;
   bool MaybeShowLaunchPreventionDialog(const apps::AppUpdate& update) override;
   void OnLaunched(LaunchCallback callback,
                   LaunchResult&& launch_result) override;

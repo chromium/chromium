@@ -78,6 +78,11 @@ std::string ReadDataBlocking(const base::FilePath& preferred_apps_file) {
 
 namespace apps {
 
+apps::mojom::Publisher* PreferredAppsImpl::Host::GetMojomPublisher(
+    apps::mojom::AppType app_type) {
+  return nullptr;
+}
+
 PreferredAppsImpl::PreferredAppsImpl(
     Host* host,
     const base::FilePath& profile_dir,
@@ -376,7 +381,7 @@ void PreferredAppsImpl::SetSupportedLinksPreferenceImpl(
 
   // Notify publishers: The new app has been set to open links, and all removed
   // apps no longer handle links.
-  auto* publisher = host_->GetPublisher(app_type);
+  auto* publisher = host_->GetMojomPublisher(app_type);
   if (publisher) {
     publisher->OnSupportedLinksPreferenceChanged(app_id,
                                                  /*open_in_app=*/true);
@@ -391,7 +396,7 @@ void PreferredAppsImpl::SetSupportedLinksPreferenceImpl(
 void PreferredAppsImpl::RemoveSupportedLinksPreferenceImpl(
     apps::mojom::AppType app_type,
     const std::string& app_id) {
-  auto* publisher = host_->GetPublisher(app_type);
+  auto* publisher = host_->GetMojomPublisher(app_type);
   if (!publisher) {
     return;
   }

@@ -35,21 +35,21 @@ class PreferredAppsImpl {
     virtual void InitializePreferredAppsForAllSubscribers() = 0;
 
     virtual void OnPreferredAppsChanged(
-        apps::mojom::PreferredAppChangesPtr changes) = 0;
+        apps::mojom::PreferredAppChangesPtr changes) {}
 
     virtual void OnPreferredAppSet(
         const std::string& app_id,
         apps::mojom::IntentFilterPtr intent_filter,
         apps::mojom::IntentPtr intent,
-        apps::mojom::ReplacedAppPreferencesPtr replaced_app_preferences) = 0;
+        apps::mojom::ReplacedAppPreferencesPtr replaced_app_preferences) {}
 
     virtual void OnSupportedLinksPreferenceChanged(const std::string& app_id,
                                                    bool open_in_app) = 0;
 
     // Returns publisher for `app_type`, or nullptr if there is no publisher for
     // `app_type`.
-    virtual apps::mojom::Publisher* GetPublisher(
-        apps::mojom::AppType app_type) = 0;
+    virtual apps::mojom::Publisher* GetMojomPublisher(
+        apps::mojom::AppType app_type);
   };
 
   PreferredAppsImpl(
@@ -79,6 +79,10 @@ class PreferredAppsImpl {
       std::vector<apps::mojom::IntentFilterPtr> all_link_filters);
   void RemoveSupportedLinksPreference(apps::mojom::AppType app_type,
                                       const std::string& app_id);
+
+  const PreferredAppsList& preferred_apps_list() const {
+    return preferred_apps_list_;
+  }
 
  private:
   friend AppServiceMojomImpl;

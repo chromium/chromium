@@ -43,7 +43,9 @@ class SubscriberCrosapi : public KeyedService,
   void RegisterAppServiceProxyFromCrosapi(
       mojo::PendingReceiver<crosapi::mojom::AppServiceProxy> receiver);
 
-  void OnApps(const std::vector<apps::AppPtr>& deltas);
+  void OnApps(const std::vector<AppPtr>& deltas);
+
+  void InitializePreferredApps(PreferredApps preferred_apps);
 
  protected:
   // apps::mojom::Subscriber overrides.

@@ -347,7 +347,7 @@ void AppServiceMojomImpl::OnSupportedLinksPreferenceChanged(
   }
 }
 
-apps::mojom::Publisher* AppServiceMojomImpl::GetPublisher(
+apps::mojom::Publisher* AppServiceMojomImpl::GetMojomPublisher(
     apps::mojom::AppType app_type) {
   auto iter = publishers_.find(app_type);
   if (iter == publishers_.end()) {

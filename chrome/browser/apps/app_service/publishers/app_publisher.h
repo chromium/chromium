@@ -84,6 +84,9 @@ class AppPublisher {
                               const std::string& shortcut_id,
                               int64_t display_id) {}
 
+  virtual void OnSupportedLinksPreferenceChanged(const std::string& app_id,
+                                                 bool open_in_app) {}
+
  protected:
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // Publish one `app` to AppServiceProxy. Should be called whenever the app

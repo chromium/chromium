@@ -65,7 +65,7 @@ void SubscriberCrosapi::RegisterAppServiceProxyFromCrosapi(
       &SubscriberCrosapi::OnCrosapiDisconnected, base::Unretained(this)));
 }
 
-void SubscriberCrosapi::OnApps(const std::vector<apps::AppPtr>& deltas) {
+void SubscriberCrosapi::OnApps(const std::vector<AppPtr>& deltas) {
   if (!subscriber_.is_bound()) {
     return;
   }
@@ -81,6 +81,12 @@ void SubscriberCrosapi::OnApps(const std::vector<apps::AppPtr>& deltas) {
   // set initialized status.
   subscriber_->OnApps(std::move(apps), AppType::kUnknown,
                       /*should_notify_initialized=*/false);
+}
+
+void SubscriberCrosapi::InitializePreferredApps(PreferredApps preferred_apps) {
+  if (subscriber_.is_bound()) {
+    subscriber_->InitializePreferredApps(std::move(preferred_apps));
+  }
 }
 
 void SubscriberCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas,

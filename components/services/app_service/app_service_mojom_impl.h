@@ -142,7 +142,8 @@ class AppServiceMojomImpl : public apps::mojom::AppService,
 
   // Returns publisher for `app_type`, or nullptr if there is no publisher for
   // `app_type`.
-  apps::mojom::Publisher* GetPublisher(apps::mojom::AppType app_type) override;
+  apps::mojom::Publisher* GetMojomPublisher(
+      apps::mojom::AppType app_type) override;
 
   // Retern the preferred_apps_list_ for testing.
   PreferredAppsList& GetPreferredAppsListForTesting();

@@ -139,7 +139,12 @@ AppServiceProxyBase::AppServiceProxyBase(Profile* profile)
       icon_coalescer_(&inner_icon_loader_),
       outer_icon_loader_(&icon_coalescer_,
                          apps::IconCache::GarbageCollectionPolicy::kEager),
-      profile_(profile) {}
+      profile_(profile) {
+  if (base::FeatureList::IsEnabled(AppServicePreferredAppsWithoutMojom)) {
+    preferred_apps_impl_ = std::make_unique<PreferredAppsImpl>(
+        this, profile ? profile->GetPath() : base::FilePath());
+  }
+}
 
 AppServiceProxyBase::~AppServiceProxyBase() = default;
 
@@ -222,6 +227,25 @@ apps::PreferredAppsListHandle& AppServiceProxyBase::PreferredAppsList() {
 void AppServiceProxyBase::RegisterPublisher(AppType app_type,
                                             AppPublisher* publisher) {
   publishers_[app_type] = publisher;
+}
+
+void AppServiceProxyBase::InitializePreferredAppsForAllSubscribers() {
+  if (preferred_apps_impl_) {
+    preferred_apps_list_.Init(
+        preferred_apps_impl_->preferred_apps_list().GetValue());
+  }
+}
+
+void AppServiceProxyBase::OnSupportedLinksPreferenceChanged(
+    const std::string& app_id,
+    bool open_in_app) {
+  if (!base::FeatureList::IsEnabled(AppServicePreferredAppsWithoutMojom)) {
+    return;
+  }
+
+  for (const auto& iter : publishers_) {
+    iter.second->OnSupportedLinksPreferenceChanged(app_id, open_in_app);
+  }
 }
 
 absl::optional<IconKey> AppServiceProxyBase::GetIconKey(

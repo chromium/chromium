@@ -27,6 +27,7 @@
 #include "components/services/app_service/public/cpp/icon_coalescer.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/preferred_apps_impl.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -67,7 +68,8 @@ struct IntentLaunchInfo {
 // See components/services/app_service/README.md.
 class AppServiceProxyBase : public KeyedService,
                             public apps::IconLoader,
-                            public apps::mojom::Subscriber {
+                            public apps::mojom::Subscriber,
+                            public PreferredAppsImpl::Host {
  public:
   explicit AppServiceProxyBase(Profile* profile);
   AppServiceProxyBase(const AppServiceProxyBase&) = delete;
@@ -90,6 +92,11 @@ class AppServiceProxyBase : public KeyedService,
   // of type `app_type`. `publisher` must have a lifetime equal to or longer
   // than this object.
   void RegisterPublisher(AppType app_type, AppPublisher* publisher);
+
+  // PreferredApps::Host overrides.
+  void InitializePreferredAppsForAllSubscribers() override;
+  void OnSupportedLinksPreferenceChanged(const std::string& app_id,
+                                         bool open_in_app) override;
 
   // apps::IconLoader overrides.
   absl::optional<IconKey> GetIconKey(const std::string& app_id) override;
@@ -399,6 +406,7 @@ class AppServiceProxyBase : public KeyedService,
   IconCoalescer icon_coalescer_;
   IconCache outer_icon_loader_;
 
+  std::unique_ptr<PreferredAppsImpl> preferred_apps_impl_;
   apps::PreferredAppsList preferred_apps_list_;
 
   raw_ptr<Profile> profile_;

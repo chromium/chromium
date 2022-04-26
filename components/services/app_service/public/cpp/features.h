@@ -16,6 +16,8 @@ COMPONENT_EXPORT(APP_UPDATE)
 extern const base::Feature kAppServiceOnAppUpdateWithoutMojom;
 COMPONENT_EXPORT(APP_UPDATE)
 extern const base::Feature AppServiceCrosApiOnAppsWithoutMojom;
+COMPONENT_EXPORT(APP_UPDATE)
+extern const base::Feature AppServicePreferredAppsWithoutMojom;
 
 }  // namespace apps
 
