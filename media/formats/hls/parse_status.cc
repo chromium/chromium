@@ -21,6 +21,7 @@ base::StringPiece ParseStatusCodeToString(ParseStatusCode code) {
     PARSE_STATUS_CODE_CASE(kFailedToParseDecimalInteger);
     PARSE_STATUS_CODE_CASE(kFailedToParseDecimalFloatingPoint);
     PARSE_STATUS_CODE_CASE(kFailedToParseSignedDecimalFloatingPoint);
+    PARSE_STATUS_CODE_CASE(kFailedToParseDecimalResolution);
     PARSE_STATUS_CODE_CASE(kFailedToParseQuotedString);
     PARSE_STATUS_CODE_CASE(kInvalidPlaylistVersion);
     PARSE_STATUS_CODE_CASE(kUnknownPlaylistType);

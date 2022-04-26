@@ -14,21 +14,37 @@
 
 namespace media::hls::types {
 
-// Data-types used in HLS, as described by the spec
+// A `DecimalInteger` is an unsigned integer value.
+// https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=of%20the%20following%3A%0A%0A%20%20%20o-,decimal%2Dinteger,-%3A%20an%20unquoted%20string
 using DecimalInteger = uint64_t;
 
 ParseStatus::Or<DecimalInteger> MEDIA_EXPORT
 ParseDecimalInteger(SourceString source_str);
 
+// A `DecimalFloatingPoint` is an unsigned floating-point value.
+// https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=on%20its%20AttributeNames.%0A%0A%20%20%20o-,decimal%2Dfloating%2Dpoint,-%3A%20an%20unquoted%20string
 using DecimalFloatingPoint = double;
 
 ParseStatus::Or<DecimalFloatingPoint> MEDIA_EXPORT
 ParseDecimalFloatingPoint(SourceString source_str);
 
+// A `SignedDecimalFloatingPoint` is a signed floating-point value.
+// https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=decimal%20positional%20notation.%0A%0A%20%20%20o-,signed%2Ddecimal%2Dfloating%2Dpoint,-%3A%20an%20unquoted%20string
 using SignedDecimalFloatingPoint = double;
 
 ParseStatus::Or<SignedDecimalFloatingPoint> MEDIA_EXPORT
 ParseSignedDecimalFloatingPoint(SourceString source_str);
+
+// A `DecimalResolution` is a set of two `DecimalInteger`s describing width and
+// height.
+// https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=enumerated%2Dstring%2Dlist.%0A%0A%20%20%20o-,decimal%2Dresolution,-%3A%20two%20decimal%2Dintegers
+struct DecimalResolution {
+  types::DecimalInteger width;
+  types::DecimalInteger height;
+
+  static MEDIA_EXPORT ParseStatus::Or<DecimalResolution> Parse(
+      SourceString source_str);
+};
 
 // Parses a string surrounded by double-quotes ("), returning the inner string.
 // These appear in the context of attribute-lists, and are subject to variable

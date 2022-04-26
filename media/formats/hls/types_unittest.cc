@@ -17,7 +17,7 @@
 namespace media::hls {
 
 TEST(HlsTypesTest, ParseDecimalInteger) {
-  auto const error_test = [](base::StringPiece input,
+  const auto error_test = [](base::StringPiece input,
                              const base::Location& from =
                                  base::Location::Current()) {
     auto result =
@@ -28,7 +28,7 @@ TEST(HlsTypesTest, ParseDecimalInteger) {
         << from.ToString();
   };
 
-  auto const ok_test = [](base::StringPiece input,
+  const auto ok_test = [](base::StringPiece input,
                           types::DecimalInteger expected,
                           const base::Location& from =
                               base::Location::Current()) {
@@ -72,7 +72,7 @@ TEST(HlsTypesTest, ParseDecimalInteger) {
 }
 
 TEST(HlsTypesTest, ParseDecimalFloatingPoint) {
-  auto const error_test = [](base::StringPiece input,
+  const auto error_test = [](base::StringPiece input,
                              const base::Location& from =
                                  base::Location::Current()) {
     auto result = types::ParseDecimalFloatingPoint(
@@ -83,7 +83,7 @@ TEST(HlsTypesTest, ParseDecimalFloatingPoint) {
         << from.ToString();
   };
 
-  auto const ok_test = [](base::StringPiece input,
+  const auto ok_test = [](base::StringPiece input,
                           types::DecimalFloatingPoint expected,
                           const base::Location& from =
                               base::Location::Current()) {
@@ -124,7 +124,7 @@ TEST(HlsTypesTest, ParseDecimalFloatingPoint) {
 }
 
 TEST(HlsTypesTest, ParseSignedDecimalFloatingPoint) {
-  auto const error_test = [](base::StringPiece input,
+  const auto error_test = [](base::StringPiece input,
                              const base::Location& from =
                                  base::Location::Current()) {
     auto result = types::ParseSignedDecimalFloatingPoint(
@@ -136,7 +136,7 @@ TEST(HlsTypesTest, ParseSignedDecimalFloatingPoint) {
         << from.ToString();
   };
 
-  auto const ok_test = [](base::StringPiece input,
+  const auto ok_test = [](base::StringPiece input,
                           types::SignedDecimalFloatingPoint expected,
                           const base::Location& from =
                               base::Location::Current()) {
@@ -417,7 +417,7 @@ TEST(HlsTypesTest, AttributeMap) {
 }
 
 TEST(HlsTypesTest, ParseVariableName) {
-  auto const ok_test = [](base::StringPiece input,
+  const auto ok_test = [](base::StringPiece input,
                           const base::Location& from =
                               base::Location::Current()) {
     auto result =
@@ -426,7 +426,7 @@ TEST(HlsTypesTest, ParseVariableName) {
     EXPECT_EQ(std::move(result).value().GetName(), input) << from.ToString();
   };
 
-  auto const error_test = [](base::StringPiece input,
+  const auto error_test = [](base::StringPiece input,
                              const base::Location& from =
                                  base::Location::Current()) {
     auto result =
@@ -561,6 +561,81 @@ TEST(HlsTypesTest, ParseQuotedString) {
 
   // Empty string is not allowed
   error_test("", ParseStatusCode::kFailedToParseQuotedString);
+}
+
+TEST(HlsTypesTest, ParseDecimalResolution) {
+  const auto error_test = [](base::StringPiece input,
+                             const base::Location& from =
+                                 base::Location::Current()) {
+    auto result = types::DecimalResolution::Parse(
+        SourceString::CreateForTesting(1, 1, input));
+    ASSERT_TRUE(result.has_error()) << from.ToString();
+    auto error = std::move(result).error();
+    EXPECT_EQ(error.code(), ParseStatusCode::kFailedToParseDecimalResolution)
+        << from.ToString();
+  };
+
+  const auto ok_test =
+      [](base::StringPiece input, types::DecimalResolution expected,
+         const base::Location& from = base::Location::Current()) {
+        auto result = types::DecimalResolution::Parse(
+            SourceString::CreateForTesting(1, 1, input));
+        ASSERT_TRUE(result.has_value()) << from.ToString();
+        auto value = std::move(result).value();
+        EXPECT_EQ(value.width, expected.width) << from.ToString();
+        EXPECT_EQ(value.height, expected.height) << from.ToString();
+      };
+
+  // Empty string is not allowed
+  error_test("");
+
+  // Decimal-resolution must have a single lower-case 'x' between two
+  // DecimalIntegers
+  error_test("123");
+  error_test("123X456");
+  error_test("123*456");
+  error_test("123x");
+  error_test("x456");
+  error_test("123x456x");
+  error_test("x123x456");
+  error_test("x123x456x");
+  error_test("0X123");
+
+  // Decimal-resolutions may not be quoted
+  error_test("'123x456'");
+  error_test("\"123x456\"");
+
+  // Decimal-resolutions may not be negative
+  error_test("-123x456");
+  error_test("123x-456");
+  error_test("-123x-456");
+  error_test("-0x456");
+
+  // Decimal-integers may not contain junk or leading/trailing spaces
+  error_test("12.3x456");
+  error_test("  123x456");
+  error_test("123 x456");
+  error_test("123x456 ");
+  error_test("123x 456");
+
+  // Decimal-integers may not exceed 20 characters
+  error_test("000000000000000000001x456");
+  error_test("123x000000000000000000001");
+
+  // Test some valid inputs
+  ok_test("00000000000000000001x456",
+          types::DecimalResolution{.width = 1, .height = 456});
+  ok_test("0x0", types::DecimalResolution{.width = 0, .height = 0});
+  ok_test("1x1", types::DecimalResolution{.width = 1, .height = 1});
+  ok_test("123x456", types::DecimalResolution{.width = 123, .height = 456});
+  ok_test("123x0", types::DecimalResolution{.width = 123, .height = 0});
+  ok_test("0x123", types::DecimalResolution{.width = 0, .height = 123});
+
+  // Test max supported value
+  ok_test("18446744073709551615x18446744073709551615",
+          types::DecimalResolution{.width = 18446744073709551615u,
+                                   .height = 18446744073709551615u});
+  error_test("18446744073709551616x18446744073709551616");
 }
 
 }  // namespace media::hls
