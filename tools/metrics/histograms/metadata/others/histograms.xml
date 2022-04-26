@@ -11574,7 +11574,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.CertificateFetch.CacheHit"
-    enum="BooleanCacheHit" expires_after="2022-05-17">
+    enum="BooleanCacheHit" expires_after="2022-10-22">
   <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
@@ -11584,7 +11584,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.CertVerificationResult" enum="NetErrorCodes"
-    expires_after="2022-05-17">
+    expires_after="2022-10-22">
   <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
@@ -11593,7 +11593,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.CTVerificationResult" enum="CTComplianceStatus"
-    expires_after="2022-05-17">
+    expires_after="2022-10-22">
   <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
@@ -11602,7 +11602,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.FallbackRedirectLoop" enum="BooleanDetected"
-    expires_after="2022-05-17">
+    expires_after="2022-10-22">
   <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
@@ -11625,7 +11625,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.OCSPResponseStatus" enum="OCSPResponseStatus"
-    expires_after="2022-05-17">
+    expires_after="2022-10-22">
   <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
@@ -11635,7 +11635,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.OCSPRevocationStatus"
-    enum="OCSPRevocationStatus" expires_after="2022-05-17">
+    enum="OCSPRevocationStatus" expires_after="2022-10-22">
   <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
@@ -11646,7 +11646,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.Prefetch.LoadResult2"
-    enum="SignedExchangeLoadResult" expires_after="2022-05-17">
+    enum="SignedExchangeLoadResult" expires_after="2022-10-22">
   <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
@@ -11656,7 +11656,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.Prefetch.Precision.30Seconds"
-    enum="BooleanUsage" expires_after="2022-05-17">
+    enum="BooleanUsage" expires_after="2022-10-22">
   <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
@@ -11668,7 +11668,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.Prefetch.Recall.30Seconds" enum="BooleanUsage"
-    expires_after="2022-05-17">
+    expires_after="2022-10-22">
   <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
@@ -11679,7 +11679,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.SignatureVerificationError.Expired"
-    units="seconds" expires_after="2022-05-17">
+    units="seconds" expires_after="2022-10-22">
   <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
@@ -11689,7 +11689,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.SignatureVerificationError.NotYetValid"
-    units="seconds" expires_after="2022-05-17">
+    units="seconds" expires_after="2022-10-22">
   <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
@@ -11699,7 +11699,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.SignatureVerificationResult"
-    enum="SignedExchangeSignatureVerificationResult" expires_after="2022-05-17">
+    enum="SignedExchangeSignatureVerificationResult" expires_after="2022-10-22">
   <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
@@ -11709,7 +11709,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.Time.CertificateFetch.Failure" units="ms"
-    expires_after="2022-05-17">
+    expires_after="2022-10-22">
   <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
@@ -11719,7 +11719,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.Time.CertificateFetch.Success" units="ms"
-    expires_after="2022-05-17">
+    expires_after="2022-10-22">
   <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
@@ -11729,7 +11729,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.Time.SignatureVerify" units="ms"
-    expires_after="2022-05-17">
+    expires_after="2022-10-22">
   <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
@@ -11739,7 +11739,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.TimeUntilExpiration" units="seconds"
-    expires_after="2022-05-17">
+    expires_after="2022-10-22">
   <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
@@ -11750,7 +11750,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.ValidityPingDuration" units="ms"
-    expires_after="2022-05-17">
+    expires_after="2022-10-22">
   <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
@@ -11760,7 +11760,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.ValidityPingResult"
-    enum="SignedExchangeValidityPingResult" expires_after="2022-05-17">
+    enum="SignedExchangeValidityPingResult" expires_after="2022-10-22">
   <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>Reports the result of the Signed Exchange validity ping.</summary>
