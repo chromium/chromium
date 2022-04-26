@@ -40,11 +40,11 @@ namespace extensions {
 namespace subtle {
 
 void AppendKeyValuePair(const char* key,
-                        std::unique_ptr<base::Value> value,
+                        base::Value value,
                         base::ListValue* list) {
-  std::unique_ptr<base::DictionaryValue> dictionary(new base::DictionaryValue);
-  dictionary->SetKey(key, base::Value::FromUniquePtrValue(std::move(value)));
-  list->Append(std::move(dictionary));
+  base::Value::Dict dictionary;
+  dictionary.Set(key, std::move(value));
+  list->Append(base::Value(std::move(dictionary)));
 }
 
 }  // namespace subtle
@@ -83,17 +83,15 @@ std::unique_ptr<base::Value> RawDataPresenter::Result() {
 }
 
 void RawDataPresenter::FeedNextBytes(const char* bytes, size_t size) {
-  subtle::AppendKeyValuePair(keys::kRequestBodyRawBytesKey,
-                             base::Value::ToUniquePtrValue(base::Value(
-                                 base::as_bytes(base::make_span(bytes, size)))),
-                             list_.get());
+  subtle::AppendKeyValuePair(
+      keys::kRequestBodyRawBytesKey,
+      base::Value(base::as_bytes(base::make_span(bytes, size))), list_.get());
 }
 
 void RawDataPresenter::FeedNextFile(const std::string& filename) {
   // Insert the file path instead of the contents, which may be too large.
   subtle::AppendKeyValuePair(keys::kRequestBodyRawFileKey,
-                             std::make_unique<base::Value>(filename),
-                             list_.get());
+                             base::Value(filename), list_.get());
 }
 
 ParsedDataPresenter::ParsedDataPresenter(

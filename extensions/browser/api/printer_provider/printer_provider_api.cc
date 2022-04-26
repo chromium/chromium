@@ -695,7 +695,7 @@ void PrinterProviderAPIImpl::OnGetPrintersResult(
   for (const api::printer_provider::PrinterInfo& p : result) {
     std::unique_ptr<base::DictionaryValue> printer(p.ToValue());
     UpdatePrinterWithExtensionInfo(printer.get(), extension);
-    printer_list.Append(std::move(printer));
+    printer_list.Append(base::Value::FromUniquePtrValue(std::move(printer)));
   }
 
   pending_get_printers_requests_.CompleteForExtension(extension->id(),

@@ -505,7 +505,8 @@ NetworkingPrivateGetDeviceStatesFunction::Run() {
 
   std::unique_ptr<base::ListValue> device_state_list(new base::ListValue);
   for (const auto& properties : *device_states)
-    device_state_list->Append(properties->ToValue());
+    device_state_list->Append(
+        base::Value::FromUniquePtrValue(properties->ToValue()));
   return RespondNow(OneArgument(
       base::Value::FromUniquePtrValue(std::move(device_state_list))));
 }

@@ -35,15 +35,15 @@ TEST(WebRequestInfoTest, CreateRequestBodyDataFromFile) {
                                                false, false, absl::nullopt,
                                                ukm::kInvalidSourceIdObj));
   ASSERT_TRUE(info.request_body_data);
-  auto* value = info.request_body_data->FindKey(
+  base::Value* value = info.request_body_data->FindKey(
       extension_web_request_api_constants::kRequestBodyRawKey);
   ASSERT_TRUE(value);
 
-  base::ListValue expected_value;
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetStringKey(
-      extension_web_request_api_constants::kRequestBodyRawFileKey, kFilePath);
-  expected_value.Append(std::move(dict));
+  base::Value expected_value(base::Value::Type::LIST);
+  base::Value::Dict dict;
+  dict.Set(extension_web_request_api_constants::kRequestBodyRawFileKey,
+           kFilePath);
+  expected_value.GetList().Append(std::move(dict));
   EXPECT_EQ(*value, expected_value);
 }
 

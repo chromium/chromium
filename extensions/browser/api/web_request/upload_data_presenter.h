@@ -37,7 +37,7 @@ namespace subtle {
 
 // Appends a dictionary {'key': 'value'} to |list|.
 void AppendKeyValuePair(const char* key,
-                        std::unique_ptr<base::Value> value,
+                        base::Value value,
                         base::ListValue* list);
 
 }  // namespace subtle

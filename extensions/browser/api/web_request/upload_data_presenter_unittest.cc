@@ -58,15 +58,12 @@ TEST(WebRequestUploadDataPresenterTest, RawData) {
   base::Value expected_c(base::as_bytes(base::make_span(block2, block2_size)));
 
   base::ListValue expected_list;
-  subtle::AppendKeyValuePair(
-      keys::kRequestBodyRawBytesKey,
-      base::Value::ToUniquePtrValue(std::move(expected_a)), &expected_list);
-  subtle::AppendKeyValuePair(
-      keys::kRequestBodyRawFileKey,
-      base::Value::ToUniquePtrValue(std::move(expected_b)), &expected_list);
-  subtle::AppendKeyValuePair(
-      keys::kRequestBodyRawBytesKey,
-      base::Value::ToUniquePtrValue(std::move(expected_c)), &expected_list);
+  subtle::AppendKeyValuePair(keys::kRequestBodyRawBytesKey,
+                             std::move(expected_a), &expected_list);
+  subtle::AppendKeyValuePair(keys::kRequestBodyRawFileKey,
+                             std::move(expected_b), &expected_list);
+  subtle::AppendKeyValuePair(keys::kRequestBodyRawBytesKey,
+                             std::move(expected_c), &expected_list);
 
   // Real output.
   RawDataPresenter raw_presenter;
