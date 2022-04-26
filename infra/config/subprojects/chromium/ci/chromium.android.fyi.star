@@ -173,9 +173,6 @@ ci.builder(
         category = "emulator|x64|rel",
         short_name = "12",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
     # Android x64 builds take longer than x86 builds to compile
     # So they need longer timeouts
     # Matching the execution time out of the android-12-x64-rel
