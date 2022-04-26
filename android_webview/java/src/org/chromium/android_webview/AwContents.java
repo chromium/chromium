@@ -89,7 +89,6 @@ import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.JavaScriptCallback;
 import org.chromium.content_public.browser.JavascriptInjector;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -3033,7 +3032,7 @@ public class AwContents implements SmartClipProvider {
      * @param sentPorts    ports for the JavaScript MessageEvent.
      */
     public void postMessageToMainFrame(
-            MessagePayload messagePayload, String targetOrigin, MessagePort[] sentPorts) {
+            String message, String targetOrigin, MessagePort[] sentPorts) {
         if (TRACE) Log.i(TAG, "%s postMessageToMainFrame", this);
         if (isDestroyed(WARN)) return;
 
@@ -3041,7 +3040,7 @@ public class AwContents implements SmartClipProvider {
         // If the RenderFrameHost or the RenderFrame doesn't exist we couldn't post the message.
         if (mainFrame == null || !mainFrame.isRenderFrameCreated()) return;
 
-        mWebContents.postMessageToMainFrame(messagePayload, null, targetOrigin, sentPorts);
+        mWebContents.postMessageToMainFrame(message, null, targetOrigin, sentPorts);
     }
 
     /**

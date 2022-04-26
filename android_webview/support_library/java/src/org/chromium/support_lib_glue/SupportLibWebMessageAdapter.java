@@ -6,10 +6,8 @@ package org.chromium.support_lib_glue;
 
 import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.recordApiCall;
 
-import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.support_lib_boundary.WebMessageBoundaryInterface;
-import org.chromium.support_lib_boundary.util.Features;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
 import java.lang.reflect.InvocationHandler;
@@ -19,23 +17,18 @@ import java.lang.reflect.InvocationHandler;
  * WebMessage back across the boundary).
  */
 public class SupportLibWebMessageAdapter implements WebMessageBoundaryInterface {
-    private MessagePayload mMessagePayload;
+    private String mData;
     private MessagePort[] mPorts;
 
-    /* package */ SupportLibWebMessageAdapter(MessagePayload messagePayload, MessagePort[] ports) {
-        mMessagePayload = messagePayload;
+    /* package */ SupportLibWebMessageAdapter(String data, MessagePort[] ports) {
+        mData = data;
         mPorts = ports;
     }
 
     @Override
     public String getData() {
         recordApiCall(ApiCall.WEB_MESSAGE_GET_DATA);
-        return mMessagePayload.getAsString();
-    }
-
-    @Override
-    public /* MessagePayload */ InvocationHandler getMessagePayload() {
-        return new SupportLibWebMessagePayloadAdapter(mMessagePayload).getInvocationHandler();
+        return mData;
     }
 
     @Override
@@ -47,6 +40,6 @@ public class SupportLibWebMessageAdapter implements WebMessageBoundaryInterface 
     @Override
     public String[] getSupportedFeatures() {
         // getData() and getPorts() are not covered by feature flags.
-        return new String[] {Features.WEB_MESSAGE_GET_MESSAGE_PAYLOAD};
+        return new String[0];
     }
 }

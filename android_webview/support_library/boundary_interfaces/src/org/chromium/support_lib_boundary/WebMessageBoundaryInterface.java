@@ -10,10 +10,7 @@ import java.lang.reflect.InvocationHandler;
  * Boundary interface for WebMessage.
  */
 public interface WebMessageBoundaryInterface extends FeatureFlagHolderBoundaryInterface {
-    @Deprecated
     String getData();
-
-    /* MessagePayload */ InvocationHandler getMessagePayload();
 
     /* WebMessagePort */ InvocationHandler[] getPorts();
 }

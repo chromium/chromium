@@ -27,7 +27,6 @@ import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -80,16 +79,12 @@ public class PostMessageTest {
         private LinkedBlockingQueue<Data> mQueue = new LinkedBlockingQueue<>();
 
         public static class Data {
-            public MessagePayload mMessagePayload;
+            public String mMessage;
             public Looper mLastLooper;
 
-            public Data(MessagePayload messagePayload, Looper looper) {
-                mMessagePayload = messagePayload;
+            public Data(String message, Looper looper) {
+                mMessage = message;
                 mLastLooper = looper;
-            }
-
-            public String getStringValue() {
-                return mMessagePayload.getAsString();
             }
         }
 
@@ -101,9 +96,9 @@ public class PostMessageTest {
             return mChannel;
         }
 
-        public void notifyCalled(MessagePayload messagePayload) {
+        public void notifyCalled(String message) {
             try {
-                mQueue.add(new Data(messagePayload, Looper.myLooper()));
+                mQueue.add(new Data(message, Looper.myLooper()));
             } catch (IllegalStateException e) {
                 // We expect this add operation will always succeed since the default capacity of
                 // the queue is Integer.MAX_VALUE.
@@ -230,9 +225,7 @@ public class PostMessageTest {
     private void verifyPostMessageToMainFrame(final String targetOrigin) throws Throwable {
         loadPage(TEST_PAGE);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                ()
-                        -> mAwContents.postMessageToMainFrame(
-                                new MessagePayload(WEBVIEW_MESSAGE), targetOrigin, null));
+                () -> mAwContents.postMessageToMainFrame(WEBVIEW_MESSAGE, targetOrigin, null));
         MessageObject.Data data = mMessageObject.waitForMessage();
         Assert.assertEquals(WEBVIEW_MESSAGE, data.mMessage);
         Assert.assertEquals(SOURCE_ORIGIN, data.mOrigin);
@@ -247,12 +240,12 @@ public class PostMessageTest {
         final CountDownLatch latch = new CountDownLatch(1);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             MessagePort[] channel = mAwContents.createMessageChannel();
-            mAwContents.postMessageToMainFrame(new MessagePayload("1"), mWebServer.getBaseUrl(),
-                    new MessagePort[] {channel[1]});
+            mAwContents.postMessageToMainFrame(
+                    "1", mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
             // Retransfer the port. This should fail with an exception.
             try {
-                mAwContents.postMessageToMainFrame(new MessagePayload("2"), mWebServer.getBaseUrl(),
-                        new MessagePort[] {channel[1]});
+                mAwContents.postMessageToMainFrame(
+                        "2", mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
             } catch (IllegalStateException ex) {
                 latch.countDown();
                 return;
@@ -275,10 +268,10 @@ public class PostMessageTest {
         final CountDownLatch latch = new CountDownLatch(1);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             MessagePort[] channel = mAwContents.createMessageChannel();
-            channel[1].postMessage(new MessagePayload("1"), null);
+            channel[1].postMessage("1", null);
             try {
-                mAwContents.postMessageToMainFrame(new MessagePayload("2"), mWebServer.getBaseUrl(),
-                        new MessagePort[] {channel[1]});
+                mAwContents.postMessageToMainFrame(
+                        "2", mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
             } catch (IllegalStateException ex) {
                 latch.countDown();
                 return;
@@ -301,8 +294,8 @@ public class PostMessageTest {
             channel[1].setMessageCallback((message, sentPorts) -> {
             }, null);
             try {
-                mAwContents.postMessageToMainFrame(new MessagePayload("2"), mWebServer.getBaseUrl(),
-                        new MessagePort[] {channel[1]});
+                mAwContents.postMessageToMainFrame(
+                        "2", mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
             } catch (IllegalStateException ex) {
                 latch.countDown();
                 return;
@@ -321,10 +314,10 @@ public class PostMessageTest {
         final CountDownLatch latch = new CountDownLatch(1);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             MessagePort[] channel1 = mAwContents.createMessageChannel();
-            channel1[1].postMessage(new MessagePayload("1"), null);
+            channel1[1].postMessage("1", null);
             MessagePort[] channel2 = mAwContents.createMessageChannel();
             try {
-                channel2[0].postMessage(new MessagePayload("2"), new MessagePort[] {channel1[1]});
+                channel2[0].postMessage("2", new MessagePort[] {channel1[1]});
             } catch (IllegalStateException ex) {
                 latch.countDown();
                 return;
@@ -348,7 +341,7 @@ public class PostMessageTest {
             }, null);
             MessagePort[] channel2 = mAwContents.createMessageChannel();
             try {
-                channel2[0].postMessage(new MessagePayload("1"), new MessagePort[] {channel1[1]});
+                channel2[0].postMessage("1", new MessagePort[] {channel1[1]});
             } catch (IllegalStateException ex) {
                 latch.countDown();
                 return;
@@ -375,7 +368,7 @@ public class PostMessageTest {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             MessagePort[] channel = mAwContents.createMessageChannel();
             try {
-                channel[0].postMessage(new MessagePayload("1"), new MessagePort[] {channel[0]});
+                channel[0].postMessage("1", new MessagePort[] {channel[0]});
             } catch (IllegalStateException ex) {
                 latch.countDown();
                 return;
@@ -396,8 +389,8 @@ public class PostMessageTest {
             MessagePort[] channel = mAwContents.createMessageChannel();
             channel[1].close();
             try {
-                mAwContents.postMessageToMainFrame(new MessagePayload("1"), mWebServer.getBaseUrl(),
-                        new MessagePort[] {channel[1]});
+                mAwContents.postMessageToMainFrame(
+                        "1", mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
             } catch (IllegalStateException ex) {
                 latch.countDown();
                 return;
@@ -419,7 +412,7 @@ public class PostMessageTest {
             MessagePort[] channel2 = mAwContents.createMessageChannel();
             channel2[1].close();
             try {
-                channel1[0].postMessage(new MessagePayload("1"), new MessagePort[] {channel2[1]});
+                channel1[0].postMessage("1", new MessagePort[] {channel2[1]});
             } catch (IllegalStateException ex) {
                 latch.countDown();
                 return;
@@ -440,7 +433,7 @@ public class PostMessageTest {
             MessagePort[] channel = mAwContents.createMessageChannel();
             channel[0].close();
             try {
-                channel[0].postMessage(new MessagePayload("1"), null);
+                channel[0].postMessage("1", null);
             } catch (IllegalStateException ex) {
                 latch.countDown();
                 return;
@@ -458,10 +451,10 @@ public class PostMessageTest {
         loadPage(TITLE_FROM_POSTMESSAGE_TO_CHANNEL);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             MessagePort[] channel = mAwContents.createMessageChannel();
-            mAwContents.postMessageToMainFrame(new MessagePayload("1"), mWebServer.getBaseUrl(),
-                    new MessagePort[] {channel[1]});
-            channel[0].postMessage(new MessagePayload("2"), null);
-            channel[0].postMessage(new MessagePayload("3"), null);
+            mAwContents.postMessageToMainFrame(
+                    "1", mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
+            channel[0].postMessage("2", null);
+            channel[0].postMessage("3", null);
             channel[0].close();
         });
         expectTitle("23");
@@ -476,8 +469,8 @@ public class PostMessageTest {
         final CountDownLatch latch = new CountDownLatch(1);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             MessagePort[] channel = mAwContents.createMessageChannel();
-            mAwContents.postMessageToMainFrame(new MessagePayload("1"), mWebServer.getBaseUrl(),
-                    new MessagePort[] {channel[1]});
+            mAwContents.postMessageToMainFrame(
+                    "1", mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
             try {
                 channel[1].close();
             } catch (IllegalStateException ex) {
@@ -498,10 +491,10 @@ public class PostMessageTest {
         final CountDownLatch latch = new CountDownLatch(1);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             MessagePort[] channel1 = mAwContents.createMessageChannel();
-            mAwContents.postMessageToMainFrame(new MessagePayload("1"), mWebServer.getBaseUrl(),
-                    new MessagePort[] {channel1[1]});
+            mAwContents.postMessageToMainFrame(
+                    "1", mWebServer.getBaseUrl(), new MessagePort[] {channel1[1]});
             MessagePort[] channel2 = mAwContents.createMessageChannel();
-            channel1[0].postMessage(new MessagePayload("2"), new MessagePort[] {channel2[0]});
+            channel1[0].postMessage("2", new MessagePort[] {channel2[0]});
             try {
                 channel2[0].close();
             } catch (IllegalStateException ex) {
@@ -522,10 +515,10 @@ public class PostMessageTest {
         loadPage(TITLE_FROM_POSTMESSAGE_TO_CHANNEL);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             MessagePort[] channel1 = mAwContents.createMessageChannel();
-            mAwContents.postMessageToMainFrame(new MessagePayload("1"), mWebServer.getBaseUrl(),
-                    new MessagePort[] {channel1[1]});
+            mAwContents.postMessageToMainFrame(
+                    "1", mWebServer.getBaseUrl(), new MessagePort[] {channel1[1]});
             MessagePort[] channel2 = mAwContents.createMessageChannel();
-            channel1[0].postMessage(new MessagePayload("2"), new MessagePort[] {channel2[0]});
+            channel1[0].postMessage("2", new MessagePort[] {channel2[0]});
         });
         expectTitle("2");
     }
@@ -559,13 +552,13 @@ public class PostMessageTest {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             channel[0].setMessageCallback(
                     (message, sentPorts) -> channelContainer.notifyCalled(message), null);
-            mAwContents.postMessageToMainFrame(new MessagePayload(WEBVIEW_MESSAGE),
-                    mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
-            channel[0].postMessage(new MessagePayload(HELLO), null);
+            mAwContents.postMessageToMainFrame(
+                    WEBVIEW_MESSAGE, mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
+            channel[0].postMessage(HELLO, null);
         });
         // wait for the asynchronous response from JS
         ChannelContainer.Data data = channelContainer.waitForMessageCallback();
-        Assert.assertEquals(HELLO + JS_MESSAGE, data.getStringValue());
+        Assert.assertEquals(HELLO + JS_MESSAGE, data.mMessage);
     }
 
     // Verify that a message port can be used immediately (even if it is in
@@ -583,13 +576,13 @@ public class PostMessageTest {
             MessagePort[] channel = mAwContents.createMessageChannel();
             channel[0].setMessageCallback(
                     (message, sentPorts) -> channelContainer.notifyCalled(message), null);
-            mAwContents.postMessageToMainFrame(new MessagePayload(WEBVIEW_MESSAGE),
-                    mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
-            channel[0].postMessage(new MessagePayload(HELLO), null);
+            mAwContents.postMessageToMainFrame(
+                    WEBVIEW_MESSAGE, mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
+            channel[0].postMessage(HELLO, null);
         });
         // Wait for the asynchronous response from JS.
         ChannelContainer.Data data = channelContainer.waitForMessageCallback();
-        Assert.assertEquals(HELLO + JS_MESSAGE, data.getStringValue());
+        Assert.assertEquals(HELLO + JS_MESSAGE, data.mMessage);
     }
 
     // Verify that a message port can be used for message transfer when both
@@ -604,11 +597,11 @@ public class PostMessageTest {
             MessagePort[] channel = mAwContents.createMessageChannel();
             channel[1].setMessageCallback(
                     (message, sentPorts) -> channelContainer.notifyCalled(message), null);
-            channel[0].postMessage(new MessagePayload(HELLO), null);
+            channel[0].postMessage(HELLO, null);
         });
         // Wait for the asynchronous response from JS.
         ChannelContainer.Data data = channelContainer.waitForMessageCallback();
-        Assert.assertEquals(HELLO, data.getStringValue());
+        Assert.assertEquals(HELLO, data.mMessage);
     }
 
     // Post a message with a pending port to a frame and then post a bunch of messages
@@ -620,12 +613,10 @@ public class PostMessageTest {
         loadPage(TITLE_FROM_POSTMESSAGE_TO_FRAME);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             MessagePort[] channel = mAwContents.createMessageChannel();
-            mAwContents.postMessageToMainFrame(new MessagePayload("1"), mWebServer.getBaseUrl(),
-                    new MessagePort[] {channel[1]});
             mAwContents.postMessageToMainFrame(
-                    new MessagePayload("2"), mWebServer.getBaseUrl(), null);
-            mAwContents.postMessageToMainFrame(
-                    new MessagePayload("3"), mWebServer.getBaseUrl(), null);
+                    "1", mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
+            mAwContents.postMessageToMainFrame("2", mWebServer.getBaseUrl(), null);
+            mAwContents.postMessageToMainFrame("3", mWebServer.getBaseUrl(), null);
         });
         expectTitle("123");
     }
@@ -661,14 +652,14 @@ public class PostMessageTest {
         loadPage(RECEIVE_JS_MESSAGE_CHANNEL_PAGE);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             MessagePort[] channel = mAwContents.createMessageChannel();
-            mAwContents.postMessageToMainFrame(new MessagePayload("1"), mWebServer.getBaseUrl(),
-                    new MessagePort[] {channel[1]});
+            mAwContents.postMessageToMainFrame(
+                    "1", mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
             channel[0].setMessageCallback((message, p) -> {
                 p[0].setMessageCallback((message1, q) -> {
-                    Assert.assertEquals("3", message1.getAsString());
-                    p[0].postMessage(new MessagePayload("4"), null);
+                    Assert.assertEquals("3", message1);
+                    p[0].postMessage("4", null);
                 }, null);
-                p[0].postMessage(new MessagePayload("2"), null);
+                p[0].postMessage("2", null);
             }, null);
         });
         expectTitle("24");
@@ -717,8 +708,8 @@ public class PostMessageTest {
         loadPage(TEST_PAGE_FOR_PORT_TRANSFER);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             MessagePort[] channel = mAwContents.createMessageChannel();
-            mAwContents.postMessageToMainFrame(new MessagePayload(WEBVIEW_MESSAGE),
-                    mWebServer.getBaseUrl(), new MessagePort[] {channel[0], channel[1]});
+            mAwContents.postMessageToMainFrame(WEBVIEW_MESSAGE, mWebServer.getBaseUrl(),
+                    new MessagePort[] {channel[0], channel[1]});
         });
         MessageObject.Data data = mMessageObject.waitForMessage();
         Assert.assertEquals(WORKER_MESSAGE, data.mMessage);
@@ -765,12 +756,12 @@ public class PostMessageTest {
             MessagePort[] channel = mAwContents.createMessageChannel();
             channel[0].setMessageCallback(
                     (message, sentPorts) -> channelContainer.notifyCalled(message), null);
-            mAwContents.postMessageToMainFrame(new MessagePayload(WEBVIEW_MESSAGE),
-                    mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
-            channel[0].postMessage(new MessagePayload(HELLO), null);
+            mAwContents.postMessageToMainFrame(
+                    WEBVIEW_MESSAGE, mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
+            channel[0].postMessage(HELLO, null);
         });
         ChannelContainer.Data data = channelContainer.waitForMessageCallback();
-        Assert.assertEquals(HELLO + JS_MESSAGE, data.getStringValue());
+        Assert.assertEquals(HELLO + JS_MESSAGE, data.mMessage);
     }
 
     // Test if WebView can post a message from/to an iframe in a popup window.
@@ -788,12 +779,12 @@ public class PostMessageTest {
             MessagePort[] channel = mAwContents.createMessageChannel();
             channel[0].setMessageCallback(
                     (message, sentPorts) -> channelContainer.notifyCalled(message), null);
-            mAwContents.postMessageToMainFrame(new MessagePayload(WEBVIEW_MESSAGE),
-                    mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
-            channel[0].postMessage(new MessagePayload(HELLO), null);
+            mAwContents.postMessageToMainFrame(
+                    WEBVIEW_MESSAGE, mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
+            channel[0].postMessage(HELLO, null);
         });
         ChannelContainer.Data data = channelContainer.waitForMessageCallback();
-        Assert.assertEquals(HELLO + JS_MESSAGE, data.getStringValue());
+        Assert.assertEquals(HELLO + JS_MESSAGE, data.mMessage);
     }
 
     private static final String TEST_PAGE_FOR_UNSUPPORTED_MESSAGES = "<!DOCTYPE html><html><body>"
@@ -822,11 +813,11 @@ public class PostMessageTest {
             MessagePort[] channel = mAwContents.createMessageChannel();
             channel[0].setMessageCallback(
                     (message, sentPorts) -> channelContainer.notifyCalled(message), null);
-            mAwContents.postMessageToMainFrame(new MessagePayload(WEBVIEW_MESSAGE),
-                    mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
+            mAwContents.postMessageToMainFrame(
+                    WEBVIEW_MESSAGE, mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
         });
         ChannelContainer.Data data = channelContainer.waitForMessageCallback();
-        Assert.assertEquals(JS_MESSAGE, data.getStringValue());
+        Assert.assertEquals(JS_MESSAGE, data.mMessage);
         // Assert that onMessage is called only once.
         Assert.assertTrue(channelContainer.isQueueEmpty());
     }
@@ -851,13 +842,13 @@ public class PostMessageTest {
             MessagePort[] channel = mAwContents.createMessageChannel();
             channel[0].setMessageCallback(
                     (message, sentPorts) -> channelContainer.notifyCalled(message), null);
-            mAwContents.postMessageToMainFrame(new MessagePayload(WEBVIEW_MESSAGE),
-                    mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
+            mAwContents.postMessageToMainFrame(
+                    WEBVIEW_MESSAGE, mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
         });
         ChannelContainer.Data data1 = channelContainer.waitForMessageCallback();
-        Assert.assertEquals("1", data1.getStringValue());
+        Assert.assertEquals("1", data1.mMessage);
         ChannelContainer.Data data2 = channelContainer.waitForMessageCallback();
-        Assert.assertEquals("2", data2.getStringValue());
+        Assert.assertEquals("2", data2.mMessage);
     }
 
     // Make sure very large messages can be sent and received.
@@ -879,12 +870,12 @@ public class PostMessageTest {
             MessagePort[] channel = mAwContents.createMessageChannel();
             channel[0].setMessageCallback(
                     (message, sentPorts) -> channelContainer.notifyCalled(message), null);
-            mAwContents.postMessageToMainFrame(new MessagePayload(WEBVIEW_MESSAGE),
-                    mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
-            channel[0].postMessage(new MessagePayload(longMessage), null);
+            mAwContents.postMessageToMainFrame(
+                    WEBVIEW_MESSAGE, mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
+            channel[0].postMessage(longMessage, null);
         });
         ChannelContainer.Data data = channelContainer.waitForMessageCallback();
-        Assert.assertEquals(longMessage + JS_MESSAGE, data.getStringValue());
+        Assert.assertEquals(longMessage + JS_MESSAGE, data.mMessage);
     }
 
     // Make sure messages are dispatched on the correct looper.
@@ -903,14 +894,14 @@ public class PostMessageTest {
             channel[1].setMessageCallback((message, sentPorts)
                                                   -> channelContainer2.notifyCalled(message),
                     new Handler(thread.getLooper()));
-            channel[0].postMessage(new MessagePayload("foo"), null);
-            channel[1].postMessage(new MessagePayload("bar"), null);
+            channel[0].postMessage("foo", null);
+            channel[1].postMessage("bar", null);
         });
         ChannelContainer.Data data1 = channelContainer1.waitForMessageCallback();
         ChannelContainer.Data data2 = channelContainer2.waitForMessageCallback();
-        Assert.assertEquals("bar", data1.getStringValue());
+        Assert.assertEquals("bar", data1.mMessage);
         Assert.assertEquals(Looper.getMainLooper(), data1.mLastLooper);
-        Assert.assertEquals("foo", data2.getStringValue());
+        Assert.assertEquals("foo", data2.mMessage);
         Assert.assertEquals(thread.getLooper(), data2.mLastLooper);
     }
 
@@ -928,20 +919,20 @@ public class PostMessageTest {
             channel[0].setMessageCallback((message, sentPorts)
                                                   -> channelContainer.notifyCalled(message),
                     new Handler(thread.getLooper()));
-            channel[1].postMessage(new MessagePayload("foo"), null);
+            channel[1].postMessage("foo", null);
         });
         ChannelContainer.Data data = channelContainer.waitForMessageCallback();
-        Assert.assertEquals("foo", data.getStringValue());
+        Assert.assertEquals("foo", data.mMessage);
         Assert.assertEquals(thread.getLooper(), data.mLastLooper);
         final ChannelContainer channelContainer2 = new ChannelContainer();
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             MessagePort[] channel = channelContainer.get();
             channel[0].setMessageCallback(
                     (message, sentPorts) -> channelContainer2.notifyCalled(message), null);
-            channel[1].postMessage(new MessagePayload("bar"), null);
+            channel[1].postMessage("bar", null);
         });
         ChannelContainer.Data data2 = channelContainer2.waitForMessageCallback();
-        Assert.assertEquals("bar", data2.getStringValue());
+        Assert.assertEquals("bar", data2.mMessage);
         Assert.assertEquals(Looper.getMainLooper(), data2.mLastLooper);
     }
 
@@ -954,16 +945,14 @@ public class PostMessageTest {
 
         // postMessage before page load.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mAwContents.postMessageToMainFrame(new MessagePayload("1"), baseUrl, null));
+                () -> mAwContents.postMessageToMainFrame("1", baseUrl, null));
 
         // loadPage shouldn't timeout.
         loadPage(TEST_PAGE);
 
         // Verify that after the page gets load, postMessage still works.
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mAwContents.postMessageToMainFrame(
-                                new MessagePayload(WEBVIEW_MESSAGE), baseUrl, null));
+                () -> mAwContents.postMessageToMainFrame(WEBVIEW_MESSAGE, baseUrl, null));
 
         MessageObject.Data data = mMessageObject.waitForMessage();
         Assert.assertEquals(WEBVIEW_MESSAGE, data.mMessage);
