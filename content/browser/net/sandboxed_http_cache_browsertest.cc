@@ -746,5 +746,71 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, EnumerateEntries) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, DoomAllEntries) {
+  const std::string kKey1 = "abc";
+  const std::string kKey2 = "def";
+  const std::string kKey3 = "ghi";
+
+  mojo::Remote<SimpleCache> simple_cache = CreateSimpleCache();
+  ASSERT_TRUE(simple_cache.is_bound());
+
+  {
+    mojo::Remote<SimpleCacheEntryEnumerator> enumerator;
+    simple_cache->EnumerateEntries(enumerator.BindNewPipeAndPassReceiver());
+
+    auto result = OpenNextEntry(enumerator.get());
+    ASSERT_TRUE(network_service_test().is_connected());
+    ASSERT_TRUE(result);
+
+    ASSERT_EQ(result->error, net::ERR_FAILED);
+    ASSERT_FALSE(result->entry);
+  }
+  ASSERT_TRUE(network_service_test().is_connected());
+
+  mojo::Remote<SimpleCacheEntry> entry1 =
+      CreateEntry(simple_cache.get(), kKey1);
+  ASSERT_TRUE(entry1.is_bound());
+
+  mojo::Remote<SimpleCacheEntry> entry2 =
+      CreateEntry(simple_cache.get(), kKey2);
+  ASSERT_TRUE(entry2.is_bound());
+
+  mojo::Remote<SimpleCacheEntry> entry3 =
+      CreateEntry(simple_cache.get(), kKey3);
+  ASSERT_TRUE(entry3.is_bound());
+
+  {
+    base::RunLoop run_loop;
+    network_service_test().set_disconnect_handler(run_loop.QuitClosure());
+    simple_cache->DoomAllEntries(
+        base::BindLambdaForTesting([&](int32_t result) {
+          EXPECT_EQ(result, net::OK);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+  ASSERT_TRUE(network_service_test().is_connected());
+
+  entry1.reset();
+  entry2.reset();
+  entry3.reset();
+
+  Detach(std::move(simple_cache));
+  ASSERT_TRUE(network_service_test().is_connected());
+
+  simple_cache = CreateSimpleCache();
+  ASSERT_TRUE(simple_cache.is_bound());
+
+  {
+    mojo::Remote<SimpleCacheEntryEnumerator> enumerator;
+    simple_cache->EnumerateEntries(enumerator.BindNewPipeAndPassReceiver());
+
+    std::vector<std::string> keys;
+    auto result = OpenNextEntry(enumerator.get());
+    EXPECT_EQ(result->error, net::ERR_FAILED);
+    EXPECT_FALSE(result->entry);
+  }
+}
+
 }  // namespace
 }  // namespace content

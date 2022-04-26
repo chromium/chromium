@@ -95,6 +95,9 @@ interface SimpleCache {
   // Marks the entry for deletion.
   DoomEntry(string key) => (int32 result);
 
+  // Marks all the entries for deletion.
+  DoomAllEntries() => (int32 result);
+
   // Enumerate entries in the backend.
   EnumerateEntries(pending_receiver<SimpleCacheEntryEnumerator> receiver);
 

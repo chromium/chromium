@@ -320,6 +320,20 @@ class SimpleCache : public network::mojom::SimpleCache {
     OnEntryDoomed(std::move(callback_holder), rv);
   }
 
+  void DoomAllEntries(DoomAllEntriesCallback callback) override {
+    auto callback_holder =
+        base::MakeRefCounted<base::RefCountedData<DoomAllEntriesCallback>>(
+            std::move(callback));
+    int rv = backend_->DoomAllEntries(
+        base::BindOnce(&SimpleCache::OnAllEntriesDoomed,
+                       weak_factory_.GetWeakPtr(), callback_holder));
+
+    if (rv == net::ERR_IO_PENDING) {
+      return;
+    }
+    OnAllEntriesDoomed(std::move(callback_holder), rv);
+  }
+
   void EnumerateEntries(
       mojo::PendingReceiver<network::mojom::SimpleCacheEntryEnumerator>
           pending_receiver) override {
@@ -372,6 +386,14 @@ class SimpleCache : public network::mojom::SimpleCache {
       scoped_refptr<base::RefCountedData<DoomEntryCallback>> callback_holder,
       int result) {
     DoomEntryCallback callback = std::move(callback_holder->data);
+    std::move(callback).Run(result);
+  }
+
+  void OnAllEntriesDoomed(
+      scoped_refptr<base::RefCountedData<DoomAllEntriesCallback>>
+          callback_holder,
+      int result) {
+    DoomAllEntriesCallback callback = std::move(callback_holder->data);
     std::move(callback).Run(result);
   }
 
