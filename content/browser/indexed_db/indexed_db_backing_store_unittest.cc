@@ -382,15 +382,15 @@ class IndexedDBBackingStoreTest : public testing::Test {
     if (idb_context_ && !idb_context_->IsInMemoryContext()) {
       IndexedDBFactoryImpl* factory = idb_context_->GetIDBFactory();
 
-      // Loop through all open buckets, and force close them, and request the
+      // Loop through all open origins, and force close them, and request the
       // deletion of the leveldb state. Once the states are no longer around,
       // delete all of the databases on disk.
       auto open_factory_buckets = factory->GetOpenBuckets();
 
-      for (const auto& bucket_locator : open_factory_buckets) {
+      for (const auto& bucket : open_factory_buckets) {
         base::RunLoop loop;
         IndexedDBBucketState* per_bucket_factory =
-            factory->GetBucketFactory(bucket_locator);
+            factory->GetBucketFactory(bucket);
 
         auto* leveldb_state =
             per_bucket_factory->backing_store()->db()->leveldb_state();
@@ -405,7 +405,7 @@ class IndexedDBBackingStoreTest : public testing::Test {
             base::SequencedTaskRunnerHandle::Get());
 
         idb_context_->ForceCloseSync(
-            bucket_locator.storage_key,
+            bucket,
             storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN);
         loop.Run();
         // There is a possible race in `leveldb_close_event` where the signaling

@@ -118,10 +118,10 @@ class CONTENT_EXPORT IndexedDBContextImpl
                              GetFilePathForTestingCallback callback) override;
   void ResetCachesForTesting(base::OnceClosure callback) override;
   void ForceSchemaDowngradeForTesting(
-      const storage::BucketLocator& bucket_locator,
+      const blink::StorageKey& storage_key,
       ForceSchemaDowngradeForTestingCallback callback) override;
   void HasV2SchemaCorruptionForTesting(
-      const storage::BucketLocator& bucket_locator,
+      const blink::StorageKey& storage_key,
       HasV2SchemaCorruptionForTestingCallback callback) override;
   void WriteToIndexedDBForTesting(const storage::BucketLocator& bucket_locator,
                                   const std::string& key,

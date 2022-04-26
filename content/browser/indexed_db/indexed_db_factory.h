@@ -57,10 +57,10 @@ class CONTENT_EXPORT IndexedDBFactory {
 
   virtual void AbortTransactionsAndCompactDatabase(
       base::OnceCallback<void(leveldb::Status)> callback,
-      const storage::BucketLocator& bucket_locator) = 0;
+      const blink::StorageKey& storage_key) = 0;
   virtual void AbortTransactionsForDatabase(
       base::OnceCallback<void(leveldb::Status)> callback,
-      const storage::BucketLocator& bucket_locator) = 0;
+      const blink::StorageKey& storage_key) = 0;
 
   virtual void HandleBackingStoreFailure(
       const blink::StorageKey& storage_key) = 0;
@@ -78,18 +78,16 @@ class CONTENT_EXPORT IndexedDBFactory {
   virtual void ForceClose(const blink::StorageKey& storage_key,
                           bool delete_in_memory_store = false) = 0;
 
-  virtual void ForceSchemaDowngrade(
-      const storage::BucketLocator& bucket_locator) = 0;
+  virtual void ForceSchemaDowngrade(const blink::StorageKey& storage_key) = 0;
   virtual V2SchemaCorruptionStatus HasV2SchemaCorruption(
-      const storage::BucketLocator& bucket_locator) = 0;
+      const blink::StorageKey& storage_key) = 0;
 
   // Called by the IndexedDBContext destructor so the factory can do cleanup.
   virtual void ContextDestroyed() = 0;
 
   // Called by the IndexedDBActiveBlobRegistry.
-  virtual void ReportOutstandingBlobs(
-      const storage::BucketLocator& bucket_locator,
-      bool blobs_outstanding) = 0;
+  virtual void ReportOutstandingBlobs(const blink::StorageKey& storage_key,
+                                      bool blobs_outstanding) = 0;
 
   // Called by IndexedDBBackingStore when blob files have been cleaned.
   virtual void BlobFilesCleaned(const blink::StorageKey& storage_key) = 0;

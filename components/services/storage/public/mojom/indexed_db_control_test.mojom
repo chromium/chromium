@@ -53,11 +53,11 @@ interface IndexedDBControlTest {
   ResetCachesForTesting() => ();
 
   // Downgrades databases to V2.
-  ForceSchemaDowngradeForTesting(storage.mojom.BucketLocator bucket_locator) =>
+  ForceSchemaDowngradeForTesting(blink.mojom.StorageKey storage_key) =>
     (bool downgraded);
 
   // Returns the corruption status for a given database.
-  HasV2SchemaCorruptionForTesting(storage.mojom.BucketLocator bucket_locator) =>
+  HasV2SchemaCorruptionForTesting(blink.mojom.StorageKey storage_key) =>
       (V2SchemaCorruptionStatus status);
 
   // Does a direct write to a database with a given key/value pair.

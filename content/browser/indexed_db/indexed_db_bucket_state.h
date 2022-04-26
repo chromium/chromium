@@ -19,10 +19,10 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
-#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/indexed_db_bucket_state_handle.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace content {
@@ -94,7 +94,8 @@ class CONTENT_EXPORT IndexedDBBucketState {
   // `earliest_global_sweep_time` and `earliest_global_compaction_time` are
   // expected to outlive this object.
   IndexedDBBucketState(
-      storage::BucketLocator bucket_locator,
+      // TODO(crbug.com/1218100): This needs a BucketLocator
+      blink::StorageKey storage_key,
       bool persist_for_incognito,
       base::Clock* clock,
       TransactionalLevelDBFactory* transactional_leveldb_factory,
@@ -128,7 +129,7 @@ class CONTENT_EXPORT IndexedDBBucketState {
 
   void StopPersistingForIncognito();
 
-  const storage::BucketLocator& bucket_locator() { return bucket_locator_; }
+  const blink::StorageKey& storage_key() { return storage_key_; }
   IndexedDBBackingStore* backing_store() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return backing_store_.get();
@@ -213,7 +214,7 @@ class CONTENT_EXPORT IndexedDBBucketState {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  storage::BucketLocator bucket_locator_;
+  blink::StorageKey storage_key_;
 
   // True if this factory should be remain alive due to the storage partition
   // being for incognito mode, and our backing store being in-memory. This is

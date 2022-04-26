@@ -28,6 +28,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
+#include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom-test-utils.h"
 #include "components/services/storage/public/mojom/indexed_db_control_test.mojom.h"
@@ -244,12 +245,12 @@ class IndexedDBBrowserTest : public ContentBrowserTest,
     return count;
   }
 
-  bool RequestSchemaDowngrade(const storage::BucketLocator& bucket_locator) {
+  bool RequestSchemaDowngrade(const blink::StorageKey& storage_key) {
     base::RunLoop loop;
     bool downgraded;
     auto control_test = GetControlTest();
     control_test->ForceSchemaDowngradeForTesting(
-        bucket_locator,
+        storage_key,
         base::BindOnce(base::BindLambdaForTesting([&](bool was_downgraded) {
           downgraded = was_downgraded;
           loop.Quit();
@@ -259,17 +260,16 @@ class IndexedDBBrowserTest : public ContentBrowserTest,
   }
 
   storage::mojom::V2SchemaCorruptionStatus RequestHasV2SchemaCorruption(
-      const storage::BucketLocator& bucket_locator) {
+      const blink::StorageKey& storage_key) {
     base::RunLoop loop;
     storage::mojom::V2SchemaCorruptionStatus ret;
     auto control_test = GetControlTest();
     control_test->HasV2SchemaCorruptionForTesting(
-        bucket_locator,
-        base::BindLambdaForTesting(
-            [&](storage::mojom::V2SchemaCorruptionStatus status) {
-              ret = status;
-              loop.Quit();
-            }));
+        storage_key, base::BindLambdaForTesting(
+                         [&](storage::mojom::V2SchemaCorruptionStatus status) {
+                           ret = status;
+                           loop.Quit();
+                         }));
     loop.Run();
     return ret;
   }
@@ -378,25 +378,15 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, Bug941965Test) {
 
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, NegativeDBSchemaVersion) {
   const GURL database_open_url = GetTestUrl("indexeddb", "database_test.html");
-
+  const blink::StorageKey kTestStorageKey =
+      blink::StorageKey(url::Origin::Create(database_open_url));
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.id = storage::BucketId::FromUnsafeValue(1);
+  bucket_locator.storage_key = kTestStorageKey;
   // Create the database.
   SimpleTest(database_open_url);
   // -10, little endian.
   std::string value = "\xF6\xFF\xFF\xFF\xFF\xFF\xFF\xFF";
-
-  // Find the bucket that was created.
-  const auto maybe_bucket_info =
-      shell()
-          ->web_contents()
-          ->GetBrowserContext()
-          ->GetDefaultStoragePartition()
-          ->GetQuotaManager()
-          ->proxy()
-          ->GetOrCreateBucketSync(
-              blink::StorageKey(url::Origin::Create(database_open_url)),
-              storage::kDefaultBucketName);
-  ASSERT_TRUE(maybe_bucket_info.ok());
-  const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
 
   auto control_test = GetControlTest();
   base::RunLoop loop;
@@ -417,25 +407,15 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, NegativeDBSchemaVersion) {
 
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, NegativeDBDataVersion) {
   const GURL database_open_url = GetTestUrl("indexeddb", "database_test.html");
-
+  const blink::StorageKey kTestStorageKey =
+      blink::StorageKey(url::Origin::Create(database_open_url));
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.id = storage::BucketId::FromUnsafeValue(1);
+  bucket_locator.storage_key = kTestStorageKey;
   // Create the database.
   SimpleTest(database_open_url);
   // -10, little endian.
   std::string value = "\xF6\xFF\xFF\xFF\xFF\xFF\xFF\xFF";
-
-  // Find the bucket that was created.
-  const auto maybe_bucket_info =
-      shell()
-          ->web_contents()
-          ->GetBrowserContext()
-          ->GetDefaultStoragePartition()
-          ->GetQuotaManager()
-          ->proxy()
-          ->GetOrCreateBucketSync(
-              blink::StorageKey(url::Origin::Create(database_open_url)),
-              storage::kDefaultBucketName);
-  ASSERT_TRUE(maybe_bucket_info.ok());
-  const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
 
   auto control_test = GetControlTest();
   base::RunLoop loop;
@@ -1176,6 +1156,8 @@ class IndexedDBBrowserTestV2SchemaCorruption : public IndexedDBBrowserTest {};
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestV2SchemaCorruption, LifecycleTest) {
   ASSERT_TRUE(embedded_test_server()->Started() ||
               embedded_test_server()->InitializeAndListen());
+  const blink::StorageKey kTestStorageKey = blink::StorageKey(
+      url::Origin::Create(embedded_test_server()->base_url()));
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       &StaticFileRequestHandler, s_indexeddb_test_prefix, this));
   embedded_test_server()->StartAcceptingConnections();
@@ -1185,35 +1167,21 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestV2SchemaCorruption, LifecycleTest) {
       std::string(s_indexeddb_test_prefix) + "v2schemacorrupt_setup.html";
   SimpleTest(embedded_test_server()->GetURL(test_file));
 
-  // Find the bucket that was created.
-  const auto maybe_bucket_info =
-      shell()
-          ->web_contents()
-          ->GetBrowserContext()
-          ->GetDefaultStoragePartition()
-          ->GetQuotaManager()
-          ->proxy()
-          ->GetOrCreateBucketSync(blink::StorageKey(url::Origin::Create(
-                                      embedded_test_server()->base_url())),
-                                  storage::kDefaultBucketName);
-  ASSERT_TRUE(maybe_bucket_info.ok());
-  const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
-
   // Verify the backing store does not have corruption.
   storage::mojom::V2SchemaCorruptionStatus has_corruption =
-      RequestHasV2SchemaCorruption(bucket_locator);
+      RequestHasV2SchemaCorruption(kTestStorageKey);
   ASSERT_EQ(has_corruption,
             storage::mojom::V2SchemaCorruptionStatus::CORRUPTION_NO);
 
   // Revert schema to v2.  This closes the targeted backing store.
-  bool schema_downgrade = RequestSchemaDowngrade(bucket_locator);
+  bool schema_downgrade = RequestSchemaDowngrade(kTestStorageKey);
   ASSERT_EQ(schema_downgrade, true);
 
   // Re-open the backing store and verify it has corruption.
   test_file =
       std::string(s_indexeddb_test_prefix) + "v2schemacorrupt_reopen.html";
   SimpleTest(embedded_test_server()->GetURL(test_file));
-  has_corruption = RequestHasV2SchemaCorruption(bucket_locator);
+  has_corruption = RequestHasV2SchemaCorruption(kTestStorageKey);
   ASSERT_EQ(has_corruption,
             storage::mojom::V2SchemaCorruptionStatus::CORRUPTION_YES);
 
@@ -1272,6 +1240,11 @@ class IndexedDBBrowserTestBlobKeyCorruption : public IndexedDBBrowserTest {
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestBlobKeyCorruption, LifecycleTest) {
   ASSERT_TRUE(embedded_test_server()->Started() ||
               embedded_test_server()->InitializeAndListen());
+  const blink::StorageKey kTestStorageKey = blink::StorageKey(
+      url::Origin::Create(embedded_test_server()->base_url()));
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.id = storage::BucketId::FromUnsafeValue(1);
+  bucket_locator.storage_key = kTestStorageKey;
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       &StaticFileRequestHandler, s_indexeddb_test_prefix, this));
   embedded_test_server()->StartAcceptingConnections();
@@ -1280,20 +1253,6 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestBlobKeyCorruption, LifecycleTest) {
   std::string test_file =
       std::string(s_indexeddb_test_prefix) + "write_and_read_blob.html";
   SimpleTest(embedded_test_server()->GetURL(test_file));
-
-  // Find the bucket that was created.
-  const auto maybe_bucket_info =
-      shell()
-          ->web_contents()
-          ->GetBrowserContext()
-          ->GetDefaultStoragePartition()
-          ->GetQuotaManager()
-          ->proxy()
-          ->GetOrCreateBucketSync(blink::StorageKey(url::Origin::Create(
-                                      embedded_test_server()->base_url())),
-                                  storage::kDefaultBucketName);
-  ASSERT_TRUE(maybe_bucket_info.ok());
-  const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
   int64_t next_blob_number = GetNextBlobNumber(bucket_locator, 1);
 
   base::FilePath first_blob =

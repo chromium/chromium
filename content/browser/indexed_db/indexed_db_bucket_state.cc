@@ -119,7 +119,7 @@ constexpr const base::TimeDelta
     IndexedDBBucketState::kMaxEarliestBucketCompactionFromNow;
 
 IndexedDBBucketState::IndexedDBBucketState(
-    storage::BucketLocator bucket_locator,
+    blink::StorageKey storage_key,
     bool persist_for_incognito,
     base::Clock* clock,
     TransactionalLevelDBFactory* transactional_leveldb_factory,
@@ -129,7 +129,7 @@ IndexedDBBucketState::IndexedDBBucketState(
     TasksAvailableCallback notify_tasks_callback,
     TearDownCallback tear_down_callback,
     std::unique_ptr<IndexedDBBackingStore> backing_store)
-    : bucket_locator_(std::move(bucket_locator)),
+    : storage_key_(std::move(storage_key)),
       persist_for_incognito_(persist_for_incognito),
       clock_(clock),
       transactional_leveldb_factory_(transactional_leveldb_factory),

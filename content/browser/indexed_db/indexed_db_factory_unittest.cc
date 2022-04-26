@@ -90,9 +90,9 @@ class IndexedDBFactoryTest : public testing::Test {
       // the deletion of the leveldb state. Once the states are no longer
       // around, delete all of the databases on disk.
       auto open_factory_buckets = factory->GetOpenBuckets();
-      for (const auto& bucket_locator : open_factory_buckets) {
+      for (const auto& storage_key : open_factory_buckets) {
         context_->ForceCloseSync(
-            bucket_locator.storage_key,
+            storage_key,
             storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN);
       }
       // All leveldb databases are closed, and they can be deleted.
@@ -285,12 +285,12 @@ TEST_F(IndexedDBFactoryTest, CloseSequenceStarts) {
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
   bucket_state_handle.Release();
 
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator));
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key));
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key)->IsClosing());
 
   factory()->ForceClose(storage_key, false);
   RunPostedTasks();
-  EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator));
+  EXPECT_FALSE(factory()->GetBucketFactory(storage_key));
 }
 
 TEST_F(IndexedDBFactoryTest, ImmediateClose) {
@@ -311,9 +311,9 @@ TEST_F(IndexedDBFactoryTest, ImmediateClose) {
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
   bucket_state_handle.Release();
 
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator));
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key));
   RunPostedTasks();
-  EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator));
+  EXPECT_FALSE(factory()->GetBucketFactory(storage_key));
   EXPECT_EQ(0ul, factory()->GetOpenBuckets().size());
 }
 
@@ -337,16 +337,16 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
   bucket_state_handle.Release();
 
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator));
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key));
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key)->IsClosing());
 
   EXPECT_EQ(IndexedDBBucketState::ClosingState::kPreCloseGracePeriod,
-            factory()->GetBucketFactory(bucket_locator)->closing_stage());
+            factory()->GetBucketFactory(storage_key)->closing_stage());
 
   task_environment()->FastForwardBy(base::Seconds(2));
 
   // The factory should be closed, as the pre close tasks are delayed.
-  EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator));
+  EXPECT_FALSE(factory()->GetBucketFactory(storage_key));
 
   // Move the clock to run the tasks in the next close sequence.
   // NOTE: The constants rate-limiting sweeps and compaction are currently the
@@ -363,16 +363,15 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
 
   // Manually execute the timer so that the PreCloseTaskList task doesn't also
   // run.
-  factory()->GetBucketFactory(bucket_locator)->close_timer()->FireNow();
+  factory()->GetBucketFactory(storage_key)->close_timer()->FireNow();
 
   // The pre-close tasks should be running now.
-  ASSERT_TRUE(factory()->GetBucketFactory(bucket_locator));
+  ASSERT_TRUE(factory()->GetBucketFactory(storage_key));
   EXPECT_EQ(IndexedDBBucketState::ClosingState::kRunningPreCloseTasks,
-            factory()->GetBucketFactory(bucket_locator)->closing_stage());
-  ASSERT_TRUE(
-      factory()->GetBucketFactory(bucket_locator)->pre_close_task_queue());
+            factory()->GetBucketFactory(storage_key)->closing_stage());
+  ASSERT_TRUE(factory()->GetBucketFactory(storage_key)->pre_close_task_queue());
   EXPECT_TRUE(factory()
-                  ->GetBucketFactory(bucket_locator)
+                  ->GetBucketFactory(storage_key)
                   ->pre_close_task_queue()
                   ->started());
 
@@ -390,16 +389,16 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
   clock.Advance(IndexedDBBucketState::kMaxEarliestGlobalSweepFromNow);
 
   bucket_state_handle.Release();
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator));
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key));
   EXPECT_EQ(IndexedDBBucketState::ClosingState::kPreCloseGracePeriod,
-            factory()->GetBucketFactory(bucket_locator)->closing_stage());
+            factory()->GetBucketFactory(storage_key)->closing_stage());
 
   // Manually execute the timer so that the PreCloseTaskList task doesn't also
   // run.
-  factory()->GetBucketFactory(bucket_locator)->close_timer()->FireNow();
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator));
+  factory()->GetBucketFactory(storage_key)->close_timer()->FireNow();
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key));
   RunPostedTasks();
-  EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator));
+  EXPECT_FALSE(factory()->GetBucketFactory(storage_key));
 
   //  Finally, move the clock forward so the storage key should allow a sweep.
   clock.Advance(IndexedDBBucketState::kMaxEarliestBucketSweepFromNow);
@@ -407,15 +406,14 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
       factory()->GetOrOpenBucketFactory(bucket_locator, context()->data_path(),
                                         /*create_if_missing=*/true);
   bucket_state_handle.Release();
-  factory()->GetBucketFactory(bucket_locator)->close_timer()->FireNow();
+  factory()->GetBucketFactory(storage_key)->close_timer()->FireNow();
 
-  ASSERT_TRUE(factory()->GetBucketFactory(bucket_locator));
+  ASSERT_TRUE(factory()->GetBucketFactory(storage_key));
   EXPECT_EQ(IndexedDBBucketState::ClosingState::kRunningPreCloseTasks,
-            factory()->GetBucketFactory(bucket_locator)->closing_stage());
-  ASSERT_TRUE(
-      factory()->GetBucketFactory(bucket_locator)->pre_close_task_queue());
+            factory()->GetBucketFactory(storage_key)->closing_stage());
+  ASSERT_TRUE(factory()->GetBucketFactory(storage_key)->pre_close_task_queue());
   EXPECT_TRUE(factory()
-                  ->GetBucketFactory(bucket_locator)
+                  ->GetBucketFactory(storage_key)
                   ->pre_close_task_queue()
                   ->started());
 }
@@ -543,14 +541,14 @@ TEST_F(IndexedDBFactoryTest, InMemoryFactoriesStay) {
                   ->is_incognito());
   bucket_state_handle.Release();
 
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator));
-  EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key));
+  EXPECT_FALSE(factory()->GetBucketFactory(storage_key)->IsClosing());
 
   factory()->ForceClose(storage_key, false);
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator));
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key));
 
   factory()->ForceClose(storage_key, true);
-  EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator));
+  EXPECT_FALSE(factory()->GetBucketFactory(storage_key));
 }
 
 TEST_F(IndexedDBFactoryTest, TooLongOrigin) {
@@ -620,7 +618,7 @@ TEST_F(IndexedDBFactoryTest, ContextDestructionClosesHandles) {
   // Now simulate shutdown, which should clear all factories.
   factory()->ContextDestroyed();
   EXPECT_FALSE(StorageBucketFromHandle(bucket_state_handle));
-  EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator));
+  EXPECT_FALSE(factory()->GetBucketFactory(storage_key));
 }
 
 TEST_F(IndexedDBFactoryTest, FactoryForceClose) {
@@ -640,9 +638,9 @@ TEST_F(IndexedDBFactoryTest, FactoryForceClose) {
   StorageBucketFromHandle(bucket_state_handle)->ForceClose();
   bucket_state_handle.Release();
 
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator));
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key));
   RunPostedTasks();
-  EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator));
+  EXPECT_FALSE(factory()->GetBucketFactory(storage_key));
 }
 
 TEST_F(IndexedDBFactoryTest, ConnectionForceClose) {
@@ -668,13 +666,13 @@ TEST_F(IndexedDBFactoryTest, ConnectionForceClose) {
   RunPostedTasks();
   EXPECT_TRUE(callbacks->connection());
 
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator));
-  EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key));
+  EXPECT_FALSE(factory()->GetBucketFactory(storage_key)->IsClosing());
 
   callbacks->connection()->CloseAndReportForceClose();
 
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator));
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key));
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key)->IsClosing());
 
   EXPECT_TRUE(db_callbacks->forced_close_called());
 }
@@ -715,8 +713,8 @@ TEST_F(IndexedDBFactoryTest, DatabaseForceCloseDuringUpgrade) {
 
   EXPECT_TRUE(db_callbacks->forced_close_called());
   // Since there are no more references the factory should be closing.
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator));
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key));
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key)->IsClosing());
 }
 
 TEST_F(IndexedDBFactoryTest, ConnectionCloseDuringUpgrade) {
@@ -755,8 +753,8 @@ TEST_F(IndexedDBFactoryTest, ConnectionCloseDuringUpgrade) {
       IndexedDBConnection::CloseErrorHandling::kAbortAllReturnLastError);
 
   // Since there are no more references the factory should be closing.
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator));
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key));
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key)->IsClosing());
 }
 
 TEST_F(IndexedDBFactoryTest, DatabaseForceCloseWithFullConnection) {
@@ -776,8 +774,8 @@ TEST_F(IndexedDBFactoryTest, DatabaseForceCloseWithFullConnection) {
 
   EXPECT_TRUE(db_callbacks->forced_close_called());
   // Since there are no more references the factory should be closing.
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator));
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key));
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key)->IsClosing());
 }
 
 TEST_F(IndexedDBFactoryTest, DeleteDatabase) {
@@ -796,8 +794,8 @@ TEST_F(IndexedDBFactoryTest, DeleteDatabase) {
                             /*force_close=*/false);
 
   // Since there are no more references the factory should be closing.
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator));
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key));
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key)->IsClosing());
 }
 
 TEST_F(IndexedDBFactoryTest, DeleteDatabaseWithForceClose) {
@@ -832,8 +830,8 @@ TEST_F(IndexedDBFactoryTest, DeleteDatabaseWithForceClose) {
   // isn't force closed, and instead is going through it's shutdown sequence.
   EXPECT_FALSE(connection->IsConnected());
   EXPECT_TRUE(db_callbacks->forced_close_called());
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator));
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator)->IsClosing());
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key));
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key)->IsClosing());
 
   // Wait until the DB is deleted before tearing down since these concurrent
   // operations may conflict.
@@ -855,7 +853,7 @@ TEST_F(IndexedDBFactoryTest, GetDatabaseNames_NoFactory) {
 
   EXPECT_TRUE(callbacks->info_called());
   // Don't create a factory if one doesn't exist.
-  EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator));
+  EXPECT_FALSE(factory()->GetBucketFactory(storage_key));
 }
 
 TEST_F(IndexedDBFactoryTest, GetDatabaseNames_ExistingFactory) {
@@ -879,9 +877,9 @@ TEST_F(IndexedDBFactoryTest, GetDatabaseNames_ExistingFactory) {
   factory()->GetDatabaseInfo(callbacks, bucket_locator, context()->data_path());
 
   EXPECT_TRUE(callbacks->info_called());
-  EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator));
+  EXPECT_TRUE(factory()->GetBucketFactory(storage_key));
   // GetDatabaseInfo didn't create the factory, so it shouldn't close it.
-  EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator)->IsClosing());
+  EXPECT_FALSE(factory()->GetBucketFactory(storage_key)->IsClosing());
 }
 
 class LookingForQuotaErrorMockCallbacks : public IndexedDBCallbacks {
@@ -1009,7 +1007,7 @@ TEST_F(IndexedDBFactoryTest, DatabaseFailedOpen) {
       loop.Run();
     }
     EXPECT_TRUE(callbacks->upgrade_called());
-    EXPECT_TRUE(factory()->IsDatabaseOpen(bucket_locator, db_name));
+    EXPECT_TRUE(factory()->IsDatabaseOpen(storage_key, db_name));
   }
 
   // Finish connecting, then close the connection.
@@ -1024,7 +1022,7 @@ TEST_F(IndexedDBFactoryTest, DatabaseFailedOpen) {
     callbacks->connection()->AbortTransactionsAndClose(
         IndexedDBConnection::CloseErrorHandling::kAbortAllReturnLastError);
     RunPostedTasks();
-    EXPECT_FALSE(factory()->IsDatabaseOpen(bucket_locator, db_name));
+    EXPECT_FALSE(factory()->IsDatabaseOpen(storage_key, db_name));
   }
 
   // Open at version < 2, which will fail.
@@ -1037,10 +1035,10 @@ TEST_F(IndexedDBFactoryTest, DatabaseFailedOpen) {
         transaction_id, db_version, std::move(create_transaction_callback));
     factory()->Open(db_name, std::move(connection), bucket_locator,
                     context()->data_path());
-    EXPECT_TRUE(factory()->IsDatabaseOpen(bucket_locator, db_name));
+    EXPECT_TRUE(factory()->IsDatabaseOpen(storage_key, db_name));
     RunPostedTasks();
     EXPECT_TRUE(failed_open_callbacks->saw_error());
-    EXPECT_FALSE(factory()->IsDatabaseOpen(bucket_locator, db_name));
+    EXPECT_FALSE(factory()->IsDatabaseOpen(storage_key, db_name));
   }
 }
 
