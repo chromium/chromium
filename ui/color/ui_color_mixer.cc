@@ -86,8 +86,9 @@ void AddUiColorMixer(ColorProvider* provider,
       kColorLiveCaptionBubbleButtonIcon, gfx::kDisabledControlAlpha);
   mixer[kColorLiveCaptionBubbleForegroundDefault] =
       GetColorWithMaxContrast(kColorLiveCaptionBubbleBackgroundDefault);
-  mixer[kColorLiveCaptionBubbleCheckbox] = {gfx::kGoogleBlue300};
-  mixer[kColorLiveCaptionBubbleLink] = {gfx::kGoogleBlue300};
+  mixer[kColorLiveCaptionBubbleCheckbox] = PickGoogleColor(
+      kColorAccent, kColorLiveCaptionBubbleBackgroundDefault, 6.0f);
+  mixer[kColorLiveCaptionBubbleLink] = {kColorLiveCaptionBubbleCheckbox};
   mixer[kColorMenuBackground] = {kColorPrimaryBackground};
   mixer[kColorMenuBorder] = {kColorMidground};
   mixer[kColorMenuDropmarker] = {kColorPrimaryForeground};
@@ -167,9 +168,13 @@ void AddUiColorMixer(ColorProvider* provider,
       SetAlpha(kColorAlertHighSeverity, gfx::kGoogleGreyAlpha100);
   mixer[kColorSyncInfoBackgroundPaused] =
       SetAlpha(kColorAccent, gfx::kGoogleGreyAlpha100);
-  mixer[kColorTabBackgroundHighlighted] = SetAlpha(gfx::kGoogleBlue300, 0x2B);
-  mixer[kColorTabBackgroundHighlightedFocused] =
-      SetAlpha(gfx::kGoogleBlue300, 0x53);
+  {
+    auto tab_background_base =
+        PickGoogleColor(kColorAccent, kColorPrimaryBackground, 6.0f);
+    mixer[kColorTabBackgroundHighlighted] = SetAlpha(tab_background_base, 0x2B);
+    mixer[kColorTabBackgroundHighlightedFocused] =
+        SetAlpha(std::move(tab_background_base), 0x53);
+  }
   mixer[kColorTabBorderSelected] = {kColorAccent};
   mixer[kColorTabContentSeparator] = {kColorMidground};
   mixer[kColorTabForeground] = {kColorSecondaryForeground};
@@ -210,8 +215,8 @@ void AddUiColorMixer(ColorProvider* provider,
   }
   mixer[kColorToggleButtonTrackOff] = {
       dark_mode ? ColorTransform(gfx::kGoogleGrey700) : kColorMidground};
-  mixer[kColorToggleButtonTrackOn] = {dark_mode ? gfx::kGoogleBlue600
-                                                : gfx::kGoogleBlue300};
+  mixer[kColorToggleButtonTrackOn] =
+      PickGoogleColor(kColorAccent, kColorToggleButtonThumbOn, 2.13f);
   mixer[kColorTooltipBackground] = SetAlpha(kColorPrimaryBackground, 0xCC);
   mixer[kColorTooltipForeground] = SetAlpha(kColorPrimaryForeground, 0xDE);
   mixer[kColorTreeBackground] = {kColorPrimaryBackground};
