@@ -354,11 +354,10 @@ void TabContainer::SetAvailableWidthCallback(
 Tab* TabContainer::AddTab(std::unique_ptr<Tab> tab,
                           int model_index,
                           TabPinned pinned) {
-  absl::optional<tab_groups::TabGroupId> group = tab->group();
-  Tab* tab_ptr = AddChildViewAt(
-      std::move(tab), GetViewInsertionIndex(group, absl::nullopt, model_index));
+  Tab* tab_ptr = AddChildView(std::move(tab));
   tabs_view_model_.Add(tab_ptr, model_index);
   layout_helper_->InsertTabAt(model_index, tab_ptr, pinned);
+  OrderTabSlotView(tab_ptr);
 
   // Don't animate the first tab, it looks weird, and don't animate anything
   // if the containing window isn't visible yet.
@@ -375,10 +374,9 @@ Tab* TabContainer::AddTab(std::unique_ptr<Tab> tab,
 
 void TabContainer::MoveTab(int from_model_index, int to_model_index) {
   Tab* tab = GetTabAtModelIndex(from_model_index);
-  ReorderChildView(tab, GetViewInsertionIndex(tab->group(), from_model_index,
-                                              to_model_index));
   tabs_view_model_.Move(from_model_index, to_model_index);
   layout_helper_->MoveTab(tab->group(), from_model_index, to_model_index);
+  OrderTabSlotView(tab);
 
   layout_helper()->SetTabPinned(to_model_index, tab->data().pinned
                                                     ? TabPinned::kPinned
@@ -490,11 +488,7 @@ void TabContainer::OnGroupMoved(const tab_groups::TabGroupId& group) {
 
   layout_helper()->UpdateGroupHeaderIndex(group);
 
-  TabGroupHeader* group_header = group_views()[group]->header();
-  const int first_tab_model_index =
-      controller_->GetFirstTabInGroup(group).value();
-
-  MoveGroupHeader(group_header, first_tab_model_index);
+  OrderTabSlotView(group_views()[group]->header());
 }
 
 void TabContainer::OnGroupClosed(const tab_groups::TabGroupId& group) {
@@ -1202,22 +1196,6 @@ void TabContainer::UpdateClosingModeOnRemovedTab(int model_index,
   }
 }
 
-void TabContainer::MoveGroupHeader(TabGroupHeader* group_header,
-                                   int first_tab_model_index) {
-  const int header_index = GetIndexOf(group_header);
-  const int first_tab_view_index =
-      GetViewIndexForModelIndex(first_tab_model_index);
-
-  // The header should be just before the first tab. If it isn't, reorder the
-  // header such that it is. Note that the index to reorder to is different
-  // depending on whether the header is before or after the tab, since the
-  // header itself occupies an index.
-  if (header_index < first_tab_view_index - 1)
-    ReorderChildView(group_header, first_tab_view_index - 1);
-  if (header_index > first_tab_view_index - 1)
-    ReorderChildView(group_header, first_tab_view_index);
-}
-
 void TabContainer::ResizeLayoutTabs() {
   // We've been called back after the TabStrip has been emptied out (probably
   // just prior to the window being destroyed). We need to do nothing here or
@@ -1291,56 +1269,23 @@ void TabContainer::RemoveMessageLoopObserver() {
   mouse_watcher_ = nullptr;
 }
 
-int TabContainer::GetViewInsertionIndex(
-    absl::optional<tab_groups::TabGroupId> group,
-    absl::optional<int> from_model_index,
-    int to_model_index) const {
-  // -1 is treated a sentinel value to indicate a tab is newly added to the
-  // beginning of the tab strip.
-  if (to_model_index < 0)
-    return 0;
+void TabContainer::OrderTabSlotView(TabSlotView* slot_view) {
+  // |slot_view| is in the wrong place in children(). Fix it.
+  std::vector<TabSlotView*> slots = layout_helper_->GetTabSlotViews();
+  size_t target_slot_index =
+      std::find(slots.begin(), slots.end(), slot_view) - slots.begin();
+  // Find the index in children() that corresponds to |target_slot_index|.
+  size_t view_index = 0;
+  for (size_t slot_index = 0; slot_index < target_slot_index; slot_index++) {
+    // If we don't own this view, skip it *without* advancing in children().
+    if (slots[slot_index]->parent() != this)
+      continue;
+    if (view_index == children().size())
+      break;
+    view_index++;
+  }
 
-  // If to_model_index is beyond the end of the tab strip, then the tab is
-  // newly added to the end of the tab strip. In that case we can just return
-  // one beyond the view index of the last existing tab.
-  if (to_model_index >= GetTabCount())
-    return (GetTabCount() ? GetViewIndexForModelIndex(GetTabCount() - 1) + 1
-                          : 0);
-
-  // If there is no from_model_index, then the tab is newly added in the
-  // middle of the tab strip. In that case we treat it as coming from the end
-  // of the tab strip, since new views are ordered at the end by default.
-  if (!from_model_index.has_value())
-    from_model_index = GetTabCount();
-
-  DCHECK_NE(to_model_index, from_model_index.value());
-
-  // Since we don't have an absolute mapping from model index to view index,
-  // we anchor on the last known view index at the given to_model_index.
-  Tab* other_tab = GetTabAtModelIndex(to_model_index);
-  int other_view_index = GetViewIndexForModelIndex(to_model_index);
-
-  if (other_view_index <= 0)
-    return 0;
-
-  // When moving to the right, just use the anchor index because the tab will
-  // replace that position in both the model and the view. This happens
-  // because the tab itself occupies a lower index that the other tabs will
-  // shift into.
-  if (to_model_index > from_model_index.value())
-    return other_view_index;
-
-  // When moving to the left, the tab may end up on either the left or right
-  // side of a group header, depending on if it's in that group. This affects
-  // its view index but not its model index, so we adjust the former only.
-  if (other_tab->group().has_value() && other_tab->group() != group)
-    return other_view_index - 1;
-
-  return other_view_index;
-}
-
-int TabContainer::GetViewIndexForModelIndex(int model_index) const {
-  return GetIndexOf(GetTabAtModelIndex(model_index));
+  ReorderChildView(slot_view, view_index);
 }
 
 bool TabContainer::IsPointInTab(Tab* tab,
