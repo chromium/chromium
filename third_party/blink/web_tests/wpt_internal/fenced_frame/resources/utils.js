@@ -26,7 +26,7 @@ function getRemoteContextURL(origin) {
 // @param {string} href - The base url of the page being navigated to
 // @param {string list} keylist - The list of key UUIDs to be used. Note that
 //                                order matters when extracting the keys
-async function generateURN(href, keylist) {
+async function generateURN(href, keylist = []) {
   try {
     await sharedStorage.worklet.addModule(
       "/wpt_internal/shared_storage/resources/simple-module.js");

@@ -78,7 +78,7 @@ var tests = [
 
 chrome.test.getConfig(async (config) => {
   mparchEnabled = config.customArg == 'MPArch';
-  serverOrigin = `http://localhost:${config.testServer.port}`;
+  serverOrigin = `https://a.test:${config.testServer.port}`;
   serverURL = serverOrigin + '/extensions/api_test/messaging/'
                            + 'connect_fenced_frames/';
   chrome.test.runTests(tests);

@@ -526,14 +526,21 @@ class OmniboxFocusInteractiveFencedFrameTest
   }
   ~OmniboxFocusInteractiveFencedFrameTest() override = default;
 
+  void SetUpOnMainThread() override {
+    OmniboxFocusInteractiveTest::SetUpOnMainThread();
+    ASSERT_TRUE(https_server_.Start());
+  }
+
+ protected:
+  net::EmbeddedTestServer& https_server() { return https_server_; }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
 IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveFencedFrameTest,
                        NtpReplacementExtension_LoadFencedFrame) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
   // Open the new tab, focus should be on the location bar.
   OpenNewTab();
 
@@ -558,8 +565,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveFencedFrameTest,
 
   // Create a fenced frame and load a URL.
   // The fenced frame navigation should not affect the view focus.
-  GURL fenced_frame_url =
-      embedded_test_server()->GetURL("/fenced_frames/title1.html");
+  GURL fenced_frame_url = https_server().GetURL("/fenced_frames/title1.html");
   content::TestNavigationManager navigation(web_contents, fenced_frame_url);
   EXPECT_TRUE(content::ExecuteScript(
       web_contents->GetMainFrame(),

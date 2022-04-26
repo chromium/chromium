@@ -354,6 +354,11 @@ class SoundContentSettingObserverFencedFrameBrowserTest
   SoundContentSettingObserverFencedFrameBrowserTest() = default;
   ~SoundContentSettingObserverFencedFrameBrowserTest() override = default;
 
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  }
+
   content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
     return fenced_frame_test_helper_;
   }
@@ -362,21 +367,23 @@ class SoundContentSettingObserverFencedFrameBrowserTest
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  net::EmbeddedTestServer& https_server() { return https_server_; }
+
  private:
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
   base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
 IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverFencedFrameBrowserTest,
                        AddAutoplayFlagsInFencedFrame) {
   // Sets up the embedded test server to serve the test javascript file.
   net::test_server::EmbeddedTestServerHandle test_server_handle;
-  ASSERT_TRUE(test_server_handle =
-                  embedded_test_server()->StartAndReturnHandle());
+  ASSERT_TRUE(test_server_handle = https_server().StartAndReturnHandle());
 
   // Configures SoundContentSettingObserver and explicitly allows the SOUND
   // setting for the primary page's URL.
-  GURL url = embedded_test_server()->GetURL("/simple.html");
+  GURL url = https_server().GetURL("/simple.html");
   HostContentSettingsMap* content_settings =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   content_settings->SetContentSettingDefaultScope(
@@ -385,8 +392,7 @@ IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverFencedFrameBrowserTest,
   // Loads a simple page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  auto fenced_frame_url =
-      embedded_test_server()->GetURL("/fenced_frames/title1.html");
+  auto fenced_frame_url = https_server().GetURL("/fenced_frames/title1.html");
 
   // Creates MultipleFramesObserver to observe fenced frame creation and
   // intercept AddAutoplayFlags() for it.

@@ -256,6 +256,7 @@ public class UrlOverridingTest {
 
     @Before
     public void setUp() throws Exception {
+        mActivityTestRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
         mContextToRestore = ContextUtils.getApplicationContext();
         mTestContext = new TestContext(mContextToRestore);
         ContextUtils.initApplicationContextForTests(mTestContext);
@@ -634,7 +635,7 @@ public class UrlOverridingTest {
         mActivityTestRule.loadUrlInNewTab("chrome://about/", /**incognito**/ true);
 
         String fallbackUrl = mTestServer.getURL(FALLBACK_LANDING_PATH);
-        String fallbackUrlWithoutScheme = fallbackUrl.replace("http://", "");
+        String fallbackUrlWithoutScheme = fallbackUrl.replace("https://", "");
         String originalUrl = mTestServer.getURL(NAVIGATION_TO_CCT_FROM_INTENT_URI + "?replace_text="
                 + Base64.encodeToString(
                         ApiCompatibilityUtils.getBytesUtf8("PARAM_FALLBACK_URL"), Base64.URL_SAFE)
