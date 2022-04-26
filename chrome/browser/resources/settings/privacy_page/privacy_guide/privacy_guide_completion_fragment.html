@@ -11,6 +11,18 @@
     row-gap: 8px;
   }
 
+  :host-context([is-privacy-guide-v2]) picture {
+    animation: fade-in var(--privacy-guide-animation-duration);
+    animation-delay: 100ms;
+    animation-fill-mode: forwards;
+    opacity: 0;
+  }
+
+  :host-context([is-privacy-guide-v2]) #privacySandboxRow,
+  :host-context([is-privacy-guide-v2]) #waaRow {
+    animation: fade-in var(--privacy-guide-animation-duration);
+  }
+
   .footer {
     align-items: center;
     bottom: calc(-1 * var(--privacy-guide-footer-total-height));

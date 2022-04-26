@@ -1,5 +1,6 @@
 <style include="cr-shared-style settings-shared">
   :host {
+    --privacy-guide-animation-duration: 900ms;
     --privacy-guide-footer-vertical-padding: 16px;
     --privacy-guide-footer-total-height: calc(var(--cr-button-height) +
         2 * var(--privacy-guide-footer-vertical-padding));
@@ -55,7 +56,13 @@
     position: relative;
   }
 
-  #background  {
+  @keyframes fade-in {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  #background {
+    animation: fade-in var(--privacy-guide-animation-duration);
     height: 100px;
     left: 50%;
     position: absolute;
@@ -72,17 +79,37 @@
     top: 0;
     width: 100%;
   }
+
+  #backgroundClouds {
+    transform: translateX(calc(var(--privacy-guide-step) * -10px));
+    transition: transform 300ms cubic-bezier(.4, 0, .2, 1);
+  }
+
+  :host-context([dir='rtl']) #backgroundClouds {
+    transform: translateX(calc(var(--privacy-guide-step) * 10px));
+  }
+
+  #backgroundHills {
+    transform: translateX(calc(var(--privacy-guide-step) * -5px));
+    transition: transform 300ms cubic-bezier(.4, 0, .2, 1);
+  }
+
+  :host-context([dir='rtl']) #backgroundHills {
+    transform: translateX(calc(var(--privacy-guide-step) * 5px));
+  }
 </style>
-<div id="privacyGuideCard" on-keydown="onKeyDown_" part="privacyGuideCard">
+<div id="privacyGuideCard" on-keydown="onKeyDown_" part="privacyGuideCard"
+    style="--privacy-guide-v2-translate-multiplier: [[translateMultiplier_]]">
   <div id="background" aria-hidden="true"
-      hidden$="[[!showBackground_(privacyGuideStep_, isPrivacyGuideV2)]]">
-    <picture>
+      hidden$="[[!showBackground_(privacyGuideStep_, isPrivacyGuideV2)]]"
+      style="--privacy-guide-step: [[stepIndicatorModel_.active]]">
+    <picture id="backgroundClouds">
       <source
           srcset="./images/privacy_guide/clouds_graphic_dark.svg"
           media="(prefers-color-scheme: dark)">
       <img alt="" src="./images/privacy_guide/clouds_graphic.svg">
     </picture>
-    <picture>
+    <picture id="backgroundHills">
       <source
           srcset="./images/privacy_guide/hills_graphic_dark.svg"
           media="(prefers-color-scheme: dark)">

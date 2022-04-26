@@ -99,6 +99,16 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       },
 
       /**
+       * Multiplier to apply on translate distances for animations in fragments.
+       * +1 if navigating forwards LTR or backwards RTL; -1 if navigating
+       * forwards RTL or backwards LTR.
+       */
+      translateMultiplier_: {
+        type: Number,
+        value: 1,
+      },
+
+      /**
        * Used by the 'step-indicator' element to display its dots.
        */
       stepIndicatorModel_: {
@@ -141,6 +151,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   // the time settings were loaded, so this is default false.
   private isManaged_: boolean = false;
   private isPrivacyGuideV2: boolean = false;
+  private translateMultiplier_: number;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
@@ -393,6 +404,15 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
     assert(step !== this.privacyGuideStep_);
     this.privacyGuideStep_ = step;
 
+    // When text direction is LTR, the pages are laid out left to right, so
+    // when the user moves to the next page, the next page animates from right
+    // to left. If the user goes to the previous page, the previous page
+    // animates from left to right. If the text direction is RTL, this is
+    // reversed.
+    const animateFromLeftToRight = isBackwardNavigation ===
+        (loadTimeData.getString('textdirection') === 'ltr');
+    this.translateMultiplier_ = animateFromLeftToRight ? -1 : 1;
+
     if (!this.privacyGuideStepToComponentsMap_.get(step)!.isAvailable()) {
       // This card is currently not available. Navigate to the next one, or
       // the previous one if this was a back navigation.
@@ -403,14 +423,10 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       }
     } else {
       if (this.animationsEnabled_ && playAnimation && !this.isPrivacyGuideV2) {
-        // In the LTR mode, the user scrolls LTR, and the animation makes it
-        // the next page slide in RTL. If the user scrolls back or if
-        // the display mode is RTL, the animation is inverted.
-        const ltr = isBackwardNavigation ===
-            (loadTimeData.getString('textdirection') === 'ltr');
         this.$.viewManager.switchView(
             this.privacyGuideStep_,
-            ltr ? 'slide-in-fade-in-ltr' : 'slide-in-fade-in-rtl',
+            animateFromLeftToRight ? 'slide-in-fade-in-ltr' :
+                                     'slide-in-fade-in-rtl',
             'no-animation');
       } else {
         this.$.viewManager.switchView(
