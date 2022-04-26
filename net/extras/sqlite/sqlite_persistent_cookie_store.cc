@@ -1082,6 +1082,7 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
         statement.ColumnTime(0),    // creation_utc
         statement.ColumnTime(6),    // expires_utc
         statement.ColumnTime(9),    // last_access_utc
+        statement.ColumnTime(18),   // last_update_utc
         statement.ColumnBool(7),    // secure
         statement.ColumnBool(8),    // http_only
         DBCookieSameSiteToCookieSameSite(static_cast<DBCookieSameSite>(
@@ -1092,11 +1093,13 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
         std::move(cookie_partition_key),                  // top_frame_site_key
         DBToCookieSourceScheme(statement.ColumnInt(15)),  // source_scheme
         statement.ColumnInt(16));                         // source_port
-    // TODO(crbug.com/1264458): Propagate/populate last_update_utc.
-    DCHECK_EQ(statement.ColumnInt(18), 0);
     if (cc) {
       DLOG_IF(WARNING, cc->CreationDate() > Time::Now())
           << L"CreationDate too recent";
+      if (!cc->LastUpdateDate().is_null()) {
+        DLOG_IF(WARNING, cc->LastUpdateDate() > Time::Now())
+            << L"LastUpdateDate too recent";
+      }
       cookies.push_back(std::move(cc));
     } else {
       RecordCookieLoadProblem(COOKIE_LOAD_PROBLEM_NON_CANONICAL);
@@ -1622,8 +1625,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
           add_statement.BindInt(15, static_cast<int>(po->cc().SourceScheme()));
           add_statement.BindInt(16, po->cc().SourcePort());
           add_statement.BindBool(17, po->cc().IsSameParty());
-          // TODO(crbug.com/1264458): Propagate/populate last_update_utc.
-          add_statement.BindInt(18, 0);
+          add_statement.BindTime(18, po->cc().LastUpdateDate());
           if (!add_statement.Run()) {
             DLOG(WARNING) << "Could not add a cookie to the DB.";
             RecordCookieCommitProblem(COOKIE_COMMIT_PROBLEM_ADD);

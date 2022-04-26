@@ -3464,8 +3464,8 @@ IN_PROC_BROWSER_TEST_P(ClearAllCachedAuthTokensFunctionTestWithPartitionParam,
                        CleanWebAuthFlowCookies) {
   auto test_cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
       "test_name", "test_value", "test.com", "/", base::Time(), base::Time(),
-      base::Time(), true, false, net::CookieSameSite::NO_RESTRICTION,
-      net::COOKIE_PRIORITY_DEFAULT, false);
+      base::Time(), base::Time(), true, false,
+      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT, false);
   base::RunLoop set_cookie_loop;
   GetCookieManager()->SetCanonicalCookie(
       *test_cookie,

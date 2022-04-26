@@ -86,8 +86,9 @@ class ThirdPartyDataRemoverTest : public InProcessBrowserTest {
     std::unique_ptr<net::CanonicalCookie> cookie =
         net::CanonicalCookie::CreateUnsafeCookieForTesting(
             name, "foobar", host, "/", base::Time(), base::Time(), base::Time(),
-            /* secure= */ true, /* httponly= */ false, same_site,
-            net::COOKIE_PRIORITY_LOW, /* same_party= */ false);
+            base::Time(),
+            /*secure=*/true, /*httponly=*/false, same_site,
+            net::COOKIE_PRIORITY_LOW, /*same_party=*/false);
     net::CookieOptions options;
     options.set_same_site_cookie_context(cookie_context);
     bool result_out;

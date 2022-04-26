@@ -31,6 +31,7 @@ void AddSigninCookie(Profile* profile) {
           kSigninCookieName, std::string(), ".google.com", "/",
           /*creation=*/base::Time(),
           /*expiration=*/base::Time(), /*last_access=*/base::Time(),
+          /*last_update=*/base::Time(),
           /*secure=*/true,
           /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
           net::COOKIE_PRIORITY_DEFAULT,

@@ -23,6 +23,7 @@ class CanonicalCookie {
     private final long mCreation;
     private final long mExpiration;
     private final long mLastAccess;
+    private final long mLastUpdate;
     private final boolean mSecure;
     private final boolean mHttpOnly;
     private final int mSameSite;
@@ -34,8 +35,8 @@ class CanonicalCookie {
 
     /** Constructs a CanonicalCookie */
     CanonicalCookie(String name, String value, String domain, String path, long creation,
-            long expiration, long lastAccess, boolean secure, boolean httpOnly, int sameSite,
-            int priority, boolean sameParty, String partitionKey, int sourceScheme,
+            long expiration, long lastAccess, long lastUpdate, boolean secure, boolean httpOnly,
+            int sameSite, int priority, boolean sameParty, String partitionKey, int sourceScheme,
             int sourcePort) {
         mName = name;
         mValue = value;
@@ -44,6 +45,7 @@ class CanonicalCookie {
         mCreation = creation;
         mExpiration = expiration;
         mLastAccess = lastAccess;
+        mLastUpdate = lastUpdate;
         mSecure = secure;
         mHttpOnly = httpOnly;
         mSameSite = sameSite;
@@ -82,6 +84,11 @@ class CanonicalCookie {
     /** @return Last accessed time. */
     long getLastAccessDate() {
         return mLastAccess;
+    }
+
+    /** @return Last updated time. */
+    long getLastUpdateDate() {
+        return mLastUpdate;
     }
 
     /** @return Expiration time. */
@@ -193,6 +200,7 @@ class CanonicalCookie {
         out.writeLong(mCreation);
         out.writeLong(mExpiration);
         out.writeLong(mLastAccess);
+        out.writeLong(mLastUpdate);
         out.writeBoolean(mSecure);
         out.writeBoolean(mHttpOnly);
         out.writeInt(mSameSite);
@@ -211,6 +219,7 @@ class CanonicalCookie {
                 in.readLong(), // creation
                 in.readLong(), // expiration
                 in.readLong(), // last access
+                in.readLong(), // last update
                 in.readBoolean(), // secure
                 in.readBoolean(), // httponly
                 in.readInt(), // samesite

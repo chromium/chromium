@@ -690,7 +690,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
   std::unique_ptr<net::CanonicalCookie> sanitized_cookie =
       net::CanonicalCookie::FromStorage(
           cookie.Name(), cookie.Value(), cookie.Domain(), cookie.Path(), now,
-          cookie.ExpiryDate(), now, cookie.IsSecure(), cookie.IsHttpOnly(),
+          cookie.ExpiryDate(), now, now, cookie.IsSecure(), cookie.IsHttpOnly(),
           cookie.SameSite(), cookie.Priority(), cookie.IsSameParty(),
           cookie_partition_key, source_scheme, origin_.port());
   DCHECK(sanitized_cookie);

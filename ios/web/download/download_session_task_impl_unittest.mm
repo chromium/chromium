@@ -515,6 +515,7 @@ TEST_F(DownloadSessionTaskImplTest, Cookie) {
           /*creation=*/now,
           /*expire_date=*/now + base::Hours(2),
           /*last_access=*/now,
+          /*last_update=*/now,
           /*secure=*/false,
           /*httponly=*/false, net::CookieSameSite::UNSPECIFIED,
           net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false);

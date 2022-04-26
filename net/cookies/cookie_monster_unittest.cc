@@ -248,89 +248,89 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
     // Domain cookies
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "dom_1", "A", ".harvard.edu", "/", now, base::Time(), base::Time(),
-        false, false, CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT,
-        false));
+        base::Time(), false, false, CookieSameSite::LAX_MODE,
+        COOKIE_PRIORITY_DEFAULT, false));
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "dom_2", "B", ".math.harvard.edu", "/", now, base::Time(), base::Time(),
-        false, false, CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT,
-        false));
+        base::Time(), false, false, CookieSameSite::LAX_MODE,
+        COOKIE_PRIORITY_DEFAULT, false));
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "dom_3", "C", ".bourbaki.math.harvard.edu", "/", now, base::Time(),
-        base::Time(), false, false, CookieSameSite::LAX_MODE,
+        base::Time(), base::Time(), false, false, CookieSameSite::LAX_MODE,
         COOKIE_PRIORITY_DEFAULT, false));
 
     // Host cookies
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "host_1", "A", url_top_level_domain_plus_1, "/", now, base::Time(),
-        base::Time(), false, false, CookieSameSite::LAX_MODE,
+        base::Time(), base::Time(), false, false, CookieSameSite::LAX_MODE,
         COOKIE_PRIORITY_DEFAULT, false));
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "host_2", "B", url_top_level_domain_plus_2, "/", now, base::Time(),
-        base::Time(), false, false, CookieSameSite::LAX_MODE,
+        base::Time(), base::Time(), false, false, CookieSameSite::LAX_MODE,
         COOKIE_PRIORITY_DEFAULT, false));
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "host_3", "C", url_top_level_domain_plus_3, "/", now, base::Time(),
-        base::Time(), false, false, CookieSameSite::LAX_MODE,
+        base::Time(), base::Time(), false, false, CookieSameSite::LAX_MODE,
         COOKIE_PRIORITY_DEFAULT, false));
 
     // http_only cookie
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "httpo_check", "A", url_top_level_domain_plus_2, "/", now, base::Time(),
-        base::Time(), false, true, CookieSameSite::LAX_MODE,
+        base::Time(), base::Time(), false, true, CookieSameSite::LAX_MODE,
         COOKIE_PRIORITY_DEFAULT, false));
 
     // same-site cookie
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "same_site_check", "A", url_top_level_domain_plus_2, "/", now,
-        base::Time(), base::Time(), false, false, CookieSameSite::STRICT_MODE,
-        COOKIE_PRIORITY_DEFAULT, false));
+        base::Time(), base::Time(), base::Time(), false, false,
+        CookieSameSite::STRICT_MODE, COOKIE_PRIORITY_DEFAULT, false));
 
     // same-party cookie
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "same_party_check", "A", url_top_level_domain_plus_2, "/", now,
-        base::Time(), base::Time(), true /* secure */, false,
+        base::Time(), base::Time(), base::Time(), true /* secure */, false,
         CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT,
         true /* same_party */));
 
     // Secure cookies
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "sec_dom", "A", ".math.harvard.edu", "/", now, base::Time(),
-        base::Time(), true, false, CookieSameSite::NO_RESTRICTION,
+        base::Time(), base::Time(), true, false, CookieSameSite::NO_RESTRICTION,
         COOKIE_PRIORITY_DEFAULT, false));
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "sec_host", "B", url_top_level_domain_plus_2, "/", now, base::Time(),
-        base::Time(), true, false, CookieSameSite::NO_RESTRICTION,
+        base::Time(), base::Time(), true, false, CookieSameSite::NO_RESTRICTION,
         COOKIE_PRIORITY_DEFAULT, false));
 
     // Domain path cookies
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "dom_path_1", "A", ".math.harvard.edu", "/dir1", now, base::Time(),
-        base::Time(), false, false, CookieSameSite::LAX_MODE,
+        base::Time(), base::Time(), false, false, CookieSameSite::LAX_MODE,
         COOKIE_PRIORITY_DEFAULT, false));
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "dom_path_2", "B", ".math.harvard.edu", "/dir1/dir2", now, base::Time(),
-        base::Time(), false, false, CookieSameSite::LAX_MODE,
+        base::Time(), base::Time(), false, false, CookieSameSite::LAX_MODE,
         COOKIE_PRIORITY_DEFAULT, false));
 
     // Host path cookies
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "host_path_1", "A", url_top_level_domain_plus_2, "/dir1", now,
-        base::Time(), base::Time(), false, false, CookieSameSite::LAX_MODE,
-        COOKIE_PRIORITY_DEFAULT, false));
+        base::Time(), base::Time(), base::Time(), false, false,
+        CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT, false));
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "host_path_2", "B", url_top_level_domain_plus_2, "/dir1/dir2", now,
-        base::Time(), base::Time(), false, false, CookieSameSite::LAX_MODE,
-        COOKIE_PRIORITY_DEFAULT, false));
+        base::Time(), base::Time(), base::Time(), false, false,
+        CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT, false));
 
     // Partitioned cookies
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "__Host-pc_1", "A", url_top_level_domain_secure, "/", now, base::Time(),
-        base::Time(), true, false, CookieSameSite::NO_RESTRICTION,
+        base::Time(), base::Time(), true, false, CookieSameSite::NO_RESTRICTION,
         CookiePriority::COOKIE_PRIORITY_DEFAULT, false,
         CookiePartitionKey::FromURLForTesting(GURL(kTopLevelDomainPlus1))));
     cookies.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
         "__Host-pc_2", "B", url_top_level_domain_secure, "/", now, base::Time(),
-        base::Time(), true, false, CookieSameSite::NO_RESTRICTION,
+        base::Time(), base::Time(), true, false, CookieSameSite::NO_RESTRICTION,
         CookiePriority::COOKIE_PRIORITY_DEFAULT, false,
         CookiePartitionKey::FromURLForTesting(GURL(kTopLevelDomainPlus1))));
 
@@ -942,10 +942,11 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
     for (int i = 0; i < num_cookies; i++) {
       std::unique_ptr<CanonicalCookie> cc(
           CanonicalCookie::CreateUnsafeCookieForTesting(
-              "a", "1", base::StringPrintf("h%05d.izzle", i), "/" /* path */,
-              creation_time, base::Time() /* expiration_time */,
-              creation_time /* last_access */, true /* secure */,
-              false /* http_only */, CookieSameSite::NO_RESTRICTION,
+              "a", "1", base::StringPrintf("h%05d.izzle", i), /*path=*/"/",
+              creation_time, /*=expiration_time=*/base::Time(),
+              /*last_access=*/creation_time, /*last_update=*/creation_time,
+              /*secure=*/true,
+              /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
               COOKIE_PRIORITY_DEFAULT, false /* same_party */));
       GURL source_url = cookie_util::SimulatedCookieSource(*cc, "https");
       cm->SetCanonicalCookieAsync(std::move(cc), source_url,
@@ -962,6 +963,7 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
           it->CreationDate() == cookie.CreationDate() &&
           it->ExpiryDate() == cookie.ExpiryDate() &&
           it->LastAccessDate() == cookie.LastAccessDate() &&
+          it->LastUpdateDate() == cookie.LastUpdateDate() &&
           it->IsSecure() == cookie.IsSecure() &&
           it->IsHttpOnly() == cookie.IsHttpOnly() &&
           it->Priority() == cookie.Priority()) {
@@ -1124,12 +1126,12 @@ TEST_F(DeferredCookieTaskTest, DeferredSetAllCookies) {
   CookieList list;
   list.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "A", "B", "." + http_www_foo_.domain(), "/", base::Time::Now(),
-      base::Time(), base::Time(), false, true, CookieSameSite::NO_RESTRICTION,
-      COOKIE_PRIORITY_DEFAULT, false));
+      base::Time(), base::Time(), base::Time(), false, true,
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false));
   list.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "C", "D", "." + http_www_foo_.domain(), "/", base::Time::Now(),
-      base::Time(), base::Time(), false, true, CookieSameSite::NO_RESTRICTION,
-      COOKIE_PRIORITY_DEFAULT, false));
+      base::Time(), base::Time(), base::Time(), false, true,
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false));
 
   ResultSavingCookieCallback<CookieAccessResult> call1;
   cookie_monster_->SetAllCookiesAsync(list, call1.MakeCallback());
@@ -2153,14 +2155,18 @@ TEST_F(CookieMonsterTest, InheritCreationDate) {
   CookieList cookies = GetAllCookies(cm.get());
   ASSERT_EQ(1u, cookies.size());
   EXPECT_EQ(the_not_so_distant_past, cookies[0].CreationDate());
+  base::Time last_update = cookies[0].LastUpdateDate();
 
   // Overwrite the cookie with the same value, and verify that the creation date
-  // is inherited.
+  // is inherited. The update date isn't inherited though.
   EXPECT_TRUE(SetCookie(cm.get(), http_www_foo_.url(), "Name=Value; path=/"));
 
   cookies = GetAllCookies(cm.get());
   ASSERT_EQ(1u, cookies.size());
   EXPECT_EQ(the_not_so_distant_past, cookies[0].CreationDate());
+  // If this is flakey you many need to manually set the last update time.
+  EXPECT_LT(last_update, cookies[0].LastUpdateDate());
+  last_update = cookies[0].LastUpdateDate();
 
   // New value => new creation date.
   EXPECT_TRUE(
@@ -2169,6 +2175,8 @@ TEST_F(CookieMonsterTest, InheritCreationDate) {
   cookies = GetAllCookies(cm.get());
   ASSERT_EQ(1u, cookies.size());
   EXPECT_NE(the_not_so_distant_past, cookies[0].CreationDate());
+  // If this is flakey you many need to manually set the last update time.
+  EXPECT_LT(last_update, cookies[0].LastUpdateDate());
 }
 
 // Check that GetAllCookiesForURL() does not return expired cookies and deletes
@@ -2528,9 +2536,9 @@ TEST_F(CookieMonsterTest, BackingStoreCommunication) {
           cmout.get(),
           CanonicalCookie::CreateUnsafeCookieForTesting(
               cookie.name, cookie.value, cookie.domain, cookie.path,
-              base::Time(), cookie.expiration_time, base::Time(), cookie.secure,
-              cookie.http_only, cookie.same_site, cookie.priority,
-              cookie.same_party),
+              base::Time(), cookie.expiration_time, base::Time(), base::Time(),
+              cookie.secure, cookie.http_only, cookie.same_site,
+              cookie.priority, cookie.same_party),
           cookie.url, true /*modify_httponly*/));
     }
 
@@ -2998,20 +3006,21 @@ TEST_F(CookieMonsterTest, SetAllCookies) {
   CookieList list;
   list.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "A", "B", "." + http_www_foo_.url().host(), "/", base::Time::Now(),
-      base::Time(), base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
-      COOKIE_PRIORITY_DEFAULT, false));
+      base::Time(), base::Time(), base::Time(), false, false,
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false));
   list.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "C", "D", "." + http_www_foo_.url().host(), "/bar", base::Time::Now(),
-      base::Time(), base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
-      COOKIE_PRIORITY_DEFAULT, false));
+      base::Time(), base::Time(), base::Time(), false, false,
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false));
   list.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "W", "X", "." + http_www_foo_.url().host(), "/", base::Time::Now(),
-      base::Time(), base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
-      COOKIE_PRIORITY_DEFAULT, false));
+      base::Time(), base::Time(), base::Time(), false, false,
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false));
   list.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "__Host-Y", "Z", https_www_foo_.url().host(), "/", base::Time::Now(),
-      base::Time(), base::Time(), true, false, CookieSameSite::NO_RESTRICTION,
-      CookiePriority::COOKIE_PRIORITY_DEFAULT, false,
+      base::Time(), base::Time(), base::Time(), true, false,
+      CookieSameSite::NO_RESTRICTION, CookiePriority::COOKIE_PRIORITY_DEFAULT,
+      false,
       CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"))));
 
   // SetAllCookies must not flush.
@@ -3100,8 +3109,8 @@ TEST_F(CookieMonsterTest, HistogramCheck) {
       expired_histogram->SnapshotSamples());
   auto cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
       "a", "b", "a.url", "/", base::Time(),
-      base::Time::Now() + base::Minutes(59), base::Time(), true, false,
-      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false);
+      base::Time::Now() + base::Minutes(59), base::Time(), base::Time(), true,
+      false, CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false);
   GURL source_url = cookie_util::SimulatedCookieSource(*cookie, "https");
   ASSERT_TRUE(SetCanonicalCookie(cm.get(), std::move(cookie), source_url,
                                  true /*modify_httponly*/));
@@ -3233,9 +3242,10 @@ TEST_F(CookieMonsterTest, ControlCharacterPurge) {
           "baz",
           "\x05"
           "boo",
-          "." + domain, path, now2, later, base::Time(), true /* secure */,
-          false /* httponly */, CookieSameSite::NO_RESTRICTION,
-          COOKIE_PRIORITY_DEFAULT, false /* sameparty */);
+          "." + domain, path, now2, later, base::Time(), base::Time(),
+          true /* secure */, false /* httponly */,
+          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+          false /* sameparty */);
   initial_cookies.push_back(std::move(cc));
 
   std::unique_ptr<CanonicalCookie> cc2 =
@@ -3243,9 +3253,10 @@ TEST_F(CookieMonsterTest, ControlCharacterPurge) {
           "baz",
           "\x7F"
           "boo",
-          "." + domain, path, now3, later, base::Time(), true /* secure */,
-          false /* httponly */, CookieSameSite::NO_RESTRICTION,
-          COOKIE_PRIORITY_DEFAULT, false /* sameparty */);
+          "." + domain, path, now3, later, base::Time(), base::Time(),
+          true /* secure */, false /* httponly */,
+          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+          false /* sameparty */);
   initial_cookies.push_back(std::move(cc2));
 
   // Partitioned cookies with control characters should not be loaded.
@@ -3256,9 +3267,10 @@ TEST_F(CookieMonsterTest, ControlCharacterPurge) {
           "__Host-baz",
           "\x7F"
           "boo",
-          domain, "/", now3, later, base::Time(), true /* secure */,
-          false /* httponly */, CookieSameSite::NO_RESTRICTION,
-          COOKIE_PRIORITY_DEFAULT, false /* sameparty */, cookie_partition_key);
+          domain, "/", now3, later, base::Time(), base::Time(),
+          true /* secure */, false /* httponly */,
+          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+          false /* sameparty */, cookie_partition_key);
   initial_cookies.push_back(std::move(cc3));
 
   AddCookieToList(url, "hello=world; path=" + path, now4, &initial_cookies);

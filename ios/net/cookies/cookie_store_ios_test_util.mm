@@ -49,6 +49,7 @@ void TestPersistentCookieStore::RunLoadedCallback() {
           base::Time(),  // creation
           base::Time(),  // expires
           base::Time(),  // last accessed
+          base::Time(),  // last updated
           false,         // secure
           false,         // httponly
           net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,

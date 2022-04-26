@@ -51,6 +51,7 @@ class AttributionCookieCheckerImplTest : public testing::Test {
         /*creation=*/base::Time(),
         /*expiration=*/base::Time(),
         /*last_access=*/base::Time(),
+        /*last_update=*/base::Time(),
         /*secure=*/true,
         /*httponly=*/params.httponly,
         /*same_site=*/params.same_site,

@@ -176,9 +176,9 @@ void CookieManager::OnGotFirstPartySetPartitionKeyForSet(
     cookie = net::CanonicalCookie::FromStorage(
         cookie->Name(), cookie->Value(), cookie->Domain(), cookie->Path(),
         cookie->CreationDate(), cookie->ExpiryDate(), cookie->LastAccessDate(),
-        cookie->IsSecure(), cookie->IsHttpOnly(), cookie->SameSite(),
-        cookie->Priority(), cookie->IsSameParty(), fps_cookie_partition_key,
-        cookie->SourceScheme(), cookie->SourcePort());
+        cookie->LastUpdateDate(), cookie->IsSecure(), cookie->IsHttpOnly(),
+        cookie->SameSite(), cookie->Priority(), cookie->IsSameParty(),
+        fps_cookie_partition_key, cookie->SourceScheme(), cookie->SourcePort());
     if (!cookie) {
       std::move(callback).Run(
           net::CookieAccessResult(net::CookieInclusionStatus(

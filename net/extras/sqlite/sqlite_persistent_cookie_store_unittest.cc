@@ -184,8 +184,9 @@ class SQLitePersistentCookieStoreTest : public TestWithTaskEnvironment {
                  const std::string& path,
                  const base::Time& creation) {
     store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
-        name, value, domain, path, creation, creation, base::Time(), false,
-        false, CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false));
+        name, value, domain, path, creation, creation, base::Time(),
+        base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
+        COOKIE_PRIORITY_DEFAULT, false));
   }
 
   void AddCookieWithExpiration(const std::string& name,
@@ -195,8 +196,9 @@ class SQLitePersistentCookieStoreTest : public TestWithTaskEnvironment {
                                const base::Time& creation,
                                const base::Time& expiration) {
     store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
-        name, value, domain, path, creation, expiration, base::Time(), false,
-        false, CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false));
+        name, value, domain, path, creation, expiration, base::Time(),
+        base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
+        COOKIE_PRIORITY_DEFAULT, false));
   }
 
   std::string ReadRawDBContents() {
@@ -533,7 +535,7 @@ TEST_F(SQLitePersistentCookieStoreTest, TestLoadOldSessionCookies) {
   // Add a session cookie.
   store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "C", "D", "sessioncookie.com", "/", base::Time::Now(), base::Time(),
-      base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
+      base::Time(), base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
       COOKIE_PRIORITY_DEFAULT, false));
 
   // Force the store to write its data to the disk.
@@ -560,7 +562,7 @@ TEST_F(SQLitePersistentCookieStoreTest, TestDontLoadOldSessionCookies) {
   // Add a session cookie.
   store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "C", "D", "sessioncookie.com", "/", base::Time::Now(), base::Time(),
-      base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
+      base::Time(), base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
       COOKIE_PRIORITY_DEFAULT, false));
 
   // Force the store to write its data to the disk.
@@ -598,7 +600,7 @@ TEST_F(SQLitePersistentCookieStoreTest, FilterBadCookiesAndFixupDb) {
       "value, encrypted_value, path, expires_utc, is_secure, is_httponly, "
       "samesite, last_access_utc, has_expires, is_persistent, priority, "
       "source_scheme, source_port, is_same_party, last_update_utc) "
-      "VALUES (?,?,?,?,?,'',?,0,0,0,0,0,1,1,0,?,?,0,0)"));
+      "VALUES (?,?,?,?,?,'',?,0,0,0,0,0,1,1,0,?,?,0,?)"));
   ASSERT_TRUE(stmt.is_valid());
 
   struct CookieInfo {
@@ -619,6 +621,7 @@ TEST_F(SQLitePersistentCookieStoreTest, FilterBadCookiesAndFixupDb) {
                       {"chromium.org", "G", "H", "/dir"}};
 
   int64_t creation_time = 1;
+  base::Time last_update(base::Time::Now());
   for (auto& cookie_info : cookies_info) {
     stmt.Reset(true);
 
@@ -632,6 +635,7 @@ TEST_F(SQLitePersistentCookieStoreTest, FilterBadCookiesAndFixupDb) {
     stmt.BindString(5, cookie_info.path);
     stmt.BindInt(6, static_cast<int>(CookieSourceScheme::kUnset));
     stmt.BindInt(7, SQLitePersistentCookieStore::kDefaultUnknownPort);
+    stmt.BindTime(8, last_update);
     ASSERT_TRUE(stmt.Run());
   }
   stmt.Clear();
@@ -646,6 +650,7 @@ TEST_F(SQLitePersistentCookieStoreTest, FilterBadCookiesAndFixupDb) {
   EXPECT_STREQ("G", cookies[0]->Name().c_str());
   EXPECT_STREQ("H", cookies[0]->Value().c_str());
   EXPECT_STREQ("/dir", cookies[0]->Path().c_str());
+  EXPECT_EQ(last_update, cookies[0]->LastUpdateDate());
   DestroyStore();
 
   // Make sure that we only have one row left.
@@ -669,13 +674,13 @@ TEST_F(SQLitePersistentCookieStoreTest, PersistIsPersistent) {
   // Add a session cookie.
   store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
       kSessionName, "val", "sessioncookie.com", "/", base::Time::Now(),
-      base::Time(), base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
-      COOKIE_PRIORITY_DEFAULT, false));
+      base::Time(), base::Time(), base::Time(), false, false,
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false));
   // Add a persistent cookie.
   store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
       kPersistentName, "val", "sessioncookie.com", "/",
       base::Time::Now() - base::Days(1), base::Time::Now() + base::Days(1),
-      base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
+      base::Time(), base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
       COOKIE_PRIORITY_DEFAULT, false));
 
   // Force the store to write its data to the disk.
@@ -716,21 +721,21 @@ TEST_F(SQLitePersistentCookieStoreTest, PriorityIsPersistent) {
   store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
       kLowName, kCookieValue, kDomain, kCookiePath,
       base::Time::Now() - base::Minutes(1), base::Time::Now() + base::Days(1),
-      base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
+      base::Time(), base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
       COOKIE_PRIORITY_LOW, false));
 
   // Add a medium-priority persistent cookie.
   store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
       kMediumName, kCookieValue, kDomain, kCookiePath,
       base::Time::Now() - base::Minutes(2), base::Time::Now() + base::Days(1),
-      base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
+      base::Time(), base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
       COOKIE_PRIORITY_MEDIUM, false));
 
   // Add a high-priority persistent cookie.
   store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
       kHighName, kCookieValue, kDomain, kCookiePath,
       base::Time::Now() - base::Minutes(3), base::Time::Now() + base::Days(1),
-      base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
+      base::Time(), base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
       COOKIE_PRIORITY_HIGH, false));
 
   // Force the store to write its data to the disk.
@@ -777,21 +782,21 @@ TEST_F(SQLitePersistentCookieStoreTest, SameSiteIsPersistent) {
   store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
       kNoneName, kCookieValue, kDomain, kCookiePath,
       base::Time::Now() - base::Minutes(1), base::Time::Now() + base::Days(1),
-      base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
+      base::Time(), base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
       COOKIE_PRIORITY_DEFAULT, false));
 
   // Add a lax-samesite persistent cookie.
   store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
       kLaxName, kCookieValue, kDomain, kCookiePath,
       base::Time::Now() - base::Minutes(2), base::Time::Now() + base::Days(1),
-      base::Time(), false, false, CookieSameSite::LAX_MODE,
+      base::Time(), base::Time(), false, false, CookieSameSite::LAX_MODE,
       COOKIE_PRIORITY_DEFAULT, false));
 
   // Add a strict-samesite persistent cookie.
   store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
       kStrictName, kCookieValue, kDomain, kCookiePath,
       base::Time::Now() - base::Minutes(3), base::Time::Now() + base::Days(1),
-      base::Time(), false, false, CookieSameSite::STRICT_MODE,
+      base::Time(), base::Time(), false, false, CookieSameSite::STRICT_MODE,
       COOKIE_PRIORITY_DEFAULT, false));
 
   // Force the store to write its data to the disk.
@@ -833,7 +838,7 @@ TEST_F(SQLitePersistentCookieStoreTest, SameSiteExtendedTreatedAsUnspecified) {
   store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
       kExtendedName, kCookieValue, kDomain, kCookiePath,
       base::Time::Now() - base::Minutes(1), base::Time::Now() + base::Days(1),
-      base::Time(), false, false, CookieSameSite::STRICT_MODE,
+      base::Time(), base::Time(), false, false, CookieSameSite::STRICT_MODE,
       COOKIE_PRIORITY_DEFAULT, false));
 
   // Force the store to write its data to the disk.
@@ -873,7 +878,7 @@ TEST_F(SQLitePersistentCookieStoreTest, SamePartyIsPersistent) {
   store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
       kNonSamePartyCookieName, kCookieValue, kDomain, kCookiePath,
       base::Time::Now() - base::Minutes(1), base::Time::Now() + base::Days(1),
-      base::Time(),
+      base::Time(), base::Time(),
       /*secure=*/true, false, CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT,
       /*same_party=*/false));
 
@@ -881,7 +886,7 @@ TEST_F(SQLitePersistentCookieStoreTest, SamePartyIsPersistent) {
   store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
       kSamePartyCookieName, kCookieValue, kDomain, kCookiePath,
       base::Time::Now() - base::Minutes(1), base::Time::Now() + base::Days(1),
-      base::Time(),
+      base::Time(), base::Time(),
       /*secure=*/true, false, CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT,
       /*same_party=*/true));
 
@@ -931,7 +936,7 @@ TEST_F(SQLitePersistentCookieStoreTest, SourcePortIsPersistent) {
     store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
         input.name, kCookieValue, kDomain, kCookiePath,
         base::Time::Now() - base::Minutes(1), base::Time::Now() + base::Days(1),
-        base::Time(),
+        base::Time(), base::Time(),
         /*secure=*/true, false, CookieSameSite::LAX_MODE,
         COOKIE_PRIORITY_DEFAULT,
         /*same_party=*/false,
@@ -1131,33 +1136,33 @@ bool AddV9CookiesToDB(sql::Database* db) {
   std::vector<CanonicalCookie> cookies;
   cookies.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "A", "B", "example.com", "/", cookie_time, cookie_time, cookie_time,
-      false, false, CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      false));
+      cookie_time, false, false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, false));
   cookie_time += base::Microseconds(1);
   cookies.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "C", "B", "example.com", "/", cookie_time, cookie_time, cookie_time,
-      false, false, CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      false));
+      cookie_time, false, false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, false));
   cookie_time += base::Microseconds(1);
   cookies.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "A", "B", "example2.com", "/", cookie_time, cookie_time, cookie_time,
-      false, false, CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      false));
+      cookie_time, false, false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, false));
   cookie_time += base::Microseconds(1);
   cookies.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "C", "B", "example2.com", "/", cookie_time, cookie_time, cookie_time,
-      false, false, CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      false));
+      cookie_time, false, false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, false));
   cookie_time += base::Microseconds(1);
   cookies.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "A", "B", "example.com", "/path", cookie_time, cookie_time, cookie_time,
-      false, false, CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      false));
+      cookie_time, false, false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, false));
   cookie_time += base::Microseconds(1);
   cookies.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "C", "B", "example.com", "/path", cookie_time, cookie_time, cookie_time,
-      false, false, CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      false));
+      cookie_time, false, false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, false));
   cookie_time += base::Microseconds(1);
   return AddV9CookiesToDBImpl(db, cookies);
 }
@@ -1280,8 +1285,9 @@ TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion10Corrupted) {
   base::Time old_time = base::Time::Now() - base::Minutes(90);
   base::Time old_time2 = base::Time::Now() - base::Minutes(91);
   auto old_cookie1 = CanonicalCookie::CreateUnsafeCookieForTesting(
-      "A", "old_value", "example.com", "/", old_time, old_time, old_time, false,
-      false, CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false);
+      "A", "old_value", "example.com", "/", old_time, old_time, old_time,
+      old_time, false, false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, false);
   AddV9CookiesToDBImpl(&connection, {*old_cookie1});
 
   // Add the same set of cookies twice to create duplicates.
@@ -1291,8 +1297,8 @@ TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion10Corrupted) {
   // Add some others as well.
   auto old_cookie2 = CanonicalCookie::CreateUnsafeCookieForTesting(
       "A", "old_value", "example.com", "/path", old_time2, old_time2, old_time2,
-      false, false, CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      false);
+      old_time2, false, false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, false);
   AddV9CookiesToDBImpl(&connection, {*old_cookie2});
 
   connection.Close();
@@ -1618,22 +1624,22 @@ bool AddV10CookiesToDB(sql::Database* db) {
 
   std::vector<CanonicalCookie> cookies;
   cookies.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
-      "A", "B", "example.com", "/", time, time, time, false, false,
+      "A", "B", "example.com", "/", time, time, time, time, false, false,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false));
   cookies.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
-      "C", "B", "example.com", "/", time, time, time, false, false,
+      "C", "B", "example.com", "/", time, time, time, time, false, false,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false));
   cookies.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
-      "A", "B", "example2.com", "/", time, time, time, false, false,
+      "A", "B", "example2.com", "/", time, time, time, time, false, false,
       CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT, false));
   cookies.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
-      "C", "B", "example2.com", "/", time, time, time, false, false,
+      "C", "B", "example2.com", "/", time, time, time, time, false, false,
       CookieSameSite::LAX_MODE, COOKIE_PRIORITY_DEFAULT, false));
   cookies.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
-      "A", "B", "example.com", "/path", time, time, time, false, false,
+      "A", "B", "example.com", "/path", time, time, time, time, false, false,
       CookieSameSite::STRICT_MODE, COOKIE_PRIORITY_DEFAULT, false));
   cookies.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
-      "C", "B", "example.com", "/path", time, time, time, false, false,
+      "C", "B", "example.com", "/path", time, time, time, time, false, false,
       CookieSameSite::STRICT_MODE, COOKIE_PRIORITY_DEFAULT, false));
   return AddV10CookiesToDBImpl(db, cookies);
 }
@@ -1988,27 +1994,27 @@ std::vector<CanonicalCookie> CookiesForMigrationTest() {
   // Some of these are constructed with SameParty set to true, to test that in
   // the DB migration, the is_same_party values are all defaulted to false.
   cookies.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
-      "A", "B", "example.com", "/", now, now, now, true /* secure */,
+      "A", "B", "example.com", "/", now, now, now, now, true /* secure */,
       false /* httponly */, CookieSameSite::UNSPECIFIED,
       COOKIE_PRIORITY_DEFAULT, false /* same_party */));
   cookies.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
-      "C", "B", "example.com", "/", now, now, now, true /* secure */,
+      "C", "B", "example.com", "/", now, now, now, now, true /* secure */,
       false /* httponly */, CookieSameSite::UNSPECIFIED,
       COOKIE_PRIORITY_DEFAULT, true /* same_party */));
   cookies.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
-      "A", "B", "example2.com", "/", now, now, now, true /* secure */,
+      "A", "B", "example2.com", "/", now, now, now, now, true /* secure */,
       false /* httponly */, CookieSameSite::UNSPECIFIED,
       COOKIE_PRIORITY_DEFAULT, true /* same_party */));
   cookies.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
-      "C", "B", "example2.com", "/", now, now, now, false /* secure */,
+      "C", "B", "example2.com", "/", now, now, now, now, false /* secure */,
       false /* httponly */, CookieSameSite::UNSPECIFIED,
       COOKIE_PRIORITY_DEFAULT, false /* same_party */));
   cookies.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
-      "A", "B", "example.com", "/path", now, now, now, false /* secure */,
+      "A", "B", "example.com", "/path", now, now, now, now, false /* secure */,
       false /* httponly */, CookieSameSite::UNSPECIFIED,
       COOKIE_PRIORITY_DEFAULT, false /* same_party */));
   cookies.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
-      "C", "B", "example.com", "/path", now, now, now, false /* secure */,
+      "C", "B", "example.com", "/path", now, now, now, now, false /* secure */,
       false /* httponly */, CookieSameSite::UNSPECIFIED,
       COOKIE_PRIORITY_DEFAULT, false /* same_party */));
   return cookies;
@@ -2237,7 +2243,7 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_TRUE(read_in_cookies[i]->IsSecure());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_FALSE(read_in_cookies[i]->IsSameParty());
-  // TODO(crbug.com/1264458): Propagate/populate last_update_utc.
+  EXPECT_TRUE(read_in_cookies[i]->LastUpdateDate().is_null());
 
   i++;
   EXPECT_EQ("A", read_in_cookies[i]->Name());
@@ -2247,7 +2253,7 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_FALSE(read_in_cookies[i]->IsSecure());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_FALSE(read_in_cookies[i]->IsSameParty());
-  // TODO(crbug.com/1264458): Propagate/populate last_update_utc.
+  EXPECT_TRUE(read_in_cookies[i]->LastUpdateDate().is_null());
 
   i++;
   EXPECT_EQ("A", read_in_cookies[i]->Name());
@@ -2257,7 +2263,7 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_TRUE(read_in_cookies[i]->IsSecure());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_EQ(expect_same_party_cookies, read_in_cookies[i]->IsSameParty());
-  // TODO(crbug.com/1264458): Propagate/populate last_update_utc.
+  EXPECT_TRUE(read_in_cookies[i]->LastUpdateDate().is_null());
 
   i++;
   EXPECT_EQ("C", read_in_cookies[i]->Name());
@@ -2267,7 +2273,7 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_TRUE(read_in_cookies[i]->IsSecure());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_EQ(expect_same_party_cookies, read_in_cookies[i]->IsSameParty());
-  // TODO(crbug.com/1264458): Propagate/populate last_update_utc.
+  EXPECT_TRUE(read_in_cookies[i]->LastUpdateDate().is_null());
 
   i++;
   EXPECT_EQ("C", read_in_cookies[i]->Name());
@@ -2277,7 +2283,7 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_FALSE(read_in_cookies[i]->IsSecure());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_FALSE(read_in_cookies[i]->IsSameParty());
-  // TODO(crbug.com/1264458): Propagate/populate last_update_utc.
+  EXPECT_TRUE(read_in_cookies[i]->LastUpdateDate().is_null());
 
   i++;
   EXPECT_EQ("C", read_in_cookies[i]->Name());
@@ -2287,7 +2293,7 @@ void ConfirmCookiesAfterMigrationTest(
   EXPECT_FALSE(read_in_cookies[i]->IsSecure());
   EXPECT_EQ(CookieSourceScheme::kUnset, read_in_cookies[i]->SourceScheme());
   EXPECT_FALSE(read_in_cookies[i]->IsSameParty());
-  // TODO(crbug.com/1264458): Propagate/populate last_update_utc.
+  EXPECT_TRUE(read_in_cookies[i]->LastUpdateDate().is_null());
 }
 
 // Confirm that source_scheme gets added and is set to "Unset".
@@ -2418,8 +2424,9 @@ TEST_P(PartitionedCookiesSQLitePersistentCookieStoreTest,
   store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "__Host-foo", "bar", GURL("https://example.com/").host(), "/",
       base::Time::Now(), base::Time::Now() + base::Days(1), base::Time::Now(),
-      true /* secure */, false /* httponly */, CookieSameSite::UNSPECIFIED,
-      COOKIE_PRIORITY_DEFAULT, false /* sameparty */,
+      base::Time::Now(), true /* secure */, false /* httponly */,
+      CookieSameSite::UNSPECIFIED, COOKIE_PRIORITY_DEFAULT,
+      false /* sameparty */,
       CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"))));
   Flush();
 
@@ -2445,12 +2452,13 @@ TEST_P(PartitionedCookiesSQLitePersistentCookieStoreTest,
       "value, encrypted_value, path, expires_utc, is_secure, is_httponly, "
       "samesite, last_access_utc, has_expires, is_persistent, priority, "
       "source_scheme, source_port, is_same_party, last_update_utc) "
-      "VALUES (?,?,?,?,?,'',?,?,1,0,0,?,1,1,0,?,?,0,0)"));
+      "VALUES (?,?,?,?,?,'',?,?,1,0,0,?,1,1,0,?,?,0,?)"));
   ASSERT_TRUE(stmt.is_valid());
 
   base::Time creation(base::Time::Now());
   base::Time expiration(creation + base::Days(1));
   base::Time last_access(base::Time::Now());
+  base::Time last_update(base::Time::Now());
 
   stmt.BindTime(0, creation);
   stmt.BindString(1, GURL("https://www.example.com/").host());
@@ -2462,6 +2470,7 @@ TEST_P(PartitionedCookiesSQLitePersistentCookieStoreTest,
   stmt.BindTime(7, last_access);
   stmt.BindInt(8, static_cast<int>(CookieSourceScheme::kUnset));
   stmt.BindInt(9, SQLitePersistentCookieStore::kDefaultUnknownPort);
+  stmt.BindTime(10, last_update);
   ASSERT_TRUE(stmt.Run());
   stmt.Clear();
 
@@ -2478,6 +2487,7 @@ TEST_P(PartitionedCookiesSQLitePersistentCookieStoreTest,
     EXPECT_EQ(
         CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com")),
         cc->PartitionKey());
+    EXPECT_EQ(last_update, cc->LastUpdateDate());
   } else {
     EXPECT_EQ(0u, cookies.size());
     // If Partitioned cookies are disabled, then we should delete any

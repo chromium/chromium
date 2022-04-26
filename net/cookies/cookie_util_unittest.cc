@@ -1538,7 +1538,7 @@ TEST(CookieUtilTest, GetSamePartyStatus_NotInSet) {
             base::Time now = base::Time::Now();
             std::unique_ptr<CanonicalCookie> cookie =
                 CanonicalCookie::CreateUnsafeCookieForTesting(
-                    "cookie", "tasty", "example.test", "/", now, now, now,
+                    "cookie", "tasty", "example.test", "/", now, now, now, now,
                     secure, httponly, same_site,
                     CookiePriority::COOKIE_PRIORITY_DEFAULT, same_party);
 
@@ -1575,7 +1575,7 @@ TEST(CookieUtilTest, GetSamePartyStatus_FeatureDisabled) {
             base::Time now = base::Time::Now();
             std::unique_ptr<CanonicalCookie> cookie =
                 CanonicalCookie::CreateUnsafeCookieForTesting(
-                    "cookie", "tasty", "example.test", "/", now, now, now,
+                    "cookie", "tasty", "example.test", "/", now, now, now, now,
                     secure, httponly, same_site,
                     CookiePriority::COOKIE_PRIORITY_DEFAULT, same_party);
 
@@ -1611,8 +1611,9 @@ TEST(CookieUtilTest, GetSamePartyStatus_NotSameParty) {
           base::Time now = base::Time::Now();
           std::unique_ptr<CanonicalCookie> cookie =
               CanonicalCookie::CreateUnsafeCookieForTesting(
-                  "cookie", "tasty", "example.test", "/", now, now, now, secure,
-                  httponly, same_site, CookiePriority::COOKIE_PRIORITY_DEFAULT,
+                  "cookie", "tasty", "example.test", "/", now, now, now, now,
+                  secure, httponly, same_site,
+                  CookiePriority::COOKIE_PRIORITY_DEFAULT,
                   false /* same_party */);
 
           options.set_same_party_context(SamePartyContext(party_context_type));
@@ -1667,7 +1668,7 @@ TEST(CookieUtilTest, GetSamePartyStatus_SamePartySemantics) {
           base::Time now = base::Time::Now();
           std::unique_ptr<CanonicalCookie> cookie =
               CanonicalCookie::CreateUnsafeCookieForTesting(
-                  "cookie", "tasty", "example.test", "/", now, now, now,
+                  "cookie", "tasty", "example.test", "/", now, now, now, now,
                   true /* secure */, httponly, same_site,
                   CookiePriority::COOKIE_PRIORITY_DEFAULT,
                   true /* same_party */);

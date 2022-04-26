@@ -175,9 +175,10 @@ void InjectCookie(content::StoragePartition* storage_partition) {
   std::unique_ptr<net::CanonicalCookie> cookie =
       net::CanonicalCookie::CreateUnsafeCookieForTesting(
           kTestCookieName, kTestCookieValue, kTestCookieHost, "/", base::Time(),
-          base::Time(), base::Time(), true /* secure */, false /* httponly*/,
-          net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_MEDIUM,
-          false /* same_party */);
+          base::Time(), base::Time(), base::Time(), /*secure=*/true,
+          /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+          net::COOKIE_PRIORITY_MEDIUM,
+          /*same_party=*/false);
   base::RunLoop run_loop;
   cookie_manager->SetCanonicalCookie(
       *cookie, net::cookie_util::SimulatedCookieSource(*cookie, "https"),

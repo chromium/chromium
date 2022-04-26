@@ -24,7 +24,7 @@ TEST(CookiesHelperUnittest, CookieConversionWithInfiniteExpirationDate) {
   const base::Time kExpirationDate = base::Time::Max();
   auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
       "cookiename", "cookievalue", "example.com", "/", base::Time::Now(),
-      kExpirationDate, base::Time(), false, false,
+      kExpirationDate, base::Time(), base::Time(), false, false,
       net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT, false);
 
   // Serialize the cookie to JSON. We need to gracefully handle the infinite

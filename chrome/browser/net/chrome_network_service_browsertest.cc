@@ -59,9 +59,9 @@ void SetCookie(network::mojom::CookieManager* cookie_manager) {
   base::Time t = base::Time::Now();
   auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
       kCookieName, kCookieValue, "www.test.com", "/", t, t + base::Days(1),
-      base::Time(), true /* secure */, false /* http-only*/,
+      base::Time(), base::Time(), /*secure=*/true, /*http-only=*/false,
       net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
-      false /* same_party */);
+      /*same_party=*/false);
   base::RunLoop run_loop;
   cookie_manager->SetCanonicalCookie(
       *cookie, net::cookie_util::SimulatedCookieSource(*cookie, "https"),

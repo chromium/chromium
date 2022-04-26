@@ -237,8 +237,9 @@ TEST_F(SameSiteDataRemoverImplTest, TestCookieRemovalUnaffectedByParameters) {
   bool result_out = false;
   auto cookie1 = net::CanonicalCookie::CreateUnsafeCookieForTesting(
       "TestCookie1", "20", "google.com", "/", base::Time::Now(), base::Time(),
-      base::Time(), true, true, net::CookieSameSite::NO_RESTRICTION,
-      net::COOKIE_PRIORITY_HIGH, /*same_party=*/true);
+      base::Time(), base::Time(), true, true,
+      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_HIGH,
+      /*same_party=*/true);
   cookie_manager->SetCanonicalCookie(
       *cookie1, net::cookie_util::SimulatedCookieSource(*cookie1, "https"),
       options, base::BindLambdaForTesting([&](net::CookieAccessResult result) {
@@ -256,7 +257,7 @@ TEST_F(SameSiteDataRemoverImplTest, TestCookieRemovalUnaffectedByParameters) {
   result_out = false;
   auto cookie2 = net::CanonicalCookie::CreateUnsafeCookieForTesting(
       "TestCookie2", "10", "gmail.google.com", "/", base::Time(),
-      base::Time::Max(), base::Time(), false, true,
+      base::Time::Max(), base::Time(), base::Time(), false, true,
       net::CookieSameSite::LAX_MODE, net::COOKIE_PRIORITY_HIGH, false);
   cookie_manager->SetCanonicalCookie(
       *cookie2, net::cookie_util::SimulatedCookieSource(*cookie2, "https"),
@@ -380,8 +381,9 @@ TEST_F(SameSiteDataRemoverImplTest, TestDoesNotDeletePartitionedCookies) {
   bool result_out;
   auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
       "__Host-partitioned", "1", "www.partitioned.com", "/", base::Time(),
-      base::Time(), base::Time(), /*secure=*/true, /*httponly=*/false,
-      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_LOW,
+      base::Time(), base::Time(), base::Time(), /*secure=*/true,
+      /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+      net::COOKIE_PRIORITY_LOW,
       /*same_party=*/false,
       net::CookiePartitionKey::FromURLForTesting(
           GURL("https://toplevel.site")));

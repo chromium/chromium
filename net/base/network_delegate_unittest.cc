@@ -22,10 +22,11 @@ constexpr char kURL[] = "example.test";
 
 CanonicalCookie MakeCookie(const std::string& name) {
   return *CanonicalCookie::CreateUnsafeCookieForTesting(
-      name, "value", kURL, "/" /* path */, base::Time() /* creation */,
-      base::Time() /* expiration */, base::Time() /* last_access */,
-      true /* secure */, false /* httponly */, CookieSameSite::UNSPECIFIED,
-      CookiePriority::COOKIE_PRIORITY_DEFAULT, false /* same_party */);
+      name, "value", kURL, /*path=*/"/", /*creation=*/base::Time(),
+      /*expiration=*/base::Time(), /*last_access=*/base::Time(),
+      /*last_update=*/base::Time(),
+      /*secure=*/true, /*httponly=*/false, CookieSameSite::UNSPECIFIED,
+      CookiePriority::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false);
 }
 
 CookieAccessResult Include() {

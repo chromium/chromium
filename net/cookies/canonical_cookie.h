@@ -138,6 +138,7 @@ class NET_EXPORT CanonicalCookie {
       base::Time creation,
       base::Time expiration,
       base::Time last_access,
+      base::Time last_update,
       bool secure,
       bool httponly,
       CookieSameSite same_site,
@@ -157,6 +158,7 @@ class NET_EXPORT CanonicalCookie {
       const base::Time& creation,
       const base::Time& expiration,
       const base::Time& last_access,
+      const base::Time& last_update,
       bool secure,
       bool httponly,
       CookieSameSite same_site,
@@ -181,9 +183,10 @@ class NET_EXPORT CanonicalCookie {
   const std::string& Domain() const { return domain_; }
   const std::string& Path() const { return path_; }
   const base::Time& CreationDate() const { return creation_date_; }
-  const base::Time& LastAccessDate() const { return last_access_date_; }
-  bool IsPersistent() const { return !expiry_date_.is_null(); }
   const base::Time& ExpiryDate() const { return expiry_date_; }
+  const base::Time& LastAccessDate() const { return last_access_date_; }
+  const base::Time& LastUpdateDate() const { return last_update_date_; }
+  bool IsPersistent() const { return !expiry_date_.is_null(); }
   bool IsSecure() const { return secure_; }
   bool IsHttpOnly() const { return httponly_; }
   CookieSameSite SameSite() const { return same_site_; }
@@ -286,7 +289,7 @@ class NET_EXPORT CanonicalCookie {
            priority_ == other.priority_ && same_party_ == other.same_party_ &&
            partition_key_ == other.partition_key_ && name_ == other.name_ &&
            value_ == other.value_ && domain_ == other.domain_ &&
-           path_ == other.path_;
+           path_ == other.path_ && last_update_date_ == other.last_update_date_;
   }
 
   void SetSourceScheme(CookieSourceScheme source_scheme) {
@@ -435,6 +438,7 @@ class NET_EXPORT CanonicalCookie {
                   base::Time creation,
                   base::Time expiration,
                   base::Time last_access,
+                  base::Time last_update,
                   bool secure,
                   bool httponly,
                   CookieSameSite same_site,
@@ -519,6 +523,7 @@ class NET_EXPORT CanonicalCookie {
   base::Time creation_date_;
   base::Time expiry_date_;
   base::Time last_access_date_;
+  base::Time last_update_date_;
   bool secure_{false};
   bool httponly_{false};
   CookieSameSite same_site_{CookieSameSite::NO_RESTRICTION};

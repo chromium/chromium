@@ -168,6 +168,7 @@ struct CanonicalCookie {
   mojo_base.mojom.Time creation;
   mojo_base.mojom.Time expiry;
   mojo_base.mojom.Time last_access;
+  mojo_base.mojom.Time last_update;
   bool secure = false;
   bool httponly = false;
   CookieSameSite site_restrictions = NO_RESTRICTION;

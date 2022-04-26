@@ -49,9 +49,10 @@ std::unique_ptr<net::CanonicalCookie> MakeCanonicalCookie(
     absl::optional<net::CookiePartitionKey> cookie_partition_key =
         absl::nullopt) {
   return net::CanonicalCookie::CreateUnsafeCookieForTesting(
-      name, "1", domain, "/" /* path */, base::Time() /* creation */,
-      base::Time() /* expiration */, base::Time() /* last_access */,
-      true /* secure */, false /* httponly */, net::CookieSameSite::UNSPECIFIED,
+      name, "1", domain, /*path=*/"/", /*creation=*/base::Time(),
+      /*expiration=*/base::Time(), /*last_access=*/base::Time(),
+      /*last_update=*/base::Time(),
+      /*secure=*/true, /*httponly=*/false, net::CookieSameSite::UNSPECIFIED,
       net::CookiePriority::COOKIE_PRIORITY_DEFAULT, sameparty,
       cookie_partition_key);
 }

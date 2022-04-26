@@ -2497,8 +2497,8 @@ void CookieMonster::ConvertPartitionedCookie(const net::CanonicalCookie& cookie,
   auto new_cookie = net::CanonicalCookie::FromStorage(
       cookie.Name(), cookie.Value(), cookie.Domain(), cookie.Path(),
       cookie.CreationDate(), cookie.ExpiryDate(), base::Time::Now(),
-      cookie.IsSecure(), cookie.IsHttpOnly(), cookie.SameSite(),
-      cookie.Priority(), cookie.IsSameParty(), absl::nullopt,
+      cookie.LastUpdateDate(), cookie.IsSecure(), cookie.IsHttpOnly(),
+      cookie.SameSite(), cookie.Priority(), cookie.IsSameParty(), absl::nullopt,
       cookie.SourceScheme(), cookie.SourcePort());
   DCHECK(new_cookie);
 

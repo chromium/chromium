@@ -44,6 +44,7 @@ void CheckSystemCookie(const base::Time& expires, bool secure, bool httponly) {
           base::Time(),  // creation
           expires,
           base::Time(),  // last_access
+          base::Time(),  // last_update
           secure, httponly, same_site, net::COOKIE_PRIORITY_DEFAULT,
           false /* same_party */);
   // Convert it to system cookie.
@@ -198,6 +199,7 @@ TEST_F(CookieUtil, SystemCookieFromBadCanonicalCookie) {
           base::Time(),  // creation
           base::Time(),  // expires
           base::Time(),  // last_access
+          base::Time(),  // last_update
           false,         // secure
           false,         // httponly
           net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
@@ -216,6 +218,7 @@ TEST_F(CookieUtil, SystemCookiesFromCanonicalCookieList) {
           base::Time(),  // creation
           expire_date,
           base::Time(),  // last_access
+          base::Time(),  // last_update
           false,         // secure
           false,         // httponly
           net::CookieSameSite::UNSPECIFIED, net::COOKIE_PRIORITY_DEFAULT,
@@ -225,6 +228,7 @@ TEST_F(CookieUtil, SystemCookiesFromCanonicalCookieList) {
           base::Time(),  // creation
           expire_date,
           base::Time(),  // last_access
+          base::Time(),  // last_update
           false,         // secure
           false,         // httponly
           net::CookieSameSite::UNSPECIFIED, net::COOKIE_PRIORITY_DEFAULT,

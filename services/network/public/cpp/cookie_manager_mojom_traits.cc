@@ -597,6 +597,7 @@ bool StructTraits<
   base::Time creation_time;
   base::Time expiry_time;
   base::Time last_access_time;
+  base::Time last_update_time;
   if (!cookie.ReadCreation(&creation_time))
     return false;
 
@@ -604,6 +605,9 @@ bool StructTraits<
     return false;
 
   if (!cookie.ReadLastAccess(&last_access_time))
+    return false;
+
+  if (!cookie.ReadLastUpdate(&last_update_time))
     return false;
 
   net::CookieSameSite site_restrictions;
@@ -625,9 +629,9 @@ bool StructTraits<
   auto cc = net::CanonicalCookie::FromStorage(
       std::move(name), std::move(value), std::move(domain), std::move(path),
       std::move(creation_time), std::move(expiry_time),
-      std::move(last_access_time), cookie.secure(), cookie.httponly(),
-      site_restrictions, priority, cookie.same_party(), partition_key,
-      source_scheme, cookie.source_port());
+      std::move(last_access_time), std::move(last_update_time), cookie.secure(),
+      cookie.httponly(), site_restrictions, priority, cookie.same_party(),
+      partition_key, source_scheme, cookie.source_port());
   if (!cc)
     return false;
   *out = *cc;

@@ -104,9 +104,9 @@ void RemoveCookieTester::AddCookie(const std::string& host,
   options.set_include_httponly();
   auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
       name, value, host, "/", base::Time(), base::Time(), base::Time(),
-      true /* secure*/, false /* http only*/,
+      base::Time(), /*secure=*/true, /*httponly=*/false,
       net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_MEDIUM,
-      false /* same_party */);
+      /*same_party=*/false);
   cookie_manager_->SetCanonicalCookie(
       *cookie, net::cookie_util::SimulatedCookieSource(*cookie, "https"),
       options,
