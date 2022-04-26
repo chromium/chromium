@@ -15,6 +15,7 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
@@ -26,6 +27,7 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/history_quick_provider.h"
 #include "components/search_engines/omnibox_focus_type.h"
 
 namespace fuzzy {
@@ -380,7 +382,14 @@ void HistoryFuzzyProvider::Start(const AutocompleteInput& input,
 
   autocomplete_input_ = input;
 
-  DoAutocomplete();
+  // Fuzzy matching intends to correct quick typos, and because it may involve
+  // a compute intensive search, some conditions are checked to bypass this
+  // provider early. When the cursor is moved from the end of input string,
+  // user may have slowed down to edit manually.
+  if (autocomplete_input_.cursor_position() ==
+      autocomplete_input_.text().length()) {
+    DoAutocomplete();
+  }
 }
 
 size_t HistoryFuzzyProvider::EstimateMemoryUsage() const {
@@ -398,7 +407,6 @@ void HistoryFuzzyProvider::DoAutocomplete() {
       .step_length = 4,
       .limit = 3,
   };
-  AddMatchForText(u"fuzzyurlhere.org");
 
   const std::u16string& text = autocomplete_input_.text();
   if (text.length() == 0) {
@@ -419,11 +427,49 @@ void HistoryFuzzyProvider::DoAutocomplete() {
       DVLOG(1) << "Trie contains input; no fuzzy results needed?";
       AddMatchForText(u"INPUT ON TRIE");
     }
-    for (const auto& correction : corrections) {
-      std::u16string fixed = text;
-      correction.ApplyTo(fixed);
-      DVLOG(1) << ":  " << fixed;
-      AddMatchForText(fixed);
+    if (!corrections.empty()) {
+      // Use of `scoped_refptr` is required here because destructor is private.
+      scoped_refptr<HistoryQuickProvider> history_quick_provider =
+          new HistoryQuickProvider(client());
+      for (const auto& correction : corrections) {
+        std::u16string fixed = text;
+        correction.ApplyTo(fixed);
+        DVLOG(1) << ":  " << fixed;
+        AddMatchForText(fixed);
+
+        // Note the `cursor_position` could be changed by insert or delete
+        // corrections, but this is easy to adapt since we only fuzzy
+        // match when cursor is at end of input; just move to new end.
+        DCHECK_EQ(autocomplete_input_.cursor_position(),
+                  autocomplete_input_.text().length());
+        AutocompleteInput corrected_input(
+            fixed, fixed.length(),
+            autocomplete_input_.current_page_classification(),
+            client()->GetSchemeClassifier());
+        history_quick_provider->Start(corrected_input, false);
+        DCHECK(history_quick_provider->done());
+
+        // TODO(orinj): Optimize with move not copy; requires provider change.
+        //  Consider taking only the most relevant match.
+        for (const auto& history_quick_match :
+             history_quick_provider->matches()) {
+          DVLOG(1) << "HQP match: " << history_quick_match.contents;
+          matches_.push_back(history_quick_match);
+
+          // Update match in place.
+          AutocompleteMatch& match = matches_.back();
+          match.provider = this;
+          match.inline_autocompletion.clear();
+          match.allowed_to_be_default_match = false;
+          // TODO(orinj): Determine suitable relevance penalty; it should
+          //  likely take into account the edit distance or size of correction.
+          //  Using 9/10 reasonably took a 1334 relevance match down to 1200.
+          match.relevance = match.relevance * 9 / 10;
+          match.contents_class.clear();
+          match.contents_class.push_back(
+              {0, AutocompleteMatch::ACMatchClassification::DIM});
+        }
+      }
     }
     DVLOG(1) << "}?";
   }
