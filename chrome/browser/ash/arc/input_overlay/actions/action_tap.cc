@@ -260,28 +260,15 @@ std::unique_ptr<ActionView> ActionTap::CreateView(
   return view;
 }
 
-bool ActionTap::RequireInputElement(const InputElement& input_element,
-                                    Action** overlapped_action) {
-  DCHECK(current_binding_);
-  if (!current_binding_)
-    return false;
-  auto& binding = GetCurrentDisplayedBinding();
-  if (binding.IsOverlapped(input_element))
-    *overlapped_action = this;
-  // For ActionTap, other actions can take its binding.
-  return false;
-}
-
-void ActionTap::Unbind() {
+void ActionTap::Unbind(const InputElement& input_element) {
   DCHECK(action_view_);
   if (!action_view_)
     return;
   if (pending_binding_)
     pending_binding_.reset();
   pending_binding_ = std::make_unique<InputElement>();
-  auto bounds = CalculateWindowContentBounds(target_window_);
-  action_view_->SetViewContent(BindingOption::kPending, bounds);
-  action_view_->SetDisplayMode(DisplayMode::kEditedUnbound);
+
+  PostUnbindProcess();
 }
 
 bool ActionTap::RewriteKeyEvent(const ui::KeyEvent* key_event,

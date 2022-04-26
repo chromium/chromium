@@ -57,6 +57,8 @@ class InputElement {
 
   // Return true if there is key overlapped or the mouse action is overlapped.
   bool IsOverlapped(const InputElement& input_element) const;
+  // Set key in the |keys_| list at the |index| to |code|.
+  void SetKey(int index, ui::DomCode code);
 
   int input_sources() const { return input_sources_; }
   const std::vector<ui::DomCode>& keys() const { return keys_; }

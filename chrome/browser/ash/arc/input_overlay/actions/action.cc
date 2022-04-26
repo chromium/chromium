@@ -257,6 +257,14 @@ const InputElement& Action::GetCurrentDisplayedBinding() {
   return pending_binding_ ? *pending_binding_ : *current_binding_;
 }
 
+bool Action::IsOverlapped(const InputElement& input_element) {
+  DCHECK(current_binding_);
+  if (!current_binding_)
+    return false;
+  auto& binding = GetCurrentDisplayedBinding();
+  return binding.IsOverlapped(input_element);
+}
+
 absl::optional<gfx::PointF> Action::CalculateTouchPosition(
     const gfx::RectF& content_bounds) {
   if (locations_.empty())
@@ -346,6 +354,12 @@ void Action::OnTouchCancelled() {
   if (locations_.empty())
     return;
   current_position_index_ = 0;
+}
+
+void Action::PostUnbindProcess() {
+  auto bounds = CalculateWindowContentBounds(target_window_);
+  action_view_->SetViewContent(BindingOption::kPending, bounds);
+  action_view_->SetDisplayMode(DisplayMode::kEditedUnbound);
 }
 
 }  // namespace input_overlay

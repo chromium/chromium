@@ -347,24 +347,27 @@ std::unique_ptr<ActionView> ActionMove::CreateView(
   return view;
 }
 
-bool ActionMove::RequireInputElement(const InputElement& input_element,
-                                     Action** overlapped_action) {
-  // For ActionMove, other actions such |ActionTap| can't take this binding.
-  DCHECK(current_binding_);
-  if (!current_binding_)
-    return false;
-  const auto& binding = GetCurrentDisplayedBinding();
-  if (binding.IsOverlapped(input_element)) {
-    *overlapped_action = this;
-    return true;
-  }
-  return false;
-}
+void ActionMove::Unbind(const InputElement& input_element) {
+  DCHECK(action_view_);
+  if (!action_view_)
+    return;
 
-void ActionMove::Unbind() {
-  // TODO(cuicuiruan): Implement if the input binding is unbound from
-  // |ActionMove|.
-  NOTIMPLEMENTED();
+  if (!pending_binding_)
+    pending_binding_ = std::make_unique<InputElement>(*current_binding_);
+  if (IsKeyboardBound(input_element)) {
+    // It might be partially overlapped and only remove the keys overlapped.
+    for (auto code : input_element.keys()) {
+      for (int i = 0; i < pending_binding_->keys().size(); i++) {
+        if (code == pending_binding_->keys()[i])
+          pending_binding_->SetKey(i, ui::DomCode::NONE);
+      }
+    }
+  } else {
+    // TODO(cuicuiruan): Implement for unbinding mouse-bound action move.
+    NOTIMPLEMENTED();
+  }
+
+  PostUnbindProcess();
 }
 
 bool ActionMove::RewriteKeyEvent(const ui::KeyEvent* key_event,

@@ -34,11 +34,6 @@ constexpr int kInterestingFlagsMask =
 // Default mouse lock key.
 constexpr ui::DomCode kDefaultMouseLockCode = ui::DomCode::ESCAPE;
 
-// UI strings.
-// TODO(cuicuiruan): move the strings to chrome/app/generated_resources.grd
-// after UX/UI strings are confirmed.
-constexpr base::StringPiece kEditErrorNotAllowedKey("Not allowed key");
-
 // Remove extra Actions with the same ID.
 void RemoveActionsWithSameID(std::vector<std::unique_ptr<Action>>& actions) {
   base::flat_set<int> ids;
@@ -181,17 +176,18 @@ void TouchInjector::OnBindingChange(
   for (auto& action : actions_) {
     if (action.get() == target_action)
       continue;
-    if (action->RequireInputElement(*input_element, &overlapped_action)) {
-      display_overlay_controller_->AddEditErrorMsg(target_action->action_view(),
-                                                   kEditErrorNotAllowedKey);
-      return;
+    if (action->IsOverlapped(*input_element)) {
+      overlapped_action = action.get();
+      break;
     }
   }
-  target_action->PrepareToBind(std::move(input_element));
 
-  // Takes the key away if there is duplicated.
+  // Partially unbind or completely unbind the |overlapped_action| if it
+  // conflicts with |input_element|.
   if (overlapped_action)
-    overlapped_action->Unbind();
+    overlapped_action->Unbind(*input_element);
+
+  target_action->PrepareToBind(std::move(input_element));
 }
 
 void TouchInjector::OnBindingSave() {
