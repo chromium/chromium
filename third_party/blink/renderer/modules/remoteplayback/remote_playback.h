@@ -74,18 +74,19 @@ class MODULES_EXPORT RemotePlayback final
   // availability via the provided callback. May start the monitoring of remote
   // playback devices if it isn't running yet.
   ScriptPromise watchAvailability(ScriptState*,
-                                  V8RemotePlaybackAvailabilityCallback*);
+                                  V8RemotePlaybackAvailabilityCallback*,
+                                  ExceptionState&);
 
   // Cancels updating the page via the callback specified by its id.
-  ScriptPromise cancelWatchAvailability(ScriptState*, int id);
+  ScriptPromise cancelWatchAvailability(ScriptState*, int id, ExceptionState&);
 
   // Cancels all the callbacks watching remote playback availability changes
   // registered with this element.
-  ScriptPromise cancelWatchAvailability(ScriptState*);
+  ScriptPromise cancelWatchAvailability(ScriptState*, ExceptionState&);
 
   // Shows the UI allowing user to change the remote playback state of the media
   // element (by picking a remote playback device from the list, for example).
-  ScriptPromise prompt(ScriptState*);
+  ScriptPromise prompt(ScriptState*, ExceptionState&);
 
   String state() const;
 

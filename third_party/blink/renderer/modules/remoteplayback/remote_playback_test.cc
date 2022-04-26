@@ -85,7 +85,7 @@ TEST_F(RemotePlaybackTest, PromptCancelledRejectsWithNotAllowedError) {
 
   LocalFrame::NotifyUserActivation(
       &page_holder->GetFrame(), mojom::UserActivationNotificationType::kTest);
-  remote_playback.prompt(scope.GetScriptState())
+  remote_playback.prompt(scope.GetScriptState(), scope.GetExceptionState())
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
   CancelPrompt(remote_playback);
 
@@ -109,7 +109,7 @@ TEST_F(RemotePlaybackTest, PromptConnectedRejectsWhenCancelled) {
 
   LocalFrame::NotifyUserActivation(
       &page_holder->GetFrame(), mojom::UserActivationNotificationType::kTest);
-  remote_playback.prompt(scope.GetScriptState())
+  remote_playback.prompt(scope.GetScriptState(), scope.GetExceptionState())
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
   CancelPrompt(remote_playback);
 
@@ -133,7 +133,7 @@ TEST_F(RemotePlaybackTest, PromptConnectedResolvesWhenDisconnected) {
 
   LocalFrame::NotifyUserActivation(
       &page_holder->GetFrame(), mojom::UserActivationNotificationType::kTest);
-  remote_playback.prompt(scope.GetScriptState())
+  remote_playback.prompt(scope.GetScriptState(), scope.GetExceptionState())
       .Then(funcs.ExpectCall(), funcs.ExpectNoCall());
 
   SetState(remote_playback, mojom::blink::PresentationConnectionState::CLOSED);
@@ -225,7 +225,7 @@ TEST_F(RemotePlaybackTest,
 
   LocalFrame::NotifyUserActivation(
       &page_holder->GetFrame(), mojom::UserActivationNotificationType::kTest);
-  remote_playback.prompt(scope.GetScriptState())
+  remote_playback.prompt(scope.GetScriptState(), scope.GetExceptionState())
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
   HTMLMediaElementRemotePlayback::SetBooleanAttribute(
       *element, html_names::kDisableremoteplaybackAttr, true);
@@ -249,7 +249,8 @@ TEST_F(RemotePlaybackTest, DisableRemotePlaybackCancelsAvailabilityCallbacks) {
       V8RemotePlaybackAvailabilityCallback::Create(funcs.ExpectNoCall());
 
   remote_playback
-      .watchAvailability(scope.GetScriptState(), availability_callback)
+      .watchAvailability(scope.GetScriptState(), availability_callback,
+                         scope.GetExceptionState())
       .Then(funcs.ExpectCall(), funcs.ExpectNoCall());
 
   HTMLMediaElementRemotePlayback::SetBooleanAttribute(
@@ -278,12 +279,14 @@ TEST_F(RemotePlaybackTest, CallingWatchAvailabilityFromAvailabilityCallback) {
   const int kNumberCallbacks = 10;
   for (int i = 0; i < kNumberCallbacks; ++i) {
     remote_playback.watchAvailability(scope.GetScriptState(),
-                                      availability_callback);
+                                      availability_callback,
+                                      scope.GetExceptionState());
   }
 
   auto add_callback_lambda = [&]() {
     remote_playback.watchAvailability(scope.GetScriptState(),
-                                      availability_callback);
+                                      availability_callback,
+                                      scope.GetExceptionState());
     return blink::ScriptValue::CreateNull(scope.GetScriptState()->GetIsolate());
   };
 
@@ -324,15 +327,10 @@ TEST_F(RemotePlaybackTest, PromptThrowsWhenBackendDisabled) {
       MakeGarbageCollected<HTMLVideoElement>(page_holder->GetDocument());
   RemotePlayback& remote_playback = RemotePlayback::From(*element);
 
-  MockFunctionScope funcs(scope.GetScriptState());
-
   LocalFrame::NotifyUserActivation(
       &page_holder->GetFrame(), mojom::UserActivationNotificationType::kTest);
-  remote_playback.prompt(scope.GetScriptState())
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
-
-  // Runs pending promises.
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  remote_playback.prompt(scope.GetScriptState(), scope.GetExceptionState());
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
 }
 
 TEST_F(RemotePlaybackTest, WatchAvailabilityWorksWhenBackendDisabled) {
@@ -351,7 +349,8 @@ TEST_F(RemotePlaybackTest, WatchAvailabilityWorksWhenBackendDisabled) {
       V8RemotePlaybackAvailabilityCallback::Create(funcs.ExpectNoCall());
 
   remote_playback
-      .watchAvailability(scope.GetScriptState(), availability_callback)
+      .watchAvailability(scope.GetScriptState(), availability_callback,
+                         scope.GetExceptionState())
       .Then(funcs.ExpectCall(), funcs.ExpectNoCall());
 
   // Runs pending promises.
@@ -391,8 +390,8 @@ TEST_F(RemotePlaybackTest, IsListening) {
   // message loop.
   EXPECT_CALL(*callback_function, Call(testing::_, testing::_)).Times(2);
 
-  remote_playback.watchAvailability(scope.GetScriptState(),
-                                    availability_callback);
+  remote_playback.watchAvailability(
+      scope.GetScriptState(), availability_callback, scope.GetExceptionState());
 
   ASSERT_TRUE(remote_playback.Urls().IsEmpty());
   ASSERT_FALSE(IsListening(remote_playback));
@@ -402,12 +401,13 @@ TEST_F(RemotePlaybackTest, IsListening) {
   ASSERT_TRUE(IsListening(remote_playback));
   remote_playback.AvailabilityChanged(mojom::ScreenAvailability::AVAILABLE);
 
-  remote_playback.cancelWatchAvailability(scope.GetScriptState());
+  remote_playback.cancelWatchAvailability(scope.GetScriptState(),
+                                          scope.GetExceptionState());
   ASSERT_EQ((size_t)1, remote_playback.Urls().size());
   ASSERT_FALSE(IsListening(remote_playback));
 
-  remote_playback.watchAvailability(scope.GetScriptState(),
-                                    availability_callback);
+  remote_playback.watchAvailability(
+      scope.GetScriptState(), availability_callback, scope.GetExceptionState());
   ASSERT_EQ((size_t)1, remote_playback.Urls().size());
   ASSERT_TRUE(IsListening(remote_playback));
   remote_playback.AvailabilityChanged(mojom::ScreenAvailability::AVAILABLE);
