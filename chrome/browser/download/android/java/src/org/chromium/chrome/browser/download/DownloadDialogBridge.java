@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogCoordinat
 import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogProperties;
 import org.chromium.chrome.browser.download.dialogs.DownloadLocationDialogController;
 import org.chromium.chrome.browser.download.dialogs.DownloadLocationDialogCoordinator;
+import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -53,6 +54,7 @@ public class DownloadDialogBridge
 
     private Context mContext;
     private ModalDialogManager mModalDialogManager;
+    private WindowAndroid mWindowAndroid;
     private long mTotalBytes;
     private @ConnectionType int mConnectionType = ConnectionType.CONNECTION_NONE;
     private @DownloadLocationDialogType int mLocationDialogType;
@@ -102,6 +104,7 @@ public class DownloadDialogBridge
     private void showDialog(WindowAndroid windowAndroid, long totalBytes,
             @ConnectionType int connectionType, @DownloadLocationDialogType int dialogType,
             String suggestedPath, boolean supportsLaterDialog, boolean isIncognito) {
+        mWindowAndroid = windowAndroid;
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) {
             onCancel();
@@ -169,6 +172,10 @@ public class DownloadDialogBridge
         if (mNativeDownloadDialogBridge == 0) return;
         DownloadDialogBridgeJni.get().onCanceled(
                 mNativeDownloadDialogBridge, DownloadDialogBridge.this);
+        if (mWindowAndroid != null) {
+            NewDownloadTab.closeExistingNewDownloadTab(mWindowAndroid);
+            mWindowAndroid = null;
+        }
     }
 
     // DownloadLaterDialogController implementation.

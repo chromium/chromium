@@ -560,7 +560,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/download/SystemDownloadNotifier.java",
   "java/src/org/chromium/chrome/browser/download/items/OfflineContentAggregatorNotificationBridgeUi.java",
   "java/src/org/chromium/chrome/browser/download/items/OfflineContentAggregatorNotificationBridgeUiFactory.java",
-  "java/src/org/chromium/chrome/browser/download/new_download_tab/NewDownloadTab.java",
   "java/src/org/chromium/chrome/browser/download/service/DownloadBackgroundTask.java",
   "java/src/org/chromium/chrome/browser/download/service/DownloadTaskScheduler.java",
   "java/src/org/chromium/chrome/browser/explore_sites/CategoryCardAdapter.java",

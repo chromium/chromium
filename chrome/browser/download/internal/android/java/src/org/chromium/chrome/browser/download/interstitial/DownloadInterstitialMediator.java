@@ -105,11 +105,7 @@ class DownloadInterstitialMediator {
     void destroy() {
         mProvider.removeObserver(mObserver);
         if (mPendingDeletion || mModel.get(STATE) == State.CANCELLED) {
-            if (mDownloadIsComplete) {
-                mProvider.removeItem(mModel.get(DOWNLOAD_ITEM).id);
-            } else {
-                mProvider.cancelDownload(mModel.get(DOWNLOAD_ITEM).id);
-            }
+            mProvider.removeItem(mModel.get(DOWNLOAD_ITEM).id);
         }
         clearDownloadPendingRemoval();
     }

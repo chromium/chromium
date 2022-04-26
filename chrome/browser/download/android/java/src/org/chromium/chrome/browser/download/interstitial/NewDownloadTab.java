@@ -2,27 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.download.new_download_tab;
+package org.chromium.chrome.browser.download.interstitial;
 
 import static org.chromium.chrome.browser.tab.TabViewProvider.Type.NEW_DOWNLOAD_TAB;
 
+import android.app.Activity;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.UnownedUserData;
 import org.chromium.base.UserData;
-import org.chromium.chrome.browser.download.interstitial.DownloadInterstitialCoordinator;
-import org.chromium.chrome.browser.download.interstitial.DownloadInterstitialCoordinatorFactory;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabViewProvider;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Represents the page shown when a CCT is created to download a file. */
-public class NewDownloadTab extends EmptyTabObserver implements UserData, TabViewProvider {
+public class NewDownloadTab
+        extends EmptyTabObserver implements UserData, UnownedUserData, TabViewProvider {
     private static final Class<NewDownloadTab> USER_DATA_KEY = NewDownloadTab.class;
 
     private final Tab mTab;
+    private final Activity mActivity;
     private final DownloadInterstitialCoordinator mCoordinator;
 
     /**
@@ -31,14 +33,28 @@ public class NewDownloadTab extends EmptyTabObserver implements UserData, TabVie
      * @return The NewDownloadTab attached to the parent tab if present or a new instance of
      *         NewDownloadTab attached to the parent tab otherwise.
      */
-    public static NewDownloadTab from(Tab tab) {
+    public static NewDownloadTab from(
+            Tab tab, DownloadInterstitialCoordinator coordinator, Activity activity) {
         assert tab.isInitialized();
         NewDownloadTab newDownloadTab = get(tab);
         if (newDownloadTab == null) {
-            newDownloadTab =
-                    tab.getUserDataHost().setUserData(USER_DATA_KEY, new NewDownloadTab(tab));
+            newDownloadTab = tab.getUserDataHost().setUserData(
+                    USER_DATA_KEY, new NewDownloadTab(tab, coordinator, activity));
         }
         return newDownloadTab;
+    }
+
+    /**
+     * Identify the {@link NewDownloadTab} instance attached to the window android using
+     * {@link UnownedUserData} through the {@link NewDownloadTabProvider} and finish its parent
+     * activity.
+     * @param windowAndroid The window android containing the new download tab.
+     */
+    public static void closeExistingNewDownloadTab(WindowAndroid windowAndroid) {
+        NewDownloadTab instance = NewDownloadTabProvider.from(windowAndroid);
+        if (instance != null) {
+            instance.onDownloadDialogCancelled();
+        }
     }
 
     /**
@@ -56,6 +72,15 @@ public class NewDownloadTab extends EmptyTabObserver implements UserData, TabVie
         if (!isViewAttached()) {
             attachView();
         }
+    }
+
+    /**
+     * Called when either a duplicate download or a download later dialog are dismissed.
+     * Destroys the NewDownloadTab and finishes the parent activity.
+     */
+    public void onDownloadDialogCancelled() {
+        destroy();
+        mActivity.finish();
     }
 
     /** Removes the NewDownloadTab instance from its parent. */
@@ -79,6 +104,7 @@ public class NewDownloadTab extends EmptyTabObserver implements UserData, TabVie
         mTab.removeObserver(this);
         mTab.getTabViewManager().removeTabViewProvider(this);
         mCoordinator.destroy();
+        NewDownloadTabProvider.detach(this);
     }
 
     @Override
@@ -96,10 +122,12 @@ public class NewDownloadTab extends EmptyTabObserver implements UserData, TabVie
         removeIfPresent();
     }
 
-    private NewDownloadTab(Tab tab) {
+    private NewDownloadTab(
+            Tab tab, DownloadInterstitialCoordinator coordinator, Activity activity) {
         mTab = tab;
-        mCoordinator = DownloadInterstitialCoordinatorFactory.create(
-                tab.getContext(), tab.getOriginalUrl().getSpec(), tab.getWindowAndroid());
+        mActivity = activity;
+        mCoordinator = coordinator;
+        NewDownloadTabProvider.attach(tab.getWindowAndroid(), this);
     }
 
     private boolean isViewAttached() {

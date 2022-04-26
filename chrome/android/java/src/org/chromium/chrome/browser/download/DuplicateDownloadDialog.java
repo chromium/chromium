@@ -13,7 +13,9 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -69,7 +71,7 @@ public class DuplicateDownloadDialog {
                         .Builder(ModalDialogProperties.ALL_KEYS)
 
                         .with(ModalDialogProperties.CONTROLLER,
-                                getController(modalDialogManager, pageUrl, callback))
+                                getController(context, modalDialogManager, pageUrl, callback))
                         .with(ModalDialogProperties.TITLE,
                                 context.getResources().getString(pageUrl.isEmpty()
                                                 ? R.string.duplicate_download_dialog_title
@@ -100,7 +102,7 @@ public class DuplicateDownloadDialog {
     }
 
     @NonNull
-    private ModalDialogProperties.Controller getController(
+    private ModalDialogProperties.Controller getController(Context context,
             ModalDialogManager modalDialogManager, String pageUrl, Callback<Boolean> callback) {
         return new ModalDialogProperties.Controller() {
             @Override
@@ -119,12 +121,18 @@ public class DuplicateDownloadDialog {
 
             @Override
             public void onDismiss(PropertyModel model, int dismissalCause) {
+                if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
+                    return;
+                }
                 if (callback != null
-                        && dismissalCause != DialogDismissalCause.POSITIVE_BUTTON_CLICKED
                         && dismissalCause != DialogDismissalCause.NEGATIVE_BUTTON_CLICKED) {
                     callback.onResult(false);
                     recordDuplicateDownloadDialogEvent(!pageUrl.isEmpty(),
                             DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_DISMISS);
+                }
+                if (context instanceof AsyncInitializationActivity) {
+                    NewDownloadTab.closeExistingNewDownloadTab(
+                            ((AsyncInitializationActivity) context).getWindowAndroid());
                 }
             }
         };

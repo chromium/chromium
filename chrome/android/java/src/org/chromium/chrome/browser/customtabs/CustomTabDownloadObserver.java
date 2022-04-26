@@ -4,8 +4,13 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import android.app.Activity;
+
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
-import org.chromium.chrome.browser.download.new_download_tab.NewDownloadTab;
+import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.download.interstitial.DownloadInterstitialCoordinator;
+import org.chromium.chrome.browser.download.interstitial.DownloadInterstitialCoordinatorFactory;
+import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -19,11 +24,14 @@ import javax.inject.Inject;
  * A {@link TabObserver} that determines whether a custom tab navigation should show the new
  * download UI.
  */
+@ActivityScope
 public class CustomTabDownloadObserver extends EmptyTabObserver {
+    private final Activity mActivity;
     private final TabObserverRegistrar mTabObserverRegistrar;
 
     @Inject
-    public CustomTabDownloadObserver(TabObserverRegistrar tabObserverRegistrar) {
+    public CustomTabDownloadObserver(Activity activity, TabObserverRegistrar tabObserverRegistrar) {
+        mActivity = activity;
         mTabObserverRegistrar = tabObserverRegistrar;
         mTabObserverRegistrar.registerTabObserver(this);
     }
@@ -44,7 +52,10 @@ public class CustomTabDownloadObserver extends EmptyTabObserver {
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_NEW_DOWNLOAD_TAB)
                 && navigation.isDownload()) {
-            NewDownloadTab.from(tab).show();
+            DownloadInterstitialCoordinator coordinator =
+                    DownloadInterstitialCoordinatorFactory.create(tab.getContext(),
+                            tab.getOriginalUrl().getSpec(), tab.getWindowAndroid());
+            NewDownloadTab.from(tab, coordinator, mActivity).show();
         }
     }
 
