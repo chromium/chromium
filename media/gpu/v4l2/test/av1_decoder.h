@@ -76,6 +76,10 @@ class Av1Decoder : public VideoDecoder {
   // set upon completion.
   ParsingResult ReadNextFrame(libgav1::RefCountedBufferPtr& current_frame);
 
+  // Copies the frame data into the V4L2 buffer of OUTPUT |queue|.
+  void CopyFrameData(const libgav1::ObuFrameHeader& frame_hdr,
+                     std::unique_ptr<V4L2Queue>& queue);
+
   IvfFrameHeader ivf_frame_header_{};
   const uint8_t* ivf_frame_data_ = nullptr;
 

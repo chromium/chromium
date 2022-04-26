@@ -104,6 +104,20 @@ Av1Decoder::ParsingResult Av1Decoder::ReadNextFrame(
   return ParsingResult::kOk;
 }
 
+void Av1Decoder::CopyFrameData(const libgav1::ObuFrameHeader& frame_hdr,
+                               std::unique_ptr<V4L2Queue>& queue) {
+  CHECK_EQ(queue->num_buffers(), 1u)
+      << "Only 1 buffer is expected to be used for OUTPUT queue for now.";
+
+  CHECK_EQ(queue->num_planes(), 1u)
+      << "Number of planes is expected to be 1 for OUTPUT queue.";
+
+  scoped_refptr<MmapedBuffer> buffer = queue->GetBuffer(0);
+
+  memcpy(static_cast<uint8_t*>(buffer->mmaped_planes()[0].start_addr),
+         ivf_frame_data_, ivf_frame_header_.frame_size);
+}
+
 VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
                                                  std::vector<char>& u_plane,
                                                  std::vector<char>& v_plane,
@@ -118,16 +132,45 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
     return VideoDecoder::kEOStream;
   }
 
+  libgav1::ObuFrameHeader current_frame_header = obu_parser_->frame_header();
+
   if (obu_parser_->sequence_header_changed())
     current_sequence_header_.emplace(obu_parser_->sequence_header());
 
   LOG_ASSERT(current_sequence_header_)
       << "Sequence header missing for decoding.";
 
+  CopyFrameData(current_frame_header, OUTPUT_queue_);
+
+  LOG_ASSERT(OUTPUT_queue_->num_buffers() == 1)
+      << "Too many buffers in OUTPUT queue. It is currently designed to "
+         "support only 1 request at a time.";
+
+  OUTPUT_queue_->GetBuffer(0)->set_frame_number(frame_number);
+
+  if (!v4l2_ioctl_->QBuf(OUTPUT_queue_, 0))
+    LOG(FATAL) << "VIDIOC_QBUF failed for OUTPUT queue.";
+
   // TODO(b/228534725): add changes to support reference frames management
 
   // TODO(b/228534730): add changes to prepare parameters for V4L2 AV1 stateless
   // decoding
+
+  if (!v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_))
+    LOG(FATAL) << "MEDIA_REQUEST_IOC_QUEUE failed.";
+
+  uint32_t index;
+
+  if (!v4l2_ioctl_->DQBuf(CAPTURE_queue_, &index))
+    LOG(FATAL) << "VIDIOC_DQBUF failed for CAPTURE queue.";
+
+  scoped_refptr<MmapedBuffer> buffer = CAPTURE_queue_->GetBuffer(index);
+
+  if (!v4l2_ioctl_->DQBuf(OUTPUT_queue_, &index))
+    LOG(FATAL) << "VIDIOC_DQBUF failed for OUTPUT queue.";
+
+  if (!v4l2_ioctl_->MediaRequestIocReinit(OUTPUT_queue_))
+    LOG(FATAL) << "MEDIA_REQUEST_IOC_REINIT failed.";
 
   return VideoDecoder::kOk;
 }

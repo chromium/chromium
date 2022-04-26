@@ -54,7 +54,7 @@ class Vp9Decoder : public VideoDecoder {
                                   gfx::Size& size);
 
   // Copies the frame data into the V4L2 buffer of OUTPUT |queue|.
-  bool CopyFrameData(const Vp9FrameHeader& frame_hdr,
+  void CopyFrameData(const Vp9FrameHeader& frame_hdr,
                      std::unique_ptr<V4L2Queue>& queue);
 
   // Sets up per frame parameters |v4l2_frame_params| needed for VP9 decoding
