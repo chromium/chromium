@@ -85,7 +85,7 @@ TEST_F(TransferredMediaStreamTrackTest, PropertiesInheritFromImplementation) {
       .muted = false,
       .content_hint = WebMediaStreamTrack::ContentHintType::kNone,
       .ready_state = MediaStreamSource::kReadyStateLive});
-  transferred_track.setImplementation(&mock_impl);
+  transferred_track.SetImplementation(&mock_impl);
 
   EXPECT_EQ(transferred_track.kind(), kKind);
   EXPECT_EQ(transferred_track.id(), kId);

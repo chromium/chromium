@@ -53,8 +53,8 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
   ScriptPromise applyConstraints(ScriptState*,
                                  const MediaTrackConstraints*) override;
 
-  bool HasImplementation() { return !!track_; }
-  void setImplementation(MediaStreamTrack* track);
+  bool HasImplementation() const { return !!track_; }
+  void SetImplementation(MediaStreamTrack* track);
 
   void SetConstraints(const MediaConstraints&) override;
 

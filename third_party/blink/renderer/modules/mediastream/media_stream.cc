@@ -142,7 +142,7 @@ MediaStream::MediaStream(ExecutionContext* context,
     audio_tracks_.push_back(new_track);
     if (transferred_track) {
       DCHECK(!transferred_track->HasImplementation());
-      transferred_track->setImplementation(new_track);
+      transferred_track->SetImplementation(new_track);
     }
   }
 
@@ -158,7 +158,7 @@ MediaStream::MediaStream(ExecutionContext* context,
     video_tracks_.push_back(new_track);
     if (transferred_track) {
       DCHECK(!transferred_track->HasImplementation());
-      transferred_track->setImplementation(new_track);
+      transferred_track->SetImplementation(new_track);
     }
   }
 

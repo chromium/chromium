@@ -182,7 +182,7 @@ ScriptPromise TransferredMediaStreamTrack::applyConstraints(
   return ScriptPromise();
 }
 
-void TransferredMediaStreamTrack::setImplementation(MediaStreamTrack* track) {
+void TransferredMediaStreamTrack::SetImplementation(MediaStreamTrack* track) {
   track_ = track;
   // TODO(https://crbug.com/1288839): Replay mutations which have happened
   // before this point. Also set up plumbing so that events fired by the
