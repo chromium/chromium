@@ -1266,6 +1266,12 @@ void HTMLDocumentParser::ScanAndPreload(HTMLPreloadScanner* scanner) {
       GetDocument()->GetStyleEngine().UpdateViewport();
     }
     if (task_runner_state_->NeedsLinkHeaderPreloadsDispatch()) {
+      {
+        TRACE_EVENT0("blink", "HTMLDocumentParser::DispatchLinkHeaderPreloads");
+        GetDocument()->Loader()->DispatchLinkHeaderPreloads(
+            base::OptionalOrNullptr(viewport_description),
+            PreloadHelper::kOnlyLoadMedia);
+      }
       if (GetDocument()->Loader()->GetPrefetchedSignedExchangeManager()) {
         TRACE_EVENT0("blink",
                      "HTMLDocumentParser::DispatchSignedExchangeManager");
@@ -1276,11 +1282,6 @@ void HTMLDocumentParser::ScanAndPreload(HTMLPreloadScanner* scanner) {
             ->Loader()
             ->GetPrefetchedSignedExchangeManager()
             ->StartPrefetchedLinkHeaderPreloads();
-      } else {
-        TRACE_EVENT0("blink", "HTMLDocumentParser::DispatchLinkHeaderPreloads");
-        GetDocument()->Loader()->DispatchLinkHeaderPreloads(
-            base::OptionalOrNullptr(viewport_description),
-            PreloadHelper::kOnlyLoadMedia);
       }
       task_runner_state_->DispatchedLinkHeaderPreloads();
     }

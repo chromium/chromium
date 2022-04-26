@@ -1349,10 +1349,8 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
       1 /* expected_script_fetch_count */);
 }
 
-// TODO(crbug.com/1258886): Fails flakily on all platforms with Synchronous HTML
-// Parsing enabled.
 IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
-                       DISABLED_ImageSrcsetAndSizes) {
+                       ImageSrcsetAndSizes) {
   const char* prefetch_path = "/prefetch.html";
   const char* target_sxg_path = "/target.sxg";
   const char* target_path = "/target.html";
