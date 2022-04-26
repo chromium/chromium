@@ -55,6 +55,12 @@ CdmFactoryDaemonProxyAsh::CdmFactoryDaemonProxyAsh() : CdmFactoryDaemonProxy() {
       LOG(ERROR) << "Empty HDCP mode for: " << ash::switches::kAlwaysEnableHdcp;
     }
   }
+
+  ash::Shell::Get()
+      ->display_configurator()
+      ->content_protection_manager()
+      ->set_hdcp_key_request(base::BindRepeating(
+          &CdmFactoryDaemonProxyAsh::GetHdcp14Key, base::Unretained(this)));
 }
 
 CdmFactoryDaemonProxyAsh::~CdmFactoryDaemonProxyAsh() = default;
@@ -260,6 +266,27 @@ void CdmFactoryDaemonProxyAsh::OnDaemonMojoConnectionError() {
   // Reset the remote here to trigger reconnection to the daemon on the next
   // call to CreateFactory.
   daemon_remote_.reset();
+}
+
+void CdmFactoryDaemonProxyAsh::GetHdcp14Key(
+    cdm::mojom::CdmFactoryDaemon::GetHdcp14KeyCallback callback) {
+  if (!mojo_task_runner_->RunsTasksInCurrentSequence()) {
+    mojo_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&CdmFactoryDaemonProxyAsh::GetHdcp14Key,
+                                  base::Unretained(this), std::move(callback)));
+    return;
+  }
+
+  DVLOG(1) << "CdmFactoryDaemonProxyAsh::GetHdcp14Key called";
+  if (daemon_remote_) {
+    DVLOG(1) << "CdmFactoryDaemon mojo connection already exists, re-use it";
+    daemon_remote_->GetHdcp14Key(std::move(callback));
+    return;
+  }
+
+  EstablishDaemonConnection(
+      base::BindOnce(&CdmFactoryDaemonProxyAsh::GetHdcp14Key,
+                     base::Unretained(this), std::move(callback)));
 }
 
 }  // namespace chromeos

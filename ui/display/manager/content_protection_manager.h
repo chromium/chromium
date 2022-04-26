@@ -46,6 +46,9 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
   using ContentProtections =
       base::flat_map<int64_t /* display_id */, uint32_t /* protection_mask */>;
 
+  using GetHdcpKeyRequest = base::RepeatingCallback<void(
+      base::OnceCallback<void(const std::string&)>)>;
+
   // Though only run once, a task must outlive its asynchronous operations, so
   // cannot be a OnceCallback.
   struct Task {
@@ -77,6 +80,10 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
 
   void set_native_display_delegate(NativeDisplayDelegate* delegate) {
     native_display_delegate_ = delegate;
+  }
+
+  void set_hdcp_key_request(GetHdcpKeyRequest callback) {
+    hdcp_key_request_ = std::move(callback);
   }
 
   using ClientId = absl::optional<uint64_t>;
@@ -163,6 +170,12 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
                                 uint32_t connection_mask,
                                 uint32_t protection_mask);
 
+  void QueueContentProtectionTask(ApplyContentProtectionCallback callback,
+                                  ClientId client_id);
+  void OnGetHdcpKey(ApplyContentProtectionCallback callback,
+                    ClientId client_id,
+                    const std::string& key);
+
   DisplayLayoutManager* const layout_manager_;                // Not owned.
   NativeDisplayDelegate* native_display_delegate_ = nullptr;  // Not owned.
 
@@ -180,6 +193,9 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
 
   // Used for periodic queries to notify observers of display security changes.
   base::RepeatingTimer security_timer_;
+
+  GetHdcpKeyRequest hdcp_key_request_;
+  std::string cached_hdcp_provisioned_key_;
 
   base::WeakPtrFactory<ContentProtectionManager> weak_ptr_factory_{this};
 };

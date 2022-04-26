@@ -45,6 +45,8 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) CdmFactoryDaemonProxyAsh
       mojo::PendingRemote<arc::mojom::ProtectedBufferManager>
           protected_buffer_manager,
       mojo::PendingRemote<cdm::mojom::OutputProtection> output_protection);
+  void GetHdcp14Key(
+      cdm::mojom::CdmFactoryDaemon::GetHdcp14KeyCallback callback);
 
   // chromeos::cdm::mojom::BrowserCdmFactoryDaemon:
   void CreateFactory(const std::string& key_system,

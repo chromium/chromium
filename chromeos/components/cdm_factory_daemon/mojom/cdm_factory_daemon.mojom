@@ -84,4 +84,9 @@ interface CdmFactoryDaemon {
   // Deprecated, do not use.
   [MinVersion=4]
   RemovedMethod5@5();
+
+  // Returns the provisioned HDCP Key back to Chrome. If successful, it will
+  // return the full key. If not, it will return an empty string.
+  [MinVersion=5]
+  GetHdcp14Key@6() => (string hdcp_key_base64);
 };

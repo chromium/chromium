@@ -24,6 +24,9 @@ DISPLAY_EXPORT extern const base::Feature kEnableHardwareMirrorMode;
 
 DISPLAY_EXPORT bool IsHardwareMirrorModeEnabled();
 
+DISPLAY_EXPORT extern const base::Feature kRequireHdcpKeyProvisioning;
+DISPLAY_EXPORT bool IsHdcpKeyProvisioningRequired();
+
 }  // namespace features
 }  // namespace display
 

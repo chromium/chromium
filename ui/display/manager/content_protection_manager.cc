@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/observer_list.h"
+#include "ui/display/display_features.h"
 #include "ui/display/manager/apply_content_protection_task.h"
 #include "ui/display/manager/display_layout_manager.h"
 #include "ui/display/manager/query_content_protection_task.h"
@@ -106,6 +107,26 @@ void ContentProtectionManager::ApplyContentProtection(
 
   protections->insert_or_assign(display_id, protection_mask);
 
+  // If the device requires a provisioned HDCP key, we need to get the key and
+  // inject it into the kernel, then apply content protection when all is ready.
+  bool should_get_provisioned_key = features::IsHdcpKeyProvisioningRequired() &&
+                                    cached_hdcp_provisioned_key_.empty() &&
+                                    ShouldPollDisplaySecurity() &&
+                                    !hdcp_key_request_.is_null();
+
+  if (should_get_provisioned_key) {
+    DVLOG(1) << "Device requires provisioned HDCP key";
+    hdcp_key_request_.Run(base::BindOnce(
+        &ContentProtectionManager::OnGetHdcpKey, weak_ptr_factory_.GetWeakPtr(),
+        std::move(callback), client_id));
+  } else {
+    QueueContentProtectionTask(std::move(callback), client_id);
+  }
+}
+
+void ContentProtectionManager::QueueContentProtectionTask(
+    ApplyContentProtectionCallback callback,
+    ClientId client_id) {
   QueueTask(std::make_unique<ApplyContentProtectionTask>(
       layout_manager_, native_display_delegate_, AggregateContentProtections(),
       base::BindOnce(&ContentProtectionManager::OnContentProtectionApplied,
@@ -113,6 +134,20 @@ void ContentProtectionManager::ApplyContentProtection(
                      client_id)));
 
   ToggleDisplaySecurityPolling();
+}
+
+void ContentProtectionManager::OnGetHdcpKey(
+    ApplyContentProtectionCallback callback,
+    ClientId client_id,
+    const std::string& key) {
+  // Cache the key to avoid making calls every time the HDCP state changes.
+  cached_hdcp_provisioned_key_ = key;
+  if (key.empty()) {
+    LOG(ERROR) << "OnGetHdcpKey: Failed to get HDCP key - Empty String";
+  }
+
+  // TODO(b/112172923): Pass the key to the kernel to enable HDCP.
+  QueueContentProtectionTask(std::move(callback), client_id);
 }
 
 const DisplaySnapshot* ContentProtectionManager::GetDisplay(
