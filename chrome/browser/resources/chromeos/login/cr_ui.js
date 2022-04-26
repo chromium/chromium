@@ -194,7 +194,9 @@ cr.define('cr.ui', function() {
         });
 
         waitForOobeScreen('enterprise-enrollment', function() {
-          chrome.send('oauthEnrollCompleteLogin', [username]);
+          chrome.send(
+              'oauthEnrollCompleteLogin',
+              [username, OobeTypes.LicenseType.ENTERPRISE]);
         });
       }
     }  // loginForTesting
