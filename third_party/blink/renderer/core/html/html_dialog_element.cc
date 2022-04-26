@@ -199,7 +199,8 @@ class DialogCloseWatcherEventListener : public NativeEventListener {
       : dialog_(dialog) {}
 
   void Invoke(ExecutionContext*, Event* event) override {
-    DCHECK(dialog_);
+    if (!dialog_)
+      return;
     if (event->type() == event_type_names::kCancel)
       dialog_->CloseWatcherFiredCancel();
     if (event->type() == event_type_names::kClose)
