@@ -61,20 +61,21 @@ void AuthenticationAsh::OnCreateQuickUnlockPrivateTokenInfoResults(
     bool success,
     std::unique_ptr<TokenInfo> token_info,
     const std::string& error_message) {
-  mojom::CreateQuickUnlockPrivateTokenInfoResultPtr result_ptr =
-      mojom::CreateQuickUnlockPrivateTokenInfoResult::New();
+  mojom::CreateQuickUnlockPrivateTokenInfoResultPtr result;
   if (success) {
     DCHECK(token_info);
     crosapi::mojom::QuickUnlockPrivateTokenInfoPtr out_token_info =
         crosapi::mojom::QuickUnlockPrivateTokenInfo::New();
     out_token_info->token = token_info->token;
     out_token_info->lifetime_seconds = token_info->lifetime_seconds;
-    result_ptr->set_token_info(std::move(out_token_info));
+    result = mojom::CreateQuickUnlockPrivateTokenInfoResult::NewTokenInfo(
+        std::move(out_token_info));
   } else {
     DCHECK(!error_message.empty());
-    result_ptr->set_error_message(error_message);
+    result = mojom::CreateQuickUnlockPrivateTokenInfoResult::NewErrorMessage(
+        error_message);
   }
-  std::move(callback).Run(std::move(result_ptr));
+  std::move(callback).Run(std::move(result));
 
   extended_authenticator->SetConsumer(nullptr);
 }

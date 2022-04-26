@@ -90,8 +90,7 @@ TEST_F(LoginStateAshTest, GetSessionState) {
     session_manager_->SetSessionState(test.session_state);
 
     mojom::GetSessionStateResultPtr expected_result_ptr =
-        mojom::GetSessionStateResult::New();
-    expected_result_ptr->set_session_state(test.expected);
+        mojom::GetSessionStateResult::NewSessionState(test.expected);
 
     base::RunLoop run_loop;
     login_state_remote_->GetSessionState(

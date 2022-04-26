@@ -77,10 +77,8 @@ void NetworkingAttributesAsh::GetNetworkDetails(
     details->ipv6_address = ipv6_address;
   }
 
-  mojom::GetNetworkDetailsResultPtr result_ptr =
-      mojom::GetNetworkDetailsResult::New();
-  result_ptr->set_network_details(std::move(details));
-  std::move(callback).Run(std::move(result_ptr));
+  std::move(callback).Run(
+      mojom::GetNetworkDetailsResult::NewNetworkDetails(std::move(details)));
 }
 
 }  // namespace crosapi

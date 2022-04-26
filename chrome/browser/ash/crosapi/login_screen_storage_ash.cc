@@ -82,14 +82,13 @@ void LoginScreenStorageAsh::Retrieve(const std::string& key,
 void LoginScreenStorageAsh::OnRetrieved(RetrieveCallback callback,
                                         absl::optional<std::string> data,
                                         absl::optional<std::string> error) {
-  mojom::LoginScreenStorageRetrieveResultPtr result_ptr =
-      mojom::LoginScreenStorageRetrieveResult::New();
+  mojom::LoginScreenStorageRetrieveResultPtr result;
   if (error) {
-    result_ptr->set_error_message(*error);
+    result = mojom::LoginScreenStorageRetrieveResult::NewErrorMessage(*error);
   } else if (data) {
-    result_ptr->set_data(*data);
+    result = mojom::LoginScreenStorageRetrieveResult::NewData(*data);
   }
-  std::move(callback).Run(std::move(result_ptr));
+  std::move(callback).Run(std::move(result));
 }
 
 }  // namespace crosapi
