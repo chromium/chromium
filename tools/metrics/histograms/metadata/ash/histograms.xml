@@ -4230,8 +4230,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Wallpaper.CustomLayout" enum="WallpaperLayout"
-    expires_after="2022-04-24">
-  <owner>xdai@chromium.org</owner>
+    expires_after="2023-04-24">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>assistive-eng@chromium.org</owner>
   <summary>
     The custom wallpaper layout type. Recorded when the user sets a new custom
     wallpaper or changes the existing custom wallpaper's layout.
