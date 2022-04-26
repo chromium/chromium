@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
@@ -677,6 +679,40 @@ TEST_F(LocalFrameViewTest, DarkModeDocumentBackground) {
   UpdateAllLifecyclePhasesForTest();
   frame_view->SetBaseBackgroundColor(Color(255, 0, 0));
   EXPECT_EQ(frame_view->DocumentBackgroundColor(), Color(18, 18, 18));
+}
+
+class NoOptimizeViewportConstrainedPaintInvalidationTest
+    : public LocalFrameViewTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kOptimizeViewportConstrainedPaintInvalidation);
+    LocalFrameViewTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// This tests the codepath where |kOptimizeViewportConstrainedPaintInvalidation|
+// is disabled.
+TEST_F(NoOptimizeViewportConstrainedPaintInvalidationTest,
+       StickyScrollInvalidatesPaint) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #sticky { position: sticky; top: 0; width: 50px; height: 50px; }
+    </style>
+    <div id='sticky'>sticky</div>
+    <div id='forcescroll' style='height: 5000px;'></div>
+  )HTML");
+
+  auto* sticky = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("sticky"));
+  EXPECT_FALSE(sticky->SubtreeShouldCheckForPaintInvalidation());
+
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic);
+
+  EXPECT_TRUE(sticky->SubtreeShouldCheckForPaintInvalidation());
 }
 
 }  // namespace
