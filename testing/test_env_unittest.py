@@ -20,6 +20,8 @@ import unittest
 HERE = os.path.dirname(os.path.abspath(__file__))
 TEST_SCRIPT = os.path.join(HERE, 'test_env_user_script.py')
 
+# pylint: disable=super-with-arguments
+
 
 def launch_process_windows(args):
   # The `universal_newlines` option is equivalent to `text` in Python 3.
@@ -42,11 +44,13 @@ def launch_process_nonwindows(args):
       universal_newlines=True)
 
 
+# pylint: disable=inconsistent-return-statements
 def read_subprocess_message(proc, starts_with):
   """Finds the value after first line prefix condition."""
   for line in proc.stdout:
     if line.startswith(starts_with):
       return line.rstrip().replace(starts_with, '')
+# pylint: enable=inconsistent-return-statements
 
 
 def send_and_wait(proc, sig, sleep_time=0.3):
@@ -65,9 +69,9 @@ class SignalingWindowsTest(unittest.TestCase):
 
   def test_send_ctrl_break_event(self):
     proc = launch_process_windows([])
-    send_and_wait(proc, signal.CTRL_BREAK_EVENT)
+    send_and_wait(proc, signal.CTRL_BREAK_EVENT) # pylint: disable=no-member
     sig = read_subprocess_message(proc, 'Signal :')
-    self.assertEqual(sig, str(int(signal.SIGBREAK)))
+    self.assertEqual(sig, str(int(signal.SIGBREAK))) # pylint: disable=no-member
 
 
 class SignalingNonWindowsTest(unittest.TestCase):

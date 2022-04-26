@@ -19,5 +19,5 @@ if __name__ == '__main__':
   signal.signal(signal.SIGTERM, print_signal)
   signal.signal(signal.SIGINT, print_signal)
   if sys.platform == 'win32':
-    signal.signal(signal.SIGBREAK, print_signal)
+    signal.signal(signal.SIGBREAK, print_signal) # pylint: disable=no-member
   time.sleep(2)  # gives process time to receive signal.

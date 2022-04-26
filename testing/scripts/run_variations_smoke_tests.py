@@ -21,12 +21,12 @@ from threading import Thread
 from skia_gold_infra.finch_skia_gold_properties import FinchSkiaGoldProperties
 from skia_gold_infra import finch_skia_gold_utils
 
-import common
 import variations_seed_access_helper as seed_helper
 
 _THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 _VARIATIONS_TEST_DATA = 'variations_smoke_test_data'
 
+from . import common
 from selenium import webdriver
 from selenium.webdriver import ChromeOptions
 from selenium.common.exceptions import NoSuchElementException
@@ -84,7 +84,7 @@ def _get_platform():
     'Windows (win32 or cygwin) are supported' % sys.platform)
 
 
-def _find_chrome_binary():
+def _find_chrome_binary(): #pylint: disable=inconsistent-return-statements
   """Finds and returns the relative path to the Chrome binary.
 
   This function assumes that the CWD is the build directory.
@@ -95,11 +95,11 @@ def _find_chrome_binary():
   platform = _get_platform()
   if platform == 'linux':
     return os.path.join('.', 'chrome')
-  elif platform == 'mac':
+  if platform == 'mac':
     chrome_name = 'Google Chrome'
     return os.path.join('.', chrome_name + '.app', 'Contents', 'MacOS',
                             chrome_name)
-  elif platform == 'win':
+  if platform == 'win':
     return os.path.join('.', 'chrome.exe')
 
 

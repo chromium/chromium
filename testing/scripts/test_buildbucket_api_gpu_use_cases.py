@@ -10,11 +10,15 @@ import json
 import os
 import sys
 
-import common
+# Add src/testing/ into sys.path for importing common without pylint errors.
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+from scripts import common
 
 # Add src/content/test/gpu into sys.path for importing common.
-sys.path.append(os.path.join(os.path.dirname(__file__),
-                             '..', '..', 'content', 'test', 'gpu'))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                os.path.pardir, os.path.pardir, 'content',
+                                'test', 'gpu')))
 
 import gather_power_measurement_results
 import gather_swarming_json_results

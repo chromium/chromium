@@ -56,8 +56,7 @@ class _TestFilter:
         """
         if self._is_prefix_match:
             return test_name.startswith(self._filter_text)
-        else:
-            return test_name == self._filter_text
+        return test_name == self._filter_text
 
     def is_exclusion_filter(self):
         """Rreturns whether this filter excludes (rather than includes) matching

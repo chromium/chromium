@@ -11,7 +11,10 @@ import re
 import subprocess
 import sys
 
-import common
+# Add src/testing/ into sys.path for importing common without pylint errors.
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+from scripts import common
 
 # A list of files that are allowed to have static initializers.
 # If something adds a static initializer, revert it. We don't accept regressions

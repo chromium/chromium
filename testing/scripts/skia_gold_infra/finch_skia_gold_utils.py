@@ -134,4 +134,3 @@ def log_skia_gold_status_code(skia_gold_session, image_name, status, error):
         'Given unhandled SkiaGoldSession StatusCode %s with error %s', status,
         error)
   return triage_link
-

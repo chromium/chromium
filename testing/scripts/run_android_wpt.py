@@ -26,12 +26,16 @@ Here's the mapping [isolate script flag] : [wpt flag]
 # run_wpt_tests.py script.
 
 import json
+import os
 import sys
 
-import common
 
 from run_wpt_tests import WPTAdapter
 
+# Add src/testing/ into sys.path for importing common without pylint errors.
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+from scripts import common
 
 # This is not really a "script test" so does not need to manually add
 # any additional compile targets.

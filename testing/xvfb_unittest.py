@@ -16,6 +16,8 @@ import sys
 import time
 import unittest
 
+# pylint: disable=super-with-arguments
+
 
 TEST_FILE = __file__.replace('.pyc', '.py')
 XVFB = TEST_FILE.replace('_unittest', '')
@@ -29,11 +31,13 @@ def launch_process(args):
       stderr=subprocess.STDOUT, env=os.environ.copy())
 
 
+# pylint: disable=inconsistent-return-statements
 def read_subprocess_message(proc, starts_with):
   """Finds the value after first line prefix condition."""
-  for line in proc.stdout:
+  for line in proc.stdout.read().decode('utf-8').splitlines(True):
     if line.startswith(starts_with):
       return line.rstrip().replace(starts_with, '')
+# pylint: enable=inconsistent-return-statements
 
 
 def send_signal(proc, sig, sleep_time=0.3):
@@ -47,7 +51,7 @@ class XvfbLinuxTest(unittest.TestCase):
 
   def setUp(self):
     super(XvfbLinuxTest, self).setUp()
-    if sys.platform != 'linux2':
+    if sys.platform != 'linux':
       self.skipTest('linux only test')
 
   def test_no_xvfb_display(self):
@@ -92,13 +96,13 @@ class XvfbTest(unittest.TestCase):
     proc = launch_process(['--sleep'])
     send_signal(proc, signal.SIGINT, 1)
     sig = read_subprocess_message(proc, 'Signal :')
-    self.assertEqual(sig, str(signal.SIGINT))
+    self.assertEqual(int(sig), int(signal.SIGINT))
 
   def test_send_sigterm(self):
     proc = launch_process(['--sleep'])
     send_signal(proc, signal.SIGTERM, 1)
     sig = read_subprocess_message(proc, 'Signal :')
-    self.assertEqual(sig, str(signal.SIGTERM))
+    self.assertEqual(int(sig), int(signal.SIGTERM))
 
 if __name__ == '__main__':
   unittest.main()
