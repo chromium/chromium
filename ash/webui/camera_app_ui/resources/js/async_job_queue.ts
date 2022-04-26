@@ -14,7 +14,9 @@ export class AsyncJobQueue {
    * @return Resolved with the job return value when the job is finished.
    */
   push<T>(job: () => Promise<T>): Promise<T> {
-    const promise = this.promise.then(job);
+    const promise =
+        this.promise.catch(() => {/* ignore error from previous job */})
+            .then(job);
     this.promise = promise;
     return promise;
   }
@@ -44,12 +46,14 @@ export class ClearableAsyncJobQueue {
    *     null if the job is cleared.
    */
   push<T>(job: () => Promise<T>): Promise<T|null> {
-    const promise: Promise<T|null> = this.promise.then(() => {
-      if (this.clearing) {
-        return null;
-      }
-      return job();
-    });
+    const promise =
+        this.promise.catch(() => {/* ignore error from previous job */})
+            .then(() => {
+              if (this.clearing) {
+                return null;
+              }
+              return job();
+            });
     this.promise = promise;
     return promise;
   }
