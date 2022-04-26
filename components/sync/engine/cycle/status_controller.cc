@@ -13,14 +13,6 @@ StatusController::StatusController() = default;
 
 StatusController::~StatusController() = default;
 
-const ModelTypeSet StatusController::get_updates_request_types() const {
-  return model_neutral_.get_updates_request_types;
-}
-
-void StatusController::set_get_updates_request_types(ModelTypeSet value) {
-  model_neutral_.get_updates_request_types = value;
-}
-
 ModelTypeSet StatusController::get_updated_types() const {
   return model_neutral_.updated_types;
 }

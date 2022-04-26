@@ -412,8 +412,6 @@ TEST_F(GetUpdatesProcessorApplyUpdatesTest, Normal) {
 
   EXPECT_EQ(0, GetNonAppliedHandler()->GetApplyUpdatesCount());
   EXPECT_EQ(1, GetAppliedHandler()->GetApplyUpdatesCount());
-
-  EXPECT_EQ(GetGuTypes(), status.get_updates_request_types());
 }
 
 // Verify that a configure cycle applies updates to the specified types.
@@ -431,8 +429,6 @@ TEST_F(GetUpdatesProcessorApplyUpdatesTest, Configure) {
 
   EXPECT_EQ(0, GetNonAppliedHandler()->GetApplyUpdatesCount());
   EXPECT_EQ(1, GetAppliedHandler()->GetApplyUpdatesCount());
-
-  EXPECT_EQ(GetGuTypes(), status.get_updates_request_types());
 }
 
 // Verify that a poll cycle applies updates to the specified types.
@@ -449,8 +445,6 @@ TEST_F(GetUpdatesProcessorApplyUpdatesTest, Poll) {
 
   EXPECT_EQ(0, GetNonAppliedHandler()->GetApplyUpdatesCount());
   EXPECT_EQ(1, GetAppliedHandler()->GetApplyUpdatesCount());
-
-  EXPECT_EQ(GetGuTypes(), status.get_updates_request_types());
 }
 
 class DownloadUpdatesDebugInfoTest : public ::testing::Test {

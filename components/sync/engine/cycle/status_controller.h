@@ -30,10 +30,6 @@ class StatusController {
 
   ~StatusController();
 
-  // The types included in the get updates client to server requests.
-  const ModelTypeSet get_updates_request_types() const;
-  void set_get_updates_request_types(ModelTypeSet value);
-
   // The types which had non-deletion updates in the GetUpdates during the
   // last sync cycle.
   ModelTypeSet get_updated_types() const;
