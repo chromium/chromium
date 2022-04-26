@@ -163,7 +163,8 @@ class CORE_EXPORT InspectorOverlayAgent final
   ToFlexItemHighlightConfig(protocol::Overlay::FlexItemHighlightConfig*);
   static std::unique_ptr<InspectorIsolationModeHighlightConfig>
   ToIsolationModeHighlightConfig(
-      protocol::Overlay::IsolationModeHighlightConfig*);
+      protocol::Overlay::IsolationModeHighlightConfig*,
+      int highlight_index);
   static absl::optional<LineStyle> ToLineStyle(protocol::Overlay::LineStyle*);
   static absl::optional<BoxStyle> ToBoxStyle(protocol::Overlay::BoxStyle*);
   static std::unique_ptr<InspectorHighlightConfig> ToHighlightConfig(

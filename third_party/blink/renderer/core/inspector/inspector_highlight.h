@@ -145,6 +145,7 @@ struct CORE_EXPORT InspectorIsolationModeHighlightConfig {
   Color resizer_color;
   Color resizer_handle_color;
   Color mask_color;
+  int highlight_index = 0;
 };
 
 struct CORE_EXPORT InspectorHighlightConfig {
@@ -300,8 +301,7 @@ std::unique_ptr<protocol::DictionaryValue> InspectorContainerQueryHighlight(
 
 std::unique_ptr<protocol::DictionaryValue> InspectorIsolatedElementHighlight(
     Element* element,
-    const InspectorIsolationModeHighlightConfig& config,
-    int highlight_index);
+    const InspectorIsolationModeHighlightConfig& config);
 
 // CORE_EXPORT is required to make these functions available for unit tests.
 std::unique_ptr<protocol::DictionaryValue> CORE_EXPORT

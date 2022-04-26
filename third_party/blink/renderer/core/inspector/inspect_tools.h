@@ -145,23 +145,20 @@ class SourceOrderTool : public InspectTool {
 };
 
 // -----------------------------------------------------------------------------
-
-using GridConfigs = Vector<
-    std::pair<Member<Node>, std::unique_ptr<InspectorGridHighlightConfig>>>;
+using GridConfigs = HeapHashMap<WeakMember<Node>,
+                                std::unique_ptr<InspectorGridHighlightConfig>>;
 using FlexContainerConfigs =
-    Vector<std::pair<Member<Node>,
-                     std::unique_ptr<InspectorFlexContainerHighlightConfig>>>;
-using ScrollSnapConfigs = Vector<
-    std::pair<Member<Node>,
-              std::unique_ptr<InspectorScrollSnapContainerHighlightConfig>>>;
-
-using ContainerQueryConfigs = Vector<std::pair<
-    Member<Node>,
-    std::unique_ptr<InspectorContainerQueryContainerHighlightConfig>>>;
-
+    HeapHashMap<WeakMember<Node>,
+                std::unique_ptr<InspectorFlexContainerHighlightConfig>>;
+using ScrollSnapConfigs =
+    HeapHashMap<WeakMember<Node>,
+                std::unique_ptr<InspectorScrollSnapContainerHighlightConfig>>;
+using ContainerQueryConfigs = HeapHashMap<
+    WeakMember<Node>,
+    std::unique_ptr<InspectorContainerQueryContainerHighlightConfig>>;
 using IsolatedElementConfigs =
-    Vector<std::pair<Member<Element>,
-                     std::unique_ptr<InspectorIsolationModeHighlightConfig>>>;
+    HeapHashMap<WeakMember<Element>,
+                std::unique_ptr<InspectorIsolationModeHighlightConfig>>;
 
 class PersistentTool : public InspectTool {
   using InspectTool::InspectTool;
@@ -180,6 +177,8 @@ class PersistentTool : public InspectTool {
 
   std::unique_ptr<protocol::DictionaryValue> GetGridInspectorHighlightsAsJson()
       const;
+
+  void Trace(Visitor* visitor) const override;
 
  private:
   bool ForwardEventsToOverlay() override;
