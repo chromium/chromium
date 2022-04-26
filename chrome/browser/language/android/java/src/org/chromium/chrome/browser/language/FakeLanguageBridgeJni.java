@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.language;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 
 /**
  * Fake implementation of LanguageBridge native methods used for testing.
@@ -23,7 +22,7 @@ public class FakeLanguageBridgeJni implements LanguageBridge.Natives {
     }
 
     @Override
-    public void getULPModelLanguages(LinkedHashSet<String> set) {
-        set.addAll(mULPLanguages);
+    public String[] getULPModelLanguages() {
+        return mULPLanguages.toArray(new String[mULPLanguages.size()]);
     }
 }

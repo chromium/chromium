@@ -13,13 +13,18 @@
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 
+using base::android::ConvertJavaStringToUTF8;
+using base::android::ConvertUTF8ToJavaString;
+using base::android::ScopedJavaLocalRef;
+using base::android::ToJavaArrayOfStrings;
+
 namespace language {
 std::vector<std::string> LanguageBridge::GetULPLanguages(
     std::string account_name) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> account_name_java =
-      base::android::ConvertUTF8ToJavaString(env, account_name);
-  base::android::ScopedJavaLocalRef<jobjectArray> languages_java =
+  ScopedJavaLocalRef<jstring> account_name_java =
+      ConvertUTF8ToJavaString(env, account_name);
+  ScopedJavaLocalRef<jobjectArray> languages_java =
       Java_LanguageBridge_getULPLanguages(env, account_name_java);
 
   const int num_langs = (*env).GetArrayLength(languages_java.obj());
@@ -27,32 +32,28 @@ std::vector<std::string> LanguageBridge::GetULPLanguages(
   for (int i = 0; i < num_langs; i++) {
     jstring language_name_java =
         (jstring)(*env).GetObjectArrayElement(languages_java.obj(), i);
-    languages.emplace_back(
-        base::android::ConvertJavaStringToUTF8(env, language_name_java));
+    languages.emplace_back(ConvertJavaStringToUTF8(env, language_name_java));
   }
 
   return languages;
 }
 }  // namespace language
 
-static void JNI_LanguageBridge_GetULPModelLanguages(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& set) {
+static ScopedJavaLocalRef<jobjectArray> JNI_LanguageBridge_GetULPModelLanguages(
+    JNIEnv* env) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   language::LanguageModel* language_model =
       LanguageModelManagerFactory::GetForBrowserContext(profile)
           ->GetLanguageModel(language::LanguageModelManager::ModelType::ULP);
-  if (!language_model)
-    return;
-
-  std::vector<language::LanguageModel::LanguageDetails> languageDetails =
-      language_model->GetLanguages();
-  DCHECK(!languageDetails.empty());
 
   std::vector<std::string> languages;
-  for (const auto& details : languageDetails) {
-    languages.push_back(details.lang_code);
+  if (language_model) {
+    std::vector<language::LanguageModel::LanguageDetails> languageDetails =
+        language_model->GetLanguages();
+    DCHECK(!languageDetails.empty());
+    for (const auto& details : languageDetails) {
+      languages.push_back(details.lang_code);
+    }
   }
-  Java_LanguageBridge_copyStringArrayToCollection(
-      env, set, base::android::ToJavaArrayOfStrings(env, languages));
+  return ToJavaArrayOfStrings(env, languages);
 }

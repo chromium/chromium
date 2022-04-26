@@ -51,8 +51,8 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     }
 
     @Override
-    public void getUserAcceptLanguages(List<String> list) {
-        list.addAll(mUserAcceptLanguages);
+    public String[] getUserAcceptLanguages() {
+        return mUserAcceptLanguages.toArray(new String[mUserAcceptLanguages.size()]);
     }
 
     /**
@@ -95,8 +95,8 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     }
 
     @Override
-    public void getAlwaysTranslateLanguages(List<String> list) {
-        list.addAll(mAlwaysLanguages);
+    public String[] getAlwaysTranslateLanguages() {
+        return mAlwaysLanguages.toArray(new String[mAlwaysLanguages.size()]);
     }
 
     @Override
@@ -109,8 +109,8 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     }
 
     @Override
-    public void getNeverTranslateLanguages(List<String> list) {
-        list.addAll(mNeverLanguages);
+    public String[] getNeverTranslateLanguages() {
+        return mNeverLanguages.toArray(new String[mNeverLanguages.size()]);
     }
 
     @Override
@@ -167,7 +167,7 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     }
 
     @Override
-    public void getModelLanguages(LinkedHashSet<String> set) {
+    public String[] getModelLanguages() {
         throw new UnsupportedOperationException();
     }
 

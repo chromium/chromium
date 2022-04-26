@@ -13,7 +13,6 @@ import org.chromium.components.language.LanguageProfileController;
 import org.chromium.components.language.LanguageProfileDelegateImpl;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -40,14 +39,7 @@ public class LanguageBridge {
      * @return The ordered set of ULP languages saved in the ULP Language Model
      */
     public static LinkedHashSet<String> getULPModelLanguages() {
-        LinkedHashSet<String> set = new LinkedHashSet<>();
-        LanguageBridgeJni.get().getULPModelLanguages(set);
-        return set;
-    }
-
-    @CalledByNative
-    private static void copyStringArrayToCollection(Collection<String> c, String[] a) {
-        c.addAll(Arrays.asList(a));
+        return new LinkedHashSet<>(Arrays.asList(LanguageBridgeJni.get().getULPModelLanguages()));
     }
 
     /**
@@ -67,6 +59,6 @@ public class LanguageBridge {
 
     @NativeMethods
     interface Natives {
-        void getULPModelLanguages(LinkedHashSet<String> set);
+        String[] getULPModelLanguages();
     }
 }
