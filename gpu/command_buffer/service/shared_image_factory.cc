@@ -43,7 +43,11 @@
 #endif
 
 #if defined(USE_OZONE)
+#include "ui/ozone/buildflags.h"
 #include "ui/ozone/public/ozone_platform.h"
+#if BUILDFLAG(OZONE_PLATFORM_X11)
+#include "ui/gl/gl_image_glx_native_pixmap.h"
+#endif
 #endif
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_WIN)) && \
@@ -124,34 +128,64 @@ enum DmaBufSupportedType {
   kYesPixmapNoVulkanExtYesGlExt = 5,
   kYesPixmapYesVulkanExtNoGlExt = 6,
   kYesPixmapYesVulkanExtYesGlExt = 7,
-  kMaxValue = kYesPixmapYesVulkanExtYesGlExt
+  kNoPixmapNoVulkanExtYesGlxExt = 8,
+  kNoPixmapYesVulkanExtYesGlxExt = 9,
+  kYesPixmapNoVulkanExtYesGlxExt = 10,
+  kYesPixmapYesVulkanExtYesGlxExt = 11,
+  kMaxValue = kYesPixmapYesVulkanExtYesGlxExt
 };
+
+enum class GLExtType { kNone, kEGL, kGLX };
 
 DmaBufSupportedType GetDmaBufSupportedType(bool pixmap_supported,
                                            bool vulkan_ext_supported,
-                                           bool gl_ext_supported) {
+                                           GLExtType gl_ext_supported) {
   if (pixmap_supported) {
     if (vulkan_ext_supported) {
-      return gl_ext_supported ? kYesPixmapYesVulkanExtYesGlExt
-                              : kYesPixmapYesVulkanExtNoGlExt;
+      switch (gl_ext_supported) {
+        case GLExtType::kNone:
+          return kYesPixmapYesVulkanExtNoGlExt;
+        case GLExtType::kEGL:
+          return kYesPixmapYesVulkanExtYesGlExt;
+        case GLExtType::kGLX:
+          return kYesPixmapYesVulkanExtYesGlxExt;
+      }
     } else {
-      return gl_ext_supported ? kYesPixmapNoVulkanExtYesGlExt
-                              : kYesPixmapNoVulkanExtNoGlExt;
+      switch (gl_ext_supported) {
+        case GLExtType::kNone:
+          return kYesPixmapNoVulkanExtNoGlExt;
+        case GLExtType::kEGL:
+          return kYesPixmapNoVulkanExtYesGlExt;
+        case GLExtType::kGLX:
+          return kYesPixmapNoVulkanExtYesGlxExt;
+      }
     }
   } else {
     if (vulkan_ext_supported) {
-      return gl_ext_supported ? kNoPixmapYesVulkanExtYesGlExt
-                              : kNoPixmapYesVulkanExtNoGlExt;
+      switch (gl_ext_supported) {
+        case GLExtType::kNone:
+          return kNoPixmapYesVulkanExtNoGlExt;
+        case GLExtType::kEGL:
+          return kNoPixmapYesVulkanExtYesGlExt;
+        case GLExtType::kGLX:
+          return kNoPixmapYesVulkanExtYesGlxExt;
+      }
     } else {
-      return gl_ext_supported ? kNoPixmapNoVulkanExtYesGlExt
-                              : kNoPixmapNoVulkanExtNoGlExt;
+      switch (gl_ext_supported) {
+        case GLExtType::kNone:
+          return kNoPixmapNoVulkanExtNoGlExt;
+        case GLExtType::kEGL:
+          return kNoPixmapNoVulkanExtYesGlExt;
+        case GLExtType::kGLX:
+          return kNoPixmapNoVulkanExtYesGlxExt;
+      }
     }
   }
 }
 
 void ReportDmaBufSupportMetric(bool pixmap_supported,
                                bool vulkan_ext_supported,
-                               bool gl_ext_supported) {
+                               GLExtType gl_ext_supported) {
   DmaBufSupportedType type = GetDmaBufSupportedType(
       pixmap_supported, vulkan_ext_supported, gl_ext_supported);
   UMA_HISTOGRAM_ENUMERATION("GPU.SharedImage.DmaBufSupportedType", type);
@@ -207,6 +241,8 @@ SharedImageFactory::SharedImageFactory(
   if (!set_dmabuf_supported_metric_) {
     bool pixmap_supported = ShouldUseOzoneFactory();
     bool vulkan_ext_supported = false;
+    GLExtType gl_ext_type = GLExtType::kNone;
+
 #if BUILDFLAG(ENABLE_VULKAN)
     if (gr_context_type_ == GrContextType::kVulkan && context_state) {
       const auto& enabled_extensions = context_state->vk_context_provider()
@@ -218,10 +254,23 @@ SharedImageFactory::SharedImageFactory(
           gfx::HasExtension(enabled_extensions,
                             VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME);
     }
-#endif
-    bool gl_ext_supported = gl::GLSurfaceEGL::HasEGLExtension("EGL_KHR_image");
+#endif  // BUILDFLAG(ENABLE_VULKAN)
+
+    bool egl_ext_supported = gl::GLSurfaceEGL::HasEGLExtension("EGL_KHR_image");
+    bool glx_ext_supported = false;
+#if defined(USE_OZONE)
+#if BUILDFLAG(OZONE_PLATFORM_X11)
+    glx_ext_supported = gl::GLImageGLXNativePixmap::CanImportNativePixmap();
+#endif  // BUILDFLAG(OZONE_PLATFORM_X11)
+#endif  // defined(USE_OZONE)
+    if (egl_ext_supported) {
+      gl_ext_type = GLExtType::kEGL;
+    } else if (glx_ext_supported) {
+      gl_ext_type = GLExtType::kGLX;
+    }
+
     ReportDmaBufSupportMetric(pixmap_supported, vulkan_ext_supported,
-                              gl_ext_supported);
+                              gl_ext_type);
     set_dmabuf_supported_metric_ = true;
   }
 

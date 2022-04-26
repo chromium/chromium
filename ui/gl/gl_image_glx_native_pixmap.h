@@ -25,6 +25,8 @@ class GL_EXPORT GLImageGLXNativePixmap : public GLImageGLX {
 
   bool Initialize(scoped_refptr<gfx::NativePixmap> pixmap);
 
+  static bool CanImportNativePixmap();
+
  protected:
   ~GLImageGLXNativePixmap() override;
 

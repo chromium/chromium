@@ -12,6 +12,7 @@
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/dri3.h"
 #include "ui/gfx/x/future.h"
+#include "ui/gfx/x/glx.h"
 #include "ui/gfx/x/xproto_types.h"
 #include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_bindings.h"
@@ -93,6 +94,11 @@ bool GLImageGLXNativePixmap::Initialize(
   return GLImageGLX::Initialize(XPixmapFromNativePixmap(
       *static_cast<gfx::NativePixmapDmaBuf*>(native_pixmap_.get()),
       Depth(format()), Bpp(format())));
+}
+
+bool GLImageGLXNativePixmap::CanImportNativePixmap() {
+  auto* conn = x11::Connection::Get();
+  return conn->dri3().present() && conn->glx().present();
 }
 
 }  // namespace gl
