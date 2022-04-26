@@ -33,6 +33,11 @@ const CGFloat kCellLabelsWidthProportion = 0.2f;
 @property(nonatomic, strong) NSLayoutConstraint* iconVisibleConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* iconHiddenConstraint;
 
+// Constraint used when the |trailingButton| is visible and hidden.
+@property(nonatomic, strong)
+    NSLayoutConstraint* trailingButtonVisibleConstraint;
+@property(nonatomic, strong) NSLayoutConstraint* trailingButtonHiddenConstraint;
+
 // Constraints that are used when the preferred content size is an
 // "accessibility" category.
 @property(nonatomic, strong) NSArray* accessibilityConstraints;
@@ -104,6 +109,14 @@ const CGFloat kCellLabelsWidthProportion = 0.2f;
     _trailingButton.accessibilityIdentifier = kTableViewCellInfoButtonViewId;
     [self.contentView addSubview:_trailingButton];
 
+    // Set up the constraint assuming that the button is hidden.
+    _trailingButtonVisibleConstraint = [textLayoutGuide.trailingAnchor
+        constraintLessThanOrEqualToAnchor:_statusTextLabel.leadingAnchor
+                                 constant:-kTableViewHorizontalSpacing];
+    _trailingButtonHiddenConstraint = [textLayoutGuide.trailingAnchor
+        constraintEqualToAnchor:_trailingButton.trailingAnchor
+                       constant:-kTableViewHorizontalSpacing];
+
     // Set up the constraints assuming that the icon image is hidden.
     _iconVisibleConstraint = [textLayoutGuide.leadingAnchor
         constraintEqualToAnchor:_iconImageView.trailingAnchor
@@ -142,9 +155,7 @@ const CGFloat kCellLabelsWidthProportion = 0.2f;
       [_trailingButton.trailingAnchor
           constraintEqualToAnchor:self.contentView.trailingAnchor
                          constant:-kTableViewHorizontalSpacing],
-      [textLayoutGuide.trailingAnchor
-          constraintLessThanOrEqualToAnchor:_statusTextLabel.leadingAnchor
-                                   constant:-kTableViewHorizontalSpacing],
+      _trailingButtonVisibleConstraint,
       [textLayoutGuide.centerYAnchor
           constraintEqualToAnchor:self.contentView.centerYAnchor],
       [textLayoutGuide.widthAnchor
@@ -260,6 +271,18 @@ const CGFloat kCellLabelsWidthProportion = 0.2f;
   } else {
     self.iconHiddenConstraint.active = NO;
     self.iconVisibleConstraint.active = YES;
+  }
+}
+
+- (void)hideUIButton:(BOOL)isHidden {
+  self.trailingButton.hidden = isHidden;
+  self.trailingButtonHiddenConstraint.active = NO;
+  if (isHidden) {
+    self.trailingButtonHiddenConstraint.active = YES;
+    self.trailingButtonVisibleConstraint.active = NO;
+  } else {
+    self.trailingButtonHiddenConstraint.active = NO;
+    self.trailingButtonVisibleConstraint.active = YES;
   }
 }
 

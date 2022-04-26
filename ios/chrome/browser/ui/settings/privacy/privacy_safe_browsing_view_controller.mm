@@ -70,12 +70,13 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 #pragma mark - PrivacySafeBrowsingConsumer
 
-- (void)reconfigureItems {
+- (void)reloadCellsForItems {
   if (!self.tableViewModel) {
     // No need to reconfigure since the model has not been loaded yet.
     return;
   }
-  [self reconfigureCellsForItems:self.safeBrowsingItems];
+  [self reloadCellsForItems:self.safeBrowsingItems
+           withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (void)setSafeBrowsingItems:(ItemArray)safeBrowsingItems {
@@ -91,6 +92,24 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   [self.tableView selectRowAtIndexPath:indexPath
                               animated:YES
                         scrollPosition:UITableViewScrollPositionNone];
+}
+
+- (void)showEnterprisePopUp:(UIButton*)buttonView {
+  EnterpriseInfoPopoverViewController* bubbleViewController =
+      [[EnterpriseInfoPopoverViewController alloc] initWithEnterpriseName:nil];
+
+  bubbleViewController.delegate = self;
+  // Disable the button when showing the bubble.
+  buttonView.enabled = NO;
+
+  // Set the anchor and arrow direction of the bubble.
+  bubbleViewController.popoverPresentationController.sourceView = buttonView;
+  bubbleViewController.popoverPresentationController.sourceRect =
+      buttonView.bounds;
+  bubbleViewController.popoverPresentationController.permittedArrowDirections =
+      UIPopoverArrowDirectionAny;
+
+  [self presentViewController:bubbleViewController animated:YES completion:nil];
 }
 
 #pragma mark - CollectionViewController
@@ -123,24 +142,15 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 #pragma mark - Actions
 
-// Called when the user clicks on the information button of the managed
-// setting's UI. Shows a textual bubble with the information of the enterprise.
-- (void)didTapManagedUIInfoButton:(UIButton*)buttonView {
-  EnterpriseInfoPopoverViewController* bubbleViewController =
-      [[EnterpriseInfoPopoverViewController alloc] initWithEnterpriseName:nil];
+// Called when the user clicks on a information button.
+- (void)didTapUIInfoButton:(UIButton*)buttonView {
+  CGPoint hitPoint = [buttonView convertPoint:CGPointZero
+                                       toView:self.tableView];
+  NSIndexPath* indexPath = [self.tableView indexPathForRowAtPoint:hitPoint];
+  TableViewModel* model = self.tableViewModel;
+  TableViewItem* selectedItem = [model itemAtIndexPath:indexPath];
 
-  bubbleViewController.delegate = self;
-  // Disable the button when showing the bubble.
-  buttonView.enabled = NO;
-
-  // Set the anchor and arrow direction of the bubble.
-  bubbleViewController.popoverPresentationController.sourceView = buttonView;
-  bubbleViewController.popoverPresentationController.sourceRect =
-      buttonView.bounds;
-  bubbleViewController.popoverPresentationController.permittedArrowDirections =
-      UIPopoverArrowDirectionAny;
-
-  [self presentViewController:bubbleViewController animated:YES completion:nil];
+  [self.modelDelegate didTapInfoButton:buttonView onItem:selectedItem];
 }
 
 #pragma mark - UITableViewDataSource
@@ -149,14 +159,14 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
-  if ([cell isKindOfClass:[TableViewInfoButtonCell class]]) {
-    TableViewInfoButtonCell* managedCell =
-        base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+  cell.selectionStyle = UITableViewCellSelectionStyleBlue;
 
-    [managedCell.trailingButton addTarget:self
-                                   action:@selector(didTapManagedUIInfoButton:)
-                         forControlEvents:UIControlEventTouchUpInside];
-  }
+  TableViewInfoButtonCell* infoCell =
+      base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+  [infoCell.trailingButton addTarget:self
+                              action:@selector(didTapUIInfoButton:)
+                    forControlEvents:UIControlEventTouchUpInside];
+
   return cell;
 }
 
@@ -168,13 +178,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   TableViewModel* model = self.tableViewModel;
   TableViewItem* selectedItem = [model itemAtIndexPath:indexPath];
   [self.modelDelegate didSelectItem:selectedItem];
-}
-
-- (void)tableView:(UITableView*)tableView
-    accessoryButtonTappedForRowWithIndexPath:(NSIndexPath*)indexPath {
-  TableViewModel* model = self.tableViewModel;
-  TableViewItem* selectedItem = [model itemAtIndexPath:indexPath];
-  [self.modelDelegate didTapAccessoryView:selectedItem];
 }
 
 - (BOOL)tableView:(UITableView*)tableView

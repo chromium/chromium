@@ -14,8 +14,8 @@
 // Consumer protocol for Safe Browsing Privacy setting.
 @protocol PrivacySafeBrowsingConsumer <ChromeTableViewConsumer>
 
-// Reconfigure items. Does nothing if the model is not loaded yet.
-- (void)reconfigureItems;
+// Reload cells for items. Does nothing if the model is not loaded yet.
+- (void)reloadCellsForItems;
 
 // Initializes item array for |safeBrowsingItems|.
 - (void)setSafeBrowsingItems:(NSArray<TableViewItem*>*)safeBrowsingItems;
@@ -25,6 +25,9 @@
 
 // Select |item|.
 - (void)selectItem:(TableViewItem*)item;
+
+// Shows enterprise pop up when info button is pressed in enterprise mode.
+- (void)showEnterprisePopUp:(UIButton*)buttonView;
 
 @end
 

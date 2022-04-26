@@ -46,6 +46,9 @@
 
   // Update the icon image, if one is present.
   [cell setIconImage:self.image withTintColor:self.tintColor];
+
+  // Updates if the cells UI button should be hidden.
+  [cell hideUIButton:self.infoButtonIsHidden];
 }
 
 @end

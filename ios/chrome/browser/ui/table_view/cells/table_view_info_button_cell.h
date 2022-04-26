@@ -46,6 +46,9 @@
 // shown. The padding will be updated only if |hasDetailText| is YES.
 - (void)updatePaddingForDetailText:(BOOL)hasDetailText;
 
+// Hides |trailingButton| and activates related constraint.
+- (void)hideUIButton:(BOOL)isHidden;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TABLE_VIEW_CELLS_TABLE_VIEW_INFO_BUTTON_CELL_H_
