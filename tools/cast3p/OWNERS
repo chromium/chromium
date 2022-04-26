@@ -2,3 +2,6 @@ chonggu@google.com
 mfoltz@google.com
 riazantsevv@google.com
 rwkeane@google.com
+
+per-file cast_core.version=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file runtime.version=chromium-autoroll@skia-public.iam.gserviceaccount.com
