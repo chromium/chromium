@@ -3203,12 +3203,6 @@ const char kInstantStartName[] = "Instant start";
 const char kInstantStartDescription[] =
     "Show start surface before native library is loaded.";
 
-const char kIntentBlockExternalFormRedirectsNoGestureName[] =
-    "Block intents from form submissions without user gesture";
-const char kIntentBlockExternalFormRedirectsNoGestureDescription[] =
-    "Require a user gesture that triggered a form submission in order to "
-    "allow for redirecting to an external intent.";
-
 const char kInterestFeedV2Name[] = "Interest Feed v2";
 const char kInterestFeedV2Description[] =
     "Show content suggestions on the New Tab Page and Start Surface using the "

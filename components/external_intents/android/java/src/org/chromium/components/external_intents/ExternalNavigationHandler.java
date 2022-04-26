@@ -657,12 +657,6 @@ public class ExternalNavigationHandler {
         return false;
     }
 
-    /** Wrapper of check against the feature to support overriding for testing. */
-    @VisibleForTesting
-    boolean blockExternalFormRedirectsWithoutGesture() {
-        return ExternalIntentsFeatures.INTENT_BLOCK_EXTERNAL_FORM_REDIRECT_NO_GESTURE.isEnabled();
-    }
-
     /**
      * http://crbug.com/149218: We want to show the intent picker for ordinary links, providing
      * the link is not an incoming intent from another application, unless it's a redirect.
@@ -708,19 +702,6 @@ public class ExternalNavigationHandler {
             return false;
         }
 
-        // http://crbug.com/839751: Require user gestures for form submits to external
-        //                          protocols.
-        // TODO(tedchoc): Turn this on by default once we verify this change does
-        //                not break the world.
-        if (isRedirectFromFormSubmit && !incomingIntentRedirect && !params.hasUserGesture()
-                && blockExternalFormRedirectsWithoutGesture()) {
-            if (DEBUG) {
-                Log.i(TAG,
-                        "Incoming form intent attempting to redirect without "
-                                + "user gesture");
-            }
-            return false;
-        }
         // http://crbug/331571 : Do not override a navigation started from user typing.
         if (params.getRedirectHandler() != null
                 && params.getRedirectHandler().isNavigationFromUserTyping()) {

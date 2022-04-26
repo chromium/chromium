@@ -329,12 +329,14 @@ public class ExternalNavigationHandlerTest {
                 .withPageTransition(PageTransition.FORM_SUBMIT)
                 .withIsRedirect(true)
                 .withHasUserGesture(false)
-                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
+                        START_OTHER_ACTIVITY);
         checkUrl("http://youtube.com://")
                 .withPageTransition(PageTransition.FORM_SUBMIT)
                 .withIsRedirect(true)
                 .withHasUserGesture(false)
-                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
+                        START_OTHER_ACTIVITY);
     }
 
     @Test
@@ -2587,11 +2589,6 @@ public class ExternalNavigationHandlerTest {
         protected boolean isValidWebApk(String packageName) {
             return packageName.startsWith(WEBAPK_PACKAGE_PREFIX)
                     && !packageName.equals(INVALID_WEBAPK_PACKAGE_NAME);
-        }
-
-        @Override
-        public boolean blockExternalFormRedirectsWithoutGesture() {
-            return true;
         }
 
         @Override

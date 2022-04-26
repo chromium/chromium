@@ -1805,9 +1805,6 @@ extern const char kInstanceSwitcherDescription[];
 extern const char kInstantStartName[];
 extern const char kInstantStartDescription[];
 
-extern const char kIntentBlockExternalFormRedirectsNoGestureName[];
-extern const char kIntentBlockExternalFormRedirectsNoGestureDescription[];
-
 extern const char kInterestFeedV2Name[];
 extern const char kInterestFeedV2Description[];
 
