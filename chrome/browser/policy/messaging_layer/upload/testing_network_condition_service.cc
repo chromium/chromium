@@ -6,6 +6,7 @@
 
 #include <cstddef>
 
+#include "base/bind.h"
 #include "chrome/browser/policy/messaging_layer/upload/network_condition_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -15,15 +16,23 @@ namespace reporting {
 
 TestingNetworkConditionService::TestingNetworkConditionService(
     content::BrowserTaskEnvironment* task_environment) {
-  // Reset the unique pointer of observer will post the task to delete the
-  // observer. |TestingNetworkConditionService| is better off without an
-  // observer changing upload_rate_ in the way.
-  observer_.reset();
+  // Post the task to remove the observer so that
+  // g_browser_process->network_quality_tracker() won't accidentally get in the
+  // way in our manipulation of artificial upload rate.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](NetworkConditionServiceImpl* network_condition_service_impl) {
+            g_browser_process->network_quality_tracker()
+                ->RemoveRTTAndThroughputEstimatesObserver(
+                    network_condition_service_impl);
+          },
+          base::Unretained(impl_.get())));
   task_environment->RunUntilIdle();
 }
 
 void TestingNetworkConditionService::SetUploadRate(uint64_t upload_rate) {
-  upload_rate_ = upload_rate;
+  impl_->upload_rate_ = upload_rate;
 }
 
 }  // namespace reporting

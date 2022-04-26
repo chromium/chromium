@@ -7,6 +7,7 @@
 #include <cstddef>
 
 #include "base/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -17,72 +18,58 @@ NetworkConditionService::NetworkConditionService() = default;
 NetworkConditionService::~NetworkConditionService() = default;
 
 uint64_t NetworkConditionService::GetUploadRate() const {
-  return upload_rate_;
+  return impl_->GetUploadRate();
 }
 
-uint64_t NetworkConditionService::ConvertKbpsToBytesPerSec(int32_t kbps) {
-  return static_cast<uint64_t>(kbps) * (1024UL / 8UL);
-}
-
-NetworkConditionService& NetworkConditionService::SetUploadRateKbps(
-    int32_t upload_rate_kbps) {
-  upload_rate_ = ConvertKbpsToBytesPerSec(upload_rate_kbps);
-  return *this;
-}
-
-// NetworkConditionService::NetworkConditionServiceObserver implementation.
-NetworkConditionService::NetworkConditionServiceObserver::
-    NetworkConditionServiceObserver(
-        NetworkConditionService* network_condition_service)
-    : network_condition_service_(network_condition_service) {
+// NetworkConditionService::NetworkConditionServiceImpl implementation.
+NetworkConditionService::NetworkConditionServiceImpl::
+    NetworkConditionServiceImpl() {
   // g_browser_process must be accessed from the UI thread
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&NetworkConditionService::NetworkConditionServiceObserver::
+      base::BindOnce(&NetworkConditionService::NetworkConditionServiceImpl::
                          RegisterRTTAndThroughputEstimatesObserver,
                      // Will always be valid. Can only be destroyed by posting
                      // another task to this task sequence via |Destroy|.
                      base::Unretained(this)));
 }
-NetworkConditionService::NetworkConditionServiceObserver::UniquePtr
-NetworkConditionService::NetworkConditionServiceObserver::MakeUnique(
-    NetworkConditionService* network_condition_service) {
+
+uint64_t
+NetworkConditionService::NetworkConditionServiceImpl::ConvertKbpsToBytesPerSec(
+    int32_t kbps) {
+  return static_cast<uint64_t>(kbps) * (1024UL / 8UL);
+}
+
+NetworkConditionService::NetworkConditionServiceImpl::UniquePtr
+NetworkConditionService::NetworkConditionServiceImpl::MakeUnique() {
   return UniquePtr(
-      new NetworkConditionServiceObserver(network_condition_service),
-      &CallDestroy);
+      new NetworkConditionServiceImpl(),
+      base::OnTaskRunnerDeleter(content::GetUIThreadTaskRunner({})));
 }
 
-void NetworkConditionService::NetworkConditionServiceObserver::CallDestroy(
-    NetworkConditionServiceObserver* observer) {
-  observer->Destroy();
+uint64_t NetworkConditionService::NetworkConditionServiceImpl::GetUploadRate()
+    const {
+  return upload_rate_;
 }
 
-void NetworkConditionService::NetworkConditionServiceObserver::Destroy() {
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](NetworkConditionServiceObserver*
-                            network_condition_service_observer) {
-                       g_browser_process->network_quality_tracker()
-                           ->RemoveRTTAndThroughputEstimatesObserver(
-                               network_condition_service_observer);
-                       delete network_condition_service_observer;
-                     },
-                     // |Destroy| can only be called once and |this| is only
-                     // deleted after the posted task is executed.
-                     base::Unretained(this)));
+NetworkConditionService::NetworkConditionServiceImpl&
+NetworkConditionService::NetworkConditionServiceImpl::SetUploadRateKbps(
+    int32_t upload_rate_kbps) {
+  upload_rate_ = ConvertKbpsToBytesPerSec(upload_rate_kbps);
+  return *this;
 }
 
-void NetworkConditionService::NetworkConditionServiceObserver::
+void NetworkConditionService::NetworkConditionServiceImpl::
     OnRTTOrThroughputEstimatesComputed(base::TimeDelta http_rtt,
                                        base::TimeDelta transport_rtt,
                                        int32_t downstream_throughput_kbps) {
   // Here we are using download rate to approximate upload rate. While they
   // may be far off in many circumstances, they are generally on the same
   // magnitude at least, which should be sufficient for our purpose.
-  network_condition_service_->SetUploadRateKbps(downstream_throughput_kbps);
+  SetUploadRateKbps(downstream_throughput_kbps);
 }
 
-void NetworkConditionService::NetworkConditionServiceObserver::
+void NetworkConditionService::NetworkConditionServiceImpl::
     RegisterRTTAndThroughputEstimatesObserver() {
   DCHECK(g_browser_process != nullptr);
   auto* network_quality_tracker = g_browser_process->network_quality_tracker();
