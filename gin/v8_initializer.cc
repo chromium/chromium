@@ -477,13 +477,6 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
     base::internal::PartitionAddressSpace::InitConfigurablePool(pool_base,
                                                                 pool_size);
     // TODO(saelo) maybe record the size of the Pool into UMA.
-
-    // If this CHECK fails, it means that something used the array buffer
-    // shared memory mapper before the sandbox was initialized, which may then
-    // cause crashes later on as array buffers may have been mapped outside the
-    // sandbox. See GetSharedMemoryMapperForArrayBuffers(). TODO(saelo) remove
-    // once sandbox initialization is mandatory.
-    CHECK_NE(nullptr, GetSharedMemoryMapperForArrayBuffers());
   }
 #endif  // V8_SANDBOX
 }

@@ -11,7 +11,8 @@
 
 namespace base {
 
-absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
+// static
+absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::MapInternal(
     subtle::PlatformSharedMemoryHandle handle,
     bool write_allowed,
     uint64_t offset,
@@ -36,7 +37,8 @@ absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
   return make_span(reinterpret_cast<uint8_t*>(address), size);
 }
 
-void PlatformSharedMemoryMapper::Unmap(span<uint8_t> mapping) {
+// static
+void PlatformSharedMemoryMapper::UnmapInternal(span<uint8_t> mapping) {
   kern_return_t kr = mach_vm_deallocate(
       mach_task_self(), reinterpret_cast<mach_vm_address_t>(mapping.data()),
       mapping.size());

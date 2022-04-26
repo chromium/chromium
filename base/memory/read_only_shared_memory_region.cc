@@ -14,23 +14,20 @@ ReadOnlySharedMemoryRegion::CreateFunction*
     ReadOnlySharedMemoryRegion::create_hook_ = nullptr;
 
 // static
-MappedReadOnlyRegion ReadOnlySharedMemoryRegion::Create(
-    size_t size,
-    SharedMemoryMapper* mapper) {
+MappedReadOnlyRegion ReadOnlySharedMemoryRegion::Create(size_t size) {
   if (create_hook_)
-    return create_hook_(size, mapper);
+    return create_hook_(size);
 
   subtle::PlatformSharedMemoryRegion handle =
       subtle::PlatformSharedMemoryRegion::CreateWritable(size);
   if (!handle.IsValid())
     return {};
 
-  auto result = handle.MapAt(0, handle.GetSize(), mapper);
+  auto result = handle.MapAt(0, handle.GetSize());
   if (!result.has_value())
     return {};
 
-  WritableSharedMemoryMapping mapping(result.value(), size, handle.GetGUID(),
-                                      mapper);
+  WritableSharedMemoryMapping mapping(result.value(), size, handle.GetGUID());
 #if BUILDFLAG(IS_MAC)
   handle.ConvertToReadOnly(mapping.memory());
 #else
@@ -68,24 +65,21 @@ ReadOnlySharedMemoryRegion ReadOnlySharedMemoryRegion::Duplicate() const {
   return ReadOnlySharedMemoryRegion(handle_.Duplicate());
 }
 
-ReadOnlySharedMemoryMapping ReadOnlySharedMemoryRegion::Map(
-    SharedMemoryMapper* mapper) const {
-  return MapAt(0, handle_.GetSize(), mapper);
+ReadOnlySharedMemoryMapping ReadOnlySharedMemoryRegion::Map() const {
+  return MapAt(0, handle_.GetSize());
 }
 
 ReadOnlySharedMemoryMapping ReadOnlySharedMemoryRegion::MapAt(
     uint64_t offset,
-    size_t size,
-    SharedMemoryMapper* mapper) const {
+    size_t size) const {
   if (!IsValid())
     return {};
 
-  auto result = handle_.MapAt(offset, size, mapper);
+  auto result = handle_.MapAt(offset, size);
   if (!result.has_value())
     return {};
 
-  return ReadOnlySharedMemoryMapping(result.value(), size, handle_.GetGUID(),
-                                     mapper);
+  return ReadOnlySharedMemoryMapping(result.value(), size, handle_.GetGUID());
 }
 
 bool ReadOnlySharedMemoryRegion::IsValid() const {

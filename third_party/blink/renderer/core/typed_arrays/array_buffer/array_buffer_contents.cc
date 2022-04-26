@@ -30,8 +30,6 @@
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/bits.h"
-#include "base/system/sys_info.h"
-#include "gin/array_buffer.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
@@ -44,35 +42,6 @@ ArrayBufferContents::ArrayBufferContents(void* data,
 
   backing_store_ =
       v8::ArrayBuffer::NewBackingStore(data, length, deleter, nullptr);
-}
-
-ArrayBufferContents::ArrayBufferContents(
-    const base::subtle::PlatformSharedMemoryRegion& region,
-    uint64_t offset,
-    size_t length) {
-  DCHECK(region.IsValid());
-
-  // The offset must be a multiples of |SysInfo::VMAllocationGranularity()|.
-  size_t offset_rounding = offset % base::SysInfo::VMAllocationGranularity();
-  uint64_t real_offset = offset - offset_rounding;
-  size_t real_length = length + offset_rounding;
-
-  absl::optional<base::span<uint8_t>> result = region.MapAt(
-      real_offset, real_length, gin::GetSharedMemoryMapperForArrayBuffers());
-  if (!result.has_value()) {
-    return;
-  }
-
-  auto deleter = [](void* buffer, size_t length, void* data) {
-    size_t offset = reinterpret_cast<uintptr_t>(buffer) %
-                    base::SysInfo::VMAllocationGranularity();
-    uint8_t* base = static_cast<uint8_t*>(buffer) - offset;
-    base::span<uint8_t> mapping = base::make_span(base, length + offset);
-    gin::GetSharedMemoryMapperForArrayBuffers()->Unmap(mapping);
-  };
-  void* base = result.value().data() + offset_rounding;
-  backing_store_ =
-      v8::ArrayBuffer::NewBackingStore(base, length, deleter, nullptr);
 }
 
 ArrayBufferContents::ArrayBufferContents(

@@ -48,24 +48,20 @@ UnsafeSharedMemoryRegion UnsafeSharedMemoryRegion::Duplicate() const {
   return UnsafeSharedMemoryRegion(handle_.Duplicate());
 }
 
-WritableSharedMemoryMapping UnsafeSharedMemoryRegion::Map(
-    SharedMemoryMapper* mapper) const {
-  return MapAt(0, handle_.GetSize(), mapper);
+WritableSharedMemoryMapping UnsafeSharedMemoryRegion::Map() const {
+  return MapAt(0, handle_.GetSize());
 }
 
-WritableSharedMemoryMapping UnsafeSharedMemoryRegion::MapAt(
-    uint64_t offset,
-    size_t size,
-    SharedMemoryMapper* mapper) const {
+WritableSharedMemoryMapping UnsafeSharedMemoryRegion::MapAt(uint64_t offset,
+                                                            size_t size) const {
   if (!IsValid())
     return {};
 
-  auto result = handle_.MapAt(offset, size, mapper);
+  auto result = handle_.MapAt(offset, size);
   if (!result.has_value())
     return {};
 
-  return WritableSharedMemoryMapping(result.value(), size, handle_.GetGUID(),
-                                     mapper);
+  return WritableSharedMemoryMapping(result.value(), size, handle_.GetGUID());
 }
 
 bool UnsafeSharedMemoryRegion::IsValid() const {
