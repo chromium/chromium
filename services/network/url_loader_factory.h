@@ -121,7 +121,7 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
   mojo::Remote<mojom::TrustedURLLoaderHeaderClient> header_client_;
 
   // |cors_url_loader_factory_| owns this.
-  raw_ptr<cors::CorsURLLoaderFactory> cors_url_loader_factory_;
+  raw_ptr<cors::CorsURLLoaderFactory> const cors_url_loader_factory_;
 
   // To allow subsequent range requests, ORB stores URLs of non-range-request
   // responses that sniffed as an audio or video resource.  The lifetime of that

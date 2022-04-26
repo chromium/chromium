@@ -91,6 +91,7 @@ URLLoaderFactory::URLLoaderFactory(
             params_->isolation_info.request_type());
   DCHECK(!params_->automatically_assign_isolation_info ||
          params_->isolation_info.IsEmpty());
+  DCHECK(cors_url_loader_factory_);
 
   if (!params_->top_frame_id) {
     params_->top_frame_id = base::UnguessableToken::Create();
