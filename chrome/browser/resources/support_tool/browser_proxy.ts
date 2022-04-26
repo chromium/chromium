@@ -30,6 +30,12 @@ export type StartDataCollectionResult = {
   errorMessage: string,
 };
 
+export type UrlGenerationResult = {
+  success: boolean,
+  url: string,
+  errorMessage: string,
+};
+
 export interface BrowserProxy {
   /**
    * Gets the list of email addresses that are logged in from C++ side.
@@ -49,6 +55,9 @@ export interface BrowserProxy {
   startDataExport(piiItems: PIIDataItem[]): void;
 
   showExportedDataInFolder(): void;
+
+  generateCustomizedURL(caseId: string, dataCollectors: DataCollectorItem[]):
+      Promise<UrlGenerationResult>;
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
@@ -79,6 +88,10 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   showExportedDataInFolder() {
     chrome.send('showExportedDataInFolder');
+  }
+
+  generateCustomizedURL(caseId: string, dataCollectors: DataCollectorItem[]) {
+    return sendWithPromise('generateCustomizedURL', caseId, dataCollectors);
   }
 
   static getInstance(): BrowserProxy {

@@ -15,22 +15,32 @@
     height: 148px;
   }
 
-  .url-text {
-    background-color: var(--cr-input-background-color);
+  #generatedURL {
     height: 32px;
     width: 520px;
+  }
+
+  #generatedURL[disabled] {
+    /* Set opacity to 1 for disabled state since we use this element disabled
+     * by default.*/
+    --cr-disabled-opacity: 1;
+  }
+
+  cr-button {
+    margin-inline-start: 12px;
   }
 </style>
 
 <h2>Generate support tool URL</h2>
 <div class="support-tool-title">Support Case ID</div>
-<cr-input class="support-case-id" value="{{caseId_}}"
-  spellcheck="false" maxlength="20">
+<cr-input id="caseIdInput" class="support-case-id" value="{{caseId_}}"
+  spellcheck="false" maxlength="20" disabled="[[urlGenerated_]]">
 </cr-input>
 <div class="support-tool-title">Data sources to collect</div>
 <iron-list class="data-collector-list" items="[[dataCollectors_]]">
   <template>
-    <cr-checkbox class="data-collector-checkbox" checked="{{item.isIncluded}}">
+    <cr-checkbox class="data-collector-checkbox" checked="{{item.isIncluded}}"
+        disabled="[[urlGenerated_]]">
       [[item.name]]
     </cr-checkbox>
   </template>
@@ -38,11 +48,29 @@
 <div class="support-tool-title">Generated URL</div>
 <!-- Use cr-input in disabled mode since we don't want to accept input but want
   to have the same styling as cr-input.-->
-<cr-input class="url-text" value="[[generatedURL_]]" disabled="true">
+<cr-input id="generatedURL" disabled="true" value="[[generatedURL_]]">
 </cr-input>
-<div class="navigation-buttons">
+<div class="navigation-buttons" hidden="[[urlGenerated_]]">
   <cr-button id="generateButton" class="action-button"
       on-click="onGenerateClick_">
     Generate URL
   </cr-button>
 </div>
+<div class="navigation-buttons" hidden="[[!urlGenerated_]]">
+  <cr-button id="backButton" on-click="onBackClick_">
+    Back
+  </cr-button>
+  <cr-button id="copyURLButton" class="action-button"
+      on-click="onCopyURLClick_">
+    Copy URL
+  </cr-button>
+</div>
+<cr-toast id="copyToast" duration="5000">
+  <span>URL copied to clipboard</span>
+</cr-toast>
+<cr-toast id="errorMessageToast" duration="0">
+  <span>[[errorMessage_]]</span>
+  <cr-icon-button on-click="onErrorMessageToastCloseClicked_"
+      iron-icon="cr:close">
+  </cr-icon-button>
+</cr-toast>

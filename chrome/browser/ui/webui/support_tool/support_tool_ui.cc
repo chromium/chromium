@@ -339,6 +339,65 @@ std::set<feedback::PIIType> GetSelectedPIIToKeep(
   return pii_to_keep;
 }
 
+std::string GetDataCollectionModuleQuery(
+    std::set<support_tool::DataCollectorType> included_data_collectors) {
+  support_tool::DataCollectionModule module;
+  for (const auto& data_collector : included_data_collectors) {
+    module.add_included_data_collectors(data_collector);
+  }
+  std::string module_serialized;
+  module.SerializeToString(&module_serialized);
+  std::string data_collection_url_query;
+  base::Base64UrlEncode(module_serialized,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &data_collection_url_query);
+  return data_collection_url_query;
+}
+
+// Returns a URL generation result in the type Support Tool UI expects.
+// type UrlGenerationResult = {
+//   success: boolean,
+//   url: string,
+//   errorMessage: string,
+// }
+base::Value::Dict GetURLGenerationResult(bool success,
+                                         std::string url,
+                                         std::string error_message) {
+  base::Value::Dict url_generation_response;
+  url_generation_response.Set("success", success);
+  url_generation_response.Set("url", url);
+  url_generation_response.Set("errorMessage", error_message);
+  return url_generation_response;
+}
+
+// Generates a customized chrome://support-tool URL from given `case_id` and
+// `data_collector_items` and returns the result in a format Support Tool UI
+// expects. Returns a result with error when there's no data collector selected
+// in `data_collector_items`.
+base::Value::Dict GenerateCustomizedURL(
+    std::string case_id,
+    const base::Value::List* data_collector_items) {
+  base::Value::Dict url_generation_response;
+  std::set<support_tool::DataCollectorType> included_data_collectors =
+      GetIncludedDataCollectorTypes(data_collector_items);
+  if (included_data_collectors.empty()) {
+    // If there's no selected data collector to add, consider this as an error.
+    return GetURLGenerationResult(
+        /*success=*/false, /*url=*/std::string(), /*error_message=*/
+        "No data collectors included. Please select a data collector.");
+  }
+  GURL customized_url("chrome://support-tool");
+  if (!case_id.empty()) {
+    customized_url =
+        net::AppendQueryParameter(customized_url, kSupportCaseIDQuery, case_id);
+  }
+  customized_url = net::AppendQueryParameter(
+      customized_url, kModuleQuery,
+      GetDataCollectionModuleQuery(included_data_collectors));
+  return GetURLGenerationResult(/*success=*/true, /*url=*/customized_url.spec(),
+                                /*error_message=*/std::string());
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -375,6 +434,8 @@ class SupportToolMessageHandler : public content::WebUIMessageHandler,
   void HandleStartDataExport(const base::Value::List& args);
 
   void HandleShowExportedDataInFolder(const base::Value::List& args);
+
+  void HandleGenerateCustomizedURL(const base::Value::List& args);
 
   // SelectFileDialog::Listener implementation.
   void FileSelected(const base::FilePath& path,
@@ -436,6 +497,11 @@ void SupportToolMessageHandler::RegisterMessages() {
       "showExportedDataInFolder",
       base::BindRepeating(
           &SupportToolMessageHandler::HandleShowExportedDataInFolder,
+          weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "generateCustomizedURL",
+      base::BindRepeating(
+          &SupportToolMessageHandler::HandleGenerateCustomizedURL,
           weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -633,6 +699,17 @@ void SupportToolMessageHandler::OnDataExportDone(
 void SupportToolMessageHandler::HandleShowExportedDataInFolder(
     const base::Value::List& args) {
   platform_util::ShowItemInFolder(Profile::FromWebUI(web_ui()), data_path_);
+}
+
+void SupportToolMessageHandler::HandleGenerateCustomizedURL(
+    const base::Value::List& args) {
+  CHECK_EQ(3U, args.size());
+  const base::Value& callback_id = args[0];
+  std::string case_id = args[1].GetString();
+  const base::Value::List* data_collectors = args[2].GetIfList();
+  DCHECK(data_collectors);
+  ResolveJavascriptCallback(callback_id, base::Value(GenerateCustomizedURL(
+                                             case_id, data_collectors)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -3,18 +3,21 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Suite of tests for the SupportToolElement. It will be executed
- * by support_tool_browsertest.js.
+ * @fileoverview Suite of tests for the Support Tool UI elements. It will be
+ * executed by support_tool_browsertest.js.
  */
 
 import 'chrome://support-tool/support_tool.js';
+import 'chrome://support-tool/url_generator.js';
 
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {BrowserProxy, BrowserProxyImpl, DataCollectorItem, IssueDetails, PIIDataItem} from 'chrome://support-tool/browser_proxy.js';
+import {BrowserProxy, BrowserProxyImpl, DataCollectorItem, IssueDetails, PIIDataItem, UrlGenerationResult} from 'chrome://support-tool/browser_proxy.js';
 import {DataExportResult, SupportToolElement, SupportToolPageIndex} from 'chrome://support-tool/support_tool.js';
-import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {UrlGeneratorElement} from 'chrome://support-tool/url_generator.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -25,6 +28,14 @@ const DATA_COLLECTORS: DataCollectorItem[] = [
   {name: 'data collector 1', isIncluded: false, protoEnum: 1},
   {name: 'data collector 2', isIncluded: true, protoEnum: 2},
   {name: 'data collector 3', isIncluded: false, protoEnum: 3},
+];
+
+const ALL_DATA_COLLECTORS: DataCollectorItem[] = [
+  {name: 'data collector 1', isIncluded: false, protoEnum: 1},
+  {name: 'data collector 2', isIncluded: false, protoEnum: 2},
+  {name: 'data collector 3', isIncluded: false, protoEnum: 3},
+  {name: 'data collector 4', isIncluded: false, protoEnum: 4},
+  {name: 'data collector 5', isIncluded: false, protoEnum: 5},
 ];
 
 const PII_ITEMS: PIIDataItem[] = [
@@ -62,6 +73,9 @@ const PII_ITEMS: PIIDataItem[] = [
  */
 class TestSupportToolBrowserProxy extends TestBrowserProxy implements
     BrowserProxy {
+  private urlGenerationResult_:
+      UrlGenerationResult = {success: false, url: '', errorMessage: ''};
+
   constructor() {
     super([
       'getEmailAddresses',
@@ -71,6 +85,7 @@ class TestSupportToolBrowserProxy extends TestBrowserProxy implements
       'startDataExport',
       'showExportedDataInFolder',
       'getAllDataCollectors',
+      'generateCustomizedURL',
     ]);
   }
 
@@ -86,10 +101,7 @@ class TestSupportToolBrowserProxy extends TestBrowserProxy implements
 
   getAllDataCollectors() {
     this.methodCalled('getAllDataCollectors');
-    // TODO(b/217931906): For now, we return the same list of DATA_COLLECTORS.
-    // Add a proper return value when we add test cases about
-    // UrlGeneratorElement.
-    return Promise.resolve(DATA_COLLECTORS);
+    return Promise.resolve(ALL_DATA_COLLECTORS);
   }
 
   startDataCollection(
@@ -111,6 +123,17 @@ class TestSupportToolBrowserProxy extends TestBrowserProxy implements
 
   showExportedDataInFolder() {
     this.methodCalled('showExportedDataInFolder');
+  }
+
+  setUrlGenerationResult(result: UrlGenerationResult) {
+    this.urlGenerationResult_ = result;
+  }
+
+  // Returns this.urlGenerationResult as response. Please call
+  // this.setUrlGenerationResult() before using this function in tests.
+  generateCustomizedURL(caseId: string, dataCollectors: DataCollectorItem[]) {
+    this.methodCalled('generateCustomizedURL', caseId, dataCollectors);
+    return Promise.resolve(this.urlGenerationResult_);
   }
 }
 
@@ -234,5 +257,67 @@ suite('SupportToolTest', function() {
     assertEquals(
         supportTool.shadowRoot!.querySelector('iron-pages')!.selected,
         SupportToolPageIndex.DATA_EXPORT_DONE);
+  });
+});
+
+suite('UrlGeneratorTest', function() {
+  let urlGenerator: UrlGeneratorElement;
+  let browserProxy: TestSupportToolBrowserProxy;
+
+  setup(async function() {
+    document.body.innerHTML = '';
+    browserProxy = new TestSupportToolBrowserProxy();
+    BrowserProxyImpl.setInstance(browserProxy);
+    urlGenerator = document.createElement('url-generator');
+    document.body.appendChild(urlGenerator);
+    await waitAfterNextRender(urlGenerator);
+  });
+
+  test('url generation success', async () => {
+    const caseIdInput = urlGenerator.shadowRoot!.getElementById(
+                            'caseIdInput')! as CrInputElement;
+    caseIdInput.value = 'test123';
+    const dataCollectors =
+        urlGenerator.shadowRoot!.querySelector('iron-list')!.items!;
+    // Select the first one of data collectors.
+    dataCollectors[0]!.selected = true;
+    // Set the expected result of URL generation to successful.
+    const expectedResult: UrlGenerationResult = {
+      success: true,
+      url: 'chrome://support-tool/?case_id=test123&module=jekhh',
+      errorMessage: ''
+    };
+    browserProxy.setUrlGenerationResult(expectedResult);
+    // Click the button to generate URL.
+    urlGenerator.shadowRoot!.getElementById('generateButton')!.click();
+    await browserProxy.whenCalled('generateCustomizedURL');
+    // Check the URL value shown to user if it's as expected.
+    const generatedURL = urlGenerator.shadowRoot!.getElementById(
+                             'generatedURL')! as CrInputElement;
+    assertEquals(generatedURL.value, expectedResult.url);
+    // The input fields should be disabled when there's a generated URL shown to
+    // user.
+    assertTrue(caseIdInput.disabled);
+    // Click the button to go back to URL generation.
+    urlGenerator.shadowRoot!.getElementById('backButton')!.click();
+    // The input fields should be enabled again when user clicked back button.
+    assertFalse(caseIdInput.disabled);
+    // Check the URL value shown to user is empty after going back.
+    assertEquals(generatedURL.value, '');
+  });
+
+  test('url generation fail', async () => {
+    // Set the expected result of URL generation to error.
+    const expectedResult: UrlGenerationResult = {
+      success: false,
+      url: '',
+      errorMessage: 'Test error message'
+    };
+    browserProxy.setUrlGenerationResult(expectedResult);
+    // Click the button to generate URL.
+    urlGenerator.shadowRoot!.getElementById('generateButton')!.click();
+    await browserProxy.whenCalled('generateCustomizedURL');
+    // Check that there's an error message shown to user.
+    assertTrue(urlGenerator.$.errorMessageToast.open);
   });
 });
