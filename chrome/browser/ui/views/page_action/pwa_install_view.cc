@@ -8,7 +8,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -139,8 +138,7 @@ void PwaInstallView::OnIphClosed() {
   PrefService* prefs =
       Profile::FromBrowserContext(web_contents->GetBrowserContext())
           ->GetPrefs();
-  base::UmaHistogramEnumeration("WebApp.InstallIphPromo.Result",
-                                web_app::InstallIphResult::kIgnored);
+
   web_app::RecordInstallIphIgnored(
       prefs, web_app::GenerateAppIdFromManifest(manager->manifest()),
       base::Time::Now());

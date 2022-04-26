@@ -194,8 +194,6 @@ void PWAConfirmationBubbleView::WindowClosing() {
   if (iph_state_ == chrome::PwaInProductHelpState::kShown && web_app_info_) {
     web_app::AppId app_id = web_app::GenerateAppId(web_app_info_->manifest_id,
                                                    web_app_info_->start_url);
-    UMA_HISTOGRAM_ENUMERATION("WebApp.InstallIphPromo.Result",
-                              web_app::InstallIphResult::kCanceled);
     web_app::RecordInstallIphIgnored(prefs_, app_id, base::Time::Now());
   }
   if (callback_) {
@@ -214,8 +212,6 @@ bool PWAConfirmationBubbleView::Accept() {
   if (iph_state_ == chrome::PwaInProductHelpState::kShown) {
     web_app::AppId app_id = web_app::GenerateAppId(web_app_info_->manifest_id,
                                                    web_app_info_->start_url);
-    UMA_HISTOGRAM_ENUMERATION("WebApp.InstallIphPromo.Result",
-                              web_app::InstallIphResult::kInstalled);
     web_app::RecordInstallIphInstalled(prefs_, app_id);
     tracker_->NotifyEvent(feature_engagement::events::kDesktopPwaInstalled);
   }

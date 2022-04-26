@@ -197,19 +197,6 @@ enum class RunOnOsLoginPolicy {
 
 std::string RunOnOsLoginModeToString(RunOnOsLoginMode mode);
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// Records result of user reaction to install in-product help promo.
-enum class InstallIphResult {
-  // Installed the web app after IPH was shown.
-  kInstalled = 0,
-  // Clicked the install icon but canceled install after IPH was shown.
-  kCanceled = 1,
-  // Ignored IPH, didn't click install.
-  kIgnored = 2,
-  kMaxValue = kIgnored,
-};
-
 // Number of times IPH can be ignored for this app before it's muted.
 constexpr int kIphMuteAfterConsecutiveAppSpecificIgnores = 3;
 // Number of times IPH can be ignored for any app before it's muted.
