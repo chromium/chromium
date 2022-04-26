@@ -63,7 +63,7 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
           pending_receiver);
 
   mojo::PendingAssociatedRemote<blink::mojom::IDBCursor> CreateCursorBinding(
-      const blink::StorageKey& storage_key,
+      const storage::BucketLocator& bucket_locator,
       std::unique_ptr<IndexedDBCursor> cursor);
   void RemoveCursorBinding(mojo::ReceiverId receiver_id);
 
@@ -82,7 +82,7 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
   void CreateAndBindTransactionImpl(
       mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
           transaction_receiver,
-      const blink::StorageKey& storage_key,
+      const storage::BucketLocator& bucket_locator,
       base::WeakPtr<IndexedDBTransaction> transaction);
 
   // Bind this receiver to read from this given file.

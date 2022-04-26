@@ -11,8 +11,8 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
@@ -29,7 +29,7 @@ class TransactionImpl : public blink::mojom::IDBTransaction {
  public:
   explicit TransactionImpl(
       base::WeakPtr<IndexedDBTransaction> transaction,
-      const blink::StorageKey& storage_key,
+      const storage::BucketLocator& bucket_locator,
       base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
       scoped_refptr<base::SequencedTaskRunner> idb_runner);
 
@@ -66,7 +66,7 @@ class TransactionImpl : public blink::mojom::IDBTransaction {
   base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host_;
   scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
   base::WeakPtr<IndexedDBTransaction> transaction_;
-  const blink::StorageKey storage_key_;
+  const storage::BucketLocator bucket_locator_;
   scoped_refptr<base::SequencedTaskRunner> idb_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);

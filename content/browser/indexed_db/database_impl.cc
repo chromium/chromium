@@ -138,9 +138,8 @@ void DatabaseImpl::CreateTransaction(
           mode));
   connection_->database()->RegisterAndScheduleTransaction(transaction);
 
-  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   dispatcher_host_->CreateAndBindTransactionImpl(
-      std::move(transaction_receiver), bucket_locator_.storage_key,
+      std::move(transaction_receiver), bucket_locator_,
       transaction->AsWeakPtr());
 }
 
@@ -473,11 +472,10 @@ void DatabaseImpl::OpenCursor(
       key_only ? indexed_db::CURSOR_KEY_ONLY : indexed_db::CURSOR_KEY_AND_VALUE;
   params->task_type = task_type;
   params->callback = std::move(aborting_callback);
-  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
-  transaction->ScheduleTask(BindWeakOperation(
-      &IndexedDBDatabase::OpenCursorOperation,
-      connection_->database()->AsWeakPtr(), std::move(params),
-      bucket_locator_.storage_key, dispatcher_host_->AsWeakPtr()));
+  transaction->ScheduleTask(
+      BindWeakOperation(&IndexedDBDatabase::OpenCursorOperation,
+                        connection_->database()->AsWeakPtr(), std::move(params),
+                        bucket_locator_, dispatcher_host_->AsWeakPtr()));
 }
 
 void DatabaseImpl::Count(

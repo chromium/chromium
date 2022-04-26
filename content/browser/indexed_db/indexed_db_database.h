@@ -22,6 +22,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/indexed_db.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_callbacks.h"
@@ -266,7 +267,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
   };
   leveldb::Status OpenCursorOperation(
       std::unique_ptr<OpenCursorOperationParams> params,
-      const blink::StorageKey& storage_key,
+      const storage::BucketLocator& bucket_locator,
       base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
       IndexedDBTransaction* transaction);
 

@@ -10,8 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 namespace base {
@@ -26,7 +26,7 @@ class IndexedDBDispatcherHost;
 class CursorImpl : public blink::mojom::IDBCursor {
  public:
   CursorImpl(std::unique_ptr<IndexedDBCursor> cursor,
-             const blink::StorageKey& storage_key,
+             const storage::BucketLocator& bucket_locator,
              IndexedDBDispatcherHost* dispatcher_host,
              scoped_refptr<base::SequencedTaskRunner> idb_runner);
 
@@ -53,7 +53,7 @@ class CursorImpl : public blink::mojom::IDBCursor {
   // This raw pointer is safe because all CursorImpl instances are owned by an
   // IndexedDBDispatcherHost.
   raw_ptr<IndexedDBDispatcherHost> dispatcher_host_;
-  const blink::StorageKey storage_key_;
+  const storage::BucketLocator bucket_locator_;
   scoped_refptr<base::SequencedTaskRunner> idb_runner_;
   std::unique_ptr<IndexedDBCursor> cursor_;
 

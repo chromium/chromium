@@ -230,11 +230,11 @@ void IndexedDBDispatcherHost::AddDatabaseBinding(
 
 mojo::PendingAssociatedRemote<blink::mojom::IDBCursor>
 IndexedDBDispatcherHost::CreateCursorBinding(
-    const blink::StorageKey& storage_key,
+    const storage::BucketLocator& bucket_locator,
     std::unique_ptr<IndexedDBCursor> cursor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto cursor_impl = std::make_unique<CursorImpl>(
-      std::move(cursor), storage_key, this, IDBTaskRunner());
+      std::move(cursor), bucket_locator, this, IDBTaskRunner());
   auto* cursor_impl_ptr = cursor_impl.get();
   mojo::PendingAssociatedRemote<blink::mojom::IDBCursor> remote;
   mojo::ReceiverId receiver_id = cursor_receivers_.Add(
@@ -327,10 +327,9 @@ void IndexedDBDispatcherHost::Open(
       IDBTaskRunner());
   base::FilePath indexed_db_path = indexed_db_context_->data_path();
 
-  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   auto create_transaction_callback = base::BindOnce(
       &IndexedDBDispatcherHost::CreateAndBindTransactionImpl, AsWeakPtr(),
-      std::move(transaction_receiver), bucket_locator.storage_key);
+      std::move(transaction_receiver), bucket_locator);
   std::unique_ptr<IndexedDBPendingConnection> connection =
       std::make_unique<IndexedDBPendingConnection>(
           std::move(callbacks), std::move(database_callbacks), transaction_id,
@@ -413,11 +412,11 @@ void IndexedDBDispatcherHost::AbortTransactionsForDatabase(
 void IndexedDBDispatcherHost::CreateAndBindTransactionImpl(
     mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
         transaction_receiver,
-    const blink::StorageKey& storage_key,
+    const storage::BucketLocator& bucket_locator,
     base::WeakPtr<IndexedDBTransaction> transaction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto transaction_impl = std::make_unique<TransactionImpl>(
-      transaction, storage_key, this->AsWeakPtr(), IDBTaskRunner());
+      transaction, bucket_locator, this->AsWeakPtr(), IDBTaskRunner());
   AddTransactionBinding(std::move(transaction_impl),
                         std::move(transaction_receiver));
 }

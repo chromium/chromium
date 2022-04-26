@@ -1424,7 +1424,7 @@ Status IndexedDBDatabase::SetIndexesReadyOperation(
 
 Status IndexedDBDatabase::OpenCursorOperation(
     std::unique_ptr<OpenCursorOperationParams> params,
-    const blink::StorageKey& storage_key,
+    const storage::BucketLocator& bucket_locator,
     base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
     IndexedDBTransaction* transaction) {
   TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::OpenCursorOperation", "txn.id",
@@ -1505,14 +1505,16 @@ Status IndexedDBDatabase::OpenCursorOperation(
   }
 
   if (mojo_value) {
-    dispatcher_host->CreateAllExternalObjects(storage_key, external_objects,
+    // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
+    dispatcher_host->CreateAllExternalObjects(bucket_locator.storage_key,
+                                              external_objects,
                                               &mojo_value->external_objects);
   }
 
   std::move(params->callback)
       .Run(blink::mojom::IDBDatabaseOpenCursorResult::NewValue(
           blink::mojom::IDBDatabaseOpenCursorValue::New(
-              dispatcher_host->CreateCursorBinding(storage_key,
+              dispatcher_host->CreateCursorBinding(bucket_locator,
                                                    std::move(cursor)),
               cursor_ptr->key(), cursor_ptr->primary_key(),
               std::move(mojo_value))));
