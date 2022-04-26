@@ -93,8 +93,8 @@ source_set("eg2_tests") {
   sources = [ "feed_management_egtest.mm" ]
   deps = [
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
-    "//ios/chrome/browser/ui/ntp:feature_flags",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
     "//ios/testing/earl_grey:eg_test_support+eg2",

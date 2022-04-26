@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"

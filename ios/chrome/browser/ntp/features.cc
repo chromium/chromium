@@ -6,3 +6,10 @@
 
 const base::Feature kBlockNewTabPagePendingLoad{
     "BlockNewTabPagePendingLoad", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kEnableWebChannels{"EnableWebChannels",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsWebChannelsEnabled() {
+  return base::FeatureList::IsEnabled(kEnableWebChannels);
+}

@@ -62,6 +62,7 @@
 #include "ios/chrome/browser/chrome_switches.h"
 #include "ios/chrome/browser/crash_report/features.h"
 #include "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
+#import "ios/chrome/browser/ntp/features.h"
 #include "ios/chrome/browser/policy/cloud/user_policy_switch.h"
 #include "ios/chrome/browser/policy/policy_features.h"
 #include "ios/chrome/browser/policy/policy_util.h"

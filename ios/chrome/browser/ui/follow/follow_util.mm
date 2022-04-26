@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/ui/follow/follow_util.h"
 
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #include "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #include "url/gurl.h"
