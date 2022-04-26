@@ -302,10 +302,9 @@ void FakeRmadClient::SetFakeStates() {
       CreateStateReply(rmad::RmadState::kUpdateRoFirmware, rmad::RMAD_ERROR_OK),
       CreateStateReply(rmad::RmadState::kRestock, rmad::RMAD_ERROR_OK),
       update_device_info,
-      // TODO(gavindodd): Add calibration states when implemented.
-      // rmad::RmadState::kCheckCalibration
-      // rmad::RmadState::kSetupCalibration
-      // rmad::RmadState::kRunCalibration
+      CreateStateReply(rmad::RmadState::kCheckCalibration, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kSetupCalibration, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kRunCalibration, rmad::RMAD_ERROR_OK),
       CreateStateReply(rmad::RmadState::kProvisionDevice, rmad::RMAD_ERROR_OK),
       CreateStateReply(rmad::RmadState::kWpEnablePhysical, rmad::RMAD_ERROR_OK),
       CreateStateReply(rmad::RmadState::kFinalize, rmad::RMAD_ERROR_OK),
