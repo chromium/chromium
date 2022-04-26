@@ -11,6 +11,7 @@
 #include "ash/system/tray/tray_utils.h"
 #include "base/callback_helpers.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
@@ -19,8 +20,8 @@
 namespace ash {
 namespace {
 
-// The preferred width of the kiosk app instruction bubble.
-constexpr int kBubblePreferredWidth = 150;
+// The preferred internal width of the kiosk app instruction bubble.
+constexpr int kBubblePreferredInternalWidth = 150;
 
 views::BubbleBorder::Arrow GetArrow(ShelfAlignment alignment) {
   switch (alignment) {
@@ -63,6 +64,7 @@ KioskAppInstructionBubble::KioskAppInstructionBubble(views::View* anchor,
                                    TrayPopupUtils::FontStyle::kSmallTitle);
   title_->SetText(l10n_util::GetStringUTF16(IDS_SHELF_KIOSK_APP_INSTRUCTION));
   title_->SetMultiLine(true);
+  title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   CreateBubble();
 
@@ -85,9 +87,17 @@ void KioskAppInstructionBubble::OnThemeChanged() {
   title_->SetEnabledColor(label_color);
 }
 
+void KioskAppInstructionBubble::GetAccessibleNodeData(
+    ui::AXNodeData* node_data) {
+  node_data->role = ax::mojom::Role::kStaticText;
+  node_data->SetName(l10n_util::GetStringUTF8(IDS_SHELF_KIOSK_APP_INSTRUCTION));
+}
+
 gfx::Size KioskAppInstructionBubble::CalculatePreferredSize() const {
-  return gfx::Size(kBubblePreferredWidth,
-                   GetHeightForWidth(kBubblePreferredWidth));
+  const int bubble_margin = views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL);
+  const int width = kBubblePreferredInternalWidth + 2 * bubble_margin;
+  return gfx::Size(width, GetHeightForWidth(width));
 }
 
 bool KioskAppInstructionBubble::ShouldCloseOnPressDown() {

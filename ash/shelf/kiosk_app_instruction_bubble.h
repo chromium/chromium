@@ -34,6 +34,7 @@ class ASH_EXPORT KioskAppInstructionBubble : public ShelfBubble {
   // views::View:
   void OnThemeChanged() override;
   gfx::Size CalculatePreferredSize() const override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // ShelfBubble:
   bool ShouldCloseOnPressDown() override;
