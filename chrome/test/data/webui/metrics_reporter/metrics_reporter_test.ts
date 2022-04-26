@@ -15,7 +15,7 @@ suite('MetricsReporterTest', function() {
   let now: bigint;
 
   let callbackRouter: PageMetricsCallbackRouter;
-  let apiProxy = TestBrowserProxy.fromClass(BrowserProxyImpl);
+  const apiProxy = TestBrowserProxy.fromClass(BrowserProxyImpl);
   let metricsReporter: MetricsReporter;
 
   function forwardTime() {

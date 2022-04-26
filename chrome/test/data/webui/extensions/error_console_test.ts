@@ -29,7 +29,7 @@ suite('CrExtensionsErrorConsoleTest', function() {
   });
 
   test('TestUpDownErrors', function() {
-    let initialFocus = findMatches(document, ACTIVE_ERROR_IN_STACK)[0];
+    const initialFocus = findMatches(document, ACTIVE_ERROR_IN_STACK)[0];
     assertTrue(!!initialFocus);
     assertEquals(1, findMatches(document, ACTIVE_ERROR_IN_STACK).length);
     assertEquals(4, findMatches(document, STACK_ERRORS).length);

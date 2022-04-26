@@ -752,7 +752,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       // Act.
       let waitForLeftScrollEnableChange =
           eventToPromise('left-scroll-hide', moduleElement);
-      let waitForRightScrollEnableChange =
+      const waitForRightScrollEnableChange =
           eventToPromise('right-scroll-show', moduleElement);
       await waitForLeftScrollEnableChange;
       await waitForRightScrollEnableChange;

@@ -35,7 +35,7 @@ suite('ExtensionOptionsDialogTest', () => {
     const dialog =
         manager.shadowRoot!.querySelector('extensions-options-dialog');
     assertTrue(!!dialog);
-    let waitForClose = eventToPromise('close', dialog);
+    const waitForClose = eventToPromise('close', dialog);
     dialog.$.dialog.cancel();
     await waitForClose;
     const activeElement = getDeepActiveElement();

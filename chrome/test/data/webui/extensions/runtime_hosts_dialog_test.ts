@@ -59,8 +59,8 @@ suite('RuntimeHostsDialog', function() {
     assertFalse(submit.disabled);
     submit.click();
     return delegate.whenCalled('addRuntimeHostPermission').then((args) => {
-      let id = args[0];
-      let input = args[1];
+      const id = args[0];
+      const input = args[1];
       assertEquals(ITEM_ID, id);
       assertEquals('http://www.example.com/*', input);
     });
@@ -171,8 +171,8 @@ suite('RuntimeHostsDialog', function() {
     assertFalse(submit.disabled);
     submit.click();
     return delegate.whenCalled('setItemHostAccess').then((args) => {
-      let id = args[0];
-      let access = args[1];
+      const id = args[0];
+      const access = args[1];
       assertEquals(ITEM_ID, id);
       assertEquals(
           chrome.developerPrivate.HostAccess.ON_SPECIFIC_SITES, access);
@@ -249,11 +249,11 @@ suite('RuntimeHostsDialog', function() {
     assertFalse(submit.disabled);
     submit.click();
 
-    let [id, host] = await delegate.whenCalled('addRuntimeHostPermission');
+    const [id, host] = await delegate.whenCalled('addRuntimeHostPermission');
     assertEquals(ITEM_ID, id);
     assertEquals('http://*.restricted.com/*', host);
 
-    let [siteSet, removedSites] =
+    const [siteSet, removedSites] =
         await delegate.whenCalled('removeUserSpecifiedSites');
     assertEquals(chrome.developerPrivate.UserSiteSet.RESTRICTED, siteSet);
     assertDeepEquals(

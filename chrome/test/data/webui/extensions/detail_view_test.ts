@@ -80,7 +80,7 @@ suite(extension_detail_view_tests.suiteName, function() {
     ];
     const isChecked = (id: string) =>
         item.shadowRoot!.querySelector<CrCheckboxElement>(id)!.checked;
-    for (let option of accessOptions) {
+    for (const option of accessOptions) {
       assertTrue(isChildVisible(item, option.id));
       assertFalse(isChecked(option.id), option.id);
       item.set('data.' + option.key + '.isEnabled', false);

@@ -242,7 +242,7 @@ suite('TabSearchAppTest', () => {
       recentlyClosedSectionExpanded: true
     }));
 
-    let tabSearchItem = tabSearchApp.$.tabsList.querySelector<HTMLElement>(
+    const tabSearchItem = tabSearchApp.$.tabsList.querySelector<HTMLElement>(
         'tab-search-item[id="100"]')!;
     tabSearchItem.click();
     const [tabId, withSearch, isTab, index] =
@@ -278,7 +278,7 @@ suite('TabSearchAppTest', () => {
       recentlyClosedSectionExpanded: true
     }));
 
-    let tabSearchItem =
+    const tabSearchItem =
         tabSearchApp.$.tabsList.querySelector('tab-search-group-item')!;
     tabSearchItem.click();
     const [id, withSearch, isTab, index] =
@@ -769,7 +769,7 @@ suite('TabSearchAppTest', () => {
       tabGroups: [tabGroup],
     }));
 
-    let tabSearchItem = tabSearchApp.$.tabsList.querySelector<TabSearchItem>(
+    const tabSearchItem = tabSearchApp.$.tabsList.querySelector<TabSearchItem>(
         'tab-search-item[id="1"]')!;
     assertEquals('Google', tabSearchItem.data.tab.title);
     assertEquals('Search Engines', tabSearchItem.data.tabGroup!.title);

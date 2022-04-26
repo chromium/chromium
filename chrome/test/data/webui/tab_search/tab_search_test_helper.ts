@@ -14,7 +14,7 @@ export function disableAnimationBehavior(klass: any, functionName: string) {
   klass.prototype[functionName] = function(options: any) {
     const args = [];
     if (typeof options === 'object' && options !== null) {
-      let noAnimationOptions = Object.assign({}, options);
+      const noAnimationOptions = Object.assign({}, options);
       delete noAnimationOptions.behavior;
 
       args.push(noAnimationOptions);

@@ -245,7 +245,7 @@ suite('NewTabPageModulesModulesTest', () => {
       // Arrange.
       const moduleArray = [];
       for (let i = 0; i < 4; ++i) {
-        let module = createElement();
+        const module = createElement();
         moduleArray.push(module);
       }
       const fooDescriptor = new ModuleDescriptorV2(
@@ -314,7 +314,7 @@ suite('NewTabPageModulesModulesTest', () => {
       let restoreCalled = false;
       const moduleArray = [];
       for (let i = 0; i < 3; ++i) {
-        let module = createElement();
+        const module = createElement();
         moduleArray.push(module);
       }
       const fooDescriptor = new ModuleDescriptorV2(
@@ -662,7 +662,7 @@ suite('NewTabPageModulesModulesTest', () => {
       // Arrange.
       const moduleArray = [];
       for (let i = 0; i < 3; ++i) {
-        let module = createElement();
+        const module = createElement();
         moduleArray.push(module);
       }
       const fooDescriptor = new ModuleDescriptorV2(

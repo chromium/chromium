@@ -184,7 +184,7 @@ suite('ExtensionsActivityLogStreamTest', function() {
     proxyDelegate.getOnExtensionActivity().callListeners(contentScriptActivity);
 
     flush();
-    let streamItems = getStreamItems();
+    const streamItems = getStreamItems();
     assertEquals(2, streamItems.length);
 
     // We should see two items: one for every script called.

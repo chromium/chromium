@@ -221,11 +221,11 @@ export function createExtensionInfo(
  */
 export function findMatches(
     root: HTMLElement|Document, query: string): HTMLElement[] {
-  let elements = new Set<HTMLElement>();
+  const elements = new Set<HTMLElement>();
   function doSearch(node: Node) {
     if (node.nodeType === Node.ELEMENT_NODE) {
       const matches = (node as Element).querySelectorAll<HTMLElement>(query);
-      for (let match of matches) {
+      for (const match of matches) {
         elements.add(match);
       }
     }

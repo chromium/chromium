@@ -12,7 +12,7 @@ suite('ColorProviderCSSColorsTest', function() {
         link.rel = 'stylesheet';
         link.href = 'chrome://theme/colors.css';
         link.onload = function() {
-          let style = getComputedStyle(document.body);
+          const style = getComputedStyle(document.body);
           // Check that we are able to query for a ui/ side color.
           assertNotEquals('', style.getPropertyValue('--color-accent'));
           // Check that we are able to query for a chrome/ side color.

@@ -289,7 +289,7 @@ suite('TabList', () => {
   async function testPlaceTabElementAnimation(
       indexToMove: number, newIndex: number, direction: number) {
     await tabList.animationPromises;
-    let unpinnedTabs = getUnpinnedTabs();
+    const unpinnedTabs = getUnpinnedTabs();
 
     const movedTab = unpinnedTabs[indexToMove]!;
     tabList.placeTabElement(movedTab, newIndex, false, undefined);
@@ -661,7 +661,7 @@ suite('TabList', () => {
     callbackRouter.tabUpdated(updatedTab);
     await flushTasks();
 
-    let pinnedTabElements = getPinnedTabs();
+    const pinnedTabElements = getPinnedTabs();
     assertEquals(pinnedTabElements.length, 1);
     assertTrue(pinnedTabElements[0]!.tab.pinned);
     assertEquals(pinnedTabElements[0]!.tab.id, tabToPin.id);
@@ -947,7 +947,7 @@ suite('TabList', () => {
     // The 2nd tab should be off-screen to the right, so activating it should
     // scroll so that the element's right edge is aligned with the screen's
     // right edge.
-    let activeTab = getUnpinnedTabs()[1]!;
+    const activeTab = getUnpinnedTabs()[1]!;
     assertEquals(
         tabList.scrollLeft + tabList.offsetWidth,
         activeTab.offsetLeft + activeTab.offsetWidth + scrollPadding);

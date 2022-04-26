@@ -101,7 +101,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
     assertEquals(alphaFromStore.id, getExtension(1).id);
 
     // Extensions from the same location are sorted by name.
-    let gammaUnpacked = createExtensionInfo({
+    const gammaUnpacked = createExtensionInfo({
       location: chrome.developerPrivate.Location.UNPACKED,
       name: 'Gamma',
       id: 'c'.repeat(32)
@@ -181,7 +181,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
             manager.shadowRoot!.querySelector('extensions-detail-view');
         assertTrue(!!detailsView);
 
-        let extensionCopy = Object.assign({}, extension);
+        const extensionCopy = Object.assign({}, extension);
         extensionCopy.description = newDescription;
         service.itemStateChangedTarget.callListeners({
           event_type: chrome.developerPrivate.EventType.PREFS_CHANGED,
@@ -189,7 +189,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
         });
 
         // Updating a different extension shouldn't have any impact.
-        let secondExtensionCopy = Object.assign({}, secondExtension);
+        const secondExtensionCopy = Object.assign({}, secondExtension);
         secondExtensionCopy.description = 'something else';
         service.itemStateChangedTarget.callListeners({
           event_type: chrome.developerPrivate.EventType.PREFS_CHANGED,

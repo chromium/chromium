@@ -202,7 +202,7 @@ suite('RuntimeHostPermissions', function() {
     // Canceling the dialog should reset the selectHostAccess value to ON_CLICK,
     // since no host was added.
     assertTrue(dialog.isOpen());
-    let whenClosed = eventToPromise('close', dialog);
+    const whenClosed = eventToPromise('close', dialog);
     dialog.shadowRoot!.querySelector<HTMLElement>('.cancel-button')!.click();
     await whenClosed;
 
@@ -265,7 +265,7 @@ suite('RuntimeHostPermissions', function() {
     // Closing the dialog (as opposed to canceling) should keep the
     // selectHostAccess value at ON_SPECIFIC_SITES.
     assertTrue(dialog.isOpen());
-    let whenClosed = eventToPromise('close', dialog);
+    const whenClosed = eventToPromise('close', dialog);
     dialog.$.submit.click();
     return whenClosed.then(() => {
       flush();

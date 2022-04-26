@@ -181,7 +181,7 @@ suite('DragManager', () => {
     const eventYWithinDragImageCenter =
         eventYPercentage * dragImageCenterRect.height;
 
-    let expectedOffsetX =
+    const expectedOffsetX =
         dragImageCenterLeftMargin + eventXWithinDragImageCenter;
     let expectedOffsetY =
         dragImageCenterTopMargin + eventYWithinDragImageCenter;

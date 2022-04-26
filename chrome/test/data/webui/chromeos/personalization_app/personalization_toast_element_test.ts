@@ -86,8 +86,8 @@ suite('PersonalizationToastTest', function() {
 
   test('automatically dismisses after ten seconds', async () => {
     // Spy on calls to |window.setTimeout|.
-    let setTimeout = window.setTimeout;
-    let setTimeoutCalls: {handler: Function|string, delay?: number}[] = [];
+    const setTimeout = window.setTimeout;
+    const setTimeoutCalls: {handler: Function|string, delay?: number}[] = [];
     window.setTimeout =
         (handler: Function|string, delay?: number, ...args: any[]): number => {
           setTimeoutCalls.push({handler, delay});
@@ -100,7 +100,7 @@ suite('PersonalizationToastTest', function() {
     await waitAfterNextRender(personalizationToastElement);
 
     // Expect that a timeout will have been scheduled for 10 seconds.
-    let setTimeoutCall: {handler: Function|string, delay?: number}|undefined =
+    const setTimeoutCall: {handler: Function|string, delay?: number}|undefined =
         setTimeoutCalls.find((setTimeoutCall) => {
           return typeof setTimeoutCall.handler === 'function' &&
               setTimeoutCall.delay === 10000;

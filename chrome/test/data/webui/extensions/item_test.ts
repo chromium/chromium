@@ -397,7 +397,7 @@ suite(extension_item_tests.suiteName, function() {
   });
 
   test(assert(extension_item_tests.TestNames.HtmlInName), function() {
-    let name = '<HTML> in the name!';
+    const name = '<HTML> in the name!';
     item.set('data.name', name);
     flush();
     assertEquals(name, item.$.name.textContent!.trim());

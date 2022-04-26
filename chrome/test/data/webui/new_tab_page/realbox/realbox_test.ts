@@ -490,8 +490,8 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(matchEls[0]!.classList.contains(Classes.SELECTED));
 
     assertEquals('      hello world', realbox.$.input.value);
-    let start = realbox.$.input.selectionStart!;
-    let end = realbox.$.input.selectionEnd!;
+    const start = realbox.$.input.selectionStart!;
+    const end = realbox.$.input.selectionEnd!;
     assertEquals('', realbox.$.input.value.substring(start, end));
   });
 
@@ -519,7 +519,7 @@ suite('NewTabPageRealboxTest', () => {
 
     assertTrue(areMatchesShowing());
 
-    let matchEls =
+    const matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('ntp-realbox-match');
     assertEquals(1, matchEls.length);
     verifyMatch(matches[0]!, matchEls[0]!);
@@ -690,8 +690,8 @@ suite('NewTabPageRealboxTest', () => {
     await testProxy.callbackRouterRemote.$.flushForTesting();
 
     assertEquals('hello world', realbox.$.input.value);
-    let start = realbox.$.input.selectionStart!;
-    let end = realbox.$.input.selectionEnd!;
+    const start = realbox.$.input.selectionStart!;
+    const end = realbox.$.input.selectionEnd!;
     assertEquals('world', realbox.$.input.value.substring(start, end));
 
     // Select the entire input.
@@ -722,8 +722,8 @@ suite('NewTabPageRealboxTest', () => {
     await testProxy.callbackRouterRemote.$.flushForTesting();
 
     assertEquals('helloworld.com', realbox.$.input.value);
-    let start = realbox.$.input.selectionStart!;
-    let end = realbox.$.input.selectionEnd!;
+    const start = realbox.$.input.selectionStart!;
+    const end = realbox.$.input.selectionEnd!;
     assertEquals('world.com', realbox.$.input.value.substring(start, end));
 
     const copyEvent = createClipboardEvent('copy');
@@ -1227,7 +1227,7 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(2, matchEls.length);
 
     // Select the second match.
-    let arrowUpEvent = new KeyboardEvent('keydown', {
+    const arrowUpEvent = new KeyboardEvent('keydown', {
       bubbles: true,
       cancelable: true,
       composed: true,  // So it propagates across shadow DOM boundary.
@@ -1429,7 +1429,7 @@ suite('NewTabPageRealboxTest', () => {
     // First match is not selected.
     assertFalse(matchEls[0]!.classList.contains(Classes.SELECTED));
 
-    let arrowDownEvent = new KeyboardEvent('keydown', {
+    const arrowDownEvent = new KeyboardEvent('keydown', {
       bubbles: true,
       cancelable: true,
       composed: true,  // So it propagates across shadow DOM boundary.
@@ -1590,7 +1590,7 @@ suite('NewTabPageRealboxTest', () => {
     await testProxy.callbackRouterRemote.$.flushForTesting();
 
     assertTrue(areMatchesShowing());
-    let matchEls =
+    const matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('ntp-realbox-match');
     assertEquals(2, matchEls.length);
 
@@ -1692,13 +1692,13 @@ suite('NewTabPageRealboxTest', () => {
     await testProxy.callbackRouterRemote.$.flushForTesting();
 
     assertTrue(areMatchesShowing());
-    let matchEls =
+    const matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('ntp-realbox-match');
 
-    let focusIndicator = matchEls[0]!.$['focus-indicator'];
+    const focusIndicator = matchEls[0]!.$['focus-indicator'];
 
     // Select the first match
-    let arrowDownEvent = new KeyboardEvent('keydown', {
+    const arrowDownEvent = new KeyboardEvent('keydown', {
       bubbles: true,
       cancelable: true,
       composed: true,  // So it propagates across shadow DOM boundary.
@@ -1778,8 +1778,8 @@ suite('NewTabPageRealboxTest', () => {
     testProxy.handler.reset();
 
     assertEquals('hello', realbox.$.input.value);
-    let start = realbox.$.input.selectionStart!;
-    let end = realbox.$.input.selectionEnd!;
+    const start = realbox.$.input.selectionStart!;
+    const end = realbox.$.input.selectionEnd!;
     assertEquals('ello', realbox.$.input.value.substring(start, end));
 
     // Type the next character of the inline autocompletion.
@@ -1842,7 +1842,7 @@ suite('NewTabPageRealboxTest', () => {
         await testProxy.callbackRouterRemote.$.flushForTesting();
 
         assertTrue(areMatchesShowing());
-        let matchEls =
+        const matchEls =
             realbox.$.matches.shadowRoot!.querySelectorAll('ntp-realbox-match');
         assertEquals(2, matchEls.length);
         assertIconMaskImageUrl(matchEls[0]!.$.icon, 'clock.svg');
@@ -1906,7 +1906,7 @@ suite('NewTabPageRealboxTest', () => {
         assertBackgroundImageDataUrl(realbox.$.icon, faviconData);
 
         // Select the first match by pressing 'Escape'.
-        let escapeEvent = new KeyboardEvent('keydown', {
+        const escapeEvent = new KeyboardEvent('keydown', {
           bubbles: true,
           cancelable: true,
           composed: true,  // So it propagates across shadow DOM boundary.
@@ -1943,7 +1943,7 @@ suite('NewTabPageRealboxTest', () => {
         // Select the entire input.
         realbox.$.input.setSelectionRange(0, realbox.$.input.value.length);
 
-        let cutEvent = createClipboardEvent('cut');
+        const cutEvent = createClipboardEvent('cut');
         realbox.$.input.dispatchEvent(cutEvent);
         assertTrue(cutEvent.defaultPrevented);
 
@@ -1974,7 +1974,7 @@ suite('NewTabPageRealboxTest', () => {
         await testProxy.callbackRouterRemote.$.flushForTesting();
 
         assertTrue(areMatchesShowing());
-        let matchEls =
+        const matchEls =
             realbox.$.matches.shadowRoot!.querySelectorAll('ntp-realbox-match');
         assertEquals(2, matchEls.length);
         assertIconMaskImageUrl(matchEls[0]!.$.icon, 'page.svg');
@@ -2046,7 +2046,7 @@ suite('NewTabPageRealboxTest', () => {
         assertTrue(window.getComputedStyle(realbox.$.icon).display !== 'none');
 
         // Select the first match by pressing 'Escape'.
-        let escapeEvent = new KeyboardEvent('keydown', {
+        const escapeEvent = new KeyboardEvent('keydown', {
           bubbles: true,
           cancelable: true,
           composed: true,  // So it propagates across shadow DOM boundary.
@@ -2243,7 +2243,7 @@ suite('NewTabPageRealboxTest', () => {
     await testProxy.callbackRouterRemote.$.flushForTesting();
 
     assertTrue(areMatchesShowing());
-    let matchEls =
+    const matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('ntp-realbox-match');
     assertEquals(1, matchEls.length);
 
@@ -2255,7 +2255,7 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(
         window.getComputedStyle(matchEls[0]!.$.separator).display, 'none');
 
-    let arrowDownEvent = new KeyboardEvent('keydown', {
+    const arrowDownEvent = new KeyboardEvent('keydown', {
       bubbles: true,
       cancelable: true,
       composed: true,  // So it propagates across shadow DOM boundary.
@@ -2291,7 +2291,7 @@ suite('NewTabPageRealboxTest', () => {
     });
     await testProxy.callbackRouterRemote.$.flushForTesting();
     assertTrue(areMatchesShowing());
-    let matchEls =
+    const matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('ntp-realbox-match');
     verifyMatch(matches[0]!, matchEls[0]!);
 
@@ -2299,7 +2299,7 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(
         window.getComputedStyle(matchEls[0]!.$.separator).display, 'none');
 
-    let arrowDownEvent = new KeyboardEvent('keydown', {
+    const arrowDownEvent = new KeyboardEvent('keydown', {
       bubbles: true,
       cancelable: true,
       composed: true,  // So it propagates across shadow DOM boundary.
@@ -2336,7 +2336,7 @@ suite('NewTabPageRealboxTest', () => {
     await testProxy.callbackRouterRemote.$.flushForTesting();
     assertTrue(areMatchesShowing());
 
-    let matchEl = $$(realbox.$.matches, 'ntp-realbox-match')!;
+    const matchEl = $$(realbox.$.matches, 'ntp-realbox-match')!;
     verifyMatch(matches[0]!, matchEl);
 
     const pedalEl = $$($$(matchEl, 'ntp-realbox-action')!, '.contents')!;
@@ -2346,7 +2346,7 @@ suite('NewTabPageRealboxTest', () => {
         'chrome://theme/current-channel-logo');  // Default Pedal
                                                  // Icon
 
-    let leftClick = new MouseEvent('click', {
+    const leftClick = new MouseEvent('click', {
       bubbles: true,
       button: 1,
       cancelable: true,
@@ -2388,7 +2388,7 @@ suite('NewTabPageRealboxTest', () => {
     await testProxy.callbackRouterRemote.$.flushForTesting();
     assertTrue(areMatchesShowing());
 
-    let matchEls =
+    const matchEls =
         realbox.$.matches.shadowRoot!.querySelectorAll('ntp-realbox-match');
     verifyMatch(matches[0]!, matchEls[0]!);
     verifyMatch(matches[1]!, matchEls[1]!);
@@ -2400,7 +2400,7 @@ suite('NewTabPageRealboxTest', () => {
         'chrome://theme/current-channel-logo');  // Default Pedal
                                                  // Icon
 
-    let leftClick = new MouseEvent('click', {
+    const leftClick = new MouseEvent('click', {
       bubbles: true,
       button: 0,
       cancelable: true,

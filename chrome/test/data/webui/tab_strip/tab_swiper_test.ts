@@ -44,14 +44,14 @@ suite('TabSwiper', () => {
     tabElement.dispatchEvent(new PointerEvent('pointermove', pointerState));
     assertEquals(tabElStyle.maxWidth, `${tabWidth}px`);
     assertEquals(tabElStyle.opacity, '1');
-    let startTop = tabElement.getBoundingClientRect().top;
+    const startTop = tabElement.getBoundingClientRect().top;
     assertEquals(startTop, 0);
 
     // Swipe was enough to start animating the position.
     pointerState.clientY = startY - (TRANSLATE_ANIMATION_THRESHOLD_PX + 1);
     tabElement.dispatchEvent(new PointerEvent('pointermove', pointerState));
     assertEquals(tabElStyle.maxWidth, `${tabWidth}px`);
-    let top = tabElement.getBoundingClientRect().top;
+    const top = tabElement.getBoundingClientRect().top;
     assertTrue(top < startTop && top > -1 * SWIPE_FINISH_THRESHOLD_PX);
 
     // Swipe was enough to start animating max width and opacity.

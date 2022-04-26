@@ -97,7 +97,7 @@ suite('PersonalizationThemeTest', function() {
     personalizationStore.setReducersEnabled(true);
     personalizationStore.expectAction(ThemeActionName.SET_DARK_MODE_ENABLED);
     radioButton.click();
-    let action =
+    const action =
         await personalizationStore.waitForAction(
             ThemeActionName.SET_DARK_MODE_ENABLED) as SetDarkModeEnabledAction;
     assertTrue(action.enabled);
@@ -120,8 +120,8 @@ suite('PersonalizationThemeTest', function() {
     personalizationStore.expectAction(
         ThemeActionName.SET_COLOR_MODE_AUTO_SCHEDULE_ENABLED);
     radioButton.click();
-    let action = await personalizationStore.waitForAction(
-                     ThemeActionName.SET_COLOR_MODE_AUTO_SCHEDULE_ENABLED) as
+    const action = await personalizationStore.waitForAction(
+                       ThemeActionName.SET_COLOR_MODE_AUTO_SCHEDULE_ENABLED) as
         SetDarkModeEnabledAction;
     assertTrue(action.enabled);
     assertTrue(personalizationStore.data.theme.colorModeAutoScheduleEnabled);

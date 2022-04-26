@@ -144,7 +144,7 @@ suite('SidePanelBookmarksListInteractiveUITest', () => {
     assertEquals('3', copiedId);
 
     keyDownOn(bookmarkElement, 0, ['ctrl'], 'v');
-    let [pastedId, pastedDestinationId] =
+    const [pastedId, pastedDestinationId] =
         await bookmarksApi.whenCalled('pasteToBookmark');
     assertEquals('0', pastedId);
     assertEquals('3', pastedDestinationId);

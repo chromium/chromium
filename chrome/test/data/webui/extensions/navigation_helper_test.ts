@@ -117,16 +117,16 @@ suite(extension_navigation_helper_tests.suiteName, function() {
         };
 
         // Test url -> state.
-        for (let key in stateUrlPairs) {
-          let entry = stateUrlPairs[key];
+        for (const key in stateUrlPairs) {
+          const entry = stateUrlPairs[key];
           assertTrue(!!entry);
           history.pushState({}, '', entry.url);
           assertDeepEquals(entry.state, navigationHelper.getCurrentPage(), key);
         }
 
         // Test state -> url.
-        for (let key in stateUrlPairs) {
-          let entry = stateUrlPairs[key];
+        for (const key in stateUrlPairs) {
+          const entry = stateUrlPairs[key];
           assertTrue(!!entry);
           navigationHelper.updateHistory(entry.state, false);
           assertEquals(entry.url, location.href, key);

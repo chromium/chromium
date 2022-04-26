@@ -273,7 +273,7 @@ suite('WallpaperCollectionsTest', function() {
     personalizationStore.notifyObservers();
 
     // Wait for |sendCollections| to be called.
-    let [target, data] = await testProxy.whenCalled('sendCollections') as
+    const [target, data] = await testProxy.whenCalled('sendCollections') as
         Parameters<IFrameApi['sendCollections']>;
     await waitAfterNextRender(wallpaperCollectionsElement);
 
@@ -286,7 +286,7 @@ suite('WallpaperCollectionsTest', function() {
     assertEquals(null, data);
 
     // Wait for |sendLocalImages| to be called.
-    let [imageTarget, imageData] =
+    const [imageTarget, imageData] =
         await testProxy.whenCalled('sendLocalImages') as
         Parameters<IFrameApi['sendLocalImages']>;
     await waitAfterNextRender(wallpaperCollectionsElement);

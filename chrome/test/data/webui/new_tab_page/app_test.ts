@@ -28,7 +28,7 @@ suite('NewTabPageAppTest', () => {
   let backgroundManager: TestBrowserProxy;
   let moduleResolver: PromiseResolver<Module[]>;
 
-  let url: URL = new URL(location.href);
+  const url: URL = new URL(location.href);
 
   setup(async () => {
     document.body.innerHTML = '';
