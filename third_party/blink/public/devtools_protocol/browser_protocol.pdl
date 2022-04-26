@@ -744,36 +744,67 @@ experimental domain Audits
   type DeprecationIssueType extends string
     enum
       AuthorizationCoveredByWildcard
+      BatteryStatusInsecureOrigin
+      CanRequestURLHTTPContainingNewline
+      ChromeLoadTimesConnectionInfo
+      ChromeLoadTimesFirstPaintAfterLoadTime
+      ChromeLoadTimesWasAlternateProtocolAvailable
       CookieWithTruncatingChar
       CrossOriginAccessBasedOnDocumentDomain
       CrossOriginWindowAlert
       CrossOriginWindowConfirm
+      CSSSelectorInternalMediaControlsOverlayCastButton
+      CustomCursorIntersectsViewport
       DeprecationExample
       DocumentDomainSettingWithoutOriginAgentClusterHeader
+      EventPath
       GeolocationInsecureOrigin
       GeolocationInsecureOriginDeprecatedNotRemoved
       GetUserMediaInsecureOrigin
+      HostCandidateAttributeGetter
+      InsecurePrivateNetworkSubresourceRequest
       LegacyConstraintGoogCpuOveruseDetection
       LegacyConstraintGoogIPv6
       LegacyConstraintGoogScreencastMinBitrate
       LegacyConstraintGoogSuspendBelowMinBitrate
       LocalCSSFileExtensionRejected
+      MediaElementAudioSourceNode
+      MediaSourceAbortRemove
+      MediaSourceDurationTruncatingBuffered
+      NoSysexWebMIDIWithoutPermission
       NotificationInsecureOrigin
+      NotificationPermissionRequestedIframe
       ObsoleteWebRtcCipherSuite
+      PaymentRequestBasicCard
+      PaymentRequestShowWithoutGesture
       PictureSourceSrc
       PrefixedCancelAnimationFrame
       PrefixedRequestAnimationFrame
+      PrefixedStorageInfo
+      PrefixedVideoDisplayingFullscreen
+      PrefixedVideoEnterFullscreen
+      PrefixedVideoEnterFullScreen
+      PrefixedVideoExitFullscreen
+      PrefixedVideoExitFullScreen
+      PrefixedVideoSupportsFullscreen
+      RangeExpand
+      RequestedSubresourceWithEmbeddedCredentials
       RTCConstraintEnableDtlsSrtpFalse
       RTCConstraintEnableDtlsSrtpTrue
       RTCPeerConnectionComplexPlanBSdpUsingDefaultSdpSemantics
       RTCPeerConnectionLegacyCreateWithMediaConstraints
+      RTCPeerConnectionSdpSemanticsPlanB
+      RtcpMuxPolicyNegotiate
       RTPDataChannel
+      SelectionAddRangeIntersect
       SharedArrayBufferConstructedWithoutIsolation
+      TextToSpeech_DisallowedByAutoplay
       Untranslated
       V8SharedArrayBufferConstructedInExtensionWithoutIsolation
       WebCodecsVideoFrameDefaultTimestamp
       XHRJSONEncodingDetection
       XMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload
+      XRSupportsSession
 
   # This issue tracks information needed to print a deprecation message.
   # The formatting is inherited from the old console.log version, see more at:

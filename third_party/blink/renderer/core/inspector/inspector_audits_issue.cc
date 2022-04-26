@@ -436,6 +436,26 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
         type = protocol::Audits::DeprecationIssueTypeEnum::
             AuthorizationCoveredByWildcard;
         break;
+      case DeprecationIssueType::kBatteryStatusInsecureOrigin:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            BatteryStatusInsecureOrigin;
+        break;
+      case DeprecationIssueType::kCanRequestURLHTTPContainingNewline:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            CanRequestURLHTTPContainingNewline;
+        break;
+      case DeprecationIssueType::kChromeLoadTimesConnectionInfo:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            ChromeLoadTimesConnectionInfo;
+        break;
+      case DeprecationIssueType::kChromeLoadTimesFirstPaintAfterLoadTime:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            ChromeLoadTimesFirstPaintAfterLoadTime;
+        break;
+      case DeprecationIssueType::kChromeLoadTimesWasAlternateProtocolAvailable:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            ChromeLoadTimesWasAlternateProtocolAvailable;
+        break;
       case DeprecationIssueType::kCookieWithTruncatingChar:
         type = protocol::Audits::DeprecationIssueTypeEnum::
             CookieWithTruncatingChar;
@@ -452,6 +472,15 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
         type = protocol::Audits::DeprecationIssueTypeEnum::
             CrossOriginWindowConfirm;
         break;
+      case DeprecationIssueType::
+          kCSSSelectorInternalMediaControlsOverlayCastButton:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            CSSSelectorInternalMediaControlsOverlayCastButton;
+        break;
+      case DeprecationIssueType::kCustomCursorIntersectsViewport:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            CustomCursorIntersectsViewport;
+        break;
       case DeprecationIssueType::kDeprecationExample:
         type = protocol::Audits::DeprecationIssueTypeEnum::DeprecationExample;
         break;
@@ -459,6 +488,9 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
           kDocumentDomainSettingWithoutOriginAgentClusterHeader:
         type = protocol::Audits::DeprecationIssueTypeEnum::
             DocumentDomainSettingWithoutOriginAgentClusterHeader;
+        break;
+      case DeprecationIssueType::kEventPath:
+        type = protocol::Audits::DeprecationIssueTypeEnum::EventPath;
         break;
       case DeprecationIssueType::kGeolocationInsecureOrigin:
         type = protocol::Audits::DeprecationIssueTypeEnum::
@@ -471,6 +503,14 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
       case DeprecationIssueType::kGetUserMediaInsecureOrigin:
         type = protocol::Audits::DeprecationIssueTypeEnum::
             GetUserMediaInsecureOrigin;
+        break;
+      case DeprecationIssueType::kHostCandidateAttributeGetter:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            HostCandidateAttributeGetter;
+        break;
+      case DeprecationIssueType::kInsecurePrivateNetworkSubresourceRequest:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            InsecurePrivateNetworkSubresourceRequest;
         break;
       case DeprecationIssueType::kLegacyConstraintGoogCpuOveruseDetection:
         type = protocol::Audits::DeprecationIssueTypeEnum::
@@ -492,13 +532,41 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
         type = protocol::Audits::DeprecationIssueTypeEnum::
             LocalCSSFileExtensionRejected;
         break;
+      case DeprecationIssueType::kMediaElementAudioSourceNode:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            MediaElementAudioSourceNode;
+        break;
+      case DeprecationIssueType::kMediaSourceAbortRemove:
+        type =
+            protocol::Audits::DeprecationIssueTypeEnum::MediaSourceAbortRemove;
+        break;
+      case DeprecationIssueType::kMediaSourceDurationTruncatingBuffered:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            MediaSourceDurationTruncatingBuffered;
+        break;
+      case DeprecationIssueType::kNoSysexWebMIDIWithoutPermission:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            NoSysexWebMIDIWithoutPermission;
+        break;
       case DeprecationIssueType::kNotificationInsecureOrigin:
         type = protocol::Audits::DeprecationIssueTypeEnum::
             NotificationInsecureOrigin;
         break;
+      case DeprecationIssueType::kNotificationPermissionRequestedIframe:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            NotificationPermissionRequestedIframe;
+        break;
       case DeprecationIssueType::kObsoleteWebRtcCipherSuite:
         type = protocol::Audits::DeprecationIssueTypeEnum::
             ObsoleteWebRtcCipherSuite;
+        break;
+      case DeprecationIssueType::kPaymentRequestBasicCard:
+        type =
+            protocol::Audits::DeprecationIssueTypeEnum::PaymentRequestBasicCard;
+        break;
+      case DeprecationIssueType::kPaymentRequestShowWithoutGesture:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            PaymentRequestShowWithoutGesture;
         break;
       case DeprecationIssueType::kPictureSourceSrc:
         type = protocol::Audits::DeprecationIssueTypeEnum::PictureSourceSrc;
@@ -510,6 +578,40 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
       case DeprecationIssueType::kPrefixedRequestAnimationFrame:
         type = protocol::Audits::DeprecationIssueTypeEnum::
             PrefixedRequestAnimationFrame;
+        break;
+      case DeprecationIssueType::kPrefixedStorageInfo:
+        type = protocol::Audits::DeprecationIssueTypeEnum::PrefixedStorageInfo;
+        break;
+      case DeprecationIssueType::kPrefixedVideoDisplayingFullscreen:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            PrefixedVideoDisplayingFullscreen;
+        break;
+      case DeprecationIssueType::kPrefixedVideoEnterFullScreen:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            PrefixedVideoEnterFullScreen;
+        break;
+      case DeprecationIssueType::kPrefixedVideoEnterFullscreen:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            PrefixedVideoEnterFullscreen;
+        break;
+      case DeprecationIssueType::kPrefixedVideoExitFullScreen:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            PrefixedVideoExitFullScreen;
+        break;
+      case DeprecationIssueType::kPrefixedVideoExitFullscreen:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            PrefixedVideoExitFullscreen;
+        break;
+      case DeprecationIssueType::kPrefixedVideoSupportsFullscreen:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            PrefixedVideoSupportsFullscreen;
+        break;
+      case DeprecationIssueType::kRangeExpand:
+        type = protocol::Audits::DeprecationIssueTypeEnum::RangeExpand;
+        break;
+      case DeprecationIssueType::kRequestedSubresourceWithEmbeddedCredentials:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            RequestedSubresourceWithEmbeddedCredentials;
         break;
       case DeprecationIssueType::kRTCConstraintEnableDtlsSrtpFalse:
         type = protocol::Audits::DeprecationIssueTypeEnum::
@@ -529,12 +631,28 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
         type = protocol::Audits::DeprecationIssueTypeEnum::
             RTCPeerConnectionLegacyCreateWithMediaConstraints;
         break;
+      case DeprecationIssueType::kRTCPeerConnectionSdpSemanticsPlanB:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            RTCPeerConnectionSdpSemanticsPlanB;
+        break;
+      case DeprecationIssueType::kRtcpMuxPolicyNegotiate:
+        type =
+            protocol::Audits::DeprecationIssueTypeEnum::RtcpMuxPolicyNegotiate;
+        break;
       case DeprecationIssueType::kRTPDataChannel:
         type = protocol::Audits::DeprecationIssueTypeEnum::RTPDataChannel;
+        break;
+      case DeprecationIssueType::kSelectionAddRangeIntersect:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            SelectionAddRangeIntersect;
         break;
       case DeprecationIssueType::kSharedArrayBufferConstructedWithoutIsolation:
         type = protocol::Audits::DeprecationIssueTypeEnum::
             SharedArrayBufferConstructedWithoutIsolation;
+        break;
+      case DeprecationIssueType::kTextToSpeech_DisallowedByAutoplay:
+        type = protocol::Audits::DeprecationIssueTypeEnum::
+            TextToSpeech_DisallowedByAutoplay;
         break;
       case DeprecationIssueType::kUntranslated:
         LOG(FATAL) << "Feature " << legacy_type << " is not translated.";
@@ -556,6 +674,9 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
           kXMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload:
         type = protocol::Audits::DeprecationIssueTypeEnum::
             XMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload;
+        break;
+      case DeprecationIssueType::kXRSupportsSession:
+        type = protocol::Audits::DeprecationIssueTypeEnum::XRSupportsSession;
         break;
     }
   }

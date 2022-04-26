@@ -7,15 +7,15 @@ Inspector issue: {
                 affectedFrame : {
                     frameId : <string>
                 }
-                deprecationType : RangeExpand
-                message : 'Range.expand()' is deprecated. Please use 'Selection.modify()' instead.
+                deprecationType : 
+                message : 
                 sourceCodeLocation : {
                     columnNumber : 24
                     lineNumber : 0
                     scriptId : <string>
                     url : 
                 }
-                type : Untranslated
+                type : RangeExpand
             }
         }
     }
