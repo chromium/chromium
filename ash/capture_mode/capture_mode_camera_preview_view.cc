@@ -7,6 +7,7 @@
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
@@ -109,13 +110,8 @@ CameraPreviewView::CameraPreviewView(
           AshColorProvider::BaseLayerType::kTransparent80),
       resize_button_->GetPreferredSize().height() / 2.f));
 
-  // Ensure that when `FadeInResizeButton` was called first time, it animates
-  // from 0 to 1.
-  resize_button_->layer()->SetOpacity(0);
-
-  // The resize button should be hidden by default so that it doesn't handle
-  // events.
-  resize_button_->SetVisible(false);
+  accessibility_observation_.Observe(Shell::Get()->accessibility_controller());
+  RefreshResizeButtonVisibility();
   UpdateResizeButtonTooltip();
 }
 
@@ -283,6 +279,14 @@ CameraPreviewView::CreatePathGenerator() {
       gfx::Insets(views::FocusRing::kDefaultHaloThickness / 2));
 }
 
+void CameraPreviewView::OnAccessibilityStatusChanged() {
+  RefreshResizeButtonVisibility();
+}
+
+void CameraPreviewView::OnAccessibilityControllerShutdown() {
+  accessibility_observation_.Reset();
+}
+
 void CameraPreviewView::OnResizeButtonPressed() {
   camera_controller_->ToggleCameraPreviewSize();
   UpdateResizeButton();
@@ -357,7 +361,8 @@ float CameraPreviewView::CalculateResizeButtonTargetOpacity() {
   if (!is_collapsible_ || camera_controller_->is_drag_in_progress())
     return 0.f;
 
-  if (IsMouseHovered() || resize_button_->IsMouseHovered() ||
+  if (Shell::Get()->accessibility_controller()->IsSwitchAccessRunning() ||
+      IsMouseHovered() || resize_button_->IsMouseHovered() ||
       resize_button_->has_focus() || has_been_tapped_) {
     return 1.f;
   }

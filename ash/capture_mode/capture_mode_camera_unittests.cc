@@ -3398,6 +3398,114 @@ TEST_P(CaptureModeCameraPreviewTest, CameraPreviewSpecs) {
   }
 }
 
+// Tests that the resize button will stay visible after mouse exiting the
+// preview and time exceeding the predefined duration on mouse event when switch
+// access is enabled. And the resize button will behave in a default way if
+// switch access is not enabled.
+TEST_P(CaptureModeCameraPreviewTest,
+       ResizeButtonSwitchAccessVisibilityTestOnMouseEvent) {
+  UpdateDisplay("1366x768");
+
+  CaptureModeCameraController* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  auto* event_generator = GetEventGenerator();
+
+  for (const bool switch_access_enabled : {false, true}) {
+    AccessibilityControllerImpl* a11y_controller =
+        Shell::Get()->accessibility_controller();
+    a11y_controller->switch_access().SetEnabled(switch_access_enabled);
+    EXPECT_EQ(switch_access_enabled, a11y_controller->IsSwitchAccessRunning());
+
+    StartCaptureSessionWithParam();
+    views::Widget* preview_widget = camera_controller->camera_preview_widget();
+    DCHECK(preview_widget);
+    gfx::Rect preview_bounds = preview_widget->GetWindowBoundsInScreen();
+    CaptureModeButton* resize_button = GetPreviewResizeButton();
+
+    // Tests the default visibility of the resize button based on whether switch
+    // access is enabled or not.
+    EXPECT_EQ(resize_button->GetVisible(),
+              switch_access_enabled ? true : false);
+
+    event_generator->MoveMouseTo(preview_bounds.CenterPoint());
+    EXPECT_TRUE(resize_button->GetVisible());
+
+    auto outside_point = preview_bounds.origin();
+    outside_point.Offset(-1, -1);
+    event_generator->MoveMouseTo(outside_point);
+    base::OneShotTimer* timer = camera_controller->camera_preview_view()
+                                    ->resize_button_hide_timer_for_test();
+    timer->FireNow();
+    EXPECT_EQ(resize_button->GetVisible(),
+              switch_access_enabled ? true : false);
+
+    // Tests that the resize button will be hidden when start dragging the
+    // camera preview regardless of whether the switch access is enabled or not.
+    event_generator->MoveMouseTo(preview_bounds.CenterPoint());
+    EXPECT_TRUE(resize_button->GetVisible());
+    event_generator->PressLeftButton();
+    EXPECT_FALSE(resize_button->GetVisible());
+    event_generator->MoveMouseBy(-100, -100);
+    EXPECT_FALSE(resize_button->GetVisible());
+
+    // Tests that the resize button will be visible if the switch access is
+    // enabled after releasing the drag and not visible otherwise.
+    event_generator->ReleaseLeftButton();
+    EXPECT_EQ(resize_button->GetVisible(),
+              switch_access_enabled ? true : false);
+
+    CaptureModeController::Get()->Stop();
+  }
+}
+
+// Tests that the resize button will stay visible after tapping on the preview
+// and time exceeding the predefined duration on tap event when switch access is
+// enabled. And the resize button will behave in a default way if switch
+// access is not enabled.
+TEST_P(CaptureModeCameraPreviewTest,
+       ResizeButtonSwitchAccessVisibilityTestOnTapEvent) {
+  UpdateDisplay("1366x768");
+
+  SwitchToTabletMode();
+  EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+
+  CaptureModeCameraController* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  auto* event_generator = GetEventGenerator();
+
+  for (const bool switch_access_enabled : {false, true}) {
+    AccessibilityControllerImpl* a11y_controller =
+        Shell::Get()->accessibility_controller();
+    a11y_controller->switch_access().SetEnabled(switch_access_enabled);
+    EXPECT_EQ(switch_access_enabled, a11y_controller->IsSwitchAccessRunning());
+
+    StartCaptureSessionWithParam();
+    views::Widget* preview_widget = camera_controller->camera_preview_widget();
+    DCHECK(preview_widget);
+    gfx::Rect preview_bounds = preview_widget->GetWindowBoundsInScreen();
+    CaptureModeButton* resize_button = GetPreviewResizeButton();
+
+    // Tests the default visibility of the resize button based on whether switch
+    // access is enabled or not.
+    EXPECT_EQ(resize_button->GetVisible(),
+              switch_access_enabled ? true : false);
+
+    event_generator->GestureTapAt(preview_bounds.CenterPoint());
+    EXPECT_TRUE(resize_button->GetVisible());
+
+    base::OneShotTimer* timer = camera_controller->camera_preview_view()
+                                    ->resize_button_hide_timer_for_test();
+    if (timer->IsRunning())
+      timer->FireNow();
+
+    EXPECT_EQ(resize_button->GetVisible(),
+              switch_access_enabled ? true : false);
+    CaptureModeController::Get()->Stop();
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          CaptureModeCameraPreviewTest,
                          testing::Values(CaptureModeSource::kFullscreen,

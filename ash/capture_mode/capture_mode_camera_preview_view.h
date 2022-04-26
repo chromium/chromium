@@ -5,11 +5,14 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_CAMERA_PREVIEW_VIEW_H_
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_CAMERA_PREVIEW_VIEW_H_
 
+#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_observer.h"
 #include "ash/capture_mode/camera_video_frame_renderer.h"
 #include "ash/capture_mode/capture_mode_button.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
@@ -56,7 +59,8 @@ class CameraPreviewResizeButton : public CaptureModeButton {
 // be responsible for painting the latest camera video frame inside its bounds.
 class CameraPreviewView
     : public views::View,
-      public CaptureModeSessionFocusCycler::HighlightableView {
+      public CaptureModeSessionFocusCycler::HighlightableView,
+      public AccessibilityObserver {
  public:
   METADATA_HEADER(CameraPreviewView);
 
@@ -103,6 +107,10 @@ class CameraPreviewView
   // CaptureModeSessionFocusCycler::HighlightableView:
   views::View* GetView() override;
   std::unique_ptr<views::HighlightPathGenerator> CreatePathGenerator() override;
+
+  // AccessibilityObserver:
+  void OnAccessibilityStatusChanged() override;
+  void OnAccessibilityControllerShutdown() override;
 
   base::OneShotTimer* resize_button_hide_timer_for_test() {
     return &resize_button_hide_timer_;
@@ -168,6 +176,9 @@ class CameraPreviewView
 
   // True only while handling a gesture tap event on this view.
   bool has_been_tapped_ = false;
+
+  base::ScopedObservation<AccessibilityControllerImpl, AccessibilityObserver>
+      accessibility_observation_{this};
 
   base::WeakPtrFactory<CameraPreviewView> weak_ptr_factory_{this};
 };
