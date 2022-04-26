@@ -317,7 +317,6 @@ SpdySessionDependencies::SpdySessionDependencies(
       session_max_queued_capped_frames(kSpdySessionMaxQueuedCappedFrames),
       time_func(&base::TimeTicks::Now),
       enable_http2_alternative_service(false),
-      enable_websocket_over_http2(false),
       enable_http2_settings_grease(false),
       http2_end_stream_with_data_frame(false),
       net_log(nullptr),

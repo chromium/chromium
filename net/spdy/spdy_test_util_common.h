@@ -205,7 +205,6 @@ struct SpdySessionDependencies {
   spdy::SettingsMap http2_settings;
   SpdySession::TimeFunc time_func;
   bool enable_http2_alternative_service;
-  bool enable_websocket_over_http2;
   bool enable_http2_settings_grease;
   absl::optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame;
   bool http2_end_stream_with_data_frame;

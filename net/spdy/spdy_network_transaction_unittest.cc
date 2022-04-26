@@ -8847,7 +8847,6 @@ TEST_F(SpdyNetworkTransactionTest,
        WebSocketDoesUseNewH2SessionWithoutWebSocketSupport) {
   base::HistogramTester histogram_tester;
   auto session_deps = std::make_unique<SpdySessionDependencies>();
-  session_deps->enable_websocket_over_http2 = true;
   NormalSpdyTransactionHelper helper(request_, HIGHEST, log_,
                                      std::move(session_deps));
   helper.RunPreTestSetup();
@@ -8965,7 +8964,6 @@ TEST_F(SpdyNetworkTransactionTest,
 TEST_F(SpdyNetworkTransactionTest, WebSocketOverHTTP2) {
   base::HistogramTester histogram_tester;
   auto session_deps = std::make_unique<SpdySessionDependencies>();
-  session_deps->enable_websocket_over_http2 = true;
   NormalSpdyTransactionHelper helper(request_, HIGHEST, log_,
                                      std::move(session_deps));
   helper.RunPreTestSetup();
@@ -9090,18 +9088,12 @@ TEST_F(SpdyNetworkTransactionTest, WebSocketOverHTTP2) {
 
 // Make sure that a WebSocket job doesn't pick up a newly created SpdySession
 // that supports WebSockets through an HTTPS proxy when an H2 server doesn't
-// support websockets and |enable_websocket_over_http2| is false. See
-// https://crbug.com/1010491.
+// support websockets. See https://crbug.com/1010491.
 TEST_F(SpdyNetworkTransactionTest,
        WebSocketDoesNotUseNewH2SessionWithoutWebSocketSupportOverHttpsProxy) {
   auto session_deps = std::make_unique<SpdySessionDependencies>(
       ConfiguredProxyResolutionService::CreateFixed(
           "https://proxy:70", TRAFFIC_ANNOTATION_FOR_TESTS));
-
-  // Note: Once WebSocket over H2 is enabled by default, this line can be
-  // deleted, and this test will still be useful to keep, though its description
-  // will need to be updated.
-  session_deps->enable_websocket_over_http2 = false;
 
   NormalSpdyTransactionHelper helper(request_, HIGHEST, log_,
                                      std::move(session_deps));
@@ -9246,7 +9238,6 @@ TEST_F(SpdyNetworkTransactionTest,
        WebSocketOverHTTP2DetectsNewSessionWithAliasing) {
   base::HistogramTester histogram_tester;
   auto session_deps = std::make_unique<SpdySessionDependencies>();
-  session_deps->enable_websocket_over_http2 = true;
   session_deps->host_resolver->set_ondemand_mode(true);
   NormalSpdyTransactionHelper helper(request_, HIGHEST, log_,
                                      std::move(session_deps));
@@ -9388,7 +9379,6 @@ TEST_F(SpdyNetworkTransactionTest,
        WebSocketOverDetectsNewSessionWithAliasingButClosedBeforeUse) {
   base::HistogramTester histogram_tester;
   auto session_deps = std::make_unique<SpdySessionDependencies>();
-  session_deps->enable_websocket_over_http2 = true;
   session_deps->host_resolver->set_ondemand_mode(true);
   NormalSpdyTransactionHelper helper(request_, HIGHEST, log_,
                                      std::move(session_deps));
@@ -9568,7 +9558,6 @@ TEST_F(SpdyNetworkTransactionTest, WebSocketNegotiatesHttp2) {
 TEST_F(SpdyNetworkTransactionTest, WebSocketHttp11Required) {
   base::HistogramTester histogram_tester;
   auto session_deps = std::make_unique<SpdySessionDependencies>();
-  session_deps->enable_websocket_over_http2 = true;
   NormalSpdyTransactionHelper helper(request_, HIGHEST, log_,
                                      std::move(session_deps));
   helper.RunPreTestSetup();

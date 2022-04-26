@@ -9368,7 +9368,6 @@ TEST_F(HttpNetworkTransactionTest, NTLMOverHttp2WithWebsockets) {
   ssl1.next_protos_expected_in_ssl_config = NextProtoVector{kProtoHTTP11};
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl1);
 
-  session_deps_.enable_websocket_over_http2 = true;
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   HttpRequestInfo initial_request_info;
