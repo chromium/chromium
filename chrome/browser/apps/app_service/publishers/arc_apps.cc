@@ -196,8 +196,8 @@ void UpdateAppPermissions(
     auto permission = apps::mojom::Permission::New();
     permission->permission_type =
         GetAppServicePermissionType(new_permission.first);
-    permission->value = apps::mojom::PermissionValue::New();
-    permission->value->set_bool_value(new_permission.second->granted);
+    permission->value = apps::mojom::PermissionValue::NewBoolValue(
+        new_permission.second->granted);
     permission->is_managed = new_permission.second->managed;
 
     permissions->push_back(std::move(permission));
