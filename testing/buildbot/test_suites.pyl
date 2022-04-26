@@ -1898,7 +1898,6 @@
       },
       'content_browsertests': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_browsertests.filter',
           '--',
           '--disable-gpu',
           '--headless',

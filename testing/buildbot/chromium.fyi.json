@@ -27679,7 +27679,6 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_browsertests.filter",
           "--",
           "--disable-gpu",
           "--headless",
@@ -30332,7 +30331,6 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_browsertests.filter",
           "--",
           "--disable-gpu",
           "--headless",
@@ -31718,7 +31716,6 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_browsertests.filter",
           "--",
           "--disable-gpu",
           "--headless",
