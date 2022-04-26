@@ -203,7 +203,7 @@ void ServiceVideoCaptureDeviceLauncher::OnCreatePushSubscriptionCallback(
   callbacks_ = nullptr;
   switch (result_code->which()) {
     case video_capture::mojom::CreatePushSubscriptionResultCode::Tag::
-        SUCCESS_CODE:
+        kSuccessCode:
       if (abort_requested) {
         subscription.reset();
         source.reset();
@@ -217,7 +217,7 @@ void ServiceVideoCaptureDeviceLauncher::OnCreatePushSubscriptionCallback(
           std::move(connection_lost_cb), callbacks, std::move(done_cb_));
       return;
     case video_capture::mojom::CreatePushSubscriptionResultCode::Tag::
-        ERROR_CODE:
+        kErrorCode:
       media::VideoCaptureError error = result_code->get_error_code();
       DCHECK_NE(error, media::VideoCaptureError::kNone);
       ConcludeLaunchDeviceWithFailure(abort_requested, error,

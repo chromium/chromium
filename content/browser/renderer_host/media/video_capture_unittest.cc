@@ -187,7 +187,7 @@ class VideoCaptureTest : public testing::Test,
  protected:
   // media::mojom::VideoCaptureObserver implementation.
   void OnStateChanged(media::mojom::VideoCaptureResultPtr result) override {
-    if (result->which() == media::mojom::VideoCaptureResult::Tag::STATE)
+    if (result->which() == media::mojom::VideoCaptureResult::Tag::kState)
       DoOnStateChanged(result->get_state());
     else
       DoOnVideoCaptureError(result->get_error_code());
