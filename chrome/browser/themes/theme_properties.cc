@@ -72,7 +72,6 @@ SkColor GetLightModeColor(int id) {
       return gfx::kGoogleGrey300;
     case ThemeProperties::COLOR_HOVER_CARD_NO_PREVIEW_BACKGROUND:
       return gfx::kGoogleGrey050;
-    case ThemeProperties::COLOR_INFOBAR_TEXT:
     case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE:
     case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE:
     case ThemeProperties::COLOR_TOOLBAR_TEXT:
@@ -167,7 +166,6 @@ absl::optional<SkColor> GetIncognitoColor(int id) {
     case ThemeProperties::COLOR_HOVER_CARD_NO_PREVIEW_BACKGROUND:
     case ThemeProperties::COLOR_NTP_SHORTCUT:
       return gfx::kGoogleGrey900;
-    case ThemeProperties::COLOR_INFOBAR_TEXT:
     case ThemeProperties::COLOR_TOOLBAR_TEXT:
       return SK_ColorWHITE;
     case ThemeProperties::COLOR_NTP_TEXT:

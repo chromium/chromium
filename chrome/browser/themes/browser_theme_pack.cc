@@ -97,7 +97,7 @@ constexpr int kTallestFrameHeight = kTallestTabHeight + 19;
 // changed default theme assets, if you need themes to recreate their generated
 // images (which are cached), if you changed how missing values are
 // generated, or if you changed any constants.
-const int kThemePackVersion = 98;
+const int kThemePackVersion = 99;
 
 // IDs that are in the DataPack won't clash with the positive integer
 // uint16_t. kHeaderID should always have the maximum value because we want the
@@ -266,7 +266,6 @@ constexpr int kNonOverwritableColorTable[] = {
     TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INCOGNITO_ACTIVE,
     TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INCOGNITO_INACTIVE,
     TP::COLOR_INFOBAR,
-    TP::COLOR_INFOBAR_TEXT,
     TP::COLOR_DOWNLOAD_SHELF,
     TP::COLOR_TOOLBAR_BUTTON_ICON_HOVERED,
     TP::COLOR_TOOLBAR_BUTTON_ICON_PRESSED,
@@ -1076,7 +1075,6 @@ void BrowserThemePack::AddColorMixers(
       {TP::COLOR_FRAME_ACTIVE, ui::kColorFrameActive},
       {TP::COLOR_FRAME_INACTIVE, ui::kColorFrameInactive},
       {TP::COLOR_INFOBAR, kColorInfoBarBackground},
-      {TP::COLOR_INFOBAR_TEXT, kColorInfoBarForeground},
       {TP::COLOR_NTP_BACKGROUND, kColorNewTabPageBackground},
       {TP::COLOR_NTP_HEADER, kColorNewTabPageHeader},
       {TP::COLOR_NTP_LINK, kColorNewTabPageLink},
@@ -1589,7 +1587,6 @@ void BrowserThemePack::SetFrameAndToolbarRelatedColors() {
   SkColor toolbar_text_color;
   if (GetColor(TP::COLOR_TOOLBAR_TEXT, &toolbar_text_color)) {
     SetColorIfUnspecified(TP::COLOR_BOOKMARK_TEXT, toolbar_text_color);
-    SetColor(TP::COLOR_INFOBAR_TEXT, toolbar_text_color);
     SetColorIfUnspecified(TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE,
                           toolbar_text_color);
   }

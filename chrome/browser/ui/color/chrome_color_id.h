@@ -29,7 +29,7 @@
     ThemeProperties::COLOR_BOOKMARK_BAR_BACKGROUND) \
   E(kColorBookmarkBarForeground, ThemeProperties::COLOR_BOOKMARK_TEXT) \
   E(kColorBookmarkBarSeparator, ThemeProperties::COLOR_BOOKMARK_SEPARATOR) \
-  E(kColorBookmarkButtonIcon, ThemeProperties::COLOR_BOOKMARK_BUTTON_ICON) \
+  E_CPONLY(kColorBookmarkButtonIcon) \
   E_CPONLY(kColorBookmarkDragImageBackground) \
   E_CPONLY(kColorBookmarkDragImageCountBackground) \
   E_CPONLY(kColorBookmarkDragImageCountForeground) \
@@ -53,16 +53,13 @@
   E_CPONLY(kColorDownloadItemProgressRingBackground) \
   E_CPONLY(kColorDownloadItemProgressRingForeground) \
   E(kColorDownloadShelfBackground, ThemeProperties::COLOR_DOWNLOAD_SHELF) \
-  E(kColorDownloadShelfButtonBackground, \
-    ThemeProperties::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND) \
-  E(kColorDownloadShelfButtonText, \
-    ThemeProperties::COLOR_DOWNLOAD_SHELF_BUTTON_TEXT) \
+  E_CPONLY(kColorDownloadShelfButtonBackground) \
+  E_CPONLY(kColorDownloadShelfButtonText) \
   E_CPONLY(kColorDownloadShelfButtonIcon) \
   E_CPONLY(kColorDownloadShelfButtonIconDisabled) \
   E(kColorDownloadShelfContentAreaSeparator, \
     ThemeProperties::COLOR_DOWNLOAD_SHELF_CONTENT_AREA_SEPARATOR) \
-  E(kColorDownloadShelfForeground, \
-    ThemeProperties::COLOR_DOWNLOAD_SHELF_FOREGROUND) \
+  E_CPONLY(kColorDownloadShelfForeground) \
   E_CPONLY(kColorDownloadStartedAnimationForeground) \
   E_CPONLY(kColorDownloadToolbarButtonActive) \
   E_CPONLY(kColorDownloadToolbarButtonInactive) \
@@ -119,7 +116,7 @@
   E_CPONLY(kColorInfoBarButtonIconDisabled) \
   E(kColorInfoBarContentAreaSeparator, \
     ThemeProperties::COLOR_INFOBAR_CONTENT_AREA_SEPARATOR) \
-  E(kColorInfoBarForeground, ThemeProperties::COLOR_INFOBAR_TEXT) \
+  E_CPONLY(kColorInfoBarForeground) \
   /* Location bar colors. */ \
   E(kColorLocationBarBorder, ThemeProperties::COLOR_LOCATION_BAR_BORDER) \
   E(kColorLocationBarBorderOpaque, \

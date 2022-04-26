@@ -2061,7 +2061,7 @@ void BookmarkBarView::UpdateAppearanceForTheme() {
     apps_page_shortcut_->SetEnabledTextColors(color);
 
   const SkColor overflow_color =
-      theme_provider->GetColor(ThemeProperties::COLOR_BOOKMARK_BUTTON_ICON);
+      GetColorProvider()->GetColor(kColorBookmarkButtonIcon);
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   overflow_button_->SetImageModel(
       views::Button::STATE_NORMAL,

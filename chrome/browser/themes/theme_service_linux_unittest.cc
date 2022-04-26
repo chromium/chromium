@@ -6,7 +6,7 @@
 
 #include <cmath>
 
-#include "base/containers/fixed_flat_map.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -117,15 +117,25 @@ class ThemeProviderRedirectedEquivalenceLinuxTest : public ThemeServiceTest {
 
 // TODO(crbug.com/1310397): There're mismatched colors in some GTK themes.
 // Enable this test after fixing them.
-TEST_F(ThemeProviderRedirectedEquivalenceLinuxTest, DISABLED_GetColor) {
+TEST_F(ThemeProviderRedirectedEquivalenceLinuxTest, GetColor) {
   const ui::ThemeProvider& theme_provider =
       ThemeService::GetThemeProviderForProfile(profile());
+
+  static constexpr const auto ignored_color_ids = base::MakeFixedFlatSet<
+      ui::ColorId>(
+      {// Ignore IPH colors due to behavior change.
+       // Original: always Google blue, redirected: follow the accent color.
+       ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_BACKGROUND,
+       ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_CLOSE_BUTTON_INK_DROP,
+       ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_DEFAULT_BUTTON_FOREGROUND});
 
   std::vector<std::string> gtk_themes =
       linux_ui_->GetAvailableSystemThemeNamesForTest();
   for (const std::string& gtk_theme : gtk_themes) {
     linux_ui_->SetSystemThemeByNameForTest(gtk_theme);
     for (auto color_id : theme_service::test::kTestColorIds) {
+      if (ignored_color_ids.contains(color_id))
+        continue;
       std::string error_message =
           base::StrCat({"GTK theme ", gtk_theme, ": ",
                         theme_service::test::ColorIdToString(color_id),

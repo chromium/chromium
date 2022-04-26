@@ -24,6 +24,10 @@
 #include "ui/native_theme/common_theme.h"
 #include "ui/native_theme/native_theme.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "ui/views/linux_ui/linux_ui.h"
+#endif
+
 namespace {
 
 using TP = ThemeProperties;
@@ -351,24 +355,11 @@ SkColor ThemeHelper::GetDefaultColor(
     case TP::COLOR_TAB_STROKE_FRAME_INACTIVE:
       return GetColor(TP::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_INACTIVE, incognito,
                       theme_supplier);
-    case TP::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND:
-      return GetColor(TP::COLOR_DOWNLOAD_SHELF, incognito, theme_supplier);
-    case TP::COLOR_DOWNLOAD_SHELF_BUTTON_TEXT: {
-      const SkColor download_shelf_color =
-          GetColor(TP::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND, incognito,
-                   theme_supplier);
-      return color_utils::PickGoogleColor(
-          color_utils::IsDark(download_shelf_color) ? gfx::kGoogleBlue300
-                                                    : gfx::kGoogleBlue600,
-          download_shelf_color, color_utils::kMinimumReadableContrastRatio);
-    }
     case TP::COLOR_DOWNLOAD_SHELF_CONTENT_AREA_SEPARATOR:
       return color_utils::AlphaBlend(
           GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, incognito, theme_supplier),
           GetColor(TP::COLOR_DOWNLOAD_SHELF, incognito, theme_supplier),
           SkAlpha{0x3A});
-    case TP::COLOR_DOWNLOAD_SHELF_FOREGROUND:
-      return GetColor(TP::COLOR_TOOLBAR_TEXT, incognito, theme_supplier);
     case TP::COLOR_STATUS_BUBBLE_ACTIVE:
       return GetColor(TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE, incognito,
                       theme_supplier);
@@ -414,7 +405,6 @@ SkColor ThemeHelper::GetDefaultColor(
       return color_utils::HSLShift(get_frame_color(/*active=*/false),
                                    GetTint(ThemeProperties::TINT_BACKGROUND_TAB,
                                            incognito, theme_supplier));
-    case TP::COLOR_BOOKMARK_BUTTON_ICON:
     case TP::COLOR_TOOLBAR_BUTTON_ICON:
     case TP::COLOR_TOOLBAR_BUTTON_ICON_HOVERED:
     case TP::COLOR_TOOLBAR_BUTTON_ICON_PRESSED:
@@ -495,8 +485,22 @@ SkColor ThemeHelper::GetDefaultColor(
 bool ThemeHelper::UseDarkModeColors(const CustomThemeSupplier* theme_supplier) {
   // Dark mode is disabled for custom themes so they apply atop a predictable
   // state.
-  return !IsCustomTheme(theme_supplier) &&
-         ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors();
+  if (IsCustomTheme(theme_supplier))
+    return false;
+
+  ui::NativeTheme const* native_theme =
+      ui::NativeTheme::GetInstanceForNativeUi();
+#if BUILDFLAG(IS_LINUX)
+  if (const auto* linux_ui = views::LinuxUI::instance()) {
+    // We rely on the fact that the system theme is in use iff `theme_supplier`
+    // is non-null, but this is cheating. In the future this might not hold
+    // after we fully migrate to the color provider and remove SystemThemeLinux.
+    native_theme = linux_ui->GetNativeTheme(
+        theme_supplier &&
+        theme_supplier->get_theme_type() == CustomThemeSupplier::NATIVE_X11);
+  }
+#endif
+  return native_theme->ShouldUseDarkColors();
 }
 
 gfx::Image ThemeHelper::GetImageNamed(

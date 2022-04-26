@@ -132,15 +132,11 @@ class ThemeProperties {
     // Colors used for various 'shelves' and 'bars'.
     // Download shelf colors.
     COLOR_DOWNLOAD_SHELF,
-    COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND,
-    COLOR_DOWNLOAD_SHELF_BUTTON_TEXT,
     COLOR_DOWNLOAD_SHELF_CONTENT_AREA_SEPARATOR,
-    COLOR_DOWNLOAD_SHELF_FOREGROUND,
 
     // Infobar colors.
     COLOR_INFOBAR,
     COLOR_INFOBAR_CONTENT_AREA_SEPARATOR,
-    COLOR_INFOBAR_TEXT,
 
     COLOR_SIDE_PANEL_CONTENT_AREA_SEPARATOR,
 
@@ -311,7 +307,6 @@ class ThemeProperties {
 
     // Colors used for the Bookmark bar
     COLOR_BOOKMARK_BAR_BACKGROUND,
-    COLOR_BOOKMARK_BUTTON_ICON,
     // If COLOR_TOOLBAR_BUTTON_ICON is defined in the custom theme, that color
     // will be returned, otherwise it will be transparent so the default
     // favicon color is retained.
