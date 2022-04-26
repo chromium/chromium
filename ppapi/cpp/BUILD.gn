@@ -2,9 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ppapi/buildflags/buildflags.gni")
+
 if (is_nacl) {
   import("//build/config/nacl/config.gni")
 }
+
+assert(enable_plugins)
 
 if (is_nacl && is_nacl_glibc) {
   cpp_target_type = "shared_library"

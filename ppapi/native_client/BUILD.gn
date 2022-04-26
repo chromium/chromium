@@ -4,7 +4,10 @@
 
 import("//build/config/features.gni")
 import("//build/config/nacl/config.gni")
+import("//components/nacl/features.gni")
 import("//components/nacl/target_cpu.gni")
+
+assert(enable_nacl)
 
 if (is_nacl) {
   group("ppapi_lib") {

@@ -13,9 +13,7 @@ if (is_mac) {
   import("//build/config/mac/rules.gni")
 }
 
-assert(
-    !(is_android || is_fuchsia) || enable_plugins,
-    "ppapi should not be used on Android or Fuchsia, unless plugins are explicitly enabled")
+assert(enable_plugins)
 
 # Test files shared between several targets below.
 #

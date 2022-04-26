@@ -2,9 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ppapi/buildflags/buildflags.gni")
+
 if (is_mac) {
   import("//build/config/mac/rules.gni")
 }
+
+assert(enable_plugins)
 
 # Declares a PPAPI example target of the correct type for the current platform
 # and with the right linker flags.

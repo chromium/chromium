@@ -1801,7 +1801,6 @@ static_library("ui") {
       "//device/bluetooth",
       "//device/bluetooth/strings:strings_grit",
       "//device/fido",
-      "//ppapi/c",
       "//services/device/public/cpp/hid",
       "//services/device/public/mojom",
       "//services/metrics/public/cpp:metrics_cpp",
@@ -5374,7 +5373,10 @@ static_library("ui") {
       "hung_plugin_tab_helper.cc",
       "hung_plugin_tab_helper.h",
     ]
-    deps += [ "//ppapi/proxy:ipc" ]
+    deps += [
+      "//ppapi/c",
+      "//ppapi/proxy:ipc",
+    ]
   }
 
   if (enable_basic_printing) {

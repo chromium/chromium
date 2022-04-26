@@ -4,7 +4,10 @@
 
 import("//components/nacl/features.gni")
 import("//components/nacl/target_cpu.gni")
+import("//ppapi/buildflags/buildflags.gni")
 import("//ppapi/native_client/nacl_test_data.gni")
+
+assert(enable_plugins)
 
 group("extensions") {
   newlib = "//build/toolchain/nacl:clang_newlib_${nacl_target_cpu}"

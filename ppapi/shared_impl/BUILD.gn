@@ -5,9 +5,7 @@
 import("//build/config/nacl/config.gni")
 import("//ppapi/buildflags/buildflags.gni")
 
-assert(
-    !(is_android || is_fuchsia) || enable_plugins,
-    "ppapi should not be used on Android or Fuchsia, unless plugins are explicitly enabled")
+assert(enable_plugins)
 
 # //ppapi/shared_impl and //ppapi/thunk go into the same library.
 config("export_shared_impl_and_thunk") {
@@ -105,7 +103,7 @@ source_set("common") {
     "//base",
     "//base:i18n",
     "//build:chromeos_buildflags",
-    "//ppapi/c:c",
+    "//ppapi/c",
     "//ppapi/thunk:headers",
     "//third_party/icu:icuuc",
     "//url",
