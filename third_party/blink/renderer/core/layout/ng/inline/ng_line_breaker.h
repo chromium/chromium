@@ -19,6 +19,7 @@ namespace blink {
 
 class Hyphenation;
 class NGBlockBreakToken;
+class NGColumnSpannerPath;
 class NGInlineBreakToken;
 class NGInlineItem;
 class NGLineInfo;
@@ -42,6 +43,7 @@ class CORE_EXPORT NGLineBreaker {
                 const NGPositionedFloatVector& leading_floats,
                 unsigned handled_leading_floats_index,
                 const NGInlineBreakToken*,
+                const NGColumnSpannerPath*,
                 NGExclusionSpace*);
   ~NGLineBreaker();
 
@@ -322,6 +324,7 @@ class CORE_EXPORT NGLineBreaker {
   const NGConstraintSpace& constraint_space_;
   NGExclusionSpace* exclusion_space_;
   const NGInlineBreakToken* break_token_;
+  const NGColumnSpannerPath* column_spanner_path_;
   scoped_refptr<const ComputedStyle> current_style_;
 
   LazyLineBreakIterator break_iterator_;

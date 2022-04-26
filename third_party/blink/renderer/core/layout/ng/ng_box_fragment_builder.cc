@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_token.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_column_spanner_path.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
@@ -408,6 +409,9 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
         has_inflow_child_break_inside_ = true;
     }
 
+    if (child_layout_result.ShouldForceSameFragmentationFlow())
+      has_inflow_child_break_inside_ = true;
+
     // Downgrade the appeal of breaking inside this container, if the break
     // inside the child is less appealing than what we've found so far.
     NGBreakAppeal appeal_inside =
@@ -432,14 +436,17 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
   // If a spanner was found inside the child, we need to finish up and propagate
   // the spanner to the column layout algorithm, so that it can take care of it.
   if (UNLIKELY(ConstraintSpace()->IsInColumnBfc())) {
-    if (NGBlockNode spanner_node = child_layout_result.ColumnSpanner()) {
+    if (const NGColumnSpannerPath* child_spanner_path =
+            child_layout_result.ColumnSpannerPath()) {
       DCHECK(HasInflowChildBreakInside() ||
              !child_layout_result.PhysicalFragment().IsBox());
-      SetColumnSpanner(spanner_node);
+      const auto* spanner_path =
+          MakeGarbageCollected<NGColumnSpannerPath>(Node(), child_spanner_path);
+      SetColumnSpannerPath(spanner_path);
       SetIsEmptySpannerParent(child_layout_result.IsEmptySpannerParent());
     }
   } else {
-    DCHECK(!child_layout_result.ColumnSpanner());
+    DCHECK(!child_layout_result.ColumnSpannerPath());
   }
 }
 

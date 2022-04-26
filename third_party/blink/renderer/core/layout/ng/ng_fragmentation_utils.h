@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_column_spanner_path.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -402,6 +403,19 @@ const NGEarlyBreak* EnterEarlyBreakInChild(const NGBlockNode& child,
 bool IsEarlyBreakTarget(const NGEarlyBreak&,
                         const NGBoxFragmentBuilder&,
                         const NGLayoutInputNode& child);
+
+// Find out if |child| is the next step on the column spanner path (if any), and
+// return the remaining path if that's the case, nullptr otherwise.
+inline const NGColumnSpannerPath* FollowColumnSpannerPath(
+    const NGColumnSpannerPath* path,
+    const NGBlockNode& child) {
+  if (!path)
+    return nullptr;
+  const NGColumnSpannerPath* next_step = path->Child();
+  if (next_step && next_step->BlockNode() == child)
+    return next_step;
+  return nullptr;
+}
 
 // Calculate the constraint space for columns of a multi-column layout.
 NGConstraintSpace CreateConstraintSpaceForColumns(

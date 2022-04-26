@@ -390,7 +390,8 @@ inline LayoutPoint ToLayoutPoint(
 const NGLayoutResult* NGBlockNode::Layout(
     const NGConstraintSpace& constraint_space,
     const NGBlockBreakToken* break_token,
-    const NGEarlyBreak* early_break) const {
+    const NGEarlyBreak* early_break,
+    const NGColumnSpannerPath* column_spanner_path) const {
   // Use the old layout code and synthesize a fragment.
   if (!CanUseNewLayout())
     return RunLegacyLayout(constraint_space);
@@ -487,6 +488,7 @@ const NGLayoutResult* NGBlockNode::Layout(
 
   NGLayoutAlgorithmParams params(*this, *fragment_geometry, constraint_space,
                                  break_token, early_break);
+  params.column_spanner_path = column_spanner_path;
 
   auto* block_flow = DynamicTo<LayoutBlockFlow>(box_.Get());
 

@@ -29,6 +29,7 @@
 
 namespace blink {
 
+class NGColumnSpannerPath;
 class NGExclusionSpace;
 class NGInlineBreakToken;
 class NGPhysicalFragment;
@@ -297,16 +298,16 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   // longer accessible. For example, in simplified OOF layout, we may want to
   // recreate a spanner break for an existing fragment being relaid out, but
   // the spanner node is no longer available. In such cases,
-  // |has_column_spanner_| may be true while |column_spanner_| is not set.
+  // |has_column_spanner_| may be true while |column_spanner_path_| is not set.
   void SetHasColumnSpanner(bool has_column_spanner) {
     has_column_spanner_ = has_column_spanner;
   }
-  void SetColumnSpanner(NGBlockNode spanner) {
-    column_spanner_ = spanner;
-    SetHasColumnSpanner(!!column_spanner_);
+  void SetColumnSpannerPath(const NGColumnSpannerPath* spanner_path) {
+    column_spanner_path_ = spanner_path;
+    SetHasColumnSpanner(!!spanner_path);
   }
   bool FoundColumnSpanner() const {
-    DCHECK(has_column_spanner_ || !column_spanner_);
+    DCHECK(has_column_spanner_ || !column_spanner_path_);
     return has_column_spanner_;
   }
   void SetIsEmptySpannerParent(bool is_empty_spanner_parent) {
@@ -314,6 +315,10 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
     is_empty_spanner_parent_ = is_empty_spanner_parent;
   }
   bool IsEmptySpannerParent() const { return is_empty_spanner_parent_; }
+
+  void SetShouldForceSameFragmentationFlow() {
+    should_force_same_fragmentation_flow_ = true;
+  }
 
   // See NGLayoutResult::AnnotationOverflow().
   void SetAnnotationOverflow(LayoutUnit overflow) {
@@ -397,7 +402,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   NGBreakTokenVector child_break_tokens_;
   const NGInlineBreakToken* last_inline_break_token_ = nullptr;
 
-  NGBlockNode column_spanner_ = nullptr;
+  const NGColumnSpannerPath* column_spanner_path_ = nullptr;
 
   const NGEarlyBreak* early_break_ = nullptr;
 
@@ -426,6 +431,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   bool is_fragmentation_context_root_ = false;
   bool has_column_spanner_ = false;
   bool is_empty_spanner_parent_ = false;
+  bool should_force_same_fragmentation_flow_ = false;
 
   bool has_oof_candidate_that_needs_block_offset_adjustment_ = false;
   bool has_out_of_flow_fragment_child_ = false;

@@ -43,8 +43,9 @@ const NGLayoutResult* NGMathTokenLayoutAlgorithm::Layout() {
       To<NGInlineNode>(child), container_builder_.GetWritingDirection());
   container_builder_.SetItemsBuilder(&items_builder);
   context.SetItemsBuilder(&items_builder);
-  const NGLayoutResult* child_layout_result =
-      To<NGInlineNode>(child).Layout(ConstraintSpace(), nullptr, &context);
+  const NGLayoutResult* child_layout_result = To<NGInlineNode>(child).Layout(
+      ConstraintSpace(), /* break_token */ nullptr,
+      /* column_spanner_path */ nullptr, &context);
 
   const auto& line_box =
       To<NGPhysicalLineBoxFragment>(child_layout_result->PhysicalFragment());

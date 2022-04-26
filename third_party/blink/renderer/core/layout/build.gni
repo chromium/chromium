@@ -505,6 +505,7 @@ blink_core_sources_layout = [
   "ng/ng_break_token.h",
   "ng/ng_column_layout_algorithm.cc",
   "ng/ng_column_layout_algorithm.h",
+  "ng/ng_column_spanner_path.h",
   "ng/ng_constraint_space.cc",
   "ng/ng_constraint_space.h",
   "ng/ng_constraint_space_builder.cc",
