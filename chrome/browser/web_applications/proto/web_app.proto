@@ -112,10 +112,12 @@ enum WebAppManagementProto {
   DEFAULT = 6;
 }
 
-message ManagementToInstallURLsInfoProto {
+message ManagementToExternalConfigInfo {
   optional WebAppManagementProto management = 1;
   // The collection of install_urls per web_app per WebAppManagement::Type.
   repeated string install_urls = 2;
+  // Stores whether the app is a placeholder app or not.
+  optional bool is_placeholder = 3;
 }
 
 // Full WebApp object data. See detailed comments in
@@ -124,6 +126,7 @@ message ManagementToInstallURLsInfoProto {
 // app_id is the storage key in ModelTypeStore.
 message WebAppProto {
   reserved "is_in_sync_install";
+  reserved 53;
 
   // Synced data. It is replicated across all devices with WEB_APPS.
   //
@@ -335,13 +338,10 @@ message WebAppProto {
   // Whether the app should be registered to run during OS Login time.
   optional RunOnOsLoginMode run_on_os_login_os_integration_state = 51;
 
-  // Map of WebAppManagement enum to install_url.
-  // There should only be one entry per WebAppManagement source.
-  repeated ManagementToInstallURLsInfoProto
-      management_to_install_urls_map_without_sync = 52;
-
-  // Stores whether the app is a placeholder app or not.
-  optional bool is_placeholder = 53;
+  // Map of WebAppManagement enum to placeholder info and install_urls.
+  // There should be only one entry per WebAppManagement source.
+  repeated ManagementToExternalConfigInfo management_to_external_config_info =
+      52;
 
   // The amount of storage (in bytes) used by the app and its related data.
   optional uint64 app_size_in_bytes = 54;

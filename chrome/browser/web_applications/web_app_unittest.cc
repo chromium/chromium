@@ -196,7 +196,6 @@ TEST(WebAppTest, EmptyAppAsDebugValue) {
    "file_handler_approval_state": "kRequiresPrompt",
    "file_handler_os_integration_state": "kDisabled",
    "file_handlers": [  ],
-   "management_to_install_urls_map_without_sync": {},
    "manifest_icons": [  ],
    "handle_links": "kUndefined",
    "install_time": "1601-01-01 00:00:00.000 UTC",
@@ -204,13 +203,13 @@ TEST(WebAppTest, EmptyAppAsDebugValue) {
    "is_generated_icon": false,
    "is_from_sync_and_pending_installation": false,
    "is_locally_installed": true,
-   "is_placeholder": false,
    "is_storage_isolated": false,
    "is_uninstalling": false,
    "last_badging_time": "1601-01-01 00:00:00.000 UTC",
    "last_launch_time": "1601-01-01 00:00:00.000 UTC",
    "launch_handler": null,
    "launch_query_params": null,
+   "management_type_to_external_configuration_map": {},
    "manifest_id": null,
    "manifest_update_time": "1601-01-01 00:00:00.000 UTC",
    "manifest_url": "",
@@ -397,19 +396,32 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
    "is_from_sync_and_pending_installation": false,
    "is_generated_icon": true,
    "is_locally_installed": false,
-   "is_placeholder": false,
    "is_storage_isolated": true,
    "is_uninstalling": false,
    "last_badging_time": "1970-01-13 20:12:59.451 UTC",
    "last_launch_time": "1970-01-04 17:38:34.900 UTC",
    "launch_handler": null,
    "launch_query_params": "986688382",
-   "management_to_install_urls_map_without_sync": {
-      "Default": [ "https://example.com/installer2_1234/" ],
-      "SubApp": [  ],
-      "Sync": [ "https://example.com/installer1_1234/" ],
-      "WebAppStore": [ "https://example.com/installer1_1234/" ]
-   },
+   "management_type_to_external_configuration_map": {
+        "Default": {
+            "install_urls": [
+                "https://example.com/installer1_1234/"
+            ],
+            "is_placeholder": false
+        },
+        "SubApp": {
+            "install_urls": [
+                "https://example.com/installer1_1234/"
+            ],
+            "is_placeholder": false
+        },
+        "WebAppStore": {
+            "install_urls": [
+                "https://example.com/installer2_1234/"
+            ],
+            "is_placeholder": false
+        }
+    },
    "manifest_icons": [ {
       "purpose": "kAny",
       "square_size_px": 256,

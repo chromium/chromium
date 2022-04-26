@@ -32,8 +32,6 @@
 namespace web_app {
 
 using WebAppSources = std::bitset<WebAppManagement::kMaxValue + 1>;
-using WebAppManagementToInstallURLsMap =
-    base::flat_map<WebAppManagement::Type, base::flat_set<GURL>>;
 
 class WebApp {
  public:
@@ -266,17 +264,30 @@ class WebApp {
     return install_source_for_metrics_;
   }
 
-  bool is_placeholder() const { return is_placeholder_; }
-  WebAppManagementToInstallURLsMap management_to_install_urls_map_without_sync()
-      const {
-    return management_to_install_urls_map_without_sync_;
-  }
-
   const absl::optional<int64_t>& app_size_in_bytes() const {
     return app_size_in_bytes_;
   }
   const absl::optional<int64_t>& data_size_in_bytes() const {
     return data_size_in_bytes_;
+  }
+
+  struct ExternalManagementConfig {
+    ExternalManagementConfig();
+    ~ExternalManagementConfig();
+    ExternalManagementConfig(
+        const ExternalManagementConfig& external_management_config);
+    ExternalManagementConfig& operator=(
+        ExternalManagementConfig&& external_management_config);
+
+    base::Value::Dict AsDebugValue() const;
+
+    bool is_placeholder = false;
+    base::flat_set<GURL> install_urls;
+  };
+
+  base::flat_map<WebAppManagement::Type, ExternalManagementConfig>
+  management_to_external_config_map() const {
+    return management_to_external_config_map_;
   }
 
   // A Web App can be installed from multiple sources simultaneously. Installs
@@ -358,12 +369,11 @@ class WebApp {
   void SetPermissionsPolicy(blink::ParsedPermissionsPolicy permissions_policy);
   void SetInstallSourceForMetrics(
       absl::optional<webapps::WebappInstallSource> install_source);
-  void SetIsPlaceholder(bool is_placeholder);
-  void SetManagementToInstallURLsMap(
-      const WebAppManagementToInstallURLsMap
-          management_to_install_urls_map_without_sync);
   void SetAppSizeInBytes(absl::optional<int64_t> app_size_in_bytes);
   void SetDataSizeInBytes(absl::optional<int64_t> data_size_in_bytes);
+  void SetWebAppManagementExternalConfigMap(
+      base::flat_map<WebAppManagement::Type, ExternalManagementConfig>
+          management_to_external_config_map);
 
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
@@ -451,23 +461,14 @@ class WebApp {
   // since this used to be tracked as a pref. It might also be null if the value
   // read from the database is not recognized by this client.
   absl::optional<webapps::WebappInstallSource> install_source_for_metrics_;
-  // The following fields are used during the migration of
-  // ExternallyInstalledWebAppPrefs to the web_app DB.
-  // This shows if the app is a placeholder app or not.
-  bool is_placeholder_ = false;
-  // This mapping of install URLs to a given WebAppManagement source
-  // is used for optimized access to the install source and the install URLs
-  // for a particular web_app.
-  // Currently the install URLs are only stored for all externally installed
-  // apps (policy/default) but not user installed apps or sync apps.
-  // The "Sync" source is still stored, but installed URLs are not added for
-  // that. If printed this looks like: "Sync" : [ "" ].
-  // This will help future developers adding this functionality
-  // have an existing data structure that can be re-used.
-  WebAppManagementToInstallURLsMap management_to_install_urls_map_without_sync_;
 
   absl::optional<int64_t> app_size_in_bytes_;
   absl::optional<int64_t> data_size_in_bytes_;
+
+  // Maps WebAppManagement::Type to config values for externally installed apps,
+  // like is_placeholder and install URLs.
+  base::flat_map<WebAppManagement::Type, ExternalManagementConfig>
+      management_to_external_config_map_;
 
   // New fields must be added to:
   //  - |operator==|
@@ -485,6 +486,11 @@ bool operator==(const WebApp::SyncFallbackData& sync_fallback_data1,
                 const WebApp::SyncFallbackData& sync_fallback_data2);
 bool operator!=(const WebApp::SyncFallbackData& sync_fallback_data1,
                 const WebApp::SyncFallbackData& sync_fallback_data2);
+
+bool operator==(const WebApp::ExternalManagementConfig& management_config1,
+                const WebApp::ExternalManagementConfig& management_config2);
+bool operator!=(const WebApp::ExternalManagementConfig& management_config1,
+                const WebApp::ExternalManagementConfig& management_config2);
 
 }  // namespace web_app
 

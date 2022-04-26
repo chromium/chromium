@@ -511,20 +511,23 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
     app->SetWebAppChromeOsData(std::move(chromeos_data));
   }
 
-  app->SetIsPlaceholder(random.next_bool());
-  WebAppManagementToInstallURLsMap management_to_install_urls_map_without_sync;
+  base::flat_map<WebAppManagement::Type, WebApp::ExternalManagementConfig>
+      management_to_external_config;
   for (WebAppManagement::Type type : management_types) {
+    if (type == WebAppManagement::kSync)
+      continue;
     base::flat_set<GURL> install_urls;
+    WebApp::ExternalManagementConfig config;
     if (random.next_bool())
       install_urls.emplace(base_url.Resolve("installer1_" + seed_str + "/"));
     if (random.next_bool())
       install_urls.emplace(base_url.Resolve("installer2_" + seed_str + "/"));
-    management_to_install_urls_map_without_sync.insert_or_assign(type,
-                                                                 install_urls);
+    config.is_placeholder = random.next_bool();
+    config.install_urls = install_urls;
+    management_to_external_config.insert_or_assign(type, std::move(config));
   }
 
-  app->SetManagementToInstallURLsMap(
-      management_to_install_urls_map_without_sync);
+  app->SetWebAppManagementExternalConfigMap(management_to_external_config);
 
   app->SetAppSizeInBytes(random.next_uint());
   app->SetDataSizeInBytes(random.next_uint());
