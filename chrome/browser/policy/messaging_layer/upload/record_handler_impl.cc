@@ -187,8 +187,6 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
 
   // Assign random UUID as the request id for server side log correlation
   const auto request_id = base::Token::CreateRandom().ToString();
-  LOG(WARNING) << "Processing upload record request with request id: "
-               << request_id;
   request_builder.SetRequestId(request_id);
 
   auto request_result = request_builder.Build();
