@@ -85,38 +85,38 @@ class StatsReporterImpl final : public partition_alloc::StatsReporter {
                         [[maybe_unused]] const PlatformThreadId tid,
                         int64_t start_time_ticks_internal_value,
                         int64_t end_time_ticks_internal_value) override {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
     // TRACE_EVENT_* macros below drop most parameters when tracing is
     // disabled at compile time.
     const char* tracing_id = ScannerIdToTracingString(id);
-#if BUILDFLAG(ENABLE_BASE_TRACING)
     const TimeTicks start_time =
         TimeTicks::FromInternalValue(start_time_ticks_internal_value);
     const TimeTicks end_time =
         TimeTicks::FromInternalValue(end_time_ticks_internal_value);
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
     TRACE_EVENT_BEGIN(kTraceCategory, perfetto::StaticString(tracing_id),
                       perfetto::ThreadTrack::ForThread(tid), start_time);
     TRACE_EVENT_END(kTraceCategory, perfetto::ThreadTrack::ForThread(tid),
                     end_time);
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
   }
 
   void ReportTraceEvent(internal::StatsCollector::MutatorId id,
                         [[maybe_unused]] const PlatformThreadId tid,
                         int64_t start_time_ticks_internal_value,
                         int64_t end_time_ticks_internal_value) override {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
     // TRACE_EVENT_* macros below drop most parameters when tracing is
     // disabled at compile time.
     const char* tracing_id = MutatorIdToTracingString(id);
-#if BUILDFLAG(ENABLE_BASE_TRACING)
     const TimeTicks start_time =
         TimeTicks::FromInternalValue(start_time_ticks_internal_value);
     const TimeTicks end_time =
         TimeTicks::FromInternalValue(end_time_ticks_internal_value);
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
     TRACE_EVENT_BEGIN(kTraceCategory, perfetto::StaticString(tracing_id),
                       perfetto::ThreadTrack::ForThread(tid), start_time);
     TRACE_EVENT_END(kTraceCategory, perfetto::ThreadTrack::ForThread(tid),
                     end_time);
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
   }
 
   void ReportSurvivedQuarantineSize(size_t survived_size) override {
