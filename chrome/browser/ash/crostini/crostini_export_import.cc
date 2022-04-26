@@ -76,7 +76,12 @@ CrostiniExportImport::CrostiniExportImport(Profile* profile)
   manager->AddImportContainerProgressObserver(this);
 }
 
-CrostiniExportImport::~CrostiniExportImport() = default;
+CrostiniExportImport::~CrostiniExportImport() {
+  if (select_folder_dialog_) {
+    /* Lifecycle for SelectFileDialog is responsibility of calling code. */
+    select_folder_dialog_->ListenerDestroyed();
+  }
+}
 
 void CrostiniExportImport::Shutdown() {
   CrostiniManager* manager = CrostiniManager::GetForProfile(profile_);
@@ -166,6 +171,9 @@ void CrostiniExportImport::OpenFileDialog(OperationData* operation_data,
   if (!crostini::CrostiniFeatures::Get()->IsExportImportUIAllowed(profile_)) {
     return;
   }
+  // Early return if the select file dialog is already active.
+  if (select_folder_dialog_)
+    return;
 
   ui::SelectFileDialog::Type file_selector_mode;
   unsigned title = 0;
@@ -200,6 +208,7 @@ void CrostiniExportImport::FileSelected(const base::FilePath& path,
                                         int index,
                                         void* params) {
   Start(static_cast<OperationData*>(params), path, base::DoNothing());
+  select_folder_dialog_.reset();
 }
 
 void CrostiniExportImport::FileSelectionCanceled(void* params) {
@@ -212,6 +221,7 @@ void CrostiniExportImport::FileSelectionCanceled(void* params) {
     status_tracker->SetStatusCancelled();
   }
   operation_data_storage_.erase(operation_data);
+  select_folder_dialog_.reset();
 }
 
 void CrostiniExportImport::ExportContainer(
