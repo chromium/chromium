@@ -1065,12 +1065,9 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   EXPECT_CALL(*network_state_handler_, UpdateBlockedCellularNetworks(true))
       .Times(2);
 
-  // Set 'AllowOnlyPolicyCellularNetworks' policy and another arbitrary cellular
-  // policy.
+  // Set 'AllowOnlyPolicyCellularNetworks' policy.
   SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
             "policy/policy_allow_only_policy_cellular_networks.onc");
-  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
-            "policy/policy_cellular.onc");
   FastForwardProfileRefreshDelay();
   base::RunLoop().RunUntilIdle();
 
@@ -1087,12 +1084,9 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AllowCellularSimLock) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(ash::features::kSimLockPolicy);
 
-  // Set 'AllowCellularSimLock' policy and another arbitrary cellular
-  // policy.
+  // Set 'AllowCellularSimLock' policy.
   SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
             "policy/policy_allow_cellular_sim_lock.onc");
-  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
-            "policy/policy_cellular.onc");
   base::RunLoop().RunUntilIdle();
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
@@ -1151,6 +1145,54 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, GetBlockedHexSSIDs) {
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
   EXPECT_FALSE(managed_handler()->AllowOnlyPolicyNetworksToAutoconnect());
   EXPECT_EQ(blocked, managed_handler()->GetBlockedHexSSIDs());
+}
+
+TEST_F(ManagedNetworkConfigurationHandlerTest, WipeGlobalNetworkConfiguration) {
+  InitializeStandardProfiles();
+
+  // A user policy must be present to apply some global config, e.g. blocked
+  // SSIDs, even though they are actually given in device policy. It does not
+  // really matter which user policy is configured for this test.
+  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
+
+  // Step 1: Apply a device policy which sets all possible entries in
+  // GlobalNetworkConfiguration.
+  EXPECT_CALL(
+      *network_state_handler_,
+      UpdateBlockedWifiNetworks(/*only_managed=*/true, /*available_only=*/true,
+                                std::vector<std::string>({"blocked_ssid"})))
+      .Times(1);
+
+  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+            "policy/policy_exhaustive_global_network_configuration.onc");
+  base::RunLoop().RunUntilIdle();
+
+  testing::Mock::VerifyAndClearExpectations(network_state_handler_.get());
+  EXPECT_TRUE(managed_handler()->AllowOnlyPolicyCellularNetworks());
+  EXPECT_TRUE(managed_handler()->AllowOnlyPolicyNetworksToAutoconnect());
+  EXPECT_TRUE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
+  EXPECT_TRUE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
+  EXPECT_THAT(managed_handler()->GetBlockedHexSSIDs(),
+              testing::ElementsAre("blocked_ssid"));
+  // TODO(b/219568567): Also test that DisableNetworkTypes are propagated to
+  // ProhibitedTechnologiesHandler.
+
+  // Step 2: Now apply a device policy with an empty GlobalNetworkConfiguration.
+  EXPECT_CALL(*network_state_handler_,
+              UpdateBlockedWifiNetworks(
+                  /*only_managed=*/false, /*available_only=*/false,
+                  std::vector<std::string>()))
+      .Times(1);
+  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+            "policy/policy_empty_global_network_configuration.onc");
+  base::RunLoop().RunUntilIdle();
+
+  testing::Mock::VerifyAndClearExpectations(network_state_handler_.get());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyCellularNetworks());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyNetworksToAutoconnect());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnect());
+  EXPECT_FALSE(managed_handler()->AllowOnlyPolicyWiFiToConnectIfAvailable());
+  EXPECT_THAT(managed_handler()->GetBlockedHexSSIDs(), testing::IsEmpty());
 }
 
 // Proxy settings can come from different sources. Proxy enforced by user policy

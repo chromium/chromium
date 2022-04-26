@@ -535,7 +535,7 @@ void ManagedNetworkConfigurationHandlerImpl::SetPolicy(
     policies_by_user_[userhash] = base::WrapUnique(policies);
   }
 
-  policies->global_network_config.MergeDictionary(&global_network_config);
+  policies->global_network_config = global_network_config.Clone();
 
   // Update prohibited technologies.
   if (prohibited_technologies_handler_) {

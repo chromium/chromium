@@ -1,0 +1,13 @@
+{
+  "NetworkConfigurations": [ ],
+  "GlobalNetworkConfiguration": {
+    "AllowOnlyPolicyCellularNetworks": true,
+    "AllowOnlyPolicyNetworksToAutoconnect": true,
+    "AllowOnlyPolicyNetworksToConnect": true,
+    "AllowOnlyPolicyNetworksToConnectIfAvailable": true,
+    "BlockedHexSSIDs": [ "blocked_ssid" ],
+    "DisableNetworkTypes": [ "VPN" ]
+  },
+  "Type": "UnencryptedConfiguration"
+}
+
