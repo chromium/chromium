@@ -1,7 +1,6 @@
 include_rules = [
   "+content/public/common",
   "+net",
-  "+services/network/public",
 
   # The browser and renderer code may not depend on eachother, and can only
   # depend on shared "public" code.
