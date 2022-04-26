@@ -23,6 +23,7 @@
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
+#include "content/browser/attribution_reporting/attribution_parser_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -40,9 +41,6 @@ namespace content {
 
 namespace {
 
-using Context = absl::variant<base::StringPiece, size_t>;
-using ContextPath = std::vector<Context>;
-
 constexpr char kTimestampKey[] = "timestamp";
 
 constexpr char kAggregatableTriggerDataKey[] =
@@ -50,52 +48,11 @@ constexpr char kAggregatableTriggerDataKey[] =
 constexpr char kAggregatableValuesKey[] =
     "Attribution-Reporting-Register-Aggregatable-Values";
 
-class ScopedContext {
- public:
-  ScopedContext(ContextPath& path, Context context) : path_(path) {
-    path_.push_back(context);
-  }
-
-  ~ScopedContext() { path_.pop_back(); }
-
-  ScopedContext(const ScopedContext&) = delete;
-  ScopedContext(ScopedContext&&) = delete;
-
-  ScopedContext& operator=(const ScopedContext&) = delete;
-  ScopedContext& operator=(ScopedContext&&) = delete;
-
- private:
-  ContextPath& path_;
-};
-
-// Writes a newline on destruction.
-class ErrorWriter {
- public:
-  explicit ErrorWriter(std::ostream& stream) : stream_(stream) {}
-
-  ~ErrorWriter() { stream_ << std::endl; }
-
-  ErrorWriter(const ErrorWriter&) = delete;
-  ErrorWriter(ErrorWriter&&) = default;
-
-  ErrorWriter& operator=(const ErrorWriter&) = delete;
-  ErrorWriter& operator=(ErrorWriter&&) = delete;
-
-  std::ostream& operator*() { return stream_; }
-
-  void operator()(base::StringPiece key) { stream_ << "[\"" << key << "\"]"; }
-
-  void operator()(size_t index) { stream_ << '[' << index << ']'; }
-
- private:
-  std::ostream& stream_;
-};
-
 class AttributionSimulatorInputParser {
  public:
   AttributionSimulatorInputParser(base::Time offset_time,
                                   std::ostream& error_stream)
-      : offset_time_(offset_time), error_stream_(error_stream) {}
+      : offset_time_(offset_time), error_manager_(error_stream) {}
 
   ~AttributionSimulatorInputParser() = default;
 
@@ -140,7 +97,7 @@ class AttributionSimulatorInputParser {
                               base::Unretained(this)));
     }
 
-    if (has_error_)
+    if (has_error())
       return absl::nullopt;
 
     return std::move(events_);
@@ -148,30 +105,20 @@ class AttributionSimulatorInputParser {
 
  private:
   const base::Time offset_time_;
-  std::ostream& error_stream_;
+  AttributionParserErrorManager error_manager_;
 
-  ContextPath context_path_;
-  bool has_error_ = false;
   std::vector<AttributionSimulationEventAndValue> events_;
 
-  ScopedContext PushContext(Context context) {
-    return ScopedContext(context_path_, context);
+  [[nodiscard]] AttributionParserErrorManager::ScopedContext PushContext(
+      AttributionParserErrorManager::Context context) {
+    return error_manager_.PushContext(context);
   }
 
-  ErrorWriter Error() {
-    has_error_ = true;
-
-    if (context_path_.empty())
-      error_stream_ << "input root";
-
-    ErrorWriter writer(error_stream_);
-    for (Context context : context_path_) {
-      absl::visit(writer, context);
-    }
-
-    error_stream_ << ": ";
-    return writer;
+  AttributionParserErrorManager::ErrorWriter Error() {
+    return error_manager_.Error();
   }
+
+  bool has_error() const { return error_manager_.has_error(); }
 
   template <typename T>
   void ParseList(T&& values,
@@ -219,7 +166,7 @@ class AttributionSimulatorInputParser {
     if (!canonical_cookie)
       *Error() << "invalid cookie";
 
-    if (has_error_)
+    if (has_error())
       return;
 
     events_.emplace_back(
@@ -267,7 +214,7 @@ class AttributionSimulatorInputParser {
     AttributionAggregatableSource aggregatable_source =
         ParseAggregatableSource(source_dict);
 
-    if (has_error_)
+    if (has_error())
       return;
 
     events_.emplace_back(
@@ -302,7 +249,7 @@ class AttributionSimulatorInputParser {
     AttributionAggregatableTrigger aggregatable_trigger =
         ParseAggregatableTrigger(dict);
 
-    if (has_error_)
+    if (has_error())
       return;
 
     events_.emplace_back(
@@ -351,7 +298,7 @@ class AttributionSimulatorInputParser {
               ParseFilterData(dict, "not_filters",
                               &AttributionFilterData::FromTriggerFilterValues);
 
-          if (has_error_)
+          if (has_error())
             return;
 
           event_triggers.emplace_back(trigger_data, priority, dedup_key,
@@ -601,7 +548,7 @@ class AttributionSimulatorInputParser {
           std::string id = ParseAggregatableKeyId(dict);
           absl::uint128 key = ParseAggregatableKey(dict);
 
-          if (has_error_)
+          if (has_error())
             return;
 
           keys.emplace_back(std::move(id), key);
@@ -678,7 +625,7 @@ class AttributionSimulatorInputParser {
                   trigger_dict, "not_filters",
                   &AttributionFilterData::FromTriggerFilterValues);
 
-              if (has_error_)
+              if (has_error())
                 return;
 
               aggregatable_triggers.push_back(
