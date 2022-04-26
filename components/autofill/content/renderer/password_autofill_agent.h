@@ -598,6 +598,10 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // Contains renderer id of the form of the last updated input element.
   FormRendererId last_updated_form_renderer_id_;
 
+  // Contains render id of the field where a form submission should be
+  // triggered.
+  FieldRendererId field_renderer_id_to_submit_;
+
   // Current state of Touch To Fill. This is reset during
   // CleanupOnDocumentShutdown.
   TouchToFillState touch_to_fill_state_ = TouchToFillState::kShouldShow;
