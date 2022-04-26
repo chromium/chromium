@@ -70,6 +70,7 @@
 /cld_2/src
 /cld_3/src
 /colorama/src
+/cpuinfo/src
 /crc32c/src
 /cros
 /cros_system_api
@@ -100,6 +101,7 @@
 /fuchsia-sdk/images
 /fuchsia-sdk/images-internal
 /fuchsia-sdk/sdk
+/fxdiv/src
 /gemmlowp/src
 /gles2_conform
 /glfw/src
@@ -205,6 +207,7 @@
 /proguard/lib/
 /protobuf/java/lite/target/
 /psyco_win32
+/pthreadpool/src
 /pthreads-win32
 /py_trace_event/src
 /pyelftools
@@ -279,4 +282,5 @@
 /wix
 /wuffs/src
 /xdg-utils
+/xnnpack/src
 /xulrunner-sdk

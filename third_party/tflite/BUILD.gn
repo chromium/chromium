@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//third_party/protobuf/proto_library.gni")
+import("//third_party/tflite/features.gni")
 
 proto_library("tflite-config-proto") {
   proto_in_dir = "src"
@@ -47,11 +48,16 @@ config("tflite_flags") {
   ]
 
   defines = [
-    "TFLITE_WITHOUT_XNNPACK",
     "FARMHASH_NO_CXX_STRING",
     "NEON2SSE_DISABLE_PERFORMANCE_WARNING",
     "TF_LITE_STRIP_ERROR_STRINGS",
   ]
+
+  if (build_tflite_with_xnnpack) {
+    defines += [ "TFLITE_BUILD_WITH_XNNPACK_DELEGATE" ]
+  } else {
+    defines += [ "TFLITE_WITHOUT_XNNPACK" ]
+  }
 
   if (is_win) {
     cflags += [
@@ -477,6 +483,15 @@ static_library("tflite") {
     "src/tensorflow/lite/version.h",
   ]
 
+  if (build_tflite_with_xnnpack) {
+    sources += [
+      "src/tensorflow/lite/delegates/xnnpack/quantization_util.cc",
+      "src/tensorflow/lite/delegates/xnnpack/quantization_util.h",
+      "src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.cc",
+      "src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.h",
+    ]
+  }
+
   if (is_win) {
     sources += [ "src/tensorflow/lite/mmap_allocation_disabled.cc" ]
   } else {
@@ -508,6 +523,15 @@ static_library("tflite") {
     "//third_party/neon_2_sse",
     "//third_party/ruy",
   ]
+
+  if (build_tflite_with_xnnpack) {
+    deps += [
+      ":tflite_kernel_internals",
+      "//third_party/cpuinfo",
+      "//third_party/pthreadpool",
+      "//third_party/xnnpack",
+    ]
+  }
 
   public_deps = [
     ":tflite-config-proto",
