@@ -670,6 +670,16 @@ absl::optional<gfx::PointF> RootFrameViewport::GetSnapPositionAndSetTarget(
   return LayoutViewport().GetSnapPositionAndSetTarget(strategy);
 }
 
+gfx::PointF RootFrameViewport::ScrollOffsetToPosition(
+    const ScrollOffset& offset) const {
+  return LayoutViewport().ScrollOffsetToPosition(offset);
+}
+
+ScrollOffset RootFrameViewport::ScrollPositionToOffset(
+    const gfx::PointF& position) const {
+  return LayoutViewport().ScrollPositionToOffset(position);
+}
+
 void RootFrameViewport::Trace(Visitor* visitor) const {
   visitor->Trace(visual_viewport_);
   visitor->Trace(layout_viewport_);

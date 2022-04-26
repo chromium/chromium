@@ -79,6 +79,9 @@ class CORE_EXPORT RootFrameViewport final
   gfx::Rect ScrollCornerRect() const override;
   void UpdateScrollOffset(const ScrollOffset&,
                           mojom::blink::ScrollType) override;
+  gfx::PointF ScrollOffsetToPosition(const ScrollOffset& offset) const override;
+  ScrollOffset ScrollPositionToOffset(
+      const gfx::PointF& position) const override;
   gfx::Vector2d ScrollOffsetInt() const override;
   ScrollOffset GetScrollOffset() const override;
   gfx::Vector2d MinimumScrollOffsetInt() const override;

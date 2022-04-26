@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -821,4 +822,41 @@ TEST_F(SnapCoordinatorTest, AddingSnapAreaDoesNotRemoveCurrentSnapTarget) {
   data = *data_ptr;
   EXPECT_EQ(expected_snap_targets, data.GetTargetSnapAreaElementIds());
 }
+
+TEST_F(SnapCoordinatorTest, NegativeOverflowWithExpandedViewport) {
+  SetHTML(R"HTML(
+    <style>
+      html { writing-mode: vertical-rl; scroll-snap-type: y mandatory; }
+      body { margin: 0; }
+      div { scroll-snap-align: end start; width: 2000px; }
+    </style>
+    <div>SNAP</div>
+  )HTML");
+
+  // There are multiple ways for layout size to differ from LocalFrameView size.
+  // The most common is on mobile with minimum page scale < 1 (see
+  // WebViewImpl::UpdateMainFrameLayoutSize). Another way, observed in
+  // crbug.com/1272302, is print mode, where the initial containing block
+  // is directly resized by LocalFrameView::ForceLayoutForPagination, but the
+  // LocalFrameView retains its non-printing size.
+
+  LocalFrameView* frame_view = GetDocument().View();
+  frame_view->SetLayoutSizeFixedToFrameSize(false);
+  frame_view->SetLayoutSize({800, 800});
+  frame_view->Resize(1200, 1200);
+  frame_view->GetPage()->GetVisualViewport().SetSize({1000, 1000});
+  UpdateAllLifecyclePhasesForTest();
+
+  // In this configuration, the layout viewport's maximum scroll _offset_ is
+  // negative (see crbug.com/1318976), but the maximum scroll _position_, which
+  // incorporates the scroll origin, should be non-negative.  SnapCoordinator
+  // relies on RootFrameViewport to translate offsets to positions correctly.
+
+  EXPECT_EQ(frame_view->LayoutViewport()->MaximumScrollOffsetInt(),
+            gfx::Vector2d(-400, 0));
+  EXPECT_EQ(
+      GetSnapContainerData(*GetDocument().GetLayoutView())->max_position(),
+      gfx::PointF(1000, 200));
+}
+
 }  // namespace blink
