@@ -172,7 +172,7 @@ TEST_F(SanitizedImageSourceTest, WrongUrl) {
 // Verifies that the image source sends a Google Photos auth token with its data
 // request if and only if asked to by URL specification.
 TEST_F(SanitizedImageSourceTest, GooglePhotosImage) {
-  constexpr char kImageUrl[] = "https://foo.com/img.png";
+  constexpr char kImageUrl[] = "https://lh3.googleusercontent.com/img.png";
   base::MockCallback<content::URLDataSource::GotDataCallback> callback;
   signin::IdentityTestEnvironment identity_test_env;
   identity_test_env.MakePrimaryAccountAvailable("test@gmail.com",
@@ -194,8 +194,7 @@ TEST_F(SanitizedImageSourceTest, GooglePhotosImage) {
   url::RawCanonOutputT<char> encoded_url;
   url::EncodeURIComponent(kImageUrl, std::size(kImageUrl), &encoded_url);
   EXPECT_GT(encoded_url.length(), 0);
-  auto encoded_url_str =
-      base::StringPiece(encoded_url.data(), encoded_url.length());
+  base::StringPiece encoded_url_str(encoded_url.data(), encoded_url.length());
 
   // Verify that param-formatted requests can be sent with auth tokens.
   sanitized_image_source_->StartDataRequest(
@@ -244,4 +243,23 @@ TEST_F(SanitizedImageSourceTest, GooglePhotosImage) {
       GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
   EXPECT_FALSE(identity_test_env.IsAccessTokenRequestPending());
   ASSERT_EQ(4, test_url_loader_factory_.NumPending());
+
+  // Verify that no auth token is sent for URLs not served by Google Photos.
+  constexpr char kBadImageUrl[] = "https://foo.com/img.png";
+  url::RawCanonOutputT<char> encoded_bad_url;
+  url::EncodeURIComponent(kBadImageUrl, std::size(kBadImageUrl),
+                          &encoded_bad_url);
+  EXPECT_GT(encoded_bad_url.length(), 0);
+  base::StringPiece encoded_bad_url_str(encoded_bad_url.data(),
+                                        encoded_bad_url.length());
+
+  sanitized_image_source_->StartDataRequest(
+      GURL(base::StrCat({chrome::kChromeUIImageURL, "?url=",
+                         encoded_bad_url_str, "&isGooglePhotos=true"})),
+      content::WebContents::Getter(), callback.Get());
+  EXPECT_FALSE(identity_test_env.IsAccessTokenRequestPending());
+  ASSERT_EQ(5, test_url_loader_factory_.NumPending());
+  EXPECT_FALSE(
+      test_url_loader_factory_.GetPendingRequest(4)->request.headers.HasHeader(
+          net::HttpRequestHeaders::kAuthorization));
 }

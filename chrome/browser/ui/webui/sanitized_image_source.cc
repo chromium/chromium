@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -58,6 +59,20 @@ std::map<std::string, std::string> ParseParams(
                        base::StringPiece16(output.data(), output.length()))});
   }
   return params;
+}
+
+bool IsGooglePhotosUrl(const GURL& url) {
+  static const char* const kGooglePhotosHostSuffixes[] = {
+      ".ggpht.com",
+      ".google.com",
+      ".googleusercontent.com",
+  };
+
+  for (const char* const suffix : kGooglePhotosHostSuffixes) {
+    if (base::EndsWith(url.host_piece(), suffix))
+      return true;
+  }
+  return false;
 }
 
 }  // namespace
@@ -109,8 +124,10 @@ void SanitizedImageSource::StartDataRequest(
     image_url = GURL(url_it->second);
 
     auto google_photos_it = params.find("isGooglePhotos");
-    if (google_photos_it != params.end() && google_photos_it->second == "true")
+    if (google_photos_it != params.end() &&
+        google_photos_it->second == "true" && IsGooglePhotosUrl(image_url)) {
       send_auth_token = true;
+    }
   }
 
   // Download the image body.
