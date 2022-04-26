@@ -4224,8 +4224,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.UniversalAccess.OriginUrlMismatchInHistoryUtil"
-    enum="BooleanAllowed" expires_after="2022-08-07">
-  <owner>alexmitra@chromium.org</owner>
+    enum="BooleanAllowed" expires_after="2022-09-01">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -4237,8 +4236,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.UniversalAccess.OriginUrlMismatchInRenderFrame"
-    enum="BooleanAllowed" expires_after="2022-06-04">
-  <owner>alexmitra@chromium.org</owner>
+    enum="BooleanAllowed" expires_after="2022-09-01">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
