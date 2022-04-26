@@ -209,7 +209,7 @@ bool InitializeCrashpadImpl(bool initial_client,
     g_database =
         crashpad::CrashReportDatabase::Initialize(database_path).release();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_IOS)
     CrashReporterClient* crash_reporter_client = GetCrashReporterClient();
     SetUploadConsent(crash_reporter_client->GetCollectStatsConsent());
 #endif
