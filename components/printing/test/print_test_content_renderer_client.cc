@@ -14,9 +14,11 @@ namespace printing {
 
 namespace {
 
+bool g_generate_tagged_pdfs = false;
+
 class PrintRenderFrameHelperDelegate : public PrintRenderFrameHelper::Delegate {
  public:
-  ~PrintRenderFrameHelperDelegate() override {}
+  ~PrintRenderFrameHelperDelegate() override = default;
 
   blink::WebElement GetPdfElement(blink::WebLocalFrame* frame) override {
     return blink::WebElement();
@@ -28,15 +30,19 @@ class PrintRenderFrameHelperDelegate : public PrintRenderFrameHelper::Delegate {
     return false;
 #endif
   }
+  bool ShouldGenerateTaggedPDF() override { return g_generate_tagged_pdfs; }
   bool OverridePrint(blink::WebLocalFrame* frame) override { return false; }
 };
 
 }  // namespace
 
-PrintTestContentRendererClient::PrintTestContentRendererClient() {
-}
+PrintTestContentRendererClient::PrintTestContentRendererClient() = default;
 
-PrintTestContentRendererClient::~PrintTestContentRendererClient() {
+PrintTestContentRendererClient::~PrintTestContentRendererClient() = default;
+
+// static
+void PrintTestContentRendererClient::SetGenerateTaggedPDFs(bool generate) {
+  g_generate_tagged_pdfs = generate;
 }
 
 void PrintTestContentRendererClient::RenderFrameCreated(

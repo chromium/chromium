@@ -153,6 +153,11 @@ class FakePrintPreviewUI : public mojom::PrintPreviewUI {
   mojo::PendingAssociatedRemote<mojom::PrintPreviewUI> BindReceiver() {
     return receiver_.BindNewEndpointAndPassDedicatedRemote();
   }
+  void ResetPreviewStatus() {
+    // Make sure there is no active request.
+    DCHECK(!quit_closure_);
+    preview_status_ = PreviewStatus::kNone;
+  }
   // Waits until the preview request is failed, canceled, invalid, or done.
   void WaitUntilPreviewUpdate() {
     // If |preview_status_| is updated, it doesn't need to wait.
@@ -427,6 +432,13 @@ class TestPrintManagerHost
     std::move(callback).Run(preview_ui_->ShouldCancelRequest());
   }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
+  void SetAccessibilityTree(
+      int32_t cookie,
+      const ui::AXTreeUpdate& accessibility_tree) override {
+    ++accessibility_tree_set_count_;
+  }
+#endif
 
   bool IsSetupScriptedPrintPreview() {
     return is_setup_scripted_print_preview_;
@@ -457,6 +469,12 @@ class TestPrintManagerHost
   }
 #endif
 
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
+  int accessibility_tree_set_count() const {
+    return accessibility_tree_set_count_;
+  }
+#endif
+
  private:
   void Init(content::RenderFrame* frame) {
     frame->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
@@ -484,7 +502,22 @@ class TestPrintManagerHost
   base::OnceClosure quit_closure_;
   // True to simulate user clicking print. False to cancel.
   bool print_dialog_user_response_ = true;
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
+  int accessibility_tree_set_count_ = 0;
+#endif
   mojo::AssociatedReceiver<mojom::PrintManagerHost> receiver_{this};
+};
+
+class ScopedGenerateTaggedPDF {
+ public:
+  ScopedGenerateTaggedPDF() {
+    PrintTestContentRendererClient::SetGenerateTaggedPDFs(true);
+  }
+  ScopedGenerateTaggedPDF(const ScopedGenerateTaggedPDF&) = delete;
+  ScopedGenerateTaggedPDF& operator=(const ScopedGenerateTaggedPDF&) = delete;
+  ~ScopedGenerateTaggedPDF() {
+    PrintTestContentRendererClient::SetGenerateTaggedPDFs(false);
+  }
 };
 
 }  // namespace
@@ -969,14 +1002,18 @@ class PrintRenderFrameHelperPreviewTest
     print_render_frame_helper->InitiatePrintPreview(
         mojo::NullAssociatedRemote(), false);
     print_render_frame_helper->PrintPreview(print_settings_.Clone());
-    WaitForPreviewMessages();
+    preview_ui()->WaitUntilPreviewUpdate();
+  }
+
+  void OnPrintPreviewRerender() {
+    preview_ui()->ResetPreviewStatus();
+    GetPrintRenderFrameHelper()->PrintPreview(print_settings_.Clone());
+    preview_ui()->WaitUntilPreviewUpdate();
   }
 
   void OnClosePrintPreviewDialog() {
     GetPrintRenderFrameHelper()->OnPrintPreviewDialogClosed();
   }
-
-  void WaitForPreviewMessages() { preview_ui()->WaitUntilPreviewUpdate(); }
 
   void VerifyPreviewRequest(bool expect_request) {
     EXPECT_EQ(expect_request, print_manager()->IsSetupScriptedPrintPreview());
@@ -1762,6 +1799,77 @@ TEST_F(PrintRenderFrameHelperPreviewTest, WindowPrintBeforePrintAfterPrint) {
 
   OnClosePrintPreviewDialog();
   ExpectOneBeforeOneAfterPrintEvent();
+}
+
+TEST_F(PrintRenderFrameHelperPreviewTest,
+       PrintPreviewRerenderWithNoTaggedPDFGeneration) {
+  LoadHTML(kHelloWorldHTML);
+
+  OnPrintPreview();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  VerifyDidPreviewPage(true, 0);
+  VerifyPreviewPageCount(1);
+  VerifyDefaultPageLayout(540, 720, 36, 36, 36, 36, false);
+  VerifyPrintPreviewCancelled(false);
+  VerifyPrintPreviewFailed(false);
+  VerifyPrintPreviewGenerated(true);
+  VerifyPagesPrinted(false);
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
+  EXPECT_EQ(0, print_manager()->accessibility_tree_set_count());
+#endif
+
+  print_settings().SetIntKey(kSettingScaleFactor, 200);
+  OnPrintPreviewRerender();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  VerifyDidPreviewPage(true, 0);
+  VerifyPreviewPageCount(1);
+  VerifyDefaultPageLayout(540, 720, 36, 36, 36, 36, false);
+  VerifyPrintPreviewCancelled(false);
+  VerifyPrintPreviewFailed(false);
+  VerifyPrintPreviewGenerated(true);
+  VerifyPagesPrinted(false);
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
+  EXPECT_EQ(0, print_manager()->accessibility_tree_set_count());
+#endif
+}
+
+TEST_F(PrintRenderFrameHelperPreviewTest,
+       PrintPreviewRerenderGeneratesTaggedPDF) {
+  ScopedGenerateTaggedPDF generate_tagged_pdf;
+
+  LoadHTML(kHelloWorldHTML);
+
+  OnPrintPreview();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  VerifyDidPreviewPage(true, 0);
+  VerifyPreviewPageCount(1);
+  VerifyDefaultPageLayout(540, 720, 36, 36, 36, 36, false);
+  VerifyPrintPreviewCancelled(false);
+  VerifyPrintPreviewFailed(false);
+  VerifyPrintPreviewGenerated(true);
+  VerifyPagesPrinted(false);
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
+  EXPECT_EQ(1, print_manager()->accessibility_tree_set_count());
+#endif
+
+  print_settings().SetIntKey(kSettingScaleFactor, 200);
+  OnPrintPreviewRerender();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  VerifyDidPreviewPage(true, 0);
+  VerifyPreviewPageCount(1);
+  VerifyDefaultPageLayout(540, 720, 36, 36, 36, 36, false);
+  VerifyPrintPreviewCancelled(false);
+  VerifyPrintPreviewFailed(false);
+  VerifyPrintPreviewGenerated(true);
+  VerifyPagesPrinted(false);
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
+  // TODO(crbug.com/1142851): Should be 2.
+  EXPECT_EQ(1, print_manager()->accessibility_tree_set_count());
+#endif
 }
 
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)

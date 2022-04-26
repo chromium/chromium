@@ -14,6 +14,9 @@ class PrintTestContentRendererClient : public content::ContentRendererClient {
   PrintTestContentRendererClient();
   ~PrintTestContentRendererClient() override;
 
+  static void SetGenerateTaggedPDFs(bool generate);
+
+  // content::ContentRendererClient:
   void RenderFrameCreated(content::RenderFrame* render_frame) override;
 };
 
