@@ -8,7 +8,6 @@
 
 goog.require('AutomationTreeWalker');
 goog.require('AutomationUtil');
-goog.require('BridgeHelper');
 goog.require('ChromeVoxState');
 goog.require('EventSourceType');
 goog.require('KeyCode');

@@ -3,13 +3,11 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Provides an interface for non-background renderer contexts
- * (options, panel, etc.) to communicate with the background.
+ * @fileoverview Provides an interface for non-background contexts (options,
+ * panel, etc.) to communicate with the background.
  */
 
 goog.provide('BackgroundBridge');
-
-goog.require('BridgeHelper');
 
 BackgroundBridge.BrailleBackground = {
   /**
@@ -18,13 +16,13 @@ BackgroundBridge.BrailleBackground = {
    * @return {!Promise<?string>}
    */
   async backTranslate(cells) {
-    return BridgeHelper.sendMessage(
+    return BackgroundBridge.sendMessage_(
         'BrailleBackground', 'backTranslate', cells);
   },
 
   /** @param {string} brailleTable The table for this translator to use. */
   async refreshBrailleTable(brailleTable) {
-    return BridgeHelper.sendMessage(
+    return BackgroundBridge.sendMessage_(
         'BrailleBackground', 'refreshBrailleTable', brailleTable);
   },
 };
@@ -36,7 +34,7 @@ BackgroundBridge.ChromeVoxPrefs = {
    *     localStorage.
    */
   async getPrefs() {
-    return BridgeHelper.sendMessage('ChromeVoxPrefs', 'getPrefs');
+    return BackgroundBridge.sendMessage_('ChromeVoxPrefs', 'getPrefs');
   },
 
   /**
@@ -45,7 +43,7 @@ BackgroundBridge.ChromeVoxPrefs = {
    * @param {boolean} value The new value of the pref.
    */
   async setLoggingPrefs(key, value) {
-    return BridgeHelper.sendMessage(
+    return BackgroundBridge.sendMessage_(
         'ChromeVoxPrefs', 'setLoggingPrefs', {key, value});
   },
 
@@ -55,28 +53,68 @@ BackgroundBridge.ChromeVoxPrefs = {
    * @param {Object|string|boolean} value The new value of the pref.
    */
   async setPref(key, value) {
-    return BridgeHelper.sendMessage('ChromeVoxPrefs', 'setPref', {key, value});
+    return BackgroundBridge.sendMessage_(
+        'ChromeVoxPrefs', 'setPref', {key, value});
   },
 };
 
-BackgroundBridge.PanelBackground = {
-  async createNewISearch() {
-    return BridgeHelper.sendMessage('PanelBackground', 'createNewISearch');
-  },
+// Helper functions:
 
-  /**
-   * Performs a search.
-   * @param {string} searchStr
-   * @param {constants.Dir} dir
-   * @param {boolean=} opt_nextObject
-   */
-  async incrementalSearch(searchStr, dir, opt_nextObject) {
-    return BridgeHelper.sendMessage(
-        'PanelBackground', 'incrementalSearch',
-        {searchStr, dir, opt_nextObject});
-  },
+/** @private {!Object<string, Object<string, Function>>} */
+BackgroundBridge.handlers = {};
 
-  async setRangeToISearchNode() {
-    return BridgeHelper.sendMessage('PanelBackground', 'setRangeToISearchNode');
-  },
+/**
+ * @param {string} target The name of the class that is registering the handler.
+ * @param {string} action The name of the intended function or, if not a direct
+ *     method of the class, a pseudo-function name.
+ * @param {Function} handler A function that performs the indicated action. It
+ *     may optionally take a single parameter, and may have an optional return
+ *         value that will be forwarded to the requestor.
+ *     If the method takes multiple parameters, they are passed as named members
+ *         of an object literal.
+ */
+BackgroundBridge.registerHandler = (target, action, handler) => {
+  if (!BackgroundBridge.handlers[target]) {
+    BackgroundBridge.handlers[target] = {};
+  }
+  BackgroundBridge.handlers[target][action] = handler;
 };
+
+BackgroundBridge.castTo = (type) => {
+  return (obj) => {
+    if (obj === null || obj === undefined) {
+      return obj;
+    }
+    Object.setPrototypeOf(obj, type.prototype);
+    return obj;
+  };
+};
+
+
+/**
+ * @param {string} target The name of the class that will handle this request.
+ * @param {string} action The name of the intended function or, if not a direct
+ *     method of the class, a pseudo-function name.
+ * @param {*=} value An optional single parameter to include with the message.
+ *     If the method takes multiple parameters, they are passed as named members
+ *     of an object literal.
+ *
+ * @return {!Promise} A promise, that resolves when the handler function has
+ *     finished and contains any value returned by the handler.
+ * @private
+ */
+BackgroundBridge.sendMessage_ = (target, action, value) => {
+  return new Promise(
+      resolve => chrome.runtime.sendMessage({target, action, value}, resolve));
+};
+
+chrome.runtime.onMessage.addListener((message, sender, respond) => {
+  const targetHandlers = BackgroundBridge.handlers[message.target];
+  if (!targetHandlers || !targetHandlers[message.action]) {
+    return;
+  }
+
+  const handler = targetHandlers[message.action];
+  Promise.resolve(handler(message.value)).then(respond);
+  return true; /** Wait for asynchronous response. */
+});
