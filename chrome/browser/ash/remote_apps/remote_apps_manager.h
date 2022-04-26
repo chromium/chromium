@@ -127,7 +127,7 @@ class RemoteAppsManager
   void Shutdown() override;
 
   // remote_apps::mojom::RemoteAppsFactory:
-  void Create(
+  void Get(
       const std::string& source_id,
       mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteApps>
           pending_remote_apps,

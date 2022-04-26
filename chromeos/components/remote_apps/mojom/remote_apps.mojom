@@ -6,6 +6,22 @@ module chromeos.remote_apps.mojom;
 
 import "url/mojom/url.mojom";
 
+union AddFolderResult {
+  // The ID of the added folder. Implies success.
+  string folder_id;
+
+  // Implies failure.
+  string error;
+};
+
+union AddAppResult {
+  // The ID of the added app. Implies success.
+  string app_id;
+
+  // Implies failure.
+  string error;
+};
+
 // Interface for communication between an extension and the Remote Apps
 // Manager.
 interface RemoteApps {
@@ -14,14 +30,15 @@ interface RemoteApps {
   //
   // Input parameters:
   // - |name|: the name of the folder.
-  //
-  // Output parameters:
-  // - |folder_id|: the ID of the newly added folder.
-  // - |error|: A string describing the error if any.
   // - |add_to_front|: true if the folder should be added to the front of the
   //                   app list.
+  //
+  // Output parameters:
+  // - |result|: A union with |folder_id| representing the ID of the added
+  //             folder on success, and |error| representing the error message
+  //             on failure.
   AddFolder(string name,
-            bool add_to_front) => (string? folder_id, string? error);
+            bool add_to_front) => (AddFolderResult result);
 
   // Adds a Remote Apps app to the launcher.
   //
@@ -36,13 +53,14 @@ interface RemoteApps {
   //                   list. Has no effect if the app has a parent folder.
   //
   // Output parameters:
-  // - |app_id|: the ID of the newly added app.
-  // - |error|: A string describing the error if any.
+  // - |result|: A union with |app_id| representing the ID of the added app on
+  //             success, and |error| representing the error message on
+  //             failure.
   AddApp(string source_id,
          string name,
          string folder_id,
          url.mojom.Url icon_url,
-         bool add_to_front) => (string? app_id, string? error);
+         bool add_to_front) => (AddAppResult result);
 
   // Deletes a Remote App added by |AddApp()|.
   //
@@ -56,9 +74,9 @@ interface RemoteApps {
 
 // Factory for creating an instance of RemoteApps.
 interface RemoteAppsFactory {
-  // Creates an instance of RemoteApps. The JS bindings manages |source_id|
-  // and passes the extension ID.
-  Create(string source_id,
+  // Binds to the Profile's RemoteApps implementation. The JS bindings manages
+  // |source_id| and passes the extension ID.
+  Get(string source_id,
          pending_receiver<RemoteApps> remote_apps,
          pending_remote<RemoteAppLaunchObserver> observer);
 };

@@ -279,7 +279,7 @@ void RemoteAppsManager::BindInterface(
 
 void RemoteAppsManager::Shutdown() {}
 
-void RemoteAppsManager::Create(
+void RemoteAppsManager::Get(
     const std::string& source_id,
     mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteApps>
         pending_remote_apps,

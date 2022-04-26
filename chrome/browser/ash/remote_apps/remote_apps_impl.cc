@@ -85,7 +85,8 @@ void RemoteAppsImpl::AddFolder(const std::string& name,
                                bool add_to_front,
                                AddFolderCallback callback) {
   const std::string& folder_id = manager_->AddFolder(name, add_to_front);
-  std::move(callback).Run(folder_id, absl::nullopt);
+  std::move(callback).Run(
+      chromeos::remote_apps::mojom::AddFolderResult::NewFolderId(folder_id));
 }
 
 void RemoteAppsImpl::AddApp(const std::string& source_id,
@@ -139,13 +140,17 @@ void RemoteAppsImpl::OnAppAdded(AddAppCallback callback,
                                 RemoteAppsError error) {
   switch (error) {
     case RemoteAppsError::kNotReady:
-      std::move(callback).Run(absl::nullopt, kErrNotReady);
+      std::move(callback).Run(
+          chromeos::remote_apps::mojom::AddAppResult::NewError(kErrNotReady));
       return;
     case RemoteAppsError::kFolderIdDoesNotExist:
-      std::move(callback).Run(absl::nullopt, kErrFolderIdDoesNotExist);
+      std::move(callback).Run(
+          chromeos::remote_apps::mojom::AddAppResult::NewError(
+              kErrFolderIdDoesNotExist));
       return;
     case RemoteAppsError::kNone:
-      std::move(callback).Run(app_id, absl::nullopt);
+      std::move(callback).Run(
+          chromeos::remote_apps::mojom::AddAppResult::NewAppId(app_id));
       return;
     case RemoteAppsError::kAppIdDoesNotExist:
       // Impossible to reach - only occurs for |DeleteApp()|.

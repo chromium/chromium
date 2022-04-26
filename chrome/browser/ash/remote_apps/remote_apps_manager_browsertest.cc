@@ -540,10 +540,10 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, OnAppLaunched) {
       observer1{&mockObserver1};
   mojo::Receiver<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>
       observer2{&mockObserver2};
-  manager_->Create(kExtensionId1, remote1.BindNewPipeAndPassReceiver(),
-                   observer1.BindNewPipeAndPassRemote());
-  manager_->Create(kExtensionId2, remote2.BindNewPipeAndPassReceiver(),
-                   observer2.BindNewPipeAndPassRemote());
+  manager_->Get(kExtensionId1, remote1.BindNewPipeAndPassReceiver(),
+                observer1.BindNewPipeAndPassRemote());
+  manager_->Get(kExtensionId2, remote2.BindNewPipeAndPassReceiver(),
+                observer2.BindNewPipeAndPassRemote());
 
   // App has id kId1, added by kExtensionId1.
   AddAppAndWaitForIconChange(kExtensionId1, kId1, "name", std::string(),
