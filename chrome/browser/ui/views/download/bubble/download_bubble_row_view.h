@@ -61,6 +61,10 @@ class DownloadBubbleRowView : public HoverButton,
   // views::ViewTargeterDelegate:
   views::View* TargetForRect(views::View* root, const gfx::Rect& rect) override;
 
+  DownloadUIModel* model() { return model_.get(); }
+
+  DownloadUIModel::BubbleUIInfo& ui_info() { return ui_info_; }
+
  protected:
   // Overrides ui::LayerDelegate:
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
