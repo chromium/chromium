@@ -63383,6 +63383,7 @@ Called by update_use_counter_css.py.-->
   <int value="3" label="Same-origin subframe vibrate, with user gesture"/>
   <int value="4" label="Cross-origin subframe vibrate, no user gesture"/>
   <int value="5" label="Cross-origin subframe vibrate, with user gesture"/>
+  <int value="6" label="In a fenced frame tree"/>
 </enum>
 
 <enum name="NCNGetActiveNetworkInfoResult">

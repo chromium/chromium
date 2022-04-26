@@ -72,14 +72,17 @@ enum class NavigatorVibrationType {
   kSameOriginSubFrameWithUserGesture = 3,
   kCrossOriginSubFrameNoUserGesture = 4,
   kCrossOriginSubFrameWithUserGesture = 5,
-  kMaxValue = kCrossOriginSubFrameWithUserGesture,
+  kInFencedFrameTree = 6,
+  kMaxValue = kInFencedFrameTree,
 };
 
 void CollectHistogramMetrics(LocalDOMWindow* window) {
   NavigatorVibrationType type;
   bool user_gesture = window->GetFrame()->HasStickyUserActivation();
   UseCounter::Count(window, WebFeature::kNavigatorVibrate);
-  if (!window->GetFrame()->IsMainFrame()) {
+  if (window->GetFrame()->IsInFencedFrameTree()) {
+    type = NavigatorVibrationType::kInFencedFrameTree;
+  } else if (!window->GetFrame()->IsMainFrame()) {
     UseCounter::Count(window, WebFeature::kNavigatorVibrateSubFrame);
     if (window->GetFrame()->IsCrossOriginToMainFrame()) {
       if (user_gesture)
