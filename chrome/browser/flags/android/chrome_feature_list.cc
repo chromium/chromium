@@ -245,6 +245,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kPageAnnotationsService,
     &kBookmarksImprovedSaveFlow,
     &kBookmarksRefresh,
+    &kBackGestureRefactorAndroid,
     &kProbabilisticCryptidRenderer,
     &kReachedCodeProfiler,
     &kImproveReaderModePrompt,
@@ -679,6 +680,9 @@ const base::Feature kBookmarksImprovedSaveFlow{
 
 const base::Feature kBookmarksRefresh{"BookmarksRefresh",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kBackGestureRefactorAndroid{
+    "BackGestureRefactorAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kProbabilisticCryptidRenderer{
     "ProbabilisticCryptidRenderer", base::FEATURE_DISABLED_BY_DEFAULT};

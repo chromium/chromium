@@ -2977,6 +2977,10 @@ const char kAppMenuMobileSiteOptionDescription[] =
     "When enabled, app menu should show 'Mobile site' when showing desktop "
     "site, instead of showing 'Desktop Site' with checkbox";
 
+const char kBackGestureRefactorAndroidName[] = "Back Gesture Refactor";
+const char kBackGestureRefactorAndroidDescription[] =
+    "Enable Back Gesture Refactor.";
+
 const char kCCTIncognitoName[] = "Chrome Custom Tabs Incognito mode";
 const char kCCTIncognitoDescription[] =
     "Enables incognito mode for Chrome Custom Tabs, on Android.";

@@ -4275,6 +4275,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"theme-refactor-android", flag_descriptions::kThemeRefactorAndroidName,
      flag_descriptions::kThemeRefactorAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kThemeRefactorAndroid)},
+    {"back-gesture-refactor-android",
+     flag_descriptions::kBackGestureRefactorAndroidName,
+     flag_descriptions::kBackGestureRefactorAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kBackGestureRefactorAndroid)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"disallow-doc-written-script-loads",
      flag_descriptions::kDisallowDocWrittenScriptsUiName,

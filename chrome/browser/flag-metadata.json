@@ -565,6 +565,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "back-gesture-refactor-android",
+    "owners": ["lazzzis@google.com", "jinsukkim", "twellington"],
+    "expiry_milestone": 109
+  },
+  {
     "name": "biometric-reauth-password-filling",
     "owners": [ "ioanap" ],
     "expiry_milestone": 104

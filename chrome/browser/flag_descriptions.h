@@ -1678,6 +1678,9 @@ extern const char kAutofillUseMobileLabelDisambiguationDescription[];
 extern const char kAppMenuMobileSiteOptionName[];
 extern const char kAppMenuMobileSiteOptionDescription[];
 
+extern const char kBackGestureRefactorAndroidName[];
+extern const char kBackGestureRefactorAndroidDescription[];
+
 extern const char kCCTIncognitoName[];
 extern const char kCCTIncognitoDescription[];
 

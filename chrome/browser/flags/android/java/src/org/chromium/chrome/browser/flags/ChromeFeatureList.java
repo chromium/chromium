@@ -233,6 +233,7 @@ public abstract class ChromeFeatureList {
     public static final String APP_LAUNCHPAD = "AppLaunchpad";
     public static final String APP_MENU_MOBILE_SITE_OPTION = "AppMenuMobileSiteOption";
     public static final String BACKGROUND_THREAD_POOL = "BackgroundThreadPool";
+    public static final String BACK_GESTURE_REFACTOR = "BackGestureRefactorAndroid";
     public static final String BIOMETRIC_TOUCH_TO_FILL = "BiometricTouchToFill";
     public static final String BULK_TAB_RESTORE = "BulkTabRestore";
     public static final String CAPTIVE_PORTAL_CERTIFICATE_LIST = "CaptivePortalCertificateList";
