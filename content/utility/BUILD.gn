@@ -97,6 +97,11 @@ source_set("utility") {
       "//media/gpu/sandbox",
       "//third_party/angle:angle_gpu_info_util",
     ]
+
+    if (use_vaapi || use_v4l2_codec) {
+      # To allow creating media::StableVideoDecoderFactoryService objects.
+      deps += [ "//media/mojo/services" ]
+    }
   }
 
   if (is_chromeos_ash && is_chrome_branded) {
