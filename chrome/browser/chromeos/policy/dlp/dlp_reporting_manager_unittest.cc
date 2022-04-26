@@ -250,4 +250,16 @@ TEST_F(DlpReportingManagerTest, Timestamp) {
   EXPECT_LE(base::Time::UnixEpoch() + time_since_epoch, upper_bound);
 }
 
+TEST_F(DlpReportingManagerTest, ReportEventError) {
+  auto report_queue =
+      std::unique_ptr<reporting::ReportQueue, base::OnTaskRunnerDeleter>(
+          nullptr, base::OnTaskRunnerDeleter(
+                       base::ThreadPool::CreateSequencedTaskRunner({})));
+  manager_.SetReportQueueForTest(std::move(report_queue));
+
+  manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
+                       DlpRulesManager::Level::kBlock);
+  EXPECT_EQ(events_.size(), 0u);
+}
+
 }  // namespace policy
