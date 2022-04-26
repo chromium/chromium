@@ -6712,6 +6712,21 @@
             ]
         }
     ],
+    "SharedHighlightingAmp": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SharedHighlightingAmp"
+                    ]
+                }
+            ]
+        }
+    ],
     "SharedHighlightingIOS": [
         {
             "platforms": [
