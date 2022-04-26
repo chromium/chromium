@@ -1,0 +1,117 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
+
+#include <utility>
+
+#include "base/bind.h"
+#include "base/logging.h"
+#include "chromeos/ash/components/dbus/rgbkbd/fake_rgbkbd_client.h"
+#include "dbus/bus.h"
+#include "dbus/message.h"
+#include "dbus/object_proxy.h"
+#include "third_party/cros_system_api/dbus/rgbkbd/dbus-constants.h"
+
+namespace ash {
+
+namespace {
+
+RgbkbdClient* g_instance = nullptr;
+
+class RgbkbdClientImpl : public RgbkbdClient {
+ public:
+  void Init(dbus::Bus* bus);
+  RgbkbdClientImpl() = default;
+  RgbkbdClientImpl(const RgbkbdClientImpl&) = delete;
+  RgbkbdClientImpl& operator=(const RgbkbdClientImpl&) = delete;
+  ~RgbkbdClientImpl() override = default;
+
+  void GetRgbKeyboardCapabilities(
+      GetRgbKeyboardCapabilitiesCallback callback) override {
+    VLOG(1) << "rgbkbd: GetRgbKeyboardCapabilities called";
+    dbus::MethodCall method_call(rgbkbd::kRgbkbdServiceName,
+                                 rgbkbd::kGetRgbKeyboardCapabilities);
+    dbus::MessageWriter writer(&method_call);
+    CHECK(rgbkbd_proxy_);
+    rgbkbd_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&RgbkbdClientImpl::GetRgbKeyboardCapabilitiesCallback,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+ private:
+  void GetRgbKeyboardCapabilitiesCallback(
+      GetRgbKeyboardCapabilitiesCallback callback,
+      dbus::Response* response) {
+    if (!response) {
+      VLOG(1)
+          << "rgbkbd: No Dbus response received for GetRgbKeyboardCapabilities";
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+    dbus::MessageReader reader(response);
+    uint32_t keyboard_capabilities;
+
+    if (!reader.PopUint32(&keyboard_capabilities)) {
+      LOG(ERROR)
+          << "rgbkbd: Error reading GetRgbKeyboardCapabilities response: "
+          << response->ToString();
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+    VLOG(1) << "rgbkbd: Value for keyboard capabilities is: "
+            << keyboard_capabilities;
+    std::move(callback).Run(
+        rgbkbd::RgbKeyboardCapabilities(keyboard_capabilities));
+  }
+
+  dbus::ObjectProxy* rgbkbd_proxy_ = nullptr;
+
+  // Note: This should remain the last member so it'll be destroyed and
+  // invalidate its weak pointers before any other members are destroyed.
+  base::WeakPtrFactory<RgbkbdClientImpl> weak_ptr_factory_{this};
+};
+
+}  // namespace
+
+void RgbkbdClientImpl::Init(dbus::Bus* bus) {
+  CHECK(bus);
+  rgbkbd_proxy_ = bus->GetObjectProxy(
+      rgbkbd::kRgbkbdServiceName, dbus::ObjectPath(rgbkbd::kRgbkbdServicePath));
+}
+
+RgbkbdClient::RgbkbdClient() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+RgbkbdClient::~RgbkbdClient() {
+  CHECK_EQ(this, g_instance);
+  g_instance = nullptr;
+}
+
+// static
+void RgbkbdClient::Initialize(dbus::Bus* bus) {
+  CHECK(bus);
+  (new RgbkbdClientImpl())->Init(bus);
+}
+
+// static
+void RgbkbdClient::InitializeFake() {
+  new FakeRgbkbdClient();
+}
+
+// static
+void RgbkbdClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
+}
+
+// static
+RgbkbdClient* RgbkbdClient::Get() {
+  return g_instance;
+}
+
+}  // namespace ash

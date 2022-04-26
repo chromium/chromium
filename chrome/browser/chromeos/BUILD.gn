@@ -251,6 +251,7 @@ source_set("chromeos") {
     "//chromeos/ash/components/dbus/patchpanel",
     "//chromeos/ash/components/dbus/patchpanel:patchpanel_proto",
     "//chromeos/ash/components/dbus/pciguard",
+    "//chromeos/ash/components/dbus/rgbkbd",
     "//chromeos/ash/components/dbus/rmad",
     "//chromeos/ash/components/dbus/services",
     "//chromeos/ash/components/dbus/spaced",

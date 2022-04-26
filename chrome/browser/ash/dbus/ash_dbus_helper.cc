@@ -25,6 +25,7 @@
 #include "chromeos/ash/components/dbus/os_install/os_install_client.h"
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
+#include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
 #include "chromeos/ash/components/dbus/rmad/rmad_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
@@ -177,6 +178,9 @@ void InitializeFeatureListDependentDBus() {
   if (ash::features::IsShimlessRMAFlowEnabled()) {
     InitializeDBusClient<RmadClient>(bus);
   }
+  if (ash::features::IsRgbKeyboardEnabled()) {
+    InitializeDBusClient<RgbkbdClient>(bus);
+  }
   InitializeDBusClient<chromeos::WilcoDtcSupportdClient>(bus);
 
   if (ash::features::IsSnoopingProtectionEnabled() ||
@@ -215,6 +219,9 @@ void ShutdownDBus() {
   chromeos::SessionManagerClient::Shutdown();
   chromeos::SeneschalClient::Shutdown();
   chromeos::ResourcedClient::Shutdown();
+  if (ash::features::IsRgbKeyboardEnabled()) {
+    RgbkbdClient::Shutdown();
+  }
   if (ash::features::IsShimlessRMAFlowEnabled()) {
     RmadClient::Shutdown();
   }
