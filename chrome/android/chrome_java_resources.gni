@@ -160,6 +160,7 @@ chrome_java_resources = [
   "java/res/drawable-mdpi/tabswitcher_border_frame_inner_shadow.9.png",
   "java/res/drawable-mdpi/tabswitcher_border_frame_shadow.9.png",
   "java/res/drawable-mdpi/verify_checkmark.png",
+  "java/res/drawable-night/virtual_card_enrollment_illustration.xml",
   "java/res/drawable-nodpi/bookmark_widget_preview.png",
   "java/res/drawable-nodpi/widget_preview.png",
   "java/res/drawable-sw600dp/window_background.xml",
