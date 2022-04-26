@@ -1210,15 +1210,9 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                         const SkPixmap* pixmap,
                         bool pixmap_has_flip_y);
 
-  void TexImage2DBase(GLenum target,
-                      GLint level,
-                      GLint internalformat,
-                      GLsizei width,
-                      GLsizei height,
-                      GLint border,
-                      GLenum format,
-                      GLenum type,
-                      const void* pixels);
+  // Call the underlying Tex[Sub]Image{2D|3D} function. Always replace
+  // `params.internalformat` with the result from ConvertTexInternalFormat.
+  void TexImageBase(const TexImageParams& params, const void* pixels);
 
   // Upload `image` to the specified texture. If `allow_copy_via_gpu` is
   // true and `image` is an AcceleratedBitmapImage, then the copy may be

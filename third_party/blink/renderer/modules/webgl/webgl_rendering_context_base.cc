@@ -5125,46 +5125,43 @@ void WebGLRenderingContextBase::TexImageSkPixmap(TexImageParams params,
 
   // Upload using GL.
   ScopedUnpackParametersResetRestore temporary_reset_unpack(this);
+  TexImageBase(params, gl_data);
+}
+
+void WebGLRenderingContextBase::TexImageBase(const TexImageParams& params,
+                                             const void* pixels) {
+  // All calling functions check isContextLost, so a duplicate check is not
+  // needed here.
+  DCHECK(params.width && params.height);
   switch (params.function_id) {
     case kTexImage2D:
-      TexImage2DBase(params.target, params.level, params.internalformat,
-                     *params.width, *params.height, params.border,
-                     params.format, params.type, gl_data);
+      ContextGL()->TexImage2D(
+          params.target, params.level,
+          ConvertTexInternalFormat(params.internalformat, params.type),
+          *params.width, *params.height, params.border, params.format,
+          params.type, pixels);
       break;
     case kTexSubImage2D:
       ContextGL()->TexSubImage2D(params.target, params.level, params.xoffset,
                                  params.yoffset, *params.width, *params.height,
-                                 params.format, params.type, gl_data);
+                                 params.format, params.type, pixels);
       break;
     case kTexImage3D:
-      ContextGL()->TexImage3D(params.target, params.level,
-                              params.internalformat, *params.width,
-                              *params.height, *params.depth, params.border,
-                              params.format, params.type, gl_data);
+      DCHECK(params.depth);
+      ContextGL()->TexImage3D(
+          params.target, params.level,
+          ConvertTexInternalFormat(params.internalformat, params.type),
+          *params.width, *params.height, *params.depth, params.border,
+          params.format, params.type, pixels);
       break;
     case kTexSubImage3D:
+      DCHECK(params.depth);
       ContextGL()->TexSubImage3D(params.target, params.level, params.xoffset,
                                  params.yoffset, params.zoffset, *params.width,
                                  *params.height, *params.depth, params.format,
-                                 params.type, gl_data);
+                                 params.type, pixels);
       break;
   }
-}
-
-void WebGLRenderingContextBase::TexImage2DBase(GLenum target,
-                                               GLint level,
-                                               GLint internalformat,
-                                               GLsizei width,
-                                               GLsizei height,
-                                               GLint border,
-                                               GLenum format,
-                                               GLenum type,
-                                               const void* pixels) {
-  // All calling functions check isContextLost, so a duplicate check is not
-  // needed here.
-  ContextGL()->TexImage2D(target, level,
-                          ConvertTexInternalFormat(internalformat, type), width,
-                          height, border, format, type, pixels);
 }
 
 void WebGLRenderingContextBase::TexImageStaticBitmapImage(
@@ -5431,33 +5428,15 @@ void WebGLRenderingContextBase::TexImageHelperDOMArrayBufferView(
     data = temp_data.data();
     change_unpack_params = true;
   }
-  if (params.function_id == kTexImage3D) {
-    ContextGL()->TexImage3D(
-        params.target, params.level,
-        ConvertTexInternalFormat(params.internalformat, params.type),
-        *params.width, *params.height, *params.depth, params.border,
-        params.format, params.type, data);
-    return;
-  }
-  if (params.function_id == kTexSubImage3D) {
-    ContextGL()->TexSubImage3D(params.target, params.level, params.xoffset,
-                               params.yoffset, params.zoffset, *params.width,
-                               *params.height, *params.depth, params.format,
-                               params.type, data);
+  if (params.function_id == kTexImage3D ||
+      params.function_id == kTexSubImage3D) {
+    TexImageBase(params, data);
     return;
   }
 
   ScopedUnpackParametersResetRestore temporary_reset_unpack(
       this, change_unpack_params);
-  if (params.function_id == kTexImage2D) {
-    TexImage2DBase(params.target, params.level, params.internalformat,
-                   *params.width, *params.height, params.border, params.format,
-                   params.type, data);
-  } else if (params.function_id == kTexSubImage2D) {
-    ContextGL()->TexSubImage2D(params.target, params.level, params.xoffset,
-                               params.yoffset, *params.width, *params.height,
-                               params.format, params.type, data);
-  }
+  TexImageBase(params, data);
 }
 
 void WebGLRenderingContextBase::texImage2D(
@@ -5643,13 +5622,13 @@ void WebGLRenderingContextBase::TexImageViaGPU(
     }
     source_size = source_canvas_webgl_context->GetDrawingBuffer()->Size();
   }
-  const int width = params.width.value_or(source_size.width());
-  const int height = params.height.value_or(source_size.height());
+  if (!params.width)
+    params.width = source_size.width();
+  if (!params.height)
+    params.height = source_size.height();
 
-  if (params.function_id == kTexImage2D) {
-    TexImage2DBase(params.target, params.level, params.internalformat, width,
-                   height, params.border, params.format, params.type, nullptr);
-  }
+  if (params.function_id == kTexImage2D)
+    TexImageBase(params, nullptr);
 
   ScopedTexture2DRestorer restorer(this);
 
@@ -5674,14 +5653,16 @@ void WebGLRenderingContextBase::TexImageViaGPU(
                                GL_CLAMP_TO_EDGE);
     ContextGL()->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
                                GL_CLAMP_TO_EDGE);
-    ContextGL()->TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
-                            GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    ContextGL()->TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, *params.width,
+                            *params.height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                            nullptr);
   }
 
   {
     // The GPU-GPU copy path uses the Y-up coordinate system.
     gfx::Rect source_sub_rectangle(params.unpack_skip_pixels,
-                                   params.unpack_skip_rows, width, height);
+                                   params.unpack_skip_rows, *params.width,
+                                   *params.height);
     bool should_adjust_source_sub_rectangle = !params.unpack_flip_y;
     if (is_origin_top_left_ && source_canvas_webgl_context)
       should_adjust_source_sub_rectangle = !should_adjust_source_sub_rectangle;
@@ -5723,15 +5704,15 @@ void WebGLRenderingContextBase::TexImageViaGPU(
     ContextGL()->BindTexture(texture->GetTarget(), texture->Object());
     if (params.function_id == kTexImage2D) {
       ContextGL()->CopyTexSubImage2D(params.target, params.level, 0, 0, 0, 0,
-                                     width, height);
+                                     *params.width, *params.height);
     } else if (params.function_id == kTexSubImage2D) {
       ContextGL()->CopyTexSubImage2D(params.target, params.level,
                                      params.xoffset, params.yoffset, 0, 0,
-                                     width, height);
+                                     *params.width, *params.height);
     } else if (params.function_id == kTexSubImage3D) {
-      ContextGL()->CopyTexSubImage3D(params.target, params.level,
-                                     params.xoffset, params.yoffset,
-                                     params.zoffset, 0, 0, width, height);
+      ContextGL()->CopyTexSubImage3D(
+          params.target, params.level, params.xoffset, params.yoffset,
+          params.zoffset, 0, 0, *params.width, *params.height);
     }
     ContextGL()->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                                       GL_TEXTURE_2D, 0, 0);
@@ -5899,9 +5880,6 @@ void WebGLRenderingContextBase::TexImageHelperVideoFrame(
   // directly instead of making a copy through the VideoFrame.
   if (auto sk_img = local_handle->sk_image()) {
     DCHECK(!sk_img->isTextureBacked());
-    const GLint adjusted_internalformat =
-        ConvertTexInternalFormat(params.internalformat, params.type);
-
     // For WebGL last-uploaded-frame-metadata API. https://crbug.com/639174
     auto metadata = WebGLVideoTexture::CreateVideoFrameUploadMetadata(
         local_handle->frame().get(), texture->GetLastUploadedVideoFrameId());
@@ -5911,7 +5889,6 @@ void WebGLRenderingContextBase::TexImageHelperVideoFrame(
     }
     auto image = UnacceleratedStaticBitmapImage::Create(std::move(sk_img));
     // Note: kHtmlDomVideo means alpha won't be unmultiplied.
-    params.internalformat = adjusted_internalformat;
     TexImageStaticBitmapImage(params, image.get(), /*image_has_flip_y=*/false,
                               /*allow_copy_via_gpu=*/false);
     texture->UpdateLastUploadedFrame(metadata);
@@ -6111,7 +6088,6 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   if (!image)
     return;
 
-  params.internalformat = adjusted_internalformat;
   TexImageStaticBitmapImage(params, image.get(), /*image_has_flip_y=*/false,
                             can_upload_via_gpu);
 
