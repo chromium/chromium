@@ -57,7 +57,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.feed.FeedReliabilityLoggingSignals;
+import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
@@ -144,7 +144,7 @@ public class NewTabPageTest {
     @Mock
     VoiceRecognitionHandler mVoiceRecognitionHandler;
     @Mock
-    FeedReliabilityLoggingSignals mFeedReliabilityLoggingSignals;
+    FeedReliabilityLogger mFeedReliabilityLogger;
 
     private static final String TEST_PAGE = "/chrome/test/data/android/navigate/simple.html";
     private static final String TEST_FEED =
@@ -193,6 +193,7 @@ public class NewTabPageTest {
         mFakebox = mNtp.getView().findViewById(R.id.search_box);
         mMvTilesLayout = mNtp.getView().findViewById(R.id.mv_tiles_layout);
         Assert.assertEquals(mSiteSuggestions.size(), mMvTilesLayout.getChildCount());
+        mNtp.getCoordinatorForTesting().setReliabilityLoggerForTesting(mFeedReliabilityLogger);
     }
 
     @After
@@ -599,11 +600,9 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testSettingOmniboxStubAddsUrlFocusChangeListener() throws IOException {
-        mNtp.setFeedReliabilityLoggingSignalsForTesting(mFeedReliabilityLoggingSignals);
-
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mNtp.setOmniboxStub(mOmniboxStub);
-            verify(mOmniboxStub).addUrlFocusChangeListener(eq(mFeedReliabilityLoggingSignals));
+            verify(mOmniboxStub).addUrlFocusChangeListener(eq(mFeedReliabilityLogger));
         });
     }
 
@@ -611,12 +610,10 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testFeedReliabilityLoggingFocusOmnibox() throws IOException {
-        mNtp.setFeedReliabilityLoggingSignalsForTesting(mFeedReliabilityLoggingSignals);
-
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mNtp.getNewTabPageManagerForTesting().focusSearchBox(
                     /*beginVoiceSearch=*/false, /*pastedText=*/"");
-            verify(mFeedReliabilityLoggingSignals).onOmniboxFocused();
+            verify(mFeedReliabilityLogger).onOmniboxFocused();
         });
     }
 
@@ -624,12 +621,10 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testFeedReliabilityLoggingVoiceSearch() throws IOException {
-        mNtp.setFeedReliabilityLoggingSignalsForTesting(mFeedReliabilityLoggingSignals);
-
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mNtp.getNewTabPageManagerForTesting().focusSearchBox(
                     /*beginVoiceSearch=*/true, /*pastedText=*/"");
-            verify(mFeedReliabilityLoggingSignals).onVoiceSearch();
+            verify(mFeedReliabilityLogger).onVoiceSearch();
         });
     }
 

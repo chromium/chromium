@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -96,7 +97,6 @@ public class FeedSurfaceMediator
                         ViewVisibility.VISIBLE);
             }
             if (!mSettingUpStreams) {
-                maybeLogLaunchFinished(DiscoverLaunchResult.SWITCHED_FEED_TABS);
                 logSwitchedFeeds(newStream);
                 bindStream(newStream);
             }
@@ -522,9 +522,12 @@ public class FeedSurfaceMediator
             mRestoreScrollState = getScrollStateForAutoScrollToTop();
         }
 
+        FeedReliabilityLogger reliabilityLogger = mCoordinator.getReliabilityLogger();
         mCurrentStream.bind(mCoordinator.getRecyclerView(), mCoordinator.getContentManager(),
                 mRestoreScrollState, mCoordinator.getSurfaceScope(),
-                mCoordinator.getHybridListRenderer(), mCoordinator.getLaunchReliabilityLogger(),
+                mCoordinator.getHybridListRenderer(),
+                reliabilityLogger != null ? reliabilityLogger.getLaunchLogger()
+                                          : new FeedLaunchReliabilityLogger() {},
                 mHeaderCount);
         mRestoreScrollState = null;
         mCoordinator.getHybridListRenderer().onSurfaceOpened();
@@ -558,7 +561,11 @@ public class FeedSurfaceMediator
 
         // This is the catch-all feed launch end event to ensure a complete flow is logged
         // even if we don't know a more specific reason for the stream unbinding.
-        maybeLogLaunchFinished(DiscoverLaunchResult.FRAGMENT_STOPPED);
+        FeedReliabilityLogger reliabilityLogger = mCoordinator.getReliabilityLogger();
+        if (reliabilityLogger != null) {
+            reliabilityLogger.logLaunchFinishedIfInProgress(
+                    DiscoverLaunchResult.FRAGMENT_STOPPED, /*userMightComeBack=*/false);
+        }
     }
 
     void onSurfaceOpened() {
@@ -1106,12 +1113,6 @@ public class FeedSurfaceMediator
         }
     }
 
-    private void maybeLogLaunchFinished(DiscoverLaunchResult result) {
-        FeedLaunchReliabilityLogger logger = mCoordinator.getLaunchReliabilityLogger();
-        if (!logger.isLaunchInProgress()) return;
-        logger.logLaunchFinished(System.nanoTime(), result.getNumber());
-    }
-
     private @StreamType int getStreamType(Stream stream) {
         switch (stream.getStreamKind()) {
             case StreamKind.FOR_YOU:
@@ -1124,8 +1125,15 @@ public class FeedSurfaceMediator
     }
 
     private void logSwitchedFeeds(Stream switchedToStream) {
-        mCoordinator.getLaunchReliabilityLogger().logSwitchedFeeds(
-                getStreamType(switchedToStream), System.nanoTime());
+        // Log the end of an ongoing launch and the beginning of a new one.
+        FeedReliabilityLogger reliabilityLogger = mCoordinator.getReliabilityLogger();
+        if (reliabilityLogger == null) {
+            return;
+        }
+        reliabilityLogger.logLaunchFinishedIfInProgress(
+                DiscoverLaunchResult.SWITCHED_FEED_TABS, /*userMightComeBack=*/false);
+        reliabilityLogger.getLaunchLogger().logSwitchedFeeds(
+                getStreamType(switchedToStream), SystemClock.elapsedRealtimeNanos());
     }
 
     private boolean isSuggestionsVisible() {

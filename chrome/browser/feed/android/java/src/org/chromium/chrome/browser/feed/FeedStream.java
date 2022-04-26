@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.feed;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.Activity;
+import android.os.SystemClock;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -245,8 +246,8 @@ public class FeedStream implements Stream {
             if (disposition != WindowOpenDisposition.NEW_BACKGROUND_TAB
                     && mLaunchReliabilityLogger != null
                     && mLaunchReliabilityLogger.isLaunchInProgress()) {
-                mLaunchReliabilityLogger.logLaunchFinished(
-                        System.nanoTime(), DiscoverLaunchResult.CARD_TAPPED.getNumber());
+                mLaunchReliabilityLogger.logLaunchFinished(SystemClock.elapsedRealtimeNanos(),
+                        DiscoverLaunchResult.CARD_TAPPED.getNumber());
             }
             // This postTask is necessary so that other click-handlers have a chance
             // to run before we begin navigating. On start surface, navigation immediately
@@ -906,8 +907,6 @@ public class FeedStream implements Stream {
             }
         }
         updateContentsInPlace(newContentList);
-
-        // TODO(iwells): Look into alternatives to View.post() that specifically wait for rendering.
         mRecyclerView.post(mReliabilityLoggingBridge::onStreamUpdateFinished);
 
         // If all of the cards fit on the screen, load more content. The view

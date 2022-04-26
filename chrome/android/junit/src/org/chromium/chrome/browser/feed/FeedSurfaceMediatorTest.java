@@ -8,9 +8,10 @@ import static junit.framework.Assert.assertEquals;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.anyLong;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,6 +52,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
+import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.StreamType;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
@@ -109,6 +111,8 @@ public class FeedSurfaceMediatorTest {
     private FeedSurfaceLifecycleManager mFeedSurfaceLifecycleManager;
     @Mock
     private FeedOptionsCoordinator mOptionsCoordinator;
+    @Mock
+    private FeedReliabilityLogger mReliabilityLogger;
 
     private Activity mActivity;
     private FeedSurfaceMediator mFeedSurfaceMediator;
@@ -132,8 +136,8 @@ public class FeedSurfaceMediatorTest {
                 .thenReturn(mFollowingStream);
         when(mFeedSurfaceCoordinator.createFeedStream(eq(StreamKind.FOR_YOU)))
                 .thenReturn(mForYouStream);
-        when(mFeedSurfaceCoordinator.getLaunchReliabilityLogger())
-                .thenReturn(mLaunchReliabilityLogger);
+        when(mFeedSurfaceCoordinator.getReliabilityLogger()).thenReturn(mReliabilityLogger);
+        when(mReliabilityLogger.getLaunchLogger()).thenReturn(mLaunchReliabilityLogger);
         when(mFeedSurfaceCoordinator.getHybridListRenderer()).thenReturn(mHybridListRenderer);
         when(mFeedSurfaceCoordinator.getSurfaceLifecycleManager())
                 .thenReturn(mFeedSurfaceLifecycleManager);
@@ -280,9 +284,9 @@ public class FeedSurfaceMediatorTest {
 
         when(mLaunchReliabilityLogger.isLaunchInProgress()).thenReturn(true);
         mFeedSurfaceMediator.onSurfaceClosed();
-        verify(mLaunchReliabilityLogger, times(1))
-                .logLaunchFinished(
-                        anyLong(), eq(DiscoverLaunchResult.FRAGMENT_STOPPED.getNumber()));
+        verify(mReliabilityLogger, times(1))
+                .logLaunchFinishedIfInProgress(
+                        eq(DiscoverLaunchResult.FRAGMENT_STOPPED), eq(false));
     }
 
     @Test
@@ -295,7 +299,9 @@ public class FeedSurfaceMediatorTest {
 
         when(mLaunchReliabilityLogger.isLaunchInProgress()).thenReturn(false);
         mFeedSurfaceMediator.onSurfaceClosed();
-        verify(mLaunchReliabilityLogger, never()).logLaunchFinished(anyLong(), anyInt());
+        verify(mReliabilityLogger, times(1))
+                .logLaunchFinishedIfInProgress(
+                        eq(DiscoverLaunchResult.FRAGMENT_STOPPED), eq(false));
     }
 
     @Test
@@ -646,6 +652,30 @@ public class FeedSurfaceMediatorTest {
         // {@link SectionHeaderProperties.OPTIONS_VIEW_VISIBILITY_KEY}.
         verify(mOptionsCoordinator, times(3)).toggleVisibility();
         assertEquals(false, forYou.get(SectionHeaderProperties.OPTIONS_INDICATOR_IS_OPEN_KEY));
+    }
+
+    @Test
+    public void testOnHeaderSelected_logSwitchedFeeds() {
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+
+        PropertyModel sectionHeaderModel = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        mFeedSurfaceMediator =
+                createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, sectionHeaderModel);
+        mFeedSurfaceMediator.updateContent();
+        reset(mReliabilityLogger);
+        when(mReliabilityLogger.getLaunchLogger()).thenReturn(mLaunchReliabilityLogger);
+        when(mLaunchReliabilityLogger.isLaunchInProgress()).thenReturn(true);
+
+        OnSectionHeaderSelectedListener listener =
+                mFeedSurfaceMediator.getOrCreateSectionHeaderListenerForTesting();
+        listener.onSectionHeaderSelected(0);
+
+        verify(mReliabilityLogger, times(1))
+                .logLaunchFinishedIfInProgress(
+                        eq(DiscoverLaunchResult.SWITCHED_FEED_TABS), eq(false));
+        verify(mLaunchReliabilityLogger, times(1))
+                .logSwitchedFeeds(eq(StreamType.FOR_YOU), anyLong());
     }
 
     private FeedSurfaceMediator createMediator() {

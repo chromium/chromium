@@ -33,11 +33,9 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.feed.FeedLaunchReliabilityLoggingState;
 import org.chromium.chrome.browser.feed.ScrollableContainerDelegate;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
-import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.SurfaceType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -76,17 +74,16 @@ public class ExploreSurfaceViewBinderTest {
         // (works well in debug build).
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPropertyModel = new PropertyModel(StartSurfaceProperties.ALL_KEYS);
-            mExploreSurfaceCoordinatorFactory = new ExploreSurfaceCoordinatorFactory(
-                    mActivityTestRule.getActivity(),
-                    mActivityTestRule.getActivity().getCompositorViewHolderForTesting(),
-                    mPropertyModel, mBottomSheetController, new ObservableSupplierImpl<>(),
-                    mScrollableContainerDelegate,
-                    mActivityTestRule.getActivity().getSnackbarManager(),
-                    mActivityTestRule.getActivity().getShareDelegateSupplier(),
-                    mActivityTestRule.getActivity().getWindowAndroid(),
-                    mActivityTestRule.getActivity().getTabModelSelector(), () -> {
-                        return null;
-                    }, new FeedLaunchReliabilityLoggingState(SurfaceType.START_SURFACE, 0L), null);
+            mExploreSurfaceCoordinatorFactory =
+                    new ExploreSurfaceCoordinatorFactory(mActivityTestRule.getActivity(),
+                            mActivityTestRule.getActivity().getCompositorViewHolderForTesting(),
+                            mPropertyModel, mBottomSheetController, new ObservableSupplierImpl<>(),
+                            mScrollableContainerDelegate,
+                            mActivityTestRule.getActivity().getSnackbarManager(),
+                            mActivityTestRule.getActivity().getShareDelegateSupplier(),
+                            mActivityTestRule.getActivity().getWindowAndroid(),
+                            mActivityTestRule.getActivity().getTabModelSelector(),
+                            () -> { return null; }, 0L, null);
             mExploreSurfaceCoordinator = mExploreSurfaceCoordinatorFactory.create(
                     false, /* isPlaceholderShown= */ false, NewTabPageLaunchOrigin.UNKNOWN);
             mFeedSurfaceView = mExploreSurfaceCoordinator.getView();

@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.feed.FeedLaunchReliabilityLoggingState;
 import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
 import org.chromium.chrome.browser.feed.ScrollableContainerDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
@@ -38,7 +37,7 @@ class ExploreSurfaceCoordinatorFactory {
     private final BottomSheetController mBottomSheetController;
     private final ScrollableContainerDelegate mScrollableContainerDelegate;
     private final Supplier<Toolbar> mToolbarSupplier;
-    private final FeedLaunchReliabilityLoggingState mFeedLaunchReliabilityLoggingState;
+    private final long mEmbeddingSurfaceConstructedTimeNs;
     @Nullable
     private final FeedSwipeRefreshLayout mSwipeRefreshLayout;
     @NonNull
@@ -57,7 +56,7 @@ class ExploreSurfaceCoordinatorFactory {
      * @param windowAndroid The current {@link WindowAndroid}.
      * @param tabModelSelector The current {@link TabModelSelector}.
      * @param toolbarSupplier Supplies the {@link Toolbar}.
-     * @param feedLaunchReliabilityLoggingState Holds the state for feed surface creation.
+     * @param embeddingSurfaceConstructedTimeNs Timestamp taken when the caller was constructed.
      * @param swipeRefreshLayout The layout to support pull-to-refresg.
      */
     ExploreSurfaceCoordinatorFactory(@NonNull Activity activity, @NonNull ViewGroup parentView,
@@ -68,8 +67,7 @@ class ExploreSurfaceCoordinatorFactory {
             @NonNull SnackbarManager snackbarManager,
             @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
             @NonNull WindowAndroid windowAndroid, @NonNull TabModelSelector tabModelSelector,
-            @NonNull Supplier<Toolbar> toolbarSupplier,
-            FeedLaunchReliabilityLoggingState feedLaunchReliabilityLoggingState,
+            @NonNull Supplier<Toolbar> toolbarSupplier, long embeddingSurfaceConstructedTimeNs,
             @Nullable FeedSwipeRefreshLayout swipeRefreshLayout) {
         mActivity = activity;
         mParentView = parentView;
@@ -81,7 +79,7 @@ class ExploreSurfaceCoordinatorFactory {
         mBottomSheetController = bottomSheetController;
         mScrollableContainerDelegate = scrollableContainerDelegate;
         mToolbarSupplier = toolbarSupplier;
-        mFeedLaunchReliabilityLoggingState = feedLaunchReliabilityLoggingState;
+        mEmbeddingSurfaceConstructedTimeNs = embeddingSurfaceConstructedTimeNs;
         mSwipeRefreshLayout = swipeRefreshLayout;
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 containerPropertyModel, parentView, ExploreSurfaceViewBinder::bind);
@@ -99,7 +97,7 @@ class ExploreSurfaceCoordinatorFactory {
 
         return new ExploreSurfaceCoordinator(profile, mActivity, isInNightMode, isPlaceholderShown,
                 mBottomSheetController, mScrollableContainerDelegate, launchOrigin,
-                mToolbarSupplier, mFeedLaunchReliabilityLoggingState, mSwipeRefreshLayout,
+                mToolbarSupplier, mEmbeddingSurfaceConstructedTimeNs, mSwipeRefreshLayout,
                 mParentView, mParentTabSupplier, mSnackbarManager, mShareDelegateSupplier,
                 mWindowAndroid);
     }

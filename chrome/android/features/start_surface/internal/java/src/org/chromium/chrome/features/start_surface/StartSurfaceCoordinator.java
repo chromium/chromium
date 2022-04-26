@@ -5,6 +5,7 @@
 package org.chromium.chrome.features.start_surface;
 
 import android.app.Activity;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +27,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.feed.FeedLaunchReliabilityLoggingState;
 import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
 import org.chromium.chrome.browser.feed.ScrollListener;
 import org.chromium.chrome.browser.feed.ScrollableContainerDelegate;
@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvi
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.SurfaceType;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
@@ -148,8 +147,8 @@ public class StartSurfaceCoordinator implements StartSurface {
     private final ObserverList<ScrollListener> mScrollListeners =
             new ObserverList<ScrollListener>();
 
-    // Stores surface creation time for Feed launch reliability logging.
-    private final FeedLaunchReliabilityLoggingState mFeedLaunchReliabilityLoggingState;
+    // Time at which constructor started to run. Used for feed reliability logging.
+    private final long mConstructedTimeNs;
 
     @Nullable
     private AppBarLayout.OnOffsetChangedListener mOffsetChangedListenerToGenerateScrollEvents;
@@ -234,8 +233,7 @@ public class StartSurfaceCoordinator implements StartSurface {
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @NonNull JankTracker jankTracker, @NonNull Supplier<Toolbar> toolbarSupplier) {
-        mFeedLaunchReliabilityLoggingState =
-                new FeedLaunchReliabilityLoggingState(SurfaceType.START_SURFACE, System.nanoTime());
+        mConstructedTimeNs = SystemClock.elapsedRealtimeNanos();
         mActivity = activity;
         mScrimCoordinator = scrimCoordinator;
         mIsStartSurfaceEnabled = ReturnToChromeUtil.isStartSurfaceEnabled(mActivity);
@@ -394,7 +392,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                     mTasksSurface.getBodyViewContainer(), mPropertyModel, mBottomSheetController,
                     mParentTabSupplier, new ScrollableContainerDelegateImpl(), mSnackbarManager,
                     mShareDelegateSupplier, mWindowAndroid, mTabModelSelector, mToolbarSupplier,
-                    mFeedLaunchReliabilityLoggingState, mSwipeRefreshLayout);
+                    mConstructedTimeNs, mSwipeRefreshLayout);
         }
         mStartSurfaceMediator.initWithNative(
                 mIsStartSurfaceEnabled ? mOmniboxStubSupplier.get() : null,

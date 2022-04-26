@@ -39,8 +39,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationUtils;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureType;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
-import org.chromium.chrome.browser.feed.FeedLaunchReliabilityLoggingState;
-import org.chromium.chrome.browser.feed.FeedReliabilityLoggingSignals;
+import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.feed.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.FeedSurfaceLifecycleManager;
@@ -126,7 +125,6 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     private final ContextMenuManager mContextMenuManager;
     private final ObserverList<MostVisitedTileClickObserver> mMostVisitedTileClickObservers;
     private FeedSurfaceProvider mFeedSurfaceProvider;
-    private FeedReliabilityLoggingSignals mFeedReliabilityLoggingSignals;
 
     private NewTabPageLayout mNewTabPageLayout;
     private TabObserver mTabObserver;
@@ -217,13 +215,19 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         public void focusSearchBox(boolean beginVoiceSearch, String pastedText) {
             if (mIsDestroyed) return;
             if (VrModuleProvider.getDelegate().isInVr()) return;
+            FeedReliabilityLogger feedReliabilityLogger =
+                    mFeedSurfaceProvider.getReliabilityLogger();
             if (mVoiceRecognitionHandler != null && beginVoiceSearch) {
-                mFeedReliabilityLoggingSignals.onVoiceSearch();
+                if (feedReliabilityLogger != null) {
+                    feedReliabilityLogger.onVoiceSearch();
+                }
                 mVoiceRecognitionHandler.startVoiceRecognition(
                         VoiceRecognitionHandler.VoiceInteractionSource.NTP);
                 mTracker.notifyEvent(EventConstants.NTP_VOICE_SEARCH_BUTTON_CLICKED);
             } else if (mOmniboxStub != null) {
-                mFeedReliabilityLoggingSignals.onOmniboxFocused();
+                if (feedReliabilityLogger != null) {
+                    feedReliabilityLogger.onOmniboxFocused();
+                }
                 mOmniboxStub.setUrlBarFocus(true, pastedText,
                         pastedText == null ? OmniboxFocusReason.FAKE_BOX_TAP
                                            : OmniboxFocusReason.FAKE_BOX_LONG_PRESS);
@@ -476,12 +480,11 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 shareDelegateSupplier, /* externalScrollableContainerDelegate= */ null,
                 NewTabPageUtils.decodeOriginFromNtpUrl(url),
                 PrivacyPreferencesManagerImpl.getInstance(), mToolbarSupplier,
-                new FeedLaunchReliabilityLoggingState(SurfaceType.NEW_TAB_PAGE, mConstructedTimeNs),
+                SurfaceType.NEW_TAB_PAGE, mConstructedTimeNs,
                 FeedSwipeRefreshLayout.create(activity, R.id.toolbar_container),
                 /* overScrollDisabled= */ false, /* viewportView= */ null, actionDelegate,
                 HelpAndFeedbackLauncherImpl.getInstance());
         mFeedSurfaceProvider = feedSurfaceCoordinator;
-        mFeedReliabilityLoggingSignals = feedSurfaceCoordinator;
 
         // Record the timestamp at which the new tab page's construction started.
         uma.trackTimeToFirstDraw(mFeedSurfaceProvider.getView(), mConstructedTimeNs);
@@ -693,7 +696,12 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
             // state from the location bar when we get a reference to it as a workaround.
             mNewTabPageLayout.setUrlFocusChangeAnimationPercent(
                     omniboxStub.isUrlBarFocused() ? 1f : 0f);
-            mOmniboxStub.addUrlFocusChangeListener(mFeedReliabilityLoggingSignals);
+
+            FeedReliabilityLogger feedReliabilityLogger =
+                    mFeedSurfaceProvider.getReliabilityLogger();
+            if (feedReliabilityLogger != null) {
+                mOmniboxStub.addUrlFocusChangeListener(feedReliabilityLogger);
+            }
         }
 
         mVoiceRecognitionHandler = mOmniboxStub.getVoiceRecognitionHandler();
@@ -831,8 +839,9 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mActivityLifecycleDispatcher.unregister(mLifecycleObserver);
         mLifecycleObserver = null;
         mBrowserControlsStateProvider.removeObserver(this);
-        if (mOmniboxStub != null) {
-            mOmniboxStub.removeUrlFocusChangeListener(mFeedReliabilityLoggingSignals);
+        FeedReliabilityLogger feedReliabilityLogger = mFeedSurfaceProvider.getReliabilityLogger();
+        if (mOmniboxStub != null && feedReliabilityLogger != null) {
+            mOmniboxStub.removeUrlFocusChangeListener(feedReliabilityLogger);
         }
         mFeedSurfaceProvider.destroy();
         mTab.getWindowAndroid().removeContextMenuCloseListener(mContextMenuManager);
@@ -926,11 +935,6 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     @VisibleForTesting
     public FeedSurfaceCoordinator getCoordinatorForTesting() {
         return (FeedSurfaceCoordinator) mFeedSurfaceProvider;
-    }
-
-    @VisibleForTesting
-    public void setFeedReliabilityLoggingSignalsForTesting(FeedReliabilityLoggingSignals signals) {
-        mFeedReliabilityLoggingSignals = signals;
     }
 
     @VisibleForTesting
