@@ -1218,6 +1218,9 @@ const base::Feature kReleaseNotesSuggestionChip{
 const base::Feature kReverseScrollGestures{"EnableReverseScrollGestures",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kRgbKeyboard = {"RgbKeyboard",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the system tray to show more information in larger screen.
 const base::Feature kScalableStatusArea{"ScalableStatusArea",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
@@ -2068,6 +2071,10 @@ bool IsRedirectToDefaultIdPEnabled() {
 
 bool IsReverseScrollGesturesEnabled() {
   return base::FeatureList::IsEnabled(kReverseScrollGestures);
+}
+
+bool IsRgbKeyboardEnabled() {
+  return base::FeatureList::IsEnabled(kRgbKeyboard);
 }
 
 bool IsSamlNotificationOnPasswordChangeSuccessEnabled() {

@@ -1009,7 +1009,7 @@ void Shell::Init(
 
   tablet_mode_controller_ = std::make_unique<TabletModeController>();
 
-  if (::features::IsRgbKeyboardEnabled()) {
+  if (features::IsRgbKeyboardEnabled()) {
     rgb_keyboard_manager_ =
         std::make_unique<RgbKeyboardManager>(ime_controller_.get());
   }

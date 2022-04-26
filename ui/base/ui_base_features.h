@@ -131,12 +131,6 @@ COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsDeprecateAltClickEnabled();
 
 COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const base::Feature kRgbKeyboard;
-
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-bool IsRgbKeyboardEnabled();
-
-COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kShortcutCustomizationApp;
 
 COMPONENT_EXPORT(UI_BASE_FEATURES)

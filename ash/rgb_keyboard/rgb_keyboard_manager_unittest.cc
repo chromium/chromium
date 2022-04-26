@@ -8,17 +8,17 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ui_base_features.h"
 
 namespace ash {
 
 class RgbKeyboardManagerTest : public testing::Test {
  public:
   RgbKeyboardManagerTest() {
-    scoped_feature_list_.InitAndEnableFeature(::features::kRgbKeyboard);
+    scoped_feature_list_.InitAndEnableFeature(features::kRgbKeyboard);
 
     // ImeControllerImpl must be initializezd before RgbKeyboardManager.
     ime_controller_ = std::make_unique<ImeControllerImpl>();

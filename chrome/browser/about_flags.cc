@@ -6162,7 +6162,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"enable-rgb-keyboard", flag_descriptions::kEnableRgbKeyboardName,
      flag_descriptions::kEnableRgbKeyboardDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kRgbKeyboard)},
+     FEATURE_VALUE_TYPE(ash::features::kRgbKeyboard)},
 
     {"enhanced-network-voices", flag_descriptions::kEnhancedNetworkVoicesName,
      flag_descriptions::kEnhancedNetworkVoicesDescription, kOsCrOS,
