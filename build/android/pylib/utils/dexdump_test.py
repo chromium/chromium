@@ -14,80 +14,85 @@ from pylib.utils import dexdump
 class DexdumpXMLParseTest(unittest.TestCase):
 
   def testParseRootXmlNode(self):
-    example_xml_string = (
-        '<api>'
-        '<package name="com.foo.bar1">'
-        '<class'
-        '  name="Class1"'
-        '  extends="java.lang.Object"'
-        '  abstract="false"'
-        '  static="false"'
-        '  final="true"'
-        '  visibility="public">'
-        '<method'
-        '  name="class1Method1"'
-        '  return="java.lang.String"'
-        '  abstract="false"'
-        '  native="false"'
-        '  synchronized="false"'
-        '  static="false"'
-        '  final="false"'
-        '  visibility="public">'
-        '</method>'
-        '<method'
-        '  name="class1Method2"'
-        '  return="viod"'
-        '  abstract="false"'
-        '  native="false"'
-        '  synchronized="false"'
-        '  static="false"'
-        '  final="false"'
-        '  visibility="public">'
-        '</method>'
-        '</class>'
-        '<class'
-        '  name="Class2"'
-        '  extends="java.lang.Object"'
-        '  abstract="false"'
-        '  static="false"'
-        '  final="true"'
-        '  visibility="public">'
-        '<method'
-        '  name="class2Method1"'
-        '  return="java.lang.String"'
-        '  abstract="false"'
-        '  native="false"'
-        '  synchronized="false"'
-        '  static="false"'
-        '  final="false"'
-        '  visibility="public">'
-        '</method>'
-        '</class>'
-        '</package>'
-        '<package name="com.foo.bar2">'
-        '</package>'
-        '<package name="com.foo.bar3">'
-        '</package>'
-        '</api>')
+    example_xml_string = ('<api>'
+                          '<package name="com.foo.bar1">'
+                          '<class'
+                          '  name="Class1"'
+                          '  extends="java.lang.Object"'
+                          '  abstract="false"'
+                          '  static="false"'
+                          '  final="true"'
+                          '  visibility="public">'
+                          '<method'
+                          '  name="class1Method1"'
+                          '  return="java.lang.String"'
+                          '  abstract="false"'
+                          '  native="false"'
+                          '  synchronized="false"'
+                          '  static="false"'
+                          '  final="false"'
+                          '  visibility="public">'
+                          '</method>'
+                          '<method'
+                          '  name="class1Method2"'
+                          '  return="viod"'
+                          '  abstract="false"'
+                          '  native="false"'
+                          '  synchronized="false"'
+                          '  static="false"'
+                          '  final="false"'
+                          '  visibility="public">'
+                          '</method>'
+                          '</class>'
+                          '<class'
+                          '  name="Class2"'
+                          '  extends="java.lang.Object"'
+                          '  abstract="true"'
+                          '  static="false"'
+                          '  final="true"'
+                          '  visibility="public">'
+                          '<method'
+                          '  name="class2Method1"'
+                          '  return="java.lang.String"'
+                          '  abstract="false"'
+                          '  native="false"'
+                          '  synchronized="false"'
+                          '  static="false"'
+                          '  final="false"'
+                          '  visibility="public">'
+                          '</method>'
+                          '</class>'
+                          '</package>'
+                          '<package name="com.foo.bar2">'
+                          '</package>'
+                          '<package name="com.foo.bar3">'
+                          '</package>'
+                          '</api>')
 
     actual = dexdump._ParseRootNode(
         ElementTree.fromstring(example_xml_string))
 
     expected = {
-      'com.foo.bar1' : {
-        'classes': {
-          'Class1': {
-            'methods': ['class1Method1', 'class1Method2'],
-            'superclass': 'java.lang.Object',
-          },
-          'Class2': {
-            'methods': ['class2Method1'],
-            'superclass': 'java.lang.Object',
-          }
+        'com.foo.bar1': {
+            'classes': {
+                'Class1': {
+                    'methods': ['class1Method1', 'class1Method2'],
+                    'superclass': 'java.lang.Object',
+                    'is_abstract': False,
+                },
+                'Class2': {
+                    'methods': ['class2Method1'],
+                    'superclass': 'java.lang.Object',
+                    'is_abstract': True,
+                }
+            },
         },
-      },
-      'com.foo.bar2' : {'classes': {}},
-      'com.foo.bar3' : {'classes': {}},
+        'com.foo.bar2': {
+            'classes': {}
+        },
+        'com.foo.bar3': {
+            'classes': {}
+        },
     }
     self.assertEqual(expected, actual)
 
@@ -96,7 +101,7 @@ class DexdumpXMLParseTest(unittest.TestCase):
         '<package name="com.foo.bar">'
         '<class name="Class1" extends="java.lang.Object">'
         '</class>'
-        '<class name="Class2" extends="java.lang.Object">'
+        '<class name="Class2" extends="java.lang.Object" abstract="true">'
         '</class>'
         '</package>')
 
@@ -105,16 +110,18 @@ class DexdumpXMLParseTest(unittest.TestCase):
         ElementTree.fromstring(example_xml_string))
 
     expected = {
-      'classes': {
-        'Class1': {
-          'methods': [],
-          'superclass': 'java.lang.Object',
+        'classes': {
+            'Class1': {
+                'methods': [],
+                'superclass': 'java.lang.Object',
+                'is_abstract': False,
+            },
+            'Class2': {
+                'methods': [],
+                'superclass': 'java.lang.Object',
+                'is_abstract': True,
+            },
         },
-        'Class2': {
-          'methods': [],
-          'superclass': 'java.lang.Object',
-        },
-      },
     }
     self.assertEqual(expected, actual)
 
@@ -132,8 +139,9 @@ class DexdumpXMLParseTest(unittest.TestCase):
         ElementTree.fromstring(example_xml_string))
 
     expected = {
-      'methods': ['method1', 'method2'],
-      'superclass': 'java.lang.Object',
+        'methods': ['method1', 'method2'],
+        'superclass': 'java.lang.Object',
+        'is_abstract': False,
     }
     self.assertEqual(expected, actual)
 

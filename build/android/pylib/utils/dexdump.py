@@ -29,7 +29,9 @@ def Dump(apk_path):
         <package_name>: {
           'classes': {
             <class_name>: {
-              'methods': [<method_1>, <method_2>]
+              'methods': [<method_1>, <method_2>],
+              'superclass': <string>,
+              'is_abstract': <boolean>
             }
           }
         }
@@ -105,10 +107,14 @@ def _ParsePackageNode(package_node):
       {
         'classes': {
           <class_1>: {
-            'methods': [<method_1>, <method_2>]
+            'methods': [<method_1>, <method_2>],
+            'superclass': <string>,
+            'is_abstract': <boolean>
           },
           <class_2>: {
-            'methods': [<method_1>, <method_2>]
+            'methods': [<method_1>, <method_2>],
+            'superclass': <string>,
+            'is_abstract': <boolean>
           },
         }
       }
@@ -126,11 +132,17 @@ def _ParseClassNode(class_node):
   Returns:
     A dict in the format:
       {
-        'methods': [<method_1>, <method_2>]
+        'methods': [<method_1>, <method_2>],
+        'superclass': <string>,
+        'is_abstract': <boolean>
       }
   """
   methods = []
   for child in class_node:
     if child.tag == 'method' and child.attrib['visibility'] == 'public':
       methods.append(child.attrib['name'])
-  return {'methods': methods, 'superclass': class_node.attrib['extends']}
+  return {
+      'methods': methods,
+      'superclass': class_node.attrib['extends'],
+      'is_abstract': class_node.attrib.get('abstract') == 'true'
+  }

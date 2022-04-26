@@ -513,7 +513,7 @@ def _GetTestsFromDexdump(test_apk):
   for dump in dex_dumps:
     for package_name, package_info in six.iteritems(dump):
       for class_name, class_info in six.iteritems(package_info['classes']):
-        if class_name.endswith('Test'):
+        if class_name.endswith('Test') and not class_info['is_abstract']:
           tests.append({
               'class': '%s.%s' % (package_name, class_name),
               'annotations': {},
