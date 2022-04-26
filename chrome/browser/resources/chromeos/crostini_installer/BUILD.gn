@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//third_party/material_web_components/build_mwc_app.gni")
 import("//tools/polymer/html_to_js.gni")
 
 js_type_check("closure_compile") {
@@ -16,28 +15,6 @@ js_type_check("closure_compile") {
   deps = [
     ":app",
     ":browser_proxy",
-  ]
-}
-
-build_mwc_app("crostini_installer") {
-  host = "crostini-installer"
-  input = rebase_path(target_gen_dir, root_build_dir)
-  js_module_in_files = [ "app.js" ]
-  js_out_files = [ "app.rollup.js" ]
-  out_manifest = "$target_gen_dir/build_manifest.json"
-  excludes = [
-    "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
-    "chrome://crostini-installer/strings.js",
-    "chrome://resources/js/load_time_data.m.js",
-    "chrome://resources/js/cr.m.js",
-    "chrome://crostini-installer/browser_proxy.js",
-    "chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js",
-  ]
-  deps = [
-    ":web_components",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources:library",
-    "//ui/webui/resources:preprocess",
   ]
 }
 

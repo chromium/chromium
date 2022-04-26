@@ -1,9 +1,9 @@
-import { __decorate } from "../../../../third_party/material_web_components/components-chromium/node_modules/tslib/tslib.es6.js";
+import { __decorate } from "chrome://resources/mwc/tslib/tslib.es6.js";
 // Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import { Button as MwcButton } from '../../../../third_party/material_web_components/components-chromium/node_modules/@material/mwc-button/mwc-button.js';
-import { css, customElement, property, query } from '../../../../third_party/material_web_components/components-chromium/node_modules/lit-element/lit-element.js';
+import { Button as MwcButton } from 'chrome://resources/mwc/@material/mwc-button/mwc-button.js';
+import { css, customElement, property, query } from 'chrome://resources/mwc/lit-element/lit-element.js';
 function linearGradientOf(color) {
     return css `linear-gradient(${color}, ${color})`;
 }
