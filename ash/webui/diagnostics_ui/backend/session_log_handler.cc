@@ -192,6 +192,9 @@ void SessionLogHandler::HandleSaveSessionLogRequest(
       web_contents ? web_contents->GetTopLevelNativeWindow()
                    : gfx::kNullNativeWindow;
 
+  // Early return if the select file dialog is already active.
+  if (select_file_dialog_)
+    return;
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this, select_file_policy_creator_.Run(web_contents));
   select_file_dialog_->SelectFile(
