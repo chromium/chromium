@@ -295,9 +295,12 @@ bool PrivacySandboxService::IsUrlSuitableForDialog(const GURL& url) {
   // Chrome history is valid as the dialog mentions history.
   if (url == GURL(chrome::kChromeUIHistoryURL))
     return true;
-  // Only a Chrome controlled New Tab Page is valid.
-  if (url == GURL(chrome::kChromeUINewTabPageURL))
+  // Only a Chrome controlled New Tab Page is valid. Third party NTP is still
+  // Chrome controlled, but is without Google branding.
+  if (url == GURL(chrome::kChromeUINewTabPageURL) ||
+      url == GURL(chrome::kChromeUINewTabPageThirdPartyURL)) {
     return true;
+  }
 
   return false;
 }

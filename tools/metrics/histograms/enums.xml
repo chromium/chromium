@@ -82838,6 +82838,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 
 <enum name="SettingsPrivacySandboxDialogDisplayHostHash">
   <int value="-2051070284" label="about:blank"/>
+  <int value="-1854305789" label="new-tab-page-third-party"/>
+  <int value="-1840427391" label="settings"/>
+  <int value="-1762176184" label="history"/>
   <int value="-1652896464" label="new-tab-page"/>
 </enum>
 
