@@ -32,9 +32,8 @@ Polymer({
   },
 
   onClick_(e) {
-    if (this.disabled) {
-      e.stopPropagation();
-    }
+    // Just checking here. The event is propagated further.
+    assert(!this.disabled);
   },
 
   ariaLabel_(labelForAria, locale, textKey) {

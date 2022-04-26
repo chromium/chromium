@@ -32,6 +32,7 @@ js_library("oobe_back_button.m") {
   deps = [
     "../behaviors:oobe_i18n_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
   ]
   extra_deps = [ ":oobe_back_button_module" ]
 }
@@ -41,6 +42,7 @@ js_library("oobe_next_button.m") {
   deps = [
     "../behaviors:oobe_i18n_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
   ]
   extra_deps = [ ":oobe_next_button_module" ]
 }
@@ -50,6 +52,7 @@ js_library("oobe_text_button.m") {
   deps = [
     "../behaviors:oobe_i18n_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
   ]
   extra_deps = [ ":oobe_text_button_module" ]
 }
