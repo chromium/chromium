@@ -284,6 +284,16 @@ void CrossFadeAnimationInternal(
   {
     ui::Layer* old_layer = old_layer_owner->root();
     old_layer->GetAnimator()->StopAnimating();
+    // If Overview exit animation is in the sequence, stopping animation may
+    // trigger `OverviewController::OnEndingAnimationComplete` which may finally
+    // start the frame animation.
+    // 'FrameHeader::FrameAnimatorView::StartAnimation' recreates the window
+    // layer such that the `new_layer` is no longer the window's current layer.
+    // Therefore, we should update the `new_layer`. Refer to
+    // https://crbug.com/1313977.
+    // TODO(zxdan): find a way to change the window state after exiting Overview
+    // or avoid frame animation when setting bounds.
+    new_layer = window->layer();
     old_layer->SetTransform(old_transform);
     ui::ScopedLayerAnimationSettings settings(old_layer->GetAnimator());
     settings.SetTransitionDuration(animation_duration);
