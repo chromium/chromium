@@ -458,6 +458,45 @@
             ]
         }
     ],
+    "ArcVmInitThrottle2": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "throttle_to_70_percent",
+                    "enable_features": [
+                        "CrOSLateBootArcVmInitial70Throttle"
+                    ],
+                    "disable_features": [
+                        "CrOSLateBootArcVmInitial30Throttle",
+                        "CrOSLateBootArcVmInitial50Throttle"
+                    ]
+                },
+                {
+                    "name": "throttle_to_50_percent",
+                    "enable_features": [
+                        "CrOSLateBootArcVmInitial50Throttle"
+                    ],
+                    "disable_features": [
+                        "CrOSLateBootArcVmInitial30Throttle",
+                        "CrOSLateBootArcVmInitial70Throttle"
+                    ]
+                },
+                {
+                    "name": "throttle_to_30_percent",
+                    "enable_features": [
+                        "CrOSLateBootArcVmInitial30Throttle"
+                    ],
+                    "disable_features": [
+                        "CrOSLateBootArcVmInitial50Throttle",
+                        "CrOSLateBootArcVmInitial70Throttle"
+                    ]
+                }
+            ]
+        }
+    ],
     "ArcVmMemorySize": [
         {
             "platforms": [
