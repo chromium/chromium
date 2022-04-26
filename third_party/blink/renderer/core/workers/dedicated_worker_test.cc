@@ -95,7 +95,6 @@ class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
     EXPECT_TRUE(IsCurrentThread());
     To<DedicatedWorkerGlobalScope>(GlobalScope())
         ->Initialize(script_url, network::mojom::ReferrerPolicy::kDefault,
-                     network::mojom::IPAddressSpace::kLocal,
                      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
                      nullptr /* response_origin_trial_tokens */);
   }

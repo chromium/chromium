@@ -9,7 +9,6 @@
 
 #include "base/synchronization/waitable_event.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
@@ -66,15 +65,11 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
   void Initialize(
       const KURL& response_url,
       network::mojom::ReferrerPolicy response_referrer_policy,
-      network::mojom::IPAddressSpace response_address_space,
       Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
       const Vector<String>* response_origin_trial_tokens) override {
     InitializeURL(response_url);
     SetReferrerPolicy(response_referrer_policy);
-    SetAddressSpace(response_address_space);
 
-    // These should be called after SetAddressSpace() to correctly override the
-    // address space by the "treat-as-public-address" CSP directive.
     InitContentSecurityPolicyFromVector(std::move(response_csp));
     BindContentSecurityPolicyToExecutionContext();
 

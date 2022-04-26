@@ -440,7 +440,6 @@ void ServiceWorkerGlobalScope::DidFetchClassicScript(
 void ServiceWorkerGlobalScope::Initialize(
     const KURL& response_url,
     network::mojom::ReferrerPolicy response_referrer_policy,
-    network::mojom::IPAddressSpace response_address_space,
     Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
     const Vector<String>* response_origin_trial_tokens) {
   // Step 4.5. "Set workerGlobalScope's url to serviceWorker's script url."
@@ -454,9 +453,6 @@ void ServiceWorkerGlobalScope::Initialize(
   // script resource's referrer policy."
   SetReferrerPolicy(response_referrer_policy);
 
-  // https://wicg.github.io/cors-rfc1918/#integration-html
-  SetAddressSpace(response_address_space);
-
   // This is quoted from the "Content Security Policy" algorithm in the service
   // workers spec:
   // "Whenever a user agent invokes Run Service Worker algorithm with a service
@@ -467,9 +463,6 @@ void ServiceWorkerGlobalScope::Initialize(
   // - If serviceWorker's script resource was delivered with a
   //   Content-Security-Policy-Report-Only HTTP header containing the value
   //   policy, the user agent must monitor policy for serviceWorker."
-  //
-  // These should be called after SetAddressSpace() to correctly override the
-  // address space by the "treat-as-public-address" CSP directive.
   InitContentSecurityPolicyFromVector(std::move(response_csp));
   BindContentSecurityPolicyToExecutionContext();
 
@@ -529,8 +522,8 @@ void ServiceWorkerGlobalScope::RunClassicScript(
     std::unique_ptr<Vector<uint8_t>> cached_meta_data,
     const v8_inspector::V8StackTraceId& stack_id) {
   // Step 4.5-4.11 are implemented in Initialize().
-  Initialize(response_url, response_referrer_policy, response_address_space,
-             std::move(response_csp), response_origin_trial_tokens);
+  Initialize(response_url, response_referrer_policy, std::move(response_csp),
+             response_origin_trial_tokens);
 
   // Step 4.12. "Let evaluationStatus be the result of running the classic
   // script script if script is a classic script, otherwise, the result of

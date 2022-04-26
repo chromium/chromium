@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
@@ -171,7 +170,7 @@ void WorkerModuleScriptFetcher::NotifyClient(
 
     // Step 12.3-12.6 are implemented in Initialize().
     global_scope_->Initialize(
-        response_url, response_referrer_policy, response.AddressSpace(),
+        response_url, response_referrer_policy,
         ParseContentSecurityPolicyHeaders(
             ContentSecurityPolicyResponseHeaders(response)),
         response_origin_trial_tokens.get());

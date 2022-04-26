@@ -46,14 +46,6 @@ class CORE_EXPORT PolicyContainer {
 
   network::mojom::blink::IPAddressSpace GetIPAddressSpace() const;
 
-  // This setter is used only by worklets and workers, which do not sync the
-  // PolicyContainer with the browser.
-  //
-  // TODO(https://crbug.com/1177199): Remove this when we implement policy
-  // inheritance for workers/worklets using the PolicyContainer.
-  void SetIPAddressSpace(
-      network::mojom::blink::IPAddressSpace ip_address_space);
-
   // Append |policies| to the list of Content Security Policy and sync them with
   // the PolicyContainerHost.
   void AddContentSecurityPolicies(

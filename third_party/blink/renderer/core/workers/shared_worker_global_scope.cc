@@ -110,7 +110,6 @@ const AtomicString& SharedWorkerGlobalScope::InterfaceName() const {
 void SharedWorkerGlobalScope::Initialize(
     const KURL& response_url,
     network::mojom::ReferrerPolicy response_referrer_policy,
-    network::mojom::IPAddressSpace response_address_space,
     Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
     const Vector<String>* response_origin_trial_tokens) {
   // Step 12.3. "Set worker global scope's url to response's url."
@@ -124,9 +123,6 @@ void SharedWorkerGlobalScope::Initialize(
   // parsing the `Referrer-Policy` header of response."
   SetReferrerPolicy(response_referrer_policy);
 
-  // https://wicg.github.io/cors-rfc1918/#integration-html
-  SetAddressSpace(response_address_space);
-
   // Step 12.6. "Execute the Initialize a global object's CSP list algorithm
   // on worker global scope and response. [CSP]"
   // SharedWorkerGlobalScope inherits the outside's CSP instead of the response
@@ -136,8 +132,6 @@ void SharedWorkerGlobalScope::Initialize(
   // https://fetch.spec.whatwg.org/#local-scheme
   //
   // https://w3c.github.io/webappsec-csp/#initialize-global-object-csp
-  // These should be called after SetAddressSpace() to correctly override the
-  // address space by the "treat-as-public-address" CSP directive.
   Vector<network::mojom::blink::ContentSecurityPolicyPtr> csp_headers =
       response_url.ProtocolIsAbout() || response_url.ProtocolIsData() ||
               response_url.ProtocolIs("blob")
@@ -280,7 +274,6 @@ void SharedWorkerGlobalScope::DidFetchClassicScript(
 
   // Step 12.3-12.6 are implemented in Initialize().
   Initialize(classic_script_loader->ResponseURL(), response_referrer_policy,
-             classic_script_loader->ResponseAddressSpace(),
              classic_script_loader->GetContentSecurityPolicy()
                  ? mojo::Clone(classic_script_loader->GetContentSecurityPolicy()
                                    ->GetParsedPolicies())

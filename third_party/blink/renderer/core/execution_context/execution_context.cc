@@ -530,11 +530,6 @@ void ExecutionContext::SetReferrerPolicy(
   policy_container_->UpdateReferrerPolicy(referrer_policy);
 }
 
-void ExecutionContext::SetAddressSpace(
-    network::mojom::blink::IPAddressSpace ip_address_space) {
-  GetPolicyContainer()->SetIPAddressSpace(ip_address_space);
-}
-
 void ExecutionContext::SetPolicyContainer(
     std::unique_ptr<PolicyContainer> container) {
   policy_container_ = std::move(container);

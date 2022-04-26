@@ -32,7 +32,6 @@
 
 #include "base/notreached.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/network/public/mojom/ip_address_space.mojom-blink-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -373,9 +372,6 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
       mojom::blink::PolicyDisposition,
       const String& message = g_empty_string,
       const String& source_file = g_empty_string) const {}
-
-  // TODO(https://crbug.com/1204028): Remove this, it is useless.
-  void SetAddressSpace(network::mojom::blink::IPAddressSpace ip_address_space);
 
   HeapObserverSet<ContextLifecycleObserver>& ContextLifecycleObserverSet();
   unsigned ContextLifecycleStateObserverCountForTesting() const;

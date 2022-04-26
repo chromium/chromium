@@ -58,11 +58,6 @@ void PolicyContainer::UpdateReferrerPolicy(
   policy_container_host_remote_->SetReferrerPolicy(policy);
 }
 
-void PolicyContainer::SetIPAddressSpace(
-    network::mojom::blink::IPAddressSpace ip_address_space) {
-  policies_->ip_address_space = ip_address_space;
-}
-
 const mojom::blink::PolicyContainerPolicies& PolicyContainer::GetPolicies()
     const {
   return *policies_;
