@@ -58,7 +58,7 @@ bool AddPdfPage(sk_sp<SkDocument> pdf_doc,
   // Rotate pages that were flipped by an ADF scanner.
   if (rotate) {
     page_canvas->rotate(kRotationDegrees);
-    page_canvas->translate(-image->width(), -image->height());
+    page_canvas->translate(-page_width, -page_height);
   }
 
   SkRect image_bounds = SkRect::MakeIWH(page_width, page_height);
