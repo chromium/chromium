@@ -167,9 +167,6 @@
       implied_by: ["Fledge", "Parakeet"],
     },
     {
-      name: "AdInterestGroupAPIRestrictedPolicyByDefault",
-    },
-    {
       name: "AdTagging",
       status: "test",
     },
