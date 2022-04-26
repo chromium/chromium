@@ -259,11 +259,6 @@ void SearchControllerImpl::Train(LaunchData&& launch_data) {
   mixer_->Train(launch_data);
 }
 
-void SearchControllerImpl::AppListShown() {
-  for (const auto& provider : providers_)
-    provider->AppListShown();
-}
-
 void SearchControllerImpl::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }

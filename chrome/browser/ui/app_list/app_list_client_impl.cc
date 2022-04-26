@@ -401,8 +401,6 @@ void AppListClientImpl::OnAppListVisibilityWillChange(bool visible) {
 void AppListClientImpl::OnAppListVisibilityChanged(bool visible) {
   app_list_visible_ = visible;
   if (visible) {
-    if (search_controller_)
-      search_controller_->AppListShown();
     MaybeRecordViewShown();
   } else if (current_model_updater_) {
     current_model_updater_->OnAppListHidden();

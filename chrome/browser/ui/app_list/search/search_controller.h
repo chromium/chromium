@@ -107,9 +107,6 @@ class SearchController {
   // Sends training signal to each |providers_|
   virtual void Train(LaunchData&& launch_data) = 0;
 
-  // Invoked when the app list is shown.
-  virtual void AppListShown() = 0;
-
   // Gets the length of the most recent query.
   // TODO(crbug.com/1199206): This should be replaced with calls to
   // get_query().size().

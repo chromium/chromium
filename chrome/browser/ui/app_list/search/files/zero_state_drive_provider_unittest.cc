@@ -78,7 +78,6 @@ TEST_F(ZeroStateDriveProviderTest, HypotheticalQueryTriggers) {
 TEST_F(ZeroStateDriveProviderTest, HypotheticalQueryIntervals) {
   histogram_tester_.ExpectTotalCount(kHypotheticalQueryHistogram, 0);
 
-  provider_->AppListShown();
   provider_->ViewClosing();
   histogram_tester_.ExpectBucketCount(
       kHypotheticalQueryHistogram,
@@ -94,7 +93,6 @@ TEST_F(ZeroStateDriveProviderTest, HypotheticalQueryIntervals) {
       ZeroStateDriveProvider::ThrottleInterval::kThirtyMinutes, 1);
 
   FastForwardByMinutes(5);
-  provider_->AppListShown();
   provider_->ViewClosing();
   histogram_tester_.ExpectBucketCount(
       kHypotheticalQueryHistogram,
@@ -110,7 +108,6 @@ TEST_F(ZeroStateDriveProviderTest, HypotheticalQueryIntervals) {
       ZeroStateDriveProvider::ThrottleInterval::kThirtyMinutes, 1);
 
   FastForwardByMinutes(5);
-  provider_->AppListShown();
   provider_->ViewClosing();
   histogram_tester_.ExpectBucketCount(
       kHypotheticalQueryHistogram,
@@ -126,7 +123,6 @@ TEST_F(ZeroStateDriveProviderTest, HypotheticalQueryIntervals) {
       ZeroStateDriveProvider::ThrottleInterval::kThirtyMinutes, 1);
 
   FastForwardByMinutes(5);
-  provider_->AppListShown();
   provider_->ViewClosing();
   histogram_tester_.ExpectBucketCount(
       kHypotheticalQueryHistogram,
@@ -142,7 +138,6 @@ TEST_F(ZeroStateDriveProviderTest, HypotheticalQueryIntervals) {
       ZeroStateDriveProvider::ThrottleInterval::kThirtyMinutes, 1);
 
   FastForwardByMinutes(15);
-  provider_->AppListShown();
   provider_->ViewClosing();
   histogram_tester_.ExpectBucketCount(
       kHypotheticalQueryHistogram,

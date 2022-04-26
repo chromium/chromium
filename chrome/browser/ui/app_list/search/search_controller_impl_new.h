@@ -72,7 +72,6 @@ class SearchControllerImplNew : public SearchController {
   ChromeSearchResult* GetResultByTitleForTest(
       const std::string& title) override;
   void Train(LaunchData&& launch_data) override;
-  void AppListShown() override;
   void ViewClosing() override;
   int GetLastQueryLength() const override;
   void OnSearchResultsImpressionMade(

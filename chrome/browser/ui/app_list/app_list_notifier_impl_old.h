@@ -143,6 +143,7 @@ class AppListNotifierImplOld : public ash::AppListNotifier,
   void NotifyResultsUpdated(Location location,
                             const std::vector<Result>& results) override;
   void NotifySearchQueryChanged(const std::u16string& query) override;
+  bool FireImpressionTimerForTesting(Location location) override;
 
   // AppListControllerObserver:
   void OnAppListVisibilityWillChange(bool shown, int64_t display_id) override;

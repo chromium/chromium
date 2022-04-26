@@ -9,9 +9,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/app_list/app_list_notifier_impl_old.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
+#include "chrome/browser/ui/app_list/test/test_app_list_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -22,8 +26,12 @@ namespace app_list {
 namespace test {
 
 namespace {
+
+constexpr char kDiscoverTabResultId[] = "help-app://discover";
+constexpr char kReleaseNotesResultId[] = "help-app://updates";
+
 void ExpectDiscoverTabChip(ChromeSearchResult* result) {
-  EXPECT_EQ("help-app://discover", result->id());
+  EXPECT_EQ(kDiscoverTabResultId, result->id());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_HELP_APP_DISCOVER_TAB_SUGGESTION_CHIP),
       result->title());
@@ -31,33 +39,51 @@ void ExpectDiscoverTabChip(ChromeSearchResult* result) {
   EXPECT_EQ(ash::SearchResultDisplayType::kChip, result->display_type());
 }
 
-void ExpectReleaseNotesChip(ChromeSearchResult* result) {
-  EXPECT_EQ("help-app://updates", result->id());
+void ExpectReleaseNotesChip(ChromeSearchResult* result,
+                            ash::SearchResultDisplayType display_type) {
+  EXPECT_EQ(kReleaseNotesResultId, result->id());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_HELP_APP_WHATS_NEW_SUGGESTION_CHIP),
             result->title());
   EXPECT_EQ(ash::AppListSearchResultType::kHelpApp, result->result_type());
-  EXPECT_EQ(ash::SearchResultDisplayType::kChip, result->display_type());
+  EXPECT_EQ(display_type, result->display_type());
 }
 }  // namespace
 
 class HelpAppProviderTest : public AppListTestBase {
  public:
-  HelpAppProviderTest() {}
-  ~HelpAppProviderTest() override = default;
-
-  void SetUp() override {
-    AppListTestBase::SetUp();
-
-    provider_ = std::make_unique<HelpAppProvider>(profile());
+  HelpAppProviderTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kHelpAppDiscoverTab,
                               chromeos::features::kReleaseNotesSuggestionChip},
         /*disabled_features=*/{});
   }
+  ~HelpAppProviderTest() override = default;
+
+  void SetUp() override {
+    AppListTestBase::SetUp();
+
+    app_list_notifier_ =
+        std::make_unique<AppListNotifierImplOld>(&app_list_controller_);
+
+    provider_ =
+        std::make_unique<HelpAppProvider>(profile(), app_list_notifier_.get());
+    provider_->set_controller(&search_controller_);
+  }
+
+  const app_list::Results& GetLatestResults() { return provider()->results(); }
+
+  ::test::TestAppListController* app_list_controller() {
+    return &app_list_controller_;
+  }
+
+  ash::AppListNotifier* app_list_notifier() { return app_list_notifier_.get(); }
 
   HelpAppProvider* provider() { return provider_.get(); }
 
  private:
+  ::test::TestAppListController app_list_controller_;
+  std::unique_ptr<ash::AppListNotifier> app_list_notifier_;
+  TestSearchController search_controller_;
   std::unique_ptr<HelpAppProvider> provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -71,7 +97,7 @@ TEST_F(HelpAppProviderTest, HasNoResultsForEmptyQueryIfTimesLeftToShowIsZero) {
 
   provider()->StartZeroState();
 
-  EXPECT_TRUE(provider()->results().empty());
+  EXPECT_TRUE(GetLatestResults().empty());
 }
 
 TEST_F(HelpAppProviderTest,
@@ -83,8 +109,8 @@ TEST_F(HelpAppProviderTest,
 
   provider()->StartZeroState();
 
-  EXPECT_EQ(1u, provider()->results().size());
-  ChromeSearchResult* result = provider()->results().at(0).get();
+  ASSERT_EQ(1u, GetLatestResults().size());
+  ChromeSearchResult* result = GetLatestResults().at(0).get();
   ExpectDiscoverTabChip(result);
 }
 
@@ -97,9 +123,9 @@ TEST_F(HelpAppProviderTest,
 
   provider()->StartZeroState();
 
-  EXPECT_EQ(1u, provider()->results().size());
-  ChromeSearchResult* result = provider()->results().at(0).get();
-  ExpectReleaseNotesChip(result);
+  ASSERT_EQ(1u, GetLatestResults().size());
+  ChromeSearchResult* result = GetLatestResults().at(0).get();
+  ExpectReleaseNotesChip(result, ash::SearchResultDisplayType::kChip);
 }
 
 TEST_F(HelpAppProviderTest, PrioritizesDiscoverTabChipForEmptyQuery) {
@@ -110,8 +136,9 @@ TEST_F(HelpAppProviderTest, PrioritizesDiscoverTabChipForEmptyQuery) {
 
   provider()->StartZeroState();
 
-  EXPECT_EQ(1u, provider()->results().size());
-  ChromeSearchResult* result = provider()->results().at(0).get();
+  ASSERT_EQ(1u, GetLatestResults().size());
+
+  ChromeSearchResult* result = GetLatestResults().at(0).get();
   ExpectDiscoverTabChip(result);
 }
 
@@ -121,7 +148,23 @@ TEST_F(HelpAppProviderTest,
       prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 3);
 
   provider()->StartZeroState();
-  provider()->AppListShown();
+
+  ASSERT_EQ(1u, GetLatestResults().size());
+  ChromeSearchResult* result = GetLatestResults().at(0).get();
+  ExpectDiscoverTabChip(result);
+
+  app_list_controller()->ShowAppList();
+  EXPECT_EQ(3, profile()->GetPrefs()->GetInteger(
+                   prefs::kDiscoverTabSuggestionChipTimesLeftToShow));
+
+  app_list_notifier()->NotifyResultsUpdated(
+      ash::AppListNotifier::Location::kChip,
+      {ash::AppListNotifier::Result(kDiscoverTabResultId,
+                                    ash::HELP_APP_UPDATES)});
+  EXPECT_EQ(3, profile()->GetPrefs()->GetInteger(
+                   prefs::kDiscoverTabSuggestionChipTimesLeftToShow));
+  ASSERT_TRUE(app_list_notifier()->FireImpressionTimerForTesting(
+      ash::AppListNotifier::Location::kChip));
 
   EXPECT_EQ(2, profile()->GetPrefs()->GetInteger(
                    prefs::kDiscoverTabSuggestionChipTimesLeftToShow));
@@ -133,7 +176,23 @@ TEST_F(HelpAppProviderTest,
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 3);
 
   provider()->StartZeroState();
-  provider()->AppListShown();
+
+  ASSERT_EQ(1u, GetLatestResults().size());
+
+  ChromeSearchResult* result = GetLatestResults().at(0).get();
+  ExpectReleaseNotesChip(result, ash::SearchResultDisplayType::kChip);
+
+  app_list_controller()->ShowAppList();
+  EXPECT_EQ(3, profile()->GetPrefs()->GetInteger(
+                   prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
+
+  app_list_notifier()->NotifyResultsUpdated(
+      ash::SearchResultDisplayType::kChip,
+      {ash::AppListNotifier::Result(kReleaseNotesResultId,
+                                    ash::HELP_APP_UPDATES)});
+
+  ASSERT_TRUE(app_list_notifier()->FireImpressionTimerForTesting(
+      ash::SearchResultDisplayType::kChip));
 
   EXPECT_EQ(2, profile()->GetPrefs()->GetInteger(
                    prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
@@ -145,7 +204,8 @@ TEST_F(HelpAppProviderTest, ClickingDiscoverTabChipStopsItFromShowing) {
 
   provider()->StartZeroState();
 
-  ChromeSearchResult* result = provider()->results().at(0).get();
+  ASSERT_EQ(1u, GetLatestResults().size());
+  ChromeSearchResult* result = GetLatestResults().at(0).get();
   result->Open(/*event_flags=*/0);
 
   EXPECT_EQ(0, profile()->GetPrefs()->GetInteger(
@@ -158,7 +218,7 @@ TEST_F(HelpAppProviderTest, ClickingReleaseNotesChipStopsItFromShowing) {
 
   provider()->StartZeroState();
 
-  ChromeSearchResult* result = provider()->results().at(0).get();
+  ChromeSearchResult* result = GetLatestResults().at(0).get();
   result->Open(/*event_flags=*/0);
 
   EXPECT_EQ(0, profile()->GetPrefs()->GetInteger(
@@ -167,15 +227,12 @@ TEST_F(HelpAppProviderTest, ClickingReleaseNotesChipStopsItFromShowing) {
 
 class HelpAppProviderWithDiscoverTabDisabledTest : public HelpAppProviderTest {
  public:
-  HelpAppProviderWithDiscoverTabDisabledTest() {}
-  ~HelpAppProviderWithDiscoverTabDisabledTest() override = default;
-
-  void SetUp() override {
-    HelpAppProviderTest::SetUp();
+  HelpAppProviderWithDiscoverTabDisabledTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kReleaseNotesSuggestionChip},
         /*disabled_features=*/{chromeos::features::kHelpAppDiscoverTab});
   }
+  ~HelpAppProviderWithDiscoverTabDisabledTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -190,7 +247,7 @@ TEST_F(HelpAppProviderWithDiscoverTabDisabledTest,
 
   provider()->StartZeroState();
 
-  EXPECT_TRUE(provider()->results().empty());
+  EXPECT_TRUE(GetLatestResults().empty());
 }
 
 }  // namespace test

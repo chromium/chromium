@@ -86,6 +86,11 @@ class ASH_PUBLIC_EXPORT AppListNotifier {
 
   // Called to indicate the user has updated the search query to |query|.
   virtual void NotifySearchQueryChanged(const std::u16string& query) = 0;
+
+  // Fires a timer to report search result impression for the provided
+  // location, if an impression update was scheduled. Returns whether a timer
+  // was fired.
+  virtual bool FireImpressionTimerForTesting(Location location) = 0;
 };
 
 }  // namespace ash

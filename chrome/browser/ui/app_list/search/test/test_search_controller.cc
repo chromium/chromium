@@ -52,8 +52,6 @@ ChromeSearchResult* TestSearchController::GetResultByTitleForTest(
 
 void TestSearchController::Train(LaunchData&& launch_data) {}
 
-void TestSearchController::AppListShown() {}
-
 int TestSearchController::GetLastQueryLength() const {
   return 0;
 }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/app_list/test/test_app_list_controller.h"
 
+#include "ash/public/cpp/app_list/app_list_controller_observer.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 
@@ -16,20 +17,38 @@ ash::AppListClient* TestAppListController::GetClient() {
   return AppListClientImpl::GetInstance();
 }
 
+void TestAppListController::AddObserver(
+    ash::AppListControllerObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void TestAppListController::RemoveObserver(
+    ash::AppListControllerObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 aura::Window* TestAppListController::GetWindow() {
   NOTIMPLEMENTED();
   return nullptr;
 }
 
+void TestAppListController::ShowAppList() {
+  visible_ = true;
+  NotifyAppListVisibilityChanged();
+}
+
+void TestAppListController::DismissAppList() {
+  visible_ = false;
+  NotifyAppListVisibilityChanged();
+}
+
 bool TestAppListController::IsVisible(
     const absl::optional<int64_t>& display_id) {
-  NOTIMPLEMENTED();
-  return false;
+  return visible_;
 }
 
 bool TestAppListController::IsVisible() {
-  NOTIMPLEMENTED();
-  return false;
+  return visible_;
 }
 
 void TestAppListController::UpdateAppListWithNewTemporarySortOrder(
@@ -43,6 +62,16 @@ void TestAppListController::UpdateAppListWithNewTemporarySortOrder(
 
   DCHECK(animate);
   std::move(update_position_closure).Run();
+}
+
+void TestAppListController::NotifyAppListVisibilityChanged() {
+  for (auto& observer : observers_) {
+    observer.OnAppListVisibilityWillChange(visible_, /*display_id=*/-1);
+  }
+  for (auto& observer : observers_) {
+    observer.OnAppListVisibilityWillChange(visible_,
+                                           /*display_id=*/-1);
+  }
 }
 
 }  // namespace test

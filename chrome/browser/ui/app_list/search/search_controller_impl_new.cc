@@ -512,11 +512,6 @@ void SearchControllerImplNew::Train(LaunchData&& launch_data) {
   ranker_->Train(launch_data);
 }
 
-void SearchControllerImplNew::AppListShown() {
-  for (const auto& provider : providers_)
-    provider->AppListShown();
-}
-
 void SearchControllerImplNew::ViewClosing() {
   for (const auto& provider : providers_)
     provider->ViewClosing();

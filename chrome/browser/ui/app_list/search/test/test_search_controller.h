@@ -41,7 +41,6 @@ class TestSearchController : public SearchController {
   ChromeSearchResult* GetResultByTitleForTest(
       const std::string& title) override;
   void Train(LaunchData&& launch_data) override;
-  void AppListShown() override;
   int GetLastQueryLength() const override;
   void OnSearchResultsImpressionMade(
       const std::u16string& trimmed_query,

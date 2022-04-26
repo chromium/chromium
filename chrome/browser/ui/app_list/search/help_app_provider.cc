@@ -10,6 +10,7 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
+#include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/webui/help_app_ui/help_app_manager.h"
 #include "ash/webui/help_app_ui/help_app_manager_factory.h"
 #include "ash/webui/help_app_ui/search/search_handler.h"
@@ -191,13 +192,17 @@ void HelpAppResult::Open(int event_flags) {
                            base::PersistentHash(help_app_content_id_));
 }
 
-HelpAppProvider::HelpAppProvider(Profile* profile)
-    : profile_(profile), search_handler_(nullptr) {
+HelpAppProvider::HelpAppProvider(Profile* profile,
+                                 ash::AppListNotifier* notifier)
+    : profile_(profile), notifier_(notifier), search_handler_(nullptr) {
   DCHECK(profile_);
 
   app_service_proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile_);
   Observe(&app_service_proxy_->AppRegistryCache());
   LoadIcon();
+
+  if (notifier_)
+    notifier_->AddObserver(this);
 
   if (!base::FeatureList::IsEnabled(
           chromeos::features::kHelpAppLauncherSearch)) {
@@ -214,7 +219,10 @@ HelpAppProvider::HelpAppProvider(Profile* profile)
       search_results_observer_receiver_.BindNewPipeAndPassRemote());
 }
 
-HelpAppProvider::~HelpAppProvider() = default;
+HelpAppProvider::~HelpAppProvider() {
+  if (notifier_)
+    notifier_->RemoveObserver(this);
+}
 
 void HelpAppProvider::Start(const std::u16string& query) {
   ClearResultsSilently();
@@ -304,19 +312,6 @@ void HelpAppProvider::OnSearchReturned(
   SwapResults(&search_results);
 }
 
-// TODO(b/171828539): Consider using AppListNotifier for better proxy of
-// impressions.
-void HelpAppProvider::AppListShown() {
-  for (auto& result : results()) {
-    if (result->id() == kHelpAppDiscoverResult) {
-      DecreaseTimesLeftToShowDiscoverTabSuggestionChip(profile_);
-    } else if (result->id() == kHelpAppUpdatesResult) {
-      ash::ReleaseNotesStorage(profile_)
-          .DecreaseTimesLeftToShowSuggestionChip();
-    }
-  }
-}
-
 ash::AppListSearchResultType HelpAppProvider::ResultType() const {
   return ash::AppListSearchResultType::kHelpApp;
 }
@@ -335,6 +330,23 @@ void HelpAppProvider::OnAppUpdate(const apps::AppUpdate& update) {
 void HelpAppProvider::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   Observe(nullptr);
+}
+
+void HelpAppProvider::OnImpression(
+    ash::AppListNotifier::Location location,
+    const std::vector<ash::AppListNotifier::Result>& results,
+    const std::u16string& query) {
+  if (location != ash::AppListNotifier::Location::kChip)
+    return;
+
+  for (const auto& result : results) {
+    if (result.id == kHelpAppDiscoverResult) {
+      DecreaseTimesLeftToShowDiscoverTabSuggestionChip(profile_);
+    } else if (result.id == kHelpAppUpdatesResult) {
+      ash::ReleaseNotesStorage(profile_)
+          .DecreaseTimesLeftToShowSuggestionChip();
+    }
+  }
 }
 
 // If the availability of search results changed, start a new search.

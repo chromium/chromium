@@ -80,6 +80,14 @@ void AppListNotifierImplOld::NotifySearchQueryChanged(
   }
 }
 
+bool AppListNotifierImplOld::FireImpressionTimerForTesting(Location location) {
+  auto timer_it = timers_.find(location);
+  if (timer_it == timers_.end() || !timer_it->second->IsRunning())
+    return false;
+  timer_it->second->FireNow();
+  return true;
+}
+
 void AppListNotifierImplOld::OnViewStateChanged(ash::AppListViewState view) {
   // We should ignore certain view state changes entirely:
   //

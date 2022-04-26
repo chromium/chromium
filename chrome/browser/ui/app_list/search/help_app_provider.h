@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "ash/webui/help_app_ui/search/search.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -67,9 +68,10 @@ class HelpAppResult : public ChromeSearchResult {
 // zero-state results.
 class HelpAppProvider : public SearchProvider,
                         public apps::AppRegistryCache::Observer,
+                        public ash::AppListNotifier::Observer,
                         public ash::help_app::mojom::SearchResultsObserver {
  public:
-  explicit HelpAppProvider(Profile* profile);
+  HelpAppProvider(Profile* profile, ash::AppListNotifier* notifier);
   ~HelpAppProvider() override;
 
   HelpAppProvider(const HelpAppProvider&) = delete;
@@ -79,7 +81,6 @@ class HelpAppProvider : public SearchProvider,
   void Start(const std::u16string& query) override;
   void StartZeroState() override;
   void ViewClosing() override;
-  void AppListShown() override;
   ash::AppListSearchResultType ResultType() const override;
   bool ShouldBlockZeroState() const override;
 
@@ -87,6 +88,11 @@ class HelpAppProvider : public SearchProvider,
   void OnAppUpdate(const apps::AppUpdate& update) override;
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
+
+  // ash::AppListNotifier::Observer:
+  void OnImpression(ash::AppListNotifier::Location location,
+                    const std::vector<ash::AppListNotifier::Result>& results,
+                    const std::u16string& query) override;
 
   // mojom::SearchResultsObserver:
   void OnSearchResultAvailabilityChanged() override;
@@ -100,6 +106,8 @@ class HelpAppProvider : public SearchProvider,
   void LoadIcon();
 
   Profile* const profile_;
+  ash::AppListNotifier* const notifier_;
+
   ash::help_app::SearchHandler* search_handler_;
   apps::AppServiceProxy* app_service_proxy_;
   gfx::ImageSkia icon_;

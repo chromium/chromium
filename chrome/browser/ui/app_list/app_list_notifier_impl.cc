@@ -95,6 +95,14 @@ void AppListNotifierImpl::NotifySearchQueryChanged(
   }
 }
 
+bool AppListNotifierImpl::FireImpressionTimerForTesting(Location location) {
+  auto timer_it = timers_.find(location);
+  if (timer_it == timers_.end() || !timer_it->second->IsRunning())
+    return false;
+  timer_it->second->FireNow();
+  return true;
+}
+
 void AppListNotifierImpl::OnAppListVisibilityWillChange(bool shown,
                                                         int64_t display_id) {
   if (shown_ == shown)

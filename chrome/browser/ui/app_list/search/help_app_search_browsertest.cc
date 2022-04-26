@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "ash/webui/help_app_ui/help_app_manager.h"
 #include "ash/webui/help_app_ui/help_app_manager_factory.h"
 #include "ash/webui/help_app_ui/search/search.mojom.h"
@@ -134,6 +135,9 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
   // is where we decrease |kReleaseNotesSuggestionChipTimesLeftToShow|.
   GetClient()->ShowAppList();
   SearchAndWaitForProviders("", {ResultType::kHelpApp});
+
+  EXPECT_TRUE(GetClient()->GetNotifier()->FireImpressionTimerForTesting(
+      ash::AppListNotifier::Location::kChip));
 
   const int times_left_to_show = GetProfile()->GetPrefs()->GetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow);
