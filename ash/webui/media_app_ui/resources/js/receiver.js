@@ -237,6 +237,16 @@ export class ReceivedFileList {
     await parentMessagePipe.sendMessage(Message.OPEN_FILES_WITH_PICKER, msg);
   }
 
+  /**
+   * @override
+   * @param {!function(!mediaApp.AbstractFile): boolean} filter
+   */
+  filterInPlace(filter) {
+    this.files = this.files.filter(filter);
+    this.length = this.files.length;
+    this.currentFileIndex = this.length > 0 ? 0 : -1;
+  }
+
   /** @param {!Array<!ReceivedFile>} files */
   addFiles(files) {
     if (files.length === 0) {

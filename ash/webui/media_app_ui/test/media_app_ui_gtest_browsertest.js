@@ -353,3 +353,7 @@ TEST_F('MediaAppUIGtestBrowserTest', 'GuestStartsWithDefaultFileList', () => {
 TEST_F('MediaAppUIGtestBrowserTest', 'GuestFailsToFetchMissingFonts', () => {
   runTestInGuest('GuestFailsToFetchMissingFonts');
 });
+
+TEST_F('MediaAppUIGtestBrowserTest', 'GuestCanFilterInPlace', () => {
+  runTestInGuest('GuestCanFilterInPlace');
+});

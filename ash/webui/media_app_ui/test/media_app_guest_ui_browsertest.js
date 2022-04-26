@@ -5,6 +5,7 @@
 /** @fileoverview Test suite for chrome-untrusted://media-app. */
 
 import {GUEST_TEST} from './guest_query_receiver.js';
+import {ReceivedFileList} from './receiver.js';
 
 export function eventToPromise(eventType, target) {
   return new Promise(function(resolve, reject) {
@@ -96,4 +97,31 @@ GUEST_TEST('GuestFailsToFetchMissingFonts', async () => {
   // fetch() will throw rather than returning a response.status of 404.
   assertEquals(error.name, 'TypeError');
   assertEquals(error.message, 'Failed to fetch');
+});
+
+GUEST_TEST('GuestCanFilterInPlace', async () => {
+  function makeTestFile(name) {
+    return {
+      token: 0,
+      file: null,
+      name: `${name}`,
+      error: '',
+      canDelete: true,
+      canRename: true
+    };
+  }
+  const message = {currentFileIndex: 0, files: [0, 1, 2].map(makeTestFile)};
+  const fileList = new ReceivedFileList(message);
+
+  fileList.filterInPlace(f => f.name !== '1');
+
+  assertEquals(fileList.length, 2);
+  assertEquals(fileList.currentFileIndex, 0);
+  assertEquals(fileList.item(0).name, '0');
+  assertEquals(fileList.item(1).name, '2');
+
+  fileList.filterInPlace(f => false);
+
+  assertEquals(fileList.length, 0);
+  assertEquals(fileList.currentFileIndex, -1);
 });
