@@ -133,7 +133,7 @@ UnitTestTestSuite::UnitTestTestSuite(
   testing::TestEventListeners& listeners =
       testing::UnitTest::GetInstance()->listeners();
   listeners.Append(CreateTestEventListener());
-  listeners.Append(new CheckForLeakedWebUIControllerFactoryRegistrations);
+  listeners.Append(new CheckForLeakedWebUIRegistrations);
 
   // The ThreadPool created by the test launcher is never destroyed.
   // Similarly, the FeatureList created here is never destroyed so it

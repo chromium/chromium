@@ -30,19 +30,21 @@ class ScopedWebUIControllerFactoryRegistration {
   raw_ptr<content::WebUIControllerFactory> factory_to_replace_;
 };
 
-// A class used in tests to ensure that registered WebUIControllerFactory
-// instances are unregistered. This should be enforced on unit-test suites
-// with tests that register WebUIControllerFactory instances, to prevent those
-// tests from causing flakiness in later tests run in the same process. This is
-// not needed for browser tests, which are each run in their own process.
-class CheckForLeakedWebUIControllerFactoryRegistrations
+// A class used in tests to ensure that registered WebUIControllerFactory and
+// WebUIConfig instances are unregistered. This should be enforced on unit-test
+// suites with tests that register WebUIControllerFactory and WebUIConfig
+// instances, to prevent those tests from causing flakiness in later tests run
+// in the same process. This is not needed for browser tests, which are each run
+// in their own process.
+class CheckForLeakedWebUIRegistrations
     : public testing::EmptyTestEventListener {
  public:
   void OnTestStart(const testing::TestInfo& test_info) override;
   void OnTestEnd(const testing::TestInfo& test_info) override;
 
  private:
-  int initial_num_registered_;
+  size_t initial_size_of_webui_config_map_;
+  int initial_num_factories_registered_;
 };
 
 }  // namespace content

@@ -103,8 +103,7 @@ void ChromeUnitTestSuite::Initialize() {
   testing::TestEventListeners& listeners =
       testing::UnitTest::GetInstance()->listeners();
   listeners.Append(new ChromeUnitTestSuiteInitializer);
-  listeners.Append(
-      new content::CheckForLeakedWebUIControllerFactoryRegistrations);
+  listeners.Append(new content::CheckForLeakedWebUIRegistrations);
 
   {
     ChromeContentClient content_client;

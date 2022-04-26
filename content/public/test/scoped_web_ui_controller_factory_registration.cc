@@ -5,6 +5,7 @@
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 
 #include "content/public/browser/web_ui_controller_factory.h"
+#include "content/public/browser/webui_config_map.h"
 
 namespace content {
 
@@ -29,16 +30,30 @@ ScopedWebUIControllerFactoryRegistration::
     content::WebUIControllerFactory::RegisterFactory(factory_to_replace_);
 }
 
-void CheckForLeakedWebUIControllerFactoryRegistrations::OnTestStart(
+void CheckForLeakedWebUIRegistrations::OnTestStart(
     const testing::TestInfo& test_info) {
-  initial_num_registered_ =
+  // Call GetInstance() to ensure WebUIConfig registers its
+  // WebUIControllerFactory before we get the number of registered factories.
+  initial_size_of_webui_config_map_ =
+      WebUIConfigMap::GetInstance().GetSizeForTesting();
+  initial_num_factories_registered_ =
       content::WebUIControllerFactory::GetNumRegisteredFactoriesForTesting();
 }
 
-void CheckForLeakedWebUIControllerFactoryRegistrations::OnTestEnd(
+void CheckForLeakedWebUIRegistrations::OnTestEnd(
     const testing::TestInfo& test_info) {
+  // TODO(crbug.com/1317510): Right now WebUIConfigs are not used in unit tests,
+  // so there is no ScopedWebUIControllerFactoryRegistration equivalent for
+  // WebUIConfigs. As we migrate from WebUIControllerFactory to WebUIConfig this
+  // EXPECT_EQ will get hit. At that point, we should implement
+  // ScopedWebUIConfigRegistration.
+  EXPECT_EQ(initial_size_of_webui_config_map_,
+            WebUIConfigMap::GetInstance().GetSizeForTesting())
+      << "A WebUIConfig was registered by a test but never unregistered. This "
+         "can cause flakiness in later tests.";
+
   EXPECT_EQ(
-      initial_num_registered_,
+      initial_num_factories_registered_,
       content::WebUIControllerFactory::GetNumRegisteredFactoriesForTesting())
       << "A WebUIControllerFactory was registered by a test but never "
          "unregistered. This can cause flakiness in later tests. Please use "

@@ -53,6 +53,9 @@ class CONTENT_EXPORT WebUIConfigMap {
   WebUIConfig* GetConfig(BrowserContext* browser_context,
                          const url::Origin& origin);
 
+  // Returns the size of the map, i.e. how many WebUIConfigs are registered.
+  size_t GetSizeForTesting() { return configs_map_.size(); }
+
  private:
   void AddWebUIConfigImpl(std::unique_ptr<WebUIConfig> config);
 
