@@ -23,22 +23,18 @@ sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
                  'scripts'))
 
-# Trunk on 4/1/2022
-RUST_REVISION = '79f178b7'
+RUST_REVISION = '1f631e8e'
 RUST_SUB_REVISION = 1
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
 # itself check the hash.
 STAGE0_JSON_SHA256 = (
-    'a38b7ea8b8cbdb592b1a7ae8b97fa31746a2bda309597de111be4893a035070d')
+    '6b1c61d494ad447f41c8ae3b9b3239626eecac00e0f0b793b844e0761133dc37')
 
 
 def GetPackageVersion():
   from update import (CLANG_REVISION, CLANG_SUB_REVISION)
-  # TODO(https://crbug.com/1319223): Move rust to pinned LLVM revision.
-  CLANG_REVISION = 'llvmorg-15-init-7980-g4ffd0b6f'
-  CLANG_SUB_REVISION = 2
   return '%s-%s-%s-%s' % (RUST_REVISION, RUST_SUB_REVISION, CLANG_REVISION,
                           CLANG_SUB_REVISION)
 

@@ -73,7 +73,16 @@ RUST_CONFIG_TEMPLATE_PATH = os.path.join(
 
 # Desired tools and libraries in our Rust toolchain.
 DISTRIBUTION_ARTIFACTS = [
-    'cargo', 'clippy', 'library/std', 'rust-analyzer', 'rustfmt', 'src/librustc'
+    'cargo', 'clippy', 'library/std', 'rust-analyzer', 'rustfmt'
+]
+
+# Which test suites to run. Any failure will fail the build.
+TEST_SUITES = [
+    'library/std',
+    'src/test/codegen',
+
+    # Temporarily disabled due to https://github.com/rust-lang/rust/issues/94322
+    # 'src/test/ui',
 ]
 
 
@@ -292,9 +301,7 @@ def main():
   if not args.skip_test:
     print('Running stage 2 tests...')
     # Run a subset of tests. Tell x.py to keep the rustc we already built.
-    RunXPy('test',
-           ['--stage', '2', 'library/std', 'src/test/codegen', 'src/test/ui'],
-           args.gcc_toolchain, args.verbose)
+    RunXPy('test', TEST_SUITES, args.gcc_toolchain, args.verbose)
 
   targets = [
       'library/proc_macro', 'library/std', 'src/tools/cargo',
