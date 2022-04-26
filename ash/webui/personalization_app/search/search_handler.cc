@@ -28,6 +28,7 @@ namespace personalization_app {
 
 namespace {
 
+// Sorts search results descending.
 bool CompareSearchResults(const mojom::SearchResultPtr& a,
                           const mojom::SearchResultPtr& b) {
   return a->relevance_score > b->relevance_score;
@@ -121,9 +122,11 @@ void SearchHandler::OnLocalSearchDone(
                                  /*relevance_score=*/local_result.score));
   }
 
-  // Limit to top |max_num_results| results. Array is small so sort and take
-  // |max_num_results| front.
-  std::sort(search_results.begin(), search_results.end(), CompareSearchResults);
+  // Limit to top |max_num_results| results. Use partial_sort and then resize.
+  std::partial_sort(
+      search_results.begin(),
+      std::min(search_results.begin() + max_num_results, search_results.end()),
+      search_results.end(), CompareSearchResults);
   search_results.resize(
       std::min(static_cast<size_t>(max_num_results), search_results.size()));
 

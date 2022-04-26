@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -15,8 +16,11 @@
 #include "ash/webui/personalization_app/search/search.mojom-test-utils.h"
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/personalization_app/search/search_concept.h"
+#include "ash/webui/personalization_app/search/search_tag_registry.h"
 #include "base/callback.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
@@ -106,6 +110,25 @@ class PersonalizationAppSearchHandlerTest : public testing::Test {
         *local_search_service_proxy_, test_pref_service_.get());
     search_handler_->BindInterface(
         search_handler_remote_.BindNewPipeAndPassReceiver());
+  }
+
+  std::vector<mojom::SearchResultPtr> SimulateSearchCompleted(
+      uint32_t max_num_results,
+      ::chromeos::local_search_service::ResponseStatus response_status,
+      const absl::optional<
+          std::vector<::chromeos::local_search_service::Result>>&
+          local_search_service_results) {
+    std::vector<mojom::SearchResultPtr> result;
+    base::RunLoop loop;
+    search_handler_->OnLocalSearchDone(
+        base::BindLambdaForTesting(
+            [&result, done = loop.QuitClosure()](
+                std::vector<mojom::SearchResultPtr> search_results) {
+              result = std::move(search_results);
+              std::move(done).Run();
+            }),
+        max_num_results, response_status, local_search_service_results);
+    return result;
   }
 
   SearchHandler* search_handler() { return search_handler_.get(); }
@@ -275,6 +298,54 @@ TEST_F(PersonalizationAppSearchHandlerTest, HasDarkModeSearchResults) {
           << "Search result should be present: " << expected_result;
     }
   }
+}
+
+TEST_F(PersonalizationAppSearchHandlerTest, SortsAndTruncatesResults) {
+  // Test search concepts.
+  std::vector<const SearchConcept> test_search_concepts = {
+      {.message_id = IDS_PERSONALIZATION_APP_WALLPAPER_LABEL},
+      {.message_id = IDS_PERSONALIZATION_APP_PERSONALIZATION_HUB_TITLE},
+      {.message_id = IDS_PERSONALIZATION_APP_SCREENSAVER_LABEL},
+      {.message_id = IDS_PERSONALIZATION_APP_AVATAR_LABEL},
+  };
+  SearchTagRegistry::SearchConceptUpdates updates;
+  for (const auto& concept : test_search_concepts) {
+    updates.insert(std::make_pair(&concept, true));
+  }
+  search_tag_registry()->UpdateSearchConcepts(updates);
+
+  // Scores that correspond to each of the |test_search_concepts|.
+  std::vector<double> scores = {0.33, 0.5, 0.1, 0.99};
+  std::vector<::chromeos::local_search_service::Result> fake_local_results;
+  for (size_t i = 0; i < scores.size(); i++) {
+    std::vector<::chromeos::local_search_service::Position> positions;
+    positions.emplace_back(/*content_id=*/base::NumberToString(
+                               test_search_concepts.at(i).message_id),
+                           /*start=*/0, /*length=*/0);
+    fake_local_results.emplace_back(
+        /*id=*/base::NumberToString(test_search_concepts.at(i).message_id),
+        /*score=*/scores.at(i), std::move(positions));
+  }
+
+  constexpr size_t maxNumResults = 2;
+  auto results = SimulateSearchCompleted(
+      /*max_num_results=*/maxNumResults,
+      ::chromeos::local_search_service::ResponseStatus::kSuccess,
+      absl::make_optional(fake_local_results));
+
+  // Capped at |maxNumResults|.
+  EXPECT_EQ(maxNumResults, results.size());
+
+  // First result is top scoring result.
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PERSONALIZATION_APP_AVATAR_LABEL),
+            results.at(0)->text);
+  EXPECT_EQ(0.99, results.at(0)->relevance_score);
+
+  // Next result is second best score.
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_PERSONALIZATION_APP_PERSONALIZATION_HUB_TITLE),
+            results.at(1)->text);
+  EXPECT_EQ(0.5, results.at(1)->relevance_score);
 }
 
 }  // namespace personalization_app
