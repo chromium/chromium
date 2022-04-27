@@ -102,6 +102,7 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//build/android:build_java",
     "//chrome/android/features/start_surface:public_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/browser_controls/android:java",
@@ -339,6 +340,7 @@ android_library("javatests") {
     ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/settings:test_support_java",

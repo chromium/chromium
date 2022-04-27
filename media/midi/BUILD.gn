@@ -50,6 +50,7 @@ if (is_android) {
   android_library("midi_java") {
     deps = [
       "//base:base_java",
+      "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

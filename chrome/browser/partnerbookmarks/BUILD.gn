@@ -18,6 +18,7 @@ android_library("delegate_java") {
   deps = [
     "//base:base_java",
     "//base:jni_java",
+    "//build/android:build_java",
     "//chrome/browser/partnercustomizations:java",
     "//components/embedder_support/android:util_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

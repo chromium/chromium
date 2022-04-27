@@ -16,6 +16,7 @@ android_library("java") {
     ":base_module_java",
     ":java_resources",
     "//base:base_java",
+    "//build/android:build_java",
     "//chrome/browser/test_dummy:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",

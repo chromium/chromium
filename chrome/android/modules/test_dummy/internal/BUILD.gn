@@ -9,6 +9,7 @@ android_library("java") {
   sources = [ "java/src/org/chromium/chrome/modules/test_dummy/TestDummyProviderImpl.java" ]
   deps = [
     "//base:base_java",
+    "//build/android:build_java",
     "//chrome/android/modules/test_dummy/public:java",
     "//chrome/browser/test_dummy:java",
     "//chrome/browser/test_dummy/internal:java",

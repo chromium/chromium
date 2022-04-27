@@ -14,6 +14,7 @@ android_apk("spnego_authenticator_apk") {
   deps = [
     ":spnego_authenticator_apk_assets",
     "//base:base_java",
+    "//build/android:build_java",
     "//net/android:net_java",
   ]
 

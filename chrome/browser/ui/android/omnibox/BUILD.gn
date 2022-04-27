@@ -137,6 +137,7 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//build/android:build_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/commerce/merchant_viewer/android:java",
@@ -233,6 +234,7 @@ android_library("javatests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base/test:test_support_java",
+    "//build/android:build_java",
     "//chrome/test/android:chrome_java_test_support",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_sdk:android_test_mock_java",
@@ -382,6 +384,7 @@ android_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//build/android:build_java",
     "//chrome/android:base_module_java",
     "//chrome/browser/device:java",
     "//chrome/browser/flags:java",

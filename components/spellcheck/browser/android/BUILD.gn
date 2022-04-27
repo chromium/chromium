@@ -9,7 +9,10 @@ generate_jni("jni_headers") {
 }
 
 android_library("java") {
-  deps = [ "//base:base_java" ]
+  deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+  ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   sources = [ "java/src/org/chromium/components/spellcheck/SpellCheckerSessionBridge.java" ]

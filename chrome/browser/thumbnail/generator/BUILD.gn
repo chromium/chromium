@@ -72,6 +72,7 @@ if (is_android) {
       ":jni_headers",
       ":proto_java",
       "//base:base_java",
+      "//build/android:build_java",
       "//chrome/browser/util:java",
       "//components/browser_ui/util/android:java",
       "//content/public/android:content_java",
@@ -159,6 +160,7 @@ if (is_android) {
     deps = [
       ":test_support_jni_headers",
       "//base:base_java",
+      "//build/android:build_java",
     ]
 
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

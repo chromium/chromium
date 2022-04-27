@@ -45,6 +45,7 @@ commerce_subscriptions_java_test_sources = [
 commerce_subscriptions_java_test_deps = [
   "//base:base_java",
   "//base:base_java_test_support",
+  "//build/android:build_java",
   "//chrome/android:base_module_java",
   "//chrome/browser/android/lifecycle:java",
   "//chrome/browser/endpoint_fetcher:java",

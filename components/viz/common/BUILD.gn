@@ -458,7 +458,10 @@ viz_source_set("perf_tests") {
 
 if (is_android) {
   android_library("common_java") {
-    deps = [ "//base:base_java" ]
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+    ]
     sources = [
       "java/src/org/chromium/components/viz/common/VizSwitches.java",
       "java/src/org/chromium/components/viz/common/display/DeJellyUtils.java",

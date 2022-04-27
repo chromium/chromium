@@ -10,6 +10,7 @@ android_library("java") {
     "//base:base_java",
     "//base:base_java",
     "//base:jni_java",
+    "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/power_bookmarks:proto_java",
     "//chrome/browser/profiles/android:java",

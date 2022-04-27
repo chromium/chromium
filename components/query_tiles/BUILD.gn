@@ -101,6 +101,7 @@ if (is_android) {
     deps = [
       ":query_tile_java",
       "//base:base_java",
+      "//build/android:build_java",
       "//components/browser_ui/widget/android:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//ui/android:ui_java",
@@ -141,6 +142,7 @@ if (is_android) {
       ":test_support_java",
       "//base:base_java",
       "//base:base_junit_test_support",
+      "//build/android:build_java",
       "//third_party/android_deps:robolectric_all_java",
       "//third_party/junit",
     ]

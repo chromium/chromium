@@ -82,6 +82,7 @@ android_library("content_main_dex_java") {
   deps = [
     ":content_java_resources",
     "//base:base_java",
+    "//build/android:build_java",
     "//components/version_info/android:version_constants_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -141,6 +142,7 @@ android_library("content_full_java") {
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
     "//build:chromeos_buildflags",
+    "//build/android:build_java",
     "//components/download/public/common:public_java",
     "//components/payments/mojom:mojom_java",
     "//content/public/common:trust_tokens_mojo_bindings_java",
@@ -640,6 +642,7 @@ junit_binary("content_junit_tests") {
     "//base:base_java_process_launcher_test_support",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//build/android:build_java",
     "//content/public/test/android:content_java_test_support",
     "//media/mojo/mojom:mojom_java",
     "//mojo/public/java:base_java",

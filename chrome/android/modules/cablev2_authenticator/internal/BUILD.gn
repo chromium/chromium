@@ -9,6 +9,7 @@ android_library("java") {
   sources = [ "java/src/org/chromium/chrome/modules/cablev2_authenticator/ModuleImpl.java" ]
   deps = [
     "//base:base_java",
+    "//build/android:build_java",
     "//chrome/android/features/cablev2_authenticator:java",
     "//chrome/android/modules/cablev2_authenticator/public:java",
   ]

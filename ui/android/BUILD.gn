@@ -363,6 +363,7 @@ android_library("ui_no_recycler_view_java") {
     ":ui_java_resources",
     ":ui_utils_java",
     "//base:base_java",
+    "//build/android:build_java",
     "//components/url_formatter/android:url_formatter_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
@@ -440,6 +441,7 @@ android_library("ui_java_test_support") {
     ":ui_java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//build/android:build_java",
     "//components/browser_ui/modaldialog/android:java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
@@ -510,6 +512,7 @@ junit_binary("ui_junit_tests") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
+    "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_java",
@@ -570,6 +573,7 @@ android_library("clipboard_java_test_support") {
   deps = [
     "//base:base_java",
     "//base:base_java_test_support",
+    "//build/android:build_java",
   ]
 }
 
@@ -587,6 +591,7 @@ android_library("ui_javatests") {
     ":ui_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//build/android:build_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_library_java",

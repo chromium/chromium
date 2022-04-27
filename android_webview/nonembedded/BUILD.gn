@@ -39,6 +39,7 @@ android_library("nonembedded_java") {
     "//android_webview/glue:glue_java",
     "//android_webview/proto:metrics_bridge_records_proto_java",
     "//base:base_java",
+    "//build/android:build_java",
     "//components/about_ui/android:aboutui_java",
     "//components/crash/android:java",
     "//components/embedder_support/android:application_java",

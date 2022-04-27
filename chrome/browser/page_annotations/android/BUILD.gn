@@ -19,6 +19,7 @@ android_library("java") {
 
   deps = [
     "//base:base_java",
+    "//build/android:build_java",
     "//chrome/browser/endpoint_fetcher:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",

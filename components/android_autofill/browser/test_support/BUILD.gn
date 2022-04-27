@@ -17,6 +17,7 @@ android_library("component_autofill_provider_java_test_support") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:jni_java",
+    "//build/android:build_java",
     "//components/android_autofill/browser:autofill_aidl",
     "//components/android_autofill/browser:java",
     "//content/public/android:content_java",

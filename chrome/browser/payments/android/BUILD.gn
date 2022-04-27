@@ -19,6 +19,7 @@ android_library("junit_test_support") {
   testonly = true
   deps = [
     "//base:base_java",
+    "//build/android:build_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/profiles/android:java",
@@ -56,6 +57,7 @@ java_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//build/android:build_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/profiles/android:java",
     "//components/payments/content/android:java",

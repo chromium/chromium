@@ -84,6 +84,7 @@ template("remoting_android_client_java_tmpl") {
     deps = [
       "//base:base_java",
       "//base:jni_java",
+      "//build/android:build_java",
       "//remoting/android:remoting_android_client_java_resources",
       "//remoting/android:remoting_apk_manifest",
       "//remoting/proto/remoting/v1:directory_proto_java",

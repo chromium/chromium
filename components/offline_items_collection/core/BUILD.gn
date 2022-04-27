@@ -114,6 +114,7 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
+      "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//url:gurl_java",
     ]

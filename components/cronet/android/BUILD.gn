@@ -897,6 +897,7 @@ if (!is_component_build) {
       ":cronet_impl_all_java",
       "//base:base_java",
       "//base:base_java_test_support",
+      "//build/android:build_java",
       "//net/android:net_java_test_support",
       "//third_party/android_sdk:android_test_base_java",
       "//third_party/junit",
@@ -929,6 +930,7 @@ if (!is_component_build) {
       ":cronet_api_java",
       ":cronet_impl_all_java",
       "//base:base_java",
+      "//build/android:build_java",
       "//third_party/android_sdk:android_test_base_java",
       "//third_party/android_support_test_runner:runner_java",
       "//third_party/junit",
@@ -1068,6 +1070,7 @@ if (!is_component_build) {
       ":cronet_test_apk_resources",
       "//base:base_java",
       "//base:base_java_test_support",
+      "//build/android:build_java",
       "//net/android:net_java",
       "//net/android:net_java_test_support",
       "//third_party/android_sdk:android_test_base_java",
@@ -1154,6 +1157,7 @@ if (!is_component_build) {
       ":cronet_test_apk_resources",
       "//base:base_java",
       "//base:base_java_test_support",
+      "//build/android:build_java",
       "//third_party/android_sdk:android_test_base_java",
       "//third_party/android_sdk:android_test_mock_java",
       "//third_party/android_support_test_runner:runner_java",
@@ -1194,6 +1198,7 @@ if (!is_component_build) {
       ":cronet_javatests",
       ":cronet_test_apk_java",
       "//base:base_java",
+      "//build/android:build_java",
       "//third_party/android_sdk:android_test_mock_java",
       "//third_party/junit",
     ]
@@ -1297,6 +1302,7 @@ if (!is_component_build) {
   jar_src("jar_cronet_impl_native_java_source") {
     src_search_dirs = [
       "//base/android/java/src",
+      "//build/android/java/src",
       "//components/cronet/android/java/src",
       "//net/android/java/src",
       "//url/android/java/src",
@@ -1304,6 +1310,7 @@ if (!is_component_build) {
     source_deps = [
       ":cronet_impl_native_base_java",
       "//base:base_java",
+      "//build/android:build_java",
       "//net/android:net_java",
       "//url:url_java",
     ]

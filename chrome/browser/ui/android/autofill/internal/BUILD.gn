@@ -30,6 +30,7 @@ android_library("java") {
     ":jni_headers",
     "//base:base_java",
     "//base:jni_java",
+    "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",

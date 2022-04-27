@@ -72,6 +72,7 @@ template("module_desc_java") {
   android_library(_target_name) {
     deps = [
       "//base:base_java",
+      "//build/android:build_java",
       "//components/module_installer/android:module_installer_java",
     ]
     srcjar_deps = [ ":${_target_name}__srcjar" ]

@@ -3984,6 +3984,7 @@ if (is_android) {
     ]
 
     deps = [
+      "//build/android:build_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/androidx:androidx_annotation_annotation_experimental_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
@@ -3992,10 +3993,7 @@ if (is_android) {
       "//third_party/androidx:androidx_multidex_multidex_java",
     ]
 
-    public_deps = [
-      ":jni_java",
-      "//build/android:build_java",
-    ]
+    public_deps = [ ":jni_java" ]
 
     sources = [
       "android/java/src/org/chromium/base/ActivityState.java",
@@ -4174,6 +4172,7 @@ if (is_android) {
       ":base_java",
       ":base_java_test_support",
       "//base/test:test_support_java",
+      "//build/android:build_java",
       "//third_party/android_support_test_runner:runner_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_java",
@@ -4228,6 +4227,7 @@ if (is_android) {
 
     deps = [
       ":base_java",
+      "//build/android:build_java",
       "//third_party/android_sdk:android_test_base_java",
       "//third_party/android_sdk:android_test_mock_java",
       "//third_party/android_support_test_runner:runner_java",
@@ -4323,7 +4323,10 @@ if (is_android) {
   android_library("base_java_process_launcher_test_support") {
     testonly = true
 
-    deps = [ ":base_java" ]
+    deps = [
+      ":base_java",
+      "//build/android:build_java",
+    ]
 
     sources = [ "test/android/javatests/src/org/chromium/base/process_launcher/TestChildProcessConnection.java" ]
   }
@@ -4350,6 +4353,7 @@ if (is_android) {
 
     deps = [
       ":base_java",
+      "//build/android:build_java",
       "//testing/android/junit:junit_test_support",
       "//third_party/android_deps:robolectric_all_java",
       "//third_party/android_support_test_runner:runner_java",
@@ -4417,6 +4421,7 @@ if (is_android) {
       ":base_junit_test_support",
       ":jni_java",
       "//base/test:test_support_java",
+      "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_java",
@@ -4452,13 +4457,19 @@ if (is_android) {
 
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
-    deps = [ "//base:base_java" ]
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+    ]
   }
 
   android_library("base_java_unittest_support") {
     testonly = true
 
-    deps = [ ":base_java" ]
+    deps = [
+      ":base_java",
+      "//build/android:build_java",
+    ]
 
     sources = [
       "test/android/java/src/org/chromium/base/ContentUriTestUtils.java",

@@ -14,7 +14,10 @@ if (is_android) {
   android_library("subresource_filter_java_test_support") {
     testonly = true
     sources = [ "../../android/javatests/src/org/chromium/chrome/browser/subresource_filter/TestRulesetPublisher.java" ]
-    deps = [ "//base:base_java" ]
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+    ]
   }
 
   android_library("subresource_filter_javatests") {

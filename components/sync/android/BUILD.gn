@@ -14,9 +14,7 @@ android_library("sync_java") {
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   srcjar_deps = [ ":java_enums" ]
-  sources = [
-    "java/src/org/chromium/components/sync/Passphrase.java",
-  ]
+  sources = [ "java/src/org/chromium/components/sync/Passphrase.java" ]
 }
 
 java_cpp_enum("java_enums") {

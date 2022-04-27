@@ -13,6 +13,7 @@ android_library("java") {
   sources = _jni_sources
   deps = [
     "//base:base_java",
+    "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",

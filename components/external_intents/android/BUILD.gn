@@ -20,6 +20,7 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//build/android:build_java",
     "//components/embedder_support/android:util_java",
     "//components/navigation_interception/android:navigation_interception_java",
     "//components/url_formatter/android:url_formatter_java",

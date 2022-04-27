@@ -130,7 +130,10 @@ if (is_android) {
 
   android_library("url_java") {
     sources = [ "android/java/src/org/chromium/url/IDNStringUtil.java" ]
-    deps = [ "//base:base_java" ]
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+    ]
   }
 
   android_library("gurl_java") {
@@ -141,6 +144,7 @@ if (is_android) {
     ]
     deps = [
       "//base:base_java",
+      "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -294,6 +298,7 @@ if (is_android) {
       ":gurl_java",
       "//base:base_java",
       "//base:base_java_test_support",
+      "//build/android:build_java",
     ]
   }
 
@@ -331,6 +336,7 @@ if (is_android) {
       ":gurl_junit_test_support",
       "//base:base_java",
       "//base:base_java_test_support",
+      "//build/android:build_java",
       "//content/public/test/android:content_java_test_support",
       "//third_party/android_support_test_runner:rules_java",
       "//third_party/android_support_test_runner:runner_java",
@@ -363,6 +369,7 @@ if (is_android) {
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
       "//base/test:test_support_java",
+      "//build/android:build_java",
       "//third_party/android_deps:robolectric_all_java",
       "//third_party/junit",
     ]

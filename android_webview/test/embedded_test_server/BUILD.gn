@@ -15,6 +15,7 @@ android_library("aw_net_java_test_support") {
   deps = [
     "//base:base_java",
     "//base:base_java_test_support",
+    "//build/android:build_java",
     "//net/android:embedded_test_server_aidl_java",
     "//net/android:net_java",
     "//net/android:net_java_test_support",
@@ -67,6 +68,7 @@ android_apk("aw_net_test_support_apk") {
   deps = [
     ":aw_net_java_test_support",
     "//base:base_java",
+    "//build/android:build_java",
   ]
   android_manifest = "java/AndroidManifest.xml"
   apk_name = "ChromiumNetTestAwSupport"
