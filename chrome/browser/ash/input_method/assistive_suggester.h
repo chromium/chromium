@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
 #include "chrome/browser/ash/input_method/suggestions_source.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace input_method {
@@ -171,8 +172,8 @@ class AssistiveSuggester : public SuggestionsSource {
   // The id of the currently active input engine.
   std::string active_engine_id_;
 
-  // ID of the focused text field, 0 if none is focused.
-  int context_id_ = -1;
+  // ID of the focused text field, nullopt if none focused.
+  absl::optional<int> focused_context_id_;
 
   // The current suggester in use, nullptr means no suggestion is shown.
   Suggester* current_suggester_ = nullptr;

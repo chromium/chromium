@@ -329,24 +329,28 @@ bool AssistiveSuggester::IsAssistiveTypeAllowedInBrowserContext(
 }
 
 void AssistiveSuggester::OnFocus(int context_id) {
-  context_id_ = context_id;
-  personal_info_suggester_.OnFocus(context_id_);
-  emoji_suggester_.OnFocus(context_id_);
-  multi_word_suggester_.OnFocus(context_id_);
+  // Some parts of the code reserve negative/zero context_id for unfocused
+  // context. As a result we should make sure it is not being errornously set to
+  // a negative number, and cause unexpected behaviour.
+  DCHECK(context_id);
+  focused_context_id_ = context_id;
+  personal_info_suggester_.OnFocus(context_id);
+  emoji_suggester_.OnFocus(context_id);
+  multi_word_suggester_.OnFocus(context_id);
   suggester_switch_->FetchEnabledSuggestionsThen(
       base::BindOnce(&AssistiveSuggester::RecordTextInputStateMetrics,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AssistiveSuggester::OnBlur() {
-  context_id_ = -1;
+  focused_context_id_ = absl::nullopt;
   personal_info_suggester_.OnBlur();
   emoji_suggester_.OnBlur();
   multi_word_suggester_.OnBlur();
 }
 
 bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
-  if (context_id_ == -1)
+  if (!focused_context_id_.has_value())
     return false;
 
   // We only track keydown event because the suggesting action is triggered by
@@ -488,7 +492,7 @@ void AssistiveSuggester::ProcessOnSurroundingTextChanged(
     const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   RecordAssistiveMatchMetrics(text, cursor_pos, anchor_pos,
                               enabled_suggestions);
-  if (!IsAssistiveFeatureEnabled() || context_id_ == -1)
+  if (!IsAssistiveFeatureEnabled() || !focused_context_id_.has_value())
     return;
 
   if (IsMultiWordSuggestEnabled()) {
