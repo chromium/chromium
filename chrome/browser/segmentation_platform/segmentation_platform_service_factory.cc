@@ -70,10 +70,6 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   OptimizationGuideKeyedService* optimization_guide =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
 
-  // If optimization guide feature is disabled, then disable segmentation.
-  if (!optimization_guide)
-    return new DummySegmentationPlatformService();
-
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
 
   params->history_service = HistoryServiceFactory::GetForProfile(
