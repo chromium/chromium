@@ -20,6 +20,19 @@ source_set("follow") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
+source_set("tab_helper") {
+  sources = [
+    "follow_tab_helper.h",
+    "follow_tab_helper.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/browser_state",
+    "//ios/web/public",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
 optimize_js("rss_link_js") {
   visibility = [ ":follow" ]
 

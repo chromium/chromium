@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/download/vcard_tab_helper.h"
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
+#import "ios/chrome/browser/follow/follow_tab_helper.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/browser/history/history_tab_helper.h"
 #include "ios/chrome/browser/history/top_sites_factory.h"
@@ -48,6 +49,7 @@
 #import "ios/chrome/browser/language/url_language_histogram_factory.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_tab_helper.h"
 #import "ios/chrome/browser/metrics/pageload_foreground_duration_tab_helper.h"
+#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/open_in/open_in_tab_helper.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_tab_helper.h"
@@ -240,5 +242,9 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     HttpsOnlyModeUpgradeTabHelper::CreateForWebState(web_state);
     HttpsOnlyModeContainer::CreateForWebState(web_state);
     HttpsOnlyModeAllowlist::CreateForWebState(web_state);
+  }
+
+  if (IsWebChannelsEnabled()) {
+    FollowTabHelper::CreateForWebState(web_state);
   }
 }
