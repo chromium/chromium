@@ -222,7 +222,7 @@ class CONTENT_EXPORT AuthenticatorCommon {
       device::AuthenticatorGetAssertionResponse response_data,
       absl::optional<std::vector<uint8_t>> large_blob = absl::nullopt);
 
-  // Runs |get_assertion_callback_| and then Cleanup().
+  // Runs |get_assertion_response_callback_| and then Cleanup().
   void CompleteGetAssertionRequest(
       blink::mojom::AuthenticatorStatus status,
       blink::mojom::GetAssertionAuthenticatorResponsePtr response = nullptr,

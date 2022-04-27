@@ -633,7 +633,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
   EXPECT_TRUE(
       NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title2.html")));
   WaitForConnectionError();
-  create_callback_receiver.WaitForCallback();
 
   // The next active document should be able to successfully call
   // navigator.credentials.create({publicKey: ...}) again.
@@ -663,7 +662,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
   EXPECT_TRUE(
       NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title2.html")));
   WaitForConnectionError();
-  get_callback_receiver.WaitForCallback();
 
   // The next active document should be able to successfully call
   // navigator.credentials.get({publicKey: ...}) again.

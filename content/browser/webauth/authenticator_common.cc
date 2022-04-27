@@ -485,17 +485,7 @@ AuthenticatorCommon::AuthenticatorCommon(RenderFrameHost* render_frame_host)
           BackForwardCacheDisable::DisabledReasonId::kWebAuthenticationAPI));
 }
 
-AuthenticatorCommon::~AuthenticatorCommon() {
-  // Resolve pending callbacks before disconnecting the receiver.
-  if (make_credential_response_callback_) {
-    CompleteMakeCredentialRequest(
-        blink::mojom::AuthenticatorStatus::UNKNOWN_ERROR);
-  }
-  if (get_assertion_response_callback_) {
-    CompleteGetAssertionRequest(
-        blink::mojom::AuthenticatorStatus::UNKNOWN_ERROR);
-  }
-}
+AuthenticatorCommon::~AuthenticatorCommon() = default;
 
 std::unique_ptr<AuthenticatorRequestClientDelegate>
 AuthenticatorCommon::MaybeCreateRequestDelegate() {
