@@ -4701,10 +4701,12 @@ bool HTMLMediaElement::MediaShouldBeOpaque() const {
 void HTMLMediaElement::SetError(MediaError* error) {
   error_ = error;
 
-  if (!error || !media_source_attachment_)
-    return;
-
-  media_source_attachment_->OnElementError();
+  if (error) {
+    DLOG(ERROR) << __func__ << ": {code=" << error->code()
+                << ", message=" << error->message() << "}";
+    if (media_source_attachment_)
+      media_source_attachment_->OnElementError();
+  }
 }
 
 void HTMLMediaElement::ReportCurrentTimeToMediaSource() {
