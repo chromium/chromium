@@ -3436,7 +3436,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, VideoSuspendAndResume) {
   EXPECT_GT(0.02, duration2 - duration1);
 
   // Resume the media.
-  EXPECT_TRUE(ExecJs(rfh_a, "video.play();"));
+  EXPECT_TRUE(ExecJs(rfh_a, R"(
+      // Ensure that the video does not auto-pause when it completes as that
+      // would add an unexpected pause event.
+      video.loop = true;
+      video.play();
+    )"));
 
   // Confirm that the media pauses automatically when going to the cache.
   // TODO(hajimehoshi): Confirm that this media automatically resumes if
