@@ -7722,7 +7722,6 @@ crbug.com/1267538 [ Linux ] http/tests/csspaint/border-color.html [ Failure Pass
 crbug.com/1267538 [ Mac ] http/tests/csspaint/border-color.html [ Failure Pass ]
 
 # Sheriff 2022-04-26
-crbug.com/1320119 [ Mac10.13 ] external/wpt/mediasession/idlharness.window.html [ Failure Pass Timeout ]
 crbug.com/1320120 [ Mac10.13 ] fast/harness/perftests/runs-per-second-log.html [ Failure Pass Timeout ]
 crbug.com/1320121 [ Mac10.13 ] http/tests/inspector-protocol/network/blocked-setcookie-same-party-cross-party.js [ Failure Pass Timeout ]
 crbug.com/1320140 [ Win ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/disallowed-navigations.https.html [ Pass Timeout ]
