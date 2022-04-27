@@ -91,6 +91,11 @@ class GuestOsWaylandServer {
           void(base::OnceCallback<void(std::unique_ptr<GuestOsCapabilities>)>)>
           factory);
 
+  // Used in tests to skip actually trying to allocate a server socket via exo.
+  void OverrideServerForTesting(vm_tools::launch::VmType vm_type,
+                                base::WeakPtr<GuestOsCapabilities> capabilities,
+                                base::FilePath path);
+
  private:
   class CapabilityHolder;
 

@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "chrome/browser/ash/borealis/borealis_capabilities.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/crostini/crostini_capabilities.h"
 #include "chrome/browser/ash/guest_os/guest_os_capabilities.h"
 #include "chrome/browser/ash/guest_os/infra/cached_callback.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
@@ -78,11 +79,13 @@ class GuestOsWaylandServer::CapabilityHolder
                               base::WeakPtr<GuestOsCapabilities> cap_ptr,
                               bool success,
                               const base::FilePath& path) {
-    if (success) {
-      std::move(callback).Run(Success(cap_ptr, path));
+    if (!success) {
+      std::move(callback).Run(Failure(ServerFailure::kFailedToSpawn));
       return;
     }
-    std::move(callback).Run(Failure(ServerFailure::kFailedToSpawn));
+    DCHECK(cap_ptr);
+    DCHECK(!path.empty());
+    std::move(callback).Run(Success(cap_ptr, path));
   }
 
   static void OnCapabilitiesCreated(RealCallback callback,
@@ -108,12 +111,12 @@ class GuestOsWaylandServer::CapabilityHolder
 GuestOsWaylandServer::ServerDetails::ServerDetails(
     base::WeakPtr<GuestOsCapabilities> capabilities,
     base::FilePath path)
-    : capabilities_(capabilities), server_path_(std::move(path)) {
-  DCHECK(capabilities_);
-  DCHECK(!server_path_.empty());
-}
+    : capabilities_(capabilities), server_path_(std::move(path)) {}
 
 GuestOsWaylandServer::ServerDetails::~ServerDetails() {
+  // In tests, this is used to avoid dealing with the real server controller.
+  if (server_path_.empty())
+    return;
   GuestOsCapabilities::MaybeRemoveServer(capabilities_, server_path_);
 }
 
@@ -139,6 +142,9 @@ GuestOsWaylandServer::GuestOsWaylandServer(Profile* profile)
   capability_holders_[vm_tools::launch::BOREALIS] =
       std::make_unique<CapabilityHolder>(base::BindRepeating(
           &borealis::BorealisCapabilities::Build, profile_));
+  capability_holders_[vm_tools::launch::TERMINA] =
+      std::make_unique<CapabilityHolder>(base::BindRepeating(
+          &crostini::CrostiniCapabilities::Build, profile_));
 }
 
 GuestOsWaylandServer::~GuestOsWaylandServer() = default;
@@ -157,6 +163,14 @@ void GuestOsWaylandServer::SetCapabilityFactoryForTesting(
     vm_tools::launch::VmType vm_type,
     CapabilityHolder::CapabilityFactory factory) {
   capability_holders_[vm_type] = std::make_unique<CapabilityHolder>(factory);
+}
+
+void GuestOsWaylandServer::OverrideServerForTesting(
+    vm_tools::launch::VmType vm_type,
+    base::WeakPtr<GuestOsCapabilities> capabilities,
+    base::FilePath path) {
+  capability_holders_[vm_type]->CacheForTesting(  // IN-TEST
+      std::make_unique<ServerDetails>(capabilities, std::move(path)));
 }
 
 }  // namespace guest_os

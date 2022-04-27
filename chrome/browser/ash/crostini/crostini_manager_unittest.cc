@@ -24,6 +24,8 @@
 #include "chrome/browser/ash/crostini/crostini_types.mojom-shared.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/handlers/powerwash_requirements_checker.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -245,6 +247,10 @@ class CrostiniManagerTest : public testing::Test {
     g_browser_process->platform_part()
         ->InitializeSchedulerConfigurationManager();
 
+    guest_os::GuestOsService::GetForProfile(profile())
+        ->WaylandServer()
+        ->OverrideServerForTesting(vm_tools::launch::TERMINA, nullptr, {});
+
     chromeos::CryptohomeMiscClient::InitializeFake();
     chromeos::FakeCryptohomeMiscClient::Get()->set_requires_powerwash(false);
     policy::PowerwashRequirementsChecker::InitializeSynchronouslyForTesting();
@@ -354,7 +360,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmNameError) {
   const base::FilePath& disk_path = base::FilePath("unused");
 
   crostini_manager()->StartTerminaVm(
-      "", disk_path, 0,
+      "", disk_path, {}, 0,
       base::BindOnce(&ExpectFailure, run_loop()->QuitClosure()));
   run_loop()->Run();
   EXPECT_EQ(fake_concierge_client_->start_termina_vm_call_count(), 0);
@@ -367,7 +373,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmAnomalyDetectorNotConnectedError) {
       false);
 
   crostini_manager()->StartTerminaVm(
-      kVmName, disk_path, 0,
+      kVmName, disk_path, {}, 0,
       base::BindOnce(&ExpectFailure, run_loop()->QuitClosure()));
   run_loop()->Run();
   EXPECT_EQ(fake_concierge_client_->start_termina_vm_call_count(), 0);
@@ -377,7 +383,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmDiskPathError) {
   const base::FilePath& disk_path = base::FilePath();
 
   crostini_manager()->StartTerminaVm(
-      kVmName, disk_path, 0,
+      kVmName, disk_path, {}, 0,
       base::BindOnce(&ExpectFailure, run_loop()->QuitClosure()));
   run_loop()->Run();
   EXPECT_EQ(fake_concierge_client_->start_termina_vm_call_count(), 0);
@@ -407,7 +413,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmPowerwashRequestError) {
   NotificationDisplayServiceTester notification_service(profile());
 
   crostini_manager()->StartTerminaVm(
-      kVmName, disk_path, 0,
+      kVmName, disk_path, {}, 0,
       base::BindOnce(&ExpectFailure, run_loop()->QuitClosure()));
   run_loop()->Run();
   EXPECT_EQ(fake_concierge_client_->start_termina_vm_call_count(), 0);
@@ -444,7 +450,7 @@ TEST_F(CrostiniManagerTest,
   NotificationDisplayServiceTester notification_service(profile());
 
   crostini_manager()->StartTerminaVm(
-      kVmName, disk_path, 0,
+      kVmName, disk_path, {}, 0,
       base::BindOnce(&ExpectFailure, run_loop()->QuitClosure()));
   run_loop()->Run();
   EXPECT_EQ(fake_concierge_client_->start_termina_vm_call_count(), 0);
@@ -465,7 +471,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmMountError) {
 
   EnsureTerminaInstalled();
   crostini_manager()->StartTerminaVm(
-      kVmName, disk_path, 0,
+      kVmName, disk_path, {}, 0,
       base::BindOnce(&ExpectFailure, run_loop()->QuitClosure()));
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
@@ -485,7 +491,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmMountErrorThenSuccess) {
 
   EnsureTerminaInstalled();
   crostini_manager()->StartTerminaVm(
-      kVmName, disk_path, 0,
+      kVmName, disk_path, {}, 0,
       base::BindOnce(&ExpectSuccess, run_loop()->QuitClosure()));
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
@@ -499,7 +505,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmSuccess) {
 
   EnsureTerminaInstalled();
   crostini_manager()->StartTerminaVm(
-      kVmName, disk_path, 0,
+      kVmName, disk_path, {}, 0,
       base::BindOnce(&ExpectSuccess, run_loop()->QuitClosure()));
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
@@ -518,7 +524,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmLowDiskNotification) {
 
   EnsureTerminaInstalled();
   crostini_manager()->StartTerminaVm(
-      ContainerId::GetDefault().vm_name, disk_path, 0,
+      ContainerId::GetDefault().vm_name, disk_path, {}, 0,
       base::BindOnce(&ExpectSuccess, run_loop()->QuitClosure()));
   run_loop()->Run();
 
@@ -540,7 +546,7 @@ TEST_F(CrostiniManagerTest,
 
   EnsureTerminaInstalled();
   crostini_manager()->StartTerminaVm(
-      ContainerId::GetDefault().vm_name, disk_path, 0,
+      ContainerId::GetDefault().vm_name, disk_path, {}, 0,
       base::BindOnce(&ExpectSuccess, run_loop()->QuitClosure()));
   run_loop()->Run();
 
@@ -556,7 +562,7 @@ TEST_F(CrostiniManagerTest, OnStartTremplinRecordsRunningVm) {
   // Start the Vm.
   EnsureTerminaInstalled();
   crostini_manager()->StartTerminaVm(
-      kVmName, disk_path, 0,
+      kVmName, disk_path, {}, 0,
       base::BindOnce(&ExpectSuccess, run_loop()->QuitClosure()));
 
   // Check that the Vm start is not recorded until tremplin starts.
@@ -1376,7 +1382,7 @@ TEST_F(CrostiniManagerRestartTest, IsContainerRunningFalseIfVmNotStarted) {
 
   base::RunLoop run_loop2;
   crostini_manager()->StartTerminaVm(
-      kVmName, disk_path, 0,
+      kVmName, disk_path, {}, 0,
       base::BindOnce(&ExpectSuccess, run_loop2.QuitClosure()));
   run_loop2.Run();
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);

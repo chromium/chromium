@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "chrome/browser/ash/crostini/crostini_browser_test_util.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
@@ -20,14 +21,15 @@
 
 namespace extensions {
 
-class TerminalPrivateBrowserTest : public InProcessBrowserTest {
+class TerminalPrivateBrowserTest : public CrostiniBrowserTestBase {
  public:
   TerminalPrivateBrowserTest(const TerminalPrivateBrowserTest&) = delete;
   TerminalPrivateBrowserTest& operator=(const TerminalPrivateBrowserTest&) =
       delete;
 
  protected:
-  TerminalPrivateBrowserTest() = default;
+  TerminalPrivateBrowserTest()
+      : CrostiniBrowserTestBase(/*register_termina=*/false) {}
 
   void ExpectJsResult(const std::string& script, const std::string& expected) {
     content::WebContents* web_contents =
@@ -50,12 +52,11 @@ IN_PROC_BROWSER_TEST_F(TerminalPrivateBrowserTest, OpenTerminalProcessChecks) {
     })}))";
 
   // 'vmshell not allowed' when crostini is not allowed.
-  crostini::FakeCrostiniFeatures crostini_features;
-  crostini_features.set_could_be_allowed(true);
-  crostini_features.set_is_allowed_now(false);
+  fake_crostini_features_.set_could_be_allowed(true);
+  fake_crostini_features_.set_is_allowed_now(false);
   ExpectJsResult(script, "vmshell not allowed");
 
-  crostini_features.set_is_allowed_now(true);
+  fake_crostini_features_.set_is_allowed_now(true);
   ExpectJsResult(script, "success");
 
   // openTerminalProcess not defined.
