@@ -380,7 +380,7 @@ StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   const bool whats_new_enabled =
-      promotional_tabs_enabled && whats_new::ShouldShowForState(local_state);
+      whats_new::ShouldShowForState(local_state, promotional_tabs_enabled);
 
   auto* privacy_sandbox_serivce =
       PrivacySandboxServiceFactory::GetForProfile(profile_);
@@ -478,6 +478,11 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
   LaunchResult launch_result =
       tabs.empty() ? LaunchResult::kNormally : LaunchResult::kWithGivenUrls;
 
+  if (whats_new_enabled && (launch_result == LaunchResult::kWithGivenUrls ||
+                            is_incognito_or_guest || is_post_crash_launch)) {
+    whats_new::LogStartupType(whats_new::StartupType::kIneligible);
+  }
+
   // Only the New Tab Page or command line URLs may be shown in incognito mode.
   // A similar policy exists for crash recovery launches, to prevent getting the
   // user stuck in a crash loop.
@@ -543,6 +548,8 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
         StartupTabs new_features_tabs;
         new_features_tabs = provider.GetNewFeaturesTabs(whats_new_enabled);
         AppendTabs(new_features_tabs, &tabs);
+      } else if (whats_new_enabled) {
+        whats_new::LogStartupType(whats_new::StartupType::kOverridden);
       }
     }
 
