@@ -817,6 +817,11 @@ class MediaStreamManager::DeviceRequest {
                /*pan_tilt_zoom_allowed=*/false);
     }
 
+    if (get_open_device_cb) {
+      std::move(get_open_device_cb)
+          .Run(MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN, nullptr);
+    }
+
     if (open_device_cb) {
       std::move(open_device_cb)
           .Run(false /* success */, std::string(), MediaStreamDevice());
