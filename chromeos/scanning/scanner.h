@@ -7,15 +7,15 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "chromeos/chromeos_export.h"
 #include "net/base/ip_address.h"
 
 namespace chromeos {
 
 // The type of protocol used to communicate with a scanner.
-enum class CHROMEOS_EXPORT ScanProtocol {
+enum class COMPONENT_EXPORT(SCANNING) ScanProtocol {
   kUnknown,
   kEscl,           // eSCL protocol.
   kEscls,          // eSCLS protocol.
@@ -23,7 +23,7 @@ enum class CHROMEOS_EXPORT ScanProtocol {
   kLegacyUsb       // Non-eSCL(S), legacy USB protocol.
 };
 
-struct CHROMEOS_EXPORT ScannerDeviceName {
+struct COMPONENT_EXPORT(SCANNING) ScannerDeviceName {
   explicit ScannerDeviceName(const std::string& device_name);
   ScannerDeviceName(const std::string& device_name, bool usable);
   ~ScannerDeviceName();
@@ -44,7 +44,7 @@ struct CHROMEOS_EXPORT ScannerDeviceName {
   bool usable = true;
 };
 
-struct CHROMEOS_EXPORT Scanner {
+struct COMPONENT_EXPORT(SCANNING) Scanner {
   Scanner();
   ~Scanner();
 

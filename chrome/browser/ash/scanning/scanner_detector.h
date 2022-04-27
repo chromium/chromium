@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "chromeos/chromeos_export.h"
 #include "chromeos/scanning/scanner.h"
 
 namespace ash {
