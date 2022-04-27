@@ -5135,6 +5135,8 @@ static_library("browser") {
       "apps/app_service/extension_apps_utils.h",
       "apps/intent_helper/common_apps_navigation_throttle.cc",
       "apps/intent_helper/common_apps_navigation_throttle.h",
+      "chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager.cc",
+      "chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager.h",
       "webshare/chromeos/sharesheet_client.cc",
       "webshare/chromeos/sharesheet_client.h",
     ]

@@ -171,6 +171,10 @@
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager.h"
+#endif
+
 using base::UserMetricsAction;
 using content::BrowserThread;
 
@@ -1666,6 +1670,17 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
         ->extension_service()
         ->BlockAllExtensions();
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Ensure that the `ContactCenterInsightsExtensionManager` is instantiated
+  // after other systems are set up and only when extensions are enabled for the
+  // given profile. This is done in `ProfileManager` so we can repurpose the
+  // same pre-conditional checks that are being used with other extension
+  // components and we can maintain said order.
+  if (extensions_enabled) {
+    ::chromeos::ContactCenterInsightsExtensionManager::GetForProfile(profile);
+  }
+#endif
 
 #endif
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
