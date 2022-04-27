@@ -239,6 +239,63 @@ class GaiaScreenTester extends ScreenElementApi {
   }
 }
 
+class SyncScreenTester extends ScreenElementApi {
+  constructor() {
+    super('sync-consent');
+  }
+}
+
+class FingerprintScreenTester extends ScreenElementApi {
+  constructor() {
+    super('fingerprint-setup');
+  }
+  /** @override */
+  shouldSkip() {
+    return !loadTimeData.getBoolean('testapi_isFingerprintSupported');
+  }
+}
+
+class AssistantScreenTester extends ScreenElementApi {
+  constructor() {
+    super('assistant-optin-flow');
+    this.mainElement = new PolymerElementApi(this, '#card');
+    this.valueProp = new PolymerElementApi(this.mainElement, '#valueProp');
+    this.valuePropSkipButtonText =
+        new PolymerElementApi(this.valueProp, '#skip-button-text');
+    this.relatedInfo = new PolymerElementApi(this.mainElement, '#relatedInfo');
+  }
+  /** @override */
+  shouldSkip() {
+    return !loadTimeData.getBoolean('testapi_isLibAssistantEnabled');
+  }
+
+  /**
+   * Returns if the assistant screen is ready for test interaction.
+   * @return {boolean}
+   */
+  isReadyForTesting() {
+    return this.isVisible() &&
+        (this.valueProp.isVisible() || this.relatedInfo.isVisible());
+  }
+
+  getSkipButtonName() {
+    if (this.valueProp.isVisible()) {
+      return this.valuePropSkipButtonText.element().textContent;
+    }
+    return loadTimeData.getString('assistantOptinNoThanksButton');
+  }
+}
+
+class MarketingOptInScreenTester extends ScreenElementApi {
+  constructor() {
+    super('marketing-opt-in');
+  }
+  /** @override */
+  shouldSkip() {
+    return !loadTimeData.getBoolean('testapi_isBrandedBuild');
+  }
+}
+
 class ConfirmSamlPasswordScreenTester extends ScreenElementApi {
   constructor() {
     super('saml-confirm-password');
@@ -402,6 +459,10 @@ class OobeApiProvider {
       EnrollmentScreen: new EnrollmentScreenTester(),
       UserCreationScreen: new UserCreationScreenTester(),
       GaiaScreen: new GaiaScreenTester(),
+      SyncScreen: new SyncScreenTester(),
+      FingerprintScreen: new FingerprintScreenTester(),
+      AssistantScreen: new AssistantScreenTester(),
+      MarketingOptInScreen: new MarketingOptInScreenTester(),
       ConfirmSamlPasswordScreen: new ConfirmSamlPasswordScreenTester(),
       PinSetupScreen: new PinSetupScreenTester(),
       EnterpriseEnrollmentScreen: new EnterpriseEnrollmentScreenTester(),
