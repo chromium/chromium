@@ -66,6 +66,8 @@ class InteractionSequenceBrowserUtil : private content::WebContentsObserver,
   // state change *doesn't* happen in a particular length of time.
   struct StateChange {
     StateChange();
+    StateChange(StateChange&& other);
+    StateChange& operator=(StateChange&& other);
     ~StateChange();
 
     // Function to be evaluated every `polling_interval`. Must be able to

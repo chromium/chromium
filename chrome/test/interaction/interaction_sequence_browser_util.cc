@@ -207,6 +207,11 @@ std::string CreateDeepQuery(
 }  // namespace
 
 InteractionSequenceBrowserUtil::StateChange::StateChange() = default;
+InteractionSequenceBrowserUtil::StateChange::StateChange(
+    InteractionSequenceBrowserUtil::StateChange&& other) = default;
+InteractionSequenceBrowserUtil::StateChange&
+InteractionSequenceBrowserUtil::StateChange::operator=(
+    InteractionSequenceBrowserUtil::StateChange&& other) = default;
 InteractionSequenceBrowserUtil::StateChange::~StateChange() = default;
 
 class InteractionSequenceBrowserUtil::NewTabWatcher
