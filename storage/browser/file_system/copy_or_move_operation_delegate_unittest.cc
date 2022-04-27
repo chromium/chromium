@@ -15,11 +15,13 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -46,7 +48,9 @@
 #include "storage/browser/test/test_file_system_backend.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_mount_option.h"
+#include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
@@ -121,7 +125,7 @@ class TestValidatorFactory : public CopyOrMoveFileValidatorFactory {
   };
 };
 
-class CopyOrMoveRecordDelegate : public CopyOrMoveHookDelegate {
+class CopyOrMoveRecordAndSecurityDelegate : public CopyOrMoveHookDelegate {
  public:
   // Records method invocations.
   struct ProgressRecord {
@@ -142,20 +146,28 @@ class CopyOrMoveRecordDelegate : public CopyOrMoveHookDelegate {
 
   using StatusCallback = FileSystemOperation::StatusCallback;
 
-  explicit CopyOrMoveRecordDelegate(std::vector<ProgressRecord>* records)
-      : records_(records) {
-    DCHECK(records_);
-  }
+  // Required callback to check whether a file/directory should be blocked for
+  // transfer. The callback returns true if the transfer should be blocked.
+  using ShouldBlockCallback =
+      base::RepeatingCallback<bool(const FileSystemURL& source_url)>;
 
-  ~CopyOrMoveRecordDelegate() override = default;
+  explicit CopyOrMoveRecordAndSecurityDelegate(
+      std::vector<ProgressRecord>& records,
+      const ShouldBlockCallback& should_block_callback)
+      : records_(records), should_block_callback_(should_block_callback) {}
+
+  ~CopyOrMoveRecordAndSecurityDelegate() override = default;
 
   void OnBeginProcessFile(const FileSystemURL& source_url,
                           const FileSystemURL& destination_url,
                           StatusCallback callback) override {
     AddRecord(ProgressRecord::Type::kBeginFile, source_url, destination_url, 0,
               base::File::FILE_OK);
-
-    std::move(callback).Run(base::File::FILE_OK);
+    if (should_block_callback_.Run(source_url)) {
+      std::move(callback).Run(base::File::FILE_ERROR_SECURITY);
+    } else {
+      std::move(callback).Run(base::File::FILE_OK);
+    }
   }
 
   void OnBeginProcessDirectory(const FileSystemURL& source_url,
@@ -163,8 +175,11 @@ class CopyOrMoveRecordDelegate : public CopyOrMoveHookDelegate {
                                StatusCallback callback) override {
     AddRecord(ProgressRecord::Type::kBeginDirectory, source_url,
               destination_url, 0, base::File::FILE_OK);
-
-    std::move(callback).Run(base::File::FILE_OK);
+    if (should_block_callback_.Run(source_url)) {
+      std::move(callback).Run(base::File::FILE_ERROR_SECURITY);
+    } else {
+      std::move(callback).Run(base::File::FILE_OK);
+    }
   }
 
   void OnProgress(const FileSystemURL& source_url,
@@ -210,12 +225,14 @@ class CopyOrMoveRecordDelegate : public CopyOrMoveHookDelegate {
     record.dest_url = dest_url;
     record.size = size;
     record.error = error;
-    records_->push_back(record);
+    records_.push_back(record);
   }
 
   // Raw ptr safe here, because the records will be destructed at end of test,
   // i.e., after the CopyOrMove operation has finished.
-  base::raw_ptr<std::vector<ProgressRecord>> records_;
+  std::vector<ProgressRecord>& records_;
+
+  ShouldBlockCallback should_block_callback_;
 };
 
 void RecordFileProgressCallback(std::vector<int64_t>* records,
@@ -253,8 +270,6 @@ class ScopedThreadStopper {
  private:
   raw_ptr<base::Thread> thread_;
 };
-
-}  // namespace
 
 class CopyOrMoveOperationTestHelper {
  public:
@@ -359,11 +374,69 @@ class CopyOrMoveOperationTestHelper {
   base::File::Error CopyWithHookDelegate(
       const FileSystemURL& src,
       const FileSystemURL& dest,
+      FileSystemOperation::ErrorBehavior error_behavior,
       std::unique_ptr<storage::CopyOrMoveHookDelegate>
           copy_or_move_hook_delegate) {
     return AsyncFileTestHelper::CopyWithHookDelegate(
-        file_system_context_.get(), src, dest,
+        file_system_context_.get(), src, dest, error_behavior,
         std::move(copy_or_move_hook_delegate));
+  }
+
+  base::File::Error CopyBlockAll(const FileSystemURL& src,
+                                 const FileSystemURL& dest) {
+    CopyOrMoveRecordAndSecurityDelegate::ShouldBlockCallback blocking_callback =
+        base::BindRepeating(
+            [](const FileSystemURL& source_url) { return true; });
+    std::vector<CopyOrMoveRecordAndSecurityDelegate::ProgressRecord> records;
+    return CopyWithHookDelegate(
+        src, dest, FileSystemOperation::ERROR_BEHAVIOR_ABORT,
+        std::make_unique<CopyOrMoveRecordAndSecurityDelegate>(
+            records, blocking_callback));
+  }
+
+  // Determines whether a specific `src` should be blocked.
+  // It uses the relative path of `src` from `root_src` and compares this path
+  // with the records within `kRegularFileSystemTestCases`. It blocks the `src`
+  // if the corresponding test case's block_action is `BLOCKED`.
+  // Additionally, it ensures that this function is not called for test cases
+  // with block_action `PARENT_BLOCKED`.
+  static bool ShouldBlockSource(const FileSystemURL& root_src,
+                                const FileSystemURL& src) {
+    base::FilePath src_relative_path;
+    if (root_src == src) {
+      // Don't block root, because we only care about the directories/folders
+      // within the root.
+      return false;
+    }
+
+    root_src.virtual_path().AppendRelativePath(src.virtual_path(),
+                                               &src_relative_path);
+    src_relative_path = src_relative_path.NormalizePathSeparators();
+    const auto records = base::make_span(kRegularFileSystemTestCases,
+                                         kRegularFileSystemTestCaseSize);
+    auto record_it = base::ranges::find(
+        records, src_relative_path, [](const FileSystemTestCaseRecord& record) {
+          return base::FilePath(record.path).NormalizePathSeparators();
+        });
+
+    EXPECT_NE(record_it, records.end());
+    EXPECT_NE(record_it->block_action, TestBlockAction::PARENT_BLOCKED);
+    return record_it->block_action == TestBlockAction::BLOCKED;
+  }
+
+  // Copy the `root` directory, but block some files that are expected to be
+  // blocked based on `kRegularFileSystemTestCases`.
+  base::File::Error CopyBlockSome(
+      const FileSystemURL& src,
+      const FileSystemURL& dest,
+      std::vector<CopyOrMoveRecordAndSecurityDelegate::ProgressRecord>&
+          records) {
+    return CopyWithHookDelegate(
+        src, dest, FileSystemOperation::ERROR_BEHAVIOR_SKIP,
+        std::make_unique<CopyOrMoveRecordAndSecurityDelegate>(
+            records,
+            base::BindRepeating(
+                &CopyOrMoveOperationTestHelper::ShouldBlockSource, src)));
   }
 
   base::File::Error Move(const FileSystemURL& src, const FileSystemURL& dest) {
@@ -373,11 +446,39 @@ class CopyOrMoveOperationTestHelper {
   base::File::Error MoveWithHookDelegate(
       const FileSystemURL& src,
       const FileSystemURL& dest,
+      FileSystemOperation::ErrorBehavior error_behavior,
       std::unique_ptr<storage::CopyOrMoveHookDelegate>
           copy_or_move_hook_delegate) {
     return AsyncFileTestHelper::MoveWithHookDelegate(
-        file_system_context_.get(), src, dest,
+        file_system_context_.get(), src, dest, error_behavior,
         std::move(copy_or_move_hook_delegate));
+  }
+
+  base::File::Error MoveBlockAll(const FileSystemURL& src,
+                                 const FileSystemURL& dest) {
+    CopyOrMoveRecordAndSecurityDelegate::ShouldBlockCallback blocking_callback =
+        base::BindRepeating(
+            [](const FileSystemURL& source_url) { return true; });
+    std::vector<CopyOrMoveRecordAndSecurityDelegate::ProgressRecord> records;
+    return MoveWithHookDelegate(
+        src, dest, FileSystemOperation::ERROR_BEHAVIOR_ABORT,
+        std::make_unique<CopyOrMoveRecordAndSecurityDelegate>(
+            records, blocking_callback));
+  }
+
+  // Move the `root` directory, but block some files that are expected to be
+  // blocked based on `kRegularFileSystemTestCases`.
+  base::File::Error MoveBlockSome(
+      const FileSystemURL& src,
+      const FileSystemURL& dest,
+      std::vector<CopyOrMoveRecordAndSecurityDelegate::ProgressRecord>&
+          records) {
+    return MoveWithHookDelegate(
+        src, dest, FileSystemOperation::ERROR_BEHAVIOR_SKIP,
+        std::make_unique<CopyOrMoveRecordAndSecurityDelegate>(
+            records,
+            base::BindRepeating(
+                &CopyOrMoveOperationTestHelper::ShouldBlockSource, src)));
   }
 
   base::File::Error SetUpTestCaseFiles(
@@ -401,9 +502,23 @@ class CopyOrMoveOperationTestHelper {
     return result;
   }
 
+  enum class VerifyDirectoryState {
+    // Verifies all files.
+    // Used if no blocking is specified and for the source directory after a
+    // move.
+    ALL_FILES_EXIST,
+    // Verifies that only the blocked files and their ancestors exist.
+    // Used to check the source for a move.
+    ONLY_BLOCKED_FILES_AND_PARENTS,
+    // Verifies that only the allowed files exist.
+    // Used to check the destination.
+    ONLY_ALLOWED_FILES,
+  };
+
   void VerifyTestCaseFiles(const FileSystemURL& root,
                            const FileSystemTestCaseRecord* const test_cases,
-                           size_t test_case_size) {
+                           size_t test_case_size,
+                           VerifyDirectoryState check_state) {
     std::map<base::FilePath, const FileSystemTestCaseRecord*> test_case_map;
     for (size_t i = 0; i < test_case_size; ++i) {
       test_case_map[base::FilePath(test_cases[i].path)
@@ -432,13 +547,52 @@ class CopyOrMoveOperationTestHelper {
           EXPECT_FALSE(test_case_map[relative]->is_directory);
           EXPECT_TRUE(FileExists(url, test_case_map[relative]->data_file_size));
         }
+        if (check_state ==
+            VerifyDirectoryState::ONLY_BLOCKED_FILES_AND_PARENTS) {
+          // We check for remaining blocked files, i.e., all files that are
+          // actually blocked (BLOCK, PARENT_BLOCKED) and their parent
+          // directories (CHILD_BLOCKED).
+          EXPECT_THAT(test_case_map[relative]->block_action,
+                      ::testing::AnyOf(TestBlockAction::CHILD_BLOCKED,
+                                       TestBlockAction::BLOCKED,
+                                       TestBlockAction::PARENT_BLOCKED))
+              << "path: " << relative.LossyDisplayName() << "\nblock_action: "
+              << static_cast<int>(test_case_map[relative]->block_action);
+        } else if (check_state == VerifyDirectoryState::ONLY_ALLOWED_FILES) {
+          // We check for allowed files, i.e., all files that were transferred
+          // and their parent directories (CHILD_BLOCKED, ALLOW).
+          EXPECT_THAT(test_case_map[relative]->block_action,
+                      ::testing::AnyOf(TestBlockAction::ALLOWED,
+                                       TestBlockAction::CHILD_BLOCKED))
+              << "path: " << relative.LossyDisplayName() << "\nblock_action: "
+              << static_cast<int>(test_case_map[relative]->block_action);
+        }
         test_case_map.erase(relative);
       }
     }
-    EXPECT_TRUE(test_case_map.empty());
-    for (const auto& path_record_pair : test_case_map) {
-      LOG(ERROR) << "Extra entry: "
-                 << path_record_pair.first.LossyDisplayName();
+    if (check_state == VerifyDirectoryState::ALL_FILES_EXIST) {
+      EXPECT_TRUE(test_case_map.empty());
+      for (const auto& path_record_pair : test_case_map) {
+        LOG(ERROR) << "Extra entry: "
+                   << path_record_pair.first.LossyDisplayName();
+      }
+    } else {
+      for (const auto& path_record_pair : test_case_map) {
+        auto* record = path_record_pair.second;
+        if (check_state ==
+            VerifyDirectoryState::ONLY_BLOCKED_FILES_AND_PARENTS) {
+          EXPECT_THAT(record->block_action,
+                      ::testing::AnyOf(TestBlockAction::ALLOWED))
+              << "path: " << path_record_pair.first.LossyDisplayName()
+              << "\nblock_action: " << static_cast<int>(record->block_action);
+        } else if (check_state == VerifyDirectoryState::ONLY_ALLOWED_FILES) {
+          EXPECT_THAT(record->block_action,
+                      ::testing::AnyOf(TestBlockAction::BLOCKED,
+                                       TestBlockAction::PARENT_BLOCKED))
+              << "path: " << path_record_pair.first.LossyDisplayName()
+              << "\nblock_action: " << static_cast<int>(record->block_action);
+        }
+      }
     }
   }
 
@@ -495,9 +649,36 @@ class CopyOrMoveOperationTestHelper {
   scoped_refptr<MockQuotaManager> quota_manager_;
 };
 
-TEST(LocalFileSystemCopyOrMoveOperationTest, CopySingleFile) {
-  CopyOrMoveOperationTestHelper helper("http://foo", kFileSystemTypeTemporary,
-                                       kFileSystemTypePersistent);
+}  // namespace
+
+class LocalFileSystemCopyOrMoveOperationTest
+    : public ::testing::TestWithParam<std::tuple</*is_move*/ bool,
+                                                 /*is_local*/ bool,
+                                                 /*blocking_enabled*/ bool>> {
+ protected:
+  bool IsMove() { return std::get<0>(GetParam()); }
+  bool IsLocal() { return std::get<1>(GetParam()); }
+  bool BlockingEnabled() { return std::get<2>(GetParam()); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LocalFileSystemCopyOrMoveOperationTest,
+    ::testing::Combine(::testing::Bool(), ::testing::Bool(), ::testing::Bool()),
+    [](const ::testing::TestParamInfo<
+        LocalFileSystemCopyOrMoveOperationTest::ParamType>& info) {
+      std::string name;
+      name += std::get<0>(info.param) ? "Move" : "Copy";
+      name += std::get<1>(info.param) ? "Local" : "";
+      name += std::get<2>(info.param) ? "WithBlocking" : "";
+      return name;
+    });
+
+TEST_P(LocalFileSystemCopyOrMoveOperationTest, SingleFile) {
+  CopyOrMoveOperationTestHelper helper(
+      "http://foo", kFileSystemTypeTemporary,
+      IsLocal() ? kFileSystemTypeTemporary : kFileSystemTypePersistent);
+
   helper.SetUp();
 
   FileSystemURL src = helper.SourceURL("a");
@@ -509,70 +690,53 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, CopySingleFile) {
   ASSERT_EQ(base::File::FILE_OK, helper.CreateFile(src, 10));
   int64_t src_increase = helper.GetSourceUsage() - src_initial_usage;
 
-  // Copy it.
-  ASSERT_EQ(base::File::FILE_OK, helper.Copy(src, dest));
+  if (IsMove()) {
+    // Move it.
+    if (BlockingEnabled()) {
+      ASSERT_EQ(base::File::FILE_ERROR_SECURITY, helper.MoveBlockAll(src, dest))
+          << "For single file moves, the last error should be a security "
+             "error!";
+    } else {
+      ASSERT_EQ(base::File::FILE_OK, helper.Move(src, dest));
+    }
+  } else {
+    // Copy it.
+    if (BlockingEnabled()) {
+      ASSERT_EQ(base::File::FILE_ERROR_SECURITY, helper.CopyBlockAll(src, dest))
+          << "For single file copies, the last error should be a security "
+             "error!";
+    } else {
+      ASSERT_EQ(base::File::FILE_OK, helper.Copy(src, dest));
+    }
+  }
 
+  bool src_should_exist = !IsMove() || BlockingEnabled();
+  bool dest_should_exist = !BlockingEnabled();
   // Verify.
-  ASSERT_TRUE(helper.FileExists(src, 10));
-  ASSERT_TRUE(helper.FileExists(dest, 10));
+  ASSERT_EQ(src_should_exist, helper.FileExists(src, 10));
+  ASSERT_EQ(dest_should_exist, helper.FileExists(dest, 10));
 
-  int64_t src_new_usage = helper.GetSourceUsage();
-  ASSERT_EQ(src_initial_usage + src_increase, src_new_usage);
-
-  int64_t dest_increase = helper.GetDestUsage() - dest_initial_usage;
-  ASSERT_EQ(src_increase, dest_increase);
+  if (IsLocal()) {
+    int64_t src_new_usage = helper.GetSourceUsage();
+    if (IsMove() || BlockingEnabled()) {
+      EXPECT_EQ(src_new_usage, src_initial_usage + src_increase);
+    } else {
+      EXPECT_EQ(src_new_usage, src_initial_usage + 2 * src_increase);
+    }
+  } else {
+    int64_t src_new_usage = helper.GetSourceUsage();
+    ASSERT_EQ(src_new_usage,
+              src_initial_usage + (src_should_exist ? src_increase : 0));
+    int64_t dest_new_usage = helper.GetDestUsage();
+    ASSERT_EQ(dest_new_usage,
+              dest_initial_usage + (dest_should_exist ? src_increase : 0));
+  }
 }
 
-TEST(LocalFileSystemCopyOrMoveOperationTest, MoveSingleFile) {
-  CopyOrMoveOperationTestHelper helper("http://foo", kFileSystemTypeTemporary,
-                                       kFileSystemTypePersistent);
-  helper.SetUp();
-
-  FileSystemURL src = helper.SourceURL("a");
-  FileSystemURL dest = helper.DestURL("b");
-  int64_t src_initial_usage = helper.GetSourceUsage();
-  int64_t dest_initial_usage = helper.GetDestUsage();
-
-  // Set up a source file.
-  ASSERT_EQ(base::File::FILE_OK, helper.CreateFile(src, 10));
-  int64_t src_increase = helper.GetSourceUsage() - src_initial_usage;
-
-  // Move it.
-  ASSERT_EQ(base::File::FILE_OK, helper.Move(src, dest));
-
-  // Verify.
-  ASSERT_FALSE(helper.FileExists(src, AsyncFileTestHelper::kDontCheckSize));
-  ASSERT_TRUE(helper.FileExists(dest, 10));
-
-  int64_t src_new_usage = helper.GetSourceUsage();
-  ASSERT_EQ(src_initial_usage, src_new_usage);
-
-  int64_t dest_increase = helper.GetDestUsage() - dest_initial_usage;
-  ASSERT_EQ(src_increase, dest_increase);
-}
-
-TEST(LocalFileSystemCopyOrMoveOperationTest, MoveSingleFileLocal) {
-  CopyOrMoveOperationTestHelper helper("http://foo", kFileSystemTypeTemporary,
-                                       kFileSystemTypeTemporary);
-  helper.SetUp();
-
-  FileSystemURL src = helper.SourceURL("a");
-  FileSystemURL dest = helper.DestURL("b");
-
-  // Set up a source file.
-  ASSERT_EQ(base::File::FILE_OK, helper.CreateFile(src, 10));
-
-  // Move it.
-  ASSERT_EQ(base::File::FILE_OK, helper.Move(src, dest));
-
-  // Verify.
-  ASSERT_FALSE(helper.FileExists(src, AsyncFileTestHelper::kDontCheckSize));
-  ASSERT_TRUE(helper.FileExists(dest, 10));
-}
-
-TEST(LocalFileSystemCopyOrMoveOperationTest, CopySingleDirectory) {
-  CopyOrMoveOperationTestHelper helper("http://foo", kFileSystemTypeTemporary,
-                                       kFileSystemTypePersistent);
+TEST_P(LocalFileSystemCopyOrMoveOperationTest, EmptyDirectory) {
+  CopyOrMoveOperationTestHelper helper(
+      "http://foo", kFileSystemTypeTemporary,
+      IsLocal() ? kFileSystemTypeTemporary : kFileSystemTypePersistent);
   helper.SetUp();
 
   FileSystemURL src = helper.SourceURL("a");
@@ -584,70 +748,53 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, CopySingleDirectory) {
   ASSERT_EQ(base::File::FILE_OK, helper.CreateDirectory(src));
   int64_t src_increase = helper.GetSourceUsage() - src_initial_usage;
 
-  // Copy it.
-  ASSERT_EQ(base::File::FILE_OK, helper.Copy(src, dest));
+  if (IsMove()) {
+    // Move it.
+    if (BlockingEnabled()) {
+      ASSERT_EQ(base::File::FILE_ERROR_SECURITY, helper.MoveBlockAll(src, dest))
+          << "For single directory moves, the last error should be a security "
+             "error!";
+    } else {
+      ASSERT_EQ(base::File::FILE_OK, helper.Move(src, dest));
+    }
+  } else {
+    // Copy it.
+    if (BlockingEnabled()) {
+      ASSERT_EQ(base::File::FILE_ERROR_SECURITY, helper.CopyBlockAll(src, dest))
+          << "For single directory copies, the last error should be a security "
+             "error!";
+    } else {
+      ASSERT_EQ(base::File::FILE_OK, helper.Copy(src, dest));
+    }
+  }
 
+  bool src_should_exist = !IsMove() || BlockingEnabled();
+  bool dest_should_exist = !BlockingEnabled();
   // Verify.
-  ASSERT_TRUE(helper.DirectoryExists(src));
-  ASSERT_TRUE(helper.DirectoryExists(dest));
+  ASSERT_EQ(src_should_exist, helper.DirectoryExists(src));
+  ASSERT_EQ(dest_should_exist, helper.DirectoryExists(dest));
 
-  int64_t src_new_usage = helper.GetSourceUsage();
-  ASSERT_EQ(src_initial_usage + src_increase, src_new_usage);
-
-  int64_t dest_increase = helper.GetDestUsage() - dest_initial_usage;
-  ASSERT_EQ(src_increase, dest_increase);
+  if (IsLocal()) {
+    int64_t src_new_usage = helper.GetSourceUsage();
+    if (IsMove() || BlockingEnabled()) {
+      EXPECT_EQ(src_new_usage, src_initial_usage + src_increase);
+    } else {
+      EXPECT_EQ(src_new_usage, src_initial_usage + 2 * src_increase);
+    }
+  } else {
+    int64_t src_new_usage = helper.GetSourceUsage();
+    int64_t dest_new_usage = helper.GetDestUsage();
+    ASSERT_EQ(src_new_usage,
+              src_initial_usage + (src_should_exist ? src_increase : 0));
+    ASSERT_EQ(dest_new_usage,
+              dest_initial_usage + (dest_should_exist ? src_increase : 0));
+  }
 }
 
-TEST(LocalFileSystemCopyOrMoveOperationTest, MoveSingleDirectory) {
-  CopyOrMoveOperationTestHelper helper("http://foo", kFileSystemTypeTemporary,
-                                       kFileSystemTypePersistent);
-  helper.SetUp();
-
-  FileSystemURL src = helper.SourceURL("a");
-  FileSystemURL dest = helper.DestURL("b");
-  int64_t src_initial_usage = helper.GetSourceUsage();
-  int64_t dest_initial_usage = helper.GetDestUsage();
-
-  // Set up a source directory.
-  ASSERT_EQ(base::File::FILE_OK, helper.CreateDirectory(src));
-  int64_t src_increase = helper.GetSourceUsage() - src_initial_usage;
-
-  // Move it.
-  ASSERT_EQ(base::File::FILE_OK, helper.Move(src, dest));
-
-  // Verify.
-  ASSERT_FALSE(helper.DirectoryExists(src));
-  ASSERT_TRUE(helper.DirectoryExists(dest));
-
-  int64_t src_new_usage = helper.GetSourceUsage();
-  ASSERT_EQ(src_initial_usage, src_new_usage);
-
-  int64_t dest_increase = helper.GetDestUsage() - dest_initial_usage;
-  ASSERT_EQ(src_increase, dest_increase);
-}
-
-TEST(LocalFileSystemCopyOrMoveOperationTest, MoveSingleDirectoryLocal) {
-  CopyOrMoveOperationTestHelper helper("http://foo", kFileSystemTypePersistent,
-                                       kFileSystemTypePersistent);
-  helper.SetUp();
-
-  FileSystemURL src = helper.SourceURL("a");
-  FileSystemURL dest = helper.DestURL("b");
-
-  // Set up a source directory.
-  ASSERT_EQ(base::File::FILE_OK, helper.CreateDirectory(src));
-
-  // Move it.
-  ASSERT_EQ(base::File::FILE_OK, helper.Move(src, dest));
-
-  // Verify.
-  ASSERT_FALSE(helper.DirectoryExists(src));
-  ASSERT_TRUE(helper.DirectoryExists(dest));
-}
-
-TEST(LocalFileSystemCopyOrMoveOperationTest, CopyDirectory) {
-  CopyOrMoveOperationTestHelper helper("http://foo", kFileSystemTypeTemporary,
-                                       kFileSystemTypePersistent);
+TEST_P(LocalFileSystemCopyOrMoveOperationTest, FilesAndDirectories) {
+  CopyOrMoveOperationTestHelper helper(
+      "http://foo", kFileSystemTypeTemporary,
+      IsLocal() ? kFileSystemTypeTemporary : kFileSystemTypePersistent);
   helper.SetUp();
 
   FileSystemURL src = helper.SourceURL("a");
@@ -662,57 +809,103 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, CopyDirectory) {
                                       kRegularFileSystemTestCaseSize));
   int64_t src_increase = helper.GetSourceUsage() - src_initial_usage;
 
-  // Copy it.
-  ASSERT_EQ(base::File::FILE_OK,
-            helper.CopyWithHookDelegate(
-                src, dest, std::make_unique<CopyOrMoveHookDelegate>()));
+  if (IsMove()) {
+    // Move it.
+    if (BlockingEnabled()) {
+      // Records are not checked in this test.
+      std::vector<CopyOrMoveRecordAndSecurityDelegate::ProgressRecord> records;
+      ASSERT_EQ(base::File::FILE_ERROR_NOT_EMPTY,
+                helper.MoveBlockSome(src, dest, records))
+          << "For multi-directory moves, the last error should be "
+             "FILE_ERROR_NOT_EMPTY because the src directory could not be "
+             "removed!";
+    } else {
+      ASSERT_EQ(base::File::FILE_OK, helper.Move(src, dest));
+    }
+  } else {
+    // Copy it.
+    if (BlockingEnabled()) {
+      // For copies, only forbidden file/directory access errors are reported.
+      // Records are not checked in this test.
+      std::vector<CopyOrMoveRecordAndSecurityDelegate::ProgressRecord> records;
+      ASSERT_EQ(base::File::FILE_ERROR_SECURITY,
+                helper.CopyBlockSome(src, dest, records))
+          << "For multi-directory copies, the last error should be "
+             "FILE_ERROR_SECURITY!";
+    } else {
+      ASSERT_EQ(base::File::FILE_OK, helper.Copy(src, dest));
+    }
+  }
+
+  bool src_should_exist = !IsMove() || BlockingEnabled();
 
   // Verify.
-  ASSERT_TRUE(helper.DirectoryExists(src));
+  ASSERT_EQ(src_should_exist, helper.DirectoryExists(src));
+  // For recursive transfers, the destination directory is always created
+  // (unless the root source directory is blocked, which is not blocked here)!
   ASSERT_TRUE(helper.DirectoryExists(dest));
 
-  helper.VerifyTestCaseFiles(dest, kRegularFileSystemTestCases,
-                             kRegularFileSystemTestCaseSize);
+  if (!IsMove()) {
+    // For copies, all files should be there!
+    helper.VerifyTestCaseFiles(
+        src, kRegularFileSystemTestCases, kRegularFileSystemTestCaseSize,
+        CopyOrMoveOperationTestHelper::VerifyDirectoryState::ALL_FILES_EXIST);
+  } else {
+    if (BlockingEnabled()) {
+      // For moves, only blocked files should remain.
+      helper.VerifyTestCaseFiles(
+          src, kRegularFileSystemTestCases, kRegularFileSystemTestCaseSize,
+          CopyOrMoveOperationTestHelper::VerifyDirectoryState::
+              ONLY_BLOCKED_FILES_AND_PARENTS);
+    }
+  }
 
-  int64_t src_new_usage = helper.GetSourceUsage();
-  ASSERT_EQ(src_initial_usage + src_increase, src_new_usage);
+  // Destination checking is independent of whether the operation is a copy or
+  // move.
+  if (BlockingEnabled()) {
+    helper.VerifyTestCaseFiles(dest, kRegularFileSystemTestCases,
+                               kRegularFileSystemTestCaseSize,
+                               CopyOrMoveOperationTestHelper::
+                                   VerifyDirectoryState::ONLY_ALLOWED_FILES);
+  } else {
+    helper.VerifyTestCaseFiles(
+        dest, kRegularFileSystemTestCases, kRegularFileSystemTestCaseSize,
+        CopyOrMoveOperationTestHelper::VerifyDirectoryState::ALL_FILES_EXIST);
+  }
 
-  int64_t dest_increase = helper.GetDestUsage() - dest_initial_usage;
-  ASSERT_EQ(src_increase, dest_increase);
-}
+  if (IsLocal()) {
+    // For local operations we can only check the size if there is no blocking
+    // involved.
+    if (!BlockingEnabled()) {
+      int64_t src_new_usage = helper.GetSourceUsage();
+      if (IsMove()) {
+        ASSERT_EQ(src_initial_usage + src_increase, src_new_usage);
+      } else {
+        // Copies duplicate used size on common file system.
+        ASSERT_EQ(src_initial_usage + 2 * src_increase, src_new_usage);
+      }
+    }
+  } else {
+    int64_t src_new_usage = helper.GetSourceUsage();
+    if (!IsMove()) {
+      // For copies, all source files should remain.
+      ASSERT_EQ(src_initial_usage + src_increase, src_new_usage);
+    } else if (!BlockingEnabled()) {
+      // For moves without blocking, additional source size should be zero.
+      ASSERT_EQ(src_initial_usage, src_new_usage);
+    } else {
+      // For moves with blocking, some files should be blocked and remain on the
+      // source file system.
+      ASSERT_LT(src_initial_usage, src_new_usage);
+    }
 
-TEST(LocalFileSystemCopyOrMoveOperationTest, MoveDirectory) {
-  CopyOrMoveOperationTestHelper helper("http://foo", kFileSystemTypeTemporary,
-                                       kFileSystemTypePersistent);
-  helper.SetUp();
-
-  FileSystemURL src = helper.SourceURL("a");
-  FileSystemURL dest = helper.DestURL("b");
-  int64_t src_initial_usage = helper.GetSourceUsage();
-  int64_t dest_initial_usage = helper.GetDestUsage();
-
-  // Set up a source directory.
-  ASSERT_EQ(base::File::FILE_OK, helper.CreateDirectory(src));
-  ASSERT_EQ(base::File::FILE_OK,
-            helper.SetUpTestCaseFiles(src, kRegularFileSystemTestCases,
-                                      kRegularFileSystemTestCaseSize));
-  int64_t src_increase = helper.GetSourceUsage() - src_initial_usage;
-
-  // Move it.
-  ASSERT_EQ(base::File::FILE_OK, helper.Move(src, dest));
-
-  // Verify.
-  ASSERT_FALSE(helper.DirectoryExists(src));
-  ASSERT_TRUE(helper.DirectoryExists(dest));
-
-  helper.VerifyTestCaseFiles(dest, kRegularFileSystemTestCases,
-                             kRegularFileSystemTestCaseSize);
-
-  int64_t src_new_usage = helper.GetSourceUsage();
-  ASSERT_EQ(src_initial_usage, src_new_usage);
-
-  int64_t dest_increase = helper.GetDestUsage() - dest_initial_usage;
-  ASSERT_EQ(src_increase, dest_increase);
+    int64_t dest_increase = helper.GetDestUsage() - dest_initial_usage;
+    if (!BlockingEnabled()) {
+      ASSERT_EQ(src_increase, dest_increase);
+    } else {
+      ASSERT_GT(src_increase, dest_increase);
+    }
+  }
 }
 
 TEST(LocalFileSystemCopyOrMoveOperationTest,
@@ -744,8 +937,9 @@ TEST(LocalFileSystemCopyOrMoveOperationTest,
       {false, FILE_PATH_LITERAL("file 3"), 0},
   };
 
-  helper.VerifyTestCaseFiles(dest, kMoveDirResultCases,
-                             std::size(kMoveDirResultCases));
+  helper.VerifyTestCaseFiles(
+      dest, kMoveDirResultCases, std::size(kMoveDirResultCases),
+      CopyOrMoveOperationTestHelper::VerifyDirectoryState::ALL_FILES_EXIST);
 }
 
 TEST(LocalFileSystemCopyOrMoveOperationTest, CopySingleFileNoValidator) {
@@ -765,9 +959,10 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, CopySingleFileNoValidator) {
   ASSERT_EQ(base::File::FILE_ERROR_SECURITY, helper.Copy(src, dest));
 }
 
-TEST(LocalFileSystemCopyOrMoveOperationTest, CopyProgress) {
-  CopyOrMoveOperationTestHelper helper("http://foo", kFileSystemTypeTemporary,
-                                       kFileSystemTypePersistent);
+TEST_P(LocalFileSystemCopyOrMoveOperationTest, FilesAndDirectoriesProgress) {
+  CopyOrMoveOperationTestHelper helper(
+      "http://foo", kFileSystemTypeTemporary,
+      IsLocal() ? kFileSystemTypeTemporary : kFileSystemTypePersistent);
   helper.SetUp();
 
   FileSystemURL src = helper.SourceURL("a");
@@ -779,19 +974,50 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, CopyProgress) {
             helper.SetUpTestCaseFiles(src, kRegularFileSystemTestCases,
                                       kRegularFileSystemTestCaseSize));
 
-  std::vector<CopyOrMoveRecordDelegate::ProgressRecord> records;
-  ASSERT_EQ(
-      base::File::FILE_OK,
-      helper.CopyWithHookDelegate(
-          src, dest, std::make_unique<CopyOrMoveRecordDelegate>(&records)));
+  CopyOrMoveRecordAndSecurityDelegate::ShouldBlockCallback allow_all_callback =
+      base::BindRepeating(
+          [](const FileSystemURL& source_url) { return false; });
+  std::vector<CopyOrMoveRecordAndSecurityDelegate::ProgressRecord> records;
+
+  if (IsMove()) {
+    // Move it.
+    if (BlockingEnabled()) {
+      ASSERT_EQ(base::File::FILE_ERROR_NOT_EMPTY,
+                helper.MoveBlockSome(src, dest, records))
+          << "For multi-directory moves, the last error should be "
+             "FILE_ERROR_NOT_EMPTY because the src directory could not be "
+             "removed!";
+    } else {
+      ASSERT_EQ(base::File::FILE_OK,
+                helper.MoveWithHookDelegate(
+                    src, dest, FileSystemOperation::ERROR_BEHAVIOR_ABORT,
+                    std::make_unique<CopyOrMoveRecordAndSecurityDelegate>(
+                        records, allow_all_callback)));
+    }
+  } else {
+    // Copy it.
+    if (BlockingEnabled()) {
+      // For copies, only forbidden file/directory access errors are reported.
+      ASSERT_EQ(base::File::FILE_ERROR_SECURITY,
+                helper.CopyBlockSome(src, dest, records))
+          << "For multi-directory copies, the last error should be "
+             "FILE_ERROR_SECURITY!";
+    } else {
+      ASSERT_EQ(base::File::FILE_OK,
+                helper.CopyWithHookDelegate(
+                    src, dest, FileSystemOperation::ERROR_BEHAVIOR_ABORT,
+                    std::make_unique<CopyOrMoveRecordAndSecurityDelegate>(
+                        records, allow_all_callback)));
+    }
+  }
 
   // Verify that for `src` kBeginFile is called.
-  // This behavior is expected, because for the src entry, ProcessFile is always
-  // called independent of whether it is a directory or not.
-  // Note: This might change if the behavior of RecursiveOperationDelegate is
-  // changed.
-  EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kBeginFile,
-            records[0].type);
+  // This behavior is expected, because for the src entry, ProcessFile is
+  // always called independent of whether it is a directory or not. Note: This
+  // might change if the behavior of RecursiveOperationDelegate is changed.
+  EXPECT_EQ(
+      CopyOrMoveRecordAndSecurityDelegate::ProgressRecord::Type::kBeginFile,
+      records[0].type);
   EXPECT_EQ(dest, records[0].dest_url);
 
   // Verify progress records.
@@ -814,80 +1040,11 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, CopyProgress) {
       }
     }
 
-    // The record should be found.
-    ASSERT_NE(begin_index, records.size());
-    ASSERT_NE(end_index, records.size());
-    ASSERT_NE(begin_index, end_index);
-
-    if (test_case.is_directory) {
-      EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kBeginDirectory,
-                records[begin_index].type);
-    } else {
-      EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kBeginFile,
-                records[begin_index].type);
-    }
-    EXPECT_EQ(dest_url, records[begin_index].dest_url);
-    EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kEndCopy,
-              records[end_index].type);
-    EXPECT_EQ(dest_url, records[end_index].dest_url);
-
-    if (test_case.is_directory) {
-      // For directory copy, the progress shouldn't be interlaced.
-      EXPECT_EQ(begin_index + 1, end_index);
-    } else {
-      // PROGRESS event's size should be ascending order.
-      int64_t current_size = 0;
-      for (size_t j = begin_index + 1; j < end_index; ++j) {
-        if (records[j].source_url == src_url) {
-          EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kProgress,
-                    records[j].type);
-          EXPECT_EQ(dest_url, records[j].dest_url);
-          EXPECT_GE(records[j].size, current_size);
-          current_size = records[j].size;
-        }
-      }
-    }
-  }
-}
-
-TEST(LocalFileSystemCopyOrMoveOperationTest, MoveProgress) {
-  CopyOrMoveOperationTestHelper helper("http://foo", kFileSystemTypeTemporary,
-                                       kFileSystemTypePersistent);
-  helper.SetUp();
-
-  FileSystemURL src = helper.SourceURL("a");
-  FileSystemURL dest = helper.DestURL("b");
-
-  // Set up a source directory.
-  ASSERT_EQ(base::File::FILE_OK, helper.CreateDirectory(src));
-  ASSERT_EQ(base::File::FILE_OK,
-            helper.SetUpTestCaseFiles(src, kRegularFileSystemTestCases,
-                                      kRegularFileSystemTestCaseSize));
-
-  std::vector<CopyOrMoveRecordDelegate::ProgressRecord> records;
-  ASSERT_EQ(
-      base::File::FILE_OK,
-      helper.MoveWithHookDelegate(
-          src, dest, std::make_unique<CopyOrMoveRecordDelegate>(&records)));
-
-  // Verify progress records.
-  for (size_t i = 0; i < kRegularFileSystemTestCaseSize; ++i) {
-    const FileSystemTestCaseRecord& test_case = kRegularFileSystemTestCases[i];
-
-    FileSystemURL src_url = helper.SourceURL(
-        std::string("a/") + base::FilePath(test_case.path).AsUTF8Unsafe());
-    FileSystemURL dest_url = helper.DestURL(
-        std::string("b/") + base::FilePath(test_case.path).AsUTF8Unsafe());
-
-    // Find the first and last progress record.
-    size_t begin_index = records.size();
-    size_t end_index = records.size();
-    for (size_t j = 0; j < records.size(); ++j) {
-      if (records[j].source_url == src_url) {
-        if (begin_index == records.size())
-          begin_index = j;
-        end_index = j;
-      }
+    if (BlockingEnabled() &&
+        test_case.block_action == TestBlockAction::PARENT_BLOCKED) {
+      // There shouldn't be any record, if the parent is blocked.
+      ASSERT_EQ(begin_index, records.size());
+      continue;
     }
 
     // The record should be found.
@@ -896,75 +1053,117 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, MoveProgress) {
     ASSERT_NE(begin_index, end_index);
 
     if (test_case.is_directory) {
-      // A directory move starts with kBegin and kEndCopy.
-      EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kBeginDirectory,
+      // A directory copy/move starts with kBegin and kEndCopy.
+      EXPECT_EQ(CopyOrMoveRecordAndSecurityDelegate::ProgressRecord::Type::
+                    kBeginDirectory,
                 records[begin_index].type);
       EXPECT_EQ(dest_url, records[begin_index].dest_url);
-      EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kEndCopy,
-                records[begin_index + 1].type);
+
+      if (BlockingEnabled() &&
+          test_case.block_action == TestBlockAction::BLOCKED) {
+        EXPECT_EQ(
+            CopyOrMoveRecordAndSecurityDelegate::ProgressRecord::Type::kError,
+            records[begin_index + 1].type);
+        EXPECT_EQ(base::File::FILE_ERROR_SECURITY,
+                  records[begin_index + 1].error);
+        EXPECT_EQ(dest_url, records[begin_index + 1].dest_url);
+        EXPECT_EQ(begin_index + 1, end_index);
+        continue;
+      }
+
+      EXPECT_EQ(
+          CopyOrMoveRecordAndSecurityDelegate::ProgressRecord::Type::kEndCopy,
+          records[begin_index + 1].type);
       EXPECT_EQ(dest_url, records[begin_index + 1].dest_url);
-      // A directory move ends with kEndRemoveSource, after the contents of the
-      // directory has been copied.
-      EXPECT_EQ(
-          CopyOrMoveRecordDelegate::ProgressRecord::Type::kEndRemoveSource,
-          records[end_index].type);
-      EXPECT_FALSE(records[end_index].dest_url.is_valid());
+
+      if (IsMove()) {
+        if (BlockingEnabled() &&
+            test_case.block_action == TestBlockAction::CHILD_BLOCKED) {
+          EXPECT_EQ(
+              CopyOrMoveRecordAndSecurityDelegate::ProgressRecord::Type::kError,
+              records[end_index].type);
+          EXPECT_FALSE(records[end_index].dest_url.is_valid());
+          EXPECT_EQ(base::File::FILE_ERROR_NOT_EMPTY, records[end_index].error);
+          EXPECT_NE(records[end_index - 1].source_url, src_url);
+          continue;
+        }
+        // A directory move ends with kEndRemoveSource, after the contents of
+        // the directory have been copied.
+        EXPECT_EQ(CopyOrMoveRecordAndSecurityDelegate::ProgressRecord::Type::
+                      kEndRemoveSource,
+                  records[end_index].type);
+        EXPECT_FALSE(records[end_index].dest_url.is_valid());
+      } else {
+        // For directory copy, the progress shouldn't be interlaced.
+        EXPECT_EQ(begin_index + 1, end_index);
+      }
     } else {
-      // A file move starts with kBeginFile.
-      EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kBeginFile,
-                records[begin_index].type);
+      // A file copy/move starts with kBeginFile.
+      EXPECT_EQ(
+          CopyOrMoveRecordAndSecurityDelegate::ProgressRecord::Type::kBeginFile,
+          records[begin_index].type);
       EXPECT_EQ(dest_url, records[begin_index].dest_url);
+
+      if (BlockingEnabled() &&
+          test_case.block_action == TestBlockAction::BLOCKED) {
+        // If a file is blocked, the second and last record for that file should
+        // be an error.
+        EXPECT_EQ(
+            CopyOrMoveRecordAndSecurityDelegate::ProgressRecord::Type::kError,
+            records[begin_index + 1].type);
+        EXPECT_EQ(base::File::FILE_ERROR_SECURITY,
+                  records[begin_index + 1].error);
+        EXPECT_EQ(dest_url, records[begin_index + 1].dest_url);
+        EXPECT_EQ(begin_index + 1, end_index);
+        continue;
+      }
+
       // PROGRESS event's size should be ascending order.
       int64_t current_size = 0;
-      for (size_t j = begin_index + 1; j < end_index - 1; ++j) {
+      size_t end_progress_index = end_index;
+      if (IsMove() && !IsLocal()) {
+        end_progress_index = end_index - 1;
+      }
+      if (IsMove() && IsLocal()) {
+        EXPECT_EQ(begin_index, end_progress_index - 1)
+            << "No progress should be reported for local moves!";
+      } else {
+        EXPECT_LT(begin_index, end_progress_index - 1)
+            << "There should be some progress reported.";
+      }
+      for (size_t j = begin_index + 1; j < end_progress_index; ++j) {
         if (records[j].source_url == src_url) {
-          EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kProgress,
+          EXPECT_EQ(CopyOrMoveRecordAndSecurityDelegate::ProgressRecord::Type::
+                        kProgress,
                     records[j].type);
           EXPECT_EQ(dest_url, records[j].dest_url);
           EXPECT_GE(records[j].size, current_size);
           current_size = records[j].size;
         }
       }
-      // A file move ends with kEndCopy and kEndRemoveSource.
-      EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kEndCopy,
-                records[end_index - 1].type);
-      EXPECT_EQ(dest_url, records[end_index - 1].dest_url);
-      EXPECT_EQ(
-          CopyOrMoveRecordDelegate::ProgressRecord::Type::kEndRemoveSource,
-          records[end_index].type);
-      EXPECT_FALSE(records[end_index].dest_url.is_valid());
+      if (IsMove() && IsLocal()) {
+        // For local moves, we expect kEndMove at the end.
+        EXPECT_EQ(
+            CopyOrMoveRecordAndSecurityDelegate::ProgressRecord::Type::kEndMove,
+            records[end_index].type);
+        EXPECT_EQ(dest_url, records[end_index].dest_url);
+      } else {
+        // A file move ends with kEndCopy and kEndRemoveSource, a copy with just
+        // kEndCopy.
+        size_t end_copy_index = IsMove() ? end_index - 1 : end_index;
+        EXPECT_EQ(
+            CopyOrMoveRecordAndSecurityDelegate::ProgressRecord::Type::kEndCopy,
+            records[end_copy_index].type);
+        EXPECT_EQ(dest_url, records[end_copy_index].dest_url);
+        if (IsMove()) {
+          EXPECT_EQ(CopyOrMoveRecordAndSecurityDelegate::ProgressRecord::Type::
+                        kEndRemoveSource,
+                    records[end_index].type);
+          EXPECT_FALSE(records[end_index].dest_url.is_valid());
+        }
+      }
     }
   }
-}
-
-TEST(LocalFileSystemCopyOrMoveOperationTest, MoveFileLocalProgress) {
-  CopyOrMoveOperationTestHelper helper("http://foo", kFileSystemTypePersistent,
-                                       kFileSystemTypePersistent);
-  helper.SetUp();
-
-  FileSystemURL src = helper.SourceURL("a");
-  FileSystemURL dest = helper.DestURL("b");
-
-  // Set up a source file.
-  ASSERT_EQ(base::File::FILE_OK, helper.CreateFile(src, 10));
-
-  std::vector<CopyOrMoveRecordDelegate::ProgressRecord> records;
-  ASSERT_EQ(
-      base::File::FILE_OK,
-      helper.MoveWithHookDelegate(
-          src, dest, std::make_unique<CopyOrMoveRecordDelegate>(&records)));
-  // There should be 2 records, for kBeginFile and kEndMove. No progress should
-  // be reported.
-  EXPECT_EQ(records.size(), 2u);
-
-  EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kBeginFile,
-            records[0].type);
-  EXPECT_EQ(src, records[0].source_url);
-  EXPECT_EQ(dest, records[0].dest_url);
-  EXPECT_EQ(CopyOrMoveRecordDelegate::ProgressRecord::Type::kEndMove,
-            records[1].type);
-  EXPECT_EQ(src, records[1].source_url);
-  EXPECT_EQ(dest, records[1].dest_url);
 }
 
 TEST(LocalFileSystemCopyOrMoveOperationTest, StreamCopyHelper) {
@@ -1288,8 +1487,8 @@ TEST(CopyOrMoveOperationDelegateTest, StopRecursionOnCopyError) {
   EXPECT_TRUE(helper.FileExists(src_file_2, kDefaultFileSize));
   EXPECT_TRUE(
       helper.FileExists(dest_file_2, AsyncFileTestHelper::kDontCheckSize));
-  // Check: the recursion has been interrupted after the error, so file 1 hasn't
-  // been copied.
+  // Check: the recursion has been interrupted after the error, so file 1
+  // hasn't been copied.
   EXPECT_TRUE(helper.FileExists(src_file_1, kDefaultFileSize));
   EXPECT_FALSE(
       helper.FileExists(dest_file_1, AsyncFileTestHelper::kDontCheckSize));

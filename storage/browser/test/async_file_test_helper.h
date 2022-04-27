@@ -41,6 +41,7 @@ class AsyncFileTestHelper {
       FileSystemContext* context,
       const FileSystemURL& src,
       const FileSystemURL& dest,
+      FileSystemOperation::ErrorBehavior error_behavior,
       std::unique_ptr<CopyOrMoveHookDelegate> copy_or_move_hook_delegate);
 
   // Performs CopyFileLocal from |src| to |dest| and returns the status code.
@@ -58,6 +59,7 @@ class AsyncFileTestHelper {
       FileSystemContext* context,
       const FileSystemURL& src,
       const FileSystemURL& dest,
+      FileSystemOperation::ErrorBehavior error_behavior,
       std::unique_ptr<CopyOrMoveHookDelegate> copy_or_move_hook_delegate);
 
   // Performs MoveFileLocal from |src| to |dest| and returns the status code.

@@ -105,21 +105,22 @@ base::File::Error AsyncFileTestHelper::Copy(FileSystemContext* context,
                                             const FileSystemURL& src,
                                             const FileSystemURL& dest) {
   return CopyWithHookDelegate(
-      context, src, dest, std::make_unique<storage::CopyOrMoveHookDelegate>());
+      context, src, dest, FileSystemOperation::ERROR_BEHAVIOR_ABORT,
+      std::make_unique<storage::CopyOrMoveHookDelegate>());
 }
 
 base::File::Error AsyncFileTestHelper::CopyWithHookDelegate(
     FileSystemContext* context,
     const FileSystemURL& src,
     const FileSystemURL& dest,
+    FileSystemOperation::ErrorBehavior error_behavior,
     std::unique_ptr<CopyOrMoveHookDelegate> copy_or_move_hook_delegate) {
   base::File::Error result = base::File::FILE_ERROR_FAILED;
   base::RunLoop run_loop;
-  context->operation_runner()->Copy(src, dest,
-                                    FileSystemOperation::CopyOrMoveOptionSet(),
-                                    FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-                                    std::move(copy_or_move_hook_delegate),
-                                    AssignAndQuitCallback(&run_loop, &result));
+  context->operation_runner()->Copy(
+      src, dest, FileSystemOperation::CopyOrMoveOptionSet(), error_behavior,
+      std::move(copy_or_move_hook_delegate),
+      AssignAndQuitCallback(&run_loop, &result));
   run_loop.Run();
   return result;
 }
@@ -142,21 +143,22 @@ base::File::Error AsyncFileTestHelper::Move(FileSystemContext* context,
                                             const FileSystemURL& src,
                                             const FileSystemURL& dest) {
   return MoveWithHookDelegate(
-      context, src, dest, std::make_unique<storage::CopyOrMoveHookDelegate>());
+      context, src, dest, FileSystemOperation::ERROR_BEHAVIOR_ABORT,
+      std::make_unique<storage::CopyOrMoveHookDelegate>());
 }
 
 base::File::Error AsyncFileTestHelper::MoveWithHookDelegate(
     FileSystemContext* context,
     const FileSystemURL& src,
     const FileSystemURL& dest,
+    FileSystemOperation::ErrorBehavior error_behavior,
     std::unique_ptr<CopyOrMoveHookDelegate> copy_or_move_hook_delegate) {
   base::File::Error result = base::File::FILE_ERROR_FAILED;
   base::RunLoop run_loop;
-  context->operation_runner()->Move(src, dest,
-                                    FileSystemOperation::CopyOrMoveOptionSet(),
-                                    FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-                                    std::move(copy_or_move_hook_delegate),
-                                    AssignAndQuitCallback(&run_loop, &result));
+  context->operation_runner()->Move(
+      src, dest, FileSystemOperation::CopyOrMoveOptionSet(), error_behavior,
+      std::move(copy_or_move_hook_delegate),
+      AssignAndQuitCallback(&run_loop, &result));
   run_loop.Run();
   return result;
 }

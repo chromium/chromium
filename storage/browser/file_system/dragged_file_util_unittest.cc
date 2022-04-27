@@ -592,6 +592,10 @@ TEST_F(DraggedFileUtilTest, EnumerateRecursivelyTest) {
           base::FilePath(FILE_PATH_LITERAL("dir a/dir d/dir e/dir g/file 3"))
               .NormalizePathSeparators(),
           base::FilePath(FILE_PATH_LITERAL("dir a/dir d/dir e/dir h"))
+              .NormalizePathSeparators(),
+          base::FilePath(FILE_PATH_LITERAL("dir a/dir d/dir e/dir h/file 0"))
+              .NormalizePathSeparators(),
+          base::FilePath(FILE_PATH_LITERAL("dir a/dir d/dir e/dir h/file 1"))
               .NormalizePathSeparators()));
 }
 

@@ -66,10 +66,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) RecursiveOperationDelegate
  protected:
   explicit RecursiveOperationDelegate(FileSystemContext* file_system_context);
 
-  // Starts to process files/directories recursively from the given |root|.
+  // Starts to process files/directories recursively from the given `root`.
   // This will call ProcessFile and ProcessDirectory on each file or directory.
   //
-  // First, this tries to call ProcessFile with |root| regardless whether it is
+  // First, this tries to call ProcessFile with `root` regardless whether it is
   // actually a file or a directory. If it is a directory, ProcessFile should
   // return File::FILE_NOT_A_FILE.
   //
@@ -109,10 +109,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) RecursiveOperationDelegate
   // PostProcessDirectory(b2_dir)
   // PostProcessDirectory(a_dir)
   //
-  // |error_behavior| is to specify how this behaves when an operation have
+  // `error_behavior` is to specify how this behaves when an operation have
   // failed.
-  // |callback| is fired with base::File::FILE_OK when every file/directory
-  // under |root| is processed, or fired earlier when any suboperation fails.
+  // `callback` is fired with `base::File::FILE_OK` when every file/directory
+  // under `root` is processed, or fired earlier when any suboperation fails.
+  //
+  // For `ERROR_BEHAVIOR_SKIP`, `callback` is fired at the end of the operation
+  // or when an unrecoverable error occurs. `callback` is called with the last
+  // error or `base::File::FILE_OK` if no error occurred.
   void StartRecursiveOperation(const FileSystemURL& root,
                                ErrorBehavior error_behavior,
                                StatusCallback callback);
@@ -141,6 +145,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) RecursiveOperationDelegate
   void DidProcessFile(const FileSystemURL& url, base::File::Error error);
   void ProcessSubDirectory();
   void DidPostProcessDirectory(base::File::Error error);
+  void SetPreviousError(base::File::Error error);
 
   // Called when all recursive operation is done (or an error occurs).
   void Done(base::File::Error error);
@@ -150,9 +155,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) RecursiveOperationDelegate
   base::stack<FileSystemURL> pending_directories_;
   base::stack<base::queue<FileSystemURL>> pending_directory_stack_;
   base::queue<FileSystemURL> pending_files_;
-  bool canceled_;
-  ErrorBehavior error_behavior_;
-  bool failed_some_operations_;
+  bool canceled_ = false;
+  ErrorBehavior error_behavior_ = ErrorBehavior::ERROR_BEHAVIOR_ABORT;
+  base::File::Error previous_error_ = base::File::FILE_OK;
 };
 
 }  // namespace storage
