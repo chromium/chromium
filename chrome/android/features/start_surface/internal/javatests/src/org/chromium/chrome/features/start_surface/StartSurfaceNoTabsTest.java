@@ -132,12 +132,16 @@ public class StartSurfaceNoTabsTest {
 
         onView(withId(R.id.primary_tasks_surface_view)).check(matches(isDisplayed()));
         onView(withId(R.id.search_box_text)).check(matches(isDisplayed()));
-        onView(withId(R.id.mv_tiles_container)).check(matches(isDisplayed()));
-        onView(withId(R.id.tab_switcher_title)).check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(R.id.carousel_tab_switcher_container))
+        onView(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container))
+                .check(matches(isDisplayed()));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.tab_switcher_title))
                 .check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(R.id.more_tabs)).check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(R.id.tasks_surface_body)).check(matches(isDisplayed()));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container))
+                .check(matches(withEffectiveVisibility(GONE)));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.more_tabs))
+                .check(matches(withEffectiveVisibility(GONE)));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.tasks_surface_body))
+                .check(matches(isDisplayed()));
         onView(withId(R.id.start_tab_switcher_button)).check(matches(isDisplayed()));
         onViewWaiting(withId(R.id.logo)).check(matches(isDisplayed()));
 
@@ -164,13 +168,18 @@ public class StartSurfaceNoTabsTest {
 
         onView(withId(R.id.primary_tasks_surface_view)).check(matches(isDisplayed()));
         onView(withId(R.id.search_box_text)).check(matches(isDisplayed()));
-        onView(withId(R.id.mv_tiles_container)).check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(R.id.tab_switcher_title)).check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(R.id.carousel_tab_switcher_container))
+        onView(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container))
                 .check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(R.id.single_tab_view)).check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(R.id.more_tabs)).check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(R.id.tasks_surface_body)).check(matches(isDisplayed()));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.tab_switcher_title))
+                .check(matches(withEffectiveVisibility(GONE)));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container))
+                .check(matches(withEffectiveVisibility(GONE)));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.single_tab_view))
+                .check(matches(withEffectiveVisibility(GONE)));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.more_tabs))
+                .check(matches(withEffectiveVisibility(GONE)));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.tasks_surface_body))
+                .check(matches(isDisplayed()));
     }
 
     private void pressBack() {

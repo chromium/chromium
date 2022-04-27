@@ -385,23 +385,24 @@ public class StartSurfaceTestUtils {
      */
     public static void launchFirstMVTile(ChromeTabbedActivity cta, int currentTabCount) {
         TabUiTestHelper.verifyTabModelTabCount(cta, currentTabCount, 0);
-        onViewWaiting(withId(R.id.mv_tiles_layout)).perform(new ViewAction() {
-            @Override
-            public Matcher<View> getConstraints() {
-                return isDisplayed();
-            }
+        onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout))
+                .perform(new ViewAction() {
+                    @Override
+                    public Matcher<View> getConstraints() {
+                        return isDisplayed();
+                    }
 
-            @Override
-            public String getDescription() {
-                return "Click explore top sites view in MV tiles.";
-            }
+                    @Override
+                    public String getDescription() {
+                        return "Click explore top sites view in MV tiles.";
+                    }
 
-            @Override
-            public void perform(UiController uiController, View view) {
-                ViewGroup mvTilesContainer = (ViewGroup) view;
-                mvTilesContainer.getChildAt(0).performClick();
-            }
-        });
+                    @Override
+                    public void perform(UiController uiController, View view) {
+                        ViewGroup mvTilesContainer = (ViewGroup) view;
+                        mvTilesContainer.getChildAt(0).performClick();
+                    }
+                });
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
         CriteriaHelper.pollUiThread(() -> !cta.getLayoutManager().overviewVisible());
         // Verifies a new Tab is created.
@@ -420,8 +421,10 @@ public class StartSurfaceTestUtils {
      * @param position The position of the tab which is clicked.
      */
     public static void clickTabInCarousel(int position) {
-        onViewWaiting(allOf(withParent(withId(R.id.carousel_tab_switcher_container)),
-                              withId(R.id.tab_list_view)))
+        onViewWaiting(
+                allOf(withParent(withId(
+                              org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container)),
+                        withId(org.chromium.chrome.tab_ui.R.id.tab_list_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(position, click()));
     }
 
@@ -436,7 +439,9 @@ public class StartSurfaceTestUtils {
         // TODO(crbug.com/1186752): Investigate whether this would be a problem for real users.
         try {
             TestThreadUtils.runOnUiThreadBlocking(
-                    () -> cta.findViewById(R.id.more_tabs).performClick());
+                    ()
+                            -> cta.findViewById(org.chromium.chrome.tab_ui.R.id.more_tabs)
+                                       .performClick());
         } catch (ExecutionException e) {
             fail("Failed to tap 'more tabs' " + e.toString());
         }

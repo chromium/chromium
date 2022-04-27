@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.features.tasks;
+package org.chromium.chrome.browser.tasks;
 
-import static org.chromium.chrome.features.tasks.SingleTabViewProperties.CLICK_LISTENER;
-import static org.chromium.chrome.features.tasks.SingleTabViewProperties.FAVICON;
-import static org.chromium.chrome.features.tasks.SingleTabViewProperties.IS_VISIBLE;
-import static org.chromium.chrome.features.tasks.SingleTabViewProperties.TITLE;
+import static org.chromium.chrome.browser.tasks.SingleTabViewProperties.CLICK_LISTENER;
+import static org.chromium.chrome.browser.tasks.SingleTabViewProperties.FAVICON;
+import static org.chromium.chrome.browser.tasks.SingleTabViewProperties.IS_VISIBLE;
+import static org.chromium.chrome.browser.tasks.SingleTabViewProperties.TITLE;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;

@@ -59,7 +59,6 @@ import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
-import org.chromium.chrome.start_surface.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -159,16 +158,18 @@ public class StartSurfaceFinaleTest {
         // Launches a new Tab from the Start surface, and verifies the omnibox is focused.
         TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNTP());
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
-        waitForView(withId(R.id.search_box_text));
-        TextView urlBar = cta.findViewById(R.id.url_bar);
+        waitForView(withId(org.chromium.chrome.start_surface.R.id.search_box_text));
+        TextView urlBar = cta.findViewById(org.chromium.chrome.start_surface.R.id.url_bar);
         CriteriaHelper.pollUiThread(
                 ()
                         -> StartSurfaceTestUtils.isKeyboardShown(mActivityTestRule)
                         && urlBar.isFocused(),
                 MAX_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        waitForView(withId(R.id.voice_search_button));
+        waitForView(withId(org.chromium.chrome.start_surface.R.id.voice_search_button));
         Assert.assertTrue(TextUtils.isEmpty(urlBar.getText()));
-        assertEquals(cta.findViewById(R.id.toolbar_buttons).getVisibility(), View.INVISIBLE);
+        assertEquals(cta.findViewById(org.chromium.chrome.start_surface.R.id.toolbar_buttons)
+                             .getVisibility(),
+                View.INVISIBLE);
         ToolbarDataProvider toolbarDataProvider =
                 cta.getToolbarManager().getLocationBarModelForTesting();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -177,18 +178,19 @@ public class StartSurfaceFinaleTest {
 
         // Navigates the new created Tab.
         TestThreadUtils.runOnUiThreadBlocking(() -> urlBar.setText("about:blank"));
-        onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
+        onView(withId(org.chromium.chrome.start_surface.R.id.url_bar))
+                .perform(pressKey(KeyEvent.KEYCODE_ENTER));
 
         // Launches a new Tab from the newly navigated tab, and verifies the omnibox is focused.
         TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNTP());
         TabUiTestHelper.verifyTabModelTabCount(cta, 3, 0);
-        waitForView(withId(R.id.search_box_text));
+        waitForView(withId(org.chromium.chrome.start_surface.R.id.search_box_text));
         CriteriaHelper.pollUiThread(
                 ()
                         -> StartSurfaceTestUtils.isKeyboardShown(mActivityTestRule)
                         && urlBar.isFocused(),
                 MAX_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        waitForView(withId(R.id.voice_search_button));
+        waitForView(withId(org.chromium.chrome.start_surface.R.id.voice_search_button));
         Assert.assertTrue(TextUtils.isEmpty(urlBar.getText()));
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertTrue(TextUtils.equals(toolbarDataProvider.getCurrentUrl(), UrlConstants.NTP_URL));
@@ -215,16 +217,18 @@ public class StartSurfaceFinaleTest {
         // Launches a new Tab from the Start surface, and verifies the omnibox is focused.
         TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNTP());
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
-        waitForView(withId(R.id.search_box_text));
-        TextView urlBar = cta.findViewById(R.id.url_bar);
+        waitForView(withId(org.chromium.chrome.start_surface.R.id.search_box_text));
+        TextView urlBar = cta.findViewById(org.chromium.chrome.start_surface.R.id.url_bar);
         CriteriaHelper.pollUiThread(
                 ()
                         -> StartSurfaceTestUtils.isKeyboardShown(mActivityTestRule)
                         && urlBar.isFocused(),
                 MAX_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        waitForView(withId(R.id.voice_search_button));
+        waitForView(withId(org.chromium.chrome.start_surface.R.id.voice_search_button));
         Assert.assertTrue(TextUtils.isEmpty(urlBar.getText()));
-        assertEquals(cta.findViewById(R.id.toolbar_buttons).getVisibility(), View.INVISIBLE);
+        assertEquals(cta.findViewById(org.chromium.chrome.start_surface.R.id.toolbar_buttons)
+                             .getVisibility(),
+                View.INVISIBLE);
         ToolbarDataProvider toolbarDataProvider =
                 cta.getToolbarManager().getLocationBarModelForTesting();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -233,18 +237,19 @@ public class StartSurfaceFinaleTest {
 
         // Navigates the new created Tab.
         TestThreadUtils.runOnUiThreadBlocking(() -> urlBar.setText("about:blank"));
-        onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
+        onView(withId(org.chromium.chrome.start_surface.R.id.url_bar))
+                .perform(pressKey(KeyEvent.KEYCODE_ENTER));
 
         // Launches a new Tab from the newly navigated tab, and verifies the omnibox is focused.
         TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNTP());
         TabUiTestHelper.verifyTabModelTabCount(cta, 3, 0);
-        waitForView(withId(R.id.search_box_text));
+        waitForView(withId(org.chromium.chrome.start_surface.R.id.search_box_text));
         CriteriaHelper.pollUiThread(
                 ()
                         -> StartSurfaceTestUtils.isKeyboardShown(mActivityTestRule)
                         && urlBar.isFocused(),
                 MAX_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        waitForView(withId(R.id.voice_search_button));
+        waitForView(withId(org.chromium.chrome.start_surface.R.id.voice_search_button));
         Assert.assertTrue(TextUtils.isEmpty(urlBar.getText()));
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertTrue(TextUtils.equals(toolbarDataProvider.getCurrentUrl(), UrlConstants.NTP_URL));
@@ -265,15 +270,18 @@ public class StartSurfaceFinaleTest {
         StartSurfaceTestUtils.waitForTabModel(cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
 
-        onViewWaiting(allOf(withId(R.id.search_box_text), isDisplayed()))
+        onViewWaiting(allOf(withId(org.chromium.chrome.start_surface.R.id.search_box_text),
+                              isDisplayed()))
                 .perform(replaceText("about:blank"));
-        onViewWaiting(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
-        waitForView(withId(R.id.primary_tasks_surface_view), ViewUtils.VIEW_INVISIBLE);
+        onViewWaiting(withId(org.chromium.chrome.start_surface.R.id.url_bar))
+                .perform(pressKey(KeyEvent.KEYCODE_ENTER));
+        waitForView(withId(org.chromium.chrome.start_surface.R.id.primary_tasks_surface_view),
+                ViewUtils.VIEW_INVISIBLE);
 
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
-        waitForView(withId(R.id.search_box_text));
-        waitForView(withId(R.id.toolbar_buttons));
-        TextView urlBar = cta.findViewById(R.id.url_bar);
+        waitForView(withId(org.chromium.chrome.start_surface.R.id.search_box_text));
+        waitForView(withId(org.chromium.chrome.start_surface.R.id.toolbar_buttons));
+        TextView urlBar = cta.findViewById(org.chromium.chrome.start_surface.R.id.url_bar);
         Assert.assertFalse(urlBar.isFocused());
     }
 
@@ -309,9 +317,10 @@ public class StartSurfaceFinaleTest {
             StartSurfaceTestUtils.waitForOverviewVisible(
                     mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
 
-            onViewWaiting(allOf(withId(R.id.mv_tiles_layout), isDisplayed()));
-            onViewWaiting(withId(R.id.carousel_tab_switcher_container));
-            onViewWaiting(withId(R.id.start_tab_switcher_button));
+            onViewWaiting(
+                    allOf(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout), isDisplayed()));
+            onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container));
+            onViewWaiting(withId(org.chromium.chrome.start_surface.R.id.start_tab_switcher_button));
 
             // Launch a tab. The home button should show on the normal tab.
             StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
@@ -322,9 +331,10 @@ public class StartSurfaceFinaleTest {
 
         // MV tiles and carousel tab switcher should not show anymore.
         StartSurfaceTestUtils.waitForOverviewVisible(cta);
-        onViewWaiting(withId(R.id.start_tab_switcher_button));
-        onView(withId(R.id.mv_tiles_container)).check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(R.id.carousel_tab_switcher_container))
+        onViewWaiting(withId(org.chromium.chrome.start_surface.R.id.start_tab_switcher_button));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container))
+                .check(matches(withEffectiveVisibility(GONE)));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container))
                 .check(matches(withEffectiveVisibility(GONE)));
     }
 
@@ -342,13 +352,14 @@ public class StartSurfaceFinaleTest {
             StartSurfaceTestUtils.waitForOverviewVisible(
                     mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
 
-            onViewWaiting(withId(R.id.mv_tiles_layout));
-            onViewWaiting(withId(R.id.carousel_tab_switcher_container));
-            onViewWaiting(withId(R.id.start_tab_switcher_button));
+            onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout));
+            onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container));
+            onViewWaiting(withId(org.chromium.chrome.start_surface.R.id.start_tab_switcher_button));
 
             // Launch a tab. The home button should show on the normal tab.
             StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
-            onViewWaiting(withId(R.id.home_button)).check(matches(isDisplayed()));
+            onViewWaiting(withId(org.chromium.chrome.start_surface.R.id.home_button))
+                    .check(matches(isDisplayed()));
         }
 
         // Go back to the home surface, MV tiles and carousel tab switcher should not show anymore.
@@ -356,9 +367,10 @@ public class StartSurfaceFinaleTest {
 
         // MV tiles should shown and carousel tab switcher should not show anymore.
         StartSurfaceTestUtils.waitForOverviewVisible(cta);
-        onViewWaiting(withId(R.id.start_tab_switcher_button));
-        onView(withId(R.id.mv_tiles_layout)).check(matches(withEffectiveVisibility(VISIBLE)));
-        onView(withId(R.id.carousel_tab_switcher_container))
+        onViewWaiting(withId(org.chromium.chrome.start_surface.R.id.start_tab_switcher_button));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout))
+                .check(matches(withEffectiveVisibility(VISIBLE)));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container))
                 .check(matches(withEffectiveVisibility(GONE)));
     }
 
@@ -383,8 +395,8 @@ public class StartSurfaceFinaleTest {
                                 TabLaunchType.FROM_CHROME_UI));
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
         StartSurfaceTestUtils.waitForOverviewVisible(cta);
-        waitForView(withId(R.id.search_box_text));
-        TextView urlBar = cta.findViewById(R.id.url_bar);
+        waitForView(withId(org.chromium.chrome.start_surface.R.id.search_box_text));
+        TextView urlBar = cta.findViewById(org.chromium.chrome.start_surface.R.id.url_bar);
         CriteriaHelper.pollUiThread(
                 ()
                         -> !StartSurfaceTestUtils.isKeyboardShown(mActivityTestRule)
@@ -414,16 +426,18 @@ public class StartSurfaceFinaleTest {
         // Launches a new Tab from the Start surface, and verifies the omnibox is focused.
         TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNTP());
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
-        waitForView(withId(R.id.search_box_text));
-        TextView urlBar = cta.findViewById(R.id.url_bar);
+        waitForView(withId(org.chromium.chrome.start_surface.R.id.search_box_text));
+        TextView urlBar = cta.findViewById(org.chromium.chrome.start_surface.R.id.url_bar);
         CriteriaHelper.pollUiThread(
                 ()
                         -> StartSurfaceTestUtils.isKeyboardShown(mActivityTestRule)
                         && urlBar.isFocused(),
                 MAX_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        waitForView(withId(R.id.voice_search_button));
+        waitForView(withId(org.chromium.chrome.start_surface.R.id.voice_search_button));
         Assert.assertTrue(TextUtils.isEmpty(urlBar.getText()));
-        assertEquals(cta.findViewById(R.id.toolbar_buttons).getVisibility(), View.INVISIBLE);
+        assertEquals(cta.findViewById(org.chromium.chrome.start_surface.R.id.toolbar_buttons)
+                             .getVisibility(),
+                View.INVISIBLE);
         ToolbarDataProvider toolbarDataProvider =
                 cta.getToolbarManager().getLocationBarModelForTesting();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -432,7 +446,7 @@ public class StartSurfaceFinaleTest {
 
         backAction.run();
 
-        waitForView(withId(R.id.primary_tasks_surface_view));
+        waitForView(withId(org.chromium.chrome.start_surface.R.id.primary_tasks_surface_view));
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
     }
 }

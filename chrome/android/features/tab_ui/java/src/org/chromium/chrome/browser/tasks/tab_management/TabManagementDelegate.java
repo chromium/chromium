@@ -33,6 +33,8 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.TasksSurface;
+import org.chromium.chrome.browser.tasks.TasksSurfaceProperties;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestions;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
@@ -44,6 +46,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.module_installer.builder.ModuleInterface;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 import java.lang.annotation.Retention;
@@ -65,6 +68,47 @@ public interface TabManagementDelegate {
         int SINGLE = 2;
         int NONE = 3;
     }
+
+    /**
+     * Create the {@link TasksSurface}
+     * @param activity The {@link Activity} that creates this surface.
+     * @param scrimCoordinator The {@link ScrimCoordinator} that controls scrim view.
+     * @param propertyModel The {@link PropertyModel} contains the {@link TasksSurfaceProperties}
+     *         to communicate with this surface.
+     * @param tabSwitcherType The type of the tab switcher to show.
+     * @param parentTabSupplier {@link Supplier} to provide parent tab for the
+     *         TasksSurface.
+     * @param hasMVTiles whether has MV tiles on the surface.
+     * @param windowAndroid An instance of a {@link WindowAndroid}.
+     * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
+     * @param tabModelSelector Gives access to the current set of {@TabModel}.
+     * @param snackbarManager Manages the display of snackbars.
+     * @param dynamicResourceLoaderSupplier Supplies the current {@link DynamicResourceLoader}.
+     * @param tabContentManager Gives access to the tab content.
+     * @param modalDialogManager Manages the display of modal dialogs.
+     * @param browserControlsStateProvider Gives access to the state of the browser controls.
+     * @param tabCreatorManger Manages creation of tabs.
+     * @param menuOrKeyboardActionController allows access to menu or keyboard actions.
+     * @param shareDelegateSupplier Supplies the current {@link ShareDelegate}.
+     * @param multiWindowModeStateDispatcher Gives access to the multi window mode state.
+     * @param rootView The root view of the app.
+     * @return The {@link TasksSurface}.
+     */
+    TasksSurface createTasksSurface(@NonNull Activity activity,
+            @NonNull ScrimCoordinator scrimCoordinator, @NonNull PropertyModel propertyModel,
+            @TabSwitcherType int tabSwitcherType, @NonNull Supplier<Tab> parentTabSupplier,
+            boolean hasMVTiles, boolean hasQueryTiles, @NonNull WindowAndroid windowAndroid,
+            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            @NonNull TabModelSelector tabModelSelector, @NonNull SnackbarManager snackbarManager,
+            @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
+            @NonNull TabContentManager tabContentManager,
+            @NonNull ModalDialogManager modalDialogManager,
+            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
+            @NonNull TabCreatorManager tabCreatorManager,
+            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
+            @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
+            @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
+            @NonNull ViewGroup rootView);
 
     /**
      * Create the {@link TabSwitcher} to display Tabs in grid.

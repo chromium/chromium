@@ -59,7 +59,7 @@ public class TabUiThemeProvider {
             float tabElevation = context.getResources().getDimension(R.dimen.tab_bg_elevation);
             @ColorInt
             int colorInt = isSelected
-                    ? MaterialColors.getColor(context, org.chromium.chrome.R.attr.colorPrimary, TAG)
+                    ? MaterialColors.getColor(context, R.attr.colorPrimary, TAG)
                     : new ElevationOverlayProvider(context)
                               .compositeOverlayWithThemeSurfaceColorIfNeeded(tabElevation);
             return colorInt;
@@ -195,8 +195,7 @@ public class TabUiThemeProvider {
             return AppCompatResources.getColorStateList(
                     context, R.color.incognito_tab_bg_selected_color);
         }
-        return ColorStateList.valueOf(
-                MaterialColors.getColor(context, org.chromium.chrome.R.attr.colorPrimary, TAG));
+        return ColorStateList.valueOf(MaterialColors.getColor(context, R.attr.colorPrimary, TAG));
     }
 
     /**
@@ -357,8 +356,7 @@ public class TabUiThemeProvider {
         } else {
             if (isSelected) {
                 @ColorInt
-                int baseColor = MaterialColors.getColor(
-                        context, org.chromium.chrome.R.attr.colorPrimary, TAG);
+                int baseColor = MaterialColors.getColor(context, R.attr.colorPrimary, TAG);
                 int alpha = context.getResources().getInteger(
                         R.integer.tab_grid_hovered_card_background_selected_color_alpha);
                 return ColorStateList.valueOf(
@@ -421,9 +419,8 @@ public class TabUiThemeProvider {
                             ? R.color.incognito_tab_grid_dialog_ungroup_bar_bg_hovered_color
                             : R.color.incognito_tab_grid_dialog_background_color);
         } else {
-            return MaterialColors.getColor(context,
-                    isTabHovered ? org.chromium.chrome.R.attr.colorPrimary : R.attr.colorSurface,
-                    TAG);
+            return MaterialColors.getColor(
+                    context, isTabHovered ? R.attr.colorPrimary : R.attr.colorSurface, TAG);
         }
     }
 
@@ -447,9 +444,8 @@ public class TabUiThemeProvider {
                             ? R.color.incognito_tab_grid_dialog_ungroup_bar_text_hovered_color
                             : R.color.incognito_tab_grid_dialog_ungroup_bar_text_color);
         } else {
-            return MaterialColors.getColor(context,
-                    isTabHovered ? R.attr.colorOnPrimary : org.chromium.chrome.R.attr.colorPrimary,
-                    TAG);
+            return MaterialColors.getColor(
+                    context, isTabHovered ? R.attr.colorOnPrimary : R.attr.colorPrimary, TAG);
         }
     }
 
