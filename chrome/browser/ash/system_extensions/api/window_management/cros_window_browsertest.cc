@@ -25,8 +25,6 @@ namespace {
 static constexpr char kEventListenerCode[] = R"(
   self.addEventListener('message', async (event) => {
     try {
-      // TODO(b/229670749): Remove once crosWindowClose test is no longer flaky.
-      console.log('Starting test');
       await cros_test();
       event.source.postMessage("PASS");
     } catch (e) {
@@ -409,7 +407,6 @@ async function cros_test() {
   RunTest(test_code);
 }
 
-// TODO(crbug.com/1316539): Re-enable the test.
 IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowClose) {
   // Open browser instance to close outside of service worker.
   chrome::NewWindow(browser());
@@ -441,7 +438,6 @@ async function cros_test() {
 
   let window_to_close = windows.find(window => window.id === "%s");
   assert_not_equals(undefined, window_to_close);
-  console.log(window_to_close.title);
   window_to_close.close();
 
   // TODO(b/221123297): Currently test will flake on close under stress.
