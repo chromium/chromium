@@ -14,6 +14,8 @@ namespace webapps {
 enum class WebApkInstallResult;
 }  // namespace webapps
 
+namespace weblayer {
+
 // The native WebApkInstallSchedulerBridge owns itself, and deletes itself and
 // its Java counterpart when finished.
 class WebApkInstallSchedulerBridge {
@@ -51,5 +53,7 @@ class WebApkInstallSchedulerBridge {
   // Points to the Java Object.
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 };
+
+}  // namespace weblayer
 
 #endif  // WEBLAYER_BROWSER_WEBAPPS_WEBAPK_INSTALL_SCHEDULER_BRIDGE_H_

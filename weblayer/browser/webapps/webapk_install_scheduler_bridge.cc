@@ -19,6 +19,8 @@ using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaByteArray;
 using gfx::ConvertToJavaBitmap;
 
+namespace weblayer {
+
 // static
 bool WebApkInstallSchedulerBridge::IsInstallServiceAvailable() {
   return Java_WebApkInstallSchedulerBridge_isInstallServiceAvailable(
@@ -78,3 +80,5 @@ void WebApkInstallSchedulerBridge::OnInstallFinished(
 
   delete this;
 }
+
+}  // namespace weblayer

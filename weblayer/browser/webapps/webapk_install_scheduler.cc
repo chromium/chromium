@@ -24,6 +24,8 @@
 #include "url/gurl.h"
 #include "weblayer/browser/webapps/webapk_install_scheduler_bridge.h"
 
+namespace weblayer {
+
 WebApkInstallScheduler::WebApkInstallScheduler(
     const webapps::ShortcutInfo& shortcut_info,
     const SkBitmap& primary_icon,
@@ -115,3 +117,5 @@ void WebApkInstallScheduler::OnResult(webapps::WebApkInstallResult result) {
 bool WebApkInstallScheduler::IsInstallServiceAvailable() {
   return WebApkInstallSchedulerBridge::IsInstallServiceAvailable();
 }
+
+}  // namespace weblayer

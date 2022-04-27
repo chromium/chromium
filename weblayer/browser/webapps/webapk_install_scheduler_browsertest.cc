@@ -37,6 +37,8 @@ const char* kBestPrimaryIconCorpUrl = "/cors_same_origin.png";
 
 }  // namespace
 
+namespace weblayer {
+
 class TestWebApkInstallScheduler : public WebApkInstallScheduler {
  public:
   TestWebApkInstallScheduler(const webapps::ShortcutInfo& shortcut_info,
@@ -84,8 +86,6 @@ class TestWebApkInstallScheduler : public WebApkInstallScheduler {
  private:
   WebApkInstallScheduler::FinishCallback callback_;
 };
-
-namespace weblayer {
 
 // Wrapper class for running WebApkInstallScheduler#FetchProtoAndScheduleInstall
 // that makes the WebApkInstallResult that is received in the OnResult-callback

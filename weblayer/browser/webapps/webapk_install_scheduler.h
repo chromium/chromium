@@ -21,6 +21,8 @@ struct ShortcutInfo;
 enum class WebApkInstallResult;
 }  // namespace webapps
 
+namespace weblayer {
+
 class WebApkInstallSchedulerBridge;
 
 // Class that schedules the WebAPK installation via the Chrome
@@ -73,5 +75,7 @@ class WebApkInstallScheduler {
   // Used to get |weak_ptr_|.
   base::WeakPtrFactory<WebApkInstallScheduler> weak_ptr_factory_{this};
 };
+
+}  // namespace weblayer
 
 #endif  // WEBLAYER_BROWSER_WEBAPPS_WEBAPK_INSTALL_SCHEDULER_H_

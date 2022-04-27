@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.webapps.WebApkInstallResult;
 
@@ -17,6 +18,7 @@ import org.chromium.components.webapps.WebApkInstallResult;
  * WebApkInstallCoordinatorService} in Chrome. This Java object is created by and owned by the
  * native WebApkInstallSchedulerBridge.
  */
+@JNINamespace("weblayer")
 public class WebApkInstallSchedulerBridge {
     // Raw pointer to the native WebApkInstallSchedulerBridge that is cleared when the native object
     // destroys this object.
