@@ -357,11 +357,11 @@ void AppListClientImpl::ActivateItem(int profile_id,
     // the type of apps launched from the grid in SearchController::Train.
     launch_data.ranking_item_type =
         app_list::RankingItemTypeFromChromeAppListItem(*item);
-    launch_data.launched_from = ash::AppListLaunchedFrom::kLaunchedFromGrid;
+    launch_data.launched_from = launched_from;
     search_controller_->Train(std::move(launch_data));
   }
 
-  MaybeRecordLauncherAction(ash::AppListLaunchedFrom::kLaunchedFromGrid);
+  MaybeRecordLauncherAction(launched_from);
   requested_model_updater->ActivateChromeItem(id, event_flags);
 }
 
@@ -813,6 +813,7 @@ void AppListClientImpl::MaybeRecordLauncherAction(
   DCHECK(launched_from == ash::AppListLaunchedFrom::kLaunchedFromGrid ||
          launched_from ==
              ash::AppListLaunchedFrom::kLaunchedFromSuggestionChip ||
+         launched_from == ash::AppListLaunchedFrom::kLaunchedFromRecentApps ||
          launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox ||
          launched_from == ash::AppListLaunchedFrom::kLaunchedFromContinueTask);
 
@@ -827,14 +828,12 @@ void AppListClientImpl::MaybeRecordLauncherAction(
     return;
 
   state_for_new_user_->action_recorded = true;
-  base::UmaHistogramEnumeration("Apps.FirstLauncherActionByNewUsers",
-                                launched_from);
   if (IsTabletMode()) {
-    base::UmaHistogramEnumeration(
-        "Apps.FirstLauncherActionByNewUsers.TabletMode", launched_from);
+    base::UmaHistogramEnumeration("Apps.NewUserFirstLauncherAction.TabletMode",
+                                  launched_from);
   } else {
     base::UmaHistogramEnumeration(
-        "Apps.FirstLauncherActionByNewUsers.ClamshellMode", launched_from);
+        "Apps.NewUserFirstLauncherAction.ClamshellMode", launched_from);
   }
 
   DCHECK(new_user_session_activation_time_.has_value());

@@ -1953,6 +1953,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.FirstLauncherActionByNewUsers{TabletOrClamshell}"
     enum="AppListLaunchedFrom" expires_after="M107">
+  <obsolete>
+    Deprecated in M103. Replaced with Apps.NewUserFirstLauncherAction.
+  </obsolete>
   <owner>andrewxu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -2322,6 +2325,22 @@ chromium-metrics-reviews@google.com.
     screen - i.e. the time passed from the user requesting an app launch to the
     app window appearing on the screen.
   </summary>
+</histogram>
+
+<histogram name="Apps.NewUserFirstLauncherAction{TabletOrClamshell}"
+    enum="AppListLaunchedFrom" expires_after="M107">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Records which launcher action a new user takes for the first time within a
+    session. Launcher actions include the following: activating a launcher app,
+    opening a search result from either a launcher suggestion chip or the search
+    box, or triggering an app from the continue section. The metric is recorded
+    when a launcher action performs on a new user's session for the first time.
+    Split depending on whether the first launcher action occurred in clamshell
+    or tablet mode.
+  </summary>
+  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
 </histogram>
 
 <histogram name="Apps.NoteTakingApp.DefaultLaunchResult"

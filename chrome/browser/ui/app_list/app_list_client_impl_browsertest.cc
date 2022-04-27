@@ -312,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
   client->ActivateItem(/*profile_id=*/0, item->id(), /*event_flags=*/0,
                        ash::AppListLaunchedFrom::kLaunchedFromGrid);
   histogram_tester.ExpectBucketCount(
-      "Apps.FirstLauncherActionByNewUsers.ClamshellMode",
+      "Apps.NewUserFirstLauncherAction.ClamshellMode",
       static_cast<int>(ash::AppListLaunchedFrom::kLaunchedFromGrid),
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
   client->ActivateItem(/*profile_id=*/0, item->id(), /*event_flags=*/0,
                        ash::AppListLaunchedFrom::kLaunchedFromGrid);
   histogram_tester.ExpectBucketCount(
-      "Apps.FirstLauncherActionByNewUsers.ClamshellMode",
+      "Apps.NewUserFirstLauncherAction.ClamshellMode",
       static_cast<int>(ash::AppListLaunchedFrom::kLaunchedFromGrid),
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
@@ -428,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, OpenSearchResult) {
 
   // Verify that opening the app result is recorded.
   histogram_tester.ExpectBucketCount(
-      "Apps.FirstLauncherActionByNewUsers.ClamshellMode",
+      "Apps.NewUserFirstLauncherAction.ClamshellMode",
       static_cast<int>(ash::AppListLaunchedFrom::kLaunchedFromSearchBox),
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(

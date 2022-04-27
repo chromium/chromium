@@ -31,6 +31,7 @@
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
 #include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/callback.h"
@@ -210,16 +211,19 @@ AppListBubbleView* GetAppListBubbleView() {
   return bubble_view;
 }
 
+AppsContainerView* GetAppsContainerView() {
+  return GetAppListView()
+      ->app_list_main_view()
+      ->contents_view()
+      ->apps_container_view();
+}
+
 AppListFolderView* GetAppListFolderView() {
   // Handle the case that the app list bubble view is effective.
   if (ShouldUseBubbleAppList())
     return GetAppListBubbleView()->folder_view_for_test();
 
-  return GetAppListView()
-      ->app_list_main_view()
-      ->contents_view()
-      ->apps_container_view()
-      ->app_list_folder_view();
+  return GetAppsContainerView()->app_list_folder_view();
 }
 
 AppListToastContainerView* GetToastContainerViewFromBubble() {
@@ -231,11 +235,14 @@ AppListToastContainerView* GetToastContainerViewFromBubble() {
 
 AppListToastContainerView* GetToastContainerViewFromFullscreenAppList() {
   DCHECK(features::IsLauncherAppSortEnabled());
-  return GetAppListView()
-      ->app_list_main_view()
-      ->contents_view()
-      ->apps_container_view()
-      ->toast_container_for_test();
+  return GetAppsContainerView()->toast_container_for_test();
+}
+
+RecentAppsView* GetRecentAppsView() {
+  if (ShouldUseBubbleAppList())
+    return GetAppListBubbleView()->apps_page_for_test()->recent_apps_for_test();
+
+  return GetAppsContainerView()->GetRecentApps();
 }
 
 // AppListVisibilityChangedWaiter ----------------------------------------------
@@ -327,6 +334,13 @@ AppListTestApi::~AppListTestApi() = default;
 
 AppListModel* AppListTestApi::GetAppListModel() {
   return AppListModelProvider::Get()->model();
+}
+
+void AppListTestApi::ShowBubbleAppListAndWait() {
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+  WaitForBubbleWindow(
+      /*wait_for_opening_animation=*/true);
 }
 
 void AppListTestApi::WaitForBubbleWindow(bool wait_for_opening_animation) {
@@ -622,6 +636,10 @@ void AppListTestApi::VerifyTopLevelItemVisibility() {
 
   // Invisible items should be none.
   EXPECT_EQ(std::vector<std::string>(), invisible_item_names);
+}
+
+views::View* AppListTestApi::GetRecentAppAt(int index) {
+  return GetRecentAppsView()->GetItemViewAt(index);
 }
 
 void AppListTestApi::ReorderByMouseClickAtContextMenuInAppsGrid(
