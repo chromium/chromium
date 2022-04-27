@@ -159,5 +159,9 @@ void CastAudioInputStream::OnCaptureError() {
   input_callback_->OnError();
 }
 
+void CastAudioInputStream::OnCaptureMetadata(const char* data, size_t size) {
+  // Not implemented!
+}
+
 }  // namespace media
 }  // namespace chromecast

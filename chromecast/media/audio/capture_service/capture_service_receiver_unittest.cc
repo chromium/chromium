@@ -64,6 +64,7 @@ class MockCaptureServiceReceiverDelegate
   MOCK_METHOD(bool, OnInitialStreamInfo, (const StreamInfo&), (override));
   MOCK_METHOD(bool, OnCaptureData, (const char*, size_t), (override));
   MOCK_METHOD(void, OnCaptureError, (), (override));
+  MOCK_METHOD(void, OnCaptureMetadata, (const char*, size_t), (override));
 };
 
 class CaptureServiceReceiverTest : public ::testing::Test {
@@ -205,6 +206,7 @@ TEST_F(CaptureServiceReceiverTest, ReceiveMetadataMessage) {
   // Neither OnCaptureError nor OnCaptureData will be called.
   EXPECT_CALL(delegate_, OnCaptureError).Times(0);
   EXPECT_CALL(delegate_, OnCaptureData).Times(0);
+  EXPECT_CALL(delegate_, OnCaptureMetadata).Times(1);
 
   receiver_.StartWithSocket(std::move(socket));
   task_environment_.RunUntilIdle();

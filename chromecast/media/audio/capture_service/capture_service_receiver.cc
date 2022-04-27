@@ -148,6 +148,11 @@ bool CaptureServiceReceiver::Socket::OnMessage(char* data, size_t size) {
     return HandleAudio(data, size);
   }
 
+  if (message_type == capture_service::MessageType::kMetadata) {
+    delegate_->OnCaptureMetadata(data, size);
+    return true;
+  }
+
   LOG(WARNING) << "Receive message with type " << type << " at state "
                << static_cast<int>(state_) << ", ignored.";
   return true;
