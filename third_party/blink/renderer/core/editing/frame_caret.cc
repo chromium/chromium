@@ -293,8 +293,10 @@ void FrameCaret::ScheduleVisualUpdateForPaintInvalidationIfNeeded() {
 }
 
 void FrameCaret::RecreateCaretBlinkTimerForTesting(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  caret_blink_timer_.MoveToNewTaskRunner(std::move(task_runner));
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    const base::TickClock* tick_clock) {
+  caret_blink_timer_.SetTaskRunnerForTesting(std::move(task_runner),
+                                             tick_clock);
 }
 
 }  // namespace blink

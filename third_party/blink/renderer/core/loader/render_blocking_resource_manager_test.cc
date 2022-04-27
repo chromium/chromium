@@ -64,7 +64,7 @@ TEST_F(RenderBlockingResourceManagerTest, FastFontFinishBeforeBody) {
   )HTML");
 
   // Make sure timer doesn't fire in case the test runs slow.
-  SetFontPreloadTimeout(base::TimeDelta::Max());
+  SetFontPreloadTimeout(base::Seconds(30));
 
   // Rendering is blocked due to ongoing font preloading.
   EXPECT_TRUE(Compositor().DeferMainFrameUpdate());
@@ -545,7 +545,7 @@ TEST_F(RenderBlockingResourceManagerTest, OptionalFontFastImperativeLoad) {
   )HTML");
 
   // Make sure timer doesn't fire in case the test runs slow.
-  SetFontPreloadTimeout(base::TimeDelta::Max());
+  SetFontPreloadTimeout(base::Seconds(30));
 
   // Rendering is blocked due to font being preloaded.
   EXPECT_TRUE(Compositor().DeferMainFrameUpdate());
@@ -604,7 +604,7 @@ TEST_F(RenderBlockingResourceManagerTest, ParserBlockingScriptBeforeFont) {
   LoadURL("https://example.com");
 
   // Make sure timer doesn't fire in case the test runs slow.
-  SetFontPreloadTimeout(base::TimeDelta::Max());
+  SetFontPreloadTimeout(base::Seconds(30));
 
   main_resource.Complete(R"HTML(
     <!doctype html>

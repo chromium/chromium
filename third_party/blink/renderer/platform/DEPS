@@ -11,6 +11,7 @@ include_rules = [
     "+base/command_line.h",
     "+base/compiler_specific.h",
     "+base/cpu.h",
+    "+base/task/delay_policy.h",
     "+base/feature_list.h",
     "+base/files",
     "+base/containers/flat_map.h",

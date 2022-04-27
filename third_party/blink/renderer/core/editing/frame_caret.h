@@ -84,7 +84,8 @@ class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
 
   // For unit tests.
   void RecreateCaretBlinkTimerForTesting(
-      scoped_refptr<base::SingleThreadTaskRunner>);
+      scoped_refptr<base::SingleThreadTaskRunner>,
+      const base::TickClock* tick_clock);
 
   void Trace(Visitor*) const;
 

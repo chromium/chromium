@@ -169,9 +169,10 @@ ScriptPromise IdleDetector::start(ScriptState* script_state,
 }
 
 void IdleDetector::SetTaskRunnerForTesting(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    const base::TickClock* tick_clock) {
   task_runner_ = std::move(task_runner);
-  timer_.MoveToNewTaskRunner(task_runner_);
+  timer_.SetTaskRunnerForTesting(task_runner_, tick_clock);
 }
 
 void IdleDetector::Abort(AbortSignal* signal) {

@@ -15,6 +15,10 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
+namespace base {
+class TickClock;
+}
+
 namespace blink {
 
 class SingleThreadTaskRunner;
@@ -51,6 +55,10 @@ class MODULES_EXPORT WebSocketMessageChunkAccumulator final {
 
   wtf_size_t GetPoolSizeForTesting() const { return pool_.size(); }
   bool IsTimerActiveForTesting() const { return timer_.IsActive(); }
+
+  void SetTaskRunnerForTesting(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      const base::TickClock* tick_clock);
 
   static constexpr size_t kSegmentSize = 16 * 1024;
   static constexpr base::TimeDelta kFreeDelay = base::Milliseconds(100);

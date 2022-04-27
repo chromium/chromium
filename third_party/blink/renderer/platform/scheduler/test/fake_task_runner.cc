@@ -15,7 +15,8 @@
 namespace blink {
 namespace scheduler {
 
-class FakeTaskRunner::Data : public WTF::ThreadSafeRefCounted<Data> {
+class FakeTaskRunner::Data : public WTF::ThreadSafeRefCounted<Data>,
+                             public base::TickClock {
  public:
   Data() = default;
   Data(const Data&) = delete;
@@ -33,12 +34,15 @@ class FakeTaskRunner::Data : public WTF::ThreadSafeRefCounted<Data> {
         [&](const PendingTask& item) { return item.second <= time_; });
   }
 
+  // base::TickClock:
+  base::TimeTicks NowTicks() const override { return time_; }
+
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   Deque<PendingTask> task_queue_;
   base::TimeTicks time_;
 
  private:
-  ~Data() = default;
+  ~Data() override = default;
 
   friend ThreadSafeRefCounted<Data>;
 };
@@ -78,6 +82,10 @@ void FakeTaskRunner::AdvanceTimeAndRun(base::TimeDelta delta) {
   }
 }
 
+const base::TickClock* FakeTaskRunner::GetMockTickClock() const {
+  return data_.get();
+}
+
 Deque<std::pair<base::OnceClosure, base::TimeTicks>>
 FakeTaskRunner::TakePendingTasksForTesting() {
   return std::move(data_->task_queue_);
@@ -88,6 +96,18 @@ bool FakeTaskRunner::PostDelayedTask(const base::Location& location,
                                      base::TimeDelta delay) {
   data_->PostDelayedTask(std::move(task), delay);
   return true;
+}
+
+bool FakeTaskRunner::PostDelayedTaskAt(
+    base::subtle::PostDelayedTaskPassKey,
+    const base::Location& from_here,
+    base::OnceClosure task,
+    base::TimeTicks delayed_run_time,
+    base::subtle::DelayPolicy deadline_policy) {
+  return PostDelayedTask(from_here, std::move(task),
+                         delayed_run_time.is_null()
+                             ? base::TimeDelta()
+                             : delayed_run_time - data_->NowTicks());
 }
 
 bool FakeTaskRunner::PostNonNestableDelayedTask(const base::Location& location,

@@ -42,6 +42,10 @@
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
+namespace base {
+class TickClock;
+}
+
 namespace blink {
 
 // Time intervals are all in seconds.
@@ -76,17 +80,15 @@ class PLATFORM_EXPORT TimerBase {
   base::TimeDelta RepeatInterval() const { return repeat_interval_; }
 
   void AugmentRepeatInterval(base::TimeDelta delta) {
-    base::TimeTicks now = TimerCurrentTimeTicks();
-    SetNextFireTime(now,
-                    std::max(next_fire_time_ - now + delta, base::TimeDelta()));
+    SetNextFireTime(next_fire_time_.is_null() ? TimerCurrentTimeTicks() + delta
+                                              : next_fire_time_ + delta);
     repeat_interval_ += delta;
   }
 
   void MoveToNewTaskRunner(scoped_refptr<base::SingleThreadTaskRunner>);
 
-  struct PLATFORM_EXPORT Comparator {
-    bool operator()(const TimerBase* a, const TimerBase* b) const;
-  };
+  void SetTaskRunnerForTesting(scoped_refptr<base::SingleThreadTaskRunner>,
+                               const base::TickClock* tick_clock);
 
  protected:
   virtual void Fired() = 0;
@@ -100,12 +102,15 @@ class PLATFORM_EXPORT TimerBase {
  private:
   base::TimeTicks TimerCurrentTimeTicks() const;
 
-  void SetNextFireTime(base::TimeTicks now, base::TimeDelta delay);
+  void SetNextFireTime(base::TimeTicks next_fire_time);
 
-  base::TimeTicks next_fire_time_;   // 0 if inactive
+  base::TimeTicks next_fire_time_ =
+      base::TimeTicks::Max();        // Max() if inactive
   base::TimeDelta repeat_interval_;  // 0 if not repeating
   base::Location location_;
   scoped_refptr<base::SingleThreadTaskRunner> web_task_runner_;
+  // The tick clock used to calculate the run time for scheduled tasks.
+  const base::TickClock* tick_clock_ = nullptr;
 
 #if DCHECK_IS_ON()
   base::PlatformThreadId thread_;

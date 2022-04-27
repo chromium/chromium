@@ -7,6 +7,8 @@
 #include <string.h>
 #include <algorithm>
 
+#include "base/time/tick_clock.h"
+
 namespace blink {
 
 constexpr size_t WebSocketMessageChunkAccumulator::kSegmentSize;
@@ -19,6 +21,12 @@ WebSocketMessageChunkAccumulator::WebSocketMessageChunkAccumulator(
              &WebSocketMessageChunkAccumulator::OnTimerFired) {}
 
 WebSocketMessageChunkAccumulator::~WebSocketMessageChunkAccumulator() = default;
+
+void WebSocketMessageChunkAccumulator::SetTaskRunnerForTesting(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    const base::TickClock* tick_clock) {
+  timer_.SetTaskRunnerForTesting(std::move(task_runner), tick_clock);
+}
 
 void WebSocketMessageChunkAccumulator::Append(base::span<const char> data) {
   if (!segments_.IsEmpty()) {

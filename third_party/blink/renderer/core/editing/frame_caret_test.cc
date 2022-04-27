@@ -46,7 +46,8 @@ TEST_F(FrameCaretTest, MAYBE_BlinkAfterTyping) {
   scoped_refptr<scheduler::FakeTaskRunner> task_runner =
       base::MakeRefCounted<scheduler::FakeTaskRunner>();
   task_runner->SetTime(0);
-  caret.RecreateCaretBlinkTimerForTesting(task_runner.get());
+  caret.RecreateCaretBlinkTimerForTesting(task_runner.get(),
+                                          task_runner->GetMockTickClock());
   const double kInterval = 10;
   LayoutTheme::GetTheme().SetCaretBlinkInterval(base::Seconds(kInterval));
   GetDocument().GetPage()->GetFocusController().SetActive(true);
