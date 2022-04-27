@@ -13,10 +13,9 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/web/public/test/http_server/http_server.h"
-#include "ios/web/public/test/http_server/http_server_util.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -56,17 +55,22 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
 }  // namespace
 
 // Toolbar integration tests for Chrome.
-@interface ToolbarTestCase : WebHttpServerChromeTestCase
+@interface ToolbarTestCase : ChromeTestCase
 @end
 
 @implementation ToolbarTestCase
+
+- (void)setUp {
+  [super setUp];
+  net::test_server::RegisterDefaultHandlers(self.testServer);
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+}
 
 #pragma mark Tests
 
 // Verifies that entering a URL in the omnibox navigates to the correct URL and
 // displays content.
 - (void)testEnterURL {
-  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   const GURL URL = self.testServer->GetURL("/destination.html");
   [ChromeEarlGrey loadURL:URL];
   [[EarlGrey selectElementWithMatcher:OmniboxText(URL.GetContent())]
@@ -110,7 +114,7 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
     EARL_GREY_TEST_SKIPPED(@"Test not support on iPad");
   }
 
-  const GURL URL = web::test::HttpServer::MakeUrl("http://origin");
+  const GURL URL = self.testServer->GetURL("/echo");
 
   [ChromeEarlGrey loadURL:URL];
 
@@ -143,7 +147,7 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
     EARL_GREY_TEST_SKIPPED(@"Test not support on iPhone");
   }
 
-  const GURL URL = web::test::HttpServer::MakeUrl("http://origin");
+  const GURL URL = self.testServer->GetURL("/echo");
 
   [ChromeEarlGrey loadURL:URL];
 
@@ -170,7 +174,7 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
     EARL_GREY_TEST_SKIPPED(@"Test not support on iPhone");
   }
 
-  const GURL URL = web::test::HttpServer::MakeUrl("http://origin");
+  const GURL URL = self.testServer->GetURL("/echo");
 
   [ChromeEarlGrey loadURL:URL];
 
@@ -239,10 +243,9 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
     [UIPasteboard generalPasteboard].string = @"";
   }];
 
-  std::map<GURL, std::string> responses;
   // The URL needs to be long enough so the tap to the omnibox selects it.
-  const GURL URL = web::test::HttpServer::MakeUrl("http://veryLongURLTestPage");
-  const GURL secondURL = web::test::HttpServer::MakeUrl("http://pastePage");
+  const GURL URL = self.testServer->GetURL("http://veryLongURLTestPage");
+  const GURL secondURL = self.testServer->GetURL("http://pastePage");
 
   [ChromeEarlGrey loadURL:URL];
 
@@ -299,7 +302,7 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
   }
 
-  const GURL URL = web::test::HttpServer::MakeUrl("http://origin");
+  const GURL URL = self.testServer->GetURL("/echo");
 
   [ChromeEarlGrey loadURL:URL];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
@@ -327,11 +330,7 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
     EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
   }
 #endif
-  std::map<GURL, std::string> responses;
-  GURL URL = web::test::HttpServer::MakeUrl("http://foo");
-  responses[URL] = "bar";
-  web::test::SetUpSimpleHttpServer(responses);
-  [ChromeEarlGrey loadURL:GURL(URL)];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
 
   [ChromeEarlGreyUI focusOmniboxAndType:@"javascript:alert('Hello');\n"];
 
