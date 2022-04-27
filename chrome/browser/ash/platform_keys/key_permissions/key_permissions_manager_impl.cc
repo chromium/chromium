@@ -59,11 +59,6 @@ const char kMigrationStatusHistogramName[] =
 // update started as well as the number of times it succeeded and failed.
 const char kArcUsageUpdateStatusHistogramName[] =
     "ChromeOS.KeyPermissionsManager.ArcUsageUpdate";
-
-// The name of the histogram that records the time taken to successfully migrate
-// key permissions to chaps.
-const char kMigrationTimeHistogramName[] =
-    "ChromeOS.KeyPermissionsManager.MigrationTime";
 // The name of the histogram that records the time taken to successfully update
 // chaps with the new ARC usage flags.
 const char kArcUsageUpdateTimeHistogramName[] =
@@ -154,19 +149,6 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
     OnUpdateFinished() {
   switch (mode_) {
     case Mode::kMigratePermissionsFromPrefs: {
-      // For more information about choosing |min| and |max| for the histogram,
-      // please refer to:
-      // https://chromium.googlesource.com/chromium/src/tools/+/refs/heads/main/metrics/histograms/README.md#count-histograms_choosing-min-and-max
-      //
-      // For more information about choosing the number of |buckets| for the
-      // histogram, please refer to:
-      // https://chromium.googlesource.com/chromium/src/tools/+/refs/heads/main/metrics/histograms/README.md#count-histograms_choosing-number-of-buckets
-      base::UmaHistogramCustomTimes(
-          kMigrationTimeHistogramName,
-          /*sample=*/base::TimeTicks::Now() - update_start_time_,
-          /*min=*/base::Milliseconds(1),
-          /*max=*/base::Minutes(5),
-          /*buckets=*/50);
       break;
     }
     case Mode::kUpdateArcUsageFlag: {
