@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_UTIL_NAMED_GUIDE_H_
 #define IOS_CHROME_BROWSER_UI_UTIL_NAMED_GUIDE_H_
 
+#import <UIKit/UIKit.h>
+
 #import "ios/chrome/browser/ui/util/layout_guide_names.h"
 
 // A UILayoutGuide subclass that represents the layout of a well-known piece of

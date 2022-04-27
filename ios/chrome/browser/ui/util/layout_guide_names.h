@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_UTIL_LAYOUT_GUIDE_NAMES_H_
 #define IOS_CHROME_BROWSER_UI_UTIL_LAYOUT_GUIDE_NAMES_H_
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 typedef NSString GuideName;
 

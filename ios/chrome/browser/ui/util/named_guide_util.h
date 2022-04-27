@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_UTIL_NAMED_GUIDE_UTIL_H_
 #define IOS_CHROME_BROWSER_UI_UTIL_NAMED_GUIDE_UTIL_H_
 
+#import <UIKit/UIKit.h>
+
 #import "ios/chrome/browser/ui/util/layout_guide_names.h"
 
 // Creates NamedGuides with the GuideNames in |names| and adds them to |view|.
