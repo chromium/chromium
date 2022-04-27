@@ -17,7 +17,8 @@ path_util.AddPyUtilsToPath()
 path_util.AddTracingToPath()
 
 from core.perfetto_binary_roller import binary_deps_manager
-from core.tbmv3 import trace_processor
+
+TP_BINARY_NAME = 'trace_processor_shell'
 
 
 if __name__ == '__main__':
@@ -49,13 +50,13 @@ if __name__ == '__main__':
 
   if args.print_latest:
     print(binary_deps_manager.GetLatestFullPathChromium(
-        trace_processor.TP_BINARY_NAME, args.platform))
+        TP_BINARY_NAME, args.platform))
   elif args.print_latest_perfetto:
     print(binary_deps_manager.GetLatestFullPathPerfetto(
-        trace_processor.TP_BINARY_NAME, args.platform))
+        TP_BINARY_NAME, args.platform))
   elif args.print_current:
     print(binary_deps_manager.GetCurrentFullPath(
-        trace_processor.TP_BINARY_NAME, args.platform))
+        TP_BINARY_NAME, args.platform))
   else:
     binary_deps_manager.SwitchBinaryToNewFullPath(
-        trace_processor.TP_BINARY_NAME, args.platform, args.path)
+        TP_BINARY_NAME, args.platform, args.path)

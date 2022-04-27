@@ -35,7 +35,9 @@ class BinaryDepsManagerTests(unittest.TestCase):
   def testUploadHostBinaryChromium(self):
     with mock.patch('py_utils.cloud_storage.Exists') as exists_patch:
       with mock.patch('py_utils.cloud_storage.Insert') as insert_patch:
-        with mock.patch('py_utils.GetHostOsName') as get_os_patch:
+        with mock.patch(
+            'core.perfetto_binary_roller.binary_deps_manager._GetHostOsName'
+        ) as get_os_patch:
           exists_patch.return_value = False
           get_os_patch.return_value = 'testos'
           binary_deps_manager.UploadHostBinaryChromium('dep', '/path/to/bin',
@@ -57,7 +59,9 @@ class BinaryDepsManagerTests(unittest.TestCase):
   def testUploadHostBinaryChromiumExists(self):
     with mock.patch('py_utils.cloud_storage.Exists') as exists_patch:
       with mock.patch('py_utils.cloud_storage.Insert') as insert_patch:
-        with mock.patch('py_utils.GetHostOsName') as get_os_patch:
+        with mock.patch(
+            'core.perfetto_binary_roller.binary_deps_manager._GetHostOsName'
+        ) as get_os_patch:
           exists_patch.return_value = True
           get_os_patch.return_value = 'testos'
           binary_deps_manager.UploadHostBinaryChromium('dep', '/path/to/bin',
@@ -113,7 +117,9 @@ class BinaryDepsManagerTests(unittest.TestCase):
         }
     })
     with mock.patch('py_utils.cloud_storage.Get') as get_patch:
-      with mock.patch('py_utils.GetHostOsName') as get_os_patch:
+      with mock.patch(
+          'core.perfetto_binary_roller.binary_deps_manager._GetHostOsName'
+      ) as get_os_patch:
         with mock.patch('py_utils.cloud_storage.CalculateHash') as hash_patch:
           with mock.patch('os.stat'):
             with mock.patch('os.chmod'):
@@ -137,7 +143,9 @@ class BinaryDepsManagerTests(unittest.TestCase):
         }
     })
     with mock.patch('py_utils.cloud_storage.Get'):
-      with mock.patch('py_utils.GetHostOsName') as get_os_patch:
+      with mock.patch(
+          'core.perfetto_binary_roller.binary_deps_manager._GetHostOsName'
+      ) as get_os_patch:
         with mock.patch('py_utils.cloud_storage.CalculateHash') as hash_patch:
           hash_patch.return_value = '234'
           get_os_patch.return_value = 'testos'

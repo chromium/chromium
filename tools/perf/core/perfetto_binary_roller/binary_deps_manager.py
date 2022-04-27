@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2022 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,11 +7,17 @@ import os
 import posixpath
 import stat
 import subprocess
+import sys
+import tempfile
 import six
 
-import py_utils
-from py_utils import cloud_storage
-from py_utils import tempfile_ext
+# When py_utils from the catapult repo are not available (as is the case
+# on autorollers), import a small replacement.
+try:
+  from py_utils import cloud_storage
+except ImportError:
+  from core.perfetto_binary_roller import cloud_storage
+
 
 # Binaries are publicly readable, data files are for internal use only.
 BINARY_BUCKET = cloud_storage.PUBLIC_BUCKET
@@ -36,6 +42,29 @@ LOCAL_STORAGE_FOLDER = os.path.abspath(
   os.path.join(os.path.dirname(__file__), 'bin'))
 CONFIG_PATH = os.path.abspath(
   os.path.join(os.path.dirname(__file__), 'binary_deps.json'))
+
+
+def _IsRunningOnCrosDevice():
+  """Returns True if we're on a ChromeOS device."""
+  lsb_release = '/etc/lsb-release'
+  if sys.platform.startswith('linux') and os.path.exists(lsb_release):
+    with open(lsb_release, 'r') as f:
+      res = f.read()
+      if res.count('CHROMEOS_RELEASE_NAME'):
+        return True
+  return False
+
+
+def _GetHostOsName():
+  if _IsRunningOnCrosDevice():
+    return 'chromeos'
+  if sys.platform.startswith('linux'):
+    return 'linux'
+  if sys.platform == 'darwin':
+    return 'mac'
+  if sys.platform == 'win32':
+    return 'win'
+  return None
 
 
 def _GetHostArch():
@@ -75,7 +104,7 @@ def _GetMacBinaryArch(binary_name):
 
 
 def _GetHostPlatform():
-  os_name = py_utils.GetHostOsName()
+  os_name = _GetHostOsName()
   # If we're running directly on a Chrome OS device, fetch the binaries for
   # linux instead, which should be compatible with CrOS.
   if os_name in ['chromeos', 'linux']:
@@ -112,14 +141,14 @@ def _GetBinaryPlatform(binary_name):
 
 def _CalculateHash(full_remote_path):
   bucket, remote_path = full_remote_path.split('/', 1)
-  with tempfile_ext.NamedTemporaryFile() as f:
+  with tempfile.NamedTemporaryFile(delete=False) as f:
     f.close()
     cloud_storage.Get(bucket, remote_path, f.name)
     return cloud_storage.CalculateHash(f.name)
 
 
 def _SetLatestPathForBinaryChromium(binary_name, platform, latest_path):
-  with tempfile_ext.NamedTemporaryFile(mode='w') as latest_file:
+  with tempfile.NamedTemporaryFile(mode='w', delete=False) as latest_file:
     latest_file.write(latest_path)
     latest_file.close()
     remote_latest_file = posixpath.join(BINARY_CS_FOLDER, binary_name, platform,
@@ -151,7 +180,7 @@ def UploadHostBinaryChromium(binary_name, binary_path, version):
 
 
 def GetLatestFullPathChromium(binary_name, platform):
-  with tempfile_ext.NamedTemporaryFile() as latest_file:
+  with tempfile.NamedTemporaryFile(delete=False) as latest_file:
     latest_file.close()
     remote_path = posixpath.join(BINARY_CS_FOLDER, binary_name, platform,
                                  LATEST_FILENAME)
