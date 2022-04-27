@@ -107,6 +107,12 @@ void WebSettingsImpl::SetFantasyFontFamily(const WebString& font,
     settings_->NotifyGenericFontFamilyChange();
 }
 
+void WebSettingsImpl::SetMathFontFamily(const WebString& font,
+                                        UScriptCode script) {
+  if (settings_->GetGenericFontFamilySettings().UpdateMath(font, script))
+    settings_->NotifyGenericFontFamilyChange();
+}
+
 void WebSettingsImpl::SetDefaultFontSize(int size) {
   settings_->SetDefaultFontSize(size);
 }

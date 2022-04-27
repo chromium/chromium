@@ -92,6 +92,9 @@ class InternalSettings final : public InternalSettingsGenerated,
   void setFantasyFontFamily(const AtomicString& family,
                             const String& script,
                             ExceptionState&);
+  void setMathFontFamily(const AtomicString& family,
+                         const String& script,
+                         ExceptionState&);
   void setDefaultVideoPosterURL(const String& url, ExceptionState&);
   void setEditingBehavior(const String&, ExceptionState&);
   void setImagesEnabled(bool, ExceptionState&);

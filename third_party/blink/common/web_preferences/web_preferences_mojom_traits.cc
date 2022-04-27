@@ -22,6 +22,7 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       !data.ReadSansSerifFontFamilyMap(&out->sans_serif_font_family_map) ||
       !data.ReadCursiveFontFamilyMap(&out->cursive_font_family_map) ||
       !data.ReadFantasyFontFamilyMap(&out->fantasy_font_family_map) ||
+      !data.ReadMathFontFamilyMap(&out->math_font_family_map) ||
       !data.ReadLazyFrameLoadingDistanceThresholdsPx(
           &out->lazy_frame_loading_distance_thresholds_px) ||
       !data.ReadLazyImageLoadingDistanceThresholdsPx(

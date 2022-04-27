@@ -49,6 +49,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   ScriptFontFamilyMap sans_serif_font_family_map;
   ScriptFontFamilyMap cursive_font_family_map;
   ScriptFontFamilyMap fantasy_font_family_map;
+  ScriptFontFamilyMap math_font_family_map;
   int default_font_size;
   int default_fixed_font_size;
   int minimum_font_size;

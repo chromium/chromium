@@ -35,6 +35,7 @@ TEST(GenericFontFamilySettingsTest, TestAllNames) {
   EXPECT_TRUE(settings.SansSerif().IsEmpty());
   EXPECT_TRUE(settings.Cursive().IsEmpty());
   EXPECT_TRUE(settings.Fantasy().IsEmpty());
+  EXPECT_TRUE(settings.Math().IsEmpty());
 
   EXPECT_TRUE(settings.Standard(USCRIPT_ARABIC).IsEmpty());
   EXPECT_TRUE(settings.Fixed(USCRIPT_ARABIC).IsEmpty());
@@ -42,6 +43,7 @@ TEST(GenericFontFamilySettingsTest, TestAllNames) {
   EXPECT_TRUE(settings.SansSerif(USCRIPT_ARABIC).IsEmpty());
   EXPECT_TRUE(settings.Cursive(USCRIPT_ARABIC).IsEmpty());
   EXPECT_TRUE(settings.Fantasy(USCRIPT_ARABIC).IsEmpty());
+  EXPECT_TRUE(settings.Math(USCRIPT_ARABIC).IsEmpty());
 
   settings.UpdateStandard("CustomStandard");
   settings.UpdateFixed("CustomFixed");
@@ -49,6 +51,7 @@ TEST(GenericFontFamilySettingsTest, TestAllNames) {
   settings.UpdateSansSerif("CustomSansSerif");
   settings.UpdateCursive("CustomCursive");
   settings.UpdateFantasy("CustomFantasy");
+  settings.UpdateMath("CustomMath");
 
   settings.UpdateStandard("CustomArabicStandard", USCRIPT_ARABIC);
   settings.UpdateFixed("CustomArabicFixed", USCRIPT_ARABIC);
@@ -56,6 +59,7 @@ TEST(GenericFontFamilySettingsTest, TestAllNames) {
   settings.UpdateSansSerif("CustomArabicSansSerif", USCRIPT_ARABIC);
   settings.UpdateCursive("CustomArabicCursive", USCRIPT_ARABIC);
   settings.UpdateFantasy("CustomArabicFantasy", USCRIPT_ARABIC);
+  settings.UpdateMath("CustomArabicMath", USCRIPT_ARABIC);
 
   EXPECT_EQ("CustomStandard", settings.Standard());
   EXPECT_EQ("CustomFixed", settings.Fixed());
@@ -63,6 +67,7 @@ TEST(GenericFontFamilySettingsTest, TestAllNames) {
   EXPECT_EQ("CustomSansSerif", settings.SansSerif());
   EXPECT_EQ("CustomCursive", settings.Cursive());
   EXPECT_EQ("CustomFantasy", settings.Fantasy());
+  EXPECT_EQ("CustomMath", settings.Math());
 
   EXPECT_EQ("CustomArabicStandard", settings.Standard(USCRIPT_ARABIC));
   EXPECT_EQ("CustomArabicFixed", settings.Fixed(USCRIPT_ARABIC));
@@ -70,6 +75,7 @@ TEST(GenericFontFamilySettingsTest, TestAllNames) {
   EXPECT_EQ("CustomArabicSansSerif", settings.SansSerif(USCRIPT_ARABIC));
   EXPECT_EQ("CustomArabicCursive", settings.Cursive(USCRIPT_ARABIC));
   EXPECT_EQ("CustomArabicFantasy", settings.Fantasy(USCRIPT_ARABIC));
+  EXPECT_EQ("CustomArabicMath", settings.Math(USCRIPT_ARABIC));
 
   settings.Reset();
 
@@ -79,6 +85,7 @@ TEST(GenericFontFamilySettingsTest, TestAllNames) {
   EXPECT_TRUE(settings.SansSerif().IsEmpty());
   EXPECT_TRUE(settings.Cursive().IsEmpty());
   EXPECT_TRUE(settings.Fantasy().IsEmpty());
+  EXPECT_TRUE(settings.Math().IsEmpty());
 
   EXPECT_TRUE(settings.Standard(USCRIPT_ARABIC).IsEmpty());
   EXPECT_TRUE(settings.Fixed(USCRIPT_ARABIC).IsEmpty());
@@ -86,6 +93,7 @@ TEST(GenericFontFamilySettingsTest, TestAllNames) {
   EXPECT_TRUE(settings.SansSerif(USCRIPT_ARABIC).IsEmpty());
   EXPECT_TRUE(settings.Cursive(USCRIPT_ARABIC).IsEmpty());
   EXPECT_TRUE(settings.Fantasy(USCRIPT_ARABIC).IsEmpty());
+  EXPECT_TRUE(settings.Math(USCRIPT_ARABIC).IsEmpty());
 }
 
 }  // namespace blink

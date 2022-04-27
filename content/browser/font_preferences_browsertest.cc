@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -18,6 +19,11 @@ class FontPreferencesBrowserTest : public DevToolsProtocolTest {
  public:
   FontPreferencesBrowserTest() = default;
   ~FontPreferencesBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "CSSFontFamilyMath");
+  }
 
  protected:
   std::string GetFirstPlatformFontForBody() {
@@ -134,6 +140,8 @@ IN_PROC_BROWSER_TEST_F(FontPreferencesBrowserTest, GenericFamilies) {
                               default_preferences.fantasy_font_family_map);
   TestGenericFamilyPreference("monospace", default_preferences,
                               default_preferences.fixed_font_family_map);
+  TestGenericFamilyPreference("math", default_preferences,
+                              default_preferences.math_font_family_map);
 }
 
 }  // namespace content

@@ -90,6 +90,8 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetWebGL2Enabled(bool) override;
   void SetFantasyFontFamily(const WebString&,
                             UScriptCode = USCRIPT_COMMON) override;
+  void SetMathFontFamily(const WebString&,
+                         UScriptCode = USCRIPT_COMMON) override;
   void SetFixedFontFamily(const WebString&,
                           UScriptCode = USCRIPT_COMMON) override;
   void SetNetworkQuietTimeout(double timeout) override;

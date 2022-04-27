@@ -299,6 +299,12 @@ void SetFantasyFontFamilyWrapper(WebSettings* settings,
   settings->SetFantasyFontFamily(WebString::FromUTF16(font), script);
 }
 
+void SetMathFontFamilyWrapper(WebSettings* settings,
+                              const std::u16string& font,
+                              UScriptCode script) {
+  settings->SetMathFontFamily(WebString::FromUTF16(font), script);
+}
+
 // If |scriptCode| is a member of a family of "similar" script codes, returns
 // the script code in that family that is used by WebKit for font selection
 // purposes.  For example, USCRIPT_KATAKANA_OR_HIRAGANA and USCRIPT_JAPANESE are
@@ -1439,6 +1445,8 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   ApplyFontsFromMap(prefs.cursive_font_family_map, SetCursiveFontFamilyWrapper,
                     settings);
   ApplyFontsFromMap(prefs.fantasy_font_family_map, SetFantasyFontFamilyWrapper,
+                    settings);
+  ApplyFontsFromMap(prefs.math_font_family_map, SetMathFontFamilyWrapper,
                     settings);
   settings->SetDefaultFontSize(prefs.default_font_size);
   settings->SetDefaultFixedFontSize(prefs.default_fixed_font_size);

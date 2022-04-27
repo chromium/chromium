@@ -47,6 +47,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.fantasy_font_family_map;
   }
 
+  static const std::map<std::string, std::u16string>& math_font_family_map(
+      const blink::web_pref::WebPreferences& r) {
+    return r.math_font_family_map;
+  }
+
   static uint32_t default_font_size(const blink::web_pref::WebPreferences& r) {
     return r.default_font_size;
   }
