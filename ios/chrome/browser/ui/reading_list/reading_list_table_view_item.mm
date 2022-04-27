@@ -141,8 +141,9 @@ NSString* const kURLAndDistillationDateFormat = @"%@ • %@";
 
 - (NSString*)hostname {
   return base::SysUTF16ToNSString(
-      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-          self.entryURL));
+      url_formatter::
+          FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+              self.entryURL));
 }
 
 @end

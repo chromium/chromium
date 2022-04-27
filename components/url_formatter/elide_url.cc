@@ -442,4 +442,19 @@ std::u16string FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
       base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
 }
 
+#if BUILDFLAG(IS_IOS)
+std::u16string
+FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+    const GURL& url) {
+  return url_formatter::FormatUrl(
+      url,
+      url_formatter::kFormatUrlOmitDefaults |
+          url_formatter::kFormatUrlTrimAfterHost |
+          url_formatter::kFormatUrlOmitHTTPS |
+          url_formatter::kFormatUrlOmitTrivialSubdomains |
+          url_formatter::kFormatUrlOmitMobilePrefix,
+      base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
+}
+#endif
+
 }  // namespace url_formatter

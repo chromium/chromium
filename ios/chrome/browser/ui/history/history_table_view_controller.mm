@@ -318,8 +318,9 @@ const CGFloat kButtonHorizontalPadding = 30.0;
                          accessibilityDelegate:self];
     item.text = [history::FormattedTitle(entry.title, entry.url) copy];
     item.detailText = base::SysUTF16ToNSString(
-        url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-            entry.url));
+        url_formatter::
+            FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                entry.url));
     item.timeText =
         [base::SysUTF16ToNSString(base::TimeFormatTimeOfDay(entry.time)) copy];
     item.URL = entry.url;

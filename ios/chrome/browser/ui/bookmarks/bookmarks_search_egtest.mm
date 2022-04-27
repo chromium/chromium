@@ -548,7 +548,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
           @"First URL, %@",
           base::SysUTF16ToNSString(
               url_formatter::
-                  FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                  FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                       GetFirstUrl()))];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(label)]
       performAction:grey_tap()];
@@ -597,7 +597,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
           @"First URL, %@",
           base::SysUTF16ToNSString(
               url_formatter::
-                  FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                  FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                       GetFirstUrl()))];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(label)]
       performAction:grey_tap()];
@@ -606,7 +606,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
           @"Second URL, %@",
           base::SysUTF16ToNSString(
               url_formatter::
-                  FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                  FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                       GetSecondUrl()))];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(label)]
       performAction:grey_tap()];
@@ -726,7 +726,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
           @"First URL, %@",
           base::SysUTF16ToNSString(
               url_formatter::
-                  FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                  FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                       GetFirstUrl()))];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(label)]
       performAction:grey_tap()];

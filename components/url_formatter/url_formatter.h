@@ -80,7 +80,7 @@ extern const FormatUrlType kFormatUrlOmitTrailingSlashOnBareHostname;
 // If the scheme is 'https://', it's removed. Not in kFormatUrlOmitDefaults.
 extern const FormatUrlType kFormatUrlOmitHTTPS;
 
-// Omits some trivially informative subdomains such as "www" or "m". Not in
+// Omits some trivially informative subdomains such as "www". Not in
 // kFormatUrlOmitDefaults.
 extern const FormatUrlType kFormatUrlOmitTrivialSubdomains;
 
@@ -93,6 +93,9 @@ extern const FormatUrlType kFormatUrlOmitFileScheme;
 
 // If the scheme is 'mailto:', it's removed. Not in kFormatUrlOmitDefaults.
 extern const FormatUrlType kFormatUrlOmitMailToScheme;
+
+// Omits the mobile prefix "m". Not in kFormatUrlOmitDefaults.
+extern const FormatUrlType kFormatUrlOmitMobilePrefix;
 
 // Convenience for omitting all unnecessary types. Does not include HTTPS scheme
 // removal, or experimental flags.
@@ -191,6 +194,9 @@ IDNConversionResult UnsafeIDNToUnicodeWithDetails(base::StringPiece host);
 // |host| is only eligible for www-stripping if it is not a private or intranet
 // hostname, and if "www." is part of the subdomain (not the eTLD+1).
 std::string StripWWW(const std::string& host);
+
+// Strips a "m." prefix from |host| if present.
+std::string StripMobilePrefix(const std::string& text);
 
 // If the |host| component of |url| begins with a "www." prefix (and meets the
 // conditions described for StripWWW), then updates |host| to strip the "www."

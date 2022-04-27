@@ -170,7 +170,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL1)),
               kTitle1)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
@@ -178,7 +178,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL2)),
               kTitle2)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
@@ -186,7 +186,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL3)),
               _URL3.GetContent())] assertWithMatcher:grey_notNil()];
 
@@ -196,7 +196,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL1)),
               kTitle1)] performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
@@ -218,7 +218,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL1)),
               kTitle1)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
@@ -226,7 +226,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL2)),
               kTitle2)] assertWithMatcher:grey_notNil()];
 }
@@ -265,7 +265,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL1)),
               kTitle1)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
@@ -273,7 +273,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL2)),
               kTitle2)] assertWithMatcher:grey_nil()];
   [[EarlGrey
@@ -281,7 +281,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL3)),
               _URL3.GetContent())] assertWithMatcher:grey_nil()];
 }
@@ -300,7 +300,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL1)),
               kTitle1)] performAction:grey_longPress()];
 
@@ -321,7 +321,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL1)),
               kTitle1)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
@@ -329,7 +329,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL2)),
               kTitle2)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
@@ -337,7 +337,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL3)),
               _URL3.GetContent())] assertWithMatcher:grey_notNil()];
 }
@@ -353,7 +353,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL1)),
               kTitle1)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
@@ -361,7 +361,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL2)),
               kTitle2)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
@@ -369,7 +369,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL3)),
               _URL3.GetContent())] assertWithMatcher:grey_notNil()];
 
@@ -381,7 +381,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL1)),
               kTitle1)] performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:DeleteHistoryEntriesButton()]
@@ -393,7 +393,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL1)),
               kTitle1)] assertWithMatcher:grey_nil()];
   [[EarlGrey
@@ -401,7 +401,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL2)),
               kTitle2)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
@@ -409,7 +409,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL3)),
               _URL3.GetContent())] assertWithMatcher:grey_notNil()];
 
@@ -421,7 +421,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL2)),
               kTitle2)] performAction:grey_tap()];
   [[EarlGrey
@@ -429,7 +429,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL3)),
               _URL3.GetContent())] performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:DeleteHistoryEntriesButton()]
@@ -490,7 +490,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL1)),
               kTitle1)] performAction:grey_longPress()];
 
@@ -514,7 +514,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL1)),
               kTitle1)] performAction:grey_longPress()];
 
@@ -533,7 +533,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL1)),
               kTitle1)] performAction:grey_longPress()];
 
@@ -554,7 +554,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL1)),
               kTitle1)] performAction:grey_longPress()];
 
@@ -577,7 +577,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL1)),
               kTitle1)] performAction:grey_longPress()];
 
@@ -597,7 +597,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL1)),
               kTitle1)] performAction:grey_longPress()];
 
@@ -609,7 +609,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL1)),
               kTitle1)] assertWithMatcher:grey_nil()];
 
@@ -619,7 +619,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL2)),
               kTitle2)];
   [[EarlGrey
@@ -627,7 +627,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL2)),
               kTitle2)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
@@ -635,7 +635,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL3)),
               _URL3.GetContent())] assertWithMatcher:grey_notNil()];
 }
@@ -759,7 +759,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL1)),
               kTitle1)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
@@ -767,7 +767,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL2)),
               kTitle2)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
@@ -775,7 +775,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL3)),
               _URL3.GetContent())] assertWithMatcher:grey_notNil()];
 
@@ -788,7 +788,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL1)),
               kTitle1)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
@@ -796,7 +796,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL2)),
               kTitle2)] assertWithMatcher:grey_notNil()];
   [[EarlGrey
@@ -804,7 +804,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL3)),
               _URL3.GetContent())] assertWithMatcher:grey_notNil()];
 
@@ -814,7 +814,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL1)),
               kTitle1)] performAction:grey_longPress()];
 
@@ -825,7 +825,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL1)),
               kTitle1)] assertWithMatcher:grey_nil()];
 
@@ -836,7 +836,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           HistoryEntry(
               base::UTF16ToUTF8(
                   url_formatter::
-                      FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL1)),
               kTitle1)] assertWithMatcher:grey_nil()];
 }

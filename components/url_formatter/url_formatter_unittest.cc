@@ -336,6 +336,47 @@ TEST(UrlFormatterTest, FormatUrl) {
        "http://co.uk/", kFormatUrlOmitTrivialSubdomains,
        base::UnescapeRule::NORMAL, L"http://co.uk/", 7},
 
+#if BUILDFLAG(IS_IOS)
+      // -------- omit mobile prefix --------
+      {"omit mobile prefix - trim leading m.",
+       "http://m.wikipedia.org/", kFormatUrlOmitMobilePrefix,
+       base::UnescapeRule::NORMAL, L"http://wikipedia.org/", 7},
+      {"omit mobile prefix - trim leading m., but don't trim www",
+       "http://m.www.google.com/", kFormatUrlOmitMobilePrefix,
+       base::UnescapeRule::NORMAL, L"http://www.google.com/", 7},
+      {"omit mobile prefix - trim first m. only",
+       "http://m.m.m.wikipedia.org/", kFormatUrlOmitMobilePrefix,
+       base::UnescapeRule::NORMAL, L"http://m.m.wikipedia.org/", 7},
+      {"omit mobile prefix - don't trim m. from middle",
+       "http://en.m.wikipedia.org/", kFormatUrlOmitMobilePrefix,
+       base::UnescapeRule::NORMAL, L"http://en.m.wikipedia.org/", 7},
+      {"omit mobile prefix - don't do blind substring matches for m.",
+       "http://foom.google.com/", kFormatUrlOmitMobilePrefix,
+       base::UnescapeRule::NORMAL, L"http://foom.google.com/", 7},
+      {"omit mobile prefix - don't crash on multiple delimiters",
+       "http://m....foobar...google.com/", kFormatUrlOmitMobilePrefix,
+       base::UnescapeRule::NORMAL, L"http://...foobar...google.com/", 7},
+      {"omit mobile prefix - sanity check for ordinary subdomains",
+       "http://mail.yahoo.com/", kFormatUrlOmitMobilePrefix,
+       base::UnescapeRule::NORMAL, L"http://mail.yahoo.com/", 7},
+      {"omit mobile prefix - sanity check for path",
+       "http://google.com/www.m.foobar", kFormatUrlOmitMobilePrefix,
+       base::UnescapeRule::NORMAL, L"http://google.com/www.m.foobar", 7},
+
+      // -------- omit mobile prefix and trivial subdomains --------
+      {"omit mobile prefix and trivial subdomains - trim leading m. and www.",
+      "http://m.www.wikipedia.org/", kFormatUrlOmitMobilePrefix | kFormatUrlOmitTrivialSubdomains,
+       base::UnescapeRule::NORMAL, L"http://wikipedia.org/", 7},
+      {"omit mobile prefix and trivial subdomains - trim leading m., "
+       "but don't trim www", "http://m.wwwwikipedia.org/",
+       kFormatUrlOmitMobilePrefix | kFormatUrlOmitTrivialSubdomains,
+       base::UnescapeRule::NORMAL, L"http://wwwwikipedia.org/", 7},
+      {"omit mobile prefix and trivial subdomains - trim leading www. and m.",
+      "http://www.m.wikipedia.org/", kFormatUrlOmitMobilePrefix |
+       kFormatUrlOmitTrivialSubdomains, base::UnescapeRule::NORMAL,
+       L"http://wikipedia.org/", 7},
+#endif
+
       // -------- trim after host --------
       {"omit the trailing slash when ommitting the path", "http://google.com/",
        kFormatUrlOmitDefaults | kFormatUrlTrimAfterHost,

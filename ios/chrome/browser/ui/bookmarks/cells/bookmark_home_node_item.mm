@@ -53,8 +53,9 @@
     urlCell.titleLabel.text =
         bookmark_utils_ios::TitleForBookmarkNode(_bookmarkNode);
     urlCell.URLLabel.text = base::SysUTF16ToNSString(
-        url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-            _bookmarkNode->url()));
+        url_formatter::
+            FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                _bookmarkNode->url()));
     urlCell.accessibilityTraits |= UIAccessibilityTraitButton;
     [urlCell configureUILayout];
   }

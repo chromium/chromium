@@ -696,4 +696,27 @@ TEST(TextEliderTest, FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains) {
           GURL("https://xn--mgbh0fb.xn--kgbechtv/")));
 }
 
+TEST(TextEliderTest,
+     FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix) {
+#if BUILDFLAG(IS_IOS)
+  EXPECT_EQ(
+      u"google.com",
+      url_formatter::
+          FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+              GURL("http://m.google.com/example")));
+  EXPECT_EQ(
+      u"google.com",
+      url_formatter::
+          FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+              GURL("http://www.m.google.com/example")));
+  EXPECT_EQ(
+      u"google.com",
+      url_formatter::
+          FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+              GURL("http://m.www.google.com/example")));
+#else
+  GTEST_SKIP();
+#endif
+}
+
 }  // namespace

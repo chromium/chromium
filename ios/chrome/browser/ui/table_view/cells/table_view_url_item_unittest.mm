@@ -49,8 +49,9 @@ TEST_F(TableViewURLItemTest, TextLabels) {
   EXPECT_NSEQ(titleText, URLCell.titleLabel.text);
   EXPECT_NSEQ(metadataText, URLCell.metadataLabel.text);
   NSString* hostname = base::SysUTF16ToNSString(
-      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-          url.gurl));
+      url_formatter::
+          FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+              url.gurl));
   EXPECT_NSEQ(hostname, URLCell.URLLabel.text);
 }
 
@@ -96,7 +97,8 @@ TEST_F(TableViewURLItemTest, SupplementalURLTextWithTitle) {
           @"%@ %@ %@",
           base::SysUTF16ToNSString(
               url_formatter::
-                  FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(kURL)),
+                  FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                      kURL)),
           kSupplementalURLTextDelimiter, kSupplementalURLText];
 
   TableViewURLItem* item = [[TableViewURLItem alloc] initWithType:0];
@@ -130,8 +132,9 @@ TEST_F(TableViewURLItemTest, SupplementalURLTextWithNoTitle) {
   TableViewURLCell* url_cell = base::mac::ObjCCast<TableViewURLCell>(cell);
   EXPECT_NSEQ(
       base::SysUTF16ToNSString(
-          url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-              kURL)),
+          url_formatter::
+              FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                  kURL)),
       url_cell.titleLabel.text);
   EXPECT_NSEQ(kSupplementalURLText, url_cell.URLLabel.text);
 }

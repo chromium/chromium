@@ -113,6 +113,27 @@ std::u16string FormatOriginForSecurityDisplay(
 std::u16string FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
     const GURL& url);
 
+// This is a convenience function for formatting a URL in a concise and
+// human-friendly way, omitting the HTTP/HTTPS scheme, the username and
+// password, the path and removing trivial subdomains and the mobile prefix
+// "m.".
+
+// The IDN hostname is turned to Unicode if the Unicode representation is deemed
+// safe, including RTL characters (as opposed to
+// `url_formatter::FormatUrlForSecurityDisplay()`).
+
+// Example:
+//  - "http://user:password@example.com/%20test" -> "example.com"
+//  - "http://user:password@example.com/" -> "example.com"
+//  - "http://www.xn--frgbolaget-q5a.se" -> "färgbolaget.se"
+//  - "http://www.m.google.com" -> "google.com"
+//  - "http://m.google.com" -> "google.com"
+#if BUILDFLAG(IS_IOS)
+std::u16string
+FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+    const GURL& url);
+#endif
+
 }  // namespace url_formatter
 
 #endif  // COMPONENTS_URL_FORMATTER_ELIDE_URL_H_
