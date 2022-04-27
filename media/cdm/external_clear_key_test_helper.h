@@ -25,7 +25,7 @@ class ExternalClearKeyTestHelper {
 
   ~ExternalClearKeyTestHelper();
 
-  CdmConfig CdmConfig() {
+  media::CdmConfig CdmConfig() {
     return {"org.chromium.externalclearkey", false, false, false};
   }
 
