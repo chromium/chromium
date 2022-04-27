@@ -31,6 +31,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
@@ -459,6 +460,14 @@ BrowserAutofillManager::~BrowserAutofillManager() {
   }
 
   single_field_form_fill_router_->CancelPendingQueries(this);
+}
+
+AutofillOfferManager* BrowserAutofillManager::GetOfferManager() {
+  return offer_manager_;
+}
+
+CreditCardAccessManager* BrowserAutofillManager::GetCreditCardAccessManager() {
+  return credit_card_access_manager_.get();
 }
 
 void BrowserAutofillManager::ShowAutofillSettings(
@@ -1442,18 +1451,6 @@ void BrowserAutofillManager::OnUserHideSuggestions(const FormData& form,
 
 bool BrowserAutofillManager::ShouldClearPreviewedForm() {
   return credit_card_access_manager_->ShouldClearPreviewedForm();
-}
-
-payments::FullCardRequest*
-BrowserAutofillManager::GetOrCreateFullCardRequest() {
-  return credit_card_access_manager_->GetOrCreateCVCAuthenticator()
-      ->GetFullCardRequest();
-}
-
-base::WeakPtr<payments::FullCardRequest::UIDelegate>
-BrowserAutofillManager::GetAsFullCardRequestUIDelegate() {
-  return credit_card_access_manager_->GetOrCreateCVCAuthenticator()
-      ->GetAsFullCardRequestUIDelegate();
 }
 
 void BrowserAutofillManager::SetTestDelegate(
@@ -2829,6 +2826,31 @@ void BrowserAutofillManager::PreProcessStateMatchingTypes(
       }
     }
   }
+}
+
+void BrowserAutofillManager::ReportAutofillWebOTPMetrics(bool used_web_otp) {
+  // It's possible that a frame without any form uses WebOTP. e.g. a server may
+  // send the verification code to a phone number that was collected beforehand
+  // and uses the WebOTP API for authentication purpose without user manually
+  // entering the code.
+  if (!has_parsed_forms() && !used_web_otp)
+    return;
+
+  if (has_observed_phone_number_field())
+    phone_collection_metric_state_ |= phone_collection_metric::kPhoneCollected;
+  if (has_observed_one_time_code_field())
+    phone_collection_metric_state_ |= phone_collection_metric::kOTCUsed;
+  if (used_web_otp)
+    phone_collection_metric_state_ |= phone_collection_metric::kWebOTPUsed;
+
+  ukm::UkmRecorder* recorder = client()->GetUkmRecorder();
+  ukm::SourceId source_id = client()->GetUkmSourceId();
+  AutofillMetrics::LogWebOTPPhoneCollectionMetricStateUkm(
+      recorder, source_id, phone_collection_metric_state_);
+
+  base::UmaHistogramEnumeration(
+      "Autofill.WebOTP.PhonePlusWebOTPPlusOTC",
+      static_cast<PhoneCollectionMetricState>(phone_collection_metric_state_));
 }
 
 }  // namespace autofill

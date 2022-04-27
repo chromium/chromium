@@ -118,9 +118,8 @@ ContentAutofillDriverFactory::CreateDriver(content::RenderFrameHost* rfh) {
     driver->GetAutofillAgent()->SetFocusRequiresScroll(false);
     driver->GetAutofillAgent()->SetQueryPasswordSuggestion(true);
   } else {
-    driver->set_browser_autofill_manager(
-        std::make_unique<BrowserAutofillManager>(
-            driver.get(), client(), app_locale_, enable_download_manager_));
+    driver->set_autofill_manager(std::make_unique<BrowserAutofillManager>(
+        driver.get(), client(), app_locale_, enable_download_manager_));
   }
   if (client() && ShouldEnableHeavyFormDataScraping(client()->GetChannel()))
     driver->GetAutofillAgent()->EnableHeavyFormDataScraping();
@@ -177,8 +176,10 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
   DCHECK(driver);
 
   if (render_frame_host->GetLifecycleState() !=
-      content::RenderFrameHost::LifecycleState::kPrerendering) {
-    driver->MaybeReportAutofillWebOTPMetrics();
+          content::RenderFrameHost::LifecycleState::kPrerendering &&
+      driver->autofill_manager()) {
+    driver->autofill_manager()->ReportAutofillWebOTPMetrics(
+        render_frame_host->DocumentUsedWebOTP());
   }
 
   // If the popup menu has been triggered from within an iframe and that
@@ -255,8 +256,6 @@ void ContentAutofillDriverFactory::ReadyToCommitNavigation(
       content::RenderFrameHost::LifecycleState::kPrerendering) {
     return;
   }
-  if (auto* driver = DriverForFrame(render_frame_host))
-    driver->MaybeReportAutofillWebOTPMetrics();
 }
 
 }  // namespace autofill

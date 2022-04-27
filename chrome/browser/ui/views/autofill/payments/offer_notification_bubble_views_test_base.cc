@@ -229,7 +229,7 @@ std::string OfferNotificationBubbleViewsTestBase::GetDefaultTestPromoCode()
 AutofillOfferManager* OfferNotificationBubbleViewsTestBase::GetOfferManager() {
   return ContentAutofillDriver::GetForRenderFrameHost(
              GetActiveWebContents()->GetMainFrame())
-      ->browser_autofill_manager()
+      ->autofill_manager()
       ->GetOfferManager();
 }
 

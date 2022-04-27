@@ -22,6 +22,7 @@
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -148,13 +149,18 @@ void CreditCardAccessoryControllerImpl::RegisterFillingSourceObserver(
 absl::optional<AccessorySheetData>
 CreditCardAccessoryControllerImpl::GetSheetData() const {
   // Note that also GetManager() can return nullptr.
-  BrowserAutofillManager* autofill_manager =
+  AutofillManager* autofill_manager =
       GetWebContents().GetFocusedFrame() ? GetManager() : nullptr;
+  // This cast is safe because the Chrome embedder only uses
+  // BrowserAutofillManager.
+  auto* browser_autofill_manager =
+      static_cast<BrowserAutofillManager*>(autofill_manager);
+
   std::vector<UserInfo> info_to_add;
   bool allow_filling =
-      autofill_manager &&
-      ShouldAllowCreditCardFallbacks(autofill_manager->client(),
-                                     autofill_manager->last_query_form());
+      autofill_manager && ShouldAllowCreditCardFallbacks(
+                              autofill_manager->client(),
+                              browser_autofill_manager->last_query_form());
 
   std::vector<const CachedServerCardInfo*> unmasked_cards =
       GetUnmaskedCreditCards();
@@ -419,7 +425,7 @@ std::vector<const CachedServerCardInfo*>
 CreditCardAccessoryControllerImpl::GetUnmaskedCreditCards() const {
   if (!GetWebContents().GetFocusedFrame())
     return std::vector<const CachedServerCardInfo*>();
-  BrowserAutofillManager* autofill_manager = GetManager();
+  AutofillManager* autofill_manager = GetManager();
   if (!autofill_manager || !autofill_manager->GetCreditCardAccessManager())
     return std::vector<const CachedServerCardInfo*>();
   std::vector<const CachedServerCardInfo*> unmasked_cards =
@@ -441,7 +447,7 @@ CreditCardAccessoryControllerImpl::GetUnmaskedCreditCards() const {
 
 std::vector<const AutofillOfferData*>
 CreditCardAccessoryControllerImpl::GetPromoCodeOffers() const {
-  BrowserAutofillManager* autofill_manager = GetManager();
+  AutofillManager* autofill_manager = GetManager();
   if (!GetWebContents().GetFocusedFrame() || !personal_data_manager_ ||
       !autofill_manager)
     return std::vector<const AutofillOfferData*>();
@@ -467,13 +473,15 @@ AutofillDriver* CreditCardAccessoryControllerImpl::GetDriver() {
                                       GetWebContents().GetFocusedFrame());
 }
 
-BrowserAutofillManager* CreditCardAccessoryControllerImpl::GetManager() const {
+AutofillManager* CreditCardAccessoryControllerImpl::GetManager() const {
   DCHECK(GetWebContents().GetFocusedFrame());
   if (af_manager_for_testing_)
     return af_manager_for_testing_;
   ContentAutofillDriver* driver = ContentAutofillDriver::GetForRenderFrameHost(
       GetWebContents().GetFocusedFrame());
-  return driver ? driver->browser_autofill_manager() : nullptr;
+  return driver
+             ? static_cast<BrowserAutofillManager*>(driver->autofill_manager())
+             : nullptr;
 }
 
 content::WebContents& CreditCardAccessoryControllerImpl::GetWebContents()

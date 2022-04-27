@@ -29,16 +29,12 @@ void SetProfileTestData(AutofillProfile* profile) {
 MockAutofillClient::MockAutofillClient() = default;
 MockAutofillClient::~MockAutofillClient() = default;
 
-AutofillMetricsBaseTest::AutofillMetricsBaseTest() {
-  autofill_driver_ = std::make_unique<TestAutofillDriver>();
+AutofillMetricsBaseTest::AutofillMetricsBaseTest(bool is_in_any_main_frame)
+    : is_in_any_main_frame_(is_in_any_main_frame) {
   test_ukm_recorder_ = autofill_client_.GetTestUkmRecorder();
 }
 
-AutofillMetricsBaseTest::~AutofillMetricsBaseTest() {
-  // Order of destruction is important as BrowserAutofillManager relies on
-  // PersonalDataManager to be around when it gets destroyed.
-  browser_autofill_manager_.reset();
-}
+AutofillMetricsBaseTest::~AutofillMetricsBaseTest() = default;
 
 void AutofillMetricsBaseTest::SetUp() {
   autofill_client_.SetPrefs(test::PrefServiceForTesting());
@@ -47,6 +43,9 @@ void AutofillMetricsBaseTest::SetUp() {
   personal_data_->set_auto_accept_address_imports_for_testing(true);
   personal_data_->SetPrefService(autofill_client_.GetPrefs());
   personal_data_->OnSyncServiceInitialized(&sync_service_);
+
+  autofill_driver_ = std::make_unique<TestAutofillDriver>();
+  autofill_driver_->SetIsInAnyMainFrame(is_in_any_main_frame_);
 
   payments::TestPaymentsClient* payments_client =
       new payments::TestPaymentsClient(autofill_driver_->GetURLLoaderFactory(),
@@ -68,8 +67,10 @@ void AutofillMetricsBaseTest::SetUp() {
       std::make_unique<AutofillOfferManager>(
           personal_data_.get(), /*coupon_service_delegate=*/nullptr));
 
-  browser_autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
+  auto browser_autofill_manager = std::make_unique<TestBrowserAutofillManager>(
       autofill_driver_.get(), &autofill_client_, personal_data_.get());
+  autofill_driver_->set_autofill_manager(std::move(browser_autofill_manager));
+
   auto external_delegate = std::make_unique<AutofillExternalDelegate>(
       &autofill_manager(), autofill_driver_.get());
   external_delegate_ = external_delegate.get();
@@ -91,7 +92,6 @@ void AutofillMetricsBaseTest::TearDown() {
   // Order of destruction is important as BrowserAutofillManager and
   // AutofillOfferManager rely on PersonalDataManager to be around when they
   // gets destroyed.
-  browser_autofill_manager_.reset();
   autofill_driver_.reset();
   autofill_client_.set_autofill_offer_manager(nullptr);
   personal_data_.reset();

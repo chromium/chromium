@@ -364,19 +364,18 @@ class AutofillMetricsTest : public metrics::AutofillMetricsBaseTest {
 
 // Test parameter indicates if the metrics are being logged for a form in an
 // iframe or the main frame. True means the form is in the main frame.
-class AutofillMetricsIFrameTest : public metrics::AutofillMetricsBaseTest,
-                                  public testing::WithParamInterface<bool> {
+class AutofillMetricsIFrameTest
+    : public testing::WithParamInterface<bool>,
+      public ::autofill::metrics::AutofillMetricsBaseTest {
  public:
   AutofillMetricsIFrameTest()
-      : is_in_any_main_frame_(GetParam()),
+      : ::autofill::metrics::AutofillMetricsBaseTest(
+            /*is_in_any_main_frame=*/GetParam()),
         credit_card_form_events_frame_histogram_(
             std::string("Autofill.FormEvents.CreditCard.") +
-            (is_in_any_main_frame_ ? "IsInMainFrame" : "IsInIFrame")) {
-    autofill_driver_->SetIsInAnyMainFrame(is_in_any_main_frame_);
-  }
+            (is_in_any_main_frame_ ? "IsInMainFrame" : "IsInIFrame")) {}
 
  protected:
-  const bool is_in_any_main_frame_;
   const std::string credit_card_form_events_frame_histogram_;
 };
 
@@ -11128,7 +11127,7 @@ TEST_F(AutofillMetricsTest,
 // frame has no form.
 TEST_F(AutofillMetricsTest, FrameHasNoForm) {
   base::HistogramTester histogram_tester;
-  browser_autofill_manager_.reset();
+  autofill_driver_.reset();
   histogram_tester.ExpectTotalCount(
       "Autofill.WebOTP.OneTimeCode.FromAutocomplete", 0);
 }
@@ -11157,7 +11156,7 @@ TEST_F(AutofillMetricsTest, FrameHasAutocompleteOneTimeCode) {
   base::HistogramTester histogram_tester;
   autofill_manager().OnFormsSeen(
       /*updated_forms=*/forms_with_one_time_code, /*removed_forms=*/{});
-  browser_autofill_manager_.reset();
+  autofill_driver_.reset();
   // Verifies that autocomplete="one-time-code" in a form is correctly recorded.
   histogram_tester.ExpectBucketCount(
       "Autofill.WebOTP.OneTimeCode.FromAutocomplete",
@@ -11187,7 +11186,7 @@ TEST_F(AutofillMetricsTest, FrameDoesNotHaveAutocompleteOneTimeCode) {
   base::HistogramTester histogram_tester;
   autofill_manager().OnFormsSeen(
       /*updated_forms=*/forms_without_one_time_code, /*removed_forms=*/{});
-  browser_autofill_manager_.reset();
+  autofill_driver_.reset();
   histogram_tester.ExpectBucketCount(
       "Autofill.WebOTP.OneTimeCode.FromAutocomplete",
       /* has_one_time_code */ 0,
@@ -11223,7 +11222,7 @@ TEST_F(AutofillMetricsTest, FrameHasPhoneNumberFieldWithoutAutocomplete) {
   base::HistogramTester histogram_tester;
   autofill_manager().OnFormsSeen(
       /*updated_forms=*/forms_with_phone_number, /*removed_forms=*/{});
-  browser_autofill_manager_.reset();
+  autofill_driver_.reset();
   histogram_tester.ExpectBucketCount(
       "Autofill.WebOTP.PhoneNumberCollection.ParseResult",
       /* has_phone_number_field */ 1,
@@ -11255,7 +11254,7 @@ TEST_F(AutofillMetricsTest, FrameHasSinglePhoneNumberFieldWithoutAutocomplete) {
   autofill_manager().OnFormsSeen(
       /*updated_forms=*/forms_with_single_phone_number_field,
       /*removed_forms=*/{});
-  browser_autofill_manager_.reset();
+  autofill_driver_.reset();
   histogram_tester.ExpectBucketCount(
       "Autofill.WebOTP.PhoneNumberCollection.ParseResult",
       /* has_phone_number_field */ 0,
@@ -11275,7 +11274,7 @@ TEST_F(AutofillMetricsTest, FrameHasPhoneNumberFieldWithAutocomplete) {
   base::HistogramTester histogram_tester;
   autofill_manager().OnFormsSeen(
       /*updated_forms=*/forms_with_phone_number, /*removed_forms=*/{});
-  browser_autofill_manager_.reset();
+  autofill_driver_.reset();
   histogram_tester.ExpectBucketCount(
       "Autofill.WebOTP.PhoneNumberCollection.ParseResult",
       /* has_phone_number_field */ 1,
@@ -11304,7 +11303,7 @@ TEST_F(AutofillMetricsTest, FrameDoesNotHavePhoneNumberField) {
   base::HistogramTester histogram_tester;
   autofill_manager().OnFormsSeen(
       /*updated_forms=*/forms_without_phone_number, /*removed_forms=*/{});
-  browser_autofill_manager_.reset();
+  autofill_driver_.reset();
   histogram_tester.ExpectBucketCount(
       "Autofill.WebOTP.PhoneNumberCollection.ParseResult",
       /* has_phone_number_field */ 0,
@@ -11326,9 +11325,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateNone) {
   base::HistogramTester histogram_tester;
   autofill_manager().OnFormsSeen(/*updated_forms=*/forms,
                                  /*removed_forms=*/{});
-  autofill_driver_->set_browser_autofill_manager(
-      std::move(browser_autofill_manager_));
-  autofill_driver_->ReportAutofillWebOTPMetrics(false);
+  autofill_manager().ReportAutofillWebOTPMetrics(false);
   histogram_tester.ExpectBucketCount("Autofill.WebOTP.PhonePlusWebOTPPlusOTC",
                                      PhoneCollectionMetricState::kNone, 1);
   histogram_tester.ExpectTotalCount("Autofill.WebOTP.PhonePlusWebOTPPlusOTC",
@@ -11345,10 +11342,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateOTC) {
   base::HistogramTester histogram_tester;
   autofill_manager().OnFormsSeen(/*updated_forms=*/forms,
                                  /*removed_forms=*/{});
-  autofill_driver_->set_browser_autofill_manager(
-      std::move(browser_autofill_manager_));
-  static_cast<ContentAutofillDriver*>(autofill_driver_.get())
-      ->ReportAutofillWebOTPMetrics(false);
+  autofill_manager().ReportAutofillWebOTPMetrics(false);
   histogram_tester.ExpectBucketCount("Autofill.WebOTP.PhonePlusWebOTPPlusOTC",
                                      PhoneCollectionMetricState::kOTC, 1);
   histogram_tester.ExpectTotalCount("Autofill.WebOTP.PhonePlusWebOTPPlusOTC",
@@ -11360,10 +11354,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateWebOTP) {
   // If WebOTP is used, even if there is no form on the page we still need to
   // report it.
   base::HistogramTester histogram_tester;
-  autofill_driver_->set_browser_autofill_manager(
-      std::move(browser_autofill_manager_));
-  static_cast<ContentAutofillDriver*>(autofill_driver_.get())
-      ->ReportAutofillWebOTPMetrics(true);
+  autofill_manager().ReportAutofillWebOTPMetrics(true);
   histogram_tester.ExpectBucketCount("Autofill.WebOTP.PhonePlusWebOTPPlusOTC",
                                      PhoneCollectionMetricState::kWebOTP, 1);
   histogram_tester.ExpectTotalCount("Autofill.WebOTP.PhonePlusWebOTPPlusOTC",
@@ -11380,10 +11371,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateWebOTPPlusOTC) {
   base::HistogramTester histogram_tester;
   autofill_manager().OnFormsSeen(/*updated_forms=*/forms,
                                  /*removed_forms=*/{});
-  autofill_driver_->set_browser_autofill_manager(
-      std::move(browser_autofill_manager_));
-  static_cast<ContentAutofillDriver*>(autofill_driver_.get())
-      ->ReportAutofillWebOTPMetrics(true);
+  autofill_manager().ReportAutofillWebOTPMetrics(true);
   histogram_tester.ExpectBucketCount("Autofill.WebOTP.PhonePlusWebOTPPlusOTC",
                                      PhoneCollectionMetricState::kWebOTPPlusOTC,
                                      1);
@@ -11401,10 +11389,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStatePhone) {
   base::HistogramTester histogram_tester;
   autofill_manager().OnFormsSeen(/*updated_forms=*/forms,
                                  /*removed_forms=*/{});
-  autofill_driver_->set_browser_autofill_manager(
-      std::move(browser_autofill_manager_));
-  static_cast<ContentAutofillDriver*>(autofill_driver_.get())
-      ->ReportAutofillWebOTPMetrics(false);
+  autofill_manager().ReportAutofillWebOTPMetrics(false);
   histogram_tester.ExpectBucketCount("Autofill.WebOTP.PhonePlusWebOTPPlusOTC",
                                      PhoneCollectionMetricState::kPhone, 1);
   histogram_tester.ExpectTotalCount("Autofill.WebOTP.PhonePlusWebOTPPlusOTC",
@@ -11422,10 +11407,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStatePhonePlusOTC) {
   base::HistogramTester histogram_tester;
   autofill_manager().OnFormsSeen(/*updated_forms=*/forms,
                                  /*removed_forms=*/{});
-  autofill_driver_->set_browser_autofill_manager(
-      std::move(browser_autofill_manager_));
-  static_cast<ContentAutofillDriver*>(autofill_driver_.get())
-      ->ReportAutofillWebOTPMetrics(false);
+  autofill_manager().ReportAutofillWebOTPMetrics(false);
   histogram_tester.ExpectBucketCount("Autofill.WebOTP.PhonePlusWebOTPPlusOTC",
                                      PhoneCollectionMetricState::kPhonePlusOTC,
                                      1);
@@ -11443,10 +11425,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStatePhonePlusWebOTP) {
   base::HistogramTester histogram_tester;
   autofill_manager().OnFormsSeen(/*updated_forms=*/forms,
                                  /*removed_forms=*/{});
-  autofill_driver_->set_browser_autofill_manager(
-      std::move(browser_autofill_manager_));
-  static_cast<ContentAutofillDriver*>(autofill_driver_.get())
-      ->ReportAutofillWebOTPMetrics(true);
+  autofill_manager().ReportAutofillWebOTPMetrics(true);
   histogram_tester.ExpectBucketCount(
       "Autofill.WebOTP.PhonePlusWebOTPPlusOTC",
       PhoneCollectionMetricState::kPhonePlusWebOTP, 1);
@@ -11467,10 +11446,7 @@ TEST_F(AutofillMetricsTest,
   base::HistogramTester histogram_tester;
   autofill_manager().OnFormsSeen(/*updated_forms=*/forms,
                                  /*removed_forms=*/{});
-  autofill_driver_->set_browser_autofill_manager(
-      std::move(browser_autofill_manager_));
-  static_cast<ContentAutofillDriver*>(autofill_driver_.get())
-      ->ReportAutofillWebOTPMetrics(true);
+  autofill_manager().ReportAutofillWebOTPMetrics(true);
   histogram_tester.ExpectBucketCount(
       "Autofill.WebOTP.PhonePlusWebOTPPlusOTC",
       PhoneCollectionMetricState::kPhonePlusWebOTPPlusOTC, 1);
@@ -11495,10 +11471,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateLoggedToUKM) {
   base::HistogramTester histogram_tester;
   autofill_manager().OnFormsSeen(/*updated_forms=*/forms,
                                  /*removed_forms=*/{});
-  autofill_driver_->set_browser_autofill_manager(
-      std::move(browser_autofill_manager_));
-  static_cast<ContentAutofillDriver*>(autofill_driver_.get())
-      ->ReportAutofillWebOTPMetrics(/* Document uses WebOTP */ true);
+  autofill_manager().ReportAutofillWebOTPMetrics(true);
 
   entries = test_ukm_recorder_->GetEntriesByName(
       ukm::builders::WebOTPImpact::kEntryName);
@@ -11837,7 +11810,7 @@ TEST_P(AutofillMetricsFunnelTest, LogFunnelMetrics) {
                                        SubmissionSource::FORM_SUBMISSION);
   }
 
-  ResetAutofillManagerToCommitMetrics();
+  ResetDriverToCommitMetrics();
 
   // Phase 2: Validate Funnel expectations.
   histogram_tester.ExpectBucketCount("Autofill.Funnel.ParsedAsType.Address", 1,
@@ -11966,7 +11939,7 @@ TEST_F(AutofillMetricsFunnelTest, AblationState) {
   autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                      SubmissionSource::FORM_SUBMISSION);
 
-  ResetAutofillManagerToCommitMetrics();
+  ResetDriverToCommitMetrics();
 
   // Phase 2: Validate Funnel expectations.
   const char* kMetrics[] = {
@@ -12046,7 +12019,7 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogEmptyForm) {
   autofill_manager().OnFormSubmitted(form_, false,
                                      SubmissionSource::FORM_SUBMISSION);
 
-  ResetAutofillManagerToCommitMetrics();
+  ResetDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.Address", 1, 1);
@@ -12083,7 +12056,7 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogNoProfile) {
   autofill_manager().OnFormSubmitted(form_, false,
                                      SubmissionSource::FORM_SUBMISSION);
 
-  ResetAutofillManagerToCommitMetrics();
+  ResetDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.Address", 0, 1);
@@ -12120,7 +12093,7 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogUserDoesNotAcceptSuggestion) {
   autofill_manager().OnFormSubmitted(form_, false,
                                      SubmissionSource::FORM_SUBMISSION);
 
-  ResetAutofillManagerToCommitMetrics();
+  ResetDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.Address", 1, 1);
@@ -12158,7 +12131,7 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogUserFixesFilledData) {
   autofill_manager().OnFormSubmitted(form_, false,
                                      SubmissionSource::FORM_SUBMISSION);
 
-  ResetAutofillManagerToCommitMetrics();
+  ResetDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.Address", 1, 1);
@@ -12195,7 +12168,7 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogUserFixesFilledDataButDoesNotSubmit) {
 
   // Don't submit form.
 
-  ResetAutofillManagerToCommitMetrics();
+  ResetDriverToCommitMetrics();
 
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingReadiness.Address", 0);
@@ -12619,7 +12592,7 @@ TEST_F(AutofillMetricsCrossFrameFormTest,
   // This fills nothing because all fields have been manually filled.
   FillForm(FormFieldData());
   SubmitForm();
-  ResetAutofillManagerToCommitMetrics();
+  ResetDriverToCommitMetrics();
 
   histogram_tester.ExpectTotalCount(
       "Autofill.CreditCard.SeamlessFills.AtFillTimeBeforeSecurityPolicy", 0);
@@ -12701,7 +12674,7 @@ TEST_F(AutofillMetricsCrossFrameFormTest,
                 /*is_autofilled=*/true, /*is_user_typed=*/false);
 
   SubmitForm();
-  ResetAutofillManagerToCommitMetrics();
+  ResetDriverToCommitMetrics();
 
   ExpectBuckets<Metric>(
       histogram_tester,

@@ -41,8 +41,7 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
     ContentAutofillDriver* autofill_driver =
         ContentAutofillDriverFactory::FromWebContents(web_contents)
             ->DriverForFrame(web_contents->GetMainFrame());
-    return autofill_driver->browser_autofill_manager()
-        ->GetCreditCardAccessManager();
+    return autofill_driver->autofill_manager()->GetCreditCardAccessManager();
   }
 
   CreditCard SaveServerCard(std::string card_number) {

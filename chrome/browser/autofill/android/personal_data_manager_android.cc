@@ -141,12 +141,13 @@ class FullCardRequester : public FullCardRequest::ResultDelegate,
       return;
     }
 
-    driver->browser_autofill_manager()
-        ->GetOrCreateFullCardRequest()
-        ->GetFullCard(*card_, AutofillClient::UnmaskCardReason::kPaymentRequest,
-                      AsWeakPtr(),
-                      driver->browser_autofill_manager()
-                          ->GetAsFullCardRequestUIDelegate());
+    CreditCardCVCAuthenticator* cvc_authenticator =
+        driver->autofill_manager()
+            ->GetCreditCardAccessManager()
+            ->GetOrCreateCVCAuthenticator();
+    cvc_authenticator->GetFullCardRequest()->GetFullCard(
+        *card_, AutofillClient::UnmaskCardReason::kPaymentRequest, AsWeakPtr(),
+        cvc_authenticator->GetAsFullCardRequestUIDelegate());
   }
 
  private:

@@ -141,7 +141,7 @@ void RemoveDuplicatePhoneNumberAtIndex(size_t index,
     list_value->EraseListIter(list.begin() + index);
 }
 
-autofill::BrowserAutofillManager* GetBrowserAutofillManager(
+autofill::AutofillManager* GetAutofillManager(
     content::WebContents* web_contents) {
   if (!web_contents) {
     return nullptr;
@@ -151,7 +151,7 @@ autofill::BrowserAutofillManager* GetBrowserAutofillManager(
           ->DriverForFrame(web_contents->GetMainFrame());
   if (!autofill_driver)
     return nullptr;
-  return autofill_driver->browser_autofill_manager();
+  return autofill_driver->autofill_manager();
 }
 
 }  // namespace
@@ -534,8 +534,8 @@ AutofillPrivateMigrateCreditCardsFunction::Run() {
   // Get the BrowserAutofillManager from the web contents.
   // BrowserAutofillManager has a pointer to its AutofillClient which owns
   // FormDataImporter.
-  autofill::BrowserAutofillManager* autofill_manager =
-      GetBrowserAutofillManager(GetSenderWebContents());
+  autofill::AutofillManager* autofill_manager =
+      GetAutofillManager(GetSenderWebContents());
   if (!autofill_manager || !autofill_manager->client())
     return RespondNow(Error(kErrorDataUnavailable));
 
@@ -582,8 +582,8 @@ AutofillPrivateLogServerCardLinkClickedFunction::Run() {
 ExtensionFunction::ResponseAction
 AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction::Run() {
   // Getting CreditCardAccessManager from WebContents.
-  autofill::BrowserAutofillManager* autofill_manager =
-      GetBrowserAutofillManager(GetSenderWebContents());
+  autofill::AutofillManager* autofill_manager =
+      GetAutofillManager(GetSenderWebContents());
   if (!autofill_manager)
     return RespondNow(Error(kErrorDataUnavailable));
   autofill::CreditCardAccessManager* credit_card_access_manager =
@@ -636,8 +636,8 @@ ExtensionFunction::ResponseAction AutofillPrivateAddVirtualCardFunction::Run() {
   if (!card)
     return RespondNow(Error(kErrorDataUnavailable));
 
-  autofill::BrowserAutofillManager* autofill_manager =
-      GetBrowserAutofillManager(GetSenderWebContents());
+  autofill::AutofillManager* autofill_manager =
+      GetAutofillManager(GetSenderWebContents());
   if (!autofill_manager || !autofill_manager->client() ||
       !autofill_manager->client()->GetFormDataImporter() ||
       !autofill_manager->client()
@@ -677,8 +677,8 @@ AutofillPrivateRemoveVirtualCardFunction::Run() {
   if (!card)
     return RespondNow(Error(kErrorDataUnavailable));
 
-  autofill::BrowserAutofillManager* autofill_manager =
-      GetBrowserAutofillManager(GetSenderWebContents());
+  autofill::AutofillManager* autofill_manager =
+      GetAutofillManager(GetSenderWebContents());
   if (!autofill_manager || !autofill_manager->client() ||
       !autofill_manager->client()->GetFormDataImporter() ||
       !autofill_manager->client()

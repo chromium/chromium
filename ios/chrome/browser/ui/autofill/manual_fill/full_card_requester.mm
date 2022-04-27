@@ -35,7 +35,11 @@ void FullCardRequester::GetFullCard(
         result_delegate) {
   DCHECK(autofill_manager);
   DCHECK(result_delegate);
-  autofill_manager->GetOrCreateFullCardRequest()->GetFullCard(
+
+  autofill::CreditCardCVCAuthenticator* cvc_authenticator =
+      autofill_manager->GetCreditCardAccessManager()
+          ->GetOrCreateCVCAuthenticator();
+  cvc_authenticator->GetFullCardRequest()->GetFullCard(
       card, autofill::AutofillClient::UnmaskCardReason::kPaymentRequest,
       result_delegate, AsWeakPtr());
 }

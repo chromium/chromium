@@ -15,7 +15,7 @@
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/browser/autofill_driver.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #include "content/public/browser/render_frame_host.h"
@@ -34,25 +34,6 @@ namespace autofill {
 
 class AutofillableData;
 class ContentAutofillRouter;
-
-// Use <Phone><WebOTP><OTC> as the bit pattern to identify the metrics state.
-enum class PhoneCollectionMetricState {
-  kNone = 0,    // Site did not collect phone, not use OTC, not use WebOTP
-  kOTC = 1,     // Site used OTC only
-  kWebOTP = 2,  // Site used WebOTP only
-  kWebOTPPlusOTC = 3,  // Site used WebOTP and OTC
-  kPhone = 4,          // Site collected phone, not used neither WebOTP nor OTC
-  kPhonePlusOTC = 5,   // Site collected phone number and used OTC
-  kPhonePlusWebOTP = 6,         // Site collected phone number and used WebOTP
-  kPhonePlusWebOTPPlusOTC = 7,  // Site collected phone number and used both
-  kMaxValue = kPhonePlusWebOTPPlusOTC,
-};
-
-namespace phone_collection_metric {
-constexpr uint32_t kOTCUsed = 1 << 0;
-constexpr uint32_t kWebOTPUsed = 1 << 1;
-constexpr uint32_t kPhoneCollected = 1 << 2;
-}  // namespace phone_collection_metric
 
 // ContentAutofillDriver drives the Autofill flow in the browser process based
 // on communication from the renderer and from the external world.
@@ -142,21 +123,10 @@ class ContentAutofillDriver : public AutofillDriver,
   ~ContentAutofillDriver() override;
 
   void set_autofill_manager(std::unique_ptr<AutofillManager> autofill_manager) {
-    browser_autofill_manager_ = nullptr;
-    autofill_manager_ = std::move(autofill_manager);
-  }
-
-  void set_browser_autofill_manager(
-      std::unique_ptr<BrowserAutofillManager> autofill_manager) {
-    browser_autofill_manager_ = autofill_manager.get();
     autofill_manager_ = std::move(autofill_manager);
   }
 
   AutofillManager* autofill_manager() { return autofill_manager_.get(); }
-
-  BrowserAutofillManager* browser_autofill_manager() {
-    return browser_autofill_manager_;
-  }
 
   void BindPendingReceiver(
       mojo::PendingAssociatedReceiver<mojom::AutofillDriver> pending_receiver);
@@ -368,17 +338,6 @@ class ContentAutofillDriver : public AutofillDriver,
       const content::RenderWidgetHost::KeyPressEventCallback& handler);
   void UnsetKeyPressHandlerImpl();
 
-  // Reports whether a document collects phone numbers, uses one time code, uses
-  // WebOTP. There are cases that the reporting is not expected:
-  //   1. some unit tests do not set necessary members,
-  //   |browser_autofill_manager_|
-  //   2. there is no form and WebOTP is not used
-  // |MaybeReportAutofillWebOTPMetrics| is to exclude the cases above.
-  // |ReportAutofillWebOTPMetrics| is visible for unit tests where the
-  // |render_frame_host_| is not set.
-  void MaybeReportAutofillWebOTPMetrics();
-  void ReportAutofillWebOTPMetrics(bool document_used_webotp);
-
  private:
   friend class ContentAutofillDriverTestApi;
 
@@ -391,10 +350,6 @@ class ContentAutofillDriver : public AutofillDriver,
   void SetFrameAndFormMetaData(FormData& form,
                                FormFieldData* optional_field) const;
   [[nodiscard]] FormData GetFormWithFrameAndFormMetaData(FormData form) const;
-
-  // Returns whether navigator.credentials.get({otp: {transport:"sms"}}) has
-  // been used.
-  bool DocumentUsedWebOTP() const;
 
   // Returns the AutofillRouter and confirms that it may be accessed (we should
   // not be using the router if we're prerendering).
@@ -422,11 +377,6 @@ class ContentAutofillDriver : public AutofillDriver,
   // code.
   std::unique_ptr<AutofillManager> autofill_manager_ = nullptr;
 
-  // The pointer to autofill_manager_ if it is BrowserAutofillManager instance.
-  // TODO: unify autofill_manager_ and browser_autofill_manager_ to a single
-  // pointer to a common root.
-  raw_ptr<BrowserAutofillManager> browser_autofill_manager_ = nullptr;
-
   // Pointer to an implementation of InternalAuthenticator.
   std::unique_ptr<webauthn::InternalAuthenticator> authenticator_impl_;
 
@@ -435,18 +385,6 @@ class ContentAutofillDriver : public AutofillDriver,
   mojo::AssociatedReceiver<mojom::AutofillDriver> receiver_{this};
 
   mojo::AssociatedRemote<mojom::AutofillAgent> autofill_agent_;
-
-  // Helps with measuring whether phone number is collected and whether it is in
-  // conjunction with WebOTP or OneTimeCode (OTC).
-  // value="0" label="Phone Not Collected, WebOTP Not Used, OTC Not Used"
-  // value="1" label="Phone Not Collected, WebOTP Not Used, OTC Used"
-  // value="2" label="Phone Not Collected, WebOTP Used, OTC Not Used"
-  // value="3" label="Phone Not Collected, WebOTP Used, OTC Used"
-  // value="4" label="Phone Collected, WebOTP Not Used, OTC Not Used"
-  // value="5" label="Phone Collected, WebOTP Not Used, OTC Used"
-  // value="6" label="Phone Collected, WebOTP Used, OTC Not Used"
-  // value="7" label="Phone Collected, WebOTP Used, OTC Used"
-  uint32_t phone_collection_metric_state_ = 0;
 };
 
 }  // namespace autofill

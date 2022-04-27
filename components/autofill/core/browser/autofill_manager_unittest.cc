@@ -51,6 +51,26 @@ class MockAutofillManager : public AutofillManager {
  public:
   MockAutofillManager(AutofillDriver* driver, AutofillClient* client)
       : AutofillManager(driver, client, DISABLE_AUTOFILL_DOWNLOAD_MANAGER) {}
+  MOCK_METHOD(bool, ShouldClearPreviewedForm, (), (override));
+  MOCK_METHOD(AutofillOfferManager*, GetOfferManager, (), (override));
+  MOCK_METHOD(CreditCardAccessManager*,
+              GetCreditCardAccessManager,
+              (),
+              (override));
+  MOCK_METHOD(void,
+              FillCreditCardForm,
+              (int query_id,
+               const FormData& form,
+               const FormFieldData& field,
+               const CreditCard& credit_card,
+               const std::u16string& cvc),
+              (override));
+  MOCK_METHOD(void,
+              FillProfileForm,
+              (const autofill::AutofillProfile& profile,
+               const FormData& form,
+               const FormFieldData& field),
+              (override));
   MOCK_METHOD(void,
               OnFocusNoLongerOnForm,
               (bool had_interacted_form),
@@ -122,6 +142,10 @@ class MockAutofillManager : public AutofillManager {
   MOCK_METHOD(void,
               OnAfterProcessParsedForms,
               (const DenseSet<FormType>& form_types),
+              (override));
+  MOCK_METHOD(void,
+              ReportAutofillWebOTPMetrics,
+              (bool used_web_otp),
               (override));
 };
 

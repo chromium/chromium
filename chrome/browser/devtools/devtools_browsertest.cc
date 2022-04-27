@@ -1905,8 +1905,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
   autofill::ContentAutofillDriver* autofill_driver =
       autofill::ContentAutofillDriverFactory::FromWebContents(GetInspectedTab())
           ->DriverForFrame(GetInspectedTab()->GetMainFrame());
-  autofill::BrowserAutofillManager* autofill_manager =
-      autofill_driver->browser_autofill_manager();
+  auto* autofill_manager = static_cast<autofill::BrowserAutofillManager*>(
+      autofill_driver->autofill_manager());
   BrowserAutofillManagerTestDelegateDevtoolsImpl autoFillTestDelegate(
       GetInspectedTab());
   autofill_manager->SetTestDelegate(&autoFillTestDelegate);

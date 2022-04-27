@@ -34,6 +34,8 @@ class RectF;
 namespace autofill {
 
 class AutofillField;
+class AutofillOfferManager;
+class CreditCardAccessManager;
 struct FormData;
 struct FormFieldData;
 class FormStructure;
@@ -93,6 +95,15 @@ class AutofillManager
     return client_;
   }
 
+  // May return nullptr.
+  virtual AutofillOfferManager* GetOfferManager() = 0;
+
+  // May return nullptr.
+  virtual CreditCardAccessManager* GetCreditCardAccessManager() = 0;
+
+  // Returns true only if the previewed form should be cleared.
+  virtual bool ShouldClearPreviewedForm() = 0;
+
   // Invoked when the value of textfield is changed.
   // |bounding_box| are viewport coordinates.
   void OnTextFieldDidChange(const FormData& form,
@@ -134,6 +145,15 @@ class AutofillManager
                        bool known_success,
                        mojom::SubmissionSource source);
 
+  virtual void FillCreditCardForm(int query_id,
+                                  const FormData& form,
+                                  const FormFieldData& field,
+                                  const CreditCard& credit_card,
+                                  const std::u16string& cvc) = 0;
+  virtual void FillProfileForm(const autofill::AutofillProfile& profile,
+                               const FormData& form,
+                               const FormFieldData& field) = 0;
+
   // Invoked when changes of the forms have been detected: the forms in
   // |updated_forms| are either new or have changed, and the forms in
   // |removed_forms| have been removed from the DOM (but may be re-added to the
@@ -167,6 +187,8 @@ class AutofillManager
   virtual void PropagateAutofillPredictions(
       content::RenderFrameHost* rfh,
       const std::vector<FormStructure*>& forms) = 0;
+
+  virtual void ReportAutofillWebOTPMetrics(bool used_web_otp) = 0;
 
   // Resets cache.
   virtual void Reset();
@@ -233,6 +255,7 @@ class AutofillManager
       int http_error) {
     OnServerRequestError(form_signature, request_type, http_error);
   }
+
 #ifdef UNIT_TEST
   // A public wrapper that calls |mutable_form_structures| for testing purposes
   // only.
@@ -245,7 +268,6 @@ class AutofillManager
   FormStructure* ParseFormForTest(const FormData& form) {
     return ParseForm(form, nullptr);
   }
-
 #endif  // UNIT_TEST
 
  protected:

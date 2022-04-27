@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_driver.h"
+#include "components/autofill/core/browser/autofill_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "url/origin.h"
@@ -32,6 +33,14 @@ class TestAutofillDriver : public ContentAutofillDriver {
   TestAutofillDriver(const TestAutofillDriver&) = delete;
   TestAutofillDriver& operator=(const TestAutofillDriver&) = delete;
   ~TestAutofillDriver() override;
+
+#if BUILDFLAG(IS_IOS)
+  void set_autofill_manager(std::unique_ptr<AutofillManager> autofill_manager) {
+    autofill_manager_ = std::move(autofill_manager);
+  }
+
+  AutofillManager* autofill_manager() { return autofill_manager_.get(); }
+#endif
 
   // AutofillDriver implementation overrides.
   bool IsIncognito() const override;
@@ -104,6 +113,10 @@ class TestAutofillDriver : public ContentAutofillDriver {
   base::RepeatingCallback<
       bool(const url::Origin&, FieldGlobalId, ServerFieldType)>
       field_type_map_filter_;
+
+#if BUILDFLAG(IS_IOS)
+  std::unique_ptr<AutofillManager> autofill_manager_;
+#endif
 
 #if !BUILDFLAG(IS_IOS)
   std::unique_ptr<webauthn::InternalAuthenticator> test_authenticator_;

@@ -35,6 +35,33 @@ AndroidAutofillManager::AndroidAutofillManager(
 
 AndroidAutofillManager::~AndroidAutofillManager() = default;
 
+AutofillOfferManager* AndroidAutofillManager::GetOfferManager() {
+  return nullptr;
+}
+
+CreditCardAccessManager* AndroidAutofillManager::GetCreditCardAccessManager() {
+  return nullptr;
+}
+
+bool AndroidAutofillManager::ShouldClearPreviewedForm() {
+  return false;
+}
+
+void AndroidAutofillManager::FillCreditCardForm(int query_id,
+                                                const FormData& form,
+                                                const FormFieldData& field,
+                                                const CreditCard& credit_card,
+                                                const std::u16string& cvc) {
+  NOTREACHED();
+}
+
+void AndroidAutofillManager::FillProfileForm(
+    const autofill::AutofillProfile& profile,
+    const FormData& form,
+    const FormFieldData& field) {
+  NOTREACHED();
+}
+
 void AndroidAutofillManager::OnFormSubmittedImpl(
     const FormData& form,
     bool known_success,

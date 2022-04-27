@@ -856,9 +856,7 @@ bool IsFidoAuthenticationAvailable(autofill::PersonalDataManager* personal_data,
       autofill_driver_factory->DriverForFrame(web_contents->GetMainFrame());
   if (!autofill_driver)
     return false;
-  autofill::BrowserAutofillManager* autofill_manager =
-      autofill_driver->browser_autofill_manager();
-  if (!autofill_manager)
+  if (!autofill_driver->autofill_manager())
     return false;
 
   // Show the toggle switch only if FIDO authentication is available. Once

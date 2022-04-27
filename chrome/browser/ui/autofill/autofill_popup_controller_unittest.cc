@@ -24,7 +24,6 @@
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/prefs/pref_service.h"
@@ -268,7 +267,8 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
         &ContentAutofillDriverTestApi(driver).autofill_router())
         .set_last_queried_source(driver);
     return std::make_unique<NiceMock<MockAutofillExternalDelegate>>(
-        driver->browser_autofill_manager(), driver);
+        static_cast<BrowserAutofillManager*>(driver->autofill_manager()),
+        driver);
   }
 
   TestAutofillPopupController* popup_controller() {
@@ -324,14 +324,16 @@ class AutofillPopupControllerAccessibilityUnitTest
     autofill_driver_ = std::make_unique<NiceMock<MockAutofillDriver>>(
         web_contents()->GetMainFrame(), autofill_client_.get(),
         autofill_router_.get());
-    autofill_driver_->set_browser_autofill_manager(
+    autofill_driver_->set_autofill_manager(
         std::make_unique<MockBrowserAutofillManager>(autofill_driver_.get(),
                                                      autofill_client_.get()));
     // Fake that |driver| has queried a form.
     ContentAutofillRouterTestApi(autofill_router_.get())
         .set_last_queried_source(autofill_driver_.get());
     return std::make_unique<NiceMock<MockAutofillExternalDelegate>>(
-        autofill_driver_->browser_autofill_manager(), autofill_driver_.get());
+        static_cast<BrowserAutofillManager*>(
+            autofill_driver_->autofill_manager()),
+        autofill_driver_.get());
   }
 
  protected:
@@ -621,7 +623,7 @@ TEST_F(AutofillPopupControllerUnitTest, GetOrCreate) {
   ContentAutofillDriver* driver =
       factory->DriverForFrame(web_contents()->GetMainFrame());
   NiceMock<MockAutofillExternalDelegate> delegate(
-      driver->browser_autofill_manager(), driver);
+      static_cast<BrowserAutofillManager*>(driver->autofill_manager()), driver);
 
   WeakPtr<AutofillPopupControllerImpl> controller =
       AutofillPopupControllerImpl::GetOrCreate(
@@ -698,7 +700,7 @@ TEST_F(AutofillPopupControllerUnitTest, HidingClearsPreview) {
   ContentAutofillDriver* driver =
       factory->DriverForFrame(web_contents()->GetMainFrame());
   StrictMock<MockAutofillExternalDelegate> delegate(
-      driver->browser_autofill_manager(), driver);
+      static_cast<BrowserAutofillManager*>(driver->autofill_manager()), driver);
   StrictMock<TestAutofillPopupController>* test_controller =
       new StrictMock<TestAutofillPopupController>(delegate.GetWeakPtr(),
                                                   gfx::RectF());
@@ -729,7 +731,7 @@ TEST_F(AutofillPopupControllerUnitTest, ShouldReportHidingPopupReason) {
   ContentAutofillDriver* driver =
       factory->DriverForFrame(web_contents()->GetMainFrame());
   NiceMock<MockAutofillExternalDelegate> delegate(
-      driver->browser_autofill_manager(), driver);
+      static_cast<BrowserAutofillManager*>(driver->autofill_manager()), driver);
   NiceMock<TestAutofillPopupController>* test_controller =
       new NiceMock<TestAutofillPopupController>(delegate.GetWeakPtr(),
                                                 gfx::RectF());

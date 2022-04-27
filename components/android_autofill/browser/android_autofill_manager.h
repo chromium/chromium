@@ -28,6 +28,20 @@ class AndroidAutofillManager : public AutofillManager {
 
   ~AndroidAutofillManager() override;
 
+  AutofillOfferManager* GetOfferManager() override;
+  CreditCardAccessManager* GetCreditCardAccessManager() override;
+
+  bool ShouldClearPreviewedForm() override;
+
+  void FillCreditCardForm(int query_id,
+                          const FormData& form,
+                          const FormFieldData& field,
+                          const CreditCard& credit_card,
+                          const std::u16string& cvc) override;
+  void FillProfileForm(const autofill::AutofillProfile& profile,
+                       const FormData& form,
+                       const FormFieldData& field) override;
+
   void OnFocusNoLongerOnForm(bool had_interacted_form) override;
 
   void OnDidFillAutofillFormData(const FormData& form,
@@ -39,6 +53,8 @@ class AndroidAutofillManager : public AutofillManager {
   void SelectFieldOptionsDidChange(const FormData& form) override;
 
   void Reset() override;
+
+  void ReportAutofillWebOTPMetrics(bool used_web_otp) override {}
 
   base::WeakPtr<AndroidAutofillManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

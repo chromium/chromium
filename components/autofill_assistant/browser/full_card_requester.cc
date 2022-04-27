@@ -44,10 +44,14 @@ void FullCardRequester::GetFullCard(
     return;
   }
 
-  driver->browser_autofill_manager()->GetOrCreateFullCardRequest()->GetFullCard(
+  autofill::CreditCardCVCAuthenticator* cvc_authenticator =
+      driver->autofill_manager()
+          ->GetCreditCardAccessManager()
+          ->GetOrCreateCVCAuthenticator();
+  cvc_authenticator->GetFullCardRequest()->GetFullCard(
       *card, autofill::AutofillClient::UnmaskCardReason::kAutofill,
       weak_ptr_factory_.GetWeakPtr(),
-      driver->browser_autofill_manager()->GetAsFullCardRequestUIDelegate());
+      cvc_authenticator->GetAsFullCardRequestUIDelegate());
 }
 
 FullCardRequester::~FullCardRequester() = default;

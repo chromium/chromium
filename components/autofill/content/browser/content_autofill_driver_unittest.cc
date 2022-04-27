@@ -301,13 +301,13 @@ class TestContentAutofillDriver : public ContentAutofillDriver {
                             ContentAutofillRouter* router,
                             AutofillClient* client)
       : ContentAutofillDriver(rfh, router) {
-    set_browser_autofill_manager(
+    set_autofill_manager(
         std::make_unique<MockBrowserAutofillManager>(this, client));
   }
   ~TestContentAutofillDriver() override = default;
 
   virtual MockBrowserAutofillManager* mock_browser_autofill_manager() {
-    return static_cast<MockBrowserAutofillManager*>(browser_autofill_manager());
+    return static_cast<MockBrowserAutofillManager*>(autofill_manager());
   }
 
   using ContentAutofillDriver::DidNavigateFrame;

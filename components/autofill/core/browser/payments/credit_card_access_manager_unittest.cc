@@ -199,7 +199,7 @@ class CreditCardAccessManagerTest : public testing::Test {
         browser_autofill_manager_->GetCreditCardAccessManager();
 
 #if !BUILDFLAG(IS_IOS)
-    autofill_driver_->set_browser_autofill_manager(
+    autofill_driver_->set_autofill_manager(
         std::move(browser_autofill_manager_));
     autofill_driver_->SetAuthenticator(new TestInternalAuthenticator());
     auto fido_authenticator = std::make_unique<TestCreditCardFIDOAuthenticator>(

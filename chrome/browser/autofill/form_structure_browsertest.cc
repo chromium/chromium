@@ -247,8 +247,7 @@ void FormStructureBrowserTest::GenerateResults(const std::string& input,
       ContentAutofillDriverFactory::FromWebContents(web_contents)
           ->DriverForFrame(web_contents->GetMainFrame());
   ASSERT_NE(nullptr, autofill_driver);
-  BrowserAutofillManager* autofill_manager =
-      autofill_driver->browser_autofill_manager();
+  AutofillManager* autofill_manager = autofill_driver->autofill_manager();
   ASSERT_NE(nullptr, autofill_manager);
   *output = FormStructuresToString(autofill_manager->form_structures());
 }
