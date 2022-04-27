@@ -162,29 +162,6 @@ AxisEdge CrossAxisStaticPositionEdge(const ComputedStyle& style,
   return AxisEdge::kStart;
 }
 
-// We are interested in cases where the flex item *may* expand due to
-// fragmentation (lines pushed down by a fragmentation line, etc).
-bool MinBlockSizeShouldEncompassIntrinsicSize(const NGFlexItem& item) {
-  // If this item has (any) descendant that is percentage based, we can end
-  // up in a situation where we'll constantly try and expand the row. E.g.
-  // <div style="display: flex;">
-  //   <div style="min-height: 100px;">
-  //     <div style="height: 200%;"></div>
-  //   </div>
-  // </div>
-  if (item.has_descendant_that_depends_on_percentage_block_size)
-    return false;
-
-  if (item.ng_input_node.IsMonolithic())
-    return false;
-
-  // TODO(almaher): Figure out which cases this should be true. (Should this
-  // only be true when min-block-size is auto in the case of |is_column_|?)
-  // Also, should this be the same in the case of a row flex container?
-  const auto& item_style = item.ng_input_node.Style();
-  return item_style.LogicalHeight().IsAutoOrContentOrIntrinsic();
-}
-
 }  // namespace
 
 void NGFlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
@@ -2403,6 +2380,57 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::RelayoutWithNewRowSizes() {
         container_builder_.MinimalSpaceShortage());
   }
   return algorithm_with_row_cross_sizes.Layout();
+}
+
+// We are interested in cases where the flex item *may* expand due to
+// fragmentation (lines pushed down by a fragmentation line, etc).
+bool NGFlexLayoutAlgorithm::MinBlockSizeShouldEncompassIntrinsicSize(
+    const NGFlexItem& item) const {
+  // If this item has (any) descendant that is percentage based, we can end
+  // up in a situation where we'll constantly try and expand the row. E.g.
+  // <div style="display: flex;">
+  //   <div style="min-height: 100px;">
+  //     <div style="height: 200%;"></div>
+  //   </div>
+  // </div>
+  if (item.has_descendant_that_depends_on_percentage_block_size)
+    return false;
+
+  if (item.ng_input_node.IsMonolithic())
+    return false;
+
+  const auto& item_style = item.ng_input_node.Style();
+
+  // NOTE: We currently assume that writing-mode roots are monolithic, but
+  // this may change in the future.
+  DCHECK_EQ(ConstraintSpace().GetWritingDirection().GetWritingMode(),
+            item_style.GetWritingMode());
+
+  if (is_column_) {
+    bool can_shrink = item_style.ResolvedFlexShrink(Style()) != 0.f &&
+                      !Style().LogicalHeight().IsAutoOrContentOrIntrinsic();
+
+    // Only allow growth if the item can't shrink and the flex-basis is
+    // content-based.
+    if (!IsUsedFlexBasisDefinite(item.ng_input_node) && !can_shrink)
+      return true;
+
+    // Only allow growth if the item's block-size is auto and either the item
+    // can't shrink or its min-height is auto.
+    if (item_style.LogicalHeight().IsAutoOrContentOrIntrinsic() &&
+        (!can_shrink || algorithm_.ShouldApplyMinSizeAutoForChild(
+                            *item.ng_input_node.GetLayoutBox())))
+      return true;
+  } else {
+    // Don't grow if the item's block-size should be the same as its container.
+    if (WillChildCrossSizeBeContainerCrossSize(item.ng_input_node))
+      return false;
+
+    // Only allow growth if the item's cross size is auto.
+    if (DoesItemCrossSizeComputeToAuto(item.ng_input_node))
+      return true;
+  }
+  return false;
 }
 
 #if DCHECK_IS_ON()

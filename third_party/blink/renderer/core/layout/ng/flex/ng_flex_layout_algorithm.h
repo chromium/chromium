@@ -17,6 +17,7 @@ class NGBlockNode;
 class NGBlockBreakToken;
 class NGBoxFragment;
 struct DevtoolsFlexInfo;
+struct NGFlexItem;
 
 class CORE_EXPORT NGFlexLayoutAlgorithm
     : public NGLayoutAlgorithm<NGBlockNode,
@@ -173,6 +174,10 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   // fragmentation, we will abort and re-run layout with the appropriate row
   // cross-size adjustments.
   const NGLayoutResult* RelayoutWithNewRowSizes();
+
+  // Used to determine when to allow an item to expand as a result of
+  // fragmentation.
+  bool MinBlockSizeShouldEncompassIntrinsicSize(const NGFlexItem& item) const;
 
 #if DCHECK_IS_ON()
   void CheckFlexLines(HeapVector<NGFlexLine>& flex_line_outputs) const;
