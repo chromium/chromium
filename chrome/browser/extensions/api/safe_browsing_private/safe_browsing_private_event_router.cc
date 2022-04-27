@@ -260,6 +260,7 @@ const char SafeBrowsingPrivateEventRouter::kTriggerFileDownload[] =
 const char SafeBrowsingPrivateEventRouter::kTriggerFileUpload[] = "FILE_UPLOAD";
 const char SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload[] =
     "WEB_CONTENT_UPLOAD";
+const char SafeBrowsingPrivateEventRouter::kTriggerPagePrint[] = "PAGE_PRINT";
 
 SafeBrowsingPrivateEventRouter::SafeBrowsingPrivateEventRouter(
     content::BrowserContext* context)

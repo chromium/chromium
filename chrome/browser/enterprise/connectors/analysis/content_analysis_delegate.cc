@@ -197,7 +197,16 @@ void ContentAnalysisDelegate::BypassWarnings(
         user_justification);
   }
 
-  // TODO(crbug.com/1273922): Add bypass reporting code for print.
+  // Mark the printed page as complying and report a warning bypass.
+  if (page_warning_) {
+    result_.page_result = true;
+
+    ReportAnalysisConnectorWarningBypass(
+        profile_, url_, "Printed page", /*sha256*/ std::string(),
+        /*mime_type*/ std::string(),
+        extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
+        access_point_, /*content_size*/ -1, page_response_, user_justification);
+  }
 
   RunCallback();
 }
@@ -513,14 +522,12 @@ void ContentAnalysisDelegate::PageRequestCallback(
   bool should_warn = action == enterprise_connectors::ContentAnalysisResponse::
                                    Result::TriggeredRule::WARN;
 
-  // TODO(crbug.com/1273922): Uncomment reporting code. Note that the "Printed
-  // page" file name, empty hash, empty mimetype and empty content_size are
-  // subject to change in a later CL if deemed necessary.
-  // MaybeReportDeepScanningVerdict(
-  //    profile_, url_, "Printed page", std::string(), std::string(),
-  //    extensions::SafeBrowsingPrivateEventRouter::kTriggerPrint,
-  //    access_point_, /*content_size*/ -1, result, response,
-  //    CalculateEventResult(data_.settings, result_.page_result, should_warn));
+  MaybeReportDeepScanningVerdict(
+      profile_, url_, "Printed page", /*sha256*/ std::string(),
+      /*mime_type*/ std::string(),
+      extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
+      access_point_, /*content_size*/ -1, result, response,
+      CalculateEventResult(data_.settings, result_.page_result, should_warn));
 
   if (!result_.page_result) {
     if (result == BinaryUploadService::Result::FILE_TOO_LARGE) {

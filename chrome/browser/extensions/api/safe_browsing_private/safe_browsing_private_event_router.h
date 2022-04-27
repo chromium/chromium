@@ -111,6 +111,7 @@ class SafeBrowsingPrivateEventRouter
   static const char kTriggerFileDownload[];
   static const char kTriggerFileUpload[];
   static const char kTriggerWebContentUpload[];
+  static const char kTriggerPagePrint[];
 
   explicit SafeBrowsingPrivateEventRouter(content::BrowserContext* context);
 
