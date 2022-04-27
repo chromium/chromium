@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "chromeos/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos::language_packs {
 namespace {
@@ -54,6 +55,21 @@ const base::flat_map<PackSpecPair, std::string>& GetAllDlcIds() {
       });
 
   return *all_dlc_ids;
+}
+
+// Finds the ID of the DLC corresponding to the given spec.
+// Returns the DLC ID if the DLC exists or absl::nullopt otherwise.
+absl::optional<std::string> GetDlcId(const std::string& feature_id,
+                                     const std::string& locale) {
+  // We search in the static list for the given Pack spec.
+  const PackSpecPair spec(feature_id, locale);
+  const auto it = GetAllDlcIds().find(spec);
+
+  if (it == GetAllDlcIds().end()) {
+    return absl::nullopt;
+  }
+
+  return it->second;
 }
 
 void OnInstallDlcComplete(OnInstallCompleteCallback callback,
@@ -117,30 +133,14 @@ bool LanguagePackManager::IsPackAvailable(const std::string& feature_id,
   return base::Contains(GetAllDlcIds(), spec);
 }
 
-bool LanguagePackManager::GetDlcId(const std::string& feature_id,
-                                   const std::string& locale,
-                                   std::string* const dlc_id) {
-  // We search in the static list for the given Pack spec.
-  const PackSpecPair spec(feature_id, locale);
-  const auto it = GetAllDlcIds().find(spec);
-
-  if (it == GetAllDlcIds().end()) {
-    return false;
-  }
-
-  *dlc_id = it->second;
-  return true;
-}
-
 void LanguagePackManager::InstallPack(const std::string& feature_id,
                                       const std::string& locale,
                                       OnInstallCompleteCallback callback) {
-  std::string dlc_id;
-  const bool found = GetDlcId(feature_id, locale, &dlc_id);
+  const absl::optional<std::string> dlc_id = GetDlcId(feature_id, locale);
 
   // If the given Language Pack doesn't exist, run callback and don't reach the
   // DLC Service.
-  if (!found) {
+  if (!dlc_id) {
     PackResult result;
     result.operation_error = dlcservice::kErrorInvalidDlc;
     result.pack_state = PackResult::WRONG_ID;
@@ -149,7 +149,7 @@ void LanguagePackManager::InstallPack(const std::string& feature_id,
   }
 
   dlcservice::InstallRequest install_request;
-  install_request.set_id(dlc_id);
+  install_request.set_id(*dlc_id);
   DlcserviceClient::Get()->Install(
       install_request,
       base::BindOnce(&OnInstallDlcComplete, std::move(callback)),
@@ -159,12 +159,11 @@ void LanguagePackManager::InstallPack(const std::string& feature_id,
 void LanguagePackManager::GetPackState(const std::string& feature_id,
                                        const std::string& locale,
                                        GetPackStateCallback callback) {
-  std::string dlc_id;
-  const bool found = GetDlcId(feature_id, locale, &dlc_id);
+  const absl::optional<std::string> dlc_id = GetDlcId(feature_id, locale);
 
   // If the given Language Pack doesn't exist, run callback and don't reach the
   // DLC Service.
-  if (!found) {
+  if (!dlc_id) {
     PackResult result;
     result.operation_error = dlcservice::kErrorInvalidDlc;
     result.pack_state = PackResult::WRONG_ID;
@@ -173,18 +172,17 @@ void LanguagePackManager::GetPackState(const std::string& feature_id,
   }
 
   DlcserviceClient::Get()->GetDlcState(
-      dlc_id, base::BindOnce(&OnGetDlcState, std::move(callback)));
+      *dlc_id, base::BindOnce(&OnGetDlcState, std::move(callback)));
 }
 
 void LanguagePackManager::RemovePack(const std::string& feature_id,
                                      const std::string& locale,
                                      OnUninstallCompleteCallback callback) {
-  std::string dlc_id;
-  const bool found = GetDlcId(feature_id, locale, &dlc_id);
+  const absl::optional<std::string> dlc_id = GetDlcId(feature_id, locale);
 
   // If the given Language Pack doesn't exist, run callback and don't reach the
   // DLC Service.
-  if (!found) {
+  if (!dlc_id) {
     PackResult result;
     result.operation_error = dlcservice::kErrorInvalidDlc;
     result.pack_state = PackResult::WRONG_ID;
@@ -193,7 +191,7 @@ void LanguagePackManager::RemovePack(const std::string& feature_id,
   }
 
   DlcserviceClient::Get()->Uninstall(
-      dlc_id, base::BindOnce(&OnUninstallDlcComplete, std::move(callback)));
+      *dlc_id, base::BindOnce(&OnUninstallDlcComplete, std::move(callback)));
 }
 
 void LanguagePackManager::AddObserver(Observer* const observer) {

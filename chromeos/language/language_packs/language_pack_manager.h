@@ -155,12 +155,6 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   LanguagePackManager();
   ~LanguagePackManager() override;
 
-  // Finds the ID of the DLC corresponding to the given spec.
-  // Returns true if the DLC exists or false otherwise.
-  bool GetDlcId(const std::string& feature_id,
-                const std::string& locale,
-                std::string* dlc_id);
-
   // DlcserviceClient::Observer overrides.
   void OnDlcStateChanged(const dlcservice::DlcState& dlc_state) override;
 
