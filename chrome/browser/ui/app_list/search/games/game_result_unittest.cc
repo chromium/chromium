@@ -42,7 +42,7 @@ TEST_F(GameResultTest, Basic) {
       apps::AppSource::kGames, "12345", u"Title",
       std::make_unique<apps::GameExtras>(
           absl::make_optional(std::vector<std::u16string>({u"A", u"B", u"C"})),
-          apps::GameExtras::Source::kTestSource,
+          apps::GameExtras::Source::kTestSource, u"TestGamePublisher",
           GURL("https://icon-url.com/")));
 
   GameResult result(profile_.get(), &list_controller_, app_discovery_service,

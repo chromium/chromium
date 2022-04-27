@@ -11,8 +11,12 @@ namespace apps {
 GameExtras::GameExtras(
     const absl::optional<std::vector<std::u16string>>& platforms,
     Source source,
+    const std::u16string& publisher,
     const GURL& icon_url)
-    : platforms_(platforms), source_(source), icon_url_(icon_url) {}
+    : platforms_(platforms),
+      source_(source),
+      publisher_(publisher),
+      icon_url_(icon_url) {}
 
 GameExtras::GameExtras(const GameExtras&) = default;
 
@@ -29,6 +33,10 @@ const absl::optional<std::vector<std::u16string>>& GameExtras::GetPlatforms()
 
 GameExtras::Source GameExtras::GetSource() const {
   return source_;
+}
+
+const std::u16string& GameExtras::GetPublisher() const {
+  return publisher_;
 }
 
 const GURL& GameExtras::GetIconUrl() const {
