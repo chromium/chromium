@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 68 tests; 63 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 68 tests; 62 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS success (image): preload events
 PASS success (image): main
 PASS 404 (image): preload events
@@ -66,7 +66,7 @@ FAIL MIME-blocked (script): preload events assert_unreached: preload onload Reac
 PASS MIME-blocked (script): main
 PASS MIME-blocked-nosniff (style): preload events
 PASS MIME-blocked-nosniff (style): main
-PASS MIME-blocked-nosniff (script): preload events
+FAIL MIME-blocked-nosniff (script): preload events assert_unreached: preload onload Reached unreachable code
 PASS MIME-blocked-nosniff (script): main
 Harness: the test ran to completion.
 

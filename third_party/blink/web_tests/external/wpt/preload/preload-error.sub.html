@@ -217,7 +217,7 @@ runTest('script', 'script', 'MIME-blocked', false, false,
     '/preload/resources/dummy.css?pipe=header(Content-Type,image/not-javascript)');
 // https://fetch.spec.whatwg.org/#should-response-to-request-be-blocked-due-to-nosniff?
 runTest('style', 'style', 'MIME-blocked-nosniff', false, false,
-    '/preload/resources/dummy.js?pipe=header(Content-Type,not/css)|header(X-Content-Type-Options|nosniff)');
+    '/preload/resources/dummy.js?pipe=header(Content-Type,not/css)|header(X-Content-Type-Options,nosniff)');
 runTest('script', 'script', 'MIME-blocked-nosniff', false, false,
-    '/preload/resources/dummy.css?pipe=header(Content-Type,text/notjavascript)|header(X-Content-Type-Options|nosniff)');
+    '/preload/resources/dummy.css?pipe=header(Content-Type,text/notjavascript)|header(X-Content-Type-Options,nosniff)');
 </script>
