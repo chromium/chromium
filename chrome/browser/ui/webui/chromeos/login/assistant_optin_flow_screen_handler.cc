@@ -652,6 +652,12 @@ void AssistantOptInFlowScreenHandler::HandleFlowFinished() {
 
 void AssistantOptInFlowScreenHandler::HandleFlowInitialized(
     const int flow_type) {
+  // Allow JavaScript. This is necessary for the in-session WebUI and is is not
+  // triggered in the OOBE flow, where `screen` objects are associated with
+  // handlers. TODO(crbug.com/1309022) - Separate in-session and OOBE handlers.
+  if (!screen_)
+    AllowJavascript();
+
   auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   if (!prefs->GetBoolean(chromeos::assistant::prefs::kAssistantEnabled)) {
     HandleFlowFinished();
