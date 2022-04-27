@@ -22,7 +22,7 @@ import {PageLoadSoundHandler} from './page_load_sound_handler.js';
 import {RangeAutomationHandler} from './range_automation_handler.js';
 
 /**
- * @fileoverview The entry point for all ChromeVox2 related code for the
+ * @fileoverview The entry point for all ChromeVox related code for the
  * background page.
  */
 
@@ -32,9 +32,7 @@ const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
 
-/**
- * ChromeVox2 background page.
- */
+/** ChromeVox background page. */
 export class Background extends ChromeVoxState {
   constructor() {
     super();
@@ -59,24 +57,12 @@ export class Background extends ChromeVoxState {
 
     Object.defineProperty(ChromeVox, 'typingEcho', {
       get() {
-        return parseInt(localStorage['typingEcho'], 10);
-      },
-      set(v) {
-        localStorage['typingEcho'] = v;
-      }
-    });
-
-    Object.defineProperty(ChromeVox, 'typingEcho', {
-      get() {
-        const typingEcho = parseInt(localStorage['typingEcho'], 10) || 0;
-        return typingEcho;
+        return parseInt(localStorage['typingEcho'], 10) || 0;
       },
       set(value) {
         localStorage['typingEcho'] = value;
       }
     });
-
-    ExtensionBridge.addMessageListener(this.onMessage_);
 
     /** @type {!BackgroundKeyboardHandler} @private */
     this.keyboardHandler_ = new BackgroundKeyboardHandler();
@@ -120,9 +106,7 @@ export class Background extends ChromeVoxState {
           ChromeVox.tts.speak(announceText.join(' '), QueueMode.FLUSH);
         });
     chrome.accessibilityPrivate.onCustomSpokenFeedbackToggled.addListener(
-        (enabled) => {
-          this.talkBackEnabled = enabled;
-        });
+        (enabled) => this.talkBackEnabled = enabled);
     chrome.accessibilityPrivate.onShowChromeVoxTutorial.addListener(() => {
       (new PanelCommand(PanelCommandType.TUTORIAL)).send();
     });
@@ -132,9 +116,7 @@ export class Background extends ChromeVoxState {
     sessionStorage.setItem('darkScreen', 'false');
   }
 
-  /**
-   * @override
-   */
+  /** @override */
   getCurrentRange() {
     if (this.currentRange_ && this.currentRange_.isValid()) {
       return this.currentRange_;
@@ -142,9 +124,7 @@ export class Background extends ChromeVoxState {
     return null;
   }
 
-  /**
-   * @override
-   */
+  /** @override */
   getCurrentRangeWithoutRecovery() {
     return this.currentRange_;
   }
@@ -297,55 +277,18 @@ export class Background extends ChromeVoxState {
     }
   }
 
-  /**
-   * Open the options page in a new tab.
-   */
-  showOptionsPage() {
-    const optionsPage = {url: '/chromevox/options/options.html'};
-    chrome.tabs.create(optionsPage);
-  }
-
-  /**
-   * @override
-   */
+  /** @override */
   onBrailleKeyEvent(evt, content) {
     return BrailleCommandHandler.onBrailleKeyEvent(evt, content);
   }
 
-  /**
-   * @param {Object} msg A message sent from a content script.
-   * @param {Port} port
-   * @private
-   */
-  onMessage_(msg, port) {
-    const target = msg['target'];
-    const action = msg['action'];
-
-    switch (target) {
-      case 'next':
-        if (action === 'getIsClassicEnabled') {
-          const url = msg['url'];
-          const isClassicEnabled = false;
-          port.postMessage({target: 'next', isClassicEnabled});
-        } else if (action === 'onCommand') {
-          CommandHandlerInterface.instance.onCommand(msg['command']);
-        } else if (action === 'flushNextUtterance') {
-          Output.forceModeForNextSpeechUtterance(QueueMode.FLUSH);
-        }
-        break;
-    }
-  }
-
-  /**
-   * @override
-   */
+  /** @override */
   restoreLastValidRangeIfNeeded() {
     // Never restore range when TalkBack is enabled as commands such as
     // Search+Left, go directly to TalkBack.
     if (this.talkBackEnabled) {
       return;
     }
-
 
     if (!this.currentRange_ || !this.currentRange_.isValid()) {
       this.setCurrentRange(this.previousRange_);

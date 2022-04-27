@@ -14,7 +14,7 @@ const TreeChangeObserverFilter = chrome.automation.TreeChangeObserverFilter;
 const TreeChangeType = chrome.automation.TreeChangeType;
 
 /**
- * ChromeVox2 live region handler.
+ * ChromeVox live region handler.
  */
 export class LiveRegions {
   /**

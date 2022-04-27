@@ -30,7 +30,7 @@ ChromeVoxStateObserver = class {
 };
 
 /**
- * ChromeVox2 state object.
+ * ChromeVox state object.
  * @constructor
  */
 ChromeVoxState = function() {

@@ -274,24 +274,6 @@ export class ChromeVoxBackground {
 
       switch (target) {
         case 'TTS':
-          if (msg['startCallbackId'] !== undefined) {
-            msg['properties']['startCallback'] = function(opt_cleanupOnly) {
-              port.postMessage({
-                'message': 'TTS_CALLBACK',
-                'cleanupOnly': opt_cleanupOnly,
-                'id': msg['startCallbackId']
-              });
-            };
-          }
-          if (msg['endCallbackId'] !== undefined) {
-            msg['properties']['endCallback'] = function(opt_cleanupOnly) {
-              port.postMessage({
-                'message': 'TTS_CALLBACK',
-                'cleanupOnly': opt_cleanupOnly,
-                'id': msg['endCallbackId']
-              });
-            };
-          }
           try {
             this.onTtsMessage(msg);
           } catch (err) {
