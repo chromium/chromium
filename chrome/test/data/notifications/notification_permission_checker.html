@@ -39,9 +39,13 @@ function requestNotificationPermission() {
 
 async function requestPushPermission() {
   let sw = await getServiceWorkerRegistration();
+  let dummy_application_server_key = new Array(65);
+  dummy_application_server_key[0] = 0x04;
   let options = {
     userVisibleOnly: true,
-    applicationServerKey: btoa('0123456789').replaceAll('=', ''),
+    applicationServerKey: 
+      new TextEncoder().encode(
+        String.fromCharCode(...dummy_application_server_key)),
   };
   sw.pushManager.subscribe(options)
       .then(sub => sendResultToTest(sub.toJSON()))
