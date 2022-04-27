@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_HAS_MATCHED_CACHE_SCOPE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_HAS_MATCHED_CACHE_SCOPE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CHECK_PSEUDO_HAS_CACHE_SCOPE_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CHECK_PSEUDO_HAS_CACHE_SCOPE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -13,31 +13,30 @@ namespace blink {
 
 class CSSSelector;
 class Document;
-class HasArgumentMatchContext;
+class CheckPseudoHasArgumentContext;
 
 // To determine whether a :has() pseudo class matches an element or not, we need
-// to match the :has() argument selector to the descendants, next siblings or
-// next sibling descendants. While matching the :has() argument selector in
-// reversed DOM tree traversal order, we can get the :has() matching result of
-// the elements in the subtree. By caching these results, we can prevent
-// unnecessary :has() matching operation. (Please refer the comments of
-// HasArgumentSubtreeIterator in has_argument_match_context.h)
+// to check the :has() argument selector on the descendants, next siblings or
+// next sibling descendants. While checking the :has() argument selector in
+// reversed DOM tree traversal order, we can get the :has() pseudo class
+// checking result on the elements in the subtree. By caching these results, we
+// can prevent unnecessary :has() pseudo class checking operations. (Please
+// refer the comments of CheckPseudoHasArgumentTraversalIterator)
 //
-// Caching all matching results of the elements in the subtree is a very memory
-// consuming approach. To prevent the large and inefficient cache memory
-// consumption, HasSelectorMatchContext stores following flags for an
-// element.
+// Caching the results on all elements in the subtree is a very memory consuming
+// approach. To prevent the large and inefficient cache memory consumption,
+// ElementCheckPseudoHasResultMap stores following flags for an element.
 //
-// - flag1 (Checked) : Indicates that the :has() match result of the element
-//     was already checked.
+// - flag1 (Checked) : Indicates that the :has() pseudo class was already
+//     checked on the element.
 //
-// - flag2 (Matched) : Indicates that the element was already checked as
-//     matched.
+// - flag2 (Matched) : Indicates that the :has() pseudo class was already
+//     checked on the element and it matched.
 //
 // - flag3 (AllDescendantsOrNextSiblingsChecked) : Indicates that all the
 //     not-cached descendant elements (or all the not-cached next sibling
 //     elements) of the element were already checked as not-matched.
-//     When the :has() argument matching traversal is stopped, this flag is set
+//     When the :has() argument checking traversal is stopped, this flag is set
 //     on the stopped element and the next sibling element of its ancestors to
 //     mark already traversed subtree.
 //
@@ -115,8 +114,9 @@ class HasArgumentMatchContext;
 //             >> not matched because d3 is
 //                'AllDescendantsOrNextSiblingsChecked'.
 //
-// Please refer the has_matched_cache_test.cc for other cases.
-enum HasSelectorMatchResult : uint8_t {
+// Please refer the check_pseudo_has_cache_scope_context_test.cc for other
+// cases.
+enum CheckPseudoHasResult : uint8_t {
   kNotCached = 0,
   kChecked = 1 << 0,
   kMatched = 1 << 1,
@@ -124,20 +124,46 @@ enum HasSelectorMatchResult : uint8_t {
   kSomeChildrenChecked = 1 << 3,
 };
 
-using ElementHasMatchedMap = HeapHashMap<Member<const Element>, uint8_t>;
-using HasMatchedCache = HeapHashMap<String, Member<ElementHasMatchedMap>>;
-
-// HasMatchedCacheScope is the stack-allocated scoping class for :has
-// matching cache.
+// The :has() result cache keeps the :has() pseudo class checking result
+// regardless of the :has() pseudo class location (whether it is for subject or
+// not).
+// (e.g. '.a:has(.b) .c', '.a .b:has(.c)', ':is(.a:has(.b) .c) .d', ...)
 //
-// This class has a hashmap to hold the matching status, so the cache
-// lifecycle follows the lifecycle of the HasMatchedCacheScope instance.
+// It stores the checking result of a :has() pseudo class. For example, when we
+// have the selector '.a:has(.b) .c', during the selector checking sequence,
+// checking result for ':has(.b)' will be inserted into the cache.
+//
+// To differentiate multiple :has() pseudo classes, the argument selector
+// text is selected as a cache key. For example, if we already have the result
+// of ':has(.a)' in the cache with cache key '.a', and we have the selectors
+// '.b:has(.a) .c' and '.b .c:has(a)' to be checked, then the selector checking
+// overhead of those 2 selectors will be similar with the overhead of '.a .c'
+// because we can get the result of ':has(.a)' from the cache with the cache
+// key '.a'.
+//
+// The :has() checking result cache uses 2 dimensional hash map to store the
+// result.
+// - hashmap[<argument-selector>][<element>] = <result>
+//
+// ElementCheckPseudoHasResultMap is a hash map that stores the
+// :has(<argument-selector>) checking result on each element.
+// - hashmap[<element>] = <result>
+using ElementCheckPseudoHasResultMap =
+    HeapHashMap<Member<const Element>, uint8_t>;
+using CheckPseudoHasResultCache =
+    HeapHashMap<String, Member<ElementCheckPseudoHasResultMap>>;
+
+// CheckPseudoHasCacheScope is the stack-allocated scoping class for :has()
+// pseudo class checking result cache.
+//
+// This class has hashmap to hold the checking result, so the lifecycle of the
+// cache follows the lifecycle of the CheckPseudoHasCacheScope instance.
 // (The hashmap for caching will be created at the construction of a
-// HasMatchedCacheScope instance, and removed at the destruction of the
+// CheckPseudoHasCacheScope instance, and removed at the destruction of the
 // instance)
 //
 // void SomeFunction() {
-//   HasMatchedCacheScope cache_scope; // A cache will be created here.
+//   CheckPseudoHasCacheScope cache_scope; // A cache will be created here.
 //   // Can use the created cache here.
 // } // The cache will be deleted here.
 //
@@ -146,63 +172,40 @@ using HasMatchedCache = HeapHashMap<String, Member<ElementHasMatchedMap>>;
 // override the previous cache scope for a better cache hit ratio.
 //
 // void SomeFunction2() {
-//   HasMatchedCacheScope cache_scope2;
+//   CheckPseudoHasCacheScope cache_scope2;
 //   // Use the cache in the cache_scope1.
 //   // The cache in the cache_scope2 will not be used.
 // }
 //
 // void SomeFunction1() {
-//   HasMatchedCacheScope cache_scope1;
+//   CheckPseudoHasCacheScope cache_scope1;
 //   // Use the cache in the cache_scope1
 //   SomeFunction2();
 // }
 //
 // To make this simple, the first allocated instance on the call stack will
 // be held in the Document instance. (The instance registers itself in the
-// contructor and deregisters itself in the destructor) This is based on
-// the restriction : The HasMatchedCacheScope is allowed to use only in the
+// constructor and deregisters itself in the destructor) This is based on
+// the restriction : The CheckPseudoHasCacheScope is allowed to use only in the
 // sequences on the blink main thread.
 //
-// The cache is valid until the DOM doesn't mutate, so any DOM mutations
-// inside the cache scope is not allowed because it will make incorrect
-// matching behavior.
-//
-// The cache keeps all the :has() matching status regardless of location.
-// (e.g. '.a:has(.b) .c', '.a .b:has(.c)', ':is(.a:has(.b) .c) .d', ...)
-//
-// It stores the matching status of a :has simple selector. For example,
-// when we have the selector '.a:has(.b) .c', during the selector matching
-// sequence, matching result for ':has(.b)' will be inserted into the cache.
-//
-// To differentiate multiple :has() simple selectors, the argument selector
-// text is selected as a cache key. For example, if we already have the result
-// of ':has(.a)' in the cache with cache key '.a', and we have the selectors
-// '.b:has(.a) .c' and '.b .c:has(a)' to be matched, then the matching
-// overhead of those 2 selectors will be similar with the overhead of '.a .c'
-// because we can get the result of ':has(.a)' from the cache with the cache
-// key '.a'.
-//
-// The cache uses 2 dimensional hash map to store the matching status.
-// - hashmap[<argument-selector>][<element>] = <match_result>
-//
-// ElementHasMatchedMap is a hash map that stores the :has(<argument-selector>)
-// matching result for each element.
-// - hashmap[<element>] = <match_result>
-class CORE_EXPORT HasMatchedCacheScope {
+// The cached results are valid until the DOM doesn't mutate, so any DOM
+// mutations inside the cache scope is not allowed for the consistency.
+class CORE_EXPORT CheckPseudoHasCacheScope {
   STACK_ALLOCATED();
 
  public:
-  explicit HasMatchedCacheScope(Document*);
-  ~HasMatchedCacheScope();
+  explicit CheckPseudoHasCacheScope(Document*);
+  ~CheckPseudoHasCacheScope();
 
-  // Context provides getter and setter of the cached :has() selector match
-  // result in ElementHasMatchedMap.
+  // Context provides getter and setter of the cached :has()
+  // pseudo class checking result in ElementCheckPseudoHasResultMap.
   class CORE_EXPORT Context {
     STACK_ALLOCATED();
 
    public:
     Context() = delete;
-    Context(const Document*, const HasArgumentMatchContext&);
+    Context(const Document*, const CheckPseudoHasArgumentContext&);
 
     uint8_t SetMatchedAndGetOldResult(Element* element);
 
@@ -216,9 +219,9 @@ class CORE_EXPORT HasMatchedCacheScope {
     bool AlreadyChecked(Element*) const;
 
    private:
-    friend class HasMatchedCacheScopeContextTest;
+    friend class CheckPseudoHasCacheScopeContextTest;
 
-    uint8_t SetResultAndGetOld(Element*, uint8_t match_result);
+    uint8_t SetResultAndGetOld(Element*, uint8_t result);
 
     void SetTraversedElementAsChecked(Element* traversed_element,
                                       Element* parent);
@@ -226,19 +229,23 @@ class CORE_EXPORT HasMatchedCacheScope {
     bool HasSiblingsWithAllDescendantsOrNextSiblingsChecked(Element*) const;
     bool HasAncestorsWithAllDescendantsOrNextSiblingsChecked(Element*) const;
 
-    ElementHasMatchedMap& map_;
-    const HasArgumentMatchContext& argument_match_context_;
+    size_t GetCacheCount() { return result_map_.size(); }
+
+    ElementCheckPseudoHasResultMap& result_map_;
+    const CheckPseudoHasArgumentContext& argument_context_;
   };
 
  private:
-  static ElementHasMatchedMap& GetCacheForSelector(const Document*,
-                                                   const CSSSelector*);
+  static ElementCheckPseudoHasResultMap& GetResultMap(const Document*,
+                                                      const CSSSelector*);
 
-  HasMatchedCache has_matched_cache_;
+  CheckPseudoHasResultCache& GetResultCache() { return result_cache_; }
+
+  CheckPseudoHasResultCache result_cache_;
 
   Document* document_;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_HAS_MATCHED_CACHE_SCOPE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CHECK_PSEUDO_HAS_CACHE_SCOPE_H_

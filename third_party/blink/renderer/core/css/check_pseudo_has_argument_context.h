@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_HAS_ARGUMENT_MATCH_CONTEXT_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_HAS_ARGUMENT_MATCH_CONTEXT_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CHECK_PSEUDO_HAS_ARGUMENT_CONTEXT_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CHECK_PSEUDO_HAS_ARGUMENT_CONTEXT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
@@ -11,57 +11,60 @@
 
 namespace blink {
 
-enum HasArgumentMatchTraversalScope {
-  // Case 1: subselector starts with child or descendant combinator, and depth
-  //         is not fixed.
+enum CheckPseudoHasArgumentTraversalScope {
+  // Case 1: :has() argument selector starts with child or descendant
+  //         combinator, and depth is not fixed.
   //         (e.g. :has(.a), :has(.a > .b), :has(.a + .b), :has(> .a .b) ...))
   kSubtree,
 
-  // Case 2: subselector starts with direct or indirect adjacent combinator
-  //         and adjacent distance is not fixed and depth is fixed and child
-  //         combinator not exists.
+  // Case 2: :has() argument selector starts with direct or indirect adjacent
+  //         combinator and adjacent distance is not fixed and depth is fixed
+  //         and child combinator not exists.
   //         (.e.g. :has(~ .a), :has(~ .a ~ .b), :has(~ .a + .b))
   kAllNextSiblings,
 
-  // Case 3: subselector starts with direct adjacent combinator and adjacent
-  //         distance is fixed and depth is not fixed.
+  // Case 3: :has() argument selector starts with direct adjacent combinator
+  //         and adjacent distance is fixed and depth is not fixed.
   //         (.e.g. :has(+ .a .b), :has(+ .a > .b .c)), :has(+ .a .b > .c)
   //                :has(+ .a .b ~ .c), :has(+ .a + .b .c))
   kOneNextSiblingSubtree,
 
-  // Case 4: subselector starts with direct or indirect adjacent combinator
-  //         and adjacent distance and depth are not fixed.
+  // Case 4: :has() argument selector starts with direct or indirect adjacent
+  //         combinator and adjacent distance and depth are not fixed.
   //         (.e.g. :has(~ .a .b), :has(+ .a ~ .b .c))
   kAllNextSiblingSubtrees,
 
-  // Case 5: subselector starts with direct adjacent combinator and both
-  //         adjacent distance and depth are fixed and no child combinator.
+  // Case 5: :has() argument selector starts with direct adjacent combinator
+  //         and both adjacent distance and depth are fixed and no child
+  //         combinator.
   //          (.e.g. :has(+ .a), :has(+ .a + .b))
   kOneNextSibling,
 
-  // Case 6: subselector starts with child combinator and depth is fixed.
+  // Case 6: :has() argument selector starts with child combinator and depth is
+  //         fixed.
   //         (.e.g. :has(> .a), :has(> .a > .b), :has(> .a + .b),
   //                :has(> .a ~ .b))
   kFixedDepthDescendants,
 
-  // Case 7: subselector starts with direct adjacent combinator and both
-  //         adjacent distance and depth are fixed and child combinator exists.
+  // Case 7: :has() argument selector starts with direct adjacent combinator
+  //         and both adjacent distance and depth are fixed and child combinator
+  //         exists.
   //          (.e.g. :has(+ .a > .b), :has(+ .a > .b ~ .c))
   kOneNextSiblingFixedDepthDescendants,
 
-  // Case 8: subselector starts with direct or indirect adjacent combinator
-  //         and adjacent distance is not fixed and depth is fixed and child
-  //         combinator exists.
+  // Case 8: :has() argument selector starts with direct or indirect adjacent
+  //         combinator and adjacent distance is not fixed and depth is fixed
+  //         and child combinator exists.
   //            (.e.g. :has(~ .a > .b), :has(+ .a ~ .b > .c),
   //                   :has(~ .a > .b ~ .c), :has(+ .a ~ .b > .c ~ .d),
   kAllNextSiblingsFixedDepthDescendants,
 };
 
-class CORE_EXPORT HasArgumentMatchContext {
+class CORE_EXPORT CheckPseudoHasArgumentContext {
   STACK_ALLOCATED();
 
  public:
-  explicit HasArgumentMatchContext(const CSSSelector* selector);
+  explicit CheckPseudoHasArgumentContext(const CSSSelector* selector);
 
   inline bool AdjacentDistanceFixed() const {
     return adjacent_distance_limit_ != kInfiniteAdjacentDistance;
@@ -81,7 +84,7 @@ class CORE_EXPORT HasArgumentMatchContext {
     return sibling_combinator_between_child_or_descendant_combinator_;
   }
 
-  HasArgumentMatchTraversalScope TraversalScope() const {
+  CheckPseudoHasArgumentTraversalScope TraversalScope() const {
     return traversal_scope_;
   }
 
@@ -213,40 +216,38 @@ class CORE_EXPORT HasArgumentMatchContext {
   int depth_limit_;
 
   // Indicates the selector's combinator information which can be used for
-  // sibling traversal after subselector matched.
+  // sibling traversal after the :has() argument selector matched.
   bool sibling_combinator_at_rightmost_{false};
   bool sibling_combinator_between_child_or_descendant_combinator_{false};
-  HasArgumentMatchTraversalScope traversal_scope_;
+  CheckPseudoHasArgumentTraversalScope traversal_scope_;
   const CSSSelector* has_argument_;
 };
 
-// Subtree traversal iterator class for ':has' argument matching. To
-// solve the following problems, this traversal uses the right-to-left
-// postorder tree traversal, and provides a functionality to limit the
-// traversal depth.
+// Subtree traversal iterator class for ':has' argument checking. To solve the
+// following issues, this traversal uses the reversed DOM tree order, and
+// provides a functionality to limit the traversal depth.
 //
-// 1. Prevent incorrect 'NotMatched' cache status marked in the ':has'
-// argument selector matching iteration.
+// 1. Cache 'Matched' and 'NotMatched' candidate elements while checking the
+// ':has()' argument selector.
 //
-// With the pre-order tree traversal, the previous ':has' matching logic
-// cannot guarantee that an element with 'NotMatched' status is actually
-// 'checked the :has selector on the element but not matched'.
-// To skip the duplicated argument selector matching on the descendant
-// subtree of an element, in the :has argument matching iteration,
-// SelectorChecker marks every descendant elements as 'NotMatched' if
-// the element status is not 'Matched'. This logic works when the subtree
-// doesn't have any argument matched element, or only 1 element. But
-// if the subtree has more than 2 argument matching elements and one of
-// them is an ancestor of the other, the pre-order tree traversal cannot
-// guarantee the 'NotMatched' status of the ancestor element because it
-// traverse root first before traversing it's descendants.
-// The right-to-left post-order traversal can guarantee the logic of
-// marking 'NotMatched' in the ':has' argument matching iteration
-// because it guarantee that the descendant subtree of the element and
-// the downward subtree(succeeding siblings and it's descendants) of the
-// element was already checked. (If any of the previous traversals have
-// matched the argument selector, the element marked as 'Matched' when
-// it was the :has scope element of the match)
+// SelectorChecker::CheckPseudoHas() can get all 'Matched' candidates (elements
+// that can be a subject of the :has() pseudo class) while checking the ':has()'
+// argument selector on an element in the traversal range. And when it found the
+// elements, it caches those as 'Matched' candidates.
+// By following the reversed DOM tree order, we can get these two advantages.
+// - Maximize the number of 'Matched' candidates that can be cached while
+//   checking :has() argument selector.
+// - Can cache 'NotMatched' candidates (elements that cannot be a subject of
+//   the :has() pseudo class) in case of these 4 traversal scope types:
+//   - kSubtree
+//   - kAllNextSiblings
+//   - kOneNextSiblingSubtree
+//   - kAllNextSiblingSubtrees
+//   While traversing, we can cache an element as 'NotMatched' if the element is
+//   not cached as 'Matched' because it must be cached as 'Matched' previously
+//   if it is a subject of the :has() pseudo class. (Reversed DOM tree order
+//   guarantees that all the descendants, next siblings and next sibling
+//   subtrees were already traversed)
 //
 // 2. Prevent unnecessary subtree traversal when it can be limited with
 // child combinator or direct sibling combinator.
@@ -260,11 +261,12 @@ class CORE_EXPORT HasArgumentMatchContext {
 // adjacent sibling of the div element. To implement this, we need a
 // way to limit the traversal depth and a way to check whether the
 // iterator is currently at the fixed depth or not.
-class HasArgumentSubtreeIterator {
+class CheckPseudoHasArgumentTraversalIterator {
   STACK_ALLOCATED();
 
  public:
-  HasArgumentSubtreeIterator(Element&, HasArgumentMatchContext&);
+  CheckPseudoHasArgumentTraversalIterator(Element&,
+                                          CheckPseudoHasArgumentContext&);
   void operator++();
   Element* CurrentElement() const { return current_; }
   bool AtEnd() const { return !current_; }
@@ -272,13 +274,15 @@ class HasArgumentSubtreeIterator {
   bool UnderDepthLimit() const { return depth_ <= context_.DepthLimit(); }
   inline int Depth() const { return depth_; }
   inline Element* ScopeElement() const { return has_scope_element_; }
-  inline const HasArgumentMatchContext& Context() const { return context_; }
+  inline const CheckPseudoHasArgumentContext& Context() const {
+    return context_;
+  }
 
  private:
   inline Element* LastWithin(Element*);
 
   Element* const has_scope_element_;
-  const HasArgumentMatchContext& context_;
+  const CheckPseudoHasArgumentContext& context_;
   int depth_{0};
   Element* current_{nullptr};
   Element* traversal_end_{nullptr};
@@ -286,4 +290,4 @@ class HasArgumentSubtreeIterator {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_HAS_ARGUMENT_MATCH_CONTEXT_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CHECK_PSEUDO_HAS_ARGUMENT_CONTEXT_H_

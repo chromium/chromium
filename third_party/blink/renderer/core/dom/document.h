@@ -171,7 +171,7 @@ class HTMLFrameOwnerElement;
 class HTMLHeadElement;
 class HTMLLinkElement;
 class HTMLMetaElement;
-class HasMatchedCacheScope;
+class CheckPseudoHasCacheScope;
 class HitTestRequest;
 class HttpRefreshScheduler;
 class IdleRequestOptions;
@@ -1558,8 +1558,8 @@ class CORE_EXPORT Document : public ContainerNode,
 
   NthIndexCache* GetNthIndexCache() const { return nth_index_cache_; }
 
-  HasMatchedCacheScope* GetHasMatchedCacheScope() const {
-    return has_matched_cache_scope_;
+  CheckPseudoHasCacheScope* GetCheckPseudoHasCacheScope() const {
+    return check_pseudo_has_cache_scope_;
   }
 
   CanvasFontCache* GetCanvasFontCache();
@@ -1882,7 +1882,7 @@ class CORE_EXPORT Document : public ContainerNode,
   friend class ThrowOnDynamicMarkupInsertionCountIncrementer;
   friend class IgnoreOpensDuringUnloadCountIncrementer;
   friend class NthIndexCache;
-  friend class HasMatchedCacheScope;
+  friend class CheckPseudoHasCacheScope;
   friend class CanvasRenderingAPIUkmMetricsTest;
   friend class OffscreenCanvasRenderingAPIUkmMetricsTest;
   FRIEND_TEST_ALL_PREFIXES(LazyLoadAutomaticImagesTest,
@@ -2012,9 +2012,10 @@ class CORE_EXPORT Document : public ContainerNode,
     nth_index_cache_ = nth_index_cache;
   }
 
-  void SetHasMatchedCacheScope(HasMatchedCacheScope* has_matched_cache_scope) {
-    DCHECK(!has_matched_cache_scope_ || !has_matched_cache_scope);
-    has_matched_cache_scope_ = has_matched_cache_scope;
+  void SetCheckPseudoHasCacheScope(
+      CheckPseudoHasCacheScope* check_pseudo_has_cache_scope) {
+    DCHECK(!check_pseudo_has_cache_scope_ || !check_pseudo_has_cache_scope);
+    check_pseudo_has_cache_scope_ = check_pseudo_has_cache_scope;
   }
 
   void UpdateActiveState(bool is_active, bool update_active_chain, Element*);
@@ -2272,7 +2273,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // on the stack, and cleared upon leaving its allocated scope. The object's
   // references will be traced by a stack walk.
   GC_PLUGIN_IGNORE("https://crbug.com/669058")
-  HasMatchedCacheScope* has_matched_cache_scope_ = nullptr;
+  CheckPseudoHasCacheScope* check_pseudo_has_cache_scope_ = nullptr;
 
   DocumentClassFlags document_classes_;
 

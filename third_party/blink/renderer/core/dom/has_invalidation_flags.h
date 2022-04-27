@@ -83,10 +83,11 @@ namespace blink {
 //    xxx-affected-by-has flags set. If an element doesn't have those flags set,
 //    then the StyleEngine will stop the traversal at the element.
 //
-//    HasArgumentSubtreeIterator traverses the subtree in the reversed DOM tree
-//    order to prevent duplicated subtree traversal caused by the multiple
-//    elements affected by :has(). If there is an argument matched element in
-//    the traversal, it returns early because the :has() pseudo class matches.
+//    CheckPseudoHasArgumentTraversalIterator traverses the subtree in the
+//    reversed DOM tree order to prevent duplicated subtree traversal caused by
+//    the multiple elements affected by :has(). If there is an argument matched
+//    element in the traversal, it returns early because the :has() pseudo class
+//    matches.
 //
 //    Due to the traversal order and the early returning, the :has()
 //    invalidation traversal can be broken when the :has() argument selector

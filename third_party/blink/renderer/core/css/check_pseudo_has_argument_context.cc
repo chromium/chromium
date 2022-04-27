@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/has_argument_match_context.h"
+#include "third_party/blink/renderer/core/css/check_pseudo_has_argument_context.h"
 
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 
@@ -25,7 +25,8 @@ inline const CSSSelector* GetCurrentRelationAndNextCompound(
 
 }  // namespace
 
-HasArgumentMatchContext::HasArgumentMatchContext(const CSSSelector* selector)
+CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
+    const CSSSelector* selector)
     : has_argument_(selector) {
   CSSSelector::RelationType relation = CSSSelector::kSubSelector;
   depth_limit_ = 0;
@@ -135,9 +136,10 @@ HasArgumentMatchContext::HasArgumentMatchContext(const CSSSelector* selector)
   }
 }
 
-HasArgumentSubtreeIterator::HasArgumentSubtreeIterator(
-    Element& has_scope_element,
-    HasArgumentMatchContext& context)
+CheckPseudoHasArgumentTraversalIterator::
+    CheckPseudoHasArgumentTraversalIterator(
+        Element& has_scope_element,
+        CheckPseudoHasArgumentContext& context)
     : has_scope_element_(&has_scope_element), context_(context) {
   if (!context_.AdjacentDistanceFixed()) {
     // Set the traversal_end_ as the next sibling of the :has scope element,
@@ -185,7 +187,7 @@ HasArgumentSubtreeIterator::HasArgumentSubtreeIterator(
   }
 }
 
-Element* HasArgumentSubtreeIterator::LastWithin(Element* element) {
+Element* CheckPseudoHasArgumentTraversalIterator::LastWithin(Element* element) {
   // If the current depth is at the depth limit, return null.
   if (depth_ == context_.DepthLimit())
     return nullptr;
@@ -202,7 +204,7 @@ Element* HasArgumentSubtreeIterator::LastWithin(Element* element) {
   return last_descendant;
 }
 
-void HasArgumentSubtreeIterator::operator++() {
+void CheckPseudoHasArgumentTraversalIterator::operator++() {
   DCHECK(current_);
   DCHECK_NE(current_, has_scope_element_);
   if (current_ == traversal_end_) {

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/has_matched_cache_scope.h"
+#include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
 
+#include "third_party/blink/renderer/core/css/check_pseudo_has_argument_context.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
-#include "third_party/blink/renderer/core/css/has_argument_match_context.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -13,25 +13,25 @@
 
 namespace blink {
 
-HasMatchedCacheScope::HasMatchedCacheScope(Document* document)
+CheckPseudoHasCacheScope::CheckPseudoHasCacheScope(Document* document)
     : document_(document) {
   DCHECK(document_);
 
-  if (document_->GetHasMatchedCacheScope())
+  if (document_->GetCheckPseudoHasCacheScope())
     return;
 
-  document_->SetHasMatchedCacheScope(this);
+  document_->SetCheckPseudoHasCacheScope(this);
 }
 
-HasMatchedCacheScope::~HasMatchedCacheScope() {
-  if (document_->GetHasMatchedCacheScope() != this)
+CheckPseudoHasCacheScope::~CheckPseudoHasCacheScope() {
+  if (document_->GetCheckPseudoHasCacheScope() != this)
     return;
 
-  document_->SetHasMatchedCacheScope(nullptr);
+  document_->SetCheckPseudoHasCacheScope(nullptr);
 }
 
 // static
-ElementHasMatchedMap& HasMatchedCacheScope::GetCacheForSelector(
+ElementCheckPseudoHasResultMap& CheckPseudoHasCacheScope::GetResultMap(
     const Document* document,
     const CSSSelector* selector) {
   // To increase the cache hit ratio, we need to have a same cache key
@@ -40,48 +40,42 @@ ElementHasMatchedMap& HasMatchedCacheScope::GetCacheForSelector(
   String selector_text = selector->SelectorText();
 
   DCHECK(document);
-  DCHECK(document->GetHasMatchedCacheScope());
+  DCHECK(document->GetCheckPseudoHasCacheScope());
 
-  HasMatchedCache& cache =
-      document->GetHasMatchedCacheScope()->has_matched_cache_;
-
-  auto element_has_matched_map = cache.find(selector_text);
-
-  if (element_has_matched_map == cache.end()) {
-    return *cache
-                .Set(selector_text,
-                     MakeGarbageCollected<ElementHasMatchedMap>())
-                .stored_value->value;
+  auto entry = document->GetCheckPseudoHasCacheScope()->GetResultCache().insert(
+      selector_text, nullptr);
+  if (entry.is_new_entry) {
+    entry.stored_value->value =
+        MakeGarbageCollected<ElementCheckPseudoHasResultMap>();
   }
-
-  return *element_has_matched_map->value;
+  DCHECK(entry.stored_value->value);
+  return *entry.stored_value->value;
 }
 
-HasMatchedCacheScope::Context::Context(
+CheckPseudoHasCacheScope::Context::Context(
     const Document* document,
-    const HasArgumentMatchContext& has_argument_match_context)
-    : map_(HasMatchedCacheScope::GetCacheForSelector(
+    const CheckPseudoHasArgumentContext& argument_context)
+    : result_map_(CheckPseudoHasCacheScope::GetResultMap(
           document,
-          has_argument_match_context.HasArgument())),
-      argument_match_context_(has_argument_match_context) {}
+          argument_context.HasArgument())),
+      argument_context_(argument_context) {}
 
-uint8_t HasMatchedCacheScope::Context::SetMatchedAndGetOldResult(
+uint8_t CheckPseudoHasCacheScope::Context::SetMatchedAndGetOldResult(
     Element* element) {
   return SetResultAndGetOld(element, kChecked | kMatched);
 }
 
-void HasMatchedCacheScope::Context::SetChecked(Element* element) {
+void CheckPseudoHasCacheScope::Context::SetChecked(Element* element) {
   SetResultAndGetOld(element, kChecked);
 }
 
-uint8_t HasMatchedCacheScope::Context::SetResultAndGetOld(
-    Element* element,
-    uint8_t match_result) {
+uint8_t CheckPseudoHasCacheScope::Context::SetResultAndGetOld(Element* element,
+                                                              uint8_t result) {
   uint8_t old_result = kNotCached;
-  auto cache_result = map_.insert(element, match_result);
+  auto cache_result = result_map_.insert(element, result);
   if (!cache_result.is_new_entry) {
     old_result = cache_result.stored_value->value;
-    cache_result.stored_value->value |= match_result;
+    cache_result.stored_value->value |= result;
   }
 
   // kMatched must set with kChecked
@@ -95,7 +89,7 @@ uint8_t HasMatchedCacheScope::Context::SetResultAndGetOld(
   return old_result;
 }
 
-void HasMatchedCacheScope::Context::SetTraversedElementAsChecked(
+void CheckPseudoHasCacheScope::Context::SetTraversedElementAsChecked(
     Element* traversed_element,
     Element* parent) {
   DCHECK(traversed_element);
@@ -106,12 +100,12 @@ void HasMatchedCacheScope::Context::SetTraversedElementAsChecked(
   SetResultAndGetOld(parent, kSomeChildrenChecked);
 }
 
-void HasMatchedCacheScope::Context::SetAllTraversedElementsAsChecked(
+void CheckPseudoHasCacheScope::Context::SetAllTraversedElementsAsChecked(
     Element* last_traversed_element,
     int last_traversed_depth) {
   DCHECK(last_traversed_element);
-  switch (argument_match_context_.TraversalScope()) {
-    case HasArgumentMatchTraversalScope::kAllNextSiblingSubtrees:
+  switch (argument_context_.TraversalScope()) {
+    case CheckPseudoHasArgumentTraversalScope::kAllNextSiblingSubtrees:
       if (last_traversed_depth == 1 &&
           !ElementTraversal::PreviousSibling(*last_traversed_element)) {
         // The :has() argument matching traversal stopped at the first child of
@@ -126,8 +120,8 @@ void HasMatchedCacheScope::Context::SetAllTraversedElementsAsChecked(
         break;
       }
       [[fallthrough]];
-    case HasArgumentMatchTraversalScope::kSubtree:
-    case HasArgumentMatchTraversalScope::kOneNextSiblingSubtree: {
+    case CheckPseudoHasArgumentTraversalScope::kSubtree:
+    case CheckPseudoHasArgumentTraversalScope::kOneNextSiblingSubtree: {
       // Mark the traversed elements in the subtree or next sibling subtree
       // of the ':has()' scope element as checked.
       Element* element = last_traversed_element;
@@ -144,13 +138,13 @@ void HasMatchedCacheScope::Context::SetAllTraversedElementsAsChecked(
       // it guarantees that we can get all the possibly matched next siblings.
       // By marking all the traversed next siblings as checked, we can skip
       // to match ':has()' on the already-checked next siblings.
-      if (argument_match_context_.TraversalScope() ==
-              HasArgumentMatchTraversalScope::kAllNextSiblingSubtrees &&
+      if (argument_context_.TraversalScope() ==
+              CheckPseudoHasArgumentTraversalScope::kAllNextSiblingSubtrees &&
           element) {
         SetTraversedElementAsChecked(element, parent);
       }
     } break;
-    case HasArgumentMatchTraversalScope::kAllNextSiblings:
+    case CheckPseudoHasArgumentTraversalScope::kAllNextSiblings:
       DCHECK_EQ(last_traversed_depth, 0);
       // Mark the last traversed element and all its next siblings as checked.
       SetTraversedElementAsChecked(last_traversed_element,
@@ -161,12 +155,12 @@ void HasMatchedCacheScope::Context::SetAllTraversedElementsAsChecked(
   }
 }
 
-uint8_t HasMatchedCacheScope::Context::GetResult(Element* element) const {
-  auto iterator = map_.find(element);
-  return iterator == map_.end() ? kNotCached : iterator->value;
+uint8_t CheckPseudoHasCacheScope::Context::GetResult(Element* element) const {
+  auto iterator = result_map_.find(element);
+  return iterator == result_map_.end() ? kNotCached : iterator->value;
 }
 
-bool HasMatchedCacheScope::Context::
+bool CheckPseudoHasCacheScope::Context::
     HasSiblingsWithAllDescendantsOrNextSiblingsChecked(Element* element) const {
   for (Element* sibling = ElementTraversal::PreviousSibling(*element); sibling;
        sibling = ElementTraversal::PreviousSibling(*sibling)) {
@@ -179,7 +173,7 @@ bool HasMatchedCacheScope::Context::
   return false;
 }
 
-bool HasMatchedCacheScope::Context::
+bool CheckPseudoHasCacheScope::Context::
     HasAncestorsWithAllDescendantsOrNextSiblingsChecked(
         Element* element) const {
   for (Element* parent = element->parentElement(); parent;
@@ -197,13 +191,13 @@ bool HasMatchedCacheScope::Context::
   return false;
 }
 
-bool HasMatchedCacheScope::Context::AlreadyChecked(Element* element) const {
-  switch (argument_match_context_.TraversalScope()) {
-    case HasArgumentMatchTraversalScope::kSubtree:
-    case HasArgumentMatchTraversalScope::kOneNextSiblingSubtree:
-    case HasArgumentMatchTraversalScope::kAllNextSiblingSubtrees:
+bool CheckPseudoHasCacheScope::Context::AlreadyChecked(Element* element) const {
+  switch (argument_context_.TraversalScope()) {
+    case CheckPseudoHasArgumentTraversalScope::kSubtree:
+    case CheckPseudoHasArgumentTraversalScope::kOneNextSiblingSubtree:
+    case CheckPseudoHasArgumentTraversalScope::kAllNextSiblingSubtrees:
       return HasAncestorsWithAllDescendantsOrNextSiblingsChecked(element);
-    case HasArgumentMatchTraversalScope::kAllNextSiblings:
+    case CheckPseudoHasArgumentTraversalScope::kAllNextSiblings:
       if (Element* parent = element->parentElement()) {
         if (!(GetResult(parent) & kSomeChildrenChecked))
           return false;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/has_argument_match_context.h"
+#include "third_party/blink/renderer/core/css/check_pseudo_has_argument_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
@@ -18,10 +18,10 @@ void RunTest(const String& selector_text,
              CSSSelector::RelationType expected_leftmost_relation,
              int expected_adjacent_distance_limit,
              int expected_depth_limit,
-             HasArgumentMatchTraversalScope expected_traversal_scope) {
+             CheckPseudoHasArgumentTraversalScope expected_traversal_scope) {
   CSSSelectorList selector_list =
       css_test_helpers::ParseSelectorList(selector_text);
-  HasArgumentMatchContext context(
+  CheckPseudoHasArgumentContext context(
       selector_list.First()->SelectorList()->First());
 
   EXPECT_EQ(expected_leftmost_relation, context.LeftmostRelation())
@@ -36,7 +36,7 @@ void RunTest(const String& selector_text,
 
 }  // namespace
 
-TEST(HasArgumentMatchContextTest, TestArgumentMatchContext) {
+TEST(CheckPseudoHasArgumentContextTest, TestArgumentMatchContext) {
   RunTest(":has(.a)", CSSSelector::kRelativeDescendant,
           /* expected_adjacent_distance_limit */ 0,
           /* expected_depth_limit */ kMax, kSubtree);
