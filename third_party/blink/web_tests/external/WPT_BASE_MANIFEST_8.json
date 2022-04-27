@@ -156457,6 +156457,19 @@
         {}
        ]
       ],
+      "flex-aspect-ratio-039.html": [
+       "fe977ef789d54cd34eed803cd2513950e6952858",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "grid-aspect-ratio-001.html": [
        "ce91fe4e4e8b2bb7f610fb230a292f59188ff95b",
        [
@@ -328226,7 +328239,7 @@
       []
      ],
      "fake-serial.js": [
-      "2ce781efe23e9dbfd0406e8f3afcd9c0fcb1fa12",
+      "e1e4d57e3eef5b88c4a5cc1264c799b40441f6c7",
       []
      ],
      "generic_sensor_mocks.js": [
@@ -332456,6 +332469,10 @@
       ],
       "service-worker-unregister.html": [
        "a78775a5a2c7a5724f7d97a4c3d8c6638c76f6d6",
+       []
+      ],
+      "service-worker-update.html": [
+       "d9a9273526efb925e22b74e6c1622e69de46bb8a",
        []
       ],
       "service-worker.js": [
@@ -400732,7 +400749,7 @@
       ]
      ],
      "CSSStyleSheet-template-adoption.html": [
-      "8fecbd83f7f99226f10175492e7629d2fc6e477b",
+      "e014627ed8be5aea0bbba075aa3e6bd5d4399686",
       [
        null,
        {}
@@ -526150,6 +526167,15 @@
        }
       ]
      ],
+     "restriction-service-worker-update.https.html": [
+      "92c16e5433d5411c0222c3ca7d2a85513f86cd12",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
      "restriction-window-move.html": [
       "e8011311f61ac1c39192ea193b395493a82fddbd",
       [
@@ -538601,7 +538627,7 @@
      ]
     ],
     "mark-errors.any.js": [
-     "dcd36695e22f2c0c333e77cb910e1023ecd557fe",
+     "39bafc045cb721c520d99b3f38c8e460bf6d4bcc",
      [
       "user-timing/mark-errors.any.html",
       {}
@@ -538797,7 +538823,7 @@
      ]
     ],
     "structured-serialize-detail.any.js": [
-     "78771b2f7663d4384b03f79e050144be39a4882f",
+     "dcceffde278df17a1dcf86f9ee11c519bbdc1abd",
      [
       "user-timing/structured-serialize-detail.any.html",
       {}
