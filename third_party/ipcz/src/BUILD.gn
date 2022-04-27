@@ -161,6 +161,10 @@ ipcz_source_set("impl") {
   visibility = [ ":*" ]
   public = [
     "ipcz/api_object.h",
+    "ipcz/driver_memory.h",
+    "ipcz/driver_memory_mapping.h",
+    "ipcz/driver_object.h",
+    "ipcz/driver_transport.h",
     "ipcz/node.h",
     "ipcz/parcel.h",
     "ipcz/parcel_queue.h",
@@ -171,6 +175,10 @@ ipcz_source_set("impl") {
   ]
   sources = [
     "ipcz/api_object.cc",
+    "ipcz/driver_memory.cc",
+    "ipcz/driver_memory_mapping.cc",
+    "ipcz/driver_object.cc",
+    "ipcz/driver_transport.cc",
     "ipcz/link_side.cc",
     "ipcz/link_side.h",
     "ipcz/link_type.cc",
@@ -218,9 +226,14 @@ ipcz_source_set("ipcz_tests_sources") {
 
   sources = [
     "api_test.cc",
+    "ipcz/driver_memory_test.cc",
+    "ipcz/driver_object_test.cc",
+    "ipcz/driver_transport_test.cc",
     "ipcz/parcel_queue_test.cc",
     "ipcz/sequenced_queue_test.cc",
     "reference_drivers/single_process_reference_driver_test.cc",
+    "test/mock_driver.cc",
+    "test/mock_driver.h",
     "test/test_base.cc",
     "test/test_base.h",
     "util/ref_counted_test.cc",
@@ -228,6 +241,7 @@ ipcz_source_set("ipcz_tests_sources") {
   ]
 
   deps = [
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
   ]
