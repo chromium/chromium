@@ -10,6 +10,7 @@
 #include "components/page_info/core/about_this_site_validation.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
+#include "net/base/url_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
@@ -53,6 +54,16 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
       .SetStatus(static_cast<int>(status))
       .Record(ukm::UkmRecorder::Get());
   if (status == AboutThisSiteStatus::kValid) {
+    if (about_this_site_metadata->site_info().has_more_about()) {
+      // Append a context parameter to identify that this URL is visited from
+      // Chrome. If we add more UI surfaces that can open this URL, we should
+      // pass in different context parameters.
+      proto::MoreAbout* more_about =
+          about_this_site_metadata->mutable_site_info()->mutable_more_about();
+      GURL more_about_url =
+          net::AppendQueryParameter(GURL(more_about->url()), "ctx", "chrome");
+      more_about->set_url(more_about_url.spec());
+    }
     return about_this_site_metadata->site_info();
   }
 

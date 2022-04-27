@@ -27,6 +27,7 @@ include_rules = [
   "+components/vector_icons",
   "+content/public",
   "+media/base",
+  "+net",
   "+net/cert",
   "+net/ssl",
   "+ppapi",

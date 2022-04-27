@@ -42,6 +42,8 @@ proto::AboutThisSiteMetadata CreateValidMetadata() {
   description->set_name("Example");
   description->mutable_source()->set_url("https://example.com");
   description->mutable_source()->set_label("Example source");
+  metadata.mutable_site_info()->mutable_more_about()->set_url(
+      "https://google.com/ats/example.com");
   return metadata;
 }
 
@@ -106,6 +108,8 @@ TEST_F(AboutThisSiteServiceTest, ValidResponse) {
   auto info = service()->GetAboutThisSiteInfo(
       GURL("https://foo.com"), ukm::UkmRecorder::GetNewSourceID());
   EXPECT_TRUE(info.has_value());
+  EXPECT_EQ(info->more_about().url(),
+            "https://google.com/ats/example.com?ctx=chrome");
   t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteStatus",
                        AboutThisSiteStatus::kValid, 1);
 }
