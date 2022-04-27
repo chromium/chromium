@@ -3962,11 +3962,34 @@ bool AXNodeObject::CanAddLayoutChild(LayoutObject& child) {
   // pseudo element.
   DCHECK(child.GetNode()->IsPseudoElement());
 
-  // Only add this inner pseudo element if it hasn't been added elsewhere.
-  // An example is ::before with ::first-letter.
-  AXObject* ax_preexisting = AXObjectCache().Get(&child);
-  return !ax_preexisting || !ax_preexisting->CachedParentObject() ||
-         ax_preexisting->CachedParentObject() == this;
+  // ---------------------------------------------------------------------------
+  // Under certain circumstances the LayoutTreeBuilderTraversal and LayoutObject
+  // trees do not match, e.g. for the combination of ::before/::after and
+  // ::marker pseudo elements in legacy layout.
+  // In this case, there is a danger that the AXObject created for |child| will
+  // be added in two places.Unfortunately, this requires a slow check.
+  // For more info, see discussion here:
+  // https://crrev.com/c/chromium/src/+/3591572/9/third_party/blink/renderer/modules/accessibility/ax_node_object.cc#3973
+  // TODO(accessibility) Remove this once legacy layout is completely removed,
+  // as this problem will go away.
+  AXObject* ax_dom_parent = AXObjectCache().GetWithoutInvalidation(
+      LayoutTreeBuilderTraversal::Parent(*child.GetNode()));
+  if (!ax_dom_parent->ShouldUseLayoutObjectTraversalForChildren()) {
+    DCHECK_NE(ax_dom_parent, this);
+    for (Node* child_node =
+             LayoutTreeBuilderTraversal::FirstChild(*ax_dom_parent->GetNode());
+         child_node;
+         child_node = LayoutTreeBuilderTraversal::NextSibling(*child_node)) {
+      if (child_node == child.GetNode()) {
+        // Different AX parent would have the same AX child (via
+        // LayoutTreeBuilderTraversal).
+        return false;
+      }
+    }
+  }
+  // ---------------------------------------------------------------------------
+
+  return true;
 }
 
 #if DCHECK_IS_ON()
