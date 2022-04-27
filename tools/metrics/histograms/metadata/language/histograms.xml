@@ -90,6 +90,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LanguageSettings.AppLanguagePrompt.HasTopULPMatch"
+    enum="BooleanYesNo" expires_after="2022-09-11">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Whether or not the Chrome UI language matches the top ULP language when the
+    AppLanguagePrompt should be shown. Logged when checking if the prompt should
+    be shown and it has not already been shown.
+
+    Only the base languages are compared so pt-PT is considered equal to pt-BR.
+  </summary>
+</histogram>
+
 <histogram name="LanguageSettings.AppLanguagePrompt.IsOnline"
     enum="BooleanYesNo" expires_after="2022-09-11">
   <owner>perrier@chromium.org</owner>
