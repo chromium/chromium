@@ -846,6 +846,8 @@ if (!is_ios) {
       sources += [
         "autofill_assistant/browser/base_browsertest.cc",
         "autofill_assistant/browser/base_browsertest.h",
+        "autofill_assistant/browser/fake_script_executor_delegate.cc",
+        "autofill_assistant/browser/fake_script_executor_delegate.h",
         "autofill_assistant/browser/fake_script_executor_ui_delegate.cc",
         "autofill_assistant/browser/fake_script_executor_ui_delegate.h",
         "autofill_assistant/browser/js_flow_executor_impl_browsertest.cc",
@@ -854,6 +856,8 @@ if (!is_ios) {
         "autofill_assistant/browser/service/mock_service.cc",
         "autofill_assistant/browser/service/mock_service.h",
         "autofill_assistant/browser/web/batch_element_checker_browsertest.cc",
+        "autofill_assistant/browser/web/mock_web_controller.cc",
+        "autofill_assistant/browser/web/mock_web_controller.h",
         "autofill_assistant/browser/web/semantic_element_finder_browsertest.cc",
         "autofill_assistant/browser/web/web_controller_browsertest.cc",
         "browser_ui/client_certificate/android/ssl_client_certificate_request_browsertest.cc",

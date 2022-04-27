@@ -7,7 +7,9 @@
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/js_flow_util.h"
 #include "components/autofill_assistant/browser/parse_jspb.h"
@@ -24,20 +26,65 @@ constexpr char kMessageIdPrefix[] = "aa.msg";
 
 // Initializes a |globalFlowState| variable on first run, and renews the
 // promises that will let JS flows request native actions.
-constexpr char kRunNativeAction[] = R"(
+constexpr char kRunNativeActionPromise[] = R"(
   if (typeof globalFlowState === 'undefined') {
-    globalFlowState = {}
+    globalFlowState = {};
   }
-    new Promise((fulfill, reject) => {
-      globalFlowState.runNativeAction = fulfill
-      globalFlowState.endNativeAction = reject
-    })
+
+  new Promise((fulfill, reject) => {
+    globalFlowState.runNativeAction = fulfill;
+    globalFlowState.endNativeAction = reject;
+  })
 )";
 
-constexpr char kArrayGetNthElement[] = "function(index) { return this[index] }";
+// The code inserted before the JS flow. The flow is wrapped in an arrow
+// function.
+// NOTE: Do not remove the trailing new line as we want to have stack traces
+// start at the first column.
+constexpr char kLeadingWrapper[] = R"(
+  function runNativeAction(native_action_id, native_action) {
+    return new Promise(
+        (fulfill, reject) => {
+             globalFlowState.runNativeAction(
+                 [{id: native_action_id, action: native_action}, fulfill]);
+        }
+    );
+  }
+
+  (async () => {
+
+  // Keep the next empty line. The JS flow script should be concatenated
+  // without leading spaces.
+
+)";
+
+// The code inserted after the JS flow. This closes and executes the arrow
+// function from the leading wrapper.
+// NOTE: Do not remove the leading new line. We want to make sure that the
+// wrapper not on the same line as the JS flow source.
+constexpr char kTrailingWrapper[] = "\n})()";
+
+// The number of lines to subtract from all call stack entries sent to the
+// backend.
+constexpr int kJsLineOffset = []() {
+  int num_lines = 0;
+  for (const char c : kLeadingWrapper) {
+    num_lines += c == '\n';
+  }
+  return num_lines;
+}();
+
+// The number of stack entries to drop before returning to the client. We drop
+// one entry as the source sent from the backend is wrapped in an anonymous
+// function.
+constexpr int kNumStackEntriesToDrop = 1;
+
+constexpr char kArrayGetNthElement[] =
+    "function(index) { return this[index]; }";
+
 constexpr char kFulfillActionPromise[] = R"(
   function(status, result) {
-    this([status, result])
+    this([status, result]);
   }
 )";
 
@@ -146,21 +193,8 @@ void JsFlowExecutorImpl::InternalStart() {
   // Wrap the main js_flow in an async function containing a method to
   // request native actions. This is essentially providing |js_flow| with a
   // JS API to call native functionality.
-  // TODO(b/208420231): adjust linenumbers to account for the offset introduced
-  // by this wrapper, otherwise exception stacktraces will be hard to map to the
-  // original js source.
-  js_flow_ = std::make_unique<std::string>(base::StrCat({
-      R"((async function() {
-        function runNativeAction(native_action_id, native_action) {
-          return new Promise(
-              (fulfill, reject) => {
-                   globalFlowState.runNativeAction(
-                       [{id: native_action_id, action: native_action}, fulfill])
-              }
-          )
-        }
-    )",
-      *js_flow_, "  }) ()"}));
+  js_flow_ = std::make_unique<std::string>(
+      base::StrCat({kLeadingWrapper, *js_flow_, kTrailingWrapper}));
 
   // Run the wrapped js_flow in the sandbox and serve potential native action
   // requests as they arrive.
@@ -179,7 +213,7 @@ void JsFlowExecutorImpl::InternalStart() {
 void JsFlowExecutorImpl::RefreshNativeActionPromise() {
   devtools_client_->GetRuntime()->Evaluate(
       runtime::EvaluateParams::Builder()
-          .SetExpression(kRunNativeAction)
+          .SetExpression(kRunNativeActionPromise)
           .SetAwaitPromise(true)
           .SetContextId(isolated_world_context_id_)
           .Build(),
@@ -199,12 +233,12 @@ void JsFlowExecutorImpl::OnNativeActionRequested(
   // value), and (2) the fulfill promise to call with the action result.
   std::string js_array_object_id = result->GetResult()->GetObjectId();
   std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
-  AddRuntimeCallArgument(/* index = */ 0, &arguments);
+  AddRuntimeCallArgument(/* value = */ 0, &arguments);
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
           .SetObjectId(js_array_object_id)
           .SetArguments(std::move(arguments))
-          .SetFunctionDeclaration(std::string(kArrayGetNthElement))
+          .SetFunctionDeclaration(kArrayGetNthElement)
           .SetReturnByValue(true)
           .Build(),
       kMainFrame,
@@ -229,12 +263,12 @@ void JsFlowExecutorImpl::OnNativeActionRequestActionRetrieved(
   }
 
   std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
-  AddRuntimeCallArgument(/* index = */ 1, &arguments);
+  AddRuntimeCallArgument(/* value = */ 1, &arguments);
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
           .SetObjectId(js_array_object_id)
           .SetArguments(std::move(arguments))
-          .SetFunctionDeclaration(std::string(kArrayGetNthElement))
+          .SetFunctionDeclaration(kArrayGetNthElement)
           .Build(),
       kMainFrame,
       base::BindOnce(
@@ -294,6 +328,7 @@ void JsFlowExecutorImpl::OnNativeActionFinished(
     const ClientStatus& result_status,
     std::unique_ptr<base::Value> result_value) {
   if (!callback_) {
+    VLOG(2) << "Native action finished after js flow finished";
     // No longer relevant.
     return;
   }
@@ -315,7 +350,7 @@ void JsFlowExecutorImpl::OnNativeActionFinished(
       runtime::CallFunctionOnParams::Builder()
           .SetObjectId(fulfill_promise_object_id)
           .SetArguments(std::move(arguments))
-          .SetFunctionDeclaration(std::string(kFulfillActionPromise))
+          .SetFunctionDeclaration(kFulfillActionPromise)
           .Build(),
       kMainFrame,
       base::BindOnce(&JsFlowExecutorImpl::OnFlowResumed,
@@ -340,7 +375,8 @@ void JsFlowExecutorImpl::OnFlowFinished(
   // values are allowed (see js_flow_util::ExtractFlowReturnValue for details).
   std::unique_ptr<base::Value> out_result_value;
   ClientStatus status = js_flow_util::ExtractFlowReturnValue(
-      reply_status, result.get(), out_result_value);
+      reply_status, result.get(), out_result_value, kJsLineOffset,
+      kNumStackEntriesToDrop);
 
   RunCallback(status, std::move(out_result_value));
 }

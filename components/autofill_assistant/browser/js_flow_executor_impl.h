@@ -32,6 +32,8 @@ class JsFlowExecutorImpl : public JsFlowExecutor {
   // contain a stack trace and additional information (limited to the sandbox).
   // Only one flow may run at a time.
   //
+  // The last statement of the |js_flow| must be a return statement.
+  //
   // Flows may request additional native actions from the delegate, using the
   // following syntax:
   //
