@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks;
+package org.chromium.chrome.features.tasks;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -14,9 +14,9 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.chrome.browser.tasks.SingleTabViewProperties.CLICK_LISTENER;
-import static org.chromium.chrome.browser.tasks.SingleTabViewProperties.FAVICON;
-import static org.chromium.chrome.browser.tasks.SingleTabViewProperties.TITLE;
+import static org.chromium.chrome.features.tasks.SingleTabViewProperties.CLICK_LISTENER;
+import static org.chromium.chrome.features.tasks.SingleTabViewProperties.FAVICON;
+import static org.chromium.chrome.features.tasks.SingleTabViewProperties.TITLE;
 
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
