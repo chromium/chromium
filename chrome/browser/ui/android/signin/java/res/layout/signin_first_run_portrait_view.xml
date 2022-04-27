@@ -52,7 +52,7 @@
                 android:gravity="center"
                 android:paddingHorizontal="70dp"
                 android:text="@string/fre_welcome"
-                android:textAppearance="@style/TextAppearance.FreFirstFrameTitle" />
+                android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
             <org.chromium.ui.widget.TextViewWithLeading
                 android:id="@+id/subtitle"

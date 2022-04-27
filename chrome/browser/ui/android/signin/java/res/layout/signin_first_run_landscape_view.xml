@@ -42,7 +42,7 @@
                 android:lineSpacingMultiplier="1.2"
                 android:gravity="start"
                 android:text="@string/fre_welcome"
-                android:textAppearance="@style/TextAppearance.FreFirstFrameTitle" />
+                android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
             <org.chromium.ui.widget.TextViewWithLeading
                 android:id="@+id/subtitle"
