@@ -249,7 +249,10 @@ NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
 // formatted link to the full text of the terms of service.
 - (UITextView*)createFooterTextViewWithUMAReportingLink:
     (BOOL)UMAReportingLink {
-  NSAttributedString* termsOfServiceString = [self createTermsOfServiceString];
+  UIFontTextStyle fontTextStyle =
+      (UMAReportingLink) ? UIFontTextStyleCaption2 : UIFontTextStyleFootnote;
+  NSAttributedString* termsOfServiceString =
+      [self createTermsOfServiceStringWithFontTextStyle:fontTextStyle];
   NSMutableAttributedString* footerString = [[NSMutableAttributedString alloc]
       initWithAttributedString:termsOfServiceString];
   if (UMAReportingLink) {
@@ -268,18 +271,19 @@ NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
       @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
   textView.translatesAutoresizingMaskIntoConstraints = NO;
   textView.attributedText = footerString;
+
   return textView;
 }
 
-- (NSAttributedString*)createTermsOfServiceString {
+- (NSAttributedString*)createTermsOfServiceStringWithFontTextStyle:
+    (UIFontTextStyle)fontTextStyle {
   NSMutableParagraphStyle* paragraphStyle =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   paragraphStyle.alignment = NSTextAlignmentCenter;
 
   NSDictionary* textAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
-    NSFontAttributeName :
-        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
+    NSFontAttributeName : [UIFont preferredFontForTextStyle:fontTextStyle],
     NSParagraphStyleAttributeName : paragraphStyle
   };
   NSDictionary* linkAttributes =
@@ -298,7 +302,7 @@ NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
   NSDictionary* textAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
     NSFontAttributeName :
-        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
+        [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2],
     NSParagraphStyleAttributeName : paragraphStyle
   };
   NSDictionary* linkAttributes =
