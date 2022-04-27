@@ -164,6 +164,7 @@ chrome_java_resources = [
   "java/res/drawable-mdpi/toolbar_shadow_focused.png",
   "java/res/drawable-mdpi/toolbar_shadow_normal.png",
   "java/res/drawable-mdpi/verify_checkmark.png",
+  "java/res/drawable-night/virtual_card_enrollment_illustration.xml",
   "java/res/drawable-nodpi/bookmark_widget_preview.png",
   "java/res/drawable-nodpi/widget_preview.png",
   "java/res/drawable-sw600dp/toolbar_shadow.xml",
