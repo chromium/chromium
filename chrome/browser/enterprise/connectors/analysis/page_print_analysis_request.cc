@@ -22,9 +22,17 @@ PagePrintAnalysisRequest::PagePrintAnalysisRequest(
     : safe_browsing::BinaryUploadService::Request(
           std::move(callback),
           analysis_settings.analysis_url),
-      page_(std::move(page)) {}
+      page_(std::move(page)) {
+  safe_browsing::IncrementCrashKey(
+      safe_browsing::ScanningCrashKey::PENDING_PRINTS);
+  safe_browsing::IncrementCrashKey(
+      safe_browsing::ScanningCrashKey::TOTAL_PRINTS);
+}
 
-PagePrintAnalysisRequest::~PagePrintAnalysisRequest() = default;
+PagePrintAnalysisRequest::~PagePrintAnalysisRequest() {
+  safe_browsing::DecrementCrashKey(
+      safe_browsing::ScanningCrashKey::PENDING_PRINTS);
+}
 
 void PagePrintAnalysisRequest::GetRequestData(DataCallback callback) {
   safe_browsing::BinaryUploadService::Request::Data data;
