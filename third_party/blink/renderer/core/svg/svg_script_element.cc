@@ -83,11 +83,6 @@ void SVGScriptElement::ChildrenChanged(const ChildrenChange& change) {
   loader_->ChildrenChanged();
 }
 
-void SVGScriptElement::DidMoveToNewDocument(Document& old_document) {
-  ScriptRunner::MovePendingScript(old_document, GetDocument(), loader_.Get());
-  SVGElement::DidMoveToNewDocument(old_document);
-}
-
 bool SVGScriptElement::IsURLAttribute(const Attribute& attribute) const {
   return attribute.GetName() == AtomicString(SourceAttributeValue());
 }

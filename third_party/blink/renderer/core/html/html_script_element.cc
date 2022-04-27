@@ -84,11 +84,6 @@ void HTMLScriptElement::ChildrenChanged(const ChildrenChange& change) {
   children_changed_by_api_ |= !change.ByParser();
 }
 
-void HTMLScriptElement::DidMoveToNewDocument(Document& old_document) {
-  ScriptRunner::MovePendingScript(old_document, GetDocument(), loader_.Get());
-  HTMLElement::DidMoveToNewDocument(old_document);
-}
-
 void HTMLScriptElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kSrcAttr) {

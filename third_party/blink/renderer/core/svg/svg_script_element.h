@@ -62,7 +62,6 @@ class SVGScriptElement final : public SVGElement,
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void DidNotifySubtreeInsertionsToDocument() override;
   void ChildrenChanged(const ChildrenChange&) override;
-  void DidMoveToNewDocument(Document& old_document) override;
 
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   bool IsURLAttribute(const Attribute&) const override;

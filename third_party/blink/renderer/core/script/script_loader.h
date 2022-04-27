@@ -22,17 +22,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_SCRIPT_LOADER_H_
 
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
-#include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
 #include "third_party/blink/renderer/core/script/pending_script.h"
-#include "third_party/blink/renderer/core/script/script.h"
-#include "third_party/blink/renderer/core/script/script_runner.h"
 #include "third_party/blink/renderer/core/script/script_scheduling_type.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_finish_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_fetch_options.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
@@ -49,14 +44,14 @@ class ScriptWebBundle;
 class SpeculationRuleSet;
 class Modulator;
 
-class CORE_EXPORT ScriptLoader final : public GarbageCollected<ScriptLoader>,
-                                       public PendingScriptClient,
+class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
                                        public NameClient {
  public:
   ScriptLoader(ScriptElementBase*, const CreateElementFlags);
   ~ScriptLoader() override;
   void Trace(Visitor*) const override;
   const char* NameInHeapSnapshot() const override { return "ScriptLoader"; }
+  String DebugName() const override { return "ScriptLoader"; }
 
   enum LegacyTypeSupport {
     kDisallowLegacyTypeInTypeAttribute,
@@ -114,11 +109,6 @@ class CORE_EXPORT ScriptLoader final : public GarbageCollected<ScriptLoader>,
 
   void SetFetchDocWrittenScriptDeferIdle();
 
-  // Return non-null if controlled by ScriptRunner, or null otherwise.
-  // Only for ScriptRunner::MovePendingScript() and should be removed once
-  // crbug.com/721914 is fixed.
-  PendingScript* GetPendingScriptIfControlledByScriptRunnerForCrossDocMove();
-
  private:
   bool IgnoresLoadRequest() const;
   bool IsScriptForEventSupported() const;
@@ -139,11 +129,10 @@ class CORE_EXPORT ScriptLoader final : public GarbageCollected<ScriptLoader>,
                              Modulator*,
                              const ScriptFetchOptions&);
 
-  // Clears the connection to the PendingScript.
-  void DetachPendingScript();
-
-  // PendingScriptClient
-  void PendingScriptFinished(PendingScript*) override;
+  // ResourceFinishObserver. This should be used only for managing
+  // `resource_keep_alive_` lifetime and shouldn't be used for script
+  // evaluation.
+  void NotifyFinished() override;
 
   // Get the effective script text (after Trusted Types checking).
   String GetScriptText() const;
@@ -205,13 +194,6 @@ class CORE_EXPORT ScriptLoader final : public GarbageCollected<ScriptLoader>,
   // Later, TakePendingScript() is called, and its caller holds a reference
   // to the PendingScript instead and |prepared_pending_script_| is cleared.
   Member<PendingScript> prepared_pending_script_;
-
-  // If the script is controlled by ScriptRunner, then
-  // ScriptLoader::pending_script_ holds a reference to the PendingScript and
-  // ScriptLoader is its client.
-  // Otherwise, HTMLParserScriptRunner or XMLParserScriptRunner holds the
-  // reference and |pending_script_| here is null.
-  Member<PendingScript> pending_script_;
 
   // This is used only to keep the ScriptResource of a classic script alive
   // and thus to keep it on MemoryCache, even after script execution, as long

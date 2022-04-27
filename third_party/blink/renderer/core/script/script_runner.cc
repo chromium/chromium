@@ -67,9 +67,14 @@ void ScriptRunner::QueueScriptForExecution(PendingScript* pending_script) {
       NOTREACHED();
       break;
   }
+
+  // Note that WatchForLoad() can immediately call PendingScriptFinished().
+  pending_script->WatchForLoad(this);
 }
 
-void ScriptRunner::NotifyScriptReady(PendingScript* pending_script) {
+void ScriptRunner::PendingScriptFinished(PendingScript* pending_script) {
+  pending_script->StopWatchingForLoad();
+
   switch (pending_script->GetSchedulingType()) {
     case ScriptSchedulingType::kAsync:
       CHECK(pending_async_scripts_.Contains(pending_script));
@@ -98,58 +103,6 @@ void ScriptRunner::NotifyScriptReady(PendingScript* pending_script) {
   }
 }
 
-bool ScriptRunner::RemovePendingInOrderScript(PendingScript* pending_script) {
-  auto it = std::find(pending_in_order_scripts_.begin(),
-                      pending_in_order_scripts_.end(), pending_script);
-  if (it == pending_in_order_scripts_.end())
-    return false;
-  pending_in_order_scripts_.erase(it);
-  return true;
-}
-
-void ScriptRunner::MovePendingScript(Document& old_document,
-                                     Document& new_document,
-                                     ScriptLoader* script_loader) {
-  Document* new_context_document =
-      new_document.GetExecutionContext()
-          ? To<LocalDOMWindow>(new_document.GetExecutionContext())->document()
-          : &new_document;
-  Document* old_context_document =
-      old_document.GetExecutionContext()
-          ? To<LocalDOMWindow>(old_document.GetExecutionContext())->document()
-          : &old_document;
-  if (old_context_document == new_context_document)
-    return;
-
-  PendingScript* pending_script =
-      script_loader
-          ->GetPendingScriptIfControlledByScriptRunnerForCrossDocMove();
-  if (!pending_script) {
-    // The ScriptLoader is not controlled by ScriptRunner. This can happen
-    // because MovePendingScript() is called for all <script> elements
-    // moved between Documents, not only for those controlled by ScriptRunner.
-    return;
-  }
-
-  old_context_document->GetScriptRunner()->MovePendingScript(
-      new_context_document->GetScriptRunner(), pending_script);
-}
-
-void ScriptRunner::MovePendingScript(ScriptRunner* new_runner,
-                                     PendingScript* pending_script) {
-  auto it = pending_async_scripts_.find(pending_script);
-  if (it != pending_async_scripts_.end()) {
-    new_runner->QueueScriptForExecution(pending_script);
-    pending_async_scripts_.erase(it);
-    document_->DecrementLoadEventDelayCount();
-    return;
-  }
-  if (RemovePendingInOrderScript(pending_script)) {
-    new_runner->QueueScriptForExecution(pending_script);
-    document_->DecrementLoadEventDelayCount();
-  }
-}
-
 void ScriptRunner::ExecutePendingScript(PendingScript* pending_script) {
   TRACE_EVENT("blink", "ScriptRunner::ExecutePendingScript");
 
@@ -165,6 +118,7 @@ void ScriptRunner::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(pending_in_order_scripts_);
   visitor->Trace(pending_async_scripts_);
+  PendingScriptClient::Trace(visitor);
 }
 
 }  // namespace blink

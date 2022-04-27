@@ -100,7 +100,7 @@ class ScriptRunnerTest : public testing::Test {
  protected:
   void NotifyScriptReady(MockPendingScript* pending_script) {
     pending_script->SetIsReady(true);
-    script_runner_->NotifyScriptReady(pending_script);
+    script_runner_->PendingScriptFinished(pending_script);
   }
 
   void QueueScriptForExecution(MockPendingScript* pending_script) {

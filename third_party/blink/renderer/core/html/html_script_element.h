@@ -86,7 +86,6 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
 
   void DidNotifySubtreeInsertionsToDocument() override;
   void ChildrenChanged(const ChildrenChange&) override;
-  void DidMoveToNewDocument(Document& old_document) override;
 
   bool IsURLAttribute(const Attribute&) const override;
   bool HasLegalLinkAttribute(const QualifiedName&) const override;
