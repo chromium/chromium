@@ -23,7 +23,10 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_uploader.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/remote_host_contacted_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal_processor.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
+#include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -271,7 +274,8 @@ void ExtensionTelemetryService::CreateAndUploadReport() {
   auto callback = base::BindOnce(&ExtensionTelemetryService::OnUploadComplete,
                                  weak_factory_.GetWeakPtr());
   active_uploader_ = std::make_unique<ExtensionTelemetryUploader>(
-      std::move(callback), url_loader_factory_, std::move(upload_data));
+      std::move(callback), url_loader_factory_, std::move(upload_data),
+      GetTokenFetcher());
   active_uploader_->Start();
 }
 
@@ -312,7 +316,8 @@ void ExtensionTelemetryService::UploadPersistedFile(std::string report,
     auto callback = base::BindOnce(&ExtensionTelemetryService::OnUploadComplete,
                                    weak_factory_.GetWeakPtr());
     active_uploader_ = std::make_unique<ExtensionTelemetryUploader>(
-        std::move(callback), url_loader_factory_, std::move(upload_data));
+        std::move(callback), url_loader_factory_, std::move(upload_data),
+        GetTokenFetcher());
     active_uploader_->Start();
   } else {
     active_report_.reset();
@@ -386,6 +391,20 @@ ExtensionTelemetryService::CreateReport() {
   telemetry_report_pb->set_creation_timestamp_msec(
       base::Time::Now().ToJavaTime());
   return telemetry_report_pb;
+}
+
+std::unique_ptr<SafeBrowsingTokenFetcher>
+ExtensionTelemetryService::GetTokenFetcher() {
+  DCHECK(!profile_->IsOffTheRecord() &&
+         IsEnhancedProtectionEnabled(*profile_->GetPrefs()));
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  if (identity_manager &&
+      safe_browsing::SyncUtils::IsPrimaryAccountSignedIn(identity_manager)) {
+    return std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
+        identity_manager);
+  }
+  return nullptr;
 }
 
 void ExtensionTelemetryService::DumpReportForTest(

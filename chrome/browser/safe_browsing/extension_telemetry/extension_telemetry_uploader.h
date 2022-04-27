@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/profile.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -18,6 +19,8 @@ class SimpleURLLoader;
 }  // namespace network
 
 namespace safe_browsing {
+
+class SafeBrowsingTokenFetcher;
 
 // An uploader of extension telemetry reports. An upload is initiated by
 // creating an instance of this object and then calling its StartUpload method.
@@ -37,7 +40,8 @@ class ExtensionTelemetryUploader {
   ExtensionTelemetryUploader(
       OnUploadCallback callback,
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
-      std::unique_ptr<std::string> upload_data);
+      std::unique_ptr<std::string> upload_data,
+      std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher);
 
   // Start the upload by sending a request. This method performs retries if
   // necessary and finally calls |callback_|. It must be called on the UI
@@ -47,8 +51,11 @@ class ExtensionTelemetryUploader {
   static std::string GetUploadURLForTest();
 
  private:
+  // Determines whether to send a request with access token.
+  void MaybeSendRequestWithAccessToken();
+
   // Sends a single network request.
-  void SendRequest();
+  void SendRequest(const std::string& access_token);
 
   // Callback when SimpleURLLoader gets the response.
   void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
@@ -65,6 +72,10 @@ class ExtensionTelemetryUploader {
   base::TimeDelta current_backoff_;
   int num_upload_retries_;
   base::TimeTicks upload_start_time_;
+  // The token fetcher used to attach OAuth access tokens to requests for
+  // appropriately consented users. It can be a nullptr when the user is
+  // not signed in.
+  std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher_;
 
   base::WeakPtrFactory<ExtensionTelemetryUploader> weak_factory_{this};
 };
