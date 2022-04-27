@@ -14,7 +14,6 @@
 #include "base/test/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 #include "device/bluetooth/test/mock_pairing_delegate.h"
@@ -1193,9 +1192,9 @@ TEST_F(BluetoothTest, MAYBE_GetName_NullName) {
 // and is non trivial to implement. On ChromeOS, it is not essential for
 // this test to operate, and so it is simply skipped. Android at least
 // does require this step.
-#if !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !BUILDFLAG(IS_CHROMEOS)
   StartLowEnergyDiscoverySession();
-#endif  // !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   BluetoothDevice* device = SimulateLowEnergyDevice(5);
   EXPECT_FALSE(device->GetName());

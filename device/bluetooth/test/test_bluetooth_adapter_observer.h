@@ -107,11 +107,11 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
   void GattDescriptorValueChanged(BluetoothAdapter* adapter,
                                   BluetoothRemoteGattDescriptor* descriptor,
                                   const std::vector<uint8_t>& value) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   void LowEnergyScanSessionHardwareOffloadingStatusChanged(
       BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus status)
       override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Adapter related:
   int present_changed_count() const { return present_changed_count_; }
@@ -228,12 +228,12 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
   std::vector<uint8_t> last_changed_descriptor_value() const {
     return last_changed_descriptor_value_;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
   last_low_energy_scan_session_hardware_offloading_status() const {
     return last_low_energy_scan_session_hardware_offloading_status_;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   // Some tests use a message loop since background processing is simulated;
@@ -306,12 +306,12 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
   BluetoothUUID last_gatt_descriptor_uuid_;
   std::vector<uint8_t> last_changed_descriptor_value_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
       last_low_energy_scan_session_hardware_offloading_status_ =
           BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
               kUndetermined;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace device

@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
-#include "build/chromeos_buildflags.h"
 #include "dbus/property.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
@@ -220,7 +219,7 @@ void BluetoothRemoteGattCharacteristicBlueZ::
                          std::move(error_callback)));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 void BluetoothRemoteGattCharacteristicBlueZ::PrepareWriteRemoteCharacteristic(
     const std::vector<uint8_t>& value,
     base::OnceClosure callback,
@@ -238,22 +237,22 @@ void BluetoothRemoteGattCharacteristicBlueZ::PrepareWriteRemoteCharacteristic(
                          weak_ptr_factory_.GetWeakPtr(),
                          std::move(error_callback)));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void BluetoothRemoteGattCharacteristicBlueZ::SubscribeToNotifications(
     device::BluetoothRemoteGattDescriptor* ccc_descriptor,
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     NotificationType notification_type,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   bluez::BluezDBusManager::Get()
       ->GetBluetoothGattCharacteristicClient()
       ->StartNotify(
           object_path(),
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
           notification_type,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
           base::BindOnce(
               &BluetoothRemoteGattCharacteristicBlueZ::OnStartNotifySuccess,
               weak_ptr_factory_.GetWeakPtr(), std::move(callback)),

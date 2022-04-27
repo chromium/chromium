@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
-#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/fake_read_response.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -192,20 +191,20 @@ void FakeRemoteGattCharacteristic::DeprecatedWriteRemoteCharacteristic(
                      std::move(error_callback), value, write_type));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 void FakeRemoteGattCharacteristic::PrepareWriteRemoteCharacteristic(
     const std::vector<uint8_t>& value,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   NOTIMPLEMENTED();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void FakeRemoteGattCharacteristic::SubscribeToNotifications(
     device::BluetoothRemoteGattDescriptor* ccc_descriptor,
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     NotificationType notification_type,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -130,14 +129,14 @@ class MockBluetoothDevice : public BluetoothDevice {
   MOCK_METHOD1(CreateGattConnectionImpl,
                void(absl::optional<BluetoothUUID> service_uuid));
   MOCK_METHOD0(DisconnectGatt, void());
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   MOCK_METHOD2(ExecuteWrite,
                void(base::OnceClosure callback,
                     ExecuteWriteErrorCallback error_callback));
   MOCK_METHOD2(AbortWrite,
                void(base::OnceClosure callback,
                     AbortWriteErrorCallback error_callback));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // BluetoothDevice manages the lifetime of its BluetoothGATTServices.
   // This method takes ownership of the MockBluetoothGATTServices. This is only

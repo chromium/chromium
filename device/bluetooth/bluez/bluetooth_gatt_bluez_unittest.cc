@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "build/chromeos_buildflags.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -2226,7 +2225,7 @@ TEST_F(BluetoothGattBlueZTest, NotifySessionsMadeInactive) {
   EXPECT_TRUE(update_sessions_[0]->IsActive());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(BluetoothGattBlueZTest, ReliableWrite) {
   fake_bluetooth_device_client_->CreateDevice(
       dbus::ObjectPath(bluez::FakeBluetoothAdapterClient::kAdapterPath),
@@ -2373,7 +2372,7 @@ TEST_F(BluetoothGattBlueZTest, NotificationType) {
   base::RunLoop().Run();
   EXPECT_EQ(2, observer.gatt_characteristic_value_changed_count());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(BluetoothGattBlueZTest, MultipleDevices) {
   fake_bluetooth_device_client_->CreateDevice(

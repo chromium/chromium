@@ -18,9 +18,9 @@
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace device {
 
@@ -119,7 +119,7 @@ class MockBluetoothAdapter : public BluetoothAdapter {
                     CreateServiceErrorCallback error_callback));
   MOCK_CONST_METHOD1(GetGattService,
                      BluetoothLocalGattService*(const std::string& identifier));
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   MOCK_METHOD3(SetServiceAllowList,
                void(const UUIDList& uuids,
                     base::OnceClosure callback,
@@ -131,7 +131,7 @@ class MockBluetoothAdapter : public BluetoothAdapter {
       std::unique_ptr<BluetoothLowEnergyScanSession>(
           std::unique_ptr<BluetoothLowEnergyScanFilter> filter,
           base::WeakPtr<BluetoothLowEnergyScanSession::Delegate> delegate));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   MOCK_METHOD0(SetStandardChromeOSAdapterName, void());

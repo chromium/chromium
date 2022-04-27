@@ -29,9 +29,9 @@
 #include "device/bluetooth/bluetooth_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -43,9 +43,9 @@ class BluetoothAdvertisement;
 class BluetoothDiscoveryFilter;
 class BluetoothDiscoverySession;
 class BluetoothLocalGattService;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 class BluetoothLowEnergyScanFilter;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 class BluetoothRemoteGattCharacteristic;
 class BluetoothRemoteGattDescriptor;
 class BluetoothRemoteGattService;
@@ -62,13 +62,13 @@ enum class UMABluetoothDiscoverySessionOutcome;
 class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     : public base::RefCounted<BluetoothAdapter> {
  public:
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   enum class LowEnergyScanSessionHardwareOffloadingStatus {
     kUndetermined = 0,
     kNotSupported,
     kSupported
   };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Interface for observing changes from bluetooth adapters.
   class DEVICE_BLUETOOTH_EXPORT Observer {
@@ -328,12 +328,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
         BluetoothRemoteGattDescriptor* descriptor,
         const std::vector<uint8_t>& value) {}
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     // Called when the low energy scanning hardware offloading support state
     // changes.
     virtual void LowEnergyScanSessionHardwareOffloadingStatusChanged(
         LowEnergyScanSessionHardwareOffloadingStatus status) {}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   };
 
   // Used to configure a listening service.
@@ -692,7 +692,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
       BluetoothRemoteGattDescriptor* descriptor,
       const std::vector<uint8_t>& value);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   void NotifyLowEnergyScanSessionHardwareOffloadingStatusChanged(
       LowEnergyScanSessionHardwareOffloadingStatus status);
 
@@ -741,7 +741,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   StartLowEnergyScanSession(
       std::unique_ptr<BluetoothLowEnergyScanFilter> filter,
       base::WeakPtr<BluetoothLowEnergyScanSession::Delegate> delegate) = 0;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Set the adapter name to one chosen from the system information. Only Ash

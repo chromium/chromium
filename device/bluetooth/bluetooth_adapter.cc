@@ -473,14 +473,14 @@ void BluetoothAdapter::NotifyGattDescriptorValueChanged(
     observer.GattDescriptorValueChanged(this, descriptor, value);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 void BluetoothAdapter::
     NotifyLowEnergyScanSessionHardwareOffloadingStatusChanged(
         LowEnergyScanSessionHardwareOffloadingStatus status) {
   for (auto& observer : observers_)
     observer.LowEnergyScanSessionHardwareOffloadingStatusChanged(status);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 BluetoothAdapter::SetPoweredCallbacks::SetPoweredCallbacks() = default;
 BluetoothAdapter::SetPoweredCallbacks::~SetPoweredCallbacks() = default;

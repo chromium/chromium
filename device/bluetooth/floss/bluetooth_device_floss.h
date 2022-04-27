@@ -9,7 +9,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"
@@ -95,12 +94,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   bool IsGattServicesDiscoveryComplete() const override;
   void Pair(device::BluetoothDevice::PairingDelegate* pairing_delegate,
             ConnectCallback callback) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   void ExecuteWrite(base::OnceClosure callback,
                     ExecuteWriteErrorCallback error_callback) override;
   void AbortWrite(base::OnceClosure callback,
                   AbortWriteErrorCallback error_callback) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   FlossDeviceId AsFlossDeviceId() const;
   void SetName(const std::string& name);

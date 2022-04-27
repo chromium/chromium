@@ -48,10 +48,10 @@
 #include "device/bluetooth/test/bluetooth_test_fuchsia.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using device::BluetoothDevice;
 
@@ -138,7 +138,7 @@ class TestBluetoothAdapter final : public BluetoothAdapter {
     return nullptr;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetServiceAllowList(const UUIDList& uuids,
                            base::OnceClosure callback,
                            ErrorCallback error_callback) override {}
@@ -154,7 +154,7 @@ class TestBluetoothAdapter final : public BluetoothAdapter {
       override {
     return nullptr;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetStandardChromeOSAdapterName() override {}

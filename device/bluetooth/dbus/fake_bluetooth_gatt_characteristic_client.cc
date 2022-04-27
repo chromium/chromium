@@ -14,7 +14,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_device_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_gatt_descriptor_client.h"
@@ -330,9 +329,9 @@ void FakeBluetoothGattCharacteristicClient::PrepareWriteValue(
 
 void FakeBluetoothGattCharacteristicClient::StartNotify(
     const dbus::ObjectPath& object_path,
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     device::BluetoothGattCharacteristic::NotificationType notification_type,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   if (!IsHeartRateVisible()) {

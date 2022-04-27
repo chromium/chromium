@@ -13,7 +13,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_gatt_notify_session.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
 
@@ -115,7 +114,7 @@ void BluetoothRemoteGattCharacteristic::StartNotifySession(
                              std::move(error_callback));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 void BluetoothRemoteGattCharacteristic::StartNotifySession(
     NotificationType notification_type,
     NotifySessionCallback callback,
@@ -123,7 +122,7 @@ void BluetoothRemoteGattCharacteristic::StartNotifySession(
   StartNotifySessionInternal(notification_type, std::move(callback),
                              std::move(error_callback));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool BluetoothRemoteGattCharacteristic::AddDescriptor(
     std::unique_ptr<BluetoothRemoteGattDescriptor> descriptor) {
@@ -240,11 +239,11 @@ void BluetoothRemoteGattCharacteristic::ExecuteStartNotifySession(
   // do whatever else is needed to get the notifications flowing.
   SubscribeToNotifications(
       ccc_descriptor[0],
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
       notification_type.value_or((GetProperties() & PROPERTY_NOTIFY)
                                      ? NotificationType::kNotification
                                      : NotificationType::kIndication),
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       base::BindOnce(
           &BluetoothRemoteGattCharacteristic::OnStartNotifySessionSuccess,
           GetWeakPtr(), std::move(callback)),

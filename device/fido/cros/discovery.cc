@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "build/chromeos_buildflags.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
 #include "components/device_event_log/device_event_log.h"
 

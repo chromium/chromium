@@ -17,7 +17,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "build/chromeos_buildflags.h"
 #include "device/gamepad/dualshock4_controller.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/hid_haptic_gamepad.h"
@@ -25,9 +24,9 @@
 #include "device/gamepad/xbox_hid_controller.h"
 #include "device/udev_linux/udev.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace device {
 
@@ -198,7 +197,7 @@ uint16_t HexStringToUInt16WithDefault(base::StringPiece input,
   return static_cast<uint16_t>(out);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 void OnOpenPathSuccess(
     chromeos::PermissionBrokerClient::OpenPathCallback callback,
     scoped_refptr<base::SequencedTaskRunner> polling_runner,
@@ -230,7 +229,7 @@ void OpenPathWithPermissionBroker(
   client->OpenPath(path, std::move(success_callback),
                    std::move(error_callback));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Small helper to avoid constructing a StringPiece from nullptr.
 base::StringPiece ToStringPiece(const char* str) {
@@ -567,7 +566,7 @@ void GamepadDeviceLinux::OpenHidrawNode(const UdevGamepadLinux& pad_info,
 
   auto fd = base::ScopedFD(open(pad_info.path.c_str(), O_RDWR | O_NONBLOCK));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   // If we failed to open the device it may be due to insufficient permissions.
   // Try again using the PermissionBrokerClient.
   if (!fd.is_valid()) {
@@ -582,7 +581,7 @@ void GamepadDeviceLinux::OpenHidrawNode(const UdevGamepadLinux& pad_info,
                        std::move(open_path_callback), polling_runner_));
     return;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   OnOpenHidrawNodeComplete(std::move(callback), std::move(fd));
 }

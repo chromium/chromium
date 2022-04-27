@@ -13,7 +13,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/fake_remote_gatt_service.h"
 
@@ -373,7 +372,7 @@ void FakePeripheral::DispatchDiscoveryResponse() {
 void FakePeripheral::DisconnectGatt() {
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 void FakePeripheral::ExecuteWrite(base::OnceClosure callback,
                                   ExecuteWriteErrorCallback error_callback) {
   NOTIMPLEMENTED();
@@ -383,6 +382,6 @@ void FakePeripheral::AbortWrite(base::OnceClosure callback,
                                 AbortWriteErrorCallback error_callback) {
   NOTIMPLEMENTED();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace bluetooth

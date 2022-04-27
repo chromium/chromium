@@ -15,7 +15,6 @@
 #include "base/system/sys_info.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "dbus/bus.h"
 #include "dbus/dbus_statistics.h"
@@ -57,9 +56,9 @@ BluezDBusManager::BluezDBusManager(dbus::Bus* bus,
   // On Chrome OS, Bluez might not be ready by the time we initialize the
   // BluezDBusManager so we initialize the clients anyway.
   bool should_check_object_manager = true;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   should_check_object_manager = false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (!use_dbus_fakes) {
     // Make sure that Floss manager daemon is in agreement with Chrome about the
@@ -255,12 +254,12 @@ void BluezDBusManager::InitializeClients() {
                                                    bluetooth_service_name);
   client_bundle_->bluetooth_admin_policy_client()->Init(GetSystemBus(),
                                                         bluetooth_service_name);
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (chromeos::features::IsBluetoothAdvertisementMonitoringEnabled()) {
     client_bundle_->bluetooth_advertisement_monitor_manager_client()->Init(
         GetSystemBus(), bluetooth_service_name);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   client_bundle_->bluetooth_agent_manager_client()->Init(
       GetSystemBus(), bluetooth_service_name);
   client_bundle_->bluetooth_device_client()->Init(GetSystemBus(),
@@ -306,7 +305,7 @@ void BluezDBusManager::Initialize(dbus::Bus* system_bus) {
 
   BluezDBusThreadManager::Initialize();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   DCHECK(system_bus);
   // On ChromeOS, BluetoothSystem needs a separate connection to Bluez, so we
   // use BluezDBusThreadManager to get two different connections to the same
@@ -365,10 +364,10 @@ void BluezDBusManager::Shutdown() {
   g_bluez_dbus_manager = nullptr;
   delete dbus_manager;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!g_using_bluez_dbus_manager_for_testing)
     BluezDBusThreadManager::Shutdown();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   g_using_bluez_dbus_manager_for_testing = false;
   DVLOG(1) << "BluezDBusManager Shutdown completed";

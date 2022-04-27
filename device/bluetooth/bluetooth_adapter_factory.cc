@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -148,7 +147,7 @@ bool BluetoothAdapterFactory::HasSharedInstanceForTesting() {
   return Get()->adapter_ != nullptr;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 // static
 void BluetoothAdapterFactory::SetBleScanParserCallback(
     BleScanParserCallback callback) {
@@ -160,7 +159,7 @@ BluetoothAdapterFactory::BleScanParserCallback
 BluetoothAdapterFactory::GetBleScanParserCallback() {
   return Get()->ble_scan_parser_;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 BluetoothAdapterFactory::GlobalValuesForTesting::GlobalValuesForTesting() =
     default;

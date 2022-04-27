@@ -306,7 +306,7 @@ void BluetoothDeviceFloss::Pair(
   NOTIMPLEMENTED();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 void BluetoothDeviceFloss::ExecuteWrite(
     base::OnceClosure callback,
     ExecuteWriteErrorCallback error_callback) {
@@ -317,7 +317,7 @@ void BluetoothDeviceFloss::AbortWrite(base::OnceClosure callback,
                                       AbortWriteErrorCallback error_callback) {
   NOTIMPLEMENTED();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 FlossDeviceId BluetoothDeviceFloss::AsFlossDeviceId() const {
   return FlossDeviceId{.address = address_, .name = name_};
