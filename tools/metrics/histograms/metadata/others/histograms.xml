@@ -8872,54 +8872,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="PerformanceManager.FrameSiteInstanceProcessRelationship.ByProcess2"
-    enum="FrameSiteInstanceProcessRelationship" expires_after="2020-12-31">
-  <owner>chrisha@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Tracks the types of frames that are being hosted by a process over its
-    entire lifetime. An entry in the
-    &quot;AllFramesHaveDistinctSiteInstances&quot; means that the process only
-    ever hosted frames with distinct site instances over its entire lifetime.
-    Recorded on state changes and every 5 minutes.
-  </summary>
-</histogram>
-
-<histogram
-    name="PerformanceManager.FrameSiteInstanceProcessRelationship.ByTime2"
-    enum="FrameSiteInstanceProcessRelationship" expires_after="2020-12-31">
-  <owner>chrisha@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Tracks the types of frames that are being hosted by a process, aggregated
-    over time. Each entry in each bucket corresponds to a process being in that
-    state for one second. Recorded on state changes and every 5 minutes.
-  </summary>
-</histogram>
-
-<histogram name="PerformanceManager.FramesPerRendererByTime" units="units"
-    expires_after="2021-03-07">
-  <owner>chrisha@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Tracks the number of frames hosted per renderer by time. An entry in bucket
-    N corresponds to N frames being hosted by a renderer process for 1 second.
-    Recorded on state changes and every 5 minutes.
-  </summary>
-</histogram>
-
-<histogram name="PerformanceManager.SiteInstancesPerRendererByTime"
-    units="units" expires_after="2020-12-31">
-  <owner>chrisha@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Tracks the number of site instances hosted per renderer by time. An entry in
-    bucket N corresponds to N site instances being hosted by a renderer process
-    for 1 second. Recorded on state changes and every 5 minutes.
-  </summary>
-</histogram>
-
 <histogram name="PerformanceManager.WorkerClientFound" enum="BooleanFound"
     expires_after="2020-11-30">
   <owner>pmonette@chromium.org</owner>

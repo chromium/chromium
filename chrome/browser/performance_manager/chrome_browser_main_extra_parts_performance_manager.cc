@@ -16,7 +16,6 @@
 #include "chrome/browser/performance_manager/decorators/helpers/page_live_state_decorator_helper.h"
 #include "chrome/browser/performance_manager/decorators/page_aggregator.h"
 #include "chrome/browser/performance_manager/metrics/memory_pressure_metrics.h"
-#include "chrome/browser/performance_manager/observers/isolation_context_metrics.h"
 #include "chrome/browser/performance_manager/observers/page_load_metrics_observer.h"
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy.h"
 #include "chrome/browser/performance_manager/policies/high_pmf_discard_policy.h"
@@ -82,8 +81,6 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
   graph->PassToGraph(std::make_unique<performance_manager::PageAggregator>());
   graph->PassToGraph(
       std::make_unique<performance_manager::FrozenFrameAggregator>());
-  graph->PassToGraph(
-      std::make_unique<performance_manager::IsolationContextMetrics>());
   graph->PassToGraph(
       std::make_unique<performance_manager::ProcessMetricsDecorator>());
 
