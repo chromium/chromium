@@ -5301,7 +5301,7 @@ TEST_P(AppsGridViewAppSortTest,
   // Cache the current context menu view.
   views::MenuItemView* reorder_option =
       context_menu->root_menu_item_view()->GetSubmenu()->GetMenuItemAt(1);
-  ASSERT_TRUE(reorder_option->title() == u"Name");
+  ASSERT_EQ(reorder_option->title(), u"Name");
 
   // Open the Reorder by Name submenu.
   const gfx::Point reorder_option_point =
@@ -5317,7 +5317,7 @@ TEST_P(AppsGridViewAppSortTest,
 
   reorder_option =
       context_menu->root_menu_item_view()->GetSubmenu()->GetMenuItemAt(2);
-  ASSERT_TRUE(reorder_option->title() == u"Color");
+  ASSERT_EQ(reorder_option->title(), u"Color");
 
   const gfx::Point color_option =
       reorder_option->GetBoundsInScreen().CenterPoint();
@@ -5349,7 +5349,7 @@ TEST_P(AppsGridViewAppSortTest,
   // Cache the current context menu view.
   views::MenuItemView* reorder_submenu =
       context_menu->root_for_testing()->GetSubmenu()->GetMenuItemAt(2);
-  ASSERT_TRUE(reorder_submenu->title() == u"Sort by");
+  ASSERT_EQ(reorder_submenu->title(), u"Sort by");
 
   // Open the Sort by submenu.
   gfx::Point reorder_submenu_point =
@@ -5358,7 +5358,7 @@ TEST_P(AppsGridViewAppSortTest,
 
   views::MenuItemView* reorder_option =
       reorder_submenu->GetSubmenu()->GetMenuItemAt(0);
-  ASSERT_TRUE(reorder_option->title() == u"Name");
+  ASSERT_EQ(reorder_option->title(), u"Name");
   gfx::Point reorder_option_point =
       reorder_option->GetBoundsInScreen().CenterPoint();
   SimulateLeftClickOrTapAt(reorder_option_point);
@@ -5378,14 +5378,14 @@ TEST_P(AppsGridViewAppSortTest,
 
   reorder_submenu =
       context_menu->root_for_testing()->GetSubmenu()->GetMenuItemAt(2);
-  ASSERT_TRUE(reorder_submenu->title() == u"Sort by");
+  ASSERT_EQ(reorder_submenu->title(), u"Sort by");
 
   // Open the Sort by submenu.
   reorder_submenu_point = reorder_submenu->GetBoundsInScreen().CenterPoint();
   SimulateLeftClickOrTapAt(reorder_submenu_point);
 
   reorder_option = reorder_submenu->GetSubmenu()->GetMenuItemAt(1);
-  ASSERT_TRUE(reorder_option->title() == u"Color");
+  ASSERT_EQ(reorder_option->title(), u"Color");
   reorder_option_point = reorder_option->GetBoundsInScreen().CenterPoint();
   SimulateLeftClickOrTapAt(reorder_option_point);
 
@@ -5394,6 +5394,67 @@ TEST_P(AppsGridViewAppSortTest,
   EXPECT_EQ(
       Shell::GetPrimaryRootWindowController()->menu_model_adapter_for_testing(),
       nullptr);
+}
+
+TEST_P(AppsGridViewAppSortTest,
+       NoSortOptionsWhenSearchPageIsShownInTabletMode) {
+  // This test checks the context menu on root window in tablet mode.
+  if (!create_as_tablet_mode_)
+    return;
+
+  model_->PopulateApps(1);
+  EXPECT_EQ(AppListSortOrder::kCustom, model_->requested_sort_order());
+
+  // Get a point in `apps_grid_view_` that doesn't have an item on it.
+  const gfx::Point empty_space =
+      apps_grid_view_->GetBoundsInScreen().CenterPoint();
+
+  // Open the menu to test the alphabetical sort option.
+  SimulateRightClickOrLongPressAt(empty_space);
+  AppMenuModelAdapter* context_menu =
+      Shell::GetPrimaryRootWindowController()->menu_model_adapter_for_testing();
+  EXPECT_TRUE(context_menu->IsShowingMenu());
+
+  // Cache the current context menu view.
+  views::MenuItemView* reorder_submenu =
+      context_menu->root_for_testing()->GetSubmenu()->GetMenuItemAt(2);
+  ASSERT_EQ(reorder_submenu->title(), u"Sort by");
+
+  // Open the Sort by submenu.
+  gfx::Point reorder_submenu_point =
+      reorder_submenu->GetBoundsInScreen().CenterPoint();
+  SimulateLeftClickOrTapAt(reorder_submenu_point);
+
+  views::MenuItemView* reorder_option =
+      reorder_submenu->GetSubmenu()->GetMenuItemAt(0);
+  ASSERT_EQ(reorder_option->title(), u"Name");
+  gfx::Point reorder_option_point =
+      reorder_option->GetBoundsInScreen().CenterPoint();
+  SimulateLeftClickOrTapAt(reorder_option_point);
+
+  // Check that the apps are sorted and the menu is closed.
+  EXPECT_EQ(AppListSortOrder::kNameAlphabetical,
+            model_->requested_sort_order());
+  EXPECT_EQ(
+      Shell::GetPrimaryRootWindowController()->menu_model_adapter_for_testing(),
+      nullptr);
+
+  // Activate the search box.
+  gfx::Point search_box_point =
+      search_box_view_->GetBoundsInScreen().CenterPoint();
+  SimulateLeftClickOrTapAt(search_box_point);
+
+  // Open the menu again.
+  SimulateRightClickOrLongPressAt(empty_space);
+  context_menu =
+      Shell::GetPrimaryRootWindowController()->menu_model_adapter_for_testing();
+  EXPECT_TRUE(context_menu->IsShowingMenu());
+
+  // Verify that the sort option is removed and there are only 2 options in the
+  // menu.
+  int context_menu_size =
+      context_menu->root_for_testing()->GetSubmenu()->GetMenuItems().size();
+  EXPECT_LT(context_menu_size, 3);
 }
 
 TEST_P(AppsGridViewAppSortTest, ContextMenuOnFolderItemSortAllApps) {
@@ -5424,7 +5485,7 @@ TEST_P(AppsGridViewAppSortTest, ContextMenuOnFolderItemSortAllApps) {
   // Cache the current context menu view.
   views::MenuItemView* reorder_option =
       context_menu->root_menu_item_view()->GetSubmenu()->GetMenuItemAt(1);
-  ASSERT_TRUE(reorder_option->title() == u"Name");
+  ASSERT_EQ(reorder_option->title(), u"Name");
 
   // Open the Reorder by Name submenu.
   gfx::Point reorder_option_point =
@@ -5440,7 +5501,7 @@ TEST_P(AppsGridViewAppSortTest, ContextMenuOnFolderItemSortAllApps) {
 
   reorder_option =
       context_menu->root_menu_item_view()->GetSubmenu()->GetMenuItemAt(2);
-  ASSERT_TRUE(reorder_option->title() == u"Color");
+  ASSERT_EQ(reorder_option->title(), u"Color");
 
   const gfx::Point color_option =
       reorder_option->GetBoundsInScreen().CenterPoint();

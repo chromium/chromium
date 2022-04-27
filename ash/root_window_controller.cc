@@ -794,8 +794,11 @@ void RootWindowController::ShowContextMenu(const gfx::Point& location_in_screen,
   // Appends the apps sort options in ShelfContextMenuModel in tablet mode. Note
   // that the launcher UI is fullscreen in tablet mode, so the whole root window
   // can be perceived by users to be part of the launcher.
+  auto* const app_list_controller = Shell::Get()->app_list_controller();
   if (features::IsLauncherAppSortEnabled() && tablet_mode &&
-      Shell::Get()->app_list_controller()->IsVisible(display_id)) {
+      app_list_controller->IsVisible(display_id) &&
+      app_list_controller->GetCurrentAppListPage() ==
+          AppListState::kStateApps) {
     ui::SimpleMenuModel* menu_model = root_window_menu_model_adapter_->model();
     sort_apps_submenu_ = std::make_unique<ui::SimpleMenuModel>(
         static_cast<ShelfContextMenuModel*>(menu_model));
