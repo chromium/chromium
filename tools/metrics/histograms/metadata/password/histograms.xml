@@ -1715,6 +1715,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.LeakDetection.PrepareSingleLeakRequestTime"
     units="ms" expires_after="2022-04-24">
+  <obsolete>
+    Removed in M103.
+  </obsolete>
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>

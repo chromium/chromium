@@ -211,10 +211,8 @@ void LeakDetectionCheckImpl::Start(const GURL& url,
   }
   payload_helper_->PreparePayload(
       base::UTF16ToUTF8(username_), base::UTF16ToUTF8(password_),
-      TimeCallback(
-          base::BindOnce(&LeakDetectionCheckImpl::OnRequestDataReady,
-                         weak_ptr_factory_.GetWeakPtr()),
-          "PasswordManager.LeakDetection.PrepareSingleLeakRequestTime"));
+      base::BindOnce(&LeakDetectionCheckImpl::OnRequestDataReady,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void LeakDetectionCheckImpl::OnAccessTokenRequestCompleted(

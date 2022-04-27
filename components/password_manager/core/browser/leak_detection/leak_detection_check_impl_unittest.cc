@@ -141,10 +141,6 @@ PayloadAndCallback LeakDetectionCheckImplTest::ImitateNetworkRequest(
   // Crypto stuff is done here.
   task_env().RunUntilIdle();
 
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.LeakDetection.PrepareSingleLeakRequestTime",
-      kMockElapsedTime, 1);
-
   return {std::move(raw_request->encrypted_payload_),
           std::move(raw_request->callback_)};
 }
@@ -201,10 +197,6 @@ TEST_P(LeakDetectionCheckImplTest, GetAccessTokenBeforeEncryption) {
       .WillOnce(Return(ByMove(std::move(network_request))));
   // Crypto stuff is done here.
   task_env().RunUntilIdle();
-
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.LeakDetection.PrepareSingleLeakRequestTime",
-      kMockElapsedTime, 1);
 }
 
 TEST_P(LeakDetectionCheckImplTest, GetAccessTokenAfterEncryption) {
@@ -218,10 +210,6 @@ TEST_P(LeakDetectionCheckImplTest, GetAccessTokenAfterEncryption) {
   leak_check()->Start(GURL(kExampleCom), kUsername16, kPassword16);
   // crypto stuff is done here.
   task_env().RunUntilIdle();
-
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.LeakDetection.PrepareSingleLeakRequestTime",
-      kMockElapsedTime, 1);
 
   const std::string access_token = "access_token";
   auto network_request = std::make_unique<MockLeakDetectionRequest>();
@@ -286,10 +274,6 @@ TEST_P(LeakDetectionCheckImplTest, PassesAPIKeys) {
 
   // Crypto stuff is done here.
   task_env().RunUntilIdle();
-
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.LeakDetection.PrepareSingleLeakRequestTime",
-      kMockElapsedTime, 1);
 }
 
 // Perform the whole cycle of a leak check. The server returns data that
