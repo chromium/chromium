@@ -36,6 +36,8 @@ fuzzer_test("first_party_sets_overrides_policy_handler_fuzzer") {
   sources = [ "test/first_party_sets_overrides_policy_handler_fuzzer.cc" ]
   deps = [
     ":first_party_sets",
+    "//base",
+    "//base:i18n",
     "//components/policy:generated",
     "//components/policy/core/browser",
     "//testing/libfuzzer/proto:json_proto",

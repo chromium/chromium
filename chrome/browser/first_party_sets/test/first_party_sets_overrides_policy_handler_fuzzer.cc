@@ -20,6 +20,15 @@
 
 namespace first_party_sets {
 
+struct IcuEnvironment {
+  IcuEnvironment() { CHECK(base::i18n::InitializeICU()); }
+
+  // used by ICU integration.
+  base::AtExitManager at_exit_manager;
+};
+
+IcuEnvironment* test_case = new IcuEnvironment();
+
 DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
   json_proto::JsonProtoConverter converter;
   std::string native_input = converter.Convert(json_value);
