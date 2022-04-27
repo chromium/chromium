@@ -876,7 +876,7 @@ TEST_F(AttributionManagerImplTest, ConversionsSentFromUI_ReportedImmediately) {
   EXPECT_THAT(reports, SizeIs(1));
   EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
-  attribution_manager_->SendReportsForWebUI({*reports.front().ReportId()},
+  attribution_manager_->SendReportsForWebUI({reports.front().ReportId()},
                                             base::DoNothing());
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_THAT(report_sender_->calls(), SizeIs(1));
@@ -895,7 +895,7 @@ TEST_F(AttributionManagerImplTest,
   EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   attribution_manager_->SendReportsForWebUI(
-      {*reports.front().ReportId(), *reports.back().ReportId()},
+      {reports.front().ReportId(), reports.back().ReportId()},
       base::BindLambdaForTesting([&]() { callback_calls++; }));
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_THAT(report_sender_->calls(), SizeIs(2));

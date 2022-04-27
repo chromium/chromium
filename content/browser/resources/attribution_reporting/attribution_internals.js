@@ -633,7 +633,7 @@ class Report extends Selectable {
     this.reportTime = new Date(mojo.reportTime);
 
     // Only pending reports are selectable.
-    if (this.id === null || mojo.status.pending === undefined) {
+    if (mojo.status.pending === undefined) {
       this.input.disabled = true;
     }
 
@@ -794,7 +794,7 @@ class ReportTableModel extends TableModel {
   sendReports() {
     const ids = [];
     this.storedReports.forEach((report) => {
-      if (!report.input.disabled && report.input.checked && report.id !== null) {
+      if (!report.input.disabled && report.input.checked) {
         ids.push(report.id);
       }
     });

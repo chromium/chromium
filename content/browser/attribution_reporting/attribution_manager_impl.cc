@@ -651,10 +651,9 @@ void AttributionManagerImpl::SendReports(std::vector<AttributionReport> reports,
                                          base::RepeatingClosure done) {
   const base::Time now = base::Time::Now();
   for (AttributionReport& report : reports) {
-    DCHECK(report.ReportId().has_value());
     DCHECK_LE(report.report_time(), now);
 
-    bool inserted = reports_being_sent_.emplace(*report.ReportId()).second;
+    bool inserted = reports_being_sent_.emplace(report.ReportId()).second;
     if (!inserted) {
       done.Run();
       continue;
@@ -703,8 +702,6 @@ void AttributionManagerImpl::PrepareToSendReport(AttributionReport report,
 void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
                                           AttributionReport report,
                                           SendResult info) {
-  DCHECK(report.ReportId().has_value());
-
   // If there was a transient failure, and another attempt is allowed,
   // update the report's DB state to reflect that. Otherwise, delete the report
   // from storage if it wasn't skipped due to the browser being offline.
@@ -727,7 +724,7 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
     // occur.
     attribution_storage_
         .AsyncCall(&AttributionStorage::UpdateReportForSendFailure)
-        .WithArgs(*report.ReportId(), report.report_time())
+        .WithArgs(report.ReportId(), report.report_time())
         .Then(base::BindOnce(
             [](base::OnceClosure done,
                base::WeakPtr<AttributionManagerImpl> manager,
@@ -742,7 +739,7 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
                     AttributionReport::GetReportType(report_id));
               }
             },
-            std::move(done), weak_factory_.GetWeakPtr(), *report.ReportId(),
+            std::move(done), weak_factory_.GetWeakPtr(), report.ReportId(),
             report.report_time()));
 
     // TODO(apaseltiner): Consider surfacing retry attempts in internals UI.
@@ -751,7 +748,7 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
   }
 
   attribution_storage_.AsyncCall(&AttributionStorage::DeleteReport)
-      .WithArgs(*report.ReportId())
+      .WithArgs(report.ReportId())
       .Then(base::BindOnce(
           [](base::OnceClosure done,
              base::WeakPtr<AttributionManagerImpl> manager,
@@ -764,7 +761,7 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
                   AttributionReport::GetReportType(report_id));
             }
           },
-          std::move(done), weak_factory_.GetWeakPtr(), *report.ReportId()));
+          std::move(done), weak_factory_.GetWeakPtr(), report.ReportId()));
 
   LogMetricsOnReportCompleted(report, info.status);
 

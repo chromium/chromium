@@ -133,7 +133,7 @@ class AttributionStorageTest : public testing::Test {
 
   void DeleteReports(const std::vector<AttributionReport>& reports) {
     for (const auto& report : reports) {
-      EXPECT_TRUE(storage_->DeleteReport(*report.ReportId()));
+      EXPECT_TRUE(storage_->DeleteReport(report.ReportId()));
     }
   }
 
@@ -1558,9 +1558,8 @@ TEST_F(AttributionStorageTest, NoIDReuse_Conversion) {
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
   auto reports = storage()->GetAttributionReports(base::Time::Max());
-  EXPECT_THAT(reports,
-              ElementsAre(Property(&AttributionReport::ReportId, IsTrue())));
-  const AttributionReport::Id id1 = *reports.front().ReportId();
+  ASSERT_THAT(reports, SizeIs(1));
+  const AttributionReport::Id id1 = reports.front().ReportId();
 
   storage()->ClearData(base::Time::Min(), base::Time::Max(),
                        base::NullCallback());
@@ -1570,9 +1569,8 @@ TEST_F(AttributionStorageTest, NoIDReuse_Conversion) {
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
   reports = storage()->GetAttributionReports(base::Time::Max());
-  EXPECT_THAT(reports,
-              ElementsAre(Property(&AttributionReport::ReportId, IsTrue())));
-  const AttributionReport::Id id2 = *reports.front().ReportId();
+  ASSERT_THAT(reports, SizeIs(1));
+  const AttributionReport::Id id2 = reports.front().ReportId();
 
   EXPECT_NE(id1, id2);
 }
@@ -1602,9 +1600,9 @@ TEST_F(AttributionStorageTest, UpdateReportForSendFailure) {
   const base::TimeDelta delay = base::Days(2);
   const base::Time new_report_time = actual_reports[0].report_time() + delay;
   EXPECT_TRUE(storage()->UpdateReportForSendFailure(
-      *actual_reports[0].ReportId(), new_report_time));
+      actual_reports[0].ReportId(), new_report_time));
   EXPECT_TRUE(storage()->UpdateReportForSendFailure(
-      *actual_reports[1].ReportId(), new_report_time));
+      actual_reports[1].ReportId(), new_report_time));
 
   task_environment_.FastForwardBy(delay);
 

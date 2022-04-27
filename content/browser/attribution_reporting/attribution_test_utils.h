@@ -587,11 +587,10 @@ class ReportBuilder {
 
   ReportBuilder& SetRandomizedTriggerRate(double rate);
 
-  ReportBuilder& SetReportId(
-      absl::optional<AttributionReport::EventLevelData::Id> id);
+  ReportBuilder& SetReportId(AttributionReport::EventLevelData::Id id);
 
   ReportBuilder& SetReportId(
-      absl::optional<AttributionReport::AggregatableAttributionData::Id> id);
+      AttributionReport::AggregatableAttributionData::Id id);
 
   ReportBuilder& SetAggregatableHistogramContributions(
       std::vector<AggregatableHistogramContribution> contributions);
@@ -607,9 +606,9 @@ class ReportBuilder {
   int64_t priority_ = 0;
   base::GUID external_report_id_;
   double randomized_trigger_rate_ = 0;
-  absl::optional<AttributionReport::EventLevelData::Id> report_id_;
-  absl::optional<AttributionReport::AggregatableAttributionData::Id>
-      aggregatable_attribution_report_id_;
+  AttributionReport::EventLevelData::Id report_id_{0};
+  AttributionReport::AggregatableAttributionData::Id
+      aggregatable_attribution_report_id_{0};
   std::vector<AggregatableHistogramContribution> contributions_;
 };
 

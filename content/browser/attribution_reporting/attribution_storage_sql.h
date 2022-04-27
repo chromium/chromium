@@ -194,14 +194,14 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   [[nodiscard]] bool HasCapacityForUniqueDestinationLimitForPendingSource(
       const StorableSource& source) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  [[nodiscard]] bool StoreEventLevelReport(
-      StoredSource::Id source_id,
-      uint64_t trigger_data,
-      base::Time trigger_time,
-      base::Time report_time,
-      int64_t priority,
-      const base::GUID& external_report_id,
-      absl::optional<uint64_t> trigger_debug_key)
+  [[nodiscard]] absl::optional<AttributionReport::EventLevelData::Id>
+  StoreEventLevelReport(StoredSource::Id source_id,
+                        uint64_t trigger_data,
+                        base::Time trigger_time,
+                        base::Time report_time,
+                        int64_t priority,
+                        const base::GUID& external_report_id,
+                        absl::optional<uint64_t> trigger_debug_key)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   absl::optional<AttributionReport> ReadReportFromStatement(sql::Statement&)
@@ -255,7 +255,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   AttributionTrigger::EventLevelResult MaybeStoreEventLevelReport(
-      const AttributionReport& report,
+      AttributionReport& report,
       absl::optional<uint64_t> dedup_key,
       int num_conversions,
       absl::optional<AttributionReport>& replaced_report)
@@ -350,13 +350,12 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   AttributionTrigger::AggregatableResult
-  MaybeStoreAggregatableAttributionReport(const AttributionReport& report,
+  MaybeStoreAggregatableAttributionReport(AttributionReport& report,
                                           int64_t aggregatable_budget_consumed)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] bool StoreAggregatableAttributionReport(
-      const AttributionReport& report)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
+      AttributionReport& report) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   absl::optional<AttributionReport>
   ReadAggregatableAttributionReportFromStatement(sql::Statement&)

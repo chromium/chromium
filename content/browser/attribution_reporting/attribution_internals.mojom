@@ -72,7 +72,7 @@ union ReportStatus {
 struct WebUIReport {
   // Allows the WebUI to issue commands for individual reports.
   // Not intended to be displayed.
-  ReportID? id;
+  ReportID id;
   url.mojom.Url report_url;
   double trigger_time;
   double report_time;

@@ -41,7 +41,7 @@ AttributionReport::EventLevelData::EventLevelData(
     uint64_t trigger_data,
     int64_t priority,
     double randomized_trigger_rate,
-    absl::optional<Id> id)
+    Id id)
     : trigger_data(trigger_data),
       priority(priority),
       randomized_trigger_rate(randomized_trigger_rate),
@@ -66,7 +66,7 @@ AttributionReport::EventLevelData::~EventLevelData() = default;
 
 AttributionReport::AggregatableAttributionData::AggregatableAttributionData(
     std::vector<AggregatableHistogramContribution> contributions,
-    absl::optional<Id> id,
+    Id id,
     base::Time initial_report_time)
     : contributions(std::move(contributions)),
       id(id),
@@ -225,9 +225,8 @@ base::Value::Dict AttributionReport::ReportBody() const {
   return absl::visit(Visitor{.report = this}, data_);
 }
 
-absl::optional<AttributionReport::Id> AttributionReport::ReportId() const {
-  return absl::visit([](const auto& v) { return absl::optional<Id>(v.id); },
-                     data_);
+AttributionReport::Id AttributionReport::ReportId() const {
+  return absl::visit([](const auto& v) { return Id(v.id); }, data_);
 }
 
 std::string AttributionReport::PrivacyBudgetKey() const {

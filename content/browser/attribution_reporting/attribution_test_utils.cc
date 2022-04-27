@@ -674,13 +674,13 @@ ReportBuilder& ReportBuilder::SetRandomizedTriggerRate(double rate) {
 }
 
 ReportBuilder& ReportBuilder::SetReportId(
-    absl::optional<AttributionReport::EventLevelData::Id> id) {
+    AttributionReport::EventLevelData::Id id) {
   report_id_ = id;
   return *this;
 }
 
 ReportBuilder& ReportBuilder::SetReportId(
-    absl::optional<AttributionReport::AggregatableAttributionData::Id> id) {
+    AttributionReport::AggregatableAttributionData::Id id) {
   aggregatable_attribution_report_id_ = id;
   return *this;
 }
@@ -1133,8 +1133,7 @@ std::ostream& operator<<(std::ostream& out,
   return out << "{trigger_data=" << data.trigger_data
              << ",priority=" << data.priority
              << ",randomized_trigger_rate=" << data.randomized_trigger_rate
-             << ",id=" << (data.id ? base::NumberToString(**data.id) : "null")
-             << "}";
+             << ",id=" << *data.id << "}";
 }
 
 std::ostream& operator<<(
@@ -1148,7 +1147,7 @@ std::ostream& operator<<(
     separator = ", ";
   }
 
-  return out << "],id=" << (data.id ? base::NumberToString(**data.id) : "null")
+  return out << "],id=" << *data.id
              << ",initial_report_time=" << data.initial_report_time << "}";
 }
 
