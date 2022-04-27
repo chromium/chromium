@@ -982,6 +982,7 @@
               "accessibility/virtual-node-build-parent-multiple.html",
               "accessibility/virtual-node-removed-from-document.html",
               "accessibility/virtual-node-repair-document.html",
+              "dom/legacy_dom_conformance/html/level2/core/createAttributeNS06.html",
               "external/wpt/accessibility/crashtests/aria-hidden-with-select.html",
               "external/wpt/accessibility/crashtests/aria-owns-destroyed-by-content-replacement.html",
               "external/wpt/accessibility/crashtests/aria-owns-reparent.html",
@@ -996,6 +997,7 @@
               "external/wpt/accessibility/crashtests/slot-assignment-lockup.html",
               "external/wpt/accessibility/crashtests/validation-message.html",
               "external/wpt/accessibility/crashtests/displaylocked-serialize.html",
+              "external/wpt/dom/ranges/Range-deleteContents.html",
               "editing/text-iterator/auto-expand-details.html",
               "editing/text-iterator/auto-expand-details-shadowdom.html"],
     "args": ["--force-renderer-accessibility"]

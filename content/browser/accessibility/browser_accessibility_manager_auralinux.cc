@@ -250,7 +250,6 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
       break;
     case ui::AXEventGenerator::Event::LOAD_START:
       DCHECK(node->IsPlatformDocument());
-      DCHECK(node->GetData().GetBoolAttribute(ax::mojom::BoolAttribute::kBusy));
       FireLoadingEvent(node, true);
       break;
     case ui::AXEventGenerator::Event::MENU_ITEM_SELECTED:

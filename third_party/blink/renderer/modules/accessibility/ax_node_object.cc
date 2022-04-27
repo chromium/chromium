@@ -1504,7 +1504,7 @@ bool AXNodeObject::IsLoaded() const {
   if (!GetDocument())
     return false;
 
-  if (GetDocument()->Parser())
+  if (!GetDocument()->IsLoadCompleted())
     return false;
 
   // Check for a navigation API single-page app navigation in progress.
