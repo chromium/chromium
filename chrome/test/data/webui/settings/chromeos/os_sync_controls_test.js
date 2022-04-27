@@ -156,6 +156,21 @@ suite('OsSyncControlsTest', function() {
 
     // Select "Customize sync" instead of "Sync everything".
     customizeSync.click();
+    // Disable "Apps".
+    syncControls.$.osAppsControl.click();
+    const prefs = await browserProxy.whenCalled('setOsSyncDatatypes');
+
+    const expectedPrefs = getSyncAllPrefs();
+    expectedPrefs.syncAllOsTypes = false;
+    expectedPrefs.osAppsSynced = false;
+    assertEquals(JSON.stringify(expectedPrefs), JSON.stringify(prefs));
+  });
+
+  test('DisablingSettingsAlsoDisablesWallpaper', async function() {
+    setupSync();
+
+    // Select "Customize sync" instead of "Sync everything".
+    customizeSync.click();
     // Disable "Settings".
     syncControls.$.osPreferencesControl.click();
     const prefs = await browserProxy.whenCalled('setOsSyncDatatypes');
@@ -163,6 +178,7 @@ suite('OsSyncControlsTest', function() {
     const expectedPrefs = getSyncAllPrefs();
     expectedPrefs.syncAllOsTypes = false;
     expectedPrefs.osPreferencesSynced = false;
+    expectedPrefs.wallpaperEnabled = false;
     assertEquals(JSON.stringify(expectedPrefs), JSON.stringify(prefs));
   });
 });

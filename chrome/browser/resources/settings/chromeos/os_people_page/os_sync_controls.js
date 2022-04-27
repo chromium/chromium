@@ -141,7 +141,7 @@ Polymer({
     this.osSyncPrefs = osSyncPrefs;
 
     // If apps are not registered or synced, force wallpaper off.
-    if (!this.osSyncPrefs.osAppsRegistered || !this.osSyncPrefs.osAppsSynced) {
+    if (!this.osSyncPrefs.osPreferencesSynced) {
       this.set('osSyncPrefs.wallpaperEnabled', false);
     }
   },
@@ -191,13 +191,14 @@ Polymer({
   },
 
   /**
-   * Handler for changes to the apps sync state; apps have a special handler
-   * instead of relying on onSingleSyncDataTypeChanged_() because wallpaper has
-   * a dependency on apps.
+   * Handler for changes to the settings sync state; settings have a special
+   * handler instead of relying on onSingleSyncDataTypeChanged_() because
+   * wallpaper has a dependency on it.
    * @private
    */
-  onAppsSyncedChanged_() {
-    this.set('osSyncPrefs.wallpaperEnabled', this.osSyncPrefs.osAppsSynced);
+  onSettingsSyncedChanged_() {
+    this.set(
+        'osSyncPrefs.wallpaperEnabled', this.osSyncPrefs.osPreferencesSynced);
 
     this.onSingleSyncDataTypeChanged_();
   },
@@ -236,6 +237,6 @@ Polymer({
    */
   shouldWallpaperSyncSectionBeDisabled_() {
     return this.areDataTypeTogglesDisabled_ || !this.osSyncPrefs ||
-        !this.osSyncPrefs.osAppsSynced;
+        !this.osSyncPrefs.osPreferencesSynced;
   },
 });
