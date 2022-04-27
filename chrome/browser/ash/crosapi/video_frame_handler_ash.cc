@@ -125,17 +125,19 @@ void VideoFrameHandlerAsh::OnNewBuffer(
   crosapi::mojom::VideoBufferHandlePtr crosapi_handle;
 
   if (buffer_handle->is_unsafe_shmem_region()) {
-    crosapi_handle->set_shared_buffer_handle(
+    crosapi_handle = crosapi::mojom::VideoBufferHandle::NewSharedBufferHandle(
         mojo::WrapPlatformSharedMemoryRegion(
             base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
                 std::move(buffer_handle->get_unsafe_shmem_region()))));
   } else if (buffer_handle->is_gpu_memory_buffer_handle()) {
-    crosapi_handle->set_gpu_memory_buffer_handle(ToCrosapiGpuMemoryBufferHandle(
-        std::move(buffer_handle->get_gpu_memory_buffer_handle())));
+    crosapi_handle =
+        crosapi::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(
+            ToCrosapiGpuMemoryBufferHandle(
+                std::move(buffer_handle->get_gpu_memory_buffer_handle())));
   } else if (buffer_handle->is_read_only_shmem_region()) {
     // Lacros is guaranteed to be newer than us so it's okay to skip the version
     // check here.
-    crosapi_handle->set_read_only_shmem_region(
+    crosapi_handle = crosapi::mojom::VideoBufferHandle::NewReadOnlyShmemRegion(
         std::move(buffer_handle->get_read_only_shmem_region()));
   } else {
     NOTREACHED() << "Unexpected new buffer type";
