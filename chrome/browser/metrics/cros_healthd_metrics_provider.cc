@@ -91,13 +91,13 @@ void CrosHealthdMetricsProvider::OnProbeDone(
 
   auto tag = block_device_result->which();
   if (tag == chromeos::cros_healthd::mojom::NonRemovableBlockDeviceResult::Tag::
-                 ERROR) {
+                 kError) {
     DVLOG(1) << "cros_healthd: Error getting block device info: "
              << block_device_result->get_error()->msg;
     return;
   }
   DCHECK_EQ(tag, chromeos::cros_healthd::mojom::NonRemovableBlockDeviceResult::
-                     Tag::BLOCK_DEVICE_INFO);
+                     Tag::kBlockDeviceInfo);
 
   for (const auto& storage : block_device_result->get_block_device_info()) {
     SystemProfileProto::Hardware::InternalStorageDevice dev;
