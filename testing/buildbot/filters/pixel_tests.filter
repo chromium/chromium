@@ -36,6 +36,7 @@ HatsBubbleTest.*
 HungRendererDialogViewBrowserTest.*
 ImportLockDialogViewBrowserTest.*
 InlineLoginHelperBrowserTest.InvokeUi_*
+InteractionSequenceBrowserUtilInteractiveUiTest.CompareScreenshot_*
 InteractionSequenceBrowserUtilTest.CompareScreenshot_*
 LocalCardMigrationBrowserUiTest.*
 NewTabPageTest.*

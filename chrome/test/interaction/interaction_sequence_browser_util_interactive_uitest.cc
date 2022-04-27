@@ -286,3 +286,117 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilInteractiveUiTest,
 
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
 }
+
+// This test checks that we can attach to a WebUI that is embedded in a tab.
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilInteractiveUiTest,
+                       CompareScreenshot_TabWebUI) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  auto download_page = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kPrimaryTabPageElementId);
+  auto test_util = CreateInteractionTestUtil();
+  const ui::ElementContext context = browser()->window()->GetElementContext();
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(context)
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kPrimaryTabPageElementId)
+                       .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kAppMenuButtonElementId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence*,
+                               ui::TrackedElement* element) {
+                             test_util->PressButton(element);
+                           }))
+                       .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(AppMenuModel::kDownloadsMenuItem)
+                       .SetMustRemainVisible(false)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence*,
+                               ui::TrackedElement* element) {
+                             test_util->SelectMenuItem(element);
+                           }))
+                       .Build())
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetType(ui::InteractionSequence::StepType::kShown)
+                  .SetElementID(kPrimaryTabPageElementId)
+                  .SetTransitionOnlyOnEvent(true)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&](ui::InteractionSequence*,
+                          ui::TrackedElement* element) {
+                        EXPECT_TRUE(
+                            InteractionSequenceBrowserUtil::CompareScreenshot(
+                                element, std::string(), "3600270"));
+                      }))
+                  .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+// This test checks that we can attach to a WebUI that is not embedded in a tab.
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilInteractiveUiTest,
+                       CompareScreenshot_SecondaryWebUI) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  std::unique_ptr<InteractionSequenceBrowserUtil> tab_search_page;
+  auto test_util = CreateInteractionTestUtil();
+  const ui::ElementContext context = browser()->window()->GetElementContext();
+  base::raw_ptr<WebUIBubbleDialogView> bubble_view = nullptr;
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(context)
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kTabSearchButtonElementId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence*,
+                               ui::TrackedElement* element) {
+                             test_util->PressButton(element);
+                           }))
+                       .Build())
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetType(ui::InteractionSequence::StepType::kShown)
+                  .SetElementID(kTabSearchBubbleElementId)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&](ui::InteractionSequence*,
+                          ui::TrackedElement* element) {
+                        bubble_view = views::AsViewClass<WebUIBubbleDialogView>(
+                            element->AsA<views::TrackedElementViews>()->view());
+                        tab_search_page =
+                            InteractionSequenceBrowserUtil::ForNonTabWebView(
+                                bubble_view->web_view(),
+                                kTabSearchPageElementId);
+                      }))
+                  .Build())
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetType(ui::InteractionSequence::StepType::kShown)
+                  .SetElementID(kTabSearchPageElementId)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&](ui::InteractionSequence* sequence,
+                          ui::TrackedElement* element) {
+                        EXPECT_TRUE(
+                            InteractionSequenceBrowserUtil::CompareScreenshot(
+                                element, std::string(), "3600270"));
+                      }))
+                  .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
