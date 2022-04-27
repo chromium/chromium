@@ -10,8 +10,11 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -159,12 +162,14 @@ struct Node {
 // but efficiency is a top concern so node size is minimized, just enough to
 // get inputs back on track, not to replicate the full completion and scoring
 // of other autocomplete providers.
-class HistoryFuzzyProvider : public HistoryProvider {
+class HistoryFuzzyProvider : public HistoryProvider,
+                             public history::HistoryServiceObserver {
  public:
   explicit HistoryFuzzyProvider(AutocompleteProviderClient* client);
   HistoryFuzzyProvider(const HistoryFuzzyProvider&) = delete;
   HistoryFuzzyProvider& operator=(const HistoryFuzzyProvider&) = delete;
 
+  // HistoryProvider:
   // AutocompleteProvider. `minimal_changes` is ignored since there is no async
   // completion performed.
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
@@ -184,6 +189,14 @@ class HistoryFuzzyProvider : public HistoryProvider {
 
   // Main thread callback to receive trie of URLs loaded from database.
   void OnUrlsLoaded(fuzzy::Node node);
+
+  // history::HistoryServiceObserver:
+  // Adds visited URL host to trie.
+  void OnURLVisited(history::HistoryService* history_service,
+                    ui::PageTransition transition,
+                    const history::URLRow& row,
+                    const history::RedirectList& redirects,
+                    base::Time visit_time) override;
 
   AutocompleteInput autocomplete_input_;
 
@@ -205,6 +218,11 @@ class HistoryFuzzyProvider : public HistoryProvider {
 
   // Task tracker for URL data loading.
   base::CancelableTaskTracker task_tracker_;
+
+  // Tracks the observed history service, for cleanup.
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   // Weak pointer factory for callback binding safety.
   base::WeakPtrFactory<HistoryFuzzyProvider> weak_ptr_factory_{this};

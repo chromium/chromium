@@ -358,6 +358,7 @@ class LoadSignificantUrls : public history::HistoryDBTask {
 
 HistoryFuzzyProvider::HistoryFuzzyProvider(AutocompleteProviderClient* client)
     : HistoryProvider(AutocompleteProvider::TYPE_HISTORY_FUZZY, client) {
+  history_service_observation_.Observe(client->GetHistoryService());
   client->GetHistoryService()->ScheduleDBTask(
       FROM_HERE,
       std::make_unique<fuzzy::LoadSignificantUrls>(
@@ -486,4 +487,14 @@ void HistoryFuzzyProvider::AddMatchForText(std::u16string text) {
 
 void HistoryFuzzyProvider::OnUrlsLoaded(fuzzy::Node node) {
   root_ = std::move(node);
+}
+
+void HistoryFuzzyProvider::OnURLVisited(
+    history::HistoryService* history_service,
+    ui::PageTransition transition,
+    const history::URLRow& row,
+    const history::RedirectList& redirects,
+    base::Time visit_time) {
+  DVLOG(1) << "URL Visit: " << row.url();
+  root_.Insert(base::ASCIIToUTF16(row.url().host()), 0);
 }
