@@ -6,6 +6,7 @@
 
 #include "base/path_service.h"
 #include "base/test/test_suite.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/env.h"
 #include "ui/base/resource/resource_bundle.h"
