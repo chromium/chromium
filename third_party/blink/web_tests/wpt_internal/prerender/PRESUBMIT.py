@@ -38,7 +38,7 @@ def _CheckTimeoutMetaTags(input_api, output_api):
         if not _CheckFileTimeoutMetaTags(f):
             results.append(
                 output_api.PresubmitError(
-                    ('Missing long timeout.'
+                    ('Missing long timeout. '
                      'Add `<meta name="timeout" content="long">` to %s.') %
                     f.LocalPath()))
     return results
