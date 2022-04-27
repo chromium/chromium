@@ -47,7 +47,7 @@
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/federated/federated_client.h"
 #include "chromeos/dbus/hermes/hermes_clients.h"
-#include "chromeos/dbus/hps/hps_dbus_client.h"
+#include "chromeos/dbus/human_presence/human_presence_dbus_client.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
 #include "chromeos/dbus/missive/missive_client.h"

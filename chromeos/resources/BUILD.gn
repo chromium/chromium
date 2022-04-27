@@ -26,7 +26,7 @@ grit("resources") {
   ]
 
   deps = [
-    "//chromeos/components/hps:hps_internals_ts",
+    "//chromeos/components/human_presence:human_presence_internals_ts",
     "//chromeos/language/public/mojom:mojom_js",
     "//chromeos/services/bluetooth_config/public/mojom:mojom_js",
 

@@ -23,7 +23,7 @@ test("chromeos_components_unittests") {
     "//build:chromeos_buildflags",
     "//chromeos/components/cdm_factory_daemon:unit_tests",
     "//chromeos/components/feature_usage:unit_tests",
-    "//chromeos/components/hps:unit_tests",
+    "//chromeos/components/human_presence:unit_tests",
     "//chromeos/components/local_search_service:unit_tests",
     "//chromeos/components/local_search_service/public/mojom:unit_tests",
     "//chromeos/components/mojo_bootstrap:unit_tests",

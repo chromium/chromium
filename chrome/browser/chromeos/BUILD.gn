@@ -303,7 +303,7 @@ source_set("chromeos") {
     "//chromeos/dbus/fwupd",
     "//chromeos/dbus/gnubby",
     "//chromeos/dbus/hermes",
-    "//chromeos/dbus/hps",
+    "//chromeos/dbus/human_presence",
     "//chromeos/dbus/image_loader",
     "//chromeos/dbus/lorgnette_manager",
     "//chromeos/dbus/lorgnette_manager:lorgnette_proto",

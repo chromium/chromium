@@ -43,7 +43,7 @@
 #include "ash/system/power/power_prefs.h"
 #include "ash/system/session/logout_button_tray.h"
 #include "ash/system/session/logout_confirmation_controller.h"
-#include "ash/system/unified/hps_notify_controller.h"
+#include "ash/system/unified/snooping_protection_controller.h"
 #include "ash/system/unified/top_shortcuts_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/usb_peripheral/usb_peripheral_notification_controller.h"
