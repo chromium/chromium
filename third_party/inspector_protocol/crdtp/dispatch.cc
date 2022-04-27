@@ -78,6 +78,14 @@ DispatchResponse DispatchResponse::ServerError(std::string message) {
   return result;
 }
 
+// static
+DispatchResponse DispatchResponse::SessionNotFound(std::string message) {
+  DispatchResponse result;
+  result.code_ = DispatchCode::SESSION_NOT_FOUND;
+  result.message_ = std::move(message);
+  return result;
+}
+
 // =============================================================================
 // Dispatchable - a shallow parser for CBOR encoded DevTools messages
 // =============================================================================
