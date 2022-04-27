@@ -92,6 +92,7 @@ extern const char kWebKitSerifFontFamily[];
 extern const char kWebKitSansSerifFontFamily[];
 extern const char kWebKitCursiveFontFamily[];
 extern const char kWebKitFantasyFontFamily[];
+extern const char kWebKitMathFontFamily[];
 
 // ISO 15924 four-letter script codes that per-script font prefs are supported
 // for.
@@ -105,6 +106,7 @@ extern const char kWebKitSerifFontFamilyMap[];
 extern const char kWebKitSansSerifFontFamilyMap[];
 extern const char kWebKitCursiveFontFamilyMap[];
 extern const char kWebKitFantasyFontFamilyMap[];
+extern const char kWebKitMathFontFamilyMap[];
 
 // Per-script font prefs that have defaults, for easy reference when registering
 // the defaults.

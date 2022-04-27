@@ -161,6 +161,11 @@
         Impact
       </message>
 
+      <!-- The default value for |WebPreference::math_font_family| -->
+      <message name="IDS_MATH_FONT_FAMILY" use_name_for_id="true">
+        Latin Modern Math
+      </message>
+
       <!-- The default value for |WebPreference::standard_font_family_map| for
            Arabic script. -->
       <message name="IDS_STANDARD_FONT_FAMILY_ARABIC" use_name_for_id="true">

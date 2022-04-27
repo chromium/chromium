@@ -92,6 +92,7 @@ IN_PROC_BROWSER_TEST_F(PrefsTabHelperBrowserTest, GenericFontFamilies) {
   prefs->SetString(prefs::kWebKitCursiveFontFamily, "CustomCursive");
   prefs->SetString(prefs::kWebKitFantasyFontFamily, "CustomFantasy");
   prefs->SetString(prefs::kWebKitFixedFontFamily, "CustomFixed");
+  prefs->SetString(prefs::kWebKitMathFontFamily, "CustomMath");
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -112,5 +113,7 @@ IN_PROC_BROWSER_TEST_F(PrefsTabHelperBrowserTest, GenericFontFamilies) {
             web_prefs.fantasy_font_family_map[blink::web_pref::kCommonScript]);
   EXPECT_EQ(u"CustomFixed",
             web_prefs.fixed_font_family_map[blink::web_pref::kCommonScript]);
+  EXPECT_EQ(u"CustomMath",
+            web_prefs.math_font_family_map[blink::web_pref::kCommonScript]);
 }
 #endif
