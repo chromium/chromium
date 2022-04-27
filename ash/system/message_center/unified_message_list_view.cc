@@ -402,7 +402,7 @@ UnifiedMessageListView::UnifiedMessageListView(
       is_notifications_refresh_enabled_(
           features::IsNotificationsRefreshEnabled()),
       message_view_width_(is_notifications_refresh_enabled_
-                              ? kTrayMenuWidth - (2 * kMessageCenterSidePadding)
+                              ? kTrayMenuWidth - (2 * kMessageCenterPadding)
                               : kTrayMenuWidth) {
   message_center_observation_.Observe(MessageCenter::Get());
   animation_->SetCurrentValue(1.0);

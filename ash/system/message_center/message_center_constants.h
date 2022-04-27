@@ -26,12 +26,11 @@ constexpr int kMessagePopupCornerRadius = 16;
 
 constexpr int kMessageCenterNotificationCornerRadius = 2;
 constexpr int kMessageCenterScrollViewCornerRadius = 12;
-constexpr int kMessageCenterSidePadding = 8;
+constexpr int kMessageCenterPadding = 8;
 constexpr int kMessageCenterBottomPadding = 8;
 constexpr int kMessageListNotificationSpacing = 2;
 
-constexpr int kNotificationBarVerticalPadding = 8;
-constexpr int kNotificationBarHorizontalPadding = 10;
+constexpr auto kNotificationBarPadding = gfx::Insets::TLBR(0, 0, 8, 4);
 
 // Horizontal spacing of the pill buttons inside notification.
 constexpr int kNotificationPillButtonHorizontalSpacing = 12;

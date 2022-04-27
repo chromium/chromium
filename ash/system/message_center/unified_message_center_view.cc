@@ -90,6 +90,12 @@ UnifiedMessageCenterView::UnifiedMessageCenterView(
     scroll_bar_ = new RoundedMessageCenterScrollBar(this);
   else
     scroll_bar_ = new MessageCenterScrollBar(this);
+
+  if (is_notifications_refresh_enabled_) {
+    SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical,
+        gfx::Insets(kMessageCenterPadding)));
+  }
 }
 
 UnifiedMessageCenterView::~UnifiedMessageCenterView() {
@@ -130,10 +136,9 @@ void UnifiedMessageCenterView::Init() {
 void UnifiedMessageCenterView::SetMaxHeight(int max_height) {
   int max_scroller_height = max_height;
   if (notification_bar_->GetVisible()) {
-    max_scroller_height -= kStackedNotificationBarHeight;
-    if (is_notifications_refresh_enabled_)
-      max_scroller_height -=
-          2 * kNotificationBarVerticalPadding + kMessageCenterBottomPadding;
+    max_scroller_height -= is_notifications_refresh_enabled_
+                               ? notification_bar_->GetLocalBounds().height()
+                               : kStackedNotificationBarHeight;
   }
   scroller_->ClipHeightTo(0, max_scroller_height);
 }
@@ -234,12 +239,13 @@ void UnifiedMessageCenterView::RemovedFromWidget() {
 }
 
 void UnifiedMessageCenterView::Layout() {
+  if (is_notifications_refresh_enabled_)
+    return views::View::Layout();
+
   if (notification_bar_->GetVisible()) {
     gfx::Rect counter_bounds(GetContentsBounds());
 
     int notification_bar_expanded_height = kStackedNotificationBarHeight;
-    if (is_notifications_refresh_enabled_)
-      notification_bar_expanded_height += 2 * kNotificationBarVerticalPadding;
 
     int notification_bar_height = collapsed_
                                       ? kStackedNotificationBarCollapsedHeight
@@ -253,16 +259,10 @@ void UnifiedMessageCenterView::Layout() {
     counter_bounds.set_y(counter_bounds.y() - notification_bar_offset);
     notification_bar_->SetBoundsRect(counter_bounds);
 
-    int scroller_bottom_inset = 0;
-    if (is_notifications_refresh_enabled_)
-      scroller_bottom_inset += kMessageCenterBottomPadding;
-
     gfx::Rect scroller_bounds(GetContentsBounds());
-    int scroller_side_padding =
-        is_notifications_refresh_enabled_ ? kMessageCenterSidePadding : 0;
+
     scroller_bounds.Inset(gfx::Insets::TLBR(
-        notification_bar_height - notification_bar_offset,
-        scroller_side_padding, scroller_bottom_inset, scroller_side_padding));
+        notification_bar_height - notification_bar_offset, 0, 0, 0));
     scroller_->SetBoundsRect(scroller_bounds);
   } else {
     scroller_->SetBoundsRect(GetContentsBounds());
@@ -272,12 +272,14 @@ void UnifiedMessageCenterView::Layout() {
 }
 
 gfx::Size UnifiedMessageCenterView::CalculatePreferredSize() const {
+  if (is_notifications_refresh_enabled_)
+    return views::View::CalculatePreferredSize();
+
   gfx::Size preferred_size = scroller_->GetPreferredSize();
 
   if (notification_bar_->GetVisible()) {
     int bar_height = kStackedNotificationBarHeight;
-    if (is_notifications_refresh_enabled_)
-      bar_height += 2 * kNotificationBarVerticalPadding;
+
     if (animation_state_ ==
         UnifiedMessageCenterAnimationState::HIDE_STACKING_BAR)
       bar_height -= GetAnimationValue() * bar_height;
@@ -294,10 +296,6 @@ gfx::Size UnifiedMessageCenterView::CalculatePreferredSize() const {
   } else if (collapsed_) {
     preferred_size.set_height(kStackedNotificationBarCollapsedHeight);
   }
-
-  if (is_notifications_refresh_enabled_)
-    preferred_size.set_height(preferred_size.height() +
-                              kMessageCenterBottomPadding);
 
   return preferred_size;
 }
@@ -414,6 +412,11 @@ double UnifiedMessageCenterView::GetAnimationValue() const {
 void UnifiedMessageCenterView::UpdateVisibility() {
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
+
+  notification_bar_->Update(
+      message_list_view_->GetTotalNotificationCount(),
+      message_list_view_->GetTotalPinnedNotificationCount(),
+      GetStackedNotifications());
 
   SetVisible(
       available_height_ >= kUnifiedNotificationMinimumHeight &&

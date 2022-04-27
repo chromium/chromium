@@ -322,6 +322,9 @@ TEST_P(UnifiedMessageCenterViewTest, DISABLED_AddAndRemoveNotification) {
 }
 
 TEST_P(UnifiedMessageCenterViewTest, RemoveNotificationAtTail) {
+  // No special scroll behavior with the Notifications Refresh anymore.
+  if (IsNotificationsRefreshEnabled())
+    return;
   // Show message center with multiple notifications.
   AddManyNotifications();
   CreateMessageCenterView();
@@ -347,15 +350,9 @@ TEST_P(UnifiedMessageCenterViewTest, RemoveNotificationAtTail) {
   AnimateMessageListToEnd();
   RelayoutMessageCenterViewForTest();
 
-  if (IsNotificationsRefreshEnabled()) {
-    EXPECT_EQ(scroll_position - removed_notification_height -
-                  kMessageListNotificationSpacing,
-              GetScroller()->GetVisibleRect().y());
-  } else {
-    EXPECT_EQ(scroll_position - removed_notification_height -
-                  kUnifiedNotificationSeparatorThickness,
-              GetScroller()->GetVisibleRect().y());
-  }
+  EXPECT_EQ(scroll_position - removed_notification_height -
+                kUnifiedNotificationSeparatorThickness,
+            GetScroller()->GetVisibleRect().y());
 
   // Check that the list is still scrolled to the bottom.
   EXPECT_EQ(GetMessageListView()->height() - GetScroller()->height(),
@@ -487,6 +484,10 @@ TEST_P(UnifiedMessageCenterViewTest, InitialPositionWithLargeNotification) {
 }
 
 TEST_P(UnifiedMessageCenterViewTest, ScrollPositionWhenResized) {
+  // We keep the scroll position at the top after the notifications refresh.
+  if (IsNotificationsRefreshEnabled())
+    return;
+
   AddManyNotifications();
   CreateMessageCenterView();
   EXPECT_TRUE(message_center_view()->GetVisible());
@@ -527,10 +528,18 @@ TEST_P(UnifiedMessageCenterViewTest, StackingCounterLabelLayout) {
             message_center_view()->bounds().height());
 
   EXPECT_TRUE(GetNotificationBar()->GetVisible());
-  EXPECT_EQ(0, GetNotificationBar()->bounds().y());
+  EXPECT_EQ(IsNotificationsRefreshEnabled() ? kMessageCenterPadding : 0,
+            GetNotificationBar()->bounds().y());
   EXPECT_EQ(GetNotificationBar()->bounds().bottom(),
             GetScroller()->bounds().y());
-  EXPECT_TRUE(GetNotificationBarLabel()->GetVisible());
+
+  // With the refresh enabled, we do not scroll the message center to the bottom
+  // so the label should not be visible.
+  if (IsNotificationsRefreshEnabled())
+    EXPECT_FALSE(GetNotificationBarLabel()->GetVisible());
+  else
+    EXPECT_TRUE(GetNotificationBarLabel()->GetVisible());
+
   EXPECT_TRUE(GetNotificationBarClearAllButton()->GetVisible());
 }
 
