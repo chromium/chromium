@@ -477,17 +477,22 @@ export class CaptureCandidatePreferrer {
       const options: VideoResolutionOption[] = [];
 
       for (const entry of levelResolutions) {
-        const fpsMap = new Map<number, Resolution[]>();
+        const fpsMap = new Map<number|null, Resolution[]>();
+        function putResolution(fps: number|null, resolution: Resolution) {
+          const list = fpsMap.get(fps);
+          if (list === undefined) {
+            fpsMap.set(fps, [resolution]);
+          } else {
+            list.push(resolution);
+          }
+        }
         for (const resolution of entry.resolutions) {
           for (const fps of getConstFpses(resolution)
                    .filter((fps) => SUPPORTED_CONSTANT_FPS.includes(fps))) {
-            const list = fpsMap.get(fps);
-            if (list === undefined) {
-              fpsMap.set(fps, [resolution]);
-            } else {
-              list.push(resolution);
-            }
+            putResolution(fps, resolution);
           }
+          // Every resolution is a candidate of non-constant fps.
+          putResolution(null, resolution);
         }
         const fpsOptions: VideoFpsOption[] = [];
         for (const [constFps, resolutions] of fpsMap.entries()) {

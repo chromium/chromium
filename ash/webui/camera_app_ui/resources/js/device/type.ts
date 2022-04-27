@@ -142,6 +142,6 @@ export interface VideoResolutionOption extends BaseSettingsOption {
 }
 
 export interface VideoFpsOption extends BaseSettingsOption {
-  constFps: number;
+  constFps: number|null;
   resolutions: Resolution[];
 }
