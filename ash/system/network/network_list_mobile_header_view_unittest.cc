@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/network/network_list_mobile_header_view_impl.h"
+#include "ash/system/network/network_list_mobile_header_view.h"
 
 #include <memory>
 
@@ -69,9 +69,9 @@ class NetworkListMobileHeaderViewTest : public AshTestBase {
   }
 
   void Init() {
-    std::unique_ptr<NetworkListMobileHeaderViewImpl>
+    std::unique_ptr<NetworkListMobileHeaderView>
         network_list_mobile_header_view =
-            std::make_unique<NetworkListMobileHeaderViewImpl>(
+            std::make_unique<NetworkListMobileHeaderView>(
                 &fake_network_list_network_header_delegate_);
 
     widget_ = CreateFramelessTestWidget();
@@ -106,7 +106,7 @@ class NetworkListMobileHeaderViewTest : public AshTestBase {
 
   IconButton* GetAddEsimButton() {
     return FindViewById<IconButton*>(
-        NetworkListMobileHeaderViewImpl::kAddESimButtonId);
+        NetworkListMobileHeaderView::kAddESimButtonId);
   }
 
   TrayToggleButton* GetToggleButton() {
@@ -136,7 +136,7 @@ class NetworkListMobileHeaderViewTest : public AshTestBase {
   base::test::ScopedFeatureList feature_list_;
   FakeNetworkListNetworkHeaderViewDelegate
       fake_network_list_network_header_delegate_;
-  NetworkListMobileHeaderViewImpl* network_list_mobile_header_view_;
+  NetworkListMobileHeaderView* network_list_mobile_header_view_;
 };
 
 TEST_F(NetworkListMobileHeaderViewTest, HeaderLabel) {
