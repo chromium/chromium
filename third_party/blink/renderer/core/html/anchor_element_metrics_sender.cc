@@ -60,8 +60,8 @@ bool AnchorElementMetricsSender::HasAnchorElementMetricsSender(
   bool is_feature_enabled =
       base::FeatureList::IsEnabled(features::kNavigationPredictor);
   const KURL& url = document.BaseURL();
-  return is_feature_enabled && document.IsInMainFrame() && url.IsValid() &&
-         url.ProtocolIs("https");
+  return is_feature_enabled && document.IsInOutermostMainFrame() &&
+         url.IsValid() && url.ProtocolIs("https");
 }
 
 void AnchorElementMetricsSender::MaybeReportClickedMetricsOnClick(
@@ -118,7 +118,7 @@ bool AnchorElementMetricsSender::AssociateInterface() {
 AnchorElementMetricsSender::AnchorElementMetricsSender(Document& document)
     : Supplement<Document>(document),
       metrics_host_(document.GetExecutionContext()) {
-  DCHECK(document.IsInMainFrame());
+  DCHECK(document.IsInOutermostMainFrame());
 
   document.View()->RegisterForLifecycleNotifications(this);
   intersection_observer_ = IntersectionObserver::Create(
