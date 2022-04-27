@@ -186,6 +186,17 @@ target(partition_alloc_target_type, "partition_alloc") {
       "partition_alloc_base/rand_util_fuchsia.cc",
     ]
   }
+  if (is_android) {
+    # Only android build requires native_library, and native_library depends
+    # on file_path. So file_path is added if is_android = true.
+    sources += [
+      "partition_alloc_base/files/file_path.cc",
+      "partition_alloc_base/files/file_path.h",
+      "partition_alloc_base/native_library.cc",
+      "partition_alloc_base/native_library.h",
+      "partition_alloc_base/native_library_posix.cc",
+    ]
+  }
   if (current_cpu == "x64") {
     defines += [ "PA_PCSCAN_STACK_SUPPORTED" ]
     sources += [ "starscan/stack/asm/x64/push_registers_asm.cc" ]

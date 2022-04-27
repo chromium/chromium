@@ -17,16 +17,12 @@
 
 namespace base {
 
-class FilePath;
 class LapTimer;
 class PlatformThread;
 class PlatformThreadHandle;
 class PlatformThreadRef;
 class TimeDelta;
 class TimeTicks;
-struct NativeLibraryLoadError;
-
-struct NativeLibraryLoadError;
 
 template <typename Type, typename Traits>
 class LazyInstance;
@@ -47,9 +43,6 @@ BASE_EXPORT std::string StringPrintf(const char* format, ...);
 template <typename CharT, typename Traits>
 class BasicStringPiece;
 using StringPiece = BasicStringPiece<char, std::char_traits<char>>;
-using NativeLibrary = void*;
-BASE_EXPORT void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
-                                                      StringPiece name);
 #endif
 
 template <typename T, typename O>
@@ -87,13 +80,11 @@ namespace partition_alloc::internal::base {
 
 // TODO(https://crbug.com/1288247): Remove these 'using' declarations once
 // the migration to the new namespaces gets done.
-using ::base::FilePath;
 using ::base::LapTimer;
 using ::base::LazyInstance;
 using ::base::LazyInstanceTraitsBase;
 using ::base::Microseconds;
 using ::base::Milliseconds;
-using ::base::NativeLibraryLoadError;
 using ::base::NoDestructor;
 using ::base::PlatformThread;
 using ::base::PlatformThreadHandle;
@@ -102,11 +93,6 @@ using ::base::Seconds;
 using ::base::StringPrintf;
 using ::base::TimeDelta;
 using ::base::TimeTicks;
-
-#if BUILDFLAG(IS_ANDROID)
-using ::base::GetFunctionPointerFromNativeLibrary;
-using ::base::NativeLibrary;
-#endif
 
 #if BUILDFLAG(IS_MAC)
 template <typename CFT>
