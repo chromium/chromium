@@ -244,9 +244,10 @@ scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
   auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
       visible_rect, natural_size, std::move(gpu_memory_buffer), mailbox_holders,
       base::NullCallback(), timestamp);
+  if (!frame)
+    return nullptr;
 
-  if (frame)
-    frame->AddDestructionObserver(destroy_cb.Release());
+  frame->AddDestructionObserver(destroy_cb.Release());
 
   // We only support importing non-DISJOINT multi-planar GbmBuffer right now.
   // TODO(crbug.com/1258986): Add DISJOINT support.
