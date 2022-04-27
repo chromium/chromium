@@ -368,6 +368,9 @@ class TabGridViewBinder {
     }
 
     private static Bitmap resizeBitmap(Bitmap source, int newWidth, int newHeight) {
+        if (newWidth <= 0 || newHeight <= 0) {
+            return source;
+        }
         return Bitmap.createScaledBitmap(source, newWidth, newHeight, true);
     }
 
