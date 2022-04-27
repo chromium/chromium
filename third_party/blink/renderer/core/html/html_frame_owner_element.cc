@@ -152,6 +152,29 @@ bool CheckAndRecordIfShouldLazilyLoadFrame(const Document& document,
   if (is_loading_attr_lazy)
     return true;
 
+  // When LazyAds and LazyEmbeds cause problems, the user might reload the page
+  // to fix the problem. Also, the user is likely to avoid reloading the page
+  // when they submit forms. So skips LazyEmbeds and LazyAds in the following
+  // conditions.
+  // - Reload a page.
+  // - Submit a form.
+  // - Resubmit a form.
+  // The reason why we use DocumentLoader::GetNavigationType() instead of
+  // DocumentLoader::LoadType() is that DocumentLoader::LoadType() is reset to
+  // WebFrameLoadType::kStandard on DidFinishNavigation(). When JavaScript adds
+  // iframes after navigation, DocumentLoader::LoadType() always returns
+  // WebFrameLoadType::kStandard. DocumentLoader::GetNavigationType() doesn't
+  // have this problem.
+  Document& top_document = document.TopDocument();
+  WebNavigationType navigation_type =
+      top_document.Loader() ? top_document.Loader()->GetNavigationType()
+                            : WebNavigationType::kWebNavigationTypeOther;
+  if (navigation_type == WebNavigationType::kWebNavigationTypeReload ||
+      navigation_type == WebNavigationType::kWebNavigationTypeFormSubmitted ||
+      navigation_type == WebNavigationType::kWebNavigationTypeFormResubmitted) {
+    return false;
+  }
+
   if (record_uma) {
     base::UmaHistogramEnumeration(
         "Blink.AutomaticLazyLoadFrame",

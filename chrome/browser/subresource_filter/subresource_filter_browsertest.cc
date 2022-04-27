@@ -1317,6 +1317,15 @@ IN_PROC_BROWSER_TEST_P(AutomaticLazyLoadFrameBrowserTest, UKM) {
   // Add iframe that is not detected as an ad-frame nor an embed.
   AddIframe(render_frame_host, kNonAdNonEmbed);
 
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // LazyEmbeds and LazyAds must be disabled when the page is reloaded.
+  EXPECT_TRUE(render_frame_host->Reload());
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  AddAdIframe(render_frame_host, kAdUrl);
+  AddIframe(render_frame_host, kEmbedUrl);
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
   // Navigating away from the test page (kMainFrameUrl) causes the document to
   // be unloaded. That will cause any buffered metrics to be flushed.
   content::NavigateToURLBlockUntilNavigationsComplete(web_contents(),
