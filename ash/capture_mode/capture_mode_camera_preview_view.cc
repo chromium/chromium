@@ -260,6 +260,10 @@ void CameraPreviewView::Layout() {
   DCHECK_EQ(width(), height());
   camera_video_renderer_.host_window()->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(height() / 2.f));
+
+  // Refocus the camera preview to relayout the focus ring on it.
+  if (has_focus())
+    PseudoFocus();
 }
 
 void CameraPreviewView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
