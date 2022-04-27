@@ -281,8 +281,7 @@ struct PasswordChangeParams {
                     IsReused(false),
                     IsSyncing(true),
                     HasChangeScript(true)),
-     IDS_CREDENTIAL_LEAK_CHANGE_AUTOMATICALLY,
-     IDS_CREDENTIAL_LEAK_DONT_CHANGE_AUTOMATICALLY, true, true},
+     IDS_CREDENTIAL_LEAK_CHANGE_AUTOMATICALLY, IDS_CLOSE, true, true},
     {CreateLeakType(IsSaved(true),
                     IsReused(true),
                     IsSyncing(false),
@@ -292,8 +291,7 @@ struct PasswordChangeParams {
                     IsReused(true),
                     IsSyncing(true),
                     HasChangeScript(true)),
-     IDS_CREDENTIAL_LEAK_CHANGE_AUTOMATICALLY,
-     IDS_CREDENTIAL_LEAK_DONT_CHANGE_AUTOMATICALLY, true, true}};
+     IDS_CREDENTIAL_LEAK_CHANGE_AUTOMATICALLY, IDS_CLOSE, true, true}};
 
 class PasswordChangeCredentialLeakDialogUtilsTest
     : public testing::TestWithParam<PasswordChangeParams> {

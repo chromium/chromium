@@ -28,7 +28,7 @@ constexpr char kPasswordCheckupURL[] =
 
 constexpr base::FeatureParam<bool> kPasswordChangeUseBasicCloseLabel{
     &password_manager::features::kPasswordChange, "use_basic_close_label",
-    false};
+    true};
 
 CredentialLeakType CreateLeakType(IsSaved is_saved,
                                   IsReused is_reused,
