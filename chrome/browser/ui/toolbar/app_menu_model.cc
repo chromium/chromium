@@ -757,7 +757,12 @@ bool AppMenuModel::IsCommandIdEnabled(int command_id) const {
   if (error)
     return true;
 
-  return chrome::IsCommandEnabled(browser_, command_id);
+  switch (command_id) {
+    case IDC_NEW_INCOGNITO_WINDOW:
+      return IncognitoModePrefs::IsIncognitoAllowed(browser_->profile());
+    default:
+      return chrome::IsCommandEnabled(browser_, command_id);
+  }
 }
 
 bool AppMenuModel::IsCommandIdVisible(int command_id) const {
@@ -845,8 +850,9 @@ void AppMenuModel::Build() {
                                        ? IDS_NEW_INCOGNITO_TAB
                                        : IDS_NEW_TAB);
   AddItemWithStringId(IDC_NEW_WINDOW, IDS_NEW_WINDOW);
-  if (ShouldShowNewIncognitoWindowMenuItem())
-    AddItemWithStringId(IDC_NEW_INCOGNITO_WINDOW, IDS_NEW_INCOGNITO_WINDOW);
+
+  AddItemWithStringId(IDC_NEW_INCOGNITO_WINDOW, IDS_NEW_INCOGNITO_WINDOW);
+
   AddSeparator(ui::NORMAL_SEPARATOR);
 
   if (!browser_->profile()->IsOffTheRecord()) {
@@ -1003,10 +1009,6 @@ void AppMenuModel::UpdateZoomControls() {
         zoom::ZoomController::FromWebContents(web_contents())->GetZoomPercent();
   }
   zoom_label_ = base::FormatPercent(zoom_percent);
-}
-
-bool AppMenuModel::ShouldShowNewIncognitoWindowMenuItem() {
-  return IncognitoModePrefs::IsIncognitoAllowed(browser_->profile());
 }
 
 bool AppMenuModel::AddGlobalErrorMenuItems() {

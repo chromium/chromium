@@ -202,8 +202,6 @@ class AppMenuModel : public ui::SimpleMenuModel,
  private:
   friend class ::MockAppMenuModel;
 
-  bool ShouldShowNewIncognitoWindowMenuItem();
-
   // Adds actionable global error menu items to the menu.
   // Examples: Extension permissions and sign in errors.
   // Returns a boolean indicating whether any menu items were added.
