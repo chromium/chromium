@@ -452,6 +452,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, IsAccessibilityElement) {
   RunTypedTest<kMacMethods>("is-accessibility-element.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, SetAccessibilityFocused) {
+  RunTypedTest<kMacMethods>("set-accessibility-focused.html");
+}
+
 // Parameterized attributes
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,

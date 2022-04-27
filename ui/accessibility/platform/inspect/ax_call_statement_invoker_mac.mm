@@ -259,6 +259,9 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForAXElement(
     return AXOptionalNSObject([NSNumber numberWithBool:return_value]);
   }
 
+  if (property_node.name_or_value == "setAccessibilityFocused")
+    return InvokeSetAccessibilityFocused(target, property_node);
+
   // accessibilityAttributeValue
   if (property_node.name_or_value == "accessibilityAttributeValue") {
     if (property_node.arguments.size() == 1) {
@@ -393,6 +396,39 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForDictionary(
   NSString* key = PropertyNodeToString(property_node);
   NSDictionary* dictionary = target;
   return AXOptionalNSObject::NotNullOrError(dictionary[key]);
+}
+
+AXOptionalNSObject AXCallStatementInvoker::InvokeSetAccessibilityFocused(
+    const id target,
+    const AXPropertyNode& property_node) const {
+  std::string selector_string = property_node.name_or_value + ":";
+  if (property_node.arguments.size() != 1) {
+    LOG(ERROR) << "Wrong arguments number for " << selector_string
+               << ", got: " << property_node.arguments.size()
+               << ", expected: 1";
+    return AXOptionalNSObject::Error();
+  }
+
+  SEL selector = NSSelectorFromString(base::SysUTF8ToNSString(selector_string));
+  if (![target respondsToSelector:selector]) {
+    LOG(ERROR) << "Target doesn't answer to " << selector_string << " selector";
+    return AXOptionalNSObject::Error();
+  }
+
+  NSInvocation* invocation = [NSInvocation
+      invocationWithMethodSignature:
+          [[target class] instanceMethodSignatureForSelector:selector]];
+
+  [invocation setSelector:selector];
+  [invocation setTarget:target];
+
+  // The target is at index 0 and the selector at index 1, so arguments
+  // start at index 2.
+  BOOL val = property_node.arguments[0].name_or_value == "FALSE" ? FALSE : TRUE;
+  [invocation setArgument:&val atIndex:2];
+  [invocation invoke];
+
+  return AXOptionalNSObject(nil);
 }
 
 AXOptionalNSObject AXCallStatementInvoker::ParamFrom(

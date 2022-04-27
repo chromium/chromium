@@ -63,6 +63,11 @@ class AX_EXPORT AXCallStatementInvoker final {
       const id target,
       const AXPropertyNode& property_node) const;
 
+  // Invokes setAccessibilityFocused method.
+  AXOptionalNSObject InvokeSetAccessibilityFocused(
+      const id target,
+      const AXPropertyNode& property_node) const;
+
   // Returns a parameterized attribute parameter by a property node representing
   // an attribute call.
   AXOptionalNSObject ParamFrom(const AXPropertyNode&) const;
