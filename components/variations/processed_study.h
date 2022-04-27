@@ -14,6 +14,23 @@
 
 namespace variations {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Exposed for testing.
+enum class InvalidStudyReason {
+  kInvalidMinVersion = 0,
+  kInvalidMaxVersion = 1,
+  kInvalidMinOsVersion = 2,
+  kInvalidMaxOsVersion = 3,
+  kMissingExperimentName = 4,
+  kRepeatedExperimentName = 5,
+  kTotalProbabilityOverflow = 6,
+  kMissingDefaultExperimentInList = 7,
+  kBlankStudyName = 8,
+  kExperimentProbabilityOverflow = 9,
+  kTriggerAndNonTriggerExperimentId = 10,
+  kMaxValue = kTriggerAndNonTriggerExperimentId,
+};
+
 class Study;
 
 // Wrapper over Study with extra information computed during pre-processing,

@@ -14,25 +14,7 @@
 #include "components/variations/proto/study.pb.h"
 
 namespace variations {
-
 namespace {
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class InvalidStudyReason {
-  kInvalidMinVersion = 0,
-  kInvalidMaxVersion = 1,
-  kInvalidMinOsVersion = 2,
-  kInvalidMaxOsVersion = 3,
-  kMissingExperimentName = 4,
-  kRepeatedExperimentName = 5,
-  kTotalProbabilityOverflow = 6,
-  kMissingDefaultExperimentInList = 7,
-  kBlankStudyName = 8,
-  kExperimentProbabilityOverflow = 9,
-  kTriggerAndNonTriggerExperimentId = 10,
-  kMaxValue = kTriggerAndNonTriggerExperimentId,
-};
 
 void LogInvalidReason(InvalidStudyReason reason) {
   base::UmaHistogramEnumeration("Variations.InvalidStudyReason", reason);

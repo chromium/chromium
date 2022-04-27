@@ -208,6 +208,7 @@ source_set("unit_tests") {
     "hashing_unittest.cc",
     "net/variations_command_line_unittest.cc",
     "net/variations_http_headers_unittest.cc",
+    "processed_study_unittest.cc",
     "simulate_for_crosstalk_unittest.cc",
     "study_filtering_unittest.cc",
     "synthetic_trial_registry_unittest.cc",
