@@ -96,14 +96,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Update" summary="interest group update"/>
 </variants>
 
-<variants name="MerchantTrustMessageStarRating">
-  <variant name="AboveFour" summary="rating value within [4 - 4.5)"/>
-  <variant name="AboveFourPointFive" summary="rating value within [4.5 - 5]"/>
-  <variant name="AboveThree" summary="rating value within [3 - 4)"/>
-  <variant name="AboveTwo" summary="rating value within [2 - 3)"/>
-  <variant name="BelowTwo" summary="rating value within [0 - 2)"/>
-</variants>
-
 <variants name="ProcessName">
   <variant name="BrowserProcess" summary=""/>
   <variant name="GPUProcess" summary=""/>
@@ -5987,7 +5979,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GridTabSwitcher.{MessageType}.DisableReason"
-    enum="GridTabSwitcherMessageDisableReason" expires_after="2022-06-07">
+    enum="GridTabSwitcherMessageDisableReason" expires_after="2022-10-01">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
@@ -7360,182 +7352,6 @@ chromium-metrics-reviews@google.com.
     Tracks the Manifest parsing result. A failure will be recorded if the
     Manifest was incorrectly structured. This doesn't take into account parse
     failures for each individual properties.
-  </summary>
-</histogram>
-
-<histogram name="MerchantTrust.BottomSheet.CloseReason"
-    enum="BottomSheet.StateChangeReason" expires_after="M102">
-  <owner>ayman@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Records the reason that the merchant trust bottom sheet is closed. Recorded
-    when the bottom sheet is closed. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="MerchantTrust.BottomSheet.DurationFullyOpened" units="ms"
-    expires_after="M102">
-  <owner>ayman@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Records the duration in milliseconds that the merchant trust bottom sheet is
-    left fully expanded. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="MerchantTrust.BottomSheet.DurationHalfOpened" units="ms"
-    expires_after="M102">
-  <owner>ayman@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Records the duration in milliseconds that the merchant trust bottom sheet is
-    left half expanded. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="MerchantTrust.BottomSheet.DurationPeeked" units="ms"
-    expires_after="M102">
-  <owner>ayman@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Records the duration in milliseconds that the merchant trust bottom sheet is
-    peeking. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="MerchantTrust.BottomSheet.IsFullyViewed" enum="Boolean"
-    expires_after="M102">
-  <owner>ayman@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Records whether the merchant trust bottom sheet is fully expanded. Recorded
-    when the bottom sheet is closed. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="MerchantTrust.BottomSheet.IsHalfViewed" enum="Boolean"
-    expires_after="M102">
-  <owner>ayman@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Records whether the merchant trust bottom sheet is half expanded. Recorded
-    when the bottom sheet is closed. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="MerchantTrust.BottomSheet.OpenSource"
-    enum="MerchantTrustBottomSheetOpenedSource" expires_after="M102">
-  <owner>zhiyuancai@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Records which ui the bottom sheet is opened from. Recorded when the bottom
-    sheet is opened. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="MerchantTrust.Message.ClearReason"
-    enum="MerchantTrustMessageClearReason" expires_after="2022-09-18">
-  <owner>ayman@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Records why the prepared merchant trust message is cleared. Recorded when
-    the prepared message is cleared. Implemented for Android. In M96 and later
-    this includes MESSAGE_CONTEXT_NO_LONGER_VALID and
-    SWITCH_TO_DIFFERENT_WEBCONTENTS.
-  </summary>
-</histogram>
-
-<histogram name="MerchantTrust.Message.DismissReason"
-    enum="MessageDismissReason" expires_after="2022-09-18">
-  <owner>ayman@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Records the reason that the merchant trust message is dismissed. Implemented
-    for Android.
-  </summary>
-</histogram>
-
-<histogram name="MerchantTrust.Message.DurationPrepared" units="ms"
-    expires_after="2022-09-18">
-  <owner>ayman@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Records the duration in milliseconds from the merchant trust message being
-    prepared to it being shown or cleared. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="MerchantTrust.Message.DurationShown" units="ms"
-    expires_after="2022-09-18">
-  <owner>ayman@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Records the duration in milliseconds that the merchant trust message is
-    shown. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="MerchantTrust.MessageImpact.BrowsingTime" units="ms"
-    expires_after="M105">
-  <owner>zhiyuancai@chromium.org</owner>
-  <owner>ayman@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Records the user browsing time in milliseconds in a tab on the same host
-    after a message shows. Recorded when user navigates to another host or the
-    tab gets hid/closed. Recorded for all messages. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram
-    name="MerchantTrust.MessageImpact.BrowsingTime.Rating{MessageStarRating}"
-    units="ms" expires_after="M105">
-  <owner>zhiyuancai@chromium.org</owner>
-  <owner>ayman@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Records the user browsing time in milliseconds in a tab on the same host
-    after a message shows. Recorded when user navigates to another host or the
-    tab gets hid/closed. Recorded for message with {MessageStarRating}.
-    Implemented for Android.
-  </summary>
-  <token key="MessageStarRating" variants="MerchantTrustMessageStarRating"/>
-</histogram>
-
-<histogram name="MerchantTrust.MessageImpact.NavigationCount"
-    units="navigations" expires_after="M105">
-  <owner>zhiyuancai@chromium.org</owner>
-  <owner>ayman@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Records the user navigation count in a tab on the same host after a message
-    shows. Recorded when user navigates to another host or the tab gets
-    hid/closed. Recorded for all messages. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram
-    name="MerchantTrust.MessageImpact.NavigationCount.Rating{MessageStarRating}"
-    units="navigations" expires_after="M105">
-  <owner>zhiyuancai@chromium.org</owner>
-  <owner>ayman@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Records the user navigation count in a tab on the same host after a message
-    shows. Recorded when user navigates to another host or the tab gets
-    hid/closed. Recorded for message with {MessageStarRating}. Implemented for
-    Android.
-  </summary>
-  <token key="MessageStarRating" variants="MerchantTrustMessageStarRating"/>
-</histogram>
-
-<histogram name="MerchantTrust.PageInfo.IsStoreInfoVisible"
-    enum="BooleanVisible" expires_after="2022-09-11">
-  <owner>zhiyuancai@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Records whether the store info row is visible in page info. Recorded when
-    the page info is opened. Implemented for Android.
   </summary>
 </histogram>
 
