@@ -97,6 +97,7 @@ TEST_F(DlpReportingManagerTest, ReportEvent) {
   manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
                        DlpRulesManager::Level::kBlock);
 
+  EXPECT_EQ(manager_.events_reported(), 1u);
   EXPECT_EQ(events_.size(), 1u);
   EXPECT_EQ(events_[0].source().url(), kCompanyPattern);
   EXPECT_FALSE(events_[0].has_destination());
@@ -110,6 +111,7 @@ TEST_F(DlpReportingManagerTest, ReportEventWithUrlDst) {
                        DlpRulesManager::Restriction::kClipboard,
                        DlpRulesManager::Level::kBlock);
 
+  EXPECT_EQ(manager_.events_reported(), 1u);
   EXPECT_EQ(events_.size(), 1u);
   EXPECT_EQ(events_[0].source().url(), kCompanyPattern);
   EXPECT_EQ(events_[0].destination().url(), dst_pattern);
@@ -134,6 +136,7 @@ TEST_F(DlpReportingManagerTest, ReportEventWithComponentDst) {
   ReportEventAndCheckComponent(
       DlpRulesManager::Component::kUnknownComponent,
       DlpPolicyEventDestination_Component_UNDEFINED_COMPONENT, 5u);
+  EXPECT_EQ(manager_.events_reported(), 6u);
 }
 
 TEST_F(DlpReportingManagerTest, MetricsReported) {
@@ -147,6 +150,7 @@ TEST_F(DlpReportingManagerTest, MetricsReported) {
                        DlpRulesManager::Restriction::kUnknownRestriction,
                        DlpRulesManager::Level::kWarn);
 
+  EXPECT_EQ(manager_.events_reported(), 3u);
   EXPECT_EQ(events_.size(), 3u);
   histogram_tester.ExpectUniqueSample(
       GetDlpHistogramPrefix() + dlp::kReportedEventStatus,
@@ -210,6 +214,7 @@ TEST_F(DlpReportingManagerTest, UserType) {
   ReportEventAndCheckUser(user_manager, active_directory_user_id,
                           active_directory_user,
                           DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE, 7u);
+  EXPECT_EQ(manager_.events_reported(), 8u);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -260,6 +265,7 @@ TEST_F(DlpReportingManagerTest, ReportEventError) {
 
   manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
                        DlpRulesManager::Level::kBlock);
+  EXPECT_EQ(manager_.events_reported(), 0u);
   EXPECT_EQ(events_.size(), 0u);
 }
 
@@ -284,6 +290,7 @@ TEST_F(DlpReportingManagerTest, OnEventEnqueuedError) {
   manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
                        DlpRulesManager::Level::kBlock);
 
+  EXPECT_EQ(manager_.events_reported(), 1u);
   EXPECT_EQ(events_.size(), 0u);
   histogram_tester.ExpectUniqueSample(
       GetDlpHistogramPrefix() + dlp::kReportedEventStatus,
