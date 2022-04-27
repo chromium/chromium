@@ -46,8 +46,8 @@ chrome.cast.ApiConfig = function(sessionRequest, onSession, onReceiver) {
 chrome.cast.initialize = function(apiConfig, onInitSuccess, onError) {
   this.apiConfig_ = apiConfig;
 
-  var receiver1 = {friendlyName: 'test cast', label: 'testcast'};
-  var receivers = [receiver1];
+  const receiver1 = {friendlyName: 'test cast', label: 'testcast'};
+  const receivers = [receiver1];
   setTimeout(this.apiConfig_.onReceiver_.bind(
       null, chrome.cast.ReceiverAvailability.UNAVAILABLE, []));
   setTimeout(this.apiConfig_.onReceiver_.bind(
