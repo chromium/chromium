@@ -24,10 +24,7 @@
   "lacros64-archive-rel": {
     "additional_compile_targets": [
       "chrome",
-      "lacros_version_metadata",
-      "linux_symbols",
-      "symupload",
-      "strip_chrome_binary"
+      "lacros_version_metadata"
     ]
   },
   "linux-archive-dbg": {

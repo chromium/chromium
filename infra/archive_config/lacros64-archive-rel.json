@@ -2,7 +2,7 @@
    "archive_datas":[
       {
          "files":[
-            "chrome.stripped",
+            "chrome",
             "chrome_100_percent.pak",
             "chrome_200_percent.pak",
             "chrome_crashpad_handler",
@@ -19,28 +19,11 @@
          "file_globs": [
             "locales/*.pak"
          ],
-         "rename_files":[
-            {
-               "from_file":"chrome.stripped",
-               "to_file":"chrome"
-            }
-         ],
          "dirs":[
             "WidevineCdm"
          ],
          "gcs_bucket":"chromium-browser-snapshots",
          "gcs_path":"lacros64/{%position%}/lacros.zip",
-         "archive_type":"ARCHIVE_TYPE_ZIP"
-      },
-      {
-         "files":[
-            "chrome.debug"
-         ],
-         "dirs": [
-            "locales"
-         ],
-         "gcs_bucket":"chromium-browser-snapshots",
-         "gcs_path":"lacros64/{%position%}/lacros_debug.zip",
          "archive_type":"ARCHIVE_TYPE_ZIP"
       },
       {
