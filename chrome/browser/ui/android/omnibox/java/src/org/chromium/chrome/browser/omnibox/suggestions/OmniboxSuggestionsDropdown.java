@@ -42,6 +42,13 @@ import java.lang.annotation.RetentionPolicy;
 /** A widget for showing a list of omnibox suggestions. */
 public class OmniboxSuggestionsDropdown extends RecyclerView {
     private static final long DEFERRED_INITIAL_SHRINKING_LAYOUT_FROM_IME_DURATION_MS = 300;
+    /**
+     * Used to defer the accessibility announcement for list content.
+     * This makes core difference when the list is first shown up, when the interaction with the
+     * Omnibox and presence of virtual keyboard may actually cause throttling of the Accessibility
+     * events.
+     */
+    private static final long LIST_COMPOSITION_ACCESSIBILITY_ANNOUNCEMENT_DELAY_MS = 300;
 
     private final int mStandardBgColor;
     private final int mIncognitoBgColor;
@@ -510,8 +517,10 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     }
 
     public void emitWindowContentChanged() {
-        announceForAccessibility(getContext().getString(
-                R.string.accessibility_omnibox_suggested_items, mAdapter.getItemCount()));
+        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> {
+            announceForAccessibility(getContext().getString(
+                    R.string.accessibility_omnibox_suggested_items, mAdapter.getItemCount()));
+        }, LIST_COMPOSITION_ACCESSIBILITY_ANNOUNCEMENT_DELAY_MS);
     }
 
     private void adjustSidePadding() {
