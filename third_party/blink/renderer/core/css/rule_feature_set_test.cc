@@ -644,6 +644,22 @@ TEST_F(RuleFeatureSetTest, nonMatchingHostContext) {
   ExpectNoInvalidation(invalidation_lists.descendants);
 }
 
+TEST_F(RuleFeatureSetTest, emptyIsWhere) {
+  EXPECT_EQ(RuleFeatureSet::kSelectorNeverMatches, CollectFeatures(":is()"));
+  EXPECT_EQ(RuleFeatureSet::kSelectorNeverMatches, CollectFeatures(":where()"));
+
+  // We do not support :nonsense, so :is()/:where() end up empty.
+  // https://drafts.csswg.org/selectors/#typedef-forgiving-selector-list
+  EXPECT_EQ(RuleFeatureSet::kSelectorNeverMatches,
+            CollectFeatures(":is(:nonsense)"));
+  EXPECT_EQ(RuleFeatureSet::kSelectorNeverMatches,
+            CollectFeatures(":where(:nonsense)"));
+  EXPECT_EQ(RuleFeatureSet::kSelectorNeverMatches,
+            CollectFeatures(".a:is(:nonsense)"));
+  EXPECT_EQ(RuleFeatureSet::kSelectorNeverMatches,
+            CollectFeatures(".b:where(:nonsense)"));
+}
+
 TEST_F(RuleFeatureSetTest, universalSiblingInvalidationDirectAdjacent) {
   EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch, CollectFeatures("* + .a"));
 

@@ -1160,6 +1160,24 @@ RuleFeatureSet::SelectorPreMatch RuleFeatureSet::CollectFeaturesFromSelector(
           return kSelectorNeverMatches;
         }
         found_host_pseudo = true;
+        // We fall through here to reach the "default" case. Entering the cases
+        // for kPseudoIs/Where has no effect, since :host[-context]() can't
+        // produce empty argument lists.
+        DCHECK(!current->SelectorList() || current->SelectorList()->IsValid());
+        [[fallthrough]];
+      case CSSSelector::kPseudoIs:
+      case CSSSelector::kPseudoWhere:
+        if (const CSSSelectorList* selector_list = current->SelectorList()) {
+          // An empty list (!IsValid) is possible here because of the forgiving
+          // selector list parsing [1], in which empty lists are not syntax
+          // errors, but also don't match anything [2].
+          //
+          // [1]
+          // https://drafts.csswg.org/selectors/#typedef-forgiving-selector-list
+          // [2] https://drafts.csswg.org/selectors/#matches
+          if (!selector_list->IsValid())
+            return kSelectorNeverMatches;
+        }
         [[fallthrough]];
       default:
         if (const CSSSelectorList* selector_list = current->SelectorList()) {
