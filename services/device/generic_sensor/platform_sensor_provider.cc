@@ -5,11 +5,10 @@
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/components/sensors/buildflags.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
 #include "services/device/generic_sensor/platform_sensor_provider_mac.h"
@@ -20,7 +19,7 @@
 #include "build/build_config.h"
 #include "services/device/generic_sensor/platform_sensor_provider_win.h"
 #include "services/device/generic_sensor/platform_sensor_provider_winrt.h"
-#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(USE_IIOSERVICE)
 #include "services/device/generic_sensor/platform_sensor_provider_chromeos.h"
 #elif defined(USE_UDEV)
@@ -44,7 +43,7 @@ std::unique_ptr<PlatformSensorProvider> PlatformSensorProvider::Create() {
   } else {
     return std::make_unique<PlatformSensorProviderWin>();
   }
-#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(USE_IIOSERVICE)
   return std::make_unique<PlatformSensorProviderChromeOS>();
 #elif defined(USE_UDEV)

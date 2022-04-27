@@ -7,7 +7,6 @@
 #include <string.h>
 
 #include <utility>
-#include "build/chromeos_buildflags.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/elapsed_timer.h"
@@ -16,7 +15,7 @@
 #include "third_party/blink/public/web/web_image.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/gfx/codec/png_codec.h"
 #endif
 
@@ -76,7 +75,7 @@ void ImageDecoderImpl::DecodeImage(mojo_base::BigBuffer encoded_data,
   }
 
   SkBitmap decoded_image;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (codec == mojom::ImageCodec::kPng) {
     // Our PNG decoding is using libpng.
     if (encoded_data.size()) {
@@ -87,7 +86,7 @@ void ImageDecoderImpl::DecodeImage(mojo_base::BigBuffer encoded_data,
       }
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   if (codec == mojom::ImageCodec::kDefault) {
     decoded_image = blink::WebImage::FromData(
         blink::WebData(reinterpret_cast<const char*>(encoded_data.data()),

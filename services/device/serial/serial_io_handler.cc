@@ -16,12 +16,11 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/device_event_log/device_event_log.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace device {
 
@@ -51,7 +50,7 @@ void SerialIoHandler::Open(const mojom::SerialConnectionOptions& options,
   DCHECK(ui_thread_task_runner_.get());
   MergeConnectionOptions(options);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Note: dbus clients are destroyed in PostDestroyThreads so passing |client|
   // as unretained is safe.
   auto* client = chromeos::PermissionBrokerClient::Get();
@@ -73,10 +72,10 @@ void SerialIoHandler::Open(const mojom::SerialConnectionOptions& options,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&SerialIoHandler::StartOpen, this,
                      base::ThreadTaskRunnerHandle::Get()));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 
 void SerialIoHandler::OnPathOpened(
     scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner,
@@ -105,7 +104,7 @@ void SerialIoHandler::ReportPathOpenError(const std::string& error_name,
   std::move(open_complete_).Run(false);
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void SerialIoHandler::MergeConnectionOptions(
     const mojom::SerialConnectionOptions& options) {

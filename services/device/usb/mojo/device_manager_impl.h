@@ -16,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -74,7 +73,7 @@ class DeviceManagerImpl : public mojom::UsbDeviceManager,
                                     bool granted);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   void CheckAccess(const std::string& guid,
                    CheckAccessCallback callback) override;
 
@@ -89,7 +88,7 @@ class DeviceManagerImpl : public mojom::UsbDeviceManager,
   void OnOpenFileDescriptorError(OpenFileDescriptorCallback callback,
                                  const std::string& error_name,
                                  const std::string& message);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void SetClient(mojo::PendingAssociatedRemote<mojom::UsbDeviceManagerClient>
                      client) override;

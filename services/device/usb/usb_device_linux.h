@@ -14,7 +14,6 @@
 #include "base/files/scoped_file.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "services/device/usb/usb_device.h"
 
 namespace base {
@@ -31,9 +30,9 @@ class UsbDeviceLinux : public UsbDevice {
   UsbDeviceLinux& operator=(const UsbDeviceLinux&) = delete;
 
 // UsbDevice implementation:
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   void CheckUsbAccess(ResultCallback callback) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   void Open(OpenCallback callback) override;
 
   const std::string& device_path() const { return device_path_; }
@@ -54,7 +53,7 @@ class UsbDeviceLinux : public UsbDevice {
   ~UsbDeviceLinux() override;
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   void OnOpenRequestComplete(OpenCallback callback,
                              base::ScopedFD fd,
                              base::ScopedFD lifeline_fd);
@@ -66,7 +65,7 @@ class UsbDeviceLinux : public UsbDevice {
       OpenCallback callback,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   void Opened(base::ScopedFD fd,
               base::ScopedFD lifeline_fd,
               OpenCallback callback,
