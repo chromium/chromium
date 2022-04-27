@@ -96,7 +96,7 @@ class RuntimeApplicationBase : public RuntimeApplication {
                              PostMessage::Reactor* reactor);
 
   // Creates the root CastWebView for this Cast session.
-  void CreateCastWebView();
+  CastWebView::Scoped CreateCastWebView();
 
   // Notifies that the application has been initialized.
   void OnApplicationInitialized();

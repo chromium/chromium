@@ -39,8 +39,6 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient,
       CastWebService* web_service,
       DisplaySettingsManager* display_settings_manager,
       shell::AccessibilityServiceImpl* accessibility_service) override;
-  void OverrideWebkitPrefs(content::WebContents* web_contents,
-                           blink::web_pref::WebPreferences* prefs) override;
   std::unique_ptr<::media::CdmFactory> CreateCdmFactory(
       ::media::mojom::FrameInterfaceFactory* frame_interfaces) override;
   // This function is used to allow/disallow WebUIs to make network requests.

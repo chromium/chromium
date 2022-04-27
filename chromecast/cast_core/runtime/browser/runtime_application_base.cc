@@ -87,7 +87,7 @@ void RuntimeApplicationBase::Load(cast::runtime::LoadApplicationRequest request,
             << request.runtime_application_service_info().grpc_endpoint();
 
   // Initialize web view.
-  CreateCastWebView();
+  cast_web_view_ = CreateCastWebView();
 
   // Set initial URL rewrite rules.
   url_rewrite::mojom::UrlRequestRewriteRulesPtr mojom_rules =
@@ -219,7 +219,7 @@ void RuntimeApplicationBase::SetApplicationState(
       std::move(callback)));
 }
 
-void RuntimeApplicationBase::CreateCastWebView() {
+CastWebView::Scoped RuntimeApplicationBase::CreateCastWebView() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   mojom::CastWebViewParamsPtr params = mojom::CastWebViewParams::New();
   params->renderer_type = renderer_type_;
@@ -228,7 +228,38 @@ void RuntimeApplicationBase::CreateCastWebView() {
 #if DCHECK_IS_ON()
   params->enabled_for_dev = true;
 #endif
-  cast_web_view_ = web_service_->CreateWebViewInternal(std::move(params));
+  CastWebView::Scoped cast_web_view =
+      web_service_->CreateWebViewInternal(std::move(params));
+  DCHECK(cast_web_view);
+
+  // Apply Cast features to the web content.
+  const auto& cast_features = GetAppConfig().cast_features();
+  if (!cast_features.empty()) {
+    base::DictionaryValue renderer_features;
+    for (const auto& feature : cast_features) {
+      base::DictionaryValue dict;
+      for (const auto& feature_value : feature.values()) {
+        switch (feature_value.value_case()) {
+          case cast::common::CastFeature::Value::kFlag:
+            dict.SetBoolKey(feature_value.key(), feature_value.flag());
+            break;
+          case cast::common::CastFeature::Value::kText:
+            dict.SetStringKey(feature_value.key(), feature_value.text());
+            break;
+          case cast::common::CastFeature::Value::VALUE_NOT_SET:
+            LOG(FATAL) << "No value was set for the feature: "
+                       << feature.name();
+        }
+      }
+      DVLOG(1) << "Renderer feature created: " << feature.name();
+      renderer_features.SetKey(feature.name(), std::move(dict));
+    }
+    cast_web_view->cast_web_contents()->AddRendererFeatures(
+        std::move(renderer_features));
+    LOG(INFO) << "Renderer features set: size=" << cast_features.size();
+  }
+
+  return cast_web_view;
 }
 
 void RuntimeApplicationBase::StopApplication() {
