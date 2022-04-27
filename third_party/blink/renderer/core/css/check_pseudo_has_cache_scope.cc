@@ -55,10 +55,21 @@ ElementCheckPseudoHasResultMap& CheckPseudoHasCacheScope::GetResultMap(
 CheckPseudoHasCacheScope::Context::Context(
     const Document* document,
     const CheckPseudoHasArgumentContext& argument_context)
-    : result_map_(CheckPseudoHasCacheScope::GetResultMap(
-          document,
-          argument_context.HasArgument())),
-      argument_context_(argument_context) {}
+    : argument_context_(argument_context) {
+  switch (argument_context_.TraversalScope()) {
+    case CheckPseudoHasArgumentTraversalScope::kSubtree:
+    case CheckPseudoHasArgumentTraversalScope::kOneNextSiblingSubtree:
+    case CheckPseudoHasArgumentTraversalScope::kAllNextSiblingSubtrees:
+    case CheckPseudoHasArgumentTraversalScope::kAllNextSiblings:
+      cache_allowed_ = true;
+      result_map_ = &CheckPseudoHasCacheScope::GetResultMap(
+          document, argument_context.HasArgument());
+      break;
+    default:
+      cache_allowed_ = false;
+      break;
+  }
+}
 
 uint8_t CheckPseudoHasCacheScope::Context::SetMatchedAndGetOldResult(
     Element* element) {
@@ -71,8 +82,10 @@ void CheckPseudoHasCacheScope::Context::SetChecked(Element* element) {
 
 uint8_t CheckPseudoHasCacheScope::Context::SetResultAndGetOld(Element* element,
                                                               uint8_t result) {
+  DCHECK(cache_allowed_);
+  DCHECK(result_map_);
   uint8_t old_result = kNotCached;
-  auto cache_result = result_map_.insert(element, result);
+  auto cache_result = result_map_->insert(element, result);
   if (!cache_result.is_new_entry) {
     old_result = cache_result.stored_value->value;
     cache_result.stored_value->value |= result;
@@ -156,8 +169,10 @@ void CheckPseudoHasCacheScope::Context::SetAllTraversedElementsAsChecked(
 }
 
 uint8_t CheckPseudoHasCacheScope::Context::GetResult(Element* element) const {
-  auto iterator = result_map_.find(element);
-  return iterator == result_map_.end() ? kNotCached : iterator->value;
+  DCHECK(cache_allowed_);
+  DCHECK(result_map_);
+  auto iterator = result_map_->find(element);
+  return iterator == result_map_->end() ? kNotCached : iterator->value;
 }
 
 bool CheckPseudoHasCacheScope::Context::

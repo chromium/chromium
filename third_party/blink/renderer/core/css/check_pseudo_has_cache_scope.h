@@ -218,6 +218,8 @@ class CORE_EXPORT CheckPseudoHasCacheScope {
 
     bool AlreadyChecked(Element*) const;
 
+    inline bool CacheAllowed() const { return cache_allowed_; }
+
    private:
     friend class CheckPseudoHasCacheScopeContextTest;
 
@@ -229,9 +231,10 @@ class CORE_EXPORT CheckPseudoHasCacheScope {
     bool HasSiblingsWithAllDescendantsOrNextSiblingsChecked(Element*) const;
     bool HasAncestorsWithAllDescendantsOrNextSiblingsChecked(Element*) const;
 
-    size_t GetCacheCount() { return result_map_.size(); }
+    size_t GetCacheCount() { return cache_allowed_ ? result_map_->size() : 0; }
 
-    ElementCheckPseudoHasResultMap& result_map_;
+    bool cache_allowed_;
+    ElementCheckPseudoHasResultMap* result_map_;
     const CheckPseudoHasArgumentContext& argument_context_;
   };
 

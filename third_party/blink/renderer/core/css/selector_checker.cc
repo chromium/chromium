@@ -676,21 +676,32 @@ inline bool CacheMatchedElementsAndReturnMatchedResultForIndirectRelation(
     HeapVector<Member<Element>>& has_argument_leftmost_compound_matches,
     CheckPseudoHasCacheScope::Context& cache_scope_context,
     Element* (*next)(Element*)) {
-  bool selector_matched = false;
+  if (cache_scope_context.CacheAllowed()) {
+    bool selector_matched = false;
+    for (auto leftmost : has_argument_leftmost_compound_matches) {
+      for (Element* has_matched_element = next(leftmost); has_matched_element;
+           has_matched_element = next(has_matched_element)) {
+        if (has_matched_element == has_scope_element)
+          selector_matched = true;
+        uint8_t old_result =
+            cache_scope_context.SetMatchedAndGetOldResult(has_matched_element);
+        if (old_result == kNotCached)
+          continue;
+        if (old_result & kMatched)
+          break;
+      }
+    }
+    return selector_matched;
+  }
+
   for (auto leftmost : has_argument_leftmost_compound_matches) {
     for (Element* has_matched_element = next(leftmost); has_matched_element;
          has_matched_element = next(has_matched_element)) {
       if (has_matched_element == has_scope_element)
-        selector_matched = true;
-      uint8_t old_result =
-          cache_scope_context.SetMatchedAndGetOldResult(has_matched_element);
-      if (old_result == kNotCached)
-        continue;
-      if (old_result & kMatched)
-        break;
+        return true;
     }
   }
-  return selector_matched;
+  return false;
 }
 
 inline bool CacheMatchedElementsAndReturnMatchedResultForDirectRelation(
@@ -698,15 +709,25 @@ inline bool CacheMatchedElementsAndReturnMatchedResultForDirectRelation(
     HeapVector<Member<Element>>& has_argument_leftmost_compound_matches,
     CheckPseudoHasCacheScope::Context& cache_scope_context,
     Element* (*next)(Element*)) {
-  bool selector_matched = false;
+  if (cache_scope_context.CacheAllowed()) {
+    bool selector_matched = false;
+    for (auto leftmost : has_argument_leftmost_compound_matches) {
+      if (Element* has_matched_element = next(leftmost)) {
+        cache_scope_context.SetMatchedAndGetOldResult(has_matched_element);
+        if (has_matched_element == has_scope_element)
+          selector_matched = true;
+      }
+    }
+    return selector_matched;
+  }
+
   for (auto leftmost : has_argument_leftmost_compound_matches) {
     if (Element* has_matched_element = next(leftmost)) {
-      cache_scope_context.SetMatchedAndGetOldResult(has_matched_element);
       if (has_matched_element == has_scope_element)
-        selector_matched = true;
+        return true;
     }
   }
-  return selector_matched;
+  return false;
 }
 
 inline bool ContextForSubjectHasInMatchesArgument(
@@ -775,7 +796,9 @@ void SetAffectedByHasFlagsForHasScopeElementOrItsSiblings(
 }
 
 void SetAncestorsOrAncestorSiblingsAffectedByHasForArgumentMatchedElement(
-    CheckPseudoHasArgumentTraversalIterator& iterator_at_matched) {
+    CheckPseudoHasArgumentContext& argument_context,
+    Element* argument_matched_element,
+    int argument_matched_element_depth) {
   // Iterator class to traverse siblings, ancestors and ancestor siblings of the
   // CheckPseudoHasArgumentTraversalIterator's current element until reach to
   // the scope or scope sibling element (element at depth 0) to set the
@@ -784,11 +807,14 @@ void SetAncestorsOrAncestorSiblingsAffectedByHasForArgumentMatchedElement(
     STACK_ALLOCATED();
 
    public:
-    explicit AncestorsOrAncestorSiblingsAffectedByHasIterator(
-        CheckPseudoHasArgumentTraversalIterator& iterator_at_matched)
-        : iterator_at_matched_(iterator_at_matched),
-          depth_(iterator_at_matched_.Depth()),
-          current_(iterator_at_matched_.CurrentElement()) {
+    AncestorsOrAncestorSiblingsAffectedByHasIterator(
+        CheckPseudoHasArgumentContext& argument_context,
+        Element* argument_matched_element,
+        int argument_matched_element_depth)
+        : argument_context_(argument_context),
+          argument_matched_element_depth_(argument_matched_element_depth),
+          depth_(argument_matched_element_depth),
+          current_(argument_matched_element) {
       DCHECK_GT(depth_, 0);
       // affected-by flags of the matched element were already set.
       // So, this iterator traverses from the next of the matched element.
@@ -824,18 +850,20 @@ void SetAncestorsOrAncestorSiblingsAffectedByHasForArgumentMatchedElement(
       // of the argument selector matched element, we can determine whether the
       // sibling traversal is needed or not by checking whether an adjacent
       // combinator is between child or descendant combinator.
-      DCHECK_LE(depth_, iterator_at_matched_.Depth());
-      return iterator_at_matched_.Depth() == depth_
-                 ? iterator_at_matched_.Context().SiblingCombinatorAtRightmost()
-                 : iterator_at_matched_.Context()
+      DCHECK_LE(depth_, argument_matched_element_depth_);
+      return argument_matched_element_depth_ == depth_
+                 ? argument_context_.SiblingCombinatorAtRightmost()
+                 : argument_context_
                        .SiblingCombinatorBetweenChildOrDescendantCombinator();
     }
 
-    const CheckPseudoHasArgumentTraversalIterator& iterator_at_matched_;
+    const CheckPseudoHasArgumentContext& argument_context_;
+    const int argument_matched_element_depth_;
     int depth_;
     Element* current_;
   } ancestors_or_ancestor_siblings_affected_by_has_iterator(
-      iterator_at_matched);
+      argument_context, argument_matched_element,
+      argument_matched_element_depth);
 
   // Set AncestorsOrAncestorSiblingsAffectedByHas flag on the elements at
   // upward (previous siblings, ancestors, ancestors' previous siblings) of the
@@ -879,17 +907,19 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
                                                            argument_context);
     }
 
-    // Get the cache item of matching ':has(<selector>)' on the element
-    // to skip argument matching on the subtree elements
-    //  - If the element was already marked as matched, return true.
-    //  - If the element was already checked but not matched,
-    //    move to the next argument selector.
-    uint8_t previous_result = SetHasScopeElementAsCheckedAndGetOldResult(
-        context, cache_scope_context);
-    if (previous_result & kChecked) {
-      if (previous_result & kMatched)
-        return true;
-      continue;
+    if (cache_scope_context.CacheAllowed()) {
+      // Get the cache item of matching ':has(<selector>)' on the element
+      // to skip argument matching on the subtree elements
+      //  - If the element was already marked as matched, return true.
+      //  - If the element was already checked but not matched,
+      //    move to the next argument selector.
+      uint8_t previous_result = SetHasScopeElementAsCheckedAndGetOldResult(
+          context, cache_scope_context);
+      if (previous_result & kChecked) {
+        if (previous_result & kMatched)
+          return true;
+        continue;
+      }
     }
 
     sub_context.selector = selector;
@@ -962,21 +992,21 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
           break;
       }
 
-      if (selector_matched) {
-        cache_scope_context.SetAllTraversedElementsAsChecked(
-            last_traversed_element, last_traversed_depth);
-
-        if (mode_ == kResolvingStyle && iterator.Depth() > 0) {
-          SetAncestorsOrAncestorSiblingsAffectedByHasForArgumentMatchedElement(
-              iterator);
-        }
-        return true;
-      }
+      if (selector_matched)
+        break;
     }
 
-    if (last_traversed_element) {
+    if (cache_scope_context.CacheAllowed() && last_traversed_element) {
       cache_scope_context.SetAllTraversedElementsAsChecked(
           last_traversed_element, last_traversed_depth);
+    }
+
+    if (selector_matched) {
+      if (mode_ == kResolvingStyle && last_traversed_depth > 0) {
+        SetAncestorsOrAncestorSiblingsAffectedByHasForArgumentMatchedElement(
+            argument_context, last_traversed_element, last_traversed_depth);
+      }
+      return true;
     }
   }
   return false;

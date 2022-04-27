@@ -59,15 +59,25 @@ class CheckPseudoHasCacheScopeContextTest : public PageTestBase {
     ExpectedCheckPseudoHasResult expected_result;
   };
 
-  bool ElementCached(CheckPseudoHasCacheScope::Context& cache_scope_context,
-                     Element* element) const {
-    return cache_scope_context.GetResult(element) !=
+  static uint8_t GetResult(
+      CheckPseudoHasCacheScope::Context& cache_scope_context,
+      Element* element) {
+    return cache_scope_context.CacheAllowed()
+               ? cache_scope_context.GetResult(element)
+               : CheckPseudoHasResult::kNotCached;
+  }
+
+  static bool ElementCached(
+      CheckPseudoHasCacheScope::Context& cache_scope_context,
+      Element* element) {
+    return GetResult(cache_scope_context, element) !=
            CheckPseudoHasResult::kNotCached;
   }
 
-  bool ElementChecked(CheckPseudoHasCacheScope::Context& cache_scope_context,
-                      Element* element) const {
-    return cache_scope_context.GetResult(element) &
+  static bool ElementChecked(
+      CheckPseudoHasCacheScope::Context& cache_scope_context,
+      Element* element) {
+    return GetResult(cache_scope_context, element) &
            CheckPseudoHasResult::kChecked;
   }
 
@@ -125,11 +135,12 @@ class CheckPseudoHasCacheScopeContextTest : public PageTestBase {
                       << expected_result_cache_entry.element_query << "'";
 
       EXPECT_EQ(expected_result_cache_entry.cached_result,
-                cache_scope_context.GetResult(element))
+                GetResult(cache_scope_context, element))
           << "Failed : " << test_name << " : { expected: "
           << TestResultToString(expected_result_cache_entry.cached_result)
           << ", actual: "
-          << TestResultToString(cache_scope_context.GetResult(element)) << " }";
+          << TestResultToString(GetResult(cache_scope_context, element))
+          << " }";
 
       switch (expected_result_cache_entry.expected_result) {
         case kSameAsCached:
@@ -1692,6 +1703,359 @@ TEST_F(CheckPseudoHasCacheScopeContextTest,
        {"#div51", kNotCached, kAlreadyNotMatched},
        {"#div6", kNotCached, kAlreadyNotMatched},
        {"#div61", kNotCached, kAlreadyNotMatched}});
+}
+
+TEST_F(CheckPseudoHasCacheScopeContextTest, QuerySelectorAllCase5) {
+  // CheckPseudoHasArgumentTraversalScope::kOneNextSibling
+
+  auto* document = HTMLDocument::CreateForTest();
+  document->write(R"HTML(
+    <!DOCTYPE html>
+    <main id=main>
+      <div id=div1>
+        <div id=div11></div>
+        <div id=div12></div>
+        <div id=div13></div>
+      </div>
+      <div id=div2>
+        <div id=div21></div>
+        <div id=div22 class=a></div>
+        <div id=div23></div>
+      </div>
+      <div id=div3 class=a>
+        <div id=div31></div>
+        <div id=div32></div>
+        <div id=div33></div>
+      </div>
+    </main>
+  )HTML");
+
+  TestMatches(document, "div2", ":has(+ .a)",
+              /* expected_match_result */ true,
+              /* expected_result_cache_count */ 0,
+              {{"#main", kNotCached, kNotYetChecked},
+               {"#div1", kNotCached, kNotYetChecked},
+               {"#div11", kNotCached, kNotYetChecked},
+               {"#div12", kNotCached, kNotYetChecked},
+               {"#div13", kNotCached, kNotYetChecked},
+               {"#div2", kNotCached, kNotYetChecked},
+               {"#div21", kNotCached, kNotYetChecked},
+               {"#div22", kNotCached, kNotYetChecked},
+               {"#div23", kNotCached, kNotYetChecked},
+               {"#div3", kNotCached, kNotYetChecked},
+               {"#div31", kNotCached, kNotYetChecked},
+               {"#div32", kNotCached, kNotYetChecked},
+               {"#div33", kNotCached, kNotYetChecked}});
+
+  TestMatches(document, "div21", ":has(+ .a)",
+              /* expected_match_result */ true,
+              /* expected_result_cache_count */ 0,
+              {{"#main", kNotCached, kNotYetChecked},
+               {"#div1", kNotCached, kNotYetChecked},
+               {"#div11", kNotCached, kNotYetChecked},
+               {"#div12", kNotCached, kNotYetChecked},
+               {"#div13", kNotCached, kNotYetChecked},
+               {"#div2", kNotCached, kNotYetChecked},
+               {"#div21", kNotCached, kNotYetChecked},
+               {"#div22", kNotCached, kNotYetChecked},
+               {"#div23", kNotCached, kNotYetChecked},
+               {"#div3", kNotCached, kNotYetChecked},
+               {"#div31", kNotCached, kNotYetChecked},
+               {"#div32", kNotCached, kNotYetChecked},
+               {"#div33", kNotCached, kNotYetChecked}});
+
+  TestQuerySelectorAll(document, "main", ":has(+ .a)", {"div2", "div21"},
+                       /* expected_result_cache_count */ 0,
+                       {{"#main", kNotCached, kNotYetChecked},
+                        {"#div1", kNotCached, kNotYetChecked},
+                        {"#div11", kNotCached, kNotYetChecked},
+                        {"#div12", kNotCached, kNotYetChecked},
+                        {"#div13", kNotCached, kNotYetChecked},
+                        {"#div2", kNotCached, kNotYetChecked},
+                        {"#div21", kNotCached, kNotYetChecked},
+                        {"#div22", kNotCached, kNotYetChecked},
+                        {"#div23", kNotCached, kNotYetChecked},
+                        {"#div3", kNotCached, kNotYetChecked},
+                        {"#div31", kNotCached, kNotYetChecked},
+                        {"#div32", kNotCached, kNotYetChecked},
+                        {"#div33", kNotCached, kNotYetChecked}});
+}
+
+TEST_F(CheckPseudoHasCacheScopeContextTest, QuerySelectorAllCase6) {
+  // CheckPseudoHasArgumentTraversalScope::kFixedDepthDescendants
+
+  auto* document = HTMLDocument::CreateForTest();
+  document->write(R"HTML(
+    <!DOCTYPE html>
+    <main id=main>
+      <div id=div1>
+        <div id=div11 class=a>
+          <div id=div111></div>
+          <div id=div112>
+            <div id=div1121></div>
+            <div id=div1122 class=a></div>
+            <div id=div1123></div>
+          </div>
+          <div id=div113></div>
+        </div>
+        <div id=div12>
+          <div id=div121></div>
+          <div id=div122 class=a></div>
+          <div id=div123></div>
+        </div>
+      </div>
+    </main>
+  )HTML");
+
+  TestMatches(document, "div1", ":has(> .a)",
+              /* expected_match_result */ true,
+              /* expected_result_cache_count */ 0,
+              {{"#main", kNotCached, kNotYetChecked},
+               {"#div1", kNotCached, kNotYetChecked},
+               {"#div11", kNotCached, kNotYetChecked},
+               {"#div111", kNotCached, kNotYetChecked},
+               {"#div112", kNotCached, kNotYetChecked},
+               {"#div1121", kNotCached, kNotYetChecked},
+               {"#div1122", kNotCached, kNotYetChecked},
+               {"#div1123", kNotCached, kNotYetChecked},
+               {"#div113", kNotCached, kNotYetChecked},
+               {"#div12", kNotCached, kNotYetChecked},
+               {"#div121", kNotCached, kNotYetChecked},
+               {"#div122", kNotCached, kNotYetChecked},
+               {"#div123", kNotCached, kNotYetChecked}});
+
+  TestMatches(document, "div112", ":has(> .a)",
+              /* expected_match_result */ true,
+              /* expected_result_cache_count */ 0,
+              {{"#main", kNotCached, kNotYetChecked},
+               {"#div1", kNotCached, kNotYetChecked},
+               {"#div11", kNotCached, kNotYetChecked},
+               {"#div111", kNotCached, kNotYetChecked},
+               {"#div112", kNotCached, kNotYetChecked},
+               {"#div1121", kNotCached, kNotYetChecked},
+               {"#div1122", kNotCached, kNotYetChecked},
+               {"#div1123", kNotCached, kNotYetChecked},
+               {"#div113", kNotCached, kNotYetChecked},
+               {"#div12", kNotCached, kNotYetChecked},
+               {"#div121", kNotCached, kNotYetChecked},
+               {"#div122", kNotCached, kNotYetChecked},
+               {"#div123", kNotCached, kNotYetChecked}});
+
+  TestMatches(document, "div12", ":has(> .a)",
+              /* expected_match_result */ true,
+              /* expected_result_cache_count */ 0,
+              {{"#main", kNotCached, kNotYetChecked},
+               {"#div1", kNotCached, kNotYetChecked},
+               {"#div11", kNotCached, kNotYetChecked},
+               {"#div111", kNotCached, kNotYetChecked},
+               {"#div112", kNotCached, kNotYetChecked},
+               {"#div1121", kNotCached, kNotYetChecked},
+               {"#div1122", kNotCached, kNotYetChecked},
+               {"#div1123", kNotCached, kNotYetChecked},
+               {"#div113", kNotCached, kNotYetChecked},
+               {"#div12", kNotCached, kNotYetChecked},
+               {"#div121", kNotCached, kNotYetChecked},
+               {"#div122", kNotCached, kNotYetChecked},
+               {"#div123", kNotCached, kNotYetChecked}});
+
+  TestQuerySelectorAll(document, "main", ":has(> .a)",
+                       {"div1", "div112", "div12"},
+                       /* expected_result_cache_count */ 0,
+                       {{"#main", kNotCached, kNotYetChecked},
+                        {"#div1", kNotCached, kNotYetChecked},
+                        {"#div11", kNotCached, kNotYetChecked},
+                        {"#div111", kNotCached, kNotYetChecked},
+                        {"#div112", kNotCached, kNotYetChecked},
+                        {"#div1121", kNotCached, kNotYetChecked},
+                        {"#div1122", kNotCached, kNotYetChecked},
+                        {"#div1123", kNotCached, kNotYetChecked},
+                        {"#div113", kNotCached, kNotYetChecked},
+                        {"#div12", kNotCached, kNotYetChecked},
+                        {"#div121", kNotCached, kNotYetChecked},
+                        {"#div122", kNotCached, kNotYetChecked},
+                        {"#div123", kNotCached, kNotYetChecked}});
+}
+
+TEST_F(CheckPseudoHasCacheScopeContextTest, QuerySelectorAllCase7) {
+  // CheckPseudoHasArgumentTraversalScope::kOneNextSiblingFixedDepthDescendants
+
+  auto* document = HTMLDocument::CreateForTest();
+  document->write(R"HTML(
+    <!DOCTYPE html>
+    <main id=main>
+      <div id=div1>
+        <div id=div11></div>
+        <div id=div12></div>
+        <div id=div13></div>
+      </div>
+      <div id=div2 class=a>
+        <div id=div21></div>
+        <div id=div22 class=b></div>
+        <div id=div23 class=a>
+          <div id=div231></div>
+          <div id=div232 class=b></div>
+          <div id=div233></div>
+        </div>
+      </div>
+    </main>
+  )HTML");
+
+  TestMatches(document, "div1", ":has(+ .a > .b)",
+              /* expected_match_result */ true,
+              /* expected_result_cache_count */ 0,
+              {{"#main", kNotCached, kNotYetChecked},
+               {"#div1", kNotCached, kNotYetChecked},
+               {"#div11", kNotCached, kNotYetChecked},
+               {"#div12", kNotCached, kNotYetChecked},
+               {"#div13", kNotCached, kNotYetChecked},
+               {"#div2", kNotCached, kNotYetChecked},
+               {"#div21", kNotCached, kNotYetChecked},
+               {"#div22", kNotCached, kNotYetChecked},
+               {"#div23", kNotCached, kNotYetChecked},
+               {"#div231", kNotCached, kNotYetChecked},
+               {"#div232", kNotCached, kNotYetChecked},
+               {"#div233", kNotCached, kNotYetChecked}});
+
+  TestMatches(document, "div22", ":has(+ .a > .b)",
+              /* expected_match_result */ true,
+              /* expected_result_cache_count */ 0,
+              {{"#main", kNotCached, kNotYetChecked},
+               {"#div1", kNotCached, kNotYetChecked},
+               {"#div11", kNotCached, kNotYetChecked},
+               {"#div12", kNotCached, kNotYetChecked},
+               {"#div13", kNotCached, kNotYetChecked},
+               {"#div2", kNotCached, kNotYetChecked},
+               {"#div21", kNotCached, kNotYetChecked},
+               {"#div22", kNotCached, kNotYetChecked},
+               {"#div23", kNotCached, kNotYetChecked},
+               {"#div231", kNotCached, kNotYetChecked},
+               {"#div232", kNotCached, kNotYetChecked},
+               {"#div233", kNotCached, kNotYetChecked}});
+
+  TestQuerySelectorAll(document, "main", ":has(+ .a > .b)", {"div1", "div22"},
+                       /* expected_result_cache_count */ 0,
+                       {{"#main", kNotCached, kNotYetChecked},
+                        {"#div1", kNotCached, kNotYetChecked},
+                        {"#div11", kNotCached, kNotYetChecked},
+                        {"#div12", kNotCached, kNotYetChecked},
+                        {"#div13", kNotCached, kNotYetChecked},
+                        {"#div2", kNotCached, kNotYetChecked},
+                        {"#div21", kNotCached, kNotYetChecked},
+                        {"#div22", kNotCached, kNotYetChecked},
+                        {"#div23", kNotCached, kNotYetChecked},
+                        {"#div231", kNotCached, kNotYetChecked},
+                        {"#div232", kNotCached, kNotYetChecked},
+                        {"#div233", kNotCached, kNotYetChecked}});
+}
+
+TEST_F(CheckPseudoHasCacheScopeContextTest, QuerySelectorAllCase8) {
+  // CheckPseudoHasArgumentTraversalScope::kAllNextSiblingsFixedDepthDescendants
+
+  auto* document = HTMLDocument::CreateForTest();
+  document->write(R"HTML(
+    <!DOCTYPE html>
+    <main id=main>
+      <div id=div1>
+        <div id=div11></div>
+        <div id=div12></div>
+        <div id=div13></div>
+      </div>
+      <div id=div2>
+        <div id=div21></div>
+        <div id=div22 class=a>
+          <div id=div221 class=b></div>
+          <div id=div222></div>
+          <div id=div223></div>
+        </div>
+        <div id=div23></div>
+      </div>
+      <div id=div3 class=a>
+        <div id=div31 class=b></div>
+        <div id=div32></div>
+        <div id=div33></div>
+      </div>
+    </main>
+  )HTML");
+
+  TestMatches(document, "div1", ":has(~ .a > .b)",
+              /* expected_match_result */ true,
+              /* expected_result_cache_count */ 0,
+              {{"#main", kNotCached, kNotYetChecked},
+               {"#div1", kNotCached, kNotYetChecked},
+               {"#div11", kNotCached, kNotYetChecked},
+               {"#div12", kNotCached, kNotYetChecked},
+               {"#div13", kNotCached, kNotYetChecked},
+               {"#div2", kNotCached, kNotYetChecked},
+               {"#div21", kNotCached, kNotYetChecked},
+               {"#div22", kNotCached, kNotYetChecked},
+               {"#div221", kNotCached, kNotYetChecked},
+               {"#div222", kNotCached, kNotYetChecked},
+               {"#div223", kNotCached, kNotYetChecked},
+               {"#div23", kNotCached, kNotYetChecked},
+               {"#div3", kNotCached, kNotYetChecked},
+               {"#div31", kNotCached, kNotYetChecked},
+               {"#div32", kNotCached, kNotYetChecked},
+               {"#div33", kNotCached, kNotYetChecked}});
+
+  TestMatches(document, "div2", ":has(~ .a > .b)",
+              /* expected_match_result */ true,
+              /* expected_result_cache_count */ 0,
+              {{"#main", kNotCached, kNotYetChecked},
+               {"#div1", kNotCached, kNotYetChecked},
+               {"#div11", kNotCached, kNotYetChecked},
+               {"#div12", kNotCached, kNotYetChecked},
+               {"#div13", kNotCached, kNotYetChecked},
+               {"#div2", kNotCached, kNotYetChecked},
+               {"#div21", kNotCached, kNotYetChecked},
+               {"#div22", kNotCached, kNotYetChecked},
+               {"#div221", kNotCached, kNotYetChecked},
+               {"#div222", kNotCached, kNotYetChecked},
+               {"#div223", kNotCached, kNotYetChecked},
+               {"#div23", kNotCached, kNotYetChecked},
+               {"#div3", kNotCached, kNotYetChecked},
+               {"#div31", kNotCached, kNotYetChecked},
+               {"#div32", kNotCached, kNotYetChecked},
+               {"#div33", kNotCached, kNotYetChecked}});
+
+  TestMatches(document, "div21", ":has(~ .a > .b)",
+              /* expected_match_result */ true,
+              /* expected_result_cache_count */ 0,
+              {{"#main", kNotCached, kNotYetChecked},
+               {"#div1", kNotCached, kNotYetChecked},
+               {"#div11", kNotCached, kNotYetChecked},
+               {"#div12", kNotCached, kNotYetChecked},
+               {"#div13", kNotCached, kNotYetChecked},
+               {"#div2", kNotCached, kNotYetChecked},
+               {"#div21", kNotCached, kNotYetChecked},
+               {"#div22", kNotCached, kNotYetChecked},
+               {"#div221", kNotCached, kNotYetChecked},
+               {"#div222", kNotCached, kNotYetChecked},
+               {"#div223", kNotCached, kNotYetChecked},
+               {"#div23", kNotCached, kNotYetChecked},
+               {"#div3", kNotCached, kNotYetChecked},
+               {"#div31", kNotCached, kNotYetChecked},
+               {"#div32", kNotCached, kNotYetChecked},
+               {"#div33", kNotCached, kNotYetChecked}});
+
+  TestQuerySelectorAll(document, "main", ":has(~ .a > .b)",
+                       {"div1", "div2", "div21"},
+                       /* expected_result_cache_count */ 0,
+                       {{"#main", kNotCached, kNotYetChecked},
+                        {"#div1", kNotCached, kNotYetChecked},
+                        {"#div11", kNotCached, kNotYetChecked},
+                        {"#div12", kNotCached, kNotYetChecked},
+                        {"#div13", kNotCached, kNotYetChecked},
+                        {"#div2", kNotCached, kNotYetChecked},
+                        {"#div21", kNotCached, kNotYetChecked},
+                        {"#div22", kNotCached, kNotYetChecked},
+                        {"#div221", kNotCached, kNotYetChecked},
+                        {"#div222", kNotCached, kNotYetChecked},
+                        {"#div223", kNotCached, kNotYetChecked},
+                        {"#div23", kNotCached, kNotYetChecked},
+                        {"#div3", kNotCached, kNotYetChecked},
+                        {"#div31", kNotCached, kNotYetChecked},
+                        {"#div32", kNotCached, kNotYetChecked},
+                        {"#div33", kNotCached, kNotYetChecked}});
 }
 
 }  // namespace blink
