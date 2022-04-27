@@ -5,6 +5,7 @@
 import 'chrome://resources/ash/common/navigation_shared_vars.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 const styleMod = document.createElement('dom-module');
