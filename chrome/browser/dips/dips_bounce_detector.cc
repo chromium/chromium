@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "chrome/browser/dips/cookie_access_filter.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
 
@@ -15,11 +16,13 @@ using content::NavigationHandle;
 namespace {
 
 // BounceDetectionState gets attached to NavigationHandle (which is a
-// SupportsUserData subclass) to store which URLs accessed cookies (since
-// WebContentsObserver::OnCookiesAccessed is called in an unpredictable order
-// with respect to WCO::DidRedirectNavigation).
+// SupportsUserData subclass) to store data needed to detect stateful server
+// redirects.
 class BounceDetectionState : public base::SupportsUserData::Data {
  public:
+  // The WebContents' previously committed URL at the time the navigation
+  // started. Needed in case a parallel navigation commits.
+  GURL initial_url;
   CookieAccessFilter filter;
 };
 
@@ -30,6 +33,12 @@ const char kBounceDetectionStateKey[] = "BounceDetectionState";
 DIPSBounceDetector::DIPSBounceDetector(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<DIPSBounceDetector>(*web_contents),
+      site_engagement_service_(site_engagement::SiteEngagementService::Get(
+          web_contents->GetBrowserContext())),
+      // It's safe to use unretained because the callback is owned by this.
+      stateful_server_redirect_handler_(
+          base::BindRepeating(&DIPSBounceDetector::HandleStatefulServerRedirect,
+                              base::Unretained(this))),
       // It's safe to use unretained because the callback is owned by this.
       stateful_redirect_handler_(
           base::BindRepeating(&DIPSBounceDetector::HandleStatefulRedirect,
@@ -37,10 +46,36 @@ DIPSBounceDetector::DIPSBounceDetector(content::WebContents* web_contents)
 
 DIPSBounceDetector::~DIPSBounceDetector() = default;
 
-void DIPSBounceDetector::HandleStatefulRedirect(
+void DIPSBounceDetector::HandleStatefulRedirect(const GURL& prev_url,
+                                                const GURL& url,
+                                                const GURL& next_url) {
+  double score = site_engagement_service_->GetScore(url);
+  (void)score;
+  // TODO: fire UKM metric
+}
+
+void DIPSBounceDetector::HandleStatefulServerRedirect(
+    const GURL& prev_url,
     content::NavigationHandle* navigation_handle,
     int redirect_index) {
-  // TODO: fire UKM metric
+  const auto& redirect_chain = navigation_handle->GetRedirectChain();
+  const GURL& url = redirect_chain[redirect_index];
+  // We are called from DidFinishNavigation() so GetURL() returns the final URL.
+  // XXX For 204 No Content responses, should we actually use `prev_url`, since
+  // it's what the user actually sees?
+  const GURL& next_url = navigation_handle->GetURL();
+  stateful_redirect_handler_.Run(prev_url, url, next_url);
+}
+
+void DIPSBounceDetector::DidStartNavigation(
+    NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  auto state = std::make_unique<BounceDetectionState>();
+  state->initial_url = web_contents()->GetLastCommittedURL();
+  navigation_handle->SetUserData(kBounceDetectionStateKey, std::move(state));
 }
 
 void DIPSBounceDetector::OnCookiesAccessed(
@@ -50,17 +85,11 @@ void DIPSBounceDetector::OnCookiesAccessed(
     return;
   }
 
-  auto* existing_state = static_cast<BounceDetectionState*>(
+  auto* state = static_cast<BounceDetectionState*>(
       navigation_handle->GetUserData(kBounceDetectionStateKey));
-  if (existing_state) {
-    existing_state->filter.AddAccess(details.url, details.type);
-    return;
+  if (state) {
+    state->filter.AddAccess(details.url, details.type);
   }
-
-  auto new_state = std::make_unique<BounceDetectionState>();
-  new_state->filter.AddAccess(details.url, details.type);
-  navigation_handle->SetUserData(kBounceDetectionStateKey,
-                                 std::move(new_state));
 }
 
 void DIPSBounceDetector::DidFinishNavigation(
@@ -73,7 +102,7 @@ void DIPSBounceDetector::DidFinishNavigation(
   // point.
   auto* state = static_cast<BounceDetectionState*>(
       navigation_handle->GetUserData(kBounceDetectionStateKey));
-  if (state) {
+  if (state && !state->filter.is_empty()) {
     std::vector<size_t> accessor_idxs;
     if (!state->filter.Filter(navigation_handle->GetRedirectChain(),
                               &accessor_idxs)) {
@@ -87,7 +116,8 @@ void DIPSBounceDetector::DidFinishNavigation(
         // redirect.
         continue;
       }
-      stateful_redirect_handler_.Run(navigation_handle, accessor_idx);
+      stateful_server_redirect_handler_.Run(state->initial_url,
+                                            navigation_handle, accessor_idx);
     }
   }
 }

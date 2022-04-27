@@ -181,12 +181,14 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 }
 
 void AppendRedirectURL(std::vector<std::string>* urls,
+                       const GURL& prev_url,
                        NavigationHandle* navigation_handle,
                        int i) {
   urls->push_back(FormatURL(navigation_handle->GetRedirectChain()[i]));
 }
 
-IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest, DetectStatefulBounces) {
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+                       DetectStatefulServerRedirect) {
   GURL redirect_url = embedded_test_server()->GetURL(
       "a.test",
       "/cross-site-with-cookie/b.test/cross-site/c.test/cross-site/d.test/"
@@ -206,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest, DetectStatefulBounces) {
       embedded_test_server()->GetURL("d.test", "/set-cookie?name=value")));
 
   std::vector<std::string> stateful_redirects;
-  bounce_detector()->SetStatefulRedirectHandlerForTesting(
+  bounce_detector()->SetStatefulServerRedirectHandlerForTesting(
       base::BindRepeating(&AppendRedirectURL, &stateful_redirects));
 
   // Visit the redirect.
@@ -276,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   content::WebContents* web_contents = GetActiveWebContents();
 
   std::vector<std::string> stateful_redirects;
-  bounce_detector()->SetStatefulRedirectHandlerForTesting(
+  bounce_detector()->SetStatefulServerRedirectHandlerForTesting(
       base::BindRepeating(&AppendRedirectURL, &stateful_redirects));
 
   ASSERT_TRUE(content::NavigateToURL(web_contents, root_url));
@@ -286,4 +288,138 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   // b.test had a stateful redirect, but because it was in an iframe, we ignored
   // it.
   EXPECT_THAT(stateful_redirects, testing::IsEmpty());
+}
+
+void AppendRedirect(std::vector<std::string>* redirects,
+                    const GURL& prev_url,
+                    const GURL& url,
+                    const GURL& next_url) {
+  redirects->push_back(
+      base::StrCat({FormatURL(prev_url), " -> ", FormatURL(url), " -> ",
+                    FormatURL(next_url)}));
+}
+
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+                       DetectStatefulRedirect_Server) {
+  GURL initial_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL redirect_url = embedded_test_server()->GetURL(
+      "a.test",
+      "/cross-site-with-cookie/b.test/cross-site/c.test/cross-site/d.test/"
+      "title1.html");
+  GURL final_url = embedded_test_server()->GetURL("d.test", "/title1.html");
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  // Set cookies on a.test, b.test and d.test (but not c.test).
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL("a.test", "/set-cookie?name=value")));
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL("b.test", "/set-cookie?name=value")));
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL("d.test", "/set-cookie?name=value")));
+
+  std::vector<std::string> redirects;
+  bounce_detector()->SetStatefulRedirectHandlerForTesting(
+      base::BindRepeating(&AppendRedirect, &redirects));
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, initial_url));
+  // Visit the redirect.
+  ASSERT_TRUE(content::NavigateToURL(web_contents, redirect_url, final_url));
+
+  // a.test and b.test are stateful redirects. c.test had no cookies, and d.test
+  // was not a redirect.
+  EXPECT_THAT(redirects,
+              testing::ElementsAre(
+                  ("a.test/title1.html -> "
+                   "a.test/cross-site-with-cookie/b.test/cross-site/c.test/"
+                   "cross-site/d.test/title1.html -> d.test/title1.html"),
+                  ("a.test/title1.html -> "
+                   "b.test/cross-site/c.test/cross-site/d.test/title1.html -> "
+                   "d.test/title1.html")));
+}
+
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+                       DetectStatefulRedirect_NoContent) {
+  GURL initial_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  // The redirect chain ends in a 204 No Content response, which doesn't commit.
+  GURL redirect_url = embedded_test_server()->GetURL(
+      "a.test",
+      "/cross-site-with-cookie/b.test/cross-site/c.test/cross-site/d.test/"
+      "nocontent");
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  // Set cookies on a.test, b.test and d.test (but not c.test).
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL("a.test", "/set-cookie?name=value")));
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL("b.test", "/set-cookie?name=value")));
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL("d.test", "/set-cookie?name=value")));
+
+  std::vector<std::string> redirects;
+  bounce_detector()->SetStatefulRedirectHandlerForTesting(
+      base::BindRepeating(&AppendRedirect, &redirects));
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, initial_url));
+  // Visit the redirect (note that the user ends up back at initial_url).
+  ASSERT_TRUE(content::NavigateToURL(web_contents, redirect_url,
+                                     /*expected_commit_url=*/initial_url));
+
+  // a.test and b.test are stateful redirects. c.test had no cookies, and d.test
+  // was not a redirect.
+  EXPECT_THAT(redirects,
+              testing::ElementsAre(
+                  ("a.test/title1.html -> "
+                   "a.test/cross-site-with-cookie/b.test/cross-site/c.test/"
+                   "cross-site/d.test/nocontent -> d.test/nocontent"),
+                  ("a.test/title1.html -> "
+                   "b.test/cross-site/c.test/cross-site/d.test/nocontent -> "
+                   "d.test/nocontent")));
+}
+
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+                       DetectStatefulRedirect_404Error) {
+  GURL initial_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  // The redirect chain ends in a 404 error.
+  GURL redirect_url = embedded_test_server()->GetURL(
+      "a.test",
+      "/cross-site-with-cookie/b.test/cross-site/c.test/cross-site/d.test/404");
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  // Set cookies on a.test, b.test and d.test (but not c.test).
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL("a.test", "/set-cookie?name=value")));
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL("b.test", "/set-cookie?name=value")));
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL("d.test", "/set-cookie?name=value")));
+
+  std::vector<std::string> redirects;
+  bounce_detector()->SetStatefulRedirectHandlerForTesting(
+      base::BindRepeating(&AppendRedirect, &redirects));
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, initial_url));
+  // Visit the redirect, ending up on an error page.
+  ASSERT_FALSE(content::NavigateToURL(web_contents, redirect_url));
+  ASSERT_TRUE(content::IsLastCommittedEntryOfPageType(
+      web_contents, content::PAGE_TYPE_ERROR));
+
+  // a.test and b.test are stateful redirects. c.test had no cookies, and d.test
+  // was not a redirect.
+  EXPECT_THAT(redirects,
+              testing::ElementsAre(
+                  ("a.test/title1.html -> "
+                   "a.test/cross-site-with-cookie/b.test/cross-site/c.test/"
+                   "cross-site/d.test/404 -> d.test/404"),
+                  ("a.test/title1.html -> "
+                   "b.test/cross-site/c.test/cross-site/d.test/404 -> "
+                   "d.test/404")));
 }
