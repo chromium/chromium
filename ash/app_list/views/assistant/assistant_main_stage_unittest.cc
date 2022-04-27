@@ -47,10 +47,10 @@ class AssistantMainStageTest : public AssistantAshTestBase {
 TEST_F(AssistantMainStageTest, DarkAndLightTheme) {
   base::test::ScopedFeatureList scoped_feature_list(
       chromeos::features::kDarkLightMode);
-  AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
+  auto* color_provider = AshColorProvider::Get();
+  color_provider->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
-  ASSERT_TRUE(features::IsDarkLightModeEnabled());
-  ASSERT_FALSE(ColorProvider::Get()->IsDarkModeEnabled());
+  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
 
   ShowAssistantUi();
 
@@ -59,15 +59,15 @@ TEST_F(AssistantMainStageTest, DarkAndLightTheme) {
       main_stage->GetViewByID(kHorizontalSeparator));
 
   EXPECT_EQ(separator->GetColor(),
-            ColorProvider::Get()->GetContentLayerColor(
+            color_provider->GetContentLayerColor(
                 ColorProvider::ContentLayerType::kSeparatorColor));
 
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kDarkModeEnabled, true);
-  ASSERT_TRUE(ColorProvider::Get()->IsDarkModeEnabled());
+  // Switch the color mode.
+  color_provider->ToggleColorMode();
+  ASSERT_NE(initial_dark_mode_status, color_provider->IsDarkModeEnabled());
 
   EXPECT_EQ(separator->GetColor(),
-            ColorProvider::Get()->GetContentLayerColor(
+            color_provider->GetContentLayerColor(
                 ColorProvider::ContentLayerType::kSeparatorColor));
 
   // Turn off dark mode, this will make NativeTheme::ShouldUseDarkColors return

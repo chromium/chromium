@@ -121,24 +121,32 @@ TEST_F(AssistantButtonTest, IconColorType) {
       nullptr, vector_icons::kKeyboardIcon,
       AssistantButtonId::kKeyboardInputToggle, std::move(params));
 
-  ASSERT_FALSE(ColorProvider::Get()->IsDarkModeEnabled());
-  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
+  const SkBitmap light_mode_expected_image =
       *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconSizeInDip,
-          gfx::kGoogleGrey900).bitmap(),
+                             gfx::kGoogleGrey900)
+           .bitmap();
+  const SkBitmap dark_mode_expected_image =
+      *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconSizeInDip,
+                             gfx::kGoogleGrey200)
+           .bitmap();
+  auto* color_provider = AshColorProvider::Get();
+  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
+
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
+      initial_dark_mode_status ? dark_mode_expected_image
+                               : light_mode_expected_image,
       *button->GetImage(views::Button::STATE_NORMAL).bitmap()));
 
-  // Switch to dark mode
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kDarkModeEnabled, true);
-  ASSERT_TRUE(ColorProvider::Get()->IsDarkModeEnabled());
+  // Switch the color mode.
+  color_provider->ToggleColorMode();
+  const bool dark_mode_status = color_provider->IsDarkModeEnabled();
+  ASSERT_NE(initial_dark_mode_status, dark_mode_status);
 
   // Manually triggers OnThemeChanged as the button is not attached to an UI
   // tree.
   button->OnThemeChanged();
-
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconSizeInDip,
-          gfx::kGoogleGrey200).bitmap(),
+      dark_mode_status ? dark_mode_expected_image : light_mode_expected_image,
       *button->GetImage(views::Button::STATE_NORMAL).bitmap()));
 }
 
@@ -179,7 +187,6 @@ TEST_F(AssistantButtonTest, FocusAndHoverColorDarkLightMode) {
       chromeos::features::kDarkLightMode);
   AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
-  ASSERT_FALSE(ColorProvider::Get()->IsDarkModeEnabled());
 
   AssistantButton::InitParams params;
   params.size_in_dip = kSizeInDip;
@@ -200,24 +207,30 @@ TEST_F(AssistantButtonTest, FocusAndHoverColorDarkLightMode) {
   gfx::Canvas canvas(gfx::Size(kSizeInDip, kSizeInDip), /*image_scale=*/1.0f,
                      /*is_opaque=*/true);
   button->OnPaint(&canvas);
+  const SkColor light_icon_color = gfx::kGoogleGrey900;
+  const SkColor dark_icon_color = gfx::kGoogleGrey200;
+
+  auto* color_provider = AshColorProvider::Get();
+  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
       CreateExpectedImageWithFocus(
-          /*icon_color=*/gfx::kGoogleGrey900,
+          /*icon_color=*/initial_dark_mode_status ? dark_icon_color
+                                                  : light_icon_color,
           /*focus_color=*/ColorProvider::Get()->GetControlsLayerColor(
               ColorProvider::ControlsLayerType::kFocusRingColor)),
       canvas.GetBitmap()));
 
-  // Switch to dark mode
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kDarkModeEnabled, true);
-  ASSERT_TRUE(ColorProvider::Get()->IsDarkModeEnabled());
+  // Switch the color mode.
+  color_provider->ToggleColorMode();
+  const bool dark_mode_status = color_provider->IsDarkModeEnabled();
+  ASSERT_NE(initial_dark_mode_status, dark_mode_status);
 
   canvas.RecreateBackingCanvas(gfx::Size(kSizeInDip, kSizeInDip),
                                /*image_scale=*/1.0f, /*is_opaque=*/true);
   button->OnPaint(&canvas);
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
       CreateExpectedImageWithFocus(
-          /*icon_color=*/gfx::kGoogleGrey200,
+          /*icon_color=*/dark_mode_status ? dark_icon_color : light_icon_color,
           /*focus_color=*/ColorProvider::Get()->GetControlsLayerColor(
               ColorProvider::ControlsLayerType::kFocusRingColor)),
       canvas.GetBitmap()));

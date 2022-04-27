@@ -937,38 +937,36 @@ TEST_P(NonClientFrameViewAshFrameColorTest, DefaultFrameColorsDarkAndLight) {
   color_provider->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
   ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
-  ASSERT_FALSE(color_provider->IsDarkModeEnabled());
+  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
 
   TestWidgetDelegate* delegate = new TestWidgetDelegate(GetParam());
   std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
   aura::Window* window = widget->GetNativeWindow();
 
-  const SkColor light_active_default =
+  const SkColor initial_active_default =
       color_provider->GetActiveDialogTitleBarColor();
-  const SkColor light_inactive_default =
+  const SkColor initial_inactive_default =
       color_provider->GetInactiveDialogTitleBarColor();
   SkColor active_color = window->GetProperty(kFrameActiveColorKey);
   SkColor inactive_color = window->GetProperty(kFrameInactiveColorKey);
 
-  EXPECT_EQ(light_active_default, active_color);
-  EXPECT_EQ(light_inactive_default, inactive_color);
+  EXPECT_EQ(initial_active_default, active_color);
+  EXPECT_EQ(initial_inactive_default, inactive_color);
 
-  // Change it to dark mode.
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kDarkModeEnabled, true);
-  ASSERT_TRUE(color_provider->IsDarkModeEnabled());
+  // Switch the color mode
+  color_provider->ToggleColorMode();
+  ASSERT_NE(initial_dark_mode_status, color_provider->IsDarkModeEnabled());
 
-  const SkColor dark_active_default =
-      color_provider->GetActiveDialogTitleBarColor();
-  const SkColor dark_inactive_default =
+  const SkColor active_default = color_provider->GetActiveDialogTitleBarColor();
+  const SkColor inactive_default =
       color_provider->GetInactiveDialogTitleBarColor();
   active_color = window->GetProperty(kFrameActiveColorKey);
   inactive_color = window->GetProperty(kFrameInactiveColorKey);
 
-  EXPECT_NE(light_active_default, dark_active_default);
-  EXPECT_NE(light_inactive_default, dark_inactive_default);
-  EXPECT_EQ(dark_active_default, active_color);
-  EXPECT_EQ(dark_inactive_default, inactive_color);
+  EXPECT_NE(initial_active_default, active_default);
+  EXPECT_NE(initial_inactive_default, inactive_default);
+  EXPECT_EQ(active_default, active_color);
+  EXPECT_EQ(inactive_default, inactive_color);
 }
 
 // Tests to make sure that NonClientFrameViewAsh does not clobber custom frame
@@ -981,7 +979,7 @@ TEST_P(NonClientFrameViewAshFrameColorTest,
   color_provider->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
   ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
-  ASSERT_FALSE(color_provider->IsDarkModeEnabled());
+  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
 
   TestWidgetDelegate* delegate = new TestWidgetDelegate(GetParam());
   std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
@@ -1000,10 +998,9 @@ TEST_P(NonClientFrameViewAshFrameColorTest,
   EXPECT_EQ(new_active_color, window->GetProperty(kFrameActiveColorKey));
   EXPECT_EQ(new_inactive_color, window->GetProperty(kFrameInactiveColorKey));
 
-  // Change it to dark mode.
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kDarkModeEnabled, true);
-  ASSERT_TRUE(color_provider->IsDarkModeEnabled());
+  // Switch the color mode.
+  color_provider->ToggleColorMode();
+  ASSERT_NE(initial_dark_mode_status, color_provider->IsDarkModeEnabled());
 
   EXPECT_EQ(new_active_color, window->GetProperty(kFrameActiveColorKey));
   EXPECT_EQ(new_inactive_color, window->GetProperty(kFrameInactiveColorKey));

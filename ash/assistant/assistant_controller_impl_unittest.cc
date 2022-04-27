@@ -271,22 +271,24 @@ TEST_F(AssistantControllerImplTest, ColorModeIsUpdated) {
 
   ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
 
+  auto* color_provider = AshColorProvider::Get();
   // AshColorProvider::IsDarkModeEnabled reports it's in dark mode if active
   // pref service is not set.
-  AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
+  ASSERT_TRUE(color_provider->IsDarkModeEnabled());
+
+  color_provider->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetPrimaryUserPrefService());
-  ASSERT_FALSE(AshColorProvider::Get()->IsDarkModeEnabled());
-
   controller()->SetAssistant(test_assistant_service());
-
+  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
   ASSERT_TRUE(test_assistant_service()->dark_mode_enabled().has_value());
-  EXPECT_FALSE(test_assistant_service()->dark_mode_enabled().value());
+  EXPECT_EQ(initial_dark_mode_status,
+            test_assistant_service()->dark_mode_enabled().value());
 
-  Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetBoolean(
-      prefs::kDarkModeEnabled, true);
-
+  // Switch the color mode.
+  color_provider->ToggleColorMode();
   ASSERT_TRUE(test_assistant_service()->dark_mode_enabled().has_value());
-  EXPECT_TRUE(test_assistant_service()->dark_mode_enabled().value());
+  EXPECT_NE(initial_dark_mode_status,
+            test_assistant_service()->dark_mode_enabled().value());
 }
 
 }  // namespace ash

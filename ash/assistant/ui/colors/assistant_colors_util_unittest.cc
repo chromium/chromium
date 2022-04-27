@@ -25,21 +25,26 @@ TEST_F(AssistantColorsUtilUnittest, AssistantColor) {
       chromeos::features::kDarkLightMode);
   AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
+  auto* color_provider = AshColorProvider::Get();
+  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
 
   EXPECT_EQ(
       ResolveAssistantColor(assistant_colors::ColorName::kBgAssistantPlate),
       assistant_colors::ResolveColor(
           assistant_colors::ColorName::kBgAssistantPlate,
-          /*is_dark_mode=*/false, /*use_debug_colors=*/false));
+          /*is_dark_mode=*/initial_dark_mode_status,
+          /*use_debug_colors=*/false));
 
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kDarkModeEnabled, true);
+  // Switch the color mode.
+  color_provider->ToggleColorMode();
+  ASSERT_NE(initial_dark_mode_status, color_provider->IsDarkModeEnabled());
 
   EXPECT_EQ(
       ResolveAssistantColor(assistant_colors::ColorName::kBgAssistantPlate),
       assistant_colors::ResolveColor(
           assistant_colors::ColorName::kBgAssistantPlate,
-          /*is_dark_mode=*/true, /*use_debug_colors=*/false));
+          /*is_dark_mode=*/!initial_dark_mode_status,
+          /*use_debug_colors=*/false));
 }
 
 TEST_F(AssistantColorsUtilUnittest, AssistantColorFlagOff) {

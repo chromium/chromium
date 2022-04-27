@@ -126,10 +126,12 @@ TEST_F(SuggestionChipViewTest, ShouldHandleRemoteIcons) {
 TEST_F(SuggestionChipViewTest, DarkAndLightTheme) {
   base::test::ScopedFeatureList scoped_feature_list(
       chromeos::features::kDarkLightMode);
-  AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
-      Shell::Get()->session_controller()->GetActivePrefService());
   ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
-  ASSERT_FALSE(ColorProvider::Get()->IsDarkModeEnabled());
+
+  auto* color_provider = AshColorProvider::Get();
+  color_provider->OnActiveUserPrefServiceChanged(
+      Shell::Get()->session_controller()->GetActivePrefService());
+  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
 
   auto widget = CreateFramelessTestWidget();
   auto* suggestion_chip_view =
@@ -171,10 +173,9 @@ TEST_F(SuggestionChipViewTest, DarkAndLightTheme) {
 
   suggestion_chip_view->GetFocusManager()->ClearFocus();
 
-  // Change it to dark mode.
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kDarkModeEnabled, true);
-  ASSERT_TRUE(ColorProvider::Get()->IsDarkModeEnabled());
+  // Switch the color mode.
+  color_provider->ToggleColorMode();
+  ASSERT_NE(initial_dark_mode_status, color_provider->IsDarkModeEnabled());
 
   EXPECT_EQ(label->GetEnabledColor(),
             ColorProvider::Get()->GetContentLayerColor(

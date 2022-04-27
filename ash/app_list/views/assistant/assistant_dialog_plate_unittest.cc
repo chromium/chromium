@@ -37,10 +37,12 @@ using AssistantDialogPlateTest = AssistantAshTestBase;
 TEST_F(AssistantDialogPlateTest, DarkAndLightTheme) {
   base::test::ScopedFeatureList scoped_feature_list(
       chromeos::features::kDarkLightMode);
-  AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
-      Shell::Get()->session_controller()->GetActivePrefService());
   ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
-  ASSERT_FALSE(ColorProvider::Get()->IsDarkModeEnabled());
+
+  auto* color_provider = AshColorProvider::Get();
+  color_provider->OnActiveUserPrefServiceChanged(
+      Shell::Get()->session_controller()->GetActivePrefService());
+  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
 
   ShowAssistantUi();
 
@@ -52,24 +54,31 @@ TEST_F(AssistantDialogPlateTest, DarkAndLightTheme) {
       static_cast<AssistantButton*>(assistant_dialog_plate->GetViewByID(
           AssistantViewID::kKeyboardInputToggle));
 
-  EXPECT_EQ(assistant_text_field->GetTextColor(),
-            ColorProvider::Get()->GetContentLayerColor(
-                ColorProvider::ContentLayerType::kTextColorPrimary));
-  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
+  const SkBitmap light_keyboard_toggle =
       *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconDipSize,
-          gfx::kGoogleGrey900).bitmap(),
+                             gfx::kGoogleGrey900)
+           .bitmap();
+  const SkBitmap dark_keyboard_toggle =
+      *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconDipSize,
+                             gfx::kGoogleGrey200)
+           .bitmap();
+  EXPECT_EQ(assistant_text_field->GetTextColor(),
+            color_provider->GetContentLayerColor(
+                ColorProvider::ContentLayerType::kTextColorPrimary));
+
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
+      initial_dark_mode_status ? dark_keyboard_toggle : light_keyboard_toggle,
       *keyboard_input_toggle->GetImage(views::Button::STATE_NORMAL).bitmap()));
 
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kDarkModeEnabled, true);
-  ASSERT_TRUE(ColorProvider::Get()->IsDarkModeEnabled());
+  // Switch the color mode.
+  color_provider->ToggleColorMode();
+  ASSERT_NE(initial_dark_mode_status, color_provider->IsDarkModeEnabled());
 
   EXPECT_EQ(assistant_text_field->GetTextColor(),
-            ColorProvider::Get()->GetContentLayerColor(
+            color_provider->GetContentLayerColor(
                 ColorProvider::ContentLayerType::kTextColorPrimary));
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconDipSize,
-          gfx::kGoogleGrey200).bitmap(),
+      !initial_dark_mode_status ? dark_keyboard_toggle : light_keyboard_toggle,
       *keyboard_input_toggle->GetImage(views::Button::STATE_NORMAL).bitmap()));
 }
 

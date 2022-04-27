@@ -31,10 +31,13 @@ using AssistantQueryViewUnittest = AssistantAshTestBase;
 TEST_F(AssistantQueryViewUnittest, ThemeDarkLightMode) {
   base::test::ScopedFeatureList scoped_feature_list(
       chromeos::features::kDarkLightMode);
-  AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
+  auto* color_provider = AshColorProvider::Get();
+
+  color_provider->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
 
   ShowAssistantUi();
+  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
 
   const views::View* query_view =
       page_view()->GetViewByID(AssistantViewID::kQueryView);
@@ -48,25 +51,27 @@ TEST_F(AssistantQueryViewUnittest, ThemeDarkLightMode) {
   EXPECT_FALSE(query_view->layer()->fills_bounds_opaquely());
   EXPECT_EQ(high_confidence_label->GetEnabledColor(),
             cros_styles::ResolveColor(cros_styles::ColorName::kTextColorPrimary,
-                                      /*is_dark_mode=*/false,
+                                      /*is_dark_mode=*/initial_dark_mode_status,
                                       /*use_debug_colors=*/false));
   EXPECT_EQ(
       low_confidence_label->GetEnabledColor(),
       cros_styles::ResolveColor(cros_styles::ColorName::kTextColorSecondary,
-                                /*is_dark_mode=*/false,
+                                /*is_dark_mode=*/initial_dark_mode_status,
                                 /*use_debug_colors=*/false));
 
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kDarkModeEnabled, true);
+  // Switch the color mode.
+  color_provider->ToggleColorMode();
+  ASSERT_NE(initial_dark_mode_status, color_provider->IsDarkModeEnabled());
 
-  EXPECT_EQ(high_confidence_label->GetEnabledColor(),
-            cros_styles::ResolveColor(cros_styles::ColorName::kTextColorPrimary,
-                                      /*is_dark_mode=*/true,
-                                      /*use_debug_colors=*/false));
+  EXPECT_EQ(
+      high_confidence_label->GetEnabledColor(),
+      cros_styles::ResolveColor(cros_styles::ColorName::kTextColorPrimary,
+                                /*is_dark_mode=*/!initial_dark_mode_status,
+                                /*use_debug_colors=*/false));
   EXPECT_EQ(
       low_confidence_label->GetEnabledColor(),
       cros_styles::ResolveColor(cros_styles::ColorName::kTextColorSecondary,
-                                /*is_dark_mode=*/true,
+                                /*is_dark_mode=*/!initial_dark_mode_status,
                                 /*use_debug_colors=*/false));
 }
 

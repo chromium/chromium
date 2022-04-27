@@ -47,6 +47,8 @@ TEST_F(AssistantZeroStateViewUnittest, ThemeDarkLightMode) {
       chromeos::features::kDarkLightMode);
   AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
+  auto* color_provider = AshColorProvider::Get();
+  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
 
   ShowAssistantUi();
 
@@ -56,23 +58,26 @@ TEST_F(AssistantZeroStateViewUnittest, ThemeDarkLightMode) {
   EXPECT_EQ(greeting_label->GetBackgroundColor(),
             assistant_colors::ResolveColor(
                 assistant_colors::ColorName::kBgAssistantPlate,
-                /*is_dark_mode=*/false, /*use_debug_colors=*/false));
+                /*is_dark_mode=*/initial_dark_mode_status,
+                /*use_debug_colors=*/false));
   EXPECT_EQ(greeting_label->GetEnabledColor(),
             cros_styles::ResolveColor(cros_styles::ColorName::kTextColorPrimary,
-                                      /*is_dark_mode=*/false,
+                                      /*is_dark_mode=*/initial_dark_mode_status,
                                       /*use_debug_colors=*/false));
-
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kDarkModeEnabled, true);
+  // Switch the color mode.
+  color_provider->ToggleColorMode();
+  ASSERT_NE(initial_dark_mode_status, color_provider->IsDarkModeEnabled());
 
   EXPECT_EQ(greeting_label->GetBackgroundColor(),
             assistant_colors::ResolveColor(
                 assistant_colors::ColorName::kBgAssistantPlate,
-                /*is_dark_mode=*/true, /*use_debug_colors=*/false));
-  EXPECT_EQ(greeting_label->GetEnabledColor(),
-            cros_styles::ResolveColor(cros_styles::ColorName::kTextColorPrimary,
-                                      /*is_dark_mode=*/true,
-                                      /*use_debug_colors=*/false));
+                /*is_dark_mode=*/!initial_dark_mode_status,
+                /*use_debug_colors=*/false));
+  EXPECT_EQ(
+      greeting_label->GetEnabledColor(),
+      cros_styles::ResolveColor(cros_styles::ColorName::kTextColorPrimary,
+                                /*is_dark_mode=*/!initial_dark_mode_status,
+                                /*use_debug_colors=*/false));
 }
 
 }  // namespace

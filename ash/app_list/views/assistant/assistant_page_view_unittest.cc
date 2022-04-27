@@ -1037,23 +1037,24 @@ TEST_F(AssistantPageBubbleTest, BackgroundColorInDarkLightMode) {
 
   base::test::ScopedFeatureList scoped_feature_list(
       chromeos::features::kDarkLightMode);
-  AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
+  auto* color_provider = AshColorProvider::Get();
+  color_provider->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
-  ASSERT_FALSE(ColorProvider::Get()->IsDarkModeEnabled());
 
   SetTabletMode(true);
   ShowAssistantUi();
 
+  const bool initial_dark_mode_status = color_provider->IsDarkModeEnabled();
   EXPECT_EQ(page_view()->layer()->GetTargetColor(),
-            ColorProvider::Get()->GetBaseLayerColor(
+            color_provider->GetBaseLayerColor(
                 ColorProvider::BaseLayerType::kTransparent80));
 
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kDarkModeEnabled, true);
-  ASSERT_TRUE(ColorProvider::Get()->IsDarkModeEnabled());
+  // Switch the color mode.
+  color_provider->ToggleColorMode();
+  ASSERT_NE(initial_dark_mode_status, color_provider->IsDarkModeEnabled());
 
   EXPECT_EQ(page_view()->layer()->GetTargetColor(),
-            ColorProvider::Get()->GetBaseLayerColor(
+            color_provider->GetBaseLayerColor(
                 ColorProvider::BaseLayerType::kTransparent80));
 }
 
