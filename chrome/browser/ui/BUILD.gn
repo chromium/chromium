@@ -3659,8 +3659,6 @@ static_library("ui") {
       "cocoa/status_icons/status_icon_mac.mm",
       "cocoa/status_icons/status_tray_mac.h",
       "cocoa/status_icons/status_tray_mac.mm",
-      "cocoa/tab_contents/chrome_web_contents_view_delegate_mac.h",
-      "cocoa/tab_contents/chrome_web_contents_view_delegate_mac.mm",
       "cocoa/tab_contents/web_drag_bookmark_handler_mac.h",
       "cocoa/tab_contents/web_drag_bookmark_handler_mac.mm",
       "cocoa/tab_menu_bridge.h",

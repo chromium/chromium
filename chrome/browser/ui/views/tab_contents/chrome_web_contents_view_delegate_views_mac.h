@@ -5,13 +5,23 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TAB_CONTENTS_CHROME_WEB_CONTENTS_VIEW_DELEGATE_VIEWS_MAC_H_
 #define CHROME_BROWSER_UI_VIEWS_TAB_CONTENTS_CHROME_WEB_CONTENTS_VIEW_DELEGATE_VIEWS_MAC_H_
 
-#import "chrome/browser/ui/cocoa/tab_contents/chrome_web_contents_view_delegate_mac.h"
+#include <memory>
+
+#include "components/renderer_context_menu/context_menu_delegate.h"
+#include "content/public/browser/web_contents_view_delegate.h"
 
 class ChromeWebContentsViewFocusHelper;
+class RenderViewContextMenuBase;
+class WebDragBookmarkHandlerMac;
 
-// A MacViews specific class that extends ChromeWebContentsViewDelegateMac.
+namespace content {
+class RenderWidgetHostView;
+class WebContents;
+}  // namespace content
+
 class ChromeWebContentsViewDelegateViewsMac
-    : public ChromeWebContentsViewDelegateMac {
+    : public content::WebContentsViewDelegate,
+      public ContextMenuDelegate {
  public:
   explicit ChromeWebContentsViewDelegateViewsMac(
       content::WebContents* web_contents);
@@ -23,7 +33,14 @@ class ChromeWebContentsViewDelegateViewsMac
 
   ~ChromeWebContentsViewDelegateViewsMac() override;
 
-  // ChromeWebContentsViewDelegateMac:
+  // WebContentsViewDelegate:
+  gfx::NativeWindow GetNativeWindow() override;
+  NSObject<RenderWidgetHostViewMacDelegate>* CreateRenderWidgetHostViewDelegate(
+      content::RenderWidgetHost* render_widget_host,
+      bool is_popup) override;
+  content::WebDragDestDelegate* GetDragDestDelegate() override;
+  void ShowContextMenu(content::RenderFrameHost& render_frame_host,
+                       const content::ContextMenuParams& params) override;
   void StoreFocus() override;
   bool RestoreFocus() override;
   void ResetStoredFocus() override;
@@ -32,10 +49,24 @@ class ChromeWebContentsViewDelegateViewsMac
   void OnPerformDrop(const content::DropData& drop_data,
                      DropCompletionCallback callback) override;
 
+  // ContextMenuDelegate:
+  std::unique_ptr<RenderViewContextMenuBase> BuildMenu(
+      content::RenderFrameHost& render_frame_host,
+      const content::ContextMenuParams& params) override;
+  void ShowMenu(std::unique_ptr<RenderViewContextMenuBase> menu) override;
+
  private:
+  content::RenderWidgetHostView* GetActiveRenderWidgetHostView() const;
+  ChromeWebContentsViewFocusHelper* GetFocusHelper() const;
+
+  // The WebContents that owns the view.
   content::WebContents* web_contents_;
 
-  ChromeWebContentsViewFocusHelper* GetFocusHelper() const;
+  // The context menu. Callbacks are asynchronous so we need to keep it around.
+  std::unique_ptr<RenderViewContextMenuBase> context_menu_;
+
+  // The chrome specific delegate that receives events from WebDragDestMac.
+  std::unique_ptr<WebDragBookmarkHandlerMac> bookmark_handler_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TAB_CONTENTS_CHROME_WEB_CONTENTS_VIEW_DELEGATE_VIEWS_MAC_H_
