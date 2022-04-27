@@ -273,6 +273,7 @@ src/webgpu/shader/execution/expression/call/builtin/acos.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/all.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/any.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/arrayLength.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/asin.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/atan.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/atan2.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/ceil.spec.ts
