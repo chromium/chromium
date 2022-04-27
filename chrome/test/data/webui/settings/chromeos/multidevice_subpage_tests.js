@@ -222,7 +222,7 @@ suite('Multidevice', function() {
   });
 
   test(
-      'setting isSmartLockSignInRemoved flat removes SmartLock subpage route',
+      'setting isSmartLockSignInRemoved flag removes SmartLock subpage route',
       function() {
         multideviceSubpage.remove();
         loadTimeData.overrideValues({'isSmartLockSignInRemoved': true});
