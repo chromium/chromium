@@ -42,8 +42,7 @@ TEST_F(GameResultTest, Basic) {
       apps::AppSource::kGames, "12345", u"Title",
       std::make_unique<apps::GameExtras>(
           absl::make_optional(std::vector<std::u16string>({u"A", u"B", u"C"})),
-          apps::GameExtras::Source::kTestSource, u"TestGamePublisher",
-          GURL("https://icon-url.com/")));
+          u"SourceName", u"TestGamePublisher", GURL("https://icon-url.com/")));
 
   GameResult result(profile_.get(), &list_controller_, app_discovery_service,
                     apps_result, 0.6, u"SomeGame");
@@ -51,13 +50,13 @@ TEST_F(GameResultTest, Basic) {
   EXPECT_EQ(result.title(), u"Title");
 
   EXPECT_EQ(StringFromTextVector(result.details_text_vector()),
-            base::StrCat({u"[game source] - ",
+            base::StrCat({u"SourceName - ",
                           l10n_util::GetStringUTF16(
                               IDS_APP_LIST_SEARCH_GAME_PLATFORMS_PREFIX),
                           u" A, B, C"}));
 
   EXPECT_EQ(result.accessible_name(),
-            base::StrCat({u"Title, [game source], ",
+            base::StrCat({u"Title, SourceName, ",
                           l10n_util::GetStringUTF16(
                               IDS_APP_LIST_SEARCH_GAME_PLATFORMS_PREFIX),
                           u" A, B, C"}));

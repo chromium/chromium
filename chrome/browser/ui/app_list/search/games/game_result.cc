@@ -52,11 +52,6 @@ GURL LaunchUrlFromId(const std::string& id) {
   return GURL(base::StrCat({kLaunchUrlPrefix, id}));
 }
 
-std::u16string DisplayStringForGameSource(apps::GameExtras::Source source) {
-  // TODO(crbug.com/1305880): Replace with display string once finalized.
-  return u"[game source]";
-}
-
 bool IsDarkModeEnabled() {
   // TODO(crbug.com/1258415): Simplify this logic once the productivity launcher
   // is launched.
@@ -124,7 +119,7 @@ void GameResult::UpdateText(const apps::Result& game,
   accessible_name.push_back(title());
   accessible_name.push_back(kA11yDelimiter);
 
-  std::u16string source = DisplayStringForGameSource(extras->GetSource());
+  std::u16string source = extras->GetSource();
   details.push_back(CreateStringTextItem(source).SetOverflowBehavior(
       OverflowBehavior::kNoElide));
   accessible_name.push_back(source);

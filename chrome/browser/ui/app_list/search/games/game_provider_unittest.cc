@@ -34,8 +34,7 @@ apps::Result MakeAppsResult(const std::u16string& title) {
       apps::AppSource::kGames, "12345", title,
       std::make_unique<apps::GameExtras>(
           absl::make_optional(std::vector<std::u16string>({u"A", u"B", u"C"})),
-          apps::GameExtras::Source::kTestSource, u"TestGamePublisher",
-          GURL("https://icon-url.com/")));
+          u"SourceName", u"TestGamePublisher", GURL("https://icon-url.com/")));
 }
 
 }  // namespace

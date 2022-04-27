@@ -130,7 +130,8 @@ std::vector<Result> GameFetcher::GetAppsForCurrentLocale(
       continue;
     }
     auto extras = std::make_unique<GameExtras>(
-        GetPlatforms(app_with_locale.app()), GameExtras::Source::kTestSource,
+        GetPlatforms(app_with_locale.app()),
+        base::UTF8ToUTF16(app_with_locale.app().source_name()),
         base::UTF8ToUTF16(app_with_locale.app().publisher_name()), GURL());
     results.push_back(Result(
         AppSource::kGames, app_with_locale.app().app_id_for_platform(),
