@@ -73,6 +73,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryOzone
  private:
   bool CanImportGpuMemoryBufferToVulkan(
       gfx::GpuMemoryBufferType memory_buffer_type);
+  bool CanImportNativePixmapToWebGPU();
 
   SharedContextState* const shared_context_state_;
   scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs_;

@@ -53,6 +53,7 @@
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_WIN)) && \
     BUILDFLAG(ENABLE_VULKAN)
 #include "gpu/command_buffer/service/external_vk_image_factory.h"
+#include "gpu/command_buffer/service/shared_image_backing_factory_ozone.h"
 #elif BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VULKAN)
 #include "gpu/command_buffer/service/external_vk_image_factory.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory_ahardwarebuffer.h"
@@ -380,8 +381,13 @@ SharedImageFactory::SharedImageFactory(
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_CHROMECAST)
   // Desktop Linux, not ChromeOS.
+  if (ShouldUseOzoneFactory()) {
+    auto ozone_factory =
+        std::make_unique<SharedImageBackingFactoryOzone>(context_state);
+    factories_.push_back(std::move(ozone_factory));
+  }
   if (gr_context_type_ == GrContextType::kVulkan &&
-      ShouldUseExternalVulkanImageFactory()) {
+      (!ShouldUseOzoneFactory() || ShouldUseExternalVulkanImageFactory())) {
     auto external_vk_image_factory =
         std::make_unique<ExternalVkImageFactory>(context_state);
     factories_.push_back(std::move(external_vk_image_factory));

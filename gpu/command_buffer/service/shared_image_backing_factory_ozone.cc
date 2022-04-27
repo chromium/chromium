@@ -9,6 +9,9 @@
 
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
@@ -19,6 +22,7 @@
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/buildflags.h"
+#include "ui/gl/gl_surface_egl.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 
@@ -196,6 +200,11 @@ bool SharedImageBackingFactoryOzone::IsSupported(
     return false;
   }
 
+  if (gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::NATIVE_PIXMAP &&
+      gmb_type != gfx::SHARED_MEMORY_BUFFER) {
+    return false;
+  }
+
 #if BUILDFLAG(IS_FUCHSIA)
   DCHECK_EQ(gr_context_type, GrContextType::kVulkan);
 
@@ -209,12 +218,26 @@ bool SharedImageBackingFactoryOzone::IsSupported(
       !CanImportGpuMemoryBufferToVulkan(gmb_type)) {
     return false;
   }
-#else
-  if (gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::NATIVE_PIXMAP &&
-      gmb_type != gfx::SHARED_MEMORY_BUFFER) {
+#elif BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+    !BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_CHROMECAST)
+  bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER) ||
+                      (usage & SHARED_IMAGE_USAGE_DISPLAY);
+  bool used_by_vulkan =
+      used_by_skia && gr_context_type == GrContextType::kVulkan;
+  bool used_by_webgpu = usage & SHARED_IMAGE_USAGE_WEBGPU;
+  bool used_by_gl = (usage & SHARED_IMAGE_USAGE_GLES2) ||
+                    (used_by_skia && gr_context_type == GrContextType::kGL);
+  if (used_by_vulkan && !CanImportGpuMemoryBufferToVulkan(gfx::NATIVE_PIXMAP)) {
     return false;
   }
-
+  if (used_by_webgpu && !CanImportNativePixmapToWebGPU()) {
+    return false;
+  }
+  if (used_by_gl &&
+      !gl::GLSurfaceEGL::GetGLDisplayEGL()->HasEGLExtension("EGL_KHR_image")) {
+    return false;
+  }
+#else
   // TODO(hitawala): Until SharedImageBackingOzone supports all use cases prefer
   // using SharedImageBackingGLImage instead
   bool needs_interop_factory = (gr_context_type == GrContextType::kVulkan &&
@@ -232,11 +255,22 @@ bool SharedImageBackingFactoryOzone::IsSupported(
 
 bool SharedImageBackingFactoryOzone::CanImportGpuMemoryBufferToVulkan(
     gfx::GpuMemoryBufferType memory_buffer_type) {
+  if (!shared_context_state_->vk_context_provider()) {
+    return false;
+  }
   auto* vk_device =
       shared_context_state_->vk_context_provider()->GetDeviceQueue();
   return shared_context_state_->vk_context_provider()
       ->GetVulkanImplementation()
       ->CanImportGpuMemoryBuffer(vk_device, memory_buffer_type);
+}
+
+bool SharedImageBackingFactoryOzone::CanImportNativePixmapToWebGPU() {
+  // Assume that if skia/vulkan vkDevice supports the Vulkan extensions
+  // (external_memory_dma_buf, image_drm_format_modifier), then Dawn/WebGPU also
+  // support the extensions until there is capability to check the extensions
+  // from Dawn vkDevice when they are exposed.
+  return CanImportGpuMemoryBufferToVulkan(gfx::NATIVE_PIXMAP);
 }
 
 }  // namespace gpu
