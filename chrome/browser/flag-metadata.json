@@ -3537,18 +3537,23 @@
   },
   {
     "name": "history-journeys",
-    "owners": [ "tommycli", "chrome-journeys@google.com", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 105
+    "owners": [ "tommycli", "chrome-journeys@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
+    "name": "history-journeys-labels",
+    "owners": [ "tommycli", "chrome-journeys@google.com" ],
+    "expiry_milestone": 110
   },
   {
     "name": "history-journeys-omnibox-action",
-    "owners": [ "tommycli", "chrome-journeys@google.com", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 105
+    "owners": [ "tommycli", "chrome-journeys@google.com" ],
+    "expiry_milestone": 110
   },
   {
     "name": "history-journeys-on-device-clustering",
     "owners": [ "sophiechang", "chrome-journeys@google.com", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 110
   },
   {
     "name": "http-cache-partitioning",

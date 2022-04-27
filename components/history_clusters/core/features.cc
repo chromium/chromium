@@ -29,6 +29,9 @@ namespace internal {
 
 const base::Feature kJourneys{"Journeys", enabled_by_default_desktop_only};
 
+const base::Feature kJourneysLabels{"JourneysLabel",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kOmniboxAction{"JourneysOmniboxAction",
                                    enabled_by_default_desktop_only};
 

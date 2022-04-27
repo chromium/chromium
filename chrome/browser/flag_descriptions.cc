@@ -1570,6 +1570,10 @@ const char kJavascriptHarmonyShippingDescription[] =
 const char kJourneysName[] = "History Journeys";
 const char kJourneysDescription[] = "Enables the History Journeys UI.";
 
+const char kJourneysLabelsName[] = "History Journeys Labels";
+const char kJourneysLabelsDescription[] =
+    "Enables labels for Journeys within the History Journeys UI.";
+
 const char kJourneysOmniboxActionName[] = "History Journeys Omnibox Action";
 const char kJourneysOmniboxActionDescription[] =
     "Enables the History Journeys Omnibox Action.";

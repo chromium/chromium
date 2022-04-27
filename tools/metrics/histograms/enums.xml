@@ -52496,6 +52496,7 @@ from previous Chrome versions.
   <int value="-2002461806" label="ShoppingAssist:enabled"/>
   <int value="-2001869199" label="ShillSandboxing:enabled"/>
   <int value="-2000567059" label="SimplifyHttpsIndicator:enabled"/>
+  <int value="-2000177300" label="JourneysLabel:disabled"/>
   <int value="-1999892428" label="force-ui-direction"/>
   <int value="-1999824144" label="NewDragSpecInLauncher:disabled"/>
   <int value="-1999617045" label="PDFAnnotations:disabled"/>
@@ -53195,6 +53196,7 @@ from previous Chrome versions.
   <int value="-1536242739" label="security-chip"/>
   <int value="-1535758690" label="AutoplayIgnoreWebAudio:disabled"/>
   <int value="-1535694535" label="PageInfoPerformanceHints:enabled"/>
+  <int value="-1535608870" label="JourneysLabel:enabled"/>
   <int value="-1534970225" label="FilesArchivemount:disabled"/>
   <int value="-1533258008" label="CalculateNativeWinOcclusion:enabled"/>
   <int value="-1532720464" label="WellKnownChangePassword:enabled"/>

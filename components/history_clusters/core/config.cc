@@ -209,17 +209,15 @@ Config::Config() {
       features::kOnDeviceClustering, "split_clusters_at_search_visits",
       split_clusters_at_search_visits);
 
-  should_label_clusters = GetFieldTrialParamByFeatureAsBool(
-      features::kOnDeviceClustering, "should_label_clusters",
-      should_label_clusters);
+  should_label_clusters =
+      base::FeatureList::IsEnabled(internal::kJourneysLabels);
 
   labels_from_hostnames = GetFieldTrialParamByFeatureAsBool(
-      features::kOnDeviceClustering, "labels_from_hostnames",
+      internal::kJourneysLabels, "labels_from_hostnames",
       labels_from_hostnames);
 
   labels_from_entities = GetFieldTrialParamByFeatureAsBool(
-      features::kOnDeviceClustering, "labels_from_entities",
-      labels_from_entities);
+      internal::kJourneysLabels, "labels_from_entities", labels_from_entities);
 
   should_check_hosts_to_skip_clustering_for =
       base::FeatureList::IsEnabled(features::kOnDeviceClusteringBlocklists);

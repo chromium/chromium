@@ -19,6 +19,9 @@ namespace internal {
 // directly. Instead use `IsJourneysEnabled()` for the system language filter.
 extern const base::Feature kJourneys;
 
+// Enables labelling of Journeys in UI.
+extern const base::Feature kJourneysLabels;
+
 // Enables the Journeys Omnibox Action chip. `kJourneys` must also be enabled
 // for this to take effect.
 extern const base::Feature kOmniboxAction;

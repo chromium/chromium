@@ -883,6 +883,9 @@ extern const char kJavascriptHarmonyShippingDescription[];
 extern const char kJourneysName[];
 extern const char kJourneysDescription[];
 
+extern const char kJourneysLabelsName[];
+extern const char kJourneysLabelsDescription[];
+
 extern const char kJourneysOmniboxActionName[];
 extern const char kJourneysOmniboxActionDescription[];
 

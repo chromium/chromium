@@ -992,53 +992,33 @@ const FeatureEntry::FeatureVariation kJourneysOmniboxActionVariations[] = {
     {"Action Chips on URLs", kJourneysOmniboxActionOnURLsParams,
      std::size(kJourneysOmniboxActionOnURLsParams), nullptr},
 };
-const FeatureEntry::FeatureParam
-    kJourneysOnDeviceClusteringLabelingNoContentClusteringParams[] = {
-        {"should_label_clusters", "true"},
-        {"labels_from_entities", "true"},
-        {"content_clustering_enabled", "false"},
+const FeatureEntry::FeatureParam kJourneysLabelsWithEntitiesParams[] = {
+    {"labels_from_entities", "true"},
 };
 const FeatureEntry::FeatureParam
-    kJourneysOnDeviceClusteringLabelingNoHostnamesNoContentClusteringParams[] =
-        {
-            {"should_label_clusters", "true"},
-            {"labels_from_hostnames", "false"},
-            {"labels_from_entities", "true"},
-            {"content_clustering_enabled", "false"},
+    kJourneysLabelsWithEntitiesNoHostnamesParams[] = {
+        {"labels_from_hostnames", "false"},
+        {"labels_from_entities", "true"},
+};
+const FeatureEntry::FeatureVariation kJourneysLabelsVariations[] = {
+    {"With Entities", kJourneysLabelsWithEntitiesParams,
+     std::size(kJourneysLabelsWithEntitiesParams), nullptr},
+    {"With Entities, No Hostnames",
+     kJourneysLabelsWithEntitiesNoHostnamesParams,
+     std::size(kJourneysLabelsWithEntitiesNoHostnamesParams), nullptr},
 };
 const FeatureEntry::FeatureParam
     kJourneysOnDeviceClusteringNoContentClusteringParams[] = {
-        {"should_label_clusters", "false"},
         {"content_clustering_enabled", "false"},
 };
 const FeatureEntry::FeatureParam
-    kJourneysOnDeviceClusteringLabelingWithContentClusteringParams[] = {
-        {"should_label_clusters", "true"},
-        {"labels_from_entities", "true"},
-        {"content_clustering_enabled", "true"},
-};
-const FeatureEntry::FeatureParam
     kJourneysOnDeviceClusteringContentClusteringParams[] = {
-        {"should_label_clusters", "false"},
         {"content_clustering_enabled", "true"},
 };
 const FeatureEntry::FeatureVariation kJourneysOnDeviceClusteringVariations[] = {
-    {"Label Clusters and No Content Clustering",
-     kJourneysOnDeviceClusteringLabelingNoContentClusteringParams,
-     std::size(kJourneysOnDeviceClusteringLabelingNoContentClusteringParams),
-     nullptr},
-    {"Label Clusters, No Hostnames, & No Content Clustering",
-     kJourneysOnDeviceClusteringLabelingNoHostnamesNoContentClusteringParams,
-     std::size(
-         kJourneysOnDeviceClusteringLabelingNoHostnamesNoContentClusteringParams),
-     nullptr},
     {"No Content Clustering",
      kJourneysOnDeviceClusteringNoContentClusteringParams,
      std::size(kJourneysOnDeviceClusteringNoContentClusteringParams), nullptr},
-    {"Label Clusters and Content Clustering",
-     kJourneysOnDeviceClusteringLabelingWithContentClusteringParams,
-     std::size(kJourneysOnDeviceClusteringLabelingWithContentClusteringParams),
-     nullptr},
     {"Content Clustering", kJourneysOnDeviceClusteringContentClusteringParams,
      std::size(kJourneysOnDeviceClusteringContentClusteringParams), nullptr},
 };
@@ -5061,6 +5041,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(history_clusters::internal::kJourneys,
                                     kJourneysVariations,
                                     "HistoryJourneys")},
+
+    {"history-journeys-labels", flag_descriptions::kJourneysLabelsName,
+     flag_descriptions::kJourneysLabelsDescription, kOsDesktop | kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(history_clusters::internal::kJourneysLabels,
+                                    kJourneysLabelsVariations,
+                                    "HistoryJourneysLabels")},
 
     {"history-journeys-omnibox-action",
      flag_descriptions::kJourneysOmniboxActionName,
