@@ -3766,16 +3766,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.LoadUrl.UrlScheme" enum="WebViewUrlScheme"
-    expires_after="2022-03-29">
+    expires_after="2023-04-19">
   <owner>ntfschr@chromium.org</owner>
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the scheme for the URL loaded by a browser-initiated navigation.
     Specifically, this is the scheme of the URL passed to loadUrl() (and its
-    overloads), postUrl(), and loadData (this is implicitly &quot;data:&quot;).
-    also records if this value is &quot;empty&quot;, which means either null or
-    &quot;about:blank&quot;. This intentionally excludes loadDataWithBaseURL().
+    overloads), postUrl(), and loadData() (this is implicitly
+    &quot;data:&quot;). also records if this value is &quot;empty&quot;, which
+    means either null or &quot;about:blank&quot;. This intentionally excludes
+    loadDataWithBaseURL().
   </summary>
 </histogram>
 
@@ -3907,6 +3908,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.WebView.onReceivedError.ErrorCode"
     enum="WebViewClientErrorCode" expires_after="2022-05-10">
+  <obsolete>
+    Deprecated in April 2022 (milestone M103).
+  </obsolete>
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3917,13 +3921,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.onReceivedHttpError.StatusCode"
-    enum="HttpResponseCode" expires_after="2022-05-10">
+    enum="HttpResponseCode" expires_after="2023-04-19">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
-    The WebViewClient http resonse status code as returned by the
-    onReceivedHttpError callback This is recorded regardless of whether the
-    network service is enabled or disabled.
+    The WebViewClient HTTP response status code as returned by the
+    onReceivedHttpError callback. This callback is only called for HTTP errors,
+    so this does not include any successful HTTP responses (code 200).
   </summary>
 </histogram>
 
