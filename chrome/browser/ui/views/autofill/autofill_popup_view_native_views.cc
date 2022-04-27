@@ -103,6 +103,10 @@ constexpr int kAdjacentLabelsVerticalSpacing = 2;
 // The default icon size used in the suggestion drop down.
 constexpr int kIconSize = 16;
 
+// The icon size used in the suggestion dropdown for displaying the Google
+// Password Manager icon in the Manager Passwords entry.
+constexpr int kGooglePasswordManagerIconSize = 20;
+
 // Popup items that use a leading icon instead of a trailing one.
 constexpr PopupItemId kItemTypesUsingLeadingIcons[] = {
     PopupItemId::POPUP_ITEM_ID_CLEAR_FORM,
@@ -159,9 +163,15 @@ std::unique_ptr<views::ImageView> ImageViewFromImageSkia(
 }
 
 std::unique_ptr<views::ImageView> ImageViewFromVectorIcon(
-    const gfx::VectorIcon& vector_icon) {
+    const gfx::VectorIcon& vector_icon,
+    int icon_size) {
   return std::make_unique<views::ImageView>(
-      ui::ImageModel::FromVectorIcon(vector_icon, ui::kColorIcon, kIconSize));
+      ui::ImageModel::FromVectorIcon(vector_icon, ui::kColorIcon, icon_size));
+}
+
+std::unique_ptr<views::ImageView> ImageViewFromVectorIcon(
+    const gfx::VectorIcon& vector_icon) {
+  return ImageViewFromVectorIcon(vector_icon, kIconSize);
 }
 
 std::unique_ptr<views::ImageView> GetIconImageViewByName(
@@ -217,7 +227,8 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
   }
 
   if (icon_str == "googlePasswordManager") {
-    return ImageViewFromVectorIcon(GooglePasswordManagerVectorIcon());
+    return ImageViewFromVectorIcon(GooglePasswordManagerVectorIcon(),
+                                   kGooglePasswordManagerIconSize);
   }
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
