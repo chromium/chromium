@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/assistant_state_base.h"
 #include "ash/public/cpp/assistant/controller/assistant_notification_controller.h"
 #include "base/barrier_closure.h"
@@ -54,6 +55,7 @@ namespace chromeos {
 namespace assistant {
 namespace {
 
+static base::OnceCallback<void()> initialized_internal_callback_for_testing;
 static bool is_first_init = true;
 
 constexpr char kAndroidSettingsAppPackage[] = "com.android.settings";
@@ -143,6 +145,18 @@ class SpeechRecognitionObserverWrapper
   mojo::Receiver<chromeos::libassistant::mojom::SpeechRecognitionObserver>
       receiver_{this};
 };
+
+// static
+void AssistantManagerServiceImpl::SetInitializedInternalCallbackForTesting(
+    base::OnceCallback<void()> callback) {
+  CHECK(initialized_internal_callback_for_testing.is_null());
+  // We expect that the callback is set when AssistantStatus is NOT_READY to
+  // confirm that AssistantStatus has changed from NOT_READY to READY. See more
+  // details at a comment in AssistantManagerServiceImpl::OnDeviceAppsEnabled.
+  CHECK(ash::AssistantState::Get()->assistant_status() ==
+        chromeos::assistant::AssistantStatus::NOT_READY);
+  initialized_internal_callback_for_testing = std::move(callback);
+}
 
 // static
 void AssistantManagerServiceImpl::ResetIsFirstInitFlagForTesting() {
@@ -555,6 +569,25 @@ void AssistantManagerServiceImpl::OnDeviceAppsEnabled(bool enabled) {
     return;
 
   display_controller().SetDeviceAppsEnabled(enabled);
+
+  // You can set initialized_internal callback only when AssistantStatus is
+  // NOT_READY. Also this line reaches only after GetState() becomes RUNNING
+  // (i.e. READY). From that reason, test code can assume that status has
+  // changed from NOT_READY to READY between those two points.
+  //
+  // Test code expects those things when Assistant gets initialized:
+  //
+  // - Status becomes READY.
+  // - All necessary settings are passed to LibAssistant.
+  //
+  // We update necessary settings after status becomes READY. For now,
+  // DeviceAppsEnabled is the only settings update which involves async call.
+  // As other settings are sync, if this async call gets completed, we can also
+  // assume that all necessary settings are passed to LibAssistant, i.e.
+  // initialized.
+  if (!initialized_internal_callback_for_testing.is_null()) {
+    std::move(initialized_internal_callback_for_testing).Run();
+  }
 }
 
 void AssistantManagerServiceImpl::AddTimeToTimer(const std::string& id,

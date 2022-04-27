@@ -95,6 +95,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
       private chromeos::libassistant::mojom::StateObserver,
       public ConversationObserver {
  public:
+  // |callback| is called when AssistantManagerServiceImpl got initialized
+  // internally. This waits DeviceApps config value sync.
+  static void SetInitializedInternalCallbackForTesting(
+      base::OnceCallback<void()> callback);
   static void ResetIsFirstInitFlagForTesting();
 
   // |service| owns this class and must outlive this class.

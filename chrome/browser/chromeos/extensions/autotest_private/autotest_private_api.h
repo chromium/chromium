@@ -738,8 +738,7 @@ class AutotestPrivateSetAssistantEnabledFunction
 
 // Bring up the Assistant service, and wait until the ready signal is received.
 class AutotestPrivateEnableAssistantAndWaitForReadyFunction
-    : public ExtensionFunction,
-      public ash::AssistantStateObserver {
+    : public ExtensionFunction {
  public:
   AutotestPrivateEnableAssistantAndWaitForReadyFunction();
   DECLARE_EXTENSION_FUNCTION("autotestPrivate.enableAssistantAndWaitForReady",
@@ -749,15 +748,7 @@ class AutotestPrivateEnableAssistantAndWaitForReadyFunction
   ~AutotestPrivateEnableAssistantAndWaitForReadyFunction() override;
   ResponseAction Run() override;
 
-  void SubscribeToStatusChanges();
-
-  // ash::AssistantStateObserver overrides:
-  void OnAssistantStatusChanged(
-      chromeos::assistant::AssistantStatus status) override;
-
-  // A reference to keep |this| alive while waiting for the Assistant to
-  // respond.
-  scoped_refptr<ExtensionFunction> self_;
+  void OnInitializedInternal();
 };
 
 // Send text query to Assistant and return response.

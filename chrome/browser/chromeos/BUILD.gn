@@ -336,6 +336,7 @@ source_set("chromeos") {
     "//chromeos/network",
     "//chromeos/printing",
     "//chromeos/scanning",
+    "//chromeos/services/assistant:lib",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/bluetooth_config:in_process_bluetooth_config",
     "//chromeos/services/cros_healthd/public/cpp",

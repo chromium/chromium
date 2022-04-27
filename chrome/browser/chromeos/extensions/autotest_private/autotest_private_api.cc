@@ -139,6 +139,7 @@
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/metrics/login_event_recorder.h"
 #include "chromeos/printing/printer_configuration.h"
+#include "chromeos/services/assistant/assistant_manager_service_impl.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
@@ -3073,13 +3074,25 @@ AutotestPrivateEnableAssistantAndWaitForReadyFunction::
     AutotestPrivateEnableAssistantAndWaitForReadyFunction() = default;
 
 AutotestPrivateEnableAssistantAndWaitForReadyFunction::
-    ~AutotestPrivateEnableAssistantAndWaitForReadyFunction() {
-  ash::AssistantState::Get()->RemoveObserver(this);
-}
+    ~AutotestPrivateEnableAssistantAndWaitForReadyFunction() = default;
 
 ExtensionFunction::ResponseAction
 AutotestPrivateEnableAssistantAndWaitForReadyFunction::Run() {
   DVLOG(1) << "AutotestPrivateEnableAssistantAndWaitForReadyFunction";
+
+  if (ash::AssistantState::Get()->assistant_status() ==
+      chromeos::assistant::AssistantStatus::READY) {
+    return RespondNow(Error("Assistant is already enabled."));
+  }
+
+  // We can set this callback only when assistant status is NOT_READY. We should
+  // call this before we try to enable Assistant to avoid causing some timing
+  // issue.
+  chromeos::assistant::AssistantManagerServiceImpl::
+      SetInitializedInternalCallbackForTesting(base::BindOnce(
+          &AutotestPrivateEnableAssistantAndWaitForReadyFunction::
+              OnInitializedInternal,
+          this));
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
   const std::string& err_msg =
@@ -3088,34 +3101,12 @@ AutotestPrivateEnableAssistantAndWaitForReadyFunction::Run() {
   if (!err_msg.empty())
     return RespondNow(Error(err_msg));
 
-  // Asynchronously subscribe to status changes to avoid a possible segmentation
-  // fault caused by Respond() in the subscriber callback being called before
-  // RespondLater() below.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AutotestPrivateEnableAssistantAndWaitForReadyFunction::
-                         SubscribeToStatusChanges,
-                     this));
-
-  // Prevent |this| from being freed before we get a response from the
-  // Assistant.
-  self_ = this;
-
   return RespondLater();
 }
 
 void AutotestPrivateEnableAssistantAndWaitForReadyFunction::
-    SubscribeToStatusChanges() {
-  // |AddObserver| will immediately trigger |OnAssistantStatusChanged|.
-  ash::AssistantState::Get()->AddObserver(this);
-}
-
-void AutotestPrivateEnableAssistantAndWaitForReadyFunction::
-    OnAssistantStatusChanged(chromeos::assistant::AssistantStatus status) {
-  if (status == chromeos::assistant::AssistantStatus::READY) {
-    Respond(NoArguments());
-    self_.reset();
-  }
+    OnInitializedInternal() {
+  Respond(NoArguments());
 }
 
 // AssistantInteractionHelper is a helper class used to interact with Assistant
