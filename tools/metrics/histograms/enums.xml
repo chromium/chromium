@@ -38079,6 +38079,11 @@ Called by update_permissions_policy_enum.py.-->
   <int value="20" label="ThirdPartyCookiesBlocked"/>
   <int value="21" label="DisabledInSettings"/>
   <int value="22" label="DisabledInFlags"/>
+  <int value="23" label="ManifestListHttpNotFound"/>
+  <int value="24" label="ManifestListNoResponse"/>
+  <int value="25" label="ManifestListInvalidResponse"/>
+  <int value="26" label="ManifestNotInManifestList"/>
+  <int value="27" label="ManifestListTooBig"/>
 </enum>
 
 <enum name="FedCmRevokeStatus">
