@@ -30,8 +30,9 @@ namespace {
 constexpr size_t kMaxWorkersPerJob = 32;
 static_assert(
     kMaxWorkersPerJob <=
-        std::numeric_limits<base::invoke_result<
-            decltype (&JobDelegate::GetTaskId), JobDelegate>::type>::max(),
+        std::numeric_limits<
+            std::invoke_result<decltype(&JobDelegate::GetTaskId),
+                               JobDelegate>::type>::max(),
     "AcquireTaskId return type isn't big enough to fit kMaxWorkersPerJob");
 
 }  // namespace

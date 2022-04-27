@@ -692,6 +692,24 @@ Prefer range-based for loops over `std::size()`: range-based for loops work even
 for regular arrays.
 ***
 
+### std::is_invocable <sup>[allowed]</sup>
+
+```c++
+std::is_invocable_v<Fn, 1, "Hello">
+```
+
+**Description:** Checks whether a function may be invoked with the given
+argument types.  The `_r` variant also evaluates whether the result is
+convertible to a given type.
+
+**Documentation:**
+[std::is_invocable](https://en.cppreference.com/w/cpp/types/is_invocable)
+
+**Notes:**
+*** promo
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/YhlF_sTDSc0/m/QMzf42BtAAAJ)
+***
+
 ## C++17 Banned Library Features {#library-blocklist-17}
 
 The following C++17 library features are not allowed in the Chromium codebase.
@@ -1289,24 +1307,6 @@ std::is_swappable_with_v<T, U>
 
 **Documentation:**
 [std::is_swappable](https://en.cppreference.com/w/cpp/types/is_swappable)
-
-**Notes:**
-*** promo
-None
-***
-
-### std::is_invocable <sup>[tbd]</sup>
-
-```c++
-std::is_invocable_v<Fn, 1, "Hello">
-```
-
-**Description:** Checks whether a function may be invoked with the given
-argument types.  The `_r` variant also evaluates whether the result is
-convertible to a given type.
-
-**Documentation:**
-[std::is_invocable](https://en.cppreference.com/w/cpp/types/is_invocable)
 
 **Notes:**
 *** promo

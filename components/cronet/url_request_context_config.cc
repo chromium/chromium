@@ -5,6 +5,7 @@
 #include "components/cronet/url_request_context_config.h"
 
 #include <memory>
+#include <type_traits>
 #include <utility>
 
 #include "base/json/json_reader.h"
@@ -234,8 +235,8 @@ ParseNetworkErrorLoggingHeaders(
 template <typename T, typename F>
 auto map(absl::optional<T> maybe, F&& f) {
   if (!maybe)
-    return absl::optional<base::invoke_result_t<F, T>>();
-  return absl::optional<base::invoke_result_t<F, T>>(f(maybe.value()));
+    return absl::optional<std::invoke_result_t<F, T>>();
+  return absl::optional<std::invoke_result_t<F, T>>(f(maybe.value()));
 }
 
 }  // namespace

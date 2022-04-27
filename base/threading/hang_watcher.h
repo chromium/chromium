@@ -491,8 +491,8 @@ class BASE_EXPORT HangWatchDeadline {
 
  private:
   using TimeTicksInternalRepresentation =
-      base::invoke_result<decltype(&TimeTicks::ToInternalValue),
-                          TimeTicks>::type;
+      std::invoke_result<decltype(&TimeTicks::ToInternalValue),
+                         TimeTicks>::type;
   static_assert(std::is_same<TimeTicksInternalRepresentation, int64_t>::value,
                 "Bit manipulations made by HangWatchDeadline need to be"
                 "adapted if internal representation of TimeTicks changes.");
