@@ -11,6 +11,9 @@ USE_PYTHON3 = True
 
 
 def _RunTestRunnerUnitTests(input_api, output_api):
+  # Don't run iOS tests on Windows.
+  if input_api.is_windows:
+    return []
   """ Runs iOS test runner unit tests """
   files = ['.*_test.py$']
 
