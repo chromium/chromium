@@ -2280,13 +2280,13 @@ void TestRunner::WorkQueue::ProcessWorkItem(mojom::WorkItemPtr work_item) {
 bool TestRunner::WorkQueue::ProcessWorkItemInternal(
     mojom::WorkItemPtr work_item) {
   switch (work_item->which()) {
-    case mojom::WorkItem::Tag::BACK_FORWARD: {
+    case mojom::WorkItem::Tag::kBackForward: {
       mojom::WorkItemBackForwardPtr& item_back_forward =
           work_item->get_back_forward();
       controller_->GoToOffset(item_back_forward->distance);
       return true;  // TODO(danakj): Did it really start a navigation?
     }
-    case mojom::WorkItem::Tag::LOADING_SCRIPT: {
+    case mojom::WorkItem::Tag::kLoadingScript: {
       mojom::WorkItemLoadingScriptPtr& item_loading_script =
           work_item->get_loading_script();
       WebFrameTestProxy* main_frame =
@@ -2296,7 +2296,7 @@ bool TestRunner::WorkQueue::ProcessWorkItemInternal(
           blink::WebString::FromUTF8(item_loading_script->script)));
       return true;  // TODO(danakj): Did it really start a navigation?
     }
-    case mojom::WorkItem::Tag::NON_LOADING_SCRIPT: {
+    case mojom::WorkItem::Tag::kNonLoadingScript: {
       mojom::WorkItemNonLoadingScriptPtr& item_non_loading_script =
           work_item->get_non_loading_script();
       WebFrameTestProxy* main_frame =
@@ -2306,12 +2306,12 @@ bool TestRunner::WorkQueue::ProcessWorkItemInternal(
           blink::WebString::FromUTF8(item_non_loading_script->script)));
       return false;
     }
-    case mojom::WorkItem::Tag::LOAD: {
+    case mojom::WorkItem::Tag::kLoad: {
       mojom::WorkItemLoadPtr& item_load = work_item->get_load();
       controller_->LoadURLForFrame(GURL(item_load->url), item_load->target);
       return true;  // TODO(danakj): Did it really start a navigation?
     }
-    case mojom::WorkItem::Tag::RELOAD:
+    case mojom::WorkItem::Tag::kReload:
       controller_->Reload();
       return true;
   }
