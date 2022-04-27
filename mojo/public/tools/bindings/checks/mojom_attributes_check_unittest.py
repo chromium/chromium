@@ -70,7 +70,7 @@ class MojoBindingsCheckTest(MojomParserTestCase):
         "a.mojom", """
       [JavaConstantsClassName="FakeClass",JavaPackage="org.chromium.Fake"]
       module a;
-      [Stable,Extensible]
+      [Stable, Extensible]
       enum Hello { [Default] kValue, kValue2, [MinVersion=2] kValue3 };
       [Native]
       enum NativeEnum {};
@@ -171,3 +171,16 @@ class MojoBindingsCheckTest(MojomParserTestCase):
     """
     self._testThrows('b.mojom', contents,
                      'attribute sync not allowed.*Did you mean: Sync')
+
+  def testStableExtensibleEnum(self):
+    # crbug.com/1193875
+    contents = """
+      module a;
+      [Stable]
+      enum Foo {
+        kDefaultVal,
+        kOtherVal = 2,
+      };
+    """
+    self._testThrows('a.mojom', contents,
+                     'Extensible.*?required.*?Stable.*?enum')

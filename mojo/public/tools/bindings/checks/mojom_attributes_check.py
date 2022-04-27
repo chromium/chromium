@@ -18,6 +18,7 @@ _COMMON_FIELD_ATTRIBUTES = _COMMON_ATTRIBUTES | {
 }
 
 # Note: `Default`` goes on the default _value_, not on the enum.
+# Note: [Stable] without [Extensible] is not allowed.
 _ENUM_ATTRIBUTES = _COMMON_ATTRIBUTES | {
     'Extensible',
     'Native',
@@ -77,6 +78,23 @@ _UNION_FIELD_ATTRIBUTES = _COMMON_FIELD_ATTRIBUTES | {
     'Default',
 }
 
+# TODO(https://crbug.com/1193875) empty this set and remove the allowlist.
+_STABLE_ONLY_ALLOWLISTED_ENUMS = {
+    'ash.health.mojom.DiskReadRoutineTypeEnum',
+    'ash.ime.mojom.CommitTextCursorBehavior',
+    'ash.ime.mojom.KeyEventResult',
+    'ash.ime.mojom.KeyEventType',
+    'crosapi.mojom.OptionalBool',
+    'crosapi.mojom.RequestActivityIconsStatus',
+    'crosapi.mojom.RequestTextSelectionActionsStatus',
+    'crosapi.mojom.RequestUrlHandlerListStatus',
+    'crosapi.mojom.TriState',
+    'network.mojom.ReferrerPolicy',
+    'skia.mojom.AlphaType',
+    'skia.mojom.ColorType',
+    'ui.mojom.WindowShowState',
+}
+
 
 class Check(check.Check):
   def __init__(self, *args, **kwargs):
@@ -100,7 +118,14 @@ class Check(check.Check):
             f"attribute {attribute} not allowed on {context}{hint}")
 
   def _CheckEnumAttributes(self, enum):
-    self._CheckAttributes("enum", _ENUM_ATTRIBUTES, enum.attributes)
+    if enum.attributes:
+      self._CheckAttributes("enum", _ENUM_ATTRIBUTES, enum.attributes)
+      if 'Stable' in enum.attributes and not 'Extensible' in enum.attributes:
+        full_name = f"{self.module.mojom_namespace}.{enum.mojom_name}"
+        if full_name not in _STABLE_ONLY_ALLOWLISTED_ENUMS:
+          raise check.CheckException(
+              self.module,
+              f"[Extensible] required on [Stable] enum {full_name}")
     for enumval in enum.fields:
       self._CheckAttributes("enum value", _ENUMVAL_ATTRIBUTES,
                             enumval.attributes)
