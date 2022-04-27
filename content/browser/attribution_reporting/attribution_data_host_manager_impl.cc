@@ -90,6 +90,11 @@ const base::FeatureParam<base::TimeDelta> kTriggerDelay{
 
 constexpr size_t kMaxDelayedTriggers = 30;
 
+void ReportBadMessageInsecureReportingOrigin() {
+  mojo::ReportBadMessage(
+      "AttributionDataHost: Reporting origin must be secure.");
+}
+
 }  // namespace
 
 struct AttributionDataHostManagerImpl::FrozenContext {
@@ -223,10 +228,16 @@ void AttributionDataHostManagerImpl::NotifyNavigationFailure(
 
 void AttributionDataHostManagerImpl::SourceDataAvailable(
     blink::mojom::AttributionSourceDataPtr data) {
-  // The API is only allowed in secure contexts.
-  if (!network::IsOriginPotentiallyTrustworthy(data->reporting_origin) ||
-      !network::IsOriginPotentiallyTrustworthy(data->destination)) {
+  if (!network::IsOriginPotentiallyTrustworthy(data->reporting_origin)) {
     RecordSourceDataHandleStatus(DataHandleStatus::kUntrustworthyOrigin);
+    ReportBadMessageInsecureReportingOrigin();
+    return;
+  }
+
+  if (!network::IsOriginPotentiallyTrustworthy(data->destination)) {
+    RecordSourceDataHandleStatus(DataHandleStatus::kUntrustworthyOrigin);
+    mojo::ReportBadMessage(
+        "AttributionDataHost: Destination origin must be secure.");
     return;
   }
 
@@ -237,8 +248,6 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
     case AttributionSourceType::kNavigation:
       DCHECK(context.destination.has_value());
 
-      // For navigation sources verify the destination matches the final
-      // navigation origin.
       if (net::SchemefulSite(data->destination) !=
           net::SchemefulSite(*context.destination)) {
         RecordSourceDataHandleStatus(DataHandleStatus::kContextError);
@@ -246,11 +255,15 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
       }
       break;
     case AttributionSourceType::kEvent:
-      // For event sources verify that all sources are consistent.
       if (!context.destination.has_value()) {
         context.destination = data->destination;
       } else if (data->destination != *context.destination) {
         RecordSourceDataHandleStatus(DataHandleStatus::kContextError);
+        if (context.destination->opaque()) {
+          mojo::ReportBadMessage(
+              "AttributionDataHost: Cannot register sources after registering "
+              "a trigger.");
+        }
         return;
       }
       break;
@@ -258,11 +271,16 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
 
   base::Time source_time = base::Time::Now();
 
+  // When converting mojo values to the browser process equivalents, it should
+  // not be possible for there to be an error except in the case of a bad
+  // renderer. All of the validation here is also performed renderer-side.
+
   absl::optional<AttributionFilterData> filter_data =
       AttributionFilterData::FromSourceFilterValues(
           std::move(data->filter_data->filter_values));
   if (!filter_data.has_value()) {
     RecordSourceDataHandleStatus(DataHandleStatus::kInvalidData);
+    mojo::ReportBadMessage("AttributionDataHost: Invalid filter data.");
     return;
   }
 
@@ -271,6 +289,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
           std::move(data->aggregatable_source->keys));
   if (!aggregatable_source.has_value()) {
     RecordSourceDataHandleStatus(DataHandleStatus::kInvalidData);
+    mojo::ReportBadMessage("AttributionDataHost: Invalid aggregatable source.");
     return;
   }
 
@@ -294,19 +313,20 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
 
 void AttributionDataHostManagerImpl::TriggerDataAvailable(
     blink::mojom::AttributionTriggerDataPtr data) {
-  // The API is only allowed in secure contexts.
   if (!network::IsOriginPotentiallyTrustworthy(data->reporting_origin)) {
     RecordTriggerDataHandleStatus(DataHandleStatus::kUntrustworthyOrigin);
+    ReportBadMessageInsecureReportingOrigin();
     return;
   }
 
   FrozenContext& context = receivers_.current_context();
   DCHECK(network::IsOriginPotentiallyTrustworthy(context.context_origin));
 
-  // Only possible in the case of a bad renderer, navigation bound data hosts
-  // cannot register triggers.
   if (context.source_type == AttributionSourceType::kNavigation) {
     RecordTriggerDataHandleStatus(DataHandleStatus::kContextError);
+    mojo::ReportBadMessage(
+        "AttributionDataHost: Navigation-bound data hosts cannot register "
+        "triggers.");
     return;
   }
 
@@ -315,6 +335,9 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
     OnSourceEligibleDataHostFinished(context.register_time);
   } else if (!context.destination->opaque()) {
     RecordTriggerDataHandleStatus(DataHandleStatus::kContextError);
+    mojo::ReportBadMessage(
+        "AttributionDataHost: Cannot register triggers after registering a "
+        "source.");
     return;
   }
 
@@ -323,11 +346,13 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
           std::move(data->filters->filter_values));
   if (!filters.has_value()) {
     RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);
+    mojo::ReportBadMessage("AttributionDataHost: Invalid top-level filters.");
     return;
   }
 
   if (data->event_triggers.size() > blink::kMaxAttributionEventTriggerData) {
     RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);
+    mojo::ReportBadMessage("AttributionDataHost: Too many event triggers.");
     return;
   }
 
@@ -340,6 +365,8 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
             std::move(event_trigger->filters->filter_values));
     if (!filters.has_value()) {
       RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);
+      mojo::ReportBadMessage(
+          "AttributionDataHost: Invalid event-trigger filters.");
       return;
     }
 
@@ -348,6 +375,8 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
             std::move(event_trigger->not_filters->filter_values));
     if (!not_filters.has_value()) {
       RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);
+      mojo::ReportBadMessage(
+          "AttributionDataHost: Invalid event-trigger not_filters.");
       return;
     }
 
@@ -364,6 +393,8 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
           std::move(data->aggregatable_trigger));
   if (!aggregatable_trigger.has_value()) {
     RecordTriggerDataHandleStatus(DataHandleStatus::kInvalidData);
+    mojo::ReportBadMessage(
+        "AttributionDataHost: Invalid aggregatable trigger.");
     return;
   }
 

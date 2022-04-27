@@ -28,6 +28,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -96,8 +97,6 @@ struct RemoteDataHost {
     task_environment.RunUntilIdle();
   }
 };
-
-}  // namespace
 
 class AttributionDataHostManagerImplTest : public testing::Test {
  public:
@@ -169,6 +168,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     const char* destination_origin;
     const char* reporting_origin;
     bool source_expected;
+    const char* bad_message = nullptr;
   } kTestCases[] = {
       {.source_origin = kLocalHost,
        .destination_origin = kLocalHost,
@@ -181,11 +181,14 @@ TEST_F(AttributionDataHostManagerImplTest,
       {.source_origin = kLocalHost,
        .destination_origin = kLocalHost,
        .reporting_origin = "http://insecure.com",
-       .source_expected = false},
+       .source_expected = false,
+       .bad_message = "AttributionDataHost: Reporting origin must be secure."},
       {.source_origin = kLocalHost,
        .destination_origin = "http://insecure.com",
        .reporting_origin = kLocalHost,
-       .source_expected = false},
+       .source_expected = false,
+       .bad_message =
+           "AttributionDataHost: Destination origin must be secure."},
       {.source_origin = "http://insecure.com",
        .destination_origin = kLocalHost,
        .reporting_origin = kLocalHost,
@@ -198,6 +201,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   for (const auto& test_case : kTestCases) {
     EXPECT_CALL(mock_manager_, HandleSource).Times(test_case.source_expected);
+
+    mojo::test::BadMessageObserver bad_message_observer;
 
     RemoteDataHost data_host_remote{.task_environment = task_environment_};
     data_host_manager_.RegisterDataHost(
@@ -216,6 +221,13 @@ TEST_F(AttributionDataHostManagerImplTest,
     data_host_remote.data_host.FlushForTesting();
 
     Mock::VerifyAndClear(&mock_manager_);
+
+    EXPECT_EQ(bad_message_observer.got_bad_message(), !!test_case.bad_message);
+
+    if (test_case.bad_message) {
+      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+                test_case.bad_message);
+    }
   }
 
   histograms.ExpectUniqueSample("Conversions.RegisteredSourcesPerDataHost", 1,
@@ -239,6 +251,8 @@ TEST_F(AttributionDataHostManagerImplTest,
         data_host_remote.BindNewPipeAndPassReceiver(),
         url::Origin::Create(GURL("https://page.example")));
 
+    mojo::test::BadMessageObserver bad_message_observer;
+
     auto source_data = blink::mojom::AttributionSourceData::New();
     source_data->destination =
         url::Origin::Create(GURL("https://trigger.example"));
@@ -252,6 +266,13 @@ TEST_F(AttributionDataHostManagerImplTest,
     data_host_remote.FlushForTesting();
 
     Mock::VerifyAndClear(&mock_manager_);
+
+    EXPECT_NE(bad_message_observer.got_bad_message(), test_case.valid);
+
+    if (!test_case.valid) {
+      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+                "AttributionDataHost: Invalid filter data.");
+    }
 
     // kSuccess = 0, kInvalidData = 3.
     histograms.ExpectUniqueSample(kSourceDataHandleStatusMetric,
@@ -289,6 +310,8 @@ TEST_F(AttributionDataHostManagerImplTest,
         data_host_remote.BindNewPipeAndPassReceiver(),
         url::Origin::Create(GURL("https://page.example")));
 
+    mojo::test::BadMessageObserver bad_message_observer;
+
     auto source_data = blink::mojom::AttributionSourceData::New();
     source_data->destination =
         url::Origin::Create(GURL("https://trigger.example"));
@@ -302,6 +325,13 @@ TEST_F(AttributionDataHostManagerImplTest,
     data_host_remote.FlushForTesting();
 
     Mock::VerifyAndClear(&mock_manager_);
+
+    EXPECT_NE(bad_message_observer.got_bad_message(), test_case.valid);
+
+    if (!test_case.valid) {
+      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+                "AttributionDataHost: Invalid filter data.");
+    }
 
     // kSuccess = 0, kInvalidData = 3.
     histograms.ExpectUniqueSample(kSourceDataHandleStatusMetric,
@@ -409,6 +439,8 @@ TEST_F(AttributionDataHostManagerImplTest,
         test_case.description);  // Since EXPECT_CALL doesn't support <<
     EXPECT_CALL(mock_manager_, HandleSource).Times(test_case.valid);
 
+    mojo::test::BadMessageObserver bad_message_observer;
+
     mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
     data_host_manager_.RegisterDataHost(
         data_host_remote.BindNewPipeAndPassReceiver(),
@@ -425,6 +457,13 @@ TEST_F(AttributionDataHostManagerImplTest,
     data_host_remote.FlushForTesting();
 
     Mock::VerifyAndClear(&mock_manager_);
+
+    EXPECT_NE(bad_message_observer.got_bad_message(), test_case.valid);
+
+    if (!test_case.valid) {
+      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+                "AttributionDataHost: Invalid aggregatable source.");
+    }
 
     // kSuccess = 0, kInvalidData = 3.
     histograms.ExpectUniqueSample(kSourceDataHandleStatusMetric,
@@ -522,6 +561,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     const char* destination_origin;
     const char* reporting_origin;
     bool trigger_expected;
+    const char* bad_message = nullptr;
   } kTestCases[] = {
       {.destination_origin = kLocalHost,
        .reporting_origin = kLocalHost,
@@ -531,7 +571,8 @@ TEST_F(AttributionDataHostManagerImplTest,
        .trigger_expected = true},
       {.destination_origin = kLocalHost,
        .reporting_origin = "http://insecure.com",
-       .trigger_expected = false},
+       .trigger_expected = false,
+       .bad_message = "AttributionDataHost: Reporting origin must be secure."},
       {.destination_origin = "http://insecure.com",
        .reporting_origin = kLocalHost,
        .trigger_expected = false},
@@ -542,6 +583,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   for (const auto& test_case : kTestCases) {
     EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.trigger_expected);
+
+    mojo::test::BadMessageObserver bad_message_observer;
 
     RemoteDataHost data_host_remote{.task_environment = task_environment_};
     data_host_manager_.RegisterDataHost(
@@ -558,6 +601,13 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     data_host_remote.data_host->TriggerDataAvailable(std::move(trigger_data));
     data_host_remote.data_host.FlushForTesting();
+
+    EXPECT_EQ(bad_message_observer.got_bad_message(), !!test_case.bad_message);
+
+    if (test_case.bad_message) {
+      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+                test_case.bad_message);
+    }
 
     Mock::VerifyAndClear(&mock_manager_);
   }
@@ -577,6 +627,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     SCOPED_TRACE(test_case.description);  // EXPECT_CALL doesn't support <<
     EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.valid);
+
+    mojo::test::BadMessageObserver bad_message_observer;
 
     mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
     data_host_manager_.RegisterDataHost(
@@ -598,6 +650,13 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     Mock::VerifyAndClear(&mock_manager_);
 
+    EXPECT_NE(bad_message_observer.got_bad_message(), test_case.valid);
+
+    if (!test_case.valid) {
+      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+                "AttributionDataHost: Invalid top-level filters.");
+    }
+
     // kSuccess = 0, kInvalidData = 3.
     histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric,
                                   test_case.valid ? 0 : 3, 1);
@@ -611,6 +670,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     SCOPED_TRACE(test_case.description);  // EXPECT_CALL doesn't support <<
     EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.valid);
+
+    mojo::test::BadMessageObserver bad_message_observer;
 
     mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
     data_host_manager_.RegisterDataHost(
@@ -638,6 +699,13 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     Mock::VerifyAndClear(&mock_manager_);
 
+    EXPECT_NE(bad_message_observer.got_bad_message(), test_case.valid);
+
+    if (!test_case.valid) {
+      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+                "AttributionDataHost: Invalid event-trigger filters.");
+    }
+
     // kSuccess = 0, kInvalidData = 3.
     histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric,
                                   test_case.valid ? 0 : 3, 1);
@@ -651,6 +719,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     SCOPED_TRACE(test_case.description);  // EXPECT_CALL doesn't support <<
     EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.valid);
+
+    mojo::test::BadMessageObserver bad_message_observer;
 
     mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
     data_host_manager_.RegisterDataHost(
@@ -679,6 +749,13 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     Mock::VerifyAndClear(&mock_manager_);
 
+    EXPECT_NE(bad_message_observer.got_bad_message(), test_case.valid);
+
+    if (!test_case.valid) {
+      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+                "AttributionDataHost: Invalid event-trigger not_filters.");
+    }
+
     // kSuccess = 0, kInvalidData = 3.
     histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric,
                                   test_case.valid ? 0 : 3, 1);
@@ -699,6 +776,8 @@ TEST_F(AttributionDataHostManagerImplTest,
     base::HistogramTester histograms;
 
     EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.expected);
+
+    mojo::test::BadMessageObserver bad_message_observer;
 
     mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
     data_host_manager_.RegisterDataHost(
@@ -728,6 +807,13 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     Mock::VerifyAndClear(&mock_manager_);
 
+    EXPECT_NE(bad_message_observer.got_bad_message(), test_case.expected);
+
+    if (!test_case.expected) {
+      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+                "AttributionDataHost: Too many event triggers.");
+    }
+
     // kSuccess = 0, kInvalidData = 3.
     histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric,
                                   test_case.expected ? 0 : 3, 1);
@@ -754,6 +840,8 @@ TEST_F(AttributionDataHostManagerImplTest,
         data_host_remote.BindNewPipeAndPassReceiver(),
         url::Origin::Create(GURL("https://trigger.example")));
 
+    mojo::test::BadMessageObserver bad_message_observer;
+
     auto trigger_data = blink::mojom::AttributionTriggerData::New();
     trigger_data->reporting_origin =
         url::Origin::Create(GURL("https://reporter.example"));
@@ -771,6 +859,13 @@ TEST_F(AttributionDataHostManagerImplTest,
     data_host_remote.FlushForTesting();
 
     Mock::VerifyAndClear(&mock_manager_);
+
+    EXPECT_NE(bad_message_observer.got_bad_message(), test_case.expected);
+
+    if (!test_case.expected) {
+      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+                "AttributionDataHost: Invalid aggregatable trigger.");
+    }
 
     // kSuccess = 0, kInvalidData = 3.
     histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric,
@@ -821,15 +916,23 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     checkpoint.Call(2);
 
-    auto source_data = blink::mojom::AttributionSourceData::New();
-    source_data->destination = destination_origin;
-    source_data->reporting_origin = reporting_origin;
-    source_data->filter_data = blink::mojom::AttributionFilterData::New();
-    source_data->aggregatable_source =
-        blink::mojom::AttributionAggregatableSource::New();
+    {
+      mojo::test::BadMessageObserver bad_message_observer;
 
-    data_host_remote.data_host->SourceDataAvailable(std::move(source_data));
-    data_host_remote.data_host.FlushForTesting();
+      auto source_data = blink::mojom::AttributionSourceData::New();
+      source_data->destination = destination_origin;
+      source_data->reporting_origin = reporting_origin;
+      source_data->filter_data = blink::mojom::AttributionFilterData::New();
+      source_data->aggregatable_source =
+          blink::mojom::AttributionAggregatableSource::New();
+
+      data_host_remote.data_host->SourceDataAvailable(std::move(source_data));
+      data_host_remote.data_host.FlushForTesting();
+
+      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+                "AttributionDataHost: Cannot register sources after "
+                "registering a trigger.");
+    }
 
     checkpoint.Call(3);
 
@@ -890,14 +993,22 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     checkpoint.Call(2);
 
-    auto trigger_data = blink::mojom::AttributionTriggerData::New();
-    trigger_data->reporting_origin = reporting_origin;
-    trigger_data->filters = blink::mojom::AttributionFilterData::New();
-    trigger_data->aggregatable_trigger =
-        blink::mojom::AttributionAggregatableTrigger::New();
+    {
+      mojo::test::BadMessageObserver bad_message_observer;
 
-    data_host_remote.data_host->TriggerDataAvailable(std::move(trigger_data));
-    data_host_remote.data_host.FlushForTesting();
+      auto trigger_data = blink::mojom::AttributionTriggerData::New();
+      trigger_data->reporting_origin = reporting_origin;
+      trigger_data->filters = blink::mojom::AttributionFilterData::New();
+      trigger_data->aggregatable_trigger =
+          blink::mojom::AttributionAggregatableTrigger::New();
+
+      data_host_remote.data_host->TriggerDataAvailable(std::move(trigger_data));
+      data_host_remote.data_host.FlushForTesting();
+
+      EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+                "AttributionDataHost: Cannot register triggers after "
+                "registering a source.");
+    }
 
     checkpoint.Call(3);
 
@@ -1596,6 +1707,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token, url::Origin::Create(GURL("https://s.test")),
       url::Origin::Create(GURL("https://d.test")));
 
+  mojo::test::BadMessageObserver bad_message_observer;
+
   auto trigger_data = blink::mojom::AttributionTriggerData::New();
   trigger_data->reporting_origin = url::Origin::Create(GURL("https://r.test"));
   trigger_data->filters = blink::mojom::AttributionFilterData::New();
@@ -1604,6 +1717,10 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   data_host_remote->TriggerDataAvailable(std::move(trigger_data));
   data_host_remote.FlushForTesting();
+
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "AttributionDataHost: Navigation-bound data hosts cannot register "
+            "triggers.");
 
   // kContextError = 2.
   histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric, 2, 1);
@@ -1656,4 +1773,5 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_remote2.FlushForTesting();
 }
 
+}  // namespace
 }  // namespace content
