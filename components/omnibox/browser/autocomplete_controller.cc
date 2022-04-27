@@ -767,7 +767,7 @@ void AutocompleteController::UpdateResult(
        i != providers_.end(); ++i)
     result_.AppendMatches(input_, (*i)->matches());
 
-  bool perform_tab_match = OmniboxFieldTrial::IsTabSwitchSuggestionsEnabled();
+  bool perform_tab_match = true;
 #if BUILDFLAG(IS_ANDROID)
   // Do not look for matching tabs on Android unless we collected all the
   // suggestions. Tab matching is an expensive process with multiple JNI calls

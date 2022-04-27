@@ -353,9 +353,6 @@ int KeywordScoreForSufficientlyCompleteMatch();
 // ---------------------------------------------------------
 // For UI experiments.
 
-// Returns true if the tab switch suggestions flag is enabled.
-bool IsTabSwitchSuggestionsEnabled();
-
 // Returns true if the fuzzy URL suggestions feature is enabled.
 bool IsFuzzyUrlSuggestionsEnabled();
 

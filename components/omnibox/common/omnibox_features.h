@@ -13,7 +13,6 @@ namespace omnibox {
 // Please do not add more features to this "big blob" list.
 // Instead, use the categorized and alphabetized lists below this "big blob".
 // You can create a new category if none of the existing ones fit.
-extern const base::Feature kOmniboxTabSwitchSuggestions;
 extern const base::Feature kExperimentalKeywordMode;
 extern const base::Feature kImageSearchSuggestionThumbnail;
 extern const base::Feature kDisplayTitleForCurrentUrl;

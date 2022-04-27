@@ -602,10 +602,6 @@ int OmniboxFieldTrial::KeywordScoreForSufficientlyCompleteMatch() {
   return value;
 }
 
-bool OmniboxFieldTrial::IsTabSwitchSuggestionsEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kOmniboxTabSwitchSuggestions);
-}
-
 bool OmniboxFieldTrial::IsFuzzyUrlSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxFuzzyUrlSuggestions);
 }

@@ -1848,12 +1848,6 @@ const char kOmniboxRetainSuggestionsWithHeadersDescription[] =
     "is available will be retained as a whole and not be counted towards the "
     "limit.";
 
-const char kOmniboxTabSwitchSuggestionsName[] =
-    "Omnibox switch to tab suggestions";
-const char kOmniboxTabSwitchSuggestionsDescription[] =
-    "Enable URL suggestions to optionally take the user to a tab where a "
-    "website is already opened.";
-
 const char kOmniboxMaxZeroSuggestMatchesName[] =
     "Omnibox Max Zero Suggest Matches";
 const char kOmniboxMaxZeroSuggestMatchesDescription[] =

@@ -1029,9 +1029,6 @@ extern const char kOmniboxSpareRendererDescription[];
 extern const char kOmniboxRetainSuggestionsWithHeadersName[];
 extern const char kOmniboxRetainSuggestionsWithHeadersDescription[];
 
-extern const char kOmniboxTabSwitchSuggestionsName[];
-extern const char kOmniboxTabSwitchSuggestionsDescription[];
-
 extern const char kOmniboxTrendingZeroPrefixSuggestionsOnNTPName[];
 extern const char kOmniboxTrendingZeroPrefixSuggestionsOnNTPDescription[];
 

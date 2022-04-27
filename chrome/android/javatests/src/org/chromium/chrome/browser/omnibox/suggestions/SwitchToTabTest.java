@@ -58,7 +58,6 @@ import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
@@ -266,7 +265,6 @@ public class SwitchToTabTest {
 
     @Test
     @MediumTest
-    @EnableFeatures("OmniboxTabSwitchSuggestions")
     public void testSwitchToTabSuggestion() throws InterruptedException {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getInstrumentation().getContext(),
@@ -294,7 +292,6 @@ public class SwitchToTabTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.N)
-    @EnableFeatures("OmniboxTabSwitchSuggestions")
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
     @FlakyTest(message = "https://crbug.com/1291136")
     public void testSwitchToTabSuggestionWhenIncognitoTabOnTop() throws InterruptedException {
@@ -334,7 +331,6 @@ public class SwitchToTabTest {
 
     @Test
     @MediumTest
-    @EnableFeatures("OmniboxTabSwitchSuggestions")
     public void testNoSwitchToIncognitoTabFromNormalModel() throws InterruptedException {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getInstrumentation().getContext(),
@@ -362,7 +358,6 @@ public class SwitchToTabTest {
 
     @Test
     @MediumTest
-    @EnableFeatures("OmniboxTabSwitchSuggestions")
     public void testSwitchToTabInSearchActivity() throws InterruptedException {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getInstrumentation().getContext(),
