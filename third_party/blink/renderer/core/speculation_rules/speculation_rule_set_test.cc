@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
+#include "third_party/blink/renderer/core/speculation_rules/stub_speculation_host.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -280,42 +281,6 @@ TEST_F(SpeculationRuleSetTest, PropagatesToDocument) {
   EXPECT_THAT(rule_set->prerender_rules(),
               ElementsAre(MatchesListOfURLs("https://example.com/bar")));
 }
-
-class StubSpeculationHost : public mojom::blink::SpeculationHost {
- public:
-  using Candidates = Vector<mojom::blink::SpeculationCandidatePtr>;
-
-  const Candidates& candidates() const { return candidates_; }
-  void SetDoneClosure(base::OnceClosure done) {
-    done_closure_ = std::move(done);
-  }
-
-  void BindUnsafe(mojo::ScopedMessagePipeHandle handle) {
-    Bind(mojo::PendingReceiver<SpeculationHost>(std::move(handle)));
-  }
-
-  void Bind(mojo::PendingReceiver<SpeculationHost> receiver) {
-    receiver_.Bind(std::move(receiver));
-    receiver_.set_disconnect_handler(base::BindOnce(
-        &StubSpeculationHost::OnConnectionLost, base::Unretained(this)));
-  }
-
-  void UpdateSpeculationCandidates(Candidates candidates) override {
-    candidates_ = std::move(candidates);
-    if (done_closure_)
-      std::move(done_closure_).Run();
-  }
-
-  void OnConnectionLost() {
-    if (done_closure_)
-      std::move(done_closure_).Run();
-  }
-
- private:
-  mojo::Receiver<SpeculationHost> receiver_{this};
-  Vector<mojom::blink::SpeculationCandidatePtr> candidates_;
-  base::OnceClosure done_closure_;
-};
 
 HTMLScriptElement* InsertSpeculationRules(Document& document,
                                           const String& speculation_script) {

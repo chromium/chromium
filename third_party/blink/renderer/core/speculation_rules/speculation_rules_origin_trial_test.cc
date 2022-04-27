@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
+#include "third_party/blink/renderer/core/speculation_rules/stub_speculation_host.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -48,21 +50,29 @@ constexpr char kSimplePrefetchProxyRuleSet[] =
     R"({
         "prefetch": [{
           "source": "list",
-          "urls": ["//example.com/index2.html"],
+          "urls": ["https://speculationrules.test/index2.html"],
           "requires": ["anonymous-client-ip-when-cross-origin"]
         }]
       })";
 
-// Similar to SpeculationRuleSettest.PropagatesToDocument.
+// Similar to SpeculationRuleSetTest.PropagatesToDocument.
 ::testing::AssertionResult DocumentAcceptsRuleSet(const char* trial_token,
                                                   const char* json) {
   DummyPageHolder page_holder;
   Document& document = page_holder.GetDocument();
+  LocalFrame& frame = page_holder.GetFrame();
+
+  // Set up the interface binder.
+  StubSpeculationHost speculation_host;
+  auto& broker = frame.DomWindow()->GetBrowserInterfaceBroker();
+  broker.SetBinderForTesting(
+      mojom::blink::SpeculationHost::Name_,
+      WTF::BindRepeating(&StubSpeculationHost::BindUnsafe,
+                         WTF::Unretained(&speculation_host)));
 
   // Clear the security origin and set a secure one, recomputing the security
   // state.
-  SecurityContext& security_context =
-      page_holder.GetFrame().DomWindow()->GetSecurityContext();
+  SecurityContext& security_context = frame.DomWindow()->GetSecurityContext();
   security_context.SetSecurityOriginForTesting(nullptr);
   security_context.SetSecurityOrigin(
       SecurityOrigin::CreateFromString("https://speculationrules.test"));
@@ -70,7 +80,10 @@ constexpr char kSimplePrefetchProxyRuleSet[] =
             SecureContextMode::kSecureContext);
 
   // Enable scripts so that <script> is not ignored.
-  page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
+  frame.GetSettings()->SetScriptEnabled(true);
+
+  base::RunLoop run_loop;
+  speculation_host.SetDoneClosure(run_loop.QuitClosure());
 
   HTMLMetaElement* meta =
       MakeGarbageCollected<HTMLMetaElement>(document, CreateElementFlags());
@@ -84,10 +97,22 @@ constexpr char kSimplePrefetchProxyRuleSet[] =
   script->setText(json);
   document.head()->appendChild(script);
 
-  auto* supplement = DocumentSpeculationRules::FromIfExists(document);
-  return (supplement && !supplement->rule_sets().IsEmpty())
-             ? ::testing::AssertionSuccess() << "a rule set was found"
-             : ::testing::AssertionFailure() << "no rule set was found";
+  if (!RuntimeEnabledFeatures::SpeculationRulesEnabled(frame.DomWindow())) {
+    // When the SpeculationRules is disabled, the host is never bound and
+    // doesn't receive candidates. Run the loop until idle to make sure that.
+    run_loop.RunUntilIdle();
+    EXPECT_FALSE(speculation_host.is_bound());
+  } else {
+    // Wait until UpdateSpeculationCandidates() is dispatched via mojo.
+    run_loop.Run();
+  }
+
+  // Reset the interface binder.
+  broker.SetBinderForTesting(mojom::blink::SpeculationHost::Name_, {});
+
+  return speculation_host.candidates().IsEmpty()
+             ? ::testing::AssertionFailure() << "no rule set was found"
+             : ::testing::AssertionSuccess() << "a rule set was found";
 }
 
 // Without the corresponding base::Feature, this trial token should not be

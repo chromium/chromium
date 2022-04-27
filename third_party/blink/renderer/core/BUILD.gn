@@ -1486,6 +1486,8 @@ source_set("unit_tests") {
     "script/script_runner_test.cc",
     "speculation_rules/speculation_rule_set_test.cc",
     "speculation_rules/speculation_rules_origin_trial_test.cc",
+    "speculation_rules/stub_speculation_host.cc",
+    "speculation_rules/stub_speculation_host.h",
     "streams/miscellaneous_operations_test.cc",
     "streams/queue_with_sizes_test.cc",
     "streams/readable_stream_test.cc",
