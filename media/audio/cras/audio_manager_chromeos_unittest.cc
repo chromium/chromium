@@ -4,6 +4,7 @@
 #include "media/audio/cras/audio_manager_chromeos.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "media/audio/audio_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
