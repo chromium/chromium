@@ -375,6 +375,10 @@ class WebApp {
       base::flat_map<WebAppManagement::Type, ExternalManagementConfig>
           management_to_external_config_map);
 
+  void AddPlaceholderInfoToManagementExternalConfigMap(
+      WebAppManagement::Type source_type,
+      bool is_placeholder);
+
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
   bool operator!=(const WebApp&) const;

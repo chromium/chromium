@@ -312,6 +312,8 @@ void ExternallyManagedAppInstallTask::FinalizePlaceholderInstall(
   options.add_to_desktop = install_options_.add_to_desktop;
   options.add_to_quick_launch_bar = install_options_.add_to_quick_launch_bar;
 
+  web_app_info.is_placeholder = true;
+
   install_finalizer_->FinalizeInstall(
       web_app_info, options,
       base::BindOnce(

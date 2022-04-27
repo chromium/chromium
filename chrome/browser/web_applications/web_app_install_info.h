@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
@@ -320,6 +319,11 @@ struct WebAppInstallInfo {
   // The declared permissions policy to apply as the baseline policy for all
   // documents belonging to the application.
   blink::ParsedPermissionsPolicy permissions_policy;
+
+  // See ExternallyManagedAppManager for placeholder app documentation.
+  // Intended to be a temporary app while we wait for the install_url to
+  // successfully load.
+  bool is_placeholder = false;
 };
 
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2);

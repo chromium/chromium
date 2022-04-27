@@ -357,6 +357,9 @@ void WebAppProvider::StartSyncBridge() {
 void WebAppProvider::OnSyncBridgeReady() {
   DCHECK(!on_registry_ready_.is_signaled());
 
+  ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(profile_->GetPrefs(),
+                                                          sync_bridge_.get());
+
   registrar_->Start();
   install_finalizer_->Start();
   icon_manager_->Start();

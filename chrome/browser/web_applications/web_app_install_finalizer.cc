@@ -169,6 +169,13 @@ void WebAppInstallFinalizer::FinalizeInstall(
   web_app->SetParentAppId(options.parent_app_id);
   web_app->SetInstallSourceForMetrics(options.install_surface);
 
+  DCHECK(!(source == WebAppManagement::Type::kSync &&
+           web_app_info.is_placeholder));
+  if (source != WebAppManagement::Type::kSync) {
+    web_app->AddPlaceholderInfoToManagementExternalConfigMap(
+        source, web_app_info.is_placeholder);
+  }
+
   if (!options.locally_installed) {
     DCHECK(!(options.add_to_applications_menu || options.add_to_desktop ||
              options.add_to_quick_launch_bar))

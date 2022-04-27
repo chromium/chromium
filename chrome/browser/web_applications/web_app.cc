@@ -392,6 +392,13 @@ void WebApp::SetWebAppManagementExternalConfigMap(
       std::move(management_to_external_config_map);
 }
 
+void WebApp::AddPlaceholderInfoToManagementExternalConfigMap(
+    WebAppManagement::Type type,
+    bool is_placeholder) {
+  DCHECK_NE(type, WebAppManagement::Type::kSync);
+  management_to_external_config_map_[type].is_placeholder = is_placeholder;
+}
+
 WebApp::ClientData::ClientData() = default;
 
 WebApp::ClientData::~ClientData() = default;

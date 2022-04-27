@@ -7,8 +7,12 @@
 #include <algorithm>
 
 #include "base/command_line.h"
+#include "base/json/json_reader.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -34,6 +38,9 @@ class ExternallyInstalledWebAppPrefsTest
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    web_app_provider_ = web_app::FakeWebAppProvider::Get(profile());
+    web_app_provider_->SkipAwaitingExtensionSystem();
+    web_app_provider_->StartWithSubsystems();
     // TODO(https://crbug.com/891172): Use an extension agnostic test registry.
     extensions::TestExtensionSystem* test_system =
         static_cast<extensions::TestExtensionSystem*>(
@@ -73,6 +80,17 @@ class ExternallyInstalledWebAppPrefsTest
     return urls;
   }
 
+  void InitProvider() {
+    base::RunLoop run_loop;
+    web_app_provider_->on_registry_ready().Post(FROM_HERE,
+                                                run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  FakeWebAppProvider* provider() { return web_app_provider_; }
+
+ private:
+  FakeWebAppProvider* web_app_provider_;
 };
 
 TEST_F(ExternallyInstalledWebAppPrefsTest, BasicOps) {
@@ -199,6 +217,124 @@ TEST_F(ExternallyInstalledWebAppPrefsTest, OldPrefFormat) {
   // This should not crash on invalid pref data.
   EXPECT_FALSE(ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
                    .IsPlaceholderApp("app_id_string"));
+}
+
+// Case 1: Single App ID, no placeholder info (defaults to
+// false).
+TEST_F(ExternallyInstalledWebAppPrefsTest, NoPlaceholderInfoDefaultsToFalse) {
+  base::Value external_prefs = *base::JSONReader::Read(R"({
+    "https://app1.com/": {
+      "extension_id": "test_app1",
+      "install_source": 2
+    },
+    "https://app2.com/": {
+      "extension_id": "test_app1",
+      "install_source": 3
+    }
+  })");
+  profile()->GetPrefs()->Set(prefs::kWebAppsExtensionIDs,
+                             std::move(external_prefs));
+  base::flat_map<AppId, ExternallyInstalledWebAppPrefs::ParsedPrefs>
+      web_app_data_map =
+          ExternallyInstalledWebAppPrefs::GetAppIdToWebAppParsedData(
+              profile()->GetPrefs());
+  EXPECT_EQ(1u, web_app_data_map.size());
+  EXPECT_FALSE(web_app_data_map["test_app1"]
+                   .placeholder_map[WebAppManagement::Type::kPolicy]);
+  EXPECT_FALSE(web_app_data_map["test_app1"]
+                   .placeholder_map[WebAppManagement::Type::kSystem]);
+}
+
+// Case 2: Multiple entries with single app ID, with is_placeholder set to true.
+TEST_F(ExternallyInstalledWebAppPrefsTest,
+       SinglePlaceholderInfoDefaultsToTrue) {
+  base::Value external_prefs = *base::JSONReader::Read(R"({
+    "https://app1.com/": {
+      "extension_id": "test_app1",
+      "install_source": 0
+    },
+    "https://app2.com/": {
+      "extension_id": "test_app1",
+      "install_source": 0,
+      "is_placeholder": true
+    }
+  })");
+  profile()->GetPrefs()->Set(prefs::kWebAppsExtensionIDs,
+                             std::move(external_prefs));
+
+  base::flat_map<AppId, ExternallyInstalledWebAppPrefs::ParsedPrefs>
+      web_app_data_map =
+          ExternallyInstalledWebAppPrefs::GetAppIdToWebAppParsedData(
+              profile()->GetPrefs());
+  EXPECT_EQ(1u, web_app_data_map.size());
+  EXPECT_TRUE(web_app_data_map["test_app1"]
+                  .placeholder_map[WebAppManagement::Type::kDefault]);
+}
+
+TEST_F(ExternallyInstalledWebAppPrefsTest, MultiAppsMultiPlaceholderInfo) {
+  base::Value external_prefs = *base::JSONReader::Read(R"({
+    "https://app1.com/": {
+      "extension_id": "test_app1",
+      "install_source": 1
+    },
+    "https://app2.com/": {
+      "extension_id": "test_app1",
+      "install_source": 1
+    },
+    "https://app3.com/": {},
+    "https://app4.com/": {
+      "extension_id": "test_app4",
+      "install_source": 4,
+      "is_placeholder": true
+    },
+    "https://app5.com/": {
+      "extension_id": "test_app4",
+      "is_placeholder": true
+    },
+    "https://app6.com/": {
+      "install_source": 4
+    }
+  })");
+  profile()->GetPrefs()->Set(prefs::kWebAppsExtensionIDs,
+                             std::move(external_prefs));
+  base::flat_map<AppId, ExternallyInstalledWebAppPrefs::ParsedPrefs>
+      web_app_data_map =
+          ExternallyInstalledWebAppPrefs::GetAppIdToWebAppParsedData(
+              profile()->GetPrefs());
+  EXPECT_EQ(2u, web_app_data_map.size());
+  EXPECT_FALSE(web_app_data_map["test_app1"]
+                   .placeholder_map[WebAppManagement::Type::kDefault]);
+  EXPECT_TRUE(web_app_data_map["test_app4"]
+                  .placeholder_map[WebAppManagement::Type::kWebAppStore]);
+}
+
+TEST_F(ExternallyInstalledWebAppPrefsTest,
+       PlaceholderMigrationTestForSingleSource) {
+  InitProvider();
+  std::unique_ptr<WebApp> web_app = test::CreateWebApp(
+      GURL("https://app.com/"), WebAppManagement::Type::kDefault);
+  AppId app_id = web_app->app_id();
+  {
+    ScopedRegistryUpdate update(&provider()->sync_bridge());
+    update->CreateApp(std::move(web_app));
+  }
+  const WebApp* installed_app = provider()->registrar().GetAppById(app_id);
+  EXPECT_FALSE(provider()->registrar().IsPlaceholderApp(app_id));
+  EXPECT_EQ(0u, installed_app->management_to_external_config_map().size());
+
+  ExternallyInstalledWebAppPrefs external_prefs(profile()->GetPrefs());
+  external_prefs.Insert(GURL("https://app.com/install"), app_id,
+                        ExternalInstallSource::kExternalDefault);
+  external_prefs.SetIsPlaceholder(GURL("https://app.com/install"), true);
+
+  ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
+      profile()->GetPrefs(), &provider()->sync_bridge());
+
+  EXPECT_TRUE(provider()->registrar().IsPlaceholderApp(app_id));
+  EXPECT_EQ(1u, installed_app->management_to_external_config_map().size());
+  EXPECT_TRUE(installed_app->management_to_external_config_map()
+                  .at(WebAppManagement::Type::kDefault)
+                  .is_placeholder);
 }
 
 }  // namespace web_app
