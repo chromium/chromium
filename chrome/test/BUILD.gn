@@ -6375,19 +6375,13 @@ test("unit_tests") {
   } else {
     # !is_android
     sources += [
-      # Badging isn't supported on Android.
-      "../browser/badging/badge_manager_unittest.cc",
-      "../browser/badging/test_badge_manager_delegate.cc",
-      "../browser/badging/test_badge_manager_delegate.h",
-
-      # Device API isn't supported on Android.
-      "../browser/device_api/device_service_unittest.cc",
-      "../browser/device_api/managed_configuration_service_unittest.cc",
-
-      # Bookmark export/import are handled via the BookmarkColumns
-      # ContentProvider.
-      "../browser/bookmarks/bookmark_html_writer_unittest.cc",
       "../browser/browser_commands_unittest.cc",
+      "../browser/cart/cart_discount_fetcher_unittest.cc",
+      "../browser/cart/cart_discount_link_fetcher_unittest.cc",
+      "../browser/cart/cart_handler_unittest.cc",
+      "../browser/cart/cart_service_unittest.cc",
+      "../browser/cart/fetch_discount_worker_unittest.cc",
+      "../browser/commerce/coupons/coupon_service_unittest.cc",
       "../browser/diagnostics/diagnostics_controller_unittest.cc",
       "../browser/diagnostics/diagnostics_model_unittest.cc",
       "../browser/download/download_commands_unittest.cc",
@@ -6409,19 +6403,11 @@ test("unit_tests") {
       "../browser/enterprise/reporting/real_time_report_generator_unittest.cc",
       "../browser/first_run/first_run_unittest.cc",
       "../browser/font_family_cache_unittest.cc",
-
-      # GCMDriverAndroid is not yet implemented.
-      "../browser/gcm/gcm_profile_service_unittest.cc",
       "../browser/hid/hid_chooser_context_unittest.cc",
       "../browser/hid/hid_policy_allowed_devices_unittest.cc",
       "../browser/importer/profile_writer_unittest.cc",
       "../browser/lifetime/application_lifetime_unittest.cc",
       "../browser/lookalikes/lookalike_url_navigation_throttle_unittest.cc",
-      "../browser/reputation/local_heuristics_unittest.cc",
-      "../browser/reputation/reputation_service_unittest.cc",
-
-      # Media remoting is not supported on Android for now.
-      "../browser/media/cast_remoting_connector_unittest.cc",
       "../browser/media/unified_autoplay_config_unittest.cc",
       "../browser/media/webrtc/current_tab_desktop_media_list_unittest.cc",
       "../browser/media/webrtc/desktop_capture_access_handler_unittest.cc",
@@ -6456,6 +6442,14 @@ test("unit_tests") {
       "../browser/new_tab_page/one_google_bar/one_google_bar_service_unittest.cc",
       "../browser/new_tab_page/promos/promo_service_unittest.cc",
       "../browser/page_load_metrics/observers/session_restore_page_load_metrics_observer_unittest.cc",
+      "../browser/platform_util_unittest.cc",
+      "../browser/policy/policy_path_parser_unittest.cc",
+      "../browser/policy/webhid_device_policy_handler_unittest.cc",
+      "../browser/profile_resetter/profile_resetter_unittest.cc",
+      "../browser/profile_resetter/reset_report_uploader_unittest.cc",
+      "../browser/renderer_context_menu/render_view_context_menu_unittest.cc",
+      "../browser/reputation/local_heuristics_unittest.cc",
+      "../browser/reputation/reputation_service_unittest.cc",
       "../browser/resource_coordinator/decision_details_unittest.cc",
       "../browser/resource_coordinator/discard_metrics_lifecycle_unit_observer_unittest.cc",
       "../browser/resource_coordinator/intervention_policy_database_unittest.cc",
@@ -6475,28 +6469,6 @@ test("unit_tests") {
       "../browser/resource_coordinator/test_lifecycle_unit.cc",
       "../browser/resource_coordinator/test_lifecycle_unit.h",
       "../browser/resource_coordinator/usage_clock_unittest.cc",
-
-      # The site data database isn't supported on Android.
-      "../browser/performance_manager/persistence/site_data/site_data_cache_facade_unittest.cc",
-      "../browser/performance_manager/persistence/site_data/unittest_utils.cc",
-      "../browser/performance_manager/persistence/site_data/unittest_utils.h",
-
-      # Urgent discarding from performance_manager and the High-PMF discard
-      # policy aren't supported on Android.
-      "../browser/performance_manager/policies/high_pmf_discard_policy_unittest.cc",
-      "../browser/performance_manager/policies/page_discarding_helper_unittest.cc",
-      "../browser/performance_manager/policies/urgent_page_discarding_policy_unittest.cc",
-
-      # Background tab loading from performance_manager isn't supported on Android.
-      "../browser/new_tab_page/chrome_colors/chrome_colors_service_unittest.cc",
-      "../browser/performance_manager/policies/background_tab_loading_policy_helpers_unittest.cc",
-      "../browser/performance_manager/policies/background_tab_loading_policy_unittest.cc",
-      "../browser/platform_util_unittest.cc",
-      "../browser/policy/policy_path_parser_unittest.cc",
-      "../browser/policy/webhid_device_policy_handler_unittest.cc",
-      "../browser/profile_resetter/profile_resetter_unittest.cc",
-      "../browser/profile_resetter/reset_report_uploader_unittest.cc",
-      "../browser/renderer_context_menu/render_view_context_menu_unittest.cc",
       "../browser/search/background/ntp_background_service_unittest.cc",
       "../browser/search/background/ntp_custom_background_service_unittest.cc",
       "../browser/search/instant_service_unittest.cc",
@@ -6534,9 +6506,6 @@ test("unit_tests") {
       "../browser/themes/theme_service_unittest.cc",
       "../browser/themes/theme_syncable_service_unittest.cc",
       "../browser/translate/translate_manager_render_view_host_unittest.cc",
-
-      # The autofill popup is implemented in mostly native code on Android.
-      "../browser/ui/autofill/autofill_popup_controller_unittest.cc",
       "../browser/ui/bookmarks/bookmark_context_menu_controller_unittest.cc",
       "../browser/ui/bookmarks/bookmark_unittest.cc",
       "../browser/ui/breadcrumb_manager_browser_agent_unittest.cc",
@@ -6687,40 +6656,97 @@ test("unit_tests") {
       "../browser/usb/web_usb_detector_unittest.cc",
       "../browser/usb/web_usb_service_impl_unittest.cc",
       "../browser/webauthn/authenticator_request_dialog_model_unittest.cc",
-      "interaction/interaction_sequence_browser_util_unittest.cc",
-
-      # The importer code is not used on Android.
-      "../common/importer/firefox_importer_utils_unittest.cc",
-
-      # No service process (which also requires multiprocess lock).
       "../common/importer/mock_importer_bridge.cc",
       "../common/importer/mock_importer_bridge.h",
       "../renderer/searchbox/searchbox_unittest.cc",
       "../utility/importer/bookmark_html_reader_unittest.cc",
       "../utility/importer/bookmarks_file_importer_unittest.cc",
+      "interaction/interaction_sequence_browser_util_unittest.cc",
+    ]
 
+    sources += [
+      # Badging isn't supported on Android.
+      "../browser/badging/badge_manager_unittest.cc",
+      "../browser/badging/test_badge_manager_delegate.cc",
+      "../browser/badging/test_badge_manager_delegate.h",
+    ]
+
+    sources += [
+      # Device API isn't supported on Android.
+      "../browser/device_api/device_service_unittest.cc",
+      "../browser/device_api/managed_configuration_service_unittest.cc",
+    ]
+
+    sources += [
+      # Bookmark export/import are handled via the BookmarkColumns
+      # ContentProvider.
+      "../browser/bookmarks/bookmark_html_writer_unittest.cc",
+    ]
+
+    sources += [
+      # GCMDriverAndroid is not yet implemented.
+      "../browser/gcm/gcm_profile_service_unittest.cc",
+    ]
+
+    sources += [
+      # Media remoting is not supported on Android for now.
+      "../browser/media/cast_remoting_connector_unittest.cc",
+    ]
+
+    sources += [
+      # The site data database isn't supported on Android.
+      "../browser/performance_manager/persistence/site_data/site_data_cache_facade_unittest.cc",
+      "../browser/performance_manager/persistence/site_data/unittest_utils.cc",
+      "../browser/performance_manager/persistence/site_data/unittest_utils.h",
+    ]
+
+    sources += [
+      # Urgent discarding from performance_manager and the High-PMF discard
+      # policy aren't supported on Android.
+      "../browser/performance_manager/policies/high_pmf_discard_policy_unittest.cc",
+      "../browser/performance_manager/policies/page_discarding_helper_unittest.cc",
+      "../browser/performance_manager/policies/urgent_page_discarding_policy_unittest.cc",
+    ]
+
+    sources += [
+      # Background tab loading from performance_manager isn't supported on Android.
+      "../browser/performance_manager/policies/background_tab_loading_policy_helpers_unittest.cc",
+      "../browser/performance_manager/policies/background_tab_loading_policy_unittest.cc",
+    ]
+
+    sources += [
+      # The autofill popup is implemented in mostly native code on Android.
+      "../browser/ui/autofill/autofill_popup_controller_unittest.cc",
+    ]
+
+    sources += [
+      # The importer code is not used on Android.
+      "../common/importer/firefox_importer_utils_unittest.cc",
+    ]
+
+    sources += [
       # Android uses different way of showing feedback page
       "../browser/feedback/show_feedback_page_unittest.cc",
       "../browser/feedback/system_logs/log_sources/chrome_internal_log_source_unittest.cc",
       "../browser/feedback/system_logs/log_sources/crash_ids_source_unittest.cc",
+    ]
 
+    sources += [
       # NTP is in native code on Android.
-      "../browser/cart/cart_discount_fetcher_unittest.cc",
-      "../browser/cart/cart_discount_link_fetcher_unittest.cc",
-      "../browser/cart/cart_handler_unittest.cc",
-      "../browser/cart/cart_service_unittest.cc",
-      "../browser/cart/fetch_discount_worker_unittest.cc",
-      "../browser/commerce/coupons/coupon_service_unittest.cc",
+      "../browser/new_tab_page/chrome_colors/chrome_colors_service_unittest.cc",
       "../browser/new_tab_page/modules/drive/drive_service_unittest.cc",
       "../browser/new_tab_page/modules/photos/photos_service_unittest.cc",
       "../browser/new_tab_page/modules/safe_browsing/safe_browsing_handler_unittest.cc",
       "../browser/new_tab_page/modules/task_module/task_module_service_unittest.cc",
       "../browser/new_tab_page/modules/task_module/time_format_util_unittest.cc",
       "../browser/search/ntp_features_unittest.cc",
+    ]
 
+    sources += [
       # Android uses a different way of showing browser windows.
       "../browser/optimization_guide/optimization_guide_tab_url_provider_unittest.cc",
     ]
+
     if (!is_mac) {
       data_deps += [ "//chrome:packed_resources" ]
     }
