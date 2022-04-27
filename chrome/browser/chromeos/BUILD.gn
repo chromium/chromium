@@ -502,6 +502,7 @@ source_set("chromeos") {
     "//printing",
     "//printing/backend",
     "//printing/mojom",
+    "//remoting/host/chromeos:host_event_reporter_impl",
     "//remoting/host/chromeos:remoting_service",
     "//remoting/protocol",
     "//remoting/protocol:errors",
@@ -561,12 +562,7 @@ source_set("chromeos") {
     "//ui/wm/public",
     "//url",
   ]
-  if (is_chromeos_ash) {
-    deps += [ "//remoting/host/chromeos:host_event_reporter_impl" ]
-    if (use_libfuzzer) {
-      deps += [ "//components/exo/wayland:weston_test_stub" ]
-    }
-  }
+
   data_deps = [ ":dbus_service_files" ]
 
   allow_circular_includes_from = [
@@ -3737,6 +3733,10 @@ source_set("chromeos") {
   defines = []
   if (use_cras) {
     defines += [ "USE_CRAS" ]
+  }
+
+  if (use_libfuzzer) {
+    deps += [ "//components/exo/wayland:weston_test_stub" ]
   }
 
   if (is_cfm) {
