@@ -42,17 +42,21 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   // Offset of the overlay from the edge of the work area.
   static constexpr int kOffset = 16;
 
-  // Creates the Toast overlay UI. |text| is the message to be shown, and
-  // |dismiss_text| is the message for the button to dismiss the toast message.
-  // The dismiss button will only be displayed if |dismiss_text| is not empty.
-  // |dismiss_callback| will be called when the button is pressed.
-  // If |is_managed| is true, a managed icon will be added to the toast.
+  // Creates the Toast overlay UI. `text` is the message to be shown, and
+  // `dismiss_text` is the message for the button to dismiss the toast message.
+  // The dismiss button will only be displayed if `dismiss_text` is not empty.
+  // `dismiss_callback` will be called when the button is pressed.
+  // `expired_callback` will be called when the toast overlay is destroyed,
+  // regardless of whether the button was pressed. In other words,
+  // `expired_callback` is called whenever the toast disappears. If `is_managed`
+  // is true, a managed icon will be added to the toast.
   ToastOverlay(Delegate* delegate,
                const std::u16string& text,
                const std::u16string& dismiss_text,
                bool show_on_lock_screen,
                bool is_managed,
-               base::RepeatingClosure dismiss_callback);
+               base::RepeatingClosure dismiss_callback,
+               base::RepeatingClosure expired_callback);
 
   ToastOverlay(const ToastOverlay&) = delete;
   ToastOverlay& operator=(const ToastOverlay&) = delete;
@@ -95,6 +99,7 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   std::unique_ptr<SystemToastStyle> overlay_view_;
   std::unique_ptr<ToastDisplayObserver> display_observer_;
   base::RepeatingClosure dismiss_callback_;
+  base::RepeatingClosure expired_callback_;
 
   gfx::Size widget_size_;
 };

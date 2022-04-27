@@ -22,6 +22,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/session_manager/session_manager_types.h"
@@ -719,6 +720,79 @@ TEST_F(ToastManagerImplTest, NotifierFrameworkMetrics) {
   // toast was queued right after the first one was shown.
   histogram_tester.ExpectTimeBucketCount("NotifierFramework.Toast.TimeInQueue",
                                          duration, /*expected_count=*/1);
+}
+
+// Table-driven test that checks that a toast's expired callback is run when a
+// toast is closed when the toast manager cancels the toast, when the toast
+// duration cancels the toast, and when the dismiss button is pressed.
+TEST_F(ToastManagerImplTest, ExpiredCallbackRunsWhenToastOverlayClosed) {
+  // Covers possible ways that a toast can be cancelled.
+  enum class CancellationSource {
+    kToastManager,
+    kDismissButton,
+    kToastDuration,
+  };
+
+  struct {
+    const std::string scope_trace;
+    const CancellationSource source;
+  } kTestCases[] = {
+      {"Cancel toast through the toast manager",
+       CancellationSource::kToastManager},
+      {"Cancel toast by pressing the dismiss button",
+       CancellationSource::kDismissButton},
+      {"Cancel toast by letting duration elapse",
+       CancellationSource::kToastDuration},
+  };
+
+  auto* toast_manager = manager();
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.scope_trace);
+    std::string toast_id = "TOAST_ID_" + base::NumberToString(GetToastSerial());
+
+    // Create data for a toast that matches the test case. If the test case is
+    // not `kToastDuration`, duration should be infinite, and if the test case
+    // is not `kDismissButton` then we do not need a dismiss button on the
+    // toast.
+    ToastData toast_data(
+        toast_id, ToastCatalogName::kToastManagerUnittest,
+        /*text=*/u"",
+        /*duration=*/test_case.source == CancellationSource::kToastDuration
+            ? ToastData::kDefaultToastDuration
+            : ToastData::kInfiniteDuration,
+        /*visible_on_lock_screen=*/false,
+        /*has_dismiss_button=*/test_case.source ==
+            CancellationSource::kDismissButton);
+
+    // Bind a lambda that will change a value to tell us whether the expired
+    // callback ran.
+    bool expired_callback_ran = false;
+    toast_data.expired_callback = base::BindLambdaForTesting(
+        [&expired_callback_ran]() { expired_callback_ran = true; });
+    toast_manager->Show(toast_data);
+
+    switch (test_case.source) {
+      case CancellationSource::kToastManager: {
+        toast_manager->Cancel(toast_id);
+        break;
+      }
+      case CancellationSource::kDismissButton: {
+        ClickDismissButton();
+        break;
+      }
+      case CancellationSource::kToastDuration: {
+        base::RunLoop run_loop;
+        base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+            FROM_HERE, run_loop.QuitClosure(),
+            ToastData::kDefaultToastDuration);
+        run_loop.Run();
+        break;
+      }
+    }
+
+    EXPECT_TRUE(expired_callback_ran);
+  }
 }
 
 }  // namespace ash

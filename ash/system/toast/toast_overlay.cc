@@ -96,7 +96,8 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
                            const std::u16string& dismiss_text,
                            bool show_on_lock_screen,
                            bool is_managed,
-                           base::RepeatingClosure dismiss_callback)
+                           base::RepeatingClosure dismiss_callback,
+                           base::RepeatingClosure expired_callback)
     : delegate_(delegate),
       text_(text),
       dismiss_text_(dismiss_text),
@@ -109,6 +110,7 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
           is_managed)),
       display_observer_(std::make_unique<ToastDisplayObserver>(this)),
       dismiss_callback_(std::move(dismiss_callback)),
+      expired_callback_(std::move(expired_callback)),
       widget_size_(overlay_view_->GetPreferredSize()) {
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_POPUP;
@@ -139,6 +141,8 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
 ToastOverlay::~ToastOverlay() {
   keyboard::KeyboardUIController::Get()->RemoveObserver(this);
   overlay_widget_->Close();
+  if (expired_callback_)
+    expired_callback_.Run();
 }
 
 void ToastOverlay::Show(bool visible) {

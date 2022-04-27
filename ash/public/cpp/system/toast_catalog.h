@@ -45,7 +45,8 @@ enum class ToastCatalogName {
   kExtensionInstallSuccess = 31,
   kAccountRemoved = 32,
   kDeskTemplateTooLarge = 33,
-  kMaxValue = kDeskTemplateTooLarge,
+  kUndoCloseAll = 34,
+  kMaxValue = kUndoCloseAll,
 };
 
 }  // namespace ash
