@@ -130,11 +130,20 @@ class PLATFORM_EXPORT WebGLImageConversion final {
     ImageExtractor(const ImageExtractor&) = delete;
     ImageExtractor& operator=(const ImageExtractor&) = delete;
 
-    const SkImage* GetSkImage() { return sk_image_.get(); }
+    sk_sp<SkImage> GetSkImage() { return sk_image_; }
 
    private:
     sk_sp<SkImage> sk_image_;
   };
+
+  // Convert a GL format and GL type to a DataFormat. This will return
+  // kDataFormatNumFormats if combination is invalid.
+  static DataFormat GetDataFormat(GLenum format, GLenum type);
+
+  // Convert a DataFormat to an SkColorType. If there is no exactly matching
+  // SkColorType, return the specified `default_color_type`.
+  static SkColorType DataFormatToSkColorType(DataFormat data_format,
+                                             SkColorType default_color_type);
 
   // Convert an SkColorType to the most appropriate DataFormat.
   static DataFormat SkColorTypeToDataFormat(SkColorType color_type);

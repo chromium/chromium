@@ -68,223 +68,226 @@ T ClampAndScaleFloat(float value) {
   return ClampFloat<T>(value * std::numeric_limits<T>::max());
 }
 
-// Return kDataFormatNumFormats if format/type combination is invalid.
-WebGLImageConversion::DataFormat GetDataFormat(GLenum destination_format,
-                                               GLenum destination_type) {
-  WebGLImageConversion::DataFormat dst_format =
-      WebGLImageConversion::kDataFormatRGBA8;
-  switch (destination_type) {
+}  // namespace
+
+WebGLImageConversion::DataFormat WebGLImageConversion::GetDataFormat(
+    GLenum format,
+    GLenum type) {
+  DataFormat result = kDataFormatRGBA8;
+  switch (type) {
     case GL_BYTE:
-      switch (destination_format) {
+      switch (format) {
         case GL_RED:
         case GL_RED_INTEGER:
-          dst_format = WebGLImageConversion::kDataFormatR8_S;
+          result = kDataFormatR8_S;
           break;
         case GL_RG:
         case GL_RG_INTEGER:
-          dst_format = WebGLImageConversion::kDataFormatRG8_S;
+          result = kDataFormatRG8_S;
           break;
         case GL_RGB:
         case GL_RGB_INTEGER:
-          dst_format = WebGLImageConversion::kDataFormatRGB8_S;
+          result = kDataFormatRGB8_S;
           break;
         case GL_RGBA:
         case GL_RGBA_INTEGER:
-          dst_format = WebGLImageConversion::kDataFormatRGBA8_S;
+          result = kDataFormatRGBA8_S;
           break;
         default:
-          return WebGLImageConversion::kDataFormatNumFormats;
+          return kDataFormatNumFormats;
       }
       break;
     case GL_UNSIGNED_BYTE:
-      switch (destination_format) {
+      switch (format) {
         case GL_RGB:
         case GL_RGB_INTEGER:
         case GL_SRGB_EXT:
-          dst_format = WebGLImageConversion::kDataFormatRGB8;
+          result = kDataFormatRGB8;
           break;
         case GL_RGBA:
         case GL_RGBA_INTEGER:
         case GL_SRGB_ALPHA_EXT:
-          dst_format = WebGLImageConversion::kDataFormatRGBA8;
+          result = kDataFormatRGBA8;
           break;
         case GL_ALPHA:
-          dst_format = WebGLImageConversion::kDataFormatA8;
+          result = kDataFormatA8;
           break;
         case GL_LUMINANCE:
         case GL_RED:
         case GL_RED_INTEGER:
-          dst_format = WebGLImageConversion::kDataFormatR8;
+          result = kDataFormatR8;
           break;
         case GL_RG:
         case GL_RG_INTEGER:
-          dst_format = WebGLImageConversion::kDataFormatRG8;
+          result = kDataFormatRG8;
           break;
         case GL_LUMINANCE_ALPHA:
-          dst_format = WebGLImageConversion::kDataFormatRA8;
+          result = kDataFormatRA8;
           break;
         default:
-          return WebGLImageConversion::kDataFormatNumFormats;
+          return kDataFormatNumFormats;
       }
       break;
     case GL_SHORT:
-      switch (destination_format) {
+      switch (format) {
         case GL_RED_INTEGER:
-          dst_format = WebGLImageConversion::kDataFormatR16_S;
+          result = kDataFormatR16_S;
           break;
         case GL_RG_INTEGER:
-          dst_format = WebGLImageConversion::kDataFormatRG16_S;
+          result = kDataFormatRG16_S;
           break;
         case GL_RGB_INTEGER:
-          dst_format = WebGLImageConversion::kDataFormatRGB16_S;
+          result = kDataFormatRGB16_S;
           break;
         case GL_RGBA_INTEGER:
-          dst_format = WebGLImageConversion::kDataFormatRGBA16_S;
+          result = kDataFormatRGBA16_S;
           break;
         default:
-          return WebGLImageConversion::kDataFormatNumFormats;
+          return kDataFormatNumFormats;
       }
       break;
     case GL_UNSIGNED_SHORT:
-      switch (destination_format) {
+      switch (format) {
         case GL_RED_INTEGER:
-          dst_format = WebGLImageConversion::kDataFormatR16;
+          result = kDataFormatR16;
           break;
         case GL_DEPTH_COMPONENT:
-          dst_format = WebGLImageConversion::kDataFormatD16;
+          result = kDataFormatD16;
           break;
         case GL_RG_INTEGER:
-          dst_format = WebGLImageConversion::kDataFormatRG16;
+          result = kDataFormatRG16;
           break;
         case GL_RGB_INTEGER:
-          dst_format = WebGLImageConversion::kDataFormatRGB16;
+          result = kDataFormatRGB16;
           break;
         case GL_RGBA_INTEGER:
-          dst_format = WebGLImageConversion::kDataFormatRGBA16;
+          result = kDataFormatRGBA16;
           break;
         default:
-          return WebGLImageConversion::kDataFormatNumFormats;
+          return kDataFormatNumFormats;
       }
       break;
     case GL_INT:
-      switch (destination_format) {
+      switch (format) {
         case GL_RED_INTEGER:
-          dst_format = WebGLImageConversion::kDataFormatR32_S;
+          result = kDataFormatR32_S;
           break;
         case GL_RG_INTEGER:
-          dst_format = WebGLImageConversion::kDataFormatRG32_S;
+          result = kDataFormatRG32_S;
           break;
         case GL_RGB_INTEGER:
-          dst_format = WebGLImageConversion::kDataFormatRGB32_S;
+          result = kDataFormatRGB32_S;
           break;
         case GL_RGBA_INTEGER:
-          dst_format = WebGLImageConversion::kDataFormatRGBA32_S;
+          result = kDataFormatRGBA32_S;
           break;
         default:
-          return WebGLImageConversion::kDataFormatNumFormats;
+          return kDataFormatNumFormats;
       }
       break;
     case GL_UNSIGNED_INT:
-      switch (destination_format) {
+      switch (format) {
         case GL_RED_INTEGER:
-          dst_format = WebGLImageConversion::kDataFormatR32;
+          result = kDataFormatR32;
           break;
         case GL_DEPTH_COMPONENT:
-          dst_format = WebGLImageConversion::kDataFormatD32;
+          result = kDataFormatD32;
           break;
         case GL_RG_INTEGER:
-          dst_format = WebGLImageConversion::kDataFormatRG32;
+          result = kDataFormatRG32;
           break;
         case GL_RGB_INTEGER:
-          dst_format = WebGLImageConversion::kDataFormatRGB32;
+          result = kDataFormatRGB32;
           break;
         case GL_RGBA_INTEGER:
-          dst_format = WebGLImageConversion::kDataFormatRGBA32;
+          result = kDataFormatRGBA32;
           break;
         default:
-          return WebGLImageConversion::kDataFormatNumFormats;
+          return kDataFormatNumFormats;
       }
       break;
     case GL_HALF_FLOAT_OES:  // OES_texture_half_float
     case GL_HALF_FLOAT:
-      switch (destination_format) {
+      switch (format) {
         case GL_RGBA:
-          dst_format = WebGLImageConversion::kDataFormatRGBA16F;
+          result = kDataFormatRGBA16F;
           break;
         case GL_RGB:
-          dst_format = WebGLImageConversion::kDataFormatRGB16F;
+          result = kDataFormatRGB16F;
           break;
         case GL_RG:
-          dst_format = WebGLImageConversion::kDataFormatRG16F;
+          result = kDataFormatRG16F;
           break;
         case GL_ALPHA:
-          dst_format = WebGLImageConversion::kDataFormatA16F;
+          result = kDataFormatA16F;
           break;
         case GL_LUMINANCE:
         case GL_RED:
-          dst_format = WebGLImageConversion::kDataFormatR16F;
+          result = kDataFormatR16F;
           break;
         case GL_LUMINANCE_ALPHA:
-          dst_format = WebGLImageConversion::kDataFormatRA16F;
+          result = kDataFormatRA16F;
           break;
         default:
-          return WebGLImageConversion::kDataFormatNumFormats;
+          return kDataFormatNumFormats;
       }
       break;
     case GL_FLOAT:  // OES_texture_float
-      switch (destination_format) {
+      switch (format) {
         case GL_RGBA:
-          dst_format = WebGLImageConversion::kDataFormatRGBA32F;
+          result = kDataFormatRGBA32F;
           break;
         case GL_RGB:
-          dst_format = WebGLImageConversion::kDataFormatRGB32F;
+          result = kDataFormatRGB32F;
           break;
         case GL_RG:
-          dst_format = WebGLImageConversion::kDataFormatRG32F;
+          result = kDataFormatRG32F;
           break;
         case GL_ALPHA:
-          dst_format = WebGLImageConversion::kDataFormatA32F;
+          result = kDataFormatA32F;
           break;
         case GL_LUMINANCE:
         case GL_RED:
-          dst_format = WebGLImageConversion::kDataFormatR32F;
+          result = kDataFormatR32F;
           break;
         case GL_DEPTH_COMPONENT:
-          dst_format = WebGLImageConversion::kDataFormatD32F;
+          result = kDataFormatD32F;
           break;
         case GL_LUMINANCE_ALPHA:
-          dst_format = WebGLImageConversion::kDataFormatRA32F;
+          result = kDataFormatRA32F;
           break;
         default:
-          return WebGLImageConversion::kDataFormatNumFormats;
+          return kDataFormatNumFormats;
       }
       break;
     case GL_UNSIGNED_SHORT_4_4_4_4:
-      dst_format = WebGLImageConversion::kDataFormatRGBA4444;
+      result = kDataFormatRGBA4444;
       break;
     case GL_UNSIGNED_SHORT_5_5_5_1:
-      dst_format = WebGLImageConversion::kDataFormatRGBA5551;
+      result = kDataFormatRGBA5551;
       break;
     case GL_UNSIGNED_SHORT_5_6_5:
-      dst_format = WebGLImageConversion::kDataFormatRGB565;
+      result = kDataFormatRGB565;
       break;
     case GL_UNSIGNED_INT_5_9_9_9_REV:
-      dst_format = WebGLImageConversion::kDataFormatRGB5999;
+      result = kDataFormatRGB5999;
       break;
     case GL_UNSIGNED_INT_24_8:
-      dst_format = WebGLImageConversion::kDataFormatDS24_8;
+      result = kDataFormatDS24_8;
       break;
     case GL_UNSIGNED_INT_10F_11F_11F_REV:
-      dst_format = WebGLImageConversion::kDataFormatRGB10F11F11F;
+      result = kDataFormatRGB10F11F11F;
       break;
     case GL_UNSIGNED_INT_2_10_10_10_REV:
-      dst_format = WebGLImageConversion::kDataFormatRGBA2_10_10_10;
+      result = kDataFormatRGBA2_10_10_10;
       break;
     default:
-      return WebGLImageConversion::kDataFormatNumFormats;
+      return kDataFormatNumFormats;
   }
-  return dst_format;
+  return result;
 }
+
+namespace {
 
 // The following Float to Half-Float conversion code is from the implementation
 // of http://www.fox-toolkit.org/ftp/fasthalffloatconversion.pdf , "Fast Half
@@ -3539,6 +3542,26 @@ WebGLImageConversion::DataFormat WebGLImageConversion::SkColorTypeToDataFormat(
   }
 }
 
+SkColorType WebGLImageConversion::DataFormatToSkColorType(
+    WebGLImageConversion::DataFormat data_format,
+    SkColorType default_color_type) {
+  switch (data_format) {
+    case kDataFormatRGBA8:
+      return kRGBA_8888_SkColorType;
+    case kDataFormatBGRA8:
+      return kBGRA_8888_SkColorType;
+    case kDataFormatRGBA16:
+      return kR16G16B16A16_unorm_SkColorType;
+    case kDataFormatRGBA16F:
+      return kRGBA_F16_SkColorType;
+    case kDataFormatRGBA32F:
+      return kRGBA_F32_SkColorType;
+    default:
+      break;
+  }
+  return default_color_type;
+}
+
 bool WebGLImageConversion::ComputeFormatAndTypeParameters(
     GLenum format,
     GLenum type,
@@ -3915,80 +3938,6 @@ bool WebGLImageConversion::PackSkPixmap(
                     source_image_sub_rectangle, depth, source_unpack_alignment,
                     unpack_image_height, format, type, alpha_op, data.data(),
                     flip_y);
-}
-
-bool WebGLImageConversion::PackImageData(
-    Image* image,
-    const void* pixels,
-    GLenum format,
-    GLenum type,
-    bool flip_y,
-    AlphaOp alpha_op,
-    DataFormat source_format,
-    unsigned source_image_width,
-    unsigned source_image_height,
-    const gfx::Rect& source_image_sub_rectangle,
-    int depth,
-    unsigned source_unpack_alignment,
-    int unpack_image_height,
-    Vector<uint8_t>& data) {
-  if (!pixels)
-    return false;
-
-  unsigned packed_size;
-  // Output data is tightly packed (alignment == 1).
-  PixelStoreParams params;
-  params.alignment = 1;
-  if (ComputeImageSizeInBytes(format, type, source_image_sub_rectangle.width(),
-                              source_image_sub_rectangle.height(), depth,
-                              params, &packed_size, nullptr,
-                              nullptr) != GL_NO_ERROR)
-    return false;
-  data.resize(packed_size);
-
-  return PackPixels(reinterpret_cast<const uint8_t*>(pixels), source_format,
-                    source_image_width, source_image_height,
-                    source_image_sub_rectangle, depth, source_unpack_alignment,
-                    unpack_image_height, format, type, alpha_op, data.data(),
-                    flip_y);
-}
-
-bool WebGLImageConversion::ExtractImageData(
-    const void* image_data,
-    DataFormat source_data_format,
-    const gfx::Size& image_data_size,
-    const gfx::Rect& source_image_sub_rectangle,
-    int depth,
-    int unpack_image_height,
-    GLenum format,
-    GLenum type,
-    bool flip_y,
-    bool premultiply_alpha,
-    Vector<uint8_t>& data) {
-  if (!image_data)
-    return false;
-  int width = image_data_size.width();
-  int height = image_data_size.height();
-
-  unsigned packed_size;
-  // Output data is tightly packed (alignment == 1).
-  PixelStoreParams params;
-  params.alignment = 1;
-  if (ComputeImageSizeInBytes(format, type, source_image_sub_rectangle.width(),
-                              source_image_sub_rectangle.height(), depth,
-                              params, &packed_size, nullptr,
-                              nullptr) != GL_NO_ERROR)
-    return false;
-  data.resize(packed_size);
-
-  if (!PackPixels(image_data, source_data_format, width, height,
-                  source_image_sub_rectangle, depth, 0, unpack_image_height,
-                  format, type,
-                  premultiply_alpha ? kAlphaDoPremultiply : kAlphaDoNothing,
-                  data.data(), flip_y))
-    return false;
-
-  return true;
 }
 
 bool WebGLImageConversion::ExtractTextureData(

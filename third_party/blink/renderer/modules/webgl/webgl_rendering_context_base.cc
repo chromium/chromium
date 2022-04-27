@@ -5032,89 +5032,130 @@ void WebGLRenderingContextBase::GetCurrentUnpackState(TexImageParams& params) {
 }
 
 void WebGLRenderingContextBase::TexImageSkImage(TexImageParams params,
-                                                const SkImage* image,
+                                                sk_sp<SkImage> image,
                                                 bool image_has_flip_y) {
   const char* func_name = GetTexImageFunctionName(params.function_id);
 
-  // Read `sk_image` into `pixmap`. Use `pixmap_data` as backing storage if
-  // `pixmap` cannot directly reference `sk_image`'s data.
-  SkPixmap pixmap;
-  Vector<uint8_t> pixmap_data;
-  const SkImageInfo sk_image_info = image->imageInfo();
-  if (!image->peekPixels(&pixmap) ||
-      pixmap.rowBytes() != sk_image_info.minRowBytes()) {
-    pixmap_data.resize(
-        base::checked_cast<wtf_size_t>(sk_image_info.computeMinByteSize()));
-    pixmap = SkPixmap(sk_image_info, pixmap_data.data(),
-                      sk_image_info.minRowBytes());
-    if (!image->readPixels(pixmap, 0, 0)) {
-      SynthesizeGLError(GL_OUT_OF_MEMORY, func_name, "bad image data");
-    }
-  }
-  TexImageSkPixmap(params, &pixmap, image_has_flip_y);
-}
-
-void WebGLRenderingContextBase::TexImageSkPixmap(TexImageParams params,
-                                                 const SkPixmap* pixmap,
-                                                 bool pixmap_has_flip_y) {
-  if (!params.width)
-    params.width = pixmap->width();
-  if (!params.height)
-    params.height = pixmap->height();
-  if (!params.depth)
-    params.depth = 1;
-
-  const char* func_name = GetTexImageFunctionName(params.function_id);
   bool selecting_sub_rectangle = false;
-  if (!ValidateTexImageSubRectangle(params, pixmap, &selecting_sub_rectangle)) {
+  if (!ValidateTexImageSubRectangle(params, image.get(),
+                                    &selecting_sub_rectangle)) {
     return;
   }
 
-  // Let `gl_data` be the data that is passed to the GL upload function.
-  const void* gl_data = pixmap->addr();
+  // Ensure that `image` have a color space, because SkImageInfo::readPixels and
+  // SkPixmap::readPixels will fail if the source has no color space but the
+  // destination does.
+  if (!image->colorSpace())
+    image = image->reinterpretColorSpace(SkColorSpace::MakeSRGB());
+
+  // The UNSIGNED_INT_10F_11F_11F_REV type pack/unpack isn't implemented,
+  // use GL_FLOAT instead.
+  if (params.type == GL_UNSIGNED_INT_10F_11F_11F_REV)
+    params.type = GL_FLOAT;
 
   // We will need to flip vertically if the unpack state for flip Y does not
   // match the source state for flip Y.
-  const bool do_flip_y = pixmap_has_flip_y != params.unpack_flip_y;
+  const bool do_flip_y = image_has_flip_y != params.unpack_flip_y;
+
+  // Let `converted_info` be `image`'s info, with adjustments for sub-rect
+  // selection, alpha type, color type, and color space. Let `converted_x` and
+  // `converted_y` be the origin in `image` at which the data is to be read.
+  // We will convert `image` to this format (using SkImage::readPixels), if
+  // it is not already in this format.
+  SkImageInfo converted_info = image->imageInfo();
+  int converted_x = 0;
+  int converted_y = 0;
+  {
+    // Set the size and offset parameters for the readPixels call, so we only
+    // convert the portion of `image` that is needed. Do not try this if we are
+    // uploading a 3D volume (just convert the full image in that case).
+    if (params.width.has_value() && params.height.has_value() &&
+        params.depth.value_or(1) == 1) {
+      converted_info = converted_info.makeWH(*params.width, *params.height);
+      converted_x = params.unpack_skip_pixels;
+      converted_y = params.unpack_skip_rows;
+      if (do_flip_y) {
+        converted_y = image->height() - converted_info.height() - converted_y;
+      }
+      params.unpack_skip_pixels = 0;
+      params.unpack_skip_rows = 0;
+      selecting_sub_rectangle = false;
+    }
+
+    // Set the alpha type to perform premultiplication or unmultiplication
+    // during readPixels, if needed. If the input is opaque, do not change it
+    // (readPixels fails if the source is opaque and the destination is not).
+    if (converted_info.alphaType() != kOpaque_SkAlphaType) {
+      converted_info = converted_info.makeAlphaType(
+          params.unpack_premultiply_alpha ? kPremul_SkAlphaType
+                                          : kUnpremul_SkAlphaType);
+    }
+
+    // Set the color type to perform pixel format conversion during readPixels,
+    // if possible.
+    converted_info = converted_info.makeColorType(
+        WebGLImageConversion::DataFormatToSkColorType(
+            WebGLImageConversion::GetDataFormat(params.format, params.type),
+            converted_info.colorType()));
+
+    // Set the color space to perform color space conversion to the unpack color
+    // space during readPixels, if needed.
+    converted_info = converted_info.makeColorSpace(
+        PredefinedColorSpaceToSkColorSpace(unpack_color_space_));
+  }
+
+  // Try to access `image`'s pixels directly. If they already match
+  // `converted_info` and `converted_x` and `converted_y` are zero, then use
+  // them directly. Otherwise, convert them using SkImage::readPixels.
+  SkBitmap converted_bitmap;
+  SkPixmap pixmap;
+  if (!image->peekPixels(&pixmap) || pixmap.info() != converted_info ||
+      pixmap.rowBytes() != converted_info.minRowBytes() || converted_x != 0 ||
+      converted_y != 0) {
+    converted_bitmap.allocPixels(converted_info);
+    pixmap = converted_bitmap.pixmap();
+    if (!image->readPixels(pixmap, converted_x, converted_y)) {
+      SynthesizeGLError(GL_OUT_OF_MEMORY, func_name, "bad image data");
+      return;
+    }
+  }
+
+  // Let `gl_data` be the data that is passed to the GL upload function.
+  const void* gl_data = pixmap.addr();
 
   // We will premultiply or unpremultiply only if there is a mismatch between
   // the source and the requested premultiplication format.
   WebGLImageConversion::AlphaOp alpha_op =
       WebGLImageConversion::kAlphaDoNothing;
   if (params.unpack_premultiply_alpha &&
-      pixmap->alphaType() == kUnpremul_SkAlphaType) {
+      pixmap.alphaType() == kUnpremul_SkAlphaType) {
     alpha_op = WebGLImageConversion::kAlphaDoPremultiply;
   }
   if (!params.unpack_premultiply_alpha &&
-      pixmap->alphaType() == kPremul_SkAlphaType) {
+      pixmap.alphaType() == kPremul_SkAlphaType) {
     alpha_op = WebGLImageConversion::kAlphaDoUnmultiply;
   }
 
-  // Use WebGLImageConversion to convert the data, if needed, and point
-  // `gl_data` at the temporary buffer `image_conversion_data`.
+  // If there are required conversions that Skia could not do above, then use
+  // WebGLImageConversion to convert the data, and point `gl_data` at the
+  // temporary buffer `image_conversion_data`.
   Vector<uint8_t> image_conversion_data;
-  if (params.type != GL_UNSIGNED_BYTE ||
-      WebGLImageConversion::SkColorTypeToDataFormat(pixmap->colorType()) !=
-          WebGLImageConversion::kDataFormatRGBA8 ||
-      params.format != GL_RGBA ||
+  if (WebGLImageConversion::SkColorTypeToDataFormat(pixmap.colorType()) !=
+          WebGLImageConversion::GetDataFormat(params.format, params.type) ||
       alpha_op != WebGLImageConversion::kAlphaDoNothing || do_flip_y ||
       selecting_sub_rectangle || params.depth != 1) {
-    // The UNSIGNED_INT_10F_11F_11F_REV type pack/unpack isn't implemented,
-    // use GL_FLOAT instead.
-    if (params.type == GL_UNSIGNED_INT_10F_11F_11F_REV)
-      params.type = GL_FLOAT;
-
     // Adjust the source image rectangle if doing a y-flip.
     gfx::Rect adjusted_source_rect(params.unpack_skip_pixels,
-                                   params.unpack_skip_rows, *params.width,
-                                   *params.height);
+                                   params.unpack_skip_rows,
+                                   params.width.value_or(pixmap.width()),
+                                   params.height.value_or(pixmap.height()));
     if (do_flip_y) {
-      adjusted_source_rect.set_y(pixmap->height() -
+      adjusted_source_rect.set_y(pixmap.height() -
                                  adjusted_source_rect.bottom());
     }
     if (!WebGLImageConversion::PackSkPixmap(
-            pixmap, params.format, params.type, do_flip_y, alpha_op,
-            adjusted_source_rect, *params.depth,
+            &pixmap, params.format, params.type, do_flip_y, alpha_op,
+            adjusted_source_rect, params.depth.value_or(1),
             /*source_unpack_alignment=*/0, params.unpack_image_height,
             image_conversion_data)) {
       SynthesizeGLError(GL_INVALID_VALUE, func_name, "packImage error");
@@ -5125,6 +5166,12 @@ void WebGLRenderingContextBase::TexImageSkPixmap(TexImageParams params,
 
   // Upload using GL.
   ScopedUnpackParametersResetRestore temporary_reset_unpack(this);
+  if (!params.width)
+    params.width = pixmap.width();
+  if (!params.height)
+    params.height = pixmap.height();
+  if (!params.depth)
+    params.depth = 1;
   TexImageBase(params, gl_data);
 }
 
@@ -5221,7 +5268,7 @@ void WebGLRenderingContextBase::TexImageStaticBitmapImage(
   DCHECK_EQ(sk_image->width(), image->width());
   DCHECK_EQ(sk_image->height(), image->height());
 
-  TexImageSkImage(params, sk_image.get(), image_has_flip_y);
+  TexImageSkImage(params, std::move(sk_image), image_has_flip_y);
 }
 
 bool WebGLRenderingContextBase::ValidateTexFunc(
@@ -5479,7 +5526,8 @@ void WebGLRenderingContextBase::TexImageHelperImageData(TexImageParams params,
   }
 
   auto pixmap = pixels->GetSkPixmap();
-  TexImageSkPixmap(params, &pixmap, /*pixmap_has_flip_y=*/false);
+  auto image = SkImage::MakeFromRaster(pixmap, nullptr, nullptr);
+  TexImageSkImage(params, std::move(image), /*image_has_flip_y=*/false);
 }
 
 void WebGLRenderingContextBase::texImage2D(GLenum target,
@@ -5531,12 +5579,12 @@ void WebGLRenderingContextBase::TexImageHelperHTMLImageElement(
   WebGLImageConversion::ImageExtractor image_extractor(
       image_for_render.get(), params.unpack_premultiply_alpha,
       unpack_colorspace_conversion_ == GL_NONE);
-  const SkImage* const sk_image = image_extractor.GetSkImage();
+  auto sk_image = image_extractor.GetSkImage();
   if (!sk_image) {
     SynthesizeGLError(GL_INVALID_VALUE, func_name, "bad image data");
     return;
   }
-  TexImageSkImage(params, sk_image, /*image_has_flip_y=*/false);
+  TexImageSkImage(params, std::move(sk_image), /*image_has_flip_y=*/false);
 }
 
 void WebGLRenderingContextBase::texImage2D(ExecutionContext* execution_context,

@@ -1203,12 +1203,10 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   // virtual because some state is only tracked in WebGL 2.
   virtual void GetCurrentUnpackState(TexImageParams& params);
 
+  // Upload `image` to the specified texture.
   void TexImageSkImage(TexImageParams params,
-                       const SkImage* image,
+                       sk_sp<SkImage> image,
                        bool image_has_flip_y);
-  void TexImageSkPixmap(TexImageParams params,
-                        const SkPixmap* pixmap,
-                        bool pixmap_has_flip_y);
 
   // Call the underlying Tex[Sub]Image{2D|3D} function. Always replace
   // `params.internalformat` with the result from ConvertTexInternalFormat.
