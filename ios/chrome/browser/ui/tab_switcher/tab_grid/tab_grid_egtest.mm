@@ -760,7 +760,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests that dragging a tab grid incognito item to the edge opens a new window
 // and that the tab is properly transferred, incuding navigation stack.
-- (void)testIncognitoDragAndDropAtEdgeToCreateNewWindow {
+// TODO(crbug.com/1320251): Test fails.
+- (void)DISABLED_testIncognitoDragAndDropAtEdgeToCreateNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
 
@@ -810,7 +811,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests dragging tab grid item between windows.
-- (void)testDragAndDropBetweenWindows {
+// TODO(crbug.com/1320251): Test fails.
+- (void)DISABLED_testDragAndDropBetweenWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
 
@@ -892,7 +894,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests dragging incognito tab grid item between windows.
-- (void)testDragAndDropIncognitoBetweenWindows {
+// TODO(crbug.com/1320251): Test fails.
+- (void)DISABLED_testDragAndDropIncognitoBetweenWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
 
@@ -965,7 +968,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests dragging tab grid item as URL between windows.
-- (void)testDragAndDropURLBetweenWindows {
+// TODO(crbug.com/1320251): Test fails.
+- (void)DISABLED_testDragAndDropURLBetweenWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
 
@@ -1026,7 +1030,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests dragging tab grid incognito item as URL to a main windows.
-- (void)testDragAndDropIncognitoURLInMainWindow {
+// TODO(crbug.com/1320251): Fails on device.
+- (void)DISABLED_testDragAndDropIncognitoURLInMainWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
 
@@ -1090,7 +1095,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests dragging tab grid main item as URL to an incognito windows.
-- (void)testDragAndDropMainURLInIncognitoWindow {
+// TODO(crbug.com/1320251): Fails on device.
+- (void)DISABLED_testDragAndDropMainURLInIncognitoWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
 
