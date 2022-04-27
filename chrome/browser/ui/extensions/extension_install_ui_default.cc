@@ -41,6 +41,16 @@
 #include "content/public/browser/notification_service.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/callback_helpers.h"
+#include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
+#endif
+
 using content::BrowserThread;
 using content::WebContents;
 using extensions::Extension;
@@ -59,16 +69,77 @@ Browser* FindOrCreateVisibleBrowser(Profile* profile) {
   return browser;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Toast id and duration for extension install success.
 constexpr char kExtensionInstallSuccessToastId[] = "extension_install_success";
+#endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ShowToast(const std::string& id,
                ash::ToastCatalogName catalog_name,
                const std::u16string& text) {
   ash::ToastManager::Get()->Show(ash::ToastData(id, catalog_name, text));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void ShowInstalledNotification(
+    scoped_refptr<const extensions::Extension> extension,
+    raw_ptr<Profile> profile) {
+  auto notification = std::make_unique<message_center::Notification>(
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      std::string(kExtensionInstallSuccessToastId),
+      /*title=*/std::u16string(),
+      /*message=*/
+      l10n_util::GetStringFUTF16(IDS_EXTENSION_NOTIFICATION_INSTALLED,
+                                 base::UTF8ToUTF16(extension->name())),
+      /*icon=*/ui::ImageModel(),
+      /*display_source=*/std::u16string(),
+      /*origin_url=*/GURL(),
+      message_center::NotifierId(message_center::NotifierType::APPLICATION,
+                                 extension->id()),
+      /*optional_fields=*/message_center::RichNotificationData(),
+      /*delegate=*/
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::DoNothingAs<void()>()));
+
+  NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
+      NotificationHandler::Type::TRANSIENT, *notification,
+      /*metadata=*/nullptr);
+}
+#endif
+
+void OpenAppInstalledUIImpl(const std::string& app_id,
+                            raw_ptr<Profile> profile) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // chrome://apps/ is not available on ChromeOS.
+  // Toast is shown for Ash and Lacros.
+  NOTREACHED();
+#else
+  Profile* current_profile = profile->GetOriginalProfile();
+  Browser* browser = FindOrCreateVisibleBrowser(current_profile);
+  if (browser) {
+    NavigateParams params(
+        GetSingletonTabNavigateParams(browser, GURL(chrome::kChromeUIAppsURL)));
+    Navigate(&params);
+  }
+#endif
+}
+
+void ShowAppInstalledNotification(
+    scoped_refptr<const extensions::Extension> extension,
+    raw_ptr<Profile> profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ShowToast(kExtensionInstallSuccessToastId,
+            ash::ToastCatalogName::kExtensionInstallSuccess,
+            l10n_util::GetStringFUTF16(IDS_EXTENSION_NOTIFICATION_INSTALLED,
+                                       base::UTF8ToUTF16(extension->name())));
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  ShowInstalledNotification(extension, profile);
+#else   // !BUILDFLAG(IS_CHROMEOS)
+  OpenAppInstalledUIImpl(extension->id(), profile);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
 
 }  // namespace
 
@@ -104,17 +175,7 @@ void ExtensionInstallUIDefault::OnInstallSuccess(
       return;
     }
 
-#if BUILDFLAG(IS_CHROMEOS)
-    // TODO(crbug.com/1286603): Show Toast for Lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    ShowToast(kExtensionInstallSuccessToastId,
-              ash::ToastCatalogName::kExtensionInstallSuccess,
-              l10n_util::GetStringFUTF16(IDS_EXTENSION_NOTIFICATION_INSTALLED,
-                                         base::UTF8ToUTF16(extension->name())));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#else   // BUILDFLAG(IS_CHROMEOS)
-    OpenAppInstalledUI(extension->id());
-#endif  // BUILDFLAG(IS_CHROMEOS)
+    ShowAppInstalledNotification(extension, profile_);
     return;
   }
 
@@ -139,19 +200,7 @@ void ExtensionInstallUIDefault::OnInstallFailure(
 }
 
 void ExtensionInstallUIDefault::OpenAppInstalledUI(const std::string& app_id) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // chrome://apps/ is not available on ChromeOS.
-  // Toast is shown for Ash (not yet Lacros: crbug.com/1286603).
-  NOTREACHED();
-#else
-  Profile* current_profile = profile_->GetOriginalProfile();
-  Browser* browser = FindOrCreateVisibleBrowser(current_profile);
-  if (browser) {
-    NavigateParams params(
-        GetSingletonTabNavigateParams(browser, GURL(chrome::kChromeUIAppsURL)));
-    Navigate(&params);
-  }
-#endif
+  OpenAppInstalledUIImpl(app_id, profile_);
 }
 
 void ExtensionInstallUIDefault::SetUseAppInstalledBubble(bool use_bubble) {
