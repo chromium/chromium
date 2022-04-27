@@ -24,6 +24,7 @@ HatsBubbleTest.*
 HungRendererDialogViewBrowserTest.*
 ImportLockDialogViewBrowserTest.*
 InlineLoginHelperBrowserTest.InvokeUi_*
+LocalCardMigrationBrowserUiTest.*
 NewTabPageTest.*
 OneTimePermissionPromptBubbleViewBrowserTest.*
 OutdatedUpgradeBubbleTest.*

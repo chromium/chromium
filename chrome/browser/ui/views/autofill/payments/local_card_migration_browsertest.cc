@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_dialog_view.h"
@@ -114,6 +115,12 @@ constexpr char kResponseGetUploadDetailsSuccess[] =
     "link: "
     "{0}.\",\"template_parameter\":[{\"display_text\":\"Link\",\"url\":\"https:"
     "//www.example.com/\"}]}]},\"context_token\":\"dummy_context_token\"}";
+constexpr char kResponseGetUploadDetailsSuccessLong[] =
+    "{\"legal_message\":{\"line\":[{\"template\":\"Long message 1 long message "
+    "2 long message 3 long message 4 long message 5 long message 6 long "
+    "message 7 long message 8 long message 9 long message 10 long message 11 "
+    "long message 12 long message 13 long message "
+    "14\"}]},\"context_token\":\"dummy_context_token\"}";
 constexpr char kResponseGetUploadDetailsFailure[] =
     "{\"error\":{\"code\":\"FAILED_PRECONDITION\",\"user_error_message\":\"An "
     "unexpected error has occurred. Please try again later.\"}}";
@@ -541,6 +548,29 @@ class LocalCardMigrationBrowserTestForStatusChip
 
  private:
   base::test::ScopedFeatureList feature_list_;
+};
+
+class LocalCardMigrationBrowserUiTest
+    : public SupportsTestDialog<LocalCardMigrationBrowserTest> {
+ public:
+  LocalCardMigrationBrowserUiTest(const LocalCardMigrationBrowserUiTest&) =
+      delete;
+  LocalCardMigrationBrowserUiTest& operator=(
+      const LocalCardMigrationBrowserUiTest&) = delete;
+
+ protected:
+  LocalCardMigrationBrowserUiTest() = default;
+  ~LocalCardMigrationBrowserUiTest() override = default;
+
+  // SupportsTestDialog:
+  void ShowUi(const std::string& name) override {
+    test_url_loader_factory()->AddResponse(
+        kURLGetUploadDetailsRequest, kResponseGetUploadDetailsSuccessLong);
+    SaveLocalCard(kFirstCardNumber);
+    SaveLocalCard(kSecondCardNumber);
+    UseCardAndWaitForMigrationOffer(kFirstCardNumber);
+    ClickOnOkButton(GetLocalCardMigrationOfferBubbleViews());
+  }
 };
 
 // Ensures that migration is not offered when user saves a new card.
@@ -1228,6 +1258,10 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest, CardIdentifierString) {
   EXPECT_EQ(static_cast<MigratableCardView*>(card_list_view->children()[1])
                 ->GetCardIdentifierString(),
             first_card.NicknameAndLastFourDigitsForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserUiTest, InvokeUi_default) {
+  ShowAndVerifyUi();
 }
 
 // TODO(crbug.com/897998):
