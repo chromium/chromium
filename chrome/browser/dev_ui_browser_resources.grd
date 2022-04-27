@@ -49,7 +49,7 @@ This file specifies browser resources for developer-facing chrome:// pages
       <include name="IDR_PREDICTORS_RESOURCE_PREFETCH_PREDICTOR_JS" file="${root_gen_dir}\chrome\browser\resources\predictors\resource_prefetch_predictor.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_MEDIA_SESSION_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\services\media_session\public\mojom\media_session.mojom-webui.js" use_base_dir="false" type="BINDATA" />
 
-      <if expr="is_android or is_linux">
+      <if expr="is_android or is_linux or chromeos_ash or chromeos_lacros">
         <include name="IDR_SANDBOX_INTERNALS_HTML" file="resources\sandbox_internals\sandbox_internals.html" preprocess="true" type="BINDATA" />
         <include name="IDR_SANDBOX_INTERNALS_JS" file="resources\sandbox_internals\sandbox_internals.js" preprocess="true" type="BINDATA" />
       </if>
