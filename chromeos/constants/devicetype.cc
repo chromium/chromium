@@ -38,7 +38,8 @@ DeviceType GetDeviceType() {
 
   // Most devices are Chromebooks, so we will also consider reference boards
   // as Chromebooks.
-  if (value == "CHROMEBOOK" || value == "REFERENCE")
+  if (value == "CHROMEBOOK" || value == "REFERENCE" || value == "CHROMESLATE" ||
+      value == "CLAMSHELL" || value == "CONVERTIBLE" || value == "DETACHABLE")
     return DeviceType::kChromebook;
   if (value == "CHROMEBASE")
     return DeviceType::kChromebase;

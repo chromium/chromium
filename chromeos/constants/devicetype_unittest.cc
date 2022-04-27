@@ -26,6 +26,22 @@ TEST(DeviceTypeTest, GetDeviceTypeAsh) {
     EXPECT_EQ(chromeos::GetDeviceType(), chromeos::DeviceType::kChromebook);
   }
   {
+    command_line->InitFromArgv({"", "--form-factor=CHROMESLATE"});
+    EXPECT_EQ(chromeos::GetDeviceType(), chromeos::DeviceType::kChromebook);
+  }
+  {
+    command_line->InitFromArgv({"", "--form-factor=CLAMSHELL"});
+    EXPECT_EQ(chromeos::GetDeviceType(), chromeos::DeviceType::kChromebook);
+  }
+  {
+    command_line->InitFromArgv({"", "--form-factor=CONVERTIBLE"});
+    EXPECT_EQ(chromeos::GetDeviceType(), chromeos::DeviceType::kChromebook);
+  }
+  {
+    command_line->InitFromArgv({"", "--form-factor=DETACHABLE"});
+    EXPECT_EQ(chromeos::GetDeviceType(), chromeos::DeviceType::kChromebook);
+  }
+  {
     command_line->InitFromArgv({"", "--form-factor=CHROMEBASE"});
     EXPECT_EQ(chromeos::GetDeviceType(), chromeos::DeviceType::kChromebase);
   }
