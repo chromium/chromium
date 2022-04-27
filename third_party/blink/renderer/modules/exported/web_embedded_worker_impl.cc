@@ -202,9 +202,7 @@ void WebEmbeddedWorkerImpl::StartWorkerThread(
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
       network::mojom::ReferrerPolicy::kDefault, starter_origin.get(),
       starter_secure_context, starter_https_state, nullptr /* worker_clients */,
-      std::move(content_settings_proxy),
-      absl::nullopt /* response_address_space */,
-      nullptr /* inherited_trial_features */,
+      std::move(content_settings_proxy), nullptr /* inherited_trial_features */,
       worker_start_data->devtools_worker_token, std::move(worker_settings),
       // Generate the full code cache in the first execution of the script.
       mojom::blink::V8CacheOptions::kFullCodeWithoutHeatCheck,

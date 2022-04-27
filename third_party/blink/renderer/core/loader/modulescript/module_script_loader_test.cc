@@ -210,7 +210,6 @@ void ModuleScriptLoaderTest::InitializeForWorklet() {
       network::mojom::ReferrerPolicy::kDefault, security_origin_.get(),
       true /* is_secure_context */, HttpsState::kModern,
       nullptr /* worker_clients */, nullptr /* content_settings_client */,
-      network::mojom::IPAddressSpace::kLocal,
       nullptr /* inherited_trial_features */, base::UnguessableToken::Create(),
       nullptr /* worker_settings */, mojom::blink::V8CacheOptions::kDefault,
       MakeGarbageCollected<WorkletModuleResponsesMap>(),

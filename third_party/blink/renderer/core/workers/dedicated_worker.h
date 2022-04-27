@@ -124,7 +124,6 @@ class CORE_EXPORT DedicatedWorker final
       network::mojom::ReferrerPolicy,
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>
           response_content_security_policies,
-      absl::optional<network::mojom::IPAddressSpace> response_address_space,
       const String& source_code,
       RejectCoepUnsafeNone reject_coep_unsafe_none,
       mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
@@ -133,8 +132,7 @@ class CORE_EXPORT DedicatedWorker final
       const KURL& script_url,
       network::mojom::ReferrerPolicy,
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>
-          response_content_security_policies,
-      absl::optional<network::mojom::IPAddressSpace> response_address_space);
+          response_content_security_policies);
   scoped_refptr<WebWorkerFetchContext> CreateWebWorkerFetchContext();
   // May return nullptr.
   std::unique_ptr<WebContentSettingsClient> CreateWebContentSettingsClient();

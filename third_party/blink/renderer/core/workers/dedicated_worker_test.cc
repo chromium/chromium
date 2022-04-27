@@ -153,7 +153,6 @@ class DedicatedWorkerMessagingProxyForTest
         false /* starter_secure_context */,
         CalculateHttpsState(security_origin.get()),
         nullptr /* worker_clients */, nullptr /* content_settings_client */,
-        network::mojom::IPAddressSpace::kLocal,
         nullptr /* inherited_trial_features */,
         base::UnguessableToken::Create(), std::move(worker_settings),
         mojom::blink::V8CacheOptions::kDefault,

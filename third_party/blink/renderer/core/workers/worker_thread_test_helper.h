@@ -143,7 +143,6 @@ class WorkerThreadForTest : public WorkerThread {
         false /* starter_secure_context */,
         CalculateHttpsState(security_origin), worker_clients,
         nullptr /* content_settings_client */,
-        network::mojom::IPAddressSpace::kLocal,
         nullptr /* inherited_trial_features */,
         base::UnguessableToken::Create(),
         std::make_unique<WorkerSettings>(std::make_unique<Settings>().get()),

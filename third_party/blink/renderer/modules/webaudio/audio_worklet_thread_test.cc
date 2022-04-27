@@ -100,7 +100,6 @@ class AudioWorkletThreadTest : public PageTestBase, public ModuleTestBase {
             window->GetReferrerPolicy(), window->GetSecurityOrigin(),
             window->IsSecureContext(), window->GetHttpsState(),
             nullptr /* worker_clients */, nullptr /* content_settings_client */,
-            absl::nullopt /* response_address_space */,
             OriginTrialContext::GetInheritedTrialFeatures(window).get(),
             base::UnguessableToken::Create(), nullptr /* worker_settings */,
             mojom::blink::V8CacheOptions::kDefault,
