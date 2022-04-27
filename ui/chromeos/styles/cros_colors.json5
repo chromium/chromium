@@ -350,8 +350,8 @@
 
     /* icon-button */
     icon_button_background_color: {
-      light: "rgba($black_rgb, 0.05)",
-      dark: "rgba($white_rgb, 0.1)",
+      light: "blend(rgba($white_rgb, 0.32), rgba($google_grey_200_rgb, 0.8))",
+      dark: "blend(rgba($black_rgb, 0.16), rgba($google_grey_800_rgb, 0.8))",
     },
     /* when icon button is pressed, we layer the $ripple_color on top of the
     hover color (which is also $ripple_color) */
