@@ -75,6 +75,9 @@ PhoneHubManagerFactory::PhoneHubManagerFactory()
           "PhoneHubManager",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(device_sync::DeviceSyncClientFactory::GetInstance());
+  if (features::IsPhoneHubCameraRollEnabled()) {
+    DependsOn(HoldingSpaceKeyedServiceFactory::GetInstance());
+  }
   DependsOn(multidevice_setup::MultiDeviceSetupClientFactory::GetInstance());
   DependsOn(secure_channel::NearbyConnectorFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());
