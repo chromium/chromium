@@ -1868,6 +1868,21 @@
             ]
         }
     ],
+    "CaptureModeSelfieCamera": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnableCaptureModeSelfieCamera",
+                    "enable_features": [
+                        "CaptureModeSelfieCamera"
+                    ]
+                }
+            ]
+        }
+    ],
     "CctClientDataHeader": [
         {
             "platforms": [
