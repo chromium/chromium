@@ -33,6 +33,7 @@ const CGFloat kIconWidth = 32.0f;
     self.layer.masksToBounds = YES;
 
     _titleLabel = [[UILabel alloc] init];
+    _titleLabel.isAccessibilityElement = NO;
     _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     _titleLabel.adjustsFontForContentSizeCategory = YES;
     _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
