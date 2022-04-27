@@ -42,8 +42,15 @@ class UI_DATA_PACK_EXPORT DataPackWithResourceSharing : public ResourceHandle {
 
   // Data of Lacros version and timestamp.
   struct LacrosVersionData {
-    char version[32];
-    char timestamp[32];
+    // The size of version components is 4. Version of Lacros. Each element
+    // corredponds to major, minor, build and patch of CHROME_VERSION.
+    static constexpr size_t kVersionComponentsSize = 4;
+
+    // Version of Lacros.
+    uint32_t version[kVersionComponentsSize];
+
+    // Last updated time of lacros-chrome.
+    int64_t timestamp;
   };
 
   // Maps resource id in Lacros resources to Ash resources.
@@ -118,6 +125,17 @@ class UI_DATA_PACK_EXPORT DataPackWithResourceSharing : public ResourceHandle {
   // Returns mapped resource ID if |resource_id| is in |mapping_table_|.
   // Return null if not.
   const absl::optional<uint16_t> LookupMappingTable(uint16_t resource_id) const;
+
+  // Check the shared resource `path` version is valid. If Lacros version used
+  // to generate `path` is not the same with the current Lacros, return false.
+  // We consider the versions are the same iff
+  // 1. Lacros chrome version is same.
+  // 2. Last updated time of Lacros file is same.
+  // Here, we check not only chrome version but also the time since there might
+  // be a change in Lacros which affects resource file. This is mostly used by
+  // developers.
+  static bool IsSharedResourceValid(const base::FilePath& path);
+
   // Writes a version and its updated time of Lacros used to generate file.
   static bool WriteLacrosVersion(ScopedFileWriter& file);
   // Writes a mapping table `mapping` to `file`.
@@ -143,7 +161,7 @@ class UI_DATA_PACK_EXPORT DataPackWithResourceSharing : public ResourceHandle {
   static void OnFailedToGenerate(ScopedFileWriter& file,
                                  const base::FilePath& path);
 
-  std::unique_ptr<DataPack::DataSource> mapping_source_;
+  std::unique_ptr<DataPack::DataSource> data_source_;
 
   // Each Mapping maps lacros resource id to ash resource id if the same data
   // exists in ash resources .pak.

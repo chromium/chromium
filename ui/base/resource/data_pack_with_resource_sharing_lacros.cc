@@ -9,10 +9,13 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/version.h"
+#include "components/version_info/version_info.h"
 
 namespace {
 
@@ -96,6 +99,8 @@ DataPackWithResourceSharing::DataPackWithResourceSharing(
     ResourceScaleFactor resource_scale_factor)
     : resource_scale_factor_(resource_scale_factor) {
   static_assert(sizeof(Mapping) == 4, "size of Mapping must be 4");
+  static_assert(sizeof(LacrosVersionData) == 24,
+                "size of LacrosVersionData must be 24");
 }
 
 DataPackWithResourceSharing::~DataPackWithResourceSharing() {}
@@ -187,7 +192,7 @@ bool DataPackWithResourceSharing::LoadMappingTable(const base::FilePath& path) {
     }
   }
 
-  mapping_source_ = std::move(data_source);
+  data_source_ = std::move(data_source);
   return true;
 }
 
@@ -252,10 +257,58 @@ void DataPackWithResourceSharing::CheckForDuplicateResources(
 #endif  // DCHECK_IS_ON()
 
 // static
+bool DataPackWithResourceSharing::IsSharedResourceValid(
+    const base::FilePath& path) {
+  std::unique_ptr<DataPack::DataSource> data_source =
+      DataPack::LoadFromPathInternal(path);
+  if (!data_source)
+    return false;
+
+  const uint8_t* data = data_source->GetData();
+  size_t data_length = data_source->GetLength();
+  // Parse the version and check for truncated header.
+  uint32_t version = 0;
+  if (data_length > sizeof(version))
+    version = reinterpret_cast<const FileHeaderV1*>(data)[0].version;
+  size_t header_length = sizeof(FileHeaderV1);
+  if (version != kFileFormatV1 || data_length < header_length)
+    return false;
+
+  // Get LacrosVersionData.
+  const LacrosVersionData* lacros_version;
+  lacros_version =
+      reinterpret_cast<const LacrosVersionData*>(&data[header_length]);
+
+  // Compare `lacros_version` with the current Lacros version.
+  std::vector<uint32_t> lacros_version_components(
+      lacros_version->version,
+      lacros_version->version + LacrosVersionData::kVersionComponentsSize);
+  if (base::Version(std::move(lacros_version_components)) !=
+      version_info::GetVersion()) {
+    return false;
+  }
+
+  const auto* command_line = base::CommandLine::ForCurrentProcess();
+  base::File::Info file_info;
+  if (!GetFileInfo(command_line->GetProgram(), &file_info)) {
+    return false;
+  }
+  if (lacros_version->timestamp !=
+      file_info.last_modified.ToDeltaSinceWindowsEpoch().InMicroseconds()) {
+    LOG(WARNING) << "Removing cached shared resource and regenerate it since "
+                 << "lacros-chrome has been modified after last shared "
+                 << "resource generation. This is expected to happen for "
+                 << "developers when updating lacros-chrome.";
+    return false;
+  }
+
+  return true;
+}
+
+// static
 void DataPackWithResourceSharing::OnFailedToGenerate(
     ScopedFileWriter& file,
     const base::FilePath& path) {
-  LOG(WARNING) << "OnFailedToGenerate";
   file.Close();
   // Reopen `file` to empty the content.
   ScopedFileWriter reopen_file(path);
@@ -265,8 +318,23 @@ void DataPackWithResourceSharing::OnFailedToGenerate(
 // static
 bool DataPackWithResourceSharing::WriteLacrosVersion(ScopedFileWriter& file) {
   // Write Lacros version and timestamp.
-  // TODO(crbug.com/1303441): Insert actual version and timestamp.
   LacrosVersionData lacros_version;
+
+  // Version components must have 4 elements.
+  DCHECK_EQ(version_info::GetVersion().components().size(),
+            LacrosVersionData::kVersionComponentsSize);
+  for (size_t i = 0; i < LacrosVersionData::kVersionComponentsSize; ++i)
+    lacros_version.version[i] = version_info::GetVersion().components()[i];
+
+  const auto* command_line = base::CommandLine::ForCurrentProcess();
+  base::File::Info file_info;
+  if (!GetFileInfo(command_line->GetProgram(), &file_info)) {
+    LOG(WARNING) << "Failed to get last modified time of lacros-chrome.";
+    return false;
+  }
+
+  lacros_version.timestamp =
+      file_info.last_modified.ToDeltaSinceWindowsEpoch().InMicroseconds();
   file.Write(&lacros_version, sizeof(LacrosVersionData));
   return true;
 }
@@ -344,9 +412,9 @@ bool DataPackWithResourceSharing::MaybeGenerateFallbackAndMapping(
     const base::FilePath& lacros_path,
     const base::FilePath& shared_resource_path,
     ResourceScaleFactor resource_scale_factor) {
-  // TODO(crbug.com/1303441): Check if fallback pak and mapping pak exist.
-  // If exists, get LacrosVersionData from `shared_resource_path` and compare it
-  // with the current Lacros version. If it's same, skip regenerating.
+  // If `shared_resource_path` is already valid, skip regenerating.
+  if (IsSharedResourceValid(shared_resource_path))
+    return true;
 
   // Write fallback_resources and mapping_table to `shared_resource_path`.
   // Generate file even if the data generation fails. If the file creation
@@ -524,8 +592,10 @@ bool DataPackWithResourceSharing::WriteSharedResourceFileForTesting(
   file.Write(&header, sizeof(FileHeaderV1));
 
   // Write dummy Lacros version and timestamp.
-  LacrosVersionData dummy_version;
-  file.Write(&dummy_version, sizeof(LacrosVersionData));
+  if (!WriteLacrosVersion(file)) {
+    OnFailedToGenerate(file, path);
+    return false;
+  }
 
   // Write mapping table.
   if (!WriteMappingTable(std::move(mapping), file)) {

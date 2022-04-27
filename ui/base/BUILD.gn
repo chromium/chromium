@@ -48,13 +48,6 @@ component("ui_data_pack") {
     "resource/scoped_file_writer.h",
   ]
 
-  if (is_chromeos_lacros) {
-    sources += [
-      "resource/data_pack_with_resource_sharing_lacros.cc",
-      "resource/data_pack_with_resource_sharing_lacros.h",
-    ]
-  }
-
   deps = [
     "//base",
     "//net",
@@ -62,6 +55,14 @@ component("ui_data_pack") {
   ]
 
   defines = [ "UI_DATA_PACK_IMPLEMENTATION" ]
+
+  if (is_chromeos_lacros) {
+    sources += [
+      "resource/data_pack_with_resource_sharing_lacros.cc",
+      "resource/data_pack_with_resource_sharing_lacros.h",
+    ]
+    deps += [ "//components/version_info" ]
+  }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
