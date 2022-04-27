@@ -427,6 +427,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Install.Result" enum="BooleanSuccess"
+    expires_after="M110">
+  <owner>phillis@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    This is recorded when a web app installation is completed. This tracks all
+    kinds of web app installations, e.g. user installs from install icon or
+    admin installs from WebAppInstallForcelist.
+  </summary>
+</histogram>
+
 <histogram name="Webapp.Install.UninstallEvent" enum="WebappUninstallSource"
     expires_after="2022-08-14">
   <owner>dmurph@chromium.org</owner>
