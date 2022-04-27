@@ -175,7 +175,8 @@ bool AdsPageLoadMetricsObserver::IsFrameSameOriginToOutermostMainFrame(
   // In navigation for prerendering, `AdsPageLoadMetricsObserver` is removed
   // from PageLoadTracker.
   // TODO(https://crbug.com/1317494): Enable it if possible.
-  DCHECK(host->IsActive());
+  DCHECK_NE(content::RenderFrameHost::LifecycleState::kPrerendering,
+            host->GetLifecycleState());
   content::RenderFrameHost* outermost_main_host = host->GetOutermostMainFrame();
   url::Origin frame_origin = host->GetLastCommittedOrigin();
   url::Origin outermost_mainframe_origin =
