@@ -13,6 +13,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/task_runner.h"
+#include "base/time/time.h"
+#include "components/policy/core/common/cloud/enterprise_metrics.h"
+#include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/policy_types.h"
@@ -22,8 +25,71 @@
 
 namespace policy {
 
-const int PolicyStatisticsCollector::kStatisticsUpdateRate =
-    24 * 60 * 60 * 1000;  // 24 hours.
+namespace {
+
+constexpr char kPoliciesSourceMetricsName[] = "Enterprise.Policies.Sources";
+
+constexpr const char* kCBCMEnrollmentPolicies[] = {
+    "CloudManagementEnrollmentToken", "CloudManagementEnrollmentMandatory"};
+
+enum SimplePolicySource {
+  kNone = 0,
+  kCloud = 1 << 0,
+  kPlatform = 1 << 1,
+  kMerge = kCloud | kPlatform,
+  kEnrollment = 1 << 2,
+};
+
+SimplePolicySource SimplifyPolicySource(PolicySource source,
+                                        const std::string& policy_name) {
+  switch (source) {
+    case POLICY_SOURCE_CLOUD:
+    case POLICY_SOURCE_CLOUD_FROM_ASH:
+      return kCloud;
+    case POLICY_SOURCE_PLATFORM:
+    case POLICY_SOURCE_ACTIVE_DIRECTORY:
+      // Adjust for enrollment policies which can never be set from cloud.
+      // Count them as cloud policy so that a device is considered as cloud
+      // managed even if there is enrollment token only.
+      for (const char* enrollment_policy : kCBCMEnrollmentPolicies) {
+        if (policy_name == enrollment_policy)
+          return kEnrollment;
+      }
+      return kPlatform;
+    case POLICY_SOURCE_MERGED:
+      return kMerge;
+    default:
+      // Other sources are only used for speicial cases and will not be counted.
+      return kNone;
+  }
+}
+
+void RecordPoliciesSources(SimplePolicySource source) {
+  if ((source & kMerge) == kMerge) {
+    base::UmaHistogramEnumeration(kPoliciesSourceMetricsName,
+                                  PoliciesSources::kHybrid);
+  } else if (source & kPlatform) {
+    base::UmaHistogramEnumeration(kPoliciesSourceMetricsName,
+                                  PoliciesSources::kPlatformOnly);
+  } else if (source & kCloud) {
+    if (source & kEnrollment) {
+      base::UmaHistogramEnumeration(
+          kPoliciesSourceMetricsName,
+          PoliciesSources::kCloudOnlyExceptEnrollment);
+    } else {
+      base::UmaHistogramEnumeration(kPoliciesSourceMetricsName,
+                                    PoliciesSources::kCloudOnly);
+    }
+  } else if (source & kEnrollment) {
+    base::UmaHistogramEnumeration(kPoliciesSourceMetricsName,
+                                  PoliciesSources::kEnrollmentOnly);
+  }
+}
+
+}  // namespace
+
+const base::TimeDelta PolicyStatisticsCollector::kStatisticsUpdateRate =
+    base::Days(1);
 
 PolicyStatisticsCollector::PolicyStatisticsCollector(
     const GetChromePolicyDetailsCallback& get_details,
@@ -35,22 +101,19 @@ PolicyStatisticsCollector::PolicyStatisticsCollector(
       chrome_schema_(chrome_schema),
       policy_service_(policy_service),
       prefs_(prefs),
-      task_runner_(task_runner) {
-}
+      task_runner_(task_runner) {}
 
-PolicyStatisticsCollector::~PolicyStatisticsCollector() {
-}
+PolicyStatisticsCollector::~PolicyStatisticsCollector() = default;
 
 void PolicyStatisticsCollector::Initialize() {
-  using base::Time;
-
-  base::TimeDelta update_rate = base::Milliseconds(kStatisticsUpdateRate);
-  Time last_update = prefs_->GetTime(policy_prefs::kLastPolicyStatisticsUpdate);
-  base::TimeDelta delay = std::max(Time::Now() - last_update, base::Days(0));
-  if (delay >= update_rate)
+  base::Time last_update =
+      prefs_->GetTime(policy_prefs::kLastPolicyStatisticsUpdate);
+  base::TimeDelta delay =
+      std::max(base::Time::Now() - last_update, base::TimeDelta());
+  if (delay >= kStatisticsUpdateRate)
     CollectStatistics();
   else
-    ScheduleUpdate(update_rate - delay);
+    ScheduleUpdate(kStatisticsUpdateRate - delay);
 }
 
 // static
@@ -80,22 +143,25 @@ void PolicyStatisticsCollector::CollectStatistics() {
   const PolicyMap& policies = policy_service_->GetPolicies(
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
 
+  int source = kNone;
   // Collect statistics.
   for (Schema::Iterator it(chrome_schema_.GetPropertiesIterator());
        !it.IsAtEnd(); it.Advance()) {
-    if (policies.Get(it.key())) {
-      const PolicyDetails* details = get_details_.Run(it.key());
-      if (details) {
-        RecordPolicyUse(details->id, kDefault);
-        if (policies.Get(it.key())->level == POLICY_LEVEL_MANDATORY) {
-          RecordPolicyUse(details->id, kMandatory);
-        } else {
-          RecordPolicyUse(details->id, kRecommended);
-        }
+    const PolicyMap::Entry* policy_entry = policies.Get(it.key());
+    if (!policy_entry)
+      continue;
+    const PolicyDetails* details = get_details_.Run(it.key());
+    if (details) {
+      RecordPolicyUse(details->id, kDefault);
+      if (policies.Get(it.key())->level == POLICY_LEVEL_MANDATORY) {
+        RecordPolicyUse(details->id, kMandatory);
       } else {
-        NOTREACHED();
+        RecordPolicyUse(details->id, kRecommended);
       }
+    } else {
+      NOTREACHED();
     }
+    source |= SimplifyPolicySource(policy_entry->source, it.key());
   }
 
   for (size_t i = 0; i < kPolicyAtomicGroupMappingsLength; ++i) {
@@ -114,9 +180,11 @@ void PolicyStatisticsCollector::CollectStatistics() {
     }
   }
 
+  RecordPoliciesSources(static_cast<SimplePolicySource>(source));
+
   // Take care of next update.
   prefs_->SetTime(policy_prefs::kLastPolicyStatisticsUpdate, base::Time::Now());
-  ScheduleUpdate(base::Milliseconds(kStatisticsUpdateRate));
+  ScheduleUpdate(kStatisticsUpdateRate);
 }
 
 void PolicyStatisticsCollector::ScheduleUpdate(base::TimeDelta delay) {

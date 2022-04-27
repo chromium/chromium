@@ -29403,6 +29403,23 @@ Called by update_document_policy_enum.py.-->
   <int value="981" label="UrlParamFilterEnabled"/>
 </enum>
 
+<enum name="EnterprisePoliciesSources">
+  <int value="0" label="Cloud only">
+    All policies are set from cloud. This also includes cloud_ash policy source
+  </int>
+  <int value="1" label="Cloud only except enrollment">
+    All policies are set from cloud except CBCM enrollment token and option.
+  </int>
+  <int value="2" label="Platform only">
+    All policies are set from platform management tool. This also includes AD
+    policeis on CrOS.
+  </int>
+  <int value="3" label="Hybrid">Policies are set with multiple tools.</int>
+  <int value="4" label="EnrollmentOnly">
+    There is no policy except CBCM enrollment token and option.
+  </int>
+</enum>
+
 <enum name="EnterprisePolicyDeviceIdValidity">
   <summary>
     Defined as PolicyDeviceIdValidity in

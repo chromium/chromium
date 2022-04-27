@@ -1791,6 +1791,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.Policies.Sources" enum="EnterprisePoliciesSources"
+    expires_after="2023-04-01">
+  <owner>zmin@chromium.org</owner>
+  <owner>igorruvinov@chromium.org</owner>
+  <summary>
+    Record summary of sources of all policies. It's recorded ever 24 hours and
+    at startup.
+
+    This does not include user cloud policy and some speicial policy sources
+    like enterprise_default.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.Policies.{PolicyLevel}" enum="EnterprisePolicies"
     expires_after="2023-03-01">
   <owner>zmin@chromium.org</owner>
