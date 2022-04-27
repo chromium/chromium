@@ -108,6 +108,7 @@ void SyncRunOnOsLoginOsIntegrationState(
   DCHECK(os_integration_manager);
 
   if (!registrar->IsLocallyInstalled(app_id)) {
+    MaybeCallTestingCallback(OsHooksErrors());
     return;
   }
 

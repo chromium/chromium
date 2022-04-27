@@ -1766,7 +1766,6 @@ void WebAppIntegrationTestDriver::CheckRunOnOsLoginDisabled(Site site) {
   absl::optional<AppState> app_state =
       GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
   ASSERT_TRUE(app_state);
-  EXPECT_EQ(app_state->run_on_os_login_mode, apps::RunOnOsLoginMode::kNotRun);
   base::ScopedAllowBlockingForTesting allow_blocking;
 #if BUILDFLAG(IS_LINUX)
   std::string shortcut_filename = "chrome-" + app_state->id + "-" +

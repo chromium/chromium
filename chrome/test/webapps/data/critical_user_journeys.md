@@ -38,6 +38,8 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 | WML | install | enable_run_on_os_login | disable_run_on_os_login | check_run_on_os_login_disabled |
 | WML | install | apply_run_on_os_login_policy_run_windowed | remove_run_on_os_login_policy | check_run_on_os_login_disabled |
 | WML | install | enable_run_on_os_login | apply_run_on_os_login_policy_blocked | remove_run_on_os_login_policy | check_run_on_os_login_enabled | 
+| WML | install_by_user_windowed | switch_profile_clients(Client2) | switch_profile_clients(Client1) | sync_turn_off | uninstall_by_user | switch_profile_clients(Client2) | apply_run_on_os_login_policy_run_windowed | check_run_on_os_login_disabled |
+| WML | install_by_user_windowed | switch_profile_clients(Client2) | switch_profile_clients(Client1) | sync_turn_off | uninstall_by_user | switch_profile_clients(Client2) | apply_run_on_os_login_policy_run_windowed | check_run_on_os_login_disabled | install_locally | check_run_on_os_login_enabled |
 
 ## Badging
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
