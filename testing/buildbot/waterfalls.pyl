@@ -385,6 +385,16 @@
           'all',
         ],
       },
+      'lacros64-archive-rel': {
+        'additional_compile_targets': [
+          'chrome',
+          'lacros_version_metadata',
+          'linux_symbols',
+          'symupload',
+          'strip_chrome_binary',
+        ],
+        'os_type': 'chromeos',
+      },
       'linux-archive-dbg': {
         'additional_compile_targets': [
           'all',

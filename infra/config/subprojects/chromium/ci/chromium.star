@@ -4,6 +4,7 @@
 """Definitions of builders in the chromium builder group."""
 
 load("//lib/args.star", "args")
+load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "goma", "os", "sheriff_rotations")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
@@ -118,6 +119,53 @@ ci.builder(
     # have populated their cached by getting through the compile step
     execution_timeout = 10 * time.hour,
     os = os.LINUX_BIONIC_REMOVE,
+    sheriff_rotations = args.ignore_default(None),
+)
+
+ci.builder(
+    name = "lacros64-archive-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "lacros",
+        short_name = "rel",
+    ),
+    branch_selector = branches.STANDARD_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chromeos",
+                "checkout_lacros_sdk",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_cros_boards = [
+                "amd64-generic",
+            ],
+            target_platform = builder_config.target_platform.CHROMEOS,
+        ),
+    ),
+    cores = 32,
+    os = os.LINUX_BIONIC_REMOVE,
+    properties = {
+        # The format of these properties is defined at archive/properties.proto
+        "$build/archive": {
+            "source_side_spec_path": [
+                "src",
+                "infra",
+                "archive_config",
+                "lacros64-archive-rel.json",
+            ],
+        },
+    },
+    # TODO(crbug.com/1320042): Turn on after it's stable.
+    tree_closing = False,
     sheriff_rotations = args.ignore_default(None),
 )
 

@@ -55,6 +55,7 @@
       'android-archive-dbg': 'android_without_codecs_debug_bot_reclient',
       'android-official': 'android_official_optimize_reclient',
       'fuchsia-official': 'fuchsia_official_optimize_goma',
+      'lacros64-archive-rel': 'chromeos_amd64-generic_lacros_rel',
       'linux-archive-rel': 'release_bot_reclient',
       'linux-archive-dbg': 'debug_bot_reclient',
       'linux-archive-tagged': 'official_optimize_reclient',
