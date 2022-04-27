@@ -40,7 +40,11 @@ class PasswordCheckImpl implements PasswordCheck, PasswordCheckObserver {
                 PasswordCheckFragmentView.PASSWORD_CHECK_REFERRER, passwordCheckReferrer);
         mSettingsLauncher.launchSettingsActivity(
                 context, PasswordCheckFragmentView.class, fragmentArgs);
-        mPasswordCheckBridge.refreshScripts();
+        // Scripts are fetched before opening safety check, so there is no need to fetch them again
+        // here.
+        if (passwordCheckReferrer != PasswordCheckReferrer.SAFETY_CHECK) {
+            mPasswordCheckBridge.refreshScripts();
+        }
     }
 
     @Override
@@ -156,5 +160,10 @@ class PasswordCheckImpl implements PasswordCheck, PasswordCheckObserver {
     @Override
     public boolean areScriptsRefreshed() {
         return mPasswordCheckBridge.areScriptsRefreshed();
+    }
+
+    @Override
+    public void fetchScripts() {
+        mPasswordCheckBridge.refreshScripts();
     }
 }

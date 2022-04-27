@@ -127,4 +127,9 @@ public interface PasswordCheck extends PasswordCheckComponentUi.Delegate {
      * Checks if scripts refreshment is finished.
      */
     boolean areScriptsRefreshed();
+
+    /**
+     *  Fetches scripts for automated passwords changes.
+     */
+    void fetchScripts();
 }
