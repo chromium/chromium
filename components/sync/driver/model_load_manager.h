@@ -50,9 +50,9 @@ class ModelLoadManager {
 
   virtual ~ModelLoadManager();
 
-  // Stops any data types that are *not* in |desired_types|, then kicks off
-  // loading of all |desired_types|.
-  // |desired_types| must be a subset of |preferred_types|.
+  // Stops any data types that are *not* in |preferred_types_without_errors|,
+  // then kicks off loading of all |preferred_types_without_errors|.
+  // |preferred_types_without_errors| must be a subset of |preferred_types|.
   // |preferred_types| contains all types selected by the user.
   void Initialize(ModelTypeSet preferred_types_without_errors,
                   ModelTypeSet preferred_types,
@@ -68,7 +68,8 @@ class ModelLoadManager {
                     SyncError error);
 
  private:
-  // Start loading non-running types that are in |desired_types_|.
+  // Start loading non-running types that are in
+  // |preferred_types_without_errors_|.
   void LoadDesiredTypes();
 
   // Callback that will be invoked when the model for |type| finishes loading.
@@ -82,8 +83,9 @@ class ModelLoadManager {
                         DataTypeController::StopCallback callback);
 
   // Calls delegate's OnAllDataTypesReadyForConfigure if all datatypes from
-  // |desired_types_| are loaded. Ensures that OnAllDataTypesReadyForConfigure
-  // is called at most once for every call to Initialize().
+  // |preferred_types_without_errors_| are loaded. Ensures that
+  // OnAllDataTypesReadyForConfigure is called at most once for every call to
+  // Initialize().
   void NotifyDelegateIfReadyForConfigure();
 
   // Set of all registered controllers.
@@ -95,7 +97,7 @@ class ModelLoadManager {
   ConfigureContext configure_context_;
 
   // Data types that are enabled.
-  ModelTypeSet desired_types_;
+  ModelTypeSet preferred_types_without_errors_;
 
   // Data types that are loaded.
   ModelTypeSet loaded_types_;
