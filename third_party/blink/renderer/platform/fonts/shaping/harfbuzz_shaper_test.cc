@@ -1942,4 +1942,34 @@ TEST_F(HarfBuzzShaperTest, OverlyLongGraphemeCluster) {
   EXPECT_EQ(1u, runs[1].num_glyphs);
 }
 
+// HarfBuzz should not swap the ordering for some fonts.
+//
+// In general, for cluster levels 0 and 1, if clusters are not in ascending
+// order (either LTR or RTL based on buffer direction), then it is a bug that
+// needs to be fixed.
+// https://github.com/harfbuzz/harfbuzz/issues/3553 crbug.com/1319078
+TEST_F(HarfBuzzShaperTest, UnorderedClusterIndex) {
+  // The first two characters may be swapped, producing [1, 0].
+  // U+1DDE COMBINING LATIN LETTER SMALL CAPITAL L
+  // U+A74A LATIN CAPITAL LETTER O WITH LONG STROKE OVERLAY
+  String string(u"\u1DDE\uA74A");
+
+  // The symptom was found on Mac, but it may occur on other platforms.
+  // Setting the font family is not strictly necessary as fonts automatically
+  // fallback, but it helps keeping the whole string in a run (i.e., shapes
+  // surrounding characters with the same font.)
+  FontFamily family;
+  family.SetFamily("Geneva", FontFamily::Type::kFamilyName);
+  font_description.SetFamily(family);
+  font = Font(font_description);
+
+  HarfBuzzShaper shaper(string);
+  scoped_refptr<ShapeResult> result = shaper.Shape(&font, TextDirection::kLtr);
+#if DCHECK_IS_ON()
+  result->CheckConsistency();
+#endif
+  Vector<ShapeResultRunData> runs = ShapeResultRunData::Get(result);
+  EXPECT_GE(runs.size(), 1u);
+}
+
 }  // namespace blink
