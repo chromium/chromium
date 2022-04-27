@@ -25,14 +25,12 @@ base::WritableSharedMemoryRegion CreateWritableSharedMemoryRegion(size_t size) {
   return mojo::UnwrapWritableSharedMemoryRegion(std::move(handle));
 }
 
-base::MappedReadOnlyRegion CreateReadOnlySharedMemoryRegion(
-    size_t size,
-    base::SharedMemoryMapper* mapper) {
+base::MappedReadOnlyRegion CreateReadOnlySharedMemoryRegion(size_t size) {
   auto writable_region = CreateWritableSharedMemoryRegion(size);
   if (!writable_region.IsValid())
     return {};
 
-  base::WritableSharedMemoryMapping mapping = writable_region.Map(mapper);
+  base::WritableSharedMemoryMapping mapping = writable_region.Map();
   return {base::WritableSharedMemoryRegion::ConvertToReadOnly(
               std::move(writable_region)),
           std::move(mapping)};

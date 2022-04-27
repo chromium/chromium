@@ -9,7 +9,7 @@
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/platform_shared_memory_handle.h"
-#include "base/memory/shared_memory_mapper.h"
+#include "base/memory/platform_shared_memory_mapper.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -188,15 +188,14 @@ class BASE_EXPORT PlatformSharedMemoryRegion {
   bool ConvertToUnsafe();
 
   // Maps |size| bytes of the shared memory region starting with the given
-  // |offset| into the caller's address space using the provided
-  // |SharedMemoryMapper|. |offset| must be aligned to value of
-  // |SysInfo::VMAllocationGranularity()|. Fails if requested bytes are out of
-  // the region limits. Returns the mapping as span on success, or absl::nullopt
-  // on failure. The mapped address is guaranteed to have an alignment of at
-  // least |kMapMinimumAlignment|.
-  absl::optional<span<uint8_t>> MapAt(uint64_t offset,
-                                      size_t size,
-                                      SharedMemoryMapper* mapper) const;
+  // |offset| into the caller's address space. |offset| must be aligned to value
+  // of |SysInfo::VMAllocationGranularity()|. Fails if requested bytes are out
+  // of the region limits.
+  // Returns true and sets |memory| and |mapped_size| on success, returns false
+  // and leaves output parameters in unspecified state otherwise. The mapped
+  // address is guaranteed to have an alignment of at least
+  // |kMapMinimumAlignment|.
+  absl::optional<span<uint8_t>> MapAt(uint64_t offset, size_t size) const;
 
   const UnguessableToken& GetGUID() const { return guid_; }
 

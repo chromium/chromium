@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/shared_memory_mapper.h"
 #include "gin/converter.h"
 #include "gin/gin_export.h"
 #include "v8/include/v8-array-buffer.h"
@@ -76,8 +75,6 @@ struct GIN_EXPORT Converter<ArrayBufferView> {
   static bool FromV8(v8::Isolate* isolate, v8::Local<v8::Value> val,
                      ArrayBufferView* out);
 };
-
-GIN_EXPORT base::SharedMemoryMapper* GetSharedMemoryMapperForArrayBuffers();
 
 }  // namespace gin
 

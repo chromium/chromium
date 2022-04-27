@@ -11,7 +11,6 @@
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/containers/span.h"
-#include "base/memory/shared_memory_mapper.h"
 #include "base/unguessable_token.h"
 
 namespace base {
@@ -71,8 +70,7 @@ class BASE_EXPORT SharedMemoryMapping {
  protected:
   SharedMemoryMapping(span<uint8_t> mapped_span,
                       size_t size,
-                      const UnguessableToken& guid,
-                      SharedMemoryMapper* mapper);
+                      const UnguessableToken& guid);
   void* raw_memory_ptr() const {
     return reinterpret_cast<void*>(mapped_span_.data());
   }
@@ -85,7 +83,6 @@ class BASE_EXPORT SharedMemoryMapping {
   span<uint8_t> mapped_span_;
   size_t size_ = 0;
   UnguessableToken guid_;
-  SharedMemoryMapper* mapper_ = nullptr;
 };
 
 // Class modeling a read-only mapping of a shared memory region into the
@@ -159,8 +156,7 @@ class BASE_EXPORT ReadOnlySharedMemoryMapping : public SharedMemoryMapping {
   friend class ReadOnlySharedMemoryRegion;
   ReadOnlySharedMemoryMapping(span<uint8_t> mapped_span,
                               size_t size,
-                              const UnguessableToken& guid,
-                              SharedMemoryMapper* mapper);
+                              const UnguessableToken& guid);
 };
 
 // Class modeling a writable mapping of a shared memory region into the
@@ -239,8 +235,7 @@ class BASE_EXPORT WritableSharedMemoryMapping : public SharedMemoryMapping {
   friend class UnsafeSharedMemoryRegion;
   WritableSharedMemoryMapping(span<uint8_t> mapped_span,
                               size_t size,
-                              const UnguessableToken& guid,
-                              SharedMemoryMapper* mapper);
+                              const UnguessableToken& guid);
 };
 
 }  // namespace base
