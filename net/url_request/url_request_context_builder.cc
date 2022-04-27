@@ -606,8 +606,9 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
           break;
       }
       http_cache_backend = std::make_unique<HttpCache::DefaultBackend>(
-          DISK_CACHE, backend_type, http_cache_params_.path,
-          http_cache_params_.max_size, http_cache_params_.reset_cache);
+          DISK_CACHE, backend_type, http_cache_params_.file_operations_factory,
+          http_cache_params_.path, http_cache_params_.max_size,
+          http_cache_params_.reset_cache);
     } else {
       http_cache_backend =
           HttpCache::DefaultBackend::InMemory(http_cache_params_.max_size);

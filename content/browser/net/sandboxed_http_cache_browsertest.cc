@@ -28,6 +28,7 @@
 #include "content/public/test/network_service_test_helper.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/features.h"
 #include "sandbox/features.h"
 #include "sandbox/policy/features.h"
@@ -122,9 +123,9 @@ class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
     mojo::Remote<SimpleCache> simple_cache;
     mojo::PendingRemote<network::mojom::HttpCacheBackendFileOperationsFactory>
         factory_remote;
-    file_operations_factories_.push_back(
-        std::make_unique<HttpCacheBackendFileOperationsFactory>(
-            factory_remote.InitWithNewPipeAndPassReceiver(), root_path));
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<HttpCacheBackendFileOperationsFactory>(root_path),
+        factory_remote.InitWithNewPipeAndPassReceiver());
 
     network_service_test()->CreateSimpleCache(
         std::move(factory_remote), path,
@@ -212,8 +213,6 @@ class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
-  std::vector<std::unique_ptr<HttpCacheBackendFileOperationsFactory>>
-      file_operations_factories_;
 };
 
 IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, OpeningFileIsProhibited) {
@@ -244,8 +243,9 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
       root.Append(FILE_PATH_LITERAL("net")).Append(FILE_PATH_LITERAL("cache"));
   mojo::PendingRemote<network::mojom::HttpCacheBackendFileOperationsFactory>
       factory_remote;
-  HttpCacheBackendFileOperationsFactory factory(
-      factory_remote.InitWithNewPipeAndPassReceiver(), root);
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<HttpCacheBackendFileOperationsFactory>(root),
+      factory_remote.InitWithNewPipeAndPassReceiver());
 
   network_service_test().set_disconnect_handler(run_loop.QuitClosure());
   const base::FilePath path = root.Append(FILE_PATH_LITERAL("not-found"));
@@ -275,8 +275,9 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, EnumerateFiles) {
       root.Append(FILE_PATH_LITERAL("net")).Append(FILE_PATH_LITERAL("cache"));
   mojo::PendingRemote<network::mojom::HttpCacheBackendFileOperationsFactory>
       factory_remote;
-  HttpCacheBackendFileOperationsFactory factory(
-      factory_remote.InitWithNewPipeAndPassReceiver(), root);
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<HttpCacheBackendFileOperationsFactory>(root),
+      factory_remote.InitWithNewPipeAndPassReceiver());
 
   network_service_test().set_disconnect_handler(run_loop.QuitClosure());
   const base::FilePath path = root.Append(FILE_PATH_LITERAL("file_enumerator"));
@@ -305,15 +306,15 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, CreateSimpleCache) {
 
   network_service_test().set_disconnect_handler(run_loop.QuitClosure());
   const base::FilePath root_path = GetTempDirPath();
-  const base::FilePath path = root_path.AppendASCII("foobar");
   mojo::Remote<SimpleCache> simple_cache;
   mojo::PendingRemote<network::mojom::HttpCacheBackendFileOperationsFactory>
       factory_remote;
-  HttpCacheBackendFileOperationsFactory factory(
-      factory_remote.InitWithNewPipeAndPassReceiver(), root_path);
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<HttpCacheBackendFileOperationsFactory>(root_path),
+      factory_remote.InitWithNewPipeAndPassReceiver());
 
   network_service_test()->CreateSimpleCache(
-      std::move(factory_remote), path,
+      std::move(factory_remote), root_path,
       base::BindLambdaForTesting([&](mojo::PendingRemote<SimpleCache> cache) {
         if (cache) {
           simple_cache.Bind(std::move(cache));
@@ -333,8 +334,9 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
   const base::FilePath root_path = path.AppendASCII("foobar");
   mojo::PendingRemote<network::mojom::HttpCacheBackendFileOperationsFactory>
       factory_remote;
-  HttpCacheBackendFileOperationsFactory factory(
-      factory_remote.InitWithNewPipeAndPassReceiver(), root_path);
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<HttpCacheBackendFileOperationsFactory>(root_path),
+      factory_remote.InitWithNewPipeAndPassReceiver());
 
   // We expect the network service to crash due to a bad mojo message.
   network_service_test().set_disconnect_handler(run_loop.QuitClosure());
@@ -357,8 +359,9 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
                                   .AppendASCII("bar");
   mojo::PendingRemote<network::mojom::HttpCacheBackendFileOperationsFactory>
       factory_remote;
-  HttpCacheBackendFileOperationsFactory factory(
-      factory_remote.InitWithNewPipeAndPassReceiver(), root_path);
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<HttpCacheBackendFileOperationsFactory>(root_path),
+      factory_remote.InitWithNewPipeAndPassReceiver());
 
   // We expect the network service to crash due to a bad mojo message.
   network_service_test().set_disconnect_handler(run_loop.QuitClosure());

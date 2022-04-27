@@ -47,6 +47,7 @@ class ApplicationStatusListener;
 
 namespace disk_cache {
 class Backend;
+class BackendFileOperationsFactory;
 class Entry;
 class EntryResult;
 }  // namespace disk_cache
@@ -94,10 +95,14 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // A default backend factory for the common use cases.
   class NET_EXPORT DefaultBackend : public BackendFactory {
    public:
-    // |path| is the destination for any files used by the backend. If
-    // |max_bytes| is  zero, a default value will be calculated automatically.
+    // `file_operations_factory` can be null, in that case
+    // TrivialFileOperationsFactory is used. `path` is the destination for any
+    // files used by the backend. If `max_bytes` is  zero, a default value
+    // will be calculated automatically.
     DefaultBackend(CacheType type,
                    BackendType backend_type,
+                   scoped_refptr<disk_cache::BackendFileOperationsFactory>
+                       file_operations_factory,
                    const base::FilePath& path,
                    int max_bytes,
                    bool hard_reset);
@@ -119,6 +124,8 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
    private:
     CacheType type_;
     BackendType backend_type_;
+    const scoped_refptr<disk_cache::BackendFileOperationsFactory>
+        file_operations_factory_;
     const base::FilePath path_;
     int max_bytes_;
     bool hard_reset_;
