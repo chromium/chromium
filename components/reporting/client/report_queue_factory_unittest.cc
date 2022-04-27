@@ -72,23 +72,6 @@ class ReportQueueFactoryTest : public ::testing::Test {
   std::unique_ptr<MockReportQueueProvider> provider_;
 };
 
-// Tests deprecated flow and will be deleted once all consumers are migrated
-// over to use event types instead
-TEST_F(ReportQueueFactoryTest, CreateAndGetQueueUsingDMToken) {
-  // Initially the queue must be an uninitialized unique_ptr
-  EXPECT_FALSE(consumer_->GetReportQueue());
-  {
-    test::TestCallbackAutoWaiter set_waiter;
-    reporting::ReportQueueFactory::Create(
-        /*dm_token_value=*/"TOKEN", destination_,
-        consumer_->GetReportQueueSetter(&set_waiter));
-    EXPECT_CALL(*provider_.get(), OnInitCompletedMock()).Times(1);
-    provider_->ExpectCreateNewQueueAndReturnNewMockQueue(1);
-  }
-  // We expect the report queue to be existing in the consumer.
-  EXPECT_TRUE(consumer_->GetReportQueue());
-}
-
 TEST_F(ReportQueueFactoryTest, CreateAndGetQueue) {
   // Initially the queue must be an uninitialized unique_ptr
   EXPECT_FALSE(consumer_->GetReportQueue());
@@ -130,20 +113,6 @@ TEST_F(ReportQueueFactoryTest, CreateSpeculativeQueueWithInvalidConfig) {
       reporting::ReportQueueFactory::CreateSpeculativeReportQueue(
           EventType::kDevice, Destination::UNDEFINED_DESTINATION);
   EXPECT_THAT(report_queue, IsNull());
-}
-
-TEST_F(ReportQueueFactoryTest, EmptyDmToken) {
-  // Initially the queue must be an uninitialized unique_ptr
-  EXPECT_FALSE(consumer_->GetReportQueue());
-  {
-    test::TestCallbackAutoWaiter set_waiter;
-    reporting::ReportQueueFactory::Create(
-        "", destination_, consumer_->GetReportQueueSetter(&set_waiter));
-    EXPECT_CALL(*provider_.get(), OnInitCompletedMock()).Times(1);
-    provider_->ExpectCreateNewQueueAndReturnNewMockQueue(1);
-  }
-  // We expect the report queue to be existing in the consumer.
-  EXPECT_TRUE(consumer_->GetReportQueue());
 }
 
 // Tests if two consumers use the same provider and create two queues.

@@ -44,19 +44,9 @@ class ReportQueueFactory {
   using TrySetReportQueueCallback =
       base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)>;
 
-  // Deprecated
-  static void Create(base::StringPiece dm_token_value,
-                     Destination destination,
-                     SuccessCallback done_cb);
-
   static void Create(EventType event_type,
                      Destination destination,
                      SuccessCallback done_cb);
-
-  // Deprecated
-  static std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>
-  CreateSpeculativeReportQueue(base::StringPiece dm_token_value,
-                               Destination destination);
 
   static std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>
   CreateSpeculativeReportQueue(EventType event_type, Destination destination);
