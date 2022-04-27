@@ -18,6 +18,9 @@ message App {
   optional LocalisedName display_name = 3;
   repeated Store available_stores = 5;
   optional string publisher_name = 6;
+  optional IconInfo icon_info = 7;
+  optional string deeplink = 8;
+  optional string source_name = 9;
 }
 
 message LocaleAvailability {
@@ -42,4 +45,8 @@ message AppWithLocale {
 
 message AppWithLocaleList {
   repeated AppWithLocale app_with_locale = 1;
+}
+
+message IconInfo {
+  optional string icon_path = 1;
 }
