@@ -2988,8 +2988,10 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
 // Runs ad auction with fenced frames enabled. The auction should succeed and
 // be loaded in a fenced frames. The displayed ad leaves the interest group
 // from a nested iframe.
+//
+// TODO(crbug.com/1320438): Re-enable the test.
 IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
-                       RunAdAuctionWithWinnerNestedLeaveGroup) {
+                       DISABLED_RunAdAuctionWithWinnerNestedLeaveGroup) {
   URLLoaderMonitor url_loader_monitor;
 
   GURL test_url =
