@@ -229,7 +229,7 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
   // If there is an error, either cancel the request or fallback depending on
   // whether we still have a parent pointer.
   if (!can_be_served_.value()) {
-    if (SearchPrefetchBlockBeforeHeadersIsEnabled() &&
+    if ((navigation_prefetch_ || SearchPrefetchBlockBeforeHeadersIsEnabled()) &&
         !streaming_prefetch_request_) {
       Fallback();
       return;
@@ -545,7 +545,7 @@ void StreamingSearchPrefetchURLLoader::PostTaskToDeleteSelf() {
 
 void StreamingSearchPrefetchURLLoader::Fallback() {
   DCHECK(!is_in_fallback_);
-  DCHECK(SearchPrefetchBlockBeforeHeadersIsEnabled());
+  DCHECK(navigation_prefetch_ || SearchPrefetchBlockBeforeHeadersIsEnabled());
 
   network_url_loader_.reset();
   url_loader_receiver_.reset();
