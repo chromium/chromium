@@ -73,6 +73,20 @@
     text-decoration: none;
   }
 
+  #consentContainer {
+    display: inline-block;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    vertical-align: top;
+    width: 0;
+  }
+
+  :host([discount-consent-visible_]) #consentContainer {
+    opacity: 1;
+    width: 254px;
+  }
+
   #consentCard {
     width: 244px;
   }
@@ -298,37 +312,39 @@
     </template>
     <div id="cartCarousel">
       <div id="leftProbe" class="probe"></div>
-      <template id="consentCardElement" is="dom-if"
-          if="[[showDiscountConsent]]">
-        <!-- TODO(crbug.com/1298116): Move this template to
-          discount_consent_card. -->
-        <template is="dom-if" if="[[!discountConsentHasTwoSteps_]]" restamp>
-          <div id="consentCard">
-            <div id="consentIconContainer">
-              <div id="consentIcon"></div>
+      <div id="consentContainer">
+        <template id="consentCardElement" is="dom-if"
+            if="[[showDiscountConsent]]">
+          <!-- TODO(crbug.com/1298116): Move this template to
+            discount_consent_card. -->
+          <template is="dom-if" if="[[!discountConsentHasTwoSteps_]]" restamp>
+            <div id="consentCard">
+              <div id="consentIconContainer">
+                <div id="consentIcon"></div>
+              </div>
+              <span id="consentContent">
+                $i18n{modulesCartDiscountConsentContent}
+              </span>
+              <div id="consentButtonContainer">
+                <cr-button id="cancelButton"
+                    class="cancel-button" on-click="onDiscountConsentRejected_"
+                    on-auxclick="onDisallowDiscount_">
+                  $i18n{modulesCartDiscountConsentReject}
+                </cr-button>
+                <cr-button id="actionButton"
+                    class="action-button" on-click="onDiscountConsentAccepted_"
+                    on-auxclick="onAllowDiscount_">
+                  $i18n{modulesCartDiscountConsentAccept}
+                </cr-button>
+              </div>
             </div>
-            <span id="consentContent">
-              $i18n{modulesCartDiscountConsentContent}
-            </span>
-            <div id="consentButtonContainer">
-              <cr-button id="cancelButton"
-                  class="cancel-button" on-click="onDiscountConsentRejected_"
-                  on-auxclick="onDisallowDiscount_">
-                $i18n{modulesCartDiscountConsentReject}
-              </cr-button>
-              <cr-button id="actionButton"
-                  class="action-button" on-click="onDiscountConsentAccepted_"
-                  on-auxclick="onAllowDiscount_">
-                $i18n{modulesCartDiscountConsentAccept}
-              </cr-button>
-            </div>
-          </div>
+          </template>
+          <template is="dom-if" if="[[discountConsentHasTwoSteps_]]" restamp>
+            <discount-consent-card id="consentCardV2"
+                merchants="[[firstThreeCartItems_]]"></discount-consent-card>
+          </template>
         </template>
-        <template is="dom-if" if="[[discountConsentHasTwoSteps_]]" restamp>
-          <discount-consent-card id="consentCardV2"
-              merchants="[[firstThreeCartItems_]]"></discount-consent-card>
-        </template>
-      </template>
+      </div>
       <template id="cartItemRepeat" is="dom-repeat" items="[[cartItems]]">
         <div class="cart-container">
           <a class="cart-item" title="[[item.merchant]]"
