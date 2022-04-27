@@ -7357,6 +7357,8 @@ domain Page
       optional string cursive
       # The fantasy font-family.
       optional string fantasy
+      # The math font-family.
+      optional string math
 
   # Font families collection for a script.
   experimental type ScriptFontFamilies extends object

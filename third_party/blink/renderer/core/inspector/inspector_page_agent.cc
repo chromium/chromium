@@ -1643,6 +1643,10 @@ Response InspectorPageAgent::setFontFamilies(
       family_settings.UpdateFantasy(
           AtomicString(font_families->getFantasy(String())), script);
     }
+    if (font_families->hasMath()) {
+      family_settings.UpdateMath(AtomicString(font_families->getMath(String())),
+                                 script);
+    }
   }
   return Response::Success();
 }

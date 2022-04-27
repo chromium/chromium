@@ -52,4 +52,13 @@ Tests Page.setFontFamilies() for 'fixed'.
         isCustomFont : false
     }
 ]
+Tests Page.setFontFamilies() for 'math'.
+.test
+[
+    [0] : {
+        familyName : Ahem
+        glyphCount : 4
+        isCustomFont : false
+    }
+]
 

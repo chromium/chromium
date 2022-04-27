@@ -8,6 +8,7 @@
     'cursive',
     'fantasy',
     'fixed',
+    'math',
   ];
 
   function cssKeywordFromPreference(name) {
