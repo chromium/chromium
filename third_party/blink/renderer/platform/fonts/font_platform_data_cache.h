@@ -31,8 +31,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_PLATFORM_DATA_CACHE_H_
 
 #include "third_party/blink/renderer/platform/fonts/font_cache_key.h"
+#include "third_party/blink/renderer/platform/fonts/lock_for_parallel_text_shaping.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace blink {
 
@@ -64,9 +64,9 @@ class FontPlatformDataCache final {
       const FontFaceCreationParams& creation_params,
       AlternateFontName alternate_font_name);
 
-  size_t ByteSize() const;
-  void Clear();
-  void Purge(const FontDataCache& font_data_cache);
+  size_t ByteSize() const LOCKS_EXCLUDED(lock_);
+  void Clear() LOCKS_EXCLUDED(lock_);
+  void Purge(const FontDataCache& font_data_cache) LOCKS_EXCLUDED(lock_);
 
  private:
   // `SizedFontPlatformDataSet` maps rounded font size to `FontPlatformData`.
@@ -90,12 +90,13 @@ class FontPlatformDataCache final {
         const FontFaceCreationParams& creation_params,
         float size,
         AlternateFontName alternate_font_name,
-        unsigned rounded_size);
+        unsigned rounded_size) LOCKS_EXCLUDED(lock_);
 
     // Returns true if `map_` is empty.
-    bool Purge(const FontDataCache& font_data_cache);
+    bool Purge(const FontDataCache& font_data_cache) LOCKS_EXCLUDED(lock_);
 
-    void Set(unsigned rounded_size, FontPlatformData* platform_data);
+    void Set(unsigned rounded_size, FontPlatformData* platform_data)
+        LOCKS_EXCLUDED(lock_);
 
    private:
     using SizeToDataMap = HashMap<unsigned,
@@ -105,12 +106,17 @@ class FontPlatformDataCache final {
 
     SizedFontPlatformDataSet();
 
+    mutable LockForParallelTextShaping lock_;
     SizeToDataMap size_to_data_map_;
   };
 
-  SizedFontPlatformDataSet& GetOrCreateSizeMap(const FontCacheKey& key);
+  SizedFontPlatformDataSet& GetOrCreateSizeMap(const FontCacheKey& key)
+      LOCKS_EXCLUDED(lock_);
 
-  HashMap<FontCacheKey, scoped_refptr<SizedFontPlatformDataSet>> map_;
+  mutable LockForParallelTextShaping lock_;
+  HashMap<FontCacheKey, scoped_refptr<SizedFontPlatformDataSet>> map_
+      GUARDED_BY(lock_);
+  ;
 
   // A maximum float value to which we limit incoming font sizes. This is the
   // smallest float so that multiplying it by
