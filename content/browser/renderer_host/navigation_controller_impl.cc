@@ -1208,16 +1208,6 @@ bool NavigationControllerImpl::RendererDidNavigate(
   // RenderFrameHostImpl::ValidateDidCommitParams. By the time we get here, some
   // effects of the navigation have already occurred.
 
-  if (ShouldMaintainTrivialSessionHistory(rfh->frame_tree_node()) &&
-      GetLastCommittedEntry()) {
-    // Ensure that this navigation does not add a navigation entry, since
-    // ShouldMaintainTrivialSessionHistory() means we should not add an entry
-    // beyond the last committed one. Therefore, `should_replace_current_entry`
-    // should be set, which replaces the current entry, or this should be a
-    // reload, which does not create a new entry.
-    DCHECK(params.should_replace_current_entry ||
-           navigation_request->GetReloadType() != ReloadType::NONE);
-  }
   is_initial_navigation_ = false;
 
   // Save the previous state before we clobber it.
@@ -1340,6 +1330,24 @@ bool NavigationControllerImpl::RendererDidNavigate(
 
   // Do navigation-type specific actions. These will make and commit an entry.
   details->type = ClassifyNavigation(rfh, params, navigation_request);
+
+  if (ShouldMaintainTrivialSessionHistory(rfh->frame_tree_node()) &&
+      GetLastCommittedEntry()) {
+    // Ensure that this navigation does not add a navigation entry, since
+    // ShouldMaintainTrivialSessionHistory() means we should not add an entry
+    // beyond the last committed one. Therefore, `should_replace_current_entry`
+    // should be set, which replaces the current entry, or this should be a
+    // reload, which does not create a new entry.
+    // In shadowDOM fenced frames, on a history/tab-restore navigation, any
+    // navigation that is restored will not be creating a new entry anyways, so
+    // exclude that case by checking NAVIGATION_TYPE_AUTO_SUBFRAME.
+    // TODO(crbug.com/1319919): Consider adjusting the dcheck for more cases as
+    // pointed out in the issue.
+    DCHECK(params.should_replace_current_entry ||
+           navigation_request->GetReloadType() != ReloadType::NONE ||
+           details->type == NAVIGATION_TYPE_AUTO_SUBFRAME);
+  }
+
   if (GetLastCommittedEntry() && GetLastCommittedEntry()->IsInitialEntry()) {
     if (rfh->GetParent()) {
       // This is a subframe navigation on the initial empty document, which used
