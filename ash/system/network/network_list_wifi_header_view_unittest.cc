@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/network/network_list_wifi_header_view.h"
+#include "ash/system/network/network_list_wifi_header_view_impl.h"
 
 #include <memory>
 
@@ -36,9 +36,10 @@ class NetworkListWifiHeaderViewTest : public AshTestBase {
     AshTestBase::SetUp();
     feature_list_.InitAndEnableFeature(features::kQuickSettingsNetworkRevamp);
 
-    std::unique_ptr<NetworkListWifiHeaderView> network_list_wifi_header_view =
-        std::make_unique<NetworkListWifiHeaderView>(
-            &fake_network_list_network_header_delegate_);
+    std::unique_ptr<NetworkListWifiHeaderViewImpl>
+        network_list_wifi_header_view =
+            std::make_unique<NetworkListWifiHeaderViewImpl>(
+                &fake_network_list_network_header_delegate_);
 
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
@@ -66,7 +67,7 @@ class NetworkListWifiHeaderViewTest : public AshTestBase {
 
   IconButton* GetJoinWifiButton() {
     return FindViewById<IconButton*>(
-        NetworkListWifiHeaderView::kJoinWifiButtonId);
+        NetworkListWifiHeaderViewImpl::kJoinWifiButtonId);
   }
 
   TrayToggleButton* GetToggleButton() {
@@ -84,7 +85,7 @@ class NetworkListWifiHeaderViewTest : public AshTestBase {
     return &fake_network_list_network_header_delegate_;
   }
 
-  NetworkListWifiHeaderView* network_list_wifi_header_view() {
+  NetworkListWifiHeaderViewImpl* network_list_wifi_header_view() {
     return network_list_wifi_header_view_;
   }
 
@@ -100,7 +101,7 @@ class NetworkListWifiHeaderViewTest : public AshTestBase {
   base::test::ScopedFeatureList feature_list_;
   FakeNetworkListNetworkHeaderViewDelegate
       fake_network_list_network_header_delegate_;
-  NetworkListWifiHeaderView* network_list_wifi_header_view_;
+  NetworkListWifiHeaderViewImpl* network_list_wifi_header_view_;
 };
 
 TEST_F(NetworkListWifiHeaderViewTest, HeaderLabel) {
