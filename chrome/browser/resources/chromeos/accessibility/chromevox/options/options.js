@@ -6,9 +6,7 @@
  * @fileoverview ChromeVox options page.
  */
 import {BrailleTable} from '../background/braille/braille_table.js';
-import {ConsoleTts} from '../background/console_tts.js';
 import {TtsBackground} from '../background/tts_background.js';
-
 import {AbstractTts} from '../common/abstract_tts.js';
 
 import {BluetoothBrailleDisplayUI} from './bluetooth_braille_display_ui.js';
@@ -503,12 +501,6 @@ export class OptionsPage {
 }
 
 /**
- * The ConsoleTts object.
- * @type {ConsoleTts}
- */
-OptionsPage.consoleTts;
-
-/**
  * The TtsBackground object.
  * @type {TtsBackground}
  */
@@ -544,11 +536,6 @@ const handleNumericalInputPref = function(id, pref) {
     }
   }, true);
 };
-
-
-chrome.runtime.sendMessage(
-    {target: 'ConsoleTts', action: 'getInstance'},
-    (consoleTts) => OptionsPage.consoleTts = consoleTts);
 
 document.addEventListener('DOMContentLoaded', async function() {
   await OptionsPage.init();
