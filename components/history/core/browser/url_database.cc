@@ -577,7 +577,7 @@ void URLDatabase::GetMostRecentKeywordSearchTerms(
     KeywordID keyword_id,
     const std::u16string& prefix,
     int max_count,
-    std::vector<KeywordSearchTermVisit>* matches) {
+    std::vector<KeywordSearchTermVisit>* visits) {
   // NOTE: the keyword_id can be zero if on first run the user does a query
   // before the TemplateURLService has finished loading. As the chances of this
   // occurring are small, we ignore it.
@@ -587,11 +587,12 @@ void URLDatabase::GetMostRecentKeywordSearchTerms(
   DCHECK(!prefix.empty());
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
-      "SELECT DISTINCT kv.term, u.visit_count, u.last_visit_time "
-      "FROM keyword_search_terms kv "
-      "JOIN urls u ON kv.url_id = u.id "
-      "WHERE kv.keyword_id = ? AND kv.normalized_term >= ? AND "
-      "kv.normalized_term < ? "
+      "SELECT DISTINCT kst.term, kst.normalized_term, u.visit_count, "
+      "u.last_visit_time "
+      "FROM keyword_search_terms kst "
+      "JOIN urls u ON kst.url_id = u.id "
+      "WHERE kst.keyword_id = ? AND kst.normalized_term >= ? AND "
+      "kst.normalized_term < ? "
       "ORDER BY u.last_visit_time DESC LIMIT ?"));
 
   // NOTE: Keep these CollapseWhitespace() and ToLower() calls in sync with
@@ -609,21 +610,23 @@ void URLDatabase::GetMostRecentKeywordSearchTerms(
   KeywordSearchTermVisit visit;
   while (statement.Step()) {
     visit.term = statement.ColumnString16(0);
-    visit.visits = statement.ColumnInt(1);
-    visit.time = base::Time::FromInternalValue(statement.ColumnInt64(2));
-    matches->push_back(visit);
+    visit.normalized_term = statement.ColumnString16(1);
+    visit.visit_count = statement.ColumnInt(2);
+    visit.last_visit_time =
+        base::Time::FromInternalValue(statement.ColumnInt64(3));
+    visits->push_back(visit);
   }
 }
 
-std::vector<NormalizedKeywordSearchTermVisit>
-URLDatabase::GetMostRecentNormalizedKeywordSearchTerms(
+void URLDatabase::GetMostRecentKeywordSearchTerms(
     KeywordID keyword_id,
-    base::Time age_threshold) {
+    base::Time age_threshold,
+    std::vector<KeywordSearchTermVisit>* visits) {
   // NOTE: the keyword_id can be zero if on first run the user does a query
   // before the TemplateURLService has finished loading. As the chances of this
   // occurring are small, we ignore it.
   if (!keyword_id)
-    return {};
+    return;
 
   // Extracts the most recent normalized search terms from the
   // keyword_search_terms table joined with the urls table. For a given search
@@ -639,23 +642,25 @@ URLDatabase::GetMostRecentNormalizedKeywordSearchTerms(
                                                       R"(
       SELECT
         normalized_term,
+        MAX(term) AS term,
         SUM(visit_count) AS visit_count,
         MAX(last_visit_time) AS last_visit_time
       FROM
         (
           SELECT
             normalized_term,
-            AVG(visit_count) AS visit_count,
+            MIN(kst.term) AS term,
+            AVG(u.visit_count) AS visit_count,
             MIN(u.last_visit_time) AS last_visit_time,
             u.last_visit_time - (u.last_visit_time % ?) as rnd_last_visit_time
           FROM
-            keyword_search_terms kv JOIN urls u ON kv.url_id = u.id
+            keyword_search_terms kst JOIN urls u ON kst.url_id = u.id
           WHERE
-            kv.keyword_id = ?
+            kst.keyword_id = ?
             AND u.last_visit_time > ?
-            AND kv.normalized_term IS NOT NULL
-            AND kv.normalized_term != ''
-          GROUP BY normalized_term, rnd_last_visit_time
+            AND kst.normalized_term IS NOT NULL
+            AND kst.normalized_term != ''
+          GROUP BY kst.normalized_term, rnd_last_visit_time
         )
       GROUP BY normalized_term
       ORDER BY last_visit_time DESC
@@ -666,16 +671,15 @@ URLDatabase::GetMostRecentNormalizedKeywordSearchTerms(
   statement.BindInt64(1, keyword_id);
   statement.BindInt64(2, age_threshold.ToInternalValue());
 
-  std::vector<NormalizedKeywordSearchTermVisit> visits;
   while (statement.Step()) {
-    NormalizedKeywordSearchTermVisit visit;
+    KeywordSearchTermVisit visit;
     visit.normalized_term = statement.ColumnString16(0);
-    visit.visits = statement.ColumnInt(1);
-    visit.most_recent_visit_time =
-        base::Time::FromInternalValue(statement.ColumnInt64(2));
-    visits.push_back(visit);
+    visit.term = statement.ColumnString16(1);
+    visit.visit_count = statement.ColumnInt(2);
+    visit.last_visit_time =
+        base::Time::FromInternalValue(statement.ColumnInt64(3));
+    visits->push_back(visit);
   }
-  return visits;
 }
 
 bool URLDatabase::DeleteKeywordSearchTerm(const std::u16string& term) {

@@ -13,13 +13,14 @@
 
 namespace history {
 
-// NormalizedKeywordSearchTermVisit is returned by
-// GetMostRecentNormalizedKeywordSearchTerms. It contains the time of the most
-// recent visit and the visit count for the normalized search term aggregated
-// from the keyword visits.
-struct NormalizedKeywordSearchTermVisit {
-  NormalizedKeywordSearchTermVisit() = default;
-  ~NormalizedKeywordSearchTermVisit();
+// KeywordSearchTermVisit is returned from GetMostRecentKeywordSearchTerms()
+// and contains either the search term and the normalized search term. It also
+// contains the visit count, and the last visit time for either a single keyword
+// visit or a set of keyword visits, depending on the overloaded functions it is
+// returned from.
+struct KeywordSearchTermVisit {
+  KeywordSearchTermVisit() = default;
+  ~KeywordSearchTermVisit();
 
   // Returns the frecency score of the visit based on the following formula:
   //            (frequency ^ frequency_exponent) * recency_decay_unit_in_seconds
@@ -34,23 +35,11 @@ struct NormalizedKeywordSearchTermVisit {
                      int recency_decay_unit_sec,
                      double frequency_exponent) const;
 
-  std::u16string normalized_term;     // The search term, in lower case and with
-                                      // extra whitespaces collapsed.
-  int visits{0};                      // The visit count.
-  base::Time most_recent_visit_time;  // The time of the most recent visit.
-};
-
-// KeywordSearchTermVisit is returned from GetMostRecentKeywordSearchTerms. It
-// gives the time and search term of the keyword visit.
-struct KeywordSearchTermVisit {
-  KeywordSearchTermVisit();
-  ~KeywordSearchTermVisit();
-
   std::u16string term;             // The search term that was used.
   std::u16string normalized_term;  // The search term, in lower case and with
                                    // extra whitespaces collapsed.
-  int visits;  // The visit count.
-  base::Time time;  // The time of the most recent visit.
+  int visit_count{0};              // The visit count.
+  base::Time last_visit_time;      // The time of the most recent visit.
 };
 
 // Used for URLs that have a search term associated with them.

@@ -30,7 +30,6 @@ namespace history {
 
 struct KeywordSearchTermRow;
 struct KeywordSearchTermVisit;
-struct NormalizedKeywordSearchTermVisit;
 
 class VisitDatabase;  // For friend statement.
 
@@ -223,14 +222,14 @@ class URLDatabase {
       KeywordID keyword_id,
       const std::u16string& prefix,
       int max_count,
-      std::vector<KeywordSearchTermVisit>* matches);
+      std::vector<KeywordSearchTermVisit>* visits);
 
-  // Returns the most recent (i.e., no older than `age_threshold`) normalized
-  // search terms (i.e., search terms in lower case with whitespaces collapsed)
-  // for the specified keyword.
-  std::vector<NormalizedKeywordSearchTermVisit>
-  GetMostRecentNormalizedKeywordSearchTerms(KeywordID keyword_id,
-                                            base::Time age_threshold);
+  // Returns the most recent (no older than `age_threshold`) search terms for
+  // the specified keyword.
+  void GetMostRecentKeywordSearchTerms(
+      KeywordID keyword_id,
+      base::Time age_threshold,
+      std::vector<KeywordSearchTermVisit>* visits);
 
   // Deletes all searches matching `term`.
   bool DeleteKeywordSearchTerm(const std::u16string& term);

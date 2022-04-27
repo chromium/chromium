@@ -196,10 +196,11 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
     return;
   }
 
+  std::vector<history::KeywordSearchTermVisit> results;
   const base::TimeTicks db_query_time = base::TimeTicks::Now();
-  auto results = url_db->GetMostRecentNormalizedKeywordSearchTerms(
+  url_db->GetMostRecentKeywordSearchTerms(
       template_url_service->GetDefaultSearchProvider()->id(),
-      OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold());
+      OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold(), &results);
 
   const base::Time now = base::Time::Now();
   const int kRecencyDecayUnitSec = 60;

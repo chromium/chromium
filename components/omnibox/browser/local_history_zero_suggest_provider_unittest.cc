@@ -482,17 +482,19 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Deletion) {
   // produce the deleted match are deleted.
   history::URLDatabase* url_db =
       client_->GetHistoryService()->InMemoryDatabase();
-  std::vector<history::NormalizedKeywordSearchTermVisit> visits =
-      url_db->GetMostRecentNormalizedKeywordSearchTerms(
-          default_search_provider()->id(),
-          GetLocalHistoryZeroSuggestAgeThreshold());
+  std::vector<history::KeywordSearchTermVisit> visits;
+  url_db->GetMostRecentKeywordSearchTerms(
+      default_search_provider()->id(), GetLocalHistoryZeroSuggestAgeThreshold(),
+      &visits);
   EXPECT_EQ(1U, visits.size());
   EXPECT_EQ(u"not to be deleted", visits[0].normalized_term);
 
   // Make sure search terms from other search providers that would produce the
   // deleted match are not deleted.
-  visits = url_db->GetMostRecentNormalizedKeywordSearchTerms(
-      other_search_provider->id(), GetLocalHistoryZeroSuggestAgeThreshold());
+  visits.clear();
+  url_db->GetMostRecentKeywordSearchTerms(
+      other_search_provider->id(), GetLocalHistoryZeroSuggestAgeThreshold(),
+      &visits);
   EXPECT_EQ(1U, visits.size());
   EXPECT_EQ(u"hello world", visits[0].normalized_term);
 }
