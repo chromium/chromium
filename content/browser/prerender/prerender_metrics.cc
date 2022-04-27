@@ -116,40 +116,4 @@ void RecordPrerenderHostFinalStatus(
   }
 }
 
-void RecordPrerenderRedirectionMismatchType(
-    PrerenderCrossOriginRedirectionMismatch mismatch_type,
-    PrerenderTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix) {
-  DCHECK_EQ(trigger_type, PrerenderTriggerType::kEmbedder);
-  base::UmaHistogramEnumeration(
-      GenerateHistogramName(
-          "Prerender.Experimental.PrerenderCrossOriginRedirectionMismatch",
-          trigger_type, embedder_histogram_suffix),
-      mismatch_type);
-}
-
-void RecordPrerenderRedirectionProtocolChange(
-    PrerenderCrossOriginRedirectionProtocolChange change_type,
-    PrerenderTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix) {
-  DCHECK_EQ(trigger_type, PrerenderTriggerType::kEmbedder);
-  base::UmaHistogramEnumeration(
-      GenerateHistogramName(
-          "Prerender.Experimental.CrossOriginRedirectionProtocolChange",
-          trigger_type, embedder_histogram_suffix),
-      change_type);
-}
-
-void RecordPrerenderRedirectionDomain(
-    PrerenderCrossOriginRedirectionDomain domain_type,
-    PrerenderTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix) {
-  DCHECK_EQ(trigger_type, PrerenderTriggerType::kEmbedder);
-  base::UmaHistogramEnumeration(
-      GenerateHistogramName(
-          "Prerender.Experimental.CrossOriginRedirectionDomain", trigger_type,
-          embedder_histogram_suffix),
-      domain_type);
-}
-
 }  // namespace content
