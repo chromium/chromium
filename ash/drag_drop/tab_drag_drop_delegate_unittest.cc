@@ -43,12 +43,16 @@ namespace ash {
 
 namespace {
 
+constexpr int kWebUITabStripHeight = 100;
+
 class MockShellDelegate : public TestShellDelegate {
  public:
   MockShellDelegate() = default;
   ~MockShellDelegate() override = default;
 
   MOCK_METHOD(bool, IsTabDrag, (const ui::OSExchangeData&), (override));
+
+  int GetBrowserWebUITabStripHeight() override { return kWebUITabStripHeight; }
 };
 
 class MockNewWindowDelegate : public TestNewWindowDelegate {
@@ -179,6 +183,8 @@ TEST_F(TabDragDropDelegateTest, DragToNewWindow) {
       SplitViewController::Get(source_window.get())->InTabletSplitViewMode());
 }
 
+// When a tab is dragged to the left/right side of the Web Contents. It should
+// enter split view.
 TEST_F(TabDragDropDelegateTest, DropOnEdgeEntersSplitView) {
   // Create the source window. This should automatically fill the work area
   // since we're in tablet mode.
@@ -217,6 +223,44 @@ TEST_F(TabDragDropDelegateTest, DropOnEdgeEntersSplitView) {
                                   SplitViewController::SnapPosition::RIGHT));
   EXPECT_EQ(source_window.get(), split_view_controller->GetSnappedWindow(
                                      SplitViewController::SnapPosition::LEFT));
+}
+
+// When a tab is dragged to the left/right edge of the tab strip. It should not
+// enter split view.
+// https://crbug.com/1316070
+TEST_F(TabDragDropDelegateTest, DropOnEdgeShouldNotEnterSplitView) {
+  // Create the source window. This should automatically fill the work area
+  // since we're in tablet mode.
+  std::unique_ptr<aura::Window> source_window = CreateToplevelTestWindow();
+
+  // We want to avoid entering overview mode between the delegate.Drop()
+  // call and |new_window|'s destruction. So we define it here before
+  // creating it.
+  std::unique_ptr<aura::Window> new_window;
+
+  // Emulate a drag to the right edge of the tab strip. It should not enter
+  // split view.
+  const gfx::Point drag_start_location = source_window->bounds().CenterPoint();
+  const gfx::Point drag_end_location =
+      gfx::Point(source_window->bounds().right(), kWebUITabStripHeight * 0.5);
+
+  auto delegate = std::make_unique<TabDragDropDelegate>(
+      Shell::GetPrimaryRootWindow(), source_window.get(), drag_start_location);
+  delegate->DragUpdate(drag_start_location);
+  delegate->DragUpdate(drag_end_location);
+
+  new_window = CreateToplevelTestWindow();
+  EXPECT_CALL(*mock_new_window_delegate(),
+              NewWindowForDetachingTab(source_window.get(), _, _))
+      .Times(1)
+      .WillOnce(RunOnceCallback<2>(new_window.get()));
+
+  delegate.release()->DropAndDeleteSelf(drag_end_location,
+                                        ui::OSExchangeData());
+
+  SplitViewController* const split_view_controller =
+      SplitViewController::Get(source_window.get());
+  EXPECT_FALSE(split_view_controller->InTabletSplitViewMode());
 }
 
 TEST_F(TabDragDropDelegateTest, DropTabInSplitViewMode) {
