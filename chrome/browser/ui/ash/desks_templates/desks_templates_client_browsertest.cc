@@ -1886,30 +1886,27 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 
 // Tests that browser session restore isn't triggered when we launch a template
 // that contains a browser window.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_SystemUIPreventBrowserSessionRestoreTest \
-  DISABLED_SystemUIPreventBrowserSessionRestoreTest
-#else
-#define MAYBE_SystemUIPreventBrowserSessionRestoreTest \
-  SystemUIPreventBrowserSessionRestoreTest
-#endif
 
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
-                       MAYBE_SystemUIPreventBrowserSessionRestoreTest) {
+                       SystemUIPreventBrowserSessionRestoreTest) {
   // Do not exit from test or delete the Profile* when last browser is closed.
   ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
                              KeepAliveRestartOption::DISABLED);
+  Profile* profile = browser()->profile();
   ScopedProfileKeepAlive profile_keep_alive(
-      browser()->profile(), ProfileKeepAliveOrigin::kBrowserWindow);
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
 
   // Enable session service.
   SessionStartupPref pref(SessionStartupPref::LAST);
-  Profile* profile = browser()->profile();
   SessionStartupPref::SetStartupPref(profile, pref);
 
   const int expected_tab_count = 2;
-  chrome::AddTabAt(browser(), GURL(kExampleUrl2), /*index=*/-1,
+  GURL example2 = GURL(kExampleUrl2);
+  content::TestNavigationObserver navigation_observer(example2);
+  navigation_observer.StartWatchingNewWebContents();
+  chrome::AddTabAt(browser(), example2, /*index=*/-1,
                    /*foreground=*/true);
+  navigation_observer.Wait();
   EXPECT_EQ(expected_tab_count, browser()->tab_strip_model()->count());
 
   // Enter overview and save the current desk as a template.
@@ -1931,13 +1928,14 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   ash::WaitForDesksTemplatesUI();
   ClickZeroStateTemplatesButton();
   ClickFirstTemplateItem();
+  content::RunAllTasksUntilIdle();
 
   // Verify that the browser was launched with the correct number of tabs, and
   // that browser session restore did not restore any windows/tabs.
-  Browser* new_browser =
-      FindLaunchedBrowserByURLs({GURL(kAboutBlankUrl), GURL(kExampleUrl2)});
-  ASSERT_TRUE(new_browser);
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  Browser* new_browser = BrowserList::GetInstance()->get(0);
+  ASSERT_TRUE(new_browser);
+  EXPECT_EQ(expected_tab_count, new_browser->tab_strip_model()->count());
 }
 
 // Tests that launching the same desk template multiple times creates desks with
