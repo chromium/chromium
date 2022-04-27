@@ -108,6 +108,9 @@ class ServiceWorkerRegistration final
       mojom::blink::ServiceWorkerUpdateViaCache update_via_cache) override;
   void UpdateFound() override;
 
+  void UpdateInternal(
+      mojom::blink::FetchClientSettingsObjectPtr mojom_settings_object,
+      ScriptPromiseResolver* resolver);
   void UnregisterInternal(ScriptPromiseResolver* resolver);
 
   Member<ServiceWorker> installing_;
