@@ -64,6 +64,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.page_info.PageInfoAction;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.proto.AboutThisSiteMetadataProto.Hyperlink;
+import org.chromium.components.page_info.proto.AboutThisSiteMetadataProto.MoreAbout;
 import org.chromium.components.page_info.proto.AboutThisSiteMetadataProto.SiteDescription;
 import org.chromium.components.page_info.proto.AboutThisSiteMetadataProto.SiteInfo;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -90,6 +91,7 @@ Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_STARTUP
 @SuppressLint("VisibleForTests")
 public class PageInfoAboutThisSiteTest {
     private static final String sSimpleHtml = "/chrome/test/data/android/simple.html";
+    private static final String sAboutHtml = "/chrome/test/data/android/about.html";
     private static final String sBannerText = "This is an example website";
 
     @ClassRule
@@ -169,11 +171,17 @@ public class PageInfoAboutThisSiteTest {
 
     private byte[] createDescription() {
         String url = mTestServerRule.getServer().getURL(sSimpleHtml);
+        String moreAboutUrl = mTestServerRule.getServer().getURL(sAboutHtml);
         SiteDescription.Builder description =
                 SiteDescription.newBuilder()
                         .setDescription("Some description about example.com for testing purposes")
                         .setSource(Hyperlink.newBuilder().setUrl(url).setLabel("Example Source"));
-        return SiteInfo.newBuilder().setDescription(description).build().toByteArray();
+        MoreAbout.Builder moreAbout = MoreAbout.newBuilder().setUrl(moreAboutUrl);
+        return SiteInfo.newBuilder()
+                .setDescription(description)
+                .setMoreAbout(moreAbout)
+                .build()
+                .toByteArray();
     }
 
     @Test
@@ -261,6 +269,19 @@ public class PageInfoAboutThisSiteTest {
         assertEquals(1,
                 mHistogramTester.getHistogramValueCount("WebsiteSettings.Action",
                         PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_SOURCE_LINK_CLICKED));
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_EN,
+            ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_NON_EN,
+            ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_MORE_INFO})
+    public void
+    testAboutThisSiteMoreInfoShown() {
+        mockResponse(createDescription());
+        openPageInfo();
+        onView(withId(PageInfoAboutThisSiteController.ROW_ID)).perform(click());
+        onView(withText(R.string.page_info_more_about_this_page)).check(matches(isDisplayed()));
     }
 
     @Test

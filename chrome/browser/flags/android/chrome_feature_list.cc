@@ -340,6 +340,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &omnibox::kUpdatedConnectionSecurityIndicators,
     &optimization_guide::features::kPushNotifications,
     &page_info::kPageInfoAboutThisSiteEn,
+    &page_info::kPageInfoAboutThisSiteMoreInfo,
     &page_info::kPageInfoAboutThisSiteNonEn,
     &page_info::kAboutThisSiteBanner,
     &page_info::kPageInfoDiscoverability,
