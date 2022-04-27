@@ -555,6 +555,12 @@ CHAR_LIMIT guidelines:
       <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_INFOBAR_CARD_PREFIX" desc="Notifies the user that their virtual card card is linked with a card on their account.">
         linked with
       </message>
+      <message name="IDS_AUTOFILL_CARD_EDITOR_VIRTUAL_CARD_TURN_ON_BUTTON_LABEL" desc="Label shown on the button that the user clicks on to enroll into virtual cards.">
+        Turn on
+      </message>
+      <message name="IDS_AUTOFILL_CARD_EDITOR_VIRTUAL_CARD_TURN_OFF_BUTTON_LABEL" desc="Label shown on the button that the user clicks on to unenroll from virtual cards.">
+        Turn off
+      </message>
 
        <!-- Payment Request section preview strings -->
        <message name="IDS_PAYMENT_REQUEST_PAYMENT_METHODS_PREVIEW" desc="This is a snippet of a payment method a user has saved to Chrome, plus an indication of the number of additional payment methods the user has saved.

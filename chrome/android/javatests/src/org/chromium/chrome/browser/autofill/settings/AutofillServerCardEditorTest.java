@@ -160,7 +160,8 @@ public class AutofillServerCardEditorTest {
 
         onView(withId(R.id.virtual_card_ui)).check(matches(isDisplayed()));
         onView(withId(R.id.virtual_card_enrollment_button))
-                .check(matches(withText(R.string.remove)));
+                .check(matches(withText(
+                        R.string.autofill_card_editor_virtual_card_turn_off_button_label)));
         // Ensure the activity is cleaned up.
         finishAndWaitForActivity(activity);
     }
@@ -175,7 +176,9 @@ public class AutofillServerCardEditorTest {
                 fragmentArgs(SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_ELIGIBLE_CARD.getGUID()));
 
         onView(withId(R.id.virtual_card_ui)).check(matches(isDisplayed()));
-        onView(withId(R.id.virtual_card_enrollment_button)).check(matches(withText(R.string.add)));
+        onView(withId(R.id.virtual_card_enrollment_button))
+                .check(matches(
+                        withText(R.string.autofill_card_editor_virtual_card_turn_on_button_label)));
         // Ensure that the native delegate is cleaned up when the test has finished.
         finishAndWaitForActivity(activity);
     }
@@ -225,7 +228,9 @@ public class AutofillServerCardEditorTest {
 
         // Verify that the Virtual Card enrollment button is shown and shows "Add".
         onView(withId(R.id.virtual_card_ui)).check(matches(isDisplayed()));
-        onView(withId(R.id.virtual_card_enrollment_button)).check(matches(withText(R.string.add)));
+        onView(withId(R.id.virtual_card_enrollment_button))
+                .check(matches(
+                        withText(R.string.autofill_card_editor_virtual_card_turn_on_button_label)));
 
         // Press the Add button.
         onView(withId(R.id.virtual_card_enrollment_button)).perform(click());
@@ -239,7 +244,8 @@ public class AutofillServerCardEditorTest {
         // Verify that the Virtual Card enrollment button still shows "Add" and that the button is
         // disabled.
         onView(withId(R.id.virtual_card_enrollment_button))
-                .check(matches(withText(R.string.add)))
+                .check(matches(
+                        withText(R.string.autofill_card_editor_virtual_card_turn_on_button_label)))
                 .check(matches(Matchers.not(isEnabled())));
 
         // Verify that the native enroll method was called with the correct parameters.
@@ -289,7 +295,8 @@ public class AutofillServerCardEditorTest {
         // Verify that the Virtual Card enrollment button shows "Remove" and that the button is
         // enabled.
         onView(withId(R.id.virtual_card_enrollment_button))
-                .check(matches(withText(R.string.remove)))
+                .check(matches(
+                        withText(R.string.autofill_card_editor_virtual_card_turn_off_button_label)))
                 .check(matches(isEnabled()));
         // Verify that enrollment is called when the user clicks the positive button on the dialog.
         verify(mNativeMock).enrollOfferedVirtualCard(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE);
@@ -311,7 +318,9 @@ public class AutofillServerCardEditorTest {
 
         // Verify that the Virtual Card enrollment button is shown and shows "Add".
         onView(withId(R.id.virtual_card_ui)).check(matches(isDisplayed()));
-        onView(withId(R.id.virtual_card_enrollment_button)).check(matches(withText(R.string.add)));
+        onView(withId(R.id.virtual_card_enrollment_button))
+                .check(matches(
+                        withText(R.string.autofill_card_editor_virtual_card_turn_on_button_label)));
 
         // Press the Add button.
         onView(withId(R.id.virtual_card_enrollment_button)).perform(click());
@@ -319,7 +328,8 @@ public class AutofillServerCardEditorTest {
         // Verify that the Virtual Card enrollment button still shows "Add" and that the button is
         // disabled.
         onView(withId(R.id.virtual_card_enrollment_button))
-                .check(matches(withText(R.string.add)))
+                .check(matches(
+                        withText(R.string.autofill_card_editor_virtual_card_turn_on_button_label)))
                 .check(matches(Matchers.not(isEnabled())));
 
         // Verify that the native enroll method was called with the correct parameters.
@@ -357,7 +367,8 @@ public class AutofillServerCardEditorTest {
         // Verify that the Virtual Card enrollment button still shows "Add" and that the button is
         // now enabled.
         onView(withId(R.id.virtual_card_enrollment_button))
-                .check(matches(withText(R.string.add)))
+                .check(matches(
+                        withText(R.string.autofill_card_editor_virtual_card_turn_on_button_label)))
                 .check(matches(isEnabled()));
         // Verify that enrollment is called when the user clicks the positive button on the dialog.
         verify(mNativeMock, times(0))
@@ -378,7 +389,8 @@ public class AutofillServerCardEditorTest {
         // Verify that the Virtual Card enrollment button is shown and shows "Remove".
         onView(withId(R.id.virtual_card_ui)).check(matches(isDisplayed()));
         onView(withId(R.id.virtual_card_enrollment_button))
-                .check(matches(withText(R.string.remove)));
+                .check(matches(withText(
+                        R.string.autofill_card_editor_virtual_card_turn_off_button_label)));
 
         // Press the Remove button.
         onView(withId(R.id.virtual_card_enrollment_button)).perform(click());
@@ -402,7 +414,8 @@ public class AutofillServerCardEditorTest {
         // Verify that the Virtual Card enrollment button shows Remove.
         onView(withId(R.id.virtual_card_ui)).check(matches(isDisplayed()));
         onView(withId(R.id.virtual_card_enrollment_button))
-                .check(matches(withText(R.string.remove)));
+                .check(matches(withText(
+                        R.string.autofill_card_editor_virtual_card_turn_off_button_label)));
 
         // Press the Remove button.
         onView(withId(R.id.virtual_card_enrollment_button)).perform(click());
@@ -427,7 +440,8 @@ public class AutofillServerCardEditorTest {
 
         // Verify that the button label has not changed from "Remove".
         onView(withId(R.id.virtual_card_enrollment_button))
-                .check(matches(withText(R.string.remove)));
+                .check(matches(withText(
+                        R.string.autofill_card_editor_virtual_card_turn_off_button_label)));
         // Ensure that the native delegate is cleaned up when the test has finished.
         finishAndWaitForActivity(activity);
     }
@@ -448,7 +462,8 @@ public class AutofillServerCardEditorTest {
         // Verify that the Virtual Card enrollment button shows "Remove".
         onView(withId(R.id.virtual_card_ui)).check(matches(isDisplayed()));
         onView(withId(R.id.virtual_card_enrollment_button))
-                .check(matches(withText(R.string.remove)));
+                .check(matches(withText(
+                        R.string.autofill_card_editor_virtual_card_turn_off_button_label)));
 
         // Press the Remove button.
         onView(withId(R.id.virtual_card_enrollment_button)).perform(click());
@@ -466,7 +481,9 @@ public class AutofillServerCardEditorTest {
                         "Autofill.VirtualCard.SettingsPageUnenrollment", /* true */ 1));
 
         // Verify that the Virtual Card enrollment button now shows "Add".
-        onView(withId(R.id.virtual_card_enrollment_button)).check(matches(withText(R.string.add)));
+        onView(withId(R.id.virtual_card_enrollment_button))
+                .check(matches(
+                        withText(R.string.autofill_card_editor_virtual_card_turn_on_button_label)));
         // Verify that the native unenroll method was called with the correct parameters.
         verify(mNativeMock).unenrollVirtualCard(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE, 123);
 

@@ -184,8 +184,9 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
     private void setVirtualCardEnrollmentButtonLabel(boolean isEnrolled) {
         mVirtualCardEnrollmentButtonShowsUnenroll = isEnrolled;
         mVirtualCardEnrollmentButton.setEnabled(true);
-        mVirtualCardEnrollmentButton.setText(
-                mVirtualCardEnrollmentButtonShowsUnenroll ? R.string.remove : R.string.add);
+        mVirtualCardEnrollmentButton.setText(mVirtualCardEnrollmentButtonShowsUnenroll
+                        ? R.string.autofill_card_editor_virtual_card_turn_off_button_label
+                        : R.string.autofill_card_editor_virtual_card_turn_on_button_label);
     }
 
     @Override
