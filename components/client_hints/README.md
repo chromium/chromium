@@ -138,6 +138,9 @@ TODO(crbug.com/1176808): There should be UseCounters measuring usage, but there 
 
 Client Hints are populated in [BaseFetchContext::AddClientHintsIfNecessary](/third_party/blink/renderer/core/loader/base_fetch_context.cc). If you need frame-based information, this should be added to [ClientHintsImageInfo](/third_party/blink/renderer/core/loader/base_fetch_context.cc), which is populated in [FrameFetchContext::AddClientHintsIfNecessary](/third_party/blink/renderer/core/loader/frame_fetch_context.cc)
 
+### Web platform tests
+* Add the new client hint to [/third_party/blink/web_tests/external/wpt/client-hints/resources/export.js], [/third_party/blink/web_tests/external/wpt/client-hints/resources/clienthintslist.py], [/third_party/blink/web_tests/external/wpt/client-hints/accept-ch/feature-policy-navigation/\_\_dir\_\_.headers], [/third_party/blink/web_tests/external/wpt/client-hints/sandbox/\_\_dir\_\_.headers], and [/third_party/blink/web_tests/external/wpt/client-hints/accept-ch/\_\_dir\_\_.headers]
+
 ### Devtools Backend
 
 * Any addition to [blink::UserAgentMetadata](/third_party/blink/public/common/user_agent/user_agent_metadata.h) also needs to extend the related Chrome Devtools Protocol API calls, namely `setUserAgentOverride`. The backend implementation can be found in [/third_party/blink/renderer/core/inspector/inspector_emulation_agent.h], and the UserAgentMetadata type in [/third_party/blink/public/devtools_protocol/browser_protocol.pdl] will also need to be extended.
@@ -184,3 +187,8 @@ Devtools frontend source code is in a different branch [devtools/devtools-fronte
 [/content/browser/devtools/protocol/emulation_handler.cc]: /content/browser/devtools/protocol/emulation_handler.cc
 [/third_party/blink/web_tests/http/tests/inspector-protocol/emulation/resources/set-accept-ch.php]: /third_party/blink/web_tests/http/tests/inspector-protocol/emulation/resources/set-accept-ch.php
 [/third_party/blink/web_tests/http/tests/inspector-protocol/emulation/emulation-user-agent-metadata-override.js]: /third_party/blink/web_tests/http/tests/inspector-protocol/emulation/emulation-user-agent-metadata-override.js
+[/third_party/blink/web_tests/external/wpt/client-hints/resources/export.js]: /third_party/blink/web_tests/external/wpt/client-hints/resources/export.js
+[/third_party/blink/web_tests/external/wpt/client-hints/resources/clienthintslist.py]: /third_party/blink/web_tests/external/wpt/client-hints/resources/clienthintslist.py
+[/third_party/blink/web_tests/external/wpt/client-hints/accept-ch/feature-policy-navigation/\_\_dir\_\_.headers]: /third_party/blink/web_tests/external/wpt/client-hints/accept-ch/feature-policy-navigation/__dir__.headers
+[/third_party/blink/web_tests/external/wpt/client-hints/sandbox/\_\_dir\_\_.headers]: /third_party/blink/web_tests/external/wpt/client-hints/sandbox/__dir__.headers
+[/third_party/blink/web_tests/external/wpt/client-hints/accept-ch/\_\_dir\_\_.headers]: /third_party/blink/web_tests/external/wpt/client-hints/accept-ch/__dir__.headers

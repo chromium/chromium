@@ -3,6 +3,7 @@
 <title>Tests Stale While Revalidate is not executed for fetch API</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/client-hints/resources/export.js"></script>
 <script src="/common/utils.js"></script>
 <script>
 function wait25ms(test) {
@@ -15,27 +16,6 @@ function wait25ms(test) {
 
 promise_test(async (test) => {
   var request_token = token();
-  var client_hint_headers = [
-    "sec-ch-device-memory",
-    "device-memory",
-    "sec-ch-dpr",
-    "dpr",
-    "sec-ch-width",
-    "width",
-    "sec-ch-viewport-width",
-    "viewport-width",
-    "rtt",
-    "downlink",
-    "ect",
-    "sec-ch-ua",
-    "sec-ch-ua-arch",
-    "sec-ch-ua-platform",
-    "sec-ch-ua-platform-version",
-    "sec-ch-ua-model",
-    "sec-ch-ua-mobile",
-    "sec-ch-prefers-color-scheme",
-    "sec-ch-viewport-height",
-  ];
 
   const response = await fetch(`/client-hints/resources/stale-echo-client-hints.py?token=` + request_token);
   const response2 = await fetch(`/client-hints/resources/stale-echo-client-hints.py?token=` + request_token);
@@ -45,7 +25,7 @@ promise_test(async (test) => {
   while(true) {
     const revalidation_check = await fetch(`/client-hints/resources/stale-echo-client-hints.py?query&token=` + request_token);
     if (revalidation_check.headers.get('Count') == '2') {
-      client_hint_headers.forEach(header => {
+      client_hints_full_list.forEach(header => {
         assert_equals(revalidation_check.headers.get(header+"-recieved"), revalidation_check.headers.get(header+"-previous"));
       });
       break;

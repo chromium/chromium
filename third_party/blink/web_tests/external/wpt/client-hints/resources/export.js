@@ -24,6 +24,8 @@ const client_hints_list = [
   "sec-ch-ua-wow64",
 ];
 
+const client_hints_full_list = client_hints_list.concat(["width", "sec-ch-width"])
+
 const default_on_client_hints = [
   "sec-ch-ua",
   "sec-ch-ua-mobile",

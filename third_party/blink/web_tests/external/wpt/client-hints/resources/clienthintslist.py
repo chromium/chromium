@@ -23,3 +23,17 @@ def client_hints_list():
           b"sec-ch-ua-full-version-list",
           b"sec-ch-ua-wow64",
   ]
+
+def client_hints_full_list():
+  return client_hints_list() + [b"width", b"sec-ch-width"]
+
+def client_hints_ua_list():
+  return [b"sec-ch-ua",
+          b"sec-ch-ua-arch",
+          b"sec-ch-ua-platform",
+          b"sec-ch-ua-platform-version",
+          b"sec-ch-ua-model",
+          b"sec-ch-ua-full-version",
+          b"sec-ch-ua-full-version-list",
+          b"sec-ch-ua-wow64",
+    ]
