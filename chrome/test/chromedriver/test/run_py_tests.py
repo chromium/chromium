@@ -115,6 +115,14 @@ _OS_SPECIFIC_FILTER['win'] = [
     'HeadlessInvalidCertificateTest.testLoadsPage',
     'HeadlessInvalidCertificateTest.testNavigateNewWindow',
     'RemoteBrowserTest.testConnectToRemoteBrowserLiteralAddressHeadless',
+    # Timed out on Win7 bots: crbug.com/1306504.
+    'ChromeLoggingCapabilityTest.testDevToolsEventsLogger',
+    'ChromeLoggingCapabilityTest.testPerformanceLogger',
+    'JavaScriptTests.testAllJS',
+    'LaunchDesktopTest.testExistingDevToolsPortFile',
+    'RemoteBrowserTest.testConnectToRemoteBrowser',
+    'SessionHandlingTest.testQuitASessionMoreThanOnce',
+    'SupportIPv4AndIPv6.testSupportIPv4AndIPv6',
 ]
 _OS_SPECIFIC_FILTER['linux'] = [
 ]
