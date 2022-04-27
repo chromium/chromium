@@ -120,7 +120,7 @@ void StyleElement::ClearSheet(Element& owner_element) {
   if (sheet_->IsLoading()) {
     DCHECK(IsSameObject(owner_element));
     if (pending_sheet_type_ != PendingSheetType::kNonBlocking) {
-      owner_element.GetDocument().GetStyleEngine().RemovePendingSheet(
+      owner_element.GetDocument().GetStyleEngine().RemovePendingBlockingSheet(
           owner_element, pending_sheet_type_);
     }
     pending_sheet_type_ = PendingSheetType::kNone;
@@ -211,8 +211,8 @@ bool StyleElement::SheetLoaded(Document& document) {
 
   DCHECK(IsSameObject(*sheet_->ownerNode()));
   if (pending_sheet_type_ != PendingSheetType::kNonBlocking) {
-    document.GetStyleEngine().RemovePendingSheet(*sheet_->ownerNode(),
-                                                 pending_sheet_type_);
+    document.GetStyleEngine().RemovePendingBlockingSheet(*sheet_->ownerNode(),
+                                                         pending_sheet_type_);
   }
   pending_sheet_type_ = PendingSheetType::kNone;
   return true;
@@ -222,7 +222,8 @@ void StyleElement::SetToPendingState(Document& document, Element& element) {
   DCHECK(IsSameObject(element));
   DCHECK_LT(pending_sheet_type_, PendingSheetType::kBlocking);
   pending_sheet_type_ = PendingSheetType::kBlocking;
-  document.GetStyleEngine().AddPendingSheet(element, pending_sheet_type_);
+  document.GetStyleEngine().AddPendingBlockingSheet(element,
+                                                    pending_sheet_type_);
 }
 
 void StyleElement::BlockingAttributeChanged(Element& element) {
@@ -235,7 +236,7 @@ void StyleElement::BlockingAttributeChanged(Element& element) {
     return;
   if (blocking() && blocking()->IsRenderBlocking())
     return;
-  element.GetDocument().GetStyleEngine().RemovePendingSheet(
+  element.GetDocument().GetStyleEngine().RemovePendingBlockingSheet(
       element, pending_sheet_type_);
   pending_sheet_type_ = PendingSheetType::kNonBlocking;
 }

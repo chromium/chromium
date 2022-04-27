@@ -243,8 +243,8 @@ CSSStyleSheet& StyleEngine::EnsureInspectorStyleSheet() {
   return *inspector_style_sheet_;
 }
 
-void StyleEngine::AddPendingSheet(Node& style_sheet_candidate_node,
-                                  PendingSheetType type) {
+void StyleEngine::AddPendingBlockingSheet(Node& style_sheet_candidate_node,
+                                          PendingSheetType type) {
   DCHECK(type == PendingSheetType::kBlocking ||
          type == PendingSheetType::kDynamicRenderBlocking);
 
@@ -268,8 +268,8 @@ void StyleEngine::AddPendingSheet(Node& style_sheet_candidate_node,
 }
 
 // This method is called whenever a top-level stylesheet has finished loading.
-void StyleEngine::RemovePendingSheet(Node& style_sheet_candidate_node,
-                                     PendingSheetType type) {
+void StyleEngine::RemovePendingBlockingSheet(Node& style_sheet_candidate_node,
+                                             PendingSheetType type) {
   DCHECK(type == PendingSheetType::kBlocking ||
          type == PendingSheetType::kDynamicRenderBlocking);
 
@@ -766,7 +766,7 @@ CSSStyleSheet* StyleEngine::CreateSheet(
   CSSStyleSheet* style_sheet = nullptr;
 
   if (type != PendingSheetType::kNonBlocking)
-    AddPendingSheet(element, type);
+    AddPendingBlockingSheet(element, type);
 
   AtomicString text_content(text);
 
