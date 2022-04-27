@@ -150,9 +150,9 @@ std::unique_ptr<base::ListValue> GetUsersList(
     std::string email = maybe_email ? *maybe_email : std::string();
     AccountId account_id = AccountId::FromUserEmail(email);
     const user_manager::User* user = user_manager->FindUser(account_id);
-    user_list->Append(
+    user_list->Append(base::Value::FromUniquePtrValue(
         (user ? CreateApiUser(email, *user) : CreateUnknownApiUser(email))
-            .ToValue());
+            .ToValue()));
   }
 
   return user_list;

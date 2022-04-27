@@ -187,9 +187,9 @@ void FileManagerPrivateInternalGetContentMetadataFunction::ParserDone(
     base::Base64Encode(base::StringPiece(image->data.data(), size), &url);
     url.insert(0, base::StrCat({"data:", image->type, ";base64,"}));
 
-    auto media_thumbnail_image = std::make_unique<base::DictionaryValue>();
-    media_thumbnail_image->SetStringKey("data", std::move(url));
-    media_thumbnail_image->SetStringKey("type", std::move(image->type));
+    base::Value::Dict media_thumbnail_image;
+    media_thumbnail_image.Set("data", std::move(url));
+    media_thumbnail_image.Set("type", std::move(image->type));
 
     base::ListValue* attached_images_list = nullptr;
     dictionary->GetList("attachedImages", &attached_images_list);
