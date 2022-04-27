@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/net_adapters.h"
 
 #include "net/base/net_errors.h"
+#include "services/network/public/cpp/features.h"
 
 namespace network {
 
@@ -31,8 +32,10 @@ MojoResult NetToMojoPendingBuffer::BeginWrite(
   MojoResult result =
       (*handle)->BeginWriteData(&buf, num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
   if (result == MOJO_RESULT_OK) {
-    if (*num_bytes > kMaxBufSize)
+    if (!base::FeatureList::IsEnabled(features::kOptimizeNetworkBuffers) &&
+        *num_bytes > kMaxBufSize) {
       *num_bytes = kMaxBufSize;
+    }
     *pending = new NetToMojoPendingBuffer(std::move(*handle), buf);
   }
   return result;

@@ -3725,6 +3725,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.InputStreamTime" units="ms"
+    expires_after="2022-08-28">
+  <owner>jam@chromium.org</owner>
+  <owner>cduvall@chromium.org</owner>
+  <summary>
+    Measures how long InputStreams take from creation to completion. This is
+    emitted for all streams whether they succeed or fail.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.LoadUrl.UrlScheme" enum="WebViewUrlScheme"
     expires_after="2022-03-29">
   <owner>ntfschr@chromium.org</owner>

@@ -12,6 +12,7 @@
 #include "base/android/jni_android.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/task/thread_pool.h"
@@ -24,6 +25,7 @@
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 
 namespace embedder_support {
@@ -114,7 +116,8 @@ AndroidStreamReaderURLLoader::AndroidStreamReaderURLLoader(
       response_delegate_(std::move(response_delegate)),
       writable_handle_watcher_(FROM_HERE,
                                mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                               base::SequencedTaskRunnerHandle::Get()) {
+                               base::SequencedTaskRunnerHandle::Get()),
+      start_time_(base::Time::Now()) {
   DCHECK(response_delegate_);
   // If there is a client error, clean up the request.
   client_.set_disconnect_handler(
@@ -285,7 +288,19 @@ void AndroidStreamReaderURLLoader::HeadersComplete(
 void AndroidStreamReaderURLLoader::SendBody() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if (CreateDataPipe(nullptr /*options*/, producer_handle_, consumer_handle_) !=
+  MojoCreateDataPipeOptions* options_ptr = nullptr;
+  MojoCreateDataPipeOptions options;
+  if (base::FeatureList::IsEnabled(
+          network::features::kOptimizeNetworkBuffers)) {
+    options_ptr = &options;
+    options.struct_size = sizeof(MojoCreateDataPipeOptions);
+    options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+    options.element_num_bytes = 1;
+    options.capacity_num_bytes =
+        network::features::GetDataPipeDefaultAllocationSize(
+            network::features::DataPipeAllocationSize::kLargerSizeIfPossible);
+  }
+  if (CreateDataPipe(options_ptr, producer_handle_, consumer_handle_) !=
       MOJO_RESULT_OK) {
     RequestComplete(net::ERR_FAILED);
     return;
@@ -430,6 +445,8 @@ void AndroidStreamReaderURLLoader::RequestCompleteWithStatus(
   }
 
   client_->OnComplete(status);
+  UMA_HISTOGRAM_TIMES("Android.WebView.InputStreamTime",
+                      base::Time::Now() - start_time_);
   CleanUp();
 }
 
