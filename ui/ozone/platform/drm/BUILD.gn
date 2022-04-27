@@ -7,6 +7,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ozone.gni")
 import("//gpu/vulkan/features.gni")
+import("//testing/test.gni")
 
 visibility = [ "//ui/ozone/*" ]
 
@@ -221,4 +222,25 @@ source_set("gbm_unittests") {
   if (drm_commit_properties_on_page_flip) {
     defines = [ "COMMIT_PROPERTIES_ON_PAGE_FLIP" ]
   }
+}
+
+source_set("drm_integration_tests") {
+  testonly = true
+
+  sources = [
+    "test/integration_test_helpers.cc",
+    "test/integration_test_helpers.h",
+    "test/vkms_tests.cc",
+  ]
+
+  deps = [
+    ":gbm",
+    "//base/test:test_support",
+    "//build/config/linux/libdrm",
+    "//skia",
+    "//ui/display/types:types",
+    "//ui/gfx/linux:test_support",
+    "//ui/ozone:platform",
+    "//ui/ozone/common",
+  ]
 }

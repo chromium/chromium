@@ -22,6 +22,10 @@ ozone_platform_deps = ozone_external_platform_deps
 # Extra dependencies to pull into ozone_unittests for built platforms.
 ozone_platform_test_deps = ozone_external_platform_test_deps
 
+# Extra dependencies to pull into ozone_integration_tests
+ozone_platform_integration_test_deps =
+    ozone_external_platform_integration_test_deps
+
 # Extra dependencies to pull into ui_test_support for built platforms.
 ozone_platform_ui_test_support_deps =
     ozone_external_platform_ui_test_support_deps
@@ -44,6 +48,8 @@ if (ozone_platform_drm) {
   ozone_platforms += [ "drm" ]
   ozone_platform_deps += [ "platform/drm:gbm" ]
   ozone_platform_test_deps += [ "platform/drm:gbm_unittests" ]
+  ozone_platform_integration_test_deps +=
+      [ "platform/drm:drm_integration_tests" ]
 }
 
 if (ozone_platform_cast) {
@@ -431,6 +437,21 @@ if (ozone_platform_x11) {
     # 2nd copy of any code via the component.
     assert_no_deps = [ "//ui/ozone" ]
   }
+}
+
+test("ozone_integration_tests") {
+  testonly = true
+
+  visibility += [ "*" ]
+
+  sources = [ "test/ozone_integration_tests_main.cc" ]
+
+  deps = [
+    "//base/test:test_support",
+    "//mojo/core/embedder",
+  ]
+
+  deps += ozone_platform_integration_test_deps
 }
 
 buildflag_header("buildflags") {

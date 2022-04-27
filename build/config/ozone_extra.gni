@@ -18,6 +18,10 @@ ozone_external_platform_deps = []
 # ozone_external_platform_test_deps = [ "platform/foo1:foo1_unitests", ... ]
 ozone_external_platform_test_deps = []
 
+# If a platform has integration tests, the corresponding source_set can be
+# listed here so that they get included into ozone_integration_tests.
+ozone_external_platform_integration_test_deps = []
+
 # If a platform has test support files for ui, the corresponding source_set can
 # be listed here so that they get included into ui_test_support.
 # ozone_external_platform_ui_test_support_deps = [ "platform/foo1:ui_test_support", ... ]
