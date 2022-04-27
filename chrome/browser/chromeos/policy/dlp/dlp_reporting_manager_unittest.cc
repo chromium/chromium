@@ -15,6 +15,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/util/status.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -260,6 +261,33 @@ TEST_F(DlpReportingManagerTest, ReportEventError) {
   manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
                        DlpRulesManager::Level::kBlock);
   EXPECT_EQ(events_.size(), 0u);
+}
+
+TEST_F(DlpReportingManagerTest, OnEventEnqueuedError) {
+  base::HistogramTester histogram_tester;
+
+  auto report_queue =
+      std::unique_ptr<reporting::MockReportQueue, base::OnTaskRunnerDeleter>(
+          new reporting::MockReportQueue(),
+          base::OnTaskRunnerDeleter(
+              base::ThreadPool::CreateSequencedTaskRunner({})));
+
+  EXPECT_CALL(*report_queue.get(), AddRecord)
+      .WillRepeatedly(testing::WithArgs<2>(
+          [](reporting::ReportQueue::EnqueueCallback callback) {
+            std::move(callback).Run(
+                reporting::Status(reporting::error::UNKNOWN, "mock"));
+          }));
+
+  manager_.SetReportQueueForTest(std::move(report_queue));
+
+  manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
+                       DlpRulesManager::Level::kBlock);
+
+  EXPECT_EQ(events_.size(), 0u);
+  histogram_tester.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kReportedEventStatus,
+      reporting::error::UNKNOWN, 1);
 }
 
 }  // namespace policy
