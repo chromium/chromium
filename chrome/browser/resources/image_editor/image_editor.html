@@ -7,10 +7,19 @@
       body {
         margin: 0;
       }
+      #content {
+        height: 100%;
+        left: 0;
+        position: fixed;
+        top: 0;
+        width: 100%;
+      }
     </style>
   </head>
   <body>
-    <iframe id="content" src="chrome-untrusted://image-editor/placeholder">
+    <iframe id="content"
+        src="chrome-untrusted://image-editor/index.html"
+        allow="cross-origin-isolated; clipboard-read; clipboard-write">
     </iframe>
   </body>
 </html>
