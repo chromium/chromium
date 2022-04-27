@@ -5335,16 +5335,6 @@ test("unit_tests") {
     ]
   }
 
-  if (enable_paint_preview) {
-    sources += [
-      "../browser/paint_preview/services/paint_preview_tab_service_unittest.cc",
-    ]
-  }
-
-  if (enable_side_search) {
-    sources += [ "../browser/page_load_metrics/observers/side_search_page_load_metrics_observer_unittest.cc" ]
-  }
-
   if (is_chromeos) {
     sources += [
       "../browser/apps/intent_helper/metrics/intent_handling_metrics_unittest.cc",
@@ -5400,11 +5390,6 @@ test("unit_tests") {
     ]
   }
 
-  if (toolkit_views) {
-    # Test accessibility checks that audit any UI opened in a browser test.
-    sources += [ "views/accessibility_checker_unittest.cc" ]
-  }
-
   if (enable_chrome_notifications) {
     sources += [
       "../browser/notifications/notification_system_observer_unittest.cc",
@@ -5451,13 +5436,17 @@ test("unit_tests") {
 
   if (enable_webui_tab_strip) {
     sources += [
+      "../browser/ui/views/frame/webui_tab_strip_container_view_unittest.cc",
       "../browser/ui/views/toolbar/webui_tab_counter_button_unittest.cc",
       "../browser/ui/webui/tab_strip/tab_strip_page_handler_unittest.cc",
+      "../browser/ui/webui/tab_strip/tab_strip_ui_layout_unittest.cc",
+      "../browser/ui/webui/tab_strip/thumbnail_tracker_unittest.cc",
     ]
   }
 
   if (enable_side_search) {
     sources += [
+      "../browser/page_load_metrics/observers/side_search_page_load_metrics_observer_unittest.cc",
       "../browser/ui/side_search/side_search_side_contents_helper_unittest.cc",
       "../browser/ui/side_search/side_search_tab_contents_helper_unittest.cc",
     ]
@@ -6049,6 +6038,9 @@ test("unit_tests") {
   }
 
   if (enable_paint_preview) {
+    sources += [
+      "../browser/paint_preview/services/paint_preview_tab_service_unittest.cc",
+    ]
     deps += [ "//chrome/browser/paint_preview:services" ]
   }
 
@@ -8261,6 +8253,9 @@ test("unit_tests") {
   }
 
   if (toolkit_views) {
+    # Test accessibility checks that audit any UI opened in a browser test.
+    sources += [ "views/accessibility_checker_unittest.cc" ]
+
     deps += [
       "//chrome:unit_tests_pak",
       "//chrome/browser/ui/tabs:tab_enums",
@@ -8494,14 +8489,6 @@ test("unit_tests") {
   if (enable_widevine_cdm_component && (is_linux || is_chromeos_lacros)) {
     sources +=
         [ "../common/media/component_widevine_cdm_hint_file_linux_unittest.cc" ]
-  }
-
-  if (enable_webui_tab_strip) {
-    sources += [
-      "../browser/ui/views/frame/webui_tab_strip_container_view_unittest.cc",
-      "../browser/ui/webui/tab_strip/tab_strip_ui_layout_unittest.cc",
-      "../browser/ui/webui/tab_strip/thumbnail_tracker_unittest.cc",
-    ]
   }
 
   # This target gets pulled in in Chromecast builds, even though it doesn't get
