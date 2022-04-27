@@ -79,7 +79,6 @@ base::Time GetEventTime(const AttributionSimulationEventAndValue& event) {
   return absl::visit(Visitor{}, event.first);
 }
 
-// TODO(apaseltiner): Consider exposing other behaviors here.
 class AlwaysSetCookieChecker : public AttributionCookieChecker {
  public:
   AlwaysSetCookieChecker() = default;
