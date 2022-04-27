@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/hover_button.h"
+#include "chrome/browser/ui/views/webid/fake_delegate.h"
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -40,25 +41,6 @@ const std::u16string kTitleSignIn =
 const std::u16string kTitleSigningIn = u"Verifying…";
 
 }  // namespace
-
-class FakeDelegate : public AccountSelectionView::Delegate {
- public:
-  explicit FakeDelegate(content::WebContents* web_contents)
-      : web_contents_(web_contents) {}
-
-  ~FakeDelegate() override = default;
-
-  void OnAccountSelected(const Account& account) override {}
-
-  void OnDismiss(bool should_embargo) override {}
-
-  gfx::NativeView GetNativeView() override { return gfx::kNullNativeView; }
-
-  content::WebContents* GetWebContents() override { return web_contents_; }
-
- private:
-  content::WebContents* web_contents_;
-};
 
 class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
  public:
@@ -102,9 +84,34 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     views::BubbleDialogDelegateView::CreateBubble(dialog_)->Show();
   }
 
-  void CheckAccountRow(views::View* view,
+  void CheckAccountRow(views::View* row,
                        std::u16string name,
-                       std::u16string email) {}
+                       std::u16string email) {
+    std::vector<views::View*> row_children = row->children();
+    ASSERT_EQ(row_children.size(), 2u);
+
+    // Check the image.
+    views::ImageView* image_view =
+        static_cast<views::ImageView*>(row_children[0]);
+    EXPECT_TRUE(image_view);
+
+    // Check the text shown.
+    views::View* text_view = row_children[1];
+    views::BoxLayout* layout_manager =
+        static_cast<views::BoxLayout*>(text_view->GetLayoutManager());
+    ASSERT_TRUE(layout_manager);
+    EXPECT_EQ(layout_manager->GetOrientation(),
+              views::BoxLayout::Orientation::kVertical);
+    std::vector<views::View*> text_view_children = text_view->children();
+    ASSERT_EQ(text_view_children.size(), 2u);
+    views::Label* name_view = static_cast<views::Label*>(text_view_children[0]);
+    ASSERT_TRUE(name_view);
+    EXPECT_EQ(name_view->GetText(), name);
+    views::Label* email_view =
+        static_cast<views::Label*>(text_view_children[1]);
+    ASSERT_TRUE(email_view);
+    EXPECT_EQ(email_view->GetText(), email);
+  }
 
   void SetUp() override {
     feature_list_.InitAndEnableFeature(features::kFedCm);
@@ -143,7 +150,6 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  // testing::NiceMock<MockEditAddressProfileDialogController> mock_controller_;
 };
 
 TEST_F(AccountSelectionBubbleViewTest, SingleAccount) {
@@ -165,28 +171,8 @@ TEST_F(AccountSelectionBubbleViewTest, SingleAccount) {
   EXPECT_TRUE(separator);
   views::View* single_account_chooser = children[1];
   ASSERT_EQ(single_account_chooser->children().size(), 3u);
-  views::View* account_row = single_account_chooser->children()[0];
-  std::vector<views::View*> row_children = account_row->children();
-  ASSERT_EQ(row_children.size(), 2u);
-  views::ImageView* image_view =
-      static_cast<views::ImageView*>(row_children[0]);
-  EXPECT_TRUE(image_view);
 
-  // Check the text shown.
-  views::View* text_view = row_children[1];
-  views::BoxLayout* layout_manager =
-      static_cast<views::BoxLayout*>(text_view->GetLayoutManager());
-  ASSERT_TRUE(layout_manager);
-  EXPECT_EQ(layout_manager->GetOrientation(),
-            views::BoxLayout::Orientation::kVertical);
-  std::vector<views::View*> text_view_children = text_view->children();
-  ASSERT_EQ(text_view_children.size(), 2u);
-  views::Label* name_view = static_cast<views::Label*>(text_view_children[0]);
-  ASSERT_TRUE(name_view);
-  EXPECT_EQ(name_view->GetText(), u"name");
-  views::Label* email_view = static_cast<views::Label*>(text_view_children[1]);
-  ASSERT_TRUE(email_view);
-  EXPECT_EQ(email_view->GetText(), u"email");
+  CheckAccountRow(single_account_chooser->children()[0], u"name", u"email");
 
   // Check the "Continue as" button.
   views::MdTextButton* button =
@@ -306,26 +292,8 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleAccountsFlow) {
   ASSERT_EQ(single_account_chooser->children().size(), 3u);
   views::View* single_account_row = single_account_chooser->children()[0];
   std::vector<views::View*> row_children = single_account_row->children();
-  ASSERT_EQ(row_children.size(), 2u);
-  views::ImageView* image_view =
-      static_cast<views::ImageView*>(row_children[0]);
-  EXPECT_TRUE(image_view);
 
-  // Check the text shown.
-  views::View* text_view = row_children[1];
-  views::BoxLayout* layout_manager =
-      static_cast<views::BoxLayout*>(text_view->GetLayoutManager());
-  ASSERT_TRUE(layout_manager);
-  EXPECT_EQ(layout_manager->GetOrientation(),
-            views::BoxLayout::Orientation::kVertical);
-  std::vector<views::View*> text_view_children = text_view->children();
-  ASSERT_EQ(text_view_children.size(), 2u);
-  views::Label* name_view = static_cast<views::Label*>(text_view_children[0]);
-  ASSERT_TRUE(name_view);
-  EXPECT_EQ(name_view->GetText(), u"name1");
-  views::Label* email_view = static_cast<views::Label*>(text_view_children[1]);
-  ASSERT_TRUE(email_view);
-  EXPECT_EQ(email_view->GetText(), u"email1");
+  CheckAccountRow(single_account_row, u"name1", u"email1");
 
   // Check the "Continue as" button.
   views::MdTextButton* button =
@@ -351,4 +319,11 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleAccountsFlow) {
   EXPECT_FALSE(dialog()->GetOkButton());
   EXPECT_FALSE(dialog()->GetCancelButton());
   EXPECT_EQ(dialog()->GetWindowTitle(), kTitleSigningIn);
+
+  ASSERT_EQ(dialog()->children().size(), 2u);
+  views::ProgressBar* progress_bar =
+      static_cast<views::ProgressBar*>(dialog()->children()[0]);
+  ASSERT_TRUE(progress_bar);
+
+  CheckAccountRow(dialog()->children()[1], u"name1", u"email1");
 }

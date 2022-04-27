@@ -8,11 +8,13 @@
 #include "chrome/browser/ui/webid/account_selection_view.h"
 
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
+#include "content/public/browser/web_contents_observer.h"
 
 // Provides an implementation of the AccountSelectionView interface on desktop,
 // which creates the AccountSelectionBubbleView dialog to display the FedCM
 // account chooser to the user.
-class FedCmAccountSelectionView : public AccountSelectionView {
+class FedCmAccountSelectionView : public AccountSelectionView,
+                                  content::WebContentsObserver {
  public:
   explicit FedCmAccountSelectionView(AccountSelectionView::Delegate* delegate);
   ~FedCmAccountSelectionView() override;
@@ -25,7 +27,14 @@ class FedCmAccountSelectionView : public AccountSelectionView {
             const content::ClientIdData& client_data,
             Account::SignInMode sign_in_mode) override;
 
- private:
+  // content::WebContentsObserver
+  void OnVisibilityChanged(content::Visibility visibility) override;
+  void RenderViewHostChanged(content::RenderViewHost* old_host,
+                             content::RenderViewHost* new_host) override;
+
+ protected:
+  friend class FedCmAccountSelectionViewBrowserTest;
+
   base::WeakPtr<views::Widget> bubble_widget_;
 };
 

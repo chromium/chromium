@@ -1,0 +1,30 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_VIEWS_WEBID_FAKE_DELEGATE_H_
+#define CHROME_BROWSER_UI_VIEWS_WEBID_FAKE_DELEGATE_H_
+
+#include "chrome/browser/ui/webid/account_selection_view.h"
+#include "ui/gfx/native_widget_types.h"
+
+class FakeDelegate : public AccountSelectionView::Delegate {
+ public:
+  explicit FakeDelegate(content::WebContents* web_contents)
+      : web_contents_(web_contents) {}
+
+  ~FakeDelegate() override = default;
+
+  void OnAccountSelected(const Account& account) override {}
+
+  void OnDismiss(bool should_embargo) override {}
+
+  // AccountSelectionView::Delegate
+  gfx::NativeView GetNativeView() override;
+  content::WebContents* GetWebContents() override;
+
+ private:
+  content::WebContents* web_contents_;
+};
+
+#endif  // CHROME_BROWSER_UI_VIEWS_WEBID_FAKE_DELEGATE_H_

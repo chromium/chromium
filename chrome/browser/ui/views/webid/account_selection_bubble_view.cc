@@ -30,6 +30,7 @@ constexpr int kButtonRadius = 20;
 constexpr int kBubbleWidth = 375;
 constexpr int kDesiredAvatarSize = 40;
 constexpr int kPadding = 5;
+constexpr int kProgressBarHeight = 2;
 
 constexpr char kImageFetcherUmaClient[] = "FedCMAccountChooser";
 
@@ -283,9 +284,11 @@ void AccountSelectionBubbleView::ShowVerifySheet(
     const content::IdentityRequestAccount& account) {
   SetTitle(l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE));
   RemoveAllChildViews();
-  // TODO(npm): replace the basic views::Separator with a separator that has the
-  // loading animation.
-  AddChildView(std::make_unique<views::Separator>());
+  views::ProgressBar* progress_bar =
+      AddChildView(std::make_unique<views::ProgressBar>(kProgressBarHeight));
+  // Use an infinite animation: SetValue(-1).
+  progress_bar->SetValue(-1);
+  progress_bar->SetBackgroundColor(SK_ColorLTGRAY);
   AddChildView(CreateAccountRow(account, /*should_hover=*/false));
   SizeToContents();
   PreferredSizeChanged();

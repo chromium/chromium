@@ -33,7 +33,8 @@ int AccountSelectionView::GetBrandIconIdealSize() {
 
 FedCmAccountSelectionView::FedCmAccountSelectionView(
     AccountSelectionView::Delegate* delegate)
-    : AccountSelectionView(delegate) {}
+    : AccountSelectionView(delegate),
+      content::WebContentsObserver(delegate->GetWebContents()) {}
 
 FedCmAccountSelectionView::~FedCmAccountSelectionView() {
   if (bubble_widget_) {
@@ -62,4 +63,26 @@ void FedCmAccountSelectionView::Show(
                            tab_strip_model))
                        ->GetWeakPtr();
   bubble_widget_->Show();
+}
+
+void FedCmAccountSelectionView::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (!bubble_widget_)
+    return;
+
+  if (visibility == content::Visibility::VISIBLE) {
+    bubble_widget_->Show();
+  } else {
+    bubble_widget_->Hide();
+  }
+}
+
+void FedCmAccountSelectionView::RenderViewHostChanged(
+    content::RenderViewHost* old_host,
+    content::RenderViewHost* new_host) {
+  // Close the bubble when the user navigates within the same tab.
+  if (bubble_widget_) {
+    bubble_widget_->Close();
+    bubble_widget_ = nullptr;
+  }
 }
