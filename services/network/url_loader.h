@@ -29,6 +29,7 @@
 #include "net/url_request/url_request.h"
 #include "services/network/keepalive_statistics_recorder.h"
 #include "services/network/network_service.h"
+#include "services/network/private_network_access_checker.h"
 #include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
@@ -415,13 +416,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // net::URLRequest.
   bool ShouldForceIgnoreTopFramePartyForCookies() const;
 
-  // Returns the client security state that applies to the current request.
-  // May return nullptr.
-  const mojom::ClientSecurityState* GetClientSecurityState() const;
-
   // Applies Private Network Access checks to the current request.
-  //
-  // Sets `response_ip_address_space_` to a value derived from `transport_info`.
   //
   // Helper for `OnConnected()`.
   PrivateNetworkAccessCheckResult PrivateNetworkAccessCheck(
@@ -562,22 +557,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // network::ResourceRequest::fetch_window_id for details.
   absl::optional<base::UnguessableToken> fetch_window_id_;
 
-  // See |ResourceRequest::target_ip_address_space_|.
-  mojom::IPAddressSpace target_ip_address_space_ =
-      mojom::IPAddressSpace::kUnknown;
-
-  // The response's address space, as computed using the |net::TransportInfo|
-  // argument to the |OnConnected()| callback. This info is only available then,
-  // so the computation result is stored for later use in this member.
-  //
-  // Set in |OnConnected()|, reset in |FollowRedirect()|.
-  //
-  // https://wicg.github.io/private-network-access/#response-ip-address-space
-  absl::optional<mojom::IPAddressSpace> response_ip_address_space_;
-
-  // True iff |OnConnected()| was called multiple times and the IP address space
-  // of the transport was not the same each time.
-  bool has_connected_to_mismatched_ip_address_spaces_ = false;
+  PrivateNetworkAccessChecker private_network_access_checker_;
 
   mojo::Remote<mojom::TrustedHeaderClient> header_client_;
 
@@ -623,13 +603,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       nullptr;
   const mojo::Remote<mojom::DevToolsObserver> devtools_observer_remote_;
   mojom::DevToolsObserver* const devtools_observer_ = nullptr;
-
-  // Client security state copied from the input ResourceRequest.
-  //
-  // If |factory_params_->client_security_state| is non-null, this is null.
-  // We indeed prefer the factory params over the request params as we trust the
-  // former more, given that they always come from the browser process.
-  mojom::ClientSecurityStatePtr request_client_security_state_;
 
   // Indicates |url_request_| is fetch upload request and that has streaming
   // body.

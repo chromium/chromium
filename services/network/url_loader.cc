@@ -59,7 +59,6 @@
 #include "services/network/data_pipe_element_reader.h"
 #include "services/network/origin_policy/origin_policy_constants.h"
 #include "services/network/origin_policy/origin_policy_manager.h"
-#include "services/network/private_network_access_check.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/corb/orb_impl.h"
@@ -478,7 +477,7 @@ URLLoader::URLLoader(
       custom_proxy_pre_cache_headers_(request.custom_proxy_pre_cache_headers),
       custom_proxy_post_cache_headers_(request.custom_proxy_post_cache_headers),
       fetch_window_id_(request.fetch_window_id),
-      target_ip_address_space_(request.target_ip_address_space),
+      private_network_access_checker_(request, &factory_params_, options_),
       trust_token_helper_factory_(std::move(trust_token_helper_factory)),
       origin_access_list_(context.GetOriginAccessList()),
       cookie_observer_remote_(std::move(cookie_observer)),
@@ -599,21 +598,6 @@ URLLoader::URLLoader(
 
   if (request.trusted_params) {
     has_user_activation_ = request.trusted_params->has_user_activation;
-
-    if (factory_params_.client_security_state) {
-      // Enforce that only one ClientSecurityState is ever given to us, as this
-      // is an invariant in the current codebase. In case of a compromised
-      // renderer process, we might be passed both, in which case we prefer to
-      // use the factory params' value: contrary to the request params, it is
-      // always sourced from the browser process.
-      DCHECK(!request.trusted_params->client_security_state)
-          << "Must not provide a ClientSecurityState in both "
-             "URLLoaderFactoryParams and ResourceRequest::TrustedParams.";
-    } else {
-      // This might be nullptr, but that does not matter. Clone it anyways.
-      request_client_security_state_ =
-          request.trusted_params->client_security_state.Clone();
-    }
   }
 
   throttling_token_ = network::ScopedThrottlingToken::MaybeCreate(
@@ -935,9 +919,6 @@ URLLoader::~URLLoader() {
   TRACE_EVENT("loading", "URLLoader::~URLLoader",
               perfetto::TerminatingFlow::FromPointer(this));
   RecordBodyReadFromNetBeforePausedIfNeeded();
-  base::UmaHistogramBoolean(
-      "Security.PrivateNetworkAccess.MismatchedAddressSpacesDuringRequest",
-      has_connected_to_mismatched_ip_address_spaces_);
   if (keepalive_ && keepalive_statistics_recorder_) {
     keepalive_statistics_recorder_->OnLoadFinished(
         *factory_params_.top_frame_id, keepalive_request_size_);
@@ -961,9 +942,9 @@ void URLLoader::FollowRedirect(
   // also calls the devtools observer.
   seen_raw_request_headers_ = false;
 
-  // Reset the response IP address space, so that we don't mistakenly compare
-  // it against the IP address space of the next connection's remote endpoint.
-  response_ip_address_space_ = absl::nullopt;
+  // Reset the state of the PNA checker - redirects should be treated like new
+  // requests by the same client.
+  private_network_access_checker_.ResetForRedirect();
 
   // Removing headers can't make the set of pre-existing headers unsafe, but
   // adding headers can.
@@ -1031,64 +1012,23 @@ void URLLoader::ResumeReadingBodyFromNet() {
   }
 }
 
-// WARNING: This should be kept in sync with similar logic in
-// `network::cors::CorsURLLoader::GetClientSecurityState()`.
-const mojom::ClientSecurityState* URLLoader::GetClientSecurityState() const {
-  // Depending on the type of URL request, we source the client security state
-  // from either the URLRequest's trusted params (for navigations, which share
-  // a factory) or the URLLoaderFactory's params. We prefer the factory params
-  // over the request params, as the former always come from the browser
-  // process.
-  if (factory_params_.client_security_state) {
-    return factory_params_.client_security_state.get();
-  }
-
-  return request_client_security_state_.get();
-}
-
 PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
     const net::TransportInfo& transport_info) {
-  const mojom::IPAddressSpace transport_ip_address_space =
-      TransportInfoToIPAddressSpace(transport_info);
+  PrivateNetworkAccessCheckResult result =
+      private_network_access_checker_.Check(transport_info);
 
-  if (response_ip_address_space_.has_value() &&
-      transport_ip_address_space != *response_ip_address_space_) {
-    // Record this so we can increment a histogram later.
-    //
-    // NOTE(titouan): The above condition is already checked in
-    // `network::PrivateNetworkAccessCheck()`. It would be good to deduplicate
-    // this code.
-    has_connected_to_mismatched_ip_address_spaces_ = true;
-  }
-
-  const mojom::ClientSecurityState* security_state = GetClientSecurityState();
-
-  // Fully-qualify function name to disambiguate it, otherwise it resolves to
-  // `URLLoader::PrivateNetworkAccessCheck()` and fails to compile.
-  PrivateNetworkAccessCheckResult result = network::PrivateNetworkAccessCheck(
-      security_state, target_ip_address_space_, response_ip_address_space_,
-      options_, transport_ip_address_space);
-
-  if (transport_info.type == net::TransportType::kCached) {
-    base::UmaHistogramEnumeration(
-        "Security.PrivateNetworkAccess.CachedResourceCheckResult", result);
-  }
-
-  response_ip_address_space_ = transport_ip_address_space;
+  mojom::IPAddressSpace response_address_space =
+      *private_network_access_checker_.ResponseAddressSpace();
 
   url_request_->net_log().AddEvent(
       net::NetLogEventType::PRIVATE_NETWORK_ACCESS_CHECK, [&] {
-        auto client_address_space = mojom::IPAddressSpace::kUnknown;
-        if (security_state) {
-          client_address_space = security_state->ip_address_space;
-        }
-
         base::Value dict(base::Value::Type::DICTIONARY);
-        dict.SetStringKey("client_address_space",
-                          IPAddressSpaceToStringPiece(client_address_space));
         dict.SetStringKey(
-            "resource_address_space",
-            IPAddressSpaceToStringPiece(transport_ip_address_space));
+            "client_address_space",
+            IPAddressSpaceToStringPiece(
+                private_network_access_checker_.ClientAddressSpace()));
+        dict.SetStringKey("resource_address_space",
+                          IPAddressSpaceToStringPiece(response_address_space));
         dict.SetStringKey("result",
                           PrivateNetworkAccessCheckResultToStringPiece(result));
         return dict;
@@ -1109,12 +1049,14 @@ PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
 
   // If `security_state` was nullptr, then `result` should not have mentioned
   // the policy set in `security_state->private_network_request_policy`.
+  const mojom::ClientSecurityState* security_state =
+      private_network_access_checker_.client_security_state();
   DCHECK(security_state);
 
   if (devtools_observer_) {
     devtools_observer_->OnPrivateNetworkRequest(
         devtools_request_id(), url_request_->url(), is_warning,
-        transport_ip_address_space, security_state->Clone());
+        response_address_space, security_state->Clone());
   }
 
   return result;
@@ -1125,21 +1067,18 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
                            net::CompletionOnceCallback callback) {
   DCHECK_EQ(url_request, url_request_.get());
 
-  DVLOG(1) << "Connection obtained for URL request to " << url_request->url()
-           << ": " << info;
-
   // Now that the request endpoint's address has been resolved, check if
   // this request should be blocked per Private Network Access.
   PrivateNetworkAccessCheckResult result = PrivateNetworkAccessCheck(info);
   absl::optional<mojom::CorsError> cors_error =
       PrivateNetworkAccessCheckResultToCorsError(result);
-  DCHECK(response_ip_address_space_.has_value());
   if (cors_error.has_value()) {
     // Remember the CORS error so we can annotate the URLLoaderCompletionStatus
     // with it later, then fail the request with the same net error code as
     // other CORS errors.
-    cors_error_status_ = CorsErrorStatus(*cors_error, target_ip_address_space_,
-                                         *response_ip_address_space_);
+    cors_error_status_ = CorsErrorStatus(
+        *cors_error, private_network_access_checker_.TargetAddressSpace(),
+        *private_network_access_checker_.ResponseAddressSpace());
     if (result == PrivateNetworkAccessCheckResult::
                       kBlockedByInconsistentIpAddressSpace ||
         result ==
@@ -1245,11 +1184,10 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
   response->request_include_credentials = url_request_->allow_credentials();
 
   response->response_address_space =
-      response_ip_address_space_.value_or(mojom::IPAddressSpace::kUnknown);
-
-  const mojom::ClientSecurityState* state = GetClientSecurityState();
+      private_network_access_checker_.ResponseAddressSpace().value_or(
+          mojom::IPAddressSpace::kUnknown);
   response->client_address_space =
-      state ? state->ip_address_space : mojom::IPAddressSpace::kUnknown;
+      private_network_access_checker_.ClientAddressSpace();
 
   return response;
 }
@@ -1310,24 +1248,6 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
                           has_user_activation_, request_destination_,
                           &redirect_info.new_url, factory_params_,
                           origin_access_list_);
-
-  // The target IP address space is no longer relevant, it only applied to the
-  // URL before the redirect. Consider the following scenario:
-  //
-  // 1. `https://public.example` fetches `http://localhost/foo`
-  // 2. `OnConnected()` notices that the remote endpoint's IP address space is
-  //    `kLocal`, fails the request with
-  //    `CorsError::UnexpectedPrivateNetworkAccess`.
-  // 3. A preflight request is sent with `target_ip_address_space_` set to
-  //    `kLocal`, succeeds.
-  // 4. `http://localhost/foo` redirects the GET request to
-  //    `https://public2.example/bar`.
-  //
-  // The target IP address space `kLocal` should not be applied to the new
-  // connection obtained to `https://public2.example`.
-  //
-  // See also: https://crbug.com/1293891
-  target_ip_address_space_ = mojom::IPAddressSpace::kUnknown;
 
   DCHECK_EQ(emitted_devtools_raw_request_, emitted_devtools_raw_response_);
   response->emitted_extra_info = emitted_devtools_raw_request_;
@@ -2148,13 +2068,6 @@ void URLLoader::DispatchOnRawRequest(
 
   seen_raw_request_headers_ = true;
 
-  mojom::ClientSecurityStatePtr client_security_state;
-  if (factory_params_.client_security_state) {
-    client_security_state = factory_params_.client_security_state->Clone();
-  } else if (request_client_security_state_) {
-    client_security_state = request_client_security_state_->Clone();
-  }
-
   net::LoadTimingInfo load_timing_info;
   url_request_->GetLoadTimingInfo(&load_timing_info);
 
@@ -2162,7 +2075,7 @@ void URLLoader::DispatchOnRawRequest(
   devtools_observer_->OnRawRequest(
       devtools_request_id().value(), url_request_->maybe_sent_cookies(),
       std::move(headers), load_timing_info.request_start,
-      std::move(client_security_state));
+      private_network_access_checker_.CloneClientSecurityState());
 }
 
 bool URLLoader::DispatchOnRawResponse() {
@@ -2219,7 +2132,8 @@ bool URLLoader::DispatchOnRawResponse() {
   devtools_observer_->OnRawResponse(
       devtools_request_id().value(), url_request_->maybe_stored_cookies(),
       std::move(header_array), raw_response_headers,
-      response_ip_address_space_.value_or(mojom::IPAddressSpace::kUnknown),
+      private_network_access_checker_.ResponseAddressSpace().value_or(
+          mojom::IPAddressSpace::kUnknown),
       response_headers->response_code());
 
   return true;
