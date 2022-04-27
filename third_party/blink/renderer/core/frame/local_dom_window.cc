@@ -840,12 +840,15 @@ void LocalDOMWindow::StatePopped(
   if (!GetFrame())
     return;
 
-  // Per step 11 of section 6.5.9 (history traversal) of the HTML5 spec, we
-  // defer firing of popstate until we're in the complete state.
-  if (document()->IsLoadCompleted())
+  // TODO(crbug.com/1254926): Remove pending_state_object_ and the capacity to
+  // delay popstate until after the load event once the behavior is proven
+  // compatible in M103.
+  if (document()->IsLoadCompleted() ||
+      base::FeatureList::IsEnabled(features::kDispatchPopstateSync)) {
     EnqueuePopstateEvent(std::move(state_object));
-  else
+  } else {
     pending_state_object_ = std::move(state_object);
+  }
 }
 
 LocalDOMWindow::~LocalDOMWindow() = default;
