@@ -46,6 +46,10 @@ void DIPSBounceDetector::HandleStatefulRedirect(
 void DIPSBounceDetector::OnCookiesAccessed(
     NavigationHandle* navigation_handle,
     const content::CookieAccessDetails& details) {
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+
   auto* existing_state = static_cast<BounceDetectionState*>(
       navigation_handle->GetUserData(kBounceDetectionStateKey));
   if (existing_state) {
@@ -61,6 +65,10 @@ void DIPSBounceDetector::OnCookiesAccessed(
 
 void DIPSBounceDetector::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+
   // We can be sure OnCookiesAccessed() was called for all redirects at this
   // point.
   auto* state = static_cast<BounceDetectionState*>(

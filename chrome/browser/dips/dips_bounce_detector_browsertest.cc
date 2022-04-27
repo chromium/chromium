@@ -4,6 +4,7 @@
 
 #include "chrome/browser/dips/dips_bounce_detector.h"
 
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ui/browser.h"
@@ -13,6 +14,9 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using content::NavigationHandle;
@@ -112,16 +116,17 @@ class DIPSBounceDetectorBrowserTest : public InProcessBrowserTest {
 // This test also verifies that for redirects that both read and write cookies,
 // OnCookiesAccessed() is called with kRead before it's called with kChange.
 //
-// If either assumption is incorrect, this test will be flaky. On 2022-04-13 I
+// If either assumption is incorrect, this test will be flaky. On 2022-04-27 I
 // (rtarpine) ran this test 1000 times in 40 parallel jobs with no failures, so
 // it seems robust.
 IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        AllCookieCallbacksBeforeNavigationFinished) {
   GURL redirect_url = embedded_test_server()->GetURL(
       "a.test",
-      "/cross-site/b.test/cross-site-with-cookie/c.test/cross-site/d.test/"
-      "title1.html");
-  GURL final_url = embedded_test_server()->GetURL("d.test", "/title1.html");
+      "/cross-site/b.test/cross-site-with-cookie/c.test/cross-site-with-cookie/"
+      "d.test/set-cookie?name=value");
+  GURL final_url =
+      embedded_test_server()->GetURL("d.test", "/set-cookie?name=value");
   content::WebContents* web_contents = GetActiveWebContents();
 
   // Set cookies on all 4 test domains
@@ -145,25 +150,34 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   // Visit the redirect.
   ASSERT_TRUE(content::NavigateToURL(web_contents, redirect_url, final_url));
 
-  // Verify that the 4 OnCookiesAccessed() executions are called in order,
-  // and all between DidStartNavigation() and DidFinishNavigation().
+  // Verify that the 7 OnCookiesAccessed() executions are called in order, and
+  // all between DidStartNavigation() and DidFinishNavigation().
+  //
+  // Note: according to web_contents_observer.h, sometimes cookie reads/writes
+  // from navigations may cause the RenderFrameHost* overload of
+  // OnCookiesAccessed to be called instead. We haven't seen that yet, and this
+  // test will intentionally fail if it happens so that we'll notice.
   EXPECT_THAT(
       logger->log(),
       testing::ElementsAre(
           ("DidStartNavigation(a.test/cross-site/b.test/cross-site-with-cookie/"
-           "c.test/cross-site/d.test/title1.html)"),
+           "c.test/cross-site-with-cookie/d.test/set-cookie)"),
           ("OnCookiesAccessed(Read: "
-           "a.test/cross-site/b.test/cross-site-with-cookie/c.test/cross-site/"
-           "d.test/title1.html)"),
+           "a.test/cross-site/b.test/cross-site-with-cookie/c.test/"
+           "cross-site-with-cookie/d.test/set-cookie)"),
           ("OnCookiesAccessed(Read: "
-           "b.test/cross-site-with-cookie/c.test/cross-site/d.test/"
-           "title1.html)"),
+           "b.test/cross-site-with-cookie/c.test/cross-site-with-cookie/d.test/"
+           "set-cookie)"),
           ("OnCookiesAccessed(Change: "
-           "b.test/cross-site-with-cookie/c.test/cross-site/d.test/"
-           "title1.html)"),
-          "OnCookiesAccessed(Read: c.test/cross-site/d.test/title1.html)",
-          "OnCookiesAccessed(Read: d.test/title1.html)",
-          "DidFinishNavigation(d.test/title1.html)"));
+           "b.test/cross-site-with-cookie/c.test/cross-site-with-cookie/d.test/"
+           "set-cookie)"),
+          ("OnCookiesAccessed(Read: "
+           "c.test/cross-site-with-cookie/d.test/set-cookie)"),
+          ("OnCookiesAccessed(Change: "
+           "c.test/cross-site-with-cookie/d.test/set-cookie)"),
+          "OnCookiesAccessed(Read: d.test/set-cookie)",
+          "OnCookiesAccessed(Change: d.test/set-cookie)",
+          "DidFinishNavigation(d.test/set-cookie)"));
 }
 
 void AppendRedirectURL(std::vector<std::string>* urls,
@@ -205,4 +219,71 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest, DetectStatefulBounces) {
                   ("a.test/cross-site-with-cookie/b.test/cross-site/c.test/"
                    "cross-site/d.test/title1.html"),
                   "b.test/cross-site/c.test/cross-site/d.test/title1.html"));
+}
+
+// An EmbeddedTestServer request handler for
+// /cross-site-with-samesite-none-cookie URLs. Like /cross-site-with-cookie, but
+// the cookie has additional Secure and SameSite=None attributes.
+std::unique_ptr<net::test_server::HttpResponse>
+HandleCrossSiteSameSiteNoneCookieRedirect(
+    net::EmbeddedTestServer* server,
+    const net::test_server::HttpRequest& request) {
+  const std::string prefix = "/cross-site-with-samesite-none-cookie";
+  if (!net::test_server::ShouldHandle(request, prefix))
+    return nullptr;
+
+  std::string dest_all = base::UnescapeBinaryURLComponent(
+      request.relative_url.substr(prefix.size() + 1));
+
+  std::string dest;
+  size_t delimiter = dest_all.find("/");
+  if (delimiter != std::string::npos) {
+    dest = base::StringPrintf(
+        "//%s:%hu/%s", dest_all.substr(0, delimiter).c_str(), server->port(),
+        dest_all.substr(delimiter + 1).c_str());
+  }
+
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
+  http_response->AddCustomHeader("Location", dest);
+  http_response->AddCustomHeader("Set-Cookie",
+                                 "server-redirect=true; Secure; SameSite=None");
+  http_response->set_content_type("text/html");
+  http_response->set_content(base::StringPrintf(
+      "<html><head></head><body>Redirecting to %s</body></html>",
+      dest.c_str()));
+  return http_response;
+}
+
+// Ignore iframes because their state will be partitioned under the top-level
+// site anyway.
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+                       IgnoreServerRedirectsInIframes) {
+  // We host the iframe content on an HTTPS server, because for it to write a
+  // cookie, the cookie needs to be SameSite=None and Secure.
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_server.AddDefaultHandlers(GetChromeTestDataDir());
+  https_server.RegisterDefaultHandler(base::BindRepeating(
+      &HandleCrossSiteSameSiteNoneCookieRedirect, &https_server));
+  ASSERT_TRUE(https_server.Start());
+
+  const GURL root_url =
+      embedded_test_server()->GetURL("a.test", "/iframe_blank.html");
+  const GURL redirect_url = https_server.GetURL(
+      "b.test", "/cross-site-with-samesite-none-cookie/c.test/title1.html");
+  const std::string iframe_id = "test";
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  std::vector<std::string> stateful_redirects;
+  bounce_detector()->SetStatefulRedirectHandlerForTesting(
+      base::BindRepeating(&AppendRedirectURL, &stateful_redirects));
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, root_url));
+  ASSERT_TRUE(
+      content::NavigateIframeToURL(web_contents, iframe_id, redirect_url));
+
+  // b.test had a stateful redirect, but because it was in an iframe, we ignored
+  // it.
+  EXPECT_THAT(stateful_redirects, testing::IsEmpty());
 }
