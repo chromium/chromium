@@ -163,6 +163,12 @@ export class ChromeCartModuleElement extends I18nMixin
       if (this.showDiscountConsent && !this.discountConsentVisible_) {
         this.showDiscountConsent = false;
         // TODO(meiliang): Show the confirmation toast here instead.
+        const firstCartLink =
+            this.$.cartCarousel.querySelector<HTMLElement>('.cart-item');
+        if (firstCartLink !== null &&
+            !this.$.confirmDiscountConsentToast.open) {
+          firstCartLink.focus();
+        }
       }
     });
   }
@@ -444,11 +450,6 @@ export class ChromeCartModuleElement extends I18nMixin
 
   private onDiscountConsentDismissed_() {
     this.discountConsentVisible_ = false;
-    const firstCart =
-        this.$.cartCarousel.querySelector<HTMLElement>('.cart-container');
-    if (firstCart !== null) {
-      firstCart.focus();
-    }
     ChromeCartProxy.getHandler().onDiscountConsentDismissed();
     chrome.metricsPrivate.recordUserAction(
         'NewTabPage.Carts.DismissDiscountConsent');
