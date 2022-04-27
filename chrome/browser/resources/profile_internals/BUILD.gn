@@ -26,7 +26,10 @@ generate_grd("build_grd") {
 preprocess_if_expr("preprocess") {
   in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [ "profile_internals_app.ts" ]
+  in_files = [
+    "profile_internals_app.ts",
+    "profile_internals_browser_proxy.ts",
+  ]
 }
 
 preprocess_if_expr("preprocess_generated") {
@@ -60,6 +63,7 @@ ts_library("build_ts") {
   in_files = [
     "profile_internals_app.ts",
     "profile_internals_app.html.ts",
+    "profile_internals_browser_proxy.ts",
   ]
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   deps = [

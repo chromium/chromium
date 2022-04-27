@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/profile_internals/profile_internals_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/profile_internals/profile_internals_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -27,13 +28,13 @@ ProfileInternalsUI::ProfileInternalsUI(content::WebUI* web_ui)
       content::WebUIDataSource::CreateAndAdd(
           browser_context, chrome::kChromeUIProfileInternalsHost);
 
+  web_ui->AddMessageHandler(std::make_unique<ProfileInternalsHandler>());
+
   // Add required resources.
   webui::SetupWebUIDataSource(html_source,
                               base::make_span(kProfileInternalsResources,
                                               kProfileInternalsResourcesSize),
                               IDR_PROFILE_INTERNALS_PROFILE_INTERNALS_HTML);
-
-  html_source->AddString("message", "Under construction.");
 }
 
 ProfileInternalsUI::~ProfileInternalsUI() = default;

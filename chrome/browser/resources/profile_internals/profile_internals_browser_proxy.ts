@@ -1,0 +1,29 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview A helper object used by the profile internals debug page
+ * to interact with the browser.
+ */
+
+export interface ProfileInternalsBrowserProxy {
+  getProfilesList(): void;
+}
+
+export class ProfileInternalsBrowserProxyImpl implements
+    ProfileInternalsBrowserProxy {
+  getProfilesList(): void {
+    chrome.send('getProfilesList');
+  }
+
+  static getInstance(): ProfileInternalsBrowserProxy {
+    return instance || (instance = new ProfileInternalsBrowserProxyImpl());
+  }
+
+  static setInstance(obj: ProfileInternalsBrowserProxy) {
+    instance = obj;
+  }
+}
+
+let instance: ProfileInternalsBrowserProxy|null = null;
