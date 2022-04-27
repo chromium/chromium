@@ -141,6 +141,10 @@ TEST_P(PrivacySandboxSettingsTest, DefaultContentSettingBlockOverridePref) {
                 {GURL("https://embedded.com"),
                  GURL("https://another-embedded.com")}));
 
+  EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+
   // An allow default or exception, whether via user or policy, should not
   // override the preference value.
   privacy_sandbox_test_util::SetupTestState(
@@ -185,6 +189,10 @@ TEST_P(PrivacySandboxSettingsTest, DefaultContentSettingBlockOverridePref) {
                 url::Origin::Create(GURL("https://test.com")),
                 {GURL("https://embedded.com"),
                  GURL("https://another-embedded.com")}));
+
+  EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
 }
 
 TEST_P(PrivacySandboxSettingsTest, CookieExceptionsApply) {
@@ -225,6 +233,10 @@ TEST_P(PrivacySandboxSettingsTest, CookieExceptionsApply) {
                 {GURL("https://embedded.com"),
                  GURL("https://another-embedded.com")}));
 
+  EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+
   // The default managed content setting should apply, overriding any user ones,
   // and disabling Topics calculations.
   privacy_sandbox_test_util::SetupTestState(
@@ -262,6 +274,10 @@ TEST_P(PrivacySandboxSettingsTest, CookieExceptionsApply) {
                 url::Origin::Create(GURL("https://test.com")),
                 {GURL("https://embedded.com"),
                  GURL("https://another-embedded.com")}));
+
+  EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
 
   // Managed content setting exceptions should override both the privacy
   // sandbox pref and any user settings.
@@ -312,6 +328,10 @@ TEST_P(PrivacySandboxSettingsTest, CookieExceptionsApply) {
                 url::Origin::Create(GURL("https://test.com")),
                 {GURL("https://embedded.com"),
                  GURL("https://another-embedded.com")}));
+
+  EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
 
   // A less specific block exception should not override a more specific allow
   // exception. The effective content setting in this scenario is still allow,
@@ -377,6 +397,10 @@ TEST_P(PrivacySandboxSettingsTest, CookieExceptionsApply) {
                 {GURL("https://embedded.com"),
                  GURL("https://another-embedded.com")}));
 
+  EXPECT_TRUE(privacy_sandbox_settings()->IsSharedStorageAllowed(
+      url::Origin::Create(GURL("https://another-test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+
   // Exceptions which specify a wildcard top frame origin should match both
   // empty top frames and non empty top frames.
   privacy_sandbox_test_util::SetupTestState(
@@ -412,6 +436,10 @@ TEST_P(PrivacySandboxSettingsTest, CookieExceptionsApply) {
                 url::Origin::Create(GURL("https://test.com")),
                 {GURL("https://embedded.com"),
                  GURL("https://another-embedded.com")}));
+
+  EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
 }
 
 TEST_P(PrivacySandboxSettingsTest, ThirdPartyCookies) {
@@ -447,6 +475,10 @@ TEST_P(PrivacySandboxSettingsTest, ThirdPartyCookies) {
                 {GURL("https://embedded.com"),
                  GURL("https://another-embedded.com")}));
 
+  EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
+
   // Privacy Sandbox APIs should be disabled if all cookies are blocked.
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
@@ -478,6 +510,10 @@ TEST_P(PrivacySandboxSettingsTest, ThirdPartyCookies) {
                 url::Origin::Create(GURL("https://test.com")),
                 {GURL("https://embedded.com"),
                  GURL("https://another-embedded.com")}));
+
+  EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
 
   // Privacy Sandbox APIs should be disabled if the privacy sandbox is disabled,
   // regardless of other cookie settings.
@@ -515,6 +551,10 @@ TEST_P(PrivacySandboxSettingsTest, ThirdPartyCookies) {
                 url::Origin::Create(GURL("https://test.com")),
                 {GURL("https://embedded.com"),
                  GURL("https://another-embedded.com")}));
+
+  EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
+      url::Origin::Create(GURL("https://test.com")),
+      url::Origin::Create(GURL("https://embedded.com"))));
 }
 
 TEST_P(PrivacySandboxSettingsTest, IsPrivacySandboxEnabled) {

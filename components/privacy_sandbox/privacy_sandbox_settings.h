@@ -155,6 +155,12 @@ class PrivacySandboxSettings : public KeyedService {
       const url::Origin& top_frame_origin,
       const std::vector<GURL>& auction_parties);
 
+  // Determines whether Shared Storage is allowable in a particular context.
+  // `top_frame_origin` can be the same as `accessing_origin` in the case of a
+  // top-level document calling Shared Storage.
+  bool IsSharedStorageAllowed(const url::Origin& top_frame_origin,
+                              const url::Origin& accessing_origin) const;
+
   // Returns whether the profile has the Privacy Sandbox enabled. This consults
   // the main preference, as well as the delegate to check whether the sandbox
   // is restricted, or has not been confirmed.  It does not consider any cookie
