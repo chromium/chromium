@@ -13,7 +13,6 @@
 #include "base/bind_internal.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "base/template_util.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE) && !HAS_FEATURE(objc_arc)
@@ -69,7 +68,7 @@ inline OnceCallback<internal::MakeUnboundRunType<Functor, Args...>> BindOnce(
                 "BindOnce requires non-const rvalue for OnceCallback binding."
                 " I.e.: base::BindOnce(std::move(callback)).");
   static_assert(
-      conjunction<
+      std::conjunction<
           internal::AssertBindArgIsNotBasePassed<std::decay_t<Args>>...>::value,
       "Use std::move() instead of base::Passed() with base::BindOnce()");
 

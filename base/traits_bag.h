@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/parameter_pack.h"
-#include "base/template_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A bag of Traits (structs / enums / etc...) can be an elegant alternative to
@@ -199,8 +198,8 @@ struct RequiredEnumTraitFilter : public BasicTraitFilter<ArgType> {
 
 // Note EmptyTrait is always regarded as valid to support filtering.
 template <class ValidTraits, class T>
-using IsValidTrait = disjunction<std::is_constructible<ValidTraits, T>,
-                                 std::is_same<T, EmptyTrait>>;
+using IsValidTrait = std::disjunction<std::is_constructible<ValidTraits, T>,
+                                      std::is_same<T, EmptyTrait>>;
 
 // Tests whether a given trait type is valid or invalid by testing whether it is
 // convertible to the provided ValidTraits type. To use, define a ValidTraits
@@ -220,7 +219,7 @@ using IsValidTrait = disjunction<std::is_constructible<ValidTraits, T>,
 // };
 template <class ValidTraits, class... ArgTypes>
 using AreValidTraits =
-    bool_constant<all_of({IsValidTrait<ValidTraits, ArgTypes>::value...})>;
+    std::bool_constant<all_of({IsValidTrait<ValidTraits, ArgTypes>::value...})>;
 
 // Helper to make getting an enum from a trait more readable.
 template <typename Enum, typename... Args>

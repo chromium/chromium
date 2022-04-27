@@ -19,7 +19,6 @@
 #include "base/containers/checked_iterators.h"
 #include "base/containers/contiguous_iterator.h"
 #include "base/cxx20_to_address.h"
-#include "base/template_util.h"
 
 namespace base {
 
@@ -56,7 +55,7 @@ template <typename T, size_t Extent>
 struct IsSpanImpl<span<T, Extent>> : std::true_type {};
 
 template <typename T>
-using IsNotSpan = negation<IsSpanImpl<std::decay_t<T>>>;
+using IsNotSpan = std::negation<IsSpanImpl<std::decay_t<T>>>;
 
 template <typename T>
 struct IsStdArrayImpl : std::false_type {};
@@ -65,10 +64,10 @@ template <typename T, size_t N>
 struct IsStdArrayImpl<std::array<T, N>> : std::true_type {};
 
 template <typename T>
-using IsNotStdArray = negation<IsStdArrayImpl<std::decay_t<T>>>;
+using IsNotStdArray = std::negation<IsStdArrayImpl<std::decay_t<T>>>;
 
 template <typename T>
-using IsNotCArray = negation<std::is_array<std::remove_reference_t<T>>>;
+using IsNotCArray = std::negation<std::is_array<std::remove_reference_t<T>>>;
 
 template <typename From, typename To>
 using IsLegalDataConversion = std::is_convertible<From (*)[], To (*)[]>;
@@ -79,8 +78,8 @@ using IteratorHasConvertibleReferenceType =
 
 template <typename Iter, typename T>
 using EnableIfCompatibleContiguousIterator = std::enable_if_t<
-    conjunction<IsContiguousIterator<Iter>,
-                IteratorHasConvertibleReferenceType<Iter, T>>::value>;
+    std::conjunction<IsContiguousIterator<Iter>,
+                     IteratorHasConvertibleReferenceType<Iter, T>>::value>;
 
 template <typename Container, typename T>
 using ContainerHasConvertibleData = IsLegalDataConversion<
@@ -106,11 +105,11 @@ using EnableIfSpanCompatibleArray =
 // SFINAE check if Container can be converted to a span<T>.
 template <typename Container, typename T>
 using IsSpanCompatibleContainer =
-    conjunction<IsNotSpan<Container>,
-                IsNotStdArray<Container>,
-                IsNotCArray<Container>,
-                ContainerHasConvertibleData<Container, T>,
-                ContainerHasIntegralSize<Container>>;
+    std::conjunction<IsNotSpan<Container>,
+                     IsNotStdArray<Container>,
+                     IsNotCArray<Container>,
+                     ContainerHasConvertibleData<Container, T>,
+                     ContainerHasIntegralSize<Container>>;
 
 template <typename Container, typename T>
 using EnableIfSpanCompatibleContainer =

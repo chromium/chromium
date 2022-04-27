@@ -11,9 +11,6 @@
 #include <tuple>
 #include <type_traits>
 
-#include "base/template_util.h"
-#include "build/build_config.h"
-
 namespace base {
 
 // Checks if any of the elements in |ilist| is true.
@@ -53,16 +50,18 @@ template <typename... Ts>
 struct ParameterPack {
   // Checks if |Type| occurs in the parameter pack.
   template <typename Type>
-  using HasType = bool_constant<any_of({std::is_same<Type, Ts>::value...})>;
+  using HasType =
+      std::bool_constant<any_of({std::is_same<Type, Ts>::value...})>;
 
   // Checks if the parameter pack only contains |Type|.
   template <typename Type>
-  using OnlyHasType = bool_constant<all_of({std::is_same<Type, Ts>::value...})>;
+  using OnlyHasType =
+      std::bool_constant<all_of({std::is_same<Type, Ts>::value...})>;
 
   // Checks if |Type| occurs only once in the parameter pack.
   template <typename Type>
   using IsUniqueInPack =
-      bool_constant<count({std::is_same<Type, Ts>::value...}, true) == 1>;
+      std::bool_constant<count({std::is_same<Type, Ts>::value...}, true) == 1>;
 
   // Returns the zero-based index of |Type| within |Pack...| or |pack_npos| if
   // it's not within the pack.
@@ -83,7 +82,7 @@ struct ParameterPack {
 
   // Checks if every type in the parameter pack is the same.
   using IsAllSameType =
-      bool_constant<all_of({std::is_same<NthType<0>, Ts>::value...})>;
+      std::bool_constant<all_of({std::is_same<NthType<0>, Ts>::value...})>;
 };
 
 }  // namespace base

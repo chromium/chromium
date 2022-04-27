@@ -62,7 +62,6 @@
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/template_util.h"
 #include "components/reporting/util/status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -90,8 +89,8 @@ class StatusOr {
   // is statically set to true, otherwise it is statically set to false.
   template <class U, typename V>
   struct is_implicitly_constructible
-      : base::conjunction<std::is_constructible<U, V>,
-                          std::is_convertible<V, U>> {};
+      : std::conjunction<std::is_constructible<U, V>,
+                         std::is_convertible<V, U>> {};
 
  public:
   // Constructs a new StatusOr with UNINITIALIZED status and no value.

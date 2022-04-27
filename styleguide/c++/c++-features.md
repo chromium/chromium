@@ -710,6 +710,26 @@ convertible to a given type.
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/YhlF_sTDSc0/m/QMzf42BtAAAJ)
 ***
 
+### std::conjunction/std::disjunction/std::negation <sup>[allowed]</sup>
+
+```c++
+template<typename T, typename... Ts>
+std::enable_if_t<std::conjunction_v<std::is_same<T, Ts>...>>
+func(T, Ts...) { ...
+```
+
+**Description:** Performs logical operations on type traits.
+
+**Documentation:**
+[std::conjunction](https://en.cppreference.com/w/cpp/types/conjunction),
+[std::disjunction](https://en.cppreference.com/w/cpp/types/disjunction),
+[std::negation](https://en.cppreference.com/w/cpp/types/negation)
+
+**Notes:**
+*** promo
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/YhlF_sTDSc0/m/QMzf42BtAAAJ)
+***
+
 ## C++17 Banned Library Features {#library-blocklist-17}
 
 The following C++17 library features are not allowed in the Chromium codebase.
@@ -1270,26 +1290,6 @@ int* p2 = static_cast<int*>(std::aligned_alloc(1024, 1024));
 
 **Documentation:**
 [std::aligned_alloc](https://en.cppreference.com/w/cpp/memory/c/aligned_alloc)
-
-**Notes:**
-*** promo
-None
-***
-
-### std::conjunction/std::disjunction/std::negation <sup>[tbd]</sup>
-
-```c++
-template<typename T, typename... Ts>
-std::enable_if_t<std::conjunction_v<std::is_same<T, Ts>...>>
-func(T, Ts...) { ...
-```
-
-**Description:** Performs logical operations on type traits.
-
-**Documentation:**
-[std::conjunction](https://en.cppreference.com/w/cpp/types/conjunction),
-[std::disjunction](https://en.cppreference.com/w/cpp/types/disjunction),
-[std::negation](https://en.cppreference.com/w/cpp/types/negation)
 
 **Notes:**
 *** promo

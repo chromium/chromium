@@ -21,7 +21,6 @@
 #include "base/memory/raw_scoped_refptr_mismatch_checker.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "base/template_util.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE) && !HAS_FEATURE(objc_arc)
@@ -371,7 +370,7 @@ struct IsCallableObject<Callable, void_t<decltype(&Callable::operator())>>
 // raw pointer to a RefCounted type.
 template <typename... Ts>
 struct HasRefCountedTypeAsRawPtr
-    : disjunction<NeedsScopedRefptrButGetsRawPtr<Ts>...> {};
+    : std::disjunction<NeedsScopedRefptrButGetsRawPtr<Ts>...> {};
 
 // ForceVoidReturn<>
 //
@@ -912,7 +911,7 @@ BanUnconstructedRefCountedReceiver(const Receiver& receiver, Unused&&...) {
 // This stores all the state passed into Bind().
 template <typename Functor, typename... BoundArgs>
 struct BindState final : BindStateBase {
-  using IsCancellable = bool_constant<
+  using IsCancellable = std::bool_constant<
       CallbackCancellationTraits<Functor,
                                  std::tuple<BoundArgs...>>::is_cancellable>;
   template <typename ForwardFunctor, typename... ForwardBoundArgs>

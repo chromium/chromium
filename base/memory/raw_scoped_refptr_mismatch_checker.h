@@ -35,8 +35,8 @@ struct IsRefCountedType<T,
 // pointer type and are convertible to a RefCounted(Base|ThreadSafeBase) type.
 template <typename T>
 struct NeedsScopedRefptrButGetsRawPtr
-    : conjunction<std::is_pointer<T>,
-                  IsRefCountedType<std::remove_pointer_t<T>>> {
+    : std::conjunction<std::is_pointer<T>,
+                       IsRefCountedType<std::remove_pointer_t<T>>> {
   static_assert(!std::is_reference<T>::value,
                 "NeedsScopedRefptrButGetsRawPtr requires non-reference type.");
 };
