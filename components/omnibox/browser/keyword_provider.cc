@@ -217,6 +217,13 @@ std::u16string KeywordProvider::GetKeywordForText(
     return std::u16string();
   }
 
+  // Don't provide a keyword if it's a starter pack engine and the starter pack
+  // feature flag is not enabled.
+  if (!OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
+      template_url->starter_pack_id() != 0) {
+    return std::u16string();
+  }
+
   return keyword;
 }
 

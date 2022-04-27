@@ -930,13 +930,15 @@ void TemplateURLService::OnWebDataServiceRequestDone(
   std::unique_ptr<OwnedTemplateURLVector> template_urls =
       std::make_unique<OwnedTemplateURLVector>();
   int new_resource_keyword_version = 0;
+  int new_resource_starter_pack_version = 0;
   {
     GetSearchProvidersUsingKeywordResult(
         *result, web_data_service_.get(), prefs_, template_urls.get(),
         (default_search_provider_source_ == DefaultSearchManager::FROM_USER)
             ? initial_default_search_provider_.get()
             : nullptr,
-        search_terms_data(), &new_resource_keyword_version, &pre_sync_deletes_);
+        search_terms_data(), &new_resource_keyword_version,
+        &new_resource_starter_pack_version, &pre_sync_deletes_);
   }
 
   Scoper scoper(this);
@@ -957,6 +959,10 @@ void TemplateURLService::OnWebDataServiceRequestDone(
 
     if (new_resource_keyword_version)
       web_data_service_->SetBuiltinKeywordVersion(new_resource_keyword_version);
+
+    if (new_resource_starter_pack_version)
+      web_data_service_->SetStarterPackKeywordVersion(
+          new_resource_starter_pack_version);
   }
 
   if (default_search_provider_) {

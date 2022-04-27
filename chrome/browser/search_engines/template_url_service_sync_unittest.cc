@@ -21,6 +21,7 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/sync/model/sync_error_factory.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/search_engine_specifics.pb.h"
@@ -1768,6 +1769,9 @@ TEST_F(TemplateURLServiceSyncTest, PreSyncUpdates) {
       TemplateURLPrepopulateData::GetPrepopulatedEngines(
           profile_a()->GetTestingPrefService(), nullptr);
 
+  std::vector<std::unique_ptr<TemplateURLData>> starter_pack_turls =
+      TemplateURLStarterPackData::GetStarterPackEngines();
+
   // We have to prematurely exit this test if for some reason this machine does
   // not have any prepopulate TemplateURLs.
   ASSERT_FALSE(prepop_turls.empty());
@@ -1806,12 +1810,12 @@ TEST_F(TemplateURLServiceSyncTest, PreSyncUpdates) {
   initial_data.push_back(
       TemplateURLService::CreateSyncDataFromTemplateURL(*sync_turl));
 
-  ASSERT_EQ(prepop_turls.size(),
+  ASSERT_EQ(prepop_turls.size() + starter_pack_turls.size(),
             model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
   model()->MergeDataAndStartSyncing(syncer::SEARCH_ENGINES, initial_data,
                                     PassProcessor(),
                                     CreateAndPassSyncErrorFactory());
-  EXPECT_EQ(prepop_turls.size(),
+  EXPECT_EQ(prepop_turls.size() + starter_pack_turls.size(),
             model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
 
   ASSERT_EQ(added_turl, model()->GetTemplateURLForKeyword(kNewKeyword16));

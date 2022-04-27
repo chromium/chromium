@@ -32,6 +32,7 @@ std::unique_ptr<WDTypedResult> GetKeywordsImpl(WebDatabase* db) {
   result.default_search_provider_id =
       keyword_table->GetDefaultSearchProviderID();
   result.builtin_keyword_version = keyword_table->GetBuiltinKeywordVersion();
+  result.starter_pack_version = keyword_table->GetStarterPackKeywordVersion();
   return std::make_unique<WDResult<WDKeywordsResult>>(KEYWORDS_RESULT, result);
 }
 

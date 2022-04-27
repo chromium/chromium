@@ -19,8 +19,10 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -94,8 +96,11 @@ IN_PROC_BROWSER_TEST_F(TemplateURLScraperTest, ScrapeWithOnSubmit) {
   std::vector<std::unique_ptr<TemplateURLData>> prepopulate_urls =
       TemplateURLPrepopulateData::GetPrepopulatedEngines(
           browser()->profile()->GetPrefs(), nullptr);
+  std::vector<std::unique_ptr<TemplateURLData>> starter_pack_urls =
+      TemplateURLStarterPackData::GetStarterPackEngines();
 
-  EXPECT_EQ(prepopulate_urls.size(), all_urls.size());
+  EXPECT_EQ(prepopulate_urls.size() + starter_pack_urls.size(),
+            all_urls.size());
 
   std::string port(base::NumberToString(embedded_test_server()->port()));
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
@@ -112,5 +117,6 @@ IN_PROC_BROWSER_TEST_F(TemplateURLScraperTest, ScrapeWithOnSubmit) {
   observer.Wait();
 
   all_urls = template_urls->GetTemplateURLs();
-  EXPECT_EQ(prepopulate_urls.size() + 1, all_urls.size());
+  EXPECT_EQ(prepopulate_urls.size() + starter_pack_urls.size() + 1,
+            all_urls.size());
 }

@@ -38,19 +38,20 @@ TemplateURL* FindURLByPrepopulateID(
 void MergeIntoEngineData(const TemplateURL* original_turl,
                          TemplateURLData* url_to_update);
 
-// CreateActionsFromCurrentPrepopulateData() (see below) takes in the current
-// prepopulated URLs as well as the user's current URLs, and returns an instance
-// of the following struct representing the changes necessary to bring the
-// user's URLs in line with the prepopulated URLs.
+// CreateActionsFromCurrentPrepopulateData() and
+// CreateActionsFromStarterPackData() (see below) takes in the current built-in
+// (prepopulated or starter pack) URLs as well as the user's current URLs, and
+// returns an instance of the following struct representing the changes
+// necessary to bring the user's URLs in line with the built-in URLs.
 //
 // There are three types of changes:
-// (1) Previous prepopulated engines that no longer exist in the current set of
-//     prepopulated engines and thus should be removed from the user's current
+// (1) Previous built-in engines that no longer exist in the current set of
+//     built-in engines and thus should be removed from the user's current
 //     URLs.
-// (2) Previous prepopulated engines whose data has changed.  The existing
+// (2) Previous built-in engines whose data has changed.  The existing
 //     entries for these engines should be updated to reflect the new data,
 //     except for any user-set names and keywords, which can be preserved.
-// (3) New prepopulated engines not in the user's engine list, which should be
+// (3) New built-in engines not in the user's engine list, which should be
 //     added.
 
 // The pair of current search engine and its new value.
@@ -94,9 +95,30 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
     const TemplateURLService::OwnedTemplateURLVector& existing_urls,
     const TemplateURL* default_search_provider);
 
+// MergeEnginesFromStarterPackData merges search engines from the built-in
+// TemplateURLStarterPackData class into |template_urls|. Calls
+// CreateActionsFromCurrentStarterPackData() to collect actions and then applies
+// them on |template_urls|. MergeEgninesFromStarterPackData is invoked when the
+// version of the starter pack data changes. If |removed_keyword_guids| is not
+// nullptr, the Sync GUID of each item removed from the DB will be added to it.
+void MergeEnginesFromStarterPackData(
+    KeywordWebDataService* service,
+    TemplateURLService::OwnedTemplateURLVector* template_urls,
+    TemplateURL* default_search_provider,
+    std::set<std::string>* removed_keyword_guids);
+
+// Given the user's current URLs and the current set of Starter Pack URLs,
+// produces the set of actions (see above) required to make the user's URLs
+// reflect the starter pack data.
+//
+// NOTE: Takes ownership of, and clears, |starter_pack_urls|.
+ActionsFromCurrentData CreateActionsFromCurrentStarterPackData(
+    std::vector<std::unique_ptr<TemplateURLData>>* starter_pack_urls,
+    const TemplateURLService::OwnedTemplateURLVector& existing_urls);
+
 // Takes in an ActionsFromCurrentData (see above) and applies the actions (add,
 // edit, or remove) to the user's current URLs.  This is called by
-// MergeEnginesFromPrepopulateData().
+// MergeEnginesFromPrepopulateData() and MergeEnginesFromStarterPackData().
 void ApplyActionsFromCurrentData(
     ActionsFromCurrentData actions,
     KeywordWebDataService* service,
@@ -124,6 +146,7 @@ void GetSearchProvidersUsingKeywordResult(
     TemplateURL* default_search_provider,
     const SearchTermsData& search_terms_data,
     int* new_resource_keyword_version,
+    int* new_resource_starter_pack_version,
     std::set<std::string>* removed_keyword_guids);
 
 // Like GetSearchProvidersUsingKeywordResult(), but allows the caller to pass in
@@ -140,6 +163,7 @@ void GetSearchProvidersUsingLoadedEngines(
     TemplateURL* default_search_provider,
     const SearchTermsData& search_terms_data,
     int* resource_keyword_version,
+    int* resource_starter_pack_version,
     std::set<std::string>* removed_keyword_guids);
 
 // Due to a bug, the |input_encodings| field of TemplateURLData could have

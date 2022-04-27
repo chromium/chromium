@@ -21,6 +21,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 
 std::u16string GetDefaultSearchEngineName(TemplateURLService* service) {
   DCHECK(service);
@@ -184,6 +185,8 @@ void MergeIntoEngineData(const TemplateURL* original_turl,
                          TemplateURLData* url_to_update) {
   DCHECK(original_turl->prepopulate_id() == 0 ||
          original_turl->prepopulate_id() == url_to_update->prepopulate_id);
+  DCHECK(original_turl->starter_pack_id() == 0 ||
+         original_turl->starter_pack_id() == url_to_update->starter_pack_id);
   // When the user modified search engine's properties or search engine is
   // imported from Play API data we need to preserve certain search engine
   // properties from overriding with prepopulated data.
@@ -309,6 +312,78 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
   return actions;
 }
 
+void MergeEnginesFromStarterPackData(
+    KeywordWebDataService* service,
+    TemplateURLService::OwnedTemplateURLVector* template_urls,
+    TemplateURL* default_search_provider,
+    std::set<std::string>* removed_keyword_guids) {
+  DCHECK(template_urls);
+
+  std::vector<std::unique_ptr<TemplateURLData>> starter_pack_urls =
+      TemplateURLStarterPackData::GetStarterPackEngines();
+
+  ActionsFromCurrentData actions(CreateActionsFromCurrentStarterPackData(
+      &starter_pack_urls, *template_urls));
+
+  ApplyActionsFromCurrentData(actions, service, template_urls,
+                              default_search_provider, removed_keyword_guids);
+}
+
+ActionsFromCurrentData CreateActionsFromCurrentStarterPackData(
+    std::vector<std::unique_ptr<TemplateURLData>>* starter_pack_urls,
+    const TemplateURLService::OwnedTemplateURLVector& existing_urls) {
+  // Create a map to hold all provided |template_urls| that originally came from
+  // starter_pack data (i.e. have a non-zero starter_pack_id()).
+  std::map<int, TemplateURL*> id_to_turl;
+  for (auto& turl : existing_urls) {
+    int starter_pack_id = turl->starter_pack_id();
+    if (starter_pack_id > 0)
+      id_to_turl[starter_pack_id] = turl.get();
+  }
+
+  // For each current starter pack URL, check whether |template_urls| contained
+  // a matching starter pack URL.  If so, update the passed-in URL to match the
+  // current data.  (If the passed-in URL was user-edited, we persist the user's
+  // name and keyword.)  If not, add the prepopulated URL.
+  ActionsFromCurrentData actions;
+  for (auto& url : *starter_pack_urls) {
+    const int starter_pack_id = url->starter_pack_id;
+    DCHECK_NE(0, starter_pack_id);
+
+    auto existing_url_iter = id_to_turl.find(starter_pack_id);
+    TemplateURL* existing_url = nullptr;
+    if (existing_url_iter != id_to_turl.end()) {
+      existing_url = existing_url_iter->second;
+      id_to_turl.erase(existing_url_iter);
+    }
+
+    if (existing_url != nullptr) {
+      // Update the data store with the new prepopulated data. Preserve user
+      // edits to the name and keyword.
+      MergeIntoEngineData(existing_url, url.get());
+      // Update last_modified to ensure that if this entry is later merged with
+      // entries from Sync, the conflict resolution logic knows that this was
+      // updated and propagates the new values to the server.
+      url->last_modified = base::Time::Now();
+      actions.edited_engines.push_back({existing_url, *url});
+    } else {
+      actions.added_engines.push_back(*url);
+    }
+  }
+
+  // The block above removed all the URLs from the |id_to_turl| map that were
+  // found in the prepopulate data.  Any remaining URLs that haven't been
+  // user-edited can be removed from the data store.
+  for (auto& i : id_to_turl) {
+    TemplateURL* template_url = i.second;
+    if (template_url->safe_for_autoreplace()) {
+      actions.removed_engines.push_back(template_url);
+    }
+  }
+
+  return actions;
+}
+
 void ApplyActionsFromCurrentData(
     ActionsFromCurrentData actions,
     KeywordWebDataService* service,
@@ -356,6 +431,7 @@ void GetSearchProvidersUsingKeywordResult(
     TemplateURL* default_search_provider,
     const SearchTermsData& search_terms_data,
     int* new_resource_keyword_version,
+    int* new_resource_starter_pack_version,
     std::set<std::string>* removed_keyword_guids) {
   DCHECK(template_urls);
   DCHECK(template_urls->empty());
@@ -381,11 +457,11 @@ void GetSearchProvidersUsingKeywordResult(
   }
 
   *new_resource_keyword_version = keyword_result.builtin_keyword_version;
-  GetSearchProvidersUsingLoadedEngines(service, prefs, template_urls,
-                                       default_search_provider,
-                                       search_terms_data,
-                                       new_resource_keyword_version,
-                                       removed_keyword_guids);
+  *new_resource_starter_pack_version = keyword_result.starter_pack_version;
+  GetSearchProvidersUsingLoadedEngines(
+      service, prefs, template_urls, default_search_provider, search_terms_data,
+      new_resource_keyword_version, new_resource_starter_pack_version,
+      removed_keyword_guids);
 }
 
 void GetSearchProvidersUsingLoadedEngines(
@@ -395,6 +471,7 @@ void GetSearchProvidersUsingLoadedEngines(
     TemplateURL* default_search_provider,
     const SearchTermsData& search_terms_data,
     int* resource_keyword_version,
+    int* resource_starter_pack_version,
     std::set<std::string>* removed_keyword_guids) {
   DCHECK(template_urls);
   DCHECK(resource_keyword_version);
@@ -413,6 +490,16 @@ void GetSearchProvidersUsingLoadedEngines(
     *resource_keyword_version = prepopulate_resource_keyword_version;
   } else {
     *resource_keyword_version = 0;
+  }
+
+  const int starter_pack_data_version =
+      TemplateURLStarterPackData::GetDataVersion();
+  if (*resource_starter_pack_version < starter_pack_data_version) {
+    MergeEnginesFromStarterPackData(
+        service, template_urls, default_search_provider, removed_keyword_guids);
+    *resource_starter_pack_version = starter_pack_data_version;
+  } else {
+    *resource_starter_pack_version = 0;
   }
 }
 
