@@ -190,7 +190,7 @@ bool PermissionUtil::IsPermission(ContentSettingsType type) {
     case ContentSettingsType::MEDIASTREAM_CAMERA:
     case ContentSettingsType::MEDIASTREAM_MIC:
     case ContentSettingsType::BACKGROUND_SYNC:
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
 #endif
     case ContentSettingsType::SENSORS:

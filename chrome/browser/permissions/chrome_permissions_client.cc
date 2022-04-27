@@ -286,7 +286,7 @@ void ChromePermissionsClient::GetUkmSourceId(
 
 permissions::IconId ChromePermissionsClient::GetOverrideIconId(
     permissions::RequestType request_type) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(xhwang): fix this icon, see crbug.com/446263.
   if (request_type == permissions::RequestType::kProtectedMediaIdentifier)
     return kProductIcon;

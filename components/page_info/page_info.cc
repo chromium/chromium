@@ -100,7 +100,7 @@ ContentSettingsType kPermissionType[] = {
     ContentSettingsType::BACKGROUND_SYNC,
     ContentSettingsType::SOUND,
     ContentSettingsType::AUTOMATIC_DOWNLOADS,
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
 #endif
     ContentSettingsType::MIDI_SYSEX,

@@ -55,10 +55,10 @@ const char kObsoleteFontAccessDefaultPref[] =
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 // This setting was moved and should be migrated on profile startup.
 const char kDeprecatedEnableDRM[] = "settings.privacy.drm_enabled";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 
 ContentSetting GetDefaultValue(const WebsiteSettingsInfo* info) {
   const base::Value& initial_default = info->initial_default_value();
@@ -138,9 +138,9 @@ void DefaultProvider::RegisterProfilePrefs(
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   registry->RegisterBooleanPref(kDeprecatedEnableDRM, true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 }
 
 DefaultProvider::DefaultProvider(PrefService* prefs, bool off_the_record)
@@ -423,7 +423,7 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   // TODO(crbug.com/1191642): Remove this migration logic in M100.
   WebsiteSettingsRegistry* website_settings =
       WebsiteSettingsRegistry::GetInstance();
@@ -437,7 +437,7 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
                                                : CONTENT_SETTING_BLOCK);
   }
   prefs_->ClearPref(kDeprecatedEnableDRM);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 }
 
 }  // namespace content_settings

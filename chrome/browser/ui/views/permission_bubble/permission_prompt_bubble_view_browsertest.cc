@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_P(QuietUIPromoBrowserTest, InvokeUi_QuietUIPromo) {
 }
 
 // ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER is ChromeOS only.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
                        InvokeUi_protected_media) {
   ShowAndVerifyUi();

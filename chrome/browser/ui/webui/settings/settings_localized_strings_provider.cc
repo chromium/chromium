@@ -2242,7 +2242,7 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
      IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_BLOCKED},
     {"siteSettingsProtectedContentBlockedSubLabel",
      IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_BLOCKED_SUB_LABEL},
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     {"siteSettingsProtectedContentIdentifiersExplanation",
      IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_IDENTIFIERS_EXPLANATION},
     {"siteSettingsProtectedContentEnableIdentifiers",

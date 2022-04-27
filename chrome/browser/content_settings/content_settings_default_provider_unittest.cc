@@ -174,7 +174,7 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
   EXPECT_EQ(CONTENT_SETTING_BLOCK, prefs->GetInteger(kGeolocationPrefPath));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 // Tests that the protected media identifier setting is migrated.
 TEST_F(ContentSettingsDefaultProviderTest,
        MigrateProtectedMediaIdentifierPreferenceBlock) {
@@ -228,7 +228,7 @@ TEST_F(ContentSettingsDefaultProviderTest,
           website_settings->Get(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER)
               ->default_value_pref_name()));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 
 TEST_F(ContentSettingsDefaultProviderTest, OffTheRecord) {
   DefaultProvider otr_provider(profile_.GetPrefs(), true /* incognito */);

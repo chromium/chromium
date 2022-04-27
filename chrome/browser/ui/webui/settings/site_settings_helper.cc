@@ -439,7 +439,7 @@ const std::vector<ContentSettingsType>& GetVisiblePermissionCategories() {
       ContentSettingsType::MIXEDSCRIPT,
       ContentSettingsType::NOTIFICATIONS,
       ContentSettingsType::POPUPS,
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
       ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
 #endif
       ContentSettingsType::SENSORS,
