@@ -4029,7 +4029,7 @@ class ChromeDriverTestLegacy(ChromeDriverBaseTestWithWebServer):
 class ChromeDriverFencedFrame(ChromeDriverBaseTestWithWebServer):
   def setUp(self):
     super().setUp()
-    self._http_server.SetDataForPath('/main.html', bytes("""
+    self._https_server.SetDataForPath('/main.html', bytes("""
       <!DOCTYPE html>
         <html>
           <body>
@@ -4038,7 +4038,7 @@ class ChromeDriverFencedFrame(ChromeDriverBaseTestWithWebServer):
         </html>
       """, 'utf-8'))
 
-    self._http_server.SetDataForPath('/nesting.html', bytes("""
+    self._https_server.SetDataForPath('/nesting.html', bytes("""
       <!DOCTYPE html>
         <html>
           <body>
@@ -4055,22 +4055,27 @@ class ChromeDriverFencedFrame(ChromeDriverBaseTestWithWebServer):
             <button></button>
           </body>
         </html>""", 'utf-8')
-    self._http_server.SetCallbackForPath('/fencedframe.html', respondWithFencedFrameContents)
+    self._https_server.SetCallbackForPath('/fencedframe.html', respondWithFencedFrameContents)
 
+  @staticmethod
+  def GetHttpsUrlForFile(file_path):
+    return ChromeDriverFencedFrame._https_server.GetUrl() + file_path
 
   def tearDown(self):
     super().tearDown()
-    self._http_server.SetDataForPath('/main.html', None)
-    self._http_server.SetDataForPath('/nesting.html', None)
-    self._http_server.SetCallbackForPath('/fencedframe.html', None)
+    self._https_server.SetDataForPath('/main.html', None)
+    self._https_server.SetDataForPath('/nesting.html', None)
+    self._https_server.SetCallbackForPath('/fencedframe.html', None)
 
   def _initDriver(self, fenced_frame_implementation):
-    self._driver = self.CreateDriver(chrome_switches=['--site-per-process',
+    self._driver = self.CreateDriver(
+        accept_insecure_certs = True,
+        chrome_switches=['--site-per-process',
         '--enable-features=FencedFrames:implementation_type/%s,PrivacySandboxAdsAPIsOverride' % fenced_frame_implementation])
 
   def _testCanSwitchToFencedFrame(self, fenced_frame_implementation):
     self._initDriver(fenced_frame_implementation)
-    self._driver.Load(self.GetHttpUrlForFile('/main.html'))
+    self._driver.Load(self.GetHttpsUrlForFile('/main.html'))
     self._driver.SetTimeouts({'implicit': 2000})
     fencedframe = self._driver.FindElement('tag name', 'fencedframe')
     self._driver.SwitchToFrame(fencedframe)
@@ -4079,7 +4084,7 @@ class ChromeDriverFencedFrame(ChromeDriverBaseTestWithWebServer):
 
   def _testAppendEmptyFencedFrame(self, fenced_frame_implementation):
     self._initDriver(fenced_frame_implementation)
-    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+    self._driver.Load(self.GetHttpsUrlForFile('/chromedriver/empty.html'))
     self._driver.ExecuteScript('document.body.appendChild(document.createElement("fencedframe"));')
     fencedframe = self._driver.FindElement('tag name', 'fencedframe')
     self.assertIsNotNone(fencedframe)
@@ -4087,7 +4092,7 @@ class ChromeDriverFencedFrame(ChromeDriverBaseTestWithWebServer):
 
   def _testFencedFrameInsideIframe(self, fenced_frame_implementation):
     self._initDriver(fenced_frame_implementation)
-    self._driver.Load(self.GetHttpUrlForFile('/nesting.html'))
+    self._driver.Load(self.GetHttpsUrlForFile('/nesting.html'))
     self._driver.SwitchToFrameByIndex(0)
     fencedframe = self._driver.FindElement('tag name', 'fencedframe')
     self.assertIsNotNone(fencedframe)

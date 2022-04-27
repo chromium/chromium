@@ -940,6 +940,13 @@ class FencedFrameFileSystemAccessBrowserTest
           {/* disabled_features */});
     }
   }
+
+  void SetUpOnMainThread() override {
+    FileSystemAccessBrowserTest::SetUpOnMainThread();
+    https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_.Start());
+  }
+
   ~FencedFrameFileSystemAccessBrowserTest() override = default;
 
   FencedFrameFileSystemAccessBrowserTest(
@@ -972,9 +979,13 @@ class FencedFrameFileSystemAccessBrowserTest
     return new_frame;
   }
 
+ protected:
+  net::EmbeddedTestServer& https_server() { return https_server_; }
+
  private:
   std::unique_ptr<content::test::FencedFrameTestHelper> fenced_frame_helper_;
   base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
 IN_PROC_BROWSER_TEST_P(FencedFrameFileSystemAccessBrowserTest,
@@ -998,8 +1009,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameFileSystemAccessBrowserTest,
   EXPECT_FALSE(IsUsageIndicatorVisible());
 
   // Load a fenced frame.
-  GURL fenced_frame_url =
-      embedded_test_server()->GetURL("/fenced_frames/title1.html");
+  GURL fenced_frame_url = https_server().GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
       CreateFencedFrame(web_contents->GetMainFrame(), fenced_frame_url);
   ASSERT_TRUE(fenced_frame_host);

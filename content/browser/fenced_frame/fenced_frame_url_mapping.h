@@ -159,8 +159,6 @@ class CONTENT_EXPORT FencedFrameURLMapping {
       std::vector<GURL> ad_component_urls,
       const ReportingMetadata& reporting_metadata = ReportingMetadata());
 
-  static bool IsValidUrnUuidURL(const GURL& url);
-
   // Generate a URN that is not yet mapped to a URL. Used by the Shared Storage
   // API to return the URN for `sharedStorage.runURLSelectionOperation` before
   // the URL selection decision is made.

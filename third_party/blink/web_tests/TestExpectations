@@ -7542,9 +7542,9 @@ crbug.com/1294619 http/tests/inspector-protocol/target/target-expose-devtools-pr
 crbug.com/1297587 [ Mac10.12 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Failure Pass ]
 
 # Sheriff 2022-02-16
-crbug.com/1297416 [ Mac Release ] virtual/fenced-frame-shadow-dom/http/tests/fenced_frame/coop-bcg-swap-rendering.html [ Failure Pass ]
-crbug.com/1297416 [ Linux Release ] virtual/fenced-frame-shadow-dom/http/tests/fenced_frame/coop-bcg-swap-rendering.html [ Failure Pass ]
-crbug.com/1297416 [ Release Win10.20h2 ] virtual/fenced-frame-shadow-dom/http/tests/fenced_frame/coop-bcg-swap-rendering.html [ Failure Pass ]
+crbug.com/1297416 [ Mac Release ] virtual/fenced-frame-shadow-dom/http/tests/fenced_frame/coop-bcg-swap-rendering.https.html [ Failure Pass ]
+crbug.com/1297416 [ Linux Release ] virtual/fenced-frame-shadow-dom/http/tests/fenced_frame/coop-bcg-swap-rendering.https.html [ Failure Pass ]
+crbug.com/1297416 [ Release Win10.20h2 ] virtual/fenced-frame-shadow-dom/http/tests/fenced_frame/coop-bcg-swap-rendering.https.html [ Failure Pass ]
 
 crbug.com/1296179 [ Mac Release ] external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Pass ]
 crbug.com/1296179 [ Linux Release ] external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Pass ]

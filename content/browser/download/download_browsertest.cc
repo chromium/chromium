@@ -1519,19 +1519,28 @@ class DownloadFencedFrameTest
 
     // FencedFrameTestHelper only supports the MPArch version of fenced frames.
     // So need to maually create a fenced frame for the ShadowDOM version.
-    TestNavigationManager navigation(shell()->web_contents(), url);
     constexpr char kAddFencedFrameScript[] = R"({
         const fenced_frame = document.createElement('fencedframe');
-        fenced_frame.src = $1;
         document.body.appendChild(fenced_frame);
     })";
-    EXPECT_TRUE(
-        ExecJs(fenced_frame_parent, JsReplace(kAddFencedFrameScript, url)));
+    EXPECT_TRUE(ExecJs(fenced_frame_parent, kAddFencedFrameScript));
+
+    // Navigate the fenced frame from inside itself, just like the
+    // `FencedFrameTestHelper` does for MPArch.
+    RenderFrameHostImpl* rfh =
+        static_cast<RenderFrameHostImpl*>(ChildFrameAt(fenced_frame_parent, 0));
+    FrameTreeNode* target_node = rfh->frame_tree_node();
+    constexpr char kNavigateInFencedFrameScript[] = R"({
+        location.href = $1;
+    })";
+
+    TestNavigationManager navigation(shell()->web_contents(), url);
+    EXPECT_EQ(url.spec(),
+              EvalJs(rfh, JsReplace(kNavigateInFencedFrameScript, url)));
     navigation.WaitForNavigationFinished();
 
-    RenderFrameHost* new_frame = ChildFrameAt(fenced_frame_parent, 0);
-
-    return new_frame;
+    EXPECT_FALSE(target_node->current_frame_host()->IsErrorDocument());
+    return target_node->current_frame_host();
   }
 
  private:

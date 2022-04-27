@@ -28,6 +28,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 
 namespace content {
 
@@ -990,7 +991,7 @@ IN_PROC_BROWSER_TEST_F(
     )")
                              .ExtractString();
 
-  EXPECT_TRUE(FencedFrameURLMapping::IsValidUrnUuidURL(GURL(urn_uuid)));
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(GURL(urn_uuid)));
 
   // There are 2 "worklet operations": addModule and runURLSelectionOperation.
   test_worklet_host_manager()
@@ -1073,7 +1074,7 @@ IN_PROC_BROWSER_TEST_F(
     )")
                              .ExtractString();
 
-  EXPECT_TRUE(FencedFrameURLMapping::IsValidUrnUuidURL(GURL(urn_uuid)));
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(GURL(urn_uuid)));
 
   // There are 2 "worklet operations": addModule and runURLSelectionOperation.
   test_worklet_host_manager()
@@ -1167,7 +1168,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
     )")
                              .ExtractString();
 
-  EXPECT_TRUE(FencedFrameURLMapping::IsValidUrnUuidURL(GURL(urn_uuid)));
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(GURL(urn_uuid)));
 
   // Navigate the iframe to about:blank.
   NavigateIframeToURL(shell()->web_contents(), "test_iframe",
@@ -1360,7 +1361,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
     )")
                              .ExtractString();
 
-  EXPECT_TRUE(FencedFrameURLMapping::IsValidUrnUuidURL(GURL(urn_uuid)));
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(GURL(urn_uuid)));
 
   // There are 2 "worklet operations": addModule and runURLSelectionOperation.
   test_worklet_host_manager()
@@ -1426,7 +1427,7 @@ IN_PROC_BROWSER_TEST_F(
     )")
                              .ExtractString();
 
-  EXPECT_TRUE(FencedFrameURLMapping::IsValidUrnUuidURL(GURL(urn_uuid)));
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(GURL(urn_uuid)));
 
   // There are 2 "worklet operations": addModule and runURLSelectionOperation.
   test_worklet_host_manager()
@@ -1464,7 +1465,7 @@ IN_PROC_BROWSER_TEST_F(
     )")
                              .ExtractString();
 
-  EXPECT_TRUE(FencedFrameURLMapping::IsValidUrnUuidURL(GURL(urn_uuid)));
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(GURL(urn_uuid)));
 
   // There are 2 "worklet operations": addModule and runURLSelectionOperation.
   test_worklet_host_manager()
@@ -1511,7 +1512,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
     )")
                              .ExtractString();
 
-  EXPECT_TRUE(FencedFrameURLMapping::IsValidUrnUuidURL(GURL(urn_uuid)));
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(GURL(urn_uuid)));
 
   // There are 2 "worklet operations": addModule and runURLSelectionOperation.
   test_worklet_host_manager()

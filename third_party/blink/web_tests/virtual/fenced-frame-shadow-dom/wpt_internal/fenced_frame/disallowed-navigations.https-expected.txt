@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = ResizeObserver loop limit exceeded
+PASS iframe data: URL
+PASS iframe blob: URL
+PASS iframe javascript: URL
+PASS fenced frame mode=opaque-ads data: URL
+PASS fenced frame mode=opaque-ads blob: URL
+PASS fenced frame mode=opaque-ads javascript: URL
+PASS fenced frame mode=opaque-ads http: URL
+PASS fenced frame mode=default data: URL
+PASS fenced frame mode=default blob: URL
+PASS fenced frame mode=default javascript: URL
+PASS fenced frame mode=default http: URL
+PASS fenced frame opaque URN => data: URL
+PASS fenced frame opaque URN => blob: URL
+PASS fenced frame opaque URN => javascript: URL
+PASS fenced frame opaque URN => http: URL
+Harness: the test ran to completion.
+

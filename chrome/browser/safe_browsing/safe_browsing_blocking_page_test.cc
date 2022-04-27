@@ -807,6 +807,8 @@ class SafeBrowsingBlockingPageBrowserTest
  protected:
   TestThreatDetailsFactory details_factory_;
 
+  net::EmbeddedTestServer& https_server() { return https_server_; }
+
  private:
   // Adds a safebrowsing result of the current test threat to the fake
   // safebrowsing service, navigates to that page, and returns the url.
@@ -3496,6 +3498,17 @@ class SafeBrowsingFencedFrameBrowserTest
  public:
   ~SafeBrowsingFencedFrameBrowserTest() override = default;
 
+  void SetUpOnMainThread() override {
+    SafeBrowsingBlockingPageBrowserTest::SetUpOnMainThread();
+    https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_.Start());
+    scoped_refptr<net::X509Certificate> cert(https_server_.GetCertificate());
+    net::CertVerifyResult verify_result;
+    verify_result.verified_cert = cert;
+    verify_result.cert_status = 0;
+    mock_cert_verifier()->AddResultForCert(cert.get(), verify_result, net::OK);
+  }
+
   void AddFencedFrameAndExpectInterstitial(const GURL& url) {
     content::WebContents* contents =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -3522,8 +3535,11 @@ class SafeBrowsingFencedFrameBrowserTest
     EXPECT_TRUE(IsShowingInterstitial(contents));
   }
 
+  net::EmbeddedTestServer& https_server() { return https_server_; }
+
  private:
   content::test::FencedFrameTestHelper fenced_frame_helper_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -3538,10 +3554,15 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(SafeBrowsingFencedFrameBrowserTest, UnsafeFencedFrame) {
   const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
   const GURL fenced_frame_url =
-      embedded_test_server()->GetURL("/fenced_frames/title1.html");
+      https_server().GetURL("/fenced_frames/title1.html");
   SetURLThreatType(fenced_frame_url, GetThreatType());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  ASSERT_FALSE(browser()
+                   ->tab_strip_model()
+                   ->GetActiveWebContents()
+                   ->GetMainFrame()
+                   ->IsErrorDocument());
   AddFencedFrameAndExpectInterstitial(fenced_frame_url);
 }
 
@@ -3551,10 +3572,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingFencedFrameBrowserTest,
   SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
   const bool expect_threat_details =
       SafeBrowsingBlockingPage::ShouldReportThreatDetails(GetThreatType());
-  const GURL initial_url =
-      embedded_test_server()->GetURL(kMaliciousFencedFrameOwner);
-  const GURL fenced_frame_url =
-      embedded_test_server()->GetURL(kMaliciousFencedFrame);
+  const GURL initial_url = https_server().GetURL(kMaliciousFencedFrameOwner);
+  const GURL fenced_frame_url = https_server().GetURL(kMaliciousFencedFrame);
   SetURLThreatType(fenced_frame_url, GetThreatType());
 
   base::RunLoop threat_report_sent_run_loop;

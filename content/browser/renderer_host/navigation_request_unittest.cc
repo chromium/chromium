@@ -348,7 +348,7 @@ TEST_F(NavigationRequestTest, FencedFrameNavigationToPendingMappedURN) {
       main_test_rfh()->GetPage().fenced_frame_urls_map();
 
   const GURL urn_uuid = fenced_frame_urls_map.GeneratePendingMappedURN();
-  const GURL mapped_url = GURL("http://chromium.org");
+  const GURL mapped_url = GURL("https://chromium.org");
 
   auto navigation_simulator = NavigationSimulatorImpl::CreateRendererInitiated(
       urn_uuid, fenced_frame_tree_node->current_frame_host());

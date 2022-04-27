@@ -131,6 +131,7 @@ source_set("headers") {
     "device_memory/approximated_device_memory.h",
     "dom_storage/session_storage_namespace_id.h",
     "features.h",
+    "fenced_frame/fenced_frame_utils.h",
     "fetch/fetch_api_request_headers_map.h",
     "fetch/fetch_api_request_headers_mojom_traits.h",
     "forcedark/forcedark_switches.h",

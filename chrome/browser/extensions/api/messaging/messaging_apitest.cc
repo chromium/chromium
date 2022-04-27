@@ -1544,6 +1544,7 @@ class MessagingApiFencedFrameTest
           {{"implementation_type", GetParam() ? "shadow_dom" : "mparch"}}},
          {features::kPrivacySandboxAdsAPIsOverride, {}}},
         {/* disabled_features */});
+    UseHttpsTestServer();
   }
   ~MessagingApiFencedFrameTest() override = default;
 

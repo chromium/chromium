@@ -9,6 +9,7 @@
 #include "content/test/fenced_frame_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -404,7 +405,7 @@ TEST(FencedFrameURLMappingTest, HasCorrectFormat) {
   EXPECT_EQ(spec.at(27), '-');
   EXPECT_EQ(spec.at(32), '-');
 
-  EXPECT_TRUE(fenced_frame_url_mapping.IsValidUrnUuidURL(urn_uuid));
+  EXPECT_TRUE(blink::IsValidUrnUuidURL(urn_uuid));
 }
 
 // Test that reporting metadata gets saved successfully.

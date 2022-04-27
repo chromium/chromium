@@ -1123,6 +1123,8 @@ class AdTaggingFencedFrameBrowserTest : public AdTaggingBrowserTest {
   void SetUpOnMainThread() override {
     AdTaggingBrowserTest::SetUpOnMainThread();
     observer_ = std::make_unique<TestSubresourceFilterObserver>(web_contents());
+    https_server_.ServeFilesFromSourceDirectory("components/test/data");
+    ASSERT_TRUE(https_server_.Start());
   }
 
   bool EvaluatedSubframeLoad(const GURL url) {
@@ -1135,9 +1137,14 @@ class AdTaggingFencedFrameBrowserTest : public AdTaggingBrowserTest {
 
   RenderFrameHost* PrimaryMainFrame() { return web_contents()->GetMainFrame(); }
 
+  GURL GetURL(const std::string& page) {
+    return https_server_.GetURL("/ad_tagging/" + page);
+  }
+
  private:
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
   std::unique_ptr<TestSubresourceFilterObserver> observer_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
 // Test that a fenced frame itself can be tagged as an ad and that iframes

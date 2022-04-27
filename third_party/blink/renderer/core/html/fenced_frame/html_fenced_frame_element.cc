@@ -6,6 +6,7 @@
 
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
@@ -393,14 +394,25 @@ void HTMLFencedFrameElement::Navigate() {
   }
 
   if (mode_ == mojom::blink::FencedFrameMode::kDefault &&
-      !network::IsUrlPotentiallyTrustworthy(url)) {
+      !IsValidFencedFrameURL(url)) {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        "A fenced frame whose mode is" + FencedFrameModeToString(mode_) +
-            " must be navigated to a potentially-trustworthy URL. See "
-            "https://www.w3.org/TR/secure-contexts/#is-url-trustworthy."));
+        "A fenced frame whose mode is " + FencedFrameModeToString(mode_) +
+            " must be navigated to an \"https\" URL or \"about:blank\"."));
     return;
+  }
+
+  if (mode_ == mojom::blink::FencedFrameMode::kOpaqueAds) {
+    if (!IsValidUrnUuidURL(url) && !IsValidFencedFrameURL(url)) {
+      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kRendering,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "A fenced frame whose mode is " + FencedFrameModeToString(mode_) +
+              " must be navigated to an opaque \"urn:uuid\" URL, an \"https\" "
+              "URL or \"about:blank\"."));
+      return;
+    }
   }
 
   frame_delegate_->Navigate(url);

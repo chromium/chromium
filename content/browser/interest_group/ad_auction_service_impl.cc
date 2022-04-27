@@ -39,6 +39,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -387,7 +388,7 @@ class FencedFrameURLMappingObserver
 void AdAuctionServiceImpl::DeprecatedGetURLFromURN(
     const GURL& urn_url,
     DeprecatedGetURLFromURNCallback callback) {
-  if (!FencedFrameURLMapping::IsValidUrnUuidURL(urn_url)) {
+  if (!blink::IsValidUrnUuidURL(urn_url)) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
@@ -544,6 +545,7 @@ void AdAuctionServiceImpl::OnAuctionComplete(
     return;
   }
   DCHECK(winning_group_id);  // Should always be present with a render_url
+  DCHECK(blink::IsValidFencedFrameURL(*render_url));
   FencedFrameURLMapping& fenced_frame_urls_map =
       GetFrame()->GetPage().fenced_frame_urls_map();
   render_url = fenced_frame_urls_map.AddFencedFrameURLWithInterestGroupInfo(

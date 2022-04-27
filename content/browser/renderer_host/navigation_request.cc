@@ -139,6 +139,7 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
@@ -1974,7 +1975,7 @@ bool NavigationRequest::NeedFencedFrameURLMapping() {
        blink::features::IsAllowURNsInIframeEnabled());
 
   return need_convert_urn_uuid_urls &&
-         FencedFrameURLMapping::IsValidUrnUuidURL(common_params_->url);
+         blink::IsValidUrnUuidURL(common_params_->url);
 }
 
 void NavigationRequest::OnFencedFrameURLMappingComplete(

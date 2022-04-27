@@ -107,6 +107,7 @@ source_set("common") {
     "device_memory/approximated_device_memory.cc",
     "dom_storage/session_storage_namespace_id.cc",
     "features.cc",
+    "fenced_frame/fenced_frame_utils.cc",
     "fetch/fetch_api_request_body_mojom_traits.cc",
     "frame/event_page_show_persisted.cc",
     "frame/frame_ad_evidence.cc",
