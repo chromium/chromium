@@ -13,6 +13,8 @@
 #error This file should only be included on lacros.
 #endif
 
+class Profile;
+
 // Task to run after the FRE is exited, with `proceed` indicating whether it
 // should be aborted or resumed.
 using ResumeTaskCallback = base::OnceCallback<void(bool proceed)>;
@@ -20,6 +22,14 @@ using ResumeTaskCallback = base::OnceCallback<void(bool proceed)>;
 // Returns whether the primary (main) profile first run experience (including
 // sync promo) should be opened on startup.
 bool ShouldOpenPrimaryProfileFirstRun();
+
+// Assuming that the primary profile first run experience needs to be opened on
+// startup, attempts to complete it silently, in case collecting consent is not
+// needed.
+// Returns `true` if the FRE was marked finished. If not, `false` will be
+// returned and `OpenPrimaryProfileFirstRunIfNeeded()` will need to be
+// eventually called to show the visual FRE.
+bool TryMarkFirstRunAlreadyFinished(Profile* primary_profile);
 
 // This function takes the user through the browser FRE.
 // 1) First, it checks whether the FRE flow can be skipped in the first place.

@@ -1637,6 +1637,15 @@ void ProfileManager::DoFinalInit(ProfileInfo* profile_info,
     browsing_data_lifetime_manager->ClearBrowsingDataForOnExitPolicy(
         /*keep_browser_alive=*/false);
   }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Check if we should turn Sync on from the background and skip the FRE.
+  if (ShouldOpenPrimaryProfileFirstRun() && profile->IsMainProfile()) {
+    // If we don't manage to set it, we will just have to defer silent or visual
+    // handling of the FRE to when the user attempts to open a browser UI.
+    TryMarkFirstRunAlreadyFinished(profile);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void ProfileManager::DoFinalInitForServices(Profile* profile,
