@@ -83,8 +83,8 @@ class CORE_EXPORT PerformanceNavigationTiming final
   uint64_t GetEncodedBodySize() const override;
   uint64_t GetDecodedBodySize() const override;
 
-  bool GetAllowRedirectDetails() const;
-
+  bool AllowRedirectDetails() const override;
+  bool AllowNegativeValue() const override;
   AtomicString AlpnNegotiatedProtocol() const override;
   AtomicString ConnectionInfo() const override;
 

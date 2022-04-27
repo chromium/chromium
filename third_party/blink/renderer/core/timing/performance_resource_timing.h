@@ -108,9 +108,6 @@ class CORE_EXPORT PerformanceResourceTiming
  protected:
   void BuildJSONValue(V8ObjectBuilder&) const override;
 
-  virtual AtomicString AlpnNegotiatedProtocol() const;
-  virtual AtomicString ConnectionInfo() const;
-
   base::TimeTicks TimeOrigin() const { return time_origin_; }
   bool CrossOriginIsolatedCapability() const {
     return cross_origin_isolated_capability_;
@@ -128,6 +125,9 @@ class CORE_EXPORT PerformanceResourceTiming
 
   double WorkerReady() const;
 
+  virtual AtomicString AlpnNegotiatedProtocol() const;
+  virtual AtomicString ConnectionInfo() const;
+
   virtual ResourceLoadTiming* GetResourceLoadTiming() const;
   virtual bool AllowTimingDetails() const;
   virtual bool DidReuseConnection() const;
@@ -135,6 +135,14 @@ class CORE_EXPORT PerformanceResourceTiming
   virtual uint64_t GetEncodedBodySize() const;
   virtual uint64_t GetDecodedBodySize() const;
 
+  virtual mojom::blink::RequestContextType ContextType() const;
+  virtual base::TimeTicks ResponseEnd() const;
+  virtual base::TimeTicks LastRedirectEndTime() const;
+  virtual bool AllowRedirectDetails() const;
+  virtual bool AllowNegativeValue() const;
+  virtual bool IsSecureTransport() const;
+
+  // Do not access private fields directly. Use getter methods.
   AtomicString initiator_type_;
   AtomicString alpn_negotiated_protocol_;
   AtomicString connection_info_;
@@ -151,8 +159,6 @@ class CORE_EXPORT PerformanceResourceTiming
   const uint64_t encoded_body_size_ = 0;
   const uint64_t decoded_body_size_ = 0;
   const bool did_reuse_connection_ = false;
-  // Do not access allow_timing_details_ directly.  Instead use the
-  // AllowTimingDetails() method which is overridden by some sub-classes.
   const bool allow_timing_details_ = false;
   const bool allow_redirect_details_ = false;
   const bool allow_negative_value_ = false;
