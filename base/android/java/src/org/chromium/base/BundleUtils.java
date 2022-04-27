@@ -372,7 +372,7 @@ public class BundleUtils {
             // We will never have android.* classes in isolated split class loaders,
             // but android framework inflater does sometimes try loading classes
             // that do not exist when inflating xml files on startup.
-            if (!cn.startsWith("android.") && sSplitsToRestore != null) {
+            if (sSplitsToRestore != null && !cn.startsWith("android.")) {
                 // If we fail from all the currently loaded classLoaders, lets
                 // try loading some splits that were loaded when chrome was last
                 // run and check again.
@@ -386,9 +386,6 @@ public class BundleUtils {
         }
 
         private void restoreSplitsClassLoaders() {
-            if (sSplitsToRestore == null) {
-                return;
-            }
             // Load splits that were stored in the SavedInstanceState Bundle.
             for (String splitName : sSplitsToRestore) {
                 if (!sInflationClassLoaders.containsKey(splitName)) {
