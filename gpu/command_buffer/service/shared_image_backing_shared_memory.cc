@@ -29,11 +29,14 @@ size_t EstimatedSize(viz::ResourceFormat format, const gfx::Size& size) {
   return estimated_size;
 }
 
-SkImageInfo MakeSkImageInfo(const gfx::Size& size, viz::ResourceFormat format) {
+SkImageInfo MakeSkImageInfo(const gfx::Size& size,
+                            viz::ResourceFormat format,
+                            SkAlphaType alpha_type,
+                            const gfx::ColorSpace& color_space) {
   return SkImageInfo::Make(size.width(), size.height(),
                            ResourceFormatToClosestSkColorType(
                                /*gpu_compositing=*/true, format),
-                           kOpaque_SkAlphaType);
+                           alpha_type, color_space.ToSkColorSpace());
 }
 
 class SharedImageRepresentationMemorySharedMemory
@@ -46,8 +49,11 @@ class SharedImageRepresentationMemorySharedMemory
 
  protected:
   SkPixmap BeginReadAccess() override {
-    SkImageInfo info = MakeSkImageInfo(shared_image_shared_memory()->size(),
-                                       shared_image_shared_memory()->format());
+    SkImageInfo info =
+        MakeSkImageInfo(shared_image_shared_memory()->size(),
+                        shared_image_shared_memory()->format(),
+                        shared_image_shared_memory()->alpha_type(),
+                        shared_image_shared_memory()->color_space());
     return SkPixmap(
         info, shared_image_shared_memory()->shared_memory_wrapper().GetMemory(),
         shared_image_shared_memory()->shared_memory_wrapper().GetStride());
