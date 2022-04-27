@@ -4170,7 +4170,7 @@ if (!is_android) {
         "../browser/renderer_context_menu/spelling_options_submenu_observer_browsertest.cc",
       ]
     }
-    if (is_linux || is_chromeos_lacros || is_mac) {
+    if (is_linux || is_mac) {
       sources += [ "../browser/ui/views/first_run_dialog_browsertest.cc" ]
     }
     if (!is_posix || is_chromeos_ash) {

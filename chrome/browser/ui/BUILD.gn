@@ -3861,7 +3861,7 @@ static_library("ui") {
     }
   }
 
-  if (is_linux || is_chromeos_lacros || is_mac) {
+  if (is_linux || is_mac) {
     # The first run dialog shows only on Linux and macOS.
     sources += [
       "views/first_run_dialog.cc",
