@@ -662,6 +662,8 @@ bool SchedulerStateMachine::ShouldInvalidateLayerTreeFrameSink() const {
 }
 
 SchedulerStateMachine::Action SchedulerStateMachine::NextAction() const {
+  if (ShouldSendBeginMainFrame())
+    return Action::SEND_BEGIN_MAIN_FRAME;
   if (ShouldActivateSyncTree())
     return Action::ACTIVATE_SYNC_TREE;
   if (ShouldCommit())
@@ -675,8 +677,6 @@ SchedulerStateMachine::Action SchedulerStateMachine::NextAction() const {
     else
       return Action::DRAW_IF_POSSIBLE;
   }
-  if (ShouldSendBeginMainFrame())
-    return Action::SEND_BEGIN_MAIN_FRAME;
   if (ShouldPerformImplSideInvalidation())
     return Action::PERFORM_IMPL_SIDE_INVALIDATION;
   if (ShouldPrepareTiles())

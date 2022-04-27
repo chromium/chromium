@@ -55,7 +55,7 @@
       SchedulerStateMachine::Action::BEGIN_LAYER_TREE_FRAME_SINK_CREATION); \
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);          \
   state.CreateAndInitializeLayerTreeFrameSinkWithActivatedCommit();         \
-  state.SetCanDraw(true);
+  state.SetCanDraw(true)
 
 namespace cc {
 
@@ -343,6 +343,38 @@ TEST(SchedulerStateMachineTest, BeginFrameNeeded) {
   EXPECT_FALSE(state.BeginFrameNeeded());
 }
 
+TEST(SchedulerStateMachineTest, BeginMainFrameIsHighestPriorityAction) {
+  SchedulerSettings default_scheduler_settings;
+  default_scheduler_settings.main_frame_before_activation_enabled = true;
+  StateMachine state(default_scheduler_settings);
+  SET_UP_STATE(state);
+  state.SetNeedsBeginMainFrame();
+  state.IssueNextBeginImplFrame();
+  EXPECT_ACTION_UPDATE_STATE(
+      SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+  state.NotifyReadyToCommit();
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::COMMIT);
+  state.NotifyReadyToActivate();
+  EXPECT_ACTION(SchedulerStateMachine::Action::ACTIVATE_SYNC_TREE);
+
+  // Still need to active, but sending BMF takes priority.
+  state.SetNeedsBeginMainFrame();
+  state.IssueNextBeginImplFrame();
+  EXPECT_ACTION_UPDATE_STATE(
+      SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::ACTIVATE_SYNC_TREE);
+
+  state.NotifyReadyToCommit();
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::COMMIT);
+  state.OnBeginImplFrameDeadline();
+  EXPECT_ACTION(SchedulerStateMachine::Action::DRAW_IF_POSSIBLE);
+
+  // Still need to draw, but sending BMF takes priority.
+  state.SetNeedsBeginMainFrame();
+  state.IssueNextBeginImplFrame();
+  EXPECT_ACTION(SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+}
+
 TEST(SchedulerStateMachineTest,
      TestNextActionNotifyBeginMainFrameNotExpectedUntil) {
   SchedulerSettings default_scheduler_settings;
@@ -500,7 +532,7 @@ TEST(SchedulerStateMachineTest, MainFrameBeforeActivationEnabled) {
   StateMachine state(scheduler_settings);
   state.SetBeginMainFrameState(
       SchedulerStateMachine::BeginMainFrameState::IDLE);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
   state.SetNeedsRedraw(false);
   state.SetNeedsBeginMainFrame();
 
@@ -552,7 +584,7 @@ TEST(SchedulerStateMachineTest,
      FailedDrawForAnimationCheckerboardSetsNeedsCommitAndRetriesDraw) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
   state.SetNeedsRedraw(true);
   EXPECT_TRUE(state.RedrawPending());
   EXPECT_TRUE(state.BeginFrameNeeded());
@@ -589,7 +621,7 @@ TEST(SchedulerStateMachineTest,
 TEST(SchedulerStateMachineTest, FailedDrawForMissingHighResNeedsCommit) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
   state.SetNeedsRedraw(true);
   EXPECT_TRUE(state.RedrawPending());
   EXPECT_TRUE(state.BeginFrameNeeded());
@@ -646,7 +678,7 @@ TEST(SchedulerStateMachineTest,
   SchedulerSettings scheduler_settings;
   scheduler_settings.maximum_number_of_failed_draws_before_draw_is_forced = 1;
   StateMachine state(scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   // Start a commit.
   state.SetNeedsBeginMainFrame();
@@ -700,7 +732,7 @@ TEST(SchedulerStateMachineTest, TestFailedDrawsDoNotRestartForcedDraw) {
   scheduler_settings.maximum_number_of_failed_draws_before_draw_is_forced =
       draw_limit;
   StateMachine state(scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   // Start a commit.
   state.SetNeedsBeginMainFrame();
@@ -759,7 +791,7 @@ TEST(SchedulerStateMachineTest, TestFailedDrawsDoNotRestartForcedDraw) {
 TEST(SchedulerStateMachineTest, TestFailedDrawIsRetriedInNextBeginImplFrame) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   // Start a draw.
   state.SetNeedsRedraw(true);
@@ -795,7 +827,7 @@ TEST(SchedulerStateMachineTest, TestFailedDrawIsRetriedInNextBeginImplFrame) {
 TEST(SchedulerStateMachineTest, TestDoestDrawTwiceInSameFrame) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
   state.SetNeedsRedraw(true);
 
   // Draw the first frame.
@@ -976,9 +1008,9 @@ TEST(SchedulerStateMachineTest,
   state.SetNeedsRedraw(true);
   state.SetCanDraw(false);
   state.IssueNextBeginImplFrame();
-  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::DRAW_ABORT);
   EXPECT_ACTION_UPDATE_STATE(
       SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::DRAW_ABORT);
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
   state.NotifyReadyToCommit();
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::COMMIT);
@@ -992,7 +1024,7 @@ TEST(SchedulerStateMachineTest,
 TEST(SchedulerStateMachineTest, TestSetNeedsBeginMainFrameIsNotLost) {
   SchedulerSettings scheduler_settings;
   StateMachine state(scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
   state.SetNeedsBeginMainFrame();
 
   EXPECT_TRUE(state.BeginFrameNeeded());
@@ -1052,7 +1084,7 @@ TEST(SchedulerStateMachineTest, TestSetNeedsBeginMainFrameIsNotLost) {
 TEST(SchedulerStateMachineTest, TestFullCycle) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   // Start clean and set commit.
   state.SetNeedsBeginMainFrame();
@@ -1097,7 +1129,7 @@ TEST(SchedulerStateMachineTest, TestFullCycle) {
 TEST(SchedulerStateMachineTest, CommitWithoutDrawWithPendingTree) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   // Start clean and set commit.
   state.SetNeedsBeginMainFrame();
@@ -1127,7 +1159,7 @@ TEST(SchedulerStateMachineTest, DontCommitWithoutDrawWithoutPendingTree) {
   scheduler_settings.commit_to_active_tree = true;
   scheduler_settings.main_frame_before_activation_enabled = false;
   StateMachine state(scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   // Start clean and set commit.
   state.SetNeedsBeginMainFrame();
@@ -1206,7 +1238,7 @@ TEST(SchedulerStateMachineTest, TestFullCycleWithCommitToActive) {
   scheduler_settings.commit_to_active_tree = true;
   scheduler_settings.main_frame_before_activation_enabled = false;
   StateMachine state(scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   // Start clean and set commit.
   state.SetNeedsBeginMainFrame();
@@ -1284,7 +1316,7 @@ TEST(SchedulerStateMachineTest, TestFullCycleWithCommitToActive) {
 TEST(SchedulerStateMachineTest, TestFullCycleWithCommitRequestInbetween) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   // Start clean and set commit.
   state.SetNeedsBeginMainFrame();
@@ -1385,7 +1417,7 @@ TEST(SchedulerStateMachineTest, TestNoRequestLayerTreeFrameSinkWhenInvisible) {
 TEST(SchedulerStateMachineTest, TestAbortBeginMainFrameBecauseInvisible) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   // Start clean and set commit.
   state.SetNeedsBeginMainFrame();
@@ -1508,7 +1540,7 @@ TEST(SchedulerStateMachineTest, TestFirstContextCreation) {
 TEST(SchedulerStateMachineTest, TestContextLostWhenCompletelyIdle) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   EXPECT_NE(SchedulerStateMachine::Action::BEGIN_LAYER_TREE_FRAME_SINK_CREATION,
             state.NextAction());
@@ -1534,7 +1566,7 @@ TEST(SchedulerStateMachineTest,
      TestContextLostWhenIdleAndCommitRequestedWhileRecreating) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   EXPECT_NE(SchedulerStateMachine::Action::BEGIN_LAYER_TREE_FRAME_SINK_CREATION,
             state.NextAction());
@@ -1650,7 +1682,7 @@ TEST(SchedulerStateMachineTest,
 TEST(SchedulerStateMachineTest, TestContextLostWhileCommitInProgress) {
   SchedulerSettings scheduler_settings;
   StateMachine state(scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   // Get a commit in flight.
   state.SetNeedsBeginMainFrame();
@@ -1708,7 +1740,7 @@ TEST(SchedulerStateMachineTest,
      TestContextLostWhileCommitInProgressAndAnotherCommitRequested) {
   SchedulerSettings scheduler_settings;
   StateMachine state(scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   // Get a commit in flight.
   state.SetNeedsBeginMainFrame();
@@ -1786,7 +1818,7 @@ TEST(SchedulerStateMachineTest,
      DontDrawBeforeCommitAfterLostLayerTreeFrameSink) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   state.SetNeedsRedraw(true);
 
@@ -1806,7 +1838,7 @@ TEST(SchedulerStateMachineTest,
      TestShouldAbortCurrentFrameAfterLostLayerTreeFrameSink) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   state.SetBeginMainFrameState(
       SchedulerStateMachine::BeginMainFrameState::SENT);
@@ -1916,7 +1948,7 @@ TEST(SchedulerStateMachineTest,
 TEST(SchedulerStateMachineTest, TestInitialActionsWhenContextLost) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
   state.SetNeedsBeginMainFrame();
   state.DidLoseLayerTreeFrameSink();
 
@@ -1941,7 +1973,7 @@ TEST(SchedulerStateMachineTest, TestInitialActionsWhenContextLost) {
 TEST(SchedulerStateMachineTest, ReportIfNotDrawing) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
   EXPECT_FALSE(state.PendingDrawsShouldBeAborted());
 
   state.SetCanDraw(false);
@@ -1968,7 +2000,7 @@ TEST(SchedulerStateMachineTest, ReportIfNotDrawing) {
 TEST(SchedulerStateMachineTest, ForceDrawForResourcelessSoftwareDraw) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
   state.SetResourcelessSoftwareDraw(true);
   EXPECT_FALSE(state.PendingDrawsShouldBeAborted());
 
@@ -2018,7 +2050,7 @@ TEST(SchedulerStateMachineTest,
      TestTriggerDeadlineImmediatelyAfterAbortedCommit) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   // This test mirrors what happens during the first frame of a scroll gesture.
   // First we get the input event and a BeginFrame.
@@ -2067,7 +2099,7 @@ void FinishPreviousCommitAndDrawWithoutExitingDeadline(
 TEST(SchedulerStateMachineTest, TestImplLatencyTakesPriority) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   // This test ensures that impl-draws are prioritized over main thread updates
   // in prefer impl latency mode.
@@ -2121,7 +2153,7 @@ TEST(SchedulerStateMachineTest,
      TestTriggerDeadlineImmediatelyOnLostLayerTreeFrameSink) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   state.SetNeedsBeginMainFrame();
 
@@ -2141,7 +2173,7 @@ TEST(SchedulerStateMachineTest,
 TEST(SchedulerStateMachineTest, TestTriggerDeadlineImmediatelyWhenInvisible) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   state.SetNeedsBeginMainFrame();
 
@@ -2161,7 +2193,7 @@ TEST(SchedulerStateMachineTest,
      TestTriggerDeadlineImmediatelyWhenBeginFrameSourcePaused) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   state.SetNeedsBeginMainFrame();
 
@@ -2180,7 +2212,7 @@ TEST(SchedulerStateMachineTest,
 TEST(SchedulerStateMachineTest, TestDeferBeginMainFrame) {
   SchedulerSettings settings;
   StateMachine state(settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   state.SetDeferBeginMainFrame(true);
 
@@ -2385,7 +2417,7 @@ TEST(SchedulerStateMachineTest,
 TEST(SchedulerStateMachineTest, NoImplSideInvalidationUntilFrameSinkActive) {
   SchedulerSettings settings;
   StateMachine state(settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   // Prefer impl side invalidation over begin main frame.
   state.set_should_defer_invalidation_for_fast_main_frame(false);
@@ -2595,7 +2627,7 @@ TEST(SchedulerStateMachineTest, TestFullPipelineMode) {
   SchedulerSettings scheduler_settings;
   scheduler_settings.wait_for_all_pipeline_stages_before_draw = true;
   StateMachine state(scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   // Start clean and set commit.
   state.SetNeedsBeginMainFrame();
@@ -2728,7 +2760,7 @@ TEST(SchedulerStateMachineTest, TestFullPipelineMode) {
 TEST(SchedulerStateMachineTest, AllowSkippingActiveTreeFirstDraws) {
   SchedulerSettings settings;
   StateMachine state(settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   // Impl-side invalidation creates a pending tree which is activated but not
   // drawn in this frame.
@@ -2760,7 +2792,7 @@ TEST(SchedulerStateMachineTest, AllowSkippingActiveTreeFirstDraws) {
 TEST(SchedulerStateMachineTest, DelayDrawIfAnimationWorkletsPending) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   // This test verifies that having pending mutations from Animation Worklets on
   // the active tree will not trigger the deadline early.
@@ -2826,7 +2858,7 @@ TEST(SchedulerStateMachineTest, DelayDrawIfAnimationWorkletsPending) {
 TEST(SchedulerStateMachineTest, BlockActivationIfAnimationWorkletsPending) {
   SchedulerSettings settings;
   StateMachine state(settings);
-  SET_UP_STATE(state)
+  SET_UP_STATE(state);
 
   // Verify that pending mutations from Animation Worklets block activation.
   state.SetNeedsBeginMainFrame();
