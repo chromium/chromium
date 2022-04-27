@@ -165,6 +165,7 @@ ipcz_source_set("impl") {
     "ipcz/driver_memory_mapping.h",
     "ipcz/driver_object.h",
     "ipcz/driver_transport.h",
+    "ipcz/message_internal.h",
     "ipcz/node.h",
     "ipcz/parcel.h",
     "ipcz/parcel_queue.h",
@@ -172,6 +173,7 @@ ipcz_source_set("impl") {
     "ipcz/router.h",
     "ipcz/sequence_number.h",
     "ipcz/sequenced_queue.h",
+    "ipcz/test_messages.h",
   ]
   sources = [
     "ipcz/api_object.cc",
@@ -185,6 +187,12 @@ ipcz_source_set("impl") {
     "ipcz/link_type.h",
     "ipcz/local_router_link.cc",
     "ipcz/local_router_link.h",
+    "ipcz/message_internal.cc",
+    "ipcz/message_macros/message_declaration_macros.h",
+    "ipcz/message_macros/message_definition_macros.h",
+    "ipcz/message_macros/message_params_declaration_macros.h",
+    "ipcz/message_macros/message_params_declaration_macros.h",
+    "ipcz/message_macros/undef_message_macros.h",
     "ipcz/node.cc",
     "ipcz/node_name.cc",
     "ipcz/node_name.h",
@@ -193,6 +201,8 @@ ipcz_source_set("impl") {
     "ipcz/portal.cc",
     "ipcz/router.cc",
     "ipcz/router_link.h",
+    "ipcz/test_messages.cc",
+    "ipcz/test_messages_generator.h",
   ]
   public_deps = [
     ":ipcz_header",
@@ -229,6 +239,7 @@ ipcz_source_set("ipcz_tests_sources") {
     "ipcz/driver_memory_test.cc",
     "ipcz/driver_object_test.cc",
     "ipcz/driver_transport_test.cc",
+    "ipcz/message_internal_test.cc",
     "ipcz/parcel_queue_test.cc",
     "ipcz/sequenced_queue_test.cc",
     "reference_drivers/single_process_reference_driver_test.cc",

@@ -98,6 +98,18 @@ class DriverTransport
   // transmission from this transport endpoint to the opposite endpoint.
   IpczResult TransmitMessage(const Message& message);
 
+  // Templated helper for transmitting macro-generated ipcz messages. This
+  // performs any necessary in-place serialization of driver objects before
+  // transmitting.
+  template <typename T>
+  IpczResult Transmit(T& message) {
+    if (!message.Serialize(*this)) {
+      return IPCZ_RESULT_INVALID_ARGUMENT;
+    }
+    return TransmitMessage(
+        Message(message.data_view(), message.transmissible_driver_handles()));
+  }
+
   // Invoked by the driver any time this transport receives data and driver
   // handles to be passed back into ipcz.
   IpczResult Notify(const Message& message);
