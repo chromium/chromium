@@ -50,8 +50,7 @@ NetworkStatePropertiesPtr CreateWifiNetwork(int signal_strength,
   wifi->signal_strength = signal_strength;
   wifi->security = security_type;
   network->type = NetworkType::kWiFi;
-  network->type_state = NetworkTypeStateProperties::New();
-  network->type_state->set_wifi(std::move(wifi));
+  network->type_state = NetworkTypeStateProperties::NewWifi(std::move(wifi));
 
   return network;
 }
@@ -62,8 +61,8 @@ NetworkStatePropertiesPtr CreateCellularNetwork(int signal_strength) {
   CellularStatePropertiesPtr cellular = CellularStateProperties::New();
   cellular->signal_strength = signal_strength;
   network->type = NetworkType::kCellular;
-  network->type_state = NetworkTypeStateProperties::New();
-  network->type_state->set_cellular(std::move(cellular));
+  network->type_state =
+      NetworkTypeStateProperties::NewCellular(std::move(cellular));
 
   return network;
 }
