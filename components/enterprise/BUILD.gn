@@ -108,6 +108,7 @@ source_set("unit_tests") {
     ":enterprise",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
+    "//components/enterprise/browser/signals:unit_tests",
     "//components/policy/core/common:test_support",
     "//components/version_info",
     "//testing/gmock",

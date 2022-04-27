@@ -1,0 +1,46 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("signals") {
+  public = [
+    "signals_aggregator.h",
+    "signals_aggregator_impl.h",
+    "signals_collector.h",
+  ]
+
+  sources = [ "signals_aggregator_impl.cc" ]
+
+  deps = [
+    "//base",
+    "//components/enterprise/common/signals:constants",
+    "//components/keyed_service/core",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "mock_signals_collector.cc",
+    "mock_signals_collector.h",
+  ]
+
+  deps = [
+    ":signals",
+    "//base",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "signals_aggregator_impl_unittest.cc" ]
+
+  deps = [
+    ":signals",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/enterprise/common/signals:constants",
+    "//testing/gtest",
+  ]
+}

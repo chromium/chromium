@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ENTERPRISE_SIGNALS_COMMON_SIGNALS_CONSTANTS_H_
-#define COMPONENTS_ENTERPRISE_SIGNALS_COMMON_SIGNALS_CONSTANTS_H_
+#ifndef COMPONENTS_ENTERPRISE_COMMON_SIGNALS_SIGNALS_CONSTANTS_H_
+#define COMPONENTS_ENTERPRISE_COMMON_SIGNALS_SIGNALS_CONSTANTS_H_
 
 namespace enterprise_signals {
 
@@ -20,4 +20,4 @@ extern const char kInstalledHotfixes[];
 
 }  // namespace enterprise_signals
 
-#endif  // COMPONENTS_ENTERPRISE_SIGNALS_COMMON_SIGNALS_CONSTANTS_H_
+#endif  // COMPONENTS_ENTERPRISE_COMMON_SIGNALS_SIGNALS_CONSTANTS_H_
