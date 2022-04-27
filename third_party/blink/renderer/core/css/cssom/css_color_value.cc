@@ -83,7 +83,6 @@ static CSSColorType DetermineColorType(CSSParserTokenRange& range) {
       case CSSValueID::kHsla:
         return CSSColorType::kHSL;
       case CSSValueID::kHwb:
-      case CSSValueID::kHwba:
         return CSSColorType::kHWB;
       default:
         return CSSColorType::kInvalid;

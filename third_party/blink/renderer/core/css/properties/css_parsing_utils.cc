@@ -1444,8 +1444,7 @@ static bool ParseHSLParameters(CSSParserTokenRange& range,
 static bool ParseHWBParameters(CSSParserTokenRange& range,
                                const CSSParserContext& context,
                                RGBA32& result) {
-  DCHECK(range.Peek().FunctionId() == CSSValueID::kHwb ||
-         range.Peek().FunctionId() == CSSValueID::kHwba);
+  DCHECK(range.Peek().FunctionId() == CSSValueID::kHwb);
   CSSParserTokenRange args = ConsumeFunction(range);
   // Consume hue, an angle.
   CSSPrimitiveValue* value = ConsumeHue(args, context, absl::nullopt);
@@ -1534,7 +1533,6 @@ static bool ParseColorFunction(CSSParserTokenRange& range,
         return false;
       break;
     case CSSValueID::kHwb:
-    case CSSValueID::kHwba:
       if (!ParseHWBParameters(color_range, context, result))
         return false;
       break;

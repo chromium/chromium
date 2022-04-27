@@ -1257,7 +1257,6 @@
     "hsl",
     "hsla",
     "hwb",
-    "hwba",
     "-internal-light-dark",
 
     // transform
