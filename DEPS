@@ -201,6 +201,13 @@ vars = {
   # By default, do not check out versions of toolschains and sdks that are
   # specifically only needed by Lacros.
   'checkout_lacros_sdk': False,
+  # To update the sdk version:
+  # 1 Choose a version that's not newer than the Ash side so it's thoroughly
+  #   tested:
+  #   https://chromium-review.googlesource.com/q/%2522Automated+Commit:+LKGM%2522+status:merged
+  # 2 Run additional a few optional tryjobs:
+  #   lacros-amd64-generic-chrome-skylab
+  #   lacros-arm-generic-chrome-skylab
   'lacros_sdk_version': '14556.0.0',
 
   # Generate location tag metadata to include in tests result data uploaded
