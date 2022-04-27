@@ -45,7 +45,7 @@ class FileOperations {
 
   class Reader {
    public:
-    using OpenResult = protocol::FileTransferResult<Monostate>;
+    using OpenResult = protocol::FileTransferResult<absl::monostate>;
     using OpenCallback = base::OnceCallback<void(OpenResult result)>;
 
     // On success, |result| will contain the read data, or an empty vector on
@@ -71,7 +71,7 @@ class FileOperations {
 
   class Writer {
    public:
-    using Result = protocol::FileTransferResult<Monostate>;
+    using Result = protocol::FileTransferResult<absl::monostate>;
     using Callback = base::OnceCallback<void(Result result)>;
 
     // Destructing before the file is completely written and closed will

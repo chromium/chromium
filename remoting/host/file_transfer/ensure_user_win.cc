@@ -12,7 +12,7 @@
 
 namespace remoting {
 
-protocol::FileTransferResult<Monostate> EnsureUserContext() {
+protocol::FileTransferResult<absl::monostate> EnsureUserContext() {
   // Impersonate the currently logged-in user, or fail if there is none.
   HANDLE user_token = nullptr;
   if (!WTSQueryUserToken(WTS_CURRENT_SESSION, &user_token)) {

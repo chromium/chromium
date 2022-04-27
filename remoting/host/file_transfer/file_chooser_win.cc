@@ -112,7 +112,7 @@ class FileChooserWindows : public FileChooser,
   void OnObjectSignaled(HANDLE object) override;
 
  private:
-  FileTransferResult<Monostate> LaunchChooserProcess();
+  FileTransferResult<absl::monostate> LaunchChooserProcess();
 
   ResultCallback callback_;
   base::Process process_;
@@ -126,7 +126,7 @@ FileChooserWindows::FileChooserWindows(
     : callback_(std::move(callback)) {}
 
 void FileChooserWindows::Show() {
-  FileTransferResult<Monostate> result = LaunchChooserProcess();
+  FileTransferResult<absl::monostate> result = LaunchChooserProcess();
 
   if (!result) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -180,7 +180,7 @@ void FileChooserWindows::OnObjectSignaled(HANDLE object) {
   std::move(callback_).Run(std::move(result));
 }
 
-FileTransferResult<Monostate> FileChooserWindows::LaunchChooserProcess() {
+FileTransferResult<absl::monostate> FileChooserWindows::LaunchChooserProcess() {
   base::LaunchOptions launch_options;
 
   FileTransferResult<ScopedHandle> current_user =

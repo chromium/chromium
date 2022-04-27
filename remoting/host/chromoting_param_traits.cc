@@ -79,22 +79,4 @@ void ParamTraits<remoting::protocol::FileTransfer_Error>::Log(
       base::StringPrintf("FileTransfer Error: %s", formatted.str().c_str()));
 }
 
-// remoting::Monostate
-
-// static
-void IPC::ParamTraits<remoting::Monostate>::Write(base::Pickle*,
-                                                  const param_type&) {}
-
-// static
-bool ParamTraits<remoting::Monostate>::Read(const base::Pickle*,
-                                            base::PickleIterator*,
-                                            param_type*) {
-  return true;
-}
-
-// static
-void ParamTraits<remoting::Monostate>::Log(const param_type&, std::string* l) {
-  l->append("()");
-}
-
 }  // namespace IPC

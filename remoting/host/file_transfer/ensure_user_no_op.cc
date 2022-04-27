@@ -6,7 +6,7 @@
 
 namespace remoting {
 
-protocol::FileTransferResult<Monostate> EnsureUserContext() {
+protocol::FileTransferResult<absl::monostate> EnsureUserContext() {
   return kSuccessTag;
 }
 

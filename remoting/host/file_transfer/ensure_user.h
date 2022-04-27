@@ -17,7 +17,7 @@ namespace remoting {
 // user is on the log-in screen, an error of type NOT_LOGGED_IN will be
 // returned. If something else goes wrong, the error type will be
 // UNEXPECTED_ERROR.
-protocol::FileTransferResult<Monostate> EnsureUserContext();
+protocol::FileTransferResult<absl::monostate> EnsureUserContext();
 
 }  // namespace remoting
 

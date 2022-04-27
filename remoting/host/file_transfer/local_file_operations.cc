@@ -77,7 +77,7 @@ class LocalFileReader : public FileOperations::Reader {
 
  private:
   void OnEnsureUserResult(OpenCallback callback,
-                          protocol::FileTransferResult<Monostate> result);
+                          protocol::FileTransferResult<absl::monostate> result);
   void OnFileChooserResult(OpenCallback callback, FileChooser::Result result);
   void OnOpenResult(OpenCallback callback, base::File::Error error);
   void OnGetInfoResult(OpenCallback callback,
@@ -196,7 +196,7 @@ FileOperations::State LocalFileReader::state() const {
 
 void LocalFileReader::OnEnsureUserResult(
     FileOperations::Reader::OpenCallback callback,
-    protocol::FileTransferResult<Monostate> result) {
+    protocol::FileTransferResult<absl::monostate> result) {
   if (!result) {
     SetState(FileOperations::kFailed);
     std::move(callback).Run(std::move(result.error()));
@@ -313,7 +313,7 @@ void LocalFileWriter::Open(const base::FilePath& filename, Callback callback) {
   base::PostTaskAndReplyWithResult(
       file_task_runner_.get(), FROM_HERE, base::BindOnce([] {
         return EnsureUserContext().AndThen(
-            [](Monostate) { return GetDesktopDirectory(); });
+            [](absl::monostate) { return GetDesktopDirectory(); });
       }),
       base::BindOnce(&LocalFileWriter::OnGetTargetDirectoryResult,
                      weak_ptr_factory_.GetWeakPtr(), filename,

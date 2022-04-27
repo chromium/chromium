@@ -43,7 +43,7 @@ class IpcFileOperations : public FileOperations {
   // Handles responses to file operations requests.
   class ResultHandler {
    public:
-    using Result = protocol::FileTransferResult<Monostate>;
+    using Result = protocol::FileTransferResult<absl::monostate>;
     using InfoResult =
         protocol::FileTransferResult<std::tuple<base::FilePath, uint64_t>>;
     using DataResult =

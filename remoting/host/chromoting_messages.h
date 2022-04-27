@@ -49,7 +49,7 @@ IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_KeyboardChanged,
 IPC_MESSAGE_CONTROL(
     ChromotingDesktopNetworkMsg_FileResult,
     uint64_t /* file_id */,
-    remoting::protocol::FileTransferResult<remoting::Monostate> /* result */)
+    remoting::protocol::FileTransferResult<absl::monostate> /* result */)
 
 // Carries the result of a read-file operation on the file identified by
 // |file_id|. |result| is the filename and size of the selected file. If
