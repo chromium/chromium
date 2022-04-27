@@ -825,5 +825,129 @@ suite('Multidevice', function() {
         assertFalse(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
         assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
         assertTrue(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+
+        // Notifications, CameraRoll and Apps features are not grant, but
+        // Notifications is prohibited. Should show Notifications and combined
+        // settings.
+        multideviceSubpage.pageContentData =
+            Object.assign({}, multideviceSubpage.pageContentData, {
+              phoneHubCameraRollState: MultiDeviceFeatureState.DISABLED_BY_USER,
+              cameraRollAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
+              phoneHubNotificationsState:
+                  MultiDeviceFeatureState.PROHIBITED_BY_POLICY,
+              notificationAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
+              phoneHubAppsState: MultiDeviceFeatureState.DISABLED_BY_USER,
+              isPhoneHubAppsAccessGranted: false
+            });
+
+        flush();
+
+        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
+        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+
+        // Notifications, CameraRoll and Apps features are not grant, but
+        // cameraRoll is prohibited. Should show cameraRoll and combined
+        // settings.
+        multideviceSubpage.pageContentData =
+            Object.assign({}, multideviceSubpage.pageContentData, {
+              phoneHubCameraRollState:
+                  MultiDeviceFeatureState.PROHIBITED_BY_POLICY,
+              cameraRollAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
+              phoneHubNotificationsState:
+                  MultiDeviceFeatureState.DISABLED_BY_USER,
+              notificationAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
+              phoneHubAppsState: MultiDeviceFeatureState.DISABLED_BY_USER,
+              isPhoneHubAppsAccessGranted: false
+            });
+
+        flush();
+
+        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
+        assertFalse(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
+        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+
+        // Notifications, CameraRoll and Apps features are not grant, but Apps
+        // is prohibited. Should show Apps and combined settings.
+        multideviceSubpage.pageContentData =
+            Object.assign({}, multideviceSubpage.pageContentData, {
+              phoneHubCameraRollState: MultiDeviceFeatureState.DISABLED_BY_USER,
+              cameraRollAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
+              phoneHubNotificationsState:
+                  MultiDeviceFeatureState.DISABLED_BY_USER,
+              notificationAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
+              phoneHubAppsState: MultiDeviceFeatureState.PROHIBITED_BY_POLICY,
+              isPhoneHubAppsAccessGranted: false
+            });
+
+        flush();
+
+        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
+        assertFalse(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+
+        // Notifications, CameraRoll and Apps features are not grant, but
+        // Notifications and CameraRoll are prohibited. Should show
+        // Notifications, CameraRoll and Apps and hide combined settings.
+        multideviceSubpage.pageContentData =
+            Object.assign({}, multideviceSubpage.pageContentData, {
+              phoneHubCameraRollState:
+                  MultiDeviceFeatureState.PROHIBITED_BY_POLICY,
+              cameraRollAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
+              phoneHubNotificationsState:
+                  MultiDeviceFeatureState.PROHIBITED_BY_POLICY,
+              notificationAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
+              phoneHubAppsState: MultiDeviceFeatureState.DISABLED_BY_USER,
+              isPhoneHubAppsAccessGranted: false
+            });
+
+        flush();
+
+        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+
+
+        // Notifications, CameraRoll and Apps features are not grant, but Phone
+        // Hub (top feature) is prohibited. Should show Notifications,
+        // CameraRoll and Apps and hide combined settings.
+        multideviceSubpage.pageContentData =
+            Object.assign({}, multideviceSubpage.pageContentData, {
+              phoneHubState: MultiDeviceFeatureState.PROHIBITED_BY_POLICY,
+              phoneHubCameraRollState:
+                  MultiDeviceFeatureState.PROHIBITED_BY_POLICY,
+              cameraRollAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
+              phoneHubNotificationsState:
+                  MultiDeviceFeatureState.PROHIBITED_BY_POLICY,
+              notificationAccessStatus:
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
+              phoneHubAppsState: MultiDeviceFeatureState.PROHIBITED_BY_POLICY,
+              isPhoneHubAppsAccessGranted: false
+            });
+
+        flush();
+
+        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
+        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
       });
 });
