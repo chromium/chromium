@@ -1962,11 +1962,10 @@ void LockContentsView::LayoutUserAddingScreenIndicator() {
 
 void LockContentsView::LayoutPublicSessionView() {
   gfx::Rect bounds = GetContentsBounds();
-  gfx::Size pref_size = expanded_view_->GetPreferredSize();
-  if (bounds.width() < pref_size.width()) {
-    int height = expanded_view_->GetHeightForWidth(bounds.width());
-    pref_size = {bounds.width(), height};
-  }
+  bounds.set_height(bounds.height() - ShelfConfig::Get()->shelf_size());
+  gfx::Size pref_size = bounds.width() >= bounds.height()
+                            ? expanded_view_->GetPreferredSizeLandscape()
+                            : expanded_view_->GetPreferredSizePortrait();
   bounds.ClampToCenteredSize(pref_size);
   expanded_view_->SetBoundsRect(bounds);
 }

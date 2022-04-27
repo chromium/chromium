@@ -14,12 +14,14 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 
 class PrefRegistrySimple;
 
 namespace ash {
 
+class MonitoringWarningView;
 class ArrowButtonView;
 struct LocaleItem;
 class LoginUserView;
@@ -79,17 +81,30 @@ class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
   void OnLearnMoreDialogClosed();
   void SetShowFullManagementDisclosure(bool show_full_management_disclosure);
 
+  static gfx::Size GetPreferredSizeLandscape();
+  static gfx::Size GetPreferredSizePortrait();
+
   // views::View:
+  int GetHeightForWidth(int width) const override;
+  void Layout() override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnPaint(gfx::Canvas* canvas) override;
-  int GetHeightForWidth(int w) const override;
 
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
 
  private:
+  void UseLandscapeLayout();
+  void UsePortraitLayout();
+
+  views::BoxLayout* layout_ = nullptr;
   LoginUserView* user_view_ = nullptr;
+  MonitoringWarningView* monitoring_warning_view_ = nullptr;
   views::View* left_pane_ = nullptr;
+  views::View* separator_ = nullptr;
   RightPaneView* right_pane_ = nullptr;
+  ArrowButtonView* submit_button_ = nullptr;
+
   OnPublicSessionViewDismissed on_dismissed_;
   PublicAccountMonitoringInfoDialog* learn_more_dialog_ = nullptr;
   std::unique_ptr<ui::EventHandler> event_handler_;
