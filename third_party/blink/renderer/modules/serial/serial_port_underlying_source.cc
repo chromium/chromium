@@ -128,24 +128,9 @@ void SerialPortUnderlyingSource::OnFlush(ScriptPromiseResolver* resolver) {
   resolver->Resolve();
 }
 
-void SerialPortUnderlyingSource::ExpectPipeClose() {
-  if (data_pipe_) {
-    // The pipe is still open. Wait for PipeClosed() to be called.
-    expect_close_ = true;
-    return;
-  }
-
-  Controller()->Close();
-  serial_port_->UnderlyingSourceClosed();
-}
-
 void SerialPortUnderlyingSource::PipeClosed() {
   if (pending_exception_) {
     Controller()->Error(pending_exception_);
-    serial_port_->UnderlyingSourceClosed();
-  }
-  if (expect_close_) {
-    Controller()->Close();
     serial_port_->UnderlyingSourceClosed();
   }
   Close();
