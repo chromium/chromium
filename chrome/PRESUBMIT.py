@@ -64,68 +64,68 @@ def _CheckNoContentUnitTestsInChrome(input_api, output_api):
       items=problems)]
 
 
-def _CheckNoOSAPPLEMacrosInChromeFile(input_api, f):
-  """Check for OS_APPLE in a given file in chrome/."""
+def _CheckNoIsAppleBuildFlagsInChromeFile(input_api, f):
+  """Check for IS_APPLE in a given file in chrome/."""
   preprocessor_statement = input_api.re.compile(r'^\s*#')
-  apple_macro = input_api.re.compile(r'defined\(OS_APPLE\)')
+  apple_buildflag = input_api.re.compile(r'BUILDFLAG\(IS_APPLE\)')
   results = []
   for lnum, line in f.ChangedContents():
-    if preprocessor_statement.search(line) and apple_macro.search(line):
+    if preprocessor_statement.search(line) and apple_buildflag.search(line):
       results.append('    %s:%d' % (f.LocalPath(), lnum))
 
   return results
 
 
-def _CheckNoOSAPPLEMacrosInChrome(input_api, output_api):
-  """Check for OS_APPLE which isn't used in chrome/."""
-  apple_macros = []
+def _CheckNoIsAppleBuildFlagsInChrome(input_api, output_api):
+  """Check for IS_APPLE which isn't used in chrome/."""
+  apple_buildflags = []
   def SourceFilter(affected_file):
     return input_api.FilterSourceFile(affected_file, INCLUDE_SOURCE_FILES_ONLY,
                                       input_api.DEFAULT_FILES_TO_SKIP)
   for f in input_api.AffectedSourceFiles(SourceFilter):
-    apple_macros.extend(_CheckNoOSAPPLEMacrosInChromeFile(input_api, f))
+    apple_buildflags.extend(_CheckNoIsAppleBuildFlagsInChromeFile(input_api, f))
 
-  if not apple_macros:
+  if not apple_buildflags:
     return []
 
   return [output_api.PresubmitError(
-      'OS_APPLE is not used in chrome/ but found in:\n', apple_macros)]
+      'IS_APPLE is not used in chrome/ but found in:\n', apple_buildflags)]
 
 
-def _CheckNoOSIOSMacrosInChromeFile(input_api, f):
-  """Check for OS_IOS in a given file in chrome/."""
+def _CheckNoIsIOSBuildFlagsInChromeFile(input_api, f):
+  """Check for IS_IOS in a given file in chrome/."""
   preprocessor_statement = input_api.re.compile(r'^\s*#')
-  ios_macro = input_api.re.compile(r'defined\(OS_IOS\)')
+  ios_buildflag = input_api.re.compile(r'BUILDFLAG\(IS_IOS\)')
   results = []
   for lnum, line in f.ChangedContents():
-    if preprocessor_statement.search(line) and ios_macro.search(line):
+    if preprocessor_statement.search(line) and ios_buildflag.search(line):
       results.append('    %s:%d' % (f.LocalPath(), lnum))
 
   return results
 
 
-def _CheckNoOSIOSMacrosInChrome(input_api, output_api):
-  """Check for OS_IOS which isn't used in chrome/."""
-  ios_macros = []
+def _CheckNoIsIOSBuildFlagsInChrome(input_api, output_api):
+  """Check for IS_IOS which isn't used in chrome/."""
+  ios_buildflags = []
   def SourceFilter(affected_file):
     return input_api.FilterSourceFile(affected_file, INCLUDE_SOURCE_FILES_ONLY,
                                       input_api.DEFAULT_FILES_TO_SKIP)
   for f in input_api.AffectedSourceFiles(SourceFilter):
-    ios_macros.extend(_CheckNoOSIOSMacrosInChromeFile(input_api, f))
+    ios_buildflags.extend(_CheckNoIsIOSBuildFlagsInChromeFile(input_api, f))
 
-  if not ios_macros:
+  if not ios_buildflags:
     return []
 
   return [output_api.PresubmitError(
-      'OS_IOS is not used in chrome/ but found in:\n', ios_macros)]
+      'IS_IOS is not used in chrome/ but found in:\n', ios_buildflags)]
 
 
 def _CommonChecks(input_api, output_api):
   """Checks common to both upload and commit."""
   results = []
   results.extend(_CheckNoContentUnitTestsInChrome(input_api, output_api))
-  results.extend(_CheckNoOSAPPLEMacrosInChrome(input_api, output_api))
-  results.extend(_CheckNoOSIOSMacrosInChrome(input_api, output_api))
+  results.extend(_CheckNoIsAppleBuildFlagsInChrome(input_api, output_api))
+  results.extend(_CheckNoIsIOSBuildFlagsInChrome(input_api, output_api))
   return results
 
 
