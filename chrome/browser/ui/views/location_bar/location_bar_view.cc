@@ -301,8 +301,14 @@ void LocationBarView::Init() {
   // |browser_| may be null when LocationBarView is used for non-Browser windows
   // such as PresentationReceiverWindowView, which do not support page actions.
   if (browser_) {
-    // The send tab to self icon is intentionally the first one added so it is
-    // the left most icon.
+    // Page action icons that participate in label animations should be added
+    // first so that they appear on the left side of the icon container.
+    // TODO(crbug.com/1318890): Improve the ordering heuristics for page action
+    // icons and determine a way to handle simultaneous icon animations.
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+    if (side_search::IsDSESupportEnabled(profile_))
+      params.types_enabled.push_back(PageActionIconType::kSideSearch);
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
     params.types_enabled.push_back(PageActionIconType::kSendTabToSelf);
     params.types_enabled.push_back(PageActionIconType::kClickToCall);
     params.types_enabled.push_back(PageActionIconType::kQRCodeGenerator);
@@ -317,10 +323,6 @@ void LocationBarView::Init() {
     if (!apps::features::LinkCapturingUiUpdateEnabled())
       params.types_enabled.push_back(PageActionIconType::kIntentPicker);
     params.types_enabled.push_back(PageActionIconType::kPwaInstall);
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
-    if (side_search::IsDSESupportEnabled(profile_))
-      params.types_enabled.push_back(PageActionIconType::kSideSearch);
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
     params.types_enabled.push_back(PageActionIconType::kFind);
     params.types_enabled.push_back(PageActionIconType::kTranslate);
     params.types_enabled.push_back(PageActionIconType::kZoom);
