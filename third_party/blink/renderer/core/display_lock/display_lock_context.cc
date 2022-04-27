@@ -372,12 +372,6 @@ bool DisplayLockContext::ShouldPrePaintChildren() const {
 bool DisplayLockContext::ShouldPaintChildren() const {
   // Note that forced updates should never require us to paint, so we don't
   // check |forced_info_| here.
-  return !is_locked_;
-}
-
-bool DisplayLockContext::ShouldPaintChildrenIncludingDeferred() const {
-  // Note that forced updates should never require us to paint, so we don't
-  // check |forced_info_| here.
   return !is_locked_ || (element_->GetLayoutObject() &&
                          element_->GetLayoutObject()->IsShapingDeferred());
 }

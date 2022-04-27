@@ -90,13 +90,13 @@ class CORE_EXPORT DisplayLockContext final
   bool ShouldStyleChildren() const;
   void DidStyleSelf();
   void DidStyleChildren();
+  // This returns |true| for an IsShapingDeferred element.
   bool ShouldLayoutChildren() const;
   void DidLayoutChildren();
-  bool ShouldPrePaintChildren() const;
-  // This returns |false| for an IsShapingDeferred element.
-  bool ShouldPaintChildren() const;
   // This returns |true| for an IsShapingDeferred element.
-  bool ShouldPaintChildrenIncludingDeferred() const;
+  bool ShouldPrePaintChildren() const;
+  // This returns |true| for an IsShapingDeferred element.
+  bool ShouldPaintChildren() const;
 
   // Returns true if the last style recalc traversal was blocked at this
   // element.

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/dom/range.h"
+#include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -618,6 +619,25 @@ TEST_F(DeferredShapingTest, InnerText) {
   EXPECT_TRUE(IsDefer("target"));
   EXPECT_TRUE(IsLocked("target"));
   EXPECT_EQ("Not-deferred\nIFC", GetDocument().body()->innerText());
+}
+
+TEST_F(DeferredShapingTest, PositionForPoint) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px">Not-deferred</div>
+<div id="target">IFC</div>
+)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("target"));
+  EXPECT_TRUE(IsLocked("target"));
+
+  auto& target = To<Element>(*GetElementById("target"));
+  Node* text = target.firstChild();
+  gfx::Rect text_rect =
+      MakeGarbageCollected<Range>(GetDocument(), text, 0, text, 3)
+          ->BoundingBox();
+  auto position = target.GetLayoutBox()->PositionForPoint(
+      {text_rect.width(), text_rect.height()});
+  EXPECT_EQ(3, position.GetPosition().OffsetInContainerNode());
 }
 
 }  // namespace blink

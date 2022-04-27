@@ -480,15 +480,6 @@ const Element* DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(
       });
 }
 
-const Element*
-DisplayLockUtilities::LockedInclusiveAncestorPreventingPaintIgnoringDeferred(
-    const Node& node) {
-  return LockedInclusiveAncestorPreventingUpdate(
-      node, [](DisplayLockContext* context) {
-        return !context->ShouldPaintChildrenIncludingDeferred();
-      });
-}
-
 Element* DisplayLockUtilities::HighestLockedInclusiveAncestor(
     const Node& node) {
   if (node.IsShadowRoot())
@@ -899,8 +890,9 @@ bool DisplayLockUtilities::IsDisplayLockedPreventingPaint(
         // Note that technically we could do a similar approach to
         // IsLockedForAccessibility by recording whether this context is locked
         // but allow paint. However, that situation is not possible since all
-        // locked contexts always prevent paint.
-        DCHECK(!context->IsLocked() || !context->ShouldPaintChildren());
+        // locked contexts always prevent paint except for DeferredShaping.
+        DCHECK(!context->IsLocked() || !context->ShouldPaintChildren() ||
+               context->IsShapingDeferred());
         if (!context->ShouldPaintChildren()) {
           memoizer_->NotifyLocked(previous_ancestor);
           return true;
