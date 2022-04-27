@@ -440,12 +440,65 @@ void MaybeAddCarbonBlack(bool report_full_names,
   products->push_back(av_product);
 }
 
+void MaybeAddTopaz(bool report_full_names, std::vector<AvProduct>* products) {
+  // Topaz does not register with WMI or Security Center so do some "best
+  // efforts" detection here.
+
+  base::FilePath binary_path;
+  // Always installed in C:\Program Files, never (x86). Force this from 32-bit
+  // on 64-bit installs by using DIR_PROGRAM_FILES6432.
+  if (!base::PathService::Get(base::DIR_PROGRAM_FILES6432, &binary_path))
+    return;
+
+  // Old versions are under the 'Diebold' directory.
+  const base::FilePath::StringPieceType kPossibleInstallPaths[] = {
+      FILE_PATH_LITERAL("Topaz OFD"), FILE_PATH_LITERAL("Diebold")};
+
+  for (const auto install_path : kPossibleInstallPaths) {
+    // Topaz ships with both 32-bit and 64-bit components. Check for just one
+    // here.
+    auto dll_path = binary_path.Append(install_path)
+                        .Append(FILE_PATH_LITERAL("Warsaw"))
+                        .Append(FILE_PATH_LITERAL("wslbdhm32.dll"));
+    if (!base::PathExists(dll_path))
+      continue;
+
+    std::wstring mutable_path_str(dll_path.value());
+    std::string product_version;
+
+    // Note: this is full version including patch level.
+    if (!GetProductVersion(&mutable_path_str, &product_version))
+      continue;
+
+    AvProduct av_product;
+
+    // Assume enabled, no easy way of knowing for sure.
+    av_product.set_product_state(
+        metrics::SystemProfileProto::AntiVirusState::
+            SystemProfileProto_AntiVirusState_STATE_ON);
+
+    // This name is taken from the properties of the installed files.
+    std::string product_name("Topaz OFD");
+    if (report_full_names) {
+      av_product.set_product_name(product_name);
+      av_product.set_product_version(product_version);
+    }
+    av_product.set_product_name_hash(variations::HashName(product_name));
+    av_product.set_product_version_hash(variations::HashName(product_version));
+
+    products->push_back(av_product);
+
+    break;
+  }
+}
+
 void MaybeAddUnregisteredAntiVirusProducts(bool report_full_names,
                                            std::vector<AvProduct>* products) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   MaybeAddTrusteerEndpointProtection(report_full_names, products);
   MaybeAddCarbonBlack(report_full_names, products);
+  MaybeAddTopaz(report_full_names, products);
 }
 
 }  // namespace
