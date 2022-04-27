@@ -52,6 +52,13 @@
        {}
       ]
      ],
+     "bdo-table-cell.html": [
+      "ae12541f8d8cb97248a7a7f3a3683f753aa96377",
+      [
+       null,
+       {}
+      ]
+     ],
      "computed-accessible-child-of-pseudo-element.html": [
       "5bc1249907480d42ab5bc8a8f342eb456895f142",
       [
@@ -296393,7 +296400,7 @@
       []
      ],
      "Document-createEvent.https-expected.txt": [
-      "c42d6f0267fbd041a5f08f725ecb786c98e1a4d1",
+      "95c1687e168ea369fb6c87f5dced71cac8f55b6b",
       []
      ],
      "Document-createEvent.js": [
@@ -325746,7 +325753,7 @@
      []
     ],
     "preload-error.sub-expected.txt": [
-     "2a77a9b8214e716705d5792187bd3657ffb7885d",
+     "f9e2190f9043294f9287992dcf4a76a41463c435",
      []
     ],
     "preload-in-data-doc-ref.html": [
@@ -407389,8 +407396,15 @@
        {}
       ]
      ],
+     "Document-createEvent-touchevent.window.js": [
+      "6523ac5a023fc46cfbd87fb87dcadbd1b59eb55c",
+      [
+       "dom/nodes/Document-createEvent-touchevent.window.html",
+       {}
+      ]
+     ],
      "Document-createEvent.https.html": [
-      "8e948a37e68630efd955398cdaca89571b042c73",
+      "f80c1c3672225dabfb20cfb35445c007b24bcf0a",
       [
        null,
        {}
