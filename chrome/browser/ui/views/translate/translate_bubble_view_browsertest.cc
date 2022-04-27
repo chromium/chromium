@@ -194,7 +194,12 @@ IN_PROC_BROWSER_TEST_F(TranslateBubbleVisualTest, InvokeUi_error) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(TranslateBubbleVisualTest, InvokeUi_advanced) {
+IN_PROC_BROWSER_TEST_F(TranslateBubbleVisualTest, InvokeUi_before_translate) {
+  set_state(TranslateBubbleModel::ViewState::VIEW_STATE_BEFORE_TRANSLATE);
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(TranslateBubbleVisualTest, InvokeUi_select_source) {
   set_state(TranslateBubbleModel::ViewState::VIEW_STATE_SOURCE_LANGUAGE);
   ShowAndVerifyUi();
 }

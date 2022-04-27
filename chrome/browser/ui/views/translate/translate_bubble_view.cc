@@ -955,6 +955,8 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvanced(
                            gfx::Insets::VH(vertical_spacing, 0));
   }
   auto* form_view = view->AddChildView(std::make_unique<views::View>());
+  // Stretch `form_view` to fit the rest of bubble's width.
+  layout->SetFlexForView(form_view, 1);
   form_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       vertical_spacing));
