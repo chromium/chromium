@@ -27,11 +27,11 @@ DeskActionView::DeskActionView(
     const std::u16string& initial_combine_desks_target_name,
     base::RepeatingClosure combine_desks_callback,
     base::RepeatingClosure close_all_callback)
-    : close_all_button_(AddChildView(
-          std::make_unique<CloseButton>(std::move(close_all_callback),
-                                        CloseButton::Type::kMediumFloating))),
-      combine_desks_button_(AddChildView(
+    : combine_desks_button_(AddChildView(
           std::make_unique<CloseButton>(std::move(combine_desks_callback),
+                                        CloseButton::Type::kMediumFloating))),
+      close_all_button_(AddChildView(
+          std::make_unique<CloseButton>(std::move(close_all_callback),
                                         CloseButton::Type::kMediumFloating))) {
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetInsideBorderInsets(gfx::Insets(kButtonMargin));

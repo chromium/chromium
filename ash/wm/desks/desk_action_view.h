@@ -33,8 +33,8 @@ class DeskActionView : public views::BoxLayoutView {
       const std::u16string& new_combine_desks_target_name);
 
  private:
-  CloseButton* close_all_button_;
   CloseButton* combine_desks_button_;
+  CloseButton* close_all_button_;
 };
 
 }  // namespace ash
