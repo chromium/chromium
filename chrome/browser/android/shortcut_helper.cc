@@ -22,6 +22,7 @@
 #include "ui/android/color_utils_android.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -153,7 +154,8 @@ bool ShortcutHelper::DoesOriginContainAnyInstalledWebApk(const GURL& origin) {
   DCHECK_EQ(origin, origin.DeprecatedGetOriginAsURL());
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> java_origin =
-      base::android::ConvertUTF8ToJavaString(env, origin.spec());
+      base::android::ConvertUTF8ToJavaString(
+          env, url::Origin::Create(origin).Serialize());
   return Java_ShortcutHelper_doesOriginContainAnyInstalledWebApk(env,
                                                                  java_origin);
 }
@@ -163,7 +165,8 @@ bool ShortcutHelper::DoesOriginContainAnyInstalledTrustedWebActivity(
   DCHECK_EQ(origin, origin.DeprecatedGetOriginAsURL());
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> java_origin =
-      base::android::ConvertUTF8ToJavaString(env, origin.spec());
+      base::android::ConvertUTF8ToJavaString(
+          env, url::Origin::Create(origin).Serialize());
   return Java_ShortcutHelper_doesOriginContainAnyInstalledTwa(env, java_origin);
 }
 
