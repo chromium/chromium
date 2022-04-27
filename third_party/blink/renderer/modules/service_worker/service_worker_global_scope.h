@@ -348,8 +348,6 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   void RunClassicScript(
       const KURL& response_url,
       network::mojom::ReferrerPolicy response_referrer_policy,
-      // TODO(https://crbug.com/1204028): Remove this unused parameter.
-      network::mojom::IPAddressSpace response_address_space,
       Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
       const Vector<String>* response_origin_trial_tokens,
       const String& source_code,

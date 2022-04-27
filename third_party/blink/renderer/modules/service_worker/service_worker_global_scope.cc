@@ -426,7 +426,6 @@ void ServiceWorkerGlobalScope::DidFetchClassicScript(
   // is set, and with the following callback steps given evaluationStatus:"
   RunClassicScript(
       classic_script_loader->ResponseURL(), referrer_policy,
-      classic_script_loader->ResponseAddressSpace(),
       classic_script_loader->GetContentSecurityPolicy()
           ? mojo::Clone(classic_script_loader->GetContentSecurityPolicy()
                             ->GetParsedPolicies())
@@ -503,19 +502,18 @@ void ServiceWorkerGlobalScope::LoadAndRunInstalledClassicScript(
         kDoNotSupportReferrerPolicyLegacyKeywords, &referrer_policy);
   }
 
-  RunClassicScript(
-      script_url, referrer_policy, script_data->GetResponseAddressSpace(),
-      ParseContentSecurityPolicyHeaders(
-          script_data->GetContentSecurityPolicyResponseHeaders()),
-      script_data->CreateOriginTrialTokens().get(),
-      script_data->TakeSourceText(), script_data->TakeMetaData(), stack_id);
+  RunClassicScript(script_url, referrer_policy,
+                   ParseContentSecurityPolicyHeaders(
+                       script_data->GetContentSecurityPolicyResponseHeaders()),
+                   script_data->CreateOriginTrialTokens().get(),
+                   script_data->TakeSourceText(), script_data->TakeMetaData(),
+                   stack_id);
 }
 
 // https://w3c.github.io/ServiceWorker/#run-service-worker-algorithm
 void ServiceWorkerGlobalScope::RunClassicScript(
     const KURL& response_url,
     network::mojom::ReferrerPolicy response_referrer_policy,
-    network::mojom::IPAddressSpace response_address_space,
     Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
     const Vector<String>* response_origin_trial_tokens,
     const String& source_code,
