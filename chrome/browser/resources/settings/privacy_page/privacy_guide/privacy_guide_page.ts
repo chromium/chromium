@@ -428,6 +428,9 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
             animateFromLeftToRight ? 'slide-in-fade-in-ltr' :
                                      'slide-in-fade-in-rtl',
             'no-animation');
+      } else if (this.animationsEnabled_ && this.isPrivacyGuideV2) {
+        this.$.viewManager.switchView(
+            this.privacyGuideStep_, 'no-animation', 'fade-out');
       } else {
         this.$.viewManager.switchView(
             this.privacyGuideStep_, 'no-animation', 'no-animation');

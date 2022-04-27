@@ -12,7 +12,14 @@
   cr-dialog::part(dialog) {
     border-radius: 0;
     height: 100vh;
+    overflow: auto;
     width: 100vw;
+  }
+
+  cr-dialog::part(wrapper),
+  cr-dialog::part(body-container) {
+    max-height: none;
+    overflow: visible;
   }
 
   settings-privacy-guide-page {
