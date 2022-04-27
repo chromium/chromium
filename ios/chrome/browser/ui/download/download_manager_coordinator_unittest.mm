@@ -12,6 +12,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -59,16 +60,6 @@ const int64_t kTestTotalBytes = 10;
 const int64_t kTestReceivedBytes = 0;
 NSString* const kTestSuggestedFileName = @"file.zip";
 
-// Creates a fake download task for testing.
-std::unique_ptr<web::FakeDownloadTask> CreateTestTask() {
-  auto task =
-      std::make_unique<web::FakeDownloadTask>(GURL(kTestUrl), kTestMimeType);
-  task->SetTotalBytes(kTestTotalBytes);
-  task->SetReceivedBytes(kTestReceivedBytes);
-  task->SetSuggestedFilename(base::SysNSStringToUTF16(kTestSuggestedFileName));
-  return task;
-}
-
 }  // namespace
 
 // Test fixture for testing DownloadManagerCoordinator class.
@@ -104,6 +95,18 @@ class DownloadManagerCoordinatorTest : public PlatformTest {
 
   DownloadManagerTabHelper* tab_helper() {
     return DownloadManagerTabHelper::FromWebState(&web_state_);
+  }
+
+  // Creates a fake download task for testing.
+  std::unique_ptr<web::FakeDownloadTask> CreateTestTask() {
+    auto task =
+        std::make_unique<web::FakeDownloadTask>(GURL(kTestUrl), kTestMimeType);
+    task->SetTotalBytes(kTestTotalBytes);
+    task->SetReceivedBytes(kTestReceivedBytes);
+    task->SetSuggestedFilename(
+        base::SysNSStringToUTF16(kTestSuggestedFileName));
+    task->SetWebState(&web_state_);
+    return task;
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -152,8 +155,8 @@ TEST_F(DownloadManagerCoordinatorTest, Start) {
 // presented view controller and download task is reset to null (to prevent a
 // stale raw pointer).
 TEST_F(DownloadManagerCoordinatorTest, Stop) {
-  web::FakeDownloadTask task(GURL(kTestUrl), kTestMimeType);
-  coordinator_.downloadTask = &task;
+  auto task = CreateTestTask();
+  coordinator_.downloadTask = task.get();
   [coordinator_ start];
   @autoreleasepool {
     // Calling -stop will retain and autorelease coordinator_. task_environment_
@@ -170,8 +173,8 @@ TEST_F(DownloadManagerCoordinatorTest, Stop) {
 
 // Tests destroying coordinator during the download.
 TEST_F(DownloadManagerCoordinatorTest, DestructionDuringDownload) {
-  web::FakeDownloadTask task(GURL(kTestUrl), kTestMimeType);
-  coordinator_.downloadTask = &task;
+  auto task = CreateTestTask();
+  coordinator_.downloadTask = task.get();
   [coordinator_ start];
 
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
@@ -182,7 +185,8 @@ TEST_F(DownloadManagerCoordinatorTest, DestructionDuringDownload) {
   // Start the download.
   base::FilePath path;
   ASSERT_TRUE(base::GetTempDir(&path));
-  task.Start(path, web::DownloadTask::Destination::kToDisk);
+  task->Start(path.Append(base::UTF16ToUTF8(task->GetSuggestedFilename())),
+              web::DownloadTask::Destination::kToDisk);
 
   @autoreleasepool {
     // Calling -downloadManagerViewControllerDidStartDownload will retain and
@@ -245,9 +249,7 @@ TEST_F(DownloadManagerCoordinatorTest, DelegateCreatedDownload) {
 // one.
 TEST_F(DownloadManagerCoordinatorTest, DelegateReplacedDownload) {
   auto task = CreateTestTask();
-  base::FilePath path;
-  ASSERT_TRUE(base::GetTempDir(&path));
-  task->Start(path, web::DownloadTask::Destination::kToMemory);
+  task->Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);
   task->SetDone(true);
 
   [coordinator_ downloadManagerTabHelper:tab_helper()
@@ -344,8 +346,8 @@ TEST_F(DownloadManagerCoordinatorTest, DelegateShowDownload) {
 // Tests closing view controller. Coordinator should be stopped and task
 // cancelled.
 TEST_F(DownloadManagerCoordinatorTest, Close) {
-  web::FakeDownloadTask task(GURL(kTestUrl), kTestMimeType);
-  coordinator_.downloadTask = &task;
+  auto task = CreateTestTask();
+  coordinator_.downloadTask = task.get();
   [coordinator_ start];
 
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
@@ -366,7 +368,7 @@ TEST_F(DownloadManagerCoordinatorTest, Close) {
   // and download task is cancelled.
   EXPECT_EQ(0U, base_view_controller_.childViewControllers.count);
   EXPECT_FALSE(coordinator_.downloadTask);
-  EXPECT_EQ(web::DownloadTask::State::kCancelled, task.GetState());
+  EXPECT_EQ(web::DownloadTask::State::kCancelled, task->GetState());
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileResult",
       static_cast<base::HistogramBase::Sample>(DownloadFileResult::NotStarted),
@@ -379,8 +381,8 @@ TEST_F(DownloadManagerCoordinatorTest, Close) {
 // Tests presenting Install Google Drive dialog. Coordinator presents StoreKit
 // dialog and hides Install Google Drive button.
 TEST_F(DownloadManagerCoordinatorTest, InstallDrive) {
-  web::FakeDownloadTask task(GURL(kTestUrl), kTestMimeType);
-  coordinator_.downloadTask = &task;
+  auto task = CreateTestTask();
+  coordinator_.downloadTask = task.get();
   [coordinator_ start];
 
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
@@ -430,9 +432,7 @@ TEST_F(DownloadManagerCoordinatorTest, InstallDrive) {
 
 // Tests presenting Open In... menu without actually opening the download.
 TEST_F(DownloadManagerCoordinatorTest, OpenIn) {
-  auto task =
-      std::make_unique<web::FakeDownloadTask>(GURL(kTestUrl), kTestMimeType);
-  task->SetSuggestedFilename(base::SysNSStringToUTF16(kTestSuggestedFileName));
+  auto task = CreateTestTask();
   coordinator_.downloadTask = task.get();
   [coordinator_ start];
 
@@ -450,7 +450,8 @@ TEST_F(DownloadManagerCoordinatorTest, OpenIn) {
   // Start the download.
   base::FilePath path;
   ASSERT_TRUE(base::GetTempDir(&path));
-  task->Start(path, web::DownloadTask::Destination::kToMemory);
+  task->Start(path.Append(base::UTF16ToUTF8(task->GetSuggestedFilename())),
+              web::DownloadTask::Destination::kToDisk);
 
   // Stub UIActivityViewController.
   OCMStub([download_view_controller_mock presentViewController:[OCMArg any]
@@ -510,7 +511,6 @@ TEST_F(DownloadManagerCoordinatorTest, OpenIn) {
 TEST_F(DownloadManagerCoordinatorTest, DestroyInProgressDownload) {
   auto task = CreateTestTask();
   coordinator_.downloadTask = task.get();
-  web::DownloadTask* task_ptr = task.get();
   [coordinator_ start];
 
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
@@ -529,6 +529,7 @@ TEST_F(DownloadManagerCoordinatorTest, DestroyInProgressDownload) {
   }
 
   // Starting download is async for model.
+  web::DownloadTask* task_ptr = task.get();
   ASSERT_TRUE(
       WaitUntilConditionOrTimeout(base::test::ios::kWaitForDownloadTimeout, ^{
         base::RunLoop().RunUntilIdle();
@@ -551,7 +552,6 @@ TEST_F(DownloadManagerCoordinatorTest, DestroyInProgressDownload) {
 TEST_F(DownloadManagerCoordinatorTest, QuitDuringInProgressDownload) {
   auto task = CreateTestTask();
   coordinator_.downloadTask = task.get();
-  web::DownloadTask* task_ptr = task.get();
   auto web_state = std::make_unique<web::FakeWebState>();
   browser_->GetWebStateList()->InsertWebState(
       0, std::move(web_state), WebStateList::INSERT_NO_FLAGS, WebStateOpener());
@@ -573,6 +573,7 @@ TEST_F(DownloadManagerCoordinatorTest, QuitDuringInProgressDownload) {
   }
 
   // Starting download is async for model.
+  web::DownloadTask* task_ptr = task.get();
   ASSERT_TRUE(
       WaitUntilConditionOrTimeout(base::test::ios::kWaitForDownloadTimeout, ^{
         base::RunLoop().RunUntilIdle();
@@ -601,10 +602,9 @@ TEST_F(DownloadManagerCoordinatorTest, QuitDuringInProgressDownload) {
 // Tests closing view controller while the download is in progress. Coordinator
 // should present the confirmation dialog.
 TEST_F(DownloadManagerCoordinatorTest, CloseInProgressDownload) {
-  web::FakeDownloadTask task(GURL(kTestUrl), kTestMimeType);
-  task.SetWebState(&web_state_);
-  task.Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);
-  coordinator_.downloadTask = &task;
+  auto task = CreateTestTask();
+  task->Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);
+  coordinator_.downloadTask = task.get();
   [coordinator_ start];
 
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
@@ -661,15 +661,14 @@ TEST_F(DownloadManagerCoordinatorTest, CloseInProgressDownload) {
 // Tests downloadManagerTabHelper:decidePolicyForDownload:completionHandler:.
 // Coordinator should present the confirmation dialog.
 TEST_F(DownloadManagerCoordinatorTest, DecidePolicyForDownload) {
-  web::FakeDownloadTask task(GURL(kTestUrl), kTestMimeType);
-  task.SetWebState(&web_state_);
-  coordinator_.downloadTask = &task;
+  auto task = CreateTestTask();
+  coordinator_.downloadTask = task.get();
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       &web_state_, OverlayModality::kWebContentArea);
   ASSERT_EQ(0U, queue->size());
   [coordinator_ downloadManagerTabHelper:tab_helper()
-                 decidePolicyForDownload:&task
+                 decidePolicyForDownload:task.get()
                        completionHandler:^(NewDownloadPolicy){
                        }];
 
@@ -705,15 +704,14 @@ TEST_F(DownloadManagerCoordinatorTest, DecidePolicyForDownload) {
 // Coordinator should present the confirmation dialog.
 TEST_F(DownloadManagerCoordinatorTest,
        DecidePolicyForDownloadFromBackgroundTab) {
-  web::FakeDownloadTask task(GURL(kTestUrl), kTestMimeType);
-  task.SetWebState(&web_state_);
+  auto task = CreateTestTask();
   coordinator_.downloadTask = nullptr;  // Current Tab does not have task.
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       &web_state_, OverlayModality::kWebContentArea);
   ASSERT_EQ(0U, queue->size());
   [coordinator_ downloadManagerTabHelper:tab_helper()
-                 decidePolicyForDownload:&task
+                 decidePolicyForDownload:task.get()
                        completionHandler:^(NewDownloadPolicy){
                        }];
 
@@ -748,10 +746,8 @@ TEST_F(DownloadManagerCoordinatorTest,
 // Tests starting the download. Verifies that download task is started and its
 // file writer is configured to write into download directory.
 TEST_F(DownloadManagerCoordinatorTest, StartDownload) {
-  web::FakeDownloadTask task(GURL(kTestUrl), kTestMimeType);
-  task.SetSuggestedFilename(base::SysNSStringToUTF16(kTestSuggestedFileName));
-  web::DownloadTask* task_ptr = &task;
-  coordinator_.downloadTask = &task;
+  auto task = CreateTestTask();
+  coordinator_.downloadTask = task.get();
   [coordinator_ start];
 
   DownloadManagerViewController* viewController =
@@ -767,6 +763,7 @@ TEST_F(DownloadManagerCoordinatorTest, StartDownload) {
   }
 
   // Starting download is async for model.
+  web::DownloadTask* task_ptr = task.get();
   ASSERT_TRUE(
       WaitUntilConditionOrTimeout(base::test::ios::kWaitForDownloadTimeout, ^{
         base::RunLoop().RunUntilIdle();
@@ -774,7 +771,7 @@ TEST_F(DownloadManagerCoordinatorTest, StartDownload) {
       }));
 
   // Download file should be located in download directory.
-  base::FilePath file = task.GetResponsePath();
+  base::FilePath file = task->GetResponsePath();
   base::FilePath download_dir;
   ASSERT_TRUE(GetTempDownloadsDirectory(&download_dir));
   EXPECT_TRUE(download_dir.IsParent(file));
@@ -788,10 +785,8 @@ TEST_F(DownloadManagerCoordinatorTest, StartDownload) {
 // Tests retrying the download. Verifies that kDownloadManagerRetryDownload UMA
 // metric is logged.
 TEST_F(DownloadManagerCoordinatorTest, RetryingDownload) {
-  web::FakeDownloadTask task(GURL(kTestUrl), kTestMimeType);
-  task.SetSuggestedFilename(base::SysNSStringToUTF16(kTestSuggestedFileName));
-  web::DownloadTask* task_ptr = &task;
-  coordinator_.downloadTask = &task;
+  auto task = CreateTestTask();
+  coordinator_.downloadTask = task.get();
   [coordinator_ start];
 
   // First download is a failure.
@@ -807,8 +802,8 @@ TEST_F(DownloadManagerCoordinatorTest, RetryingDownload) {
     [viewController.delegate
         downloadManagerViewControllerDidStartDownload:viewController];
   }
-  task.SetErrorCode(net::ERR_INTERNET_DISCONNECTED);
-  task.SetDone(true);
+  task->SetErrorCode(net::ERR_INTERNET_DISCONNECTED);
+  task->SetDone(true);
   ASSERT_EQ(1, user_action_tester_.GetActionCount("IOSDownloadStartDownload"));
 
   @autoreleasepool {
@@ -821,6 +816,7 @@ TEST_F(DownloadManagerCoordinatorTest, RetryingDownload) {
   }
 
   // Starting download is async for model.
+  web::DownloadTask* task_ptr = task.get();
   ASSERT_TRUE(
       WaitUntilConditionOrTimeout(base::test::ios::kWaitForDownloadTimeout, ^{
         base::RunLoop().RunUntilIdle();
@@ -843,9 +839,8 @@ TEST_F(DownloadManagerCoordinatorTest, RetryingDownload) {
 
 // Tests download failure in background.
 TEST_F(DownloadManagerCoordinatorTest, FailingInBackground) {
-  web::FakeDownloadTask task(GURL(kTestUrl), kTestMimeType);
-  task.SetSuggestedFilename(base::SysNSStringToUTF16(kTestSuggestedFileName));
-  coordinator_.downloadTask = &task;
+  auto task = CreateTestTask();
+  coordinator_.downloadTask = task.get();
   [coordinator_ start];
 
   // Start and immediately fail the download.
@@ -860,9 +855,9 @@ TEST_F(DownloadManagerCoordinatorTest, FailingInBackground) {
     [viewController.delegate
         downloadManagerViewControllerDidStartDownload:viewController];
   }
-  task.SetPerformedBackgroundDownload(true);
-  task.SetErrorCode(net::ERR_INTERNET_DISCONNECTED);
-  task.SetDone(true);
+  task->SetPerformedBackgroundDownload(true);
+  task->SetErrorCode(net::ERR_INTERNET_DISCONNECTED);
+  task->SetDone(true);
 
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileResult",
@@ -878,9 +873,8 @@ TEST_F(DownloadManagerCoordinatorTest, FailingInBackground) {
 
 // Tests successful download in background.
 TEST_F(DownloadManagerCoordinatorTest, SucceedingInBackground) {
-  web::FakeDownloadTask task(GURL(kTestUrl), kTestMimeType);
-  task.SetSuggestedFilename(base::SysNSStringToUTF16(kTestSuggestedFileName));
-  coordinator_.downloadTask = &task;
+  auto task = CreateTestTask();
+  coordinator_.downloadTask = task.get();
   [coordinator_ start];
 
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);
@@ -891,7 +885,8 @@ TEST_F(DownloadManagerCoordinatorTest, SucceedingInBackground) {
   // Start the download.
   base::FilePath path;
   ASSERT_TRUE(base::GetTempDir(&path));
-  task.Start(path, web::DownloadTask::Destination::kToDisk);
+  task->Start(path.Append(base::UTF16ToUTF8(task->GetSuggestedFilename())),
+              web::DownloadTask::Destination::kToDisk);
 
   // Start the download.
   @autoreleasepool {
@@ -904,8 +899,8 @@ TEST_F(DownloadManagerCoordinatorTest, SucceedingInBackground) {
   }
 
   // Complete the download to log UMA.
-  task.SetPerformedBackgroundDownload(true);
-  task.SetDone(true);
+  task->SetPerformedBackgroundDownload(true);
+  task->SetDone(true);
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileInBackground",
       static_cast<base::HistogramBase::Sample>(
