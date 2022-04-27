@@ -12,9 +12,9 @@
 #include <sstream>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/files/file_util.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/no_destructor.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/no_destructor.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 
@@ -54,7 +54,7 @@ class URandomFd {
 };
 
 int GetUrandomFD() {
-  static base::NoDestructor<URandomFd> urandom_fd;
+  static partition_alloc::internal::base::NoDestructor<URandomFd> urandom_fd;
   return urandom_fd->fd();
 }
 

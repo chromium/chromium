@@ -27,6 +27,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/no_destructor.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -46,7 +47,6 @@
 #include "base/immediate_crash.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -1182,7 +1182,7 @@ class PCScan::PCScanThread final {
 
   static PCScanThread& Instance() {
     // Lazily instantiate the scanning thread.
-    static base::NoDestructor<PCScanThread> instance;
+    static internal::base::NoDestructor<PCScanThread> instance;
     return *instance;
   }
 
@@ -1208,7 +1208,7 @@ class PCScan::PCScanThread final {
   }
 
  private:
-  friend class base::NoDestructor<PCScanThread>;
+  friend class internal::base::NoDestructor<PCScanThread>;
 
   PCScanThread() {
     ScopedAllowAllocations allow_allocations_within_std_thread;

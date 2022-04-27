@@ -82,6 +82,7 @@ target(partition_alloc_target_type, "partition_alloc") {
     "partition_alloc_base/logging.cc",
     "partition_alloc_base/logging.h",
     "partition_alloc_base/migration_adapter.h",
+    "partition_alloc_base/no_destructor.h",
     "partition_alloc_base/numerics/checked_math.h",
     "partition_alloc_base/numerics/checked_math_impl.h",
     "partition_alloc_base/numerics/clamped_math.h",
@@ -274,4 +275,3 @@ target(partition_alloc_target_type, "partition_alloc") {
 #    "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$_put_ref_count_in_previous_slot",
 #    "USE_MTE_CHECKED_PTR=$_use_mte_checked_ptr",
 #    "RECORD_ALLOC_INFO=$_record_alloc_info",
-

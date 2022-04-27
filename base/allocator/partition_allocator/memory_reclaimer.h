@@ -8,10 +8,10 @@
 #include <memory>
 #include <set>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/no_destructor.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/base_export.h"
-#include "base/no_destructor.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 
@@ -65,7 +65,7 @@ class BASE_EXPORT MemoryReclaimer {
   internal::Lock lock_;
   std::set<PartitionRoot<>*> partitions_ GUARDED_BY(lock_);
 
-  friend class base::NoDestructor<MemoryReclaimer>;
+  friend class internal::base::NoDestructor<MemoryReclaimer>;
   friend class MemoryReclaimerTest;
 };
 

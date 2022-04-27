@@ -13,12 +13,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/no_destructor.h"
 #include "base/allocator/partition_allocator/starscan/metadata_allocator.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/allocator/partition_allocator/starscan/starscan_fwd.h"
 #include "base/allocator/partition_allocator/starscan/write_protector.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
 
 // TODO(crbug.com/1288247): Remove this when migration is complete.
 namespace partition_alloc::internal {
@@ -46,7 +46,7 @@ class PCScanInternal final {
   static PCScanInternal& Instance() {
     // Since the data that PCScanInternal holds is cold, it's fine to have the
     // runtime check for thread-safe local static initialization.
-    static base::NoDestructor<PCScanInternal> instance;
+    static internal::base::NoDestructor<PCScanInternal> instance;
     return *instance;
   }
 
@@ -110,7 +110,7 @@ class PCScanInternal final {
   partition_alloc::StatsReporter& GetReporter();
 
  private:
-  friend base::NoDestructor<PCScanInternal>;
+  friend internal::base::NoDestructor<PCScanInternal>;
   friend class partition_alloc::internal::StarScanSnapshot;
 
   using StackTops = std::unordered_map<

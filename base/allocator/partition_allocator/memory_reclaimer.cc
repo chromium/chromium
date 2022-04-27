@@ -5,10 +5,10 @@
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/no_destructor.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
-#include "base/no_destructor.h"
 
 // TODO(bikineev): Temporarily disable *Scan in MemoryReclaimer as it seems to
 // cause significant jank.
@@ -18,7 +18,7 @@ namespace partition_alloc {
 
 // static
 MemoryReclaimer* MemoryReclaimer::Instance() {
-  static base::NoDestructor<MemoryReclaimer> instance;
+  static internal::base::NoDestructor<MemoryReclaimer> instance;
   return instance.get();
 }
 

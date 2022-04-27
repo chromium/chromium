@@ -45,9 +45,6 @@ class BasicStringPiece;
 using StringPiece = BasicStringPiece<char, std::char_traits<char>>;
 #endif
 
-template <typename T, typename O>
-class NoDestructor;
-
 #if BUILDFLAG(IS_MAC)
 
 namespace internal {
@@ -85,7 +82,6 @@ using ::base::LazyInstance;
 using ::base::LazyInstanceTraitsBase;
 using ::base::Microseconds;
 using ::base::Milliseconds;
-using ::base::NoDestructor;
 using ::base::PlatformThread;
 using ::base::PlatformThreadHandle;
 using ::base::PlatformThreadRef;

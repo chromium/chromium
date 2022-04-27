@@ -26,7 +26,6 @@ include_rules = [
     "+base/mac/scoped_cftyperef.h",
     "+base/memory/ref_counted.h",
     "+base/memory/scoped_refptr.h",
-    "+base/no_destructor.h",
     "+base/posix/eintr_wrapper.h",
     "+base/process/memory.h",
     "+base/strings/stringprintf.h",

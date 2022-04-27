@@ -46,7 +46,7 @@ struct SlotSpanMetadata;
 
 #if (DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
     BUILDFLAG(USE_BACKUP_REF_PTR)
-void CheckThatSlotOffsetIsZero(uintptr_t address);
+BASE_EXPORT void CheckThatSlotOffsetIsZero(uintptr_t address);
 #endif
 
 }  // namespace internal
