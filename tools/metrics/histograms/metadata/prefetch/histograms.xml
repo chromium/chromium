@@ -52,7 +52,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.CacheEntryAge.{PrefetchProxyCanaryCheckerClient}"
-    units="hours" expires_after="M104">
+    units="hours" expires_after="2023-04-25">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
   <summary>
@@ -64,7 +64,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.CacheLookupResult.{PrefetchProxyCanaryCheckerClient}"
-    enum="CanaryCheckLookupResult" expires_after="M104">
+    enum="CanaryCheckLookupResult" expires_after="2023-04-25">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
   <summary>
@@ -79,7 +79,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.FinalState.{PrefetchProxyCanaryCheckerClient}"
-    enum="BooleanSuccess" expires_after="M104">
+    enum="BooleanSuccess" expires_after="2023-04-25">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
   <summary>
@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.GenerateCacheKey.{PrefetchProxyCanaryCheckerClient}"
-    units="ms" expires_after="M104">
+    units="ms" expires_after="2023-04-25">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
   <summary>
@@ -107,7 +107,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.NetError.{PrefetchProxyCanaryCheckerClient}"
-    enum="NetErrorCodes" expires_after="M104">
+    enum="NetErrorCodes" expires_after="2023-04-25">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
   <summary>
@@ -121,7 +121,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.NumAttemptsBeforeSuccess.{PrefetchProxyCanaryCheckerClient}"
-    units="count" expires_after="M104">
+    units="count" expires_after="2023-04-25">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
   <summary>
@@ -138,7 +138,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.TimeUntilFailure.{PrefetchProxyCanaryCheckerClient}"
-    units="ms" expires_after="M104">
+    units="ms" expires_after="2023-04-25">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
   <summary>
@@ -151,7 +151,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.TimeUntilSuccess.{PrefetchProxyCanaryCheckerClient}"
-    units="ms" expires_after="M104">
+    units="ms" expires_after="2023-04-25">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
   <summary>
