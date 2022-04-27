@@ -406,20 +406,20 @@ TEST(PrivateNetworkAccessCheckerTest, ResponseAddressSpace) {
 
   EXPECT_THAT(checker.ResponseAddressSpace(),
               Optional(mojom::IPAddressSpace::kPrivate));
-
-  checker.ResetForRedirect();
-
-  EXPECT_EQ(checker.ResponseAddressSpace(), absl::nullopt);
 }
 
 TEST(PrivateNetworkAccessCheckerTest, ProxiedTransportAddressSpaceIsUnknown) {
   mojom::URLLoaderFactoryParams factory_params;
 
   PrivateNetworkAccessChecker checker(ResourceRequest(), &factory_params,
-                                      mojom::kURLLoadOptionNone);
+                                      mojom::kURLLoadOptionBlockLocalRequest);
 
-  checker.Check(ProxiedTransport(LocalEndpoint()));
+  // This succeeds in spite of the load option, because the proxied transport
+  // is not considered any less public than `kPublic`.
+  EXPECT_EQ(checker.Check(ProxiedTransport(LocalEndpoint())),
+            Result::kAllowedMissingClientSecurityState);
 
+  // In fact, it is considered unknown.
   EXPECT_EQ(checker.ResponseAddressSpace(), mojom::IPAddressSpace::kUnknown);
 }
 
@@ -427,13 +427,18 @@ TEST(PrivateNetworkAccessCheckerTest, CachedTransportAddressSpace) {
   mojom::URLLoaderFactoryParams factory_params;
 
   PrivateNetworkAccessChecker checker(ResourceRequest(), &factory_params,
-                                      mojom::kURLLoadOptionNone);
+                                      mojom::kURLLoadOptionBlockLocalRequest);
 
-  checker.Check(CachedTransport(PrivateEndpoint()));
+  // The cached transport is treated like a direct transport to the same
+  // endpoint, so the load option does not fail the check.
+  EXPECT_EQ(checker.Check(CachedTransport(PublicEndpoint())),
+            Result::kAllowedMissingClientSecurityState);
 
-  EXPECT_EQ(checker.ResponseAddressSpace(), mojom::IPAddressSpace::kPrivate);
+  EXPECT_EQ(checker.ResponseAddressSpace(), mojom::IPAddressSpace::kPublic);
 
-  checker.Check(CachedTransport(LocalEndpoint()));
+  // When the endpoint is local, the check fails as for a direct transport.
+  EXPECT_EQ(checker.Check(CachedTransport(LocalEndpoint())),
+            Result::kBlockedByLoadOption);
 
   EXPECT_EQ(checker.ResponseAddressSpace(), mojom::IPAddressSpace::kLocal);
 }
@@ -451,6 +456,11 @@ TEST(PrivateNetworkAccessCheckerTest, ResetForRedirectTargetAddressSpace) {
 
   // The target address space has been cleared.
   EXPECT_EQ(checker.TargetAddressSpace(), mojom::IPAddressSpace::kUnknown);
+
+  // This succeeds even though the IP address space does not match the target
+  // passed at construction time, thanks to `ResetForRedirect()`.
+  EXPECT_EQ(checker.Check(DirectTransport(LocalEndpoint())),
+            Result::kAllowedMissingClientSecurityState);
 }
 
 TEST(PrivateNetworkAccessCheckerTest, ResetForRedirectResponseAddressSpace) {
@@ -464,6 +474,11 @@ TEST(PrivateNetworkAccessCheckerTest, ResetForRedirectResponseAddressSpace) {
   checker.ResetForRedirect();
 
   EXPECT_EQ(checker.ResponseAddressSpace(), absl::nullopt);
+
+  // This succeeds even though the IP address space does not match that of the
+  // previous endpoint passed to `Check()`, thanks to `ResetForRedirect()`.
+  EXPECT_EQ(checker.Check(DirectTransport(LocalEndpoint())),
+            Result::kAllowedMissingClientSecurityState);
 }
 
 TEST(PrivateNetworkAccessCheckerTest,
