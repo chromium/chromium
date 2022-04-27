@@ -105,8 +105,15 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
   void SetUp() override {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     // Choose between running with local test runner or via a service.
-    feature_list_.InitWithFeatureState(features::kEnableOopPrintDrivers,
-                                       UseService());
+    if (UseService()) {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          features::kEnableOopPrintDrivers,
+          {{ features::kEnableOopPrintDriversSandbox.name,
+             "true" }});
+    } else {
+      feature_list_.InitWithFeatureState(features::kEnableOopPrintDrivers,
+                                         false);
+    }
 #endif
 
     TestingProfile::Builder builder;

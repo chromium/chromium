@@ -2373,12 +2373,17 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
 
   virtual bool UseService() = 0;
 
+  // Only of interest when `UseService()` returns true.
+  virtual bool SandboxService() = 0;
+
   void SetUp() override {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     if (UseService()) {
       feature_list_.InitAndEnableFeatureWithParameters(
           features::kEnableOopPrintDrivers,
-          {{features::kEnableOopPrintDriversJobPrint.name, "true"}});
+          {{features::kEnableOopPrintDriversJobPrint.name, "true"},
+           {features::kEnableOopPrintDriversSandbox.name,
+            SandboxService() ? "true" : "false"}});
 
       // Safe to use `base::Unretained(this)` since this testing class
       // necessarily must outlive all interactions from the tests which will
@@ -2786,25 +2791,62 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
   bool stop_invoked_ = false;
 };
 
-class PrintBackendPrintBrowserTestService
+class PrintBackendPrintBrowserTestSandboxedService
     : public PrintBackendPrintBrowserTestBase {
+ public:
+  PrintBackendPrintBrowserTestSandboxedService() = default;
+  ~PrintBackendPrintBrowserTestSandboxedService() override = default;
+
+  bool UseService() override { return true; }
+  bool SandboxService() override { return true; }
+};
+
+class PrintBackendPrintBrowserTestService
+    : public PrintBackendPrintBrowserTestBase,
+      public testing::WithParamInterface<bool> {
  public:
   PrintBackendPrintBrowserTestService() = default;
   ~PrintBackendPrintBrowserTestService() override = default;
 
   bool UseService() override { return true; }
+  bool SandboxService() override { return GetParam(); }
 };
 
-class PrintBackendPrintBrowserTest : public PrintBackendPrintBrowserTestBase,
-                                     public testing::WithParamInterface<bool> {
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrintBackendPrintBrowserTestService,
+                         testing::Bool());
+
+enum class PrintBackendFeatureVariation {
+  // `PrintBackend` calls occur from browser process.
+  kInBrowserProcess,
+  // Use OOP `PrintBackend`.  Attempt to have `PrintBackendService` be
+  // sandboxed.
+  kOopSandboxedService,
+  // Use OOP `PrintBackend`.  Always use `PrintBackendService` unsandboxed.
+  kOopUnsandboxedService,
+};
+
+class PrintBackendPrintBrowserTest
+    : public PrintBackendPrintBrowserTestBase,
+      public testing::WithParamInterface<PrintBackendFeatureVariation> {
  public:
   PrintBackendPrintBrowserTest() = default;
   ~PrintBackendPrintBrowserTest() override = default;
 
-  bool UseService() override { return GetParam(); }
+  bool UseService() override {
+    return GetParam() != PrintBackendFeatureVariation::kInBrowserProcess;
+  }
+  bool SandboxService() override {
+    return GetParam() == PrintBackendFeatureVariation::kOopSandboxedService;
+  }
 };
 
-INSTANTIATE_TEST_SUITE_P(All, PrintBackendPrintBrowserTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PrintBackendPrintBrowserTest,
+    testing::Values(PrintBackendFeatureVariation::kInBrowserProcess,
+                    PrintBackendFeatureVariation::kOopSandboxedService,
+                    PrintBackendFeatureVariation::kOopUnsandboxedService));
 
 IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTest, UpdatePrintSettings) {
   AddPrinter("printer1");
@@ -2854,7 +2896,7 @@ IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTest, UpdatePrintSettings) {
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 
-IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService, StartPrinting) {
+IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTestService, StartPrinting) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
 
@@ -2887,7 +2929,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService, StartPrinting) {
   EXPECT_TRUE(stop_invoked());
 }
 
-IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
+IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTestService,
                        StartPrintingSpoolingSharedMemoryError) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
@@ -2918,7 +2960,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
   EXPECT_TRUE(stop_invoked());
 }
 
-IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
+IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestSandboxedService,
                        StartPrintingAccessDenied) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
@@ -2955,7 +2997,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
   EXPECT_TRUE(stop_invoked());
 }
 
-IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
+IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestSandboxedService,
                        StartPrintingRepeatedAccessDenied) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
@@ -2986,7 +3028,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
 }
 
 #if BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
+IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestSandboxedService,
                        StartPrintingRenderPageAccessDenied) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
@@ -3021,7 +3063,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
 
 // TODO(crbug.com/1008222)  Include Windows once XPS print pipeline is added.
 #if !BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
+IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestSandboxedService,
                        StartPrintingRenderDocumentAccessDenied) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
@@ -3053,7 +3095,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
 }
 #endif  // !BUILDFLAG(IS_WIN)
 
-IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
+IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestSandboxedService,
                        StartPrintingDocumentDoneAccessDenied) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
@@ -3095,7 +3137,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
 // TODO(crbug.com/809738)  Extend to Linux once Wayland can be made to support
 // a system be modal against an application window in the browser process.
 #if BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService, StartBasicPrint) {
+IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTestService, StartBasicPrint) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
 
@@ -3129,7 +3171,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService, StartBasicPrint) {
   EXPECT_TRUE(stop_invoked());
 }
 
-IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
+IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTestService,
                        StartBasicPrintCancel) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
@@ -3159,7 +3201,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
   EXPECT_TRUE(stop_invoked());
 }
 
-IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
+IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTestService,
                        StartBasicPrintConcurrent) {
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
@@ -3191,7 +3233,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
+IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTestService,
                        StartBasicPrintUseDefaultFails) {
   PrimeForFailInUseDefaultSettings();
 
