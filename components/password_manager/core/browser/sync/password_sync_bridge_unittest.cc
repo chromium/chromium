@@ -46,6 +46,7 @@ using testing::Eq;
 using testing::Invoke;
 using testing::NotNull;
 using testing::Return;
+using testing::ReturnRef;
 using testing::UnorderedElementsAre;
 using testing::UnorderedElementsAreArray;
 
@@ -396,6 +397,9 @@ class PasswordSyncBridgeTest : public testing::Test {
         .WillByDefault(testing::Return(true));
     ON_CALL(mock_sync_metadata_store_sync_, ClearModelTypeState)
         .WillByDefault(testing::Return(true));
+
+    ON_CALL(mock_processor_, GetPossiblyTrimmedRemoteSpecifics)
+        .WillByDefault(ReturnRef(sync_pb::EntitySpecifics::default_instance()));
   }
 
   // Creates an EntityData around a copy of the given specifics.

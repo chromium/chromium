@@ -170,7 +170,8 @@ JobId PasswordStoreAndroidBackendBridgeImpl::RemoveLogin(
     const password_manager::PasswordForm& form,
     Account account) {
   JobId job_id = GetNextJobId();
-  sync_pb::PasswordSpecificsData data = SpecificsDataFromPassword(form);
+  sync_pb::PasswordSpecificsData data =
+      SpecificsDataFromPassword(form, /*base_password_data=*/{});
   Java_PasswordStoreAndroidBackendBridgeImpl_removeLogin(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
       base::android::ToJavaByteArray(base::android::AttachCurrentThread(),

@@ -80,6 +80,11 @@ class PasswordSyncBridge : public syncer::ModelTypeSyncBridge {
   // Retrieves the storage keys of all unsynced passwords in the store.
   std::set<FormPrimaryKey> GetUnsyncedPasswordsStorageKeys();
 
+  // If available, returns cached possibly trimmed PasswordSpecificsData for
+  // given |storage_key|. By default, empty PasswordSpecificsData is returned.
+  const sync_pb::PasswordSpecificsData& GetPossiblyTrimmedPasswordSpecificsData(
+      const std::string& storage_key);
+
   // Password store responsible for persistence.
   const raw_ptr<PasswordStoreSync> password_store_sync_;
 

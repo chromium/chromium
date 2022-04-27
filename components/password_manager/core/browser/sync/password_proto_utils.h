@@ -32,12 +32,18 @@ base::flat_map<InsecureType, InsecurityMetadata> PasswordIssuesMapFromProto(
     const sync_pb::PasswordSpecificsData& password_data);
 
 // Returns sync_pb::PasswordSpecifics based on given `password_form`.
+// `base_password_data` is intended for carrying over unknown and unsupported
+// fields when there is a local modification to an existing sync entity.
 sync_pb::PasswordSpecifics SpecificsFromPassword(
-    const PasswordForm& password_form);
+    const PasswordForm& password_form,
+    const sync_pb::PasswordSpecificsData& base_password_data);
 
 // Returns sync_pb::PasswordSpecificsData based on given `password_form`.
+// `base_password_data` is intended for carrying over unknown and unsupported
+// fields when there is a local modification to an existing sync entity.
 sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
-    const PasswordForm& password_form);
+    const PasswordForm& password_form,
+    const sync_pb::PasswordSpecificsData& base_password_data);
 
 // Returns sync_pb::PasswordWithLocalData based on given `password_form`.
 sync_pb::PasswordWithLocalData PasswordWithLocalDataFromPassword(

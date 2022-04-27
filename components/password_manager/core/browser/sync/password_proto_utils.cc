@@ -128,10 +128,11 @@ sync_pb::PasswordSpecificsData TrimPasswordSpecificsDataForCaching(
 }
 
 sync_pb::PasswordSpecifics SpecificsFromPassword(
-    const PasswordForm& password_form) {
+    const PasswordForm& password_form,
+    const sync_pb::PasswordSpecificsData& base_password_data) {
   sync_pb::PasswordSpecifics specifics;
   *specifics.mutable_client_only_encrypted_data() =
-      SpecificsDataFromPassword(password_form);
+      SpecificsDataFromPassword(password_form, base_password_data);
 
   // WARNING: if you are adding support for new `PasswordSpecificsData` fields,
   // you need to update following functions accordingly:
@@ -144,8 +145,11 @@ sync_pb::PasswordSpecifics SpecificsFromPassword(
 }
 
 sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
-    const PasswordForm& password_form) {
-  sync_pb::PasswordSpecificsData password_data;
+    const PasswordForm& password_form,
+    const sync_pb::PasswordSpecificsData& base_password_data) {
+  // Repeated fields in base_password_data might need to be cleared
+  // before adding entries from password_form to avoid duplicates.
+  sync_pb::PasswordSpecificsData password_data = base_password_data;
   password_data.set_scheme(static_cast<int>(password_form.scheme));
   password_data.set_signon_realm(password_form.signon_realm);
   password_data.set_origin(password_form.url.spec());
@@ -221,7 +225,7 @@ sync_pb::PasswordWithLocalData PasswordWithLocalDataFromPassword(
   sync_pb::PasswordWithLocalData password_with_local_data;
 
   *password_with_local_data.mutable_password_specifics_data() =
-      SpecificsDataFromPassword(password_form);
+      SpecificsDataFromPassword(password_form, /*base_password_data=*/{});
 
   auto* local_data = password_with_local_data.mutable_local_data();
   local_data->set_opaque_metadata(SerializeOpaqueLocalData(password_form));

@@ -230,7 +230,7 @@ void InjectEncryptedServerPassword(
     const syncer::KeyDerivationParams& key_derivation_params,
     fake_server::FakeServer* fake_server) {
   sync_pb::PasswordSpecificsData password_data =
-      password_manager::SpecificsFromPassword(form)
+      password_manager::SpecificsFromPassword(form, /*base_password_data=*/{})
           .client_only_encrypted_data();
   InjectEncryptedServerPassword(password_data, encryption_passphrase,
                                 key_derivation_params, fake_server);
@@ -255,7 +255,7 @@ void InjectKeystoreEncryptedServerPassword(
     const password_manager::PasswordForm& form,
     fake_server::FakeServer* fake_server) {
   sync_pb::PasswordSpecificsData password_data =
-      password_manager::SpecificsFromPassword(form)
+      password_manager::SpecificsFromPassword(form, /*base_password_data=*/{})
           .client_only_encrypted_data();
   InjectKeystoreEncryptedServerPassword(password_data, fake_server);
 }
