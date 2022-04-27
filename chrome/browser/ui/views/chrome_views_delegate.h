@@ -52,8 +52,11 @@ class ChromeViewsDelegate : public views::ViewsDelegate {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  gfx::ImageSkia* GetDefaultWindowIcon() const override;
   bool WindowManagerProvidesTitleBar(bool maximized) override;
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+  gfx::ImageSkia* GetDefaultWindowIcon() const override;
 #endif
 
   void AddRef() override;
