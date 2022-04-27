@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_components/localized_link/localized_link.js';
+import '//resources/cr_elements/policy/cr_tooltip_icon.m.js';
 
 import {AppType, InstallSource} from '//resources/cr_components/app_management/constants.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -115,6 +116,16 @@ class AppManagementAppDetailsItem extends AppManagementAppDetailsItemBase {
   shouldShowDataSize_(app) {
     return app.dataSize !== null && app.dataSize !== '';
   }
+  /**
+   * The info icon is only shown for apps installed from the Chrome browser.
+   *
+   * @param {!App} app
+   * @returns {boolean}
+   * @private
+   */
+  shouldShowInfoIcon_(app) {
+    return app.installSource === InstallSource.kBrowser;
+  }
 
   /**
    * Returns the string for the app type.
@@ -154,8 +165,6 @@ class AppManagementAppDetailsItem extends AppManagementAppDetailsItemBase {
         return this.i18n('appManagementAppDetailsInstallSourceWebStore');
       case InstallSource.kPlayStore:
         return this.i18n('appManagementAppDetailsInstallSourcePlayStore');
-      case InstallSource.kBrowser:
-        return this.i18n('appManagementAppDetailsInstallSourceBrowser');
       default:
         console.error('Install source not recognised.');
         return '';
@@ -183,6 +192,7 @@ class AppManagementAppDetailsItem extends AppManagementAppDetailsItemBase {
               ]
             });
       case InstallSource.kBrowser:
+        return this.i18n('appManagementAppDetailsInstallSourceBrowser');
       case InstallSource.kUnknown:
         return this.getTypeString_(app);
       default:
@@ -252,7 +262,18 @@ class AppManagementAppDetailsItem extends AppManagementAppDetailsItemBase {
         'appManagementAppDetailsVersion',
         app.version ? app.version.toString() : '');
   }
-}
 
+  /**
+   * Returns the sanitized URL for apps downloaded from
+   * the Chrome browser, to be shown in the tooltip.
+   *
+   * @param {!App} app
+   * @returns {string}
+   * @private
+   */
+  getSanitizedURL_(app) {
+    return app.publisherId.replace(/\?.*$/g, '');
+  }
+}
 customElements.define(
     AppManagementAppDetailsItem.is, AppManagementAppDetailsItem);

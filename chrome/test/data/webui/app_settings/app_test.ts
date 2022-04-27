@@ -46,7 +46,8 @@ suite('AppSettingsAppTest', () => {
       },
       installSource: InstallSource.kUnknown,
       appSize: '',
-      dataSize: ''
+      dataSize: '',
+      publisherId: '',
     };
 
     const permissionTypes = [

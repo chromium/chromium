@@ -485,6 +485,8 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
     app->hide_window_mode = provider->registrar().IsIsolated(app->id);
   }
 
+  app->publisher_id = update.PublisherId();
+
   return app;
 }
 

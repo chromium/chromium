@@ -151,6 +151,7 @@ struct App {
   FileHandlingState? file_handling_state;
   string? app_size;
   string? data_size;
+  string publisher_id;
 };
 
 // Extension-based apps primarily use install-time permissions that cannot be

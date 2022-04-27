@@ -56,6 +56,7 @@ export function createTestApp(): App {
     installSource: InstallSource.kUnknown,
     appSize: undefined,
     dataSize: undefined,
+    publisherId: '',
   };
 
   const permissionTypes = [

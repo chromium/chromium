@@ -114,6 +114,7 @@ export class FakePageHandler {
       installSource: InstallSource.kUnknown,
       appSize: '',
       dataSize: '',
+      publisherId: '',
     };
 
     if (optConfig) {
