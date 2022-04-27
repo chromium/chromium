@@ -85,9 +85,7 @@ AutofillVirtualCardEnrollmentInfoBar::CreateRenderInfoBar(
   Java_AutofillVirtualCardEnrollmentInfoBar_addCardDetail(
       env, java_delegate,
       gfx::ConvertToJavaBitmap(
-          *virtual_card_enrollment_delegate_->GetIssuerIcon()
-               ->AsImageSkia()
-               .bitmap()),
+          *virtual_card_enrollment_delegate_->GetIssuerIcon()->bitmap()),
       base::android::ConvertUTF16ToJavaString(
           env, virtual_card_enrollment_delegate_->GetCardLabel()));
 

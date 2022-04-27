@@ -19,10 +19,6 @@ namespace content {
 class WebContents;
 }
 
-namespace gfx {
-class Image;
-}
-
 namespace autofill {
 
 class CreditCard;
@@ -40,9 +36,12 @@ struct VirtualCardEnrollmentFields {
   ~VirtualCardEnrollmentFields();
   // The credit card to enroll.
   CreditCard credit_card;
-  // Raw pointer to the image for the card art. The |card_art_image| object is
-  // owned by PersonalDataManager.
-  raw_ptr<gfx::Image> card_art_image = nullptr;
+  // Raw pointer to the image skia for the card art. If the card art is not yet
+  // available, this pointer will be set to the network image after we receive a
+  // GetDetailsForEnrollResponse. The |card_art_image| object is owned by
+  // PersonalDataManager if it is the card art, or by the resource bundle if it
+  // is the network icon.
+  raw_ptr<const gfx::ImageSkia> card_art_image = nullptr;
   // The Google-specific legal messages that the user must accept before
   // opting-in to virtual card enrollment.
   LegalMessageLines google_legal_message;

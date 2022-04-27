@@ -48,11 +48,11 @@ AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetLearnMoreLinkText()
   return virtual_card_enroll_bubble_controller_->GetLearnMoreLinkText();
 }
 
-const raw_ptr<gfx::Image>
+raw_ptr<const gfx::ImageSkia>
 AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetIssuerIcon() const {
   return virtual_card_enroll_bubble_controller_
       ->GetVirtualCardEnrollmentFields()
-      .card_art_image.get();
+      .card_art_image;
 }
 
 std::u16string

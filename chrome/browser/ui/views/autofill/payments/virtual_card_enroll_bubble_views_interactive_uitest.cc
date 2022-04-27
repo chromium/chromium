@@ -237,8 +237,9 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
   VirtualCardEnrollmentFields downstream_virtual_card_enrollment_fields_;
   VirtualCardEnrollmentFields upstream_virtual_card_enrollment_fields_;
   VirtualCardEnrollmentFields settings_page_virtual_card_enrollment_fields_;
-  gfx::Image card_art_image_ =
-      gfx::test::CreateImage(kCardImageWidthInPx, kCardImageLengthInPx);
+  gfx::ImageSkia card_art_image_ =
+      gfx::test::CreateImage(kCardImageWidthInPx, kCardImageLengthInPx)
+          .AsImageSkia();
 };
 
 class VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized
@@ -266,21 +267,6 @@ IN_PROC_BROWSER_TEST_P(
       base::DoNothing());
 
   EXPECT_TRUE(GetBubbleViews());
-  EXPECT_TRUE(IsIconVisible());
-}
-
-IN_PROC_BROWSER_TEST_P(
-    VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
-    ShowBubble_MissingCardArt) {
-  VirtualCardEnrollmentSource virtual_card_enrollment_source = GetParam();
-  VirtualCardEnrollmentFields enrollment_fields =
-      GetFieldsForSource(virtual_card_enrollment_source);
-  // Ensure there is a non-empty image set if no card art image is present.
-  enrollment_fields.card_art_image = nullptr;
-
-  ShowBubbleAndWaitUntilShown(enrollment_fields, base::DoNothing(),
-                              base::DoNothing());
-  EXPECT_TRUE(GetBubbleViews()->NetworkIconNotEmptyForTesting());
   EXPECT_TRUE(IsIconVisible());
 }
 

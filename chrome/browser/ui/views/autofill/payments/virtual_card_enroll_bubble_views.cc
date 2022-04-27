@@ -156,19 +156,12 @@ void VirtualCardEnrollBubbleViews::Init() {
 
   const VirtualCardEnrollmentFields virtual_card_enrollment_fields =
       controller_->GetVirtualCardEnrollmentFields();
+
   CreditCard card = virtual_card_enrollment_fields.credit_card;
-  gfx::Image* card_image = virtual_card_enrollment_fields.card_art_image;
 
   card_network_icon_ =
       description_view->AddChildView(std::make_unique<views::ImageView>());
-  DCHECK(!card.network().empty());
-
-  // If the card art image is retrieved at this point, display that. Otherwise
-  // fallback to the network icon.
-  card_network_icon_->SetImage(
-      card_image ? card_image->AsImageSkia()
-                 : *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-                       CreditCard::IconResourceId(card.network())));
+  card_network_icon_->SetImage(virtual_card_enrollment_fields.card_art_image);
   card_network_icon_->SetTooltipText(card.NetworkForDisplay());
 
   const std::u16string card_info =
