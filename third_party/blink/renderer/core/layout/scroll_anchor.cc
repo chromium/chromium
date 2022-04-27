@@ -253,6 +253,12 @@ static const String ComputeUniqueSelector(Node* anchor_node) {
     return String();
   }
 
+  // When the scroll anchor is a shadow DOM element, the selector may be applied
+  // to the top document. We fail in this case.
+  if (anchor_node->IsInShadowTree()) {
+    return String();
+  }
+
   TRACE_EVENT0("blink", "ScrollAnchor::SerializeAnchor");
   SCOPED_BLINK_UMA_HISTOGRAM_TIMER(
       "Layout.ScrollAnchor.TimeToComputeAnchorNodeSelector");

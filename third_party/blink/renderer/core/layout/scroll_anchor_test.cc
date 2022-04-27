@@ -821,6 +821,35 @@ TEST_P(ScrollAnchorTest, SerializeAnchorFailsForPseudoElement) {
   EXPECT_FALSE(GetScrollAnchor(LayoutViewport()).AnchorObject());
 }
 
+TEST_P(ScrollAnchorTest, SerializeAnchorFailsForShadowDOMElement) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        body { height: 5000px; margin: 0; }
+        div { height: 200px; }
+      </style>
+      <div id='host'></div>
+      <div></div>
+      <div></div>)HTML");
+  auto* host = GetElementById("host");
+  auto& shadow_root = host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  shadow_root.setInnerHTML(R"HTML(
+      <style>
+        div { height: 100px; }
+      </style>
+      <div></div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  ScrollLayoutViewport(ScrollOffset(0, 50));
+
+  SerializedAnchor serialized =
+      GetScrollAnchor(LayoutViewport()).GetSerializedAnchor();
+  EXPECT_FALSE(serialized.IsValid());
+
+  LayoutObject* anchor_object =
+      GetScrollAnchor(LayoutViewport()).AnchorObject();
+  EXPECT_TRUE(anchor_object->GetNode()->IsInShadowTree());
+}
+
 TEST_P(ScrollAnchorTest, RestoreAnchorSimple) {
   SetBodyInnerHTML(
       "<style> body { height: 1000px; margin: 0; } div { height: 100px } "
