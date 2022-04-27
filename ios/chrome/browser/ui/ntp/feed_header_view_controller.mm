@@ -500,11 +500,14 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
 
     // Find the "Following" label within the segmented control, since it is not
     // exposed by UISegmentedControl.
-    UIView* followingSegment = self.segmentedControl.subviews[0];
     UILabel* followingLabel;
-    for (UIView* view in followingSegment.subviews) {
+    for (UIView* view in self.segmentedControl.subviews) {
       if ([view isKindOfClass:[UILabel class]]) {
-        followingLabel = static_cast<UILabel*>(view);
+        UILabel* currentLabel = static_cast<UILabel*>(view);
+        if (currentLabel.text ==
+            l10n_util::GetNSString(IDS_IOS_FOLLOWING_FEED_TITLE)) {
+          followingLabel = currentLabel;
+        }
       }
     }
 
