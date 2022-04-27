@@ -15,6 +15,7 @@
     scroll-target="gridScrollThreshold">
     <template>
       <wallpaper-grid-item
+        aria-label$="[[getAlbumAriaLabel_(album)]]"
         class="album"
         image-src="[[album.preview.url]]"
         index="[[index]]"

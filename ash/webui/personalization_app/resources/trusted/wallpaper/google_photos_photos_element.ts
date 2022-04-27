@@ -398,7 +398,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
     return sections;
   }
 
-  // Returns the date to display for the specified grid |row|.
+  /** Returns the date to display for the specified grid |row|. */
   private getGridRowDate_(
       row: GooglePhotosPhotosRow,
       photosBySection: GooglePhotosPhotos['photosBySection_']): string
@@ -411,7 +411,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
     return gridRowSection ? gridRowSection.date : undefined;
   }
 
-  // Returns the locations to display for the specified grid |row|.
+  /** Returns the locations to display for the specified grid |row|. */
   private getGridRowLocations_(
       row: GooglePhotosPhotosRow,
       photosBySection: GooglePhotosPhotos['photosBySection_']): string
@@ -426,7 +426,16 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
         undefined;
   }
 
-  // Returns whether the title for the specified grid |row| is visible.
+  /** Returns the aria label for the specified |photo|. */
+  private getPhotoAriaLabel_(photo: GooglePhotosPhoto|null): string|undefined {
+    if (photo) {
+      return photo.id === PLACEHOLDER_ID ? this.i18n('ariaLabelLoading') :
+                                           photo.name;
+    }
+    return undefined;
+  }
+
+  /** Returns whether the title for the specified grid |row| is visible. */
   private isGridRowTitleVisible_(
       row: GooglePhotosPhotosRow,
       photosBySection: GooglePhotosPhotos['photosBySection_']): boolean {
@@ -438,7 +447,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
     return !!photo && photo.id === PLACEHOLDER_ID;
   }
 
-  // Returns whether the specified |photo| is currently selected.
+  /** Returns whether the specified |photo| is currently selected. */
   private isPhotoSelected_(
       photo: GooglePhotosPhoto|null,
       currentSelected: GooglePhotosPhotos['currentSelected_'],

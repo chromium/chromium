@@ -20,15 +20,6 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
   let wallpaperProvider: TestWallpaperProvider;
 
   /**
-   * Returns the match for |selector| in |googlePhotosPhotosByAlbumIdElement|'s
-   * shadow DOM.
-   */
-  function querySelector(selector: string): Element|null {
-    return googlePhotosPhotosByAlbumIdElement!.shadowRoot!.querySelector(
-        selector);
-  }
-
-  /**
    * Returns all matches for |selector| in
    * |googlePhotosPhotosByAlbumIdElement|'s shadow DOM.
    */
@@ -415,11 +406,17 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
     googlePhotosPhotosByAlbumIdElement.setAttribute('album-id', album.id);
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
     assertEquals(querySelectorAll(photoSelector)!.length, 0);
-    assertNotEquals(querySelectorAll(placeholderSelector)!.length, 0);
+    const placeholderEls = querySelectorAll(placeholderSelector);
+    assertNotEquals(placeholderEls!.length, 0);
+
+    // Placeholders should be aria-labeled.
+    placeholderEls!.forEach(placeholderEl => {
+      assertEquals(placeholderEl.getAttribute('aria-label'), 'Loading');
+    });
 
     // Clicking a placeholder should do nothing.
     const clickHandler = 'selectGooglePhotosPhoto';
-    (querySelector(placeholderSelector) as HTMLElement).click();
+    (placeholderEls![0] as HTMLElement).click();
     await new Promise<void>(resolve => setTimeout(resolve));
     assertEquals(wallpaperProvider.getCallCount(clickHandler), 0);
 
@@ -433,11 +430,17 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
 
     // Only photos should be present.
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
-    assertNotEquals(querySelectorAll(photoSelector)!.length, 0);
+    const photoEls = querySelectorAll(photoSelector);
+    assertNotEquals(photoEls!.length, 0);
     assertEquals(querySelectorAll(placeholderSelector)!.length, 0);
 
+    // Photos should be aria-labeled.
+    photoEls!.forEach((photoEl, i) => {
+      assertEquals(photoEl.getAttribute('aria-label'), photos[i]!.name);
+    });
+
     // Clicking a photo should do something.
-    (querySelector(photoSelector) as HTMLElement).click();
+    (photoEls![0] as HTMLElement).click();
     assertEquals(
         await wallpaperProvider.whenCalled(clickHandler), photos[0]!.id);
   });

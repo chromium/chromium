@@ -35,7 +35,7 @@
   .location {
     color: var(--cros-text-color-disabled);
     font-weight: 400;
-    padding-left: 12px;
+    padding-inline-start: 12px;
   }
 
   .photos {
@@ -63,6 +63,7 @@
         <div class="photos">
           <template is="dom-repeat" items="[[row]]" as="photo">
             <wallpaper-grid-item
+              aria-label$="[[getPhotoAriaLabel_(photo)]]"
               class="photo"
               colindex$="[[index]]"
               image-src="[[photo.url.url]]"

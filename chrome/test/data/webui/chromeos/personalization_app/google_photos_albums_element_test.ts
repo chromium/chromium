@@ -21,14 +21,6 @@ suite('GooglePhotosAlbumsTest', function() {
   let wallpaperProvider: TestWallpaperProvider;
 
   /**
-   * Returns the match for |selector| in |googlePhotosAlbumsElement|'s shadow
-   * DOM.
-   */
-  function querySelector(selector: string): Element|null {
-    return googlePhotosAlbumsElement!.shadowRoot!.querySelector(selector);
-  }
-
-  /**
    * Returns all matches for |selector| in |googlePhotosAlbumsElement|'s shadow
    * DOM.
    */
@@ -189,7 +181,13 @@ suite('GooglePhotosAlbumsTest', function() {
     const albumSelector = `${selector}:not([placeholder])`;
     const placeholderSelector = `${selector}[placeholder]`;
     assertEquals(querySelectorAll(albumSelector)!.length, 0);
-    assertNotEquals(querySelectorAll(placeholderSelector)!.length, 0);
+    const placeholderEls = querySelectorAll(placeholderSelector);
+    assertNotEquals(placeholderEls!.length, 0);
+
+    // Placeholders should be aria-labeled.
+    placeholderEls!.forEach(placeholderEl => {
+      assertEquals(placeholderEl.getAttribute('aria-label'), 'Loading');
+    });
 
     // Mock singleton |PersonalizationRouter|.
     const router = TestBrowserProxy.fromClass(PersonalizationRouter);
@@ -202,7 +200,7 @@ suite('GooglePhotosAlbumsTest', function() {
     };
 
     // Clicking a placeholder should do nothing.
-    (querySelector(placeholderSelector) as HTMLElement).click();
+    (placeholderEls![0] as HTMLElement).click();
     await new Promise<void>(resolve => setTimeout(resolve));
     assertEquals(selectedGooglePhotosAlbum, undefined);
 
@@ -213,11 +211,17 @@ suite('GooglePhotosAlbumsTest', function() {
 
     // Only albums should be present.
     await waitAfterNextRender(googlePhotosAlbumsElement);
-    assertNotEquals(querySelectorAll(albumSelector)!.length, 0);
+    const albumEls = querySelectorAll(albumSelector);
+    assertNotEquals(albumEls!.length, 0);
     assertEquals(querySelectorAll(placeholderSelector)!.length, 0);
 
+    // Albums should be aria-labeled.
+    albumEls!.forEach((albumEl, i) => {
+      assertEquals(albumEl.getAttribute('aria-label'), albums[i]!.title);
+    });
+
     // Clicking an album should do something.
-    (querySelector(albumSelector) as HTMLElement).click();
+    (albumEls![0] as HTMLElement).click();
     assertEquals(selectedGooglePhotosAlbum, albums[0]);
   });
 

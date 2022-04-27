@@ -198,6 +198,15 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
     afterNextRender(this, () => this.$.grid.fire('iron-resize'));
   }
 
+  /** Returns the aria label for the specified |album|. */
+  private getAlbumAriaLabel_(album: GooglePhotosAlbum|null): string|undefined {
+    if (album) {
+      return album.id === PLACEHOLDER_ID ? this.i18n('ariaLabelLoading') :
+                                           album.title;
+    }
+    return undefined;
+  }
+
   /** Returns the secondary text to display for the specified |album|. */
   private getSecondaryText_(album: GooglePhotosAlbum): string {
     return getCountText(album.photoCount);

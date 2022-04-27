@@ -276,6 +276,15 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
     }
   }
 
+  /** Returns the aria label for the specified |photo|. */
+  private getPhotoAriaLabel_(photo: GooglePhotosPhoto|null): string|undefined {
+    if (photo) {
+      return photo.id === PLACEHOLDER_ID ? this.i18n('ariaLabelLoading') :
+                                           photo.name;
+    }
+    return undefined;
+  }
+
   /** Returns whether the specified |photo| is a placeholder. */
   private isPhotoPlaceholder_(photo: GooglePhotosPhoto|null): boolean {
     return !!photo && photo.id === PLACEHOLDER_ID;

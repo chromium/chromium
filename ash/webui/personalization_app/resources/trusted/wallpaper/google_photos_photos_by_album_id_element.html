@@ -15,6 +15,7 @@
     scroll-target="gridScrollThreshold">
     <template>
       <wallpaper-grid-item
+        aria-label$="[[getPhotoAriaLabel_(photo)]]"
         class="photo"
         image-src="[[photo.url.url]]"
         index="[[index]]"
