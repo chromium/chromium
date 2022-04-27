@@ -15,6 +15,7 @@
 namespace password_manager {
 
 namespace {
+using SuccessStatus = PasswordStoreBackendMetricsRecorder::SuccessStatus;
 
 constexpr base::TimeDelta kSyncTaskTimeout = base::Seconds(30);
 
@@ -92,19 +93,15 @@ LoginsResult LoginDatabaseAsyncHelper::GetAllLogins(
   PrimaryKeyToFormMap key_to_form_map;
 
   if (!login_db_) {
-    metrics_recorder.RecordMetrics(
-        /*success=*/false,
-        /*error=*/absl::optional<ErrorFromPasswordStoreOrAndroidBackend>(
-            PasswordStoreBackendError::kUnrecoverable));
+    metrics_recorder.RecordMetrics(SuccessStatus::kError,
+                                   PasswordStoreBackendError::kUnrecoverable);
     return {};
   }
   FormRetrievalResult result = login_db_->GetAllLogins(&key_to_form_map);
   if (result != FormRetrievalResult::kSuccess &&
       result != FormRetrievalResult::kEncryptionServiceFailureWithPartialData) {
-    metrics_recorder.RecordMetrics(
-        /*success=*/false,
-        /*error=*/absl::optional<ErrorFromPasswordStoreOrAndroidBackend>(
-            PasswordStoreBackendError::kUnrecoverable));
+    metrics_recorder.RecordMetrics(SuccessStatus::kError,
+                                   PasswordStoreBackendError::kUnrecoverable);
     return {};
   }
 
@@ -113,7 +110,8 @@ LoginsResult LoginDatabaseAsyncHelper::GetAllLogins(
   for (auto& pair : key_to_form_map) {
     obtained_forms.push_back(std::move(pair.second));
   }
-  metrics_recorder.RecordMetrics(/*success=*/true, /*error=*/absl::nullopt);
+  metrics_recorder.RecordMetrics(SuccessStatus::kSuccess,
+                                 /*error=*/absl::nullopt);
   return obtained_forms;
 }
 
@@ -122,13 +120,12 @@ LoginsResult LoginDatabaseAsyncHelper::GetAutofillableLogins(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<std::unique_ptr<PasswordForm>> results;
   if (!login_db_ || !login_db_->GetAutofillableLogins(&results)) {
-    metrics_recorder.RecordMetrics(
-        /*success=*/false,
-        /*error=*/absl::optional<ErrorFromPasswordStoreOrAndroidBackend>(
-            PasswordStoreBackendError::kUnrecoverable));
+    metrics_recorder.RecordMetrics(SuccessStatus::kError,
+                                   PasswordStoreBackendError::kUnrecoverable);
     return {};
   }
-  metrics_recorder.RecordMetrics(/*success=*/true, /*error=*/absl::nullopt);
+  metrics_recorder.RecordMetrics(SuccessStatus::kSuccess,
+                                 /*error=*/absl::nullopt);
   return results;
 }
 
@@ -138,19 +135,19 @@ LoginsResult LoginDatabaseAsyncHelper::FillMatchingLogins(
     PasswordStoreBackendMetricsRecorder metrics_recorder) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<std::unique_ptr<PasswordForm>> results;
-  bool success = false;
+  SuccessStatus success = SuccessStatus::kError;
   for (const auto& form : forms) {
     std::vector<std::unique_ptr<PasswordForm>> matched_forms;
     if (login_db_ && !login_db_->GetLogins(form, include_psl, &matched_forms))
       continue;
-    success = true;
+    success = SuccessStatus::kSuccess;
     results.insert(results.end(),
                    std::make_move_iterator(matched_forms.begin()),
                    std::make_move_iterator(matched_forms.end()));
   }
   metrics_recorder.RecordMetrics(
       success,
-      /*error=*/success
+      /*error=*/success == SuccessStatus::kSuccess
           ? absl::nullopt
           : absl::optional<ErrorFromPasswordStoreOrAndroidBackend>(
                 PasswordStoreBackendError::kUnrecoverable));
@@ -172,7 +169,8 @@ PasswordStoreChangeList LoginDatabaseAsyncHelper::AddLogin(
   // the login data.
   CommitTransaction();
   metrics_recorder.RecordMetrics(
-      /*success=*/error == AddLoginError::kNone,
+      error == AddLoginError::kNone ? SuccessStatus::kSuccess
+                                    : SuccessStatus::kError,
       /*error=*/error == AddLoginError::kNone
           ? absl::nullopt
           : absl::optional<ErrorFromPasswordStoreOrAndroidBackend>(
@@ -195,7 +193,8 @@ PasswordStoreChangeList LoginDatabaseAsyncHelper::UpdateLogin(
   // the login data.
   CommitTransaction();
   metrics_recorder.RecordMetrics(
-      /*success=*/error == UpdateLoginError::kNone,
+      error == UpdateLoginError::kNone ? SuccessStatus::kSuccess
+                                       : SuccessStatus::kError,
       /*error=*/error == UpdateLoginError::kNone
           ? absl::nullopt
           : absl::optional<ErrorFromPasswordStoreOrAndroidBackend>(
@@ -219,7 +218,7 @@ PasswordStoreChangeList LoginDatabaseAsyncHelper::RemoveLogin(
   // the login data.
   CommitTransaction();
   metrics_recorder.RecordMetrics(
-      /*success=*/!changes.empty(),
+      changes.empty() ? SuccessStatus::kError : SuccessStatus::kSuccess,
       /*error=*/!changes.empty()
           ? absl::nullopt
           : absl::optional<ErrorFromPasswordStoreOrAndroidBackend>(
@@ -244,7 +243,7 @@ PasswordStoreChangeList LoginDatabaseAsyncHelper::RemoveLoginsCreatedBetween(
   // the login data.
   CommitTransaction();
   metrics_recorder.RecordMetrics(
-      success,
+      success ? SuccessStatus::kSuccess : SuccessStatus::kError,
       /*error=*/success
           ? absl::nullopt
           : absl::optional<ErrorFromPasswordStoreOrAndroidBackend>(
@@ -299,7 +298,7 @@ PasswordStoreChangeList LoginDatabaseAsyncHelper::RemoveLoginsByURLAndTime(
       NotifyDeletionsHaveSynced(/*success=*/true);
   }
   metrics_recorder.RecordMetrics(
-      success,
+      success ? SuccessStatus::kSuccess : SuccessStatus::kError,
       /*error=*/success
           ? absl::nullopt
           : absl::optional<ErrorFromPasswordStoreOrAndroidBackend>(

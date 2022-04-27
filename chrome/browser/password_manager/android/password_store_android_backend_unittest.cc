@@ -774,6 +774,12 @@ TEST_F(PasswordStoreAndroidBackendTest,
 
 TEST_F(PasswordStoreAndroidBackendTest, RecordClearedZombieTaskWithoutLatency) {
   constexpr JobId kJobId{1337};
+  const char kDurationMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.AddLoginAsync.Latency";
+  const char kSuccessMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.AddLoginAsync.Success";
+  const char kErrorCodeMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
   base::HistogramTester histogram_tester;
   backend().InitBackend(/*stored_passwords_changed=*/base::DoNothing(),
                         /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
@@ -793,6 +799,12 @@ TEST_F(PasswordStoreAndroidBackendTest, RecordClearedZombieTaskWithoutLatency) {
   task_environment_.FastForwardUntilNoTasksRemain();  // For backend work.
   consumer().OnLoginsChanged(kJobId, {});  // Can be delayed or never happen.
   task_environment_.FastForwardUntilNoTasksRemain();  // For would-be response.
+
+  histogram_tester.ExpectTotalCount(kDurationMetric, 0);
+  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
+  histogram_tester.ExpectBucketCount(kSuccessMetric, true, 0);
+  histogram_tester.ExpectBucketCount(kSuccessMetric, false, 1);
+  histogram_tester.ExpectBucketCount(kErrorCodeMetric, 8, 1);
 }
 
 class PasswordStoreAndroidBackendTestForMetrics

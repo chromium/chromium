@@ -4,7 +4,31 @@
 
 #include "components/password_manager/core/browser/password_store_backend_metrics_recorder.h"
 
+#include <utility>
+
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
+
 namespace password_manager {
+
+namespace {
+constexpr char kMetricPrefix[] = "PasswordManager.PasswordStore";
+
+bool ShouldRecordLatency(
+    PasswordStoreBackendMetricsRecorder::SuccessStatus success_status) {
+  switch (success_status) {
+    case PasswordStoreBackendMetricsRecorder::SuccessStatus::kSuccess:
+    case PasswordStoreBackendMetricsRecorder::SuccessStatus::kError:
+      return true;
+    case PasswordStoreBackendMetricsRecorder::SuccessStatus::kCancelled:
+      return false;
+  }
+  NOTREACHED();
+  return false;
+}
+
+}  // namespace
 
 PasswordStoreBackendMetricsRecorder::PasswordStoreBackendMetricsRecorder() =
     default;
@@ -26,47 +50,62 @@ PasswordStoreBackendMetricsRecorder::~PasswordStoreBackendMetricsRecorder() =
     default;
 
 void PasswordStoreBackendMetricsRecorder::RecordMetrics(
-    bool success,
+    SuccessStatus success_status,
     absl::optional<ErrorFromPasswordStoreOrAndroidBackend> error) const {
-  auto BuildMetricName = [this](base::StringPiece suffix) {
-    return base::StrCat({"PasswordManager.PasswordStore", *backend_infix_, ".",
-                         *metric_infix_, ".", suffix});
-  };
-  auto BuildOverallMetricName = [this](base::StringPiece suffix) {
-    return base::StrCat(
-        {"PasswordManager.PasswordStoreBackend.", *metric_infix_, ".", suffix});
-  };
-  base::TimeDelta duration = base::Time::Now() - start_;
-  base::UmaHistogramMediumTimes(BuildMetricName("Latency"), duration);
-  base::UmaHistogramBoolean(BuildMetricName("Success"), success);
-  base::UmaHistogramMediumTimes(BuildOverallMetricName("Latency"), duration);
-  base::UmaHistogramBoolean(BuildOverallMetricName("Success"), success);
-  if (!error.has_value())
-    return;
-
-  DCHECK(!success);
-  ErrorFromPasswordStoreOrAndroidBackend error_variant =
-      std::move(error.value());
-  // In case of AndroidBackend error, we report additional metrics.
-  if (absl::holds_alternative<AndroidBackendError>(error_variant)) {
-    AndroidBackendError backend_error = std::move(absl::get<1>(error_variant));
-    base::UmaHistogramEnumeration(
-        "PasswordManager.PasswordStoreAndroidBackend.ErrorCode",
-        backend_error.type);
-    base::UmaHistogramEnumeration(BuildMetricName("ErrorCode"),
-                                  backend_error.type);
-    if (backend_error.type == AndroidBackendErrorType::kExternalError) {
-      DCHECK(backend_error.api_error_code.has_value());
-      base::HistogramBase* histogram = base::SparseHistogram::FactoryGet(
-          "PasswordManager.PasswordStoreAndroidBackend.APIError",
-          base::HistogramBase::kUmaTargetedHistogramFlag);
-      histogram->Add(backend_error.api_error_code.value());
-      histogram = base::SparseHistogram::FactoryGet(
-          BuildMetricName("APIError"),
-          base::HistogramBase::kUmaTargetedHistogramFlag);
-      histogram->Add(backend_error.api_error_code.value());
+  RecordSuccess(success_status);
+  if (ShouldRecordLatency(success_status)) {
+    RecordLatency();
+  }
+  if (error.has_value()) {
+    DCHECK_NE(success_status, SuccessStatus::kSuccess);
+    if (absl::holds_alternative<AndroidBackendError>(error.value())) {
+      RecordErrorCode(std::move(absl::get<1>(error.value())));
     }
   }
 }
 
+void PasswordStoreBackendMetricsRecorder::RecordSuccess(
+    SuccessStatus success_status) const {
+  base::UmaHistogramBoolean(BuildMetricName("Success"),
+                            success_status == SuccessStatus::kSuccess);
+  base::UmaHistogramBoolean(BuildOverallMetricName("Success"),
+                            success_status == SuccessStatus::kSuccess);
+}
+
+void PasswordStoreBackendMetricsRecorder::RecordErrorCode(
+    const AndroidBackendError& backend_error) const {
+  base::UmaHistogramEnumeration(
+      base::StrCat({kMetricPrefix, "AndroidBackend.ErrorCode"}),
+      backend_error.type);
+  base::UmaHistogramEnumeration(BuildMetricName("ErrorCode"),
+                                backend_error.type);
+  if (backend_error.type == AndroidBackendErrorType::kExternalError) {
+    DCHECK(backend_error.api_error_code.has_value());
+    RecordApiErrorCode(backend_error.api_error_code.value());
+  }
+}
+
+void PasswordStoreBackendMetricsRecorder::RecordLatency() const {
+  base::TimeDelta duration = base::Time::Now() - start_;
+  base::UmaHistogramMediumTimes(BuildMetricName("Latency"), duration);
+  base::UmaHistogramMediumTimes(BuildOverallMetricName("Latency"), duration);
+}
+
+void PasswordStoreBackendMetricsRecorder::RecordApiErrorCode(
+    int api_error_code) const {
+  base::UmaHistogramSparse(
+      base::StrCat({kMetricPrefix, "AndroidBackend.APIError"}), api_error_code);
+  base::UmaHistogramSparse(BuildMetricName("APIError"), api_error_code);
+}
+
+std::string PasswordStoreBackendMetricsRecorder::BuildMetricName(
+    base::StringPiece suffix) const {
+  return base::StrCat(
+      {kMetricPrefix, *backend_infix_, ".", *metric_infix_, ".", suffix});
+}
+
+std::string PasswordStoreBackendMetricsRecorder::BuildOverallMetricName(
+    base::StringPiece suffix) const {
+  return base::StrCat({kMetricPrefix, "Backend.", *metric_infix_, ".", suffix});
+}
 }  // namespace password_manager

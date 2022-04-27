@@ -26,7 +26,9 @@ enum class AndroidBackendErrorType {
   kGMSVersionNotSupported = 6,
   // API was successfully called, but returned an error.
   kExternalError = 7,
-  kMaxValue = kExternalError,
+  // Task was cleaned-up without a proper response.
+  kCleanedUpWithoutResponse = 8,
+  kMaxValue = kCleanedUpWithoutResponse,
 };
 
 struct AndroidBackendError {
