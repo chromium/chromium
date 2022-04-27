@@ -9,6 +9,8 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
+#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -38,30 +40,43 @@ FakeCrosHealthd* g_instance = nullptr;
 
 }  // namespace
 
-FakeCrosHealthd::FakeCrosHealthd() {
-  DCHECK(!g_instance);
-  g_instance = this;
-}
+FakeCrosHealthd::FakeCrosHealthd() = default;
 
-FakeCrosHealthd::~FakeCrosHealthd() {
-  DCHECK_EQ(this, g_instance);
-  g_instance = nullptr;
-}
+FakeCrosHealthd::~FakeCrosHealthd() = default;
 
 // static
 void FakeCrosHealthd::Initialize() {
-  new FakeCrosHealthd();
+  CHECK(!g_instance);
+  g_instance = new FakeCrosHealthd();
 
-  // Make sure that the ServiceConnection is created, so it always use fake to
-  // bootstrap. Without this, ServiceConnection could be initialized after
-  // FakeCrosHealthd is shutdowned and causes weird behavior.
-  ServiceConnection::GetInstance();
+  if (!FakeCrosHealthdClient::Get()) {
+    CHECK(!CrosHealthdClient::Get())
+        << "A real dbus client has already been initialized. Cannot initialize "
+           "FakeCrosHealthd.";
+    CrosHealthdClient::InitializeFake();
+  }
+  // FakeCrosHealthd will shutdown the fake dbus client when shutdowning so it
+  // is safe to use `Unretained` here.
+  FakeCrosHealthdClient::Get()->SetBootstrapCallback(base::BindRepeating(
+      &FakeCrosHealthd::BindNewRemote, base::Unretained(g_instance)));
 }
 
 // static
 void FakeCrosHealthd::Shutdown() {
-  DCHECK(g_instance);
+  // Make sure that the ServiceConnection is created, so it always use fake
+  // to bootstrap. Without this, ServiceConnection could be initialized
+  // after FakeCrosHealthd is shutdowned in unit tests and causes weird
+  // behavior.
+  ServiceConnection::GetInstance();
+
+  CHECK(FakeCrosHealthdClient::Get())
+      << "The fake dbus client has been shutdowned by others. Cannot shutdown "
+         "the FakeCrosHealthd";
+  CrosHealthdClient::Shutdown();
+
+  CHECK(g_instance);
   delete g_instance;
+  g_instance = nullptr;
 
   // After all the receivers in this class are destructed, flush all the mojo
   // remote in ServiceConnection so it will be disconnected and reset. Without
@@ -323,13 +338,10 @@ FakeCrosHealthd::GetRoutineUpdateParams() const {
 }
 
 mojo::Remote<mojom::CrosHealthdServiceFactory>
-FakeCrosHealthd::BootstrapMojoConnection(
-    BootstrapMojoConnectionCallback result_callback) {
-  mojo::Remote<mojom::CrosHealthdServiceFactory> remote(
+FakeCrosHealthd::BindNewRemote() {
+  healthd_receiver_.reset();
+  return mojo::Remote<mojom::CrosHealthdServiceFactory>(
       healthd_receiver_.BindNewPipeAndPassRemote());
-
-  std::move(result_callback).Run(/*success=*/true);
-  return remote;
 }
 
 FakeCrosHealthd::RoutineUpdateParams::RoutineUpdateParams(

@@ -4,8 +4,7 @@
 
 #include "chrome/browser/ash/wilco_dtc_supportd/mojo_utils.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_browser_test.h"
-#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
-#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_service.h"
+#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,7 +17,7 @@ using TelemetryExtensionDiagnosticsApiBrowserTest =
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        GetAvailableRoutinesSuccess) {
-  cros_healthd::FakeCrosHealthdClient::Get()->SetAvailableRoutinesForTesting({
+  cros_healthd::FakeCrosHealthd::Get()->SetAvailableRoutinesForTesting({
       cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity,
       cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge,
       cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryDischarge,
@@ -81,8 +80,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
   response->progress_percent = 87;
   response->routine_update_union = std::move(routineUpdateUnion);
 
-  cros_healthd::FakeCrosHealthdClient::Get()
-      ->SetGetRoutineUpdateResponseForTesting(response);
+  cros_healthd::FakeCrosHealthd::Get()->SetGetRoutineUpdateResponseForTesting(
+      response);
 
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
@@ -107,9 +106,9 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
   )");
 
   // Verify that CrosHealthd is called with the correct parameters.
-  absl::optional<cros_healthd::FakeCrosHealthdService::RoutineUpdateParams>
+  absl::optional<cros_healthd::FakeCrosHealthd::RoutineUpdateParams>
       update_params =
-          cros_healthd::FakeCrosHealthdClient::Get()->GetRoutineUpdateParams();
+          cros_healthd::FakeCrosHealthd::Get()->GetRoutineUpdateParams();
 
   ASSERT_TRUE(update_params.has_value());
   EXPECT_EQ(123456, update_params->id);
@@ -136,8 +135,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       "routine is running...");
   response->routine_update_union = std::move(routineUpdateUnion);
 
-  cros_healthd::FakeCrosHealthdClient::Get()
-      ->SetGetRoutineUpdateResponseForTesting(response);
+  cros_healthd::FakeCrosHealthd::Get()->SetGetRoutineUpdateResponseForTesting(
+      response);
 
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
@@ -164,9 +163,9 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
   )");
 
   // Verify that CrosHealthd is called with the correct parameters.
-  absl::optional<cros_healthd::FakeCrosHealthdService::RoutineUpdateParams>
+  absl::optional<cros_healthd::FakeCrosHealthd::RoutineUpdateParams>
       update_params =
-          cros_healthd::FakeCrosHealthdClient::Get()->GetRoutineUpdateParams();
+          cros_healthd::FakeCrosHealthd::Get()->GetRoutineUpdateParams();
 
   ASSERT_TRUE(update_params.has_value());
   EXPECT_EQ(654321, update_params->id);
@@ -186,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       }
     ]);
   )");
-  EXPECT_EQ(cros_healthd::FakeCrosHealthdClient::Get()->GetLastRunRoutine(),
+  EXPECT_EQ(cros_healthd::FakeCrosHealthd::Get()->GetLastRunRoutine(),
             cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity);
 }
 
@@ -207,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       }
     ]);
   )");
-  EXPECT_EQ(cros_healthd::FakeCrosHealthdClient::Get()->GetLastRunRoutine(),
+  EXPECT_EQ(cros_healthd::FakeCrosHealthd::Get()->GetLastRunRoutine(),
             cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge);
 }
 
@@ -228,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       }
     ]);
   )");
-  EXPECT_EQ(cros_healthd::FakeCrosHealthdClient::Get()->GetLastRunRoutine(),
+  EXPECT_EQ(cros_healthd::FakeCrosHealthd::Get()->GetLastRunRoutine(),
             cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryDischarge);
 }
 
@@ -244,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       }
     ]);
   )");
-  EXPECT_EQ(cros_healthd::FakeCrosHealthdClient::Get()->GetLastRunRoutine(),
+  EXPECT_EQ(cros_healthd::FakeCrosHealthd::Get()->GetLastRunRoutine(),
             cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryHealth);
 }
 
@@ -264,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       }
     ]);
   )");
-  EXPECT_EQ(cros_healthd::FakeCrosHealthdClient::Get()->GetLastRunRoutine(),
+  EXPECT_EQ(cros_healthd::FakeCrosHealthd::Get()->GetLastRunRoutine(),
             cros_healthd::mojom::DiagnosticRoutineEnum::kCpuCache);
 }
 
@@ -284,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       }
     ]);
   )");
-  EXPECT_EQ(cros_healthd::FakeCrosHealthdClient::Get()->GetLastRunRoutine(),
+  EXPECT_EQ(cros_healthd::FakeCrosHealthd::Get()->GetLastRunRoutine(),
             cros_healthd::mojom::DiagnosticRoutineEnum::kFloatingPointAccuracy);
 }
 
@@ -304,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       }
     ]);
   )");
-  EXPECT_EQ(cros_healthd::FakeCrosHealthdClient::Get()->GetLastRunRoutine(),
+  EXPECT_EQ(cros_healthd::FakeCrosHealthd::Get()->GetLastRunRoutine(),
             cros_healthd::mojom::DiagnosticRoutineEnum::kPrimeSearch);
 }
 
@@ -324,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       }
     ]);
   )");
-  EXPECT_EQ(cros_healthd::FakeCrosHealthdClient::Get()->GetLastRunRoutine(),
+  EXPECT_EQ(cros_healthd::FakeCrosHealthd::Get()->GetLastRunRoutine(),
             cros_healthd::mojom::DiagnosticRoutineEnum::kCpuStress);
 }
 
@@ -346,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       }
     ]);
   )");
-  EXPECT_EQ(cros_healthd::FakeCrosHealthdClient::Get()->GetLastRunRoutine(),
+  EXPECT_EQ(cros_healthd::FakeCrosHealthd::Get()->GetLastRunRoutine(),
             cros_healthd::mojom::DiagnosticRoutineEnum::kDiskRead);
 }
 
@@ -362,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       }
     ]);
   )");
-  EXPECT_EQ(cros_healthd::FakeCrosHealthdClient::Get()->GetLastRunRoutine(),
+  EXPECT_EQ(cros_healthd::FakeCrosHealthd::Get()->GetLastRunRoutine(),
             cros_healthd::mojom::DiagnosticRoutineEnum::kLanConnectivity);
 }
 
@@ -378,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       }
     ]);
   )");
-  EXPECT_EQ(cros_healthd::FakeCrosHealthdClient::Get()->GetLastRunRoutine(),
+  EXPECT_EQ(cros_healthd::FakeCrosHealthd::Get()->GetLastRunRoutine(),
             cros_healthd::mojom::DiagnosticRoutineEnum::kMemory);
 }
 
@@ -398,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       }
     ]);
   )");
-  EXPECT_EQ(cros_healthd::FakeCrosHealthdClient::Get()->GetLastRunRoutine(),
+  EXPECT_EQ(cros_healthd::FakeCrosHealthd::Get()->GetLastRunRoutine(),
             cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeWearLevel);
 }
 
@@ -414,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       }
     ]);
   )");
-  EXPECT_EQ(cros_healthd::FakeCrosHealthdClient::Get()->GetLastRunRoutine(),
+  EXPECT_EQ(cros_healthd::FakeCrosHealthd::Get()->GetLastRunRoutine(),
             cros_healthd::mojom::DiagnosticRoutineEnum::kSmartctlCheck);
 }
 

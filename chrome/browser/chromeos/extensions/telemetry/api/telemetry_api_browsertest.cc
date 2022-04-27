@@ -6,9 +6,9 @@
 #include <utility>
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_browser_test.h"
-#include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
+#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,9 +54,9 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
               std::move(system_info));
     }
 
-    ASSERT_TRUE(cros_healthd::FakeCrosHealthdClient::Get());
+    ASSERT_TRUE(cros_healthd::FakeCrosHealthd::Get());
 
-    cros_healthd::FakeCrosHealthdClient::Get()
+    cros_healthd::FakeCrosHealthd::Get()
         ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
   }
 
@@ -155,9 +155,9 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
               std::move(memory_info));
     }
 
-    ASSERT_TRUE(cros_healthd::FakeCrosHealthdClient::Get());
+    ASSERT_TRUE(cros_healthd::FakeCrosHealthd::Get());
 
-    cros_healthd::FakeCrosHealthdClient::Get()
+    cros_healthd::FakeCrosHealthd::Get()
         ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
   }
 
@@ -255,9 +255,9 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
               std::move(cpu_info));
     }
 
-    ASSERT_TRUE(cros_healthd::FakeCrosHealthdClient::Get());
+    ASSERT_TRUE(cros_healthd::FakeCrosHealthd::Get());
 
-    cros_healthd::FakeCrosHealthdClient::Get()
+    cros_healthd::FakeCrosHealthd::Get()
         ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
   }
 
@@ -355,8 +355,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
               std::move(battery_info));
     }
 
-    ASSERT_TRUE(cros_healthd::FakeCrosHealthdClient::Get());
-    cros_healthd::FakeCrosHealthdClient::Get()
+    ASSERT_TRUE(cros_healthd::FakeCrosHealthd::Get());
+    cros_healthd::FakeCrosHealthd::Get()
         ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
   }
 
@@ -449,9 +449,9 @@ IN_PROC_BROWSER_TEST_F(
               std::move(system_info));
     }
 
-    ASSERT_TRUE(cros_healthd::FakeCrosHealthdClient::Get());
+    ASSERT_TRUE(cros_healthd::FakeCrosHealthd::Get());
 
-    cros_healthd::FakeCrosHealthdClient::Get()
+    cros_healthd::FakeCrosHealthd::Get()
         ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
   }
 
@@ -515,8 +515,8 @@ IN_PROC_BROWSER_TEST_F(
               std::move(battery_info));
     }
 
-    ASSERT_TRUE(cros_healthd::FakeCrosHealthdClient::Get());
-    cros_healthd::FakeCrosHealthdClient::Get()
+    ASSERT_TRUE(cros_healthd::FakeCrosHealthd::Get());
+    cros_healthd::FakeCrosHealthd::Get()
         ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
   }
 

@@ -30,7 +30,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DBUS_CROS_HEALTHD)
   // Creates and initializes the global instance. |bus| must not be null.
   static void Initialize(dbus::Bus* bus);
 
-  // Creates and initializes a fake global instance if not already created.
+  // Creates and initializes a fake global instance.
   static void InitializeFake();
 
   // Destroys the global instance.

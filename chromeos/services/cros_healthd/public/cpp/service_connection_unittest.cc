@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -365,7 +366,14 @@ class CrosHealthdServiceConnectionTest : public testing::Test {
 
   void SetUp() override { FakeCrosHealthd::Initialize(); }
 
-  void TearDown() override { FakeCrosHealthd::Shutdown(); }
+  void TearDown() override {
+    FakeCrosHealthd::Shutdown();
+    // Reset the callback to prevent them being called after the tests finished.
+    ServiceConnection::GetInstance()->SetBindNetworkHealthServiceCallback(
+        ServiceConnection::BindNetworkHealthServiceCallback());
+    ServiceConnection::GetInstance()->SetBindNetworkDiagnosticsRoutinesCallback(
+        ServiceConnection::BindNetworkDiagnosticsRoutinesCallback());
+  }
 
  private:
   base::test::TaskEnvironment task_environment_;

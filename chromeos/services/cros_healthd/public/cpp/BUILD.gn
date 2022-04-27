@@ -25,7 +25,9 @@ source_set("cpp") {
     "//chromeos/services/cros_healthd/public/mojom",
     "//ui/events/ozone/evdev:event_device_info",
   ]
-  if (!use_real_dbus_clients) {
+  if (use_real_dbus_clients) {
+    defines += [ "USE_REAL_DBUS_CLIENTS" ]
+  } else {
     sources += [
       "fake_cros_healthd.cc",
       "fake_cros_healthd.h",

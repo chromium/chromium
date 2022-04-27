@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
@@ -30,8 +29,7 @@ namespace ash::cros_healthd {
 // all requests on each of the interfaces are fulfilled by
 // FakeCrosHealthd.
 class FakeCrosHealthd final
-    : public CrosHealthdClient,
-      public chromeos::cros_healthd::mojom::CrosHealthdServiceFactory,
+    : public chromeos::cros_healthd::mojom::CrosHealthdServiceFactory,
       public chromeos::cros_healthd::mojom::CrosHealthdDiagnosticsService,
       public chromeos::cros_healthd::mojom::CrosHealthdEventService,
       public chromeos::cros_healthd::mojom::CrosHealthdProbeService,
@@ -52,17 +50,13 @@ class FakeCrosHealthd final
   FakeCrosHealthd(const FakeCrosHealthd&) = delete;
   FakeCrosHealthd& operator=(const FakeCrosHealthd&) = delete;
 
-  // Initializes a global instance. This also initializes the CrosHealthdClient
-  // to override it for testing.
+  // Initializes a global instance. This register a fake mojo service for
+  // testing. Don't need to call this in browser test because ServiceConnection
+  // will initialize this in browser test.
   static void Initialize();
 
-  // Shutdowns the global instance. This also shutdown the CrosHealthdClient.
-  // This also clean up the internal state of ServiceConnection object for unit
-  // tests.
-  // Notes: Currently, CrosHealthdClient::Shutdown() is also used for
-  // shutdowning. It is for aligning with other fake dbus client in browser
-  // test. However, if you want to shutdown FakeCrosHealthd can clean the state
-  // in ServiceConnection which will be shared between test, use this function.
+  // Shutdowns the global instance. This also shutdown the CrosHealthdClient
+  // (the dbus client). In browser test this will not be called.
   static void Shutdown();
 
   // Gets the global instance. A `nullptr` could be returned if it is not
@@ -186,10 +180,9 @@ class FakeCrosHealthd final
   FakeCrosHealthd();
   ~FakeCrosHealthd() override;
 
-  // CrosHealthdClient overrides:
+  // Binds a new mojo remote and disconnected the old one if exists.
   mojo::Remote<chromeos::cros_healthd::mojom::CrosHealthdServiceFactory>
-  BootstrapMojoConnection(
-      BootstrapMojoConnectionCallback result_callback) override;
+  BindNewRemote();
 
   // CrosHealthdServiceFactory overrides:
   void GetProbeService(mojo::PendingReceiver<
