@@ -30,7 +30,7 @@ class ExtensionTelemetryPersisterTest : public ::testing::Test {
     success_ = success;
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   bool success_;
   std::string read_string_;
   base::WeakPtrFactory<ExtensionTelemetryPersisterTest> weak_factory_{this};
@@ -44,8 +44,6 @@ ExtensionTelemetryPersisterTest::ExtensionTelemetryPersisterTest()
 }
 
 TEST_F(ExtensionTelemetryPersisterTest, WriteReadCheck) {
-  // Ensure all files are clear then write one file.
-  persister_->ClearPersistedFiles();
   std::string written_string = "Test String 1";
   persister_->WriteReport(written_string);
   task_environment_.RunUntilIdle();
@@ -59,46 +57,43 @@ TEST_F(ExtensionTelemetryPersisterTest, WriteReadCheck) {
   EXPECT_EQ(success_, true);
   EXPECT_EQ(written_string, read_string_);
   persister_->ClearPersistedFiles();
+  task_environment_.RunUntilIdle();
 }
 
-// TODO(crbug.com/1312282): Flaky on Linux TSAN builder.
-#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
-#define MAYBE_WritePastFullCacheCheck DISABLED_WritePastFullCacheCheck
-#else
-#define MAYBE_WritePastFullCacheCheck WritePastFullCacheCheck
-#endif
-TEST_F(ExtensionTelemetryPersisterTest, MAYBE_WritePastFullCacheCheck) {
-  persister_->ClearPersistedFiles();
+TEST_F(ExtensionTelemetryPersisterTest, WritePastFullCacheCheck) {
   read_string_ = "No File was read";
   std::string written_string = "Test String 1";
   for (int i = 0; i < 12; i++) {
     persister_->WriteReport(written_string);
+    task_environment_.RunUntilIdle();
   }
-  task_environment_.RunUntilIdle();
   persister_->ClearPersistedFiles();
+  task_environment_.RunUntilIdle();
   // After a clear no file should be there to read from.
   auto callback = base::BindPostTask(
       base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(&ExtensionTelemetryPersisterTest::CallbackHelper,
                      weak_factory_.GetWeakPtr()));
   persister_->ReadReport(std::move(callback));
+  task_environment_.RunUntilIdle();
   EXPECT_NE(written_string, read_string_);
   persister_->ClearPersistedFiles();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(ExtensionTelemetryPersisterTest, ReadFullCache) {
-  persister_->ClearPersistedFiles();
   // Fully load persisted cache.
   std::string written_string = "Test String 1";
   for (int i = 0; i < 10; i++) {
     persister_->WriteReport(written_string);
+    task_environment_.RunUntilIdle();
   }
   written_string = "Test String 2";
   // Overwrite first 5 files.
   for (int i = 0; i < 5; i++) {
     persister_->WriteReport(written_string);
+    task_environment_.RunUntilIdle();
   }
-  task_environment_.RunUntilIdle();
   //  Read should start at highest numbered file.
   for (int i = 0; i < 5; i++) {
     auto callback = base::BindPostTask(
@@ -109,7 +104,6 @@ TEST_F(ExtensionTelemetryPersisterTest, ReadFullCache) {
     task_environment_.RunUntilIdle();
     EXPECT_EQ(success_, true);
     EXPECT_EQ("Test String 1", read_string_);
-    task_environment_.RunUntilIdle();
   }
   // Files 0-4 should be different.
   for (int i = 0; i < 5; i++) {
@@ -121,7 +115,6 @@ TEST_F(ExtensionTelemetryPersisterTest, ReadFullCache) {
     task_environment_.RunUntilIdle();
     EXPECT_EQ(success_, true);
     EXPECT_EQ("Test String 2", read_string_);
-    task_environment_.RunUntilIdle();
   }
   auto callback = base::BindPostTask(
       base::SequencedTaskRunnerHandle::Get(),
@@ -132,5 +125,6 @@ TEST_F(ExtensionTelemetryPersisterTest, ReadFullCache) {
   // Last read should not happen as all files have been read.
   EXPECT_EQ(success_, false);
   persister_->ClearPersistedFiles();
+  task_environment_.RunUntilIdle();
 }
 }  // namespace safe_browsing
