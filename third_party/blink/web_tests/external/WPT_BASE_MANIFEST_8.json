@@ -101,6 +101,13 @@
        {}
       ]
      ],
+     "iframe-srcdoc.html": [
+      "74460048e09e65097aa5f2139a5d2819bb0207e0",
+      [
+       null,
+       {}
+      ]
+     ],
      "in-page-link-with-aria-hidden.html": [
       "237707ba074c6943a3922c8a49fa81acb173a566",
       [
@@ -260129,6 +260136,10 @@
       "f596b559b0e26b9c03d47b7dcab966a4d091308b",
       []
      ],
+     "all-prop-revert-layer-expected.txt": [
+      "8ae9b7998ecf1b075405a6dad10e7e642f390b45",
+      []
+     ],
      "all-prop-revert-visited-ref.html": [
       "0ef326c2722a4f65f6657d7740a990c079b08289",
       []
@@ -377189,6 +377200,13 @@
      ],
      "all-prop-revert-layer-noop.html": [
       "66aa2b9c736c1fc2a101c000340e3a9855378f77",
+      [
+       null,
+       {}
+      ]
+     ],
+     "all-prop-revert-layer.html": [
+      "b031e76c1a6791402cf203fce6c171656c76f464",
       [
        null,
        {}
@@ -504170,6 +504188,13 @@
       {}
      ]
     ],
+    "subresource-integrity-font.html": [
+     "da705dcb135695e748f10cc3fd3b528259601f7c",
+     [
+      null,
+      {}
+     ]
+    ],
     "subresource-integrity-partial-image.html": [
      "108897c4d6531ad53921f67c294b9754e987bbc7",
      [
@@ -526056,6 +526081,13 @@
        {
         "timeout": "long"
        }
+      ]
+     ],
+     "remove-script-element.html": [
+      "9de7656f5048f2268a10a14bd2cf19335dda1de0",
+      [
+       null,
+       {}
       ]
      ],
      "restriction-broadcast-channel.html": [
