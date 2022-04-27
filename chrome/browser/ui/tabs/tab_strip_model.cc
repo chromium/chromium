@@ -2269,6 +2269,14 @@ void TabStripModel::AddToNewGroupImpl(const std::vector<int>& indices,
   }
 
   MoveTabsAndSetGroupImpl(indices, destination_index, new_group);
+
+  // Excluding the active tab, deselect all tabs being added to the group.
+  // See crbug/1301846 for more info.
+  const gfx::Range tab_indices =
+      group_model()->GetTabGroup(new_group)->ListTabs();
+  for (auto index = tab_indices.start(); index < tab_indices.end(); ++index)
+    if (active_index() != static_cast<int>(index) && IsTabSelected(index))
+      ToggleSelectionAt(index);
 }
 
 void TabStripModel::AddToExistingGroupImpl(

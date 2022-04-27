@@ -1466,6 +1466,11 @@ TEST_F(TabStripModelTest, CommandToggleGrouped) {
   EXPECT_EQ(tabstrip.GetTabGroupForTab(0), tabstrip.GetTabGroupForTab(1));
   EXPECT_NE(tabstrip.GetTabGroupForTab(0), original_group);
 
+  // Only the active tab will remain selected when adding multiple tabs to a
+  // group; all selected tabs continue to be selected when removing multiple
+  // tabs from a group.
+  tabstrip.ToggleSelectionAt(1);
+
   // Execute CommandToggleGrouped again. Expect both tabs to be ungrouped, since
   // they were in the same group.
   tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandToggleGrouped);
