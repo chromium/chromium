@@ -13,7 +13,6 @@ import {strf, util} from '../../../common/js/util.js';
 export class FileMetadataFormatter extends EventTarget {
   constructor() {
     super();
-    this.setDateTimeFormat(true);
 
     /** @private {?Intl.DateTimeFormat} */
     this.timeFormatter_;
@@ -50,6 +49,11 @@ export class FileMetadataFormatter extends EventTarget {
     if (!modTime) {
       return '...';
     }
+
+    if (!(this.timeFormatter_ && this.dateFormatter_)) {
+      this.setDateTimeFormat(true);
+    }
+
     const today = new Date();
     today.setHours(0);
     today.setMinutes(0);
