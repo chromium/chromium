@@ -17,6 +17,7 @@
 #include "third_party/webrtc/api/task_queue/task_queue_factory.h"
 #include "third_party/webrtc_overrides/coalesced_tasks.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
+#include "third_party/webrtc_overrides/task_queue_factory.h"
 
 namespace blink {
 
@@ -25,7 +26,7 @@ const base::Feature kWebRtcMetronomeTaskQueue{
 
 class WebRtcMetronomeTaskQueue : public webrtc::TaskQueueBase {
  public:
-  WebRtcMetronomeTaskQueue();
+  explicit WebRtcMetronomeTaskQueue(base::TaskTraits traits);
 
   // webrtc::TaskQueueBase implementation.
   void Delete() override;
@@ -56,8 +57,9 @@ class WebRtcMetronomeTaskQueue : public webrtc::TaskQueueBase {
   CoalescedTasks coalesced_tasks_;
 };
 
-WebRtcMetronomeTaskQueue::WebRtcMetronomeTaskQueue()
-    : task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
+WebRtcMetronomeTaskQueue::WebRtcMetronomeTaskQueue(base::TaskTraits traits)
+    : task_runner_(
+          base::ThreadPool::CreateSequencedTaskRunner(std::move(traits))),
       is_active_(new base::RefCountedData<bool>(true)) {}
 
 void Deactivate(scoped_refptr<base::RefCountedData<bool>> is_active,
@@ -157,7 +159,7 @@ class WebrtcMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
   std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>
   CreateTaskQueue(absl::string_view name, Priority priority) const override {
     return std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>(
-        new WebRtcMetronomeTaskQueue());
+        new WebRtcMetronomeTaskQueue(TaskQueuePriority2Traits(priority)));
   }
 };
 
