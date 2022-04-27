@@ -160,7 +160,7 @@
       'chromeos-amd64-generic-cfi-thin-lto-rel': 'chromeos_amd64-generic_cfi_thin_lto',
       'chromeos-amd64-generic-dbg': 'chromeos_amd64-generic_dbg_reclient',
       'chromeos-amd64-generic-dbg (reclient shadow)': 'chromeos_amd64-generic_dbg_reclient',
-      'chromeos-amd64-generic-lacros-dbg': 'chromeos_amd64-generic_lacros_dbg',
+      'chromeos-amd64-generic-lacros-dbg': 'chromeos_amd64-generic_lacros_dbg_reclient',
       'chromeos-amd64-generic-rel': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
       'chromeos-arm-generic-dbg': 'chromeos_arm-generic_dbg_reclient',
       'chromeos-arm-generic-dbg (reclient shadow)': 'chromeos_arm-generic_dbg_reclient',
@@ -1955,8 +1955,8 @@
       'chromeos_amd64-generic-vm_reclient', 'lacros',
     ],
 
-    'chromeos_amd64-generic_lacros_dbg': [
-      'chromeos_amd64-generic-crostoolchain', 'lacros', 'debug', 'static',
+    'chromeos_amd64-generic_lacros_dbg_reclient': [
+      'chromeos_amd64-generic-crostoolchain_reclient', 'lacros', 'debug', 'static',
     ],
 
     'chromeos_amd64-generic_dbg': [
@@ -3589,6 +3589,10 @@
 
     'chromeos_amd64-generic-crostoolchain': {
       'mixins': ['chromeos_device', 'amd64-generic-crostoolchain',]
+    },
+
+    'chromeos_amd64-generic-crostoolchain_reclient': {
+      'mixins': ['chromeos_device_reclient', 'amd64-generic-crostoolchain',]
     },
 
     'chromeos_arm-generic-crostoolchain': {

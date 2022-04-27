@@ -89,7 +89,8 @@
       "is_debug": true,
       "ozone_platform_headless": true,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "chromeos-amd64-generic-rel": {
