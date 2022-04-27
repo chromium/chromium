@@ -76,11 +76,6 @@ void LensSidePanelController::OpenWithURL(
 
   browser_view_->MaybeClobberAllSideSearchSidePanels();
 
-  if (browser_view_->toolbar()->side_panel_button()) {
-    browser_view_->toolbar()->side_panel_button()->SetTooltipText(
-        l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_HIDE));
-  }
-
   side_panel_view_->GetWebContents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(params));
   if (side_panel_->GetVisible()) {
@@ -107,10 +102,6 @@ void LensSidePanelController::Close() {
     side_panel_->SetVisible(false);
     browser_view_->RightAlignedSidePanelWasClosed();
     base::RecordAction(base::UserMetricsAction("LensSidePanel.Hide"));
-  }
-  if (browser_view_->toolbar()->side_panel_button()) {
-    browser_view_->toolbar()->side_panel_button()->SetTooltipText(
-        l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_SHOW));
   }
   std::move(close_callback_).Run();
 }

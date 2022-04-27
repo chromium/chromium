@@ -685,6 +685,9 @@ class BrowserView::SidePanelButtonHighlighter : public views::ViewObserver {
       }
     }
     button_->SetHighlighted(any_panel_visible);
+    button_->SetTooltipText(l10n_util::GetStringUTF16(
+        any_panel_visible ? IDS_TOOLTIP_SIDE_PANEL_HIDE
+                          : IDS_TOOLTIP_SIDE_PANEL_SHOW));
   }
 
   const raw_ptr<views::Button> button_;
