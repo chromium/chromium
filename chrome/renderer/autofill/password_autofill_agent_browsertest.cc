@@ -201,6 +201,7 @@ const char kSimpleWebpage[] =
     "   <body>"
     "       <form name='LoginTestForm'>"
     "           <input type='text' id='username'/>"
+    "           <input type='checkbox' id='accept-tc'>"
     "           <input type='password' id='password'/>"
     "           <input type='checkbox' id='remember-me'>"
     "           <input type='submit' value='Login'/>"

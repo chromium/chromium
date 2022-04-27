@@ -477,9 +477,20 @@ mojom::SubmissionReadinessState CalculateSubmissionReadiness(
     return mojom::SubmissionReadinessState::kError;
   }
 
-  for (size_t i = username_index + 1; i < password_index; ++i) {
-    if (form_data.fields[i].IsVisible())
-      return mojom::SubmissionReadinessState::kFieldBetweenUsernameAndPassword;
+  auto ShouldIgnoreField = [](const FormFieldData& field) {
+    if (!field.IsVisible())
+      return true;
+    // Don't treat a checkbox (e.g. "remember me") as an input field that may
+    // block a form submission. Note: Don't use |check_status !=
+    // kNotCheckable|, a radio button is considered a "checkable" element too,
+    // but it should block a submission.
+    return field.form_control_type == "checkbox";
+  };
+
+  for (size_t i = username_index + 1; i <= password_index - 1; ++i) {
+    if (ShouldIgnoreField(form_data.fields[i]))
+      continue;
+    return mojom::SubmissionReadinessState::kFieldBetweenUsernameAndPassword;
   }
 
   if (!password_element.IsLastInputElementInForm())
@@ -487,20 +498,14 @@ mojom::SubmissionReadinessState CalculateSubmissionReadiness(
 
   size_t number_of_visible_elements = 0;
   for (size_t i = 0; i < number_of_elements; ++i) {
-    if (form_data.fields[i].IsVisible()) {
-      // Don't treat a checkbox (e.g. "remember me") as an input field that may
-      // block a form submission. Note: Don't use |check_status !=
-      // kNotCheckable|, a radio button is considered a "checkable" element too,
-      // but it should block a submission.
-      if (form_data.fields[i].form_control_type == "checkbox")
-        continue;
+    if (ShouldIgnoreField(form_data.fields[i]))
+      continue;
 
-      if (username_index != i && password_index != i &&
-          form_data.fields[i].value.empty()) {
-        return mojom::SubmissionReadinessState::kEmptyFields;
-      }
-      number_of_visible_elements++;
+    if (username_index != i && password_index != i &&
+        form_data.fields[i].value.empty()) {
+      return mojom::SubmissionReadinessState::kEmptyFields;
     }
+    number_of_visible_elements++;
   }
 
   if (number_of_visible_elements > 2)
