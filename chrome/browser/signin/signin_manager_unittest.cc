@@ -331,15 +331,15 @@ TEST_F(SigninManagerTest, UnconsentedPrimaryAccountDuringLoad) {
             identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin));
   EXPECT_TRUE(observer().events().empty());
 
-// Clearing the primary account is not supported on Lacros.
-// TODO(https://crbug.com/1260291): Revisit this once signout flows are defined.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Assert secondary profile.
+  ASSERT_FALSE(client_.GetInitialPrimaryAccount().has_value());
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   // Finish the token load should clear the primary account as the token of the
   // primary account was revoked.
   identity_test_env()->ReloadAccountsFromDisk();
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
   ExpectUnconsentedPrimaryAccountClearedEvent(main_account);
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 TEST_F(SigninManagerTest,
@@ -429,8 +429,7 @@ TEST_F(SigninManagerTest, ClearPrimaryAccountAndSignOut) {
   EXPECT_TRUE(event.GetCurrentState().primary_account.IsEmpty());
 }
 
-// Clearing the primary account is not supported on Lacros.
-// TODO(https://crbug.com/1260291): Revisit this once signout flows are defined.
+// Disabling `kSigninAllowed` is not supported on Lacros.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(SigninManagerTest,
        UnconsentedPrimaryAccountClearedWhenSigninDisallowed) {
