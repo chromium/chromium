@@ -83,6 +83,17 @@ enum class OobeDialogState {
   MARKETING_OPT_IN = 19,
 };
 
+// Modes of the managed device, which is used to update the visibility of
+// license-specific components.
+enum class ManagementDeviceMode {
+  kNone = 0,
+  kChromeEnterprise = 1,
+  kChromeEducation = 2,
+  kKioskSku = 3,
+  kOther = 4,
+  kMaxValue = kOther,
+};
+
 // Supported multi-profile user behavior values.
 // TODO(estade): change all the enums to use kCamelCase.
 enum class MultiProfileUserBehavior {
@@ -163,6 +174,24 @@ struct ASH_PUBLIC_EXPORT EasyUnlockIconInfo {
   // display via a separate EasyUnlockIconsOption update. See
   // LoginScreenClient::HardlockPod.
   bool hardlock_on_click = false;
+};
+
+// Enterprise information about a managed device.
+struct ASH_PUBLIC_EXPORT DeviceEnterpriseInfo {
+  bool operator==(const DeviceEnterpriseInfo& other) const;
+
+  // The name of the entity that manages the device and current account user.
+  //       For standard Dasher domains, this will be the domain name (foo.com).
+  //       For FlexOrgs, this will be the admin's email (user@foo.com).
+  //       For Active Directory or not enterprise enrolled, this will be an
+  //       empty string.
+  std::string enterprise_domain_manager;
+
+  // Whether this is an Active Directory managed enterprise device.
+  bool active_directory_managed = false;
+
+  // Which mode a managed device is enrolled in.
+  ManagementDeviceMode management_device_mode = ManagementDeviceMode::kNone;
 };
 
 // Information of each input method. This is used to populate keyboard layouts

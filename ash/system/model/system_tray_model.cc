@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "ash/components/phonehub/phone_hub_manager.h"
+#include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/update_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -67,11 +68,9 @@ void SystemTrayModel::SetUse24HourClock(bool use_24_hour) {
   clock()->SetUse24HourClock(use_24_hour);
 }
 
-void SystemTrayModel::SetEnterpriseDomainInfo(
-    const std::string& enterprise_domain_manager,
-    bool active_directory_managed) {
-  enterprise_domain()->SetEnterpriseDomainInfo(enterprise_domain_manager,
-                                               active_directory_managed);
+void SystemTrayModel::SetDeviceEnterpriseInfo(
+    const DeviceEnterpriseInfo& device_enterprise_info) {
+  enterprise_domain()->SetDeviceEnterpriseInfo(device_enterprise_info);
 }
 
 void SystemTrayModel::SetEnterpriseAccountDomainInfo(

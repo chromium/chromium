@@ -40,8 +40,8 @@ class SystemTrayModel : public SystemTray {
   void SetPrimaryTrayEnabled(bool enabled) override;
   void SetPrimaryTrayVisible(bool visible) override;
   void SetUse24HourClock(bool use_24_hour) override;
-  void SetEnterpriseDomainInfo(const std::string& enterprise_domain_manager,
-                               bool active_directory_managed) override;
+  void SetDeviceEnterpriseInfo(
+      const DeviceEnterpriseInfo& device_enterprise_info) override;
   void SetEnterpriseAccountDomainInfo(
       const std::string& account_domain_manager) override;
   void SetPerformanceTracingIconVisible(bool visible) override;

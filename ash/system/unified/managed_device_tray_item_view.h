@@ -30,7 +30,7 @@ class ManagedDeviceTrayItemView : public TrayItemView,
   void OnLoginStatusChanged(LoginStatus status) override;
 
   // EnterpriseDomainObserver:
-  void OnEnterpriseDomainChanged() override;
+  void OnDeviceEnterpriseInfoChanged() override;
   void OnEnterpriseAccountDomainChanged() override;
 
   // views::TrayItemView:

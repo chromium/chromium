@@ -448,7 +448,7 @@ class EnterpriseManagedView : public ManagedStateView,
   ~EnterpriseManagedView() override;
 
   // EnterpriseDomainObserver:
-  void OnEnterpriseDomainChanged() override;
+  void OnDeviceEnterpriseInfoChanged() override;
   void OnEnterpriseAccountDomainChanged() override;
 
   // SessionObserver:
@@ -481,7 +481,7 @@ EnterpriseManagedView::~EnterpriseManagedView() {
   Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
-void EnterpriseManagedView::OnEnterpriseDomainChanged() {
+void EnterpriseManagedView::OnDeviceEnterpriseInfoChanged() {
   Update();
 }
 

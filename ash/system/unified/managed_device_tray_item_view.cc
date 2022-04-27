@@ -39,7 +39,7 @@ void ManagedDeviceTrayItemView::OnLoginStatusChanged(LoginStatus status) {
   Update();
 }
 
-void ManagedDeviceTrayItemView::OnEnterpriseDomainChanged() {
+void ManagedDeviceTrayItemView::OnDeviceEnterpriseInfoChanged() {
   Update();
 }
 

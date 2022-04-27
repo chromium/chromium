@@ -4,6 +4,7 @@
 
 #include "ash/system/model/enterprise_domain_model.h"
 
+#include "ash/public/cpp/login_types.h"
 #include "ash/system/enterprise/enterprise_domain_observer.h"
 
 namespace ash {
@@ -20,13 +21,11 @@ void EnterpriseDomainModel::RemoveObserver(EnterpriseDomainObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void EnterpriseDomainModel::SetEnterpriseDomainInfo(
-    const std::string& enterprise_domain_manager,
-    bool active_directory_managed) {
-  enterprise_domain_manager_ = enterprise_domain_manager;
-  active_directory_managed_ = active_directory_managed;
+void EnterpriseDomainModel::SetDeviceEnterpriseInfo(
+    const DeviceEnterpriseInfo& device_enterprise_info) {
+  device_enterprise_info_ = device_enterprise_info;
   for (auto& observer : observers_)
-    observer.OnEnterpriseDomainChanged();
+    observer.OnDeviceEnterpriseInfoChanged();
 }
 
 void EnterpriseDomainModel::SetEnterpriseAccountDomainInfo(

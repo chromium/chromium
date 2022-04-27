@@ -5,6 +5,7 @@
 #include "ash/system/unified/unified_system_info_view.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/login_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
@@ -72,8 +73,9 @@ TEST_P(UnifiedSystemInfoViewTest, EnterpriseManagedVisible) {
   EXPECT_FALSE(info_view()->enterprise_managed_->GetVisible());
 
   // Simulate enterprise information becoming available.
-  enterprise_domain()->SetEnterpriseDomainInfo(
-      "example.com", /*active_directory_managed=*/false);
+  enterprise_domain()->SetDeviceEnterpriseInfo(
+      DeviceEnterpriseInfo{"example.com", /*active_directory_managed=*/false,
+                           ManagementDeviceMode::kChromeEnterprise});
 
   // EnterpriseManagedView should be shown.
   EXPECT_TRUE(info_view()->enterprise_managed_->GetVisible());
@@ -82,8 +84,9 @@ TEST_P(UnifiedSystemInfoViewTest, EnterpriseManagedVisible) {
 TEST_P(UnifiedSystemInfoViewTest, EnterpriseManagedVisibleForActiveDirectory) {
   // Active directory information becoming available.
   const std::string empty_domain;
-  enterprise_domain()->SetEnterpriseDomainInfo(
-      empty_domain, /*active_directory_managed=*/true);
+  enterprise_domain()->SetDeviceEnterpriseInfo(
+      DeviceEnterpriseInfo{empty_domain, /*active_directory_managed=*/true,
+                           ManagementDeviceMode::kChromeEnterprise});
 
   // EnterpriseManagedView should be shown.
   EXPECT_TRUE(info_view()->enterprise_managed_->GetVisible());

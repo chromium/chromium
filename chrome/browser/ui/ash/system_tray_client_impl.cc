@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/locale_update_controller.h"
+#include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system_tray.h"
 #include "ash/public/cpp/update_types.h"
@@ -14,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -177,6 +181,27 @@ void OpenInBrowser(const GURL& event_url) {
                             ash::NewWindowDelegate::OpenUrlFrom::kUnspecified);
 }
 
+ash::ManagementDeviceMode GetManagementDeviceMode(
+    policy::BrowserPolicyConnectorAsh* connector) {
+  if (connector->IsDeviceEnterpriseManaged())
+    return ash::ManagementDeviceMode::kNone;
+
+  if (connector->IsKioskEnrolled())
+    return ash::ManagementDeviceMode::kKioskSku;
+
+  switch (connector->GetEnterpriseMarketSegment()) {
+    case policy::MarketSegment::UNKNOWN:
+      return ash::ManagementDeviceMode::kOther;
+    case policy::MarketSegment::ENTERPRISE:
+      return ash::ManagementDeviceMode::kChromeEnterprise;
+    case policy::MarketSegment::EDUCATION:
+      return ash::ManagementDeviceMode::kChromeEducation;
+  }
+
+  NOTREACHED();
+  return ash::ManagementDeviceMode::kOther;
+}
+
 }  // namespace
 
 class SystemTrayClientImpl::EnterpriseAccountObserver
@@ -272,7 +297,7 @@ SystemTrayClientImpl::SystemTrayClientImpl()
       policy_connector->GetDeviceCloudPolicyManager();
   if (policy_manager)
     policy_manager->core()->store()->AddObserver(this);
-  UpdateEnterpriseDomainInfo();
+  UpdateDeviceEnterpriseInfo();
 
   system_tray_->SetClient(this);
 
@@ -765,28 +790,34 @@ void SystemTrayClientImpl::OnUpgradeRecommended() {
 ////////////////////////////////////////////////////////////////////////////////
 // policy::CloudPolicyStore::Observer
 void SystemTrayClientImpl::OnStoreLoaded(policy::CloudPolicyStore* store) {
-  UpdateEnterpriseDomainInfo();
+  UpdateDeviceEnterpriseInfo();
 }
 
 void SystemTrayClientImpl::OnStoreError(policy::CloudPolicyStore* store) {
-  UpdateEnterpriseDomainInfo();
+  UpdateDeviceEnterpriseInfo();
 }
 
-void SystemTrayClientImpl::UpdateEnterpriseDomainInfo() {
+void SystemTrayClientImpl::UpdateDeviceEnterpriseInfo() {
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
-  const std::string enterprise_domain_manager =
+  ash::DeviceEnterpriseInfo device_enterprise_info;
+  device_enterprise_info.enterprise_domain_manager =
       connector->GetEnterpriseDomainManager();
-  const bool active_directory_managed = connector->IsActiveDirectoryManaged();
-  if (enterprise_domain_manager == last_enterprise_domain_manager_ &&
-      active_directory_managed == last_active_directory_managed_) {
-    return;
+  device_enterprise_info.active_directory_managed =
+      connector->IsActiveDirectoryManaged();
+  device_enterprise_info.management_device_mode =
+      GetManagementDeviceMode(connector);
+  if (!last_device_enterprise_info_) {
+    last_device_enterprise_info_ =
+        std::make_unique<ash::DeviceEnterpriseInfo>();
   }
+
+  if (device_enterprise_info == *last_device_enterprise_info_)
+    return;
+
   // Send to ash, which will add an item to the system tray.
-  system_tray_->SetEnterpriseDomainInfo(enterprise_domain_manager,
-                                        active_directory_managed);
-  last_enterprise_domain_manager_ = enterprise_domain_manager;
-  last_active_directory_managed_ = active_directory_managed;
+  system_tray_->SetDeviceEnterpriseInfo(device_enterprise_info);
+  *last_device_enterprise_info_ = device_enterprise_info;
 }
 
 void SystemTrayClientImpl::UpdateEnterpriseAccountDomainInfo(Profile* profile) {

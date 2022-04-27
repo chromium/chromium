@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/login_types.h"
 #include "base/observer_list.h"
 
 namespace ash {
@@ -27,34 +28,34 @@ class ASH_EXPORT EnterpriseDomainModel {
   void AddObserver(EnterpriseDomainObserver* observer);
   void RemoveObserver(EnterpriseDomainObserver* observer);
 
-  // |enterprise_domain_manager| and |account_domain_manager| should be either
-  // an empty string, a domain name (foo.com) or an email address
-  // (user@foo.com). This string will be displayed to the user without
-  // modification.
-  void SetEnterpriseDomainInfo(const std::string& enterprise_domain_manager,
-                               bool active_directory_managed);
+  void SetDeviceEnterpriseInfo(
+      const DeviceEnterpriseInfo& device_enterprise_info);
+
+  // |account_domain_manager| should be either an empty string, a domain name
+  // (foo.com) or an email address (user@foo.com). This string will be displayed
+  // to the user without modification.
   void SetEnterpriseAccountDomainInfo(
       const std::string& account_domain_manager);
 
   const std::string& enterprise_domain_manager() const {
-    return enterprise_domain_manager_;
+    return device_enterprise_info_.enterprise_domain_manager;
   }
-  bool active_directory_managed() const { return active_directory_managed_; }
+
+  bool active_directory_managed() const {
+    return device_enterprise_info_.active_directory_managed;
+  }
+
+  ManagementDeviceMode management_device_mode() const {
+    return device_enterprise_info_.management_device_mode;
+  }
+
   const std::string& account_domain_manager() const {
     return account_domain_manager_;
   }
 
  private:
-  // The name of the entity that manages the device and current account user.
-  //    For standard Dasher domains, this will be the domain name (foo.com).
-  //    For FlexOrgs, this will be the admin's email (user@foo.com).
-  //    For Active Directory or not enteprise enrolled, this will be an empty
-  //    string.
-  std::string enterprise_domain_manager_;
+  DeviceEnterpriseInfo device_enterprise_info_;
   std::string account_domain_manager_;
-
-  // Whether this is an Active Directory managed enterprise device.
-  bool active_directory_managed_ = false;
 
   base::ObserverList<EnterpriseDomainObserver>::Unchecked observers_;
 };

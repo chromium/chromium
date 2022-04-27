@@ -4,6 +4,7 @@
 
 #include "ash/system/update/update_notification_controller.h"
 
+#include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/update_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -88,7 +89,9 @@ class UpdateNotificationControllerTest : public AshTestBase {
     EnterpriseDomainModel* enterprise_domain =
         Shell::Get()->system_tray_model()->enterprise_domain();
     enterprise_domain->SetEnterpriseAccountDomainInfo(kDomain);
-    enterprise_domain->SetEnterpriseDomainInfo(kDeviceDomain, false);
+    enterprise_domain->SetDeviceEnterpriseInfo(
+        DeviceEnterpriseInfo{kDeviceDomain, /*active_directory_managed=*/false,
+                             ManagementDeviceMode::kNone});
   }
 
  protected:
