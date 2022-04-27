@@ -322,7 +322,7 @@ TEST_F(SerialPortImplTest, Close) {
   CreatePort(&serial_port, &watcher);
 
   base::RunLoop loop;
-  serial_port->Close(loop.QuitClosure());
+  serial_port->Close(/*flush=*/true, loop.QuitClosure());
   loop.Run();
 }
 

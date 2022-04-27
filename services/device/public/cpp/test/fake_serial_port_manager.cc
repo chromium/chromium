@@ -71,7 +71,9 @@ class FakeSerialPort : public mojom::SerialPort {
 
   void GetPortInfo(GetPortInfoCallback callback) override { NOTREACHED(); }
 
-  void Close(CloseCallback callback) override { std::move(callback).Run(); }
+  void Close(bool flush, CloseCallback callback) override {
+    std::move(callback).Run();
+  }
 
  private:
   mojo::Receiver<mojom::SerialPort> receiver_{this};

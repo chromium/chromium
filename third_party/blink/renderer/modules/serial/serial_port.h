@@ -67,6 +67,7 @@ class SerialPort final : public EventTargetWithInlineData,
   ScriptPromise ContinueClose(ScriptState*);
   void AbortClose();
   void StreamsClosed();
+  bool IsClosing() const { return close_resolver_; }
 
   void Flush(device::mojom::blink::SerialPortFlushMode mode,
              device::mojom::blink::SerialPort::FlushCallback callback);
@@ -118,10 +119,6 @@ class SerialPort final : public EventTargetWithInlineData,
   // should not be reopened.
   bool read_fatal_ = false;
   bool write_fatal_ = false;
-
-  // Indicates that the port is being closed and so the streams should not be
-  // reopened on demand.
-  bool closing_ = false;
 
   // The port was opened with { flowControl: "hardware" }.
   bool hardware_flow_control_ = false;

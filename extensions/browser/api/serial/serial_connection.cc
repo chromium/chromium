@@ -526,6 +526,7 @@ void SerialConnection::SetControlSignals(
 void SerialConnection::Close(base::OnceClosure callback) {
   DCHECK(serial_port_);
   serial_port_->Close(
+      /*flush=*/false,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback)));
 }
 

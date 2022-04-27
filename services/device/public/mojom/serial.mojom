@@ -201,8 +201,9 @@ interface SerialPort {
   GetPortInfo() => (SerialConnectionInfo info);
 
   // Closes the port and this pipe. Once this returns no more data will be sent
-  // or received on |in_stream| or |out_stream|.
-  Close() => ();
+  // or received from |consumer| and |producer|. If |flush| is true the port's
+  // transmit and receive buffers are flushed before closing.
+  Close(bool flush) => ();
 };
 
 interface SerialPortClient {

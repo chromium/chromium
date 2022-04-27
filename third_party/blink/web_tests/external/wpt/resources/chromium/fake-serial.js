@@ -307,10 +307,14 @@ class FakeSerialPort {
     }
     this.writable_ = undefined;
 
-    if (this.receiver_) {
-      this.receiver_.$.close();
-      this.receiver_ = undefined;
-    }
+    // Close the receiver asynchronously so the reply to this message can be
+    // sent first.
+    const receiver = this.receiver_;
+    this.receiver_ = undefined;
+    setTimeout(() => {
+      receiver.$.close();
+    }, 0);
+
     return {};
   }
 }

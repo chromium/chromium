@@ -62,7 +62,7 @@ class BluetoothSerialPortImpl : public mojom::SerialPort {
   void ConfigurePort(mojom::SerialConnectionOptionsPtr options,
                      ConfigurePortCallback callback) override;
   void GetPortInfo(GetPortInfoCallback callback) override;
-  void Close(CloseCallback callback) override;
+  void Close(bool flush, CloseCallback callback) override;
 
   void OpenSocket(const BluetoothUUID& service_class_id, OpenCallback callback);
   void WriteToSocket(MojoResult result, const mojo::HandleSignalsState& state);

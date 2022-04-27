@@ -44,6 +44,13 @@ ScriptPromise SerialPortUnderlyingSource::Cancel(ScriptState* script_state,
 
   Close();
 
+  // If the port is closing the flush will be performed when it closes so we
+  // don't need to do it here.
+  if (serial_port_->IsClosing()) {
+    serial_port_->UnderlyingSourceClosed();
+    return ScriptPromise::CastUndefined(script_state);
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   serial_port_->Flush(
       device::mojom::blink::SerialPortFlushMode::kReceive,

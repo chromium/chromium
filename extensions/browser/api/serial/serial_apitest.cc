@@ -165,7 +165,7 @@ class FakeSerialPort : public device::mojom::SerialPort {
     std::move(callback).Run(std::move(info));
   }
 
-  void Close(CloseCallback callback) override {
+  void Close(bool flush, CloseCallback callback) override {
     in_stream_watcher_.Cancel();
     in_stream_.reset();
     out_stream_watcher_.Cancel();

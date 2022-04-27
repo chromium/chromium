@@ -505,8 +505,10 @@ void BluetoothSerialPortImpl::GetPortInfo(GetPortInfoCallback callback) {
   std::move(callback).Run(std::move(info));
 }
 
-void BluetoothSerialPortImpl::Close(CloseCallback callback) {
+void BluetoothSerialPortImpl::Close(bool flush, CloseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // It is safe to ignore |flush| because we get the semantics of a flush simply
+  // by disconnecting the socket. There are no hardware buffers to clear.
   bluetooth_socket_->Disconnect(
       base::BindOnce(&BluetoothSerialPortImpl::OnSocketDisconnected,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

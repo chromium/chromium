@@ -114,32 +114,33 @@ DOMException* DOMExceptionFromReceiveError(SerialReceiveError error) {
   }
 }
 
-// A ScriptFunction that calls ContinueClose() on the provided SerialPort.
-class ContinueCloseFunction : public ScriptFunction::Callable {
+// A ScriptFunction that returns the provided ScriptPromise.
+class ReturnPromiseFunction : public ScriptFunction::Callable {
  public:
-  explicit ContinueCloseFunction(SerialPort* port) : port_(port) {}
+  explicit ReturnPromiseFunction(ScriptPromise promise) : promise_(promise) {}
 
-  ScriptValue Call(ScriptState* script_state, ScriptValue) override {
-    return port_->ContinueClose(script_state).AsScriptValue();
+  ScriptValue Call(ScriptState*, ScriptValue) override {
+    return promise_.AsScriptValue();
   }
 
   void Trace(Visitor* visitor) const override {
-    visitor->Trace(port_);
+    visitor->Trace(promise_);
     ScriptFunction::Callable::Trace(visitor);
   }
 
  private:
-  Member<SerialPort> port_;
+  ScriptPromise promise_;
 };
 
-// A ScriptFunction that calls AbortClose() on the provided SerialPort.
+// A ScriptFunction that calls AbortClose() on the provided SerialPort and
+// passes through the rejection.
 class AbortCloseFunction : public ScriptFunction::Callable {
  public:
   explicit AbortCloseFunction(SerialPort* port) : port_(port) {}
 
-  ScriptValue Call(ScriptState*, ScriptValue) override {
+  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
     port_->AbortClose();
-    return ScriptValue();
+    return ScriptPromise::Reject(script_state, value).AsScriptValue();
   }
 
   void Trace(Visitor* visitor) const override {
@@ -272,7 +273,7 @@ ReadableStream* SerialPort::readable(ScriptState* script_state,
   if (readable_)
     return readable_;
 
-  if (!port_.is_bound() || open_resolver_ || closing_ || read_fatal_)
+  if (!port_.is_bound() || open_resolver_ || IsClosing() || read_fatal_)
     return nullptr;
 
   mojo::ScopedDataPipeProducerHandle producer;
@@ -302,7 +303,7 @@ WritableStream* SerialPort::writable(ScriptState* script_state,
   if (writable_)
     return writable_;
 
-  if (!port_.is_bound() || open_resolver_ || closing_ || write_fatal_)
+  if (!port_.is_bound() || open_resolver_ || IsClosing() || write_fatal_)
     return nullptr;
 
   mojo::ScopedDataPipeProducerHandle producer;
@@ -408,20 +409,21 @@ ScriptPromise SerialPort::close(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  if (closing_) {
+  if (IsClosing()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "A call to close() is already in progress.");
     return ScriptPromise();
   }
 
-  closing_ = true;
+  close_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = close_resolver_->Promise();
 
   HeapVector<ScriptPromise> promises;
   if (readable_) {
     promises.push_back(readable_->cancel(script_state, exception_state));
     if (exception_state.HadException()) {
-      closing_ = false;
+      AbortClose();
       return ScriptPromise();
     }
   }
@@ -432,17 +434,22 @@ ScriptPromise SerialPort::close(ScriptState* script_state,
                                         ScriptValue::From(script_state, reason),
                                         exception_state));
     if (exception_state.HadException()) {
-      closing_ = false;
+      AbortClose();
       return ScriptPromise();
     }
   }
 
+  if (promises.IsEmpty()) {
+    StreamsClosed();
+    return promise;
+  }
+
   return ScriptPromise::All(script_state, promises)
-      .Then(
-          MakeGarbageCollected<ScriptFunction>(
-              script_state, MakeGarbageCollected<ContinueCloseFunction>(this)),
-          MakeGarbageCollected<ScriptFunction>(
-              script_state, MakeGarbageCollected<AbortCloseFunction>(this)));
+      .Then(MakeGarbageCollected<ScriptFunction>(
+                script_state,
+                MakeGarbageCollected<ReturnPromiseFunction>(promise)),
+            MakeGarbageCollected<ScriptFunction>(
+                script_state, MakeGarbageCollected<AbortCloseFunction>(this)));
 }
 
 ScriptPromise SerialPort::forget(ScriptState* script_state,
@@ -462,35 +469,20 @@ ScriptPromise SerialPort::forget(ScriptState* script_state,
   return resolver->Promise();
 }
 
-ScriptPromise SerialPort::ContinueClose(ScriptState* script_state) {
-  DCHECK(closing_);
-  DCHECK(!close_resolver_);
-
-  if (!port_.is_bound())
-    return ScriptPromise::CastUndefined(script_state);
-
-  close_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-
-  // readable.cancel() and writable.abort() can resolve before |readable_| or
-  // |writable_| are set to null if the streams were already erroring. Wait
-  // until UnderlyingSourceClosed() and UnderlyingSinkClosed() have been called
-  // before continuing.
-  if (!readable_ && !writable_) {
-    StreamsClosed();
-  }
-
-  return close_resolver_->Promise();
-}
-
 void SerialPort::AbortClose() {
-  DCHECK(closing_);
-  closing_ = false;
+  DCHECK(IsClosing());
+  // Dropping |close_resolver_| is okay because the Promise it is attached to
+  // won't be returned to script in this case.
+  close_resolver_ = nullptr;
 }
 
 void SerialPort::StreamsClosed() {
   DCHECK(!readable_);
   DCHECK(!writable_);
-  port_->Close(WTF::Bind(&SerialPort::OnClose, WrapPersistent(this)));
+  DCHECK(IsClosing());
+
+  port_->Close(/*flush=*/true,
+               WTF::Bind(&SerialPort::OnClose, WrapPersistent(this)));
 }
 
 void SerialPort::Flush(
@@ -511,7 +503,7 @@ void SerialPort::UnderlyingSourceClosed() {
   readable_ = nullptr;
   underlying_source_ = nullptr;
 
-  if (close_resolver_ && !writable_) {
+  if (IsClosing() && !writable_) {
     StreamsClosed();
   }
 }
@@ -521,7 +513,7 @@ void SerialPort::UnderlyingSinkClosed() {
   writable_ = nullptr;
   underlying_sink_ = nullptr;
 
-  if (close_resolver_ && !readable_) {
+  if (IsClosing() && !readable_) {
     StreamsClosed();
   }
 }
@@ -620,7 +612,6 @@ bool SerialPort::CreateDataPipe(mojo::ScopedDataPipeProducerHandle* producer,
 }
 
 void SerialPort::OnConnectionError() {
-  closing_ = false;
   read_fatal_ = false;
   write_fatal_ = false;
   port_.reset();
@@ -638,7 +629,7 @@ void SerialPort::OnConnectionError() {
   }
   signal_resolvers_.clear();
 
-  if (close_resolver_) {
+  if (IsClosing()) {
     close_resolver_->Resolve();
     close_resolver_ = nullptr;
   }
@@ -715,13 +706,12 @@ void SerialPort::OnSetSignals(ScriptPromiseResolver* resolver, bool success) {
 }
 
 void SerialPort::OnClose() {
-  DCHECK(close_resolver_);
-  closing_ = false;
   read_fatal_ = false;
   write_fatal_ = false;
   port_.reset();
   client_receiver_.reset();
 
+  DCHECK(IsClosing());
   close_resolver_->Resolve();
   close_resolver_ = nullptr;
 }
