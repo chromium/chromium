@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/ui/badges/badge_constants.h"
 #import "ios/chrome/browser/ui/badges/badge_delegate.h"
 #import "ios/chrome/browser/ui/badges/badge_overflow_menu_util.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/infobar_icon.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -25,8 +27,6 @@ namespace {
 // The identifier for the new popup menu action trigger.
 NSString* const kOverflowPopupMenuActionIdentifier =
     @"kOverflowPopupMenuActionIdentifier";
-// The size of the symbol image in the badge button.
-const CGFloat kSymbolImagePointSize = 18;
 }  // namespace
 
 @implementation BadgeButtonFactory
@@ -104,11 +104,14 @@ const CGFloat kSymbolImagePointSize = 18;
 }
 
 - (BadgeButton*)saveCardBadgeButton {
+  UIImage* image;
+  image = UseSymbols() ? DefaultSymbolWithPointSize(kCreditCardSymbol,
+                                                    kSymbolImagePointSize)
+                       : [UIImage imageNamed:@"infobar_save_card_icon"];
   BadgeButton* button =
       [self createButtonForType:kBadgeTypeSaveCard
-                          image:[[UIImage imageNamed:@"infobar_save_card_icon"]
-                                    imageWithRenderingMode:
-                                        UIImageRenderingModeAlwaysTemplate]];
+                          image:[image imageWithRenderingMode:
+                                           UIImageRenderingModeAlwaysTemplate]];
   [button addTarget:self.delegate
                 action:@selector(saveCardBadgeButtonTapped:)
       forControlEvents:UIControlEventTouchUpInside];
@@ -119,11 +122,14 @@ const CGFloat kSymbolImagePointSize = 18;
 }
 
 - (BadgeButton*)translateBadgeButton {
+  UIImage* image;
+  image = UseSymbols() ? CustomSymbolWithPointSize(kTranslateSymbol,
+                                                   kSymbolImagePointSize)
+                       : [UIImage imageNamed:@"infobar_translate_icon"];
   BadgeButton* button =
       [self createButtonForType:kBadgeTypeTranslate
-                          image:[[UIImage imageNamed:@"infobar_translate_icon"]
-                                    imageWithRenderingMode:
-                                        UIImageRenderingModeAlwaysTemplate]];
+                          image:[image imageWithRenderingMode:
+                                           UIImageRenderingModeAlwaysTemplate]];
   [button addTarget:self.delegate
                 action:@selector(translateBadgeButtonTapped:)
       forControlEvents:UIControlEventTouchUpInside];

@@ -475,14 +475,10 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
                     action:@selector(shareButtonPressed)
           forControlEvents:UIControlEventTouchUpInside];
 
-      UIImage* shareImage;
-      if (base::FeatureList::IsEnabled(kUseSFSymbolsSamples)) {
-        shareImage = DefaultSymbolWithPointSize(@"square.and.arrow.up",
-                                                kSymbolImagePointSize);
-      } else {
-        shareImage = [UIImage imageNamed:@"location_bar_share"];
-      }
-
+      UIImage* shareImage =
+          UseSymbols() ? DefaultSymbolWithPointSize(@"square.and.arrow.up",
+                                                    kSymbolImagePointSize)
+                       : [UIImage imageNamed:@"location_bar_share"];
       [self.locationBarSteadyView.trailingButton
           setImage:[shareImage imageWithRenderingMode:
                                    UIImageRenderingModeAlwaysTemplate]
@@ -504,14 +500,10 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
                     action:@selector(startVoiceSearch)
           forControlEvents:UIControlEventTouchUpInside];
 
-      UIImage* micImage;
-      if (base::FeatureList::IsEnabled(kUseSFSymbolsSamples)) {
-        micImage =
-            DefaultSymbolWithPointSize(@"mic.fill", kSymbolImagePointSize);
-      } else {
-        micImage = [UIImage imageNamed:@"location_bar_voice"];
-      }
-
+      UIImage* micImage =
+          UseSymbols()
+              ? DefaultSymbolWithPointSize(@"mic.fill", kSymbolImagePointSize)
+              : [UIImage imageNamed:@"location_bar_voice"];
       [self.locationBarSteadyView.trailingButton
           setImage:[micImage imageWithRenderingMode:
                                  UIImageRenderingModeAlwaysTemplate]

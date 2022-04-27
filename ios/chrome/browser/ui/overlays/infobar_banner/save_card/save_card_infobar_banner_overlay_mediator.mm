@@ -9,6 +9,8 @@
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_card_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_card_infobar_modal_overlay_responses.h"
 #include "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/infobar_icon.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator.h"
@@ -75,7 +77,12 @@ using save_card_infobar_overlays::SaveCardMainAction;
 
   [self.consumer
       setButtonText:base::SysUTF16ToNSString(self.config->button_label_text())];
-  [self.consumer setIconImage:[UIImage imageNamed:config->icon_image_name()]];
+  if (UseSymbols()) {
+    [self.consumer setIconImage:DefaultSymbolWithPointSize(
+                                    kCreditCardSymbol, kSymbolImagePointSize)];
+  } else {
+    [self.consumer setIconImage:[UIImage imageNamed:config->icon_image_name()]];
+  }
   [self.consumer
       setTitleText:base::SysUTF16ToNSString(self.config->message_text())];
   [self.consumer

@@ -13,6 +13,9 @@ extern NSString* const kIncognitoSymbol;
 extern NSString* const kSquareNumberSymbol;
 extern NSString* const kTranslateSymbol;
 
+// Default symbol names.
+extern NSString* const kCreditCardSymbol;
+
 // Returns a SF symbol named |symbolName| configured with the given
 // |configuration|.
 UIImage* DefaultSymbolWithConfiguration(NSString* symbolName,
@@ -30,5 +33,8 @@ UIImage* DefaultSymbolWithPointSize(NSString* symbolName, NSInteger pointSize);
 // Returns a custom symbol named |symbolName| configured with the default
 // configuration and the given |pointSize|.
 UIImage* CustomSymbolWithPointSize(NSString* symbolName, NSInteger pointSize);
+
+// Returns YES if the kUseSFSymbolsSamples flag is enabled.
+bool UseSymbols();
 
 #endif  // IOS_CHROME_BROWSER_UI_ICONS_CHROME_SYMBOL_H_

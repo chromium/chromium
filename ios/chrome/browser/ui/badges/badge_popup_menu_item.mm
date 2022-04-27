@@ -9,6 +9,8 @@
 #import "base/notreached.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/infobar_icon.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -124,11 +126,20 @@ const CGFloat kBadgeCornerRadius = 5.0;
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
     case kBadgeTypeSaveCard:
-      badgeImage = [[UIImage imageNamed:@"infobar_save_card_icon"]
+      badgeImage = UseSymbols()
+                       ? DefaultSymbolWithPointSize(kCreditCardSymbol,
+                                                    kSymbolImagePointSize)
+                       : [UIImage imageNamed:@"infobar_save_card_icon"];
+      badgeImage = [badgeImage
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
+
     case kBadgeTypeTranslate:
-      badgeImage = [[UIImage imageNamed:@"infobar_translate_icon"]
+      badgeImage = UseSymbols()
+                       ? CustomSymbolWithPointSize(kTranslateSymbol,
+                                                   kSymbolImagePointSize)
+                       : [UIImage imageNamed:@"infobar_translate_icon"];
+      badgeImage = [badgeImage
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
     case kBadgeTypeAddToReadingList:

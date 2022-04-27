@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -37,10 +39,14 @@ UIImage* SymbolWithConfiguration(NSString* symbolName,
 
 }  // namespace
 
+// Custom symbol names.
 NSString* const kArrowClockWiseSymbol = @"arrow_clockwise";
 NSString* const kIncognitoSymbol = @"incognito";
 NSString* const kSquareNumberSymbol = @"square_number";
 NSString* const kTranslateSymbol = @"translate";
+
+// Default symbol names.
+NSString* const kCreditCardSymbol = @"creditcard";
 
 UIImage* DefaultSymbolWithConfiguration(NSString* symbolName,
                                         UIImageConfiguration* configuration) {
@@ -60,4 +66,8 @@ UIImage* DefaultSymbolWithPointSize(NSString* symbolName, NSInteger pointSize) {
 UIImage* CustomSymbolWithPointSize(NSString* symbolName, NSInteger pointSize) {
   return CustomSymbolWithConfiguration(
       symbolName, DefaultSymbolConfigurationWithPointSize(pointSize));
+}
+
+bool UseSymbols() {
+  return base::FeatureList::IsEnabled(kUseSFSymbolsSamples);
 }

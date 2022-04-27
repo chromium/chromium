@@ -9,6 +9,8 @@
 #include "base/notreached.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_overlay_responses.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/translate_infobar_banner_overlay_request_config.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/infobar_icon.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
@@ -53,7 +55,13 @@ using translate_infobar_overlays::TranslateBannerRequestConfig;
 
   [self.consumer setBannerAccessibilityLabel:[self bannerTitleText]];
   [self.consumer setButtonText:[self infobarButtonText]];
-  [self.consumer setIconImage:[UIImage imageNamed:config->icon_image_name()]];
+
+  if (UseSymbols()) {
+    [self.consumer setIconImage:CustomSymbolWithPointSize(
+                                    kTranslateSymbol, kSymbolImagePointSize)];
+  } else {
+    [self.consumer setIconImage:[UIImage imageNamed:config->icon_image_name()]];
+  }
   [self.consumer setPresentsModal:YES];
   [self.consumer setTitleText:[self bannerTitleText]];
   [self.consumer setSubtitleText:[self bannerSubtitleText]];
