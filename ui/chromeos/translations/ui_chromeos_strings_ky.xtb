@@ -5,7 +5,7 @@
 <translation id="1047956942837015229"><ph name="COUNT" /> нерсе жок кылынууда…</translation>
 <translation id="1049926623896334335">Word документи</translation>
 <translation id="1056775291175587022">Тармактар жок</translation>
-<translation id="1060368002126861100">Файлдарды <ph name="APP_NAME" /> колдонмосунда ачуу үчүн, алгач аларды Windows папкасына жылдырыңыз.</translation>
+<translation id="1060368002126861100">Файлдарды <ph name="APP_NAME" /> колдонмосунда ачуу үчүн алгач аларды Windows папкасына жылдырыңыз.</translation>
 <translation id="1062407476771304334">Алмаштыруу</translation>
 <translation id="1119069657431255176">Bzip2 менен кысылган тар архив</translation>
 <translation id="1119447706177454957">Ички ката</translation>
@@ -295,7 +295,7 @@
 <translation id="3524311639100184459">Эскертүү: Бул файлдар убактылуу жана дискте орун бошотуу үчүн автоматтык түрдө жок кылынышы мүмкүн.  <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Куржун</translation>
 <translation id="3549797760399244642">drive.google.com дегенге өтүңүз…</translation>
-<translation id="3553048479571901246">Файлдарды <ph name="APP_NAME" /> колдонмосунда ачуу үчүн, алгач аларды Windows папкасына көчүрүңүз.</translation>
+<translation id="3553048479571901246">Файлдарды <ph name="APP_NAME" /> колдонмосунда ачуу үчүн алгач аларды Windows папкасына көчүрүңүз.</translation>
 <translation id="3556731189587832921">Англисче (АКШ) жана жеке компьютерлер үчүн эл аралык баскычтоп</translation>
 <translation id="3567221313191587603">Файлды тандап, оффлайнда колдонууга уруксат берүү үчүн <ph name="OFFLINE_CHECKBOX_NAME" /> кутучасын белгилеңиз.</translation>
 <translation id="357479282490346887">Литвача</translation>

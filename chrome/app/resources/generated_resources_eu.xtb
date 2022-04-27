@@ -3952,7 +3952,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4881695831933465202">Ireki</translation>
 <translation id="488211015466188466">Jarraitu webguneari</translation>
 <translation id="4882312758060467256">Webgunerako sarbidea du</translation>
-<translation id="4882919381756638075">Webguneek mikrofonoa erabili ohi dute bideo-deiak eta antzeko komunikazio-eginbideak eskaintzeko</translation>
+<translation id="4882919381756638075">Webguneek mikrofonoa erabili ohi dute bideodeiak eta antzeko komunikazio-eginbideak eskaintzeko</translation>
 <translation id="4883436287898674711"><ph name="WEBSITE_1" /> webguneak</translation>
 <translation id="48838266408104654">&amp;Zereginen kudeatzailea</translation>
 <translation id="4884987973312178454">6x</translation>
@@ -5656,7 +5656,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6592808042417736307">Gehitu da hatz-marka</translation>
 <translation id="6593881952206664229">Baliteke multimedia-eduki copyrighduna ez erreproduzitzea</translation>
 <translation id="6594011207075825276">Serieko gailuak bilatzen…</translation>
-<translation id="659498884637196217">Google-ren Pasahitz kudeatzailea atalean (gailu honetan)</translation>
+<translation id="659498884637196217">Google-ren Pasahitz-kudeatzailea atalean (gailu honetan)</translation>
 <translation id="6595187330192059106">Blokeatu beti <ph name="HOST" /> ostalariari MIDI gailuak erabat kontrolatzeko aukera.</translation>
 <translation id="6595792813574514527">Arrastatu irudiak <ph name="VISUAL_SEARCH_PROVIDER" /> bidez bilatzeko</translation>
 <translation id="6596325263575161958">Enkriptatze aukerak</translation>
@@ -6060,7 +6060,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="6995899638241819463">Abisatu pasahitzak arriskuan badaude datuen isilpekotasuna urratu delako</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Jardueren erregistroa</translation>
 <translation id="6997707937646349884">Gailu hauetan:</translation>
-<translation id="6998793565256476099">Erregistratu gailua bideo-konferentziak egiteko</translation>
+<translation id="6998793565256476099">Erregistratu gailua bideokonferentziak egiteko</translation>
 <translation id="6999956497249459195">Talde berria</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> konektatu da baina konfiguratu egin behar da</translation>
 <translation id="7000347579424117903">Erabili Ktrl, Alt edo bilaketa-tekla</translation>
@@ -6608,7 +6608,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7569983096843329377">Beltza</translation>
 <translation id="7571643774869182231">Ez dago eguneratzeko behar adina toki</translation>
 <translation id="7573172247376861652">Bateriaren karga</translation>
-<translation id="7573594921350120855">Webguneek bideo-kamera erabili ohi dute bideo-deiak eta antzeko komunikazio-eginbideak eskaintzeko</translation>
+<translation id="7573594921350120855">Webguneek bideo-kamera erabili ohi dute bideodeiak eta antzeko komunikazio-eginbideak eskaintzeko</translation>
 <translation id="7574650250151586813">Testua idazteko, eguneratu Daydream Keyboard aplikazioa</translation>
 <translation id="7574676002608048667">Bidali pasahitza</translation>
 <translation id="7576690715254076113">Tartekatu</translation>
@@ -7600,7 +7600,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8551588720239073785">Data- eta ordu-ezarpenak</translation>
 <translation id="8553342806078037065">Kudeatu beste pertsona batzuk</translation>
 <translation id="8554899698005018844">Ez da zehaztu hizkuntzarik</translation>
-<translation id="855604308879080518">Eman USB gailuak atzitzeko baimena Android-erako aplikazioei Chromebook honetan. USB bidezko gailu bat konektatzen duzun bakoitzean eskatuko da baimena. Android-erako aplikazio bakoitzak baimen gehigarriak eskatuko ditu.</translation>
+<translation id="855604308879080518">Eman USB bidezko gailuak atzitzeko baimena Android-erako aplikazioei Chromebook honetan. USB bidezko gailu bat konektatzen duzun bakoitzean eskatuko da baimena. Android-erako aplikazio bakoitzak baimen gehigarriak eskatuko ditu.</translation>
 <translation id="8557022314818157177">Jarraitu segurtasun-giltza sakatzen, hatz-marka hauteman arte</translation>
 <translation id="8557180006508471423">Aktibatu "Google Chrome" Mac-eko Kokapen-zerbitzuak ezarpenean</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Ireki guztiak &amp;beste leiho batean}=1{Ireki &amp;beste leiho batean}other{Ireki guztiak ({COUNT}) &amp;beste leiho batean}}</translation>

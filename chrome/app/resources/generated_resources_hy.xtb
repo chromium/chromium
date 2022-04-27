@@ -524,10 +524,10 @@
 <translation id="1509163368529404530">&amp;Վերականգնել խումբը</translation>
 <translation id="1509281256533087115">Մուտք գործեք ցանկացած <ph name="DEVICE_NAME_AND_VENDOR" /> սարք USB-ի միջոցով</translation>
 <translation id="1510238584712386396">Գործարկիչ</translation>
-<translation id="1510785804673676069">Եթե դուք օգտվում եք միջնորդ սերվերից, ստուգեք նրա կարգավորումները
+<translation id="1510785804673676069">Եթե դուք օգտվում եք պրոքսի սերվերից, ստուգեք նրա կարգավորումները
     կամ խնդրեք ցանցի ադմինիստրատորին
-    կարգավորել այն: Եթե միջնորդ սերվեր չեք օգտագործում, կարգաբերեք ձեր
-    <ph name="LINK_START" />միջնորդ սերվերի կարգավորումները<ph name="LINK_END" />:</translation>
+    կարգավորել այն: Եթե պրոքսի սերվեր չեք օգտագործում, կարգաբերեք ձեր
+    <ph name="LINK_START" />պրոքսի սերվերի կարգավորումները<ph name="LINK_END" />:</translation>
 <translation id="1511997356770098059">Անվտանգության այս բանալիում մուտքի տվյալներ չեն կարող պահվել</translation>
 <translation id="1512210426710821809">Այս գործողությունը հետարկելու միակ ձևը <ph name="IDS_SHORT_PRODUCT_OS_NAME" />-ը նորից տեղադրելն է</translation>
 <translation id="1512642802859169995">«<ph name="FILE_NAME" />» ֆայլը գաղտնագրված է։ Խնդրեք սեփականատիրոջը վերծանել այն։</translation>
@@ -1912,7 +1912,7 @@
 <translation id="2819167288942847344">Օգտագործել հեռախոսի և պլանշետի ստանդարտ պարամետրեր կամ թույլատրել պատուհանների չափի փոփոխումը՝ սխալներից խուսափելու համար</translation>
 <translation id="2822634587701817431">Սեղմել/ընդարձակել</translation>
 <translation id="2822910719211888134">Չհաջողվեց պահուստավորել Լինուքսը</translation>
-<translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" />-ն օգտագործում է ձեր ադմինիստրատորի միջնորդ սերվերի կարգավորումները</translation>
+<translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" />-ն օգտագործում է ձեր ադմինիստրատորի պրոքսի սերվերի կարգավորումները</translation>
 <translation id="2825758591930162672">Սուբյեկտի հանրային բանալին</translation>
 <translation id="2828375943530438449">Վերադառնալ «Մուտք» էջից</translation>
 <translation id="2828650939514476812">Միացեք Wi-Fi ցանցի</translation>
@@ -2908,7 +2908,7 @@
 <translation id="3813358687923336574">Էջերի թարգմանության և արագ պատասխանների համար օգտագործվող լեզուն</translation>
 <translation id="3814529970604306954">Ուսումնական հաշիվ</translation>
 <translation id="3816118180265633665">Chrome-ի գույներ</translation>
-<translation id="3817524650114746564">Ձեր համակարգչում բացեք միջնորդ սերվերի կարգավորումները</translation>
+<translation id="3817524650114746564">Ձեր համակարգչում բացեք պրոքսի սերվերի կարգավորումները</translation>
 <translation id="3819257035322786455">Պահուստավորում</translation>
 <translation id="3819261658055281761">Համակարգին չհաջողվեց պահել այս սարքի երկարաժամկետ API-ի մուտքի թոքենը:</translation>
 <translation id="3819800052061700452">&amp;Լիաէկրան</translation>
@@ -4275,7 +4275,7 @@
 <translation id="5210365745912300556">Փակել ներդիրը</translation>
 <translation id="5213114823401215820">Վերականգնել փակված խումբը</translation>
 <translation id="5213481667492808996">Տվյալների փոխանցման «<ph name="NAME" />» ծառայությունը պատրաստ է օգտագործման</translation>
-<translation id="5213891612754844763">Ցուցադրել միջնորդ սերվերի կարգավորումները</translation>
+<translation id="5213891612754844763">Ցուցադրել պրոքսի սերվերի կարգավորումները</translation>
 <translation id="5215502535566372932">Ընտրեք երկիրը</translation>
 <translation id="521582610500777512">Լուսանկարը ջնջվել է</translation>
 <translation id="522155068793322853">Չհաջողվեց բացել <ph name="APP_NAME" /> հավելվածը</translation>
@@ -5392,7 +5392,7 @@
 <translation id="6325191661371220117">Անջատել ինքնագործարկումը</translation>
 <translation id="6326175484149238433">Հեռացնել Chrome-ից</translation>
 <translation id="6326855256003666642">Keepalive կապակցումների քանակը</translation>
-<translation id="6327785803543103246">Միջնորդ սերվերի ինքնահայտնաբերում</translation>
+<translation id="6327785803543103246">Պրոքսի սերվերի ինքնահայտնաբերում</translation>
 <translation id="6331191339300272798">Ավտոմատ մուգ թեմա</translation>
 <translation id="6331566915566907158">Օգնել ավելի լավը դարձնել Chrome OS-ի գործառույթներն ու աշխատանքը</translation>
 <translation id="6331818708794917058">Կայքերը կարող են MIDI սարքերին միանալու թույլտվություն խնդրել</translation>
@@ -7174,7 +7174,7 @@
     <ph name="BEGIN_PARAGRAPH5" />Այս ծառայությունը կարող եք անջատել Կարգավորումներում:<ph name="END_PARAGRAPH5" /></translation>
 <translation id="8096740438774030488">Անջատել էկրանը մարտկոցից սնուցման ընթացքում</translation>
 <translation id="80974698889265265">PIN կոդերը չեն համընկնում</translation>
-<translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" />-ն օգտագործում է ընդլայնումներից մեկի միջնորդ սերվերի կարգավորումները</translation>
+<translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" />-ն օգտագործում է ընդլայնումներից մեկի պրոքսի սերվերի կարգավորումները</translation>
 <translation id="8097959162767603171">Ձեր ադմինիստրատորը նախ պետք է ընդունի օգտագործման պայմանները Ադմինիստրատորի վահանակի Chrome սարքերի ցանկում։</translation>
 <translation id="8098156986344908134">Իսկապե՞ս ուզում եք տեղադրել <ph name="DEVICE_OS" />-ը և ջնջել բոլոր տվյալները կոշտ սկավառակից</translation>
 <translation id="8098616321286360457">Պահանջվում է ինտերնետ կապ</translation>

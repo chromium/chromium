@@ -1392,8 +1392,8 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
       Als je het beleid niet instelt, worden er geen servicevoorwaarden getoond.
 
       Het beleid moet worden ingesteld op een URL waar <ph name="PRODUCT_OS_NAME" /> de servicevoorwaarden kan downloaden. De servicevoorwaarden moeten in platte tekst worden getoond als MIME-type text/plain. Er is geen opmaak toegestaan.</translation>
-<translation id="2500699707048942472">Met de functie voor het automatisch indienen van pincodes kun je wijzigen hoe pincodes worden ingevoerd in Chrome OS.
-          Deze functie heeft een speciale UI die gebruikers duidelijk toont hoeveel tekens er voor hun pincode zijn vereist in plaats van hetzelfde tekstveld voor de invoer van het wachtwoord te tonen. Hierdoor wordt de lengte van de pincode van de gebruiker niet samen met de versleutelde gegevens van die gebruiker opgeslagen. Alleen pincodes die tussen 6 en 12 cijfers lang zijn, worden ondersteund.
+<translation id="2500699707048942472">Met de functie voor het automatisch versturen van pincodes kun je wijzigen hoe pincodes worden ingevoerd in Chrome OS.
+          Deze functie heeft een speciale UI die gebruikers duidelijk laat zien hoeveel tekens er voor hun pincode zijn vereist in plaats van hetzelfde tekstveld voor de invoer van het wachtwoord te tonen. Hierdoor wordt de lengte van de pincode van de gebruiker niet samen met de versleutelde gegevens van die gebruiker opgeslagen. Alleen pincodes die tussen 6 en 12 cijfers lang zijn, worden ondersteund.
 
           Als dit beleid is ingesteld op False, krijgen gebruikers niet de optie om deze functie op de pagina Instellingen aan te zetten.</translation>
 <translation id="250151283451228612">Als je <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> aanzet en <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> instelt, wordt de drempel voor stroom voor piekuren van de batterij in procenten ingesteld.
@@ -3116,7 +3116,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 
       De beleidswaarde moet worden opgegeven in dagen.</translation>
 <translation id="4528929591840709501">Tijd wanneer het apparaat ophoudt met opladen, geïnterpreteerd in de lokale tijdzone van het apparaat.</translation>
-<translation id="4529868888205510667">Tenzij ARC op een andere manier is uitgezet, zorgt het instellen van het beleid op True of het niet instellen van het beleid ervoor dat gebruikers ARC kunnen gebruiken. Als het beleid wordt ingesteld op False, kunnen niet-gelieerde gebruikers ARC niet gebruiken.
+<translation id="4529868888205510667">Tenzij ARC op een andere manier is uitgezet, kunnen gebruikers ARC gebruiken als het beleid wordt ingesteld op True of niet wordt ingesteld. Als het beleid wordt ingesteld op False, kunnen niet-gelieerde gebruikers ARC niet gebruiken.
 
       Wijzigingen in het beleid zijn alleen van toepassing als ARC niet actief is, bijvoorbeeld bij het opstarten van Chrome OS.</translation>
 <translation id="453031441196755904">Dit beleid is beëindigd.</translation>
@@ -5355,7 +5355,7 @@ Als je dit beleid niet instelt, wordt het schermtoetsenbord getoond als de table
       Als je het beleid niet instelt of instelt op een lege tekenreeks, kan de host voor externe toegang elke beschikbare poort gebruiken.
 
       Opmerking: Als <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> is uitgezet, gebruikt de host voor externe toegang UDP-poorten in het bereik 12400-12409.</translation>
-<translation id="7091842872805965910">Zet de functie voor het automatisch indienen van pincodes aan op het vergrendel- en inlogscherm.</translation>
+<translation id="7091842872805965910">Zet de functie voor het automatisch versturen van pincodes aan op het vergrendel- en inlogscherm.</translation>
 <translation id="7093294902558672021">Rapporteer de ventilatorgegevens van een apparaat.
 
       Als het beleid is ingesteld op False of niet is ingesteld, worden de gegevens niet gerapporteerd.

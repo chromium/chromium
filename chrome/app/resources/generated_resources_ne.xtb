@@ -2369,7 +2369,7 @@
 <translation id="3308134619352333507">बटन लुकाउनुहोस्</translation>
 <translation id="3308852433423051161">Google सहायक लोड गर्दै...</translation>
 <translation id="3309330461362844500">सर्टिफिकेट प्रोफाइलको ID</translation>
-<translation id="3311445899360743395">यो यन्त्रबाट यस अनुप्रयोगसँग सम्बन्धित डेटा हटाइन सक्छ।</translation>
+<translation id="3311445899360743395">यो यन्त्रबाट यस एपसँग सम्बन्धित डेटा हटाइन सक्छ।</translation>
 <translation id="3312883087018430408">तपाईं कुनै निश्चित साइट वा Chrome को कुनै निश्चित भागमा भएका कुराहरू खोज्न चाहनुहुन्छ भने एड्रेस बारमा त्यसको सर्टकट टाइप गर्नुहोस् अनि आफ्नो रोजाइको किबोर्ड सर्टकट थिच्नुहोस्। उदाहरणका लागि, तपाईं बुकमार्कमा भएका कुराहरू मात्र खोज्न चाहनुहुन्छ भने "@bookmarks" टाइप गर्नुहोस् अनि Tab वा Space की थिच्नुहोस्।</translation>
 <translation id="3313622045786997898">प्रमाणपत्र हस्ताक्षर मूल्य</translation>
 <translation id="3313950410573257029">इन्टरनेट जाँच्नुहोस्</translation>
@@ -8303,7 +8303,7 @@
 <translation id="960987915827980018">लगभग 1 घन्टा बाँकी</translation>
 <translation id="962802172452141067">पुस्तक चिन्ह भएको फोल्डरको ट्री</translation>
 <translation id="964286338916298286">तपाईंको IT एडमिनले तपाईंको डिभाइसमा Chrome Goodies लाई असक्षम पार्नुभएको छ।</translation>
-<translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{अनुप्रयोग}other{अनुप्रयोगहरू}}</translation>
+<translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{एप}other{एपहरू}}</translation>
 <translation id="964790508619473209">स्क्रिनका सेटिङ</translation>
 <translation id="965211523698323809">आफ्नो <ph name="DEVICE_TYPE" /> बाट टेक्स्ट म्यासेजहरू सेयर गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast मा भएको कुनै समस्याका बारेमा उजुरी गर्नुहोस्</translation>

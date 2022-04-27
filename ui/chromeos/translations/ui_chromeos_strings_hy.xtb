@@ -164,7 +164,7 @@
 <translation id="2377319039870049694">Ցանկի տեսքով</translation>
 <translation id="2377590462528165447">Դուք <ph name="NUMBER_OF_ITEMS" /> պանակով կիսվեցին Լինուքսի հետ</translation>
 <translation id="2378075407703503998">Ընտրված է <ph name="SELCTED_FILE_COUNT" /> ֆայլ</translation>
-<translation id="2387458720915042159">Միջնորդ սերվերի միացման տեսակը</translation>
+<translation id="2387458720915042159">Պրոքսի սերվերի միացման տեսակը</translation>
 <translation id="2389832672041313158">բիրմաներեն (Մյանմա)</translation>
 <translation id="2392369802118427583">Ակտիվացնել</translation>
 <translation id="240770291734945588">Հասանելի է <ph name="SPACE_AVAILABLE" /></translation>
@@ -173,7 +173,7 @@
 <translation id="2448312741937722512">Տեսակ</translation>
 <translation id="2452444014801043526">Մեգաֆոնով մարդ</translation>
 <translation id="2464079411014186876">Պաղպաղակ</translation>
-<translation id="2464089476039395325">HTTP միջնորդ սերվեր</translation>
+<translation id="2464089476039395325">HTTP պրոքսի սերվեր</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> ցանց, անջատված է</translation>
 <translation id="2468402215065996499">Տամագոչի</translation>
 <translation id="2470939964922472929">Սխալ PIN կոդի մուտքագրման չափազանց շատ փորձեր են կատարվել։ Նոր PIN կոդ սահմանելու համար մուտքագրեք 8-անիշ անձնական ապակողպման բանալին (PUK), որը տրամադրվել է ձեր օպերատորի կողմից։</translation>
@@ -181,7 +181,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Որոնել</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> տարր ջնջվեց</translation>
-<translation id="2534460670861217804">Ապահով HTTP միջնորդ սերվեր</translation>
+<translation id="2534460670861217804">Ապահով HTTP պրոքսի սերվեր</translation>
 <translation id="2541377937973966830">Այս պանակի բովանդակությունը հասանելի է միայն կարդալու համար։ Որոշ գործողություններ չեն աջակցվում։</translation>
 <translation id="2542049655219295786">Google աղյուսակ</translation>
 <translation id="2544853746127077729">Իսկորոշման վկայագիրը մերժվել է ցանցի կողմից</translation>
@@ -329,7 +329,7 @@
 <translation id="3811494700605067549">Ընտրվել է 1 ֆայլ</translation>
 <translation id="3817579325494460411">Չի տրամադրվել</translation>
 <translation id="3819448694985509187">PIN կոդը սխալ է։ Մնաց 1 փորձ։</translation>
-<translation id="3822559385185038546">Այս միջնորդ սերվերը պարտադրաբար միացվել է ադմինիստրատորի կողմից</translation>
+<translation id="3822559385185038546">Այս պրոքսի սերվերը պարտադրաբար միացվել է ադմինիստրատորի կողմից</translation>
 <translation id="3830674330436234648">Հնարավոր չէ նվագարկել</translation>
 <translation id="383652340667548381">Սերբական</translation>
 <translation id="385051799172605136">Հետ</translation>
@@ -622,7 +622,7 @@
 <translation id="6312403991423642364">Ցանցի անհայտ սխալ</translation>
 <translation id="6317608858038767920">Հատուկ DNS սերվեր <ph name="INPUT_INDEX" /></translation>
 <translation id="6321303798550928047">Ձեռքով ողջույն</translation>
-<translation id="6327785803543103246">Միջնորդ սերվերի ինքնահայտնաբերում</translation>
+<translation id="6327785803543103246">Պրոքսի սերվերի ինքնահայտնաբերում</translation>
 <translation id="6339145975392024142">ԱՄՆ միջազգային (PC)</translation>
 <translation id="6346310558342052870">Սահմանափակ հասանելիություն</translation>
 <translation id="6356685157277930264">Ֆայլերի մասին տեղեկությունների պատուհան</translation>
@@ -637,7 +637,7 @@
 <translation id="6423031066725912715">վիետնամերեն (TCVN ստեղնաշար)</translation>
 <translation id="6485131920355264772">Չհաջողվեց առբերել ազատ տարածքի մասին տեղեկությունները</translation>
 <translation id="6495925982925244349">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կառավարվում է ձեր ադմինիստրատորի կողմից, մանրամասներ</translation>
-<translation id="6499681088828539489">Չօգտագործել միջնորդ սերվերներ ընդհանուր ցանցերի համար</translation>
+<translation id="6499681088828539489">Չօգտագործել պրոքսի սերվերներ ընդհանուր ցանցերի համար</translation>
 <translation id="6509122719576673235">Նորվեգական</translation>
 <translation id="6528513914570774834">Թույլատրել սարքի մյուս օգտատերերին օգտագործել այս ցանցը</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" />-ի համաժամացում…</translation>
@@ -724,7 +724,7 @@
 <translation id="7229570126336867161">Հարկավոր է EVDO</translation>
 <translation id="7238097264433196391">Կրիչի անունը</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, մանրամասներ</translation>
-<translation id="7246947237293279874">FTP միջնորդ սերվեր</translation>
+<translation id="7246947237293279874">FTP պրոքսի սերվեր</translation>
 <translation id="7248671827512403053">Հավելված</translation>
 <translation id="7256405249507348194">Չճանաչված սխալ՝ <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Հասանելի ծառայություններ</translation>
@@ -887,7 +887,7 @@
 <translation id="853494022971700746">ֆրանսերեն (Ֆրանսիա)</translation>
 <translation id="8540608333167683902">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մանրամասներ</translation>
 <translation id="8545476925160229291">անգլերեն (ԱՄՆ)</translation>
-<translation id="854655314928502177">Միջնորդ սերվերի ինքնահայտնաբերման URL</translation>
+<translation id="854655314928502177">Պրոքսի սերվերի ինքնահայտնաբերման URL</translation>
 <translation id="8549186985808798022">իտալերեն</translation>
 <translation id="8551494947769799688">Լատվիական</translation>
 <translation id="8560515948038859357">կանտոներեն</translation>
