@@ -30,6 +30,32 @@ class CloudPolicyService;
 
 // Observes CloudPolicyClient and CloudPolicyStore to trigger periodic policy
 // fetches and issue retries on error conditions.
+//
+// Refreshing non-managed responses:
+// - If there is a cached non-managed response, make sure to only re-query the
+//   server after kUnmanagedRefreshDelayMs.
+//  - NB: For existing policy, an immediate refresh is intentional.
+//
+// Refreshing on mobile platforms:
+// - if no user is signed-in then the |client_| is never registered.
+// - if the user is signed-in but isn't enterprise then the |client_| is
+//   never registered.
+// - if the user is signed-in but isn't registered for policy yet then the
+//   |client_| isn't registered either; the UserPolicySigninService will try
+//   to register, and OnRegistrationStateChanged() will be invoked later.
+// - if the client is signed-in and has policy then its timestamp is used to
+//   determine when to perform the next fetch, which will be once the cached
+//   version is considered "old enough".
+//
+// If there is an old policy cache then a fetch will be performed "soon"; if
+// that fetch fails then a retry is attempted after a delay, with exponential
+// backoff. If those fetches keep failing then the cached timestamp is *not*
+// updated, and another fetch (and subsequent retries) will be attempted
+// again on the next startup.
+//
+// But if the cached policy is considered fresh enough then we try to avoid
+// fetching again on startup; the Android logic differs from the desktop in
+// this aspect.
 class POLICY_EXPORT CloudPolicyRefreshScheduler
     : public CloudPolicyClient::Observer,
       public CloudPolicyStore::Observer,
