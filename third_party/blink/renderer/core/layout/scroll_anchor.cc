@@ -740,7 +740,8 @@ bool ScrollAnchor::RestoreAnchor(const SerializedAnchor& serialized_anchor) {
 
     ScrollOffset desired_offset = desired_point.OffsetFromOrigin();
     ScrollOffset delta =
-        ScrollOffset(ToRoundedVector2d(serialized_anchor.relative_offset));
+        ScrollOffset(serialized_anchor.relative_offset.X().ToFloat(),
+                     serialized_anchor.relative_offset.Y().ToFloat());
     desired_offset -= delta;
     scroller_->SetScrollOffset(desired_offset,
                                mojom::blink::ScrollType::kAnchoring);

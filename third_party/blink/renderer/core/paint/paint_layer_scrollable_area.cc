@@ -249,8 +249,7 @@ void PaintLayerScrollableArea::ApplyPendingHistoryRestoreScrollOffset() {
   // Anchor-based restore should allow for earlier restoration.
   bool did_restore = RestoreScrollAnchor(
       {pending_view_state_->scroll_anchor_data_.selector_,
-       LayoutPoint(pending_view_state_->scroll_anchor_data_.offset_.x(),
-                   pending_view_state_->scroll_anchor_data_.offset_.y()),
+       LayoutPoint(pending_view_state_->scroll_anchor_data_.offset_),
        pending_view_state_->scroll_anchor_data_.simhash_});
   if (!did_restore) {
     SetScrollOffset(pending_view_state_->scroll_offset_,
