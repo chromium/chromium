@@ -13,16 +13,24 @@
 namespace autofill {
 
 class AutofillProvider;
+class ContentAutofillDriver;
+
+// Creates an AndroidAutofillManager and attaches it to the `driver`.
+//
+// This hook is to be passed to CreateForWebContentsAndDelegate().
+// It is the glue between ContentAutofillDriver[Factory] and
+// AndroidAutofillManager.
+//
+// Other embedders (which don't want to use AndroidAutofillManager) shall use
+// other implementations.
+void AndroidDriverInitHook(
+    AutofillClient* client,
+    AutofillManager::AutofillDownloadManagerState enable_download_manager,
+    ContentAutofillDriver* driver);
 
 // This class forwards AutofillManager calls to AutofillProvider.
 class AndroidAutofillManager : public AutofillManager {
  public:
-  static std::unique_ptr<AutofillManager> Create(
-      AutofillDriver* driver,
-      AutofillClient* client,
-      const std::string& app_locale,
-      AutofillManager::AutofillDownloadManagerState enable_download_manager);
-
   AndroidAutofillManager(const AndroidAutofillManager&) = delete;
   AndroidAutofillManager& operator=(const AndroidAutofillManager&) = delete;
 
@@ -68,6 +76,11 @@ class AndroidAutofillManager : public AutofillManager {
                          const FormData& form);
 
  protected:
+  friend void AndroidDriverInitHook(
+      AutofillClient* client,
+      AutofillManager::AutofillDownloadManagerState enable_download_manager,
+      ContentAutofillDriver* driver);
+
   AndroidAutofillManager(
       AutofillDriver* driver,
       AutofillClient* client,

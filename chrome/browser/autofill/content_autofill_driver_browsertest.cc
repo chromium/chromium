@@ -96,8 +96,9 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
         ContentAutofillDriverFactory::
             kContentAutofillDriverFactoryWebContentsUserDataKey);
     ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
-        web_contents, &autofill_client(), "en-US",
-        BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
+        web_contents, &autofill_client(),
+        base::BindRepeating(&autofill::BrowserDriverInitHook,
+                            &autofill_client(), "en-US"));
 
     // Serve both a.com and b.com (and any other domain).
     host_resolver()->AddRule("*", "127.0.0.1");

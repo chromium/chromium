@@ -24,29 +24,37 @@ namespace autofill {
 
 class ContentAutofillDriver;
 
+// Creates an BrowserAutofillManager and attaches it to the `driver`.
+//
+// This hook is to be passed to CreateForWebContentsAndDelegate().
+// It is the glue between ContentAutofillDriver[Factory] and
+// BrowserAutofillManager.
+//
+// Other embedders (which don't want to use BrowserAutofillManager) shall use
+// other implementations.
+void BrowserDriverInitHook(AutofillClient* client,
+                           const std::string& app_locale,
+                           ContentAutofillDriver* driver);
+
 // Manages lifetime of ContentAutofillDriver. One Factory per WebContents
 // creates one Driver per RenderFrame.
 class ContentAutofillDriverFactory : public content::WebContentsObserver,
                                      public base::SupportsUserData::Data {
  public:
+  using DriverInitCallback =
+      base::RepeatingCallback<void(ContentAutofillDriver*)>;
+
   static const char kContentAutofillDriverFactoryWebContentsUserDataKey[];
 
   // Creates a factory for a WebContents object.
   //
-  // The |autofill_manager_factory_callback| is eventually called by
-  // ContentAutofillDriver's constructor. Chrome passes a null callback and
-  // ContentAutofillDriver calls SetBrowserAutofillManager() in this case.
-  //
-  // TODO(crbug.com/1200511): Remove default parameter and pass proper callback
-  // and remove ContentAutofillDriver::SetBrowserAutofillManager().
+  // The `driver_init_hook` is called whenever a driver is constructed, so it
+  // may configure the driver. In particular, it may create and set the driver's
+  // AutofillManager.
   static void CreateForWebContentsAndDelegate(
       content::WebContents* contents,
       AutofillClient* client,
-      const std::string& app_locale,
-      BrowserAutofillManager::AutofillDownloadManagerState
-          enable_download_manager,
-      AutofillManager::AutofillManagerFactoryCallback
-          autofill_manager_factory_callback = {});
+      DriverInitCallback driver_init_hook);
 
   static ContentAutofillDriverFactory* FromWebContents(
       content::WebContents* contents);
@@ -78,23 +86,15 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver,
  private:
   friend class ContentAutofillDriverFactoryTestApi;
 
-  ContentAutofillDriverFactory(
-      content::WebContents* web_contents,
-      AutofillClient* client,
-      const std::string& app_locale,
-      BrowserAutofillManager::AutofillDownloadManagerState
-          enable_download_manager,
-      AutofillManager::AutofillManagerFactoryCallback
-          autofill_manager_factory_callback);
+  ContentAutofillDriverFactory(content::WebContents* web_contents,
+                               AutofillClient* client,
+                               DriverInitCallback driver_init_hook);
 
   std::unique_ptr<ContentAutofillDriver> CreateDriver(
       content::RenderFrameHost* rfh);
 
   const raw_ptr<AutofillClient> client_;
-  std::string app_locale_;
-  BrowserAutofillManager::AutofillDownloadManagerState enable_download_manager_;
-  AutofillManager::AutofillManagerFactoryCallback
-      autofill_manager_factory_callback_;
+  DriverInitCallback driver_init_hook_;
 
   // Routes events between different drivers.
   // Must be destroyed after |driver_map_|'s elements.

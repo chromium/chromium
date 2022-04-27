@@ -254,8 +254,10 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
   virtual std::unique_ptr<NiceMock<MockAutofillExternalDelegate>>
   CreateExternalDelegate() {
     ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
-        web_contents(), autofill_client_.get(), "en-US",
-        BrowserAutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER);
+        web_contents(), autofill_client_.get(),
+        base::BindRepeating(&autofill::BrowserDriverInitHook,
+                            autofill_client_.get(), "en-US"));
+
     // Make sure RenderFrame is created.
     NavigateAndCommit(GURL("about:blank"));
     ContentAutofillDriverFactory* factory =

@@ -55,8 +55,10 @@ ExtensionViewHost::ExtensionViewHost(const Extension* extension,
   autofill::ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
       host_contents(),
       autofill::ChromeAutofillClient::FromWebContents(host_contents()),
-      g_browser_process->GetApplicationLocale(),
-      autofill::BrowserAutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER);
+      base::BindRepeating(
+          &autofill::BrowserDriverInitHook,
+          autofill::ChromeAutofillClient::FromWebContents(host_contents()),
+          g_browser_process->GetApplicationLocale()));
 
   // The popup itself cannot be zoomed, but we must specify a zoom level to use.
   // Otherwise, if a user zooms a page of the same extension, the popup would

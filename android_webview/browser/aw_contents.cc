@@ -328,16 +328,28 @@ void AwContents::InitAutofillIfNecessary(bool autocomplete_enabled) {
   if (!autofill_provider && !autocomplete_enabled)
     return;
 
+  autofill::AutofillManager::AutofillDownloadManagerState
+      enable_download_manager =
+          autofill::AutofillProvider::is_download_manager_disabled_for_testing()
+              ? autofill::AutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER
+              : autofill::AutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER;
+
   AwAutofillClient::CreateForWebContents(web_contents);
+
+  // WebView browser tests may shall use BrowserAutofillManager if
+  // `!autofill_provider`.
+  ContentAutofillDriverFactory::DriverInitCallback driver_init_hook =
+      autofill_provider
+          ? base::BindRepeating(&autofill::AndroidDriverInitHook,
+                                AwAutofillClient::FromWebContents(web_contents),
+                                enable_download_manager)
+          : base::BindRepeating(&autofill::BrowserDriverInitHook,
+                                AwAutofillClient::FromWebContents(web_contents),
+                                base::android::GetDefaultLocaleString());
+
   ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
       web_contents, AwAutofillClient::FromWebContents(web_contents),
-      base::android::GetDefaultLocaleString(),
-      autofill::AutofillProvider::is_download_manager_disabled_for_testing()
-          ? autofill::AutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER
-          : autofill::AutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER,
-      autofill_provider
-          ? base::BindRepeating(&autofill::AndroidAutofillManager::Create)
-          : autofill::AutofillManager::AutofillManagerFactoryCallback());
+      std::move(driver_init_hook));
 }
 
 void AwContents::SetAwAutofillClient(const JavaRef<jobject>& client) {

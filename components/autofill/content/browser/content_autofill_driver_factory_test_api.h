@@ -18,11 +18,7 @@ class ContentAutofillDriverFactoryTestApi {
   static std::unique_ptr<ContentAutofillDriverFactory> Create(
       content::WebContents* web_contents,
       AutofillClient* client,
-      const std::string& app_locale,
-      BrowserAutofillManager::AutofillDownloadManagerState
-          enable_download_manager,
-      AutofillManager::AutofillManagerFactoryCallback
-          autofill_manager_factory_callback);
+      ContentAutofillDriverFactory::DriverInitCallback driver_init_hook);
 
   explicit ContentAutofillDriverFactoryTestApi(
       ContentAutofillDriverFactory* factory);

@@ -39,6 +39,16 @@ bool ShouldEnableHeavyFormDataScraping(const version_info::Channel channel) {
 
 }  // namespace
 
+void BrowserDriverInitHook(AutofillClient* client,
+                           const std::string& app_locale,
+                           ContentAutofillDriver* driver) {
+  driver->set_autofill_manager(std::make_unique<BrowserAutofillManager>(
+      driver, client, app_locale,
+      AutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER));
+  if (client && ShouldEnableHeavyFormDataScraping(client->GetChannel()))
+    driver->GetAutofillAgent()->EnableHeavyFormDataScraping();
+}
+
 const char ContentAutofillDriverFactory::
     kContentAutofillDriverFactoryWebContentsUserDataKey[] =
         "web_contents_autofill_driver_factory";
@@ -47,19 +57,13 @@ const char ContentAutofillDriverFactory::
 void ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
     content::WebContents* contents,
     AutofillClient* client,
-    const std::string& app_locale,
-    BrowserAutofillManager::AutofillDownloadManagerState
-        enable_download_manager,
-    AutofillManager::AutofillManagerFactoryCallback
-        autofill_manager_factory_callback) {
+    DriverInitCallback driver_init_hook) {
   if (FromWebContents(contents))
     return;
 
-  contents->SetUserData(
-      kContentAutofillDriverFactoryWebContentsUserDataKey,
-      base::WrapUnique(new ContentAutofillDriverFactory(
-          contents, client, app_locale, enable_download_manager,
-          std::move(autofill_manager_factory_callback))));
+  contents->SetUserData(kContentAutofillDriverFactoryWebContentsUserDataKey,
+                        base::WrapUnique(new ContentAutofillDriverFactory(
+                            contents, client, std::move(driver_init_hook))));
 }
 
 // static
@@ -93,36 +97,17 @@ void ContentAutofillDriverFactory::BindAutofillDriver(
 ContentAutofillDriverFactory::ContentAutofillDriverFactory(
     content::WebContents* web_contents,
     AutofillClient* client,
-    const std::string& app_locale,
-    BrowserAutofillManager::AutofillDownloadManagerState
-        enable_download_manager,
-    AutofillManager::AutofillManagerFactoryCallback
-        autofill_manager_factory_callback)
+    DriverInitCallback driver_init_hook)
     : content::WebContentsObserver(web_contents),
       client_(client),
-      app_locale_(app_locale),
-      enable_download_manager_(enable_download_manager),
-      autofill_manager_factory_callback_(
-          std::move(autofill_manager_factory_callback)) {}
+      driver_init_hook_(std::move(driver_init_hook)) {}
 
 ContentAutofillDriverFactory::~ContentAutofillDriverFactory() = default;
 
 std::unique_ptr<ContentAutofillDriver>
 ContentAutofillDriverFactory::CreateDriver(content::RenderFrameHost* rfh) {
   auto driver = std::make_unique<ContentAutofillDriver>(rfh, &router_);
-  if (autofill_manager_factory_callback_) {
-    driver->set_autofill_manager(autofill_manager_factory_callback_.Run(
-        driver.get(), client(), app_locale_, enable_download_manager_));
-    driver->GetAutofillAgent()->SetUserGestureRequired(false);
-    driver->GetAutofillAgent()->SetSecureContextRequired(true);
-    driver->GetAutofillAgent()->SetFocusRequiresScroll(false);
-    driver->GetAutofillAgent()->SetQueryPasswordSuggestion(true);
-  } else {
-    driver->set_autofill_manager(std::make_unique<BrowserAutofillManager>(
-        driver.get(), client(), app_locale_, enable_download_manager_));
-  }
-  if (client() && ShouldEnableHeavyFormDataScraping(client()->GetChannel()))
-    driver->GetAutofillAgent()->EnableHeavyFormDataScraping();
+  driver_init_hook_.Run(driver.get());
   return driver;
 }
 

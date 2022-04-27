@@ -133,10 +133,9 @@ class ContentAutofillDriverFactoryTest
                             base::Unretained(agent_.get())));
 
     factory_ = ContentAutofillDriverFactoryTestApi::Create(
-        web_contents(), client_.get(), "en_US",
-        BrowserAutofillManager::AutofillDownloadManagerState::
-            ENABLE_AUTOFILL_DOWNLOAD_MANAGER,
-        AutofillManager::AutofillManagerFactoryCallback());
+        web_contents(), client_.get(),
+        base::BindRepeating(&autofill::BrowserDriverInitHook, client_.get(),
+                            "en-US"));
   }
 
   void TearDown() override {

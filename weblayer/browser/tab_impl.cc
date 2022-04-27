@@ -1415,8 +1415,9 @@ void TabImpl::InitializeAutofillDriver() {
 
   autofill::ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
       web_contents, AutofillClientImpl::FromWebContents(web_contents),
-      i18n::GetApplicationLocale(), enable_autofill_download_manager,
-      base::BindRepeating(&autofill::AndroidAutofillManager::Create));
+      base::BindRepeating(&autofill::AndroidDriverInitHook,
+                          AutofillClientImpl::FromWebContents(web_contents),
+                          enable_autofill_download_manager));
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

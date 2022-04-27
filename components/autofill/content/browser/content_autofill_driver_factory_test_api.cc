@@ -11,14 +11,9 @@ std::unique_ptr<ContentAutofillDriverFactory>
 ContentAutofillDriverFactoryTestApi::Create(
     content::WebContents* web_contents,
     AutofillClient* client,
-    const std::string& app_locale,
-    BrowserAutofillManager::AutofillDownloadManagerState
-        enable_download_manager,
-    AutofillManager::AutofillManagerFactoryCallback
-        autofill_manager_factory_callback) {
-  return base::WrapUnique(new ContentAutofillDriverFactory(
-      web_contents, client, app_locale, enable_download_manager,
-      autofill_manager_factory_callback));
+    ContentAutofillDriverFactory::DriverInitCallback driver_init_hook) {
+  return base::WrapUnique(
+      new ContentAutofillDriverFactory(web_contents, client, driver_init_hook));
 }
 
 ContentAutofillDriverFactoryTestApi::ContentAutofillDriverFactoryTestApi(
