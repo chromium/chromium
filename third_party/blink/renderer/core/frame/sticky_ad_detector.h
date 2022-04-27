@@ -41,16 +41,16 @@ class CORE_EXPORT StickyAdDetector {
   StickyAdDetector& operator=(const StickyAdDetector&) = delete;
   ~StickyAdDetector() = default;
 
-  void MaybeFireDetection(LocalFrame* main_frame);
+  void MaybeFireDetection(LocalFrame* outermost_main_frame);
 
  private:
-  void OnLargeStickyAdDetected(LocalFrame* main_frame);
+  void OnLargeStickyAdDetected(LocalFrame* outermost_main_frame);
 
   absl::optional<base::Time> last_detection_time_;
 
   DOMNodeId candidate_id_;
   int candidate_height_;
-  int candidate_start_main_frame_scroll_offset_;
+  int candidate_start_outermost_main_frame_scroll_offset_;
 
   bool done_detection_ = false;
 };

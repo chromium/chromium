@@ -51,17 +51,17 @@ bool IsStickyAdCandidate(Element* element) {
 
 }  // namespace
 
-void StickyAdDetector::MaybeFireDetection(LocalFrame* main_frame) {
-  DCHECK(main_frame);
-  DCHECK(main_frame->IsMainFrame());
+void StickyAdDetector::MaybeFireDetection(LocalFrame* outermost_main_frame) {
+  DCHECK(outermost_main_frame);
+  DCHECK(outermost_main_frame->IsOutermostMainFrame());
   if (done_detection_)
     return;
 
-  DCHECK(main_frame->GetDocument());
-  DCHECK(main_frame->ContentLayoutObject());
+  DCHECK(outermost_main_frame->GetDocument());
+  DCHECK(outermost_main_frame->ContentLayoutObject());
 
   // Skip any measurement before the FCP.
-  if (PaintTiming::From(*main_frame->GetDocument())
+  if (PaintTiming::From(*outermost_main_frame->GetDocument())
           .FirstContentfulPaint()
           .is_null()) {
     return;
@@ -77,14 +77,17 @@ void StickyAdDetector::MaybeFireDetection(LocalFrame* main_frame) {
 
   TRACE_EVENT0("blink,benchmark", "StickyAdDetector::MaybeFireDetection");
 
-  gfx::Size main_frame_size = main_frame->GetMainFrameViewportSize();
+  gfx::Size outermost_main_frame_size =
+      outermost_main_frame->GetMainFrameViewportSize();
 
   // Hit test the bottom center of the viewport.
-  HitTestLocation location(gfx::PointF(main_frame_size.width() / 2.0,
-                                       main_frame_size.height() * 9.0 / 10));
+  HitTestLocation location(
+      gfx::PointF(outermost_main_frame_size.width() / 2.0,
+                  outermost_main_frame_size.height() * 9.0 / 10));
 
   HitTestResult result;
-  main_frame->ContentLayoutObject()->HitTestNoLifecycleUpdate(location, result);
+  outermost_main_frame->ContentLayoutObject()->HitTestNoLifecycleUpdate(
+      location, result);
 
   last_detection_time_ = current_time;
 
@@ -98,10 +101,10 @@ void StickyAdDetector::MaybeFireDetection(LocalFrame* main_frame) {
     // If the main frame scrolling position has changed by a distance greater
     // than the height of the candidate, and the candidate is still at the
     // bottom center, then we record the use counter.
-    if (std::abs(candidate_start_main_frame_scroll_offset_ -
-                 main_frame->GetMainFrameScrollOffset().y()) >
+    if (std::abs(candidate_start_outermost_main_frame_scroll_offset_ -
+                 outermost_main_frame->GetMainFrameScrollOffset().y()) >
         candidate_height_) {
-      OnLargeStickyAdDetected(main_frame);
+      OnLargeStickyAdDetected(outermost_main_frame);
     }
     return;
   }
@@ -120,8 +123,8 @@ void StickyAdDetector::MaybeFireDetection(LocalFrame* main_frame) {
       element->GetLayoutObject()->AbsoluteBoundingBoxRect();
 
   bool is_large =
-      (overlay_rect.size().Area64() >
-       main_frame_size.Area64() * kLargeAdSizeToViewportSizeThreshold);
+      (overlay_rect.size().Area64() > outermost_main_frame_size.Area64() *
+                                          kLargeAdSizeToViewportSizeThreshold);
 
   bool is_main_page_scrollable =
       element->GetDocument().GetLayoutView()->HasScrollableOverflowY();
@@ -129,14 +132,16 @@ void StickyAdDetector::MaybeFireDetection(LocalFrame* main_frame) {
   if (is_large && is_main_page_scrollable && IsStickyAdCandidate(element)) {
     candidate_id_ = element_id;
     candidate_height_ = overlay_rect.size().height();
-    candidate_start_main_frame_scroll_offset_ =
-        main_frame->GetMainFrameScrollOffset().y();
+    candidate_start_outermost_main_frame_scroll_offset_ =
+        outermost_main_frame->GetMainFrameScrollOffset().y();
   }
 }
 
-void StickyAdDetector::OnLargeStickyAdDetected(LocalFrame* main_frame) {
-  main_frame->Client()->OnLargeStickyAdDetected();
-  UseCounter::Count(main_frame->GetDocument(), WebFeature::kLargeStickyAd);
+void StickyAdDetector::OnLargeStickyAdDetected(
+    LocalFrame* outermost_main_frame) {
+  outermost_main_frame->Client()->OnLargeStickyAdDetected();
+  UseCounter::Count(outermost_main_frame->GetDocument(),
+                    WebFeature::kLargeStickyAd);
   done_detection_ = true;
 }
 

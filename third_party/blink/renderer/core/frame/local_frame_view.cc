@@ -1062,10 +1062,12 @@ void LocalFrameView::RunIntersectionObserverSteps() {
     return;
   }
 
-  if (frame_->IsMainFrame()) {
+  if (frame_->IsOutermostMainFrame()) {
     EnsureOverlayInterstitialAdDetector().MaybeFireDetection(frame_.Get());
     EnsureStickyAdDetector().MaybeFireDetection(frame_.Get());
+  }
 
+  if (frame_->IsMainFrame()) {
     // Report the main frame's document intersection with itself.
     LayoutObject* layout_object = GetLayoutView();
     gfx::Rect main_frame_dimensions(ToRoundedSize(
