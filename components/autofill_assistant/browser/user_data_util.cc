@@ -882,6 +882,7 @@ ClientStatus ResolveSelectorUserData(SelectorProto* selector,
       case SelectorProto::Filter::kLabelled:
       case SelectorProto::Filter::kMatchCssSelector:
       case SelectorProto::Filter::kOnTop:
+      case SelectorProto::Filter::kParent:
       case SelectorProto::Filter::FILTER_NOT_SET:
         break;
         // Do not add default here. In case a new filter gets added (that may

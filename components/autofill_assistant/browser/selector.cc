@@ -133,6 +133,7 @@ bool operator<(const SelectorProto::Filter& a, const SelectorProto::Filter& b) {
 
     case SelectorProto::Filter::kEnterFrame:
     case SelectorProto::Filter::kLabelled:
+    case SelectorProto::Filter::kParent:
       return false;
 
     case SelectorProto::Filter::kMatchCssSelector:
@@ -389,6 +390,10 @@ std::ostream& operator<<(std::ostream& out, const SelectorProto::Filter& f) {
 
     case SelectorProto::Filter::kProperty:
       out << f.property();
+      return out;
+
+    case SelectorProto::Filter::kParent:
+      out << "parent";
       return out;
 
     case SelectorProto::Filter::FILTER_NOT_SET:

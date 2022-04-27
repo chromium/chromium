@@ -3327,4 +3327,25 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ExecuteJSWithException) {
               testing::ElementsAre(18, 12, 10));
 }
 
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ParentFilter) {
+  SelectorProto proto;
+  proto.add_filters()->set_css_selector("#select option:checked");
+  proto.add_filters()->mutable_parent();
+
+  std::string element_tag;
+  EXPECT_EQ(ACTION_APPLIED,
+            GetElementTag(Selector(proto), &element_tag).proto_status());
+  EXPECT_EQ("SELECT", element_tag);
+
+  SelectorProto failing_proto;
+  failing_proto.add_filters()->set_css_selector("body");
+  failing_proto.add_filters()->mutable_parent();  // document
+  failing_proto.add_filters()->mutable_parent();  // Nothing
+
+  ClientStatus failing_status;
+  ElementFinderResult ignored_element;
+  FindElement(Selector(failing_proto), &failing_status, &ignored_element);
+  EXPECT_EQ(ELEMENT_RESOLUTION_FAILED, failing_status.proto_status());
+}
+
 }  // namespace autofill_assistant

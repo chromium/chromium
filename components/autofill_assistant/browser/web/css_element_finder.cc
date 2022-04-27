@@ -270,7 +270,8 @@ void CssElementFinder::ExecuteNextTask() {
     case SelectorProto::Filter::kMatchCssSelector:
     case SelectorProto::Filter::kCssStyle:
     case SelectorProto::Filter::kLabelled:
-    case SelectorProto::Filter::kOnTop: {
+    case SelectorProto::Filter::kOnTop:
+    case SelectorProto::Filter::kParent: {
       std::vector<std::string> matches;
       if (!ConsumeAllMatchesOrFail(matches))
         return;

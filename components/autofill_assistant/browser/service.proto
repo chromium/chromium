@@ -1597,6 +1597,9 @@ message SelectorProto {
       //
       // This filter replaces |inner_text| and |value|.
       PropertyFilter property = 14;
+
+      // Retrieve parent of current elements.
+      EmptyFilter parent = 15;
     }
 
     reserved 10;

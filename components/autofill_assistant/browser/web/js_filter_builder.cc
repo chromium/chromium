@@ -157,6 +157,12 @@ bool JsFilterBuilder::AddFilter(const SelectorProto::Filter& filter) {
       return true;
     }
 
+    case SelectorProto::Filter::kParent:
+      AddLine("elements = elements.flatMap((e) => {");
+      AddLine("  return e.parentElement ? [e.parentElement] : [];");
+      AddLine("});");
+      return true;
+
     case SelectorProto::Filter::kEnterFrame:
     case SelectorProto::Filter::kPseudoType:
     case SelectorProto::Filter::FILTER_NOT_SET:
