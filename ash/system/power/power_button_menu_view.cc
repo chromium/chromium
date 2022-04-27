@@ -18,7 +18,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/highlight_border.h"
 #include "ash/style/system_shadow.h"
 #include "ash/system/power/power_button_menu_item_view.h"
 #include "ash/system/power/power_button_menu_metrics_type.h"
@@ -36,6 +35,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/highlight_border.h"
 
 namespace ash {
 
@@ -89,8 +89,8 @@ PowerButtonMenuView::PowerButtonMenuView(
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetPaintToLayer();
   if (features::IsDarkLightModeEnabled()) {
-    SetBorder(std::make_unique<HighlightBorder>(
-        kMenuCornerRadius, HighlightBorder::Type::kHighlightBorder1,
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        kMenuCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
         /*use_light_colors=*/false));
   }
   layer()->SetFillsBoundsOpaquely(false);

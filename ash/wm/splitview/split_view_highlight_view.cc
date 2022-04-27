@@ -8,13 +8,13 @@
 #include "ash/shell.h"
 #include "ash/style/default_color_constants.h"
 #include "ash/style/default_colors.h"
-#include "ash/style/highlight_border.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "base/i18n/rtl.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
@@ -78,9 +78,9 @@ void SplitViewHighlightView::OnThemeChanged() {
   background()->SetNativeControlColor(
       DeprecatedGetBackgroundColor(kSplitviewHighlightViewBackgroundColor));
   if (chromeos::features::IsDarkLightModeEnabled()) {
-    SetBorder(std::make_unique<HighlightBorder>(
+    SetBorder(std::make_unique<views::HighlightBorder>(
         kHighlightScreenRoundRectRadius,
-        HighlightBorder::Type::kHighlightBorder1,
+        views::HighlightBorder::Type::kHighlightBorder1,
         /*use_light_colors=*/false));
   }
 }
@@ -192,9 +192,9 @@ void SplitViewHighlightView::OnWindowDraggingStateChanged(
           ? kSplitviewHighlightViewBackgroundColor
           : kSplitviewHighlightViewBackgroundCannotSnapColor));
   if (chromeos::features::IsDarkLightModeEnabled()) {
-    SetBorder(std::make_unique<HighlightBorder>(
+    SetBorder(std::make_unique<views::HighlightBorder>(
         kHighlightScreenRoundRectRadius,
-        HighlightBorder::Type::kHighlightBorder1,
+        views::HighlightBorder::Type::kHighlightBorder1,
         /*use_light_colors=*/false));
   }
 

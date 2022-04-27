@@ -10,7 +10,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/highlight_border.h"
 #include "ash/style/pill_button.h"
 #include "ash/system/toast/toast_overlay.h"
 #include "ash/wm/work_area_insets.h"
@@ -25,6 +24,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
@@ -163,8 +163,8 @@ SystemToastStyle::SystemToastStyle(base::RepeatingClosure dismiss_callback,
   SetBackground(views::CreateRoundedRectBackground(GetBackgroundColor(),
                                                    toast_corner_radius));
   if (features::IsDarkLightModeEnabled()) {
-    SetBorder(std::make_unique<HighlightBorder>(
-        toast_corner_radius, HighlightBorder::Type::kHighlightBorder1,
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        toast_corner_radius, views::HighlightBorder::Type::kHighlightBorder1,
         /*use_light_colors=*/false));
   }
 }

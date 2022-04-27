@@ -32,7 +32,6 @@
 #include "ash/search_box/search_box_constants.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/highlight_border.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -56,6 +55,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -553,10 +553,10 @@ void AppListBubbleView::OnThemeChanged() {
       AshColorProvider::Get()->GetBaseLayerColor(
           AshColorProvider::BaseLayerType::kTransparent80),
       kBubbleCornerRadius));
-  SetBorder(std::make_unique<HighlightBorder>(
-      kBubbleCornerRadius, HighlightBorder::Type::kHighlightBorder1,
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      kBubbleCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
       /*use_light_colors=*/false,
-      /*insets_type=*/HighlightBorder::InsetsType::kHalfInsets));
+      /*insets_type=*/views::HighlightBorder::InsetsType::kHalfInsets));
 }
 
 void AppListBubbleView::Layout() {

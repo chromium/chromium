@@ -33,10 +33,15 @@
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/round_rect_painter.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
 
 namespace views {
 
@@ -440,12 +445,20 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
 
   corner_radius_ = bubble_border->corner_radius();
   // If the menu uses Ash system UI layout, use `background_view` to build a
-  // blurry background. Otherwise, use default BubbleBackground.
+  // blurry background with highlight border. Otherwise, use default
+  // BubbleBackground.
   if (use_ash_system_ui_layout_) {
     background_view_->layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(corner_radius_));
     background_view_->SetBackground(
         CreateThemedRoundedRectBackground(id, corner_radius_));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (ash::features::IsDarkLightModeEnabled()) {
+      background_view_->SetBorder(std::make_unique<HighlightBorder>(
+          corner_radius_, HighlightBorder::Type::kHighlightBorder1,
+          /*use_light_colors=*/false));
+    }
+#endif
   } else {
     SetBackground(std::make_unique<BubbleBackground>(bubble_border.get()));
   }

@@ -11,7 +11,6 @@
 #include "ash/public/cpp/view_shadow.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/highlight_border.h"
 #include "ash/style/pill_button.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -24,6 +23,7 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/style/typography.h"
@@ -171,8 +171,9 @@ void RemoveTaskFeedbackDialog::OnThemeChanged() {
       AshColorProvider::Get()->GetBaseLayerColor(
           AshColorProvider::BaseLayerType::kTransparent80),
       kDialogRoundedCornerRadius));
-  SetBorder(std::make_unique<HighlightBorder>(
-      kDialogRoundedCornerRadius, HighlightBorder::Type::kHighlightBorder1,
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      kDialogRoundedCornerRadius,
+      views::HighlightBorder::Type::kHighlightBorder1,
       /*use_light_colors=*/false));
 }
 

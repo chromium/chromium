@@ -11,12 +11,12 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
-#include "ash/style/highlight_border.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
@@ -112,11 +112,11 @@ void TrayContainer::OnPaint(gfx::Canvas* canvas) {
   const gfx::RoundedCornersF rounded_corners =
       tray_background_view_->GetRoundedCorners();
 
-  HighlightBorder::PaintBorderToCanvas(
-      canvas,
+  views::HighlightBorder::PaintBorderToCanvas(
+      canvas, *this,
       gfx::Rect(gfx::PointAtOffsetFromOrigin(bounds_origin),
                 background_bounds.size()),
-      rounded_corners, HighlightBorder::Type::kHighlightBorder2,
+      rounded_corners, views::HighlightBorder::Type::kHighlightBorder2,
       /*use_light_colors=*/false);
 }
 

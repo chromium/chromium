@@ -184,6 +184,17 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #define PLATFORM_SPECIFIC_COLOR_IDS \
+  E_CPONLY(kColorAshSystemUIBorderColor1) \
+  E_CPONLY(kColorAshSystemUIBorderColor2) \
+  E_CPONLY(kColorAshSystemUIHighlightColor1) \
+  E_CPONLY(kColorAshSystemUIHighlightColor2) \
+  \
+  /* TODO(crbug/1319917): Remove these when dark light mode is launched. */ \
+  E_CPONLY(kColorAshSystemUILightBorderColor1) \
+  E_CPONLY(kColorAshSystemUILightBorderColor2) \
+  E_CPONLY(kColorAshSystemUILightHighlightColor1) \
+  E_CPONLY(kColorAshSystemUILightHighlightColor2) \
+  \
   E_CPONLY(kColorAshSystemUIMenuBackground) \
   E_CPONLY(kColorAshSystemUIMenuIcon) \
   E_CPONLY(kColorAshSystemUIMenuItemBackgroundSelected) \

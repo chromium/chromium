@@ -16,7 +16,6 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/highlight_border.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -37,6 +36,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/painter.h"
 #include "ui/views/views_delegate.h"
@@ -517,8 +517,8 @@ void TrayBubbleView::OnThemeChanged() {
     return;
 
   if (features::IsDarkLightModeEnabled()) {
-    SetBorder(std::make_unique<HighlightBorder>(
-        params_.corner_radius, HighlightBorder::Type::kHighlightBorder1,
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        params_.corner_radius, views::HighlightBorder::Type::kHighlightBorder1,
         /*use_light_colors=*/false));
     set_color(AshColorProvider::Get()->GetBaseLayerColor(
         AshColorProvider::BaseLayerType::kTransparent80));

@@ -10,7 +10,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/highlight_border.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_item_view.h"
 #include "base/bind.h"
@@ -39,6 +38,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 
@@ -602,8 +602,9 @@ void WindowCycleView::OnThemeChanged() {
       AshColorProvider::Get()->GetBaseLayerColor(
           AshColorProvider::BaseLayerType::kTransparent80));
   if (chromeos::features::IsDarkLightModeEnabled()) {
-    SetBorder(std::make_unique<HighlightBorder>(
-        kBackgroundCornerRadius, HighlightBorder::Type::kHighlightBorder1,
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        kBackgroundCornerRadius,
+        views::HighlightBorder::Type::kHighlightBorder1,
         /*use_light_colors=*/false));
   }
 }

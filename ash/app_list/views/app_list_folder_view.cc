@@ -35,7 +35,6 @@
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/highlight_border.h"
 #include "ash/style/system_shadow.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
@@ -60,6 +59,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
@@ -1052,10 +1052,10 @@ void AppListFolderView::UpdateHighlightBorder(bool show) {
     return;
   }
 
-  background_view_->SetBorder(std::make_unique<HighlightBorder>(
+  background_view_->SetBorder(std::make_unique<views::HighlightBorder>(
       GetAppListConfig()->folder_background_radius(),
-      HighlightBorder::Type::kHighlightBorder1,
-      /*use_light_colors=*/true));
+      views::HighlightBorder::Type::kHighlightBorder1,
+      /*use_light_colors=*/!features::IsDarkLightModeEnabled()));
 }
 
 void AppListFolderView::UpdatePreferredBounds() {

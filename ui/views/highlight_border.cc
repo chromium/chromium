@@ -1,12 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/style/highlight_border.h"
+#include "ui/views/highlight_border.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
-#include "ash/style/ash_color_provider.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -14,36 +14,46 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/view.h"
 
-namespace ash {
+namespace views {
 
 constexpr int kHighlightBorderThickness = 1;
 
 // static
 void HighlightBorder::PaintBorderToCanvas(
     gfx::Canvas* canvas,
+    const views::View& view,
     const gfx::Rect& bounds,
     const gfx::RoundedCornersF& corner_radii,
     Type type,
     bool use_light_colors) {
-  AshColorProvider* color_provider = AshColorProvider::Get();
-  const AshColorProvider::ControlsLayerType highlight_color_type =
-      type == HighlightBorder::Type::kHighlightBorder1
-          ? AshColorProvider::ControlsLayerType::kHighlightColor1
-          : AshColorProvider::ControlsLayerType::kHighlightColor2;
-  const AshColorProvider::ControlsLayerType border_color_type =
-      type == HighlightBorder::Type::kHighlightBorder1
-          ? AshColorProvider::ControlsLayerType::kBorderColor1
-          : AshColorProvider::ControlsLayerType::kBorderColor2;
-  SkColor inner_color =
-      color_provider->GetControlsLayerColor(highlight_color_type);
-  SkColor outer_color =
-      color_provider->GetControlsLayerColor(border_color_type);
-
-  if (use_light_colors && !features::IsDarkLightModeEnabled()) {
-    ScopedLightModeAsDefault scoped_light_mode_as_default;
-    inner_color = color_provider->GetControlsLayerColor(highlight_color_type);
-    outer_color = color_provider->GetControlsLayerColor(border_color_type);
+  ui::ColorId highlight_color_id;
+  ui::ColorId border_color_id;
+  if (use_light_colors) {
+    // TODO(crbug/1319917): These light color values are used here since we want
+    // to use light colors when dark/light mode feature is not enabled. This
+    // should be removed after dark light mode is launched.
+    DCHECK(!ash::features::IsDarkLightModeEnabled());
+    highlight_color_id = type == HighlightBorder::Type::kHighlightBorder1
+                             ? ui::kColorAshSystemUILightHighlightColor1
+                             : ui::kColorAshSystemUILightHighlightColor2;
+    border_color_id = type == HighlightBorder::Type::kHighlightBorder1
+                          ? ui::kColorAshSystemUILightBorderColor1
+                          : ui::kColorAshSystemUILightBorderColor2;
+  } else {
+    highlight_color_id = type == HighlightBorder::Type::kHighlightBorder1
+                             ? ui::kColorAshSystemUIHighlightColor1
+                             : ui::kColorAshSystemUIHighlightColor2;
+    border_color_id = type == HighlightBorder::Type::kHighlightBorder1
+                          ? ui::kColorAshSystemUIBorderColor1
+                          : ui::kColorAshSystemUIBorderColor2;
   }
+
+  // `view` should be embedded in a Widget to use color provider.
+  DCHECK(view.GetWidget());
+  const SkColor inner_color =
+      view.GetColorProvider()->GetColor(highlight_color_id);
+  const SkColor outer_color =
+      view.GetColorProvider()->GetColor(border_color_id);
 
   cc::PaintFlags flags;
   flags.setStrokeWidth(kHighlightBorderThickness);
@@ -90,7 +100,7 @@ HighlightBorder::HighlightBorder(int corner_radius,
       insets_type_(insets_type) {}
 
 void HighlightBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
-  PaintBorderToCanvas(canvas, view.GetLocalBounds(),
+  PaintBorderToCanvas(canvas, view, view.GetLocalBounds(),
                       gfx::RoundedCornersF(corner_radius_), type_,
                       use_light_colors_);
 }
@@ -111,4 +121,4 @@ gfx::Size HighlightBorder::GetMinimumSize() const {
                    kHighlightBorderThickness * 4);
 }
 
-}  // namespace ash
+}  // namespace views

@@ -32,7 +32,6 @@
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/highlight_border.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
@@ -48,6 +47,7 @@
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/focus/focus_search.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -98,8 +98,12 @@ class HideAnimationObserver : public ui::ImplicitAnimationObserver {
 class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
                                      public ui::LayerDelegate {
  public:
-  ShelfBackgroundLayerDelegate(Shelf* shelf, bool draw_highlight_border)
-      : shelf_(shelf), draw_highlight_border_(draw_highlight_border) {}
+  ShelfBackgroundLayerDelegate(Shelf* shelf,
+                               views::View* owner_view,
+                               bool draw_highlight_border)
+      : shelf_(shelf),
+        owner_view_(owner_view),
+        draw_highlight_border_(draw_highlight_border) {}
 
   ShelfBackgroundLayerDelegate(const ShelfBackgroundLayerDelegate&) = delete;
   ShelfBackgroundLayerDelegate& operator=(const ShelfBackgroundLayerDelegate&) =
@@ -132,7 +136,7 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
 
   // Sets the highlight border type to use if shelf uses highlight border.
   // No-op if `draw_highlight_border_` is false.
-  void SetBorderType(HighlightBorder::Type type) {
+  void SetBorderType(views::HighlightBorder::Type type) {
     if (!draw_highlight_border_)
       return;
 
@@ -176,9 +180,9 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
     if (login_shelf_view_ && login_shelf_view_->GetVisible())
       return;
 
-    HighlightBorder::PaintBorderToCanvas(canvas, gfx::Rect(layer()->size()),
-                                         gfx::RoundedCornersF(corner_radius_),
-                                         highlight_border_type_, false);
+    views::HighlightBorder::PaintBorderToCanvas(
+        canvas, *owner_view_, gfx::Rect(layer()->size()),
+        gfx::RoundedCornersF(corner_radius_), highlight_border_type_, false);
   }
 
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
@@ -187,13 +191,14 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
   }
 
   Shelf* const shelf_;
+  views::View* const owner_view_;
   const bool draw_highlight_border_;
 
   LoginShelfView* login_shelf_view_ = nullptr;
   SkColor background_color_;
   float corner_radius_ = 0.0f;
-  HighlightBorder::Type highlight_border_type_ =
-      HighlightBorder::Type::kHighlightBorder1;
+  views::HighlightBorder::Type highlight_border_type_ =
+      views::HighlightBorder::Type::kHighlightBorder1;
 };
 
 }  // namespace
@@ -323,6 +328,7 @@ ShelfWidget::DelegateView::DelegateView(ShelfWidget* shelf_widget, Shelf* shelf)
     : shelf_widget_(shelf_widget),
       opaque_background_(
           shelf,
+          this,
           /*draw_highlight_border=*/features::IsDarkLightModeEnabled()),
       animating_background_(ui::LAYER_SOLID_COLOR),
       animating_drag_handle_(ui::LAYER_SOLID_COLOR) {
@@ -853,10 +859,10 @@ void ShelfWidget::OnHotseatStateChanged(HotseatState old_state,
 
   if (new_state == HotseatState::kExtended) {
     delegate_view_->opaque_background()->SetBorderType(
-        HighlightBorder::Type::kHighlightBorder2);
+        views::HighlightBorder::Type::kHighlightBorder2);
   } else {
     delegate_view_->opaque_background()->SetBorderType(
-        HighlightBorder::Type::kHighlightBorder1);
+        views::HighlightBorder::Type::kHighlightBorder1);
   }
 }
 

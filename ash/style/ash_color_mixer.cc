@@ -5,6 +5,7 @@
 #include "ash/style/ash_color_mixer.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_provider.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
@@ -15,11 +16,39 @@ namespace ash {
 
 void AddAshColorMixer(ui::ColorProvider* provider,
                       const ui::ColorProviderManager::Key& key) {
-  if (!features::IsDarkLightModeEnabled())
-    return;
-
   auto* ash_color_provider = AshColorProvider::Get();
   ui::ColorMixer& mixer = provider->AddMixer();
+
+  mixer[ui::kColorAshSystemUIBorderColor1] = {
+      ash_color_provider->GetControlsLayerColor(
+          ash::AshColorProvider::ControlsLayerType::kBorderColor1)};
+  mixer[ui::kColorAshSystemUIBorderColor2] = {
+      ash_color_provider->GetControlsLayerColor(
+          ash::AshColorProvider::ControlsLayerType::kBorderColor2)};
+  mixer[ui::kColorAshSystemUIHighlightColor1] = {
+      ash_color_provider->GetControlsLayerColor(
+          ash::AshColorProvider::ControlsLayerType::kHighlightColor1)};
+  mixer[ui::kColorAshSystemUIHighlightColor2] = {
+      ash_color_provider->GetControlsLayerColor(
+          ash::AshColorProvider::ControlsLayerType::kHighlightColor2)};
+
+  if (!features::IsDarkLightModeEnabled()) {
+    ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
+    mixer[ui::kColorAshSystemUILightBorderColor1] = {
+        ash_color_provider->GetControlsLayerColor(
+            ash::AshColorProvider::ControlsLayerType::kBorderColor1)};
+    mixer[ui::kColorAshSystemUILightBorderColor2] = {
+        ash_color_provider->GetControlsLayerColor(
+            ash::AshColorProvider::ControlsLayerType::kBorderColor1)};
+    mixer[ui::kColorAshSystemUILightHighlightColor1] = {
+        ash_color_provider->GetControlsLayerColor(
+            ash::AshColorProvider::ControlsLayerType::kHighlightColor1)};
+    mixer[ui::kColorAshSystemUILightHighlightColor2] = {
+        ash_color_provider->GetControlsLayerColor(
+            ash::AshColorProvider::ControlsLayerType::kHighlightColor2)};
+    return;
+  }
+
   mixer[ui::kColorAshSystemUIMenuBackground] = {
       ash_color_provider->GetBaseLayerColor(
           AshColorProvider::BaseLayerType::kTransparent80)};

@@ -4,12 +4,12 @@
 
 #include "ash/system/time/calendar_event_list_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/highlight_border.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
@@ -25,6 +25,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
@@ -60,10 +61,10 @@ class CalendarEmptyEventListView : public views::LabelButton {
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
     label()->SetBorder(views::CreateEmptyBorder(kOpenGoogleCalendarInsets));
     label()->SetTextContext(CONTEXT_CALENDAR_DATE);
-    SetBorder(std::make_unique<HighlightBorder>(
+    SetBorder(std::make_unique<views::HighlightBorder>(
         GetPreferredSize().height() / 2,
-        HighlightBorder::Type::kHighlightBorder1,
-        /*use_light_colors=*/true));
+        views::HighlightBorder::Type::kHighlightBorder1,
+        /*use_light_colors=*/!features::IsDarkLightModeEnabled()));
     SetTooltipText(
         l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_EVENT_BUTTON_TOOL_TIP));
   }

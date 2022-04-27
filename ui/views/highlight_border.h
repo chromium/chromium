@@ -1,24 +1,25 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_STYLE_HIGHLIGHT_BORDER_H_
-#define ASH_STYLE_HIGHLIGHT_BORDER_H_
+#ifndef UI_VIEWS_HIGHLIGHT_BORDER_H_
+#define UI_VIEWS_HIGHLIGHT_BORDER_H_
 
-#include "ash/ash_export.h"
 #include "ui/views/border.h"
+#include "ui/views/views_export.h"
 
 namespace gfx {
 class Rect;
 class RoundedCornersF;
 }  // namespace gfx
 
-namespace ash {
+namespace views {
 
 // A rounded rectangle border that has inner (highlight) and outer color.
 // Useful when go/cros-launcher-spec mentions "BorderHighlight".
-class ASH_EXPORT HighlightBorder : public views::Border {
+class VIEWS_EXPORT HighlightBorder : public views::Border {
  public:
+  // TODO(crbug/1319944): Change these type names to something more descriptive.
   enum class Type {
     // A higher contrast highlight border than the `kHighlightBorder2` used
     // for floating components that do not have a shield below.
@@ -44,10 +45,12 @@ class ASH_EXPORT HighlightBorder : public views::Border {
     kFullInsets,
   };
 
-  // Paints the highlight border onto `canvas`. Note that directly using this
-  // function won't set the insets on any view so it acts like setting kNoInsets
-  // when using HighlightBorder class.
+  // Paints the highlight border onto `canvas` for the specified `view`. The
+  // color of the border will be determined using `view`'s color provider. Note
+  // that directly using this function won't set the insets on any view so it
+  // acts like setting kNoInsets when using HighlightBorder class.
   static void PaintBorderToCanvas(gfx::Canvas* canvas,
+                                  const views::View& view,
                                   const gfx::Rect& bounds,
                                   const gfx::RoundedCornersF& corner_radii,
                                   Type type,
@@ -80,6 +83,6 @@ class ASH_EXPORT HighlightBorder : public views::Border {
   const InsetsType insets_type_;
 };
 
-}  // namespace ash
+}  // namespace views
 
-#endif  // ASH_STYLE_HIGHLIGHT_BORDER_H_
+#endif  // UI_VIEWS_HIGHLIGHT_BORDER_H_

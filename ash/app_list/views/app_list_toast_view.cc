@@ -11,7 +11,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/highlight_border.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "components/vector_icons/vector_icons.h"
@@ -25,6 +24,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 
@@ -214,8 +214,8 @@ void AppListToastView::OnThemeChanged() {
         ColorProvider::Get()->GetBaseLayerColor(
             ColorProvider::BaseLayerType::kTransparent80),
         kCornerRadius));
-    SetBorder(std::make_unique<HighlightBorder>(
-        kCornerRadius, HighlightBorder::Type::kHighlightBorder1,
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        kCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
         /*use_light_colors=*/false));
   } else {
     SetBackground(views::CreateRoundedRectBackground(

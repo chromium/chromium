@@ -17,7 +17,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/default_color_constants.h"
 #include "ash/style/default_colors.h"
-#include "ash/style/highlight_border.h"
 #include "ash/utility/haptics_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
@@ -38,6 +37,7 @@
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -235,9 +235,9 @@ class SplitViewDragIndicators::RotatedImageLabelView : public views::View {
         2, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
 
     if (chromeos::features::IsDarkLightModeEnabled()) {
-      label_parent_->SetBorder(std::make_unique<HighlightBorder>(
+      label_parent_->SetBorder(std::make_unique<views::HighlightBorder>(
           /*corner_radius=*/kSplitviewLabelRoundRectRadiusDp,
-          HighlightBorder::Type::kHighlightBorder1,
+          views::HighlightBorder::Type::kHighlightBorder1,
           /*use_light_colors=*/false));
     }
   }

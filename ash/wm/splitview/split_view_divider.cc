@@ -12,7 +12,6 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/highlight_border.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -29,6 +28,7 @@
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/views/background.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/view.h"
 #include "ui/views/view_targeter_delegate.h"
 #include "ui/views/widget/widget.h"
@@ -202,8 +202,8 @@ class DividerView : public views::View, public views::ViewTargeterDelegate {
             AshColorProvider::BaseLayerType::kOpaque));
 
     if (chromeos::features::IsDarkLightModeEnabled()) {
-      divider_view_->SetBorder(std::make_unique<HighlightBorder>(
-          /*corner_radius=*/0, HighlightBorder::Type::kHighlightBorder1,
+      divider_view_->SetBorder(std::make_unique<views::HighlightBorder>(
+          /*corner_radius=*/0, views::HighlightBorder::Type::kHighlightBorder1,
           /*use_light_colors=*/false));
     }
   }

@@ -23,7 +23,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/highlight_border.h"
 #include "ash/style/style_util.h"
 #include "base/bind.h"
 #include "base/strings/string_util.h"
@@ -44,6 +43,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/vector_icons.h"
@@ -391,9 +391,9 @@ void ContinueTaskView::UpdateStyleForTabletMode() {
   SetBackground(
       views::CreateSolidBackground(ColorProvider::Get()->GetBaseLayerColor(
           ColorProvider::BaseLayerType::kTransparent60)));
-  SetBorder(std::make_unique<HighlightBorder>(
+  SetBorder(std::make_unique<views::HighlightBorder>(
       GetCornerRadius(/*tablet_mode=*/true),
-      HighlightBorder::Type::kHighlightBorder2,
+      views::HighlightBorder::Type::kHighlightBorder2,
       /*use_light_colors=*/false));
 }
 

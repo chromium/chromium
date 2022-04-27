@@ -30,7 +30,6 @@
 #include "ash/search_box/search_box_view_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/highlight_border.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
@@ -54,6 +53,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
@@ -360,9 +360,10 @@ void SearchBoxView::OnPaintBackground(gfx::Canvas* canvas) {
 
 void SearchBoxView::OnPaintBorder(gfx::Canvas* canvas) {
   if (should_paint_highlight_border_) {
-    HighlightBorder::PaintBorderToCanvas(
-        canvas, GetContentsBounds(), gfx::RoundedCornersF(corner_radius_),
-        HighlightBorder::Type::kHighlightBorder1, false);
+    views::HighlightBorder::PaintBorderToCanvas(
+        canvas, *this, GetContentsBounds(),
+        gfx::RoundedCornersF(corner_radius_),
+        views::HighlightBorder::Type::kHighlightBorder1, false);
   }
 }
 

@@ -6,6 +6,7 @@
 
 #include <math.h>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/root_window_controller.h"
@@ -13,7 +14,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/default_color_constants.h"
 #include "ash/style/default_colors.h"
-#include "ash/style/highlight_border.h"
 #include "ash/wm/window_util.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -26,6 +26,7 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -224,9 +225,10 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(
           AshColorProvider::ShieldLayerType::kShield20,
           kSplitviewPhantomWindowColor),
       kPhantomWindowCornerRadius));
-  phantom_view->SetBorder(std::make_unique<HighlightBorder>(
-      kPhantomWindowCornerRadius, HighlightBorder::Type::kHighlightBorder1,
-      /*use_light_colors=*/true));
+  phantom_view->SetBorder(std::make_unique<views::HighlightBorder>(
+      kPhantomWindowCornerRadius,
+      views::HighlightBorder::Type::kHighlightBorder1,
+      /*use_light_colors=*/!features::IsDarkLightModeEnabled()));
 
   return phantom_widget;
 }
@@ -265,8 +267,8 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreateMaximizeCue(
   maximize_cue->layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   const gfx::RoundedCornersF radii(kMaximizeCueHeight / 2);
   maximize_cue->layer()->SetRoundedCornerRadius(radii);
-  maximize_cue->SetBorder(std::make_unique<HighlightBorder>(
-      kMaximizeCueHeight / 2, HighlightBorder::Type::kHighlightBorder1,
+  maximize_cue->SetBorder(std::make_unique<views::HighlightBorder>(
+      kMaximizeCueHeight / 2, views::HighlightBorder::Type::kHighlightBorder1,
       /*use_light_colors=*/false));
 
   // Set layout of cue view and add a label to the view.

@@ -17,7 +17,6 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/highlight_border.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
@@ -39,6 +38,7 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/background.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/view.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -146,7 +146,8 @@ class BoundsAnimationReporter : public gfx::AnimationDelegate {
 
 class BackgroundLayerDelegate : public ui::LayerDelegate {
  public:
-  explicit BackgroundLayerDelegate(ui::Layer* layer) : layer_(layer) {}
+  BackgroundLayerDelegate(ui::Layer* layer, views::View* shelf_view)
+      : layer_(layer), shelf_view_(shelf_view) {}
   BackgroundLayerDelegate(const BackgroundLayerDelegate&) = delete;
   BackgroundLayerDelegate& operator=(const BackgroundLayerDelegate&) = delete;
   ~BackgroundLayerDelegate() override {}
@@ -177,9 +178,9 @@ class BackgroundLayerDelegate : public ui::LayerDelegate {
     if (!Shell::Get()->IsInTabletMode() || ShelfConfig::Get()->is_in_app())
       return;
 
-    HighlightBorder::PaintBorderToCanvas(
-        canvas, gfx::Rect(layer_->size()), corner_radii,
-        HighlightBorder::Type::kHighlightBorder2, false);
+    views::HighlightBorder::PaintBorderToCanvas(
+        canvas, *shelf_view_, gfx::Rect(layer_->size()), corner_radii,
+        views::HighlightBorder::Type::kHighlightBorder2, false);
   }
 
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
@@ -188,6 +189,8 @@ class BackgroundLayerDelegate : public ui::LayerDelegate {
   }
 
   ui::Layer* const layer_;
+  views::View* const shelf_view_;
+
   // The background color of `layer_`. Note that this value has to be updated by
   // SetBackgroundColor() and the default value should never be drawn.
   SkColor background_color_ = SK_ColorRED;
@@ -363,8 +366,8 @@ ShelfNavigationWidget::Delegate::Delegate(Shelf* shelf, ShelfView* shelf_view)
   SetOwnedByWidget(true);
 
   if (features::IsDarkLightModeEnabled()) {
-    background_delegate_ =
-        std::make_unique<BackgroundLayerDelegate>(&opaque_background_);
+    background_delegate_ = std::make_unique<BackgroundLayerDelegate>(
+        &opaque_background_, shelf_view);
     opaque_background_.set_delegate(background_delegate_.get());
     opaque_background_.SetFillsBoundsOpaquely(false);
   }
