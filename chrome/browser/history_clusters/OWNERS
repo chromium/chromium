@@ -1,1 +1,5 @@
 file://components/history_clusters/OWNERS
+
+# This is for the common case of adding or renaming files. If you're doing
+# structural changes, use usual OWNERS rules.
+per-file BUILD.gn=*
