@@ -296413,7 +296413,7 @@
       []
      ],
      "Document-createEvent.https-expected.txt": [
-      "95c1687e168ea369fb6c87f5dced71cac8f55b6b",
+      "26c1e95770b276ad618995d5775df088afc71cac",
       []
      ],
      "Document-createEvent.js": [
@@ -300900,7 +300900,7 @@
        []
       ],
       "preflight.py": [
-       "730a5532624e1b7f727244676e2f5f09f7576cbc",
+       "5c1ea9db160a89a8a4b3b6ba5f0a98340158783e",
        []
       ],
       "service-worker-bridge.html": [
@@ -300924,7 +300924,7 @@
        []
       ],
       "support.sub.js": [
-       "ecb8b8193d49323e03152233bea7bafd0b6b793a",
+       "e01162b940f82826fcd14a11b3535f8d8e199e22",
        []
       ],
       "worker-fetcher.html": [
@@ -377617,7 +377617,7 @@
        ]
       ],
       "color-invalid.html": [
-       "0f9a6f414ee4bf262b39ebe3e10b2c924f73c55f",
+       "9dc42ea6ed09408812c0d6056150c1f817600734",
        [
         null,
         {}
@@ -407421,7 +407421,7 @@
       ]
      ],
      "Document-createEvent.https.html": [
-      "f80c1c3672225dabfb20cfb35445c007b24bcf0a",
+      "4781d54e8e46b6718139c55550f0bc85b76657ac",
       [
        null,
        {}
@@ -435309,6 +435309,24 @@
       "6d246e1c76d6c5f603c3e29430ae0586fdb9f5ad",
       [
        "fetch/private-network-access/nested-worker.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "preflight-cache.https.window.js": [
+      "87dbf501f628a25fa299240da5d5856f4366d8cc",
+      [
+       "fetch/private-network-access/preflight-cache.https.window.html",
        {
         "script_metadata": [
          [
