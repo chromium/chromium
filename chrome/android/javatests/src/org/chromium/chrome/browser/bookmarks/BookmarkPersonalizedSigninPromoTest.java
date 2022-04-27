@@ -7,9 +7,12 @@ package org.chromium.chrome.browser.bookmarks;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -96,7 +99,6 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1294402")
     public void testSigninButtonDefaultAccount() {
         HistogramDelta signinHistogram =
                 new HistogramDelta("Signin.SyncPromo.Continued.Count.Bookmarks", 1);
@@ -106,7 +108,8 @@ public class BookmarkPersonalizedSigninPromoTest {
         CoreAccountInfo accountInfo =
                 mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         showBookmarkManagerAndCheckSigninPromoIsDisplayed();
-        onView(withId(R.id.signin_promo_signin_button)).perform(click());
+        onView(allOf(withId(R.id.signin_promo_signin_button), withEffectiveVisibility(VISIBLE)))
+                .perform(click());
         verify(mMockSyncConsentActivityLauncher)
                 .launchActivityForPromoDefaultFlow(any(Activity.class),
                         eq(SigninAccessPoint.BOOKMARK_MANAGER), eq(accountInfo.getEmail()));
