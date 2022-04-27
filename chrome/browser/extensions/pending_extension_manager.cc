@@ -50,60 +50,42 @@ PendingExtensionManager::~PendingExtensionManager() {}
 
 const PendingExtensionInfo* PendingExtensionManager::GetById(
     const std::string& id) const {
-  PendingExtensionList::const_iterator iter;
-  for (iter = pending_extension_list_.begin();
-       iter != pending_extension_list_.end();
-       ++iter) {
-    if (id == iter->id())
-      return &(*iter);
-  }
+  auto it = pending_extensions_.find(id);
+  if (it != pending_extensions_.end())
+    return &it->second;
 
-  return NULL;
+  return nullptr;
 }
 
 bool PendingExtensionManager::Remove(const std::string& id) {
-  PendingExtensionList::iterator iter;
-  for (iter = pending_extension_list_.begin();
-       iter != pending_extension_list_.end();
-       ++iter) {
-    if (id == iter->id()) {
-      pending_extension_list_.erase(iter);
-      return true;
-    }
-  }
-
-  return false;
+  return pending_extensions_.erase(id) > 0;
 }
 
 bool PendingExtensionManager::IsIdPending(const std::string& id) const {
-  return GetById(id) != NULL;
+  return GetById(id) != nullptr;
 }
 
 bool PendingExtensionManager::HasPendingExtensions() const {
-  return !pending_extension_list_.empty();
+  return !pending_extensions_.empty();
 }
 
 bool PendingExtensionManager::HasPendingExtensionFromSync() const {
-  PendingExtensionList::const_iterator iter;
-  for (iter = pending_extension_list_.begin();
-       iter != pending_extension_list_.end();
-       ++iter) {
-    if (iter->is_from_sync())
-      return true;
-  }
-
-  return false;
+  return std::any_of(
+      pending_extensions_.begin(), pending_extensions_.end(),
+      [](const std::pair<std::string, PendingExtensionInfo>& it) {
+        return it.second.is_from_sync();
+      });
 }
 
 bool PendingExtensionManager::HasHighPriorityPendingExtension() const {
-  return std::find_if(pending_extension_list_.begin(),
-                      pending_extension_list_.end(),
-                      [](const PendingExtensionInfo& info) {
-                        return info.install_source() ==
-                                   ManifestLocation::kExternalPolicyDownload ||
-                               info.install_source() ==
-                                   ManifestLocation::kExternalComponent;
-                      }) != pending_extension_list_.end();
+  return std::any_of(
+      pending_extensions_.begin(), pending_extensions_.end(),
+      [](const std::pair<std::string, PendingExtensionInfo>& it) {
+        return it.second.install_source() ==
+                   ManifestLocation::kExternalPolicyDownload ||
+               it.second.install_source() ==
+                   ManifestLocation::kExternalComponent;
+      });
 }
 
 bool PendingExtensionManager::AddFromSync(
@@ -255,10 +237,8 @@ std::list<std::string> PendingExtensionManager::GetPendingIdsForUpdateCheck()
     const {
   std::list<std::string> result;
 
-  for (PendingExtensionList::const_iterator iter =
-           pending_extension_list_.begin();
-       iter != pending_extension_list_.end(); ++iter) {
-    ManifestLocation install_source = iter->install_source();
+  for (const auto& it : pending_extensions_) {
+    ManifestLocation install_source = it.second.install_source();
 
     // Some install sources read a CRX from the filesystem.  They can
     // not be fetched from an update URL, so don't include them in the
@@ -269,7 +249,7 @@ std::list<std::string> PendingExtensionManager::GetPendingIdsForUpdateCheck()
       continue;
     }
 
-    result.push_back(iter->id());
+    result.push_back(it.first);
   }
 
   return result;
@@ -316,12 +296,9 @@ bool PendingExtensionManager::AddExtensionImpl(
 
     VLOG(1) << "Overwrite existing record.";
 
-    std::replace(pending_extension_list_.begin(),
-                 pending_extension_list_.end(),
-                 *pending,
-                 info);
+    pending_extensions_[info.id()] = std::move(info);
   } else {
-    pending_extension_list_.push_back(info);
+    pending_extensions_.emplace(info.id(), std::move(info));
   }
 
   return true;
@@ -346,7 +323,8 @@ void PendingExtensionManager::
 
 void PendingExtensionManager::AddForTesting(
     const PendingExtensionInfo& pending_extension_info) {
-  pending_extension_list_.push_back(pending_extension_info);
+  pending_extensions_.emplace(pending_extension_info.id(),
+                              pending_extension_info);
 }
 
 }  // namespace extensions
