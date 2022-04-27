@@ -40,7 +40,7 @@ class SettingsOverridesAPI : public BrowserContextKeyedAPI,
   // Wrappers around PreferenceAPI.
   void SetPref(const std::string& extension_id,
                const std::string& pref_key,
-               std::unique_ptr<base::Value> value) const;
+               base::Value value) const;
   void UnsetPref(const std::string& extension_id,
                  const std::string& pref_key) const;
 

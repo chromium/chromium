@@ -782,33 +782,33 @@ const char kTargetTypeBackgroundPage[] = "background_page";
 const char kTargetTypeWorker[] = "worker";
 const char kTargetTypeOther[] = "other";
 
-base::Value SerializeTarget(scoped_refptr<DevToolsAgentHost> host) {
-  base::Value dictionary(base::Value::Type::DICTIONARY);
-  dictionary.SetStringKey(kTargetIdField, host->GetId());
-  dictionary.SetStringKey(kTargetTitleField, host->GetTitle());
-  dictionary.SetBoolKey(kTargetAttachedField, host->IsAttached());
-  dictionary.SetStringKey(kTargetUrlField, host->GetURL().spec());
+base::Value::Dict SerializeTarget(scoped_refptr<DevToolsAgentHost> host) {
+  base::Value::Dict dictionary;
+  dictionary.Set(kTargetIdField, host->GetId());
+  dictionary.Set(kTargetTitleField, host->GetTitle());
+  dictionary.Set(kTargetAttachedField, host->IsAttached());
+  dictionary.Set(kTargetUrlField, host->GetURL().spec());
 
   std::string type = host->GetType();
   std::string target_type = kTargetTypeOther;
   if (type == DevToolsAgentHost::kTypePage) {
     int tab_id =
         extensions::ExtensionTabUtil::GetTabId(host->GetWebContents());
-    dictionary.SetIntKey(kTargetTabIdField, tab_id);
+    dictionary.Set(kTargetTabIdField, tab_id);
     target_type = kTargetTypePage;
   } else if (type == ChromeDevToolsManagerDelegate::kTypeBackgroundPage) {
-    dictionary.SetStringKey(kTargetExtensionIdField, host->GetURL().host());
+    dictionary.Set(kTargetExtensionIdField, host->GetURL().host());
     target_type = kTargetTypeBackgroundPage;
   } else if (type == DevToolsAgentHost::kTypeServiceWorker ||
              type == DevToolsAgentHost::kTypeSharedWorker) {
     target_type = kTargetTypeWorker;
   }
 
-  dictionary.SetStringKey(kTargetTypeField, target_type);
+  dictionary.Set(kTargetTypeField, target_type);
 
   GURL favicon_url = host->GetFaviconURL();
   if (favicon_url.is_valid())
-    dictionary.SetStringKey(kTargetFaviconUrlField, favicon_url.spec());
+    dictionary.Set(kTargetFaviconUrlField, favicon_url.spec());
 
   return dictionary;
 }
@@ -821,18 +821,17 @@ DebuggerGetTargetsFunction::~DebuggerGetTargetsFunction() = default;
 
 ExtensionFunction::ResponseAction DebuggerGetTargetsFunction::Run() {
   content::DevToolsAgentHost::List list = DevToolsAgentHost::GetOrCreateAll();
-  std::unique_ptr<base::ListValue> result(new base::ListValue());
+  base::Value::List result;
   Profile* profile = Profile::FromBrowserContext(browser_context());
   for (auto& host : list) {
     if (!ExtensionMayAttachToTargetProfile(
             profile, include_incognito_information(), *host)) {
       continue;
     }
-    result->Append(SerializeTarget(host));
+    result.Append(SerializeTarget(host));
   }
 
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+  return RespondNow(OneArgument(base::Value(std::move(result))));
 }
 
 }  // namespace extensions

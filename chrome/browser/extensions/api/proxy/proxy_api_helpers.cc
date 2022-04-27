@@ -391,50 +391,50 @@ std::unique_ptr<base::Value> CreateProxyConfigDict(
   return nullptr;
 }
 
-std::unique_ptr<base::DictionaryValue> CreateProxyRulesDict(
+absl::optional<base::Value::Dict> CreateProxyRulesDict(
     const ProxyConfigDictionary& proxy_config) {
   ProxyPrefs::ProxyMode mode;
   CHECK(proxy_config.GetMode(&mode) && mode == ProxyPrefs::MODE_FIXED_SERVERS);
 
-  auto extension_proxy_rules = std::make_unique<base::DictionaryValue>();
-
   std::string proxy_servers;
   if (!proxy_config.GetProxyServer(&proxy_servers)) {
     LOG(ERROR) << "Missing proxy servers in configuration.";
-    return NULL;
+    return absl::nullopt;
   }
+
+  base::Value::Dict extension_proxy_rules;
 
   net::ProxyConfig::ProxyRules rules;
   rules.ParseFromString(proxy_servers);
 
   switch (rules.type) {
     case net::ProxyConfig::ProxyRules::Type::EMPTY:
-      return NULL;
+      return absl::nullopt;
     case net::ProxyConfig::ProxyRules::Type::PROXY_LIST:
       if (!rules.single_proxies.IsEmpty()) {
-        extension_proxy_rules->Set(
+        extension_proxy_rules.Set(
             proxy_api_constants::field_name[proxy_api_constants::SCHEME_ALL],
             CreateProxyServerDict(rules.single_proxies.Get()));
       }
       break;
     case net::ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME:
       if (!rules.proxies_for_http.IsEmpty()) {
-        extension_proxy_rules->Set(
+        extension_proxy_rules.Set(
             proxy_api_constants::field_name[proxy_api_constants::SCHEME_HTTP],
             CreateProxyServerDict(rules.proxies_for_http.Get()));
       }
       if (!rules.proxies_for_https.IsEmpty()) {
-        extension_proxy_rules->Set(
+        extension_proxy_rules.Set(
             proxy_api_constants::field_name[proxy_api_constants::SCHEME_HTTPS],
             CreateProxyServerDict(rules.proxies_for_https.Get()));
       }
       if (!rules.proxies_for_ftp.IsEmpty()) {
-        extension_proxy_rules->Set(
+        extension_proxy_rules.Set(
             proxy_api_constants::field_name[proxy_api_constants::SCHEME_FTP],
             CreateProxyServerDict(rules.proxies_for_ftp.Get()));
       }
       if (!rules.fallback_proxies.IsEmpty()) {
-        extension_proxy_rules->Set(
+        extension_proxy_rules.Set(
             proxy_api_constants::field_name
                 [proxy_api_constants::SCHEME_FALLBACK],
             CreateProxyServerDict(rules.fallback_proxies.Get()));
@@ -451,89 +451,88 @@ std::unique_ptr<base::DictionaryValue> CreateProxyRulesDict(
     std::string bypass_list_string;
     if (!proxy_config.GetBypassList(&bypass_list_string)) {
       LOG(ERROR) << "Invalid bypassList in configuration.";
-      return NULL;
+      return absl::nullopt;
     }
-    std::unique_ptr<base::ListValue> bypass_list =
+    base::Value::List bypass_list =
         TokenizeToStringList(bypass_list_string, ",;");
-    extension_proxy_rules->Set(proxy_api_constants::kProxyConfigBypassList,
-                               std::move(bypass_list));
+    extension_proxy_rules.Set(proxy_api_constants::kProxyConfigBypassList,
+                              std::move(bypass_list));
   }
 
   return extension_proxy_rules;
 }
 
-std::unique_ptr<base::DictionaryValue> CreateProxyServerDict(
-    const net::ProxyServer& proxy) {
-  auto out = std::make_unique<base::DictionaryValue>();
+base::Value::Dict CreateProxyServerDict(const net::ProxyServer& proxy) {
+  base::Value::Dict out;
+  const char* scheme = nullptr;
   switch (proxy.scheme()) {
     case net::ProxyServer::SCHEME_HTTP:
-      out->SetStringKey(proxy_api_constants::kProxyConfigRuleScheme, "http");
+      scheme = "http";
       break;
     case net::ProxyServer::SCHEME_HTTPS:
-      out->SetStringKey(proxy_api_constants::kProxyConfigRuleScheme, "https");
+      scheme = "https";
       break;
     case net::ProxyServer::SCHEME_QUIC:
-      out->SetStringKey(proxy_api_constants::kProxyConfigRuleScheme, "quic");
+      scheme = "quic";
       break;
     case net::ProxyServer::SCHEME_SOCKS4:
-      out->SetStringKey(proxy_api_constants::kProxyConfigRuleScheme, "socks4");
+      scheme = "socks4";
       break;
     case net::ProxyServer::SCHEME_SOCKS5:
-      out->SetStringKey(proxy_api_constants::kProxyConfigRuleScheme, "socks5");
+      scheme = "socks5";
       break;
     case net::ProxyServer::SCHEME_DIRECT:
     case net::ProxyServer::SCHEME_INVALID:
       NOTREACHED();
-      return NULL;
+      return out;
   }
-  out->SetStringKey(proxy_api_constants::kProxyConfigRuleHost,
-                    proxy.host_port_pair().host());
-  out->SetIntKey(proxy_api_constants::kProxyConfigRulePort,
-                 proxy.host_port_pair().port());
+  out.Set(proxy_api_constants::kProxyConfigRuleScheme, scheme);
+  out.Set(proxy_api_constants::kProxyConfigRuleHost,
+          proxy.host_port_pair().host());
+  out.Set(proxy_api_constants::kProxyConfigRulePort,
+          proxy.host_port_pair().port());
   return out;
 }
 
-std::unique_ptr<base::DictionaryValue> CreatePacScriptDict(
+absl::optional<base::Value::Dict> CreatePacScriptDict(
     const ProxyConfigDictionary& proxy_config) {
   ProxyPrefs::ProxyMode mode;
   CHECK(proxy_config.GetMode(&mode) && mode == ProxyPrefs::MODE_PAC_SCRIPT);
 
-  auto pac_script_dict = std::make_unique<base::DictionaryValue>();
   std::string pac_url;
   if (!proxy_config.GetPacUrl(&pac_url)) {
     LOG(ERROR) << "Invalid proxy configuration. Missing PAC URL.";
-    return NULL;
+    return absl::nullopt;
   }
   bool pac_mandatory = false;
   if (!proxy_config.GetPacMandatory(&pac_mandatory)) {
     LOG(ERROR) << "Invalid proxy configuration. Missing PAC mandatory field.";
-    return NULL;
+    return absl::nullopt;
   }
 
+  base::Value::Dict pac_script_dict;
   if (base::StartsWith(pac_url, "data", base::CompareCase::SENSITIVE)) {
     std::string pac_data;
     if (!CreatePACScriptFromDataURL(pac_url, &pac_data)) {
       LOG(ERROR) << "Cannot decode base64-encoded PAC data URL: " << pac_url;
-      return NULL;
+      return absl::nullopt;
     }
-    pac_script_dict->SetStringKey(
-        proxy_api_constants::kProxyConfigPacScriptData, pac_data);
+    pac_script_dict.Set(proxy_api_constants::kProxyConfigPacScriptData,
+                        pac_data);
   } else {
-    pac_script_dict->SetStringKey(proxy_api_constants::kProxyConfigPacScriptUrl,
-                                  pac_url);
+    pac_script_dict.Set(proxy_api_constants::kProxyConfigPacScriptUrl, pac_url);
   }
-  pac_script_dict->SetBoolKey(
-      proxy_api_constants::kProxyConfigPacScriptMandatory, pac_mandatory);
-  return pac_script_dict;
+  pac_script_dict.Set(proxy_api_constants::kProxyConfigPacScriptMandatory,
+                      pac_mandatory);
+  return absl::make_optional(std::move(pac_script_dict));
 }
 
-std::unique_ptr<base::ListValue> TokenizeToStringList(
-    const std::string& in,
-    const std::string& delims) {
-  auto out = std::make_unique<base::ListValue>();
+base::Value::List TokenizeToStringList(const std::string& in,
+                                       const std::string& delims) {
+  base::Value::List out;
   base::StringTokenizer entries(in, delims);
   while (entries.GetNext())
-    out->Append(entries.token_piece());
+    out.Append(entries.token_piece());
   return out;
 }
 

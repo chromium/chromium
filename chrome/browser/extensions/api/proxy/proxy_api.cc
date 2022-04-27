@@ -171,24 +171,22 @@ std::unique_ptr<base::Value> ProxyPrefTransformer::BrowserToExtensionPref(
       // A PAC URL either point to a PAC script or contain a base64 encoded
       // PAC script. In either case we build a PacScript dictionary as defined
       // in the extension API.
-      std::unique_ptr<base::DictionaryValue> pac_dict =
+      absl::optional<base::Value::Dict> pac_dict =
           proxy_api_helpers::CreatePacScriptDict(config);
       if (!pac_dict)
         return nullptr;
-      extension_pref->SetKey(
-          proxy_api_constants::kProxyConfigPacScript,
-          base::Value::FromUniquePtrValue(std::move(pac_dict)));
+      extension_pref->SetKey(proxy_api_constants::kProxyConfigPacScript,
+                             base::Value(std::move(*pac_dict)));
       break;
     }
     case ProxyPrefs::MODE_FIXED_SERVERS: {
       // Build ProxyRules dictionary according to the extension API.
-      std::unique_ptr<base::DictionaryValue> proxy_rules_dict =
+      absl::optional<base::Value::Dict> proxy_rules_dict =
           proxy_api_helpers::CreateProxyRulesDict(config);
       if (!proxy_rules_dict)
         return nullptr;
-      extension_pref->SetKey(
-          proxy_api_constants::kProxyConfigRules,
-          base::Value::FromUniquePtrValue(std::move(proxy_rules_dict)));
+      extension_pref->SetKey(proxy_api_constants::kProxyConfigRules,
+                             base::Value(std::move(*proxy_rules_dict)));
       break;
     }
     case ProxyPrefs::kModeCount:

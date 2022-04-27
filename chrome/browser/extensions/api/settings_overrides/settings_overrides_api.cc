@@ -137,14 +137,12 @@ SettingsOverridesAPI::GetFactoryInstance() {
 
 void SettingsOverridesAPI::SetPref(const std::string& extension_id,
                                    const std::string& pref_key,
-                                   std::unique_ptr<base::Value> value) const {
+                                   base::Value value) const {
   PreferenceAPI* prefs = PreferenceAPI::Get(profile_);
   if (!prefs)
     return;  // Expected in unit tests.
-  DCHECK(value);
   prefs->SetExtensionControlledPref(
-      extension_id, pref_key, kExtensionPrefsScopeRegular,
-      base::Value::FromUniquePtrValue(std::move(value)));
+      extension_id, pref_key, kExtensionPrefsScopeRegular, std::move(value));
 }
 
 void SettingsOverridesAPI::UnsetPref(const std::string& extension_id,
@@ -167,25 +165,24 @@ void SettingsOverridesAPI::OnExtensionLoaded(
         ExtensionPrefs::Get(profile_)->GetInstallParam(extension->id());
     if (settings->homepage) {
       SetPref(extension->id(), prefs::kHomePage,
-              std::make_unique<base::Value>(SubstituteInstallParam(
-                  settings->homepage->spec(), install_parameter)));
+              base::Value(SubstituteInstallParam(settings->homepage->spec(),
+                                                 install_parameter)));
       SetPref(extension->id(), prefs::kHomePageIsNewTabPage,
-              std::make_unique<base::Value>(false));
+              base::Value(false));
     }
     if (!settings->startup_pages.empty()) {
-      SetPref(
-          extension->id(), prefs::kRestoreOnStartup,
-          std::make_unique<base::Value>(SessionStartupPref::kPrefValueURLs));
+      SetPref(extension->id(), prefs::kRestoreOnStartup,
+              base::Value(SessionStartupPref::kPrefValueURLs));
       if (settings->startup_pages.size() > 1) {
         VLOG(1) << extensions::ErrorUtils::FormatErrorMessage(
                        kManyStartupPagesWarning,
                        manifest_keys::kSettingsOverride);
       }
-      std::unique_ptr<base::ListValue> url_list(new base::ListValue);
-      url_list->Append(SubstituteInstallParam(settings->startup_pages[0].spec(),
-                                              install_parameter));
+      base::Value::List url_list;
+      url_list.Append(SubstituteInstallParam(settings->startup_pages[0].spec(),
+                                             install_parameter));
       SetPref(extension->id(), prefs::kURLsToRestoreOnStartup,
-              std::move(url_list));
+              base::Value(std::move(url_list)));
     }
     if (settings->search_engine) {
       // Bring the preference to the correct state. Before this code set it
@@ -193,7 +190,7 @@ void SettingsOverridesAPI::OnExtensionLoaded(
       // all search engines.
       if (settings->search_engine->is_default) {
         SetPref(extension->id(), prefs::kDefaultSearchProviderEnabled,
-                std::make_unique<base::Value>(true));
+                base::Value(true));
       } else {
         UnsetPref(extension->id(), prefs::kDefaultSearchProviderEnabled);
       }
@@ -250,9 +247,10 @@ void SettingsOverridesAPI::RegisterSearchProvider(
 
   if (settings->search_engine->is_default) {
     // Override current DSE pref to have extension overriden value.
-    SetPref(extension->id(),
-            DefaultSearchManager::kDefaultSearchProviderDataPrefName,
-            TemplateURLDataToDictionary(*data));
+    SetPref(
+        extension->id(),
+        DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+        base::Value::FromUniquePtrValue(TemplateURLDataToDictionary(*data)));
   }
 }
 

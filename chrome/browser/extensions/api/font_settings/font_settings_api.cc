@@ -254,11 +254,10 @@ ExtensionFunction::ResponseAction FontSettingsGetFontFunction::Run() {
       extensions::preference_helpers::GetLevelOfControl(profile, extension_id(),
                                                         pref_path, kIncognito);
 
-  std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
-  result->SetStringKey(kFontIdKey, font_name);
-  result->SetStringKey(kLevelOfControlKey, level_of_control);
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+  base::Value::Dict result;
+  result.Set(kFontIdKey, font_name);
+  result.Set(kLevelOfControlKey, level_of_control);
+  return RespondNow(OneArgument(base::Value(std::move(result))));
 }
 
 ExtensionFunction::ResponseAction FontSettingsSetFontFunction::Run() {
@@ -346,12 +345,10 @@ ExtensionFunction::ResponseAction GetFontPrefExtensionFunction::Run() {
       extensions::preference_helpers::GetLevelOfControl(
           profile, extension_id(), GetPrefName(), kIncognito);
 
-  std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
-  result->Set(GetKey(),
-              base::Value::ToUniquePtrValue(pref->GetValue()->Clone()));
-  result->SetStringKey(kLevelOfControlKey, level_of_control);
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+  base::Value::Dict result;
+  result.Set(GetKey(), pref->GetValue()->Clone());
+  result.Set(kLevelOfControlKey, level_of_control);
+  return RespondNow(OneArgument(base::Value(std::move(result))));
 }
 
 ExtensionFunction::ResponseAction SetFontPrefExtensionFunction::Run() {
