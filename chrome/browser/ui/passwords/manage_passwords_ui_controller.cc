@@ -754,18 +754,7 @@ bool ManagePasswordsUIController::HasBrowserWindow() const {
   return chrome::FindBrowserWithWebContents(web_contents()) != nullptr;
 }
 
-void ManagePasswordsUIController::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted() ||
-      // Don't react to same-document (fragment) navigations.
-      navigation_handle->IsSameDocument()) {
-    return;
-  }
-
+void ManagePasswordsUIController::PrimaryPageChanged(content::Page& page) {
   // Keep the state if the bubble is currently open or the fallback for saving
   // should be still available.
   if (IsShowingBubble() || save_fallback_timer_.IsRunning()) {

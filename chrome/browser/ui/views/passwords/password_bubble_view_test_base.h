@@ -12,6 +12,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
+#include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -45,6 +46,7 @@ class PasswordBubbleViewTestBase : public ChromeViewsTestBase {
 
  private:
   content::RenderViewHostTestEnabler test_render_host_factories_;
+  password_manager::StubPasswordManagerClient password_manager_client_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
