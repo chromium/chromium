@@ -47,13 +47,9 @@ TEST(EncodeValuesTest, EncodeTimeAsGeneralizedTime) {
 // on platforms where it returns true. As of this writing, it will return false
 // on Windows.
 TEST(EncodeValuesTest, EncodeTimeFromBeforeWindowsEpoch) {
-  constexpr int kYearsBeforeWindowsEpoch = 1601 - 1570;
-  constexpr int kDaysPerYear = 365;
-  constexpr int kExtraLeapDaysOverThoseYears = 8;
+  // Thu, 01 Jan 1570 00:00:00 GMT
   constexpr base::Time kStartOfYear1570 =
-      base::Time() - base::Days(kYearsBeforeWindowsEpoch * kDaysPerYear +
-                                kExtraLeapDaysOverThoseYears);
-
+      base::Time::UnixEpoch() - base::Seconds(12622780800);
   GeneralizedTime generalized_time;
   if (!EncodeTimeAsGeneralizedTime(kStartOfYear1570, &generalized_time))
     return;
