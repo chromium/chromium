@@ -524,7 +524,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.MenuItemSelected" enum="FileManagerMenuCommands"
-    expires_after="2022-04-10">
+    expires_after="M113">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
