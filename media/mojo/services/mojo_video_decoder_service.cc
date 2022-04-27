@@ -196,6 +196,15 @@ void MojoVideoDecoderService::Initialize(
 
   init_cb_ = std::move(callback);
 
+  // Prevent creation of too many hardware decoding instances since it may lead
+  // to system instability. Note: This will break decoding entirely for codecs
+  // which don't have software fallback, so we use a conservative limit. Most
+  // platforms will self-limit and never reach this limit.
+  if (!config.is_encrypted() && g_num_active_mvd_instances >= 128) {
+    OnDecoderInitialized(DecoderStatus::Codes::kTooManyDecoders);
+    return;
+  }
+
   if (!decoder_) {
     OnDecoderInitialized(DecoderStatus::Codes::kFailedToCreateDecoder);
     return;

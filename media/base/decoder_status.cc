@@ -40,6 +40,7 @@ const std::string GetDecodeStatusString(const DecoderStatus& status) {
     STRINGIFY(DecoderStatus::Codes::kFailedToCreateDecoder);
     STRINGIFY(DecoderStatus::Codes::kKeyFrameRequired);
     STRINGIFY(DecoderStatus::Codes::kMissingTimestamp);
+    STRINGIFY(DecoderStatus::Codes::kTooManyDecoders);
   }
 #undef STRINGIFY
 }
