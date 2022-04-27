@@ -346,8 +346,6 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorButtonBackgroundProminent};
   mixer[kColorOmniboxAnswerIconForeground] = {
       ui::kColorButtonForegroundProminent};
-  mixer[kColorOmniboxBackground] = {dark_mode ? gfx::kGoogleGrey900
-                                              : gfx::kGoogleGrey100};
   mixer[kColorOmniboxChipBackgroundLowVisibility] = {
       kColorTabBackgroundActiveFrameActive};
   mixer[kColorOmniboxChipBackgroundNormalVisibility] = {
@@ -356,8 +354,6 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       kColorTabForegroundActiveFrameActive};
   mixer[kColorOmniboxChipForegroundNormalVisibility] = {
       ui::kColorButtonForeground};
-  mixer[kColorOmniboxText] =
-      ui::GetColorWithMaxContrast(kColorOmniboxBackground);
   mixer[kColorPageInfoChosenObjectDeleteButtonIcon] = {ui::kColorIcon};
   mixer[kColorPageInfoChosenObjectDeleteButtonIconDisabled] = {
       ui::kColorIconDisabled};

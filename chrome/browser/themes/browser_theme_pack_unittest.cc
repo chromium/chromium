@@ -753,39 +753,6 @@ TEST_F(BrowserThemePackTest, TestNonExistantImages) {
   EXPECT_FALSE(LoadRawBitmapsTo(out_file_paths));
 }
 
-TEST_F(BrowserThemePackTest, TestCreateColorMixersOmniboxNoValues) {
-  // Tests to make sure that existing colors within the color provider are not
-  // overwritten or lost in the absence of any user provided theme values.
-  ui::ColorProvider provider;
-  ui::ColorMixer& mixer = provider.AddMixer();
-  mixer[kColorToolbar] = {SK_ColorRED};
-  mixer[kColorOmniboxText] = {SK_ColorGREEN};
-  mixer[kColorOmniboxBackground] = {SK_ColorBLUE};
-  theme_pack().AddColorMixers(&provider, ui::ColorProviderManager::Key());
-  provider.GenerateColorMap();
-  EXPECT_EQ(SK_ColorRED, provider.GetColor(kColorToolbar));
-  EXPECT_EQ(SK_ColorGREEN, provider.GetColor(kColorOmniboxText));
-  EXPECT_EQ(SK_ColorBLUE, provider.GetColor(kColorOmniboxBackground));
-}
-
-TEST_F(BrowserThemePackTest, TestCreateColorMixersOmniboxPartialValues) {
-  // Tests to make sure that only provided theme values are replicated into the
-  // color provider.
-  ui::ColorProvider provider;
-  ui::ColorMixer& mixer = provider.AddMixer();
-  mixer[kColorToolbar] = {SK_ColorRED};
-  mixer[kColorOmniboxText] = {SK_ColorGREEN};
-  mixer[kColorOmniboxBackground] = {SK_ColorBLUE};
-  std::string color_json = R"({ "toolbar": [0, 20, 40],
-                                "omnibox_text": [60, 80, 100] })";
-  LoadColorJSON(color_json);
-  theme_pack().AddColorMixers(&provider, ui::ColorProviderManager::Key());
-  provider.GenerateColorMap();
-  EXPECT_EQ(SkColorSetRGB(0, 20, 40), provider.GetColor(kColorToolbar));
-  EXPECT_EQ(SkColorSetRGB(60, 80, 100), provider.GetColor(kColorOmniboxText));
-  EXPECT_EQ(SK_ColorBLUE, provider.GetColor(kColorOmniboxBackground));
-}
-
 TEST_F(BrowserThemePackTest, TestCreateColorMixersOmniboxAllValues) {
   // Tests to make sure that all available colors are properly loaded into the
   // color provider.
