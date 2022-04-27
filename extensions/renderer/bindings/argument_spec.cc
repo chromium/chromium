@@ -699,7 +699,7 @@ bool ArgumentSpec::ParseArgumentToArray(v8::Local<v8::Context> context,
       return false;
     }
     if (out_value)
-      result->Append(std::move(item));
+      result->Append(base::Value::FromUniquePtrValue(std::move(item)));
     if (v8_out_value) {
       // This should never fail, since it's a newly-created array with
       // CreateDataProperty().
