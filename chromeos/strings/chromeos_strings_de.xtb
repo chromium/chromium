@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">Der Gerätetyp ist unbekannt.</translation>
 <translation id="3966286471246132217">Du erhältst genauere Ergebnisse, wenn alle Apps während des Tests geschlossen sind.</translation>
 <translation id="3967822245660637423">Download abgeschlossen</translation>
+<translation id="3969602104473960991">Das Passwort für Chrome OS wurde aktualisiert</translation>
 <translation id="397105322502079400">Wird berechnet...</translation>
 <translation id="39823212440917567">Druckaufträge, die älter als <ph name="NUMBER_OF_DAYS" /> Tage sind, werden entfernt</translation>
 <translation id="3993704782688964914">„<ph name="DEVICE_NAME" />“ ist jetzt auf dem neuesten Stand</translation>
@@ -462,6 +463,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6113701710518389813">Aufwärtspfeil</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> weitere Alben</translation>
 <translation id="6122191549521593678">Online</translation>
+<translation id="6122277663991249694">Dienst für die Chrome OS-Eingabemethoden</translation>
 <translation id="6137767437444130246">Nutzerzertifikat</translation>
 <translation id="6146993107019042706">Gib zum Schluss dein neues Passwort ein</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -660,6 +662,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8398927464629426868">Die Stromstärke, mit der das Gerät momentan geladen oder entladen wird</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Interne Tastatur</translation>
+<translation id="8431300646573772016">Neues bei Chrome OS</translation>
 <translation id="843568408673868420">Internetverbindung</translation>
 <translation id="844521431886043384">DNS ist nicht eingerichtet</translation>
 <translation id="8461329675984532579">Name des Homepageanbieters</translation>

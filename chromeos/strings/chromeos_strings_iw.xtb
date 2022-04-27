@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">סוג המכשיר לא ידוע.</translation>
 <translation id="3966286471246132217">כדי לקבל תוצאות מדויקות יותר, סוגרים את כל האפליקציות עד להשלמת הבדיקה.</translation>
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
+<translation id="3969602104473960991">‏הסיסמה של ChromeOS עודכנה</translation>
 <translation id="397105322502079400">מתבצע חישוב...</translation>
 <translation id="39823212440917567">משימות הדפסה בנות יותר מ-<ph name="NUMBER_OF_DAYS" /> ימים יוסרו</translation>
 <translation id="3993704782688964914">עכשיו המכשיר <ph name="DEVICE_NAME" /> מעודכן</translation>
@@ -462,6 +463,7 @@
 <translation id="6113701710518389813">חץ למעלה</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> ועוד <ph name="NUMBER" /> אלבומים</translation>
 <translation id="6122191549521593678">אונליין</translation>
+<translation id="6122277663991249694">‏שירות שיטת הקלט של ChromeOS</translation>
 <translation id="6137767437444130246">אישור משתמש</translation>
 <translation id="6146993107019042706">כדי לסיים, יש להזין את הסיסמה החדשה</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -660,6 +662,7 @@
 <translation id="8398927464629426868">קצב הטעינה או קצב הפריקה הנוכחיים של המכשיר</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">מקלדת פנימית</translation>
+<translation id="8431300646573772016">‏מה חדש ב-ChromeOS</translation>
 <translation id="843568408673868420">חיבור לאינטרנט</translation>
 <translation id="844521431886043384">‏לא הוגדר DNS</translation>
 <translation id="8461329675984532579">שם ספק ביתי</translation>

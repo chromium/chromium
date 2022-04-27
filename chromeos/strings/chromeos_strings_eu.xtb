@@ -86,7 +86,7 @@
 <translation id="1792647875738159689">Eskaneatzeko prozesua bertan behera uzten</translation>
 <translation id="1807246157184219062">Argia</translation>
 <translation id="1827738518074806965">Arte-galeria</translation>
-<translation id="1851218745569890714">Bideo-konferentziak</translation>
+<translation id="1851218745569890714">Bideokonferentziak</translation>
 <translation id="1852934301711881861">Instalatu ChromeOS Flex</translation>
 <translation id="1856388568474281774">Behera gezi-tekla</translation>
 <translation id="1874612839560830905">MTU</translation>
@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">Gailu mota ezezaguna da.</translation>
 <translation id="3966286471246132217">Emaitza zehatzagoak lortzeko, itxi aplikazio guztiak proba osatu arte.</translation>
 <translation id="3967822245660637423">Deskargatzen amaitu da</translation>
+<translation id="3969602104473960991">Eguneratu da Chrome OS-ko pasahitza</translation>
 <translation id="397105322502079400">Kalkulatzen…</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> egun baino gehiagoko inprimatze-lanak kendu egingo dira</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> eguneratuta dago</translation>
@@ -462,6 +463,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6113701710518389813">Gora gezi-tekla</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> eta beste <ph name="NUMBER" /> album</translation>
 <translation id="6122191549521593678">Konektatu</translation>
+<translation id="6122277663991249694">Chrome OS-ren idazketa-metodoaren zerbitzua</translation>
 <translation id="6137767437444130246">Erabiltzaile-ziurtagiria</translation>
 <translation id="6146993107019042706">Amaitzeko, idatzi pasahitz berria</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -660,6 +662,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8398927464629426868">Gailua zer abiaduratan kargatzen edo deskargatzen ari den</translation>
 <translation id="8422748173858722634">IMEIa</translation>
 <translation id="8428073762635678092">Teklatu integratua</translation>
+<translation id="8431300646573772016">Chrome OS-ren berritasunak</translation>
 <translation id="843568408673868420">Interneteko konexioa</translation>
 <translation id="844521431886043384">Ez dago DNSrik konfiguratuta</translation>
 <translation id="8461329675984532579">Hasierako hornitzailearen izena</translation>

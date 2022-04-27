@@ -200,6 +200,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2107914222138020205">USB-C-johto ei tue Thunderboltia. Laitteen toiminta voi olla rajoitettua.</translation>
 <translation id="2108303511227308752">Pikanäppäinyhdistelmä Alt + askelpalautin on muuttunut. Jos haluat käyttää Delete-näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + askelpalautin.</translation>
 <translation id="211328683600082144">KÄYNNISTÄ MIKROFONI</translation>
+<translation id="2123115117533398272">Chrome-käyttöjärjestelmä näyttää ehdotuksia uudesta sisällöstä. Lähettää tilastoja laadun parantamiseksi vain, jos olet sallinut käyttödatan jakamisen. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">Uusi työpöytä</translation>
 <translation id="2127372758936585790">Pienitehoinen laturi</translation>
 <translation id="2132302418721800944">Tallenna koko näyttö</translation>
@@ -270,6 +271,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2620436844016719705">Järjestelmä</translation>
 <translation id="2621713457727696555">Suojattu</translation>
 <translation id="263399434338050016">"Valitse kaikki"</translation>
+<translation id="2645435784669275700">Chrome-käyttöjärjestelmä</translation>
 <translation id="2653019840645008922">Ikkunan tallennus</translation>
 <translation id="2653659639078652383">Lähetä</translation>
 <translation id="2658778018866295321">Klikkaa ja vedä</translation>
@@ -395,6 +397,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3375634426936648815">Yhdistetty</translation>
 <translation id="3378442621503952303">Muodostetaan yhteyttä profiiliin. Odota muutama minuutti.</translation>
 <translation id="3386978599540877378">koko näytön suurentaja</translation>
+<translation id="3387527074123400161">Chromium-käyttöjärjestelmä</translation>
 <translation id="3400357268283240774">Lisäasetukset</translation>
 <translation id="3410336247007142655">Näytä tumman teeman asetukset</translation>
 <translation id="3413817803639110246">Ei mitään nähtävää vielä</translation>

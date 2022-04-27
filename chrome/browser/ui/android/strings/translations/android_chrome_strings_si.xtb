@@ -30,6 +30,7 @@
 <translation id="1146678959555564648">VR ඇතුළු කරන්න</translation>
 <translation id="114825011539563458">වඩාත්ම වැදගත් පෞද්ගලිකත්වය සහ ආරක්ෂක පාලන එක තැනකය</translation>
 <translation id="1149401351239820326">කල් ඉකුත් වන මාසය</translation>
+<translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome තුළ විවෘත වනු ඇත. ඉදිරියට යාමෙන්, ඔබ <ph name="BEGIN_LINK1" />Google සේවා නියම<ph name="END_LINK1" /> සහ <ph name="BEGIN_LINK2" />Google Chrome සහ ChromeOS අතිරේක සේවා නියම<ph name="END_LINK2" /> සමග එකඟ වේ.</translation>
 <translation id="1154704303112745282">පිටුව නොබැඳිව ලබා ගත නොහැකිය: <ph name="VIOLATED_URL" /></translation>
 <translation id="1171770572613082465">"ඉහළම වෙබ් අඩවි" බොත්තමට තට්ටු කිරීමෙන් ජනප්‍රිය වෙබ් අඩවි බලන්න</translation>
 <translation id="1173894706177603556">ප්‍රතිනම්</translation>
@@ -208,6 +209,7 @@
 <translation id="2126426811489709554">Chrome විසින් බලගන්වන ලද</translation>
 <translation id="2132122640199389833">සියලුම සබැඳි කළ උපාංග ඉවත් කරන්න</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> වසන ලදී</translation>
+<translation id="2134927169889348449">Chrome භාවිත කිරීමෙන්, ඔබ <ph name="BEGIN_TOS_LINK" />Google සේවා නියම<ph name="END_TOS_LINK" /> සහ <ph name="BEGIN_ATOS_LINK" />Google Chrome සහ ChromeOS අතිරේක සේවා නියම<ph name="END_ATOS_LINK" /> සමග එකඟ වේ.</translation>
 <translation id="2139186145475833000">මුල් පිටු තිරයට එක් කරන්න</translation>
 <translation id="2141396931810938595">ඔබගේ භාවිතය මත පදනම්ව</translation>
 <translation id="214888715418183969">ඔබ Chrome සමග පහසුවෙන් බෙදා ගන්නේ කුමන දේවල්ද යන්න තෝරන්න. ඔබ බෙදාගන්නා මාත්‍රික Chrome හි විශේෂාංග, ක්‍රියාකාරීත්වය සහ ස්ථායිතාව වැඩි දියුණු කිරීමට උපකාරී වේ.</translation>
@@ -392,6 +394,7 @@
 <translation id="3062802207422175757">Chrome හි ඔබේ රුචිකත්ව ගැන ලිපි</translation>
 <translation id="3066573403916685335">පහළට ගෙන යන්න</translation>
 <translation id="3070005020161560471">ස්වයංක්‍රියව පරිවර්තනය කරන්න</translation>
+<translation id="3072980200212375806"><ph name="APP_NAME" /> Chrome තුළ විවෘත වනු ඇත. ඉදිරියට යාමෙන්, ඔබ <ph name="BEGIN_LINK1" />Google සේවා නියම<ph name="END_LINK1" /> සහ <ph name="BEGIN_LINK2" />Google Chrome සහ ChromeOS අතිරේක සේවා නියම<ph name="END_LINK2" /> සමග එකඟ වේ. <ph name="BEGIN_LINK3" />පෞද්ගලිකත්ව ප්‍රතිපත්තිය<ph name="END_LINK3" /> ද අදාළ වේ.</translation>
 <translation id="3091010850649238832">පසුරු පුවරු අන්තර්ගතය පෙන්වන්න</translation>
 <translation id="3098745985164956033">ඔබ සඳහා විස්තර වැඩි දියුණු කිරීම සඳහා සමහර පින්තූර Google වෙත යවනු ලැබේ</translation>
 <translation id="3114507951000454849">අද දවසේ <ph name="NEWS_ICON" /> පුවත් කියවන්න</translation>
@@ -583,6 +586,7 @@
 <translation id="4269820728363426813">ලින්ක් ලිපිනය පිටපත් කරන්න</translation>
 <translation id="4290281343757112331">ඒ වෙනුවට පසුව බාගන්නද?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android සැකසීම් තුළ තිර අගුල ක්‍රියාත්මක කරන්න<ph name="END_LINK" /></translation>
+<translation id="4293476595220860475">Chrome භාවිත කිරීමෙන්, ඔබ <ph name="BEGIN_TOS_LINK" />Google සේවා නියම<ph name="END_TOS_LINK" /> සහ <ph name="BEGIN_ATOS_LINK" />Google Chrome සහ ChromeOS අතිරේක සේවා නියම<ph name="END_ATOS_LINK" /> සමග එකඟ වේ. <ph name="BEGIN_PRIVACY_LINK" />පෞද්ගලිකත්ව ප්‍රතිපත්තිය<ph name="END_PRIVACY_LINK" /> ද අදාළ වේ.</translation>
 <translation id="4296252229500326964">නව අප්‍රකට ටැබය</translation>
 <translation id="4298388696830689168">සබැඳි කළ වෙබ් අඩවි</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -1048,6 +1052,7 @@
 <translation id="6767294960381293877">අර්ධ උසකින් විවෘත කර ඇති පටිත්තක් බෙදා ගැනීම සඳහා වන උපාංග ලැයිස්තුව.</translation>
 <translation id="6770602306803890733">ඔබේ සහ වෙබය මත සියලු දෙනාගේම ආරක්‍ෂාව වැඩිදියුණු කරයි</translation>
 <translation id="6783942555455976443">මෙම පිටුව පසුව සුරකින්න සහ සිහිකැඳවීමක් ලබා ගන්න</translation>
+<translation id="6785476624617658922">Chrome සහ ChromeOS අතිරේක සේවා නියම</translation>
 <translation id="6795633245022906657">ඉක්මනින් නව ටැබයක් විවෘත කරන්න. මෙම කෙටිමඟ සංස්කරණය කිරීමට, සැකසීම් වෙත යන්න.</translation>
 <translation id="6802555630140434547">කවුළුව වැසෙනු ඇත</translation>
 <translation id="6811034713472274749">පිටුව බැලීමට සූදානම්</translation>

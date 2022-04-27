@@ -201,6 +201,7 @@
 <translation id="2107914222138020205">사용 중인 USB-C 케이블은 Thunderbolt를 지원하지 않습니다. 기기 성능이 제한될 수 있습니다.</translation>
 <translation id="2108303511227308752">Alt + Backspace 단축키가 변경되었습니다. Delete 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + backspace 키를 누르세요.</translation>
 <translation id="211328683600082144">마이크 켜기</translation>
+<translation id="2123115117533398272">ChromeOS에서 탐색할 새 추천 콘텐츠를 표시합니다. 사용 데이터를 공유하기로 선택한 경우에만 추천 기능 개선을 위해 통계를 전송합니다. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">새 데스크</translation>
 <translation id="2127372758936585790">저출력 충전기</translation>
 <translation id="2132302418721800944">화면 전체 녹화</translation>
@@ -271,6 +272,7 @@
 <translation id="2620436844016719705">시스템</translation>
 <translation id="2621713457727696555">보안</translation>
 <translation id="263399434338050016">"모두 선택"</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">창 캡처</translation>
 <translation id="2653659639078652383">제출</translation>
 <translation id="2658778018866295321">클릭하여 드래그</translation>
@@ -396,6 +398,7 @@
 <translation id="3375634426936648815">연결됨</translation>
 <translation id="3378442621503952303">프로필에 연결하는 중입니다. 잠시만 기다려 주세요.</translation>
 <translation id="3386978599540877378">전체 화면 돋보기</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">추가 설정</translation>
 <translation id="3410336247007142655">어두운 테마 설정 표시</translation>
 <translation id="3413817803639110246">표시할 내용 없음</translation>

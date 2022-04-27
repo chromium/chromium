@@ -201,6 +201,7 @@
 <translation id="2107914222138020205">ខ្សែ USB-C របស់អ្នកមិនអាចប្រើ Thunderbolt បានទេ។ ប្រតិបត្តិការឧបករណ៍អាចត្រូវ​បានដាក់កំហិត។</translation>
 <translation id="2108303511227308752">បានប្ដូរ​ផ្លូវកាត់ក្ដារចុច Alt + Backspace។ ដើម្បីប្រើ​គ្រាប់ចុច Delete សូមចុចគ្រាប់ចុច <ph name="LAUNCHER_KEY_NAME" /> + backspace។</translation>
 <translation id="211328683600082144">បើក​មីក្រូហ្វូន</translation>
+<translation id="2123115117533398272">ChromeOS បង្ហាញ​ការណែនាំ​ខ្លឹមសារថ្មី​សម្រាប់ធ្វើការរុករក។ ផ្ញើស្ថិតិ ដើម្បីកែលម្អគុណភាព លុះត្រាតែអ្នក​បានជ្រើសរើស​ចែករំលែកទិន្នន័យ​ប្រើប្រាស់ប៉ុណ្ណោះ។ <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">តុធ្វើការថ្មី</translation>
 <translation id="2127372758936585790">ឆ្នាំងសាកផ្តល់ថាមពលទាប</translation>
 <translation id="2132302418721800944">ថតវីដេអូ​ពេញអេក្រង់</translation>
@@ -271,6 +272,7 @@
 <translation id="2620436844016719705">ប្រព័ន្ធ</translation>
 <translation id="2621713457727696555">មាន​សុវត្ថិភាព</translation>
 <translation id="263399434338050016">"ជ្រើសរើសទាំងអស់"</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">ថតវិនដូ</translation>
 <translation id="2653659639078652383">ដាក់ស្នើ</translation>
 <translation id="2658778018866295321">ចុចហើយអូស</translation>
@@ -396,6 +398,7 @@
 <translation id="3375634426936648815">បានភ្ជាប់</translation>
 <translation id="3378442621503952303">កំពុងភ្ជាប់ជាមួយកម្រងព័ត៌មាន។ សូមរង់ចាំមួយភ្លែត។</translation>
 <translation id="3386978599540877378">កម្មវិធីពង្រីក​ពេញ​អេក្រង់</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">ការកំណត់​បន្ថែម</translation>
 <translation id="3410336247007142655">បង្ហាញការ​កំណត់​រចនាប័ទ្ម​ងងឹត</translation>
 <translation id="3413817803639110246">មិនទាន់មានអ្វីថ្មីនៅឡើយទេ</translation>

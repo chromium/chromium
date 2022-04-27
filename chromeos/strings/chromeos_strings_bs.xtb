@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">Vrsta uređaja je nepoznata.</translation>
 <translation id="3966286471246132217">Da dobijete tačnije rezultate, zatvorite sve aplikacije dok se test ne završi.</translation>
 <translation id="3967822245660637423">Preuzimanje je završeno</translation>
+<translation id="3969602104473960991">Lozinka za ChromeOS je ažurirana</translation>
 <translation id="397105322502079400">Računanje…</translation>
 <translation id="39823212440917567">Zadaci za štampanje stariji od <ph name="NUMBER_OF_DAYS" /> dana će se ukloniti</translation>
 <translation id="3993704782688964914">Vaš uređaj <ph name="DEVICE_NAME" /> je sada ažuriran</translation>
@@ -462,6 +463,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6113701710518389813">Strelica nagore</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, + još <ph name="NUMBER" /> album(a)</translation>
 <translation id="6122191549521593678">Na mreži</translation>
+<translation id="6122277663991249694">Usluga načina unosa u ChromeOS</translation>
 <translation id="6137767437444130246">Korisnički certifikat</translation>
 <translation id="6146993107019042706">Unesite novu lozinku da završite</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -660,6 +662,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="8398927464629426868">Brzina kojom se uređaj trenutno puni ili prazni</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Interna tastatura</translation>
+<translation id="8431300646573772016">Novosti iz ChromeOS-a</translation>
 <translation id="843568408673868420">Povezivanje s internetom</translation>
 <translation id="844521431886043384">DNS nije postavljen</translation>
 <translation id="8461329675984532579">Naziv mobilnog operatera</translation>

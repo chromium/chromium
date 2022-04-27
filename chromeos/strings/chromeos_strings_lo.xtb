@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">ບໍ່ຮູ້ປະເພດອຸປະກອນ.</translation>
 <translation id="3966286471246132217">ເພື່ອຮັບຜົນການຊອກຫາທີ່ມີຄວາມຖືກຕ້ອງຍິ່ງຂຶ້ນ, ໃຫ້ປິດແອັບທັງໝົດຈົນກວ່າການທົດສອບຈະສຳເລັດ.</translation>
 <translation id="3967822245660637423">ດາວ​ໂຫຼດ​ສຳ​ເລັດ</translation>
+<translation id="3969602104473960991">ອັບເດດລະຫັດຜ່ານ ChromeOS ແລ້ວ</translation>
 <translation id="397105322502079400">ກໍາລັງຄິດ​ໄລ່...</translation>
 <translation id="39823212440917567">ວຽກພິມທີ່ເກົ່າກວ່າ <ph name="NUMBER_OF_DAYS" /> ມື້ຈະຖືກລຶບອອກ</translation>
 <translation id="3993704782688964914">ຕອນນີ້ອັບເດດ <ph name="DEVICE_NAME" /> ຂອງທ່ານແລ້ວ</translation>
@@ -462,6 +463,7 @@
 <translation id="6113701710518389813">ລູກສອນຂຶ້ນ</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> ອະ​ລະ​ບ້ຳ​ເພີ່ມ​ເຕີມ</translation>
 <translation id="6122191549521593678">ອອນ​ລາຍ</translation>
+<translation id="6122277663991249694">ບໍລິການວິທີການປ້ອນຂໍ້ມູນຂອງ ChromeOS</translation>
 <translation id="6137767437444130246">ໃບຮັບຮອງຜູ້ໃຊ້</translation>
 <translation id="6146993107019042706">ເພື່ອດຳເນີນການໃຫ້ສຳເລັດ, ກະລຸນາປ້ອນລະຫັດຜ່ານໃໝ່ຂອງທ່ານ</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -661,6 +663,7 @@
 <translation id="8398927464629426868">ອັດຕາການສາກ ຫຼື ຄາຍປະຈຸຂອງອຸປະກອນໃນປັດຈຸບັນ</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">ແປ້ນພິມພາຍໃນ</translation>
+<translation id="8431300646573772016">ມີຫຍັງໃໝ່ກັບ ChromeOS</translation>
 <translation id="843568408673868420">ການເຊື່ອມຕໍ່ອິນເຕີເນັດ</translation>
 <translation id="844521431886043384">ບໍ່ໄດ້ຕັ້ງຄ່າ DNS ເທື່ອ</translation>
 <translation id="8461329675984532579">ຊື່ຜູ້ໃຫ້ບໍລິການ Home</translation>

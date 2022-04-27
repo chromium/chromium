@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">Ο τύπος συσκευής είναι άγνωστος.</translation>
 <translation id="3966286471246132217">Για πιο ακριβή αποτελέσματα, κλείστε όλες τις εφαρμογές έως ότου ολοκληρωθεί ο έλεγχος.</translation>
 <translation id="3967822245660637423">Ολοκλήρωση λήψης</translation>
+<translation id="3969602104473960991">Ο κωδικός πρόσβασης του Chrome OS ενημερώθηκε</translation>
 <translation id="397105322502079400">Υπολογισμός…</translation>
 <translation id="39823212440917567">Οι εργασίες εκτύπωσης που είναι παλαιότερες των <ph name="NUMBER_OF_DAYS" /> ημερών θα καταργηθούν.</translation>
 <translation id="3993704782688964914">Η συσκευή <ph name="DEVICE_NAME" /> είναι ενημερωμένη</translation>
@@ -462,6 +463,7 @@
 <translation id="6113701710518389813">Επάνω βέλος</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> ακόμη λευκώματα</translation>
 <translation id="6122191549521593678">Συνδεδεμένο</translation>
+<translation id="6122277663991249694">Υπηρεσία μεθόδου εισαγωγής Chrome OS</translation>
 <translation id="6137767437444130246">Πιστοποιητικό χρήστη</translation>
 <translation id="6146993107019042706">Για να ολοκληρώσετε, εισαγάγετε τον νέο κωδικό πρόσβασης</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -660,6 +662,7 @@
 <translation id="8398927464629426868">Ο ρυθμός με τον οποίο φορτίζεται ή εκφορτίζεται η συσκευή αυτήν τη στιγμή.</translation>
 <translation id="8422748173858722634">Αριθμός ΙΜΕΙ</translation>
 <translation id="8428073762635678092">Ενσωματωμένο πληκτρολόγιο</translation>
+<translation id="8431300646573772016">Νέα στοιχεία Chrome OS</translation>
 <translation id="843568408673868420">Συνδεσιμότητα στο διαδίκτυο</translation>
 <translation id="844521431886043384">Το DNS δεν έχει ρυθμιστεί.</translation>
 <translation id="8461329675984532579">Όνομα παρόχου αρχικής σελίδας</translation>

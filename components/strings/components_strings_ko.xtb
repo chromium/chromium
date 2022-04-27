@@ -508,6 +508,7 @@
 <translation id="2298855485018661510">쿠키 관리 버튼, Enter를 눌러 Chrome 설정에서 쿠키 환경설정 관리</translation>
 <translation id="2300306941146563769">업로드되지 않음</translation>
 <translation id="2310021320168182093">Chou2(봉투)</translation>
+<translation id="2316159751672436664">ChromeOS 설정에서 접근성 도구 맞춤설정</translation>
 <translation id="2316887270356262533">1MB 미만의 저장용량을 확보합니다. 일부 사이트는 다음 방문 시 로드 속도가 느려질 수 있습니다.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" />에 사용자 이름과 비밀번호를 입력해야 합니다.</translation>
 <translation id="2318594867107319532">마지막 정책 타임스탬프:</translation>
@@ -1660,6 +1661,7 @@
 <translation id="5518670652865028077">예술 및 엔터테인먼트</translation>
 <translation id="5519516356611866228">변경사항 포함</translation>
 <translation id="5523118979700054094">정책 이름</translation>
+<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ChromeOS 설정에서 접근성 도구를 맞춤설정하려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="5528532273234423708">홈 자동화</translation>
 <translation id="55293785478302737">에지 스티치</translation>
 <translation id="553484882784876924">Prc6(봉투)</translation>
@@ -2238,6 +2240,7 @@
 <translation id="722454870747268814">새 시크릿 탭</translation>
 <translation id="7233592378249864828">인쇄 확인 시트</translation>
 <translation id="7234638337680728591">유가 및 자동차 주유</translation>
+<translation id="7237492777898608035">사이트에서 이러한 메시지를 다시 표시하지 않음</translation>
 <translation id="7238585580608191973">SHA-256 지문</translation>
 <translation id="7240120331469437312">인증서 대상 대체 이름</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -2619,6 +2622,7 @@
 <translation id="8242426110754782860">계속</translation>
 <translation id="8249296373107784235">중단</translation>
 <translation id="8249463483885748674">표준 시험 및 입학 시험</translation>
+<translation id="8252991034201168845">접근성 설정 관리 버튼, ChromeOS 설정의 접근성 도구를 맞춤설정하려면 Enter를 누르세요</translation>
 <translation id="8253091569723639551">청구지 주소 필요</translation>
 <translation id="8257387598443225809">모바일용 앱</translation>
 <translation id="825929999321470778">저장된 비밀번호 모두 표시</translation>

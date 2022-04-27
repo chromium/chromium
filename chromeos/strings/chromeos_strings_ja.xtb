@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">デバイスの種類は不明です。</translation>
 <translation id="3966286471246132217">より正確な結果を得るには、テストが完了するまですべてのアプリを閉じてください。</translation>
 <translation id="3967822245660637423">ダウンロード完了</translation>
+<translation id="3969602104473960991">Chrome OS のパスワードが更新されました</translation>
 <translation id="397105322502079400">計算しています...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> 日より前の印刷ジョブは削除されます</translation>
 <translation id="3993704782688964914">お使いの「<ph name="DEVICE_NAME" />」は最新の状態です</translation>
@@ -462,6 +463,7 @@
 <translation id="6113701710518389813">上矢印</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />、他 <ph name="NUMBER" /> 個のアルバム</translation>
 <translation id="6122191549521593678">オンライン</translation>
+<translation id="6122277663991249694">Chrome OS の入力方法サービス</translation>
 <translation id="6137767437444130246">ユーザー証明書</translation>
 <translation id="6146993107019042706">終了するには、新しいパスワードを入力してください</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -660,6 +662,7 @@
 <translation id="8398927464629426868">現在デバイスが充電または放電している速度</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">内部キーボード</translation>
+<translation id="8431300646573772016">Chrome OS の最新情報</translation>
 <translation id="843568408673868420">インターネット接続</translation>
 <translation id="844521431886043384">DNS が設定されていません</translation>
 <translation id="8461329675984532579">ホーム プロバイダ名</translation>

@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">ကိရိယာအမျိုးအစား မသိပါ။</translation>
 <translation id="3966286471246132217">ပိုမိုတိကျသော ရလဒ်များအတွက် စစ်ဆေးမှုပြီးသည်အထိ အက်ပ်အားလုံးကို ပိတ်ပါ။</translation>
 <translation id="3967822245660637423">ဒေါင်းလုဒ်လုပ်ခြင်း ပြည့်စုံပါပြီ</translation>
+<translation id="3969602104473960991">ChromeOS စကားဝှက် အပ်ဒိတ်လုပ်ထားသည်</translation>
 <translation id="397105322502079400">တွက်ချက်နေ...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ရက်အထက် ပရင့်ထုတ်ရန်ဖိုင်များကို ဖယ်ရှားပါမည်</translation>
 <translation id="3993704782688964914">ယခု သင့် <ph name="DEVICE_NAME" /> အပ်ဒိတ်ဖြစ်နေပါပြီ</translation>
@@ -461,6 +462,7 @@
 <translation id="6113701710518389813">အပေါ်ညွှန်မြား</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />၊ + နောက်ထပ်အယ်လ်ဘမ် <ph name="NUMBER" /> ခု</translation>
 <translation id="6122191549521593678">အွန်လိုင်း</translation>
+<translation id="6122277663991249694">ChromeOS လက်ကွက်ဝန်ဆောင်မှု</translation>
 <translation id="6137767437444130246">အသုံးပြုသူ အသိအမှတ်ပြုလက်မှတ်</translation>
 <translation id="6146993107019042706">အပြီးသတ်ရန် သင့်စကားဝှက်အသစ်ကို ထည့်ပါ</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -659,6 +661,7 @@
 <translation id="8398927464629426868">စက်ပစ္စည်း၏ လက်ရှိအားသွင်းနှုန်း (သို့) အားလျော့နှုန်း</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">အတွင်းပိုင်း ကီးဘုတ်</translation>
+<translation id="8431300646573772016">ChromeOS ၏ အသစ်ပါဝင်မှု</translation>
 <translation id="843568408673868420">အင်တာနက် ချိတ်ဆက်မှု</translation>
 <translation id="844521431886043384">DNS စနစ်ထည့်သွင်းမထားပါ</translation>
 <translation id="8461329675984532579">ပင်မထောက်ပံ့သူအမည်</translation>

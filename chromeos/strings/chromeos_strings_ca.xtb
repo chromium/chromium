@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">El tipus de dispositiu és desconegut.</translation>
 <translation id="3966286471246132217">Per obtenir uns resultats més precisos, tanca totes les aplicacions fins que la prova hagi finalitzat.</translation>
 <translation id="3967822245660637423">S'ha completat la baixada</translation>
+<translation id="3969602104473960991">S'ha actualitzat la contrasenya de Chrome OS</translation>
 <translation id="397105322502079400">S’està calculant...</translation>
 <translation id="39823212440917567">Se suprimiran les tasques d'impressió amb una antiguitat superior a <ph name="NUMBER_OF_DAYS" /> dies</translation>
 <translation id="3993704782688964914">El dispositiu <ph name="DEVICE_NAME" /> s'acaba d'actualitzar</translation>
@@ -462,6 +463,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6113701710518389813">Fletxa amunt</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> i <ph name="NUMBER" /> àlbums més</translation>
 <translation id="6122191549521593678">En línia</translation>
+<translation id="6122277663991249694">Servei del mètode d'introducció de text a Chrome OS</translation>
 <translation id="6137767437444130246">Certificat d'usuari</translation>
 <translation id="6146993107019042706">Per acabar, introdueix la contrasenya nova</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -660,6 +662,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8398927464629426868">El percentatge al qual s'està carregant o descarregant el dispositiu actualment</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Teclat intern</translation>
+<translation id="8431300646573772016">Novetats de Chrome OS</translation>
 <translation id="843568408673868420">Connectivitat a Internet</translation>
 <translation id="844521431886043384">No s'ha configurat el DNS</translation>
 <translation id="8461329675984532579">Nom del proveïdor domèstic</translation>

@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">ಸಾಧನದ ಪ್ರಕಾರವು ತಿಳಿದಿಲ್ಲ.</translation>
 <translation id="3966286471246132217">ಇನ್ನಷ್ಟು ನಿಖರವಾದ ಫಲಿತಾಂಶಗಳಿಗಾಗಿ, ಪರೀಕ್ಷೆ ಪೂರ್ಣಗೊಳ್ಳುವವರೆಗೆ ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳನ್ನು ಮುಚ್ಚಿ.</translation>
 <translation id="3967822245660637423">ಡೌನ್‌ಲೋಡ್‌‌ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
+<translation id="3969602104473960991">ChromeOS ಪಾಸ್‌ವರ್ಡ್ ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="397105322502079400">ಎಣಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ದಿನಗಳಿಗಿಂತ ಹಳೆಯದಾದ ಮುದ್ರಣ ಕಾರ್ಯಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
 <translation id="3993704782688964914">ನಿಮ್ಮ <ph name="DEVICE_NAME" /> ಈಗ ಅಪ್‌ ಟು ಡೇಟ್‌‌ ಆಗಿದೆ</translation>
@@ -461,6 +462,7 @@
 <translation id="6113701710518389813">ಅಪ್ ಆ್ಯರೋ</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, + ಇನ್ನೂ <ph name="NUMBER" /> ಆಲ್ಬಮ್‌ಗಳು</translation>
 <translation id="6122191549521593678">ಆನ್‌ಲೈನ್</translation>
+<translation id="6122277663991249694">ChromeOS ಇನ್‌ಪುಟ್ ವಿಧಾನ ಸೇವೆ</translation>
 <translation id="6137767437444130246">ಬಳಕೆದಾರರ ಪ್ರಮಾಣಪತ್ರ</translation>
 <translation id="6146993107019042706">ಪೂರ್ಣಗೊಳಿಸಲು, ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -659,6 +661,7 @@
 <translation id="8398927464629426868">ಸಾಧನವು ಪ್ರಸ್ತುತವಾಗಿ ಚಾರ್ಜ್ ಅಥವಾ ಡಿಸ್‌ಚಾರ್ಜ್ ಆಗುತ್ತಿರುವ ದರ</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">ಅಂತರಿಕ ಕೀಬೋರ್ಡ್</translation>
+<translation id="8431300646573772016">ChromeOS ನಲ್ಲಿ ಹೊಸದೇನಿದೆ</translation>
 <translation id="843568408673868420">ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕ</translation>
 <translation id="844521431886043384">DNS ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿಲ್ಲ</translation>
 <translation id="8461329675984532579">Home ಪೂರೈಕೆದಾರರ ಹೆಸರು</translation>

@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">មិន​ស្គាល់​ប្រភេទឧបករណ៍។</translation>
 <translation id="3966286471246132217">ដើម្បី​ទទួលបាន​លទ្ធផល​កាន់តែ​សុក្រឹត សូមបិទ​កម្មវិធី​ទាំងអស់ រហូតដល់​បញ្ចប់​ការធ្វើតេស្ត​។</translation>
 <translation id="3967822245660637423">ការទាញយកបានបញ្ចប់</translation>
+<translation id="3969602104473960991">បានប្ដូរ​ពាក្យសម្ងាត់ ChromeOS</translation>
 <translation id="397105322502079400">កំពុងគណនា...</translation>
 <translation id="39823212440917567">កិច្ចការបោះពុម្ព​ដែលចាស់ជាង <ph name="NUMBER_OF_DAYS" /> ថ្ងៃ​នឹងត្រូវបាន​លុបចេញ</translation>
 <translation id="3993704782688964914">ឥឡូវនេះ <ph name="DEVICE_NAME" /> របស់អ្នកមានកំណែថ្មីបំផុតហើយ</translation>
@@ -461,6 +462,7 @@
 <translation id="6113701710518389813">ព្រួញ​ឡើង​លើ</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, អាល់ប៊ុម +<ph name="NUMBER" /> ទៀត</translation>
 <translation id="6122191549521593678">លើអ៊ីនធឺណិត</translation>
+<translation id="6122277663991249694">សេវាកម្ម​វិធីបញ្ចូល ChromeOS</translation>
 <translation id="6137767437444130246">វិញ្ញាបនបត្រ​អ្នក​ប្រើប្រាស់</translation>
 <translation id="6146993107019042706">ដើម្បី​បញ្ចប់ សូម​បញ្ចូល​ពាក្យសម្ងាត់​ថ្មីរបស់អ្នក</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -659,6 +661,7 @@
 <translation id="8398927464629426868">អត្រាដែលឧបករណ៍កំពុងសាកថ្ម ឬបញ្ចេញថាមពលក្នុងពេលបច្ចុប្បន្ន</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">ក្តារចុច​ដែលភ្ជាប់មក​ជាមួយស្រាប់</translation>
+<translation id="8431300646573772016">អ្វីដែលថ្មីក្នុង ChromeOS</translation>
 <translation id="843568408673868420">ការតភ្ជាប់អ៊ីនធឺណិត</translation>
 <translation id="844521431886043384">មិនបានរៀបចំ DNS ទេ</translation>
 <translation id="8461329675984532579">ឈ្មោះអ្នកផ្តល់សេវាកម្មនៅផ្ទះ</translation>

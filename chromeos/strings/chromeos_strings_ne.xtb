@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">यो डिभाइस कुन प्रकारको डिभाइस हो भन्ने जानकारी उपलब्ध छैन।</translation>
 <translation id="3966286471246132217">अझ सटीक परिणामहरू प्राप्त गर्न जाँच पूरा नहुँदासम्म सबै एप बन्द राख्नुहोस्।</translation>
 <translation id="3967822245660637423">डाउनलोड पूर्ण भयो</translation>
+<translation id="3969602104473960991">ChromeOS को पासवर्ड परिवर्तन गरिएको छ</translation>
 <translation id="397105322502079400">हिसाब गर्दै...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> दिनभन्दा पहिलेका प्रिन्टसम्बन्धी कार्यहरू हटाइने छ</translation>
 <translation id="3993704782688964914">तपाईंको <ph name="DEVICE_NAME" /> अप टु डेट छ</translation>
@@ -461,6 +462,7 @@
 <translation id="6113701710518389813">अप एरो</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, थप <ph name="NUMBER" /> एल्बमहरू</translation>
 <translation id="6122191549521593678">अनलाइन</translation>
+<translation id="6122277663991249694">ChromeOS को इनपुट विधिसम्बन्धी सेवा</translation>
 <translation id="6137767437444130246">प्रयोगकर्ताको प्रमाणपत्र</translation>
 <translation id="6146993107019042706">यो कार्य पूरा गर्न आफ्नो नयाँ पासवर्ड प्रविष्टि गर्नुहोस्</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -659,6 +661,7 @@
 <translation id="8398927464629426868">यन्त्र हाल चार्ज वा डिस्चार्ज भइरहेको दर</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">इन्टर्नल किबोर्ड</translation>
+<translation id="8431300646573772016">ChromeOS मा नयाँ के छ</translation>
 <translation id="843568408673868420">इन्टरनेट कनेक्सन</translation>
 <translation id="844521431886043384">DNS सेट अप गरिएको छैन</translation>
 <translation id="8461329675984532579">गृह प्रदायकको नाम</translation>

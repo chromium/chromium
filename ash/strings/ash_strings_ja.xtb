@@ -201,6 +201,7 @@
 <translation id="2107914222138020205">USB-C ケーブルは Thunderbolt に対応していません。デバイスのパフォーマンスが制限される可能性があります。</translation>
 <translation id="2108303511227308752">キーボード ショートカット「Alt+Backspace」が変更されました。Delete キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+Backspace キーを押してください。</translation>
 <translation id="211328683600082144">マイクをオンにする</translation>
+<translation id="2123115117533398272">Chrome OS により新しいコンテンツの検索候補を表示します。使用状況データの共有を選択した場合のみ、検索候補の精度を向上させるために統計情報を送信します。<ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">新しいデスク</translation>
 <translation id="2127372758936585790">低電力の充電器</translation>
 <translation id="2132302418721800944">全画面を録画</translation>
@@ -271,6 +272,7 @@
 <translation id="2620436844016719705">システム</translation>
 <translation id="2621713457727696555">保護あり</translation>
 <translation id="263399434338050016">"すべて選択"</translation>
+<translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2653019840645008922">ウィンドウ キャプチャ</translation>
 <translation id="2653659639078652383">送信</translation>
 <translation id="2658778018866295321">クリックしてドラッグ</translation>
@@ -396,6 +398,7 @@
 <translation id="3375634426936648815">接続完了</translation>
 <translation id="3378442621503952303">プロファイルに接続しています。数分お待ちください。</translation>
 <translation id="3386978599540877378">全画面拡大鏡</translation>
+<translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">その他の設定</translation>
 <translation id="3410336247007142655">ダークモードの設定を表示</translation>
 <translation id="3413817803639110246">通知はありません</translation>

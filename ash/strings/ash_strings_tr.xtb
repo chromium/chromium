@@ -201,6 +201,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2107914222138020205">USB-C kablonuz Thunderbolt'u desteklemiyor. Cihaz performansı sınırlı olabilir.</translation>
 <translation id="2108303511227308752">Alt + Geri tuşu klavye kısayolu değişti. Delete tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> + geri tuşlarına basın.</translation>
 <translation id="211328683600082144">MİKROFONU AÇ</translation>
+<translation id="2123115117533398272">ChromeOS, keşfedilecek yeni içerik önerileri sunar. Yalnızca kullanım verilerini paylaşmayı seçtiyseniz önerileri iyileştirmek için istatistikleri gönderir. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">Yeni masa</translation>
 <translation id="2127372758936585790">Düşük güçlü şarj cihazı</translation>
 <translation id="2132302418721800944">Tam ekran kaydet</translation>
@@ -271,6 +272,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2621713457727696555">Güvenlik sağlandı</translation>
 <translation id="263399434338050016">"Tümünü seç"</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Pencere ekran görüntüsü alma</translation>
 <translation id="2653659639078652383">Gönder</translation>
 <translation id="2658778018866295321">Tıkla ve sürükle</translation>
@@ -396,6 +398,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3375634426936648815">Bağlı</translation>
 <translation id="3378442621503952303">Profile bağlanılıyor. Birkaç dakika bekleyin.</translation>
 <translation id="3386978599540877378">tam ekran büyüteci</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">Ek ayarlar</translation>
 <translation id="3410336247007142655">Koyu tema ayarlarını göster</translation>
 <translation id="3413817803639110246">Henüz görülecek bir şey yok</translation>

@@ -248,6 +248,7 @@
 <translation id="3954678691475912818">기기 유형을 알 수 없습니다.</translation>
 <translation id="3966286471246132217">더욱 정확한 결과를 위해 테스트가 완료될 때까지 모든 앱을 닫으세요.</translation>
 <translation id="3967822245660637423">다운로드 완료</translation>
+<translation id="3969602104473960991">ChromeOS 비밀번호 업데이트됨</translation>
 <translation id="397105322502079400">계산 중...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" />일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> 버전이 최신임</translation>
@@ -462,6 +463,7 @@
 <translation id="6113701710518389813">위쪽 화살표</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, <ph name="NUMBER" />개 앨범 더 보기</translation>
 <translation id="6122191549521593678">온라인</translation>
+<translation id="6122277663991249694">ChromeOS 입력 방법 서비스</translation>
 <translation id="6137767437444130246">사용자 인증서</translation>
 <translation id="6146993107019042706">완료하려면 새 비밀번호를 입력하세요.</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -660,6 +662,7 @@
 <translation id="8398927464629426868">기기가 현재 충전 또는 방전되는 속도</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">내부 키보드</translation>
+<translation id="8431300646573772016">ChromeOS의 새로운 기능</translation>
 <translation id="843568408673868420">인터넷 연결</translation>
 <translation id="844521431886043384">DNS가 설정되어 있지 않습니다.</translation>
 <translation id="8461329675984532579">홈 공급자 이름</translation>

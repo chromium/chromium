@@ -893,6 +893,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8588404856427128947">Désactivée</translation>
 <translation id="8590913940444621808">Ne jamais demander</translation>
 <translation id="8591976964826315682">Bloquer les témoins tiers en navigation privée</translation>
+<translation id="8592752150819985187">Remplir automatiquement les mots de passe</translation>
 <translation id="8605219856220328675">Fermer l'onglet.</translation>
 <translation id="8620640915598389714">Modifier</translation>
 <translation id="8626393685701737946">Vous pouvez modifier l'affichage du site par défaut pour le mode Bureau dans Paramètres &gt; Paramètres de contenu</translation>
@@ -911,6 +912,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8741995161408053644">D'autres formes d'historique de navigation peuvent exister sur votre compte Google : <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Vous trouverez vos onglets ici</translation>
 <translation id="8756969031206844760">Mettre à jour le mot de passe?</translation>
+<translation id="8764015330924122850">Se désabonner de <ph name="DOMAIN_NAME" /></translation>
 <translation id="8775144690796719618">URL non valide</translation>
 <translation id="8787968206789828143">Recherchez sur le Web</translation>
 <translation id="8803639129939845298">Sécuritaire</translation>
