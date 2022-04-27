@@ -539,7 +539,7 @@ const base::Feature kMediaDevicesSystemMonitorCache {
 // Use a custom backend to store media licenses in lieu of the
 // Plugin Private File System.
 const base::Feature kMediaLicenseBackend{"MediaLicenseBackend",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Allow cross-context transfer of MediaStreamTracks.
 const base::Feature kMediaStreamTrackTransfer{
