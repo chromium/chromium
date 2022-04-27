@@ -34,6 +34,7 @@ class VersionUpdater : public UpdateEngineClient::Observer,
     UPDATE_NOT_REQUIRED,
     UPDATE_ERROR,
     UPDATE_SKIPPED,
+    UPDATE_OPT_OUT_INFO_SHOWN,
   };
 
   enum class State {

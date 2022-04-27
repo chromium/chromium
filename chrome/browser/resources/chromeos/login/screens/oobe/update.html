@@ -119,8 +119,10 @@
             <img slot="slide-img" aria-hidden="true"
                 class="update-illustration oobe-illustration"
                 srcset="images/update-no-waiting.svg">
-            <div slot="title">[[i18nDynamic(locale, 'slideUpdateTitle')]]</div>
-            <div slot="text">[[i18nDynamic(locale, 'slideUpdateText')]]</div>
+            <div slot="title">[[getUpdateSlideTitle_(locale, isOptOutEnabled)]]
+            </div>
+            <div slot="text">[[getUpdateSlideText_(locale, isOptOutEnabled)]]
+            </div>
           </oobe-slide>
           <oobe-slide slot="slides">
             <img slot="slide-img" aria-hidden="true"
@@ -164,6 +166,24 @@
       <h1 slot="title">
         [[i18nDynamic(locale, 'updateCompeletedMsg')]]
       </h1>
+    </oobe-adaptive-dialog>
+    <oobe-adaptive-dialog footer-shrinkable id="opt-out-info-dialog"
+        for-step="opt-out-info" aria-live="polite">
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'noUpdateAvailableTitle')]]
+      </h1>
+      <div slot="subtitle">
+        [[i18nRecursive(locale, 'noUpdateAvailableText', 'productName')]]
+      </div>
+      <div slot="content" class="flex layout vertical center-justified center">
+        <img class="update-illustration oobe-illustration"
+            srcset="images/update-not-needed.svg" aria-hidden="true">
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-next-button id="opt-out-info-next" class="focus-on-show" inverse
+            on-click="onOptOutInfoNext_"></oobe-next-button>
+      </div>
     </oobe-adaptive-dialog>
   </template>
   <script src="update.js"></script>

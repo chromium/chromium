@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/login/screens/gesture_navigation_screen.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,14 +34,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
-#include "third_party/icu/source/common/unicode/utypes.h"
-#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 namespace {
-
-const size_t kMaxGeolocationResponseLength = 8;
 
 // Records the opt-in and opt-out rates for Chromebook emails. Differentiates
 // between users who have a default opt-in vs. a default opt-out option.
@@ -210,15 +207,9 @@ void MarketingOptInScreen::Initialize() {
 }
 
 void MarketingOptInScreen::SetCountryFromTimezoneIfAvailable(
-    const std::string& timezone_id) {
-  // Determine region code from timezone id.
-  char region[kMaxGeolocationResponseLength];
-  UErrorCode error = U_ZERO_ERROR;
-  auto timezone_id_unicode = icu::UnicodeString::fromUTF8(timezone_id);
-  icu::TimeZone::getRegion(timezone_id_unicode, region,
-                           kMaxGeolocationResponseLength, error);
-  // Track failures.
-  if (U_FAILURE(error)) {
+    const std::string& timezone) {
+  auto region = system::GetCountryCodeFromTimezoneIfAvailable(timezone);
+  if (!region.has_value()) {
     RecordGeolocationResolve(GeolocationEvent::kCouldNotDetermineCountry);
     return;
   }
@@ -228,19 +219,18 @@ void MarketingOptInScreen::SetCountryFromTimezoneIfAvailable(
 
   // Set the country
   country_.clear();
-  const std::string region_str = base::ToLowerASCII(region);
-  const bool is_default_country = default_countries_.count(region_str);
+  const bool is_default_country = default_countries_.count(region.value());
   const bool is_extended_country =
-      additional_countries_.count(region_str) &&
+      additional_countries_.count(region.value()) &&
       base::FeatureList::IsEnabled(
           ::features::kOobeMarketingAdditionalCountriesSupported);
   const bool is_double_optin_country =
-      double_opt_in_countries_.count(region_str) &&
+      double_opt_in_countries_.count(region.value()) &&
       base::FeatureList::IsEnabled(
           ::features::kOobeMarketingDoubleOptInCountriesSupported);
 
   if (is_default_country || is_extended_country || is_double_optin_country) {
-    country_ = region_str;
+    country_ = region.value();
   }
 }
 

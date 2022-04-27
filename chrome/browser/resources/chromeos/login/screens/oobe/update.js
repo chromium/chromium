@@ -11,6 +11,7 @@
 const USER_ACTION_ACCEPT_UPDATE_OVER_CELLUAR = 'update-accept-cellular';
 const USER_ACTION_REJECT_UPDATE_OVER_CELLUAR = 'update-reject-cellular';
 const USER_ACTION_CANCEL_UPDATE_SHORTCUT = 'cancel-update';
+const USER_ACTION_OPT_OUT_INFO_NEXT = 'opt-out-info-next';
 
 const UNREACHABLE_PERCENT = 1000;
 // Thresholds which are used to determine when update status announcement should
@@ -31,6 +32,7 @@ const UpdateUIState = {
   RESTART: 'restart',
   REBOOT: 'reboot',
   CELLULAR: 'cellular',
+  OPT_OUT_INFO: 'opt-out-info',
 };
 
 /**
@@ -133,6 +135,14 @@ class Update extends UpdateBase {
       thresholdIndex: {
         type: Number,
         value: 0,
+      },
+
+      /**
+       * Whether a user can opt out from auto-updates.
+       */
+      isOptOutEnabled: {
+        type: Boolean,
+        value: false,
       }
     };
   }
@@ -172,6 +182,14 @@ class Update extends UpdateBase {
   }
 
   /**
+   * Event handler that is invoked just before the screen is shown.
+   * @param {Object} data Screen init payload.
+   */
+  onBeforeShow(data) {
+    this.isOptOutEnabled = data['is_opt_out_enabled'];
+  }
+
+  /**
    * Cancels the screen.
    */
   cancel() {
@@ -184,6 +202,10 @@ class Update extends UpdateBase {
 
   onNextClicked_() {
     this.userActed(USER_ACTION_ACCEPT_UPDATE_OVER_CELLUAR);
+  }
+
+  onOptOutInfoNext_() {
+    this.userActed(USER_ACTION_OPT_OUT_INFO_NEXT);
   }
 
   /** @param {boolean} enabled */
@@ -247,6 +269,28 @@ class Update extends UpdateBase {
    */
   getAutoTransition_(step, autoTransition) {
     return step == UpdateUIState.UPDATE && autoTransition;
+  }
+
+  /**
+   * Computes the title of the first slide in carousel during update.
+   * @param {string} locale
+   * @param {boolean} isOptOutEnabled
+   */
+  getUpdateSlideTitle_(locale, isOptOutEnabled) {
+    return this.i18n(
+        isOptOutEnabled ? 'slideUpdateAdditionalSettingsTitle' :
+                          'slideUpdateTitle');
+  }
+
+  /**
+   * Computes the text of the first slide in carousel during update.
+   * @param {string} locale
+   * @param {boolean} isOptOutEnabled
+   */
+  getUpdateSlideText_(locale, isOptOutEnabled) {
+    return this.i18n(
+        isOptOutEnabled ? 'slideUpdateAdditionalSettingsText' :
+                          'slideUpdateText');
   }
 }
 

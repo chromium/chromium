@@ -52,6 +52,8 @@ struct UResClose {
 base::LazyInstance<base::Lock>::Leaky g_timezone_bundle_lock =
     LAZY_INSTANCE_INITIALIZER;
 
+const size_t kMaxGeolocationResponseLength = 8;
+
 // Returns an exemplary city in the given timezone.
 std::u16string GetExemplarCity(const icu::TimeZone& zone) {
   // These will be leaked at the end.
@@ -195,6 +197,21 @@ bool CanSetSystemTimezone(const user_manager::User* user) {
 
 namespace ash {
 namespace system {
+
+absl::optional<std::string> GetCountryCodeFromTimezoneIfAvailable(
+    const std::string& timezone) {
+  // Determine region code from timezone id.
+  char region[kMaxGeolocationResponseLength];
+  UErrorCode error = U_ZERO_ERROR;
+  auto timezone_unicode = icu::UnicodeString::fromUTF8(timezone);
+  icu::TimeZone::getRegion(timezone_unicode, region,
+                           kMaxGeolocationResponseLength, error);
+  // Track failures.
+  if (U_FAILURE(error))
+    return absl::nullopt;
+
+  return base::ToLowerASCII(region);
+}
 
 std::u16string GetCurrentTimezoneName() {
   return GetTimezoneName(TimezoneSettings::GetInstance()->GetTimezone());

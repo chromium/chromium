@@ -18,10 +18,14 @@
 #include "chrome/browser/ash/login/error_screens_histogram_helper.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/ash/system/timezone_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_screen_handler.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/network/network_state.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -34,6 +38,8 @@ constexpr const char kUserActionRejectUpdateOverCellular[] =
     "update-reject-cellular";
 
 constexpr const char kUserActionCancelUpdateShortcut[] = "cancel-update";
+
+constexpr const char kUserActionOptOutInfoNext[] = "opt-out-info-next";
 
 // Time in seconds after which we initiate reboot.
 constexpr const base::TimeDelta kWaitBeforeRebootTime = base::Seconds(2);
@@ -90,6 +96,8 @@ std::string UpdateScreen::GetResultString(Result result) {
       return "UpdateError";
     case Result::UPDATE_SKIPPED:
       return BaseScreen::kNotApplicable;
+    case Result::UPDATE_OPT_OUT_INFO_SHOWN:
+      return "UpdateNotRequired_OptOutInfo";
   }
 }
 
@@ -145,6 +153,7 @@ bool UpdateScreen::MaybeSkip(WizardContext* context) {
 }
 
 void UpdateScreen::ShowImpl() {
+  is_opt_out_enabled_ = CheckIfOptOutIsEnabled();
   // AccessibilityManager::Get() can be nullptr in unittests.
   if (AccessibilityManager::Get()) {
     AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
@@ -165,10 +174,15 @@ void UpdateScreen::ShowImpl() {
       view_) {
     view_->SetUpdateState(UpdateView::UIState::kCellularPermission);
   }
-  show_timer_.Start(FROM_HERE, kShowDelay,
-                    base::BindOnce(&UpdateScreen::MakeSureScreenIsShown,
-                                   weak_factory_.GetWeakPtr()));
-
+  // If opt out is enabled for the region don't try to skip the screen
+  // without showing it, as we will need to show additional step to user anyway.
+  if (is_opt_out_enabled_) {
+    MakeSureScreenIsShown();
+  } else {
+    show_timer_.Start(FROM_HERE, kShowDelay,
+                      base::BindOnce(&UpdateScreen::MakeSureScreenIsShown,
+                                     weak_factory_.GetWeakPtr()));
+  }
   version_updater_->StartNetworkCheck();
 }
 
@@ -197,6 +211,8 @@ void UpdateScreen::OnUserActionDeprecated(const std::string& action_id) {
   } else if (action_id == kUserActionRejectUpdateOverCellular) {
     version_updater_->RejectUpdateOverCellular();
     ExitUpdate(Result::UPDATE_ERROR);
+  } else if (action_id == kUserActionOptOutInfoNext) {
+    FinishExitUpdate(Result::UPDATE_OPT_OUT_INFO_SHOWN);
   } else {
     BaseScreen::OnUserActionDeprecated(action_id);
   }
@@ -397,13 +413,16 @@ void UpdateScreen::UpdateInfoChanged(
 }
 
 void UpdateScreen::FinishExitUpdate(Result result) {
-  if (!start_update_stage_.is_null()) {
-    check_time_ = (check_time_.is_zero())
-                      ? tick_clock_->NowTicks() - start_update_stage_
-                      : check_time_;
+  if (!start_update_stage_.is_null() && check_time_.is_zero()) {
+    check_time_ = tick_clock_->NowTicks() - start_update_stage_;
     RecordCheckTime(check_time_);
   }
   show_timer_.Stop();
+  if (is_opt_out_enabled_ && result == Result::UPDATE_NOT_REQUIRED) {
+    if (view_)
+      view_->SetUpdateState(UpdateView::UIState::kOptOutInfo);
+    return;
+  }
   exit_callback_.Run(result);
 }
 
@@ -473,7 +492,9 @@ void UpdateScreen::MakeSureScreenIsShown() {
     view_->SetAutoTransition(
         !AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
   }
-  view_->Show();
+  // `is_opt_out_enabled_` can be true only if the feature is enabled.
+  DCHECK(!is_opt_out_enabled_ || features::IsConsumerAutoUpdateToggleAllowed());
+  view_->Show(is_opt_out_enabled_);
 }
 
 void UpdateScreen::HideErrorMessage() {
@@ -507,6 +528,19 @@ void UpdateScreen::OnAccessibilityStatusChanged(
 void UpdateScreen::OnErrorScreenHidden() {
   error_screen_->SetParentScreen(ash::OOBE_SCREEN_UNKNOWN);
   Show(context());
+}
+
+// static
+bool UpdateScreen::CheckIfOptOutIsEnabled() {
+  if (!features::IsConsumerAutoUpdateToggleAllowed())
+    return false;
+  auto country = system::GetCountryCodeFromTimezoneIfAvailable(
+      g_browser_process->local_state()->GetString(
+          prefs::kSigninScreenTimezone));
+  if (!country.has_value()) {
+    return false;
+  }
+  return base::Contains(kEUCountriesSet, country.value());
 }
 
 }  // namespace ash

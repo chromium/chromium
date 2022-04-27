@@ -39,6 +39,7 @@ constexpr const char kUpdateInProgress[] = "update";
 constexpr const char kRestartInProgress[] = "restart";
 constexpr const char kManualReboot[] = "reboot";
 constexpr const char kCellularPermission[] = "cellular";
+constexpr const char kOptOutInfo[] = "opt-out-info";
 
 }  // namespace
 
@@ -51,12 +52,10 @@ UpdateScreenHandler::~UpdateScreenHandler() {
     screen_->OnViewDestroyed(this);
 }
 
-void UpdateScreenHandler::Show() {
-  if (!IsJavascriptAllowed()) {
-    show_on_init_ = true;
-    return;
-  }
-  ShowInWebUI();
+void UpdateScreenHandler::Show(bool is_opt_out_enabled) {
+  base::Value::Dict data;
+  data.Set("is_opt_out_enabled", is_opt_out_enabled);
+  ShowInWebUI(std::move(data));
 }
 
 void UpdateScreenHandler::Hide() {}
@@ -74,23 +73,22 @@ void UpdateScreenHandler::Unbind() {
 void UpdateScreenHandler::SetUpdateState(UpdateView::UIState value) {
   switch (value) {
     case UpdateView::UIState::kCheckingForUpdate:
-      CallJS("login.UpdateScreen.setUpdateState",
-             std::string(kCheckingForUpdate));
+      CallJS("login.UpdateScreen.setUpdateState", kCheckingForUpdate);
       break;
     case UpdateView::UIState::kUpdateInProgress:
-      CallJS("login.UpdateScreen.setUpdateState",
-             std::string(kUpdateInProgress));
+      CallJS("login.UpdateScreen.setUpdateState", kUpdateInProgress);
       break;
     case UpdateView::UIState::kRestartInProgress:
-      CallJS("login.UpdateScreen.setUpdateState",
-             std::string(kRestartInProgress));
+      CallJS("login.UpdateScreen.setUpdateState", kRestartInProgress);
       break;
     case UpdateView::UIState::kManualReboot:
-      CallJS("login.UpdateScreen.setUpdateState", std::string(kManualReboot));
+      CallJS("login.UpdateScreen.setUpdateState", kManualReboot);
       break;
     case UpdateView::UIState::kCellularPermission:
-      CallJS("login.UpdateScreen.setUpdateState",
-             std::string(kCellularPermission));
+      CallJS("login.UpdateScreen.setUpdateState", kCellularPermission);
+      break;
+    case UpdateView::UIState::kOptOutInfo:
+      CallJS("login.UpdateScreen.setUpdateState", kOptOutInfo);
       break;
   }
 }
@@ -124,6 +122,10 @@ void UpdateScreenHandler::DeclareLocalizedValues(
                IDS_UPDATE_SCREEN_ACCESSIBLE_TITLE);
   builder->Add("checkingForUpdates", IDS_CHECKING_FOR_UPDATES);
 
+  builder->Add("slideUpdateAdditionalSettingsTitle",
+               IDS_UPDATE_SLIDE_UPDATE_ADDITIONAL_SETTINGS_TITLE);
+  builder->Add("slideUpdateAdditionalSettingsText",
+               IDS_UPDATE_SLIDE_UPDATE_ADDITIONAL_SETTINGS_TEXT);
   builder->Add("slideUpdateTitle", IDS_UPDATE_SLIDE_UPDATE_TITLE);
   builder->Add("slideUpdateText", IDS_UPDATE_SLIDE_UPDATE_TEXT);
   builder->Add("slideAntivirusTitle", IDS_UPDATE_SLIDE_ANTIVIRUS_TITLE);
@@ -134,7 +136,8 @@ void UpdateScreenHandler::DeclareLocalizedValues(
   builder->Add("slideAccountText", IDS_UPDATE_SLIDE_ACCOUNT_TEXT);
   builder->Add("batteryWarningTitle", IDS_UPDATE_BATTERY_WARNING_TITLE);
   builder->Add("batteryWarningText", IDS_UPDATE_BATTERY_WARNING_TEXT);
-
+  builder->Add("noUpdateAvailableTitle", IDS_UPDATE_NO_UPDATE_AVAILABLE_TITLE);
+  builder->Add("noUpdateAvailableText", IDS_UPDATE_NO_UPDATE_AVAILABLE_TEXT);
   builder->Add("slideLabel", IDS_UPDATE_SLIDE_LABEL);
   builder->Add("slideSelectedButtonLabel", IDS_UPDATE_SELECTED_BUTTON_LABEL);
   builder->Add("slideUnselectedButtonLabel",
@@ -152,13 +155,6 @@ void UpdateScreenHandler::DeclareLocalizedValues(
                IDS_UPDATE_OVER_CELLULAR_PROMPT_TITLE);
   builder->Add("updateOverCellularPromptMessage",
                IDS_UPDATE_OVER_CELLULAR_PROMPT_MESSAGE);
-}
-
-void UpdateScreenHandler::InitializeDeprecated() {
-  if (show_on_init_) {
-    Show();
-    show_on_init_ = false;
-  }
 }
 
 }  // namespace chromeos

@@ -405,8 +405,14 @@
   <message name="IDS_UPDATE_SLIDE_UPDATE_TITLE" desc="Title of educative slide.">
     After this, no waiting for updates
   </message>
+  <message name="IDS_UPDATE_SLIDE_UPDATE_ADDITIONAL_SETTINGS_TITLE" desc="Title of educative slide.">
+    From here on out, no waiting required
+  </message>
   <message name="IDS_UPDATE_SLIDE_UPDATE_TEXT" desc="Text of educative slide.">
     This is the only time you’ll wait for an update. On Chromebooks, software updates happen in the background.
+  </message>
+  <message name="IDS_UPDATE_SLIDE_UPDATE_ADDITIONAL_SETTINGS_TEXT" desc="Text of educative slide.">
+    After this, software updates will happen in the background. You can review update preferences in Settings.
   </message>
   <message name="IDS_UPDATE_SLIDE_ANTIVIRUS_TITLE" desc="Title of educative slide.">
     Built-in virus protection
@@ -431,6 +437,12 @@
   </message>
   <message name="IDS_UPDATE_BATTERY_WARNING_TEXT" desc="Text of battery warning which is shown during update process if battery is running out.">
     Looks like your Chromebook will run out of power before the update is complete. Make sure it's charging correctly to avoid interruption.
+  </message>
+  <message name="IDS_UPDATE_NO_UPDATE_AVAILABLE_TITLE" desc="Title of the screen that is shown when there is no update available.">
+    Your device is up to date
+  </message>
+  <message name="IDS_UPDATE_NO_UPDATE_AVAILABLE_TEXT" desc="Text of the screen that is shown when there is no update available.">
+    Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> updates automatically in the background to give you the latest features and security improvements. You can review update preferences in Settings.
   </message>
   <message name="IDS_UPDATE_SLIDE_LABEL" desc="Text of slide label for accessibility.">
     Extra content <ph name="CURRENT_ELEMENT">$1<ex>1</ex></ph> out of <ph name="TOTAL_ELEMENTS">$2<ex>2</ex></ph>

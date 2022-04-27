@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 class Profile;
 
 namespace base {
@@ -23,6 +25,9 @@ namespace ash {
 struct TimeZoneResponseData;
 
 namespace system {
+
+absl::optional<std::string> GetCountryCodeFromTimezoneIfAvailable(
+    const std::string& timezone);
 
 // Gets the current timezone's display name.
 std::u16string GetCurrentTimezoneName();

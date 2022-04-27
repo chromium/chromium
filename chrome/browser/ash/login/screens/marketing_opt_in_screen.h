@@ -93,7 +93,7 @@ class MarketingOptInScreen : public BaseScreen {
   void Initialize();
 
   // Sets the country to be used if the feature is available in this region.
-  void SetCountryFromTimezoneIfAvailable(const std::string& timezone_id);
+  void SetCountryFromTimezoneIfAvailable(const std::string& timezone);
 
   // Whether the screen should be shown depending if it was shown before and if
   // the user had the option to subscribe to emails.

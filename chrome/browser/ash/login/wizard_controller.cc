@@ -1449,6 +1449,7 @@ void WizardController::OnUpdateScreenExit(UpdateScreen::Result result) {
   switch (result) {
     case UpdateScreen::Result::UPDATE_NOT_REQUIRED:
     case UpdateScreen::Result::UPDATE_SKIPPED:
+    case UpdateScreen::Result::UPDATE_OPT_OUT_INFO_SHOWN:
       OnUpdateCompleted();
       break;
     case UpdateScreen::Result::UPDATE_ERROR:

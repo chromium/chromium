@@ -113,6 +113,7 @@ generate_grd("build_oobe_grd") {
     "images/update-antivirus.svg",
     "images/update-apps.svg",
     "images/update-charge.svg",
+    "images/update-not-needed.svg",
     "images/update-no-waiting.svg",
     "images/updating.svg",
     "images/google-accounts.svg",
