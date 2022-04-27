@@ -50,6 +50,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FontSettingsGenericFamilies) {
   prefs->SetString(prefs::kWebKitCursiveFontFamily, "default_cursive");
   prefs->SetString(prefs::kWebKitFantasyFontFamily, "default_fantasy");
   prefs->SetString(prefs::kWebKitFixedFontFamily, "default_fixed");
+  prefs->SetString(prefs::kWebKitMathFontFamily, "default_math");
   EXPECT_TRUE(RunExtensionTest("font_settings/generic_families")) << message_;
 }
 

@@ -47,7 +47,7 @@
       {
         "id": "GenericFamily",
         "type": "string",
-        "enum": ["standard", "sansserif", "serif", "fixed", "cursive", "fantasy"],
+        "enum": ["standard", "sansserif", "serif", "fixed", "cursive", "fantasy", "math"],
         "description": "A CSS generic font family."
       },
       {

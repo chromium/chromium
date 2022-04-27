@@ -18,6 +18,7 @@ const genericFamilyNames = [
   'cursive',
   'fantasy',
   'fixed',
+  'math',
 ];
 
 chrome.test.runTests([
@@ -32,7 +33,12 @@ chrome.test.runTests([
           resolve();
         };
         fs.onFontChanged.addListener(listener);
-        await fs.setFont({genericFamily: genericFamily, fontId: fontId});
+        try {
+          await fs.setFont({genericFamily: genericFamily, fontId: fontId});
+        } catch (error) {
+          chrome.test.fail(error);
+          resolve();
+        }
       });
       chrome.test.assertEq(
           {
@@ -49,11 +55,15 @@ chrome.test.runTests([
   async function getGenericFamilies() {
     for (const genericFamily of genericFamilyNames) {
       const fontId = `custom_${genericFamily}`;
-      await fs.getFont({genericFamily: genericFamily}).then(value => {
-        chrome.test.assertEq(
-            {fontId: fontId, levelOfControl: CONTROLLED_BY_THIS_EXTENSION},
-            value);
-      });
+      try {
+        await fs.getFont({genericFamily: genericFamily}).then(value => {
+          chrome.test.assertEq(
+              {fontId: fontId, levelOfControl: CONTROLLED_BY_THIS_EXTENSION},
+              value);
+        });
+      } catch (error) {
+        chrome.test.fail(error);
+      }
     }
     chrome.test.succeed();
   },
@@ -69,7 +79,12 @@ chrome.test.runTests([
           resolve();
         };
         fs.onFontChanged.addListener(listener);
-        await fs.clearFont({genericFamily: genericFamily});
+        try {
+          await fs.clearFont({genericFamily: genericFamily});
+        } catch (error) {
+          chrome.test.fail(error);
+          resolve();
+        }
       });
       chrome.test.assertEq(
           {
