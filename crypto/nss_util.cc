@@ -155,6 +155,9 @@ class NSSInitSingleton {
     } else {
       LOG(ERROR) << "Error opening persistent database (" << modspec
                  << "): " << GetNSSErrorMessage();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      DiagnosePublicSlotAndCrash(path);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     }
 
     return ScopedPK11Slot(db_slot_info);

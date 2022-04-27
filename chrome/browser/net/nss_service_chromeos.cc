@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/userdataauth/cryptohome_pkcs11_client.h"
 #include "components/user_manager/user.h"
@@ -239,9 +240,18 @@ class NssService::NSSCertDatabaseChromeOSManager
                       crypto::ScopedPK11Slot system_slot) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
+    auto public_slot = crypto::GetPublicSlotForChromeOSUser(username_hash_);
+
+    // TODO(crbug.com/1163303): Remove when the bug is fixed.
+    if (!public_slot) {
+      Profile* profile = ProfileManager::GetActiveUserProfile();
+      CHECK(profile);
+      crypto::DiagnosePublicSlotAndCrash(
+          crypto::GetSoftwareNSSDBPath(profile->GetPath()));
+    }
+
     nss_cert_database_ = std::make_unique<net::NSSCertDatabaseChromeOS>(
-        crypto::GetPublicSlotForChromeOSUser(username_hash_),
-        std::move(private_slot));
+        std::move(public_slot), std::move(private_slot));
 
     if (system_slot)
       nss_cert_database_->SetSystemSlot(std::move(system_slot));
