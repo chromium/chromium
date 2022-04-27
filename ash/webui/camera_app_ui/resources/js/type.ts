@@ -53,6 +53,19 @@ export class Resolution {
   }
 
   /**
+   * Compares width/height of resolutions, see if they are equal or not. It also
+   * returns true if the resolution is rotated.
+   *
+   * @param resolution Resolution to be compared with.
+   * @return Whether width/height of resolutions are equal.
+   */
+  equalsWithRotation(resolution: Resolution): boolean {
+    return (this.width === resolution.width &&
+            this.height === resolution.height) ||
+        (this.width === resolution.height && this.height === resolution.width);
+  }
+
+  /**
    * Compares aspect ratio of resolutions, see if they are equal or not.
    *
    * @param resolution Resolution to be compared with.
@@ -137,6 +150,7 @@ export enum VideoType {
 export enum PhotoResolutionLevel {
   FULL = 'full',
   MEDIUM = 'medium',
+  UNKNOWN = 'unknown',
 }
 
 export enum VideoResolutionLevel {
@@ -146,6 +160,7 @@ export enum VideoResolutionLevel {
   QUAD_HD = 'Quad HD',
   FULL_HD = 'Full HD',
   HD = 'HD',
+  UNKNOWN = 'unknown',
 }
 
 export enum AspectRatioSet {

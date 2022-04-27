@@ -287,13 +287,18 @@ export class CaptureCandidatePreferrer {
    * current opened camera.
    */
   getPhotoResolutionLevel(resolution: Resolution): PhotoResolutionLevel {
+    if (this.photoOptions.size === 0) {
+      // Only fake camera will reach here.
+      return PhotoResolutionLevel.UNKNOWN;
+    }
+
     assert(this.cameraConfig !== null);
     const optionsGroups =
         this.photoOptions.get(this.cameraConfig.deviceId)?.values();
     assert(optionsGroups !== undefined);
     for (const options of optionsGroups) {
       for (const {resolutionLevel, resolutions} of options) {
-        if (resolutions.some((r) => resolution.equals(r))) {
+        if (resolutions.some((r) => resolution.equalsWithRotation(r))) {
           return resolutionLevel;
         }
       }
@@ -306,12 +311,17 @@ export class CaptureCandidatePreferrer {
    * current opened camera.
    */
   getVideoResolutionLevel(resolution: Resolution): VideoResolutionLevel {
+    if (this.videoOptions.size === 0) {
+      // Only fake camera will reach here.
+      return VideoResolutionLevel.UNKNOWN;
+    }
+
     assert(this.cameraConfig !== null);
     const options = this.videoOptions.get(this.cameraConfig.deviceId);
     assert(options !== undefined);
     for (const {resolutionLevel, fpsOptions} of options) {
       for (const {resolutions} of fpsOptions) {
-        if (resolutions.some((r) => resolution.equals(r))) {
+        if (resolutions.some((r) => resolution.equalsWithRotation(r))) {
           return resolutionLevel;
         }
       }
