@@ -208,6 +208,8 @@ crbug.com/v8/12227 external/wpt/wasm/jsapi/idlharness.any.worker.html [ Failure 
 
 # --- Skia roll test suppressions
 
+crbug.com/1320294 virtual/oopr-canvas2d/fast/canvas/canvas-ellipse-circumference.html [ Pass Failure ]
+
 # --- END Skia roll test suppresions
 
 
