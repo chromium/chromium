@@ -13,9 +13,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
-#include "cc/metrics/throughput_ukm_reporter.h"
-#include "cc/trees/ukm_manager.h"
-#include "components/ukm/test_ukm_recorder.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,7 +42,8 @@ class FrameSequenceTrackerTest : public testing::Test {
   FrameSequenceTrackerTest()
       : compositor_frame_reporting_controller_(
             std::make_unique<CompositorFrameReportingController>(
-                /*should_report_metrics=*/true,
+                /*should_report_histograms=*/true,
+                /*should_report_ukm=*/false,
                 /*layer_tree_host_id=*/1)),
         collection_(/*is_single_threaded=*/false,
                     compositor_frame_reporting_controller_.get()) {

@@ -13,7 +13,8 @@ namespace cc {
 base::TimeDelta INTERVAL = base::Milliseconds(16);
 
 FakeCompositorFrameReportingController::FakeCompositorFrameReportingController()
-    : CompositorFrameReportingController(/*should_report_metrics=*/true,
+    : CompositorFrameReportingController(/*should_report_histograms=*/false,
+                                         /*should_report_ukm=*/false,
                                          /*layer_tree_host_id=*/1) {}
 
 void FakeCompositorFrameReportingController::WillBeginMainFrame(

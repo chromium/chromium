@@ -36,9 +36,9 @@ class DroppedFrameCounter;
 class LatencyUkmReporter;
 
 struct GlobalMetricsTrackers {
-  DroppedFrameCounter* dropped_frame_counter = nullptr;
-  LatencyUkmReporter* latency_ukm_reporter = nullptr;
-  FrameSequenceTrackerCollection* frame_sequence_trackers = nullptr;
+  raw_ptr<DroppedFrameCounter> dropped_frame_counter = nullptr;
+  raw_ptr<LatencyUkmReporter> latency_ukm_reporter = nullptr;
+  raw_ptr<FrameSequenceTrackerCollection> frame_sequence_trackers = nullptr;
 };
 
 // This is used for tracing and reporting the duration of pipeline stages within
@@ -228,7 +228,7 @@ class CC_EXPORT CompositorFrameReporter {
 
   CompositorFrameReporter(const ActiveTrackers& active_trackers,
                           const viz::BeginFrameArgs& args,
-                          bool should_report_metrics,
+                          bool should_report_histograms,
                           SmoothThread smooth_thread,
                           FrameInfo::SmoothEffectDrivingThread scrolling_thread,
                           int layer_tree_host_id,
@@ -350,7 +350,7 @@ class CC_EXPORT CompositorFrameReporter {
   void TerminateReporter();
   void EndCurrentStage(base::TimeTicks end_time);
 
-  void ReportCompositorLatencyHistograms() const;
+  void ReportCompositorLatencyMetrics() const;
   void ReportStageHistogramWithBreakdown(
       const StageData& stage,
       FrameSequenceTrackerType frame_sequence_tracker_type =
@@ -366,7 +366,7 @@ class CC_EXPORT CompositorFrameReporter {
       absl::optional<BlinkBreakdown> blink_breakdown,
       base::TimeDelta time_delta) const;
 
-  void ReportEventLatencyHistograms() const;
+  void ReportEventLatencyMetrics() const;
   void ReportCompositorLatencyTraceEvents(const FrameInfo& info) const;
   void ReportEventLatencyTraceEvents() const;
 
@@ -389,7 +389,9 @@ class CC_EXPORT CompositorFrameReporter {
 
   base::WeakPtr<CompositorFrameReporter> GetWeakPtr();
 
-  const bool should_report_metrics_;
+  // Whether UMA histograms should be reported or not.
+  const bool should_report_histograms_;
+
   const viz::BeginFrameArgs args_;
 
   StageData current_stage_;

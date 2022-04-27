@@ -320,18 +320,19 @@ CompositorFrameReporter::ProcessedVizBreakdown::CreateIterator(
 CompositorFrameReporter::CompositorFrameReporter(
     const ActiveTrackers& active_trackers,
     const viz::BeginFrameArgs& args,
-    bool should_report_metrics,
+    bool should_report_histograms,
     SmoothThread smooth_thread,
     FrameInfo::SmoothEffectDrivingThread scrolling_thread,
     int layer_tree_host_id,
     const GlobalMetricsTrackers& trackers)
-    : should_report_metrics_(should_report_metrics),
+    : should_report_histograms_(should_report_histograms),
       args_(args),
       active_trackers_(active_trackers),
       scrolling_thread_(scrolling_thread),
       smooth_thread_(smooth_thread),
       layer_tree_host_id_(layer_tree_host_id),
       global_trackers_(trackers) {
+  DCHECK(global_trackers_.dropped_frame_counter);
   global_trackers_.dropped_frame_counter->OnBeginFrame(
       args, IsScrollActive(active_trackers_));
   DCHECK(IsScrollActive(active_trackers_) ||
@@ -483,7 +484,7 @@ CompositorFrameReporter::CopyReporterAtBeginImplStage() {
     return nullptr;
   }
   auto new_reporter = std::make_unique<CompositorFrameReporter>(
-      active_trackers_, args_, should_report_metrics_, smooth_thread_,
+      active_trackers_, args_, should_report_histograms_, smooth_thread_,
       scrolling_thread_, layer_tree_host_id_, global_trackers_);
   new_reporter->did_finish_impl_frame_ = did_finish_impl_frame_;
   new_reporter->impl_frame_finish_time_ = impl_frame_finish_time_;
@@ -647,8 +648,9 @@ void CompositorFrameReporter::TerminateReporter() {
   if (TestReportType(FrameReportType::kNonDroppedFrame))
     ReportEventLatencyTraceEvents();
 
-  // Only report compositor latency histograms if the frame was produced.
-  if (should_report_metrics_ && report_types_.any()) {
+  // Only report compositor latency metrics if the frame was produced.
+  if (report_types_.any() &&
+      (should_report_histograms_ || global_trackers_.latency_ukm_reporter)) {
     DCHECK(stage_history_.size());
     DCHECK_EQ(SumOfStageHistory(), stage_history_.back().end_time -
                                        stage_history_.front().start_time);
@@ -656,25 +658,21 @@ void CompositorFrameReporter::TerminateReporter() {
                                 stage_history_.front().start_time,
                                 stage_history_.back().end_time);
 
-    ReportCompositorLatencyHistograms();
-    // Only report event latency histograms if the frame was presented.
+    ReportCompositorLatencyMetrics();
+    // Only report event latency metrics if the frame was presented.
     if (TestReportType(FrameReportType::kNonDroppedFrame))
-      ReportEventLatencyHistograms();
+      ReportEventLatencyMetrics();
   }
 
-  auto* dropped_frame_counter = global_trackers_.dropped_frame_counter;
-  if (dropped_frame_counter) {
-    if (TestReportType(FrameReportType::kDroppedFrame)) {
-      dropped_frame_counter->AddDroppedFrame();
-    } else {
-      if (has_partial_update_)
-        dropped_frame_counter->AddPartialFrame();
-      else
-        dropped_frame_counter->AddGoodFrame();
-    }
-
-    dropped_frame_counter->OnEndFrame(args_, frame_info);
+  if (TestReportType(FrameReportType::kDroppedFrame)) {
+    global_trackers_.dropped_frame_counter->AddDroppedFrame();
+  } else {
+    if (has_partial_update_)
+      global_trackers_.dropped_frame_counter->AddPartialFrame();
+    else
+      global_trackers_.dropped_frame_counter->AddGoodFrame();
   }
+  global_trackers_.dropped_frame_counter->OnEndFrame(args_, frame_info);
 
   if (discarded_partial_update_dependents_count_ > 0)
     UMA_HISTOGRAM_CUSTOM_COUNTS(
@@ -690,10 +688,20 @@ void CompositorFrameReporter::EndCurrentStage(base::TimeTicks end_time) {
   current_stage_.start_time = base::TimeTicks();
 }
 
-void CompositorFrameReporter::ReportCompositorLatencyHistograms() const {
+void CompositorFrameReporter::ReportCompositorLatencyMetrics() const {
   static base::CpuReductionExperimentFilter filter;
   if (!filter.ShouldLogHistograms())
     return;
+
+  if (global_trackers_.latency_ukm_reporter) {
+    global_trackers_.latency_ukm_reporter->ReportCompositorLatencyUkm(
+        report_types_, stage_history_, active_trackers_,
+        *processed_blink_breakdown_, *processed_viz_breakdown_);
+  }
+
+  if (!should_report_histograms_)
+    return;
+
   for (const StageData& stage : stage_history_) {
     ReportStageHistogramWithBreakdown(stage);
 
@@ -706,12 +714,6 @@ void CompositorFrameReporter::ReportCompositorLatencyHistograms() const {
         }
       }
     }
-  }
-
-  if (global_trackers_.latency_ukm_reporter) {
-    global_trackers_.latency_ukm_reporter->ReportCompositorLatencyUkm(
-        report_types_, stage_history_, active_trackers_,
-        *processed_blink_breakdown_, *processed_viz_breakdown_);
   }
 
   for (size_t type = 0; type < report_types_.size(); ++type) {
@@ -884,9 +886,18 @@ void CompositorFrameReporter::ReportCompositorLatencyHistogram(
   }
 }
 
-void CompositorFrameReporter::ReportEventLatencyHistograms() const {
+void CompositorFrameReporter::ReportEventLatencyMetrics() const {
   const StageData& total_latency_stage = stage_history_.back();
   DCHECK_EQ(StageType::kTotalLatency, total_latency_stage.stage_type);
+
+  if (global_trackers_.latency_ukm_reporter) {
+    global_trackers_.latency_ukm_reporter->ReportEventLatencyUkm(
+        events_metrics_, stage_history_, *processed_blink_breakdown_,
+        *processed_viz_breakdown_);
+  }
+
+  if (!should_report_histograms_)
+    return;
 
   const std::string total_latency_stage_name =
       GetStageName(StageType::kTotalLatency);
@@ -934,12 +945,6 @@ void CompositorFrameReporter::ReportEventLatencyHistograms() const {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         total_latency_histogram_name, total_latency, kEventLatencyHistogramMin,
         kEventLatencyHistogramMax, kEventLatencyHistogramBucketCount);
-  }
-
-  if (global_trackers_.latency_ukm_reporter) {
-    global_trackers_.latency_ukm_reporter->ReportEventLatencyUkm(
-        events_metrics_, stage_history_, *processed_blink_breakdown_,
-        *processed_viz_breakdown_);
   }
 }
 

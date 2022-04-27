@@ -26,12 +26,17 @@ constexpr char kTraceCategory[] = "cc,benchmark";
 }  // namespace
 
 CompositorFrameReportingController::CompositorFrameReportingController(
-    bool should_report_metrics,
+    bool should_report_histograms,
+    bool should_report_ukm,
     int layer_tree_host_id)
-    : should_report_metrics_(should_report_metrics),
+    : should_report_histograms_(should_report_histograms),
       layer_tree_host_id_(layer_tree_host_id),
       latency_ukm_reporter_(std::make_unique<LatencyUkmReporter>()) {
-  global_trackers_.latency_ukm_reporter = latency_ukm_reporter_.get();
+  if (should_report_ukm) {
+    // UKM metrics should be reported if and only if `latency_ukm_reporter` is
+    // set on `global_trackers_`.
+    global_trackers_.latency_ukm_reporter = latency_ukm_reporter_.get();
+  }
 }
 
 CompositorFrameReportingController::~CompositorFrameReportingController() {
@@ -107,7 +112,7 @@ void CompositorFrameReportingController::WillBeginImplFrame(
     }
   }
   auto reporter = std::make_unique<CompositorFrameReporter>(
-      active_trackers_, args, should_report_metrics_, GetSmoothThread(),
+      active_trackers_, args, should_report_histograms_, GetSmoothThread(),
       scrolling_thread_, layer_tree_host_id_, global_trackers_);
   reporter->set_tick_clock(tick_clock_);
   reporter->StartStage(StageType::kBeginImplFrameToSendBeginMainFrame,
@@ -145,7 +150,7 @@ void CompositorFrameReportingController::WillBeginMainFrame(
       smooth_thread = last_started_compositor_frame_.smooth_thread;
     }
     auto reporter = std::make_unique<CompositorFrameReporter>(
-        active_trackers, args, should_report_metrics_, smooth_thread,
+        active_trackers, args, should_report_histograms_, smooth_thread,
         scrolling_thread, layer_tree_host_id_, global_trackers_);
     reporter->set_tick_clock(tick_clock_);
     reporter->StartStage(StageType::kSendBeginMainFrameToCommit, Now());
@@ -729,7 +734,7 @@ void CompositorFrameReportingController::CreateReportersForDroppedFrames(
     // start time, but they were skipped and history of scrolling thread might
     // change in the diff of start time and report time.
     auto reporter = std::make_unique<CompositorFrameReporter>(
-        active_trackers_, args, should_report_metrics_,
+        active_trackers_, args, should_report_histograms_,
         GetSmoothThreadAtTime(timestamp),
         FrameInfo::SmoothEffectDrivingThread::kUnknown, layer_tree_host_id_,
         global_trackers_);

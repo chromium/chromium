@@ -45,7 +45,8 @@ class CC_EXPORT CompositorFrameReportingController {
     kNumPipelineStages
   };
 
-  CompositorFrameReportingController(bool should_report_metrics,
+  CompositorFrameReportingController(bool should_report_histograms,
+                                     bool should_report_ukm,
                                      int layer_tree_host_id);
   virtual ~CompositorFrameReportingController();
 
@@ -166,7 +167,7 @@ class CC_EXPORT CompositorFrameReportingController {
   void AddSortedFrame(const viz::BeginFrameArgs& args,
                       const FrameInfo& frame_info);
 
-  const bool should_report_metrics_;
+  const bool should_report_histograms_;
   const int layer_tree_host_id_;
 
   viz::BeginFrameId last_submitted_frame_id_;
