@@ -296,8 +296,8 @@ AttributionSrcLoader::CanRegisterAttribution(
       mojom::blink::PermissionsPolicyFeature::kAttributionReporting);
 
   if (!feature_policy_enabled) {
-    LogAuditIssue(AttributionReportingIssueType::kPermissionPolicyDisabled, "",
-                  element, request_id);
+    LogAuditIssue(AttributionReportingIssueType::kPermissionPolicyDisabled,
+                  /*string=*/absl::nullopt, element, request_id);
     return RegisterResult::kNotAllowed;
   }
 
@@ -491,7 +491,7 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
 
 void AttributionSrcLoader::LogAuditIssue(
     AttributionReportingIssueType issue_type,
-    const String& string,
+    const absl::optional<String>& string,
     HTMLElement* element,
     const absl::optional<String>& request_id) {
   if (!local_frame_->IsAttached())

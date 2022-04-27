@@ -102,7 +102,7 @@ class CORE_EXPORT AttributionSrcLoader
                                        RegisterResult& out_register_result);
 
   void LogAuditIssue(AttributionReportingIssueType issue_type,
-                     const String& string,
+                     const absl::optional<String>& string,
                      HTMLElement* element,
                      const absl::optional<String>& request_id);
 
