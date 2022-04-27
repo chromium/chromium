@@ -31,7 +31,6 @@
 #include "net/http/http_util.h"
 
 using base::CaseInsensitiveCompareASCII;
-using base::DictionaryValue;
 using base::ListValue;
 using base::Value;
 
@@ -335,7 +334,7 @@ class HeaderMatcher {
     // Gets the test group description in |tests| and creates the corresponding
     // HeaderMatchTest. On failure returns null.
     static std::unique_ptr<const HeaderMatchTest> Create(
-        const base::DictionaryValue* tests);
+        const base::Value::Dict& tests);
 
     // Does the header "|name|: |value|" match all tests in |this|?
     bool Matches(const std::string& name, const std::string& value) const;
@@ -367,12 +366,12 @@ std::unique_ptr<const HeaderMatcher> HeaderMatcher::Create(
     const base::Value::ConstListView tests) {
   std::vector<std::unique_ptr<const HeaderMatchTest>> header_tests;
   for (const auto& entry : tests) {
-    const base::DictionaryValue* tests_dict = nullptr;
-    if (!entry.GetAsDictionary(&tests_dict))
+    const base::Value::Dict* tests_dict = entry.GetIfDict();
+    if (!tests_dict)
       return nullptr;
 
     std::unique_ptr<const HeaderMatchTest> header_test(
-        HeaderMatchTest::Create(tests_dict));
+        HeaderMatchTest::Create(*tests_dict));
     if (header_test.get() == nullptr)
       return nullptr;
     header_tests.push_back(std::move(header_test));
@@ -451,39 +450,38 @@ HeaderMatcher::HeaderMatchTest::~HeaderMatchTest() {}
 
 // static
 std::unique_ptr<const HeaderMatcher::HeaderMatchTest>
-HeaderMatcher::HeaderMatchTest::Create(const base::DictionaryValue* tests) {
+HeaderMatcher::HeaderMatchTest::Create(const base::Value::Dict& tests) {
   std::vector<std::unique_ptr<const StringMatchTest>> name_match;
   std::vector<std::unique_ptr<const StringMatchTest>> value_match;
 
-  for (base::DictionaryValue::Iterator it(*tests);
-       !it.IsAtEnd(); it.Advance()) {
+  for (const auto entry : tests) {
     bool is_name = false;  // Is this test for header name?
     StringMatchTest::MatchType match_type;
-    if (it.key() == keys::kNamePrefixKey) {
+    if (entry.first == keys::kNamePrefixKey) {
       is_name = true;
       match_type = StringMatchTest::kPrefix;
-    } else if (it.key() == keys::kNameSuffixKey) {
+    } else if (entry.first == keys::kNameSuffixKey) {
       is_name = true;
       match_type = StringMatchTest::kSuffix;
-    } else if (it.key() == keys::kNameContainsKey) {
+    } else if (entry.first == keys::kNameContainsKey) {
       is_name = true;
       match_type = StringMatchTest::kContains;
-    } else if (it.key() == keys::kNameEqualsKey) {
+    } else if (entry.first == keys::kNameEqualsKey) {
       is_name = true;
       match_type = StringMatchTest::kEquals;
-    } else if (it.key() == keys::kValuePrefixKey) {
+    } else if (entry.first == keys::kValuePrefixKey) {
       match_type = StringMatchTest::kPrefix;
-    } else if (it.key() == keys::kValueSuffixKey) {
+    } else if (entry.first == keys::kValueSuffixKey) {
       match_type = StringMatchTest::kSuffix;
-    } else if (it.key() == keys::kValueContainsKey) {
+    } else if (entry.first == keys::kValueContainsKey) {
       match_type = StringMatchTest::kContains;
-    } else if (it.key() == keys::kValueEqualsKey) {
+    } else if (entry.first == keys::kValueEqualsKey) {
       match_type = StringMatchTest::kEquals;
     } else {
       NOTREACHED();  // JSON schema type checking should prevent this.
       return nullptr;
     }
-    const base::Value* content = &it.value();
+    const base::Value* content = &entry.second;
 
     std::vector<std::unique_ptr<const StringMatchTest>>* matching_tests =
         is_name ? &name_match : &value_match;

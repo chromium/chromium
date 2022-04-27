@@ -108,17 +108,16 @@ static base::LazyInstance<URLMatcherConditionFactoryMethods>::DestructorAtExit
 scoped_refptr<URLMatcherConditionSet>
 URLMatcherFactory::CreateFromURLFilterDictionary(
     URLMatcherConditionFactory* url_matcher_condition_factory,
-    const base::DictionaryValue* url_filter_dict,
+    const base::Value::Dict& url_filter_dict,
     URLMatcherConditionSet::ID id,
     std::string* error) {
   std::unique_ptr<URLMatcherSchemeFilter> url_matcher_schema_filter;
   std::unique_ptr<URLMatcherPortFilter> url_matcher_port_filter;
   URLMatcherConditionSet::Conditions url_matcher_conditions;
 
-  for (base::DictionaryValue::Iterator iter(*url_filter_dict);
-       !iter.IsAtEnd(); iter.Advance()) {
-    const std::string& condition_attribute_name = iter.key();
-    const base::Value& condition_attribute_value = iter.value();
+  for (const auto iter : url_filter_dict) {
+    const std::string& condition_attribute_name = iter.first;
+    const base::Value& condition_attribute_value = iter.second;
     if (IsURLMatcherConditionAttribute(condition_attribute_name)) {
       // Handle {host, path, ...}{Prefix, Suffix, Contains, Equals}.
       URLMatcherCondition url_matcher_condition =

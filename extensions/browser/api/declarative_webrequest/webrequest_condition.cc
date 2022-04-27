@@ -120,15 +120,15 @@ std::unique_ptr<WebRequestCondition> WebRequestCondition::Create(
     URLMatcherConditionFactory* url_matcher_condition_factory,
     const base::Value& condition,
     std::string* error) {
-  const base::DictionaryValue* condition_dict = NULL;
-  if (!condition.GetAsDictionary(&condition_dict)) {
+  const base::Value::Dict* condition_dict = condition.GetIfDict();
+  if (!condition_dict) {
     *error = kExpectedDictionary;
     return nullptr;
   }
 
   // Verify that we are dealing with a Condition whose type we understand.
   const std::string* instance_type =
-      condition_dict->FindStringKey(keys::kInstanceTypeKey);
+      condition_dict->FindString(keys::kInstanceTypeKey);
   if (!instance_type) {
     *error = kConditionWithoutInstanceType;
     return nullptr;
@@ -141,24 +141,23 @@ std::unique_ptr<WebRequestCondition> WebRequestCondition::Create(
   WebRequestConditionAttributes attributes;
   scoped_refptr<URLMatcherConditionSet> url_matcher_condition_set;
 
-  for (base::DictionaryValue::Iterator iter(*condition_dict);
-       !iter.IsAtEnd(); iter.Advance()) {
-    const std::string& condition_attribute_name = iter.key();
-    const base::Value& condition_attribute_value = iter.value();
+  for (const auto entry : *condition_dict) {
+    const std::string& condition_attribute_name = entry.first;
+    const base::Value& condition_attribute_value = entry.second;
     if (condition_attribute_name == keys::kInstanceTypeKey ||
         condition_attribute_name ==
             keys::kDeprecatedFirstPartyForCookiesUrlKey ||
         condition_attribute_name == keys::kDeprecatedThirdPartyKey) {
       // Skip this.
     } else if (condition_attribute_name == keys::kUrlKey) {
-      const base::DictionaryValue* dict = NULL;
-      if (!condition_attribute_value.GetAsDictionary(&dict)) {
+      const base::Value::Dict* dict = condition_attribute_value.GetIfDict();
+      if (!dict) {
         *error = base::StringPrintf(kInvalidTypeOfParamter,
                                     condition_attribute_name.c_str());
       } else {
         url_matcher_condition_set =
             URLMatcherFactory::CreateFromURLFilterDictionary(
-                url_matcher_condition_factory, dict, ++g_next_id, error);
+                url_matcher_condition_factory, *dict, ++g_next_id, error);
       }
     } else {
       scoped_refptr<const WebRequestConditionAttribute> attribute =

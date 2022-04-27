@@ -87,11 +87,9 @@ void StarterHeuristic::InitFromTrialParams() {
     }
 
     std::string error;
-    const auto& url_conditions_dict =
-        base::Value::AsDictionaryValue(*url_conditions);
     condition_sets.emplace_back(
         url_matcher::URLMatcherFactory::CreateFromURLFilterDictionary(
-            url_matcher_.condition_factory(), &url_conditions_dict,
+            url_matcher_.condition_factory(), url_conditions->GetDict(),
             next_condition_set_id, &error));
     if (!error.empty()) {
       VLOG(1) << "Error pasing url conditions: " << error;

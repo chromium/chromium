@@ -27,21 +27,21 @@ TEST(URLMatcherFactoryTest, CreateFromURLFilterDictionary) {
   scoped_refptr<URLMatcherConditionSet> result;
 
   // Invalid key: {"invalid": "foobar"}
-  base::DictionaryValue invalid_condition;
-  invalid_condition.SetStringKey("invalid", "foobar");
+  base::Value::Dict invalid_condition;
+  invalid_condition.Set("invalid", "foobar");
 
   // Invalid value type: {"hostSuffix": []}
-  base::DictionaryValue invalid_condition2;
-  invalid_condition2.SetKey(keys::kHostSuffixKey,
-                            base::Value(base::Value::Type::LIST));
+  base::Value::Dict invalid_condition2;
+  invalid_condition2.Set(keys::kHostSuffixKey,
+                         base::Value(base::Value::Type::LIST));
 
   // Invalid regex value: {"urlMatches": "*"}
-  base::DictionaryValue invalid_condition3;
-  invalid_condition3.SetStringKey(keys::kURLMatchesKey, "*");
+  base::Value::Dict invalid_condition3;
+  invalid_condition3.Set(keys::kURLMatchesKey, "*");
 
   // Invalid regex value: {"originAndPathMatches": "*"}
-  base::DictionaryValue invalid_condition4;
-  invalid_condition4.SetStringKey(keys::kOriginAndPathMatchesKey, "*");
+  base::Value::Dict invalid_condition4;
+  invalid_condition4.Set(keys::kOriginAndPathMatchesKey, "*");
 
   // Valid values:
   // {
@@ -62,43 +62,43 @@ TEST(URLMatcherFactoryTest, CreateFromURLFilterDictionary) {
   base::Value scheme_list(base::Value::Type::LIST);
   scheme_list.Append("http");
 
-  base::DictionaryValue valid_condition;
-  valid_condition.SetStringKey(keys::kHostSuffixKey, "example.com");
-  valid_condition.SetStringKey(keys::kHostPrefixKey, "www");
-  valid_condition.SetKey(keys::kPortsKey, std::move(port_ranges));
-  valid_condition.SetKey(keys::kSchemesKey, std::move(scheme_list));
+  base::Value::Dict valid_condition;
+  valid_condition.Set(keys::kHostSuffixKey, "example.com");
+  valid_condition.Set(keys::kHostPrefixKey, "www");
+  valid_condition.Set(keys::kPortsKey, std::move(port_ranges));
+  valid_condition.Set(keys::kSchemesKey, std::move(scheme_list));
 
   // Test wrong condition name passed.
   error.clear();
   result = URLMatcherFactory::CreateFromURLFilterDictionary(
-      matcher.condition_factory(), &invalid_condition, 1, &error);
+      matcher.condition_factory(), invalid_condition, 1, &error);
   EXPECT_FALSE(error.empty());
   EXPECT_FALSE(result);
 
   // Test wrong datatype in hostSuffix.
   error.clear();
   result = URLMatcherFactory::CreateFromURLFilterDictionary(
-      matcher.condition_factory(), &invalid_condition2, 2, &error);
+      matcher.condition_factory(), invalid_condition2, 2, &error);
   EXPECT_FALSE(error.empty());
   EXPECT_FALSE(result);
 
   // Test invalid regex in urlMatches.
   error.clear();
   result = URLMatcherFactory::CreateFromURLFilterDictionary(
-      matcher.condition_factory(), &invalid_condition3, 3, &error);
+      matcher.condition_factory(), invalid_condition3, 3, &error);
   EXPECT_FALSE(error.empty());
   EXPECT_FALSE(result);
 
   error.clear();
   result = URLMatcherFactory::CreateFromURLFilterDictionary(
-      matcher.condition_factory(), &invalid_condition4, 4, &error);
+      matcher.condition_factory(), invalid_condition4, 4, &error);
   EXPECT_FALSE(error.empty());
   EXPECT_FALSE(result);
 
   // Test success.
   error.clear();
   result = URLMatcherFactory::CreateFromURLFilterDictionary(
-      matcher.condition_factory(), &valid_condition, 100, &error);
+      matcher.condition_factory(), valid_condition, 100, &error);
   EXPECT_EQ("", error);
   ASSERT_TRUE(result.get());
 
@@ -125,39 +125,35 @@ TEST(URLMatcherFactoryTest, UpperCase) {
   scoped_refptr<URLMatcherConditionSet> result;
 
   // {"hostContains": "exaMple"}
-  base::DictionaryValue invalid_condition1;
-  invalid_condition1.SetString(keys::kHostContainsKey, "exaMple");
+  base::Value::Dict invalid_condition1;
+  invalid_condition1.Set(keys::kHostContainsKey, "exaMple");
 
   // {"hostSuffix": ".Com"}
-  base::DictionaryValue invalid_condition2;
-  invalid_condition2.SetString(keys::kHostSuffixKey, ".Com");
+  base::Value::Dict invalid_condition2;
+  invalid_condition2.Set(keys::kHostSuffixKey, ".Com");
 
   // {"hostPrefix": "WWw."}
-  base::DictionaryValue invalid_condition3;
-  invalid_condition3.SetString(keys::kHostPrefixKey, "WWw.");
+  base::Value::Dict invalid_condition3;
+  invalid_condition3.Set(keys::kHostPrefixKey, "WWw.");
 
   // {"hostEquals": "WWW.example.Com"}
-  base::DictionaryValue invalid_condition4;
-  invalid_condition4.SetString(keys::kHostEqualsKey, "WWW.example.Com");
+  base::Value::Dict invalid_condition4;
+  invalid_condition4.Set(keys::kHostEqualsKey, "WWW.example.Com");
 
   // {"scheme": ["HTTP"]}
-  auto scheme_list = std::make_unique<base::ListValue>();
-  scheme_list->Append("HTTP");
-  base::DictionaryValue invalid_condition5;
+  base::Value::List scheme_list;
+  scheme_list.Append("HTTP");
+  base::Value::Dict invalid_condition5;
   invalid_condition5.Set(keys::kSchemesKey, std::move(scheme_list));
 
-  const base::DictionaryValue* invalid_conditions[] = {
-    &invalid_condition1,
-    &invalid_condition2,
-    &invalid_condition3,
-    &invalid_condition4,
-    &invalid_condition5
-  };
+  const base::Value::Dict* invalid_conditions[] = {
+      &invalid_condition1, &invalid_condition2, &invalid_condition3,
+      &invalid_condition4, &invalid_condition5};
 
   for (size_t i = 0; i < std::size(invalid_conditions); ++i) {
     error.clear();
     result = URLMatcherFactory::CreateFromURLFilterDictionary(
-        matcher.condition_factory(), invalid_conditions[i], 1, &error);
+        matcher.condition_factory(), *invalid_conditions[i], 1, &error);
     EXPECT_FALSE(error.empty()) << "in iteration " << i;
     EXPECT_FALSE(result) << "in iteration " << i;
   }
@@ -232,14 +228,14 @@ void UrlConditionCaseTest::Test() const {
 void UrlConditionCaseTest::CheckCondition(
     const std::string& value,
     UrlConditionCaseTest::ResultType expected_result) const {
-  base::DictionaryValue condition;
+  base::Value::Dict condition;
   if (use_list_of_strings_) {
     auto list = std::make_unique<base::ListValue>();
     list->Append(value);
-    condition.SetKey(condition_key_,
-                     base::Value::FromUniquePtrValue(std::move(list)));
+    condition.Set(condition_key_,
+                  base::Value::FromUniquePtrValue(std::move(list)));
   } else {
-    condition.SetKey(condition_key_, base::Value(value));
+    condition.Set(condition_key_, base::Value(value));
   }
 
   URLMatcher matcher;
@@ -247,7 +243,7 @@ void UrlConditionCaseTest::CheckCondition(
   scoped_refptr<URLMatcherConditionSet> result;
 
   result = URLMatcherFactory::CreateFromURLFilterDictionary(
-      matcher.condition_factory(), &condition, 1, &error);
+      matcher.condition_factory(), condition, 1, &error);
   if (expected_result == CREATE_FAILURE) {
     EXPECT_FALSE(error.empty());
     EXPECT_FALSE(result);

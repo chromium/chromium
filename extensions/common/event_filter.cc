@@ -92,21 +92,21 @@ bool EventFilter::CreateConditionSets(
   if (url_filter_count == 0) {
     // If there are no URL filters then we want to match all events, so create a
     // URLFilter from an empty dictionary.
-    base::DictionaryValue empty_dict;
-    return AddDictionaryAsConditionSet(&empty_dict, condition_sets);
+    base::Value::Dict empty_dict;
+    return AddDictionaryAsConditionSet(empty_dict, condition_sets);
   }
   for (int i = 0; i < url_filter_count; i++) {
-    const base::DictionaryValue* url_filter;
-    if (!matcher->GetURLFilter(i, &url_filter))
+    const base::Value::Dict* url_filter = matcher->GetURLFilter(i);
+    if (!url_filter)
       return false;
-    if (!AddDictionaryAsConditionSet(url_filter, condition_sets))
+    if (!AddDictionaryAsConditionSet(*url_filter, condition_sets))
       return false;
   }
   return true;
 }
 
 bool EventFilter::AddDictionaryAsConditionSet(
-    const base::DictionaryValue* url_filter,
+    const base::Value::Dict& url_filter,
     URLMatcherConditionSet::Vector* condition_sets) {
   std::string error;
   URLMatcherConditionSet::ID condition_set_id = next_condition_set_id_++;
