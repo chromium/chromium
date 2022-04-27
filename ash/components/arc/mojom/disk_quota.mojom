@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 2
+// Next MinVersion: 3
 
 module arc.mojom;
 
-// Next Method ID: 3
+// Next Method ID: 6
 interface DiskQuotaHost {
   // Whether cryptohome supports quota-based stats.
   IsQuotaSupported@0() => (bool supported);
@@ -26,6 +26,12 @@ interface DiskQuotaHost {
   // corresponding path in Chrome OS file system.
   [MinVersion=1] SetProjectId@4(uint32 project_id, string android_file_path) =>
       (bool success);
+
+  // Request host to expand the disk image for /data. Returns -1 for failure.
+  // ARC is supposed to call this when there is not enough free disk space for
+  // /data.
+  [MinVersion=2] RequestDataDiskExpansion@5(int64 total_space, int64 free_space)
+       => (int64 new_disk_size);
 };
 
 // Next Method ID: 1

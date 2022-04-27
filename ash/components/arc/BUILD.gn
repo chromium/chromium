@@ -127,6 +127,7 @@ static_library("arc") {
     "//chromeos/ash/components/dbus/patchpanel:patchpanel_proto",
     "//chromeos/components/sensors:sensors",
     "//chromeos/dbus",
+    "//chromeos/dbus:concierge_proto",
     "//chromeos/dbus/cryptohome",
     "//chromeos/dbus/permission_broker",
     "//chromeos/dbus/power",
