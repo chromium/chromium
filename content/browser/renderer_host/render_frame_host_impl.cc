@@ -1402,8 +1402,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       code_cache_host_receivers_(
           GetProcess()->GetStoragePartition()->GetGeneratedCodeCacheContext()),
       fenced_frame_status_(
-          IsInFencedFrameTree()
-              ? (IsFencedFrameRootNoStatus()
+          frame_tree_node_->IsInFencedFrameTree()
+              ? (frame_tree_node_->IsFencedFrameRoot()
                      ? FencedFrameStatus::kFencedFrameRoot
                      : FencedFrameStatus::kIframeNestedWithinFencedFrame)
               : FencedFrameStatus::kNotNestedInFencedFrame) {
@@ -1927,57 +1927,6 @@ bool RenderFrameHostImpl::IsDescendantOfWithinFrameTree(
 
 bool RenderFrameHostImpl::IsFencedFrameRoot() {
   return fenced_frame_status_ == FencedFrameStatus::kFencedFrameRoot;
-}
-
-bool RenderFrameHostImpl::IsFencedFrameRootNoStatus() {
-  if (!blink::features::IsFencedFramesEnabled())
-    return false;
-
-  switch (blink::features::kFencedFramesImplementationTypeParam.Get()) {
-    case blink::features::FencedFramesImplementationType::kMPArch: {
-      return is_main_frame() &&
-             frame_tree()->type() == FrameTree::Type::kFencedFrame;
-    }
-    case blink::features::FencedFramesImplementationType::kShadowDOM: {
-      // Different from the MPArch case, the ShadowDOM implementation of fenced
-      // frame lives in the same FrameTree as its parent, so we need to check
-      // its effective frame policy instead.
-      return browsing_context_state_->effective_frame_policy().is_fenced;
-    }
-    default:
-      return false;
-  }
-}
-
-bool RenderFrameHostImpl::IsInFencedFrameTree() {
-  if (!blink::features::IsFencedFramesEnabled())
-    return false;
-
-  switch (blink::features::kFencedFramesImplementationTypeParam.Get()) {
-    case blink::features::FencedFramesImplementationType::kMPArch:
-      return frame_tree()->type() == FrameTree::Type::kFencedFrame;
-    case blink::features::FencedFramesImplementationType::kShadowDOM: {
-      // FrameTreeNode may not necessarily be initialized in which case,
-      // determining fenced frame information will require a valid
-      // RenderFrameHost.
-      if (browsing_context_state_->effective_frame_policy().is_fenced) {
-        return true;
-      }
-
-      RenderFrameHostImpl* node = GetParent();
-      while (node) {
-        if (node->browsing_context_state()
-                ->effective_frame_policy()
-                .is_fenced) {
-          return true;
-        }
-        node = node->GetParent() ? node->GetParent() : nullptr;
-      }
-      return false;
-    }
-    default:
-      return false;
-  }
 }
 
 bool RenderFrameHostImpl::IsNestedWithinFencedFrame() {

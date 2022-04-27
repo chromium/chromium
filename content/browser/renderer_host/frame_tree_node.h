@@ -741,6 +741,9 @@ class CONTENT_EXPORT FrameTreeNode {
   // navigations.
   absl::optional<FencedFrameMode> fenced_frame_mode_;
 
+  const RenderFrameHostImpl::FencedFrameStatus fenced_frame_status_ =
+      RenderFrameHostImpl::FencedFrameStatus::kNotNestedInFencedFrame;
+
   // Manages creation and swapping of RenderFrameHosts for this frame.
   //
   // This field needs to be declared last, because destruction of

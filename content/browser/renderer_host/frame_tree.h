@@ -536,6 +536,9 @@ class CONTENT_EXPORT FrameTree {
   // more RenderFrameHosts or RenderFrameProxyHosts using it.
   RenderViewHostMap render_view_host_map_;
 
+  // Indicates type of frame tree.
+  const Type type_;
+
   // This is an owned ptr to the root FrameTreeNode, which never changes over
   // the lifetime of the FrameTree. It is not a scoped_ptr because we need the
   // pointer to remain valid even while the FrameTreeNode is being destroyed,
@@ -551,9 +554,6 @@ class CONTENT_EXPORT FrameTree {
   // unsafe to show the pending URL. Usually false unless another window tries
   // to modify the blank page.  Always false after the first commit.
   bool has_accessed_initial_main_document_ = false;
-
-  // Indicates type of frame tree.
-  const Type type_;
 
   bool is_being_destroyed_ = false;
 

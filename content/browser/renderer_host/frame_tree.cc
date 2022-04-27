@@ -191,6 +191,7 @@ FrameTree::FrameTree(
                  *this,
                  navigator_delegate,
                  navigation_controller_delegate),
+      type_(type),
       root_(new FrameTreeNode(this,
                               nullptr,
                               // The top-level frame must always be in a
@@ -202,8 +203,7 @@ FrameTree::FrameTree(
                               blink::FrameOwnerElementType::kNone,
                               blink::FramePolicy())),
       focused_frame_tree_node_id_(FrameTreeNode::kFrameTreeNodeInvalidId),
-      load_progress_(0.0),
-      type_(type) {}
+      load_progress_(0.0) {}
 
 FrameTree::~FrameTree() {
   is_being_destroyed_ = true;

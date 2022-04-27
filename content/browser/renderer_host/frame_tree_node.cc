@@ -105,6 +105,44 @@ FrameTreeNode* FrameTreeNode::From(RenderFrameHost* rfh) {
   return static_cast<RenderFrameHostImpl*>(rfh)->frame_tree_node();
 }
 
+RenderFrameHostImpl::FencedFrameStatus ComputeFencedFrameStatus(
+    FrameTree* frame_tree,
+    RenderFrameHostImpl* parent,
+    const blink::FramePolicy& frame_policy) {
+  if (blink::features::IsFencedFramesEnabled()) {
+    switch (blink::features::kFencedFramesImplementationTypeParam.Get()) {
+      case blink::features::FencedFramesImplementationType::kMPArch: {
+        if (frame_tree->type() == FrameTree::Type::kFencedFrame) {
+          if (!parent)
+            return RenderFrameHostImpl::FencedFrameStatus::kFencedFrameRoot;
+          return RenderFrameHostImpl::FencedFrameStatus::
+              kIframeNestedWithinFencedFrame;
+        } else {
+          return RenderFrameHostImpl::FencedFrameStatus::
+              kNotNestedInFencedFrame;
+        }
+      }
+      case blink::features::FencedFramesImplementationType::kShadowDOM: {
+        // Different from the MPArch case, the ShadowDOM implementation of
+        // fenced frame lives in the same FrameTree as its parent, so we need to
+        // check its effective frame policy instead.
+        if (frame_policy.is_fenced) {
+          return RenderFrameHostImpl::FencedFrameStatus::kFencedFrameRoot;
+        } else if (parent && parent->frame_tree_node()->IsInFencedFrameTree()) {
+          return RenderFrameHostImpl::FencedFrameStatus::
+              kIframeNestedWithinFencedFrame;
+        }
+        return RenderFrameHostImpl::FencedFrameStatus::kNotNestedInFencedFrame;
+      }
+      default: {
+        return RenderFrameHostImpl::FencedFrameStatus::kNotNestedInFencedFrame;
+      }
+    }
+  }
+
+  return RenderFrameHostImpl::FencedFrameStatus::kNotNestedInFencedFrame;
+}
+
 FrameTreeNode::FrameTreeNode(
     FrameTree* frame_tree,
     RenderFrameHostImpl* parent,
@@ -124,6 +162,8 @@ FrameTreeNode::FrameTreeNode(
       devtools_frame_token_(devtools_frame_token),
       frame_owner_properties_(frame_owner_properties),
       blame_context_(frame_tree_node_id_, FrameTreeNode::From(parent)),
+      fenced_frame_status_(
+          ComputeFencedFrameStatus(frame_tree_, parent_, frame_policy)),
       render_manager_(this, frame_tree->manager_delegate()) {
   std::pair<FrameTreeNodeIdMap::iterator, bool> result =
       g_frame_tree_node_id_map.Get().insert(
@@ -824,11 +864,13 @@ bool FrameTreeNode::HasNavigation() {
 }
 
 bool FrameTreeNode::IsFencedFrameRoot() const {
-  return current_frame_host()->IsFencedFrameRootNoStatus();
+  return fenced_frame_status_ ==
+         RenderFrameHostImpl::FencedFrameStatus::kFencedFrameRoot;
 }
 
 bool FrameTreeNode::IsInFencedFrameTree() const {
-  return current_frame_host()->IsInFencedFrameTree();
+  return fenced_frame_status_ !=
+         RenderFrameHostImpl::FencedFrameStatus::kNotNestedInFencedFrame;
 }
 
 void FrameTreeNode::SetFencedFrameNonceIfNeeded() {
