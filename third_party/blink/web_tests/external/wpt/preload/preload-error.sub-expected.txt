@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 68 tests; 59 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 68 tests; 63 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS success (image): preload events
 PASS success (image): main
 PASS 404 (image): preload events
@@ -32,8 +32,8 @@ PASS CSP-error (script): preload events
 PASS CSP-error (script): main
 PASS success (xhr): preload events
 PASS success (xhr): main
-FAIL 404 (xhr): preload events assert_unreached: preload onerror Reached unreachable code
-FAIL 404 (xhr): main assert_unreached: XHR onabort Reached unreachable code
+PASS 404 (xhr): preload events
+PASS 404 (xhr): main
 PASS CORS (xhr): preload events
 PASS CORS (xhr): main
 PASS CORS-error (xhr): preload events
@@ -42,8 +42,8 @@ PASS CSP-error (xhr): preload events
 PASS CSP-error (xhr): main
 PASS success (fetch): preload events
 PASS success (fetch): main
-FAIL 404 (fetch): preload events assert_unreached: preload onerror Reached unreachable code
-FAIL 404 (fetch): main assert_unreached: fetch() completed but text() timeout Reached unreachable code
+PASS 404 (fetch): preload events
+PASS 404 (fetch): main
 PASS CORS (fetch): preload events
 PASS CORS (fetch): main
 PASS CORS-error (fetch): preload events

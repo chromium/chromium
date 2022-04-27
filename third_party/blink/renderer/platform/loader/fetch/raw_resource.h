@@ -103,9 +103,9 @@ class PLATFORM_EXPORT RawResource final : public Resource {
   // Resource implementation
   void DidAddClient(ResourceClient*) override;
   void AppendData(const char*, size_t) override;
-  bool ShouldIgnoreHTTPStatusCodeErrors() const override {
-    return !IsLinkPreload();
-  }
+
+  bool ShouldIgnoreHTTPStatusCodeErrors() const override { return true; }
+
   void WillNotFollowRedirect() override;
   void ResponseReceived(const ResourceResponse&) override;
   void ResponseBodyReceived(
