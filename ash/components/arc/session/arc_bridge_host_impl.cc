@@ -57,6 +57,7 @@
 #include "ash/components/arc/mojom/sensor.mojom.h"
 #include "ash/components/arc/mojom/sharesheet.mojom.h"
 #include "ash/components/arc/mojom/storage_manager.mojom.h"
+#include "ash/components/arc/mojom/system_ui.mojom.h"
 #include "ash/components/arc/mojom/timer.mojom.h"
 #include "ash/components/arc/mojom/tracing.mojom.h"
 #include "ash/components/arc/mojom/tts.mojom.h"
@@ -394,6 +395,12 @@ void ArcBridgeHostImpl::OnStorageManagerInstanceReady(
     mojo::PendingRemote<mojom::StorageManagerInstance> storage_manager_remote) {
   OnInstanceReady(arc_bridge_service_->storage_manager(),
                   std::move(storage_manager_remote));
+}
+
+void ArcBridgeHostImpl::OnSystemUIInstanceReady(
+    mojo::PendingRemote<mojom::SystemUIInstance> system_ui_remote) {
+  OnInstanceReady(arc_bridge_service_->system_ui(),
+                  std::move(system_ui_remote));
 }
 
 void ArcBridgeHostImpl::OnTimerInstanceReady(

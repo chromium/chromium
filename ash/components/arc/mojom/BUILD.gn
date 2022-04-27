@@ -63,6 +63,7 @@ mojom("mojom") {
     "sensor_service.mojom",
     "sharesheet.mojom",
     "storage_manager.mojom",
+    "system_ui.mojom",
     "timer.mojom",
     "tracing.mojom",
     "tts.mojom",

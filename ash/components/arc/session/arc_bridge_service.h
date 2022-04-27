@@ -102,6 +102,7 @@ class SharesheetInstance;
 class SmartCardManagerHost;
 class SmartCardManagerInstance;
 class StorageManagerInstance;
+class SystemUIInstance;
 class TimerHost;
 class TimerInstance;
 class TracingInstance;
@@ -321,6 +322,7 @@ class ArcBridgeService {
   ConnectionHolder<mojom::StorageManagerInstance>* storage_manager() {
     return &storage_manager_;
   }
+  ConnectionHolder<mojom::SystemUIInstance>* system_ui() { return &system_ui_; }
   ConnectionHolder<mojom::TimerInstance, mojom::TimerHost>* timer() {
     return &timer_;
   }
@@ -418,6 +420,7 @@ class ArcBridgeService {
   ConnectionHolder<mojom::SmartCardManagerInstance, mojom::SmartCardManagerHost>
       smart_card_manager_;
   ConnectionHolder<mojom::StorageManagerInstance> storage_manager_;
+  ConnectionHolder<mojom::SystemUIInstance> system_ui_;
   ConnectionHolder<mojom::TimerInstance, mojom::TimerHost> timer_;
   ConnectionHolder<mojom::TracingInstance> tracing_;
   ConnectionHolder<mojom::TtsInstance, mojom::TtsHost> tts_;

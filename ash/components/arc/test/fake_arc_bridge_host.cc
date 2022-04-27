@@ -52,6 +52,7 @@
 #include "ash/components/arc/mojom/sensor.mojom.h"
 #include "ash/components/arc/mojom/sharesheet.mojom.h"
 #include "ash/components/arc/mojom/storage_manager.mojom.h"
+#include "ash/components/arc/mojom/system_ui.mojom.h"
 #include "ash/components/arc/mojom/timer.mojom.h"
 #include "ash/components/arc/mojom/tracing.mojom.h"
 #include "ash/components/arc/mojom/tts.mojom.h"
@@ -230,6 +231,9 @@ void FakeArcBridgeHost::OnSmartCardManagerInstanceReady(
 void FakeArcBridgeHost::OnStorageManagerInstanceReady(
     mojo::PendingRemote<mojom::StorageManagerInstance> storage_manager_remote) {
 }
+
+void FakeArcBridgeHost::OnSystemUIInstanceReady(
+    mojo::PendingRemote<mojom::SystemUIInstance> system_ui_remote) {}
 
 void FakeArcBridgeHost::OnTimerInstanceReady(
     mojo::PendingRemote<mojom::TimerInstance> timer_remote) {}
