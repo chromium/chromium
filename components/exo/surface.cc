@@ -1220,10 +1220,7 @@ void Surface::UpdateResource(FrameSinkResourceManager* resource_manager) {
             std::move(state_.per_commit_explicit_release_callback_))) {
       current_resource_has_alpha_ =
           FormatHasAlpha(state_.buffer->buffer()->GetFormat());
-      // Setting colors for YUV buffers has been problematic in the past. See
-      // crrev.com/c/2331769
-      if (state_.buffer->buffer()->GetFormat() != gfx::BufferFormat::YVU_420)
-        current_resource_.color_space = state_.basic_state.color_space;
+      current_resource_.color_space = state_.basic_state.color_space;
     } else {
       current_resource_.id = viz::kInvalidResourceId;
       // Use the buffer's size, so the AppendContentsToFrame() will append

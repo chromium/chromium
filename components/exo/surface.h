@@ -426,7 +426,7 @@ class Surface final : public ui::PropertyHandler {
     SkBlendMode blend_mode = SkBlendMode::kSrcOver;
     float alpha = 1.0f;
     gfx::Vector2d offset;
-    gfx::ColorSpace color_space;
+    gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
     bool is_tracking_occlusion = false;
   };
   class BufferAttachment {
