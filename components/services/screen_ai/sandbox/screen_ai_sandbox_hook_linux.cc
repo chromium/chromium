@@ -17,10 +17,7 @@ using sandbox::syscall_broker::MakeBrokerCommandSet;
 namespace screen_ai {
 
 bool ScreenAIPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
-  // TODO(https://crbug.com/1278249): Ensure this is the same version of the
-  // library that is used in ScreenAIService and component updater has not added
-  // a newer version between the two steps.
-  const base::FilePath library_path = screen_ai::GetLibraryFilePath();
+  base::FilePath library_path = screen_ai::GetLatestLibraryFilePath();
   if (library_path.empty()) {
     VLOG(1) << "Screen AI library not found.";
   } else {
@@ -29,11 +26,14 @@ bool ScreenAIPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
     // The library is delivered by the component updater. If it is not available
     // we cannot do anything about it here. The requests to the service will
     // fail later as the library does not exist.
-    if (!screen_ai_library)
+    if (!screen_ai_library) {
       VLOG(1) << dlerror();
-    else
+      library_path.clear();
+    } else {
       VLOG(2) << "Screen AI library loaded pre-sandboxing:" << library_path;
+    }
   }
+  screen_ai::SetPreloadedLibraryFilePath(library_path);
 
   auto* instance = sandbox::policy::SandboxLinux::GetInstance();
 

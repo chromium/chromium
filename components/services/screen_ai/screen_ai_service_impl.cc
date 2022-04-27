@@ -22,7 +22,7 @@ namespace screen_ai {
 
 ScreenAIService::ScreenAIService(
     mojo::PendingReceiver<mojom::ScreenAIService> receiver)
-    : library_(screen_ai::GetLibraryFilePath()),
+    : library_(screen_ai::GetPreloadedLibraryFilePath()),
       init_function_(reinterpret_cast<ScreenAIInitFunction>(
           library_.GetFunctionPointer("Init"))),
       annotator_function_(reinterpret_cast<ScreenAIAnnotateFunction>(

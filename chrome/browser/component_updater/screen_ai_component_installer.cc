@@ -79,7 +79,7 @@ bool ScreenAIComponentInstallerPolicy::VerifyInstallation(
   // TODO(https://crbug.com/1278249): Consider trying to open and initialize the
   // library.
   VLOG(1) << "Verifying Screen AI Library in " << install_dir.value();
-  return screen_ai::GetLibraryFilePath().DirName() == install_dir;
+  return screen_ai::GetLatestLibraryFilePath().DirName() == install_dir;
 }
 
 base::FilePath ScreenAIComponentInstallerPolicy::GetRelativeInstallDir() const {
@@ -104,7 +104,7 @@ ScreenAIComponentInstallerPolicy::GetInstallerAttributes() const {
 // static
 void ScreenAIComponentInstallerPolicy::DeleteLibraryOrScheduleDeletionIfNeeded(
     PrefService* global_prefs) {
-  base::FilePath library_path = screen_ai::GetLibraryFilePath();
+  base::FilePath library_path = screen_ai::GetLatestLibraryFilePath();
   if (library_path.empty())
     return;
 
@@ -123,7 +123,7 @@ void ScreenAIComponentInstallerPolicy::DeleteLibraryOrScheduleDeletionIfNeeded(
     // If there are more than one instance of the library, delete them as well.
     do {
       base::DeletePathRecursively(library_path.DirName());
-      library_path = screen_ai::GetLibraryFilePath();
+      library_path = screen_ai::GetLatestLibraryFilePath();
     } while (!library_path.empty());
     global_prefs->SetTime(prefs::kScreenAIScheduledDeletionTimePrefName,
                           base::Time());

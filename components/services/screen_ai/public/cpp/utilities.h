@@ -10,10 +10,17 @@
 namespace screen_ai {
 
 // Get the absolute path of the ScreenAI library.
-const base::FilePath GetLibraryFilePath();
+base::FilePath GetLatestLibraryFilePath();
 
 // Returns the install directory relative to components folder.
-const base::FilePath GetRelativeInstallDir();
+base::FilePath GetRelativeInstallDir();
+
+// Stores the path to the preloaded library. This value is set when the library
+// is loaded prior to sandboxing in every session.
+void SetPreloadedLibraryFilePath(const base::FilePath& path);
+
+// Returns the preloaded path for the library.
+base::FilePath GetPreloadedLibraryFilePath();
 
 }  // namespace screen_ai
 #endif  // COMPONENTS_SERVICES_SCREEN_AI_PUBLIC_CPP_UTILITIES_H_

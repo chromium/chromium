@@ -17,13 +17,22 @@ const base::FilePath::CharType kScreenAISubDirName[] =
 
 const base::FilePath::CharType kScreenAILibraryFileName[] =
     FILE_PATH_LITERAL("libchrome_screen_ai.so");
+
+enum {
+  PATH_START = 13000,
+
+  DIR_SCREEN_AI_LIBRARY,  // Path from which ScreenAI library is preloaded.
+
+  PATH_END
+};
+
 }  // namespace
 
-const base::FilePath GetRelativeInstallDir() {
+base::FilePath GetRelativeInstallDir() {
   return base::FilePath(kScreenAISubDirName);
 }
 
-const base::FilePath GetLibraryFilePath() {
+base::FilePath GetLatestLibraryFilePath() {
   base::FilePath components_dir;
   base::PathService::Get(component_updater::DIR_COMPONENT_USER,
                          &components_dir);
@@ -48,6 +57,16 @@ const base::FilePath GetLibraryFilePath() {
     return base::FilePath();
 
   return library_path;
+}
+
+void SetPreloadedLibraryFilePath(const base::FilePath& path) {
+  base::PathService::Override(DIR_SCREEN_AI_LIBRARY, path);
+}
+
+base::FilePath GetPreloadedLibraryFilePath() {
+  base::FilePath path;
+  base::PathService::Get(DIR_SCREEN_AI_LIBRARY, &path);
+  return path;
 }
 
 }  // namespace screen_ai
