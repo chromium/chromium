@@ -241,6 +241,10 @@
 	        "tmux_integration": {
                   "description": "True if tmux control mode integration is enabled.",
                   "type": "boolean"
+                },
+	        "ssh": {
+                  "description": "True if terminal-ssh is enabled.",
+                  "type": "boolean"
                 }
 	      },
               "description": "Information about which features are enabled."
