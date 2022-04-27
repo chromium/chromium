@@ -24,7 +24,7 @@ import websockets
 
 async def get_websocket():
     port = os.getenv('PORT', 8080)
-    url = f'ws://localhost:{port}'
+    url = f'ws://localhost:{port}/session'
     return await websockets.connect(url)
 
 

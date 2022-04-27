@@ -44,10 +44,10 @@ export class BidiServerRunner {
 
       if (!request.url) return response.end(404);
 
-      // Needed for WPT compatibility.
+      // https://w3c.github.io/webdriver-bidi/#transport, step 2.
       if (request.url.startsWith('/session')) {
         response.writeHead(200, {
-          'Content-Type': 'application/json; charset=utf-8',
+          'Content-Type': 'application/json;charset=utf-8',
           'Cache-Control': 'no-cache',
         });
         response.write(
