@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunBrowserTest, SetShouldShowWelcomePage) {
   EXPECT_FALSE(ShouldShowWelcomePage());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS)
 namespace {
 
 // A generic test class to be subclassed by test classes testing specific
@@ -101,7 +101,7 @@ class FirstRunMasterPrefsBrowserTestBase : public InProcessBrowserTest {
     extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
   }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   void SetUpInProcessBrowserTestFixture() override {
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
     // Suppress first run dialog since it blocks test progress.
@@ -431,6 +431,6 @@ INSTANTIATE_TEST_SUITE_P(FirstRunMasterPrefsVariationsSeedTests,
                          FirstRunMasterPrefsVariationsSeedTest,
                          testing::Bool());
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace first_run
