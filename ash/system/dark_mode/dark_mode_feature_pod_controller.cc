@@ -49,6 +49,12 @@ FeaturePodButton* DarkModeFeaturePodController::CreateButton() {
 }
 
 void DarkModeFeaturePodController::OnIconPressed() {
+  // Toggling Dark theme feature pod button inside quick settings should cancel
+  // auto scheduling. This ensures that on and off states of the pod button
+  // match the non-scheduled states of Dark and Light buttons in
+  // personalization hub respectively.
+  ash::Shell::Get()->dark_mode_controller()->SetAutoScheduleEnabled(
+      /*enabled=*/false);
   AshColorProvider::Get()->ToggleColorMode();
 }
 
