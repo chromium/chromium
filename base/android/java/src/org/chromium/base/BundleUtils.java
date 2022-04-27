@@ -22,7 +22,6 @@ import dalvik.system.BaseDexClassLoader;
 import dalvik.system.PathClassLoader;
 
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.IdentifierNameString;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.BuildConfig;
@@ -254,15 +253,6 @@ public class BundleUtils {
                     activity.getClass());
             replaceClassLoader(baseContext, activityClassLoader);
         }
-    }
-
-    /**
-     * Gets the obfuscated name for the passed in class name. Important: this MUST be called with a
-     * string literal, otherwise @IdentifierNameString will not work.
-     */
-    @IdentifierNameString
-    public static String getIdentifierName(String className) {
-        return className;
     }
 
     /**
