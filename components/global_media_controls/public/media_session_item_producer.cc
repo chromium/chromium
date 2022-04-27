@@ -345,6 +345,7 @@ void MediaSessionItemProducer::OnMediaItemUIDismissed(const std::string& id) {
 
   session->set_dismiss_reason(
       GlobalMediaControlsDismissReason::kUserDismissedNotification);
+  session->item()->Stop();
   session->item()->Dismiss();
 }
 

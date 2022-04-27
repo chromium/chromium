@@ -176,13 +176,16 @@ void MediaSessionNotificationItem::SeekTo(base::TimeDelta time) {
 }
 
 void MediaSessionNotificationItem::Dismiss() {
-  if (media_controller_remote_.is_bound())
-    media_controller_remote_->Stop();
   delegate_->RemoveItem(request_id_);
 }
 
 media_message_center::SourceType MediaSessionNotificationItem::SourceType() {
   return media_message_center::SourceType::kLocalMediaSession;
+}
+
+void MediaSessionNotificationItem::Stop() {
+  if (media_controller_remote_.is_bound())
+    media_controller_remote_->Stop();
 }
 
 void MediaSessionNotificationItem::Raise() {

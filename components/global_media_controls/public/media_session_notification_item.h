@@ -96,6 +96,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
   void SetVolume(float volume) override {}
   void SetMute(bool mute) override;
 
+  // Stops the media session.
+  void Stop();
+
   // Calls |Raise()| on the underlying MediaSession, which will focus the
   // WebContents if the MediaSession is associated with one.
   void Raise();
