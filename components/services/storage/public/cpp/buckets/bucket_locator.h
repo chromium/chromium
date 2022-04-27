@@ -39,8 +39,8 @@ struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketLocator {
   COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
   friend bool operator<(const BucketLocator& lhs, const BucketLocator& rhs);
 
-  BucketId id;
-  blink::StorageKey storage_key;
+  BucketId id = BucketId::FromUnsafeValue(0);
+  blink::StorageKey storage_key = blink::StorageKey();
   blink::mojom::StorageType type = blink::mojom::StorageType::kUnknown;
   bool is_default = false;
 };

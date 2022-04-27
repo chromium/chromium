@@ -16,6 +16,7 @@
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_env.h"
@@ -36,6 +37,8 @@ TEST(IndexedDBIOErrorTest, CleanUpTest) {
   base::test::TaskEnvironment task_env;
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
   base::ScopedTempDir temp_directory;
   ASSERT_TRUE(temp_directory.CreateUniqueTempDir());
   const base::FilePath path = temp_directory.GetPath();
@@ -45,7 +48,7 @@ TEST(IndexedDBIOErrorTest, CleanUpTest) {
   std::unique_ptr<IndexedDBBackingStore> backing_store = std::make_unique<
       IndexedDBBackingStore>(
       IndexedDBBackingStore::Mode::kInMemory, &transactional_leveldb_factory,
-      storage_key, path,
+      bucket_locator, path,
       transactional_leveldb_factory.CreateLevelDBDatabase(
           FakeLevelDBFactory::GetBrokenLevelDB(
               leveldb::Status::IOError("It's broken!"), path),
@@ -65,6 +68,8 @@ TEST(IndexedDBNonRecoverableIOErrorTest, NuancedCleanupTest) {
   base::test::TaskEnvironment task_env;
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
   base::ScopedTempDir temp_directory;
   ASSERT_TRUE(temp_directory.CreateUniqueTempDir());
   const base::FilePath path = temp_directory.GetPath();
@@ -84,7 +89,7 @@ TEST(IndexedDBNonRecoverableIOErrorTest, NuancedCleanupTest) {
     std::unique_ptr<IndexedDBBackingStore> backing_store = std::make_unique<
         IndexedDBBackingStore>(
         IndexedDBBackingStore::Mode::kInMemory, &transactional_leveldb_factory,
-        storage_key, path,
+        bucket_locator, path,
         transactional_leveldb_factory.CreateLevelDBDatabase(
             FakeLevelDBFactory::GetBrokenLevelDB(error_status, path), nullptr,
             task_runner.get(),

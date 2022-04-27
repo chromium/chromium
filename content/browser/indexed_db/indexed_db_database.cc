@@ -70,14 +70,14 @@ namespace {
 std::vector<blink::mojom::IDBReturnValuePtr> CreateMojoValues(
     std::vector<IndexedDBReturnValue>& found_values,
     IndexedDBDispatcherHost* dispatcher_host,
-    const blink::StorageKey& storage_key) {
+    const storage::BucketLocator& bucket_locator) {
   std::vector<blink::mojom::IDBReturnValuePtr> mojo_values;
   mojo_values.reserve(found_values.size());
   for (size_t i = 0; i < found_values.size(); ++i) {
     mojo_values.push_back(
         IndexedDBReturnValue::ConvertReturnValue(&found_values[i]));
     dispatcher_host->CreateAllExternalObjects(
-        storage_key, found_values[i].external_objects,
+        bucket_locator, found_values[i].external_objects,
         &mojo_values[i]->value->external_objects);
   }
   return mojo_values;
@@ -843,7 +843,7 @@ Status IndexedDBDatabase::GetOperation(
     blink::mojom::IDBReturnValuePtr mojo_value =
         IndexedDBReturnValue::ConvertReturnValue(&value);
     dispatcher_host->CreateAllExternalObjects(
-        storage_key(), value.external_objects,
+        bucket_locator(), value.external_objects,
         &mojo_value->value->external_objects);
     std::move(callback).Run(
         blink::mojom::IDBDatabaseGetResult::NewValue(std::move(mojo_value)));
@@ -901,7 +901,7 @@ Status IndexedDBDatabase::GetOperation(
   blink::mojom::IDBReturnValuePtr mojo_value =
       IndexedDBReturnValue::ConvertReturnValue(&value);
   dispatcher_host->CreateAllExternalObjects(
-      storage_key(), value.external_objects,
+      bucket_locator(), value.external_objects,
       &mojo_value->value->external_objects);
   std::move(callback).Run(
       blink::mojom::IDBDatabaseGetResult::NewValue(std::move(mojo_value)));
@@ -1063,7 +1063,7 @@ Status IndexedDBDatabase::GetAllOperation(
     } else {
       if (found_values.size() >= max_values_before_sending) {
         result_sink->ReceiveValues(CreateMojoValues(
-            found_values, dispatcher_host.get(), storage_key()));
+            found_values, dispatcher_host.get(), bucket_locator()));
         found_values.clear();
       }
     }
@@ -1075,8 +1075,8 @@ Status IndexedDBDatabase::GetAllOperation(
     }
   } else {
     if (!found_values.empty()) {
-      result_sink->ReceiveValues(
-          CreateMojoValues(found_values, dispatcher_host.get(), storage_key()));
+      result_sink->ReceiveValues(CreateMojoValues(
+          found_values, dispatcher_host.get(), bucket_locator()));
     }
   }
   return s;
@@ -1209,8 +1209,9 @@ Status IndexedDBDatabase::PutOperation(
     std::move(params->callback)
         .Run(blink::mojom::IDBTransactionPutResult::NewKey(*key));
   }
+  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   factory_->NotifyIndexedDBContentChanged(
-      storage_key(), metadata_.name,
+      bucket_locator().storage_key, metadata_.name,
       metadata_.object_stores[params->object_store_id].name);
   return s;
 }
@@ -1401,7 +1402,7 @@ Status IndexedDBDatabase::BatchGetAllOperation(
       mojo_values.push_back(
           IndexedDBReturnValue::ConvertReturnValue(&found_values[j]));
       dispatcher_host->CreateAllExternalObjects(
-          storage_key(), found_values[j].external_objects,
+          bucket_locator(), found_values[j].external_objects,
           &mojo_values[j]->value->external_objects);
     }
     all_mojo_values.push_back(std::move(mojo_values));
@@ -1505,9 +1506,7 @@ Status IndexedDBDatabase::OpenCursorOperation(
   }
 
   if (mojo_value) {
-    // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
-    dispatcher_host->CreateAllExternalObjects(bucket_locator.storage_key,
-                                              external_objects,
+    dispatcher_host->CreateAllExternalObjects(bucket_locator, external_objects,
                                               &mojo_value->external_objects);
   }
 
@@ -1582,8 +1581,9 @@ Status IndexedDBDatabase::DeleteRangeOperation(
   if (!s.ok())
     return s;
   callbacks->OnSuccess();
+  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   factory_->NotifyIndexedDBContentChanged(
-      storage_key(), metadata_.name,
+      bucket_locator().storage_key, metadata_.name,
       metadata_.object_stores[object_store_id].name);
   return s;
 }
@@ -1628,8 +1628,9 @@ Status IndexedDBDatabase::ClearOperation(
     return s;
   callbacks->OnSuccess();
 
+  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   factory_->NotifyIndexedDBContentChanged(
-      storage_key(), metadata_.name,
+      bucket_locator().storage_key, metadata_.name,
       metadata_.object_stores[object_store_id].name);
   return s;
 }

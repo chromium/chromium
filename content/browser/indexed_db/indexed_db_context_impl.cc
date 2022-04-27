@@ -30,6 +30,7 @@
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_client_callback_wrapper.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
@@ -537,32 +538,35 @@ void IndexedDBContextImpl::ResetCachesForTesting(base::OnceClosure callback) {
 }
 
 void IndexedDBContextImpl::ForceSchemaDowngradeForTesting(
-    const blink::StorageKey& storage_key,
+    const storage::BucketLocator& bucket_locator,
     ForceSchemaDowngradeForTestingCallback callback) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
 
-  if (is_incognito() || !HasBucket(storage_key)) {
+  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
+  if (is_incognito() || !HasBucket(bucket_locator.storage_key)) {
     std::move(callback).Run(false);
     return;
   }
 
   if (indexeddb_factory_.get()) {
-    indexeddb_factory_->ForceSchemaDowngrade(storage_key);
+    indexeddb_factory_->ForceSchemaDowngrade(bucket_locator);
     std::move(callback).Run(true);
     return;
   }
+  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
   ForceCloseSync(
-      storage_key,
+      bucket_locator.storage_key,
       storage::mojom::ForceCloseReason::FORCE_SCHEMA_DOWNGRADE_INTERNALS_PAGE);
   std::move(callback).Run(false);
 }
 
 void IndexedDBContextImpl::HasV2SchemaCorruptionForTesting(
-    const blink::StorageKey& storage_key,
+    const storage::BucketLocator& bucket_locator,
     HasV2SchemaCorruptionForTestingCallback callback) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
 
-  if (is_incognito() || !HasBucket(storage_key)) {
+  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
+  if (is_incognito() || !HasBucket(bucket_locator.storage_key)) {
     std::move(callback).Run(
         storage::mojom::V2SchemaCorruptionStatus::CORRUPTION_UNKNOWN);
     return;
@@ -571,7 +575,7 @@ void IndexedDBContextImpl::HasV2SchemaCorruptionForTesting(
   if (indexeddb_factory_.get()) {
     std::move(callback).Run(
         static_cast<storage::mojom::V2SchemaCorruptionStatus>(
-            indexeddb_factory_->HasV2SchemaCorruption(storage_key)));
+            indexeddb_factory_->HasV2SchemaCorruption(bucket_locator)));
     return;
   }
   return std::move(callback).Run(
@@ -579,14 +583,14 @@ void IndexedDBContextImpl::HasV2SchemaCorruptionForTesting(
 }
 
 void IndexedDBContextImpl::WriteToIndexedDBForTesting(
-    const blink::StorageKey& storage_key,
+    const storage::BucketLocator& bucket_locator,
     const std::string& key,
     const std::string& value,
     base::OnceClosure callback) {
   IndexedDBBucketStateHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      GetIDBFactory()->GetOrOpenBucketFactory(storage_key, data_path(),
+      GetIDBFactory()->GetOrOpenBucketFactory(bucket_locator, data_path(),
                                               /*create_if_missing=*/true);
   CHECK(s.ok()) << s.ToString();
   CHECK(handle.IsHeld());
@@ -597,7 +601,8 @@ void IndexedDBContextImpl::WriteToIndexedDBForTesting(
   s = db->Put(key, &value_copy);
   CHECK(s.ok()) << s.ToString();
   handle.Release();
-  GetIDBFactory()->ForceClose(storage_key, true);
+  // TODO(crbug.com/1218100): Propagate BucketLocator to callee.
+  GetIDBFactory()->ForceClose(bucket_locator.storage_key, true);
   std::move(callback).Run();
 }
 
@@ -608,13 +613,13 @@ void IndexedDBContextImpl::GetBlobCountForTesting(
 }
 
 void IndexedDBContextImpl::GetNextBlobNumberForTesting(
-    const blink::StorageKey& storage_key,
+    const storage::BucketLocator& bucket_locator,
     int64_t database_id,
     GetNextBlobNumberForTestingCallback callback) {
   IndexedDBBucketStateHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      GetIDBFactory()->GetOrOpenBucketFactory(storage_key, data_path(),
+      GetIDBFactory()->GetOrOpenBucketFactory(bucket_locator, data_path(),
                                               /*create_if_missing=*/true);
   CHECK(s.ok()) << s.ToString();
   CHECK(handle.IsHeld());
@@ -638,14 +643,14 @@ void IndexedDBContextImpl::GetNextBlobNumberForTesting(
 }
 
 void IndexedDBContextImpl::GetPathForBlobForTesting(
-    const blink::StorageKey& storage_key,
+    const storage::BucketLocator& bucket_locator,
     int64_t database_id,
     int64_t blob_number,
     GetPathForBlobForTestingCallback callback) {
   IndexedDBBucketStateHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      GetIDBFactory()->GetOrOpenBucketFactory(storage_key, data_path(),
+      GetIDBFactory()->GetOrOpenBucketFactory(bucket_locator, data_path(),
                                               /*create_if_missing=*/true);
   CHECK(s.ok()) << s.ToString();
   CHECK(handle.IsHeld());

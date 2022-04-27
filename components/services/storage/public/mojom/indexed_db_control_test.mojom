@@ -4,6 +4,7 @@
 
 module storage.mojom;
 
+import "components/services/storage/public/mojom/buckets/bucket_locator.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -52,27 +53,27 @@ interface IndexedDBControlTest {
   ResetCachesForTesting() => ();
 
   // Downgrades databases to V2.
-  ForceSchemaDowngradeForTesting(blink.mojom.StorageKey storage_key) =>
+  ForceSchemaDowngradeForTesting(storage.mojom.BucketLocator bucket_locator) =>
     (bool downgraded);
 
   // Returns the corruption status for a given database.
-  HasV2SchemaCorruptionForTesting(blink.mojom.StorageKey storage_key) =>
+  HasV2SchemaCorruptionForTesting(storage.mojom.BucketLocator bucket_locator) =>
       (V2SchemaCorruptionStatus status);
 
   // Does a direct write to a database with a given key/value pair.
-  WriteToIndexedDBForTesting(blink.mojom.StorageKey storage_key, string key,
-                             string value) => ();
+  WriteToIndexedDBForTesting(storage.mojom.BucketLocator bucket_locator,
+                             string key, string value) => ();
 
   // Returns the number of blobs for a given `storage_key`.
   GetBlobCountForTesting(blink.mojom.StorageKey storage_key) =>
     (int64 num_blobs);
 
   // Returns the next blob id for a given `storage_key`.
-  GetNextBlobNumberForTesting(blink.mojom.StorageKey storage_key,
+  GetNextBlobNumberForTesting(storage.mojom.BucketLocator bucket_locator,
                               int64 database_id) => (int64 next_blob_number);
 
   // Returns the path for a given key/database/blob.
-  GetPathForBlobForTesting(blink.mojom.StorageKey storage_key,
+  GetPathForBlobForTesting(storage.mojom.BucketLocator bucket_locator,
                            int64 database_id, int64 blob_number) =>
       (mojo_base.mojom.FilePath path);
 
