@@ -98,6 +98,10 @@ import UIKit
 
 extension PopupModel: OmniboxSuggestionCommands {
   public func highlightNextSuggestion() {
+    // Pressing Up Arrow when there are no suggestions does nothing.
+    if sections.isEmpty || sections.first!.matches.isEmpty {
+      return
+    }
     guard var indexPath = self.highlightedMatchIndexPath else {
       // When nothing is highlighted, pressing Up Arrow doesn't do anything.
       return
@@ -127,6 +131,10 @@ extension PopupModel: OmniboxSuggestionCommands {
   }
 
   public func highlightPreviousSuggestion() {
+    // Pressing Down Arrow when there are no suggestions does nothing.
+    if sections.isEmpty || sections.first!.matches.isEmpty {
+      return
+    }
     // Initialize the highlighted index path to section:0, row:-1, so that pressing down when nothing
     // is highlighted highlights the first row (at index 0).
     var indexPath = self.highlightedMatchIndexPath ?? IndexPath(row: -1, section: 0)
