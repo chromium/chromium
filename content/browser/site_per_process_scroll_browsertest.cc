@@ -371,8 +371,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
 
 #if BUILDFLAG(IS_ANDROID)
   // The reason for Android specific code is that
-  // AutoZoomFocusedNodeToLegibleScale is in blink's WebSettings and difficult
-  // to access from here. It so happens that the setting is on for Android.
+  // AutoZoomFocusedEditableToLegibleScale is in blink's WebSettings and
+  // difficult to access from here. It so happens that the setting is on for
+  // Android.
+  // TODO(bokan): This is accessible now but this test will soon be replaced.
+  // crbug.com/1296183.
 
   // A lower bound on the ratio of page scale factor after scroll. The actual
   // value depends on minReadableCaretHeight / caret_bounds.Height(). The page

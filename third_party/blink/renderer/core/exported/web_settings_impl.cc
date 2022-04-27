@@ -43,7 +43,7 @@ WebSettingsImpl::WebSettingsImpl(Settings* settings,
     : settings_(settings),
       dev_tools_emulator_(dev_tools_emulator),
       render_v_sync_notification_enabled_(false),
-      auto_zoom_focused_node_to_legible_scale_(false),
+      auto_zoom_focused_editable_to_legible_scale_(false),
       support_deprecated_target_density_dpi_(false),
       viewport_meta_non_user_scalable_quirk_(false),
       clobber_user_agent_initial_scale_quirk_(false) {
@@ -138,10 +138,10 @@ void WebSettingsImpl::SetAutoplayPolicy(mojom::blink::AutoplayPolicy policy) {
       static_cast<blink::AutoplayPolicy::Type>(policy));
 }
 
-void WebSettingsImpl::SetAutoZoomFocusedNodeToLegibleScale(
-    bool auto_zoom_focused_node_to_legible_scale) {
-  auto_zoom_focused_node_to_legible_scale_ =
-      auto_zoom_focused_node_to_legible_scale;
+void WebSettingsImpl::SetAutoZoomFocusedEditableToLegibleScale(
+    bool auto_zoom_focused_editable_to_legible_scale) {
+  auto_zoom_focused_editable_to_legible_scale_ =
+      auto_zoom_focused_editable_to_legible_scale;
 }
 
 void WebSettingsImpl::SetTextAutosizingEnabled(bool enabled) {

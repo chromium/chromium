@@ -1631,7 +1631,6 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetAccessibilityFontScaleFactor(prefs.font_scale_factor);
   settings->SetDeviceScaleAdjustment(prefs.device_scale_adjustment);
   web_view_impl->SetIgnoreViewportTagScaleLimits(prefs.force_enable_zoom);
-  settings->SetAutoZoomFocusedNodeToLegibleScale(true);
   settings->SetDefaultVideoPosterURL(
       WebString::FromASCII(prefs.default_video_poster_url.spec()));
   settings->SetSupportDeprecatedTargetDensityDPI(
@@ -1682,6 +1681,8 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetViewportEnabled(prefs.viewport_enabled);
   settings->SetViewportMetaEnabled(prefs.viewport_meta_enabled);
   settings->SetViewportStyle(prefs.viewport_style);
+  settings->SetAutoZoomFocusedEditableToLegibleScale(
+      prefs.auto_zoom_focused_editable_to_legible_scale);
 
   settings->SetLoadWithOverviewMode(prefs.initialize_at_minimum_page_scale);
   settings->SetMainFrameResizesAreOrientationChanges(
@@ -2037,7 +2038,7 @@ void WebViewImpl::SetFocusedFrame(WebFrame* frame) {
 
 bool WebViewImpl::ShouldZoomToLegibleScale(const Element& element) {
   bool zoom_into_legible_scale =
-      web_settings_->AutoZoomFocusedNodeToLegibleScale() &&
+      web_settings_->AutoZoomFocusedEditableToLegibleScale() &&
       !GetPage()->GetVisualViewport().ShouldDisableDesktopWorkarounds();
 
   if (zoom_into_legible_scale) {

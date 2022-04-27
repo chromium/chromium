@@ -135,6 +135,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool supports_multiple_windows;
   bool viewport_enabled;
   bool viewport_meta_enabled;
+  bool auto_zoom_focused_editable_to_legible_scale;
 
   // If true - Blink will clamp the minimum scale factor to the content width,
   // preventing zoom beyond the visible content. This is really only needed if

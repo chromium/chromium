@@ -132,6 +132,8 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->supports_multiple_windows = data.supports_multiple_windows();
   out->viewport_enabled = data.viewport_enabled();
   out->viewport_meta_enabled = data.viewport_meta_enabled();
+  out->auto_zoom_focused_editable_to_legible_scale =
+      data.auto_zoom_focused_editable_to_legible_scale();
   out->shrinks_viewport_contents_to_fit =
       data.shrinks_viewport_contents_to_fit();
   out->smooth_scroll_for_find_enabled = data.smooth_scroll_for_find_enabled();

@@ -4083,7 +4083,7 @@ TEST_F(WebFrameTest, DontZoomInOnFocusedInTouchAction) {
       .SetTextAutosizingEnabled(false);
   web_view_helper.GetWebView()
       ->GetSettings()
-      ->SetAutoZoomFocusedNodeToLegibleScale(true);
+      ->SetAutoZoomFocusedEditableToLegibleScale(true);
   web_view_helper.Resize(gfx::Size(viewport_width, viewport_height));
 
   float initial_scale = web_view_helper.GetWebView()->PageScaleFactor();
@@ -12052,7 +12052,7 @@ class WebFrameSimTest : public SimTest {
         true);
     WebView().GetPage()->GetSettings().SetViewportStyle(
         mojom::blink::ViewportStyle::kMobile);
-    WebView().GetSettings()->SetAutoZoomFocusedNodeToLegibleScale(true);
+    WebView().GetSettings()->SetAutoZoomFocusedEditableToLegibleScale(true);
     WebView().GetSettings()->SetShrinksViewportContentToFit(true);
     WebView().SetDefaultPageScaleLimits(0.25f, 5);
   }
@@ -12326,7 +12326,7 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableElementIntoView) {
   WebView().EnableFakePageScaleAnimationForTesting(true);
   WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
   WebView().GetPage()->GetSettings().SetViewportEnabled(false);
-  WebView().GetSettings()->SetAutoZoomFocusedNodeToLegibleScale(true);
+  WebView().GetSettings()->SetAutoZoomFocusedEditableToLegibleScale(true);
 
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -12433,7 +12433,7 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableInRootScroller) {
   WebView().EnableFakePageScaleAnimationForTesting(true);
   WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
   WebView().GetPage()->GetSettings().SetViewportEnabled(false);
-  WebView().GetSettings()->SetAutoZoomFocusedNodeToLegibleScale(true);
+  WebView().GetSettings()->SetAutoZoomFocusedEditableToLegibleScale(true);
 
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");

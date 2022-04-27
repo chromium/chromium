@@ -370,6 +370,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.viewport_meta_enabled;
   }
 
+  static bool auto_zoom_focused_editable_to_legible_scale(
+      const blink::web_pref::WebPreferences& r) {
+    return r.auto_zoom_focused_editable_to_legible_scale;
+  }
+
   static bool shrinks_viewport_contents_to_fit(
       const blink::web_pref::WebPreferences& r) {
     return r.shrinks_viewport_contents_to_fit;
