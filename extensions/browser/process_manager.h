@@ -237,11 +237,6 @@ class ProcessManager : public KeyedService,
   // |worker_id|.
   bool HasServiceWorker(const WorkerId& worker_id) const;
 
-  // Returns all the Service Worker infos that is active in the given render
-  // process for the extension with |extension_id|.
-  std::vector<WorkerId> GetServiceWorkers(const ExtensionId& extension_id,
-                                          int render_process_id) const;
-
   // Returns all the Service Worker infos that is active for the extension with
   // |extension_id|.
   std::vector<WorkerId> GetServiceWorkersForExtension(

@@ -1047,13 +1047,6 @@ bool ProcessManager::HasServiceWorker(const WorkerId& worker_id) const {
   return all_extension_workers_.Contains(worker_id);
 }
 
-std::vector<WorkerId> ProcessManager::GetServiceWorkers(
-    const ExtensionId& extension_id,
-    int render_process_id) const {
-  return all_extension_workers_.GetAllForExtension(extension_id,
-                                                   render_process_id);
-}
-
 std::vector<WorkerId> ProcessManager::GetServiceWorkersForExtension(
     const ExtensionId& extension_id) const {
   return all_extension_workers_.GetAllForExtension(extension_id);
