@@ -112,9 +112,6 @@ linux_memory_builder(
     execution_timeout = 6 * time.hour,
     ssd = True,
     cores = 16,
-    goma_backend = goma.backend.RBE_PROD,
-    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
-    reclient_instance = None,
 )
 
 linux_memory_builder(
@@ -136,9 +133,6 @@ linux_memory_builder(
     execution_timeout = 4 * time.hour,
     ssd = True,
     cores = 16,
-    goma_backend = goma.backend.RBE_PROD,
-    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
-    reclient_instance = None,
 )
 
 linux_memory_builder(

@@ -34,7 +34,8 @@
       "is_lsan": true,
       "symbol_level": 1,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Linux ChromiumOS MSan Builder": {
@@ -45,7 +46,8 @@
       "is_msan": true,
       "msan_track_origins": 2,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Linux MSan Builder": {
