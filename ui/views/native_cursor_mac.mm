@@ -38,4 +38,16 @@ gfx::NativeCursor GetNativeNorthSouthResizeCursor() {
   return [NSCursor resizeUpDownCursor];
 }
 
+gfx::NativeCursor GetNativeNorthWestSouthEastResizeCursor() {
+  NOTIMPLEMENTED();
+  // TODO(tapted): This is the wrong cursor. Fetch the right one from WebCursor
+  // or ResourceBundle or CoreCursor private API.
+  return [NSCursor resizeLeftRightCursor];
+}
+
+gfx::NativeCursor GetNativeNorthEastSouthWestResizeCursor() {
+  NOTIMPLEMENTED();
+  return [NSCursor resizeUpDownCursor];
+}
+
 }  // namespace views

@@ -15,6 +15,8 @@ VIEWS_EXPORT gfx::NativeCursor GetNativeHandCursor();
 VIEWS_EXPORT gfx::NativeCursor GetNativeColumnResizeCursor();
 VIEWS_EXPORT gfx::NativeCursor GetNativeEastWestResizeCursor();
 VIEWS_EXPORT gfx::NativeCursor GetNativeNorthSouthResizeCursor();
+VIEWS_EXPORT gfx::NativeCursor GetNativeNorthWestSouthEastResizeCursor();
+VIEWS_EXPORT gfx::NativeCursor GetNativeNorthEastSouthWestResizeCursor();
 
 }  // namespace views
 

@@ -29,4 +29,12 @@ gfx::NativeCursor GetNativeNorthSouthResizeCursor() {
   return ui::mojom::CursorType::kNorthSouthResize;
 }
 
+gfx::NativeCursor GetNativeNorthWestSouthEastResizeCursor() {
+  return ui::mojom::CursorType::kNorthWestSouthEastResize;
+}
+
+gfx::NativeCursor GetNativeNorthEastSouthWestResizeCursor() {
+  return ui::mojom::CursorType::kNorthEastSouthWestResize;
+}
+
 }  // namespace views
