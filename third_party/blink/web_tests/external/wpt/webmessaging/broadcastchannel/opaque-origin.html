@@ -79,6 +79,93 @@ promise_test(t => {
     document.body.appendChild(iframe1);
     });
 }, "BroadcastChannel messages from opaque origins should be self-contained");
+
+const worker_src = (channel_name, worker_name) => `data:,
+const handler = (reply) => {
+  let bc2 = new BroadcastChannel("${channel_name}");
+  bc2.onmessage = (e) => {
+    if (e.data == "from-${worker_name}") {
+      reply("${worker_name}-done");
+    } else {
+      reply("fail");
+    }
+  };
+  let bc3 = new BroadcastChannel("${channel_name}");
+  bc3.postMessage("from-${worker_name}");
+};
+// For dedicated workers:
+self.addEventListener("message", () => handler(self.postMessage));
+// For shared workers:
+self.addEventListener("connect", (e) => handler(e.ports[0].postMessage));
+`;
+
+promise_test(t => {
+  return new Promise((resolve, reject) => {
+    const channel_name = "opaque-origin-test-3";
+    const bc1 = new BroadcastChannel(channel_name);
+    bc1.onmessage = e => { reject("Received message from an opaque origin"); };
+
+    // Same as the previous test but with data URL dedicated workers (which
+    // should have opaque origins per the HTML spec).
+    const worker_name_prefix = "data-url-dedicated-worker";
+    const worker_1_name = `${worker_name_prefix}-1`;
+    const worker_2_name = `${worker_name_prefix}-2`;
+
+    const handler = e => {
+      if(e.data == `${worker_1_name}-done`) {
+        const worker2 = new Worker(worker_src(channel_name, worker_2_name));
+        t.add_cleanup(() => worker2.terminate());
+        worker2.addEventListener("message", handler);
+        worker2.postMessage("go!");
+      } else if(e.data == `${worker_2_name}-done`) {
+        resolve();
+      } else if(e.data == "fail") {
+        reject("One opaque origin received a message from the other");
+      } else {
+        reject("An unexpected error occurred");
+      }
+    };
+
+    let worker1 = new Worker(worker_src(channel_name, worker_1_name));
+    t.add_cleanup(() => worker1.terminate());
+    worker1.addEventListener("message", handler);
+    worker1.postMessage("go!");
+    });
+}, "BroadcastChannel messages from data URL dedicated workers should be self-contained");
+
+promise_test(() => {
+  return new Promise((resolve, reject) => {
+    const channel_name = "opaque-origin-test-4";
+    const bc1 = new BroadcastChannel(channel_name);
+    bc1.onmessage = e => { reject("Received message from an opaque origin"); };
+
+    // Same as the previous test but with data URL shared workers (which
+    // should have opaque origins per the HTML spec).
+    const worker_name_prefix = "data-url-shared-worker";
+    const worker_1_name = `${worker_name_prefix}-1`;
+    const worker_2_name = `${worker_name_prefix}-2`;
+
+    const handler = e => {
+      if(e.data == `${worker_1_name}-done`) {
+        const worker_script = worker_src(channel_name, worker_2_name);
+        const worker2 = new SharedWorker(worker_script, worker_2_name);
+        worker2.port.addEventListener("message", handler);
+        worker2.port.postMessage("go!");
+      } else if(e.data == `${worker_2_name}-done`) {
+        resolve();
+      } else if(e.data == "fail") {
+        reject("One opaque origin received a message from the other");
+      } else {
+        reject("An unexpected error occurred");
+      }
+    };
+
+    const worker_script = worker_src(channel_name, worker_2_name);
+    const worker1 = new SharedWorker(worker_script, worker_1_name);
+    worker1.port.addEventListener("message", handler);
+    worker1.port.postMessage("go!");
+    });
+}, "BroadcastChannel messages from data URL shared workers should be self-contained");
 //-->
 </script>
 </body>
