@@ -20,6 +20,7 @@
 #include "build/chromeos_buildflags.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/clipboard.h"
+#include "remoting/host/input_injector_constants_linux.h"
 #include "remoting/host/linux/unicode_to_keysym.h"
 #include "remoting/host/linux/x11_character_injector.h"
 #include "remoting/host/linux/x11_keyboard_impl.h"
@@ -49,12 +50,6 @@ using protocol::KeyEvent;
 using protocol::MouseEvent;
 using protocol::TextEvent;
 using protocol::TouchEvent;
-
-enum class ScrollDirection {
-  DOWN = -1,
-  UP = 1,
-  NONE = 0,
-};
 
 ScrollDirection WheelDeltaToScrollDirection(float num) {
   return (num > 0)   ? ScrollDirection::UP
