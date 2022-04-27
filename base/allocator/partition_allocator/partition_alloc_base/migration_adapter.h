@@ -55,13 +55,6 @@ BASE_EXPORT void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
 template <typename T, typename O>
 class NoDestructor;
 
-namespace internal {
-
-template <typename T>
-class CheckedNumeric;
-
-}
-
 #if BUILDFLAG(IS_MAC)
 
 namespace internal {
@@ -85,6 +78,7 @@ bool IsAtLeastOS10_14();
 bool IsOS10_11();
 
 }  // namespace mac
+
 #endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace base
@@ -108,7 +102,6 @@ using ::base::Seconds;
 using ::base::StringPrintf;
 using ::base::TimeDelta;
 using ::base::TimeTicks;
-using ::base::internal::CheckedNumeric;
 
 #if BUILDFLAG(IS_ANDROID)
 using ::base::GetFunctionPointerFromNativeLibrary;
