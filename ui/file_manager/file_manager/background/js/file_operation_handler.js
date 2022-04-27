@@ -75,11 +75,11 @@ export class FileOperationHandler {
       };
     }
     item.message = getMessageFromProgressEvent_(event);
+    item.sourceMessage = event.sourceName;
+    item.destinationMessage = event.destinationName;
 
     switch (event.state) {
       case chrome.fileManagerPrivate.IOTaskState.QUEUED:
-        item.sourceMessage = event.sourceName;
-        item.destinationMessage = event.destinationName;
         item.progressMax = event.totalBytes;
         item.progressValue = event.bytesTransferred;
         item.remainingTime = event.remainingSeconds;
@@ -97,8 +97,6 @@ export class FileOperationHandler {
         if (newItem) {
           // ERROR events can be dispatched before BEGIN events.
           item.progressMax = 1;
-          item.sourceMessage = event.sourceName;
-          item.destinationMessage = event.destinationName;
         }
         if (event.state === chrome.fileManagerPrivate.IOTaskState.SUCCESS) {
           item.state = ProgressItemState.COMPLETED;
