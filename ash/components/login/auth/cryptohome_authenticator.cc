@@ -20,6 +20,7 @@
 #include "ash/components/login/auth/user_context.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -40,6 +41,11 @@
 namespace ash {
 
 namespace {
+
+bool ShouldUseOldEncryptionForTesting() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ash::switches::kCryptohomeUseOldEncryptionForTesting);
+}
 
 // The name under which the type of key generated from the user's GAIA
 // credentials is stored.
@@ -222,9 +228,14 @@ void DoMount(const base::WeakPtr<AuthAttemptState>& attempt,
         cryptohome_parameter_utils::CreateKeyDefFromUserContext(
             *attempt->user_context),
         mount.mutable_create()->add_keys());
+    if (ShouldUseOldEncryptionForTesting()) {
+      mount.mutable_create()->set_force_ecryptfs(true);
+    }
   }
-  if (attempt->user_context->IsForcingDircrypto())
+  if (attempt->user_context->IsForcingDircrypto() &&
+      !ShouldUseOldEncryptionForTesting()) {
     mount.set_force_dircrypto_if_available(true);
+  }
   *mount.mutable_account() = cryptohome::CreateAccountIdentifierFromAccountId(
       attempt->user_context->GetAccountId());
   *mount.mutable_authorization() = auth;

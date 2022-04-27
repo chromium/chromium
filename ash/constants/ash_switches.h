@@ -94,6 +94,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCrosRegion[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kCryptohomeRecoveryReauthUrl[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCryptohomeUseAuthSession[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kCryptohomeUseOldEncryptionForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDefaultWallpaperIsOem[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDefaultWallpaperLarge[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDefaultWallpaperSmall[];

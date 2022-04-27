@@ -293,6 +293,12 @@ const char kCryptohomeRecoveryReauthUrl[] = "cryptohome-recovery-reauth-url";
 // Controls if AuthSession API should be used when interacting with cryptohomed.
 const char kCryptohomeUseAuthSession[] = "cryptohome-use-authsession";
 
+// Forces cryptohome to create new users using old (ecryptfs) encryption.
+// This switch can be used to set up configurations that can be used to
+// test encryption migration scenarios.
+const char kCryptohomeUseOldEncryptionForTesting[] =
+    "cryptohome-use-old-encryption-for-testing";
+
 // Indicates that the wallpaper images specified by
 // kAshDefaultWallpaper{Large,Small} are OEM-specific (i.e. they are not
 // downloadable from Google).
