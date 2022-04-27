@@ -1900,8 +1900,8 @@ class WebAppBrowserTest_FileHandler : public WebAppBrowserTest {
     feature_list_.InitAndEnableFeature(blink::features::kFileHandlingAPI);
   }
 
- protected:
 #if BUILDFLAG(IS_WIN)
+ protected:
   void SetUp() override {
     // Don't pollute Windows registry of machine running tests.
     registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER);
@@ -1915,13 +1915,7 @@ class WebAppBrowserTest_FileHandler : public WebAppBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1270961): Flaky on Win and Mac.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define MAYBE_WebAppFileHandler DISABLED_WebAppFileHandler
-#else
-#define MAYBE_WebAppFileHandler WebAppFileHandler
-#endif
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, MAYBE_WebAppFileHandler) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, RegKeysFileExtension) {
   os_hooks_suppress_.reset();
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -1976,7 +1970,6 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, MAYBE_WebAppFileHandler) {
     }
   }
 #elif BUILDFLAG(IS_MAC)
-  std::vector<GURL> test_file_urls;
   for (auto extension : expected_extensions) {
     const base::FilePath test_file_path =
         shortcut_override->chrome_apps_folder.GetPath().AppendASCII("test." +
@@ -1984,34 +1977,11 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, MAYBE_WebAppFileHandler) {
     const base::File test_file(test_file_path, base::File::FLAG_CREATE_ALWAYS |
                                                    base::File::FLAG_WRITE);
     const GURL test_file_url = net::FilePathToFileURL(test_file_path);
-    test_file_urls.push_back(test_file_url);
     EXPECT_EQ(u"Manifest with file handlers",
               shell_integration::GetApplicationNameForProtocol(test_file_url))
         << "The default app to open the file is wrong. "
         << "File extension: " + extension;
   }
-
-  // Simulate the user permanently denying file handling permission. Regression
-  // test for crbug.com/1269387
-  base::RunLoop run_loop_remove_file_handlers;
-  PersistFileHandlersUserChoice(browser()->profile(), app_id, /*allowed=*/false,
-                                run_loop_remove_file_handlers.QuitClosure());
-  run_loop_remove_file_handlers.Run();
-
-  for (const auto& test_file_url : test_file_urls) {
-    // The system update is asynchronous (i.e.
-    // `LSCopyDefaultApplicationURLForURL()` won't immediately return the
-    // updated value), so unfortunately we must poll. If the unregistration of
-    // the file handlers failed, the test will time out.
-    while (u"Manifest with file handlers" ==
-           shell_integration::GetApplicationNameForProtocol(test_file_url)) {
-      base::RunLoop delay_loop;
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, delay_loop.QuitClosure(), base::Milliseconds(100));
-      delay_loop.Run();
-    }
-  }
-
   ASSERT_TRUE(shortcut_override->chrome_apps_folder.Delete());
 #endif
 
@@ -2028,7 +1998,6 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, MAYBE_WebAppFileHandler) {
 
 #if BUILDFLAG(IS_WIN)
   // Check file associations after the web app is uninstalled.
-
   // Check that HKCU/Software Classes/<filext>/ doesn't have the ProgId.
   for (const auto& reg_key_prog_id : reg_key_prog_id_map) {
     ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER,
@@ -2037,7 +2006,73 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, MAYBE_WebAppFileHandler) {
   }
 #endif
 }
-#endif
+
+// TODO(crbug.com/1270961): Disabled because it is flaky on Mac.
+#if BUILDFLAG(IS_MAC) && MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_VERSION_11_0
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
+                       UserDenyFileHandlingPermission) {
+  os_hooks_suppress_.reset();
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  std::unique_ptr<ScopedShortcutOverrideForTesting> shortcut_override =
+      OverrideShortcutsForTesting(base::GetHomeDir());
+  std::vector<std::string> expected_extensions{"bar", "baz", "foo", "foobar"};
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL app_url(embedded_test_server()->GetURL(
+      "/banners/"
+      "manifest_test_page.html?manifest=manifest_with_file_handlers.json"));
+
+  NavigateToURLAndWait(browser(), app_url);
+
+  // Wait for OS hooks and installation to complete.
+  chrome::SetAutoAcceptWebAppDialogForTesting(true, true);
+  base::RunLoop run_loop_install;
+  WebAppInstallManagerObserverAdapter observer(profile());
+  observer.SetWebAppInstalledWithOsHooksDelegate(base::BindLambdaForTesting(
+      [&](const AppId& installed_app_id) { run_loop_install.Quit(); }));
+  const AppId app_id = test::InstallPwaForCurrentUrl(browser());
+  run_loop_install.Run();
+  content::RunAllTasksUntilIdle();
+  chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
+
+  // Simulate the user permanently denying file handling permission. Regression
+  // test for crbug.com/1269387
+  base::RunLoop run_loop_remove_file_handlers;
+  PersistFileHandlersUserChoice(browser()->profile(), app_id, /*allowed=*/false,
+                                run_loop_remove_file_handlers.QuitClosure());
+  run_loop_remove_file_handlers.Run();
+
+  for (auto extension : expected_extensions) {
+    const base::FilePath test_file_path =
+        shortcut_override->chrome_apps_folder.GetPath().AppendASCII("test." +
+                                                                    extension);
+    const base::File test_file(test_file_path, base::File::FLAG_CREATE_ALWAYS |
+                                                   base::File::FLAG_WRITE);
+    const GURL test_file_url = net::FilePathToFileURL(test_file_path);
+    while (u"Manifest with file handlers" ==
+           shell_integration::GetApplicationNameForProtocol(test_file_url)) {
+      base::RunLoop delay_loop;
+      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE, delay_loop.QuitClosure(), base::Milliseconds(100));
+      delay_loop.Run();
+    }
+  }
+  ASSERT_TRUE(shortcut_override->chrome_apps_folder.Delete());
+
+  // Unistall the web app
+  NavigateToURLAndWait(browser(), GURL(chrome::kChromeUIAppsURL));
+  base::RunLoop run_loop_uninstall;
+  WebAppProvider::GetForTest(profile())->install_finalizer().UninstallWebApp(
+      app_id, webapps::WebappUninstallSource::kAppsPage,
+      base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+        EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
+        run_loop_uninstall.Quit();
+      }));
+  run_loop_uninstall.Run();
+}
+#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PRE_UninstallIncompleteUninstall) {
   auto* provider = WebAppProvider::GetForTest(profile());
