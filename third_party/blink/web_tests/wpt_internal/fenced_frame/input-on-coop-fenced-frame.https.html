@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <title>Test input inside a fenced frame with non-matching COOP.</title>
+<link rel="help" href="https://crbug.com/1316535">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
@@ -12,14 +13,14 @@
 <script>
 
 // Navigating a fenced frame to a page with a COOP mismatch (in this case,
-// unsafe-none -> same-origin-allow-popups) will force a browsing instance swap
-// which means we'll force using a new RenderFrameHost. This will create a
-// speculative frame host which will create the renderer's frame using
-// RenderFrameImpl::CreateFrame rather than RenderFrameImpl::CreateMainFrame.
-// This test is a basic smoke test that the WebFrameWidgetImpl is correctly
-// setup in that path. This test sends some input in to exercise this code
-// path, mainly ensuring the renderer doesn't crash/DCHECK.  See
-// https://crgbug.com/1316535.
+// unsafe-none -> same-origin-allow-popups) will force the page into a new
+// browsing context group.
+//
+// In Chromium, this forces using a "speculative" frame host which initializes
+// the new frame using a different path than normal.
+//
+// This test is a basic smoke test that sending input through this setup works
+// and doesn't cause any crashes. See linked bug for more details.
 promise_test(async () => {
   const frame = attachFencedFrameContext({
     headers: [["Cross-Origin-Opener-Policy", "same-origin-allow-popups"]]
