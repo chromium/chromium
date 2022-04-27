@@ -54,6 +54,8 @@ class EasyUnlockNotificationController {
 
  protected:
   // Exposed for testing.
+  // TODO(b/227674947): Delete LaunchEasyUnlockSettings after Sign in with Smart
+  // Lock is removed.
   virtual void LaunchEasyUnlockSettings();
   virtual void LaunchMultiDeviceSettings();
   virtual void LockScreen();

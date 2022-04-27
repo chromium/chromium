@@ -1298,7 +1298,7 @@ const base::Feature kSmartDimExperimentalComponent{
 // screen, removes the Smart Lock subpage in settings, and shows a one-time
 // notification for users who previously had this feature enabled.
 const base::Feature kSmartLockSignInRemoved{"SmartLockSignInRemoved",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Replaces Smart Lock UI in lock screen password box with new UI similar to
 // fingerprint auth. Adds Smart Lock to "Lock screen and sign-in" section of

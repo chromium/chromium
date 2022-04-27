@@ -216,10 +216,27 @@ suite('Multidevice', function() {
         assertFalse(!!multideviceSubpage.$$('#phoneHubCameraRollItem'));
       });
 
-  test('clicking SmartLock item routes to SmartLock subpage', function() {
-    multideviceSubpage.$$('#smartLockItem').$$('.link-wrapper').click();
-    assertEquals(Router.getInstance().getCurrentRoute(), routes.SMART_LOCK);
-  });
+  test(
+      'SmartLock item routes to subpage with isSmartLockSignInRemoved disabled',
+      function() {
+        multideviceSubpage.remove();
+        loadTimeData.overrideValues({'isSmartLockSignInRemoved': false});
+        browserProxy = new TestMultideviceBrowserProxy();
+        MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
+
+        PolymerTest.clearBody();
+        multideviceSubpage =
+            document.createElement('settings-multidevice-subpage');
+        multideviceSubpage.pageContentData = {hostDeviceName: 'Pixel XL'};
+        setMode(MultiDeviceSettingsMode.HOST_SET_VERIFIED);
+        setSupportedFeatures(Object.values(MultiDeviceFeature));
+
+        document.body.appendChild(multideviceSubpage);
+        flush();
+
+        multideviceSubpage.$$('#smartLockItem').$$('.link-wrapper').click();
+        assertEquals(Router.getInstance().getCurrentRoute(), routes.SMART_LOCK);
+      });
 
   test(
       'setting isSmartLockSignInRemoved flag removes SmartLock subpage route',

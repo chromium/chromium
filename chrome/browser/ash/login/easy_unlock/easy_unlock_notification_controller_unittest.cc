@@ -76,6 +76,8 @@ TEST_F(EasyUnlockNotificationControllerTest,
           test_profile));
 
   // Check returns false when kSmartLockSignInRemoved isn't enabled.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(ash::features::kSmartLockSignInRemoved);
   pref_service->SetBoolean(
       proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled, true);
   pref_service->SetBoolean(prefs::kHasSeenSmartLockSignInRemovedNotification,
@@ -86,8 +88,8 @@ TEST_F(EasyUnlockNotificationControllerTest,
 
   // Check returns false when kHasSeenSmartLockSignInRemovedNotification is
   // true.
-  base::test::ScopedFeatureList feature_list(
-      ash::features::kSmartLockSignInRemoved);
+  feature_list.Reset();
+  feature_list.InitAndEnableFeature(ash::features::kSmartLockSignInRemoved);
   pref_service->SetBoolean(prefs::kHasSeenSmartLockSignInRemovedNotification,
                            true);
   ASSERT_FALSE(
@@ -142,6 +144,17 @@ TEST_F(EasyUnlockNotificationControllerTest,
   EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
 
   // Clicking notification button should launch settings.
+  EXPECT_CALL(*notification_controller_, LaunchMultiDeviceSettings());
+  notification->delegate()->Click(0, absl::nullopt);
+
+  // Clicking the notification itself should also launch settings.
+  EXPECT_CALL(*notification_controller_, LaunchMultiDeviceSettings());
+  notification->delegate()->Click(absl::nullopt, absl::nullopt);
+
+  // When kSmartLockSignInRemoved is disabled, LaunchEasyUnlockSettings() should
+  // be called instead.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(ash::features::kSmartLockSignInRemoved);
   EXPECT_CALL(*notification_controller_, LaunchEasyUnlockSettings());
   notification->delegate()->Click(0, absl::nullopt);
 
@@ -161,16 +174,23 @@ TEST_F(EasyUnlockNotificationControllerTest,
   ASSERT_EQ(2u, notification->buttons().size());
   EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
 
+  // Clicking the notification itself should do nothing.
+  notification->delegate()->Click(absl::nullopt, absl::nullopt);
+
   // Clicking 1st notification button should lock screen settings.
   EXPECT_CALL(*notification_controller_, LockScreen());
   notification->delegate()->Click(0, absl::nullopt);
 
   // Clicking 2nd notification button should launch settings.
-  EXPECT_CALL(*notification_controller_, LaunchEasyUnlockSettings());
+  EXPECT_CALL(*notification_controller_, LaunchMultiDeviceSettings());
   notification->delegate()->Click(1, absl::nullopt);
 
-  // Clicking the notification itself should do nothing.
-  notification->delegate()->Click(absl::nullopt, absl::nullopt);
+  // When kSmartLockSignInRemoved is disabled, LaunchEasyUnlockSettings() should
+  // be called instead.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(ash::features::kSmartLockSignInRemoved);
+  EXPECT_CALL(*notification_controller_, LaunchEasyUnlockSettings());
+  notification->delegate()->Click(1, absl::nullopt);
 }
 
 TEST_F(EasyUnlockNotificationControllerTest,
@@ -188,6 +208,18 @@ TEST_F(EasyUnlockNotificationControllerTest,
   // Check that the phone name is in the notification message.
   EXPECT_NE(std::string::npos, notification->message().find(kPhoneName16));
 
+  // Clicking notification button should launch settings.
+  EXPECT_CALL(*notification_controller_, LaunchMultiDeviceSettings());
+  notification->delegate()->Click(0, absl::nullopt);
+
+  // Clicking the notification itself should also launch settings.
+  EXPECT_CALL(*notification_controller_, LaunchMultiDeviceSettings());
+  notification->delegate()->Click(absl::nullopt, absl::nullopt);
+
+  // When kSmartLockSignInRemoved is disabled, LaunchEasyUnlockSettings() should
+  // be called instead.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(ash::features::kSmartLockSignInRemoved);
   // Clicking notification button should launch settings.
   EXPECT_CALL(*notification_controller_, LaunchEasyUnlockSettings());
   notification->delegate()->Click(0, absl::nullopt);
