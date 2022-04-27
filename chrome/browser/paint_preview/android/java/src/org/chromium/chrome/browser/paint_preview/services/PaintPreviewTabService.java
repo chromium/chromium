@@ -14,10 +14,13 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
+import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -33,6 +36,10 @@ import java.io.File;
  */
 @JNINamespace("paint_preview")
 public class PaintPreviewTabService implements NativePaintPreviewServiceProvider {
+    public static final BooleanCachedFieldTrialParameter ALLOW_SRP =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP, "allow_srp", true);
+
     private static final long AUDIT_START_DELAY_MS = 2 * 60 * 1000; // Two minutes;
     private static boolean sIsAccessibilityEnabledForTesting;
 
@@ -86,7 +93,14 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
             String scheme = tab.getUrl().getScheme();
             boolean schemeAllowed = scheme.equals("http") || scheme.equals("https");
             return !tab.isIncognito() && !tab.isNativePage() && !tab.isShowingErrorPage()
-                    && tab.getWebContents() != null && !tab.isLoading() && schemeAllowed;
+                    && tab.getWebContents() != null && !tab.isLoading() && schemeAllowed
+                    && allowIfSrp(tab);
+        }
+
+        private boolean allowIfSrp(Tab tab) {
+            if (ALLOW_SRP.getValue()) return true;
+
+            return !UrlUtilitiesJni.get().isGoogleSearchUrl(tab.getUrl().getSpec());
         }
     }
 

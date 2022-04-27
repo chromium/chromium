@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.notifications.chime.ChimeFeatures;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuidePushNotificationManager;
 import org.chromium.chrome.browser.page_annotations.PageAnnotationsServiceConfig;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
+import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -162,6 +163,7 @@ public class ChromeCachedFlags {
                         add(StartSurfaceConfiguration.USER_CLICK_THRESHOLD);
                         add(StartSurfaceConfiguration.WARM_UP_RENDERER);
                         add(StartupPaintPreviewHelper.ACCESSIBILITY_SUPPORT_PARAM);
+                        add(PaintPreviewTabService.ALLOW_SRP);
                         add(TabContentManager.ALLOW_TO_REFETCH_TAB_THUMBNAIL_VARIATION);
                         add(TabUiFeatureUtilities.ENABLE_LAUNCH_BUG_FIX);
                         add(TabUiFeatureUtilities.ENABLE_LAUNCH_POLISH);

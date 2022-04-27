@@ -36,6 +36,7 @@ android_library("java") {
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/util:java",
     "//components/browser_ui/styles/android:java",
+    "//components/embedder_support/android:util_java",
     "//components/paint_preview/browser/android:java",
     "//components/paint_preview/player/android:java",
     "//content/public/android:content_java",
