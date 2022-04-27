@@ -199,8 +199,6 @@
 <translation id="2649120831653069427">રેન્બોફીશ</translation>
 <translation id="2663066752008346276">બર્મીઝ/મ્યાનમાર, Myansan કીબોર્ડ સાથે</translation>
 <translation id="2664412712123763093">ફાઇલનું સ્થાન</translation>
-<translation id="2672394958563893062">એક ભૂલ આવી. શરૂઆતથી પુન: પ્રારંભ કરોને ક્લિક કરો.</translation>
-<translation id="2676946222714718093">આ પર ચલાવી રહ્યાં છે</translation>
 <translation id="2718540689505416944">Linux વડે ઍપ ઇન્સ્ટૉલ કરો</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, વિગતો</translation>
 <translation id="2724954091494693138">ટર્કિશ, F-કીબોર્ડ સાથે</translation>
@@ -342,7 +340,6 @@
 <translation id="3901991538546252627"><ph name="NAME" /> થી કનેક્ટ કરી રહ્યું છે</translation>
 <translation id="3906232975181435906">મોબાઇલ પ્રોફાઇલ ઇન્સ્ટૉલ કરી રહ્યાં છીએ, <ph name="NETWORK_NAME" />ના <ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક</translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">આના પર ચલાવો</translation>
 <translation id="3943857333388298514">પેસ્ટ કરો</translation>
 <translation id="3952872973865944257">તેલુગુ ફોનેટિક</translation>
 <translation id="3958548648197196644">કિવી</translation>
@@ -414,7 +411,6 @@
 <translation id="4631887759990505102">કલાકાર</translation>
 <translation id="4642769377300286600">મોબાઇલ પ્રોફાઇલ ઇન્સ્ટૉલ કરી રહ્યાં છીએ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />ના <ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક</translation>
 <translation id="4646813851450205600">ચેક, Qwerty કીબોર્ડ સાથે</translation>
-<translation id="4656293982926141856">આ કમ્પ્યુટર</translation>
 <translation id="4656777537938206294">ફાઇલોને ઑફલાઇન ઉપલબ્ધ કરાવો</translation>
 <translation id="4658782175094886150">હિમવર્ષામાં ઉભેલી વ્યક્તિ</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />'ના સભ્યો ઍક્સેસ ગુમાવશે સિવાય કે આ આઇટમને તેમની સાથે શેર કરવામાં ન આવી હોય.</translation>
@@ -431,7 +427,6 @@
 <translation id="4720185134442950733">મોબાઇલ ડેટા નેટવર્ક</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> ફોટાનો બેક અપ લેવાયો</translation>
 <translation id="4725511304875193254">કોર્ગી - કૂતરાની એક પ્રજાતિ</translation>
-<translation id="4732760563705710320">માફ કરશો, આ વીડિયો તમારા કાસ્ટ ડિવાઇસ દ્વારા સમર્થિત નથી.</translation>
 <translation id="4737050008115666127">લેન્ડિંગ</translation>
 <translation id="4747271164117300400">મેસેડોનિયન</translation>
 <translation id="4759238208242260848">ડાઉનલોડ્સ</translation>
@@ -622,7 +617,6 @@
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" />ને ફોર્મેટ કરો</translation>
 <translation id="6227235786875481728">આ ફાઇલ ચલાવી શકાઈ નથી.</translation>
 <translation id="6241349547798190358">ડચ (બેલ્જિયમ)</translation>
-<translation id="6248400709929739064">સબટાઇટલ ચાલુ કરો</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક, <ph name="PHONE_NAME" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, ફોનની બૅટરી <ph name="BATTERY_STATUS" />%, કનેક્ટ કરો</translation>
 <translation id="6269630227984243955">મલય</translation>
 <translation id="6287852322318138013">આ ફાઇલ ખોલવા માટે એક ઍપ્લિકેશન પસંદ કરો</translation>
@@ -640,7 +634,6 @@
 <translation id="637062427944097960">આ ફાઇલને બીજા ડેસ્કટૉપ પર ખોલેલી. તેને જોવા માટે <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) પર જાઓ.</translation>
 <translation id="6394388407447716302">ફક્ત વાંચવા માટે</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> આઇટમ</translation>
-<translation id="6398765197997659313">પૂર્ણ સ્ક્રીનથી બહાર નીકળો</translation>
 <translation id="642282551015776456">આ નામનો ઉપયોગ ફોલ્ડર નામની કોઈ ફાઇલ તરીકે થઈ શકશે નહીં</translation>
 <translation id="6423031066725912715">વિયેતનામીઝ, TCVN કીબોર્ડ સાથે</translation>
 <translation id="6485131920355264772">સ્થાન માહિતી પુનર્પ્રાપ્ત કરવામાં નિષ્ફળ</translation>
@@ -676,7 +669,6 @@
 <translation id="6820687829547641339">Gzip સંકુચિત તાર આર્કાઇવ</translation>
 <translation id="6823166707458800069">આ ફોલ્ડરમાં સાચવેલી તમામ ફાઇલોનું ઑટોમૅટિક રીતે ઑનલાઇન બૅકઅપ લેવાય છે.</translation>
 <translation id="6825883775269213504">રશિયન</translation>
-<translation id="6827236167376090743">આ વીડિયો સમીસાંજ સુધી ચાલુ રહેશે.</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> પસંદગીમાંથી કાઢી નાખ્યું.</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, વિગતો</translation>
 <translation id="6861394552169064235">ફારસી</translation>
@@ -812,7 +804,6 @@
 <translation id="7857117644404132472">અપવાદ ઉમેરો</translation>
 <translation id="7868774406711971383">પોલિશ</translation>
 <translation id="7874321682039004450">ફિલિપિનો</translation>
-<translation id="7881969471599061635">ઉપશીર્ષકો બંધ કરો</translation>
 <translation id="78946041517601018">શેર કરેલી ડ્રાઇવ</translation>
 <translation id="7908793776359722643">વિભાગને ફૉર્મેટ કરવાથી તેમાં સ્ટોર કરેલો બધો ડેટા કાઢી નાખવામાં આવશે. આ ક્રિયા રદ કરી શકાતી નથી.</translation>
 <translation id="7925247922861151263">AAA તપાસ નિષ્ફળ</translation>
@@ -889,7 +880,6 @@
 <translation id="8492972329130824181">હોમ નેટવર્ક ઉપલબ્ધ નથી. કનેક્ટ કરવા માટે મોબાઇલ ડેટા રોમિંગની સુવિધા ચાલુ કરવી આવશ્યક છે.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> આઇટમને એક્સટ્રેક્ટ કરી રહ્યાં છીએ...</translation>
 <translation id="8521441079177373948">યુકે</translation>
-<translation id="8525306231823319788">પૂર્ણ સ્ક્રીન</translation>
 <translation id="853494022971700746">ફ્રેન્ચ (ફ્રાન્સ)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, વિગતો</translation>
 <translation id="8545476925160229291">અંગ્રેજી (યુએસ)</translation>

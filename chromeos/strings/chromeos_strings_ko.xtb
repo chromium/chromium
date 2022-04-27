@@ -42,6 +42,7 @@
 <translation id="1394661041439318933">기기의 케이스 배터리 잔량이 <ph name="BATTERY_PERCENTAGE" />%입니다.</translation>
 <translation id="1397738625398125236">핑할 수 있는 게이트웨이</translation>
 <translation id="1398634363027580500">HTTPS 지연 시간 매우 높음</translation>
+<translation id="1407069428457324124">어두운 테마</translation>
 <translation id="1413240736185167732">실패 - 필터링 실패</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">키 쌍 있음</translation>
@@ -63,6 +64,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> 업데이트할 수 없음</translation>
 <translation id="1567064801249837505">앨범</translation>
 <translation id="1572585716423026576">배경화면으로 설정</translation>
+<translation id="1578784163189013834">화면 보호기 배경 선택</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> 이후 데이터 사용량</translation>
 <translation id="1621067168122174824">충전 테스트 실행</translation>
 <translation id="1639239467298939599">로드 중</translation>
@@ -85,12 +87,15 @@
 <translation id="1768959921651994223">인증 유형</translation>
 <translation id="1782199038061388045">번역</translation>
 <translation id="1792647875738159689">스캔 취소 중</translation>
+<translation id="1801418420130173017">어두운 테마 사용 안함</translation>
 <translation id="1807246157184219062">밝게</translation>
 <translation id="1827738518074806965">아트 갤러리</translation>
 <translation id="1851218745569890714">화상 회의</translation>
 <translation id="1852934301711881861">ChromeOS Flex 설치</translation>
 <translation id="1856388568474281774">아래쪽 화살표</translation>
+<translation id="1871569928317311284">어두운 테마 사용 중지</translation>
 <translation id="1874612839560830905">MTU</translation>
+<translation id="188114911237521550">어두운 모드 사용 중지</translation>
 <translation id="1887850431809612466">하드웨어 버전</translation>
 <translation id="1905710495812624430">허용되는 최대 시도 횟수를 초과했습니다.</translation>
 <translation id="1908234395526491708">UDP 요청 실패</translation>
@@ -115,6 +120,7 @@
 <translation id="2157959690810728433">대기 중</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: 다시 시도</translation>
 <translation id="2161394479394250669">인쇄 작업 취소</translation>
+<translation id="2163937499206714165">어두운 모드 사용 설정</translation>
 <translation id="2180197493692062006">문제가 발생했습니다. 앱을 다시 열어 보세요.</translation>
 <translation id="2209788852729124853">트래픽 카운터 재설정</translation>
 <translation id="2212733584906323460">이름 결정</translation>
@@ -126,8 +132,10 @@
 <translation id="2236746079896696523">키보드 백라이트 토글</translation>
 <translation id="2240366984605217732">레이아웃 전환</translation>
 <translation id="225692081236532131">활성화 상태</translation>
+<translation id="2271469253353559191">어두운 모드 예약</translation>
 <translation id="2287186687001756809">사용할 수 있는 이미지가 없습니다. 사진을 추가하려면 <ph name="LINK" />(으)로 이동하세요.</translation>
 <translation id="2307344026739914387">현재 키 쌍 사용</translation>
+<translation id="2320295602967756579">밝은 테마 사용 설정</translation>
 <translation id="2323506179655536734">건너뜀</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" />dpi</translation>
 <translation id="2338501278241028356">블루투스를 사용 설정하여 근처 기기 탐색</translation>
@@ -147,13 +155,16 @@
 <translation id="2493126929778606526">가장 잘 나온 사진이 자동으로 선별됩니다.</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" />, <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">현재 배경화면 이미지 새로고침</translation>
+<translation id="2513396635448525189">로그인 이미지</translation>
 <translation id="2517472476991765520">검색</translation>
+<translation id="2526590354069164005">데스크톱</translation>
 <translation id="253029298928638905">다시 시작 중...</translation>
 <translation id="2536159006530886390">인터넷에 연결할 수 없습니다.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> 테스트 실행 중…</translation>
 <translation id="2584559707064218956">설정하려면 설정으로 이동하세요.</translation>
 <translation id="2619761439309613843">매일 새로고침</translation>
 <translation id="2620436844016719705">시스템</translation>
+<translation id="2638662041295312666">로그인 이미지</translation>
 <translation id="2640549051766135490">앨범 <ph name="TITLE" /> <ph name="DESC" /> 선택됨</translation>
 <translation id="2695514675076754339">8자리 잠금 해제 코드 입력</translation>
 <translation id="2712812801627182647">TLS 인증 키</translation>
@@ -173,11 +184,13 @@
 <translation id="2926057806159140518">사용자 이름과 비밀번호를 입력하거나 QR 코드를 스캔하세요.</translation>
 <translation id="3008341117444806826">새로고침</translation>
 <translation id="3009958530611748826">저장 폴더 선택</translation>
+<translation id="3017079585324758401">배경</translation>
 <translation id="3031560714565892478">비디오 카메라 기기입니다.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">엔드포인트</translation>
 <translation id="3069085583900247081">테스트 실패</translation>
 <translation id="3083667275341675831">연결 진단</translation>
+<translation id="3084958266922136097">화면 보호기 사용 중지</translation>
 <translation id="3091839911843451378">실패 - 중지됨</translation>
 <translation id="3102119246920354026">캐시</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -201,6 +214,7 @@
 <translation id="3340011300870565703">기기의 오른쪽 이어폰 배터리 잔량이 <ph name="BATTERY_PERCENTAGE" />%입니다.</translation>
 <translation id="3368922792935385530">연결됨</translation>
 <translation id="3369013195428705271">모든 인쇄 기록을 삭제하시겠습니까? 진행 중인 인쇄 작업은 삭제되지 않습니다.</translation>
+<translation id="3404249063913988450">화면 보호기 사용</translation>
 <translation id="3413935475507503304">업데이트를 계속하려면 다음을 클릭하세요.</translation>
 <translation id="3434107140712555581">배터리 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">보안</translation>
@@ -215,6 +229,7 @@
 <translation id="3532980081107202182">약 <ph name="MIN_REMAINING" />분 남음</translation>
 <translation id="3557205324756024651">로컬 ID(선택사항)</translation>
 <translation id="3565064564551103223">허용된 IP</translation>
+<translation id="3569407787324516067">화면 보호기</translation>
 <translation id="3577473026931028326">문제가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="357889014807611375">전송량 제한이 있는 Wi-Fi</translation>
 <translation id="3583278742022654445">신호 강도가 약합니다. Wi-Fi 신호 소스 가까이 이동해 보세요.</translation>
@@ -249,6 +264,7 @@
 <translation id="3954678691475912818">기기 유형을 알 수 없습니다.</translation>
 <translation id="3966286471246132217">더욱 정확한 결과를 위해 테스트가 완료될 때까지 모든 앱을 닫으세요.</translation>
 <translation id="3967822245660637423">다운로드 완료</translation>
+<translation id="3969602104473960991">ChromeOS 비밀번호 업데이트됨</translation>
 <translation id="397105322502079400">계산 중...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" />일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> 버전이 최신임</translation>
@@ -257,9 +273,11 @@
 <translation id="4044093238444069296">게이트웨이에 접근할 수 없습니다.</translation>
 <translation id="4046123991198612571">다음 트랙</translation>
 <translation id="404928562651467259">경고</translation>
+<translation id="4093865285251893588">프로필 이미지</translation>
 <translation id="409427325554347132">테스트 세부정보 저장</translation>
 <translation id="4110686435123617899">앨범 <ph name="TITLE" /> <ph name="DESC" /> 선택</translation>
 <translation id="4111761024568264522">USB 터치패드</translation>
+<translation id="4117637339509843559">어두운 모드</translation>
 <translation id="4131410914670010031">흑백</translation>
 <translation id="4140251671072434548">RMA 서버 잠금 해제 수행</translation>
 <translation id="4145784616224233563">HTTP 방화벽</translation>
@@ -269,6 +287,7 @@
 <translation id="4170700058716978431">실패</translation>
 <translation id="4176463684765177261">사용 중지됨</translation>
 <translation id="4176659219503619100">제어판</translation>
+<translation id="420283545744377356">화면 보호기 사용 중지</translation>
 <translation id="4213104098953699324">USB 키보드</translation>
 <translation id="4227825898293920515">비밀번호가 <ph name="TIME" /> 후에 만료됨</translation>
 <translation id="4238516577297848345">진행 중인 인쇄 작업 없음</translation>
@@ -331,6 +350,7 @@
 <translation id="4793756956024303490">압축 알고리즘</translation>
 <translation id="4794140124556169553">CPU 테스트를 실행하면 시스템 성능에 영향을 줄 수 있습니다.</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> 인쇄 작업 취소됨</translation>
+<translation id="4809927044794281115">밝은 테마</translation>
 <translation id="4813136279048157860">내 이미지</translation>
 <translation id="4813345808229079766">연결</translation>
 <translation id="4832079907277790330">파일 앱에서 폴더 선택…</translation>
@@ -378,6 +398,7 @@
 마이크를 탭하여 무엇이든지 물어보세요.</translation>
 <translation id="5212593641110061691">타블로이드</translation>
 <translation id="5222676887888702881">로그아웃</translation>
+<translation id="5227902338748591677">어두운 테마 일정</translation>
 <translation id="5234764350956374838">닫기</translation>
 <translation id="5252456968953390977">로밍</translation>
 <translation id="5257811368506016604">가벼운 색상 모드 사용</translation>
@@ -398,6 +419,7 @@
 <translation id="5346687412805619883">로컬 네트워크</translation>
 <translation id="5358174242040570474">문제가 발생했습니다. 배경화면을 다시 선택하거나 앱을 다시 실행해 보세요.</translation>
 <translation id="5372659122375744710">Wi-Fi 네트워크가 안전하지 않습니다.</translation>
+<translation id="5376354385557966694">자동 밝은 모드</translation>
 <translation id="5400907029458559844">기기 연결 중입니다.</translation>
 <translation id="5401938042319910061">모든 루틴 실행</translation>
 <translation id="5423849171846380976">활성화됨</translation>
@@ -433,6 +455,7 @@
 <translation id="583281660410589416">알 수 없음</translation>
 <translation id="5843706793424741864">화씨</translation>
 <translation id="5849570051105887917">홈 공급자 코드</translation>
+<translation id="5859603669299126575">아트 갤러리 앨범</translation>
 <translation id="5860033963881614850">사용 안함</translation>
 <translation id="5860491529813859533">사용</translation>
 <translation id="5866840822086176774">매우 강함</translation>
@@ -463,6 +486,7 @@
 <translation id="6113701710518389813">위쪽 화살표</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, <ph name="NUMBER" />개 앨범 더 보기</translation>
 <translation id="6122191549521593678">온라인</translation>
+<translation id="6122277663991249694">ChromeOS 입력 방법 서비스</translation>
 <translation id="6137767437444130246">사용자 인증서</translation>
 <translation id="6146993107019042706">완료하려면 새 비밀번호를 입력하세요.</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -478,11 +502,15 @@
 <translation id="6275224645089671689">오른쪽 화살표</translation>
 <translation id="6278428485366576908">테마</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6284632978374966585">어두운 테마 사용 설정</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> 테스트가 취소됨</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> 펌웨어 업데이트</translation>
+<translation id="6321407676395378991">화면 보호기 사용 설정</translation>
 <translation id="6325525973963619867">실패</translation>
+<translation id="6331191339300272798">자동 어두운 테마</translation>
 <translation id="6340526405444716530">맞춤설정</translation>
 <translation id="6348738456043757611">사용자 이름 및 비밀번호</translation>
+<translation id="6359706544163531585">밝은 테마 사용 중지</translation>
 <translation id="636850387210749493">엔터프라이즈 등록</translation>
 <translation id="6379086450106841622">터치스크린</translation>
 <translation id="6381741036071372448">키보드 테스트</translation>
@@ -557,6 +585,7 @@
 <translation id="714876143603641390">LAN 연결</translation>
 <translation id="7155171745945906037">카메라 또는 파일의 기존 사진</translation>
 <translation id="7162487448488904999">갤러리</translation>
+<translation id="7170236477717446850">프로필 사진</translation>
 <translation id="7172721935181587524">이미지 1개</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> 설정</translation>
 <translation id="7177485034254901881">이 <ph name="DEVICE_TYPE" />은(는) <ph name="MANAGER" />에서 관리합니다. 관리자가 기기를 원격으로 구성할 수 있습니다.</translation>
@@ -578,6 +607,7 @@
 <translation id="7359657277149375382">파일 형식</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378886533986123738">화면 보호기 변경</translation>
+<translation id="7397270852490618635">밝은 테마 사용 중지</translation>
 <translation id="741244894080940828">변환</translation>
 <translation id="7415801143053185905">HTTPS 지연 시간 매우 높음</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -589,6 +619,7 @@
 <translation id="7497215489070763236">서버 CA 인증서</translation>
 <translation id="7502658306369382406">IPv6 주소</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7535791657097741517">밝은 테마 사용 설정</translation>
 <translation id="7550715992156305117">진단 루틴</translation>
 <translation id="7551123448725492271">오디오 기기입니다.</translation>
 <translation id="7561454561030345039">관리자가 관리하는 작업입니다.</translation>
@@ -610,11 +641,14 @@
 <translation id="7763470514545477072">도메인 서픽스 일치</translation>
 <translation id="7769672763586021400">모델 ID</translation>
 <translation id="7784116172884276937">DNS 서버가 설정되어 있지 않습니다.</translation>
+<translation id="7799817062559422778">밝은 모드</translation>
 <translation id="780301667611848630">취소</translation>
 <translation id="7805768142964895445">상태</translation>
 <translation id="7819857487979277519">PSK (WPA 또는 RSN)</translation>
+<translation id="7841134249932030522">어두운 모드 사용</translation>
 <translation id="7846634333498149051">키보드</translation>
 <translation id="7856267634822906833">블루투스 터치스크린</translation>
+<translation id="7869143217755017858">어두운 모드 사용 중지</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">공급자 유형</translation>
 <translation id="7882501334836096755">공개 키</translation>
@@ -654,6 +688,7 @@
 <translation id="8297006494302853456">약함</translation>
 <translation id="8302368968391049045">HTTPS 방화벽</translation>
 <translation id="8318753676953949627">이미지 없음</translation>
+<translation id="8336739000755212683">기기 계정 이미지 변경</translation>
 <translation id="8347227221149377169">인쇄 작업</translation>
 <translation id="8352772353338965963">멀티 로그인에 계정을 추가하세요. 비밀번호를 입력하지 않고 모든 로그인 계정에 액세스할 수 있으므로 이 기능은 신뢰할 수 있는 계정에만 사용해야 합니다.</translation>
 <translation id="8364946094152050673">네임서버가 비어 있습니다.</translation>
@@ -662,8 +697,10 @@
 <translation id="8398927464629426868">기기가 현재 충전 또는 방전되는 속도</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">내부 키보드</translation>
+<translation id="8431300646573772016">ChromeOS의 새로운 기능</translation>
 <translation id="843568408673868420">인터넷 연결</translation>
 <translation id="844521431886043384">DNS가 설정되어 있지 않습니다.</translation>
+<translation id="8456761643544401578">자동 어두운 모드</translation>
 <translation id="8461329675984532579">홈 공급자 이름</translation>
 <translation id="8475690821716466388">Wi-Fi 네트워크가 약한 프로토콜 WEP PSK로 보호되었습니다.</translation>
 <translation id="8477551185774834963">DNS 지연 시간이 허용되는 기준을 약간 초과했습니다.</translation>
@@ -690,6 +727,7 @@
 <translation id="8730621377337864115">완료</translation>
 <translation id="8747900814994928677">변경사항 확인</translation>
 <translation id="8764414543112028321">WireGuard</translation>
+<translation id="87646919272181953">Google 포토 앨범</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">네트워크에 종속 포털이 있을 수 있습니다.</translation>
 <translation id="8798099450830957504">기본값</translation>
@@ -699,6 +737,7 @@
 <translation id="8834539327799336565">현재 연결된 기기</translation>
 <translation id="8845001906332463065">도움말 보기</translation>
 <translation id="8855781559874488009">방화벽으로 인해 HTTP 웹사이트에 연결할 수 없습니다.</translation>
+<translation id="8863170912498892583">어두운 테마 사용</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />"의 <ph name="INTENT" /> 확인 등</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">태블릿 기기입니다.</translation>

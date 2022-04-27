@@ -26,7 +26,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="109942774857561566">Jam i mërzitur</translation>
 <translation id="1104084341931202936">Shfaq cilësimet e qasshmërisë</translation>
 <translation id="1104621072296271835">Pajisjet e tua punojnë edhe më mirë së bashku</translation>
-<translation id="1111781754511998498">Projektori</translation>
 <translation id="112308213915226829">Fshih raftin automatikisht</translation>
 <translation id="1142002900084379065">Fotot e fundit</translation>
 <translation id="1148499908455722006">Hap dialogun e informacioneve për <ph name="USER_NAME" /></translation>
@@ -185,11 +184,9 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2021864487439853900">Kliko për ta shkyçur</translation>
 <translation id="2023558322300866873">Mund ta ndalosh regjistrimin e paketave në çdo kohë.</translation>
 <translation id="2034971124472263449">Ruaje gjithsesi</translation>
-<translation id="2047639699071423250">Shto ide kyçe</translation>
 <translation id="2049240716062114887">Emri i tryezës u ndryshua në "<ph name="DESK_NAME" />"</translation>
 <translation id="2050339315714019657">Portret (vertikal</translation>
 <translation id="2064048859448024834">Pamja paraprake e kamerës aktive</translation>
-<translation id="2066708475850724665">Ndalo zmadhuesin</translation>
 <translation id="2067602449040652523">Ndriçimi i tastierës</translation>
 <translation id="2078034614700056995">Rrëshqit shpejt djathtas me katër gishta për të kaluar te tavolina tjetër e punës</translation>
 <translation id="2079504693865562705">Fshih aplikacionet në raft</translation>
@@ -199,6 +196,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2107914222138020205">Kablloja jote USB-C nuk mbështet Thunderbolt. Cilësia e funksionimit të pajisjes mund të jetë e kufizuar.</translation>
 <translation id="2108303511227308752">Shkurtorja për Alt + Backspace është ndryshuar. Për të përdorur tastin Delete, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> key + Backspace.</translation>
 <translation id="211328683600082144">NDIZ MIKROFONIN</translation>
+<translation id="2123115117533398272">ChromeOS shfaq sugjerime për përmbajtje të reja për të eksploruar. Dërgon statistika për të përmirësuar cilësinë vetëm nëse ke zgjedhur të ndash të dhënat e përdorimit. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">Tavolinë e re</translation>
 <translation id="2127372758936585790">Ngarkues me fuqi të ulët</translation>
 <translation id="2132302418721800944">Regjistro ekranin e plotë</translation>
@@ -212,6 +210,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2220572644011485463">Kodi PIN ose fjalëkalimi</translation>
 <translation id="2222841058024245321">Tavolina e punës 7</translation>
 <translation id="2224075387478458881">Regjistrimi i ekranit nuk lejohet kur përmbajtja e mbrojtur është e dukshme</translation>
+<translation id="2227179592712503583">Hiq sugjerimin</translation>
 <translation id="225680501294068881">Po skanon për pajisje...</translation>
 <translation id="2257486738914982088">Ndodhi një gabim gjatë shkarkimi të <ph name="FILENAME" /></translation>
 <translation id="2268130516524549846">Bluetooth-i u çaktivizua</translation>
@@ -269,6 +268,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2620436844016719705">Sistemi</translation>
 <translation id="2621713457727696555">I siguruar</translation>
 <translation id="263399434338050016">"Zgjidh të gjitha"</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Regjistrimi i dritares</translation>
 <translation id="2653659639078652383">Dërgoje</translation>
 <translation id="2658778018866295321">Kliko dhe zvarrit</translation>
@@ -281,7 +281,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2704781753052663061">Bashkohu me rrjete të tjera Wi-Fi</translation>
 <translation id="2705001408393684014">Aktivizo/çaktivizo mikrofonin. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Lart</translation>
-<translation id="2713444072780614174">E bardhë</translation>
 <translation id="2718395828230677721">Drita e natës</translation>
 <translation id="2726420622004325180">Telefoni yt duhet të përdorë të dhënat celulare për të ofruar një zonë qasjeje për internet</translation>
 <translation id="2727175239389218057">Përgjigju</translation>
@@ -350,7 +349,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3100274880412651815">Hiq modalitetin e regjistrimit</translation>
 <translation id="3105917916468784889">Nxirr një pamje të ekranit</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
-<translation id="3113926042639749131">Hiq sugjerimin</translation>
 <translation id="3120421559657122717">Të fiket pajisja?</translation>
 <translation id="3126069444801937830">Rifillo për të përditësuar</translation>
 <translation id="3139942575505304791">Tavolina e punës 1</translation>
@@ -394,6 +392,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3375634426936648815">Lidhur</translation>
 <translation id="3378442621503952303">Po lidhet me profilin. Prit disa minuta.</translation>
 <translation id="3386978599540877378">zmadhuesi në ekran të plotë</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">Cilësimet shtesë</translation>
 <translation id="3410336247007142655">Shfaq cilësimet e "Temës së errët"</translation>
 <translation id="3413817803639110246">Nuk ka ende asgjë për të parë</translation>
@@ -427,7 +426,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3542066395059568317">Do të shohësh rekomandime, në mënyrë që të vazhdosh aty ku e ke lënë. Mund të klikosh me butonin djathtas për të hequr rekomandimet.</translation>
 <translation id="3552189655002856821">Wi-Fi është çaktivizuar</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> u gozhdua</translation>
-<translation id="3560866052109807830">Vegla vizatimi me piketë</translation>
 <translation id="3563775809269155755">Aktivizo zonën e qasjes për internet</translation>
 <translation id="3566240529365775567">Hapur tani</translation>
 <translation id="3571734092741541777">Konfigurimi</translation>
@@ -452,7 +450,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3638400994746983214">Ndrysho ekranin e privatësisë. <ph name="STATE_TEXT" /></translation>
 <translation id="3649505501900178324">Afati i përditësimit ka kaluar</translation>
 <translation id="366222428570480733">Përdorues i menaxhuar (<ph name="USER_EMAIL_ADDRESS" />)</translation>
-<translation id="3680908746918359504">Pastro të gjitha piketat</translation>
 <translation id="36813544980941320">Rrjetet Wi-Fi do të ndahen mes telefonit tënd dhe <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Sajtet e uebit</translation>
 <translation id="3701206655856637070">Tani mund të ndryshosh se ku ruhen regjistrimet e ekranit</translation>
@@ -518,7 +515,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Joaktiv për një apl.}other{Joaktiv për # apl.}}</translation>
 <translation id="4066027111132117168">Aktive, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Sinjal mesatar</translation>
-<translation id="4095366824370681039">Pena me bojë</translation>
 <translation id="4112140312785995938">Kërko prapa</translation>
 <translation id="4114315158543974537">Aktivizo Phone Hub</translation>
 <translation id="4115378294792113321">E purpurt e errët</translation>
@@ -550,7 +546,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4279490309300973883">Pasqyrim</translation>
 <translation id="4283888303416325161">Fut fjalëkalimin për më shumë siguri</translation>
 <translation id="4285498937028063278">Zhgozhdo</translation>
-<translation id="429402653707266969">Aktivizo/çaktivizo vendndodhjen e shiritit të veglave</translation>
 <translation id="4294319844246081198">Mirëmëngjesi <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Pastro të <ph name="COUNT" /> njoftimet</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> u zhvendos te skedari <ph name="FOLDER_NAME" />.</translation>
@@ -614,7 +609,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4587299710837179226">Mikrofoni është joaktiv</translation>
 <translation id="4596144739579517758">"Tema e errët" është joaktive</translation>
 <translation id="4611292653554630842">Identifikohu</translation>
-<translation id="4614295562446151104">Zgjero veglat e piketës</translation>
 <translation id="4623167406982293031">Verifiko llogarinë</translation>
 <translation id="4628757576491864469">Pajisjet</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, vlerësimi me yje <ph name="RATING_SCORE" /></translation>
@@ -684,7 +678,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="504465286040788597">Paragrafi i mëparshëm</translation>
 <translation id="5045550434625856497">Fjalëkalim i gabuar</translation>
 <translation id="5071064518267176975">Një aplikacion kërkon të përdorë mikrofonin</translation>
-<translation id="5075554201838155866">Fillo titrat</translation>
 <translation id="5078796286268621944">Kod i pasaktë PIN</translation>
 <translation id="5083553833479578423">Shkyç më shumë funksione të "Asistentit".</translation>
 <translation id="5106223312672646208">Personalizo</translation>
@@ -792,7 +785,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5790085346892983794">Me sukses</translation>
 <translation id="5805809050170488595">Kliko për të aktivizuar <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Cilësimet e pajisjeve të lidhura</translation>
-<translation id="583281660410589416">E panjohur</translation>
 <translation id="5837036133683224804">Ndalo <ph name="ROUTE_TITLE" /> në <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Mbaj për të maksimizuar</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> nuk është aktivizuar.</translation>
@@ -837,7 +829,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6043212731627905357">Ky monitor nuk po përshtatet me pajisjen tënde <ph name="DEVICE_TYPE" /> (monitori nuk mbështetet).</translation>
 <translation id="6043994281159824495">Dil tani</translation>
 <translation id="6047696787498798094">Ndarja e ekranit do të ndalojë kur të kalosh te një përdorues tjetër. Dëshiron që të vazhdosh?</translation>
-<translation id="6050368268239407309">Mjetet e prezantimit</translation>
 <translation id="6054305421211936131">Identifikohu me kartën smart</translation>
 <translation id="6059276912018042191">Skedat e fundit të Chrome</translation>
 <translation id="6062360702481658777">Do të dalësh automatikisht për <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -991,7 +982,6 @@ Instalim i ri</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, "Asistenti i Google"</translation>
 <translation id="7042322267639375032">Palos zonën e statusit</translation>
 <translation id="7045033600005038336">Të zëvendësohet shablloni?</translation>
-<translation id="7045595904618419789">Fillo zmadhuesin</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> u shkëput</translation>
 <translation id="7055910611768509537">Stilolapsi nuk është përdorur prej më shumë se një jave</translation>
 <translation id="7066646422045619941">Ky rrjet është çaktivizuar nga administratori yt.</translation>
@@ -1019,7 +1009,6 @@ Instalim i ri</translation>
 <translation id="7258828758145722155">Modifikuar dje</translation>
 <translation id="726276584504105859">Zvarrit këtu për të përdorur ekranin e ndarë</translation>
 <translation id="7262906531272962081">Krijo alarm rikujtues</translation>
-<translation id="7279434993080105272">Ngjyra e piketës: <ph name="COLOR_PARAMETER" /></translation>
 <translation id="7302889331339392448">"Titrat në çast" janë joaktivë.</translation>
 <translation id="7303365578352795231">Po përgjigjet në një pajisje tjetër</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1046,7 +1035,6 @@ Instalim i ri</translation>
 <translation id="742594950370306541">Kamera është në përdorim.</translation>
 <translation id="742608627846767349">Mirëmëngjesi,</translation>
 <translation id="743058460480092004">Kamera dhe mikrofoni janë në përdorim</translation>
-<translation id="7434543979546293336">Shënuar si ide kyçe</translation>
 <translation id="7452560014878697800">Kamerën tënde po e përdor një aplikacion</translation>
 <translation id="7453330308669753048">Rezultati i historikut të kërkimeve u hoq</translation>
 <translation id="7461924472993315131">Gozhdoje</translation>
@@ -1054,7 +1042,6 @@ Instalim i ri</translation>
 <translation id="7466449121337984263">Prek sensorin</translation>
 <translation id="7477793887173910789">Kontrollo muzikën, videot e tua etj.</translation>
 <translation id="7483025031359818980">Zona e përzgjedhjes është caktuar në ekran të plotë</translation>
-<translation id="7486227320194954040">Palos veglat e piketës</translation>
 <translation id="7497767806359279797">Zgjidh gjuhën dhe tastierën</translation>
 <translation id="7508690557411636492">Hapur muajin e kaluar</translation>
 <translation id="7509246181739783082">Verifiko identitetin</translation>
@@ -1071,7 +1058,6 @@ Instalim i ri</translation>
 <translation id="7561982940498449837">Mbyll menynë</translation>
 <translation id="7564874036684306347">Zhvendosja e dritareve te një desktop tjetër mund të shkaktojë një sjellje të papritur. Njoftimet pasuese, dritarja dhe dialogët mund të ndahen mes desktopëve.</translation>
 <translation id="7569509451529460200">Braille dhe ChromeVox janë aktivizuar</translation>
-<translation id="7569983096843329377">E zezë</translation>
 <translation id="7573585051776738856">Dritarja aktive u pozicionua në të djathtë.</translation>
 <translation id="7579778809502851308">Regjistrimi i ekranit</translation>
 <translation id="7590883480672980941">Cilësimet e hyrjes</translation>
@@ -1079,7 +1065,6 @@ Instalim i ri</translation>
 <translation id="7600875258240007829">Shiko të gjitha njoftimet</translation>
 <translation id="7607002721634913082">Ndërprerë</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7631906263969450674">Pena e piketës</translation>
 <translation id="7633755430369750696">Shfaq cilësimet e "Ndarjes në afërsi".</translation>
 <translation id="7641938616688887143">Regjistro</translation>
 <translation id="7642647758716480637">Hap cilësimet për <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
@@ -1151,7 +1136,6 @@ Instalim i ri</translation>
 <translation id="8029247720646289474">Lidhja me zonën e qasjes për internet dështoi</translation>
 <translation id="8029629653277878342">Kërkohet kodi PIN ose fjalëkalimi për më shumë siguri</translation>
 <translation id="8030169304546394654">I shkëputur</translation>
-<translation id="8035152190676905274">Pena</translation>
 <translation id="8036504271468642248">Fjalia e mëparshme</translation>
 <translation id="8042893070933512245">Hap menynë e cilësimeve të qasshmërisë</translation>
 <translation id="8042925093898452104">Mbyll informacionet e detajuara</translation>
@@ -1167,7 +1151,6 @@ Instalim i ri</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Konfirmo</translation>
 <translation id="8131994907636310308">Mbyll njoftimin e renditjes</translation>
-<translation id="8132487352815776550">Ndalo titrat</translation>
 <translation id="8132793192354020517">Lidhur me <ph name="NAME" /></translation>
 <translation id="813913629614996137">Po fillon...</translation>
 <translation id="8142441511840089262">Kliko dy herë</translation>

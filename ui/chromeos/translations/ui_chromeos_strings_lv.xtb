@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">Ivrits, transliterācija</translation>
 <translation id="1747761757048858544">Holandiešu (Nīderlande)</translation>
 <translation id="174937106936716857">Failu kopskaits</translation>
+<translation id="1755345808328621801">Šis fails ir paredzēts datoram ar Windows programmatūru. Tas nav saderīgs ar jūsu ierīci, kurā darbojas operētājsistēma Chrome OS. Lūdzu, meklējiet Chrome interneta veikalā atbilstošu aizstājošo lietotni.</translation>
 <translation id="1773212559869067373">Autentifikācijas sertifikāts tika lokāli noraidīts.</translation>
 <translation id="1775381402323441512">Video informācija</translation>
 <translation id="180035236176489073">Lai piekļūtu šiem failiem, jums ir jābūt tiešsaistē.</translation>
@@ -198,8 +199,6 @@
 <translation id="2649120831653069427">Varavīksnes zivs</translation>
 <translation id="2663066752008346276">Birmiešu (Mjanma), ar Myansan tastatūru</translation>
 <translation id="2664412712123763093">Faila atrašanās vieta</translation>
-<translation id="2672394958563893062">Radās kļūda. Noklikšķiniet, lai sāktu vēlreiz no sākuma.</translation>
-<translation id="2676946222714718093">Tiek atskaņots šeit:</translation>
 <translation id="2718540689505416944">Instalēt lietotni operētājsistēmā Linux</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, informācija</translation>
 <translation id="2724954091494693138">Turku, ar F tastatūru</translation>
@@ -225,6 +224,7 @@
 <translation id="2943503720238418293">Izmantojiet īsāku nosaukumu.</translation>
 <translation id="2949781154072577687">Notiek diska “<ph name="DRIVE_NAME" />” formatēšana...</translation>
 <translation id="2951236788251446349">Medūza</translation>
+<translation id="2977940621473452797">Šis fails ir paredzēts datoram ar Macintosh programmatūru. Tas nav saderīgs ar jūsu ierīci, kurā darbojas operētājsistēma Chrome OS. Lūdzu, meklējiet Chrome interneta veikalā atbilstošu aizstājošo lietotni.</translation>
 <translation id="2984337792991268709">Šodien plkst. <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Notiek vienumu atjaunošana (skaits: <ph name="COUNT" />)…</translation>
 <translation id="2994669386200004489">Nevarēja dublēt failu <ph name="FILE_NAME" />.</translation>
@@ -340,7 +340,6 @@
 <translation id="3901991538546252627">Notiek savienojuma izveide ar <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Notiek mobilo sakaru profila instalēšana, <ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Atskaņošanas ierīces</translation>
 <translation id="3943857333388298514">Ielīmēt</translation>
 <translation id="3952872973865944257">Telugu, fonētiskā</translation>
 <translation id="3958548648197196644">Kivi</translation>
@@ -412,7 +411,6 @@
 <translation id="4631887759990505102">Izpildītājs</translation>
 <translation id="4642769377300286600">Notiek mobilo sakaru profila instalēšana, <ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Čehu, ar Qwerty tastatūru</translation>
-<translation id="4656293982926141856">Šajā datorā</translation>
 <translation id="4656777537938206294">Padariet failus pieejamus bezsaistē</translation>
 <translation id="4658782175094886150">Persona sniegā</translation>
 <translation id="4669606053856530811">“<ph name="SOURCE_NAME" />” dalībnieki zaudēs piekļuvi šiem vienumiem, ja tie netiks kopīgoti ar viņiem.</translation>
@@ -422,13 +420,13 @@
 <translation id="4694604912444486114">Pērtiķis</translation>
 <translation id="469612310041132144">Ķīniešu, ātrās ievades metode</translation>
 <translation id="4697043402264950621">Failu saraksts ir sakārtots pēc slejas “<ph name="COLUMN_NAME" />” augošā secībā.</translation>
+<translation id="469897186246626197">Šis fails ir paredzēts datoram ar Windows programmatūru. Tas nav saderīgs ar jūsu ierīci, kurā darbojas operētājsistēma Chrome OS. <ph name="BEGIN_LINK_HELP" />Uzziniet vairāk<ph name="END_LINK_HELP" /> par failu atvēršanu operētājsistēmā Chrome OS.</translation>
 <translation id="4706042980341760088">Tamilu, ar rakstāmmašīnas tastatūru</translation>
 <translation id="4711094779914110278">Turku valoda</translation>
 <translation id="4712283082407695269">Notiek dokumenta “<ph name="PATH" />” atvēršana</translation>
 <translation id="4720185134442950733">Mobilo datu tīkls</translation>
 <translation id="4724850507808590449">Dublēti <ph name="FILE_COUNT" /> fotoattēli</translation>
 <translation id="4725511304875193254">Korgijs</translation>
-<translation id="4732760563705710320">Diemžēl jūsu apraides ierīce neatbalsta šo videoklipu.</translation>
 <translation id="4737050008115666127">Ielidošana</translation>
 <translation id="4747271164117300400">Maķedoniešu</translation>
 <translation id="4759238208242260848">Lejupielādes</translation>
@@ -543,6 +541,7 @@
 <translation id="5583640892426849032">Atkāpšanās taustiņš</translation>
 <translation id="5602622065581044566">Bulgāru, ar fonētisko tastatūru</translation>
 <translation id="5605830556594064952">ASV Dvorak</translation>
+<translation id="5618330573454123917">Šis fails ir paredzēts datoram ar Macintosh programmatūru. Tas nav saderīgs ar jūsu ierīci, kurā darbojas operētājsistēma Chrome OS. <ph name="BEGIN_LINK_HELP" />Uzziniet vairāk<ph name="END_LINK_HELP" /> par failu atvēršanu operētājsistēmā Chrome OS.</translation>
 <translation id="5625294776298156701">Tamilu, ar Tamil99 tastatūru</translation>
 <translation id="5633226425545095130">Pārvietojot šo failu, tas tiks kopīgots ar ikvienu, kas var skatīt kopīgoto mapi “<ph name="DESTINATION_NAME" />”.</translation>
 <translation id="5649768706273821470">Klausīties</translation>
@@ -618,7 +617,6 @@
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> formatēšana</translation>
 <translation id="6227235786875481728">Šo failu nevarēja demonstrēt.</translation>
 <translation id="6241349547798190358">Holandiešu (Beļģija)</translation>
-<translation id="6248400709929739064">Iespējot subtitrus</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />%, tālruņa akumulatora statuss: <ph name="BATTERY_STATUS" />%, savienojums</translation>
 <translation id="6269630227984243955">Malajiešu</translation>
 <translation id="6287852322318138013">Lietotnes atlasīšana šī faila atvēršanai</translation>
@@ -636,7 +634,6 @@
 <translation id="637062427944097960">Šis fails tika atvērts citā darbvirsmā. Lai skatītu šo darbvirsmu, izmantojiet profilu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Tikai lasāma</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> vienumi</translation>
-<translation id="6398765197997659313">Iziet no pilnekrāna režīma</translation>
 <translation id="642282551015776456">Šo nosaukumu nedrīkst izmantot kā mapes nosaukuma failu</translation>
 <translation id="6423031066725912715">Vjetnamiešu, ar TCVN tastatūru</translation>
 <translation id="6485131920355264772">Neizdevās izgūt informāciju par brīvo vietu</translation>
@@ -672,7 +669,6 @@
 <translation id="6820687829547641339">Gzip saspiests Tar arhīvs</translation>
 <translation id="6823166707458800069">Visi faili, kas saglabāti šajā mapē, tiek automātiski dublēti tiešsaistē.</translation>
 <translation id="6825883775269213504">Krievu valoda</translation>
-<translation id="6827236167376090743">Šis videoklips tiks atkārtoti atskaņots.</translation>
 <translation id="6847101934483209767">Vienums “<ph name="ENTRY_NAME" />” ir noņemts no atlases.</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signāla stiprums procentos: <ph name="SIGNAL_STRENGTH" />, informācija</translation>
 <translation id="6861394552169064235">Persiešu</translation>
@@ -738,6 +734,7 @@
 <translation id="7309413087278791451">Vācu (Beļģija)</translation>
 <translation id="7339898014177206373">Jauns logs</translation>
 <translation id="7343393116438664539">Vjetnamiešu, telekss</translation>
+<translation id="7357762654218998920">Šis faila tips netiek atbalstīts. <ph name="BEGIN_LINK_HELP" />Uzziniet vairāk<ph name="END_LINK_HELP" /> par failu atvēršanu operētājsistēmā Chrome OS.</translation>
 <translation id="7359359531237882347">Notiek <ph name="NUMBER_OF_ITEMS" /> vienumu kopēšana...</translation>
 <translation id="7375951387215729722">Failu saraksts ir sakārtots pēc slejas “<ph name="COLUMN_NAME" />” dilstošā secībā.</translation>
 <translation id="7402503521691663770">Chrome OS Flex ierīces</translation>
@@ -809,7 +806,6 @@
 <translation id="7857117644404132472">Pievienot izņēmumu</translation>
 <translation id="7868774406711971383">Poļu</translation>
 <translation id="7874321682039004450">Filipīniešu</translation>
-<translation id="7881969471599061635">Atspējot subtitrus</translation>
 <translation id="78946041517601018">Kopīgie diski</translation>
 <translation id="7908793776359722643">Formatējot nodalījumu, tiks izdzēsti visi tajā glabātie dati. Šo darbību nevar atsaukt.</translation>
 <translation id="7925247922861151263">AAA pārbaude neizdevās</translation>
@@ -886,7 +882,6 @@
 <translation id="8492972329130824181">Mājas tīkls nav pieejams. Lai izveidotu savienojumu, jāiespējo mobilo datu viesabonēšana.</translation>
 <translation id="8499098729323186194">Notiek <ph name="NUMBER_OF_ITEMS" /> vienumu izvilkšana...</translation>
 <translation id="8521441079177373948">Lielbritānijas</translation>
-<translation id="8525306231823319788">Pilnekrāna režīms</translation>
 <translation id="853494022971700746">Franču (Francija)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />%, informācija</translation>
 <translation id="8545476925160229291">Angļu (ASV)</translation>

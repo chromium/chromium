@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
 <translation id="1113173431709655881">โหมดกล้อง</translation>
+<translation id="1153190633558910465">ปิดตารางกริด</translation>
 <translation id="1175958423215084756">ตรวจพบลิงก์ <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">หมุน 90 องศาตามเข็มนาฬิกา</translation>
 <translation id="1276998909102132017">รูปภาพในแกลเลอรี</translation>
 <translation id="1300209025925956156">สแกนเอกสาร</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" /> กดค้นหา + ลูกศรซ้ายเพื่อเข้าถึง</translation>
+<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">พิมพ์</translation>
 <translation id="1467231725790366244">ถอดปลั๊ก <ph name="CAMERA" /> แล้ว</translation>
 <translation id="1473110567575736769">ตัวจับเวลา 3 วินาที</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">ระยะเวลาของตัวจับเวลา</translation>
 <translation id="2050339315714019657">แนวตั้ง</translation>
 <translation id="2064538373111010176">ใช้งาน <ph name="CAMERA" /> อยู่</translation>
+<translation id="2134029355740465625">การตั้งค่าวิดีโอ</translation>
 <translation id="2144806332417375165">กำหนดพารามิเตอร์วิดีโอเอง</translation>
 <translation id="2175927920773552910">คิวอาร์โค้ด</translation>
 <translation id="2271433936731426666">เปิดใช้ภาพรวมของวิดีโอขนาดเต็ม</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">กล้องหลัง</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> วินาที</translation>
 <translation id="2761536921376153655">ประเภทการสแกน</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">แสดงตัวอย่างมิเรอร์</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> เสียบอยู่</translation>
 <translation id="2968794441791257519">รูปภาพและวิดีโอที่ถ่ายจากกล้องจะย้ายไปยังโฟลเดอร์ "ดาวน์โหลด" คุณจะเข้าถึงรายการเหล่านี้ได้ในแอป Files
 
@@ -52,6 +57,8 @@
 <translation id="3240426699337459095">คัดลอกลิงก์แล้ว</translation>
 <translation id="3259149966178251584">ความละเอียดกล้อง</translation>
 <translation id="3305962767867348165">แก้ไข</translation>
+<translation id="3354465018370944241">การตั้งค่ารูปภาพ</translation>
+<translation id="3411958449466169012">ปิดตัวจับเวลา</translation>
 <translation id="3448774564454087943">ไม่ได้บันทึกวิดีโอเนื่องจากสั้นเกินไป</translation>
 <translation id="346539236881580388">ถ่ายใหม่</translation>
 <translation id="3517926952904427380">ถ่ายภาพบุคคลไม่ได้</translation>
@@ -63,9 +70,12 @@
 <translation id="3810838688059735925">วิดีโอ</translation>
 <translation id="3838931309141338733">สแกนบาร์โค้ด</translation>
 <translation id="3892148308691398805">คัดลอกข้อความ</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> ล้านพิกเซล</translation>
 <translation id="4118525110028899586">หยุดบันทึกชั่วคราว</translation>
 <translation id="4121305183798804752">ตรวจพบเอกสาร</translation>
+<translation id="414641094616694804">เปลี่ยนความละเอียดของกล้องนี้ไม่ได้</translation>
 <translation id="4269820728363426813">คัดลอกที่อยู่ลิงก์</translation>
+<translation id="4281620174117014503">ความละเอียดปานกลาง</translation>
 <translation id="4329152592498422850">เปลี่ยนเป็นถ่ายภาพแบบสี่เหลี่ยมจัตุรัส</translation>
 <translation id="4383571725254449280">พิมพ์บันทึกประสิทธิภาพ</translation>
 <translation id="4445542136948522167">หยุดถ่ายภาพ</translation>
@@ -74,12 +84,15 @@
 <translation id="4628948037717959914">รูปภาพ</translation>
 <translation id="4649291346448517080">บันทึกไฟล์ไม่ได้</translation>
 <translation id="4695379108709712600">ย้ายไปทางด้านบน</translation>
+<translation id="4705093842003735294">ความละเอียดเต็ม</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">การบันทึกวิดีโอแบบหลายสตรีม</translation>
+<translation id="5034763830503483128">สัดส่วนภาพ</translation>
 <translation id="5057360777601936059">ขณะนี้กล้องไม่พร้อมใช้งาน
         โปรดตรวจสอบว่ากล้องเชื่อมต่ออย่างถูกต้อง</translation>
 <translation id="5163387177077603948">ย้ายไปทางด้านขวา</translation>
 <translation id="520537883758714667">การสแกนเอกสารพร้อมใช้งานแล้ว</translation>
+<translation id="5235304959032763950">16 ต่อ 9</translation>
 <translation id="5266635337630551423">มุมซ้ายบนของเอกสาร</translation>
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5320594929574852403">ย้ายไปทางด้านซ้าย</translation>
@@ -94,6 +107,7 @@
 <translation id="5916664084637901428">เปิด</translation>
 <translation id="5975083100439434680">ย่อ</translation>
 <translation id="5976160379964388480">อื่นๆ</translation>
+<translation id="603973421174355542">Full HD</translation>
 <translation id="6073451960410192870">หยุดบันทึก</translation>
 <translation id="6197807149213783179">บันทึกข้อมูลเมตา</translation>
 <translation id="6233780560267770709">3 x 3</translation>
@@ -104,6 +118,7 @@
 หากความคิดนั้นเห็นเกี่ยวกับคุณภาพของรูปภาพหรือวิดีโอ โปรดแนบตัวอย่างรูปภาพหรือวิดีโอแล้วอธิบายปัญหาที่พบ (เช่น รูปภาพมืดเกินไปหรือวัตถุไม่อยู่ในโฟกัส)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> เมกะพิกเซล</translation>
 <translation id="6527303717912515753">แชร์</translation>
+<translation id="6631515515009660915">ปิดมิเรอร์</translation>
 <translation id="6652737148136672975">เลื่อนตำแหน่งของมุมด้วยปุ่มลูกศร</translation>
 <translation id="667999046851023355">เอกสาร</translation>
 <translation id="6681668084120808868">ถ่ายภาพ</translation>
@@ -114,6 +129,7 @@
 <translation id="698156982839284926">3 วินาที</translation>
 <translation id="712848772518857951">คุณต้องการนำ <ph name="COUNT" /> รายการออกจริงๆ ใช่ไหม</translation>
 <translation id="7134221860976209830">ตัวจับเวลา 10 วินาที</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">ประเภทการบันทึก</translation>
 <translation id="7243947652761655814">ความละเอียดวิดีโอ</translation>
 <translation id="7337660886763914220">ข้อผิดพลาดเกี่ยวกับระบบไฟล์</translation>
@@ -146,9 +162,11 @@
 <translation id="8815966864175525708">เปลี่ยนเป็นถ่ายภาพบุคคล</translation>
 <translation id="8828441885228359828">บันทึกต่อ</translation>
 <translation id="8870695351537079478">เริ่มบันทึกวิดีโอไม่ได้</translation>
+<translation id="8880167521484863515">4 ต่อ 3</translation>
 <translation id="8903921497873541725">ขยาย</translation>
 <translation id="9045010116236796332">จัดขอบเอกสารทุกด้านให้อยู่ภายในกรอบ</translation>
 <translation id="9045155556724273246">10 วินาที</translation>
 <translation id="906331135292332864">กำลังดำเนินการกับรูปภาพ...</translation>
+<translation id="922762992951083513">เปิดมิเรอร์</translation>
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>
 </translationbundle>

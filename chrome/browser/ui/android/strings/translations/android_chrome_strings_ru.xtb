@@ -134,7 +134,6 @@
 <translation id="1672586136351118594">Больше не показывать</translation>
 <translation id="1680919990519905526">Найти в Покупках через Google Объектив <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Попробовать</translation>
-<translation id="1697284962337958118">Куда добавить</translation>
 <translation id="1702543251015153180">Изменить настройки тёмной темы?</translation>
 <translation id="1702907158640575240">Управляемый браузер</translation>
 <translation id="1710099199314114079">Переключить или закрыть вкладки</translation>
@@ -146,7 +145,6 @@
 <translation id="1749561566933687563">Синхронизируйте закладки</translation>
 <translation id="17513872634828108">Открытые вкладки</translation>
 <translation id="1754404134430936718">Текст скопирован.</translation>
-<translation id="1772137089884020309">Список папок с закладками закрыт</translation>
 <translation id="1779766957982586368">Закрыть окно</translation>
 <translation id="1791662854739702043">Установлено</translation>
 <translation id="1792959175193046959">Вы можете в любой момент изменить расположение скачиваемых файлов по умолчанию.</translation>
@@ -806,6 +804,7 @@
 <translation id="5517095782334947753">Вам доступны закладки, история, пароли и другие настройки пользователя <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524761631371622910">Если пробные функции включены и Chrome случайным образом выберет вас для их тестирования, то история браузера будет влиять на предложенные интересы, которые представлены ниже, и на то, какую рекламу вы будете видеть. Чтобы обеспечивать вашу конфиденциальность, Chrome каждый месяц удаляет ваши интересы.</translation>
 <translation id="5524843473235508879">Попытка переадресации заблокирована.</translation>
+<translation id="5528459307536571064">Одна группа вкладок</translation>
 <translation id="5548606607480005320">Проверка безопасности</translation>
 <translation id="5555525474779371165">Выберите режим работы Безопасного просмотра</translation>
 <translation id="5556459405103347317">Перезагрузить</translation>
@@ -989,7 +988,6 @@
 <translation id="6475951671322991020">Скачать видео</translation>
 <translation id="6477928892249167417">Кажется, следующие сайты важны для вас:</translation>
 <translation id="6482749332252372425">Не удалось скачать файл <ph name="FILE_NAME" />, так как места для хранения данных недостаточно.</translation>
-<translation id="6489610539826642779">Список для чтения <ph name="BEGIN_NEW" />Новый<ph name="END_NEW" /></translation>
 <translation id="6496823230996795692">При первом запуске приложения "<ph name="APP_NAME" />" требуется подключение к Интернету.</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Скачан 1 файл.}one{Скачан # файл.}few{Скачано # файла.}many{Скачано # файлов.}other{Скачано # файла.}}</translation>
 <translation id="6508722015517270189">Перезапустите Google Chrome.</translation>
@@ -1050,7 +1048,6 @@
 <translation id="6756507620369789050">Отправить отзыв</translation>
 <translation id="6767294960381293877">Список устройств для отправки вкладки развернут на половину экрана.</translation>
 <translation id="6770602306803890733">Делает интернет более безопасным для вас и других пользователей.</translation>
-<translation id="6783942555455976443">Сохранить эту страницу офлайн и отправить напоминание</translation>
 <translation id="6785476624617658922">Дополнительные условия использования Chrome и Chrome OS</translation>
 <translation id="6795633245022906657">Открыть новую вкладку. Чтобы изменить функцию кнопки, перейдите в настройки.</translation>
 <translation id="6802555630140434547">Окно будет закрыто.</translation>
@@ -1122,7 +1119,6 @@
 <translation id="7177959540995930968">Вы можете узнать больше об этих функциях в настройках Chrome.</translation>
 <translation id="718226107353899806">Превышено максимально допустимое число откликов: <ph name="MAX_NUM_REACTIONS" />.</translation>
 <translation id="7187993566681480880">Позволяет избегать угроз при работе в браузере Chrome и может использоваться для повышения уровня безопасности в других приложениях Google, когда выполнен вход в аккаунт.</translation>
-<translation id="718926126787620637">Список папок с закладками открыт на весь экран</translation>
 <translation id="7191430249889272776">Вкладка открыта в фоновом режиме</translation>
 <translation id="7196215469483532480">Пояснение для руководства по конфиденциальности открыто на весь экран</translation>
 <translation id="7208109991155904980">Отклик перемещен</translation>
@@ -1142,7 +1138,6 @@
 <translation id="7304873321153398381">Вы не в Сети. Браузеру Chrome не удается проверить пароли.</translation>
 <translation id="7313188324932846546">Нажмите, чтобы настроить синхронизацию.</translation>
 <translation id="7332075081379534664">Аутентификация выполнена</translation>
-<translation id="7333031090786104871">Предыдущий сайт ещё не добавлен</translation>
 <translation id="7339898014177206373">Новое окно</translation>
 <translation id="7340958967809483333">Параметры рекомендаций</translation>
 <translation id="7352339641508007922">Перетащите, чтобы сделать длинный скриншот.</translation>
@@ -1422,6 +1417,7 @@
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8746155870861185046">Поделиться выделенным</translation>
 <translation id="8748850008226585750">Содержимое скрыто</translation>
+<translation id="8756969031206844760">Обновить пароль?</translation>
 <translation id="8766529642647037772">Создать ссылку с похожим выделением?</translation>
 <translation id="8773160212632396039">Запрос обрабатывается</translation>
 <translation id="8788265440806329501">История переходов закрыта</translation>
@@ -1450,7 +1446,6 @@
 <translation id="8922289737868596582">Скачивайте страницы через меню кнопки "Ещё" и открывайте их без подключения к Интернету</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" />: языковой пакет готов.</translation>
-<translation id="8928626432984354940">Список папок с закладками развернут на половину экрана</translation>
 <translation id="8937267401510745927">Чтобы вы смогли выполнять действия в Chrome с помощью Ассистента, в Google будет отправляться контент и URL сайтов, а также информация, которую вы сообщаете Ассистенту. Эта информация может храниться в вашем аккаунте Google. Отключить Ассистента можно в настройках Chrome.</translation>
 <translation id="8937772741022875483">Удалить данные о ваших действиях в Chrome из сервиса "Цифровое благополучие"?</translation>
 <translation id="8942627711005830162">Открыть в новом окне</translation>
@@ -1514,7 +1509,6 @@
 <translation id="932327136139879170">Главная страница</translation>
 <translation id="938850635132480979">Ошибка <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Введите кодовую фразу</translation>
-<translation id="948039501338975565">Список папок с закладками</translation>
 <translation id="95817756606698420">В Китае Chrome может использовать для поиска <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />. Это можно изменить в <ph name="BEGIN_LINK" />Настройках<ph name="END_LINK" />.</translation>
 <translation id="962979164594783469">Установить приложение</translation>
 <translation id="96681097142096641">Посмотреть страницу в упрощенном виде?</translation>
@@ -1523,5 +1517,6 @@
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="983192555821071799">Закрыть все вкладки</translation>
 <translation id="987264212798334818">Общие</translation>
+<translation id="992745192656291733">Вкладок: <ph name="TAB_COUNT" /></translation>
 <translation id="996149300115483134">Меню карточки из ленты закрыто</translation>
 </translationbundle>

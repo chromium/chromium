@@ -199,8 +199,6 @@
 <translation id="2649120831653069427">Pește</translation>
 <translation id="2663066752008346276">Birmană/Myanmar cu tastatură Myansan</translation>
 <translation id="2664412712123763093">Locația fișierului</translation>
-<translation id="2672394958563893062">A apărut o eroare. Dați clic pentru a relua de la început.</translation>
-<translation id="2676946222714718093">Se redă pe</translation>
 <translation id="2718540689505416944">Instalează aplicația cu Linux</translation>
 <translation id="2719020180254996569">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, detalii</translation>
 <translation id="2724954091494693138">Tastatură turcă F</translation>
@@ -342,7 +340,6 @@
 <translation id="3901991538546252627">Se conectează la <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Se instalează profilul mobil, rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Redă pe</translation>
 <translation id="3943857333388298514">Inserează</translation>
 <translation id="3952872973865944257">Telugu fonetică</translation>
 <translation id="3958548648197196644">Kiwi</translation>
@@ -414,7 +411,6 @@
 <translation id="4631887759990505102">Artist</translation>
 <translation id="4642769377300286600">Se instalează profilul mobil, rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Cehă cu tastatură QWERTY</translation>
-<translation id="4656293982926141856">Acest computer</translation>
 <translation id="4656777537938206294">Fă fișierele disponibile offline</translation>
 <translation id="4658782175094886150">Persoană înconjurată de zăpadă</translation>
 <translation id="4669606053856530811">Membrii „<ph name="SOURCE_NAME" />” vor pierde accesul, exceptând cazul în care li se permite accesul la aceste articole.</translation>
@@ -431,7 +427,6 @@
 <translation id="4720185134442950733">Rețea de date mobile</translation>
 <translation id="4724850507808590449">S-a făcut backup pentru <ph name="FILE_COUNT" /> fotografii</translation>
 <translation id="4725511304875193254">Corgi</translation>
-<translation id="4732760563705710320">Ne pare rău. Acest videoclip nu este acceptat de dispozitivul tău de proiecție.</translation>
 <translation id="4737050008115666127">Aterizare</translation>
 <translation id="4747271164117300400">Macedoneană</translation>
 <translation id="4759238208242260848">Descărcări</translation>
@@ -622,7 +617,6 @@
 <translation id="6224253798271602650">Formatează <ph name="DRIVE_NAME" /></translation>
 <translation id="6227235786875481728">Acest fișier nu a putut fi redat.</translation>
 <translation id="6241349547798190358">Neerlandeză (Belgia)</translation>
-<translation id="6248400709929739064">Activează subtitrările</translation>
 <translation id="6267547857941397424">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, bateria telefonului: <ph name="BATTERY_STATUS" /> %, conectează-te</translation>
 <translation id="6269630227984243955">Malaieză</translation>
 <translation id="6287852322318138013">Selectați o aplicație pentru deschiderea acestui fișier</translation>
@@ -640,7 +634,6 @@
 <translation id="637062427944097960">Acest fișier a fost deschis pe alt desktop. Pentru a-l vedea, treceți la <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Numai în citire</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elemente</translation>
-<translation id="6398765197997659313">Ieși din ecranul complet</translation>
 <translation id="642282551015776456">Acest nume nu poate fi folosit ca nume de fișier sau de dosar</translation>
 <translation id="6423031066725912715">Tastatură vietnameză TCVN</translation>
 <translation id="6485131920355264772">Nu s-au putut prelua informațiile despre spațiu</translation>
@@ -676,7 +669,6 @@
 <translation id="6820687829547641339">Arhivă .tar comprimată Gzip</translation>
 <translation id="6823166707458800069">Pentru toate fișierele salvate în acest dosar se creează automat backupuri online.</translation>
 <translation id="6825883775269213504">Rusă</translation>
-<translation id="6827236167376090743">Videoclipul va fi redat în continuu.</translation>
 <translation id="6847101934483209767">S-a eliminat <ph name="ENTRY_NAME" /> din selecție.</translation>
 <translation id="6856459657722366306">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, detalii</translation>
 <translation id="6861394552169064235">Persană</translation>
@@ -814,7 +806,6 @@
 <translation id="7857117644404132472">Adaugă o excepție</translation>
 <translation id="7868774406711971383">Poloneză</translation>
 <translation id="7874321682039004450">Filipineză</translation>
-<translation id="7881969471599061635">Dezactivează subtitrările</translation>
 <translation id="78946041517601018">Drive-uri în comun</translation>
 <translation id="7908793776359722643">Formatarea partiției va șterge toate datele stocate pe partiție. Această acțiune nu poate fi anulată.</translation>
 <translation id="7925247922861151263">Verificarea AAA nu a reușit</translation>
@@ -891,7 +882,6 @@
 <translation id="8492972329130824181">Rețeaua de domiciliu nu este disponibilă. Trebuie să activezi roamingul de date mobile pentru a te conecta.</translation>
 <translation id="8499098729323186194">Se extrag <ph name="NUMBER_OF_ITEMS" /> elemente...</translation>
 <translation id="8521441079177373948">UK</translation>
-<translation id="8525306231823319788">Ecran complet</translation>
 <translation id="853494022971700746">Franceză (Franța)</translation>
 <translation id="8540608333167683902">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, detalii</translation>
 <translation id="8545476925160229291">Engleză (S.U.A.)</translation>

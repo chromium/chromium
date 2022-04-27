@@ -578,6 +578,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="156793199942386351">A tecla "<ph name="CURRENTKEY" />" já está atribuída à ação "<ph name="ACTION" />". Prima qualquer tecla para <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Consola de JavaScript</translation>
 <translation id="1568323446248056064">Abrir definições do dispositivo de visualização</translation>
+<translation id="1569044524074707727">Desbloqueie o telemóvel</translation>
 <translation id="1570604804919108255">Reativar o som das notificações</translation>
 <translation id="1571304935088121812">Copiar nome de utilizador</translation>
 <translation id="1571738973904005196">Ver o separador: <ph name="TAB_ORIGIN" /></translation>
@@ -1002,7 +1003,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1942600407708803723">Encerrar quando a tampa for fechada</translation>
 <translation id="1944528062465413897">Código de sincronização de Bluetooth:</translation>
 <translation id="1944921356641260203">Atualização encontrada</translation>
-<translation id="1946577776959096882">Ver contas</translation>
 <translation id="1949584741547056205">Respostas rápidas</translation>
 <translation id="1951012854035635156">Assistente</translation>
 <translation id="1954597385941141174">Os sites podem solicitar a ligação a dispositivos USB</translation>
@@ -1420,7 +1420,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2322622365472107569">Hora de fim: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Redes Wi-Fi guardadas</translation>
 <translation id="2325444234681128157">Memorizar palavra-passe</translation>
-<translation id="2325760149602186433">Remover cartão virtual</translation>
 <translation id="2326188115274135041">Confirme o PIN para ativar o desbloqueio automático.</translation>
 <translation id="2326931316514688470">&amp;Recarregar aplicação</translation>
 <translation id="2327492829706409234">Ativar aplicação</translation>
@@ -2009,6 +2008,7 @@ e Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="288042212351694283">Aceder aos seus dispositivos Universal 2nd Factor</translation>
 <translation id="2881076733170862447">Quando clica na extensão</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> é reiniciado e reposto momentaneamente</translation>
+<translation id="2883470649061584386">Feed</translation>
 <translation id="2885378588091291677">Gestor de tarefas</translation>
 <translation id="2885729872133513017">Ocorreu um problema ao descodificar a resposta do servidor.</translation>
 <translation id="2886119409731773154">Esta ação pode demorar até 30 minutos.</translation>
@@ -4700,9 +4700,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5585912436068747822">Falha na formatação</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">A carregar aplicações…</translation>
-<translation id="5591644692203457362">Qualquer utilização alargada da chave</translation>
 <translation id="5592595402373377407">Ainda não estão disponíveis dados suficientes.</translation>
-<translation id="5593564924968945303">Navegador Chrome</translation>
 <translation id="5595485650161345191">Editar morada</translation>
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5600348067066185292">Para a instalação, efetue alguns passos fáceis. Terá outra oportunidade de confirmar antes de realizar as alterações ao seu computador.</translation>
@@ -5030,7 +5028,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5935158534896975820">A preparar pedido de assinatura de certificado (a aguardar servidor)…</translation>
 <translation id="5935656526031444304">Gerir Navegação segura</translation>
 <translation id="5938002010494270685">Atualização de segurança disponível</translation>
-<translation id="5938153366081463283">Adicione um cartão virtual</translation>
 <translation id="5939518447894949180">Repor</translation>
 <translation id="5939719276406088041">Não é possível criar o atalho.</translation>
 <translation id="594048410531370124">Tecla não reconhecida. Prima qualquer tecla para <ph name="RESPONSE" />.</translation>
@@ -5320,6 +5317,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6227002569366039565">Prima |<ph name="ACCELERATOR" />| para focar este balão e, em seguida, focar o elemento para o qual está a apontar.</translation>
 <translation id="6227280783235722609">extensão</translation>
 <translation id="6229849828796482487">Desligar rede Wi-Fi</translation>
+<translation id="6230165830166519105">Experimente outra forma</translation>
 <translation id="6231782223312638214">Sugerido</translation>
 <translation id="6231881193380278751">Adicione um parâmetro de consulta no URL para atualizar automaticamente a página: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Bateria</translation>
@@ -5675,7 +5673,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="656293578423618167">O caminho ou nome do ficheiro é demasiado longo. Guarde com um nome mais curto ou noutra localização.</translation>
 <translation id="6563469144985748109">O seu gestor ainda não o aprovou</translation>
 <translation id="6568283005472142698">Pesquisa de separadores</translation>
-<translation id="6569911211938664415">As palavras-passe são guardadas na sua Conta Google (<ph name="ACCOUNT" />) para que as possa utilizar em qualquer dispositivo</translation>
 <translation id="65711204837946324">Precisa de autorização para transferir</translation>
 <translation id="6571772921213691236">Edite os dados de início de sessão</translation>
 <translation id="6573497332121198392">Não foi possível remover o atalho.</translation>
@@ -5802,7 +5799,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6697492270171225480">Mostrar sugestões de páginas semelhantes se não for possível encontrar uma página</translation>
 <translation id="6697690052557311665">Para partilhar, clique com o botão direito do rato numa pasta na aplicação Ficheiros e selecione "Partilhar com Linux".</translation>
 <translation id="6698810901424468597">Ler e alterar os seus dados em <ph name="WEBSITE_1" /> e <ph name="WEBSITE_2" /></translation>
-<translation id="6699883973579689168">Agora, pode gerir todas as suas Contas Google num único local. Passa a ser possível aplicar o acesso e as autorizações concedidos a aplicações, Websites e extensões no Chrome e no Google Play a todas as suas contas com sessão iniciada. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="6700093763382332031">Bloqueio do SIM de rede móvel</translation>
 <translation id="6700480081846086223">Transmitir <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Não foi possível obter o perfil.</translation>
@@ -6543,6 +6539,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7450761244949417357">A abrir no <ph name="ALTERNATIVE_BROWSER_NAME" /> agora</translation>
 <translation id="7452166281927983300">Avisos ignorados (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">Ao selecionar esta impressora, está a conceder à seguinte extensão a autorização para aceder à sua impressora:</translation>
+<translation id="7453467225369441013">A sua sessão é terminada na maioria dos sites. A sessão na sua Conta Google não é terminada.</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">Gerir contentores adicionais</translation>
 <translation id="7456142309650173560">programador</translation>

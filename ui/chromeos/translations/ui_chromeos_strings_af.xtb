@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">Hebreeuse transliterasie</translation>
 <translation id="1747761757048858544">Nederlands (Nederland)</translation>
 <translation id="174937106936716857">Totale aantal lêers</translation>
+<translation id="1755345808328621801">Hierdie lêer is ontwerp vir ’n rekenaar wat Windows-sagteware gebruik. Dit is nie versoenbaar met jou toestel, wat Chrome-bedryfstelsel gebruik, nie. Deursoek asseblief die Chrome Webwinkel na ’n geskikte plaasvervangerprogram.</translation>
 <translation id="1773212559869067373">Stawingsertifikaat is plaaslik verwerp</translation>
 <translation id="1775381402323441512">Video-inligting</translation>
 <translation id="180035236176489073">Jy moet aanlyn wees om by hierdie lêers in te gaan.</translation>
@@ -198,8 +199,6 @@
 <translation id="2649120831653069427">Reënboogvis</translation>
 <translation id="2663066752008346276">Birmaans/Mianmar met Miansan-sleutelbord</translation>
 <translation id="2664412712123763093">Lêerligging</translation>
-<translation id="2672394958563893062">'n Fout het voorgekom. Klik om van die begin af te herbegin.</translation>
-<translation id="2676946222714718093">Speel tans op</translation>
 <translation id="2718540689505416944">Installeer program met Linux</translation>
 <translation id="2719020180254996569">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, besonderhede</translation>
 <translation id="2724954091494693138">Turks met F-sleutelbord</translation>
@@ -225,6 +224,7 @@
 <translation id="2943503720238418293">Gebruik 'n korter naam</translation>
 <translation id="2949781154072577687">Formateer tans <ph name="DRIVE_NAME" /> …</translation>
 <translation id="2951236788251446349">Jellievis</translation>
+<translation id="2977940621473452797">Hierdie lêer is ontwerp vir ’n rekenaar wat Macintosh-sagteware gebruik. Dit is nie versoenbaar met jou toestel wat Chrome-bedryfstelsel gebruik nie. Deursoek asseblief die Chrome Webwinkel vir ’n geskikte plaasvervangerprogram.</translation>
 <translation id="2984337792991268709">Vandag <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Stel tans <ph name="COUNT" /> items terug …</translation>
 <translation id="2994669386200004489">Kon nie <ph name="FILE_NAME" /> rugsteun nie</translation>
@@ -340,7 +340,6 @@
 <translation id="3901991538546252627">Koppel tans aan <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Installeer tans mobiele profiel, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Speel op</translation>
 <translation id="3943857333388298514">Plak</translation>
 <translation id="3952872973865944257">Teloegoe-foneties</translation>
 <translation id="3958548648197196644">Kiwi</translation>
@@ -412,7 +411,6 @@
 <translation id="4631887759990505102">Kunstenaar</translation>
 <translation id="4642769377300286600">Installeer tans mobiele profiel, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Tsjeggies met Qwerty-sleutelbord</translation>
-<translation id="4656293982926141856">Hierdie rekenaar</translation>
 <translation id="4656777537938206294">Maak lêers vanlyn beskikbaar</translation>
 <translation id="4658782175094886150">Persoon in sneeu</translation>
 <translation id="4669606053856530811">Lede van "<ph name="SOURCE_NAME" />" sal toegang verloor tensy hierdie items met hulle gedeel word.</translation>
@@ -422,13 +420,13 @@
 <translation id="4694604912444486114">Aap</translation>
 <translation id="469612310041132144">Chinees-Quick</translation>
 <translation id="4697043402264950621">Lêerlys is volgens <ph name="COLUMN_NAME" /> in stygende volgorde gerangskik.</translation>
+<translation id="469897186246626197">Hierdie lêer is ontwerp vir ’n rekenaar wat Windows-sagteware gebruik. Dit is nie versoenbaar met jou toestel wat Chrome-bedryfstelsel gebruik nie. <ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /> oor hoe om lêers op Chrome-bedryfstelsel oop te maak.</translation>
 <translation id="4706042980341760088">Tamil met Typewriter-sleutelbord</translation>
 <translation id="4711094779914110278">Turks</translation>
 <translation id="4712283082407695269">Maak tans "<ph name="PATH" />" oop</translation>
 <translation id="4720185134442950733">Mobiele datanetwerk</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> foto's is gerugsteun</translation>
 <translation id="4725511304875193254">Corgi</translation>
-<translation id="4732760563705710320">Jammer, hierdie video word nie deur jou uitsaaitoestel gesteun nie.</translation>
 <translation id="4737050008115666127">Besig om te land</translation>
 <translation id="4747271164117300400">Macedonies</translation>
 <translation id="4759238208242260848">Aflaaie</translation>
@@ -542,6 +540,7 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5602622065581044566">Bulgaars met fonetiese sleutelbord</translation>
 <translation id="5605830556594064952">VSA Dvorak</translation>
+<translation id="5618330573454123917">Hierdie lêer is ontwerp vir ’n rekenaar wat Macintosh-sagteware gebruik. Dit is nie versoenbaar met jou toestel wat Chrome-bedryfstelsel gebruik nie. <ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /> oor hoe om lêers op Chrome-bedryfstelsel oop te maak.</translation>
 <translation id="5625294776298156701">Tamil met Tamil99-sleutelbord</translation>
 <translation id="5633226425545095130">As hierdie item geskuif word, sal dit gedeel word met almal wat die vouer "<ph name="DESTINATION_NAME" />" kan sien.</translation>
 <translation id="5649768706273821470">Luister</translation>
@@ -617,7 +616,6 @@
 <translation id="6224253798271602650">Formateer <ph name="DRIVE_NAME" /></translation>
 <translation id="6227235786875481728">Hierdie lêer kan nie gespeel word nie.</translation>
 <translation id="6241349547798190358">Nederlands (België)</translation>
-<translation id="6248400709929739064">Aktiveer onderskrifte</translation>
 <translation id="6267547857941397424">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, foonbattery <ph name="BATTERY_STATUS" />%, koppel</translation>
 <translation id="6269630227984243955">Maleis</translation>
 <translation id="6287852322318138013">Kies 'n program om hierdie lêer oop te maak</translation>
@@ -635,7 +633,6 @@
 <translation id="637062427944097960">Hierdie lêer het op 'n ander werkskerm oopgemaak. Beweeg na <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om dit te bekyk.</translation>
 <translation id="6394388407447716302">Leesalleen</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> items</translation>
-<translation id="6398765197997659313">Gaan by volskerm uit</translation>
 <translation id="642282551015776456">Hierdie naam mag nie as 'n lêer- of vouernaam gebruik word nie</translation>
 <translation id="6423031066725912715">Viëtnamees met TCVN-sleutelbord</translation>
 <translation id="6485131920355264772">Kon nie spasieinligting gaan haal nie</translation>
@@ -671,7 +668,6 @@
 <translation id="6820687829547641339">Gzip saamgeperste teerargief</translation>
 <translation id="6823166707458800069">Al die lêers wat in hierdie vouer gestoor is, word outomaties aanlyn gerugsteun.</translation>
 <translation id="6825883775269213504">Russies</translation>
-<translation id="6827236167376090743">Hierdie video sal aanhou speel tot die perde horings kry.</translation>
 <translation id="6847101934483209767">Het <ph name="ENTRY_NAME" /> uit keuse verwyder.</translation>
 <translation id="6856459657722366306">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, besonderhede</translation>
 <translation id="6861394552169064235">Persies</translation>
@@ -737,6 +733,7 @@
 <translation id="7309413087278791451">Duits (België)</translation>
 <translation id="7339898014177206373">Nuwe venster</translation>
 <translation id="7343393116438664539">Viëtnamees-Telex</translation>
+<translation id="7357762654218998920">Hierdie lêertipe word nie gesteun nie. <ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /> oor hoe om lêers op Chrome-bedryfstelsel oop te maak.</translation>
 <translation id="7359359531237882347">Kopieer tans <ph name="NUMBER_OF_ITEMS" /> items …</translation>
 <translation id="7375951387215729722">Lêerlys is volgens <ph name="COLUMN_NAME" /> in dalende volgorde gerangskik.</translation>
 <translation id="7402503521691663770">Chrome OS Flex-toestelle</translation>
@@ -808,7 +805,6 @@
 <translation id="7857117644404132472">Voeg uitsondering by</translation>
 <translation id="7868774406711971383">Pools</translation>
 <translation id="7874321682039004450">Filippyns</translation>
-<translation id="7881969471599061635">Deaktiveer onderskrifte</translation>
 <translation id="78946041517601018">Gedeelde Drives</translation>
 <translation id="7908793776359722643">Wanneer 'n verdeling geformateer word, sal alle data uitgevee word wat daarop geberg is. Hierdie handeling kan nie ontdoen word nie.</translation>
 <translation id="7925247922861151263">AAA-kontrolering het misluk</translation>
@@ -885,7 +881,6 @@
 <translation id="8492972329130824181">Tuisnetwerk is nie beskikbaar nie. Mobiele dataswerwing moet geaktiveer wees om te kan koppel.</translation>
 <translation id="8499098729323186194">Onttrek tans <ph name="NUMBER_OF_ITEMS" /> items …</translation>
 <translation id="8521441079177373948">VK</translation>
-<translation id="8525306231823319788">Volskerm</translation>
 <translation id="853494022971700746">Frans (Frankryk)</translation>
 <translation id="8540608333167683902">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, besonderhede</translation>
 <translation id="8545476925160229291">Engels (VSA)</translation>

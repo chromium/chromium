@@ -1003,7 +1003,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1942600407708803723">Când capacul este închis: oprire</translation>
 <translation id="1944528062465413897">Cod de asociere prin Bluetooth:</translation>
 <translation id="1944921356641260203">A fost găsită o actualizare</translation>
-<translation id="1946577776959096882">Vezi conturile</translation>
 <translation id="1949584741547056205">Răspunsuri rapide</translation>
 <translation id="1951012854035635156">Asistent</translation>
 <translation id="1954597385941141174">Site-urile pot solicita permisiunea de a se conecta la dispozitive USB</translation>
@@ -1421,7 +1420,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2322622365472107569">Ora de încheiere: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Rețele Wi-Fi salvate</translation>
 <translation id="2325444234681128157">Reține parola</translation>
-<translation id="2325760149602186433">Elimină cardul virtual</translation>
 <translation id="2326188115274135041">Confirmă codul PIN pentru a activa deblocarea automată</translation>
 <translation id="2326931316514688470">&amp;Reîncarcă aplicația</translation>
 <translation id="2327492829706409234">Activați aplicația</translation>
@@ -4700,9 +4698,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5585912436068747822">Formatarea nu a reușit</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Se încarcă aplicațiile...</translation>
-<translation id="5591644692203457362">Orice folosire extinsă a cheii</translation>
 <translation id="5592595402373377407">Nu există încă date suficiente.</translation>
-<translation id="5593564924968945303">Browserul Chrome</translation>
 <translation id="5595485650161345191">Editează adresa</translation>
 <translation id="5596627076506792578">Mai multe opțiuni</translation>
 <translation id="5600348067066185292">Instalarea presupune câțiva pași simpli. Vei avea o altă ocazie de a confirma înainte ca modificările să se aplice pe computer.</translation>
@@ -5029,7 +5025,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5935158534896975820">Se pregătește solicitarea de semnare a certificatului (se așteaptă serverul)</translation>
 <translation id="5935656526031444304">Gestionează Navigarea sigură</translation>
 <translation id="5938002010494270685">Este disponibilă o actualizare de securitate</translation>
-<translation id="5938153366081463283">Adaugă un card virtual</translation>
 <translation id="5939518447894949180">Resetează</translation>
 <translation id="5939719276406088041">Nu se poate crea comanda rapidă</translation>
 <translation id="594048410531370124">Tasta nu a fost recunoscută. Apasă pe orice tastă pentru <ph name="RESPONSE" />.</translation>
@@ -5674,7 +5669,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="656293578423618167">Calea sau numele fișierului sunt prea lungi. Salvați utilizând un nume mai scurt sau într-o altă locație.</translation>
 <translation id="6563469144985748109">Administratorul nu l-a aprobat încă</translation>
 <translation id="6568283005472142698">Căutarea filelor</translation>
-<translation id="6569911211938664415">Parolele sunt salvate în Contul tău Google (<ph name="ACCOUNT" />), astfel încât să le poți folosi pe orice dispozitiv</translation>
 <translation id="65711204837946324">Necesită permisiunea pentru descărcare</translation>
 <translation id="6571772921213691236">Editează datele de conectare</translation>
 <translation id="6573497332121198392">Nu se poate elimina comanda rapidă</translation>
@@ -5801,7 +5795,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6697492270171225480">Afișează sugestii pentru pagini similare atunci când o pagină nu poate fi găsită</translation>
 <translation id="6697690052557311665">Pentru a trimite, dă clic dreapta pe un dosar din aplicația Files, apoi selectează „Trimite cu Linux”.</translation>
 <translation id="6698810901424468597">Citește și modifică datele de pe <ph name="WEBSITE_1" /> și <ph name="WEBSITE_2" /></translation>
-<translation id="6699883973579689168">Acum poți gestiona toate Conturile Google într-un singur loc. Accesul și permisiunile acordate aplicațiilor, site-urilor și extensiilor din Chrome și Google Play pot fi aplicate acum tuturor conturilor conectate. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="6700093763382332031">Blocarea cardului SIM pentru rețeaua mobilă</translation>
 <translation id="6700480081846086223">Proiectează <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Profilul nu a putut fi preluat.</translation>
@@ -6542,6 +6535,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="7450761244949417357">Se deschide acum în <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="7452166281927983300">Avertismente respinse (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">Selectând această imprimantă, acorzi următoarei extensii permisiunea de a accesa imprimanta:</translation>
+<translation id="7453467225369441013">Te deconectează de pe majoritatea site-urilor. Nu te va deconecta de la Contul Google.</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">Gestionează containere suplimentare</translation>
 <translation id="7456142309650173560">dezvoltatori</translation>

@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
 <translation id="1113173431709655881">Камерын горим</translation>
+<translation id="1153190633558910465">Хүснэгтлэхийг унтраах</translation>
 <translation id="1175958423215084756">Холбоос илэрсэн. <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">Цагийн зүүний дагуу 90 хэм эргүүлэх</translation>
 <translation id="1276998909102132017">Галлерейны зураг</translation>
 <translation id="1300209025925956156">Документоо скан хийх</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Хандахын тулд Хайлт + Зүүн сумыг дарна уу.</translation>
+<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">Хэвлэх</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" />-г салгасан байна.</translation>
 <translation id="1473110567575736769">3 секундийн цаг тоологч</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">Цаг хэмжигчийн үргэлжлэх хугацаа</translation>
 <translation id="2050339315714019657">Хөрөг зураг</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> идэвхтэй байна</translation>
+<translation id="2134029355740465625">Видеоны тохиргоо</translation>
 <translation id="2144806332417375165">Захиалгат видеоны параметр</translation>
 <translation id="2175927920773552910">QR код</translation>
 <translation id="2271433936731426666">Бүрэн хэмжээтэй видеоны агшныг үзэхийг идэвхжүүлэх</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">Арын камер</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> сек</translation>
 <translation id="2761536921376153655">Скан хийх төрөл</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">Тусгалын урьдчилан үзэх</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" />-г залгасан байна.</translation>
 <translation id="2968794441791257519">Камераар авсан зураг болон видеог Татаж авсан файлын фолдерт зөөнө. Та тэдгээрт Файлс цэсээс хандаж болно.
 
@@ -52,6 +57,8 @@
 <translation id="3240426699337459095">Холбоосыг хуулсан</translation>
 <translation id="3259149966178251584">Камерын нягтрал</translation>
 <translation id="3305962767867348165">Засах</translation>
+<translation id="3354465018370944241">Зургийн тохиргоо</translation>
+<translation id="3411958449466169012">Цаг хэмжигчийг унтраах</translation>
 <translation id="3448774564454087943">Видеог хэт богино байсны улмаас хадгалаагүй</translation>
 <translation id="346539236881580388">Дахин авах</translation>
 <translation id="3517926952904427380">Хөрөг зураг авах боломжгүй байна</translation>
@@ -63,9 +70,12 @@
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3838931309141338733">Баркодыг скан хийх</translation>
 <translation id="3892148308691398805">Текстийг хуулах</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MП</translation>
 <translation id="4118525110028899586">Бичлэгийг түр зогсоох</translation>
 <translation id="4121305183798804752">Документ илэрлээ</translation>
+<translation id="414641094616694804">Энэ камерын нягтралыг өөрчлөх боломжгүй</translation>
 <translation id="4269820728363426813">Холбоосын хаягийг хуулах</translation>
+<translation id="4281620174117014503">Дундаж нягтрал</translation>
 <translation id="4329152592498422850">Дөрвөлжин зураг авахын тулд сэлгэх</translation>
 <translation id="4383571725254449280">Хэвлэх гүйцэтгэлийн логууд</translation>
 <translation id="4445542136948522167">Зураг авахыг зогсоох</translation>
@@ -74,12 +84,15 @@
 <translation id="4628948037717959914">Зураг</translation>
 <translation id="4649291346448517080">Файлыг хадгалах боломжгүй байна</translation>
 <translation id="4695379108709712600">Дээш зөөж байна</translation>
+<translation id="4705093842003735294">Бүрэн нягтрал</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Олон дамжуулалттай видео бичлэг</translation>
+<translation id="5034763830503483128">Зургийн харьцаа</translation>
 <translation id="5057360777601936059">Tаны камер одоогоор боломжгүй байна.
         Камераа зөв залгасан эсэхээ шалгана уу.</translation>
 <translation id="5163387177077603948">Баруун тийш зөөж байна</translation>
 <translation id="520537883758714667">Одоо документ скан хийх боломжтой боллоо</translation>
+<translation id="5235304959032763950">16-г харьцах нь 9</translation>
 <translation id="5266635337630551423">Документын зүүн дээд булан</translation>
 <translation id="5317780077021120954">Хадгалах</translation>
 <translation id="5320594929574852403">Зүүн тийш зөөж байна</translation>
@@ -94,6 +107,7 @@
 <translation id="5916664084637901428">Асаах</translation>
 <translation id="5975083100439434680">Багасгаж харах</translation>
 <translation id="5976160379964388480">Бусад</translation>
+<translation id="603973421174355542">Бүтэн HD</translation>
 <translation id="6073451960410192870">Бичихийг зогсоох</translation>
 <translation id="6197807149213783179">Мета өгөгдлийг хадгалах</translation>
 <translation id="6233780560267770709">3-г харьцах нь 3</translation>
@@ -104,6 +118,7 @@
 Хэрэв таны санал хүсэлт зургийн эсвэл видеоны чанартай холбоотой бол жишээ зураг эсвэл видеог хавсаргаад ямар алдаа байгааг тодорхойлно уу. (Жишээлбэл, зураг хэт бараан эсвэл субъект фокусгүй байна.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> мега пиксел</translation>
 <translation id="6527303717912515753">Хуваалцах</translation>
+<translation id="6631515515009660915">Тусгал үүсгэхийг унтраах</translation>
 <translation id="6652737148136672975">Булангийн байрлалыг суман түлхүүрээр хөдөлгөнө үү</translation>
 <translation id="667999046851023355">Бичиг баримт</translation>
 <translation id="6681668084120808868">Гэрэл зураг авах</translation>
@@ -114,6 +129,7 @@
 <translation id="698156982839284926">3 секунд</translation>
 <translation id="712848772518857951">Та <ph name="COUNT" /> зүйлийг устгахдаа итгэлтэй байна уу?</translation>
 <translation id="7134221860976209830">10 секундийн цаг тооцогч</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Бичлэгийн төрөл</translation>
 <translation id="7243947652761655814">Видео нягтрал</translation>
 <translation id="7337660886763914220">Файлын системийн алдаа гарлаа.</translation>
@@ -146,9 +162,11 @@
 <translation id="8815966864175525708">Хөрөг зураг авахын тулд сэлгэх</translation>
 <translation id="8828441885228359828">Бичлэгийг үргэлжлүүлэх</translation>
 <translation id="8870695351537079478">Бичиж эхлэх боломжгүй байна</translation>
+<translation id="8880167521484863515">4-ийг харьцах нь 3</translation>
 <translation id="8903921497873541725">Томруулж харах</translation>
 <translation id="9045010116236796332">Документын бүх ирмэгийг хүрээнд байрлуулна уу</translation>
 <translation id="9045155556724273246">10 секунд</translation>
 <translation id="906331135292332864">Зургийг боловсруулж байна...</translation>
+<translation id="922762992951083513">Тусгал үүсгэхийг асаах</translation>
 <translation id="945522503751344254">Санал хүсэлт илгээх</translation>
 </translationbundle>

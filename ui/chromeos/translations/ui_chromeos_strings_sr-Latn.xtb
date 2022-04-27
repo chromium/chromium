@@ -199,8 +199,6 @@
 <translation id="2649120831653069427">Riba</translation>
 <translation id="2663066752008346276">burmanski/Mijanmar sa mjansan tastaturom</translation>
 <translation id="2664412712123763093">Lokacija datoteke</translation>
-<translation id="2672394958563893062">Došlo je do greške. Kliknite da biste krenuli iz početka.</translation>
-<translation id="2676946222714718093">Pušteno na</translation>
 <translation id="2718540689505416944">Instalirajte aplikaciju za Linux</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, detalji</translation>
 <translation id="2724954091494693138">turski sa tastaturom F</translation>
@@ -342,7 +340,6 @@
 <translation id="3901991538546252627">Povezivanje sa mrežom <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Instalira se profil za mobilne uređaje, mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Pusti na</translation>
 <translation id="3943857333388298514">Nalepi</translation>
 <translation id="3952872973865944257">fonetski telugu</translation>
 <translation id="3958548648197196644">Kivi</translation>
@@ -414,7 +411,6 @@
 <translation id="4631887759990505102">Izvođač</translation>
 <translation id="4642769377300286600">Instalira se profil za mobilne uređaje, mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">češki sa Qwerty tastaturom</translation>
-<translation id="4656293982926141856">Ovaj računar</translation>
 <translation id="4656777537938206294">Učinite fajlove dostupnim oflajn</translation>
 <translation id="4658782175094886150">Osoba na snegu</translation>
 <translation id="4669606053856530811">Članovi iz „<ph name="SOURCE_NAME" />“ će izgubiti pristup ako se ove stavke ne dele sa njima.</translation>
@@ -431,7 +427,6 @@
 <translation id="4720185134442950733">Mobilna mreža za prenos podataka</translation>
 <translation id="4724850507808590449">Napravljena je rezervna kopija slika (<ph name="FILE_COUNT" />)</translation>
 <translation id="4725511304875193254">Korgi</translation>
-<translation id="4732760563705710320">Žao nam je, uređaj za prebacivanje ne podržava ovaj video.</translation>
 <translation id="4737050008115666127">Sletanje</translation>
 <translation id="4747271164117300400">makedonski</translation>
 <translation id="4759238208242260848">Preuzimanja</translation>
@@ -622,7 +617,6 @@
 <translation id="6224253798271602650">Formatiraj: <ph name="DRIVE_NAME" /></translation>
 <translation id="6227235786875481728">Ovu datoteku nije moguće pustiti.</translation>
 <translation id="6241349547798190358">holandski (Belgija)</translation>
-<translation id="6248400709929739064">Omogući titlove</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, baterija telefona <ph name="BATTERY_STATUS" />%, poveži</translation>
 <translation id="6269630227984243955">malajski</translation>
 <translation id="6287852322318138013">Izaberite aplikaciju za otvaranje ove datoteke</translation>
@@ -640,7 +634,6 @@
 <translation id="637062427944097960">Ova datoteka je otvorena na drugom profilu. Pređite na <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) da biste je pogledali.</translation>
 <translation id="6394388407447716302">Samo za čitanje</translation>
 <translation id="6395575651121294044">Stavki: <ph name="NUMBER_OF_FILES" /></translation>
-<translation id="6398765197997659313">Izađi iz režima celog ekrana</translation>
 <translation id="642282551015776456">Ovaj naziv ne može da se koristi kao naziv datoteke ili direktorijuma</translation>
 <translation id="6423031066725912715">vijetnamski sa tastaturom TCVN</translation>
 <translation id="6485131920355264772">Preuzimanje informacija o prostoru nije uspelo</translation>
@@ -676,7 +669,6 @@
 <translation id="6820687829547641339">Gzip komprimovana tar arhiva</translation>
 <translation id="6823166707458800069">Za sve datoteke sačuvane u ovom direktorijumu automatski se pravi onlajn rezervna kopija.</translation>
 <translation id="6825883775269213504">ruski</translation>
-<translation id="6827236167376090743">Reprodukcija ovog video snimka će se nastaviti u nedogled.</translation>
 <translation id="6847101934483209767">Uklonili ste <ph name="ENTRY_NAME" /> iz izbora.</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, detalji</translation>
 <translation id="6861394552169064235">persijski</translation>
@@ -814,7 +806,6 @@
 <translation id="7857117644404132472">Dodaj izuzetak</translation>
 <translation id="7868774406711971383">poljski</translation>
 <translation id="7874321682039004450">filipinski</translation>
-<translation id="7881969471599061635">Onemogući titlove</translation>
 <translation id="78946041517601018">Deljeni diskovi</translation>
 <translation id="7908793776359722643">Ako formatirate particiju, brišete sve podatke na njoj. Ova radnja ne može da se opozove.</translation>
 <translation id="7925247922861151263">Provera potvrde identiteta, ovlašćenja i pristupa nije uspela</translation>
@@ -891,7 +882,6 @@
 <translation id="8492972329130824181">Kućna mreža nije dostupna. Prenos podataka u romingu mora da bude omogućen radi povezivanja.</translation>
 <translation id="8499098729323186194">Izdvajaju se stavke (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="8521441079177373948">UK</translation>
-<translation id="8525306231823319788">Ceo ekran</translation>
 <translation id="853494022971700746">francuski (Francuska)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, detalji</translation>
 <translation id="8545476925160229291">engleski (SAD)</translation>

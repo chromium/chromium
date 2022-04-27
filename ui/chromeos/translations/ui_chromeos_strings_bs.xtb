@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">hebrejski (transliteracija)</translation>
 <translation id="1747761757048858544">nizozemski (Nizozemska)</translation>
 <translation id="174937106936716857">Ukupan broj fajlova</translation>
+<translation id="1755345808328621801">Ovaj fajl je dizajniran za PC računar koji koristi Windows softver. Sadržaj nije kompatibilan s vašim uređajem koji koristi ChromeOS. Pretražite Chrome Web trgovinu da pronađete odgovarajuću zamjensku aplikaciju.</translation>
 <translation id="1773212559869067373">Potvrda za autentifikaciju je odbijena lokalno</translation>
 <translation id="1775381402323441512">Informacije o videozapisu</translation>
 <translation id="180035236176489073">Za pristup ovim fajlovima morate biti na mreži.</translation>
@@ -198,8 +199,6 @@
 <translation id="2649120831653069427">Dugina riba</translation>
 <translation id="2663066752008346276">burmanski/mijanmarski s mijansan tastaturom</translation>
 <translation id="2664412712123763093">Lokacija fajla</translation>
-<translation id="2672394958563893062">Došlo je do greške. Kliknite da ponovo pokrenete od početka.</translation>
-<translation id="2676946222714718093">Reproducira se na</translation>
 <translation id="2718540689505416944">Instaliraj aplikaciju s Linuxom</translation>
 <translation id="2719020180254996569">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, detalji</translation>
 <translation id="2724954091494693138">turski s tastaturom F</translation>
@@ -225,6 +224,7 @@
 <translation id="2943503720238418293">Koristite kraći naziv</translation>
 <translation id="2949781154072577687">Formatiranje diska <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Meduza</translation>
+<translation id="2977940621473452797">Ovaj fajl je dizajniran za računar koji koristi Macintosh softver. Sadržaj nije kompatibilan s vašim uređajem koji koristi ChromeOS. Pretražite Chrome Web trgovinu da pronađete odgovarajuću zamjensku aplikaciju.</translation>
 <translation id="2984337792991268709">Danas u <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Vraćanje sljedećeg broja stavki: <ph name="COUNT" />…</translation>
 <translation id="2994669386200004489">Izrada sigurnosne kopije fajla <ph name="FILE_NAME" /> nije uspjela</translation>
@@ -340,7 +340,6 @@
 <translation id="3901991538546252627">Povezivanje na mrežu <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Instaliranje profila mobilnog uređaja, mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Reproduciraj na</translation>
 <translation id="3943857333388298514">Zalijepi</translation>
 <translation id="3952872973865944257">telugu fonetski</translation>
 <translation id="3958548648197196644">Kivi</translation>
@@ -412,7 +411,6 @@
 <translation id="4631887759990505102">Izvođač</translation>
 <translation id="4642769377300286600">Instaliranje profila mobilnog uređaja, mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">češki s Qwerty tastaturom</translation>
-<translation id="4656293982926141856">Ovaj računar</translation>
 <translation id="4656777537938206294">Učinite fajlove dostupnim offline</translation>
 <translation id="4658782175094886150">Osoba na snijegu</translation>
 <translation id="4669606053856530811">Članovi tima „<ph name="SOURCE_NAME" />“ će izgubiti pristup osim ako se ove stavke ne dijele s njima.</translation>
@@ -422,13 +420,13 @@
 <translation id="4694604912444486114">Majmun</translation>
 <translation id="469612310041132144">kineski brzi</translation>
 <translation id="4697043402264950621">Spisak fajlova je poredan prema <ph name="COLUMN_NAME" /> u uzlaznom poretku.</translation>
+<translation id="469897186246626197">Ovaj fajl je dizajniran za PC računar koji koristi Windows softver. Sadržaj nije kompatibilan s vašim uređajem koji koristi ChromeOS. <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /> o otvaranju fajlova u ChromeOS-u.</translation>
 <translation id="4706042980341760088">tamilski s tastaturom typewriter</translation>
 <translation id="4711094779914110278">Turska</translation>
 <translation id="4712283082407695269">Otvaranje putanje "<ph name="PATH" />"</translation>
 <translation id="4720185134442950733">Prijenos podataka na mobilnoj mreži</translation>
 <translation id="4724850507808590449">Napravljena je sigurnosna kopija za sljedeći broj fotografija: <ph name="FILE_COUNT" /></translation>
 <translation id="4725511304875193254">Corgi</translation>
-<translation id="4732760563705710320">Nažalost, vaš "cast" uređaj ne podržava ovaj videozapis.</translation>
 <translation id="4737050008115666127">Slijetanje</translation>
 <translation id="4747271164117300400">Makedonska</translation>
 <translation id="4759238208242260848">Preuzimanja</translation>
@@ -543,6 +541,7 @@
 <translation id="5583640892426849032">Tipka za brisanje</translation>
 <translation id="5602622065581044566">bugarski s fonetskom tastaturom</translation>
 <translation id="5605830556594064952">SAD Dvorak</translation>
+<translation id="5618330573454123917">Ovaj fajl je dizajniran za računar koji koristi Macintosh softver. Sadržaj nije kompatibilan s vašim uređajem koji koristi ChromeOS. <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /> o otvaranju fajlova u ChromeOS-u.</translation>
 <translation id="5625294776298156701">tamilski s tastaturom Tamil99</translation>
 <translation id="5633226425545095130">Ako premjestite ovu stavku, dijelit će se sa svakim ko može vidjeti dijeljeni folder "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Poslušajte</translation>
@@ -618,7 +617,6 @@
 <translation id="6224253798271602650">Formatirajte <ph name="DRIVE_NAME" /></translation>
 <translation id="6227235786875481728">Reproduciranje ovog fajla nije uspjelo.</translation>
 <translation id="6241349547798190358">nizozemski (Belgija)</translation>
-<translation id="6248400709929739064">Omogući titlove</translation>
 <translation id="6267547857941397424">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, baterija telefona <ph name="BATTERY_STATUS" />%, poveži</translation>
 <translation id="6269630227984243955">malajski</translation>
 <translation id="6287852322318138013">Odaberite aplikaciju da otvorite ovaj fajl</translation>
@@ -636,7 +634,6 @@
 <translation id="637062427944097960">Ovaj fajl se otvorio na drugoj radnoj površini. Prebacite na korisnika <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) da ga vidite.</translation>
 <translation id="6394388407447716302">Samo za čitanje</translation>
 <translation id="6395575651121294044">Broj stavki: <ph name="NUMBER_OF_FILES" /></translation>
-<translation id="6398765197997659313">Napusti prikaz preko cijelog ekrana</translation>
 <translation id="642282551015776456">Ovo ime se ne može koristiti za naziv fajla ili foldera.</translation>
 <translation id="6423031066725912715">vijetnamski s tastaturom TCVN</translation>
 <translation id="6485131920355264772">Preuzimanje informacije o prostoru nije uspjelo</translation>
@@ -672,7 +669,6 @@
 <translation id="6820687829547641339">Gzip kompresirana tar arhiva</translation>
 <translation id="6823166707458800069">Za sve fajlove koje sačuvate u ovom folderu se automatski kreira sigurnosna kopija na mreži.</translation>
 <translation id="6825883775269213504">ruski</translation>
-<translation id="6827236167376090743">Ovaj videozapis će se reproducirati dok se boje ne rastope.</translation>
 <translation id="6847101934483209767">Stavka <ph name="ENTRY_NAME" /> je uklonjena iz odabira.</translation>
 <translation id="6856459657722366306">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, detalji</translation>
 <translation id="6861394552169064235">perzijski</translation>
@@ -738,6 +734,7 @@
 <translation id="7309413087278791451">njemački (Belgija)</translation>
 <translation id="7339898014177206373">Novi prozor</translation>
 <translation id="7343393116438664539">vijetnamski telex</translation>
+<translation id="7357762654218998920">Ova vrsta fajla nije podržana. <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /> o otvaranju fajlova u ChromeOS-u.</translation>
 <translation id="7359359531237882347">Kopiranje sljedećeg broja stavki: <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="7375951387215729722">Spisak fajlova je poredan prema <ph name="COLUMN_NAME" /> u silaznom poretku.</translation>
 <translation id="7402503521691663770">ChromeOS Flex uređaji</translation>
@@ -809,7 +806,6 @@
 <translation id="7857117644404132472">Dodaj izuzetak</translation>
 <translation id="7868774406711971383">poljski</translation>
 <translation id="7874321682039004450">filipino</translation>
-<translation id="7881969471599061635">Onemogući titlove</translation>
 <translation id="78946041517601018">Dijeljeni diskovi</translation>
 <translation id="7908793776359722643">Formatiranjem particije ćete izbrisati sve podatke koji su pohranjeni na nju. Ovu radnju nije moguće opozvati.</translation>
 <translation id="7925247922861151263">AAA provjera nije uspjela</translation>
@@ -886,7 +882,6 @@
 <translation id="8492972329130824181">Kućna mreža nije dostupna. Prijenos roming podataka na mobilnoj mreži mora biti omogućen da se povežete.</translation>
 <translation id="8499098729323186194">Izdvajanje stavki (njih <ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="8521441079177373948">Velika Britanija</translation>
-<translation id="8525306231823319788">Cijeli ekran</translation>
 <translation id="853494022971700746">francuski (Francuska)</translation>
 <translation id="8540608333167683902">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, detalji</translation>
 <translation id="8545476925160229291">engleski (SAD)</translation>

@@ -198,8 +198,6 @@
 <translation id="2649120831653069427">रेनबोफ़िश</translation>
 <translation id="2663066752008346276">मयन्सन कीबोर्ड के साथ बर्मीज़/म्यांमार</translation>
 <translation id="2664412712123763093">फ़ाइल की जगह</translation>
-<translation id="2672394958563893062">एक गड़बड़ी हुई. शुरुआत से शुरू करने के लिए रिस्टार्ट पर क्लिक करें.</translation>
-<translation id="2676946222714718093">इस पर चलाया जा रहा है:</translation>
 <translation id="2718540689505416944">Linux पर ऐप्लिकेशन की मदद से इंस्टॉल करें</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, जानकारी</translation>
 <translation id="2724954091494693138">एफ़-कीबोर्ड के साथ टर्किश</translation>
@@ -340,7 +338,6 @@
 <translation id="3901991538546252627"><ph name="NAME" /> से कनेक्‍ट हो रहा है</translation>
 <translation id="3906232975181435906">मोबाइल प्रोफ़ाइल को इंस्टॉल किया जा रहा है. यह <ph name="NETWORK_COUNT" /> <ph name="NETWORK_NAME" /> नेटवर्क में से नेटवर्क <ph name="NETWORK_INDEX" /> है</translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">इसपर चलाएं</translation>
 <translation id="3943857333388298514">चिपकाएं</translation>
 <translation id="3952872973865944257">तेलुगु फ़ोनेटिक</translation>
 <translation id="3958548648197196644">कीवी</translation>
@@ -412,7 +409,6 @@
 <translation id="4631887759990505102">कलाकार</translation>
 <translation id="4642769377300286600">मोबाइल प्रोफ़ाइल को इंस्टॉल किया जा रहा है. यह <ph name="NETWORK_PROVIDER_NAME" /> के <ph name="NETWORK_COUNT" /> <ph name="NETWORK_NAME" /> नेटवर्क में से नेटवर्क <ph name="NETWORK_INDEX" /> है</translation>
 <translation id="4646813851450205600">क्वर्टी कीबोर्ड के साथ चेक</translation>
-<translation id="4656293982926141856">यह कंप्यूटर</translation>
 <translation id="4656777537938206294">फ़ाइलों को ऑफ़लाइन उपलब्ध कराएं</translation>
 <translation id="4658782175094886150">गिरती हुई बर्फ़ में खड़ा व्यक्ति</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' के सदस्यों को तब तक एक्सेस नहीं मिलेगा जब तक कि ये आइटम उनके साथ शेयर नहीं किए जाते.</translation>
@@ -428,7 +424,6 @@
 <translation id="4720185134442950733">मोबाइल डेटा नेटवर्क</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> फ़ोटो का बैक अप लिया गया</translation>
 <translation id="4725511304875193254">कॉर्गी</translation>
-<translation id="4732760563705710320">क्षमा करें, यह वीडियो आपके कास्‍ट डिवाइस द्वारा समर्थित नहीं है.</translation>
 <translation id="4737050008115666127">लैंडिंग</translation>
 <translation id="4747271164117300400">मैसेडोनियाई</translation>
 <translation id="4759238208242260848">डाउनलोड</translation>
@@ -618,7 +613,6 @@
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> फ़ॉर्मैट करें</translation>
 <translation id="6227235786875481728">यह फ़ाइल चलाई नहीं जा सकती.</translation>
 <translation id="6241349547798190358">डच (बेल्जियम)</translation>
-<translation id="6248400709929739064">सबटाइटल चालू करें</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="PHONE_NAME" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, फ़ोन की बैटरी <ph name="BATTERY_STATUS" />%, कनेक्ट करें</translation>
 <translation id="6269630227984243955">मलय</translation>
 <translation id="6287852322318138013">यह फ़ाइल खोलने के लिए कोई ऐप्लिकेशन चुनें</translation>
@@ -636,7 +630,6 @@
 <translation id="637062427944097960">यह फ़ाइल किसी अलग डेस्कटॉप पर खुली है. उसे देखने के लिए <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) पर जाएं.</translation>
 <translation id="6394388407447716302">सिर्फ़ पढ़ने के लिए</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> आइटम</translation>
-<translation id="6398765197997659313">फ़ुल स्क्रीन से बाहर निकलें</translation>
 <translation id="642282551015776456">यह नाम कि‍सी फ़ाइल या फ़ोल्‍डर के लि‍ए उपयोग नहीं कि‍या जा सकता</translation>
 <translation id="6423031066725912715">टीसीवीएन कीबोर्ड के साथ वियतनामीज़</translation>
 <translation id="6485131920355264772">स्थान जानकारी पाने में विफल रहा</translation>
@@ -672,7 +665,6 @@
 <translation id="6820687829547641339">Gzip संकुचित tar संग्रह</translation>
 <translation id="6823166707458800069">इस फ़ोल्डर में सेव की गई सभी फ़ाइलों का ऑनलाइन बैक अप अपने-आप लिया जाता है.</translation>
 <translation id="6825883775269213504">रूसी</translation>
-<translation id="6827236167376090743">यह वीडियो शाम होने तक लगातार चलता रहेगा.</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> को चुनी गई चीज़ों से हटाया गया.</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, जानकारी</translation>
 <translation id="6861394552169064235">फ़ारसी</translation>
@@ -809,7 +801,6 @@
 <translation id="7857117644404132472">अपवाद जोड़ें</translation>
 <translation id="7868774406711971383">पोलिश</translation>
 <translation id="7874321682039004450">फ़िलिपीनो</translation>
-<translation id="7881969471599061635">सबटाइटल बंद करें</translation>
 <translation id="78946041517601018">शेयर की गईं डिस्क</translation>
 <translation id="7908793776359722643">किसी पार्टीशन को फ़ॉर्मैट करने से उस पर सेव किया गया पूरा डेटा मिट जाएगा. मिटने के बाद यह सब वापस नहीं पाया जा सकता.</translation>
 <translation id="7925247922861151263">AAA जाँच पूरा नहीं हो सका</translation>
@@ -886,7 +877,6 @@
 <translation id="8492972329130824181">होम नेटवर्क उपलब्ध नहीं है. कनेक्ट करने के लिए, मोबाइल डेटा रोमिंग को चालू करना ज़रूरी है.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> आइटम ढूंढे जा रहे हैं...</translation>
 <translation id="8521441079177373948">यूके</translation>
-<translation id="8525306231823319788">फ़ुल स्‍क्रीन</translation>
 <translation id="853494022971700746">फ़्रेंच (फ़्रांस)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, जानकारी</translation>
 <translation id="8545476925160229291">अंग्रेज़ी (यूएस)</translation>

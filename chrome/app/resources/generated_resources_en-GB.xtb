@@ -581,6 +581,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' is already assigned to the '<ph name="ACTION" />' action. Press any key to <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript Console</translation>
 <translation id="1568323446248056064">Open display device settings</translation>
+<translation id="1569044524074707727">Unlock your phone</translation>
 <translation id="1570604804919108255">Unmute notifications</translation>
 <translation id="1571304935088121812">Copy username</translation>
 <translation id="1571738973904005196">View tab: <ph name="TAB_ORIGIN" /></translation>
@@ -1014,7 +1015,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1942600407708803723">Shut down when cover is closed</translation>
 <translation id="1944528062465413897">Bluetooth pairing code</translation>
 <translation id="1944921356641260203">Update found</translation>
-<translation id="1946577776959096882">View accounts</translation>
 <translation id="1949584741547056205">Quick answers</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954597385941141174">Sites can ask to connect to USB devices</translation>
@@ -1435,7 +1435,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2322622365472107569">End time <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Saved Wi-Fi networks</translation>
 <translation id="2325444234681128157">Remember password</translation>
-<translation id="2325760149602186433">Remove virtual card</translation>
 <translation id="2326188115274135041">Confirm PIN to turn on automatic unlock</translation>
 <translation id="2326931316514688470">&amp;Reload app</translation>
 <translation id="2327492829706409234">Enable app</translation>
@@ -2024,6 +2023,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="288042212351694283">Access your Universal 2nd Factor devices</translation>
 <translation id="2881076733170862447">When you click the extension</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> will restart and reset momentarily</translation>
+<translation id="2883470649061584386">Feed</translation>
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2885729872133513017">A problem occurred when decoding server response.</translation>
 <translation id="2886119409731773154">This may take up to 30 minutes</translation>
@@ -4715,9 +4715,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5585912436068747822">Formatting failed</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Loading apps...</translation>
-<translation id="5591644692203457362">Any extended key usage</translation>
 <translation id="5592595402373377407">Not enough data available yet.</translation>
-<translation id="5593564924968945303">Chrome Browser</translation>
 <translation id="5595485650161345191">Edit address</translation>
 <translation id="5596627076506792578">More options</translation>
 <translation id="5600348067066185292">Installation takes a few easy steps. You’ll have another chance to confirm before changes are made to your computer.</translation>
@@ -5044,7 +5042,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5935158534896975820">Preparing certificate signing request (waiting on server)</translation>
 <translation id="5935656526031444304">Manage Safe Browsing</translation>
 <translation id="5938002010494270685">Security upgrade available</translation>
-<translation id="5938153366081463283">Add virtual card</translation>
 <translation id="5939518447894949180">Reset</translation>
 <translation id="5939719276406088041">Can't create shortcut</translation>
 <translation id="594048410531370124">Unrecognised key. Press any key to <ph name="RESPONSE" />.</translation>
@@ -5334,6 +5331,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6227002569366039565">Press |<ph name="ACCELERATOR" />| to focus this bubble, then again to focus the element that it is pointing to.</translation>
 <translation id="6227280783235722609">extension</translation>
 <translation id="6229849828796482487">Disconnect Wi-Fi network</translation>
+<translation id="6230165830166519105">Try another way</translation>
 <translation id="6231782223312638214">Suggested</translation>
 <translation id="6231881193380278751">Add a QueryParam in URL to auto-refresh the page: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Battery</translation>
@@ -5689,7 +5687,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="656293578423618167">The file path or name is too long.  Please save with a shorter name or to another location.</translation>
 <translation id="6563469144985748109">Your manager hasn't approved it yet</translation>
 <translation id="6568283005472142698">Tab search</translation>
-<translation id="6569911211938664415">Passwords are saved in your Google Account (<ph name="ACCOUNT" />) so that you can use them on any device</translation>
 <translation id="65711204837946324">Needs permission to download</translation>
 <translation id="6571772921213691236">Edit sign-in data</translation>
 <translation id="6573497332121198392">Can't remove shortcut</translation>
@@ -5816,7 +5813,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6697492270171225480">Show suggestions for similar pages when a page can't be found</translation>
 <translation id="6697690052557311665">To share, right-click on a folder in Files app, then select 'Share with Linux'.</translation>
 <translation id="6698810901424468597">Read and change your data on <ph name="WEBSITE_1" /> and <ph name="WEBSITE_2" /></translation>
-<translation id="6699883973579689168">You can now manage all of your Google accounts in one place. Access and permissions that you've granted to apps, websites and extensions in Chrome and Google Play may now apply to all of your signed-in accounts. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="6700093763382332031">Mobile SIM lock</translation>
 <translation id="6700480081846086223">Cast <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Could not get profile.</translation>
@@ -6557,6 +6553,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="7450761244949417357">Opening in <ph name="ALTERNATIVE_BROWSER_NAME" /> now</translation>
 <translation id="7452166281927983300">Dismissed warnings (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">By selecting this printer, you are giving the following extension the permission to access your printer:</translation>
+<translation id="7453467225369441013">Signs you out of most sites. You won't be signed out of your Google Account.</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">Manage extra containers</translation>
 <translation id="7456142309650173560">dev</translation>

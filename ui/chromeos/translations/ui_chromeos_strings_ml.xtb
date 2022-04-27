@@ -199,8 +199,6 @@
 <translation id="2649120831653069427">റെയിൻബോഫിഷ്</translation>
 <translation id="2663066752008346276">Myansan കീബോർഡ് ഉള്ള ബർമീസ്/മ്യാൻമർ</translation>
 <translation id="2664412712123763093">ഫയൽ ലൊക്കേഷൻ</translation>
-<translation id="2672394958563893062">ഒരു പിശക് സംഭവിച്ചു. തുടക്കത്തിൽ നിന്ന് പുനരാരംഭിക്കുന്നതിന് ക്ലിക്ക് ചെയ്യുക.</translation>
-<translation id="2676946222714718093">ഇതിൽ പ്ലേ ചെയ്യുന്നു</translation>
 <translation id="2718540689505416944">Linux ഉപയോഗിച്ച് ആപ്പ് ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, വിശദാംശങ്ങൾ</translation>
 <translation id="2724954091494693138">F-keyboard ഉള്ള ടർക്കിഷ്</translation>
@@ -342,7 +340,6 @@
 <translation id="3901991538546252627"><ph name="NAME" /> എന്നതിലേക്ക് കണക്റ്റുചെയ്യുന്നു</translation>
 <translation id="3906232975181435906">മൊബെെൽ പ്രൊഫെെൽ ഇൻസ്‌റ്റാൾ ചെയ്യുന്നു, <ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" />-ാമത്തെ നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">ഇതിൽ പ്ലേ ചെയ്യുക</translation>
 <translation id="3943857333388298514">ഒട്ടിക്കുക</translation>
 <translation id="3952872973865944257">തെലുങ്ക് ഉച്ചാരണശബ്‌ദം</translation>
 <translation id="3958548648197196644">കിവി</translation>
@@ -414,7 +411,6 @@
 <translation id="4631887759990505102">ആര്‍ട്ടിസ്റ്റ്</translation>
 <translation id="4642769377300286600">മൊബെെൽ പ്രൊഫെെൽ ഇൻസ്‌റ്റാൾ ചെയ്യുന്നു, <ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" />-ാമത്തെ നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Qwerty കീബോർഡ് ഉള്ള ചെക്ക്</translation>
-<translation id="4656293982926141856">ഈ കമ്പ്യൂട്ടറിൽ</translation>
 <translation id="4656777537938206294">ഫയലുകൾ ഓഫ്‌ലൈനിൽ ലഭ്യമാക്കുക</translation>
 <translation id="4658782175094886150">മഞ്ഞിൽ നിൽക്കുന്ന വ്യക്തി</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' എന്നതിലെ അംഗങ്ങളുമായി ഈ ഇനങ്ങൾ പങ്കിട്ടില്ലെങ്കിൽ അവർക്ക് അവയിലേക്കുള്ള ആക്‌സസ് ‌നഷ്‌ടമാകും.</translation>
@@ -431,7 +427,6 @@
 <translation id="4720185134442950733">മൊബൈൽ ഡാറ്റ നെറ്റ്‌വർക്ക്</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> ഫോട്ടോകൾ ബാക്കപ്പുചെയ്‌തു</translation>
 <translation id="4725511304875193254">പട്ടിക്കുട്ടി</translation>
-<translation id="4732760563705710320">ക്ഷമിക്കണം, ഈ വീഡിയോയെ നിങ്ങളുടെ കാസ്‌റ്റ് ഉപകരണം പിന്തുണയ്‌ക്കുന്നില്ല.</translation>
 <translation id="4737050008115666127">ലാൻഡിംഗ്</translation>
 <translation id="4747271164117300400">മാസിഡോണിയൻ</translation>
 <translation id="4759238208242260848">ഡൌണ്‍ലോഡുകള്‍</translation>
@@ -622,7 +617,6 @@
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ഫോർമാറ്റ് ചെയ്യുക</translation>
 <translation id="6227235786875481728">ഈ ഫയൽ പ്ലേ ചെയ്യാൻ കഴിഞ്ഞില്ല.</translation>
 <translation id="6241349547798190358">ഡച്ച് (ബെൽജിയം)</translation>
-<translation id="6248400709929739064">സബ്‌ടൈറ്റിലുകൾ പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="PHONE_NAME" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, ഫോൺ ബാറ്ററി <ph name="BATTERY_STATUS" />%, കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="6269630227984243955">മലെയ്</translation>
 <translation id="6287852322318138013">ഈ ഫയൽ തുറക്കാനായി ഒരു ആപ്പ് തിരഞ്ഞെടുക്കുക</translation>
@@ -640,7 +634,6 @@
 <translation id="637062427944097960">ഈ ഫയൽ മറ്റൊരു ഡെസ്‌ക്‌ടോപ്പിലാണ് തുറന്നിരിക്കുന്നത്. അത് കാണാൻ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) എന്നതിലേക്ക് നീക്കുക.</translation>
 <translation id="6394388407447716302">വായന മാത്രം</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ഇനങ്ങൾ</translation>
-<translation id="6398765197997659313">പൂര്‍ണ്ണ സ്ക്രീനില്‍ നിന്ന് പുറത്തുകടക്കുക</translation>
 <translation id="642282551015776456">ഈ നാമം ഒരു ഫോൾഡർ നാമത്തിന്റെ ഫയൽ ആയി ഉപയോഗിക്കരുത്</translation>
 <translation id="6423031066725912715">TCVN കീബോർഡ് ഉള്ള വിയറ്റ്നാമീസ്</translation>
 <translation id="6485131920355264772">സ്‌പെയ്‌സ് വിവരം വീണ്ടെടുക്കുന്നതിന് പരാജയപ്പെട്ടു</translation>
@@ -676,7 +669,6 @@
 <translation id="6820687829547641339">Gzip ഉൾക്കൊള്ളിച്ച tar ആർക്കൈവ്</translation>
 <translation id="6823166707458800069">ഈ ഫോൾഡറിൽ സംരക്ഷിച്ചിരിക്കുന്ന എല്ലാ ഫയലുകളും ഓൺലൈനിൽ സ്വയമേവ ബാക്കപ്പ് ചെയ്യപ്പെടുന്നതാണ്.</translation>
 <translation id="6825883775269213504">റഷ്യന്‍</translation>
-<translation id="6827236167376090743">ഈ വീഡിയോ ദീർഘ നേരം പ്ലേ ചെയ്യും.</translation>
 <translation id="6847101934483209767">തിരഞ്ഞെടുത്തതിൽ നിന്നും <ph name="ENTRY_NAME" /> നീക്കം ചെയ്‌തു.</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, വിശദാംശങ്ങൾ</translation>
 <translation id="6861394552169064235">പേർഷ്യൻ</translation>
@@ -814,7 +806,6 @@
 <translation id="7857117644404132472">ഒഴിവാക്കൽ ചേർക്കുക</translation>
 <translation id="7868774406711971383">പോളിഷ്</translation>
 <translation id="7874321682039004450">ഫിലിപ്പിനോ</translation>
-<translation id="7881969471599061635">സബ്‌ടൈറ്റിലുകൾ പ്രവർത്തനരഹിതമാക്കുക</translation>
 <translation id="78946041517601018">പങ്കിട്ട ഡ്രൈവുകൾ</translation>
 <translation id="7908793776359722643">ഒരു ഭാഗം ഫോർമാറ്റ് ചെയ്യുന്നത് അതിൽ സംഭരിച്ചിരിക്കുന്ന എല്ലാ ഡാറ്റയും മായ്‌ക്കും. ഈ പ്രവർത്തനം പഴയപടിയാക്കാനാകില്ല.</translation>
 <translation id="7925247922861151263">AAA പരിശോധന പരാജയപ്പെട്ടു</translation>
@@ -891,7 +882,6 @@
 <translation id="8492972329130824181">വീട്ടിലെ നെറ്റ്‌വർക്ക് ലഭ്യമല്ല. കണക്റ്റ് ചെയ്യാൻ മൊബൈൽ ഡാറ്റ റോമിംഗ് പ്രവർത്തനക്ഷമമാക്കണം.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ എക്‌സ്‌ട്രാക്റ്റ് ചെയ്യുന്നു...</translation>
 <translation id="8521441079177373948">യുകെ</translation>
-<translation id="8525306231823319788">പൂര്‍ണ്ണ സ്ക്രീന്‍</translation>
 <translation id="853494022971700746">ഫ്രഞ്ച് (ഫ്രാൻസ്)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, വിശദാംശങ്ങൾ</translation>
 <translation id="8545476925160229291">ഇംഗ്ലീഷ് (യുഎസ്)</translation>

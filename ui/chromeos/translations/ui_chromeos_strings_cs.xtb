@@ -199,8 +199,6 @@
 <translation id="2649120831653069427">Duhovka</translation>
 <translation id="2663066752008346276">barmština/myanmarština s myansanskou klávesnicí</translation>
 <translation id="2664412712123763093">Umístění souboru</translation>
-<translation id="2672394958563893062">Došlo k chybě. Kliknutím spustíte přehrávání od začátku.</translation>
-<translation id="2676946222714718093">Přehrávání v zařízení</translation>
 <translation id="2718540689505416944">Nainstalujte aplikaci pro Linux</translation>
 <translation id="2719020180254996569">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, podrobnosti</translation>
 <translation id="2724954091494693138">turečtina s klávesnicí F</translation>
@@ -342,7 +340,6 @@
 <translation id="3901991538546252627">Připojování k síti <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Instalace mobilního profilu, síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Přehrát v zařízení</translation>
 <translation id="3943857333388298514">Vložit</translation>
 <translation id="3952872973865944257">telugština (fonetická)</translation>
 <translation id="3958548648197196644">Kiwi</translation>
@@ -414,7 +411,6 @@
 <translation id="4631887759990505102">Interpret</translation>
 <translation id="4642769377300286600">Instalace mobilního profilu, síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">čeština s klávesnicí Qwerty</translation>
-<translation id="4656293982926141856">Tento počítač</translation>
 <translation id="4656777537938206294">Dostupnost souborů v režimu offline</translation>
 <translation id="4658782175094886150">Člověk ve sněhu</translation>
 <translation id="4669606053856530811">Pokud s nimi tyto položky nejsou sdíleny, ztratí k nim členové týmu <ph name="SOURCE_NAME" /> přístup.</translation>
@@ -431,7 +427,6 @@
 <translation id="4720185134442950733">Mobilní datová síť</translation>
 <translation id="4724850507808590449">Počet zálohovaných fotek: <ph name="FILE_COUNT" /></translation>
 <translation id="4725511304875193254">Pes corgi</translation>
-<translation id="4732760563705710320">Je nám líto, ale vaše zařízení pro streamování obsahu toto video nepodporuje.</translation>
 <translation id="4737050008115666127">Přistání</translation>
 <translation id="4747271164117300400">makedonština</translation>
 <translation id="4759238208242260848">Stažené soubory</translation>
@@ -621,7 +616,6 @@
 <translation id="6224253798271602650">Formátovat jednotku <ph name="DRIVE_NAME" /></translation>
 <translation id="6227235786875481728">Soubor nelze přehrát.</translation>
 <translation id="6241349547798190358">nizozemština (Belgie)</translation>
-<translation id="6248400709929739064">Zapnout titulky</translation>
 <translation id="6267547857941397424">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, baterie telefonu: <ph name="BATTERY_STATUS" /> %, připojit</translation>
 <translation id="6269630227984243955">malajština</translation>
 <translation id="6287852322318138013">Vyberte aplikaci, pomocí které soubor otevřete</translation>
@@ -639,7 +633,6 @@
 <translation id="637062427944097960">Tento soubor je otevřen na jiné ploše. Chcete-li jej zobrazit, přejděte do profilu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Pouze pro čtení</translation>
 <translation id="6395575651121294044">Počet položek: <ph name="NUMBER_OF_FILES" /></translation>
-<translation id="6398765197997659313">Ukončit režim celé obrazovky</translation>
 <translation id="642282551015776456">Tento název nelze použít k pojmenování souboru ani složky.</translation>
 <translation id="6423031066725912715">vietnamština s klávesnicí TCVN</translation>
 <translation id="6485131920355264772">Informace o volném místě se nepodařilo načíst</translation>
@@ -675,7 +668,6 @@
 <translation id="6820687829547641339">Archiv ve formátu Tar komprimovaný metodou Gzip</translation>
 <translation id="6823166707458800069">Všechny soubory uložené v této složce se automaticky zálohují online.</translation>
 <translation id="6825883775269213504">ruština</translation>
-<translation id="6827236167376090743">Toto video se bude přehrávat až do skonání času.</translation>
 <translation id="6847101934483209767">Položka <ph name="ENTRY_NAME" /> byla odebrána z výběru.</translation>
 <translation id="6856459657722366306">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="6861394552169064235">perština</translation>
@@ -813,7 +805,6 @@
 <translation id="7857117644404132472">Přidat výjimku</translation>
 <translation id="7868774406711971383">polština</translation>
 <translation id="7874321682039004450">filipínština</translation>
-<translation id="7881969471599061635">Vypnout titulky</translation>
 <translation id="78946041517601018">Sdílené disky</translation>
 <translation id="7908793776359722643">Naformátováním oddílu smažete všechna na něm uložená data. Tuto akci nelze vrátit zpět.</translation>
 <translation id="7925247922861151263">Selhala bezpečnostní kontrola AAA</translation>
@@ -890,7 +881,6 @@
 <translation id="8492972329130824181">Domácí síť není k dispozici. K připojení musí být zapnutý roaming pro mobilní data.</translation>
 <translation id="8499098729323186194">Rozbalování položek (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="8521441079177373948">Britská klávesnice</translation>
-<translation id="8525306231823319788">Celá obrazovka</translation>
 <translation id="853494022971700746">francouzština (Francie)</translation>
 <translation id="8540608333167683902">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="8545476925160229291">angličtina (USA)</translation>

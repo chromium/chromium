@@ -42,6 +42,7 @@
 <translation id="1394661041439318933">Az eszköz tokjának akkumulátorszintje: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Az átjáró pingelhető</translation>
 <translation id="1398634363027580500">Nagyon hosszú várakozási idő HTTPS esetén</translation>
+<translation id="1407069428457324124">Sötét téma</translation>
 <translation id="1413240736185167732">Sikertelen – Szűrőhiba</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Rendelkezem kulcspárral</translation>
@@ -63,6 +64,7 @@
 <translation id="1565038567006703504">Nem sikerült frissíteni a következőt: <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albumok</translation>
 <translation id="1572585716423026576">Beállítás háttérként</translation>
+<translation id="1578784163189013834">A képernyővédő hátterének kiválasztása</translation>
 <translation id="1615335640928990664">Adathasználat <ph name="FRIENDLY_DATE" /> óta</translation>
 <translation id="1621067168122174824">Töltési teszt futtatása</translation>
 <translation id="1639239467298939599">Betöltés</translation>
@@ -85,12 +87,15 @@
 <translation id="1768959921651994223">Hitelesítés típusa</translation>
 <translation id="1782199038061388045">Fordítás</translation>
 <translation id="1792647875738159689">Beolvasás megszakítása…</translation>
+<translation id="1801418420130173017">Sötét téma kikapcsolása</translation>
 <translation id="1807246157184219062">Világos</translation>
 <translation id="1827738518074806965">Galéria</translation>
 <translation id="1851218745569890714">Videokonferencia</translation>
 <translation id="1852934301711881861">ChromeOS Flex telepítése</translation>
 <translation id="1856388568474281774">Lefelé nyíl</translation>
+<translation id="1871569928317311284">Sötét téma kikapcsolása</translation>
 <translation id="1874612839560830905">MTU</translation>
+<translation id="188114911237521550">Sötét mód kikapcsolása</translation>
 <translation id="1887850431809612466">Hardver ellenőrzése</translation>
 <translation id="1905710495812624430">Elérte az engedélyezett kísérletek maximális számát.</translation>
 <translation id="1908234395526491708">Hibás UDP-kérelmek.</translation>
@@ -115,6 +120,7 @@
 <translation id="2157959690810728433">VÁRAKOZIK</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Újra</translation>
 <translation id="2161394479394250669">Nyomtatási feladat megszakítása</translation>
+<translation id="2163937499206714165">Sötét mód bekapcsolása</translation>
 <translation id="2180197493692062006">Hiba történt. Próbálja meg újra megnyitni az alkalmazást.</translation>
 <translation id="2209788852729124853">Forgalomszámlálók visszaállítása</translation>
 <translation id="2212733584906323460">Névfeloldás</translation>
@@ -126,8 +132,10 @@
 <translation id="2236746079896696523">Billentyűzet háttérvilágításának be- vagy kikapcsolása</translation>
 <translation id="2240366984605217732">Kiosztásváltó</translation>
 <translation id="225692081236532131">Aktiválás állapota</translation>
+<translation id="2271469253353559191">Sötét mód ütemezése</translation>
 <translation id="2287186687001756809">Nem található kép. Fotók hozzáadásához ugorjon a következőre: <ph name="LINK" />.</translation>
 <translation id="2307344026739914387">Jelenlegi kulcspár használata</translation>
+<translation id="2320295602967756579">Világos téma bekapcsolása</translation>
 <translation id="2323506179655536734">KIHAGYVA</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Kapcsolja be a Bluetooth-t a közeli eszközök felfedezéséhez</translation>
@@ -147,13 +155,16 @@
 <translation id="2493126929778606526">A legjobb, automatikusan kiválasztott fotók</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">A jelenlegi háttérkép frissítése</translation>
+<translation id="2513396635448525189">Bejelentkezési kép</translation>
 <translation id="2517472476991765520">Keresés</translation>
+<translation id="2526590354069164005">Asztal</translation>
 <translation id="253029298928638905">Újraindítás…</translation>
 <translation id="2536159006530886390">Nem lehet csatlakozni az internethez.</translation>
 <translation id="2570743873672969996">„<ph name="TEST_NAME" />” teszt futtatása…</translation>
 <translation id="2584559707064218956">A beállításhoz nyissa meg a Beállításokat</translation>
 <translation id="2619761439309613843">Napi frissítés</translation>
 <translation id="2620436844016719705">Rendszer</translation>
+<translation id="2638662041295312666">Bejelentkezési kép</translation>
 <translation id="2640549051766135490">A következő album kiválasztva: <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2695514675076754339">Adja meg a nyolcjegyű feloldási kódot</translation>
 <translation id="2712812801627182647">TLS-hitelesítési kulcs</translation>
@@ -173,11 +184,13 @@
 <translation id="2926057806159140518">Adja meg felhasználónevét és jelszavát, vagy olvassa be QR-kódját.</translation>
 <translation id="3008341117444806826">FRISSÍTÉS</translation>
 <translation id="3009958530611748826">Válassza ki a mentés helyét</translation>
+<translation id="3017079585324758401">Háttér</translation>
 <translation id="3031560714565892478">Az eszköz egy videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Befejező pont</translation>
 <translation id="3069085583900247081">Sikertelen teszt</translation>
 <translation id="3083667275341675831">Connectivity Diagnostics</translation>
+<translation id="3084958266922136097">Képernyővédő letiltása</translation>
 <translation id="3091839911843451378">Sikertelen – Leállítva</translation>
 <translation id="3102119246920354026">Gyorsítótár</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -201,6 +214,7 @@
 <translation id="3340011300870565703">Jobb fülhallgató akkumulátorszintje: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Kapcsolódva</translation>
 <translation id="3369013195428705271">Biztosan törli a nyomtatási előzményeket? A folyamatban lévő nyomtatási feladatok nem szakadnak meg.</translation>
+<translation id="3404249063913988450">Képernyővédő engedélyezése</translation>
 <translation id="3413935475507503304">A frissítéssel való folytatáshoz kattintson a Tovább lehetőségre.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Biztonság</translation>
@@ -215,6 +229,7 @@
 <translation id="3532980081107202182">Körülbelül <ph name="MIN_REMAINING" /> perc van hátra</translation>
 <translation id="3557205324756024651">Helyi azonosító (nem kötelező)</translation>
 <translation id="3565064564551103223">Engedélyezett IP-címek</translation>
+<translation id="3569407787324516067">Képernyővédő</translation>
 <translation id="3577473026931028326">Hiba történt. Próbálja újra.</translation>
 <translation id="357889014807611375">mért adatforgalmú Wi-Fi</translation>
 <translation id="3583278742022654445">Gyenge jelerősség. Próbáljon közelebb helyezkedni a Wi-Fi-jelforráshoz.</translation>
@@ -249,6 +264,7 @@
 <translation id="3954678691475912818">Az eszköz típusa ismeretlen.</translation>
 <translation id="3966286471246132217">Pontosabb eredmény érdekében zárja be az összes alkalmazást, amíg a teszt befejeződik.</translation>
 <translation id="3967822245660637423">A letöltés sikeres</translation>
+<translation id="3969602104473960991">ChromeOS-jelszó módosítva</translation>
 <translation id="397105322502079400">Számítás…</translation>
 <translation id="39823212440917567">A(z) <ph name="NUMBER_OF_DAYS" /> napnál régebbi nyomtatási feladatokat eltávolítja a rendszer</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> eszköze most már naprakész</translation>
@@ -257,9 +273,11 @@
 <translation id="4044093238444069296">Nem lehet csatlakozni átjáróhoz</translation>
 <translation id="4046123991198612571">Következő szám</translation>
 <translation id="404928562651467259">FIGYELMEZTETÉS</translation>
+<translation id="4093865285251893588">Profilkép</translation>
 <translation id="409427325554347132">Tesztadatok mentése</translation>
 <translation id="4110686435123617899">A következő album kiválasztása: <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB-érintőpad</translation>
+<translation id="4117637339509843559">Sötét mód</translation>
 <translation id="4131410914670010031">Fekete-fehér</translation>
 <translation id="4140251671072434548">Visszáru-engedélyezés szerverfeloldásának végrehajtása</translation>
 <translation id="4145784616224233563">HTTP-tűzfal</translation>
@@ -269,6 +287,7 @@
 <translation id="4170700058716978431">SIKERTELEN</translation>
 <translation id="4176463684765177261">Letiltva</translation>
 <translation id="4176659219503619100">Vezérlőpult</translation>
+<translation id="420283545744377356">Képernyővédő kikapcsolása</translation>
 <translation id="4213104098953699324">USB-billentyűzet</translation>
 <translation id="4227825898293920515">A jelszó <ph name="TIME" /> múlva lejár</translation>
 <translation id="4238516577297848345">Nincsenek folyamatban lévő nyomtatási feladatok</translation>
@@ -331,6 +350,7 @@
 <translation id="4793756956024303490">Tömörítési algoritmus</translation>
 <translation id="4794140124556169553">CPU-teszt futtatása befolyásolhatja a rendszer teljesítményét.</translation>
 <translation id="4808449224298348341">Nyomtatási feladat (<ph name="DOCUMENT_TITLE" />) megszakítva</translation>
+<translation id="4809927044794281115">Világos téma</translation>
 <translation id="4813136279048157860">Saját képek</translation>
 <translation id="4813345808229079766">Kapcsolat</translation>
 <translation id="4832079907277790330">Mappa kiválasztása a Fájlok alkalmazásban…</translation>
@@ -378,6 +398,7 @@
 Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5212593641110061691">„Tabloid” méret</translation>
 <translation id="5222676887888702881">Kijelentkezés</translation>
+<translation id="5227902338748591677">Sötét téma ütemezése</translation>
 <translation id="5234764350956374838">Elvetés</translation>
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5257811368506016604">Világos szín mód engedélyezése</translation>
@@ -398,6 +419,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5346687412805619883">Helyi hálózat</translation>
 <translation id="5358174242040570474">Hiba történt. Próbálkozzon ismét a háttérkép kiválasztásával, vagy nyissa meg újból az alkalmazást.</translation>
 <translation id="5372659122375744710">A Wi-Fi-hálózat nem biztonságos</translation>
+<translation id="5376354385557966694">Automatikus világos mód</translation>
 <translation id="5400907029458559844">Az eszköz csatlakozása folyamatban van.</translation>
 <translation id="5401938042319910061">Összes rutin futtatása</translation>
 <translation id="5423849171846380976">Aktiválva</translation>
@@ -433,6 +455,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="583281660410589416">Ismeretlen</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Otthoni szolgáltató kódja</translation>
+<translation id="5859603669299126575">Művészeti album</translation>
 <translation id="5860033963881614850">Kikapcsolva</translation>
 <translation id="5860491529813859533">Bekapcsolás</translation>
 <translation id="5866840822086176774">Nagyon erős</translation>
@@ -463,6 +486,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6113701710518389813">Felfelé nyíl</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> és <ph name="NUMBER" /> további album</translation>
 <translation id="6122191549521593678">Online</translation>
+<translation id="6122277663991249694">ChromeOS beviteli módszere szolgáltatás</translation>
 <translation id="6137767437444130246">Felhasználói tanúsítvány</translation>
 <translation id="6146993107019042706">A befejezéshez adja meg új jelszavát</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -478,11 +502,15 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6275224645089671689">Jobbra nyíl</translation>
 <translation id="6278428485366576908">Téma</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6284632978374966585">Sötét téma bekapcsolása</translation>
 <translation id="6302401976930124515">Teszt (<ph name="TEST_NAME" />) megszakítva</translation>
 <translation id="6319207335391420837">Firmware telepítése a következőre: <ph name="DEVICE_NAME" /></translation>
+<translation id="6321407676395378991">Képernyővédő bekapcsolása</translation>
 <translation id="6325525973963619867">Nem sikerült</translation>
+<translation id="6331191339300272798">Automatikus sötét téma</translation>
 <translation id="6340526405444716530">Személyre szabás</translation>
 <translation id="6348738456043757611">Felhasználónév és jelszó</translation>
+<translation id="6359706544163531585">Világos téma kikapcsolása</translation>
 <translation id="636850387210749493">Vállalat rögzítése</translation>
 <translation id="6379086450106841622">Érintőképernyő</translation>
 <translation id="6381741036071372448">Billentyűzet tesztelése</translation>
@@ -557,6 +585,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="714876143603641390">LAN-csatlakozás</translation>
 <translation id="7155171745945906037">Meglévő fénykép a fényképezőgépről vagy fájlból</translation>
 <translation id="7162487448488904999">Galéria</translation>
+<translation id="7170236477717446850">Profilkép</translation>
 <translation id="7172721935181587524">1 kép</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> konfigurálása</translation>
 <translation id="7177485034254901881">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a(z) <ph name="MANAGER" /> kezeli. A rendszergazdák távolról konfigurálhatják az eszközt.</translation>
@@ -578,6 +607,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7359657277149375382">Fájltípus</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378886533986123738">Képernyőkímélő módosítása</translation>
+<translation id="7397270852490618635">Világos téma kikapcsolása</translation>
 <translation id="741244894080940828">Átváltás</translation>
 <translation id="7415801143053185905">Nagyon hosszú HTTP várakozási idő</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -589,6 +619,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7497215489070763236">Szerver CA tanúsítványa</translation>
 <translation id="7502658306369382406">IPv6-cím</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7535791657097741517">Világos téma bekapcsolása</translation>
 <translation id="7550715992156305117">Diagnosztikai rutinok</translation>
 <translation id="7551123448725492271">Az eszköz egy audioeszköz.</translation>
 <translation id="7561454561030345039">Ezt a műveletet a rendszergazdája kezeli.</translation>
@@ -610,11 +641,14 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7763470514545477072">Domainvégződés – egyezés</translation>
 <translation id="7769672763586021400">Modellazonosító</translation>
 <translation id="7784116172884276937">Nincsenek beállítva DNS-szerverek</translation>
+<translation id="7799817062559422778">Világos mód</translation>
 <translation id="780301667611848630">Köszönöm, nem</translation>
 <translation id="7805768142964895445">Állapot</translation>
 <translation id="7819857487979277519">PSK (WPA vagy RSN)</translation>
+<translation id="7841134249932030522">Sötét mód engedélyezése</translation>
 <translation id="7846634333498149051">Billentyűzet</translation>
 <translation id="7856267634822906833">Bluetooth-érintőképernyő</translation>
+<translation id="7869143217755017858">Sötét mód kikapcsolása</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Szolgáltató típusa</translation>
 <translation id="7882501334836096755">Nyilvános kulcs</translation>
@@ -654,6 +688,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8297006494302853456">Gyenge</translation>
 <translation id="8302368968391049045">HTTPS-tűzfal</translation>
 <translation id="8318753676953949627">Nincsenek képek</translation>
+<translation id="8336739000755212683">Eszközfiókhoz tartozó kép módosítása</translation>
 <translation id="8347227221149377169">Nyomtatási feladatok</translation>
 <translation id="8352772353338965963">Adjon hozzá egy fiókot a többfiókos bejelentkezéshez. Az összes bejelentkezett fiók elérhető a jelszó megadása nélkül, ezért ezt a funkciót csak megbízható fiókokkal használja.</translation>
 <translation id="8364946094152050673">Üres névszerverek</translation>
@@ -662,8 +697,10 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8398927464629426868">Az eszköz jelenlegi töltésének vagy merülésének sebessége</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Belső billentyűzet</translation>
+<translation id="8431300646573772016">A ChromeOS újdonságai</translation>
 <translation id="843568408673868420">Internetkapcsolat</translation>
 <translation id="844521431886043384">A DNS nincs beállítva</translation>
+<translation id="8456761643544401578">Automatikus sötét mód</translation>
 <translation id="8461329675984532579">Otthoni szolgáltató neve</translation>
 <translation id="8475690821716466388">A Wi-Fi-hálózat gyenge protokollal (WEP PSK) van biztosítva</translation>
 <translation id="8477551185774834963">A DNS várakozási ideje kissé az engedélyezhető határérték felett van</translation>
@@ -690,6 +727,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8730621377337864115">Kész</translation>
 <translation id="8747900814994928677">Módosítás megerősítése</translation>
 <translation id="8764414543112028321">WireGuard</translation>
+<translation id="87646919272181953">Google Fotók-album</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Előfordulhat, hogy a hálózat hitelesítési portállal rendelkezik</translation>
 <translation id="8798099450830957504">Alapértelmezett</translation>
@@ -699,6 +737,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8834539327799336565">Csatlakoztatva</translation>
 <translation id="8845001906332463065">Súgó</translation>
 <translation id="8855781559874488009">Nem lehet a tűzfalon keresztül HTTP-protokollt használó webhelyekhez csatlakozni</translation>
+<translation id="8863170912498892583">Sötét téma bekapcsolása</translation>
 <translation id="8863888432376731307"><ph name="INTENT" /> kérése „<ph name="QUERY" />” és egyebek esetében</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Az eszköz egy táblagép.</translation>

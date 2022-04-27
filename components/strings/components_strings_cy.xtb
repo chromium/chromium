@@ -512,6 +512,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2298855485018661510">Botwm rheoli cwcis, pwyswch Enter i reoli eich dewisiadau cwcis yng ngosodiadau Chrome</translation>
 <translation id="2300306941146563769">Ni uwchlwythwyd</translation>
 <translation id="2310021320168182093">Chou2 (Amlen)</translation>
+<translation id="2316159751672436664">Personoleiddio'ch offer hygyrchedd yng ngosodiadau ChromeOS</translation>
 <translation id="2316887270356262533">Yn creu llai nag 1 MB. Mae'n bosib y bydd rhai gwefannau yn llwytho'n arafach ar eich ymweliad nesaf.</translation>
 <translation id="2317259163369394535">Mae <ph name="DOMAIN" /> yn gofyn am enw defnyddiwr a chyfrinair.</translation>
 <translation id="2318594867107319532">Stamp amser polisi diweddar</translation>
@@ -1669,6 +1670,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5518670652865028077">Y celfyddydau ac adloniant</translation>
 <translation id="5519516356611866228">Gyda'ch newidiadau</translation>
 <translation id="5523118979700054094">Enw'r polisi</translation>
+<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pwyswch Tab yna Enter i bersonoleiddio'ch offer hygyrchedd yng ngosodiadau ChromeOS</translation>
 <translation id="5528532273234423708">Awtomatiaeth cartref</translation>
 <translation id="55293785478302737">Pwyth ymyl</translation>
 <translation id="553484882784876924">Prc6 (Amlen)</translation>
@@ -2247,6 +2249,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="722454870747268814">Tab Anhysbys Newydd</translation>
 <translation id="7233592378249864828">Taflen gadarnhau argraffu</translation>
 <translation id="7234638337680728591">Prisiau tanwydd a llenwi cerbydau â thanwydd</translation>
+<translation id="7237492777898608035">Peidio â dangos y neges hon eto ar gyfer y wefan hon</translation>
 <translation id="7238585580608191973">Olion bysedd SHA-256</translation>
 <translation id="7240120331469437312">Enw Amgen Pwnc y Dystysgrif</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -2629,6 +2632,7 @@ Manylion ychwanegol:
 <translation id="8242426110754782860">Parhau</translation>
 <translation id="8249296373107784235">Terfynu</translation>
 <translation id="8249463483885748674">Profion safonol a mynediad</translation>
+<translation id="8252991034201168845">Botwm rheoli gosodiadau hygyrchedd, pwyswch Enter i bersonoleiddio'ch offer hygyrchedd yng ngosodiadau ChromeOS</translation>
 <translation id="8253091569723639551">Mae angen cyfeiriad bilio</translation>
 <translation id="8257387598443225809">Mae'r ap hwn wedi'i ddylunio ar gyfer dyfeisiau symudol</translation>
 <translation id="825929999321470778">Dangos yr Holl Gyfrineiriau Sydd wedi'u Cadw</translation>

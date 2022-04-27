@@ -26,7 +26,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="109942774857561566">Je m'ennuie</translation>
 <translation id="1104084341931202936">Afficher les paramètres d'accessibilité</translation>
 <translation id="1104621072296271835">Vos appareils fonctionnent encore mieux ensemble</translation>
-<translation id="1111781754511998498">Projector</translation>
 <translation id="112308213915226829">Masquer automatiquement l'étagère</translation>
 <translation id="1142002900084379065">Photos récentes</translation>
 <translation id="1148499908455722006">Ouvrir la boîte de dialogue d'information pour <ph name="USER_NAME" /></translation>
@@ -185,11 +184,9 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2021864487439853900">Cliquez pour le déverrouiller</translation>
 <translation id="2023558322300866873">Vous pouvez arrêter la capture des paquets en tout temps</translation>
 <translation id="2034971124472263449">Enregistrer quand même</translation>
-<translation id="2047639699071423250">Ajouter une idée clé</translation>
 <translation id="2049240716062114887">Le bureau a été renommé : <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2064048859448024834">Aperçu de la caméra affiché</translation>
-<translation id="2066708475850724665">Désactiver la loupe</translation>
 <translation id="2067602449040652523">Luminosité du clavier</translation>
 <translation id="2078034614700056995">Balayez vers la droite avec quatre doigts pour passer au bureau suivant</translation>
 <translation id="2079504693865562705">Masquer les applications sur l'étagère</translation>
@@ -199,6 +196,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2107914222138020205">Votre câble USB-C ne prend pas en charge la norme Thunderbolt. La performance de l'appareil peut être limitée.</translation>
 <translation id="2108303511227308752">Le raccourci-clavier Alt+Retour arrière a changé. Pour utiliser la touche Suppression, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+Retour arrière.</translation>
 <translation id="211328683600082144">ACTIVER LE MICROPHONE</translation>
+<translation id="2123115117533398272">Chrome OS affiche des suggestions de nouveau contenu à explorer. Envoie des statistiques afin d'améliorer la qualité seulement si vous avez choisi de partager les données d'utilisation. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">Nouveau bureau</translation>
 <translation id="2127372758936585790">Chargeur de faible puissance</translation>
 <translation id="2132302418721800944">Enregistrer tout l'écran</translation>
@@ -212,6 +210,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2220572644011485463">NIP ou mot de passe</translation>
 <translation id="2222841058024245321">Bureau 7</translation>
 <translation id="2224075387478458881">L'enregistrement de l'écran n"est pas autorisé lorsque du contenu protégé est visible</translation>
+<translation id="2227179592712503583">Supprimer la suggestion</translation>
 <translation id="225680501294068881">Recherche d'appareils en cours…</translation>
 <translation id="2257486738914982088">Un problème est survenu lors du téléchargement de <ph name="FILENAME" /></translation>
 <translation id="2268130516524549846">La connectivité Bluetooth est désactivée</translation>
@@ -269,6 +268,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2620436844016719705">Système</translation>
 <translation id="2621713457727696555">Sécurisé</translation>
 <translation id="263399434338050016">« Tout sélectionner »</translation>
+<translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2653019840645008922">Capturer la fenêtre</translation>
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="2658778018866295321">Cliquez et faites glisser</translation>
@@ -281,7 +281,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2704781753052663061">Se connecter à d'autres réseaux Wi-Fi</translation>
 <translation id="2705001408393684014">Activer/Désactiver le microphone. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Haut</translation>
-<translation id="2713444072780614174">Blanc</translation>
 <translation id="2718395828230677721">Éclairage nocturne</translation>
 <translation id="2726420622004325180">Les données cellulaires doivent être activées sur votre téléphone pour que celui-ci puisse offrir un point d'accès sans fil</translation>
 <translation id="2727175239389218057">Répondre</translation>
@@ -350,7 +349,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3100274880412651815">Fermer le mode de capture</translation>
 <translation id="3105917916468784889">Faire une capture d'écran</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
-<translation id="3113926042639749131">Retirer la suggestion</translation>
 <translation id="3120421559657122717">Éteindre l'appareil?</translation>
 <translation id="3126069444801937830">Redémarrer pour faire la mise à jour</translation>
 <translation id="3139942575505304791">Bureau 1</translation>
@@ -394,6 +392,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3375634426936648815">Fonctionnalité connectée</translation>
 <translation id="3378442621503952303">Connexion au profil en cours… Patientez quelques minutes.</translation>
 <translation id="3386978599540877378">la loupe plein écran</translation>
+<translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">Autres paramètres</translation>
 <translation id="3410336247007142655">Afficher les paramètres du thème sombre</translation>
 <translation id="3413817803639110246">Rien à voir pour le moment</translation>
@@ -427,7 +426,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3542066395059568317">Des recommandations s'afficheront pour vous permettre de reprendre le cours de vos activités. Vous pouvez faire un clic droit pour retirer les recommandations.</translation>
 <translation id="3552189655002856821">Le Wi-Fi est désactivé</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> a été épinglé</translation>
-<translation id="3560866052109807830">Outils de dessin : marqueur</translation>
 <translation id="3563775809269155755">Activer le point d'accès sans fil</translation>
 <translation id="3566240529365775567">Ouvert au cours des dernières minutes</translation>
 <translation id="3571734092741541777">Configurer</translation>
@@ -452,7 +450,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3638400994746983214">Basculer l'écran de confidentialité. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Mise à jour à effectuer</translation>
 <translation id="366222428570480733">Utilisateur géré : <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="3680908746918359504">Effacer tous les marqueurs</translation>
 <translation id="36813544980941320">Les réseaux Wi-Fi seront partagés entre votre téléphone et votre <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Sites Web</translation>
 <translation id="3701206655856637070">Vous pouvez maintenant modifier l'endroit où les captures d'écran sont enregistrées</translation>
@@ -518,7 +515,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Désactivées pour une appli}one{Désactivées pour # appli}other{Désactivées pour # applis}}</translation>
 <translation id="4066027111132117168">Activé, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Signal moyen</translation>
-<translation id="4095366824370681039">Stylo</translation>
 <translation id="4112140312785995938">Rechercher vers l'arrière</translation>
 <translation id="4114315158543974537">Activer Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -550,7 +546,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4279490309300973883">Mise en miroir</translation>
 <translation id="4283888303416325161">Entrez le mot de passe pour plus de sécurité</translation>
 <translation id="4285498937028063278">Annuler l'épinglage</translation>
-<translation id="429402653707266969">Basculer l'emplacement de la barre d'outils</translation>
 <translation id="4294319844246081198">Bonjour <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Effacer les <ph name="COUNT" /> notifications</translation>
 <translation id="430191667033048642">L'application <ph name="MOVED_APP_NAME" /> a été déplacée dans le dossier <ph name="FOLDER_NAME" />.</translation>
@@ -614,7 +609,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4587299710837179226">Le microphone est désactivé</translation>
 <translation id="4596144739579517758">Le thème sombre est désactivé</translation>
 <translation id="4611292653554630842">Connexion</translation>
-<translation id="4614295562446151104">Développer les outils de marqueur</translation>
 <translation id="4623167406982293031">Valider le compte</translation>
 <translation id="4628757576491864469">Appareils</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, note <ph name="RATING_SCORE" /></translation>
@@ -684,7 +678,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="504465286040788597">Paragraphe précédent</translation>
 <translation id="5045550434625856497">Mot de passe incorrect</translation>
 <translation id="5071064518267176975">Une application demande l'autorisation d'utiliser le microphone</translation>
-<translation id="5075554201838155866">Activer les sous-titres</translation>
 <translation id="5078796286268621944">NIP incorrect</translation>
 <translation id="5083553833479578423">Déverrouillez davantage de fonctionnalités de l'Assistant Google.</translation>
 <translation id="5106223312672646208">Personnaliser</translation>
@@ -792,7 +785,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5790085346892983794">Opération réussie</translation>
 <translation id="5805809050170488595">Cliquez pour activer <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Paramètres des appareils connectés</translation>
-<translation id="583281660410589416">Inconnu</translation>
 <translation id="5837036133683224804">Arrêter <ph name="ROUTE_TITLE" /> sur <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Maintenez le doigt sur la fenêtre pour l'agrandir</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> n'est pas activé.</translation>
@@ -837,7 +829,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="6043212731627905357">Ce moniteur n'est pas compatible avec votre <ph name="DEVICE_TYPE" /> (le moniteur n'est pas pris en charge).</translation>
 <translation id="6043994281159824495">Se déconnecter maintenant</translation>
 <translation id="6047696787498798094">Le partage d'écran s'arrête lorsque vous passez à un autre utilisateur. Voulez-vous continuer?</translation>
-<translation id="6050368268239407309">Outils de présentation</translation>
 <translation id="6054305421211936131">Se connecter avec une carte à puce</translation>
 <translation id="6059276912018042191">Onglets Chrome récents</translation>
 <translation id="6062360702481658777">Vous serez automatiquement déconnecté dans <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -991,7 +982,6 @@ Nouvelle installation</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Assistant Google</translation>
 <translation id="7042322267639375032">Réduire la zone de notifications</translation>
 <translation id="7045033600005038336">Remplacer le modèle?</translation>
-<translation id="7045595904618419789">Activer la loupe</translation>
 <translation id="7051244143160304048">Appareil <ph name="DEVICE_NAME" /> déconnecté</translation>
 <translation id="7055910611768509537">Le stylet n'a pas été utilisé depuis plus d'une semaine</translation>
 <translation id="7066646422045619941">Ce réseau est désactivé par votre administrateur.</translation>
@@ -1019,7 +1009,6 @@ Nouvelle installation</translation>
 <translation id="7258828758145722155">Modifié hier</translation>
 <translation id="726276584504105859">Glissez l'élément ici pour utiliser l'écran partagé</translation>
 <translation id="7262906531272962081">Créer un rappel</translation>
-<translation id="7279434993080105272">Marqueur <ph name="COLOR_PARAMETER" /></translation>
 <translation id="7302889331339392448">La transcription instantanée est désactivée.</translation>
 <translation id="7303365578352795231">Réponse sur un autre appareil.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1046,7 +1035,6 @@ Nouvelle installation</translation>
 <translation id="742594950370306541">La caméra est en cours d'utilisation.</translation>
 <translation id="742608627846767349">Bonjour,</translation>
 <translation id="743058460480092004">La caméra et le microphone sont actuellement utilisés.</translation>
-<translation id="7434543979546293336">Indiquée comme idée clé</translation>
 <translation id="7452560014878697800">Une application utilise votre caméra</translation>
 <translation id="7453330308669753048">Résultat de l'historique de recherche retiré</translation>
 <translation id="7461924472993315131">NIP</translation>
@@ -1054,7 +1042,6 @@ Nouvelle installation</translation>
 <translation id="7466449121337984263">Veuillez toucher le capteur</translation>
 <translation id="7477793887173910789">Commandez votre musique, vos vidéos et plus encore</translation>
 <translation id="7483025031359818980">La zone de sélection est définie à l'écran au complet</translation>
-<translation id="7486227320194954040">Réduire les outils de marqueur</translation>
 <translation id="7497767806359279797">Choisir la langue et le clavier</translation>
 <translation id="7508690557411636492">Ouvert au cours du dernier mois</translation>
 <translation id="7509246181739783082">Vérifier votre identité</translation>
@@ -1071,7 +1058,6 @@ Nouvelle installation</translation>
 <translation id="7561982940498449837">Fermer le menu</translation>
 <translation id="7564874036684306347">Si vous déplacez des fenêtres sur un autre bureau, elles peuvent présenter des comportements inattendus. À la suite d'une telle opération, les notifications, les fenêtres et les boîtes de dialogue peuvent s'afficher sur les deux écrans.</translation>
 <translation id="7569509451529460200">Braille et ChromeVox activés</translation>
-<translation id="7569983096843329377">Noir</translation>
 <translation id="7573585051776738856">Fenêtre active ancrée à droite.</translation>
 <translation id="7579778809502851308">Capture d'écran</translation>
 <translation id="7590883480672980941">Paramètres d'entrée</translation>
@@ -1079,7 +1065,6 @@ Nouvelle installation</translation>
 <translation id="7600875258240007829">Afficher toutes les notifications</translation>
 <translation id="7607002721634913082">Interrompu</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
-<translation id="7631906263969450674">Marqueur</translation>
 <translation id="7633755430369750696">Afficher les paramètres de partage à proximité.</translation>
 <translation id="7641938616688887143">Enregistrer</translation>
 <translation id="7642647758716480637">Ouvrir les paramètres pour <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
@@ -1151,7 +1136,6 @@ Nouvelle installation</translation>
 <translation id="8029247720646289474">Échec de la connexion au point d'accès sans fil</translation>
 <translation id="8029629653277878342">Le NIP ou le mot de passe est exigé pour plus de sécurité</translation>
 <translation id="8030169304546394654">Déconnecté</translation>
-<translation id="8035152190676905274">Stylo</translation>
 <translation id="8036504271468642248">Phrase précédente</translation>
 <translation id="8042893070933512245">Ouvrir le menu des paramètres d'accessibilité</translation>
 <translation id="8042925093898452104">Fermer les informations détaillées</translation>
@@ -1167,7 +1151,6 @@ Nouvelle installation</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8131994907636310308">Fermer le message de tri</translation>
-<translation id="8132487352815776550">Fermer les sous-titres</translation>
 <translation id="8132793192354020517">Connecté à <ph name="NAME" /></translation>
 <translation id="813913629614996137">Initialisation en cours...</translation>
 <translation id="8142441511840089262">Double-clic</translation>

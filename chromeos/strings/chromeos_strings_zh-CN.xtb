@@ -42,6 +42,7 @@
 <translation id="1394661041439318933">设备保护套电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="1397738625398125236">可以对网关执行 ping 操作</translation>
 <translation id="1398634363027580500">HTTPS 延迟非常高</translation>
+<translation id="1407069428457324124">深色主题</translation>
 <translation id="1413240736185167732">失败 - 过滤器出问题了</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">我有一个密钥对</translation>
@@ -63,6 +64,7 @@
 <translation id="1565038567006703504">无法更新<ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">影集</translation>
 <translation id="1572585716423026576">设为壁纸</translation>
+<translation id="1578784163189013834">选择屏保背景</translation>
 <translation id="1615335640928990664">自 <ph name="FRIENDLY_DATE" />开始的流量使用情况</translation>
 <translation id="1621067168122174824">运行充电测试</translation>
 <translation id="1639239467298939599">正在加载</translation>
@@ -85,12 +87,15 @@
 <translation id="1768959921651994223">身份验证类型</translation>
 <translation id="1782199038061388045">翻译</translation>
 <translation id="1792647875738159689">正在取消扫描</translation>
+<translation id="1801418420130173017">停用深色主题</translation>
 <translation id="1807246157184219062">浅色调</translation>
 <translation id="1827738518074806965">画廊</translation>
 <translation id="1851218745569890714">视频会议</translation>
 <translation id="1852934301711881861">安装 ChromeOS Flex</translation>
 <translation id="1856388568474281774">向下</translation>
+<translation id="1871569928317311284">关闭深色主题</translation>
 <translation id="1874612839560830905">MTU</translation>
+<translation id="188114911237521550">关闭深色模式</translation>
 <translation id="1887850431809612466">硬件版本</translation>
 <translation id="1905710495812624430">已超过允许的尝试次数上限。</translation>
 <translation id="1908234395526491708">UDP 请求失败</translation>
@@ -115,6 +120,7 @@
 <translation id="2157959690810728433">已加入队列</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />：重试</translation>
 <translation id="2161394479394250669">取消打印任务</translation>
+<translation id="2163937499206714165">开启深色模式</translation>
 <translation id="2180197493692062006">出了点问题。请尝试重新打开此应用。</translation>
 <translation id="2209788852729124853">重置流量计数器</translation>
 <translation id="2212733584906323460">域名解析</translation>
@@ -126,8 +132,10 @@
 <translation id="2236746079896696523">键盘背光切换开关</translation>
 <translation id="2240366984605217732">布局切换</translation>
 <translation id="225692081236532131">激活状态</translation>
+<translation id="2271469253353559191">深色模式时间表</translation>
 <translation id="2287186687001756809">没有可显示的图片。若要添加照片，请前往 <ph name="LINK" /></translation>
 <translation id="2307344026739914387">使用当前密钥对</translation>
+<translation id="2320295602967756579">启用浅色主题</translation>
 <translation id="2323506179655536734">已跳过</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">开启蓝牙以发现附近的设备</translation>
@@ -147,13 +155,16 @@
 <translation id="2493126929778606526">您的最佳照片，由系统自动挑选</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">刷新当前壁纸图片</translation>
+<translation id="2513396635448525189">登录图片</translation>
 <translation id="2517472476991765520">扫描</translation>
+<translation id="2526590354069164005">桌面</translation>
 <translation id="253029298928638905">正在重启…</translation>
 <translation id="2536159006530886390">无法连接到互联网。</translation>
 <translation id="2570743873672969996">正在运行<ph name="TEST_NAME" />测试…</translation>
 <translation id="2584559707064218956">若要进行设置，请转到“设置”</translation>
 <translation id="2619761439309613843">每日刷新</translation>
 <translation id="2620436844016719705">系统</translation>
+<translation id="2638662041295312666">登录帐号图片</translation>
 <translation id="2640549051766135490">已选择影集“<ph name="TITLE" />”，<ph name="DESC" /></translation>
 <translation id="2695514675076754339">输入 8 位字符的解锁代码</translation>
 <translation id="2712812801627182647">TLS 身份验证密钥</translation>
@@ -173,11 +184,13 @@
 <translation id="2926057806159140518">输入您的用户名和密码，或扫描您的二维码</translation>
 <translation id="3008341117444806826">刷新</translation>
 <translation id="3009958530611748826">选择要保存到的文件夹</translation>
+<translation id="3017079585324758401">背景</translation>
 <translation id="3031560714565892478">设备类型是摄像机。</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">端点</translation>
 <translation id="3069085583900247081">测试失败</translation>
 <translation id="3083667275341675831">网络连接诊断</translation>
+<translation id="3084958266922136097">停用屏保功能</translation>
 <translation id="3091839911843451378">失败 - 已停止</translation>
 <translation id="3102119246920354026">缓存</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -201,6 +214,7 @@
 <translation id="3340011300870565703">设备右侧耳机的电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="3368922792935385530">已连接</translation>
 <translation id="3369013195428705271">确定要清除所有打印记录吗？您正在执行的打印任务不会被清除。</translation>
+<translation id="3404249063913988450">启用屏保功能</translation>
 <translation id="3413935475507503304">若要继续更新，请点击“下一步”。</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">安全</translation>
@@ -215,6 +229,7 @@
 <translation id="3532980081107202182">还剩大约 <ph name="MIN_REMAINING" /> 分钟</translation>
 <translation id="3557205324756024651">本地身份（可选）</translation>
 <translation id="3565064564551103223">允许使用的 IP</translation>
+<translation id="3569407787324516067">屏保</translation>
 <translation id="3577473026931028326">出了点问题。请重试。</translation>
 <translation id="357889014807611375">按流量计费的 Wi-Fi</translation>
 <translation id="3583278742022654445">信号强度较弱。请尝试移到离 Wi-Fi 信号源更近的地方。</translation>
@@ -249,6 +264,7 @@
 <translation id="3954678691475912818">设备类型未知。</translation>
 <translation id="3966286471246132217">为了获得更准确的结果，请关闭所有应用，直到测试完成为止。</translation>
 <translation id="3967822245660637423">下载完毕</translation>
+<translation id="3969602104473960991">Chrome 操作系统密码已更新</translation>
 <translation id="397105322502079400">正在计算...</translation>
 <translation id="39823212440917567">系统会自动移除存在时长已超过 <ph name="NUMBER_OF_DAYS" /> 天的打印任务</translation>
 <translation id="3993704782688964914">您的<ph name="DEVICE_NAME" />目前已是最新版本</translation>
@@ -257,9 +273,11 @@
 <translation id="4044093238444069296">无法连接网关</translation>
 <translation id="4046123991198612571">下一曲</translation>
 <translation id="404928562651467259">警告</translation>
+<translation id="4093865285251893588">个人资料图片</translation>
 <translation id="409427325554347132">保存测试详细信息</translation>
 <translation id="4110686435123617899">选择影集“<ph name="TITLE" />”，<ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB 触控板</translation>
+<translation id="4117637339509843559">深色模式</translation>
 <translation id="4131410914670010031">黑白色</translation>
 <translation id="4140251671072434548">执行 RMA 服务器解锁</translation>
 <translation id="4145784616224233563">HTTP 防火墙</translation>
@@ -269,6 +287,7 @@
 <translation id="4170700058716978431">失败</translation>
 <translation id="4176463684765177261">已停用</translation>
 <translation id="4176659219503619100">控制台</translation>
+<translation id="420283545744377356">关闭屏保功能</translation>
 <translation id="4213104098953699324">USB 键盘</translation>
 <translation id="4227825898293920515">密码将于 <ph name="TIME" />后到期</translation>
 <translation id="4238516577297848345">没有正在进行的打印任务</translation>
@@ -331,6 +350,7 @@
 <translation id="4793756956024303490">压缩算法</translation>
 <translation id="4794140124556169553">运行 CPU 测试可能会影响系统性能</translation>
 <translation id="4808449224298348341">已取消打印任务“<ph name="DOCUMENT_TITLE" />”</translation>
+<translation id="4809927044794281115">浅色主题</translation>
 <translation id="4813136279048157860">我的图片</translation>
 <translation id="4813345808229079766">连接</translation>
 <translation id="4832079907277790330">在“文件”应用中选择文件夹…</translation>
@@ -378,6 +398,7 @@
 请尝试通过点按麦克风图标向我提问。</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">退出</translation>
+<translation id="5227902338748591677">深色主题时间表</translation>
 <translation id="5234764350956374838">关闭</translation>
 <translation id="5252456968953390977">漫游</translation>
 <translation id="5257811368506016604">启用浅色模式</translation>
@@ -398,6 +419,7 @@
 <translation id="5346687412805619883">本地网络</translation>
 <translation id="5358174242040570474">出了点问题。请再次尝试选择一种壁纸，或者重新打开该应用。</translation>
 <translation id="5372659122375744710">Wi-Fi 网络不安全</translation>
+<translation id="5376354385557966694">自动浅色模式</translation>
 <translation id="5400907029458559844">设备正在连接。</translation>
 <translation id="5401938042319910061">运行所有例程</translation>
 <translation id="5423849171846380976">已激活</translation>
@@ -433,6 +455,7 @@
 <translation id="583281660410589416">未知</translation>
 <translation id="5843706793424741864">华氏度</translation>
 <translation id="5849570051105887917">家用移动网络提供商代码</translation>
+<translation id="5859603669299126575">画廊中的影集</translation>
 <translation id="5860033963881614850">关闭</translation>
 <translation id="5860491529813859533">启用</translation>
 <translation id="5866840822086176774">非常强</translation>
@@ -463,6 +486,7 @@
 <translation id="6113701710518389813">向上</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />，以及另外 <ph name="NUMBER" /> 个影集</translation>
 <translation id="6122191549521593678">在线</translation>
+<translation id="6122277663991249694">Chrome 操作系统输入法服务</translation>
 <translation id="6137767437444130246">用户证书</translation>
 <translation id="6146993107019042706">要完成更改，请输入您的新密码</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -478,11 +502,15 @@
 <translation id="6275224645089671689">向右</translation>
 <translation id="6278428485366576908">主题背景</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6284632978374966585">开启深色主题</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />测试已被取消</translation>
 <translation id="6319207335391420837">更新“<ph name="DEVICE_NAME" />”上的固件</translation>
+<translation id="6321407676395378991">开启屏保功能</translation>
 <translation id="6325525973963619867">失败</translation>
+<translation id="6331191339300272798">自动深色主题</translation>
 <translation id="6340526405444716530">个性化</translation>
 <translation id="6348738456043757611">用户名和密码</translation>
+<translation id="6359706544163531585">停用浅色主题</translation>
 <translation id="636850387210749493">企业注册</translation>
 <translation id="6379086450106841622">触摸屏</translation>
 <translation id="6381741036071372448">测试您的键盘</translation>
@@ -557,6 +585,7 @@
 <translation id="714876143603641390">LAN 连接性</translation>
 <translation id="7155171745945906037">相机或文件中的现有照片</translation>
 <translation id="7162487448488904999">媒体库</translation>
+<translation id="7170236477717446850">个人资料照片</translation>
 <translation id="7172721935181587524">1 张图片</translation>
 <translation id="7175037578838465313">配置“<ph name="NAME" />”</translation>
 <translation id="7177485034254901881">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。管理员可能会远程配置此设备。</translation>
@@ -578,6 +607,7 @@
 <translation id="7359657277149375382">文件类型</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378886533986123738">更换屏保</translation>
+<translation id="7397270852490618635">关闭浅色主题</translation>
 <translation id="741244894080940828">换算</translation>
 <translation id="7415801143053185905">HTTPS 延迟时间非常长</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -589,6 +619,7 @@
 <translation id="7497215489070763236">服务器 CA 证书</translation>
 <translation id="7502658306369382406">IPv6 地址</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7535791657097741517">开启浅色主题</translation>
 <translation id="7550715992156305117">诊断例程</translation>
 <translation id="7551123448725492271">设备类型是音频设备。</translation>
 <translation id="7561454561030345039">此操作由您的管理员管理</translation>
@@ -610,11 +641,14 @@
 <translation id="7763470514545477072">域名后缀匹配</translation>
 <translation id="7769672763586021400">型号 ID</translation>
 <translation id="7784116172884276937">未设置 DNS 服务器</translation>
+<translation id="7799817062559422778">浅色模式</translation>
 <translation id="780301667611848630">不用了，谢谢</translation>
 <translation id="7805768142964895445">状态</translation>
 <translation id="7819857487979277519">PSK（WPA 或 RSN）</translation>
+<translation id="7841134249932030522">启用深色模式</translation>
 <translation id="7846634333498149051">键盘</translation>
 <translation id="7856267634822906833">蓝牙触摸屏</translation>
+<translation id="7869143217755017858">停用深色模式</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">提供商类型</translation>
 <translation id="7882501334836096755">公钥</translation>
@@ -654,6 +688,7 @@
 <translation id="8297006494302853456">弱</translation>
 <translation id="8302368968391049045">HTTPS 防火墙</translation>
 <translation id="8318753676953949627">无图片</translation>
+<translation id="8336739000755212683">更改设备帐号图片</translation>
 <translation id="8347227221149377169">打印任务</translation>
 <translation id="8352772353338965963">为多帐号登录添加帐号。用户无需使用密码即可访问所有已登录的帐号，因此您应仅通过受信任的帐号使用此功能。</translation>
 <translation id="8364946094152050673">未指定域名服务器</translation>
@@ -662,8 +697,10 @@
 <translation id="8398927464629426868">设备当前的充电或放电速度</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">内部键盘</translation>
+<translation id="8431300646573772016">Chrome 操作系统的新变化</translation>
 <translation id="843568408673868420">互联网连接</translation>
 <translation id="844521431886043384">未设置 DNS</translation>
+<translation id="8456761643544401578">自动深色模式</translation>
 <translation id="8461329675984532579">家用移动网络提供商名称</translation>
 <translation id="8475690821716466388">Wi-Fi 网络采用了防护能力较弱的 WEP PSK 协议</translation>
 <translation id="8477551185774834963">DNS 延迟时间略微超出了允许的阈值</translation>
@@ -690,6 +727,7 @@
 <translation id="8730621377337864115">完成</translation>
 <translation id="8747900814994928677">确认更改</translation>
 <translation id="8764414543112028321">WireGuard</translation>
+<translation id="87646919272181953">Google 相册中的影集</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">此网络可能有强制门户</translation>
 <translation id="8798099450830957504">默认</translation>
@@ -699,6 +737,7 @@
 <translation id="8834539327799336565">目前已连接</translation>
 <translation id="8845001906332463065">获取帮助</translation>
 <translation id="8855781559874488009">无法通过防火墙连接到 HTTP 网站</translation>
+<translation id="8863170912498892583">启用深色主题</translation>
 <translation id="8863888432376731307">获取“<ph name="QUERY" />”的<ph name="INTENT" />，等等</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">设备类型是平板电脑。</translation>

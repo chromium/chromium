@@ -512,6 +512,7 @@
 <translation id="2298855485018661510">குக்கீகளை நிர்வகிப்பதற்கான பட்டன். Chrome அமைப்புகளில் குக்கீ விருப்பத்தேர்வுகளை நிர்வகிக்க, Enter விசையை அழுத்துங்கள்</translation>
 <translation id="2300306941146563769">பதிவேற்றப்படவில்லை</translation>
 <translation id="2310021320168182093">Chou2 (என்வலப்)</translation>
+<translation id="2316159751672436664">ChromeOS அமைப்புகளில் உங்கள் அணுகல்தன்மைக் கருவிகளைப் பிரத்தியேகமாக்கலாம்</translation>
 <translation id="2316887270356262533">1 மெ.பை. அளவிற்கும் குறைவான இடத்தைக் காலியாக்கும். நீங்கள் அடுத்த முறை பார்வையிடும் போது, சில தளங்கள் மிகவும் மெதுவாக ஏற்றப்படலாம்.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" />க்குப் பயனர்பெயரும் கடவுச்சொல்லும் தேவை.</translation>
 <translation id="2318594867107319532">பாலிசி நிலை கடைசியாகப் புதுப்பித்தது:</translation>
@@ -1665,6 +1666,7 @@
 <translation id="5518670652865028077">கலை &amp; பொழுதுபோக்கு</translation>
 <translation id="5519516356611866228">நான் செய்த மாற்றங்களுடன் பதிவிறக்கு</translation>
 <translation id="5523118979700054094">கொள்கைப் பெயர்</translation>
+<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. ChromeOS அமைப்புகளில் அணுகல் கருவிகளைப் பிரத்தியேகமாக்க, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="5528532273234423708">வீட்டுத் தன்னியக்கமாக்கம்</translation>
 <translation id="55293785478302737">எட்ஜ் ஸ்டிட்ச்</translation>
 <translation id="553484882784876924">Prc6 (என்வலப்)</translation>
@@ -2242,6 +2244,7 @@
 <translation id="722454870747268814">புதிய மறைநிலைத் தாவல்</translation>
 <translation id="7233592378249864828">உறுதிப்படுத்தல் தாளை அச்சிடு</translation>
 <translation id="7234638337680728591">எரிவாயு விலைகள் &amp; வாகன எரிபொருள்</translation>
+<translation id="7237492777898608035">இந்தத் தளத்திற்கு இந்த மெசேஜை மீண்டும் காட்டாதே</translation>
 <translation id="7238585580608191973">SHA-256 விரல்அச்சு</translation>
 <translation id="7240120331469437312">சான்றிதழ் பொருள் மாற்றுப் பெயர்</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -2624,6 +2627,7 @@
 <translation id="8242426110754782860">தொடருக</translation>
 <translation id="8249296373107784235">கைவிடு</translation>
 <translation id="8249463483885748674">வழக்கமான &amp; சேர்க்கைகளுக்கான தேர்வுகள்</translation>
+<translation id="8252991034201168845">அணுகல்தன்மை அமைப்புகளை நிர்வகிப்பதற்கான பட்டன். ChromeOS அமைப்புகளில் அணுகல்தன்மைக் கருவிகளைப் பிரத்தியேகமாக்க, Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="8253091569723639551">பில்லிங் முகவரி தேவை</translation>
 <translation id="8257387598443225809">இந்த ஆப்ஸ், மொபைலுக்காக வடிவமைக்கப்பட்டது</translation>
 <translation id="825929999321470778">சேமித்த எல்லாக் கடவுச்சொற்களையும் காட்டு</translation>

@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
 <translation id="1113173431709655881">Modalità Fotocamera</translation>
+<translation id="1153190633558910465">Griglia off</translation>
 <translation id="1175958423215084756">Link rilevato. <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">Ruota di 90 gradi in senso orario</translation>
 <translation id="1276998909102132017">Immagini della galleria</translation>
 <translation id="1300209025925956156">Scansiona il tuo documento</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Tasto per la ricerca + Freccia sinistra per accedere.</translation>
+<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">Stampa</translation>
 <translation id="1467231725790366244">Videocamera <ph name="CAMERA" /> scollegata.</translation>
 <translation id="1473110567575736769">Timer di 3 secondi</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">Durata del timer</translation>
 <translation id="2050339315714019657">Verticale</translation>
 <translation id="2064538373111010176">Fotocamera <ph name="CAMERA" /> attiva</translation>
+<translation id="2134029355740465625">Impostazioni video</translation>
 <translation id="2144806332417375165">Parametri video personalizzati</translation>
 <translation id="2175927920773552910">Codice QR</translation>
 <translation id="2271433936731426666">Attiva l'istantanea video a grandezza originale</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">Fotocamera posteriore</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Tipo di scansione</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">Anteprima specchio</translation>
 <translation id="2879583609344924966">Videocamera <ph name="CAMERA" /> collegata.</translation>
 <translation id="2968794441791257519">Le foto e i video acquisiti con la fotocamera verranno spostati nella cartella Download e potrai accedervi dall'app File.
 
@@ -52,6 +57,8 @@ Le app con autorizzazioni di accesso allo spazio di archiviazione potranno acced
 <translation id="3240426699337459095">Link copiato</translation>
 <translation id="3259149966178251584">Risoluzione della fotocamera</translation>
 <translation id="3305962767867348165">Sistema</translation>
+<translation id="3354465018370944241">Impostazioni foto</translation>
+<translation id="3411958449466169012">Timer off</translation>
 <translation id="3448774564454087943">Video non salvato perché è troppo breve</translation>
 <translation id="346539236881580388">Nuovo scatto</translation>
 <translation id="3517926952904427380">Impossibile scattare foto verticale</translation>
@@ -63,9 +70,12 @@ Le app con autorizzazioni di accesso allo spazio di archiviazione potranno acced
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Scansiona il codice a barre</translation>
 <translation id="3892148308691398805">Copia testo</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Metti in pausa la registrazione</translation>
 <translation id="4121305183798804752">Documento rilevato</translation>
+<translation id="414641094616694804">Non è possibile modificare la risoluzione di questa fotocamera</translation>
 <translation id="4269820728363426813">Copia indirizzo link</translation>
+<translation id="4281620174117014503">Media risoluzione</translation>
 <translation id="4329152592498422850">Passa alla modalità foto quadrata</translation>
 <translation id="4383571725254449280">Log relativi alle prestazioni di stampa</translation>
 <translation id="4445542136948522167">Interrompi acquisizione foto</translation>
@@ -74,12 +84,15 @@ Le app con autorizzazioni di accesso allo spazio di archiviazione potranno acced
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4649291346448517080">Impossibile salvare il file</translation>
 <translation id="4695379108709712600">Spostamento in alto</translation>
+<translation id="4705093842003735294">Massima risoluzione</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Registrazione video multistream</translation>
+<translation id="5034763830503483128">Proporzioni foto</translation>
 <translation id="5057360777601936059">La tua fotocamera non è attualmente disponibile.
         Controlla se la fotocamera è collegata correttamente.</translation>
 <translation id="5163387177077603948">Spostamento a destra</translation>
 <translation id="520537883758714667">Ora è disponibile la scansione di documenti</translation>
+<translation id="5235304959032763950">16 su 9</translation>
 <translation id="5266635337630551423">Angolo superiore sinistro del documento</translation>
 <translation id="5317780077021120954">Salva</translation>
 <translation id="5320594929574852403">Spostamento a sinistra</translation>
@@ -94,6 +107,7 @@ Le app con autorizzazioni di accesso allo spazio di archiviazione potranno acced
 <translation id="5916664084637901428">On</translation>
 <translation id="5975083100439434680">Diminuisci lo zoom</translation>
 <translation id="5976160379964388480">Altri</translation>
+<translation id="603973421174355542">Full HD</translation>
 <translation id="6073451960410192870">Interrompi registrazione</translation>
 <translation id="6197807149213783179">Salva metadati</translation>
 <translation id="6233780560267770709">3 x 3</translation>
@@ -104,6 +118,7 @@ Le app con autorizzazioni di accesso allo spazio di archiviazione potranno acced
 Se il feedback riguarda la qualità di immagini o video, allega una foto o un video di esempio e descrivi il problema (ad esempio, la foto è troppo scura o il soggetto non è a fuoco).</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="6527303717912515753">Condividi</translation>
+<translation id="6631515515009660915">Specchio off</translation>
 <translation id="6652737148136672975">Sposta l'angolo del documento con i tasti Freccia</translation>
 <translation id="667999046851023355">Documento</translation>
 <translation id="6681668084120808868">Scatta foto</translation>
@@ -114,6 +129,7 @@ Se il feedback riguarda la qualità di immagini o video, allega una foto o un vi
 <translation id="698156982839284926">3 secondi</translation>
 <translation id="712848772518857951">Vuoi rimuovere <ph name="COUNT" /> elementi?</translation>
 <translation id="7134221860976209830">Timer di 10 secondi</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Tipo di registrazione</translation>
 <translation id="7243947652761655814">Risoluzione video</translation>
 <translation id="7337660886763914220">Errori del file system.</translation>
@@ -146,9 +162,11 @@ Se il feedback riguarda la qualità di immagini o video, allega una foto o un vi
 <translation id="8815966864175525708">Passa alla modalità foto verticale</translation>
 <translation id="8828441885228359828">Riprendi la registrazione</translation>
 <translation id="8870695351537079478">Impossibile avviare la registrazione</translation>
+<translation id="8880167521484863515">4 su 3</translation>
 <translation id="8903921497873541725">Aumenta lo zoom</translation>
 <translation id="9045010116236796332">Posiziona i bordi del documento all'interno dell'inquadratura</translation>
 <translation id="9045155556724273246">10 secondi</translation>
 <translation id="906331135292332864">Elaborazione dell'immagine in corso…</translation>
+<translation id="922762992951083513">Specchio on</translation>
 <translation id="945522503751344254">Invia feedback</translation>
 </translationbundle>

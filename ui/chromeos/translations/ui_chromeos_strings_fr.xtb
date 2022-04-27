@@ -198,8 +198,6 @@
 <translation id="2649120831653069427">Poisson arc-en-ciel</translation>
 <translation id="2663066752008346276">Birman/Myanmar avec clavier MyanSan</translation>
 <translation id="2664412712123763093">Emplacement du fichier</translation>
-<translation id="2672394958563893062">Une erreur s'est produite. Veuillez cliquer ici pour recommencer depuis le début.</translation>
-<translation id="2676946222714718093">Lecture en cours sur</translation>
 <translation id="2718540689505416944">Installer l'appli avec Linux</translation>
 <translation id="2719020180254996569">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, détails</translation>
 <translation id="2724954091494693138">Turc avec clavier F</translation>
@@ -340,7 +338,6 @@
 <translation id="3901991538546252627">Connexion à <ph name="NAME" /> en cours…</translation>
 <translation id="3906232975181435906">Installation du profil mobile, réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />…</translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Lire sur</translation>
 <translation id="3943857333388298514">Coller</translation>
 <translation id="3952872973865944257">Télougou (phonétique)</translation>
 <translation id="3958548648197196644">Kiwi</translation>
@@ -412,7 +409,6 @@
 <translation id="4631887759990505102">Artiste</translation>
 <translation id="4642769377300286600">Installation du profil mobile, réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />…</translation>
 <translation id="4646813851450205600">Tchèque avec clavier Qwerty</translation>
-<translation id="4656293982926141856">Cet ordinateur</translation>
 <translation id="4656777537938206294">Rendre des fichiers accessibles hors connexion</translation>
 <translation id="4658782175094886150">Personne dans la neige</translation>
 <translation id="4669606053856530811">Les membres de "<ph name="SOURCE_NAME" />" n'auront plus accès à ces éléments, à moins qu'ils ne soient partagés avec eux.</translation>
@@ -428,7 +424,6 @@
 <translation id="4720185134442950733">Réseau de données mobiles</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> photos ont été sauvegardées</translation>
 <translation id="4725511304875193254">Corgi</translation>
-<translation id="4732760563705710320">Cette vidéo n'est pas compatible avec votre appareil Cast.</translation>
 <translation id="4737050008115666127">Piste d'atterrissage</translation>
 <translation id="4747271164117300400">Macédonien</translation>
 <translation id="4759238208242260848">Téléchargements</translation>
@@ -618,7 +613,6 @@
 <translation id="6224253798271602650">Formater <ph name="DRIVE_NAME" /></translation>
 <translation id="6227235786875481728">Impossible de lire ce fichier.</translation>
 <translation id="6241349547798190358">Néerlandais (Belgique)</translation>
-<translation id="6248400709929739064">Activer les sous-titres</translation>
 <translation id="6267547857941397424">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, batterie du téléphone à <ph name="BATTERY_STATUS" /> %, connexion</translation>
 <translation id="6269630227984243955">Malais</translation>
 <translation id="6287852322318138013">Sélectionner une application pour ouvrir ce fichier</translation>
@@ -636,7 +630,6 @@
 <translation id="637062427944097960">Ce fichier est ouvert sur un autre bureau. Utilisez le compte de <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) pour l'afficher.</translation>
 <translation id="6394388407447716302">Lecture seule</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> éléments</translation>
-<translation id="6398765197997659313">Quitter le mode plein écran</translation>
 <translation id="642282551015776456">Ce nom ne peut pas être utilisé comme nom de fichier ni de dossier.</translation>
 <translation id="6423031066725912715">Vietnamien (avec clavier TCVN)</translation>
 <translation id="6485131920355264772">Échec de la récupération des informations sur l'espace disponible</translation>
@@ -672,7 +665,6 @@
 <translation id="6820687829547641339">Archive TAR compressée avec Gzip</translation>
 <translation id="6823166707458800069">Tous les fichiers enregistrés dans ce dossier sont automatiquement sauvegardés en ligne.</translation>
 <translation id="6825883775269213504">Russe</translation>
-<translation id="6827236167376090743">Cette vidéo va être lue en boucle.</translation>
 <translation id="6847101934483209767">Élément <ph name="ENTRY_NAME" /> supprimé de la sélection.</translation>
 <translation id="6856459657722366306">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, détails</translation>
 <translation id="6861394552169064235">Persan</translation>
@@ -809,7 +801,6 @@
 <translation id="7857117644404132472">Ajouter une exception</translation>
 <translation id="7868774406711971383">Polonais</translation>
 <translation id="7874321682039004450">Philippin</translation>
-<translation id="7881969471599061635">Désactiver les sous-titres</translation>
 <translation id="78946041517601018">Drive d'équipe partagés</translation>
 <translation id="7908793776359722643">Le formatage d'une partition entraîne la suppression de toutes les données qui y sont stockées. Cette action est irréversible.</translation>
 <translation id="7925247922861151263">Échec de la vérification AAA</translation>
@@ -886,7 +877,6 @@
 <translation id="8492972329130824181">Le réseau domestique n'est pas disponible. Pour vous y connecter, vous devez activer l'itinérance des données mobiles.</translation>
 <translation id="8499098729323186194">Extraction de <ph name="NUMBER_OF_ITEMS" /> éléments...</translation>
 <translation id="8521441079177373948">Royaume-Uni</translation>
-<translation id="8525306231823319788">Plein écran</translation>
 <translation id="853494022971700746">Français (France)</translation>
 <translation id="8540608333167683902">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, détails</translation>
 <translation id="8545476925160229291">Anglais (États-Unis)</translation>

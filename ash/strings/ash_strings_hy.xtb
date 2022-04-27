@@ -26,7 +26,6 @@
 <translation id="109942774857561566">Ձանձրանում եմ</translation>
 <translation id="1104084341931202936">Ցուցադրել հատուկ գործառույթների կարգավորումները</translation>
 <translation id="1104621072296271835">Միասին ձեր սարքերն ավելի լավ կաշխատեն</translation>
-<translation id="1111781754511998498">Projector</translation>
 <translation id="112308213915226829">Ինքնաթաքցնել դարակը</translation>
 <translation id="1142002900084379065">Վերջին լուսանկարները</translation>
 <translation id="1148499908455722006">Բացել <ph name="USER_NAME" /> հաշվի տեղեկությունների երկխոսության պատուհանը</translation>
@@ -185,11 +184,9 @@
 <translation id="2021864487439853900">Սեղմեք՝ ապակողպելու համար</translation>
 <translation id="2023558322300866873">Փաթեթների գրանցումը կարող եք ցանկացած ժամանակ կանգնեցնել</translation>
 <translation id="2034971124472263449">Պահել</translation>
-<translation id="2047639699071423250">Ավելացնել հիմնական գաղափար</translation>
 <translation id="2049240716062114887">Աշխատասեղանի անունը փոխվել է հետևյալի՝ <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Ուղղաձիգ</translation>
 <translation id="2064048859448024834">Տեսախցիկի նախադիտումը միացված է</translation>
-<translation id="2066708475850724665">Անջատել խոշորացույցը</translation>
 <translation id="2067602449040652523">Ստեղնաշարի պայծառություն</translation>
 <translation id="2078034614700056995">Հաջորդ աշխատասեղանին անցնելու համար չորս մատով սահեցրեք աջ</translation>
 <translation id="2079504693865562705">Թաքցնել դարակի հավելվածները</translation>
@@ -213,6 +210,7 @@
 <translation id="2220572644011485463">PIN կոդը կամ գաղտնաբառը</translation>
 <translation id="2222841058024245321">Աշխատասեղան 7</translation>
 <translation id="2224075387478458881">Էկրանի տեսագրում չի թույլատրվում, երբ պաշտպանված բովանդակություն է տեսանելի</translation>
+<translation id="2227179592712503583">Հեռացնել հուշումը</translation>
 <translation id="225680501294068881">Սարքերի որոնում…</translation>
 <translation id="2257486738914982088">Ֆայլը (<ph name="FILENAME" />) ներբեռնելիս սխալ առաջացավ</translation>
 <translation id="2268130516524549846">Bluetooth-ն անջատված է</translation>
@@ -283,7 +281,6 @@
 <translation id="2704781753052663061">Միացեք այլ Wi-Fi ցանցերի</translation>
 <translation id="2705001408393684014">Միացնել/անջատել խոսափողը։ <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
-<translation id="2713444072780614174">Սպիտակ</translation>
 <translation id="2718395828230677721">Գիշերային ռեժիմ</translation>
 <translation id="2726420622004325180">Թեժ կետն ակտիվացնելու համար հեռախոսում պետք է միացված լինի բջջային ինտերնետը</translation>
 <translation id="2727175239389218057">Պատասխանել</translation>
@@ -352,7 +349,6 @@
 <translation id="3100274880412651815">Անջատել տեսագրման ռեժիմը</translation>
 <translation id="3105917916468784889">Ստանալ սքրինշոթը</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
-<translation id="3113926042639749131">Հեռացնել հուշումը</translation>
 <translation id="3120421559657122717">Անջատե՞լ սարքը</translation>
 <translation id="3126069444801937830">Թարմացնելու համար վերագործարկեք</translation>
 <translation id="3139942575505304791">Աշխատասեղան 1</translation>
@@ -430,7 +426,6 @@
 <translation id="3542066395059568317">Դուք առաջարկություններ կտեսնեք և կկարողանաք շարունակել այն պահից, որտեղ կանգ էիք առել։ Առաջարկությունները հեռացնելու համար սեղմեք մկնիկի աջ կոճակը։</translation>
 <translation id="3552189655002856821">Wi-Fi-ն անջատված է</translation>
 <translation id="3554637740840164787">«<ph name="ITEM_TITLE" />» տարրն ամրացվեց</translation>
-<translation id="3560866052109807830">Մարկերով նկարչության գործիքներ</translation>
 <translation id="3563775809269155755">Միացնել թեժ կետը</translation>
 <translation id="3566240529365775567">Քիչ առաջ բացել եք</translation>
 <translation id="3571734092741541777">Տեղակայել</translation>
@@ -455,7 +450,6 @@
 <translation id="3638400994746983214">Միացնել/անջատել գաղտնիության էկրանը։ <ph name="STATE_TEXT" />:</translation>
 <translation id="3649505501900178324">Թարմացման ժամկետը լրացել է</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> կառավարվող օգտատեր</translation>
-<translation id="3680908746918359504">Ջնջել բոլոր նշիչները</translation>
 <translation id="36813544980941320">Ձեր հեռախոսում և <ph name="DEVICE_NAME" />-ում կօգտագործվեն նույն Wi-Fi ցանցերը</translation>
 <translation id="3694122362646626770">Վեբկայքեր</translation>
 <translation id="3701206655856637070">Այժմ դուք կարող եք ընտրել պանակ, որում կպահվեն էկրանի տեսագրումները։</translation>
@@ -521,7 +515,6 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Անջատել 1 ծրագրի համար}one{Անջատել # ծրագրի համար}other{Անջատել # ծրագրերի համար}}</translation>
 <translation id="4066027111132117168">Միացված է, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Միջին ուժգնության ազդանշան</translation>
-<translation id="4095366824370681039">Գրիչ</translation>
 <translation id="4112140312785995938">Հետ գնալ</translation>
 <translation id="4114315158543974537">Միացրեք Phone Hub-ը</translation>
 <translation id="4115378294792113321">Ծիրանեգույն</translation>
@@ -553,7 +546,6 @@
 <translation id="4279490309300973883">Հայելապատճենում</translation>
 <translation id="4283888303416325161">Անվտանգության նկատառումներից ելնելով՝ մուտքագրեք գաղտնաբառը</translation>
 <translation id="4285498937028063278">Ապամրացնել</translation>
-<translation id="429402653707266969">Փոխել գործիքագոտու տեղադրությունը</translation>
 <translation id="4294319844246081198">Բարի լույս, <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Մաքրել բոլոր <ph name="COUNT" /> ծանուցումները</translation>
 <translation id="430191667033048642">«<ph name="MOVED_APP_NAME" />» հավելվածը տեղափոխվեց «<ph name="FOLDER_NAME" />» պանակ։</translation>
@@ -617,7 +609,6 @@
 <translation id="4587299710837179226">Խոսափողն անջատված է</translation>
 <translation id="4596144739579517758">Մուգ թեման անջատված է</translation>
 <translation id="4611292653554630842">Մուտք</translation>
-<translation id="4614295562446151104">Ծավալել նշիչի գործիքները</translation>
 <translation id="4623167406982293031">Հաստատել հաշիվը</translation>
 <translation id="4628757576491864469">Սարքեր</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, վարկանիշը՝ <ph name="RATING_SCORE" /></translation>
@@ -687,7 +678,6 @@
 <translation id="504465286040788597">Նախորդ պարբերությունը</translation>
 <translation id="5045550434625856497">Գաղտնաբառը սխալ է</translation>
 <translation id="5071064518267176975">Հավելվածը հայցում է խոսափողն օգտագործելու թույլտվություն</translation>
-<translation id="5075554201838155866">Ցույց տալ ենթագրերը</translation>
 <translation id="5078796286268621944">Սխալ PIN կոդ</translation>
 <translation id="5083553833479578423">Օգտվեք Օգնականի այլ գործառույթներից</translation>
 <translation id="5106223312672646208">Անհատականացնել</translation>
@@ -795,7 +785,6 @@
 <translation id="5790085346892983794">Հաջողվեց</translation>
 <translation id="5805809050170488595">Սեղմել՝ <ph name="NETWORK_NAME" /> ցանցն ակտիվացնելու համար</translation>
 <translation id="5825969630400862129">Կապված սարքերի կարգավորումներ</translation>
-<translation id="583281660410589416">Անհայտ</translation>
 <translation id="5837036133683224804">Դադարեցնել <ph name="ROUTE_TITLE" /> ներդիրի հեռարձակումը «<ph name="RECEIVER_NAME" />» սարքին</translation>
 <translation id="584525477304726060">Պահեք՝ մեծացնելու համար</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> ցանցն ակտիվացված չէ։</translation>
@@ -840,7 +829,6 @@
 <translation id="6043212731627905357">Այս մոնիտորը համատեղելի չէ ձեր <ph name="DEVICE_TYPE" /> սարքի հետ (մոնիտորը չի աջակցվում):</translation>
 <translation id="6043994281159824495">Դուրս գրվել</translation>
 <translation id="6047696787498798094">Էկրանի համօգտագործումը կդադարեցվի օգտատիրոջը փոխելու դեպքում: Ցանկանո՞ւմ եք շարունակել:</translation>
-<translation id="6050368268239407309">Ներկայացման գործիքներ</translation>
 <translation id="6054305421211936131">Մտնել հաշիվ խելացի քարտի օգնությամբ</translation>
 <translation id="6059276912018042191">Վերջերս բացված Chrome-ի ներդիրներ</translation>
 <translation id="6062360702481658777">Դուք ավտոմատ դուրս կգրվեք <ph name="LOGOUT_TIME_LEFT" />-ից:</translation>
@@ -994,7 +982,6 @@
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Օգնական</translation>
 <translation id="7042322267639375032">Ծալել կարգավիճակի տարածքը</translation>
 <translation id="7045033600005038336">Փոխարինե՞լ ձևանմուշը</translation>
-<translation id="7045595904618419789">Միացնել խոշորացույցը</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> սարքն անջատված է</translation>
 <translation id="7055910611768509537">Ստիլուսը ավելի քան մեկ շաբաթ չի օգտագործվել</translation>
 <translation id="7066646422045619941">Ադմինիստրատորն արգելափակել է այս ցանցը:</translation>
@@ -1022,7 +1009,6 @@
 <translation id="7258828758145722155">Երեկ փոփոխել եք</translation>
 <translation id="726276584504105859">Քաշեք այստեղ՝ էկրանի տրոհումն օգտագործելու համար</translation>
 <translation id="7262906531272962081">Ստեղծել հիշեցում</translation>
-<translation id="7279434993080105272">Նշիչի գույնը (<ph name="COLOR_PARAMETER" />)</translation>
 <translation id="7302889331339392448">«Կենդանի ենթագրեր» գործառույթը միացված է։</translation>
 <translation id="7303365578352795231">Օգնականն այլ սարքում է պատասխանում:</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1049,7 +1035,6 @@
 <translation id="742594950370306541">Տեսախցիկն օգտագործվում է:</translation>
 <translation id="742608627846767349">Բարի լույս,</translation>
 <translation id="743058460480092004">Տեսախցիկն ու խոսափողը օգտագործվում են:</translation>
-<translation id="7434543979546293336">Նշված է որպես հիմնական գաղափար</translation>
 <translation id="7452560014878697800">Ինչ-որ հավելված օգտագործում է ձեր տեսախցիկը</translation>
 <translation id="7453330308669753048">Արդյունքը հեռացվեց որոնումների պատմությունից</translation>
 <translation id="7461924472993315131">Ամրացնել</translation>
@@ -1057,7 +1042,6 @@
 <translation id="7466449121337984263">Մատը դրեք տվիչին</translation>
 <translation id="7477793887173910789">Վերահսկեք երաժշտությունը, տեսանյութերը և այլն</translation>
 <translation id="7483025031359818980">Ընտրված է ամբողջ էկրանը</translation>
-<translation id="7486227320194954040">Ծալել նշիչի գործիքները</translation>
 <translation id="7497767806359279797">Ընտրել լեզու և ստեղնաշար</translation>
 <translation id="7508690557411636492">Անցած ամիս բացել եք</translation>
 <translation id="7509246181739783082">Հաստատեք ձեր ինքնությունը</translation>
@@ -1074,7 +1058,6 @@
 <translation id="7561982940498449837">Փակել ընտրացանկը</translation>
 <translation id="7564874036684306347">Պատուհանների տեղափոխումն այլ աշխատասեղան կարող է անսպասելի արդյունքներ ունենալ: Հետագա ծանուցումները, պատուհանները և երկխոսությունները կարող են տրոհվել աշխատասեղանների միջև:</translation>
 <translation id="7569509451529460200">Բրայլյան գրատիպն ու ChromeVox-ը միացված են</translation>
-<translation id="7569983096843329377">Սև</translation>
 <translation id="7573585051776738856">Ակտիվ պատուհանն ամրացված է աջ կողմում։</translation>
 <translation id="7579778809502851308">Էկրանի լուսանկարում</translation>
 <translation id="7590883480672980941">Ներածման կարգավորումներ</translation>
@@ -1082,7 +1065,6 @@
 <translation id="7600875258240007829">Տեսնել բոլոր ծանուցումները</translation>
 <translation id="7607002721634913082">Դադարեցված է</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7631906263969450674">Ֆլոմաստեր</translation>
 <translation id="7633755430369750696">Ցուցադրել «Փոխանակում մոտակա սարքերի հետ» գործառույթի կարգավորումները։</translation>
 <translation id="7641938616688887143">Տեսագրել</translation>
 <translation id="7642647758716480637">Բացել «<ph name="NETWORK_NAME" />» ցանցի կարգավորումները, <ph name="CONNECTION_STATUS" /></translation>
@@ -1154,7 +1136,6 @@
 <translation id="8029247720646289474">Չհաջողվեց միանալ թեժ կետին</translation>
 <translation id="8029629653277878342">Անվտանգության նկատառումներից ելնելով անհրաժեշտ է մուտքագրել PIN կոդը կամ գաղտնաբառը</translation>
 <translation id="8030169304546394654">Անջատված է</translation>
-<translation id="8035152190676905274">Գրիչ</translation>
 <translation id="8036504271468642248">Նախորդ նախադասությունը</translation>
 <translation id="8042893070933512245">Բացել հատուկ գործառույթների կարգավորումների ընտրացանկը</translation>
 <translation id="8042925093898452104">Փակել մանրամասն տեղեկությունները</translation>
@@ -1170,7 +1151,6 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Հաստատել</translation>
 <translation id="8131994907636310308">Փակել տեսակավորման մասին ծանուցումը</translation>
-<translation id="8132487352815776550">Թաքցնել ենթագրերը</translation>
 <translation id="8132793192354020517">Միացված է <ph name="NAME" />-ին</translation>
 <translation id="813913629614996137">Նախապատրաստվում է...</translation>
 <translation id="8142441511840089262">Կրկնակի սեղմում</translation>

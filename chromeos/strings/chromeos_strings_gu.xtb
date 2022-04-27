@@ -42,6 +42,7 @@
 <translation id="1394661041439318933">ડિવાઇસના કેસમાં <ph name="BATTERY_PERCENTAGE" />% બૅટરી છે.</translation>
 <translation id="1397738625398125236">ગેટવેને પિંગ કરી શકાય છે</translation>
 <translation id="1398634363027580500">HTTPSની અતિ ઉચ્ચ વિલંબતા</translation>
+<translation id="1407069428457324124">ઘેરી થીમ</translation>
 <translation id="1413240736185167732">નિષ્ફળ થયું - ફિલ્ટર નિષ્ફળ થયું</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">મારી પાસે કીની જોડી છે</translation>
@@ -63,6 +64,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> અપડેટ કરી શકાતું નથી</translation>
 <translation id="1567064801249837505">આલ્બમ</translation>
 <translation id="1572585716423026576">વૉલપેપર તરીકે સેટ કરો</translation>
+<translation id="1578784163189013834">સ્ક્રીન સેવરનું બૅકગ્રાઉન્ડ પસંદ કરો</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />થી ડેટા વપરાશ</translation>
 <translation id="1621067168122174824">ચાર્જિંગનું પરીક્ષણ ચાલુ કરો</translation>
 <translation id="1639239467298939599">લોડ કરી રહ્યું છે</translation>
@@ -85,12 +87,15 @@
 <translation id="1768959921651994223">પ્રમાણીકરણનો પ્રકાર</translation>
 <translation id="1782199038061388045">અનુવાદ</translation>
 <translation id="1792647875738159689">સ્કૅન કરવાનું કાર્ય રદ કરી રહ્યાં છીએ</translation>
+<translation id="1801418420130173017">ઘેરી થીમ બંધ કરો</translation>
 <translation id="1807246157184219062">આછું</translation>
 <translation id="1827738518074806965">આર્ટ ગૅલરી</translation>
 <translation id="1851218745569890714">વીડિયો કૉન્ફરન્સિંગ</translation>
 <translation id="1852934301711881861">ChromeOS Flex ઇન્સ્ટૉલ કરો</translation>
 <translation id="1856388568474281774">નીચેની ઍરો કી</translation>
+<translation id="1871569928317311284">ઘેરી થીમ બંધ કરો</translation>
 <translation id="1874612839560830905">MTU</translation>
+<translation id="188114911237521550">ઘેરો મોડ બંધ કરો</translation>
 <translation id="1887850431809612466">હાર્ડવેર પુનરાવર્તન</translation>
 <translation id="1905710495812624430">મહત્તમ મંજૂર પ્રયત્નોની સંખ્યા ઓળંગાઈ.</translation>
 <translation id="1908234395526491708">UDP વિનંતી નિષ્ફળ થઈ</translation>
@@ -115,6 +120,7 @@
 <translation id="2157959690810728433">કતારમાં</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ફરી પ્રયાસ કરો</translation>
 <translation id="2161394479394250669">પ્રિન્ટ જોબ રદ કરો</translation>
+<translation id="2163937499206714165">ઘેરો મોડ ચાલુ કરો</translation>
 <translation id="2180197493692062006">કંઈક ખોટું થયું. ઍપ ફરીથી ખોલવાનો પ્રયાસ કરી જુઓ.</translation>
 <translation id="2209788852729124853">ટ્રાફિક કાઉન્ટર રીસેટ કરો</translation>
 <translation id="2212733584906323460">નામનું રિઝોલ્યુશન</translation>
@@ -126,8 +132,10 @@
 <translation id="2236746079896696523">કીબોર્ડની બૅકલાઇટ માટે ટૉગલ કી</translation>
 <translation id="2240366984605217732">લેઆઉટ સ્વિચ કી</translation>
 <translation id="225692081236532131">સક્રિયતાની સ્થિતિ</translation>
+<translation id="2271469253353559191">ઘેરા મોડનું શેડ્યૂલ</translation>
 <translation id="2287186687001756809">કોઈ છબી ઉપલબ્ધ નથી. ફોટા ઉમેરવા માટે, <ph name="LINK" /> પર જાઓ</translation>
 <translation id="2307344026739914387">હાલની કીની જોડીનો ઉપયોગ કરો</translation>
+<translation id="2320295602967756579">ઝાંખી થીમ ચાલુ કરો</translation>
 <translation id="2323506179655536734">છોડ્યું</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">નજીકનાં ડિવાઇસ શોધવા માટે Bluetooth ચાલુ કરો</translation>
@@ -147,13 +155,16 @@
 <translation id="2493126929778606526">ઑટોમૅટિક રીતે પસંદ કરવામાં આવેલા તમારા શ્રેષ્ઠ ફોટા</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">હાલની વૉલપેપર છબી રિફ્રેશ કરો</translation>
+<translation id="2513396635448525189">લૉગ ઇન છબી</translation>
 <translation id="2517472476991765520">સ્કૅન કરો</translation>
+<translation id="2526590354069164005">ડેસ્કટૉપ</translation>
 <translation id="253029298928638905">ફરી શરૂ કરી રહ્યાં છીએ…</translation>
 <translation id="2536159006530886390">ઇન્ટરનેટથી કનેક્ટ થઈ શકતા નથી.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> પરીક્ષણ ચલાવી રહ્યાં છીએ…</translation>
 <translation id="2584559707064218956">સેટઅપ કરવા માટે, સેટિંગમાં જાઓ</translation>
 <translation id="2619761439309613843">દરરોજ રિફ્રેશ કરો</translation>
 <translation id="2620436844016719705">સિસ્ટમ</translation>
+<translation id="2638662041295312666">સાઇન ઇન છબી</translation>
 <translation id="2640549051766135490">આલ્બમ <ph name="TITLE" /> <ph name="DESC" />ની પસંદગી કરી</translation>
 <translation id="2695514675076754339">8 અક્ષરનો અનલૉક કોડ દાખલ કરો</translation>
 <translation id="2712812801627182647">TLS પ્રમાણીકરણ કી</translation>
@@ -173,11 +184,13 @@
 <translation id="2926057806159140518">તમારું વપરાશકર્તા નામ અને પાસવર્ડ દાખલ કરો અથવા તમારો QR કોડ સ્કૅન કરો</translation>
 <translation id="3008341117444806826">રિફ્રેશ કરો</translation>
 <translation id="3009958530611748826">સ્કૅન જેમાં સાચવવાના છે તે ફોલ્ડર પસંદ કરો</translation>
+<translation id="3017079585324758401">બૅકગ્રાઉન્ડ</translation>
 <translation id="3031560714565892478">ડિવાઇસ એક વીડિયો કૅમેરા છે.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">છેવટ</translation>
 <translation id="3069085583900247081">પરીક્ષણ નિષ્ફળ થયું</translation>
 <translation id="3083667275341675831">કનેક્ટિવિટીના નિદાનો</translation>
+<translation id="3084958266922136097">સ્ક્રીન સેવર બંધ કરો</translation>
 <translation id="3091839911843451378">નિષ્ફળ થયું - પ્રિન્ટર બંધ થઈ ગયું છે</translation>
 <translation id="3102119246920354026">કેશ</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -201,6 +214,7 @@
 <translation id="3340011300870565703">ડિવાઇસના જમણા ઇયરબડમાં <ph name="BATTERY_PERCENTAGE" />% બૅટરી છે.</translation>
 <translation id="3368922792935385530">કનેક્ટેડ</translation>
 <translation id="3369013195428705271">શું તમે ખરેખર પ્રિન્ટનો બધો ઇતિહાસ સાફ કરવા માગો છો? તમારી હાલની પ્રિન્ટ જોબ સાફ કરવામાં આવશે નહીં.</translation>
+<translation id="3404249063913988450">સ્ક્રીન સેવર ચાલુ કરો</translation>
 <translation id="3413935475507503304">અપડેટમાં આગળ વધવા માટે આગળ પર ક્લિક કરો.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">સુરક્ષા</translation>
@@ -215,6 +229,7 @@
 <translation id="3532980081107202182">લગભગ <ph name="MIN_REMAINING" /> મિનિટ બાકી છે</translation>
 <translation id="3557205324756024651">સ્થાનિક ઓળખ (વૈકલ્પિક)</translation>
 <translation id="3565064564551103223">મંજૂર કરેલા IPs</translation>
+<translation id="3569407787324516067">સ્ક્રીન સેવર</translation>
 <translation id="3577473026931028326">કંઈક ખોટું થયું. ફરી પ્રયાસ કરો.</translation>
 <translation id="357889014807611375">મીટર્ડ (ડેટા નિયંત્રણ) વાઇ-ફાઇ</translation>
 <translation id="3583278742022654445">સિગ્નલની પ્રબળતા નબળી છે. વાઇ-ફાઇ સિગ્નલના સૉર્સની વધુ નજીક જઈને પ્રયાસ કરી જુઓ.</translation>
@@ -258,9 +273,11 @@
 <translation id="4044093238444069296">ગેટવે સાથે સંપર્ક કરી શકતા નથી</translation>
 <translation id="4046123991198612571">આગલો ટ્રૅક</translation>
 <translation id="404928562651467259">ચેતવણી</translation>
+<translation id="4093865285251893588">પ્રોફાઇલ ફોટો</translation>
 <translation id="409427325554347132">પરીક્ષણની વિગતો સાચવો</translation>
 <translation id="4110686435123617899">પસંદ કરો આલ્બમ <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB ટચપૅડ</translation>
+<translation id="4117637339509843559">ઘેરો મોડ</translation>
 <translation id="4131410914670010031">કાળો અને સફેદ</translation>
 <translation id="4140251671072434548">RMA સર્વર અનલૉક કરો</translation>
 <translation id="4145784616224233563">HTTP ફાયરવૉલ</translation>
@@ -270,6 +287,7 @@
 <translation id="4170700058716978431">નિષ્ફળ થયું</translation>
 <translation id="4176463684765177261">અક્ષમ કરેલું</translation>
 <translation id="4176659219503619100">કન્ટ્રોલ પૅનલ</translation>
+<translation id="420283545744377356">સ્ક્રીન સેવર બંધ કરો</translation>
 <translation id="4213104098953699324">USB કીબોર્ડ</translation>
 <translation id="4227825898293920515"><ph name="TIME" />માં પાસવર્ડની સમયસીમા સમાપ્ત થાય છે</translation>
 <translation id="4238516577297848345">કોઈ પ્રિન્ટ કામ ચાલુ નથી</translation>
@@ -332,6 +350,7 @@
 <translation id="4793756956024303490">કમ્પ્રેશન ઍલ્ગોરિધમ</translation>
 <translation id="4794140124556169553">CPUનું પરીક્ષણ ચલાવવાથી તમારી સિસ્ટમની કાર્યક્ષમતા પર અસર થઈ શકે છે</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" />ને પ્રિન્ટ કરવાનું રદ કર્યું</translation>
+<translation id="4809927044794281115">ઝાંખી થીમ</translation>
 <translation id="4813136279048157860">મારી છબીઓ</translation>
 <translation id="4813345808229079766">કનેક્શન</translation>
 <translation id="4832079907277790330">Files ઍપમાં ફોલ્ડર પસંદ કરો...</translation>
@@ -378,6 +397,7 @@
 <translation id="5212543919916444558">મને તમારી સ્ક્રીન પર એવી કોઈપણ વસ્તુ મળી નથી કે જેમાં હું તમારી સહાય કરી શકું. મને કંઈપણ પૂછવા માટે માઇકને ટૅપ કરી જુઓ.</translation>
 <translation id="5212593641110061691">ટેબ્લોઇડ</translation>
 <translation id="5222676887888702881">સાઇન આઉટ</translation>
+<translation id="5227902338748591677">ઘેરી થીમનું શેડ્યૂલ</translation>
 <translation id="5234764350956374838">કાઢી નાખો</translation>
 <translation id="5252456968953390977">રોમિંગ</translation>
 <translation id="5257811368506016604">આછા રંગવાળો મોડ ચાલુ કરો</translation>
@@ -398,6 +418,7 @@
 <translation id="5346687412805619883">સ્થાનિક નેટવર્ક</translation>
 <translation id="5358174242040570474">કંઈક ખોટું થયું. વૉલપેપર ફરીથી પસંદ કરવાનો પ્રયાસ કરો અથવા ઍપ ફરીથી ખોલો.</translation>
 <translation id="5372659122375744710">આ વાઇ-ફાઇ નેટવર્ક સુરક્ષિત નથી</translation>
+<translation id="5376354385557966694">ઑટોમૅટિક લાઇટ મોડ</translation>
 <translation id="5400907029458559844">ડિવાઇસ કનેક્ટ થઈ રહ્યું છે.</translation>
 <translation id="5401938042319910061">તમામ રૂટિન ચલાવો</translation>
 <translation id="5423849171846380976">સક્રિય કર્યું</translation>
@@ -433,6 +454,7 @@
 <translation id="583281660410589416">અજ્ઞાત</translation>
 <translation id="5843706793424741864">ફેરનહીટ</translation>
 <translation id="5849570051105887917">હોમ પ્રદાતાનો કોડ</translation>
+<translation id="5859603669299126575">આર્ટ ગૅલરી આલ્બમ</translation>
 <translation id="5860033963881614850">બંધ</translation>
 <translation id="5860491529813859533">ચાલુ કરો</translation>
 <translation id="5866840822086176774">ખૂબ સશક્ત</translation>
@@ -479,11 +501,15 @@
 <translation id="6275224645089671689">જમણી ઍરો કી</translation>
 <translation id="6278428485366576908">થીમ</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6284632978374966585">ઘેરી થીમ ચાલુ કરો</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />નું પરીક્ષણ રદ કરવામાં આવ્યું</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> પર ફર્મવેયર અપડેટ કરો</translation>
+<translation id="6321407676395378991">સ્ક્રીન સેવર ચાલુ કરો</translation>
 <translation id="6325525973963619867">નિષ્ફળ થયું</translation>
+<translation id="6331191339300272798">ઑટોમૅટિક ઘેરી થીમ</translation>
 <translation id="6340526405444716530">મનગમતું બનાવવું</translation>
 <translation id="6348738456043757611">વપરાશકર્તાનું નામ અને પાસવર્ડ</translation>
+<translation id="6359706544163531585">ઝાંખી થીમ બંધ કરો</translation>
 <translation id="636850387210749493">સંગઠન નોંધણી</translation>
 <translation id="6379086450106841622">ટચસ્ક્રીન</translation>
 <translation id="6381741036071372448">તમારા કીબોર્ડનું પરીક્ષણ કરો</translation>
@@ -558,6 +584,7 @@
 <translation id="714876143603641390">LAN કનેક્ટિવિટી</translation>
 <translation id="7155171745945906037">કૅમેરા અથવા ફાઇલમાંથી અસ્તિત્વમાંનો ફોટો</translation>
 <translation id="7162487448488904999">Gallery</translation>
+<translation id="7170236477717446850">પ્રોફાઇલ ચિત્ર</translation>
 <translation id="7172721935181587524">1 છબી</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> ગોઠવો</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> દ્વારા <ph name="DEVICE_TYPE" />ને મેનેજ કરવામાં આવે છે. વ્યવસ્થાપકો દ્વારા ડિવાઇસને રિમોટલી કન્ફિગર કરવામાં આવી શકે છે.</translation>
@@ -579,6 +606,7 @@
 <translation id="7359657277149375382">ફાઇલ પ્રકાર</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378886533986123738">સ્ક્રીનસેવર બદલો</translation>
+<translation id="7397270852490618635">ઝાંખી થીમ બંધ કરો</translation>
 <translation id="741244894080940828">રૂપાંતરણ</translation>
 <translation id="7415801143053185905">HTTPની અતિ ઉચ્ચ વિલંબતા</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -590,6 +618,7 @@
 <translation id="7497215489070763236">સર્વર CA પ્રમાણપત્ર</translation>
 <translation id="7502658306369382406">IPv6 સરનામું</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7535791657097741517">ઝાંખી થીમ ચાલુ કરો</translation>
 <translation id="7550715992156305117">નિદાન માટેના રૂટિન</translation>
 <translation id="7551123448725492271">ડિવાઇસ એક ઑડિયો ડિવાઇસ છે.</translation>
 <translation id="7561454561030345039">આ ક્રિયાને તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
@@ -611,11 +640,14 @@
 <translation id="7763470514545477072">ડોમેન સફિક્સનો મેળ</translation>
 <translation id="7769672763586021400">મોડલ ID</translation>
 <translation id="7784116172884276937">કોઈપણ DNS સર્વરનું સેટઅપ કરવામાં આવ્યું નથી</translation>
+<translation id="7799817062559422778">લાઇટ મોડ</translation>
 <translation id="780301667611848630">નહીં, આભાર</translation>
 <translation id="7805768142964895445">સ્થિતિ</translation>
 <translation id="7819857487979277519">PSK (WPA અથવા RSN)</translation>
+<translation id="7841134249932030522">ઘેરો મોડ ચાલુ કરો</translation>
 <translation id="7846634333498149051">કીબોર્ડ</translation>
 <translation id="7856267634822906833">બ્લૂટૂથ ટચસ્ક્રીન</translation>
+<translation id="7869143217755017858">ઘેરો મોડ બંધ કરો</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">પ્રદાતાનો પ્રકાર</translation>
 <translation id="7882501334836096755">જાહેર કી</translation>
@@ -655,6 +687,7 @@
 <translation id="8297006494302853456">નબળું</translation>
 <translation id="8302368968391049045">HTTPS ફાયરવૉલ</translation>
 <translation id="8318753676953949627">કોઈ છબી ઉપલબ્ધ નથી</translation>
+<translation id="8336739000755212683">ડિવાઇસના એકાઉન્ટની છબી બદલો</translation>
 <translation id="8347227221149377169">પ્રિન્ટ કરવાના કામો</translation>
 <translation id="8352772353338965963">એકથી વધુ સાઇન ઇન કરવા એક એકાઉન્ટ ઉમેરો. બધા સાઇન ઇન એકાઉન્ટ પાસવર્ડ વગર ઉપયોગ કરી શકાય છે, તેથી આ સુવિધા માત્ર વિશ્વસનીય એકાઉન્ટ સાથે ઉપયોગમાં આવવી જોઇએ.</translation>
 <translation id="8364946094152050673">સર્વરના કોઈ નામ આપવામાં આવ્યા નથી</translation>
@@ -666,6 +699,7 @@
 <translation id="8431300646573772016">ChromeOSમાં નવું શું છે</translation>
 <translation id="843568408673868420">ઇન્ટરનેટ કનેક્ટિવિટી</translation>
 <translation id="844521431886043384">DNSનું સેટઅપ કર્યું</translation>
+<translation id="8456761643544401578">ઑટોમૅટિક ઘેરો મોડ</translation>
 <translation id="8461329675984532579">હોમ પ્રદાતાનું નામ</translation>
 <translation id="8475690821716466388">વાઇ-ફાઇ નેટવર્કની સુરક્ષા પ્રમાણમાં નબળા WEP PSK પ્રોટોકૉલ વડે કરવામાં આવી છે</translation>
 <translation id="8477551185774834963">DNSની વિલંબતા મંજૂરીયોગ્ય થ્રેશોલ્ડ કરતાં થોડી વધુ છે</translation>
@@ -692,6 +726,7 @@
 <translation id="8730621377337864115">થઈ ગયું</translation>
 <translation id="8747900814994928677">ફેરફાર કન્ફર્મ કરો</translation>
 <translation id="8764414543112028321">WireGuard</translation>
+<translation id="87646919272181953">Google Photos આલ્બમ</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">આ નેટવર્કમાં કૅપ્ટિવ પોર્ટલ હોઈ શકે છે</translation>
 <translation id="8798099450830957504">ડિફૉલ્ટ</translation>
@@ -701,6 +736,7 @@
 <translation id="8834539327799336565">હાલમાં કનેક્ટેડ</translation>
 <translation id="8845001906332463065">સહાય મેળવો</translation>
 <translation id="8855781559874488009">ફાયરવૉલ મારફતે HTTP વેબસાઇટ સાથે કનેક્ટ કરી શકતા નથી</translation>
+<translation id="8863170912498892583">ઘેરી થીમ ચાલુ કરો</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" માટે <ph name="INTENT" /> અને વધુ મેળવો</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ડિવાઇસ એક ટૅબ્લેટ છે.</translation>

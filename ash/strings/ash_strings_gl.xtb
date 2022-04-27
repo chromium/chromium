@@ -4,7 +4,7 @@
 <translation id="1012876632442809908">Dispositivo USB‑C (porto frontal)</translation>
 <translation id="1013598600051641573">A resolución do dispositivo <ph name="DISPLAY_NAME" /> cambiouse a <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Para gardar os cambios, fai clic en Confirmar. A configuración anterior restaurarase en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" quere recibir permiso para sincronizarse. Introduce este código PIN nese dispositivo: <ph name="PINCODE" /></translation>
-<translation id="1014111206066007277">Ferramentas de captura de pantalla de vídeo</translation>
+<translation id="1014111206066007277">Ferramentas de gravación da pantalla</translation>
 <translation id="1024261588257374085">Seleccionouse unha captura de pantalla parcial</translation>
 <translation id="1024364763893396229">Garda o dispositivo (<ph name="NAME" />)</translation>
 <translation id="1032891413405719768">O lapis óptico ten pouca batería</translation>
@@ -26,7 +26,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="109942774857561566">Abúrrome</translation>
 <translation id="1104084341931202936">Mostrar a configuración de accesibilidade</translation>
 <translation id="1104621072296271835">Os dispositivos funcionan mellor xuntos</translation>
-<translation id="1111781754511998498">Projector</translation>
 <translation id="112308213915226829">Ocultar estante automaticamente</translation>
 <translation id="1142002900084379065">Fotos recentes</translation>
 <translation id="1148499908455722006">Abrir cadro de diálogo de información para <ph name="USER_NAME" /></translation>
@@ -185,11 +184,9 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2021864487439853900">Para desbloqueala, fai clic</translation>
 <translation id="2023558322300866873">Podes deter a captura de paquetes cando queiras</translation>
 <translation id="2034971124472263449">Gardar de todas formas</translation>
-<translation id="2047639699071423250">Engadir idea clave</translation>
 <translation id="2049240716062114887">Cambiouse o nome do escritorio por <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2064048859448024834">A vista previa da cámara está activada</translation>
-<translation id="2066708475850724665">Deter lupa</translation>
 <translation id="2067602449040652523">Brillo do teclado</translation>
 <translation id="2078034614700056995">Para cambiar ao escritorio seguinte, pasa catro dedos cara á dereita</translation>
 <translation id="2079504693865562705">Ocultar as aplicacións do estante</translation>
@@ -199,6 +196,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2107914222138020205">O teu cable USB-C non é compatible con Thunderbolt. O rendemento do dispositivo podería verse limitado.</translation>
 <translation id="2108303511227308752">O atallo de teclado Alt + Retroceso cambiou. Para usar a tecla Suprimir, preme <ph name="LAUNCHER_KEY_NAME" /> + Retroceso.</translation>
 <translation id="211328683600082144">ACTIVAR MICRÓFONO</translation>
+<translation id="2123115117533398272">Chrome OS mostra suxestións de contido novo que podes explorar. Envía estatísticas para mellorar a calidade só se escolliches compartir os datos de uso. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">Novo escritorio</translation>
 <translation id="2127372758936585790">Cargador de baixa potencia</translation>
 <translation id="2132302418721800944">Gravar pantalla completa</translation>
@@ -212,6 +210,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2220572644011485463">PIN ou contrasinal</translation>
 <translation id="2222841058024245321">Escritorio 7</translation>
 <translation id="2224075387478458881">Non se pode gravar a pantalla cando nela se mostra contido protexido</translation>
+<translation id="2227179592712503583">Quitar suxestión</translation>
 <translation id="225680501294068881">Buscando dispositivos...</translation>
 <translation id="2257486738914982088">Produciuse un erro ao descargar o ficheiro <ph name="FILENAME" /></translation>
 <translation id="2268130516524549846">Bluetooth desactivado</translation>
@@ -269,6 +268,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2621713457727696555">Protexida</translation>
 <translation id="263399434338050016">"Selecciona todo"</translation>
+<translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2653019840645008922">Captura de ventá</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2658778018866295321">Facer clic e arrastrar</translation>
@@ -281,7 +281,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2704781753052663061">Unirse a outras redes wifi</translation>
 <translation id="2705001408393684014">Activar/desactivar micrófono. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Arriba</translation>
-<translation id="2713444072780614174">Branco</translation>
 <translation id="2718395828230677721">Luz nocturna</translation>
 <translation id="2726420622004325180">O teu teléfono debe ter datos móbiles para ofrecer unha zona wifi</translation>
 <translation id="2727175239389218057">Responder</translation>
@@ -350,7 +349,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3100274880412651815">Ignorar modo de captura</translation>
 <translation id="3105917916468784889">Fai unha captura de pantalla</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
-<translation id="3113926042639749131">Quitar suxestión</translation>
 <translation id="3120421559657122717">Queres apagar o dispositivo?</translation>
 <translation id="3126069444801937830">Reinicia para actualizar</translation>
 <translation id="3139942575505304791">Escritorio 1</translation>
@@ -394,6 +392,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3375634426936648815">Función conectada</translation>
 <translation id="3378442621503952303">Conectando co perfil. Agarda uns minutos.</translation>
 <translation id="3386978599540877378">a lupa de pantalla completa</translation>
+<translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">Configuración adicional</translation>
 <translation id="3410336247007142655">Mostrar configuración do tema escuro</translation>
 <translation id="3413817803639110246">Aínda non hai contido</translation>
@@ -427,7 +426,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3542066395059568317">Recibirás recomendacións para poder continuar coas túas actividades desde onde as deixaches. Podes facer clic co botón dereito para quitar as recomendacións.</translation>
 <translation id="3552189655002856821">A wifi está desactivada</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" />(fixouse)</translation>
-<translation id="3560866052109807830">Ferramentas de debuxo (marcador)</translation>
 <translation id="3563775809269155755">Activar zona wifi</translation>
 <translation id="3566240529365775567">Abriuse hai uns intres</translation>
 <translation id="3571734092741541777">Configurar</translation>
@@ -452,7 +450,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3638400994746983214">Activar/desactivar a pantalla de privacidade. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Actualización pendente</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Usuario xestionado</translation>
-<translation id="3680908746918359504">Borrar todos os marcadores</translation>
 <translation id="36813544980941320">O teu teléfono e o dispositivo (<ph name="DEVICE_NAME" />) compartirán as redes wifi</translation>
 <translation id="3694122362646626770">Sitios web</translation>
 <translation id="3701206655856637070">Podes cambiar o lugar no que se gardan as capturas de pantalla</translation>
@@ -519,7 +516,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Non para 1 app}other{Non para # apps}}</translation>
 <translation id="4066027111132117168">Activado, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Sinal medio</translation>
-<translation id="4095366824370681039">Estilográfica</translation>
 <translation id="4112140312785995938">Retroceder</translation>
 <translation id="4114315158543974537">Activar Phone Hub</translation>
 <translation id="4115378294792113321">Maxenta</translation>
@@ -551,7 +547,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4279490309300973883">Proxección</translation>
 <translation id="4283888303416325161">Escribe o contrasinal como medida de seguranza adicional</translation>
 <translation id="4285498937028063278">Deixar de fixar</translation>
-<translation id="429402653707266969">Alternar localización da barra de ferramentas</translation>
 <translation id="4294319844246081198">Bos días, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Borrar as <ph name="COUNT" /> notificacións</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> moveuse ao cartafol <ph name="FOLDER_NAME" />.</translation>
@@ -615,7 +610,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4587299710837179226">O micrófono está desactivado</translation>
 <translation id="4596144739579517758">O tema escuro está desactivado</translation>
 <translation id="4611292653554630842">Iniciar sesión</translation>
-<translation id="4614295562446151104">Despregar ferramentas de marcador</translation>
 <translation id="4623167406982293031">Verificar conta</translation>
 <translation id="4628757576491864469">Dispositivos</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, valoración en estrelas: <ph name="RATING_SCORE" /></translation>
@@ -685,7 +679,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="504465286040788597">Anterior parágrafo</translation>
 <translation id="5045550434625856497">Contrasinal incorrecto</translation>
 <translation id="5071064518267176975">Unha aplicación quere usar o micrófono</translation>
-<translation id="5075554201838155866">Iniciar subtítulos</translation>
 <translation id="5078796286268621944">PIN incorrecto</translation>
 <translation id="5083553833479578423">Desbloquea máis funcións do Asistente.</translation>
 <translation id="5106223312672646208">Personalizar</translation>
@@ -793,7 +786,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5790085346892983794">Correcto</translation>
 <translation id="5805809050170488595">Facer clic para activar <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Configuración de dispositivos conectados</translation>
-<translation id="583281660410589416">Descoñecido</translation>
 <translation id="5837036133683224804">Deter <ph name="ROUTE_TITLE" /> no receptor <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Para maximizar a ventá, mantena premida</translation>
 <translation id="5856638668464565213">Rede <ph name="NETWORK_NAME" /> non activada.</translation>
@@ -838,7 +830,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6043212731627905357">Este monitor non funciona co dispositivo <ph name="DEVICE_TYPE" /> (o monitor non é compatible).</translation>
 <translation id="6043994281159824495">Pechar sesión agora</translation>
 <translation id="6047696787498798094">O uso compartido da pantalla deterase cando cambies a outro usuario. Queres continuar?</translation>
-<translation id="6050368268239407309">Ferramentas de presentación</translation>
 <translation id="6054305421211936131">Inicia sesión coa tarxeta intelixente</translation>
 <translation id="6059276912018042191">Pestanas recentes de Chrome</translation>
 <translation id="6062360702481658777">A túa sesión pecharase automaticamente en <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -992,7 +983,6 @@ Nova instalación</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Asistente de Google</translation>
 <translation id="7042322267639375032">Contraer área de estado</translation>
 <translation id="7045033600005038336">Queres substituír o modelo?</translation>
-<translation id="7045595904618419789">Iniciar lupa</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> (desconectado)</translation>
 <translation id="7055910611768509537">O lapis óptico non se usou desde hai máis dunha semana</translation>
 <translation id="7066646422045619941">Esta rede está desactivada polo administrador.</translation>
@@ -1020,7 +1010,6 @@ Nova instalación</translation>
 <translation id="7258828758145722155">Editouse onte</translation>
 <translation id="726276584504105859">Arrastra aquí a ventá para usar a vista dividida</translation>
 <translation id="7262906531272962081">Crear recordatorio</translation>
-<translation id="7279434993080105272">Cor do marcador: <ph name="COLOR_PARAMETER" /></translation>
 <translation id="7302889331339392448">A función Subtítulos instantáneos está desactivada.</translation>
 <translation id="7303365578352795231">Respondendo consulta noutro dispositivo.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1047,7 +1036,6 @@ Nova instalación</translation>
 <translation id="742594950370306541">Estase utilizando a cámara.</translation>
 <translation id="742608627846767349">Bos días!</translation>
 <translation id="743058460480092004">Estanse utilizando a cámara e o micrófono.</translation>
-<translation id="7434543979546293336">Marcouse como idea clave</translation>
 <translation id="7452560014878697800">Unha aplicación está utilizando a túa cámara</translation>
 <translation id="7453330308669753048">Quitouse un resultado do historial de busca</translation>
 <translation id="7461924472993315131">Marcar cun alfinete</translation>
@@ -1055,7 +1043,6 @@ Nova instalación</translation>
 <translation id="7466449121337984263">Toca o sensor</translation>
 <translation id="7477793887173910789">Controlar a túa música, os vídeos e moito máis</translation>
 <translation id="7483025031359818980">Definiuse a pantalla completa como área de selección</translation>
-<translation id="7486227320194954040">Contraer ferramentas de marcador</translation>
 <translation id="7497767806359279797">Escoller idioma e teclado</translation>
 <translation id="7508690557411636492">Abriuse durante o último mes</translation>
 <translation id="7509246181739783082">Verifica a túa identidade</translation>
@@ -1072,7 +1059,6 @@ Nova instalación</translation>
 <translation id="7561982940498449837">Pechar menú</translation>
 <translation id="7564874036684306347">Ao mover as ventás a outro ordenador pódese provocar un comportamento inesperado. É posible que as notificacións, as ventás e os cadros de diálogo posteriores se dividan entre os ordenadores.</translation>
 <translation id="7569509451529460200">Activouse o braille e ChromeVox</translation>
-<translation id="7569983096843329377">Negro</translation>
 <translation id="7573585051776738856">Ventá activa fixada á dereita.</translation>
 <translation id="7579778809502851308">Captura de pantalla</translation>
 <translation id="7590883480672980941">Configuración da introdución de texto</translation>
@@ -1080,7 +1066,6 @@ Nova instalación</translation>
 <translation id="7600875258240007829">Ver todas as notificacións</translation>
 <translation id="7607002721634913082">En pausa</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
-<translation id="7631906263969450674">Lapis marcador</translation>
 <translation id="7633755430369750696">Mostrar a configuración da función Compartir por Nearby.</translation>
 <translation id="7641938616688887143">Zona que se gravará</translation>
 <translation id="7642647758716480637">Abrir a configuración para <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
@@ -1152,7 +1137,6 @@ Nova instalación</translation>
 <translation id="8029247720646289474">Produciuse un erro coa conexión á zona wifi</translation>
 <translation id="8029629653277878342">Como medida adicional de seguranza debes escribir o PIN ou o contrasinal</translation>
 <translation id="8030169304546394654">Desconectado</translation>
-<translation id="8035152190676905274">Bolígrafo</translation>
 <translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8042893070933512245">Abrir menú da configuración de accesibilidade</translation>
 <translation id="8042925093898452104">Pechar información detallada</translation>
@@ -1168,7 +1152,6 @@ Nova instalación</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8131994907636310308">Pechar notificación de ordenar</translation>
-<translation id="8132487352815776550">Deter subtítulos</translation>
 <translation id="8132793192354020517">Conectado a <ph name="NAME" /></translation>
 <translation id="813913629614996137">Iniciando...</translation>
 <translation id="8142441511840089262">Dobre clic</translation>

@@ -511,6 +511,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2298855485018661510">Botón Xestionar cookies. Para xestionar na configuración de Chrome as túas preferencias relativas ás cookies, preme Introducir</translation>
 <translation id="2300306941146563769">Non se cargou</translation>
 <translation id="2310021320168182093">Chou2 (sobre)</translation>
+<translation id="2316159751672436664">Personalizar as túas ferramentas de accesibilidade na configuración de Chrome OS</translation>
 <translation id="2316887270356262533">Libera menos de 1 MB. É posible que algúns sitios carguen de forma máis lenta a próxima vez que os visites.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> require un nome de usuario e un contrasinal.</translation>
 <translation id="2318594867107319532">Última marca de tempo da política:</translation>
@@ -1668,6 +1669,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5518670652865028077">Arte e entretemento</translation>
 <translation id="5519516356611866228">Cos teus cambios</translation>
 <translation id="5523118979700054094">Nome da política</translation>
+<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para personalizar as ferramentas de accesibilidade na configuración de Chrome OS, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="5528532273234423708">Domótica</translation>
 <translation id="55293785478302737">Grampa no bordo</translation>
 <translation id="553484882784876924">Prc6 (sobre)</translation>
@@ -2246,6 +2248,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="722454870747268814">Nova pestana do modo de incógnito</translation>
 <translation id="7233592378249864828">Folla de confirmación da impresión</translation>
 <translation id="7234638337680728591">Combustible para vehículos e prezos do combustible</translation>
+<translation id="7237492777898608035">Non mostrar esta mensaxe de novo para este sitio</translation>
 <translation id="7238585580608191973">Impresión dixital SHA-256</translation>
 <translation id="7240120331469437312">Nome alternativo do asunto do certificado</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -2628,6 +2631,7 @@ Detalles adicionais:
 <translation id="8242426110754782860">Continuar</translation>
 <translation id="8249296373107784235">Cancelar</translation>
 <translation id="8249463483885748674">Probas estandarizadas e de admisión</translation>
+<translation id="8252991034201168845">Botón para xestionar a configuración de accesibilidade. Para personalizar as ferramentas de accesibilidade na configuración de Chrome OS, preme Introducir</translation>
 <translation id="8253091569723639551">É obrigatorio introducir o enderezo de facturación</translation>
 <translation id="8257387598443225809">Esta aplicación está deseñada para dispositivos móbiles</translation>
 <translation id="825929999321470778">Mostrar todos os contrasinais gardados</translation>

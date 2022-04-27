@@ -5,7 +5,7 @@
 <translation id="1047956942837015229"><ph name="COUNT" /> нерсе жок кылынууда…</translation>
 <translation id="1049926623896334335">Word документи</translation>
 <translation id="1056775291175587022">Тармактар жок</translation>
-<translation id="1060368002126861100">Файлдарды <ph name="APP_NAME" /> колдонмосунда ачуу үчүн, алгач аларды Windows папкасына жылдырыңыз.</translation>
+<translation id="1060368002126861100">Файлдарды <ph name="APP_NAME" /> колдонмосунда ачуу үчүн алгач аларды Windows папкасына жылдырыңыз.</translation>
 <translation id="1062407476771304334">Алмаштыруу</translation>
 <translation id="1119069657431255176">Bzip2 менен кысылган тар архив</translation>
 <translation id="1119447706177454957">Ички ката</translation>
@@ -199,8 +199,6 @@
 <translation id="2649120831653069427">Түстүү балык</translation>
 <translation id="2663066752008346276">Бирмача (Мьянма) жана Myansan баскычтобу</translation>
 <translation id="2664412712123763093">Файлдын жайгашкан жери</translation>
-<translation id="2672394958563893062">Ката кетти. Кайра башынан баштоо үчүн чыкылдатыңыз.</translation>
-<translation id="2676946222714718093">Төмөнкүдө ойнотулууда:</translation>
 <translation id="2718540689505416944">Колдонмону Linux менен орнотуу</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Чоо-жайы</translation>
 <translation id="2724954091494693138">Түркчө (Turkish F баскычтобу)</translation>
@@ -296,7 +294,7 @@
 <translation id="3524311639100184459">Эскертүү: Бул файлдар убактылуу жана дискте орун бошотуу үчүн автоматтык түрдө жок кылынышы мүмкүн.  <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Куржун</translation>
 <translation id="3549797760399244642">drive.google.com дегенге өтүңүз…</translation>
-<translation id="3553048479571901246">Файлдарды <ph name="APP_NAME" /> колдонмосунда ачуу үчүн, алгач аларды Windows папкасына көчүрүңүз.</translation>
+<translation id="3553048479571901246">Файлдарды <ph name="APP_NAME" /> колдонмосунда ачуу үчүн алгач аларды Windows папкасына көчүрүңүз.</translation>
 <translation id="3556731189587832921">Англисче (АКШ) жана жеке компьютерлер үчүн эл аралык баскычтоп</translation>
 <translation id="3567221313191587603">Файлды тандап, оффлайнда колдонууга уруксат берүү үчүн <ph name="OFFLINE_CHECKBOX_NAME" /> кутучасын белгилеңиз.</translation>
 <translation id="357479282490346887">Литвача</translation>
@@ -342,7 +340,6 @@
 <translation id="3901991538546252627"><ph name="NAME" /> менен туташууда</translation>
 <translation id="3906232975181435906">Мобилдик профиль орнотулууда, <ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Төмөнкүдө ойнотуу</translation>
 <translation id="3943857333388298514">Чаптоо</translation>
 <translation id="3952872973865944257">Телугуча (фонетикалык)</translation>
 <translation id="3958548648197196644">Киви</translation>
@@ -414,7 +411,6 @@
 <translation id="4631887759990505102">Аткаруучу</translation>
 <translation id="4642769377300286600">Мобилдик профиль орнотулууда, <ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Чехче жана Qwerty баскычтобу</translation>
-<translation id="4656293982926141856">Ушул компьютер</translation>
 <translation id="4656777537938206294">Файлдарды оффлайнда колдонуңуз</translation>
 <translation id="4658782175094886150">Кардагы адам</translation>
 <translation id="4669606053856530811">Файлдар бөлүшүлмөйүнчө "<ph name="SOURCE_NAME" />" жалпы дискинин колдонуучулары аларды колдоно албай калышат.</translation>
@@ -431,7 +427,6 @@
 <translation id="4720185134442950733">Мобилдик Интернет тармагы</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> сүрөттүн камдык көчүрмөсү сакталды</translation>
 <translation id="4725511304875193254">Корги</translation>
-<translation id="4732760563705710320">Кечиресиз, бул видео тышкы экранга чыгаруу түзмөгүңүздө колдоого алынбайт.</translation>
 <translation id="4737050008115666127">Конуу</translation>
 <translation id="4747271164117300400">Македонияча</translation>
 <translation id="4759238208242260848">Жүктөлүп алынгандар</translation>
@@ -621,7 +616,6 @@
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> форматталсын</translation>
 <translation id="6227235786875481728">Бул файл ойнотулган жок.</translation>
 <translation id="6241349547798190358">Голландча (Бельгия)</translation>
-<translation id="6248400709929739064">Коштомо жазууларды иштетүү</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="PHONE_NAME" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Телефондун батареясы <ph name="BATTERY_STATUS" />%, Туташуу</translation>
 <translation id="6269630227984243955">Малайча</translation>
 <translation id="6287852322318138013">Бул файлды ачуу үчүн колдонмо тандаңыз</translation>
@@ -639,7 +633,6 @@
 <translation id="637062427944097960">Бул файл башка иштактада ачылган. Аны көрүү үчүн <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) карай жылыңыз.</translation>
 <translation id="6394388407447716302">Окуу үчүн гана</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> элемент</translation>
-<translation id="6398765197997659313">Толук экран режиминен чыгуу</translation>
 <translation id="642282551015776456">Муну файл же папка аталышы катары колдонууга болбойт</translation>
 <translation id="6423031066725912715">Вьетнамча (TCVN баскычтобу)</translation>
 <translation id="6485131920355264772">Бош орун тууралуу маалымат түшпөй калды</translation>
@@ -675,7 +668,6 @@
 <translation id="6820687829547641339">Gzip менен кысылган tar архиви</translation>
 <translation id="6823166707458800069">Бул папкада сакталган бардык файлдардын камдык көчүрмөлөрү автоматтык түрдө Интернетте сакталат.</translation>
 <translation id="6825883775269213504">Орусча</translation>
-<translation id="6827236167376090743">Бул видео уйлар кезүүдөн келгенче ойноло берет.</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> тандоодон чыгарылды.</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, cигналдын күчү <ph name="SIGNAL_STRENGTH" />%, чоо-жайы</translation>
 <translation id="6861394552169064235">Фарсиче</translation>
@@ -813,7 +805,6 @@
 <translation id="7857117644404132472">Өзгөчө учурду кошуу</translation>
 <translation id="7868774406711971383">Полякча</translation>
 <translation id="7874321682039004450">Филиппинче</translation>
-<translation id="7881969471599061635">Коштомо жазууларды өчүрүү</translation>
 <translation id="78946041517601018">Жалпы дисктер</translation>
 <translation id="7908793776359722643">Бөлүмдөрдү форматтасаңыз, анда сакталган бардык нерселер өчүрүлөт. Бул аракетти артка кайтаруу мүмкүн эмес.</translation>
 <translation id="7925247922861151263">AAA текшерүүсү кыйрады</translation>
@@ -890,7 +881,6 @@
 <translation id="8492972329130824181">Үйдөгү тармак жеткиликсиз. Туташуу үчүн мобилдик интернет-роуминг иштетилиши керек.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> нерсе чыгарылууда...</translation>
 <translation id="8521441079177373948">UK</translation>
-<translation id="8525306231823319788">Толук экран</translation>
 <translation id="853494022971700746">Французча (Франция)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Чоо-жайы</translation>
 <translation id="8545476925160229291">Англисче (АКШ)</translation>

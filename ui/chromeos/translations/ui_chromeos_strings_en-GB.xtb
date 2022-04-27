@@ -199,8 +199,6 @@
 <translation id="2649120831653069427">Rainbowfish</translation>
 <translation id="2663066752008346276">Burmese/Myanmar with Myansan keyboard</translation>
 <translation id="2664412712123763093">File location</translation>
-<translation id="2672394958563893062">An error occurred. Click to restart from the beginning.</translation>
-<translation id="2676946222714718093">Playing on</translation>
 <translation id="2718540689505416944">Install app with Linux</translation>
 <translation id="2719020180254996569">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, details</translation>
 <translation id="2724954091494693138">Turkish with F-keyboard</translation>
@@ -342,7 +340,6 @@
 <translation id="3901991538546252627">Connecting to <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Installing mobile profile, network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Play on</translation>
 <translation id="3943857333388298514">Paste</translation>
 <translation id="3952872973865944257">Telugu phonetic</translation>
 <translation id="3958548648197196644">Kiwi</translation>
@@ -414,7 +411,6 @@
 <translation id="4631887759990505102">Artist</translation>
 <translation id="4642769377300286600">Installing mobile profile, network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Czech with QWERTY keyboard</translation>
-<translation id="4656293982926141856">This computer</translation>
 <translation id="4656777537938206294">Make files available offline</translation>
 <translation id="4658782175094886150">Person in snow</translation>
 <translation id="4669606053856530811">Members of '<ph name="SOURCE_NAME" />' will lose access unless these items are shared with them.</translation>
@@ -431,7 +427,6 @@
 <translation id="4720185134442950733">Mobile data network</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> photos backed up</translation>
 <translation id="4725511304875193254">Corgi</translation>
-<translation id="4732760563705710320">Sorry, this video is not supported by your cast device.</translation>
 <translation id="4737050008115666127">Landing</translation>
 <translation id="4747271164117300400">Macedonian</translation>
 <translation id="4759238208242260848">Downloads</translation>
@@ -622,7 +617,6 @@
 <translation id="6224253798271602650">Format <ph name="DRIVE_NAME" /></translation>
 <translation id="6227235786875481728">This file could not be played.</translation>
 <translation id="6241349547798190358">Dutch (Belgium)</translation>
-<translation id="6248400709929739064">Enable subtitles</translation>
 <translation id="6267547857941397424">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signal strength <ph name="SIGNAL_STRENGTH" />%, phone battery <ph name="BATTERY_STATUS" />%, connect</translation>
 <translation id="6269630227984243955">Malay</translation>
 <translation id="6287852322318138013">Select an app to open this file</translation>
@@ -640,7 +634,6 @@
 <translation id="637062427944097960">This file opened on a different desktop. Move to <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) to view it.</translation>
 <translation id="6394388407447716302">Read-only</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> items</translation>
-<translation id="6398765197997659313">Exit full screen</translation>
 <translation id="642282551015776456">This name may not be used as a file or folder name</translation>
 <translation id="6423031066725912715">Vietnamese with TCVN keyboard</translation>
 <translation id="6485131920355264772">Failed to retrieve space info</translation>
@@ -676,7 +669,6 @@
 <translation id="6820687829547641339">Gzip compressed tar archive</translation>
 <translation id="6823166707458800069">All files saved in this folder are backed up online automatically.</translation>
 <translation id="6825883775269213504">Russian</translation>
-<translation id="6827236167376090743">This video will keep playing until the cows come home.</translation>
 <translation id="6847101934483209767">Removed <ph name="ENTRY_NAME" /> from selection.</translation>
 <translation id="6856459657722366306">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="6861394552169064235">Persian</translation>
@@ -814,7 +806,6 @@
 <translation id="7857117644404132472">Add exception</translation>
 <translation id="7868774406711971383">Polish</translation>
 <translation id="7874321682039004450">Filipino</translation>
-<translation id="7881969471599061635">Disable subtitles</translation>
 <translation id="78946041517601018">Shared drives</translation>
 <translation id="7908793776359722643">Formatting a partition will erase all data stored on it. This action cannot be undone.</translation>
 <translation id="7925247922861151263">AAA check failed</translation>
@@ -891,7 +882,6 @@
 <translation id="8492972329130824181">Home network is not available. Mobile data roaming must be enabled to connect.</translation>
 <translation id="8499098729323186194">Extracting <ph name="NUMBER_OF_ITEMS" /> items…</translation>
 <translation id="8521441079177373948">UK</translation>
-<translation id="8525306231823319788">Full screen</translation>
 <translation id="853494022971700746">French (France)</translation>
 <translation id="8540608333167683902">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="8545476925160229291">English (US)</translation>

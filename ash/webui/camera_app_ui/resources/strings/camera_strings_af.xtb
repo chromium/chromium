@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
 <translation id="1113173431709655881">Kameramodus</translation>
+<translation id="1153190633558910465">Rooster af</translation>
 <translation id="1175958423215084756">Skakel is bespeur. <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">Draai 90 grade kloksgewys</translation>
 <translation id="1276998909102132017">Galeryprente</translation>
 <translation id="1300209025925956156">Skandeer jou dokument</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Search + linkspyl om toegang te kry</translation>
+<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">Druk uit</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> is uitgeprop.</translation>
 <translation id="1473110567575736769">Afteller van 3 sekondes</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">Tydsduur van afteller</translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> is aktief</translation>
+<translation id="2134029355740465625">Video-instellings</translation>
 <translation id="2144806332417375165">Gepasmaakte videoparameters</translation>
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="2271433936731426666">Aktiveer video-oorsig in volle grootte</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">Agterste kamera</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />s</translation>
 <translation id="2761536921376153655">Soort skandering</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">Spieëlvoorskou</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> is ingeprop.</translation>
 <translation id="2968794441791257519">Foto's en video's wat met die kamera geneem is, sal na die Aflaaie-vouer toe geskuif word. Jy kan in Lêers by hulle ingaan.
 
@@ -52,6 +57,8 @@
 <translation id="3240426699337459095">Skakel gekopieer</translation>
 <translation id="3259149966178251584">Kameraresolusie</translation>
 <translation id="3305962767867348165">Maak reg</translation>
+<translation id="3354465018370944241">Foto-instellings</translation>
+<translation id="3411958449466169012">Afteller af</translation>
 <translation id="3448774564454087943">Video is nie gestoor nie want dis te kort</translation>
 <translation id="346539236881580388">Neem weer</translation>
 <translation id="3517926952904427380">Kan nie portretfoto neem nie</translation>
@@ -63,9 +70,12 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skandeer strepieskode</translation>
 <translation id="3892148308691398805">Kopieer teks</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Onderbreek opname</translation>
 <translation id="4121305183798804752">Dokument bespeur</translation>
+<translation id="414641094616694804">Hierdie kamera kan nie resolusie verander nie</translation>
 <translation id="4269820728363426813">Kopieer skakeladres</translation>
+<translation id="4281620174117014503">Mediumresolusie</translation>
 <translation id="4329152592498422850">Wissel om vierkantige foto te neem</translation>
 <translation id="4383571725254449280">Drukwerkverrigtingloglêers</translation>
 <translation id="4445542136948522167">Hou op om foto te neem</translation>
@@ -74,12 +84,15 @@
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4649291346448517080">Kan nie die lêer stoor nie</translation>
 <translation id="4695379108709712600">Beweeg tans na bo</translation>
+<translation id="4705093842003735294">Volle resolusie</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Multistroom-video-opname</translation>
+<translation id="5034763830503483128">Fotoaspekverhouding</translation>
 <translation id="5057360777601936059">Jou kamera is tans nie beskikbaar nie.
         Kyk asseblief of die kamera behoorlik gekoppel is.</translation>
 <translation id="5163387177077603948">Beweeg tans na regs</translation>
 <translation id="520537883758714667">Dokumentskandering is nou beskikbaar</translation>
+<translation id="5235304959032763950">16 tot 9</translation>
 <translation id="5266635337630551423">Dokument se hoek links bo</translation>
 <translation id="5317780077021120954">Berg</translation>
 <translation id="5320594929574852403">Beweeg tans na links</translation>
@@ -94,6 +107,7 @@
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5975083100439434680">Zoem uit</translation>
 <translation id="5976160379964388480">Ander</translation>
+<translation id="603973421174355542">Volle HD</translation>
 <translation id="6073451960410192870">Stop opname</translation>
 <translation id="6197807149213783179">Stoor metadata</translation>
 <translation id="6233780560267770709">3 by 3</translation>
@@ -104,6 +118,7 @@
 As jou terugvoer oor prent- of videogehalte gaan, moet jy asseblief 'n voorbeeldfoto of -video aanheg en beskryf wat fout is. (Byvoorbeeld, foto is te donker of onderwerp is nie in fokus nie.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapieksel</translation>
 <translation id="6527303717912515753">Deel</translation>
+<translation id="6631515515009660915">Spieël af</translation>
 <translation id="6652737148136672975">Beweeg hoekposisie met pylsleutels</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6681668084120808868">Neem foto</translation>
@@ -114,6 +129,7 @@ As jou terugvoer oor prent- of videogehalte gaan, moet jy asseblief 'n voorbeeld
 <translation id="698156982839284926">3 sekondes</translation>
 <translation id="712848772518857951">Wil jy regtig <ph name="COUNT" /> items verwyder?</translation>
 <translation id="7134221860976209830">Afteller van 10 sekondes</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Soort opname</translation>
 <translation id="7243947652761655814">Videoresolusie</translation>
 <translation id="7337660886763914220">Lêerstelselfoute.</translation>
@@ -146,9 +162,11 @@ As jou terugvoer oor prent- of videogehalte gaan, moet jy asseblief 'n voorbeeld
 <translation id="8815966864175525708">Wissel om portretfoto te neem</translation>
 <translation id="8828441885228359828">Hervat opname</translation>
 <translation id="8870695351537079478">Kan nie opname begin nie</translation>
+<translation id="8880167521484863515">4 tot 3</translation>
 <translation id="8903921497873541725">Zoem in</translation>
 <translation id="9045010116236796332">Plaas al die kante van die dokument binne die raam</translation>
 <translation id="9045155556724273246">10 sekondes</translation>
 <translation id="906331135292332864">Verwerk tans prent …</translation>
+<translation id="922762992951083513">Spieël aan</translation>
 <translation id="945522503751344254">Stuur terugvoer</translation>
 </translationbundle>

@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
 <translation id="1113173431709655881">Kameramodus</translation>
+<translation id="1153190633558910465">Rutenett av</translation>
 <translation id="1175958423215084756">Oppdaget link. <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">Rotér 90 grader med klokken</translation>
 <translation id="1276998909102132017">Galleribilder</translation>
 <translation id="1300209025925956156">Skann dokumentet</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Trykk på søketasten + venstrepil for å se dem.</translation>
+<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> er koblet fra.</translation>
 <translation id="1473110567575736769">Tre sekunders nedtelling</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">Nedtellervarighet</translation>
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> er aktivt</translation>
+<translation id="2134029355740465625">Videoinnstillinger</translation>
 <translation id="2144806332417375165">Egendefinerte videoparametre</translation>
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="2271433936731426666">Slå på full størrelse for øyeblikksbilder fra videoer</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">Bakre kamera</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Skannetype</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">Forhåndsvisning av speiling</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> er koblet til.</translation>
 <translation id="2968794441791257519">Bilder og videoer som er tatt med kameraet, flyttes til mappen Nedlastinger. Du har tilgang til dem i Filer.
 
@@ -52,6 +57,8 @@ Apper med lagringstillatelser har tilgang til bildene og videoene dine.</transla
 <translation id="3240426699337459095">Linken er kopiert</translation>
 <translation id="3259149966178251584">Kameraoppløsning</translation>
 <translation id="3305962767867348165">Fiks</translation>
+<translation id="3354465018370944241">Bildeinnstillinger</translation>
+<translation id="3411958449466169012">Nedtelling av</translation>
 <translation id="3448774564454087943">Videoen blir ikke lagret, siden den er for kort</translation>
 <translation id="346539236881580388">Ta på nytt</translation>
 <translation id="3517926952904427380">Kunne ikke ta bilde i stående format</translation>
@@ -63,9 +70,12 @@ Apper med lagringstillatelser har tilgang til bildene og videoene dine.</transla
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skann strekkoden</translation>
 <translation id="3892148308691398805">Kopiér teksten</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Sett opptaket på pause</translation>
 <translation id="4121305183798804752">Et dokument er oppdaget</translation>
+<translation id="414641094616694804">Dette kameraet kan ikke endre oppløsning</translation>
 <translation id="4269820728363426813">Kopiér linkadressen</translation>
+<translation id="4281620174117014503">Middels oppløsning</translation>
 <translation id="4329152592498422850">Bytt til kvadratisk bilde</translation>
 <translation id="4383571725254449280">Logger over utskriftsytelse</translation>
 <translation id="4445542136948522167">Slutt å ta bilde</translation>
@@ -74,12 +84,15 @@ Apper med lagringstillatelser har tilgang til bildene og videoene dine.</transla
 <translation id="4628948037717959914">Bilde</translation>
 <translation id="4649291346448517080">Kan ikke lagre filen</translation>
 <translation id="4695379108709712600">Beveger seg oppover</translation>
+<translation id="4705093842003735294">Full oppløsning</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Videoopptak med flere strømmer</translation>
+<translation id="5034763830503483128">Høyde/bredde-forhold for bildet</translation>
 <translation id="5057360777601936059">Kameraet er ikke tilgjengelig akkurat nå.
         Sjekk om kameraet er koblet til riktig.</translation>
 <translation id="5163387177077603948">Beveger seg mot høyre</translation>
 <translation id="520537883758714667">Dokumentskanning er nå tilgjengelig</translation>
+<translation id="5235304959032763950">16 til 9</translation>
 <translation id="5266635337630551423">Dokumentets øvre venstre hjørne</translation>
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5320594929574852403">Beveger seg mot venstre</translation>
@@ -94,6 +107,7 @@ Apper med lagringstillatelser har tilgang til bildene og videoene dine.</transla
 <translation id="5916664084637901428">På</translation>
 <translation id="5975083100439434680">Zoom ut</translation>
 <translation id="5976160379964388480">Andre</translation>
+<translation id="603973421174355542">Full HD</translation>
 <translation id="6073451960410192870">Stopp opptaket</translation>
 <translation id="6197807149213783179">Lagre metadata</translation>
 <translation id="6233780560267770709">3 ganger 3</translation>
@@ -104,6 +118,7 @@ Apper med lagringstillatelser har tilgang til bildene og videoene dine.</transla
 Hvis tilbakemeldingen din gjelder bilde- eller videokvalitet, ber vi deg legge ved et eksempelbilde eller en eksempelvideo og forklare hva som er galt. (Eksempel: Bildet er for mørkt, eller motivet er ute av fokus.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapiksel</translation>
 <translation id="6527303717912515753">Del</translation>
+<translation id="6631515515009660915">Speiling av</translation>
 <translation id="6652737148136672975">Flytt hjørneposisjonen med piltastene</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6681668084120808868">Ta et bilde</translation>
@@ -114,6 +129,7 @@ Hvis tilbakemeldingen din gjelder bilde- eller videokvalitet, ber vi deg legge v
 <translation id="698156982839284926">3 sekunder</translation>
 <translation id="712848772518857951">Er du sikker på at du vil fjerne de <ph name="COUNT" /> elementene?</translation>
 <translation id="7134221860976209830">Ti sekunders nedtelling</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Posttype</translation>
 <translation id="7243947652761655814">Videooppløsning</translation>
 <translation id="7337660886763914220">Filsystemfeil.</translation>
@@ -146,9 +162,11 @@ Hvis tilbakemeldingen din gjelder bilde- eller videokvalitet, ber vi deg legge v
 <translation id="8815966864175525708">Bytt til bilde i stående format</translation>
 <translation id="8828441885228359828">Gjenoppta opptaket</translation>
 <translation id="8870695351537079478">Kan ikke starte opptak</translation>
+<translation id="8880167521484863515">4 til 3</translation>
 <translation id="8903921497873541725">Zoom inn</translation>
 <translation id="9045010116236796332">Plassér alle hjørnene av dokumentet innenfor rammen</translation>
 <translation id="9045155556724273246">10 sekunder</translation>
 <translation id="906331135292332864">Behandler bildet …</translation>
+<translation id="922762992951083513">Speiling på</translation>
 <translation id="945522503751344254">Send tilbakemelding</translation>
 </translationbundle>

@@ -26,7 +26,6 @@
 <translation id="109942774857561566">Мне скучно</translation>
 <translation id="1104084341931202936">Показать настройки специальных возможностей</translation>
 <translation id="1104621072296271835">Вместе ваши устройства будут работать ещё лучше</translation>
-<translation id="1111781754511998498">Проектор</translation>
 <translation id="112308213915226829">Автоматически скрывать панель запуска</translation>
 <translation id="1142002900084379065">Недавние фотографии</translation>
 <translation id="1148499908455722006">Открыть диалоговое окно с информацией об аккаунте <ph name="USER_NAME" /></translation>
@@ -80,6 +79,7 @@
 <translation id="1312604459020188865">Уровень сигнала – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Всегда показывать панель запуска</translation>
 <translation id="1316811122439383437">Быстрый доступ: недавние скриншоты, а также скачанные и закрепленные файлы</translation>
+<translation id="132346741904777634">Окно предварительного просмотра камеры привязано к левому верхнему углу, так как перекрывало элементы системного интерфейса</translation>
 <translation id="1333308631814936910">Подключено устройство "<ph name="DISPLAY_NAME" />".</translation>
 <translation id="1341651618736211726">Открыть дополнительное меню</translation>
 <translation id="1346748346194534595">Справа</translation>
@@ -163,6 +163,7 @@
 <translation id="1885785240814121742">Используйте разблокировку по отпечатку пальца</translation>
 <translation id="1888656773939766144">Экран "<ph name="DISPLAY_NAME" />" не поддерживает разрешение <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц). Установлено разрешение <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Гц). Чтобы сохранить изменения, нажмите "Подтвердить". Предыдущие настройки восстановятся через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1915307458270490472">Закрыть</translation>
+<translation id="1918022425394817322">Окно предварительного просмотра камеры привязано к правому верхнему углу</translation>
 <translation id="1919743966458266018">Изменились быстрые клавиши для запуска диспетчера задач. Используйте <ph name="NEW_SHORTCUT" /> вместо <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Автоматическое нажатие</translation>
 <translation id="1928739107511554905">Чтобы выполнить обновление, перезагрузите устройство Chromebook с помощью сенсорной панели, не отключая от него клавиатуру.</translation>
@@ -185,11 +186,9 @@
 <translation id="2021864487439853900">Нажать, чтобы разблокировать</translation>
 <translation id="2023558322300866873">Операцию можно прервать в любой момент.</translation>
 <translation id="2034971124472263449">Все равно сохранить</translation>
-<translation id="2047639699071423250">Добавить основную идею</translation>
 <translation id="2049240716062114887">Название рабочего стола изменилось на "<ph name="DESK_NAME" />"</translation>
 <translation id="2050339315714019657">Вертикальное расположение</translation>
 <translation id="2064048859448024834">Предварительный просмотр для камеры включен</translation>
-<translation id="2066708475850724665">Выключить лупу</translation>
 <translation id="2067602449040652523">Яркость клавиатуры</translation>
 <translation id="2078034614700056995">Чтобы перейти на следующий рабочий стол, проведите четырьмя пальцами вправо.</translation>
 <translation id="2079504693865562705">Скрыть приложения на панели запуска</translation>
@@ -213,6 +212,7 @@
 <translation id="2220572644011485463">PIN-код или пароль</translation>
 <translation id="2222841058024245321">Рабочий стол 7</translation>
 <translation id="2224075387478458881">Запись экрана запрещена, так как на нем есть защищенный контент.</translation>
+<translation id="2227179592712503583">Удалить подсказку</translation>
 <translation id="225680501294068881">Поиск устройств…</translation>
 <translation id="2257486738914982088">При скачивании файла <ph name="FILENAME" /> произошла ошибка.</translation>
 <translation id="2268130516524549846">Bluetooth отключен</translation>
@@ -283,7 +283,6 @@
 <translation id="2704781753052663061">Подключиться к другим сетям Wi-Fi</translation>
 <translation id="2705001408393684014">Кнопка включения и отключения микрофона. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Вверх</translation>
-<translation id="2713444072780614174">Белый</translation>
 <translation id="2718395828230677721">Ночной свет</translation>
 <translation id="2726420622004325180">Чтобы включить точку доступа на телефоне, требуется подключение к мобильному Интернету</translation>
 <translation id="2727175239389218057">Ответить</translation>
@@ -352,7 +351,6 @@
 <translation id="3100274880412651815">Отключить режим снимка экрана</translation>
 <translation id="3105917916468784889">Скриншот</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
-<translation id="3113926042639749131">Удалить подсказку</translation>
 <translation id="3120421559657122717">Выключить устройство?</translation>
 <translation id="3126069444801937830">Перезагрузите, чтобы обновить</translation>
 <translation id="3139942575505304791">Рабочий стол 1</translation>
@@ -430,7 +428,6 @@
 <translation id="3542066395059568317">Следуйте рекомендациям, чтобы продолжить работу с того места, на котором вы остановились. Нажмите на них правой кнопкой мыши, чтобы удалить.</translation>
 <translation id="3552189655002856821">Wi-Fi отключен</translation>
 <translation id="3554637740840164787">Объект "<ph name="ITEM_TITLE" />" закреплен</translation>
-<translation id="3560866052109807830">Инструменты рисования маркером</translation>
 <translation id="3563775809269155755">Включить точку доступа</translation>
 <translation id="3566240529365775567">Открыто только что</translation>
 <translation id="3571734092741541777">Настроить</translation>
@@ -455,7 +452,6 @@
 <translation id="3638400994746983214">Включить или отключить экран конфиденциальности. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Нужно обновить ПО</translation>
 <translation id="366222428570480733">Управляемый пользователь <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="3680908746918359504">Удалить все маркеры</translation>
 <translation id="36813544980941320">На вашем телефоне и устройстве <ph name="DEVICE_NAME" /> будут использоваться одинаковые сети Wi-Fi.</translation>
 <translation id="3694122362646626770">Сайты</translation>
 <translation id="3701206655856637070">Теперь вы можете выбрать папку, в которой будут храниться записи экрана.</translation>
@@ -521,7 +517,6 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Откл. 1 прил.}one{Откл. # прил.}few{Откл. # прил.}many{Откл. # прил.}other{Откл. # прил.}}</translation>
 <translation id="4066027111132117168">Включен, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">сигнал средней мощности</translation>
-<translation id="4095366824370681039">Ручка</translation>
 <translation id="4112140312785995938">Перемотать назад</translation>
 <translation id="4114315158543974537">Включите Phone Hub</translation>
 <translation id="4115378294792113321">Пурпурный</translation>
@@ -553,12 +548,12 @@
 <translation id="4279490309300973883">Отражение</translation>
 <translation id="4283888303416325161">Для дополнительной безопасности введите пароль.</translation>
 <translation id="4285498937028063278">Открепить</translation>
-<translation id="429402653707266969">Изменить местоположение панели инструментов</translation>
 <translation id="4294319844246081198">Доброе утро, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Удалить все уведомления: <ph name="COUNT" /></translation>
 <translation id="430191667033048642">Приложение "<ph name="MOVED_APP_NAME" />" перемещено в папку "<ph name="FOLDER_NAME" />".</translation>
 <translation id="4302592941791324970">Недоступно</translation>
 <translation id="4303223480529385476">Развернуть панель состояния</translation>
+<translation id="4312840429157639164">Окно предварительного просмотра камеры привязано к правому верхнему углу, так как перекрывало элементы системного интерфейса</translation>
 <translation id="4316910396681052118">ВСЕ ПРИЛОЖЕНИЯ</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Вы нажали сочетание клавиш для включения режима высокой контрастности. Выполнить это действие?</translation>
@@ -617,7 +612,6 @@
 <translation id="4587299710837179226">Микрофон отключен.</translation>
 <translation id="4596144739579517758">Тёмная тема отключена</translation>
 <translation id="4611292653554630842">Войти</translation>
-<translation id="4614295562446151104">Развернуть инструменты маркера</translation>
 <translation id="4623167406982293031">Подтвердите, что это ваш аккаунт.</translation>
 <translation id="4628757576491864469">Устройства</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, рейтинг – <ph name="RATING_SCORE" /></translation>
@@ -687,7 +681,6 @@
 <translation id="504465286040788597">Предыдущий абзац</translation>
 <translation id="5045550434625856497">Неправильный пароль</translation>
 <translation id="5071064518267176975">Приложение запрашивает доступ к микрофону</translation>
-<translation id="5075554201838155866">Показать субтитры</translation>
 <translation id="5078796286268621944">Неверный PIN-код</translation>
 <translation id="5083553833479578423">Получите доступ к другим возможностям Ассистента.</translation>
 <translation id="5106223312672646208">Персонализировать</translation>
@@ -795,7 +788,6 @@
 <translation id="5790085346892983794">Выполнено</translation>
 <translation id="5805809050170488595">Нажмите, чтобы активировать <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Настройки подключенных устройств</translation>
-<translation id="583281660410589416">Неизвестно</translation>
 <translation id="5837036133683224804">Остановить трансляцию <ph name="ROUTE_TITLE" /> на устройство "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="584525477304726060">Чтобы развернуть окно, удерживайте его</translation>
 <translation id="5856638668464565213">Сеть "<ph name="NETWORK_NAME" />" не активирована.</translation>
@@ -840,7 +832,6 @@
 <translation id="6043212731627905357">Монитор не совместим с устройством <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6043994281159824495">Выйти</translation>
 <translation id="6047696787498798094">Если перейти к другому пользователю, доступ к экрану будет закрыт. Продолжить?</translation>
-<translation id="6050368268239407309">Инструменты для презентаций</translation>
 <translation id="6054305421211936131">Войти с помощью смарт-карты</translation>
 <translation id="6059276912018042191">Недавние вкладки в Chrome</translation>
 <translation id="6062360702481658777">Выход из системы будет выполнен автоматически через <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -869,6 +860,7 @@
 <translation id="6254629735336163724">Заблокировано в горизонтальном положении</translation>
 <translation id="6259254695169772643">Выберите нужное с помощью стилуса</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: выполняется активация...</translation>
+<translation id="6274202259872570803">Скринкаст</translation>
 <translation id="6283712521836204486">Режим "Не беспокоить" отключен</translation>
 <translation id="6284232397434400372">Разрешение изменено</translation>
 <translation id="6288235558961782912">Аккаунт <ph name="USER_EMAIL_ADDRESS" /> можно будет добавить снова с разрешения одного из родителей.</translation>
@@ -900,6 +892,7 @@
 <translation id="649452524636452238">PIN-код для смарт-карты</translation>
 <translation id="6495400115277918834">Включен режим "Картинка в картинке", чтобы переместить фокус, нажмите Alt + Shift + V</translation>
 <translation id="6501401484702599040">Трансляция содержимого экрана: <ph name="RECEIVER_NAME" /></translation>
+<translation id="6515727200518652613">Попытка переподключения после потери связи с камерой.</translation>
 <translation id="6520517963145875092">Выберите окно для снимка</translation>
 <translation id="652139407789908527">Экран будет оставаться выключенным дольше, чем обычно (до одной минуты). Не нажимайте кнопку питания, пока обновление не завершится.</translation>
 <translation id="6528179044667508675">Не беспокоить</translation>
@@ -918,6 +911,7 @@
 <translation id="6578407462441924264">Без имени</translation>
 <translation id="6585808820553845416">Сеанс закончится через <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597278316891651699">Окно предварительного просмотра камеры привязано к левому нижнему углу, так как перекрывало элементы системного интерфейса</translation>
 <translation id="661203523074512333">Статус защиты – "<ph name="SECURITY_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" />, под управлением администратора</translation>
 <translation id="6612802754306526077">Выбран режим записи видео с экрана</translation>
 <translation id="6614169507485700968">Экран конфиденциальности включен</translation>
@@ -955,6 +949,7 @@
 <translation id="6801878137098616817">Недавно отредактировано</translation>
 <translation id="6803622936009808957">Не удалось дублировать изображение экрана, т. к. указанное разрешение не поддерживается. Включен режим расширенного рабочего стола.</translation>
 <translation id="6818242057446442178">Назад на одно слово</translation>
+<translation id="6819327813400217281">Окно предварительного просмотра камеры привязано к левому нижнему углу</translation>
 <translation id="6820676911989879663">Пора отдохнуть!</translation>
 <translation id="6827049576281411231">Закрыть панель мероприятий</translation>
 <translation id="6836499262298959512">Опасный файл</translation>
@@ -983,6 +978,7 @@
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6981982820502123353">Спец. возможности</translation>
 <translation id="698231206551913481">После удаления пользователя все связанные с ним файлы и локальные данные также будут удалены.</translation>
+<translation id="7005239792648594238">Чтобы начать, откройте приложение</translation>
 <translation id="7007983414944123363">Введенный PIN-код или пароль недействителен. Повторите попытку.</translation>
 <translation id="7014684956566476813">Установлено подключение к устройству "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7015766095477679451">Увидимся снова в <ph name="COME_BACK_TIME" />.</translation>
@@ -994,9 +990,9 @@
 <translation id="703425375924687388">Запрос "<ph name="QUERY_NAME" />" для Google Ассистента</translation>
 <translation id="7042322267639375032">Свернуть панель состояния</translation>
 <translation id="7045033600005038336">Заменить шаблон?</translation>
-<translation id="7045595904618419789">Включить лупу</translation>
 <translation id="7051244143160304048">Устройство "<ph name="DEVICE_NAME" />" отключено.</translation>
 <translation id="7055910611768509537">Стилус не использовался больше недели</translation>
+<translation id="7061457967428964661">Окно предварительного просмотра камеры. Чтобы переместить его в другой угол, нажмите Ctrl + клавиша со стрелкой.</translation>
 <translation id="7066646422045619941">Эта сеть отключена администратором.</translation>
 <translation id="7067196344162293536">Автоповорот</translation>
 <translation id="7068360136237591149">Открыть файлы</translation>
@@ -1017,12 +1013,12 @@
 <translation id="718361511487535372">Открыть в Google Календаре</translation>
 <translation id="7188494361780961876">Меню перемещено в левый верхний угол экрана.</translation>
 <translation id="7189412385142492784">Расстояние до Венеры</translation>
+<translation id="7198435252016571249">Окно предварительного просмотра камеры привязано к правому нижнему углу, так как перекрывало элементы системного интерфейса</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" /> Для установки обновления необходимо перезапустить Chromebook. Это может занять около минуты.</translation>
 <translation id="7256634071279256947">Основной микрофон</translation>
 <translation id="7258828758145722155">Изменено вчера</translation>
 <translation id="726276584504105859">Перетащите сюда, чтобы разделить экран</translation>
 <translation id="7262906531272962081">Создать напоминание</translation>
-<translation id="7279434993080105272">Цвет маркера (<ph name="COLOR_PARAMETER" />)</translation>
 <translation id="7302889331339392448">Автоматические субтитры отключены</translation>
 <translation id="7303365578352795231">Ассистент отвечает на другом устройстве.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1049,7 +1045,6 @@
 <translation id="742594950370306541">Камера используется.</translation>
 <translation id="742608627846767349">Доброе утро!</translation>
 <translation id="743058460480092004">Камера и микрофон используются.</translation>
-<translation id="7434543979546293336">Помечено как основная идея.</translation>
 <translation id="7452560014878697800">Приложение использует вашу камеру</translation>
 <translation id="7453330308669753048">Результат удален из истории поиска</translation>
 <translation id="7461924472993315131">Закрепить</translation>
@@ -1057,7 +1052,6 @@
 <translation id="7466449121337984263">Приложите палец к сканеру.</translation>
 <translation id="7477793887173910789">Управляйте воспроизведением музыки, видео и других медиафайлов</translation>
 <translation id="7483025031359818980">Выбран весь экран</translation>
-<translation id="7486227320194954040">Свернуть инструменты маркера</translation>
 <translation id="7497767806359279797">Выберите язык и клавиатуру</translation>
 <translation id="7508690557411636492">Открыто в прошлом месяце</translation>
 <translation id="7509246181739783082">Подтвердите личность</translation>
@@ -1074,16 +1068,16 @@
 <translation id="7561982940498449837">Закрыть меню</translation>
 <translation id="7564874036684306347">При переносе окон на другой рабочий стол иногда возникают ошибки. Уведомления и диалоговые окна могут появляться на разных рабочих столах.</translation>
 <translation id="7569509451529460200">Шрифт Брайля и функция ChromeVox включены</translation>
-<translation id="7569983096843329377">Черный</translation>
 <translation id="7573585051776738856">Активное окно прикреплено справа.</translation>
 <translation id="7579778809502851308">Запись экрана</translation>
 <translation id="7590883480672980941">Настройки ввода</translation>
 <translation id="7593891976182323525">Search или Shift</translation>
 <translation id="7600875258240007829">Показать все уведомления</translation>
 <translation id="7607002721634913082">Приостановлен</translation>
+<translation id="7611213136657090146">Камера переподключена.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
-<translation id="7631906263969450674">Фломастер</translation>
 <translation id="7633755430369750696">Показать настройки Обмена с окружением</translation>
+<translation id="7634648064048557203">Окно предварительного просмотра камеры привязано к правому нижнему углу</translation>
 <translation id="7641938616688887143">Запись</translation>
 <translation id="7642647758716480637">Открыть настройки сети "<ph name="NETWORK_NAME" />", статус: <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (владелец)</translation>
@@ -1096,6 +1090,7 @@
 <translation id="7662283695561029522">Нажмите, чтобы настроить.</translation>
 <translation id="7670953955701272011">Посмотреть эту дату в Google Календаре</translation>
 <translation id="7671610481353807627">Приложения упорядочены по цвету.</translation>
+<translation id="7684531502177797067">Используется камера "<ph name="CAMERA_NAME" />".</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Добавить мобильную сеть</translation>
 <translation id="7720410380936703141">ПОВТОРИТЬ</translation>
@@ -1154,7 +1149,6 @@
 <translation id="8029247720646289474">Не удалось подключиться к точке доступа</translation>
 <translation id="8029629653277878342">В качестве дополнительной меры безопасности введите PIN-код или пароль.</translation>
 <translation id="8030169304546394654">Отключено</translation>
-<translation id="8035152190676905274">Ручка</translation>
 <translation id="8036504271468642248">К предыдущему предложению</translation>
 <translation id="8042893070933512245">Открыть меню настроек специальных возможностей</translation>
 <translation id="8042925093898452104">Закрыть подробные сведения</translation>
@@ -1170,7 +1164,6 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Подтвердить</translation>
 <translation id="8131994907636310308">Закрыть всплывающее окно сортировки</translation>
-<translation id="8132487352815776550">Скрыть субтитры</translation>
 <translation id="8132793192354020517">Подключено к сети <ph name="NAME" /></translation>
 <translation id="813913629614996137">Инициализация...</translation>
 <translation id="8142441511840089262">Двойное нажатие кнопкой мыши</translation>
@@ -1319,6 +1312,7 @@
 <translation id="9077404278023321866">Шаблоны</translation>
 <translation id="9077515519330855811">Элементы управления медиафайлами, сейчас играет "<ph name="MEDIA_TITLE" />"</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
+<translation id="9080073830732419341">Окно предварительного просмотра камеры привязано к левому верхнему углу</translation>
 <translation id="9080132581049224423">Чтобы перейти на главный экран, проведите вверх.</translation>
 <translation id="9080206825613744995">Микрофон используется</translation>
 <translation id="9084606467167974638">Переместить меню</translation>

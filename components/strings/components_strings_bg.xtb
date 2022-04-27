@@ -510,6 +510,7 @@
 <translation id="2298855485018661510">Бутон „Управление на „бисквитките“. Натиснете Enter, за да управлявате предпочитанията си за „бисквитките“ от настройките на Chrome</translation>
 <translation id="2300306941146563769">Не е качено</translation>
 <translation id="2310021320168182093">Chou2 (плик)</translation>
+<translation id="2316159751672436664">Персонализиране на инструментите за достъпност в настройките на Chrome OS</translation>
 <translation id="2316887270356262533">Ще освободите по-малко от 1 МБ. Някои сайтове може да се заредят по-бавно при следващото ви посещение.</translation>
 <translation id="2317259163369394535">Изискват се потребителско име и парола за <ph name="DOMAIN" />.</translation>
 <translation id="2318594867107319532">Клеймо за дата и час на най-новата версия на правилата:</translation>
@@ -1667,6 +1668,7 @@
 <translation id="5518670652865028077">Изкуство и развлечения</translation>
 <translation id="5519516356611866228">С промените ви</translation>
 <translation id="5523118979700054094">Име на правилото</translation>
+<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да персонализирате инструментите за достъпност в настройките на Chrome OS</translation>
 <translation id="5528532273234423708">Автоматизиране на дома</translation>
 <translation id="55293785478302737">Зашиване на ръба</translation>
 <translation id="553484882784876924">Prc6 (плик)</translation>
@@ -2245,6 +2247,7 @@
 <translation id="722454870747268814">Нов раздел в режим „инкогнито“</translation>
 <translation id="7233592378249864828">Отпечатване на лист за потвърждение</translation>
 <translation id="7234638337680728591">Цени на горива и зареждане на превозни средства с гориво</translation>
+<translation id="7237492777898608035">Съобщението да не се показва отново за този сайт</translation>
 <translation id="7238585580608191973">Пръстов отпечатък SHA-256</translation>
 <translation id="7240120331469437312">Алтернативно име на субекта на сертификата</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -2627,6 +2630,7 @@
 <translation id="8242426110754782860">Продължаване</translation>
 <translation id="8249296373107784235">Прекратяване</translation>
 <translation id="8249463483885748674">Стандартизирани тестове и тестове за прием</translation>
+<translation id="8252991034201168845">Бутон „Управление на настройките за достъпност“. Натиснете Enter, за да персонализирате инструментите за достъпност в настройките на Chrome OS</translation>
 <translation id="8253091569723639551">Адресът за фактуриране е задължителен</translation>
 <translation id="8257387598443225809">Това приложение е предназначено за мобилни устройства</translation>
 <translation id="825929999321470778">Показване на всички запазени пароли</translation>

@@ -199,8 +199,6 @@
 <translation id="2649120831653069427">ਰੈਂਬੋਫ਼ਿਸ਼</translation>
 <translation id="2663066752008346276">ਮੇਅਨਸਨ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਬਰਮੀ/ਮਿਆਂਮਾਰ</translation>
 <translation id="2664412712123763093">ਫ਼ਾਈਲ ਦਾ ਟਿਕਾਣਾ</translation>
-<translation id="2672394958563893062">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਮੁੱਢ ਤੋਂ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
-<translation id="2676946222714718093">ਤੇ ਪਲੇ ਹੋ ਰਿਹਾ ਹੈ</translation>
 <translation id="2718540689505416944">Linux ਨਾਲ ਐਪ ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="2719020180254996569">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ਵੇਰਵੇ</translation>
 <translation id="2724954091494693138">F ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਤੁਰਕੀ</translation>
@@ -342,7 +340,6 @@
 <translation id="3901991538546252627"><ph name="NAME" /> ਨਾਲ ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="3906232975181435906">ਮੋਬਾਈਲ ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਸਥਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ, <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" /> ਨੈੱਟਵਰਕ, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">ਮੈਟਾ</translation>
-<translation id="3930521966936686665">ਇਸਤੇ ਚਲਾਓ</translation>
 <translation id="3943857333388298514">ਪੇਸਟ ਕਰੋ</translation>
 <translation id="3952872973865944257">ਤੇਲਗੂ ਧੁਨੀਆਤਮਿਕ</translation>
 <translation id="3958548648197196644">ਕੀਵੀ</translation>
@@ -414,7 +411,6 @@
 <translation id="4631887759990505102">ਕਲਾਕਾਰ</translation>
 <translation id="4642769377300286600">ਮੋਬਾਈਲ ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਸਥਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ, <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" /> ਨੈੱਟਵਰਕ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">QWERTY ਕੀ-ਬੋਰਡ ਨਾਲ ਚੈੱਕ</translation>
-<translation id="4656293982926141856">ਇਹ ਕੰਪਿਊਟਰ</translation>
 <translation id="4656777537938206294">ਫ਼ਾਈਲਾਂ ਨੂੰ ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ ਕਰਵਾਓ</translation>
 <translation id="4658782175094886150">ਬਰਫ਼ੀਲੀ ਥਾਂ 'ਤੇ ਵਿਅਕਤੀ</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' ਦੇ ਮੈਂਬਰ ਪਹੁੰਚ ਗੁਆ ਦੇਣਗੇ ਜੇਕਰ ਇਹਨਾਂ ਆਈਟਮਾਂ ਨੂੰ ਉਹਨਾਂ ਨਾਲ ਸਾਂਝਾ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ।</translation>
@@ -431,7 +427,6 @@
 <translation id="4720185134442950733">ਮੋਬਾਈਲ ਡਾਟਾ ਨੈੱਟਵਰਕ</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> ਫ਼ੋਟੋਆਂ ਬੈਕ ਅਪ ਕੀਤਾ</translation>
 <translation id="4725511304875193254">ਕੋਰਗੀ</translation>
-<translation id="4732760563705710320">ਮਾਫ਼ ਕਰਨਾ, ਇਹ ਵੀਡੀਓ ਤੁਹਾਡੀ ਕਾਸਟ ਡੀਵਾਈਸ ਵੱਲੋਂ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।</translation>
 <translation id="4737050008115666127">ਲੈਂਡਿੰਗ</translation>
 <translation id="4747271164117300400">ਮੈਕੇਡੋਨੀਅਨ</translation>
 <translation id="4759238208242260848">ਡਾਊਨਲੋਡਸ</translation>
@@ -621,7 +616,6 @@
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ਨੂੰ ਫਾਰਮੈਟ ਕਰੋ</translation>
 <translation id="6227235786875481728">ਇਹ ਫਾਈਲ ਪਲੇ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।</translation>
 <translation id="6241349547798190358">ਡੱਚ (ਬੈਲਜੀਅਮ)</translation>
-<translation id="6248400709929739064">ਉਪਸਿਰਲੇਖਾਂ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="6267547857941397424">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਫ਼ੋਨ ਦੀ ਬੈਟਰੀ <ph name="BATTERY_STATUS" />%, ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="6269630227984243955">ਮਲਾਏ</translation>
 <translation id="6287852322318138013">ਇਸ ਫ਼ਾਈਲ ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ ਇੱਕ ਐਪ ਚੁਣੋ</translation>
@@ -639,7 +633,6 @@
 <translation id="637062427944097960">ਇਹ ਫਾਈਲ ਇੱਕ ਵੱਖਰੇ ਡੈਸਕਟਾਪ 'ਤੇ ਖੁੱਲੀ ਹੋਈ ਹੈ। ਇਸਨੂੰ ਦੇਖਣ ਲਈ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) 'ਤੇ ਹਲਚਲ ਕਰੋ।</translation>
 <translation id="6394388407447716302">ਸਿਰਫ਼ ਪੜ੍ਹਨ ਲਈ</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ਆਈਟਮਾਂ</translation>
-<translation id="6398765197997659313">ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
 <translation id="642282551015776456">ਇਹ ਨਾਮ ਫੋਲਡਰ ਨਾਮ ਦੀ ਇੱਕ ਫਾਈਲ ਦੇ ਤੌਰ ਤੇ ਨਹੀਂ ਵਰਤਿਆ ਜਾ ਸਕਦਾ</translation>
 <translation id="6423031066725912715">TCVN ਕੀ-ਬੋਰਡ ਨਾਲ ਵੀਅਤਨਾਮੀ</translation>
 <translation id="6485131920355264772">ਸਪੇਸ ਜਾਣਕਾਰੀ ਮੁੜ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ</translation>
@@ -675,7 +668,6 @@
 <translation id="6820687829547641339">Gzip ਕੰਪਰੈੱਸਡ ਟਾਰ ਪੁਰਾਲੇਖ</translation>
 <translation id="6823166707458800069">ਇਸ ਫੋਲਡਰ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਗਈਆਂ ਸਾਰੀਆਂ ਫ਼ਾਈਲਾਂ ਦਾ ਆਨਲਾਈਨ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬੈਕਅੱਪ ਲਿਆ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="6825883775269213504">Rusi</translation>
-<translation id="6827236167376090743">ਇਹ ਵੀਡੀਓ ਲੰਮੇ ਸਮੇਂ ਤੱਕ ਪਲੇ ਹੁੰਦਾ ਰਹੇਗਾ।</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> ਨੂੰ ਚੋਣ ਵਿੱਚੋਂ ਹਟਾਇਆ ਗਿਆ।</translation>
 <translation id="6856459657722366306">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਵੇਰਵੇ</translation>
 <translation id="6861394552169064235">ਫ਼ਾਰਸੀ</translation>
@@ -813,7 +805,6 @@
 <translation id="7857117644404132472">ਅਪਵਾਦ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="7868774406711971383">ਪੋਲਿਸ਼</translation>
 <translation id="7874321682039004450">ਫਿਲੀਪੀਨੋ</translation>
-<translation id="7881969471599061635">ਉਪਸਿਰਲੇਖਾਂ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="78946041517601018">ਸਾਂਝੇ ਡਰਾਈਵ</translation>
 <translation id="7908793776359722643">ਕਿਸੇ ਭਾਗ ਨੂੰ ਫਾਰਮੈਟ ਕਰਨ ਨਾਲ ਇਸ 'ਤੇ ਸਟੋਰ ਕੀਤਾ ਸਾਰਾ ਡਾਟਾ ਮਿਟ ਜਾਵੇਗਾ। ਇਸ ਕਾਰਵਾਈ ਨੂੰ ਅਣਕੀਤਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
 <translation id="7925247922861151263">AAA ਜਾਂਚ ਅਸਫਲ ਹੋ ਗਈ</translation>
@@ -890,7 +881,6 @@
 <translation id="8492972329130824181">ਘਰੇਲੂ ਨੈੱਟਵਰਕ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਕਨੈਕਟ ਕਰਨ ਲਈ ਮੋਬਾਈਲ ਡਾਟਾ ਰੋਮਿੰਗ ਦਾ ਚਾਲੂ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਨੂੰ ਐਕਸਟਰੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="8521441079177373948">ਯੂਕੇ</translation>
-<translation id="8525306231823319788">ਪੂਰੀ ਸਕ੍ਰੀਨ</translation>
 <translation id="853494022971700746">ਫਰਾਂਸੀਸੀ (ਫ਼ਰਾਂਸ)</translation>
 <translation id="8540608333167683902">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਵੇਰਵੇ</translation>
 <translation id="8545476925160229291">ਅੰਗਰੇਜ਼ੀ (ਯੂ.ਐੱਸ.)</translation>

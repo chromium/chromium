@@ -199,8 +199,6 @@
 <translation id="2649120831653069427">Риба виножито</translation>
 <translation id="2663066752008346276">бурмански (Мјанмар) со тастатура Myansan</translation>
 <translation id="2664412712123763093">Локација на датотеката</translation>
-<translation id="2672394958563893062">Настана грешка. Кликнете за да се рестартира отпочеток.</translation>
-<translation id="2676946222714718093">Се репродуцира на</translation>
 <translation id="2718540689505416944">Инсталирајте ја апликацијата со Linux</translation>
 <translation id="2719020180254996569">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, детали</translation>
 <translation id="2724954091494693138">турски со F-тастатура</translation>
@@ -342,7 +340,6 @@
 <translation id="3901991538546252627">Се поврзува со <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Се инсталира профилот на мобилниот уред, мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Репродуцирај на</translation>
 <translation id="3943857333388298514">Залепи</translation>
 <translation id="3952872973865944257">фонетски телугу</translation>
 <translation id="3958548648197196644">Киви</translation>
@@ -414,7 +411,6 @@
 <translation id="4631887759990505102">Уметник</translation>
 <translation id="4642769377300286600">Се инсталира профилот на мобилниот уред, мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">чешки со тастатура Qwerty</translation>
-<translation id="4656293982926141856">Овој компјутер</translation>
 <translation id="4656777537938206294">Направете датотеките да се достапни офлајн</translation>
 <translation id="4658782175094886150">Човек во снег</translation>
 <translation id="4669606053856530811">Членовите на „<ph name="SOURCE_NAME" />“ ќе изгубат пристап освен ако ставкиве се споделени со нив.</translation>
@@ -431,7 +427,6 @@
 <translation id="4720185134442950733">Мобилна мрежа на податоци</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> фотографии се ископирани</translation>
 <translation id="4725511304875193254">Корги</translation>
-<translation id="4732760563705710320">Извинете, ова видео не е поддржано од вашиот уред за емитување.</translation>
 <translation id="4737050008115666127">Слетување</translation>
 <translation id="4747271164117300400">македонски</translation>
 <translation id="4759238208242260848">Преземања</translation>
@@ -621,7 +616,6 @@
 <translation id="6224253798271602650">Форматирање на <ph name="DRIVE_NAME" /></translation>
 <translation id="6227235786875481728">Датотеката не може да се репродуцира.</translation>
 <translation id="6241349547798190358">холандски (Белгија)</translation>
-<translation id="6248400709929739064">Овозможи титлови</translation>
 <translation id="6267547857941397424">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, батерија на телефонот: <ph name="BATTERY_STATUS" /> %, поврзи</translation>
 <translation id="6269630227984243955">малајски</translation>
 <translation id="6287852322318138013">Изберете апликација за да ја отворите оваа датотека</translation>
@@ -639,7 +633,6 @@
 <translation id="637062427944097960">Оваа датотека се отвори на друг десктоп. Поместете ја на <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) за да се прикаже.</translation>
 <translation id="6394388407447716302">Само за читање</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ставки</translation>
-<translation id="6398765197997659313">Излези од цел екран</translation>
 <translation id="642282551015776456">Имево не може да се користи како име на датотека или на папка</translation>
 <translation id="6423031066725912715">виетнамски со тастатура TCVN</translation>
 <translation id="6485131920355264772">Не успеа да вчита информации за простор</translation>
@@ -675,7 +668,6 @@
 <translation id="6820687829547641339">tar архива компримирана со gzip</translation>
 <translation id="6823166707458800069">Автоматски се прави резервна копија онлајн од сите датотеки зачувани во папкава.</translation>
 <translation id="6825883775269213504">руски</translation>
-<translation id="6827236167376090743">Видеото ќе се прикажува постојано.</translation>
 <translation id="6847101934483209767">Го отстранивте <ph name="ENTRY_NAME" /> од изборот.</translation>
 <translation id="6856459657722366306">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, детали</translation>
 <translation id="6861394552169064235">персиски</translation>
@@ -813,7 +805,6 @@
 <translation id="7857117644404132472">Додајте исклучок</translation>
 <translation id="7868774406711971383">полски</translation>
 <translation id="7874321682039004450">филипински</translation>
-<translation id="7881969471599061635">Оневозможи титлови</translation>
 <translation id="78946041517601018">Споделени простори</translation>
 <translation id="7908793776359722643">Форматирањето на партицијата ќе ги избрише сите податоци што се зачувани на неа. Дејството не може да се врати.</translation>
 <translation id="7925247922861151263">AAA-проверката не успеа</translation>
@@ -890,7 +881,6 @@
 <translation id="8492972329130824181">Домашната мрежа не е достапна. Мора да се овозможи интернет-роаминг за да се поврзете.</translation>
 <translation id="8499098729323186194">Се извлекуваат <ph name="NUMBER_OF_ITEMS" /> ставки…</translation>
 <translation id="8521441079177373948">UK</translation>
-<translation id="8525306231823319788">Цел екран</translation>
 <translation id="853494022971700746">француски (Франција)</translation>
 <translation id="8540608333167683902">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, детали</translation>
 <translation id="8545476925160229291">англиски (САД)</translation>

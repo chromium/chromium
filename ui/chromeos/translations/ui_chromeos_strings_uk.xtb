@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">Іврит, транслітерація</translation>
 <translation id="1747761757048858544">Нідерландська (Нідерланди)</translation>
 <translation id="174937106936716857">Усього файлів</translation>
+<translation id="1755345808328621801">Цей файл створено для ПК з програмним забезпеченням Windows. Він несумісний із вашим пристроєм, на якому встановлено ОС Chrome. Знайдіть відповідний додаток у Веб-магазині Chrome.</translation>
 <translation id="1773212559869067373">Сертифікат автентифікації відхилений локально</translation>
 <translation id="1775381402323441512">Інформація про відео</translation>
 <translation id="180035236176489073">Щоб отримати доступ до цих файлів, потрібно перебувати в режимі онлайн.</translation>
@@ -198,8 +199,6 @@
 <translation id="2649120831653069427">Золота рибка</translation>
 <translation id="2663066752008346276">Бірманська/м'янмська, розкладка м'янсан</translation>
 <translation id="2664412712123763093">Місце розташування файлу</translation>
-<translation id="2672394958563893062">Сталася помилка. Натисніть, щоб знову запустити з початку.</translation>
-<translation id="2676946222714718093">Відтворюється на пристрої</translation>
 <translation id="2718540689505416944">Установити додаток для Linux</translation>
 <translation id="2719020180254996569">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />. Докладніше</translation>
 <translation id="2724954091494693138">Турецька, розкладка FGĞIOD</translation>
@@ -225,6 +224,7 @@
 <translation id="2943503720238418293">Введіть коротшу назву</translation>
 <translation id="2949781154072577687">Форматування диска "<ph name="DRIVE_NAME" />"…</translation>
 <translation id="2951236788251446349">Медуза</translation>
+<translation id="2977940621473452797">Цей файл створено для комп’ютерів із програмним забезпеченням Macintosh. Він несумісний із вашим пристроєм, на якому встановлено ОС Chrome. Знайдіть відповідний додаток у Веб-магазині Chrome.</translation>
 <translation id="2984337792991268709">Сьогодні <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Відновлення елементів (<ph name="COUNT" />)…</translation>
 <translation id="2994669386200004489">Не вдалося створити резервну копію файлу "<ph name="FILE_NAME" />"</translation>
@@ -340,7 +340,6 @@
 <translation id="3901991538546252627">Під’єднання до <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Встановлення мобільного профілю; мережа <ph name="NETWORK_INDEX" />, усього мереж: <ph name="NETWORK_COUNT" />; назва: <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Відтворити на</translation>
 <translation id="3943857333388298514">Вставити</translation>
 <translation id="3952872973865944257">Телугу, фонетична розкладка</translation>
 <translation id="3958548648197196644">Ківі</translation>
@@ -412,7 +411,6 @@
 <translation id="4631887759990505102">Виконавець</translation>
 <translation id="4642769377300286600">Встановлення мобільного профілю; мережа <ph name="NETWORK_INDEX" />, усього мереж: <ph name="NETWORK_COUNT" />; назва: <ph name="NETWORK_NAME" />; оператор: <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Чеська, розкладка Qwerty</translation>
-<translation id="4656293982926141856">На цьому комп’ютері</translation>
 <translation id="4656777537938206294">Можливість роботи з файлами без підключення до Інтернету</translation>
 <translation id="4658782175094886150">Людина в снігу</translation>
 <translation id="4669606053856530811">Учасники, які мають доступ до розташування "<ph name="SOURCE_NAME" />", втратять доступ до елементів, якими з ними не поділилися.</translation>
@@ -422,13 +420,13 @@
 <translation id="4694604912444486114">Мавпа</translation>
 <translation id="469612310041132144">Китайська, спрощений стандарт цанцзе</translation>
 <translation id="4697043402264950621">Список файлів відсортовано в порядку зростання за таким критерієм: <ph name="COLUMN_NAME" />.</translation>
+<translation id="469897186246626197">Цей файл створено для ПК з програмним забезпеченням Windows. Він несумісний із вашим пристроєм, на якому встановлено ОС Chrome. <ph name="BEGIN_LINK_HELP" />Докладніше<ph name="END_LINK_HELP" /> про те, як відкривати файли в ОС Chrome.</translation>
 <translation id="4706042980341760088">Тамільська, друкарська розкладка</translation>
 <translation id="4711094779914110278">Турецька</translation>
 <translation id="4712283082407695269">Файл "<ph name="PATH" />" відкривається</translation>
 <translation id="4720185134442950733">Мережа мобільного передавання даних</translation>
 <translation id="4724850507808590449">Імпортовано <ph name="FILE_COUNT" /> фото</translation>
 <translation id="4725511304875193254">Коргі</translation>
-<translation id="4732760563705710320">На жаль, ваш пристрій для трансляції не підтримує це відео.</translation>
 <translation id="4737050008115666127">Посадка</translation>
 <translation id="4747271164117300400">Македонська</translation>
 <translation id="4759238208242260848">Завантаження</translation>
@@ -543,6 +541,7 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5602622065581044566">Болгарська, фонетична розкладка</translation>
 <translation id="5605830556594064952">Розкладка Дворака (США)</translation>
+<translation id="5618330573454123917">Цей файл створено для комп’ютерів із програмним забезпеченням Macintosh. Він несумісний із вашим пристроєм, на якому встановлено ОС Chrome. <ph name="BEGIN_LINK_HELP" />Докладніше<ph name="END_LINK_HELP" /> про те, як відкривати файли в ОС Chrome.</translation>
 <translation id="5625294776298156701">Тамільська, розкладка Tamil99</translation>
 <translation id="5633226425545095130">Якщо перемістити цей файл, до нього отримають доступ усі користувачі, які можуть переглядати спільну папку "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Слухати</translation>
@@ -618,7 +617,6 @@
 <translation id="6224253798271602650">Форматувати (<ph name="DRIVE_NAME" />)</translation>
 <translation id="6227235786875481728">Неможливо відтворити цей файл.</translation>
 <translation id="6241349547798190358">Нідерландська (Бельгія)</translation>
-<translation id="6248400709929739064">Увімкнути субтитри</translation>
 <translation id="6267547857941397424">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, рівень заряду акумулятора телефона – <ph name="BATTERY_STATUS" />%. Підключитися</translation>
 <translation id="6269630227984243955">Малайська</translation>
 <translation id="6287852322318138013">Вибрати програму, щоб відкрити цей файл</translation>
@@ -636,7 +634,6 @@
 <translation id="637062427944097960">Цей файл відкрито на іншому робочому столі. Перейдіть до <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), щоб переглянути його.</translation>
 <translation id="6394388407447716302">Лише перегляд</translation>
 <translation id="6395575651121294044">Елементів: <ph name="NUMBER_OF_FILES" /></translation>
-<translation id="6398765197997659313">Вийти з повноекранного режиму</translation>
 <translation id="642282551015776456">Не може використовуватися як ім’я файлу чи назва папки</translation>
 <translation id="6423031066725912715">В'єтнамська, розкладка TCVN</translation>
 <translation id="6485131920355264772">Не вдалось отримати дані про вільне місце</translation>
@@ -672,7 +669,6 @@
 <translation id="6820687829547641339">Архів у форматі TAR зі стисненням Gzip</translation>
 <translation id="6823166707458800069">Резервні копії всіх файлів, збережених у цій папці, автоматично створюються в мережі.</translation>
 <translation id="6825883775269213504">Російська</translation>
-<translation id="6827236167376090743">Це відео буде відтворюватися, доки рак на горі не свисне.</translation>
 <translation id="6847101934483209767">Видалено з вибраного: <ph name="ENTRY_NAME" />.</translation>
 <translation id="6856459657722366306">Мережа №<ph name="NETWORK_INDEX" />, загалом мереж: <ph name="NETWORK_COUNT" />, назва: <ph name="NETWORK_NAME" />, оператор: <ph name="NETWORK_PROVIDER_NAME" />, стан з'єднання: <ph name="CONNECTION_STATUS" />, рівень сигналу: <ph name="SIGNAL_STRENGTH" />%, відомості</translation>
 <translation id="6861394552169064235">Перська</translation>
@@ -738,6 +734,7 @@
 <translation id="7309413087278791451">Німецька (Бельгія)</translation>
 <translation id="7339898014177206373">Нове вікно</translation>
 <translation id="7343393116438664539">В'єтнамська, телекс</translation>
+<translation id="7357762654218998920">Цей тип файлу не підтримується. <ph name="BEGIN_LINK_HELP" />Докладніше<ph name="END_LINK_HELP" /> про те, як відкривати файли в ОС Chrome.</translation>
 <translation id="7359359531237882347">Копіювання елементів (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="7375951387215729722">Список файлів відсортовано в порядку спадання за таким критерієм: <ph name="COLUMN_NAME" />.</translation>
 <translation id="7402503521691663770">Пристрої з ОС Chrome Flex</translation>
@@ -809,7 +806,6 @@
 <translation id="7857117644404132472">Додати виняток</translation>
 <translation id="7868774406711971383">Польська</translation>
 <translation id="7874321682039004450">Філіппінська</translation>
-<translation id="7881969471599061635">Вимкнути субтитри</translation>
 <translation id="78946041517601018">Спільні диски</translation>
 <translation id="7908793776359722643">Якщо відформатувати розділ, усі збережені в ньому дані буде видалено. Цю дію не можна відмінити.</translation>
 <translation id="7925247922861151263">Помилка перевірки AAA</translation>
@@ -886,7 +882,6 @@
 <translation id="8492972329130824181">Домашня мережа недоступна. Щоб підключитися, потрібно ввімкнути роумінг мобільних даних.</translation>
 <translation id="8499098729323186194">Видобування елементів (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="8521441079177373948">Англійська (Велика Британія)</translation>
-<translation id="8525306231823319788">На весь екран</translation>
 <translation id="853494022971700746">Французька (Франція)</translation>
 <translation id="8540608333167683902">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Докладніше</translation>
 <translation id="8545476925160229291">Англійська (США)</translation>

@@ -894,6 +894,7 @@
 <translation id="8588404856427128947">ปิด</translation>
 <translation id="8590913940444621808">อย่าถามอีก</translation>
 <translation id="8591976964826315682">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน</translation>
+<translation id="8592752150819985187">ป้อนรหัสผ่านอัตโนมัติ</translation>
 <translation id="8605219856220328675">ปิดแท็บ</translation>
 <translation id="8620640915598389714">แก้ไข</translation>
 <translation id="8626393685701737946">คุณเปลี่ยนมุมมองเริ่มต้นของเว็บไซต์เป็นเดสก์ท็อปได้ในการตั้งค่า &gt; การตั้งค่าเนื้อหา</translation>
@@ -912,6 +913,7 @@
 <translation id="8741995161408053644">บัญชี Google ของคุณอาจมีประวัติการท่องเว็บในรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /></translation>
 <translation id="8750037785291841318">คุณจะเห็นแท็บที่เปิดไว้ที่นี่</translation>
 <translation id="8756969031206844760">อัปเดตรหัสผ่านไหม</translation>
+<translation id="8764015330924122850">เลิกติดตาม <ph name="DOMAIN_NAME" /></translation>
 <translation id="8775144690796719618">URL ไม่ถูกต้อง</translation>
 <translation id="8787968206789828143">ค้นหาในเว็บ</translation>
 <translation id="8803639129939845298">ปลอดภัย</translation>

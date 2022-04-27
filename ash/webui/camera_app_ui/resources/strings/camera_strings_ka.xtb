@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
 <translation id="1113173431709655881">კამერის რეჟიმი</translation>
+<translation id="1153190633558910465">ბადის გარეშე</translation>
 <translation id="1175958423215084756">აღმოჩენილია ბმული. <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">შეტრიალება 90 გრადუსით საათის ისრის მიმართულებით</translation>
 <translation id="1276998909102132017">გალერეის სურათები</translation>
 <translation id="1300209025925956156">დაასკანირეთ თქვენი დოკუმენტი</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. წვდომისთვის გამოიყენეთ კლავიშთა კომბინაცია Search + მარცხნივ მიმართული ისარი.</translation>
+<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">ბეჭდვა</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> გამოერთებულია.</translation>
 <translation id="1473110567575736769">3-წამიანი ტაიმერი</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">ტაიმერის ხანგრძლივობა</translation>
 <translation id="2050339315714019657">პორტრეტი</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> აქტიურია</translation>
+<translation id="2134029355740465625">ვიდეოს პარამეტრები</translation>
 <translation id="2144806332417375165">მორგებული ვიდეოპარამეტრები</translation>
 <translation id="2175927920773552910">QR კოდი</translation>
 <translation id="2271433936731426666">სრულზომიანი ვიდეოსნეპშოტის გადაღების დაშვება</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">უკანა კამერა</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> წმ</translation>
 <translation id="2761536921376153655">სკანირების ტიპი</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">არეკვლის გადახედვა</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> მიერთებულია.</translation>
 <translation id="2968794441791257519">კამერით გადაღებული ფოტოები და ვიდეოები გადატანილი იქნება „ჩამოტვირთვების“ საქაღალდეში. მათზე წვდომა შეგიძლიათ ფაილების აპიდან.
 
@@ -52,6 +57,8 @@
 <translation id="3240426699337459095">ბმული დაკოპირდა</translation>
 <translation id="3259149966178251584">კამერის გარჩევადობა</translation>
 <translation id="3305962767867348165">შესწორება</translation>
+<translation id="3354465018370944241">ფოტოს პარამეტრები</translation>
+<translation id="3411958449466169012">ტაიმერის გამორთვა</translation>
 <translation id="3448774564454087943">ვიდეო არ შეინახა, რადგან ის ზედმეტად მოკლეა</translation>
 <translation id="346539236881580388">ხელახლა გადაღება</translation>
 <translation id="3517926952904427380">პორტრეტის რეჟიმში ფოტოს გადაღება ვერ მოხერხდა</translation>
@@ -63,9 +70,12 @@
 <translation id="3810838688059735925">ვიდეო</translation>
 <translation id="3838931309141338733">შტრიხკოდის სკანირება</translation>
 <translation id="3892148308691398805">ტექსტის კოპირება</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> მპ</translation>
 <translation id="4118525110028899586">ჩაწერის დაპაუზება</translation>
 <translation id="4121305183798804752">დოკუმენტი აღმოჩენილია</translation>
+<translation id="414641094616694804">ამ კამერის გარჩევადობა ვერ შეიცვლება</translation>
 <translation id="4269820728363426813">ბმულის მისამართის კოპირება</translation>
+<translation id="4281620174117014503">საშუალო გარჩევადობა</translation>
 <translation id="4329152592498422850">კვადრატული ფოტოს გადაღებაზე გადართვა</translation>
 <translation id="4383571725254449280">ბეჭდვის წარმადობის ჟურნალები</translation>
 <translation id="4445542136948522167">ფოტოს გადაღების შეწყვეტა</translation>
@@ -74,12 +84,15 @@
 <translation id="4628948037717959914">ფოტო</translation>
 <translation id="4649291346448517080">ფაილის შენახვა ვერ მოხერხდა</translation>
 <translation id="4695379108709712600">გადატანა ხდება ზედა მიმართულებით</translation>
+<translation id="4705093842003735294">სრული გარჩევადობა</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">მრავალნაკადოვანი ვიდეოჩაწერა</translation>
+<translation id="5034763830503483128">ფოტოს თანაფარდობა</translation>
 <translation id="5057360777601936059">თქვენი კამერა ამჟამად მიუწვდომელია.
         შეამოწმეთ, რომ კამერა სწორად არის დაკავშირებული.</translation>
 <translation id="5163387177077603948">გადატანა ხდება მარჯვენა მიმართულებით</translation>
 <translation id="520537883758714667">ამიერიდან ხელმისაწვდომია დოკუმენტების სკანირების ფუნქცია</translation>
+<translation id="5235304959032763950">თექვსმეტი ცხრაზე</translation>
 <translation id="5266635337630551423">დოკუმენტის ზედა მარცხენა კუთხე</translation>
 <translation id="5317780077021120954">შენახვა</translation>
 <translation id="5320594929574852403">გადატანა ხდება მარცხენა მიმართულებით</translation>
@@ -94,6 +107,7 @@
 <translation id="5916664084637901428">ჩართვა</translation>
 <translation id="5975083100439434680">დაშორება</translation>
 <translation id="5976160379964388480">სხვა</translation>
+<translation id="603973421174355542">სრული HD</translation>
 <translation id="6073451960410192870">ჩაწერის შეწყვეტა</translation>
 <translation id="6197807149213783179">მეტამონაცემების შენახვა</translation>
 <translation id="6233780560267770709">სამი სამზე</translation>
@@ -104,6 +118,7 @@
 თუ თქვენი გამოხმაურება გამოსახულების ან ვიდეოს ხარისხს ეხება, მაგალითის სახით დაურთეთ ფოტო ან ვიდეო და აღწერეთ პრობლემა (მაგალითად, ფოტო ზედმეტად მუქია ან ობიექტი არ არის მოქცეული ფოკუსში).</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> — <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> მეგაპიქსელი</translation>
 <translation id="6527303717912515753">გაზიარება</translation>
+<translation id="6631515515009660915">არეკვლის გამორთვა</translation>
 <translation id="6652737148136672975">გადაიტანეთ კუთხის პოზიცია ისრებიანი კლავიშების მეშვეობით</translation>
 <translation id="667999046851023355">დოკუმენტი</translation>
 <translation id="6681668084120808868">ფოტოს გადაღება</translation>
@@ -114,6 +129,7 @@
 <translation id="698156982839284926">3 წამი</translation>
 <translation id="712848772518857951">ნამდვილად გსურთ, ამოშალოთ <ph name="COUNT" /> ერთეული?</translation>
 <translation id="7134221860976209830">10-წამიანი ტაიმერი</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">ჩაწერის ტიპი</translation>
 <translation id="7243947652761655814">ვიდეოს გარჩევადობა</translation>
 <translation id="7337660886763914220">ფაილების სისტემის შეცდომები.</translation>
@@ -146,9 +162,11 @@
 <translation id="8815966864175525708">ფოტოს პორტრეტის რეჟიმში გადაღებაზე გადართვა</translation>
 <translation id="8828441885228359828">ჩაწერის გაგრძელება</translation>
 <translation id="8870695351537079478">ჩაწერის დაწყება ვერ მოხერხდა</translation>
+<translation id="8880167521484863515">ოთხი სამზე</translation>
 <translation id="8903921497873541725">მასშტაბის გადიდება</translation>
 <translation id="9045010116236796332">მოათავსეთ დოკუმენტის ყველა კიდე ჩარჩოში</translation>
 <translation id="9045155556724273246">10 წამი</translation>
 <translation id="906331135292332864">მიმდინარეობს იმიჯის დამუშავება...</translation>
+<translation id="922762992951083513">არეკვლის ჩართვა</translation>
 <translation id="945522503751344254">შეფასების გაგზავნა</translation>
 </translationbundle>

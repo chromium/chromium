@@ -3,6 +3,7 @@
 <translationbundle lang="zh-CN">
 <translation id="1143896152279775643">系统会将您的密码保存到 <ph name="EMAIL" /> 的 Google 密码管理器中。</translation>
 <translation id="1282031177488366470">帮助我们改进 Chrome 的功能和性能</translation>
+<translation id="1462727070346936664">登录即可充分利用 Chrome。</translation>
 <translation id="1479202195792305274">您需要先登录 Google 帐号才能使用 Chrome 的密码检查功能。</translation>
 <translation id="1493827051843127077">将 Chrome 设为默认同步您所有设备上的标签页、密码和付款信息</translation>
 <translation id="1504372625950710826">Chrome 无法检查是否有更新。请尝试检查您的互联网连接。</translation>
@@ -39,6 +40,7 @@
 <translation id="3345341804167540816">随时随地使用 Chrome</translation>
 <translation id="3522659714780527202">要查看您在其他设备上用 Chrome 打开的标签页，请开启同步功能</translation>
 <translation id="3533694711092285624">尚未保存任何密码。您需要先保存密码才能使用 Chrome 的密码检查功能。</translation>
+<translation id="3641179212828090796">使用您保存在 Chrome 中的密码更快地完成登录</translation>
 <translation id="3655656110921623717">这意味着 Chrome 每次都会对移动网站发出请求。</translation>
 <translation id="3706101708757577809">当您点按消息、文档和其他应用中的链接时，可以使用 Chrome 打开链接啦。</translation>
 <translation id="3720541637541300822">在您关闭 Chrome 时锁定无痕式标签页</translation>

@@ -199,8 +199,6 @@
 <translation id="2649120831653069427">ماهی رنگین‌مکان</translation>
 <translation id="2663066752008346276">میانماری/برمه‌ای با صفحه‌کلید میانسان</translation>
 <translation id="2664412712123763093">محل فایل</translation>
-<translation id="2672394958563893062">خطایی رخ داده است. برای شروع مجدد از ابتدا، کلیک کنید.</translation>
-<translation id="2676946222714718093">در حال پخش در</translation>
 <translation id="2718540689505416944">‏نصب برنامه با Linux</translation>
 <translation id="2719020180254996569">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، جزئیات</translation>
 <translation id="2724954091494693138">‏ترکی با صفحه‌کلید F</translation>
@@ -342,7 +340,6 @@
 <translation id="3901991538546252627">در حال اتصال به <ph name="NAME" /></translation>
 <translation id="3906232975181435906">درحال نصب نمایه تلفن همراه، شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">پخش در</translation>
 <translation id="3943857333388298514">جاگذاری</translation>
 <translation id="3952872973865944257">تلوگو (آوایی)</translation>
 <translation id="3958548648197196644">کیوی</translation>
@@ -414,7 +411,6 @@
 <translation id="4631887759990505102">هنرمند</translation>
 <translation id="4642769377300286600">درحال نصب نمایه تلفن همراه، شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">‏چکی با صفحه‌کلید Qwerty</translation>
-<translation id="4656293982926141856">این رایانه</translation>
 <translation id="4656777537938206294">تنظیم فایل برای دسترسی آفلاین</translation>
 <translation id="4658782175094886150">شخصی در برف</translation>
 <translation id="4669606053856530811">اگر این موارد با اعضای «<ph name="SOURCE_NAME" />» هم‌رسانی نشوند، دسترسی را از دست خواهند داد.</translation>
@@ -431,7 +427,6 @@
 <translation id="4720185134442950733">شبکه داده تلفن همراه</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> عکس پشتیبان گرفته شدند</translation>
 <translation id="4725511304875193254">کورگی</translation>
-<translation id="4732760563705710320">متأسفیم، دستگاه فرستادن شما، این ویدئو را پشتیبانی نمی‌کند.</translation>
 <translation id="4737050008115666127">فرود</translation>
 <translation id="4747271164117300400">مقدونی</translation>
 <translation id="4759238208242260848">بارگیری‌ها</translation>
@@ -622,7 +617,6 @@
 <translation id="6224253798271602650">قالب‌بندی <ph name="DRIVE_NAME" /></translation>
 <translation id="6227235786875481728">این فایل اجرا نمی‌شود.</translation>
 <translation id="6241349547798190358">هلندی (بلژیک)</translation>
-<translation id="6248400709929739064">فعال کردن زیرنویس</translation>
 <translation id="6267547857941397424">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="PHONE_NAME" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، باتری تلفن <ph name="BATTERY_STATUS" />٪، اتصال</translation>
 <translation id="6269630227984243955">مالایی</translation>
 <translation id="6287852322318138013">یک برنامه را برای باز کردن این فایل انتخاب کنید</translation>
@@ -640,7 +634,6 @@
 <translation id="637062427944097960">این فایل در میزکار دیگری باز شده است. به <ph name="USER_NAME" /> ‏(<ph name="MAIL_ADDRESS" />) بروید تا آن را مشاهده کنید.</translation>
 <translation id="6394388407447716302">فقط خواندنی</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> مورد</translation>
-<translation id="6398765197997659313">خروج از حالت تمام صفحه</translation>
 <translation id="642282551015776456">این نام ممکن است به‌عنوان نام فایلی از پوشه استفاده نشود</translation>
 <translation id="6423031066725912715">‏ویتنامی با صفحه‌کلید TCVN</translation>
 <translation id="6485131920355264772">دریافت اطلاعات فضا انجام نشد</translation>
@@ -676,7 +669,6 @@
 <translation id="6820687829547641339">‏بایگانی نوار فشرده Gzip</translation>
 <translation id="6823166707458800069">از همه فایل‌های ذخیره‌شده در این پوشه به‌طور خودکار و آنلاین پشتیبان‌گیری شده است.</translation>
 <translation id="6825883775269213504">روسی</translation>
-<translation id="6827236167376090743">پخش این ویدئو ادامه می‌یابد و تکرار می‌شود.</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> از موارد انتخابی برداشته شد.</translation>
 <translation id="6856459657722366306">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، جزئیات</translation>
 <translation id="6861394552169064235">فارسی</translation>
@@ -814,7 +806,6 @@
 <translation id="7857117644404132472">افزودن استثنا</translation>
 <translation id="7868774406711971383">لهستانی</translation>
 <translation id="7874321682039004450">فیلیپینی</translation>
-<translation id="7881969471599061635">غیرفعال کردن زیرنویس</translation>
 <translation id="78946041517601018">درایوهای هم‌رسانی‌شده</translation>
 <translation id="7908793776359722643">با قالب‌بندی پارتیشن، همه داده‌های ذخیره‌شده در آن حذف خواهد شد. این کنش واگردشدنی نیست.</translation>
 <translation id="7925247922861151263">‏بررسی AAA انجام نشد</translation>
@@ -891,7 +882,6 @@
 <translation id="8492972329130824181">شبکه خانه دردسترس نیست. برای اتصال، رومینگ داده تلفن همراه باید فعال باشد.</translation>
 <translation id="8499098729323186194">درحال استخراج <ph name="NUMBER_OF_ITEMS" /> مورد…</translation>
 <translation id="8521441079177373948">بریتانیایی</translation>
-<translation id="8525306231823319788">تمام صفحه</translation>
 <translation id="853494022971700746">فرانسوی (فرانسه)</translation>
 <translation id="8540608333167683902">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، جزئیات</translation>
 <translation id="8545476925160229291">انگلیسی (آمریکا)</translation>

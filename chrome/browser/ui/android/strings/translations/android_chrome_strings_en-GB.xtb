@@ -117,6 +117,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="1558391695376153246">Close Incognito tabs</translation>
 <translation id="1571304935088121812">Copy username</translation>
 <translation id="1592864538817356322">Standard protection:</translation>
+<translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> suggested items in list below.</translation>
 <translation id="161647866166517041">Spam and fraud reduction relies on trust tokens to help sites fight fraud and distinguish bots from people.
 
 Based on your interaction with a site, like regularly signing in to an account, that site can issue a trust token to your browser. Later, if other sites that you visit check for and find a valid trust token, they’re more likely to treat you like a person and not a bot.
@@ -134,7 +135,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="1672586136351118594">Don‘t show again</translation>
 <translation id="1680919990519905526">Shop image with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Try now</translation>
-<translation id="1697284962337958118">Add to</translation>
 <translation id="1702543251015153180">Change your Dark theme settings?</translation>
 <translation id="1702907158640575240">Managed browser</translation>
 <translation id="1710099199314114079">Switch or close tabs</translation>
@@ -146,7 +146,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="1749561566933687563">Sync your bookmarks</translation>
 <translation id="17513872634828108">Open tabs</translation>
 <translation id="1754404134430936718">Text copied</translation>
-<translation id="1772137089884020309">List of bookmark folders is closed</translation>
 <translation id="1779766957982586368">Close window</translation>
 <translation id="1791662854739702043">Installed</translation>
 <translation id="1792959175193046959">Change the default download location at any time</translation>
@@ -989,7 +988,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="6475951671322991020">Download video</translation>
 <translation id="6477928892249167417">These sites seem important to you:</translation>
 <translation id="6482749332252372425"><ph name="FILE_NAME" /> download failed due to lack of storage space.</translation>
-<translation id="6489610539826642779">Reading list <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="6496823230996795692">To use <ph name="APP_NAME" /> for the first time, please connect to the Internet.</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{File downloaded}other{# downloads complete}}</translation>
 <translation id="6508722015517270189">Restart Chrome</translation>
@@ -1050,7 +1048,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="6756507620369789050">Share feedback</translation>
 <translation id="6767294960381293877">List of devices to share a tab with, opened at half height.</translation>
 <translation id="6770602306803890733">Improves security for you and everyone on the web</translation>
-<translation id="6783942555455976443">Save this page for later and get a reminder</translation>
 <translation id="6785476624617658922">Chrome and Chrome OS additional Terms of Service</translation>
 <translation id="6795633245022906657">Quickly open a new tab. To edit this shortcut, go to Settings.</translation>
 <translation id="6802555630140434547">The window will be closed</translation>
@@ -1122,7 +1119,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="7177959540995930968">You can learn more about these features in Chrome settings.</translation>
 <translation id="718226107353899806">You can add up to <ph name="MAX_NUM_REACTIONS" /> reactions</translation>
 <translation id="7187993566681480880">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in.</translation>
-<translation id="718926126787620637">List of bookmark folders opened at full height</translation>
 <translation id="7191430249889272776">Tab opened in background.</translation>
 <translation id="7196215469483532480">Privacy guide explanation opened at full height</translation>
 <translation id="7208109991155904980">Reaction moved</translation>
@@ -1142,7 +1138,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="7304873321153398381">Offline. Chrome can’t check your passwords.</translation>
 <translation id="7313188324932846546">Tap to set up sync</translation>
 <translation id="7332075081379534664">Sign-in succeeded</translation>
-<translation id="7333031090786104871">Still adding previous site</translation>
 <translation id="7339898014177206373">New window</translation>
 <translation id="7340958967809483333">Options for Discover</translation>
 <translation id="7352339641508007922">Drag to take a long screenshot</translation>
@@ -1422,6 +1417,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="8730621377337864115">Done</translation>
 <translation id="8746155870861185046">Share highlight</translation>
 <translation id="8748850008226585750">Contents hidden</translation>
+<translation id="8756969031206844760">Update password?</translation>
 <translation id="8766529642647037772">Create a highlighted link like this one?</translation>
 <translation id="8773160212632396039">Processing request</translation>
 <translation id="8788265440806329501">Navigation history is closed</translation>
@@ -1450,7 +1446,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="8922289737868596582">Download pages from the More Options button to use them offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> is ready</translation>
-<translation id="8928626432984354940">List of bookmark folders opened at half height</translation>
 <translation id="8937267401510745927">To help you complete tasks, Google will receive the URLs and contents of sites on which you use Assistant, as well as information that you submit through Assistant. This information may be stored in your Google Account. You can turn off Assistant in Chrome settings.</translation>
 <translation id="8937772741022875483">Remove your Chrome activity from Digital Wellbeing?</translation>
 <translation id="8942627711005830162">Open in other window</translation>
@@ -1514,7 +1509,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="932327136139879170">Home</translation>
 <translation id="938850635132480979">Error: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Enter passphrase</translation>
-<translation id="948039501338975565">List of bookmark folders</translation>
 <translation id="95817756606698420">Chrome can use <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> for search in China. You can change this in <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
 <translation id="962979164594783469">Install this app</translation>
 <translation id="96681097142096641">View simplified page?</translation>

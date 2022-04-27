@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">Hebraisht me transliterim</translation>
 <translation id="1747761757048858544">Holandisht (Holandë)</translation>
 <translation id="174937106936716857">Numri total i skedarëve</translation>
+<translation id="1755345808328621801">Ky skedar është i projektuar për një kompjuter që përdor softuerë të Windows. Kjo nuk përputhet me pajisjen tënde e cila funksionon me ChromeOS. Kërko "Dyqanin e uebit të Chrome" për një aplikacion të përshtatshëm zëvendësimi.</translation>
 <translation id="1773212559869067373">Certifikata e vërtetimit u refuzua nga afër</translation>
 <translation id="1775381402323441512">Informacionet e videos</translation>
 <translation id="180035236176489073">Duhet të jesh në linjë për t'u qasur te këta skedarë.</translation>
@@ -198,8 +199,6 @@
 <translation id="2649120831653069427">Peshku</translation>
 <translation id="2663066752008346276">Birmanisht/Mianmar me tastierë Myansan</translation>
 <translation id="2664412712123763093">Vendndodhja e skedarit</translation>
-<translation id="2672394958563893062">Ndodhi një gabim. Kliko për të rinisur nga fillimi.</translation>
-<translation id="2676946222714718093">Po luan</translation>
 <translation id="2718540689505416944">Instalo aplikacionin me Linux</translation>
 <translation id="2719020180254996569">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, detaje</translation>
 <translation id="2724954091494693138">Turqisht me tastierën F</translation>
@@ -225,6 +224,7 @@
 <translation id="2943503720238418293">Përdor një emër më të shkurtër</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> po formatohet...</translation>
 <translation id="2951236788251446349">Kandili i detit</translation>
+<translation id="2977940621473452797">Ky skedar është i projektuar për një kompjuter që përdor softuerë të Macintosh. Kjo nuk përputhet me pajisjen tënde e cila funksionon me ChromeOS. Kërko "Dyqanin e uebit të Chrome" për një aplikacion të përshtatshëm zëvendësimi.</translation>
 <translation id="2984337792991268709">Sot <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> artikuj po restaurohen...</translation>
 <translation id="2994669386200004489"><ph name="FILE_NAME" /> nuk mund të rezervohej</translation>
@@ -340,7 +340,6 @@
 <translation id="3901991538546252627">Po lidhet me <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Po instalon profilin e celularit, rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Luaje në</translation>
 <translation id="3943857333388298514">Ngjite</translation>
 <translation id="3952872973865944257">Teluguisht fonetike</translation>
 <translation id="3958548648197196644">Kivi</translation>
@@ -412,7 +411,6 @@
 <translation id="4631887759990505102">Artisti</translation>
 <translation id="4642769377300286600">Po instalon profilin e celularit, rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Çekisht me tastierë Qwerty</translation>
-<translation id="4656293982926141856">Ky kompjuter</translation>
 <translation id="4656777537938206294">Bëji skedarët të disponueshëm jashtë linje</translation>
 <translation id="4658782175094886150">Person në dëborë</translation>
 <translation id="4669606053856530811">Anëtarët e "<ph name="SOURCE_NAME" />" do të humbin qasjen në rast se këta artikuj nuk ndahen me ta.</translation>
@@ -422,13 +420,13 @@
 <translation id="4694604912444486114">Majmun</translation>
 <translation id="469612310041132144">Kinezisht e shpejtë</translation>
 <translation id="4697043402264950621">Lista e skedarëve është renditur sipas kolonës "<ph name="COLUMN_NAME" />" në rend rritës.</translation>
+<translation id="469897186246626197">Ky skedar është i projektuar për një kompjuter që përdor softuerë të Windows. Kjo nuk përputhet me pajisjen tënde e cila punon me ChromeOS. <ph name="BEGIN_LINK_HELP" />Mëso më shumë<ph name="END_LINK_HELP" /> në lidhje me hapjen e skedarëve në ChromeOS.</translation>
 <translation id="4706042980341760088">Tamilisht me tastierë makine shkrimi</translation>
 <translation id="4711094779914110278">Turqisht</translation>
 <translation id="4712283082407695269">Po hap "<ph name="PATH" />"</translation>
 <translation id="4720185134442950733">Rrjeti i të dhënave celulare</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> fotografi u rezervuan</translation>
 <translation id="4725511304875193254">Korgi</translation>
-<translation id="4732760563705710320">Na vjen keq, por kjo video nuk mbështetet nga pajisja jote e transmetimit.</translation>
 <translation id="4737050008115666127">Zbritja</translation>
 <translation id="4747271164117300400">Maqedonisht</translation>
 <translation id="4759238208242260848">Shkarkimet</translation>
@@ -542,6 +540,7 @@
 <translation id="5583640892426849032">Hapësirë prapa</translation>
 <translation id="5602622065581044566">Bullgarisht me tastierë fonetike</translation>
 <translation id="5605830556594064952">Amerikane Dvorak</translation>
+<translation id="5618330573454123917">Ky skedar është i projektuar për kompjuterë që përdorin softuerë të Macintosh. Kjo nuk përputhet me pajisjen tënde e cila punon me ChromeOS. <ph name="BEGIN_LINK_HELP" />Mëso më shumë<ph name="END_LINK_HELP" /> në lidhje me hapjen e skedarëve në ChromeOS.</translation>
 <translation id="5625294776298156701">Tamilisht me tastierë Tamil99</translation>
 <translation id="5633226425545095130">Zhvendosja e këtij artikulli do ta ndajë atë me të gjithë ata që mund ta shikojnë dosjen e ndarë "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Dëgjo</translation>
@@ -617,7 +616,6 @@
 <translation id="6224253798271602650">Formato <ph name="DRIVE_NAME" /></translation>
 <translation id="6227235786875481728">Ky skedar nuk mund të luhej.</translation>
 <translation id="6241349547798190358">Holandisht (Belgjikë)</translation>
-<translation id="6248400709929739064">Aktivizo titrat</translation>
 <translation id="6267547857941397424">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bateria e telefonit <ph name="BATTERY_STATUS" />%, lidhu</translation>
 <translation id="6269630227984243955">Malajzisht</translation>
 <translation id="6287852322318138013">Zgjidh një aplikacion për ta hapur këtë skedar</translation>
@@ -635,7 +633,6 @@
 <translation id="637062427944097960">Ky skedar u hap në një desktop tjetër. Lëviz te <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) për ta parë.</translation>
 <translation id="6394388407447716302">Vetëm për lexim</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> artikuj</translation>
-<translation id="6398765197997659313">Dil nga ekrani i plotë</translation>
 <translation id="642282551015776456">Ky emër nuk mund të përdoret si emër skedari ose dosjeje</translation>
 <translation id="6423031066725912715">Vietnamisht me tastierë TCVN</translation>
 <translation id="6485131920355264772">Dështoi në marrjen e informacionit të hapësirës</translation>
@@ -671,7 +668,6 @@
 <translation id="6820687829547641339">Arkivi i ngjeshur Gzip</translation>
 <translation id="6823166707458800069">Të gjithë skedarët e ruajtur në këtë dosje rezervohen automatikisht në linjë.</translation>
 <translation id="6825883775269213504">Rusisht</translation>
-<translation id="6827236167376090743">Kjo video do të vazhdojë të luhet për një kohë shumë të gjatë.</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> u hoq nga zgjedhja.</translation>
 <translation id="6856459657722366306">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, detaje</translation>
 <translation id="6861394552169064235">Persisht</translation>
@@ -737,6 +733,7 @@
 <translation id="7309413087278791451">Gjermanisht (Belgjikë)</translation>
 <translation id="7339898014177206373">Dritare e re</translation>
 <translation id="7343393116438664539">Vietnamisht Telex</translation>
+<translation id="7357762654218998920">Ky lloj skedari nuk mbështetet. <ph name="BEGIN_LINK_HELP" />Mëso më shumë<ph name="END_LINK_HELP" /> në lidhje me hapjen e skedarëve në ChromeOS.</translation>
 <translation id="7359359531237882347">Po kopjon <ph name="NUMBER_OF_ITEMS" /> artikuj...</translation>
 <translation id="7375951387215729722">Lista e skedarëve është renditur sipas kolonës "<ph name="COLUMN_NAME" />" në rend zbritës.</translation>
 <translation id="7402503521691663770">Pajisjet Chrome OS Flex</translation>
@@ -808,7 +805,6 @@
 <translation id="7857117644404132472">Shto një përjashtim</translation>
 <translation id="7868774406711971383">Polonisht</translation>
 <translation id="7874321682039004450">Filipinisht</translation>
-<translation id="7881969471599061635">Çaktivizo titrat</translation>
 <translation id="78946041517601018">Disqet e ndara</translation>
 <translation id="7908793776359722643">Formatimi i një ndarjeje do të spastrojë të gjitha të dhënat e ruajtura në të. Ky veprim nuk mund të zhbëhet.</translation>
 <translation id="7925247922861151263">Kontrolli AAA dështoi</translation>
@@ -885,7 +881,6 @@
 <translation id="8492972329130824181">Rrjeti i shtëpisë nuk ofrohet. Duhet të aktivizohet roaming-u për të dhënat celulare për t'u lidhur.</translation>
 <translation id="8499098729323186194">Po nxjerr <ph name="NUMBER_OF_ITEMS" /> artikuj...</translation>
 <translation id="8521441079177373948">Britanike</translation>
-<translation id="8525306231823319788">Ekrani i plotë</translation>
 <translation id="853494022971700746">Frëngjisht (Francë)</translation>
 <translation id="8540608333167683902">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, detaje</translation>
 <translation id="8545476925160229291">Anglisht (SHBA)</translation>

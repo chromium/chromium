@@ -30,6 +30,7 @@
 <translation id="1146678959555564648">VRஐ உள்ளிடு</translation>
 <translation id="114825011539563458">மிக முக்கியமான தனியுரிமை &amp; பாதுகாப்புக் கட்டுப்பாடுகள் - ஒரே இடத்தில்</translation>
 <translation id="1149401351239820326">காலாவதியாகும் மாதம்</translation>
+<translation id="1150263420752757504"><ph name="APP_NAME" /> Chromeமில் திறக்கப்படும். தொடர்வதன் மூலம் <ph name="BEGIN_LINK1" />Google சேவை விதிமுறைகள்<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Google Chrome &amp; ChromeOS தொடர்பான கூடுதல் சேவை விதிமுறைகள்<ph name="END_LINK2" /> ஆகியவற்றை ஏற்கிறீர்கள்.</translation>
 <translation id="1154704303112745282">பக்கம் ஆஃப்லைனில் கிடைக்கவில்லை: <ph name="VIOLATED_URL" /></translation>
 <translation id="1171770572613082465">"பிரபலமானவை" பட்டனைத் தட்டி பிரபல இணையதளங்களைப் பாருங்கள்</translation>
 <translation id="1173894706177603556">மறுபெயரிடு</translation>
@@ -133,7 +134,6 @@
 <translation id="1672586136351118594">மீண்டும் காட்டாதே</translation>
 <translation id="1680919990519905526">Google Lens மூலம் வாங்குக <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">இப்போதே பயன்படுத்துக</translation>
-<translation id="1697284962337958118">இதில் சேர்:</translation>
 <translation id="1702543251015153180">டார்க் தீம் அமைப்புகளை மாற்ற வேண்டுமா?</translation>
 <translation id="1702907158640575240">நிர்வகிக்கப்பட்ட உலாவி</translation>
 <translation id="1710099199314114079">உலாவிப் பக்கங்களுக்கு இடையே மாறலாம் அல்லது அவற்றை மூடலாம்</translation>
@@ -145,7 +145,6 @@
 <translation id="1749561566933687563">உங்கள் புத்தகக்குறிகளை ஒத்திசைக்கவும்</translation>
 <translation id="17513872634828108">தாவல்களைத் திற</translation>
 <translation id="1754404134430936718">உரை நகலெடுக்கப்பட்டது</translation>
-<translation id="1772137089884020309">புக்மார்க் ஃபோல்டர்களின் பட்டியல் மூடப்பட்டது</translation>
 <translation id="1779766957982586368">சாளரத்தை மூடுக</translation>
 <translation id="1791662854739702043">நிறுவப்பட்டது</translation>
 <translation id="1792959175193046959">எப்போது வேண்டுமானாலும் இயல்புப் பதிவிறக்க இடத்தை மாற்றலாம்</translation>
@@ -209,6 +208,7 @@
 <translation id="2126426811489709554">Chromeஇல் இயங்குகிறது</translation>
 <translation id="2132122640199389833">இணைக்கப்பட்டுள்ள சாதனங்கள் அனைத்தையும் அகற்று</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> மூடப்பட்டது</translation>
+<translation id="2134927169889348449">Chromeமைப் பயன்படுத்துவதன் மூலம் <ph name="BEGIN_TOS_LINK" />Google சேவை விதிமுறைகள்<ph name="END_TOS_LINK" />, <ph name="BEGIN_ATOS_LINK" />Google Chrome &amp; ChromeOS தொடர்பான கூடுதல் சேவை விதிமுறைகள்<ph name="END_ATOS_LINK" /> ஆகியவற்றை ஏற்கிறீர்கள்.</translation>
 <translation id="2139186145475833000">முகப்புத் திரையில் சேர்</translation>
 <translation id="2141396931810938595">உங்கள் உபயோகத்தின் அடிப்படையில்</translation>
 <translation id="214888715418183969">Chromeமுடன் எதையெல்லாம் பகிரலாம் என்பதைத் தேர்வுசெய்யுங்கள். Chromeமின் அம்சங்கள், செயல்திறன், நிலைப்புத்தன்மை ஆகியவற்றை மேம்படுத்த இந்த அளவீடுகள் பயன்படுத்தப்படும்.</translation>
@@ -392,6 +392,7 @@
 <translation id="3062802207422175757">உங்களுக்குப் பிடித்த கட்டுரைகளை Chromeமில் படிக்கலாம்</translation>
 <translation id="3066573403916685335">கீழே நகர்த்து</translation>
 <translation id="3070005020161560471">தானாக மொழிபெயர்க்க வேண்டியவை</translation>
+<translation id="3072980200212375806"><ph name="APP_NAME" /> Chromeமில் திறக்கப்படும். தொடர்வதன் மூலம் <ph name="BEGIN_LINK1" />Google சேவை விதிமுறைகள்<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Google Chrome &amp; ChromeOS தொடர்பான கூடுதல் சேவை விதிமுறைகள்<ph name="END_LINK2" /> ஆகியவற்றை ஏற்கிறீர்கள். <ph name="BEGIN_LINK3" />தனியுரிமைக் கொள்கையையும்<ph name="END_LINK3" /> ஏற்கிறீர்கள்.</translation>
 <translation id="3091010850649238832">கிளிப்போர்டில் உள்ளவற்றைக் காட்டும்</translation>
 <translation id="3098745985164956033">உங்களுக்கான விளக்கங்களை மேம்படுத்த, படங்கள் Googleளுக்கு அனுப்பப்படும்</translation>
 <translation id="3114507951000454849">இன்றைய செய்திகளைப் படியுங்கள் <ph name="NEWS_ICON" /></translation>
@@ -583,6 +584,7 @@
 <translation id="4269820728363426813">இணைப்பு முகவரியை நகலெடு</translation>
 <translation id="4290281343757112331">பின்னர் பதிவிறக்கவா?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android அமைப்புகளில் திரைப் பூட்டு அம்சத்தை இயக்கவும்<ph name="END_LINK" /></translation>
+<translation id="4293476595220860475">Chromeமைப் பயன்படுத்துவதன் மூலம் <ph name="BEGIN_TOS_LINK" />Google சேவை விதிமுறைகள்<ph name="END_TOS_LINK" />, <ph name="BEGIN_ATOS_LINK" />Google Chrome &amp; ChromeOS தொடர்பான கூடுதல் சேவை விதிமுறைகள்<ph name="END_ATOS_LINK" /> ஆகியவற்றை ஏற்கிறீர்கள். <ph name="BEGIN_PRIVACY_LINK" />தனியுரிமைக் கொள்கையையும்<ph name="END_PRIVACY_LINK" /> ஏற்கிறீர்கள்.</translation>
 <translation id="4296252229500326964">புதிய மறைநிலைத் தாவல்</translation>
 <translation id="4298388696830689168">இணைக்கப்பட்டுள்ள தளங்கள்</translation>
 <translation id="4303044213806199882">chrome_ஸ்கிரீன்ஷாட்_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -985,7 +987,6 @@
 <translation id="6475951671322991020">வீடியோவைப் பதிவிறக்கு</translation>
 <translation id="6477928892249167417">இந்தத் தளங்கள் உங்களுக்கு முக்கியமானவை எனக் கருதுகிறோம்:</translation>
 <translation id="6482749332252372425">போதுமான சேமிப்பிடம் இல்லாததால் <ph name="FILE_NAME" />ஐப் பதிவிறக்க முடியவில்லை.</translation>
-<translation id="6489610539826642779">வாசிப்புப் பட்டியல் <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="6496823230996795692">முதல்முறையாக <ph name="APP_NAME" />ஐப் பயன்படுத்த, இணையத்துடன் இணைக்கவும்.</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{ஃபைல் பதிவிறக்கப்பட்டது}other{# பதிவிறக்கங்கள் முடிந்தன}}</translation>
 <translation id="6508722015517270189">Chromeஐ மீண்டும் தொடங்கவும்</translation>
@@ -1046,7 +1047,7 @@
 <translation id="6756507620369789050">கருத்தைப் பகிர்க</translation>
 <translation id="6767294960381293877">தாவலைப் பகிர்வதற்கான சாதனங்களின் பட்டியல் திரையின் பாதி அளவிற்குத் திறக்கப்பட்டுள்ளது.</translation>
 <translation id="6770602306803890733">உங்களுக்கும் வலையைப் பயன்படுபடுத்துகின்ற அனைவருக்குமான பாதுகாப்பையும் மேம்படுத்தும்</translation>
-<translation id="6783942555455976443">இதைப் பின்னர் பார்ப்பதற்குச் சேமித்து அதற்கான நினைவூட்டலைப் பெறலாம்</translation>
+<translation id="6785476624617658922">Chrome &amp; ChromeOS தொடர்பான கூடுதல் சேவை விதிமுறைகள்</translation>
 <translation id="6795633245022906657">புதிய தாவலை உடனடியாகத் திறக்கலாம். இந்த ஷார்ட்கட்டை மாற்ற அமைப்புகளுக்குச் செல்லவும்.</translation>
 <translation id="6802555630140434547">சாளரம் மூடப்படும்</translation>
 <translation id="6811034713472274749">பக்கத்தைப் பார்க்கலாம்</translation>
@@ -1117,7 +1118,6 @@
 <translation id="7177959540995930968">இந்த அம்சங்களைப் பற்றி Chrome அமைப்புகளில் மேலும் அறிந்துகொள்ளலாம்.</translation>
 <translation id="718226107353899806"><ph name="MAX_NUM_REACTIONS" /> உணர்வு வெளிப்பாடுகள் வரை மட்டுமே சேர்க்க முடியும்</translation>
 <translation id="7187993566681480880">Chromeமைப் பயன்படுத்தும்போது இது பாதுகாப்பை வழங்கும், அத்துடன் நீங்கள் பிற Google ஆப்ஸில் உள்நுழைந்திருக்கும்போது உங்கள் பாதுகாப்பை மேம்படுத்துவதற்காக இதைப் பயன்படுத்தலாம்.</translation>
-<translation id="718926126787620637">புக்மார்க் ஃபோல்டர்களின் பட்டியல் முழுத் திரையில் காட்டப்படுகிறது</translation>
 <translation id="7191430249889272776">தாவல் பின்புலத்தில் திறக்கப்பட்டது.</translation>
 <translation id="7196215469483532480">தனியுரிமை வழிகாட்டியின் விளக்கம் முழுத் திரையில் காட்டப்பட்டுள்ளது</translation>
 <translation id="7208109991155904980">உணர்வு வெளிப்பாடு நகர்த்தப்பட்டது</translation>
@@ -1137,7 +1137,6 @@
 <translation id="7304873321153398381">ஆஃப்லைன். Chrome உலாவியால் உங்கள் கடவுச்சொற்களைச் சரிபார்க்க முடியவில்லை.</translation>
 <translation id="7313188324932846546">ஒத்திசைவை அமைக்க தட்டவும்</translation>
 <translation id="7332075081379534664">உள்நுழைந்துவிட்டீர்கள்</translation>
-<translation id="7333031090786104871">முந்தைய தளத்தை இன்னும் சேர்க்கிறது</translation>
 <translation id="7339898014177206373">புதிய சாளரம்</translation>
 <translation id="7340958967809483333">Discoverருக்கான விருப்பங்கள்</translation>
 <translation id="7352339641508007922">நீண்ட ஸ்கிரீன்ஷாட்டை எடுக்க இழுக்கவும்</translation>
@@ -1417,6 +1416,7 @@
 <translation id="8730621377337864115">முடிந்தது</translation>
 <translation id="8746155870861185046">ஹைலைட் செய்த உரையைப் பகிர்</translation>
 <translation id="8748850008226585750">மறைந்துள்ள உள்ளடக்கம்</translation>
+<translation id="8756969031206844760">கடவுச்சொல்லைப் புதுப்பிக்கவா?</translation>
 <translation id="8766529642647037772">இதைப் போன்று ஹைலைட் செய்யப்பட்ட இணைப்பை உருவாக்க வேண்டுமா?</translation>
 <translation id="8773160212632396039">கோரிக்கையைச் செயலாக்குகிறது</translation>
 <translation id="8788265440806329501">வழிசெலுத்தல் வரலாறு மூடப்பட்டுள்ளது</translation>
@@ -1445,7 +1445,6 @@
 <translation id="8922289737868596582">பக்கங்களை ஆஃப்லைனில் பயன்படுத்த, 'மேலும் விருப்பங்கள்' பட்டனுக்குச் சென்று அவற்றைப் பதிவிறக்கவும்</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> மொழி தயாராக உள்ளது</translation>
-<translation id="8928626432984354940">புக்மார்க் ஃபோல்டர்களின் பட்டியல் பாதித் திரையில் காட்டப்படுகிறது</translation>
 <translation id="8937267401510745927">பணிகளை நிறைவுசெய்ய உங்களுக்கு உதவும் வகையில் நீங்கள் Assistantடைப் பயன்படுத்தும் தளங்களின் URLகளையும் உள்ளடக்கங்களையும் Assistant மூலம் சமர்ப்பிக்கும் தகவல்களையும் Google பெறும். இந்தத் தகவல்கள் உங்கள் Google கணக்கில் சேமிக்கப்படலாம். Chrome அமைப்புகளுக்குச் சென்று Assistantடை முடக்கலாம்.</translation>
 <translation id="8937772741022875483">உங்கள் Chrome செயல்பாட்டை டிஜிட்டல் வெல்பீயிங்கிலிருந்து நீக்கவா?</translation>
 <translation id="8942627711005830162">வேறு சாளரத்தில் திற</translation>
@@ -1509,7 +1508,6 @@
 <translation id="932327136139879170">முகப்பு</translation>
 <translation id="938850635132480979">பிழை: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">கடவுச்சொற்றொடரை உள்ளிடுக</translation>
-<translation id="948039501338975565">புக்மார்க் ஃபோல்டர்களின் பட்டியல்</translation>
 <translation id="95817756606698420">சீனாவில் தேடுவதற்கு, Chromeமில் <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />ஐப் பயன்படுத்தலாம். இதை <ph name="BEGIN_LINK" />அமைப்புகளுக்குச்<ph name="END_LINK" /> சென்று மாற்றலாம்.</translation>
 <translation id="962979164594783469">இந்த ஆப்ஸை நிறுவும்</translation>
 <translation id="96681097142096641">படிப்பதற்கான பயன்முறையில் காட்டவா?</translation>

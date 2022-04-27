@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
 <translation id="1113173431709655881">حالت دوربین</translation>
+<translation id="1153190633558910465">خطوط شطرنجی خاموش</translation>
 <translation id="1175958423215084756">پیوند شناسایی شد. <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">چرخش ۹۰ درجه ساعت‌گرد</translation>
 <translation id="1276998909102132017">تصاویر گالری</translation>
 <translation id="1300209025925956156">اسکن سند</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. برای دسترسی، «جستجو + جهت‌نمای چپ» را فشار دهید.</translation>
+<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">چاپ</translation>
 <translation id="1467231725790366244">اتصال <ph name="CAMERA" /> قطع شد.</translation>
 <translation id="1473110567575736769">زمان‌سنج ۳ ثانیه‌ای</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">مدت تایمر</translation>
 <translation id="2050339315714019657">عمودی</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> فعال شد</translation>
+<translation id="2134029355740465625">تنظیمات فیلم</translation>
 <translation id="2144806332417375165">پارامترهای ویدیوی سفارشی</translation>
 <translation id="2175927920773552910">رمزینه پاسخ‌سریع</translation>
 <translation id="2271433936731426666">فعال کردن عکس آنی از ویدیو با اندازه کامل</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">دوربین پشت</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> ثانیه</translation>
 <translation id="2761536921376153655">نوع اسکن</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">پیش‌نمایش بازتاب</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> متصل شد.</translation>
 <translation id="2968794441791257519">‏عکس‌ها و ویدیوهایی که با دوربین گرفته شده است، به پوشه «بارگیری‌ها» منتقل خواهد شد. می‌توانید در Files به آن‌ها دسترسی داشته باشید.
 
@@ -52,6 +57,8 @@
 <translation id="3240426699337459095">پیوند کپی شد</translation>
 <translation id="3259149966178251584">وضوح دوربین</translation>
 <translation id="3305962767867348165">اصلاح</translation>
+<translation id="3354465018370944241">تنظیمات عکس</translation>
+<translation id="3411958449466169012">زمان‌سنج خاموش</translation>
 <translation id="3448774564454087943">ویدیو ذخیره نمی‌شود چون خیلی کوتاه است</translation>
 <translation id="346539236881580388">عکس گرفتن مجدد</translation>
 <translation id="3517926952904427380">عکس عمودی ممکن نیست</translation>
@@ -63,9 +70,12 @@
 <translation id="3810838688059735925">فیلم</translation>
 <translation id="3838931309141338733">اسکن بارکد</translation>
 <translation id="3892148308691398805">کپی کردن نوشتار</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> مگاپیکسل</translation>
 <translation id="4118525110028899586">توقف موقت ضبط</translation>
 <translation id="4121305183798804752">سند شناسایی شد</translation>
+<translation id="414641094616694804">نمی‌توان وضوح این دوربین را تغییر داد</translation>
 <translation id="4269820728363426813">کپی نشانی پیوند</translation>
+<translation id="4281620174117014503">وضوح متوسط</translation>
 <translation id="4329152592498422850">تغییر وضعیت به گرفتن عکس مربع</translation>
 <translation id="4383571725254449280">چاپ گزارش‌های عملکرد</translation>
 <translation id="4445542136948522167">توقف عکس‌برداری</translation>
@@ -74,12 +84,15 @@
 <translation id="4628948037717959914">عکس</translation>
 <translation id="4649291346448517080">فایل ذخیره نشد</translation>
 <translation id="4695379108709712600">درحال انتقال به‌سمت بالا</translation>
+<translation id="4705093842003735294">وضوح کامل</translation>
 <translation id="4890010094662541459">۳ × ۳</translation>
 <translation id="491895758387112773">ضبط ویدیوی چندجریانی</translation>
+<translation id="5034763830503483128">نسبت ابعادی عکس</translation>
 <translation id="5057360777601936059">درحال‌حاضر دوربینتان دردسترس نیست.
         مطمئن شوید دوربین درست وصل شده باشد.</translation>
 <translation id="5163387177077603948">درحال انتقال به‌سمت راست</translation>
 <translation id="520537883758714667">اسکن سند اکنون دردسترس است</translation>
+<translation id="5235304959032763950">۱۶ به ۹</translation>
 <translation id="5266635337630551423">گوشه بالا سمت چپ سند</translation>
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5320594929574852403">درحال انتقال به‌سمت چپ</translation>
@@ -94,6 +107,7 @@
 <translation id="5916664084637901428">روشن</translation>
 <translation id="5975083100439434680">دورنمایی کردن</translation>
 <translation id="5976160379964388480">موارد دیگر</translation>
+<translation id="603973421174355542">‏تمام HD</translation>
 <translation id="6073451960410192870">توقف ضبط</translation>
 <translation id="6197807149213783179">ذخیره فراداده</translation>
 <translation id="6233780560267770709">۳ در ۳</translation>
@@ -104,6 +118,7 @@
 اگر بازخوردتان درباره کیفیت تصویر یا ویدیو است، لطفاً نمونه‌ای از عکس یا ویدیو را ضمیمه کنید و مشکل را توضیح دهید. (برای مثال، عکس خیلی تیره است یا روی سوژه موردنظر فوکوس نشده است.)</translation>
 <translation id="6420689864531458495">‏(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> مگاپیکسل</translation>
 <translation id="6527303717912515753">اشتراک‌گذاری</translation>
+<translation id="6631515515009660915">بازتاب خاموش</translation>
 <translation id="6652737148136672975">موقعیت گوشه را بااستفاده از کلیدهای جهت‌نما تغییر دهید</translation>
 <translation id="667999046851023355">سند</translation>
 <translation id="6681668084120808868">عکسبرداری</translation>
@@ -114,6 +129,7 @@
 <translation id="698156982839284926">۳ ثانیه</translation>
 <translation id="712848772518857951">واقعاً می‌خواهید <ph name="COUNT" /> مورد را بردارید؟</translation>
 <translation id="7134221860976209830">زمان‌سنج ۱۰ ثانیه‌ای</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">نوع ضبط</translation>
 <translation id="7243947652761655814">وضوح ویدیو</translation>
 <translation id="7337660886763914220">خطاهایی در سیستم فایل روی داده است.</translation>
@@ -146,9 +162,11 @@
 <translation id="8815966864175525708">تغییر به گرفتن عکس عمودی</translation>
 <translation id="8828441885228359828">ازسرگیری ضبط</translation>
 <translation id="8870695351537079478">شروع ضبط انجام نشد</translation>
+<translation id="8880167521484863515">۴ به ۳</translation>
 <translation id="8903921497873541725">بزرگ‌نمایی</translation>
 <translation id="9045010116236796332">همه لبه‌های سند را داخل قاب قرار دهید</translation>
 <translation id="9045155556724273246">۱۰ ثانیه</translation>
 <translation id="906331135292332864">درحال پردازش تصویر…</translation>
+<translation id="922762992951083513">بازتاب روشن</translation>
 <translation id="945522503751344254">ارسال بازخورد</translation>
 </translationbundle>

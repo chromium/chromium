@@ -199,8 +199,6 @@
 <translation id="2649120831653069427">Kamalakbaliq</translation>
 <translation id="2663066752008346276">Birma/Myanma (Myansan klaviaturasi)</translation>
 <translation id="2664412712123763093">Fayl joylashuvi</translation>
-<translation id="2672394958563893062">Xatolik yuz berdi. Boshidan boshlash uchun bosing.</translation>
-<translation id="2676946222714718093">Qurilma:</translation>
 <translation id="2718540689505416944">Linux bilan ilova oʻrnatish</translation>
 <translation id="2719020180254996569">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Ulanish: <ph name="CONNECTION_STATUS" />, Batafsil</translation>
 <translation id="2724954091494693138">Turk (Turkcha F klaviaturasi)</translation>
@@ -342,7 +340,6 @@
 <translation id="3901991538546252627"><ph name="NAME" /> tarmog‘iga ulanilmoqda</translation>
 <translation id="3906232975181435906">Mobil profil, tarmoq <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> oʻrnatilmoqda</translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Ijro etish</translation>
 <translation id="3943857333388298514">Joylash</translation>
 <translation id="3952872973865944257">Telugu (fonetik)</translation>
 <translation id="3958548648197196644">Kivi</translation>
@@ -414,7 +411,6 @@
 <translation id="4631887759990505102">Ijrochi</translation>
 <translation id="4642769377300286600">Mobil profil, tarmoq <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> oʻrnatilmoqda</translation>
 <translation id="4646813851450205600">Chex va Qwerty klaviaturasi</translation>
-<translation id="4656293982926141856">Bu kompyuterdan</translation>
 <translation id="4656777537938206294">Fayllarni oflaynga nusxalash</translation>
 <translation id="4658782175094886150">Qordagi odam</translation>
 <translation id="4669606053856530811">“<ph name="SOURCE_NAME" />” foydalanuvchilariga ulashmasangiz, ular bu obyektlardan foydalana olmasliklari mumkin.</translation>
@@ -431,7 +427,6 @@
 <translation id="4720185134442950733">Mobil internet tarmog‘i</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> ta rasm saqlab qolindi</translation>
 <translation id="4725511304875193254">Korgi</translation>
-<translation id="4732760563705710320">Cast-qurilmangizda bu video qo‘llab-quvvatlanmaydi.</translation>
 <translation id="4737050008115666127">Lending</translation>
 <translation id="4747271164117300400">Makedon</translation>
 <translation id="4759238208242260848">Yuklanmalar</translation>
@@ -621,7 +616,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6224253798271602650">Formatlash: <ph name="DRIVE_NAME" /></translation>
 <translation id="6227235786875481728">Bu faylni ijro etib bo‘lmaydi.</translation>
 <translation id="6241349547798190358">Golland (Belgiya)</translation>
-<translation id="6248400709929739064">Taglavhalarni yoqish</translation>
 <translation id="6267547857941397424">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Telefon nomi: <ph name="PHONE_NAME" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Telefon quvvati: <ph name="BATTERY_STATUS" />%, Ulanish</translation>
 <translation id="6269630227984243955">Malay</translation>
 <translation id="6287852322318138013">Ushbu faylni ochish uchun kerakli dasturni tanlang</translation>
@@ -639,7 +633,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="637062427944097960">Ushbu fayl boshqa ish stolida ochilgan. Uni ko‘rish uchun <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) profiliga o‘tib oling.</translation>
 <translation id="6394388407447716302">Faqat oʻqish</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ta fayl</translation>
-<translation id="6398765197997659313">To‘liq ekran rejimidan chiqish</translation>
 <translation id="642282551015776456">Fayl yoki jildga noto‘g‘ri nom berildi</translation>
 <translation id="6423031066725912715">Vyetnam (TCVN klaviaturasi)</translation>
 <translation id="6485131920355264772">Bo‘shliq ma’lumotini olib bo‘lmadi</translation>
@@ -675,7 +668,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6820687829547641339">Gzip formatida arxivlangan TAR fayl</translation>
 <translation id="6823166707458800069">Bu jildga saqlangan barcha fayllar avtomatik ravishda onlayn zaxiralanadi</translation>
 <translation id="6825883775269213504">Ruscha</translation>
-<translation id="6827236167376090743">Bu video to‘xtovsiz ko‘rsatilaveradi.</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> tanlamadan olib tashlandi.</translation>
 <translation id="6856459657722366306">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Himoya: <ph name="NETWORK_PROVIDER_NAME" />, Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Batafsil</translation>
 <translation id="6861394552169064235">Fors</translation>
@@ -813,7 +805,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7857117644404132472">Istisno qo‘shish</translation>
 <translation id="7868774406711971383">Polyak</translation>
 <translation id="7874321682039004450">Filippin</translation>
-<translation id="7881969471599061635">Taglavhalarni o‘chirib qo‘yish</translation>
 <translation id="78946041517601018">Umumiy disklar</translation>
 <translation id="7908793776359722643">Disk boʻlimi formatlansa, undagi barcha axborotlar tozlanaladi. Bu amal bekor qilinmaydi.</translation>
 <translation id="7925247922861151263">AAA tekshirilmadi</translation>
@@ -890,7 +881,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8492972329130824181">Uydagi tarmoq ishlamayapti. Ulanish uchun mobil internet-roumingni yoqing.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> ta fayl arxivdan chiqarilmoqda...</translation>
 <translation id="8521441079177373948">UK</translation>
-<translation id="8525306231823319788">To‘liq ekran rejimi</translation>
 <translation id="853494022971700746">Fransuz (Fransiya)</translation>
 <translation id="8540608333167683902">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Ulanish:<ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Batafsil</translation>
 <translation id="8545476925160229291">Ingliz (AQSH)</translation>

@@ -11,6 +11,7 @@
 <translation id="110877069173485804">នេះគឺជា Chrome របស់អ្នក</translation>
 <translation id="1125124144982679672">តើនរណា​កំពុងប្រើ Chrome?</translation>
 <translation id="1142745911746664600">មិនអាចដំឡើងជំនាន់ Chrome បានទេ</translation>
+<translation id="1152920704813762236">អំពី ChromeOS</translation>
 <translation id="1154147086299354128">&amp;​បើក​នៅក្នុង Chrome</translation>
 <translation id="1178374936842835197">ប្រសិនបើ​ការកំណត់​មិនបង្ហាញនៅក្នុងទំព័រនេះទេ សូមមើលនៅក្នុង<ph name="LINK_BEGIN" />
         ការកំណត់ ChromeOS Flex របស់អ្នក<ph name="LINK_END" /></translation>
@@ -18,6 +19,7 @@
 <translation id="1278833599417554002">ចាប់​ផ្តើមឡើងវិញដើម្បីដំឡើងកំណែ &amp;Chrome</translation>
 <translation id="1302523850133262269">សូមរង់ចាំ ខណៈពេលដែល Chrome តំឡើងការធ្វើបច្ចុប្បន្នភាពប្រព័ន្ធចុងក្រោយបំផុត។</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> តម្រូវឱ្យអ្នកអាន និងយល់ព្រមតាមលក្ខខណ្ឌប្រើប្រាស់ខាងក្រោម មុនពេលប្រើឧបករណ៍នេះ។ លក្ខខណ្ឌទាំងនេះមិនបន្ថែម កែប្រែ ឬដាក់កំហិតលើលក្ខខណ្ឌ Google ChromeOS Flex ទេ។</translation>
+<translation id="1363996462118479832">ChromeOS មិនអាចធ្វើ​សម​កាល​កម្មទិន្នន័យរបស់អ្នកបានទេ ដោយសារមានបញ្ហាក្នុងការចូលគណនី។</translation>
 <translation id="137466361146087520">Google Chrome បេតា</translation>
 <translation id="1399397803214730675">កុំព្យូទ័រនេះមានកំណែ  Google Chrome ថ្មីជាងនេះរួចហើយ ប្រសិនបើកម្មវិធីនេះមិនដំណើរការ សូមលុបការតំឡើង Google Chrome ហើយព្យាយាមម្តងទៀត។</translation>
 <translation id="139993653570221430">អ្នកអាចប្ដូរចិត្តរបស់អ្នកបានគ្រប់ពេលនៅក្នុងការកំណត់ Chrome។ ការ​សាក​ល្បងដំណើរការជាមួយវិធីបច្ចុប្បន្ន ដែលការផ្សាយពាណិជ្ជកម្មបង្ហាញ ដូច្នេះអ្នកនឹងមើលមិនឃើញការផ្លាស់ប្ដូរភ្លាមៗទេ។</translation>
@@ -25,6 +27,7 @@
 <translation id="1507198376417198979">ប្ដូរកម្រងព័ត៌មាន Chrome ថ្មីរបស់អ្នកតាមបំណង</translation>
 <translation id="1516530951338665275">Google Chrome ត្រូវការសិទ្ធិ​ចូលប្រើប៊្លូធូស ដើម្បីបន្ត
 ផ្គូផ្គង។ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1547295885616600893">ChromeOS អាចបង្កើតឡើងបានដោយ<ph name="BEGIN_LINK_CROS_OSS" />កម្មវិធីកូដ​ចំហ<ph name="END_LINK_CROS_OSS" />បន្ថែម។</translation>
 <translation id="1553358976309200471">ធ្វើបច្ចុប្បន្នភាព Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> បានចូលកម្រងព័ត៌មាន Chrome នេះរួចហើយ។ សកម្មភាពនេះនឹងបង្កើតកម្រងព័ត៌មាន Chrome ថ្មីសម្រាប់ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome កំពុងប្រើកាមេរ៉ារបស់អ្នក។</translation>
@@ -60,6 +63,7 @@
 <translation id="2121284319307530122">ចាប់​ផ្តើមឡើងវិញដើម្បីដំឡើងកំណែ &amp;Chrome</translation>
 <translation id="2123055963409958220">ជួយ​ធ្វើឲ្យ Chrome ប្រសើរ​ជាងមុន​ដោយ​រាយការណ៍​អំពី <ph name="BEGIN_LINK" />ការកំណត់​បច្ចុប្បន្ន<ph name="END_LINK" /></translation>
 <translation id="2131230230468101642">ដើម្បីការពារ​ឯកជនភាព​របស់អ្នក យើងលុប​ចំណាប់អារម្មណ៍​របស់អ្នក​ដែលចាស់ជាង 4 សប្ដាហ៍​ដោយស្វ័យប្រវត្តិ។ នៅពេលដែលអ្នក​បន្តរុករក ចំណាប់អារម្មណ៍​ប្រហែលជាបង្ហាញ​នៅលើ​បញ្ជីម្ដងទៀត។ ឬអ្នកអាច​ដកចំណាប់អារម្មណ៍ដែលអ្នក​មិនចង់ឱ្យ Chrome ពិចារណាចេញបាន។</translation>
+<translation id="2139300032719313227">ចាប់ផ្តើម ChromeOS ឡើងវិញ</translation>
 <translation id="2151406531797534936">សូមចាប់ផ្ដើម Chrome ឡើងវិញ​ឥឡូវនេះ</translation>
 <translation id="2258103955319320201">ដើម្បីចូលប្រើទិន្នន័យនៃកម្មវិធីរុករកតាមអ៊ីនធឺណិត Chrome នៅលើឧបករណ៍ទាំងអស់របស់អ្នក សូមចូលគណនី រួចបើកសមកាលកម្ម</translation>
 <translation id="2290014774651636340">សោ Google API បានបាត់។ មុខងារមួយចំនួននៃ Google Chrome នឹងត្រូវបានបិទដំណើរការ។</translation>
@@ -70,6 +74,7 @@
 <translation id="234869673307233423">Chrome មិន​អាចពិនិត្យ​ពាក្យសម្ងាត់របស់អ្នកបានទេ។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។</translation>
 <translation id="235650106824528204">អ្នកគ្រប់គ្រងកម្រងព័ត៌មានការងារអាចលុបទិន្នន័យ Chrome ទាំងឡាយ ដែលបង្កើតអំឡុងពេលប្រើកម្រងព័ត៌មាននេះ (ដូចជាការបង្កើតចំណាំ ប្រវត្តិ ពាក្យសម្ងាត់ និងការកំណត់ផ្សេងទៀត)។ <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">បន្ត</translation>
+<translation id="2401189691232800402">ប្រព័ន្ធ ChromeOS</translation>
 <translation id="2429317896000329049">Google Chrome មិនអាចធ្វើសមកម្មទិន្នន័យរបស់អ្នកទេ ពីព្រោះ សមកម្ម មិនមានសម្រាប់ដែនរបស់អ្នកទេ។</translation>
 <translation id="2467438592969358367">Google Chrome ចង់​នាំចេញពាក្យ​សម្ងាត់​របស់អ្នក​។ សូមវាយ​បញ្ចូលពាក្យ​សម្ងាត់ Windows របស់អ្នក​ដើម្បីអនុញ្ញាត​ការនាំចេញ​នេះ។</translation>
 <translation id="2485422356828889247">លុប</translation>
@@ -80,6 +85,7 @@
 <translation id="2580411288591421699">មិនអាចតំឡើងកំណែ Google Chrome ដូចគ្នាទៅនឹងកំណែដែលកំពុងដំណើរការបច្ចុប្បន្នទេ។ សូមបិទ Google Chrome ហើយព្យាយាមម្តងទៀត។</translation>
 <translation id="2586406160782125153">វា​នឹង​លុប​ទិន្នន័យ​រុករក​របស់អ្នក​ចេញ​ពី​ឧបករណ៍​នេះ។ ដើម្បី​ទាញ​យក​ទិន្នន័យ​របស់អ្នក​មកវិញ​នៅ​ពេល​ក្រោយ សូម​ចូល​ទៅ​កាន់ Chrome ជា <ph name="USER_EMAIL" /> ។</translation>
 <translation id="2622559029861875898">Chrome មិនអាចពិនិត្យរក​កំណែថ្មីបានទេ។ សូមសាកល្បងពិនិត្យ​ការតភ្ជាប់អ៊ីនធឺណិត​របស់អ្នក។</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2652691236519827073">បើក​តំណ​នៅក្នុង​ផ្ទាំង Chrome ថ្មី</translation>
 <translation id="2665296953892887393">ជួយធ្វើឲ្យ Google Chrome ប្រសើរជាងមុនដោយការផ្ញើរបាយការណ៍គាំង និង <ph name="UMA_LINK" /> ទៅ Google</translation>
 <translation id="2689103672227170538">កម្មវិធីបន្ថែមនេះបានប្តូរអ្វីដែលបានបង្ហាញនៅលើទំព័រនៅពេលអ្នកចាប់ផ្តើម Chrome។</translation>
@@ -121,6 +127,7 @@
 <translation id="3434246496373299699">Chrome អាចពិនិត្យពាក្យសម្ងាត់របស់អ្នក នៅពេលអ្នកចូល​ដោយប្រើគណនី Google របស់អ្នក</translation>
 <translation id="3451115285585441894">កំពុងបន្ថែមទៅ Chrome...</translation>
 <translation id="345171907106878721">បន្ថែមខ្លួនអ្នកទៅ Chrome</translation>
+<translation id="3453763134178591239">លក្ខខណ្ឌ ChromeOS</translation>
 <translation id="34857402635545079">សម្អាតទិន្នន័យពី Chrome (<ph name="URL" />) ផងដែរ</translation>
 <translation id="3503306920980160878">Chrome ត្រូវការ​សិទ្ធិចូលប្រើ​ទីតាំង​របស់អ្នក​ ដើម្បី​ចែករំលែក​ទីតាំង​​របស់អ្នកជាមួយ​ទំព័រនេះ</translation>
 <translation id="3533694711092285624">គ្មានពាក្យសម្ងាត់ដែលបានរក្សាទុកទេ។ Chrome អាចពិនិត្យពាក្យសម្ងាត់របស់អ្នក នៅពេលអ្នករក្សាទុកពាក្យសម្ងាត់ទាំងនោះ។</translation>
@@ -130,16 +137,20 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{អ្នក​គ្រប់គ្រង​របស់អ្នក​តម្រូវឱ្យអ្នក​ចាប់ផ្ដើម Chrome ឡើងវិញ​ ដើម្បីប្រើ​កំណែថ្មី}=1{អ្នក​គ្រប់គ្រង​របស់អ្នក​តម្រូវឱ្យអ្នក​ចាប់ផ្ដើម Chrome ឡើងវិញ​ ដើម្បីប្រើ​កំណែថ្មី។ ផ្ទាំងឯកជនរបស់អ្នក​នឹង​មិនបើកឡើងវិញទេ។}other{អ្នក​គ្រប់គ្រង​របស់អ្នក​តម្រូវឱ្យអ្នក​ចាប់ផ្ដើម Chrome ឡើងវិញ​ ដើម្បីប្រើ​កំណែថ្មី។ ផ្ទាំងឯកជន # របស់អ្នក​នឹងមិន​បើកឡើងវិញទេ។}}</translation>
 <translation id="3622797965165704966">ឥឡូវនេះ វាមានភាពងាយស្រួលក្នុងការប្រើ Chrome ជាមួយគណនី Google របស់អ្នក និងនៅលើកុំព្យូទ័រដែលបានចែករំលែក។</translation>
 <translation id="3673813398384385993">Chrome បានរកឃើញថា "<ph name="EXTENSION_NAME" />" មាន​កម្មវិធីគ្រោះថ្នាក់</translation>
+<translation id="3703994572283698466">ChromeOS អាចបង្កើតឡើងបានដោយ<ph name="BEGIN_LINK_CROS_OSS" />កម្មវិធីកូដ​ចំហ<ph name="END_LINK_CROS_OSS" />បន្ថែម ដូច<ph name="BEGIN_LINK_LINUX_OSS" />មជ្ឈដ្ឋាន​អភិវឌ្ឍ Linux<ph name="END_LINK_LINUX_OSS" />។</translation>
 <translation id="3716540481907974026">កំណែ ChromeOS Flex</translation>
 <translation id="3718181793972440140">វា​នឹង​លុប​ធាតុ 1 ចេញ​ពី​ឧបករណ៍​នេះ។ ដើម្បី​ទាញ​យក​ទិន្នន័យ​របស់អ្នក​មកវិញ​នៅ​ពេល​ក្រោយ សូម​ចូល​ទៅ​កាន់ Chrome ជា <ph name="USER_EMAIL" /> ។</translation>
 <translation id="3735758079232443276">កម្មវិធីបន្ថែម "<ph name="EXTENSION_NAME" />" បានប្តូរអ្វីដែលបានបង្ហាញនៅលើទំព័រនៅពេលអ្នកចាប់ផ្តើម Chrome។</translation>
+<translation id="3744202345691150878">ទទួលជំនួយ​ពាក់ព័ន្ធនឹង ChromeOS</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex មិនអាចធ្វើ​សម​កាល​កម្មទិន្នន័យរបស់អ្នកបានទេ ដោយសារមានបញ្ហាក្នុងការចូលគណនី។</translation>
+<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3835168907083856002">សកម្មភាពនេះនឹងបង្កើតកម្រងព័ត៌មាន Chrome ថ្មីសម្រាប់ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">សូមបិទផ្ទាំង Google Chrome ទាំងអស់ ហើយព្យាយាមម្តងទៀត។</translation>
 <translation id="3865754807470779944">Chrome កំណែ <ph name="PRODUCT_VERSION" /> ត្រូវបានដំឡើង</translation>
 <translation id="3873044882194371212">បើកតំណ​នៅក្នុងវិនដូឯកជន Chrome</translation>
 <translation id="3889417619312448367">លុបការតំឡើង Google Chrome</translation>
+<translation id="4035053306113201399">ChromeOS ត្រូវការចាប់ផ្ដើមឡើងវិញ ដើម្បីប្រើកំណែថ្មី។</translation>
 <translation id="4050175100176540509">ការធ្វើឲ្យប្រសើរឡើងផ្នែកសុវត្ថិភាពសំខាន់ៗ និងលក្ខណៈពិសេសថ្មីៗមាននៅក្នុងកំណែថ្មីបំផុតនេះ។</translation>
 <translation id="4053720452172726777">កែសម្រួល និងគ្រប់គ្រង Google Chrome</translation>
 <translation id="4106587138345390261">Chrome កំពុងរុករក​មុខងារថ្មីៗដែលអនុញ្ញាត​ឱ្យគេហទំព័រផ្ដល់​បទពិសោធន៍រុករក​ដូចគ្នា ដោយប្រើ​ព័ត៌មានរបស់អ្នក​កាន់តែតិច</translation>
@@ -183,8 +194,10 @@
 <translation id="495931528404527476">នៅក្នុង Chrome</translation>
 <translation id="4969674060580488087">ChromeOS Flex មិនអាចធ្វើ​សម​កាល​កម្មទិន្នន័យរបស់អ្នកបានទេ ដោយសារព័ត៌មានលម្អិតអំពីការចូលគណនីរបស់អ្នកហួសសម័យហើយ។</translation>
 <translation id="4970761609246024540">សូមស្វាគមន៍​មកកាន់កម្រង​ព័ត៌មាន Chrome</translation>
+<translation id="4970880042055371251">កំណែ ChromeOS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">ដើម្បីទទួលបានកំណែថ្មីរបស់ Google Chrome ក្នុងពេលអនាគត អ្នកនឹងត្រូវការ macOS 10.13 ឬកំណែខ្ពស់ជាងនេះ។ កុំព្យូទ័រនេះកំពុងប្រើ OS X 10.11។</translation>
+<translation id="5112116809696021727">ដើម្បី​មើល​ថាតើឧបករណ៍​របស់អ្នក​មានបច្ចុប្បន្នភាពឬអត់ សូម​ចូលទៅកាន់<ph name="LINK_BEGIN" />ការកំណត់ ChromeOS<ph name="LINK_END" /></translation>
 <translation id="5132929315877954718">ស្វែងយល់ពីកម្មវិធី ហ្គេម កម្មវិធីបន្ថែម និងធីមដ៏អស្ចារ្យសម្រាប់ Google Chrome។</translation>
 <translation id="5139423532931106058">ប្ដូរកម្រងព័ត៌មាន Chrome របស់អ្នកតាមបំណង</translation>
 <translation id="5163087008893166964">សូម​ស្វាគមន៍​មក​កាន់ Chrome។ បាន​បើក​វិនដូ​របស់​កម្មវិធីរុករកតាមអ៊ីនធឺណិត​ថ្មី</translation>
@@ -193,7 +206,9 @@
 លក្ខណៈពិសេសមួយចំនួនមិនមានទេ។ សូមបញ្ជាក់ពីថតឯកសារទម្រង់ផ្សេង ឬប្រើកំណែ Chrome ថ្មីជាងមុន។</translation>
 <translation id="521447420733633466">ប្រសិនបើអ្នកចែករំលែកឧបករណ៍ណាមួយ មិត្តភ័ក្ដិ និងគ្រួសាររបស់អ្នកអាចរុករកដាច់ដោយឡែក ព្រមទាំងរៀបចំ Chrome តាមអ្វីដែលពួកគេចង់បាន</translation>
 <translation id="5251420635869119124">ភ្ញៀវអាចប្រើ Chrome ដោយមិនមានបន្សល់ទុកអ្វីឡើយ។</translation>
+<translation id="5334309298019785904">ChromeOS មិនអាចធ្វើ​សម​កាល​កម្មទិន្នន័យរបស់អ្នកបានទេ ដោយសារមិនអាចប្រើ​សម​កាល​កម្មនៅក្នុងដែនរបស់អ្នក។</translation>
 <translation id="5334487786912937552">Chrome ត្រូវការ​ការអនុញ្ញាត​ឱ្យចូលប្រើ​ទំហំផ្ទុក ដើម្បីទាញយក​ឯកសារ</translation>
+<translation id="5337648990166757586">មិនតម្រូវ៖ ជួយកែលម្អ​មុខងារ និងប្រតិបត្តិការ ChromeOS ដោយផ្ញើ​ទិន្នន័យប្រើប្រាស់ និងការវិភាគ​ទៅ Google ដោយស្វ័យប្រវត្តិ។</translation>
 <translation id="5357889879764279201">ទទួលជំនួយពាក់ព័ន្ធនឹង ChromeOS Flex</translation>
 <translation id="5386244825306882791">វាក៏គ្រប់គ្រងអ្វីដែលទំព័របានបង្ហាញផងដែរ នៅពេលអ្នកចាប់ផ្តើម Chrome ឬស្វែងរកពីប្រអប់អូមនី។</translation>
 <translation id="5394833366792865639">ចែករំលែក​ផ្ទាំង Chrome</translation>
@@ -221,6 +236,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ការចូល​បណ្ដាញ</translation>
 <translation id="5940385492829620908">គេហទំព័រ ចំណាំ និងរបស់ផ្សេងទៀតរបស់ Chrome របស់អ្នកនៅទីនេះ។</translation>
 <translation id="5941830788786076944">ដាក់ Google Chrome ជាកម្មវិធីរុករកលំនាំដើម</translation>
+<translation id="5959292945051687759">ប្រសិនបើ​ការកំណត់​មិនបង្ហាញ​នៅក្នុងទំព័រនេះទេ សូមមើល​នៅក្នុង<ph name="LINK_BEGIN" />ការកំណត់ ChromeOS<ph name="LINK_END" /> របស់អ្នក</translation>
 <translation id="6070348360322141662">ដើម្បី​ទទួលបាន​សុវត្ថិភាព​បន្ថែម Google Chrome នឹង​អ៊ិនគ្រីប​ទិន្នន័យ​របស់​អ្នក</translation>
 <translation id="608006075545470555">បញ្ចូលកម្រងព័ត៌មានការងារទៅក្នុងកម្មវិធីរុករកតាមអ៊ីនធឺណិតនេះ</translation>
 <translation id="6113794647360055231">Chrome កាន់តែប្រសើរជាងមុន</translation>
@@ -247,6 +263,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="683440813066116847">វិន័យត្រលប់ចូលសម្រាប់  Google Chrome Canary ដើម្បីអនុញ្ញាតចរាចរណ៍ mDNS។</translation>
 <translation id="6881299373831449287">កំពុង​ដំឡើង​កំណែ Chrome</translation>
 <translation id="6885412569789873916">កម្មវិធី Chrome បេតា</translation>
+<translation id="6933858244219479645">ប្រព័ន្ធ ChromeOS</translation>
 <translation id="6943584222992551122">ទិន្នន័យរុករក​របស់​បុគ្គលនេះ​នឹងត្រូវ​បាន​លុបចេញ​ពីឧបករណ៍​នេះ។ ដើម្បីស្តារ​ទិន្នន័យនេះ​ឡើងវិញ សូមចូល​ទៅ Chrome ជា <ph name="USER_EMAIL" /> ។</translation>
 <translation id="6967962315388095737">ក្បួនត្រលប់ចូលសម្រាប់ Google Chrome បេតា ដែលត្រូវអនុញ្ញាតលើការធ្វើចរាចររបស់ mDNS ។</translation>
 <translation id="6989339256997917931">Google Chrome ត្រូវបានធ្វើបច្ចុប្បន្នភាព ប៉ុន្តែអ្នកមិនទាន់បានប្រើវាយ៉ាងហោចណាស់ 30 ថ្ងៃហើយ។</translation>
@@ -258,6 +275,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="7085332316435785646">ជ្រើសរើសថាត្រូវរួមបញ្ចូលប្រវត្តិ Chrome ដើម្បីទទួលបានបទពិសោធន៍ប្រើប្រាស់កាន់តែស្របនឹងបុគ្គលនៅក្នុងសេវាកម្ម Google ឬអត់</translation>
 <translation id="7088681679121566888">Chrome ជា​កំណែថ្មី​ហើយ</translation>
 <translation id="7098166902387133879">Google Chrome កំពុងប្រើម៉ៃក្រូហ្វូនរបស់អ្នក។</translation>
+<translation id="7099479769133613710">ចាប់ផ្តើម​ឡើងវិញ​ដើម្បីដំឡើងកំណែ &amp;ChromeOS</translation>
 <translation id="7106741999175697885">កម្មវិធីគ្រប់គ្រងភារកិច្ច - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{មានកំណែថ្មី​សម្រាប់ Chrome ​ហើយ ហើយកំណែថ្មីនេះ​នឹង​ប្រើភ្លាមៗ ​បន្ទាប់ពី​អ្នក​ចាប់ផ្ដើម​ឡើងវិញ។}=1{មានកំណែថ្មី​សម្រាប់ Chrome ​ហើយ ហើយកំណែថ្មីនេះ​នឹង​ប្រើភ្លាមៗ ​បន្ទាប់ពី​អ្នក​ចាប់ផ្ដើម​ឡើងវិញ។ ផ្ទាំងឯកជនរបស់អ្នក​នឹង​មិនបើកឡើងវិញទេ។}other{មានកំណែថ្មី​សម្រាប់ Chrome ​ហើយ ហើយកំណែថ្មីនេះ​នឹង​ប្រើភ្លាមៗ ​បន្ទាប់ពី​អ្នក​ចាប់ផ្ដើម​ឡើងវិញ។ ផ្ទាំងឯកជន # របស់អ្នក​នឹងមិន​បើកឡើងវិញទេ។}}</translation>
 <translation id="7155997830309522122">ប្រសិនបើដូច្នេះមែន សូមកែ​ពាក្យសម្ងាត់​ដែលអ្នកបានរក្សាទុក​នៅក្នុង Chrome ដើម្បីឱ្យ​ពាក្យសម្ងាត់​នោះត្រូវគ្នា​ជាមួយពាក្យសម្ងាត់ថ្មី​របស់អ្នក។</translation>
@@ -279,6 +297,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="7592736734348559088">Google Chrome មិនអាចធ្វើសមកម្មទិន្នន័យរបស់អ្នកទេ ពីព្រោះព័ត៌មានលំអិតគណនីចូលរបស់អ្នកហួសសម័យហើយ។</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">ស្វាគមន៍មកកាន់ Chrome</translation>
+<translation id="7626072681686626474"><ph name="MANAGER" /> តម្រូវឱ្យអ្នកអាន និងយល់ព្រមតាមលក្ខខណ្ឌប្រើប្រាស់ខាងក្រោម មុនពេលប្រើឧបករណ៍នេះ។ លក្ខខណ្ឌទាំងនេះមិនបន្ថែម កែប្រែ ឬដាក់កំហិតលើលក្ខខណ្ឌ Google ChromeOS ទេ។</translation>
 <translation id="7629695634924605473">Chrome ប្រាប់អ្នក​ឱ្យដឹងថាតើពាក្យ​សម្ងាត់របស់អ្នក​ធា្លប់ត្រូវបានវាយលុកឬអត់</translation>
 <translation id="7641148173327520642">អ្នក​គ្រប់គ្រង​ប្រព័ន្ធ​របស់អ្នក​បានកំណត់រចនាសម្ព័ន្ធ Google Chrome ឱ្យ​បើក <ph name="ALTERNATIVE_BROWSER_NAME" /> ដើម្បី​ចូលប្រើ <ph name="TARGET_URL_HOSTNAME" /> ។</translation>
 <translation id="7651907282515937834">និមិត្តសញ្ញា​ក្រុមហ៊ុន Chrome</translation>
@@ -315,6 +334,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="8394720698884623075">ពិនិត្យ URL ធៀបនឹងបញ្ជីគេហទំព័រគ្មានសុវត្ថិភាព ដែលរក្សាទុកនៅក្នុង Chrome</translation>
 <translation id="840084489713044809">Google Chrome ចង់​នាំចេញ​ពាក្យ​សម្ងាត់​របស់អ្នក​។</translation>
 <translation id="8416347857511542594">ស្វែងយល់បន្ថែមអំពីការកំណត់ការផ្សាយពាណិជ្ជកម្មឱ្យស្របតាមបុគ្គលនៅក្នុង Chrome</translation>
+<translation id="8418845734693287262">ChromeOS មិនអាចធ្វើ​សម​កាល​កម្មទិន្នន័យរបស់អ្នកបានទេ ដោយសារព័ត៌មានលម្អិតអំពីការចូលគណនីរបស់អ្នកហួសសម័យហើយ។</translation>
 <translation id="8421734018304082652">Chrome បានទប់ស្កាត់​ឯកសារនេះ ដោយសារវា​ត្រូវបានអ៊ីនគ្រីប។ សូមស្នើឱ្យ​ម្ចាស់ឯកសារនេះ​ឌិគ្រីបវា</translation>
 <translation id="8433638294851456451">ដើម្បីផ្ញើលេខទូរសព្ទ​ពីទីនេះទៅទូរសព្ទ Android របស់អ្នក សូមចូល Chrome នៅលើ​ឧបករណ៍​ទាំងពីរ។</translation>
 <translation id="8498858610309223613">ការធ្វើបច្ចុប្បន្នភាព​ផ្នែកសុវត្ថិភាព​ពិសេសសម្រាប់ Google Chrome ទើបតែ​ត្រូវបានអនុវត្ត។ សូមចាប់ផ្ដើម​ឡើងវិញឥឡូវនេះ នោះយើងនឹង​ស្ដារផ្ទាំង​របស់អ្នក។</translation>

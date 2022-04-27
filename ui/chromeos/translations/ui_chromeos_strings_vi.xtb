@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">Tiếng Do Thái (chuyển tự)</translation>
 <translation id="1747761757048858544">Tiếng Hà Lan (Hà Lan)</translation>
 <translation id="174937106936716857">Tổng số lượng tệp</translation>
+<translation id="1755345808328621801">Tệp này dành cho máy tính sử dụng phần mềm Windows. Tệp này không tương thích với thiết bị chạy ChromeOS của bạn. Vui lòng tìm kiếm ứng dụng thay thế phù hợp trong Cửa hàng Chrome trực tuyến.</translation>
 <translation id="1773212559869067373">Chứng chỉ xác thực bị từ chối cục bộ</translation>
 <translation id="1775381402323441512">Thông tin về tệp video</translation>
 <translation id="180035236176489073">Bạn phải trực tuyến để truy cập các tệp này.</translation>
@@ -198,8 +199,6 @@
 <translation id="2649120831653069427">Cá cầu vồng</translation>
 <translation id="2663066752008346276">Tiếng Miến Điện/Myanmar bằng bàn phím Myansan</translation>
 <translation id="2664412712123763093">Vị trí tệp</translation>
-<translation id="2672394958563893062">Đã xảy ra lỗi. Nhấp để khởi động lại từ đầu.</translation>
-<translation id="2676946222714718093">Đang phát trên</translation>
 <translation id="2718540689505416944">Cài đặt ứng dụng Linux</translation>
 <translation id="2719020180254996569">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Thông tin chi tiết</translation>
 <translation id="2724954091494693138">Tiếng Thổ Nhĩ Kỳ bằng bàn phím F</translation>
@@ -225,6 +224,7 @@
 <translation id="2943503720238418293">Hãy sử dụng tên ngắn hơn</translation>
 <translation id="2949781154072577687">Đang định dạng <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Sứa</translation>
+<translation id="2977940621473452797">Tệp này dành cho máy tính sử dụng phần mềm Macintosh. Tệp này không tương thích với thiết bị chạy ChromeOS của bạn. Vui lòng tìm kiếm ứng dụng thay thế phù hợp trong Cửa hàng Chrome trực tuyến.</translation>
 <translation id="2984337792991268709">Hôm nay <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Đang khôi phục <ph name="COUNT" /> mục...</translation>
 <translation id="2994669386200004489">Không thể sao lưu <ph name="FILE_NAME" /></translation>
@@ -340,7 +340,6 @@
 <translation id="3901991538546252627">Đang kết nối với <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Đang cài đặt hồ sơ mạng di động, Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Phát trên</translation>
 <translation id="3943857333388298514">Dán</translation>
 <translation id="3952872973865944257">Tiếng Telugu (phiên âm)</translation>
 <translation id="3958548648197196644">Kiwi</translation>
@@ -412,7 +411,6 @@
 <translation id="4631887759990505102">Nghệ sĩ</translation>
 <translation id="4642769377300286600">Đang cài đặt hồ sơ mạng di động, Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Tiếng Séc bằng bàn phím Qwerty</translation>
-<translation id="4656293982926141856">Máy tính này</translation>
 <translation id="4656777537938206294">Dùng tệp khi không có mạng</translation>
 <translation id="4658782175094886150">Người trong tuyết</translation>
 <translation id="4669606053856530811">Thành viên của '<ph name="SOURCE_NAME" />' sẽ mất quyền truy cập trừ khi bạn chia sẻ các mục này với họ.</translation>
@@ -422,13 +420,13 @@
 <translation id="4694604912444486114">Khỉ</translation>
 <translation id="469612310041132144">Tiếng Trung (bộ gõ Quick)</translation>
 <translation id="4697043402264950621">Danh sách tệp được sắp xếp tăng dần theo <ph name="COLUMN_NAME" />.</translation>
+<translation id="469897186246626197">Tệp này dành cho máy tính sử dụng phần mềm Windows. Tệp này không tương thích với thiết bị chạy ChromeOS của bạn. <ph name="BEGIN_LINK_HELP" />Tìm hiểu thêm<ph name="END_LINK_HELP" /> về cách mở tệp trên ChromeOS.</translation>
 <translation id="4706042980341760088">Tiếng Tamil bằng bàn phím dạng Máy đánh chữ</translation>
 <translation id="4711094779914110278">Tiếng Thổ Nhĩ Kỳ</translation>
 <translation id="4712283082407695269">Đang mở "<ph name="PATH" />"</translation>
 <translation id="4720185134442950733">Mạng dữ liệu di động</translation>
 <translation id="4724850507808590449">Đã sao lưu <ph name="FILE_COUNT" /> ảnh</translation>
 <translation id="4725511304875193254">Chó Corgi</translation>
-<translation id="4732760563705710320">Rất tiếc, video không được thiết bị truyền của bạn hỗ trợ.</translation>
 <translation id="4737050008115666127">Hạ cánh</translation>
 <translation id="4747271164117300400">Tiếng Macedonia</translation>
 <translation id="4759238208242260848">Tệp đã tải xuống</translation>
@@ -543,6 +541,7 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5602622065581044566">Tiếng Bulgaria bằng bàn phím phiên âm</translation>
 <translation id="5605830556594064952">Dvorak Hoa Kỳ</translation>
+<translation id="5618330573454123917">Tệp này dành cho máy tính sử dụng phần mềm Macintosh. Tệp này không tương thích với thiết bị chạy ChromeOS của bạn. <ph name="BEGIN_LINK_HELP" />Tìm hiểu thêm<ph name="END_LINK_HELP" /> về cách mở tệp trên ChromeOS.</translation>
 <translation id="5625294776298156701">Tiếng Tamil bằng bàn phím Tamil99</translation>
 <translation id="5633226425545095130">Khi bạn di chuyển mục này, mục này sẽ được chia sẻ với những người có thể xem thư mục dùng chung "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Nghe</translation>
@@ -618,7 +617,6 @@
 <translation id="6224253798271602650">Định dạng <ph name="DRIVE_NAME" /></translation>
 <translation id="6227235786875481728">Không thể phát tệp này.</translation>
 <translation id="6241349547798190358">Tiếng Hà Lan (Bỉ)</translation>
-<translation id="6248400709929739064">Bật phụ đề</translation>
 <translation id="6267547857941397424">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Pin điện thoại <ph name="BATTERY_STATUS" />%, Kết nối</translation>
 <translation id="6269630227984243955">Tiếng Malay</translation>
 <translation id="6287852322318138013">Chọn một ứng dụng để mở tệp này</translation>
@@ -636,7 +634,6 @@
 <translation id="637062427944097960">Tệp này được mở trên máy tính khác. Chuyển sang <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) để xem tệp này.</translation>
 <translation id="6394388407447716302">Chỉ có thể đọc</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> mục</translation>
-<translation id="6398765197997659313">Thoát khỏi chế độ toàn màn hình</translation>
 <translation id="642282551015776456">Không thể sử dụng tên này làm tên tệp trong thư mục</translation>
 <translation id="6423031066725912715">Tiếng Việt bằng bàn phím TCVN</translation>
 <translation id="6485131920355264772">Không thể truy xuất thông tin dung lượng</translation>
@@ -672,7 +669,6 @@
 <translation id="6820687829547641339">Lưu trữ tar được nén bởi Gzip</translation>
 <translation id="6823166707458800069">Tất cả các tệp bạn đã lưu trong thư mục này đều tự động được sao lưu trực tuyến.</translation>
 <translation id="6825883775269213504">Tiếng Nga</translation>
-<translation id="6827236167376090743">Video này sẽ tiếp tục phát đi phát lại.</translation>
 <translation id="6847101934483209767">Đã xóa <ph name="ENTRY_NAME" /> khỏi lựa chọn.</translation>
 <translation id="6856459657722366306">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Thông tin chi tiết</translation>
 <translation id="6861394552169064235">Tiếng Ba Tư</translation>
@@ -738,6 +734,7 @@
 <translation id="7309413087278791451">Tiếng Đức (Bỉ)</translation>
 <translation id="7339898014177206373">Cửa sổ mới</translation>
 <translation id="7343393116438664539">Tiếng Việt (Telex)</translation>
+<translation id="7357762654218998920">Loại tệp này không được hỗ trợ. <ph name="BEGIN_LINK_HELP" />Tìm hiểu thêm<ph name="END_LINK_HELP" /> về cách mở tệp trên ChromeOS.</translation>
 <translation id="7359359531237882347">Đang sao chép <ph name="NUMBER_OF_ITEMS" /> mục...</translation>
 <translation id="7375951387215729722">Danh sách tệp được sắp xếp giảm dần theo <ph name="COLUMN_NAME" />.</translation>
 <translation id="7402503521691663770">Thiết bị ChromeOS Flex</translation>
@@ -809,7 +806,6 @@
 <translation id="7857117644404132472">Thêm ngoại lệ</translation>
 <translation id="7868774406711971383">Tiếng Ba Lan</translation>
 <translation id="7874321682039004450">Tiếng Philippines</translation>
-<translation id="7881969471599061635">Tắt phụ đề</translation>
 <translation id="78946041517601018">Bộ nhớ dùng chung</translation>
 <translation id="7908793776359722643">Thao tác định dạng một phân vùng sẽ xóa toàn bộ dữ liệu lưu trữ trên phân vùng đó. Bạn không thể hủy thao tác này sau khi thực hiện.</translation>
 <translation id="7925247922861151263">Không thể kiểm tra AAA</translation>
@@ -886,7 +882,6 @@
 <translation id="8492972329130824181">Mạng gia đình không hoạt động. Bạn phải bật chế độ chuyển vùng dữ liệu di động để kết nối.</translation>
 <translation id="8499098729323186194">Đang trích xuất <ph name="NUMBER_OF_ITEMS" /> mục...</translation>
 <translation id="8521441079177373948">Vương quốc Anh</translation>
-<translation id="8525306231823319788">Toàn màn hình</translation>
 <translation id="853494022971700746">Tiếng Pháp (Pháp)</translation>
 <translation id="8540608333167683902">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Thông tin chi tiết</translation>
 <translation id="8545476925160229291">Tiếng Anh (Mỹ)</translation>

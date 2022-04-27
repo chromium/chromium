@@ -199,8 +199,6 @@
 <translation id="2649120831653069427">Vikerkaarekala</translation>
 <translation id="2663066752008346276">birma (Myanmar), Myansani klaviatuuriga</translation>
 <translation id="2664412712123763093">Faili asukoht</translation>
-<translation id="2672394958563893062">Ilmnes viga. Klõpsake uuesti alustamiseks.</translation>
-<translation id="2676946222714718093">Mängib seadmes</translation>
 <translation id="2718540689505416944">Rakenduse installimine Linuxiga</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, üksikasjad</translation>
 <translation id="2724954091494693138">türgi, F-klaviatuuriga</translation>
@@ -342,7 +340,6 @@
 <translation id="3901991538546252627">Võrguga <ph name="NAME" /> ühenduse loomine</translation>
 <translation id="3906232975181435906">Mobiiliprofiili installimine, võrk <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Esita seadmes</translation>
 <translation id="3943857333388298514">Kleebi</translation>
 <translation id="3952872973865944257">telugu, foneetiline</translation>
 <translation id="3958548648197196644">Kiivi</translation>
@@ -414,7 +411,6 @@
 <translation id="4631887759990505102">Esitaja</translation>
 <translation id="4642769377300286600">Mobiiliprofiili installimine, võrk <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">tšehhi, QWERTY-klaviatuuriga</translation>
-<translation id="4656293982926141856">See arvuti</translation>
 <translation id="4656777537938206294">Muutke failid võrguühenduseta kättesaadavaks</translation>
 <translation id="4658782175094886150">Inimene lumes</translation>
 <translation id="4669606053856530811">Üksuse „<ph name="SOURCE_NAME" />” liikmed kaotavad juurdepääsu, kui neid üksusi nendega ei jagata.</translation>
@@ -431,7 +427,6 @@
 <translation id="4720185134442950733">Mobiilse andmeside võrk</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> fotot on varundatud</translation>
 <translation id="4725511304875193254">Corgi</translation>
-<translation id="4732760563705710320">Kahjuks ei toeta teie ülekandeseade seda videot.</translation>
 <translation id="4737050008115666127">Maandumine</translation>
 <translation id="4747271164117300400">Makedoonia</translation>
 <translation id="4759238208242260848">Allalaadimised</translation>
@@ -622,7 +617,6 @@
 <translation id="6224253798271602650">Ketta <ph name="DRIVE_NAME" /> vormindamine</translation>
 <translation id="6227235786875481728">Faili ei saanud esitada.</translation>
 <translation id="6241349547798190358">hollandi (Belgia)</translation>
-<translation id="6248400709929739064">Luba subtiitrid</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="PHONE_NAME" />, <ph name="SIGNAL_STRENGTH" />, signaalitugevus: <ph name="BATTERY_STATUS" />%, telefoni aku: %, ühenda</translation>
 <translation id="6269630227984243955">malai</translation>
 <translation id="6287852322318138013">Valige faili avamiseks rakendus</translation>
@@ -640,7 +634,6 @@
 <translation id="637062427944097960">Fail on avatud muul töölaual. Selle vaatamiseks avage <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Kirjutuskaitstud</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> üksust</translation>
-<translation id="6398765197997659313">Välju täisekraanilt</translation>
 <translation id="642282551015776456">Seda nime ei saa faili või kausta nimena kasutada</translation>
 <translation id="6423031066725912715">vietnami, klaviatuuriga TCVN</translation>
 <translation id="6485131920355264772">Talletusruumi teabe toomine ebaõnnestus</translation>
@@ -676,7 +669,6 @@
 <translation id="6820687829547641339">Gzipi tihendatud TAR-arhiiv</translation>
 <translation id="6823166707458800069">Kõik sellesse kausta salvestatud failid varundatakse võrgus automaatselt.</translation>
 <translation id="6825883775269213504">vene keel</translation>
-<translation id="6827236167376090743">Seda videot esitatakse seni, kuni lehmad koju jõuavad.</translation>
 <translation id="6847101934483209767">Kirje <ph name="ENTRY_NAME" /> eemaldati valikust.</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, üksikasjad</translation>
 <translation id="6861394552169064235">pärsia</translation>
@@ -814,7 +806,6 @@
 <translation id="7857117644404132472">Lisa erand</translation>
 <translation id="7868774406711971383">poola</translation>
 <translation id="7874321682039004450">filipiini</translation>
-<translation id="7881969471599061635">Keela subtiitrid</translation>
 <translation id="78946041517601018">Jagatud kettad</translation>
 <translation id="7908793776359722643">Partitsiooni vormindamisel kustutatakse kõik sellesse salvestatud andmed. Seda toimingut ei saa tagasi võtta.</translation>
 <translation id="7925247922861151263">AAA kontrollimine nurjus</translation>
@@ -891,7 +882,6 @@
 <translation id="8492972329130824181">Kodune võrk pole saadaval. Ühenduse loomiseks tuleb lubada mobiilse andmeside rändlus.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> üksuse ekstraktimine …</translation>
 <translation id="8521441079177373948">Ühendkuningriik</translation>
-<translation id="8525306231823319788">Täisekraan</translation>
 <translation id="853494022971700746">prantsuse (Prantsusmaa)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, üksikasjad</translation>
 <translation id="8545476925160229291">inglise (USA)</translation>

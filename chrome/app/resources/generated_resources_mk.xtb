@@ -583,6 +583,7 @@
 <translation id="156793199942386351">Копчето „<ph name="CURRENTKEY" />“ е веќе назначено за дејството „<ph name="ACTION" />“. Притиснете на кое било копче за да <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Конзола за JavaScript</translation>
 <translation id="1568323446248056064">Отворете ги поставките на уредот за екранот</translation>
+<translation id="1569044524074707727">Отклучете го телефонот</translation>
 <translation id="1570604804919108255">Вклучете го звукот на известувањата</translation>
 <translation id="1571304935088121812">Копирај го корисничкото име</translation>
 <translation id="1571738973904005196">Прикажи ја картичката: <ph name="TAB_ORIGIN" /></translation>
@@ -1017,7 +1018,6 @@
 <translation id="1942600407708803723">Исклучи кога капакот е затворен</translation>
 <translation id="1944528062465413897">Код за спарување преку Bluetooth:</translation>
 <translation id="1944921356641260203">Најдено е ажурирање</translation>
-<translation id="1946577776959096882">Прикажи ги сметките</translation>
 <translation id="1949584741547056205">Брзи одговори</translation>
 <translation id="1951012854035635156">Помошник</translation>
 <translation id="1954597385941141174">Сајтовите може да прашуваат дали да се поврзат со USB-уредите</translation>
@@ -1438,7 +1438,6 @@
 <translation id="2322622365472107569">Време на завршување: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Зачувани Wi-Fi мрежи</translation>
 <translation id="2325444234681128157">Запомни ја лозинката</translation>
-<translation id="2325760149602186433">Отстранете ја виртуелната картичка</translation>
 <translation id="2326188115274135041">Потврдете го PIN-кодот за да вклучите автоматско отклучување</translation>
 <translation id="2326931316514688470">&amp;Вчитај ја апликацијата повторно</translation>
 <translation id="2327492829706409234">Вклучи апликација</translation>
@@ -2027,6 +2026,7 @@
 <translation id="288042212351694283">Пристапете на вашите уреди Universal 2nd Factor</translation>
 <translation id="2881076733170862447">Кога ќе кликнете на екстензијата</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> ќе се рестартира и ресетира моментално</translation>
+<translation id="2883470649061584386">Активност</translation>
 <translation id="2885378588091291677">Управник со задачи</translation>
 <translation id="2885729872133513017">Настана проблем при декодирање на одговорот на серверот.</translation>
 <translation id="2886119409731773154">Ова може да потрае до 30 минути</translation>
@@ -4723,9 +4723,7 @@
 <translation id="5585912436068747822">Форматирањето не успеа</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Вчитување апликации…</translation>
-<translation id="5591644692203457362">Која било проширена употреба на клучеви</translation>
 <translation id="5592595402373377407">Уште нема доволно достапни податоци.</translation>
-<translation id="5593564924968945303">Прелистувач Chrome</translation>
 <translation id="5595485650161345191">Измени адреса</translation>
 <translation id="5596627076506792578">Повеќе опции</translation>
 <translation id="5600348067066185292">За инсталација се потребни неколку лесни чекори. Ќе имате уште една шанса да ги потврдите измените пред да се извршат на вашиот компјутер.</translation>
@@ -5053,7 +5051,6 @@
 <translation id="5935158534896975820">Се подготвува барање за најавување со сертификат (се чека серверот)</translation>
 <translation id="5935656526031444304">Управувајте со „Безбедното прелистување“</translation>
 <translation id="5938002010494270685">Достапна е надградба за безбедност</translation>
-<translation id="5938153366081463283">Додајте виртуелна картичка</translation>
 <translation id="5939518447894949180">Ресетирај</translation>
 <translation id="5939719276406088041">Не може да се создаде кратенката</translation>
 <translation id="594048410531370124">Непрепознаено копче. Притиснете на кое било копче за да <ph name="RESPONSE" />.</translation>
@@ -5343,6 +5340,7 @@
 <translation id="6227002569366039565">Притиснете |<ph name="ACCELERATOR" />| за да го фокусирате балончево, а потоа притиснете пак за да го фокусирате на елементот на кој посочува.</translation>
 <translation id="6227280783235722609">екстензија</translation>
 <translation id="6229849828796482487">Исклучување Wi-Fi мрежа</translation>
+<translation id="6230165830166519105">Обидете се поинаку</translation>
 <translation id="6231782223312638214">Предложено</translation>
 <translation id="6231881193380278751">Додајте параметар на барањето во URL за автоматско освежување на страницата: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Батерија</translation>
@@ -5699,7 +5697,6 @@
 <translation id="656293578423618167">Патеката на датотеката или нејзиното име се многу долги. Зачувајте ја со пократко име или на друга локација.</translation>
 <translation id="6563469144985748109">Управникот уште не го одобрил</translation>
 <translation id="6568283005472142698">Пребарување картички</translation>
-<translation id="6569911211938664415">Лозинките се зачувуваат во вашата сметка на Google (<ph name="ACCOUNT" />) за да може да ги користите на кој било уред</translation>
 <translation id="65711204837946324">Потребна е дозвола за преземање</translation>
 <translation id="6571772921213691236">Изменете ги податоците за најавување</translation>
 <translation id="6573497332121198392">Не може да се отстрани кратенката</translation>
@@ -5833,7 +5830,6 @@
 <translation id="6697492270171225480">Прикажувај предлози за слични страници кога страницата не може да се најде</translation>
 <translation id="6697690052557311665">За да споделите, кликнете со десен клик на папка во апликацијата „Папки“, потоа изберете „Сподели со Linux“.</translation>
 <translation id="6698810901424468597">Прочитајте ги и променете ги вашите податоци на <ph name="WEBSITE_1" /> и <ph name="WEBSITE_2" /></translation>
-<translation id="6699883973579689168">Сега може да управувате со сите ваши сметки на Google од едно место. Пристапот и дозволите што сте им ги одобриле на апликациите, веб-сајтовите и екстензиите во Chrome и Google Play сега може да се применат на сите сметки на коишто сте најавени. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="6700093763382332031">Заклучување на мобилната SIM-картичка</translation>
 <translation id="6700480081846086223">Емитувај <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Не може да се добие профил.</translation>
@@ -6574,6 +6570,7 @@
 <translation id="7450761244949417357">Се отвора во <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="7452166281927983300">Отфрлени опомени (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">Со избирање на печатачов, давате дозвола следната екстензија да пристапува до него:</translation>
+<translation id="7453467225369441013">Ќе ве одјави од повеќето сајтови. Нема да се одјавите од вашата сметка на Google.</translation>
 <translation id="7454548535253569100">Портал: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">Управувајте со дополнителните контејнери</translation>
 <translation id="7456142309650173560">dev</translation>
@@ -8384,7 +8381,7 @@
 <translation id="932327136139879170">Дома</translation>
 <translation id="932508678520956232">Не може да започне печатење.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Датотекава е преголема за безбедносна проверка. Може да прикачувате датотеки до 50 MB.}one{Некои од датотекиве се преголеми за безбедносна проверка. Може да прикачувате датотеки до 50 MB.}other{Некои од датотекиве се преголеми за безбедносна проверка. Може да прикачувате датотеки до 50 MB.}}</translation>
-<translation id="93343527085570547">Одете на <ph name="BEGIN_LINK1" />страницата „Правна помош“<ph name="END_LINK1" /> за да побарате промени на содржините од правни причини. Некои информации за сметката и системот можеби ќе се испратат до Google. Информациите што ни ги давате ќе ги користиме за да се справиме со техничките проблеми и за да ги подобриме нашите услуги, согласно нашите <ph name="BEGIN_LINK2" />Политика за приватност<ph name="END_LINK2" /> и <ph name="BEGIN_LINK3" />Услови за користење<ph name="END_LINK3" />.</translation>
+<translation id="93343527085570547">Одете на <ph name="BEGIN_LINK1" />страницата „Правна помош“<ph name="END_LINK1" /> за да побарате промени во содржините од правни причини. Одредени податоци за сметката и системот може да се испратат во Google. Податоците што ни ги давате ќе ги користиме за решавање технички проблеми и подобрување на нашите услуги, согласно со нашите <ph name="BEGIN_LINK2" />Политика за приватност<ph name="END_LINK2" /> и <ph name="BEGIN_LINK3" />Услови за користење<ph name="END_LINK3" />.</translation>
 <translation id="93393615658292258">Само лозинка</translation>
 <translation id="934244546219308557">Именувајте ја групава</translation>
 <translation id="934503638756687833">Ставките што не се наведени тука исто така ќе се отстранат ако е потребно. Дознајте повеќе за &lt;a href="<ph name="URL" />"&gt;заштита од несакан софтвер&lt;/a&gt; во белата книга за приватност на Chrome.</translation>

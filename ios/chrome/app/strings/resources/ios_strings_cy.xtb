@@ -764,6 +764,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7425346204213733349">Ni fydd newidiadau yn eich nodau tudalen, eich hanes, eich cyfrineiriau na'ch gosodiadau eraill yn cael eu cysoni â'ch Cyfrif Google mwyach. Fodd bynnag, bydd eich data presennol yn parhau i gael eu cadw yn eich Cyfrif Google.</translation>
 <translation id="7431991332293347422">Rheoli sut mae eich hanes pori yn cael ei ddefnyddio i bersonoleiddio Search a rhagor</translation>
 <translation id="7435356471928173109">Wedi'i ddiffodd gan eich gweinyddwr</translation>
+<translation id="7438481509621345350">Nawr byddwch yn gweld straeon o <ph name="CHANNEL_NAME" /> pan fyddwch yn agor tab newydd.</translation>
 <translation id="7454057999980797137">Talaith / Sir</translation>
 <translation id="7456847797759667638">Agor Lleoliad...</translation>
 <translation id="7464701184726199289">Mae hyn yn clirio data sydd wedi'u cysoni o bob dyfais. Ni fydd gosodiadau gwefan sydd wedi'u cadw yn cael eu dileu ac mae'n bosib y byddant yn adlewyrchu eich arferion pori. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
@@ -893,6 +894,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8588404856427128947">Diffodd</translation>
 <translation id="8590913940444621808">Peidio Byth â Gofyn</translation>
 <translation id="8591976964826315682">Rhwystro Cwcis Trydydd Parti yn y Modd Anhysbys</translation>
+<translation id="8592752150819985187">Awtolenwi Cyfrineiriau</translation>
 <translation id="8605219856220328675">Cau'r tab.</translation>
 <translation id="8620640915598389714">Golygu</translation>
 <translation id="8626393685701737946">Gallwch newid y wedd gwefan ddiofyn i fwrdd gwaith yn y Gosodiadau &gt; Gosodiadau Cynnwys.</translation>
@@ -911,6 +913,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8741995161408053644">Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori yn <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Byddwch yn gweld eich tabiau yma</translation>
 <translation id="8756969031206844760">Diweddaru'r cyfrinair?</translation>
+<translation id="8764015330924122850">Dad-ddilyn <ph name="DOMAIN_NAME" /></translation>
 <translation id="8775144690796719618">URL Annilys</translation>
 <translation id="8787968206789828143">Chwilio ar y We</translation>
 <translation id="8803639129939845298">Diogel</translation>

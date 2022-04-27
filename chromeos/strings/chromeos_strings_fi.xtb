@@ -42,6 +42,7 @@
 <translation id="1394661041439318933">Laitteen kotelon akun varaus on <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Yhdyskäytävää voidaan pingata</translation>
 <translation id="1398634363027580500">Erittäin suuri HTTPS-viive</translation>
+<translation id="1407069428457324124">Tumma teema</translation>
 <translation id="1413240736185167732">Epäonnistui – Suodatin epäkunnossa</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Minulla on avainpari</translation>
@@ -63,6 +64,7 @@
 <translation id="1565038567006703504">Päivitys ei onnistu: <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albumit</translation>
 <translation id="1572585716423026576">Aseta taustakuvaksi</translation>
+<translation id="1578784163189013834">Valitse näytönsäästäjän tausta</translation>
 <translation id="1615335640928990664">Datan käyttö <ph name="FRIENDLY_DATE" /> jälkeen</translation>
 <translation id="1621067168122174824">Suorita lataustesti</translation>
 <translation id="1639239467298939599">Ladataan</translation>
@@ -85,12 +87,15 @@
 <translation id="1768959921651994223">Todennustyyppi</translation>
 <translation id="1782199038061388045">käännös</translation>
 <translation id="1792647875738159689">Perutaan skannausta</translation>
+<translation id="1801418420130173017">Poista tumma teema käytöstä</translation>
 <translation id="1807246157184219062">Vaalea</translation>
 <translation id="1827738518074806965">Taidegalleria</translation>
 <translation id="1851218745569890714">Videokonferenssit</translation>
 <translation id="1852934301711881861">Asenna ChromeOS Flex</translation>
 <translation id="1856388568474281774">Alanuoli</translation>
+<translation id="1871569928317311284">Laita tumma teema pois päältä</translation>
 <translation id="1874612839560830905">MTU</translation>
+<translation id="188114911237521550">Laita tumma tila pois päältä</translation>
 <translation id="1887850431809612466">Laitteistoversio</translation>
 <translation id="1905710495812624430">Yritysten enimmäismäärä ylitettiin.</translation>
 <translation id="1908234395526491708">Epäonnistuneita UDP-pyyntöjä</translation>
@@ -115,6 +120,7 @@
 <translation id="2157959690810728433">JONOSSA</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Yritä uudelleen</translation>
 <translation id="2161394479394250669">Peru tulostustyö</translation>
+<translation id="2163937499206714165">Ota tumma tila käyttöön</translation>
 <translation id="2180197493692062006">Jotain meni pieleen. Kokeile avata sovellus uudelleen.</translation>
 <translation id="2209788852729124853">Nollaa liikennelaskurit</translation>
 <translation id="2212733584906323460">Verkkotunnuksen muuntaminen</translation>
@@ -126,8 +132,10 @@
 <translation id="2236746079896696523">Näppäimistön taustavalo päälle/pois</translation>
 <translation id="2240366984605217732">Asettelun valitsin</translation>
 <translation id="225692081236532131">Aktivoinnin tila</translation>
+<translation id="2271469253353559191">Tumman tilan aikataulu</translation>
 <translation id="2287186687001756809">Kuvia ei saatavilla. Jos haluat lisätä kuvia, avaa <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Käytä tämänhetkistä avainparia</translation>
+<translation id="2320295602967756579">Ota vaalea teema käyttöön</translation>
 <translation id="2323506179655536734">OHITETTU</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Löydä lähellä olevat laitteet ottamalla ensin Bluetooth käyttöön.</translation>
@@ -147,13 +155,16 @@
 <translation id="2493126929778606526">Parhaat kuvasi, valittu automaattisesti</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Päivitä taustakuva</translation>
+<translation id="2513396635448525189">Kirjautumiskuva</translation>
 <translation id="2517472476991765520">Etsi</translation>
+<translation id="2526590354069164005">Työpöytä</translation>
 <translation id="253029298928638905">Käynnistetään uudelleen…</translation>
 <translation id="2536159006530886390">Ei internetyhteyttä.</translation>
 <translation id="2570743873672969996">Tehdään testiä <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Aloita määritys avaamalla Asetukset.</translation>
 <translation id="2619761439309613843">Uusi päivittäin</translation>
 <translation id="2620436844016719705">Järjestelmä</translation>
+<translation id="2638662041295312666">Kirjautumiskuva</translation>
 <translation id="2640549051766135490">Albumi <ph name="TITLE" /> <ph name="DESC" /> valittu</translation>
 <translation id="2695514675076754339">Lisää 8-numeroinen avauskoodi</translation>
 <translation id="2712812801627182647">TLS-todennusavain</translation>
@@ -173,11 +184,13 @@
 <translation id="2926057806159140518">Lisää käyttäjätunnus ja salasana tai skannaa QR-koodi</translation>
 <translation id="3008341117444806826">PÄIVITÄ</translation>
 <translation id="3009958530611748826">Valitse tallennuskansio</translation>
+<translation id="3017079585324758401">Tausta</translation>
 <translation id="3031560714565892478">Laite on videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Päätepiste</translation>
 <translation id="3069085583900247081">Testi epäonnistui</translation>
 <translation id="3083667275341675831">Yhteysdiagnostiikka</translation>
+<translation id="3084958266922136097">Poista näytönsäästäjä käytöstä</translation>
 <translation id="3091839911843451378">Epäonnistui – Pysäytetty</translation>
 <translation id="3102119246920354026">Välimuisti</translation>
 <translation id="3122464029669770682">Keskusyksikkö</translation>
@@ -201,6 +214,7 @@
 <translation id="3340011300870565703">Laitteen oikean kuulokkeen akun varaus on <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Yhdistetty</translation>
 <translation id="3369013195428705271">Haluatko varmasti poistaa tulostushistorian? Käynnissä olevia tulostustöitä ei poisteta.</translation>
+<translation id="3404249063913988450">Ota näytönsäästäjä käyttöön</translation>
 <translation id="3413935475507503304">Jatka päivitystä valitsemalla Seuraava</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Suojaus</translation>
@@ -215,6 +229,7 @@
 <translation id="3532980081107202182">Noin <ph name="MIN_REMAINING" /> minuuttia jäljellä</translation>
 <translation id="3557205324756024651">Paikallinen identiteetti (valinnainen)</translation>
 <translation id="3565064564551103223">Sallitut IP-osoitteet</translation>
+<translation id="3569407787324516067">Näytönsäästäjä</translation>
 <translation id="3577473026931028326">Jotain meni pieleen. Yritä uudelleen.</translation>
 <translation id="357889014807611375">maksullinen Wi-Fi</translation>
 <translation id="3583278742022654445">Heikko signaalin voimakkuus. Kokeile siirtyä lähemmäs Wi-Fi-signaalin lähdettä.</translation>
@@ -249,6 +264,7 @@
 <translation id="3954678691475912818">Laitetyyppi on tuntematon.</translation>
 <translation id="3966286471246132217">Jos haluat tarkempia tuloksia, sulje kaikki sovellukset, kunnes testi on suoritettu.</translation>
 <translation id="3967822245660637423">Lataus on valmis</translation>
+<translation id="3969602104473960991">Chrome-käyttöjärjestelmän salasana vaihdettu</translation>
 <translation id="397105322502079400">Lasketaan...</translation>
 <translation id="39823212440917567">Yli <ph name="NUMBER_OF_DAYS" /> päivää vanhat tulostustyöt poistetaan</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> on nyt ajan tasalla</translation>
@@ -257,9 +273,11 @@
 <translation id="4044093238444069296">Yhdyskäytävään ei saada yhteyttä</translation>
 <translation id="4046123991198612571">Seuraava kappale</translation>
 <translation id="404928562651467259">Varoitus</translation>
+<translation id="4093865285251893588">Profiilikuva</translation>
 <translation id="409427325554347132">Tallenna testin tulokset</translation>
 <translation id="4110686435123617899">Valitse albumi <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB-kosketuslevy</translation>
+<translation id="4117637339509843559">Tumma tila</translation>
 <translation id="4131410914670010031">Mustavalkoinen</translation>
 <translation id="4140251671072434548">Avaa palvelin tuotepalautusvaltuutusta varten</translation>
 <translation id="4145784616224233563">HTTP-palomuuri</translation>
@@ -269,6 +287,7 @@
 <translation id="4170700058716978431">EPÄONNISTUI</translation>
 <translation id="4176463684765177261">Pois käytöstä</translation>
 <translation id="4176659219503619100">Ohjauspaneeli</translation>
+<translation id="420283545744377356">Laita näytönsäästäjä pois päältä</translation>
 <translation id="4213104098953699324">USB-näppäimistö</translation>
 <translation id="4227825898293920515">Salasana vanhenee: <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ei tulostustöitä käynnissä</translation>
@@ -331,6 +350,7 @@
 <translation id="4793756956024303490">Pakkausalgoritmi</translation>
 <translation id="4794140124556169553">CPU-testin suorittaminen voi vaikuttaa järjestelmän suorituskykyyn</translation>
 <translation id="4808449224298348341">Peruutettu tulostustyö: <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4809927044794281115">Vaalea teema</translation>
 <translation id="4813136279048157860">Omat kuvat</translation>
 <translation id="4813345808229079766">Yhteys</translation>
 <translation id="4832079907277790330">Valitse kansio Tiedostot-sovelluksesta…</translation>
@@ -378,6 +398,7 @@
 Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Kirjaudu ulos</translation>
+<translation id="5227902338748591677">Tumman teeman aikataulu</translation>
 <translation id="5234764350956374838">Hylkää</translation>
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5257811368506016604">Ota vaalea väritila käyttöön</translation>
@@ -398,6 +419,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5346687412805619883">Paikallinen verkko</translation>
 <translation id="5358174242040570474">Jotain meni pieleen. Kokeile valita taustakuva uudelleen tai avaa sovellus.</translation>
 <translation id="5372659122375744710">Wi-Fi-verkko ei ole suojattu</translation>
+<translation id="5376354385557966694">Automaattinen vaalea tila</translation>
 <translation id="5400907029458559844">Laite muodostaa yhteyttä.</translation>
 <translation id="5401938042319910061">Suorita kaikki ohjelmat</translation>
 <translation id="5423849171846380976">Aktivoitu</translation>
@@ -433,6 +455,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="583281660410589416">Tuntematon</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Kotiverkon palveluntarjoajan koodi</translation>
+<translation id="5859603669299126575">Taidegalleria-albumi</translation>
 <translation id="5860033963881614850">Pois päältä</translation>
 <translation id="5860491529813859533">Ota käyttöön</translation>
 <translation id="5866840822086176774">Hyvin vahva</translation>
@@ -463,6 +486,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6113701710518389813">Ylänuoli</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, <ph name="NUMBER" /> muuta albumia</translation>
 <translation id="6122191549521593678">Online</translation>
+<translation id="6122277663991249694">Chrome-käyttöjärjestelmän syöttötapapalvelu</translation>
 <translation id="6137767437444130246">Käyttäjävarmenne</translation>
 <translation id="6146993107019042706">Lisää lopuksi uusi salasana</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -478,11 +502,15 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6275224645089671689">Oikea nuoli</translation>
 <translation id="6278428485366576908">Teema</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6284632978374966585">Laita tumma teema päälle</translation>
 <translation id="6302401976930124515">Testi on peruttu: <ph name="TEST_NAME" /></translation>
 <translation id="6319207335391420837">Päivitä laiteohjelmisto: <ph name="DEVICE_NAME" /></translation>
+<translation id="6321407676395378991">Laita näytönsäästäjä päälle</translation>
 <translation id="6325525973963619867">Epäonnistui</translation>
+<translation id="6331191339300272798">Automaattinen tumma teema</translation>
 <translation id="6340526405444716530">Personointi</translation>
 <translation id="6348738456043757611">Käyttäjätunnus ja salasana</translation>
+<translation id="6359706544163531585">Poista vaalea teema käytöstä</translation>
 <translation id="636850387210749493">Yritysversion käyttöönotto</translation>
 <translation id="6379086450106841622">Kosketusnäyttö</translation>
 <translation id="6381741036071372448">Testaa näppäimistöä</translation>
@@ -557,6 +585,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="714876143603641390">LAN-yhteys</translation>
 <translation id="7155171745945906037">Olemassa oleva kuva kamerasta tai tiedostosta</translation>
 <translation id="7162487448488904999">Galleria</translation>
+<translation id="7170236477717446850">Profiilikuva</translation>
 <translation id="7172721935181587524">1 kuva</translation>
 <translation id="7175037578838465313">Määritä <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> ylläpitää tätä: <ph name="DEVICE_TYPE" />. Järjestelmänvalvojat voivat määrittää laitteen etänä.</translation>
@@ -578,6 +607,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7359657277149375382">Tiedostotyyppi</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378886533986123738">Vaihda näytönsäästäjä</translation>
+<translation id="7397270852490618635">Laita vaalea teema pois päältä</translation>
 <translation id="741244894080940828">muunnos</translation>
 <translation id="7415801143053185905">Erittäin suuri HTTP-viive</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -589,6 +619,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7497215489070763236">Palvelimen CA-varmenne</translation>
 <translation id="7502658306369382406">IPv6-osoite</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7535791657097741517">Laita vaalea teema päälle</translation>
 <translation id="7550715992156305117">Diagnostiikkaohjelmat</translation>
 <translation id="7551123448725492271">Laite on audiolaite.</translation>
 <translation id="7561454561030345039">Järjestelmänvalvojasi ylläpitää tätä toimintoa</translation>
@@ -610,11 +641,14 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7763470514545477072">Verkkotunnuksen päätteen vastaavuus</translation>
 <translation id="7769672763586021400">Mallitunnus</translation>
 <translation id="7784116172884276937">DNS-palvelimia ei ole määritetty</translation>
+<translation id="7799817062559422778">Vaalea tila</translation>
 <translation id="780301667611848630">Ei kiitos</translation>
 <translation id="7805768142964895445">Tila</translation>
 <translation id="7819857487979277519">PSK (WPA tai RSN)</translation>
+<translation id="7841134249932030522">Ota tumma tila käyttöön</translation>
 <translation id="7846634333498149051">Näppäimistö</translation>
 <translation id="7856267634822906833">Bluetooth-kosketusnäyttö</translation>
+<translation id="7869143217755017858">Poista tumma tila käytöstä</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Palveluntarjoajan tyyppi</translation>
 <translation id="7882501334836096755">Julkinen avain</translation>
@@ -654,6 +688,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8297006494302853456">Heikko</translation>
 <translation id="8302368968391049045">HTTPS-palomuuri</translation>
 <translation id="8318753676953949627">Ei kuvia</translation>
+<translation id="8336739000755212683">Vaihda laitteen tilikuva</translation>
 <translation id="8347227221149377169">Tulostustyöt</translation>
 <translation id="8352772353338965963">Lisää tili useaan tiliin kirjautumiseen. Kaikkia tilejä, joihin on kirjauduttu sisään, voi käyttää ilman salasanaa. Käytä siis ominaisuutta vain luotetuilla tileillä.</translation>
 <translation id="8364946094152050673">Nimipalvelimet tyhjiä</translation>
@@ -662,8 +697,10 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8398927464629426868">Laitteen tämänhetkinen latausnopeus tai latauksen purkunopeus</translation>
 <translation id="8422748173858722634">IMEI-koodi</translation>
 <translation id="8428073762635678092">Sisäinen näppäimistö</translation>
+<translation id="8431300646573772016">Chrome OS: uutta</translation>
 <translation id="843568408673868420">Internetyhteydet</translation>
 <translation id="844521431886043384">DNS:ää ei ole määritetty</translation>
+<translation id="8456761643544401578">Automaattinen tumma tila</translation>
 <translation id="8461329675984532579">Kotiverkon palveluntarjoajan nimi</translation>
 <translation id="8475690821716466388">Wi-Fi-verkko on suojattu heikolla WEP PSK -protokollalla</translation>
 <translation id="8477551185774834963">DNS-viive hieman yli sallitun rajan</translation>
@@ -690,6 +727,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8747900814994928677">Vahvista muutos</translation>
 <translation id="8764414543112028321">WireGuard</translation>
+<translation id="87646919272181953">Google Kuvat ‑albumi</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Tällä sivustolla saattaa olla captive portal</translation>
 <translation id="8798099450830957504">Oletus</translation>
@@ -699,6 +737,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8834539327799336565">Yhdistetty tällä hetkellä</translation>
 <translation id="8845001906332463065">Hae ohjeita</translation>
 <translation id="8855781559874488009">HTTP-sivustoihin ei voi yhdistää palomuurin läpi</translation>
+<translation id="8863170912498892583">Ota tumma teema käyttöön</translation>
 <translation id="8863888432376731307">Hae <ph name="INTENT" />: "<ph name="QUERY" />" ja muita</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Laite on tabletti.</translation>

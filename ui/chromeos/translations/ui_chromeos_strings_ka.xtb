@@ -199,8 +199,6 @@
 <translation id="2649120831653069427">თევზი</translation>
 <translation id="2663066752008346276">ბირმული/მიანმარული Myansan კლავიატურით</translation>
 <translation id="2664412712123763093">ფაილის მდებარეობა</translation>
-<translation id="2672394958563893062">შეცდომა მოხდა. დააწკაპუნეთ, რათა თავიდან დაიწყოთ.</translation>
-<translation id="2676946222714718093">ჩართვა</translation>
 <translation id="2718540689505416944">დააინსტალირეთ აპი Linux-ის მეშვეობით</translation>
 <translation id="2719020180254996569">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, დეტალები</translation>
 <translation id="2724954091494693138">თურქული F-კლავიატურით</translation>
@@ -342,7 +340,6 @@
 <translation id="3901991538546252627"><ph name="NAME" />-თან დაკავშირება</translation>
 <translation id="3906232975181435906">მიმდინარეობს მობილური პროფილის ინსტალაცია, ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">მეტა</translation>
-<translation id="3930521966936686665">დაკვრა მოწყობილობით</translation>
 <translation id="3943857333388298514">ჩასმა</translation>
 <translation id="3952872973865944257">ტელუგუ ფონეტიკური</translation>
 <translation id="3958548648197196644">კივი</translation>
@@ -414,7 +411,6 @@
 <translation id="4631887759990505102">შემსრულებელი</translation>
 <translation id="4642769377300286600">მიმდინარეობს მობილური პროფილის ინსტალაცია, ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">ჩეხური Qwerty კლავიატურით</translation>
-<translation id="4656293982926141856">ეს კომპიუტერი</translation>
 <translation id="4656777537938206294">აქციეთ ფაილები ხაზგარეშე რეჟიმში ხელმისაწვდომად</translation>
 <translation id="4658782175094886150">პიროვნება თოვლში</translation>
 <translation id="4669606053856530811">„<ph name="SOURCE_NAME" />“-ის წევრები დაკარგავენ წვდომას, თუ ეს ერთეულები არ იქნება გაზიარებული მათთან.</translation>
@@ -431,7 +427,6 @@
 <translation id="4720185134442950733">მობილური ინტერნეტის ქსელი</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> ფოტოს სარეზერვო ასლი შენახულია</translation>
 <translation id="4725511304875193254">კორგი</translation>
-<translation id="4732760563705710320">სამწუხაროდ, ვიდეო არ არის მხარდაჭერილი თქვენს ტრანსლირების მოწყობილობაში.</translation>
 <translation id="4737050008115666127">დაშვება</translation>
 <translation id="4747271164117300400">მაკედონიური</translation>
 <translation id="4759238208242260848">ჩამოტვირთვები</translation>
@@ -621,7 +616,6 @@
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" />-ის დაფორმატება</translation>
 <translation id="6227235786875481728">ამ ფაილის დაკვრა ვერ მოხერხდა.</translation>
 <translation id="6241349547798190358">ნიდერლანდური (ბელგია)</translation>
-<translation id="6248400709929739064">სუბტიტრების ჩართვა</translation>
 <translation id="6267547857941397424">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="PHONE_NAME" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, ტელეფონის ბატარეა: <ph name="BATTERY_STATUS" />%, დაკავშირება</translation>
 <translation id="6269630227984243955">მალაიური</translation>
 <translation id="6287852322318138013">აირჩიეთ პროგრამა ამ ფაილის გასახსნელად</translation>
@@ -639,7 +633,6 @@
 <translation id="637062427944097960">ეს ფაილი გახსნილია სხვა სამუშაო დაფაზე. მის სანახავად გადადით <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)-ზე.</translation>
 <translation id="6394388407447716302">მხოლოდ კითხვადი</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ერთეული</translation>
-<translation id="6398765197997659313">სრულეკრანიანი რეჟიმიდან გამოსვლა</translation>
 <translation id="642282551015776456">ამ სახელის გამოყენება ფაილის ან საქაღალდის სახელად შეუძლებელია</translation>
 <translation id="6423031066725912715">ვიეტნამური TCVN კლავიატურით</translation>
 <translation id="6485131920355264772">ვერ მოხერხდა სივრცის ინფორმაციის მიღება</translation>
@@ -675,7 +668,6 @@
 <translation id="6820687829547641339">Gzip შეკუმშული tar არქივი</translation>
 <translation id="6823166707458800069">ამ საქაღალდეში შენახული ყველა ფაილის სარეზერვო ასლები ავტომატურად იქმნება ონლაინ.</translation>
 <translation id="6825883775269213504">რუსული</translation>
-<translation id="6827236167376090743">ეს ვიდეო უსასრულოდ იქნება ჩართული.</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> ამოიშალა არჩეულიდან.</translation>
 <translation id="6856459657722366306">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, დეტალები</translation>
 <translation id="6861394552169064235">სპარსული</translation>
@@ -813,7 +805,6 @@
 <translation id="7857117644404132472">გამონაკლისის დამატება</translation>
 <translation id="7868774406711971383">პოლონური</translation>
 <translation id="7874321682039004450">ფილიპინური</translation>
-<translation id="7881969471599061635">სუბტიტრების გათიშვა</translation>
 <translation id="78946041517601018">საზიარო Drive-ები</translation>
 <translation id="7908793776359722643">დანაყოფის დაფორმატება წაშლის მასში შენახულ ყველა მონაცემს. ამ მოქმედებას ვერ გააუქმებთ.</translation>
 <translation id="7925247922861151263">AAA შემოწმება ვერ მოხერხდა</translation>
@@ -890,7 +881,6 @@
 <translation id="8492972329130824181">სახლის ქსელი მიუწვდომელია. დასაკავშირებლად საჭიროა მობილური ინტერნეტის როუმინგის ჩართვა.</translation>
 <translation id="8499098729323186194">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ერთეულის ამოღება...</translation>
 <translation id="8521441079177373948">დიდი ბრიტანეთი</translation>
-<translation id="8525306231823319788">მთელ ეკრანზე</translation>
 <translation id="853494022971700746">ფრანგული (საფრანგეთი)</translation>
 <translation id="8540608333167683902">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, დეტალები</translation>
 <translation id="8545476925160229291">ინგლისური (აშშ)</translation>

@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">히브리어(음역)</translation>
 <translation id="1747761757048858544">네덜란드어(네덜란드)</translation>
 <translation id="174937106936716857">전체 파일 수</translation>
+<translation id="1755345808328621801">이 파일은 Windows 소프트웨어를 사용하는 PC용으로 설계되었으며 ChromeOS를 실행하는 기기와 호환되지 않습니다. 적합한 대체 앱을 찾으려면 Chrome 웹 스토어를 검색하세요.</translation>
 <translation id="1773212559869067373">인증서가 로컬로 거부됨</translation>
 <translation id="1775381402323441512">동영상 정보</translation>
 <translation id="180035236176489073">이 파일에 액세스하려면 온라인 상태여야 합니다.</translation>
@@ -198,8 +199,6 @@
 <translation id="2649120831653069427">구피</translation>
 <translation id="2663066752008346276">버마어(미얀마, 미얀산 키보드)</translation>
 <translation id="2664412712123763093">파일 위치</translation>
-<translation id="2672394958563893062">오류가 발생했습니다. 클릭하여 처음부터 다시 시작하세요.</translation>
-<translation id="2676946222714718093">재생 중:</translation>
 <translation id="2718540689505416944">Linux 앱 설치</translation>
 <translation id="2719020180254996569">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, 세부정보</translation>
 <translation id="2724954091494693138">터키어(F 키보드)</translation>
@@ -225,6 +224,7 @@
 <translation id="2943503720238418293">더 짧은 이름을 입력해 주세요.</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" />을(를) 포맷 중...</translation>
 <translation id="2951236788251446349">해파리</translation>
+<translation id="2977940621473452797">이 파일은 Macintosh 소프트웨어를 사용하는 컴퓨터용으로 설계되었으며 ChromeOS를 실행하는 기기와 호환될 수 없습니다. 적합한 대체 앱을 찾으려면 Chrome 웹 스토어를 검색해 보세요.</translation>
 <translation id="2984337792991268709">오늘 <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" />개 항목 복원 중...</translation>
 <translation id="2994669386200004489"><ph name="FILE_NAME" />을(를) 백업할 수 없음</translation>
@@ -340,7 +340,6 @@
 <translation id="3901991538546252627"><ph name="NAME" />에 연결 중</translation>
 <translation id="3906232975181435906">모바일 프로필 설치 중, 네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">다음 기기에서 재생</translation>
 <translation id="3943857333388298514">붙여넣기</translation>
 <translation id="3952872973865944257">텔루구어(표음)</translation>
 <translation id="3958548648197196644">키위</translation>
@@ -412,7 +411,6 @@
 <translation id="4631887759990505102">아티스트</translation>
 <translation id="4642769377300286600">모바일 프로필 설치 중, 네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">체코어(쿼티 키보드)</translation>
-<translation id="4656293982926141856">이 컴퓨터</translation>
 <translation id="4656777537938206294">파일을 오프라인에서 사용할 수 있도록 설정</translation>
 <translation id="4658782175094886150">눈 맞는 사람</translation>
 <translation id="4669606053856530811">이 항목을 '<ph name="SOURCE_NAME" />'의 멤버와 공유하지 않으면 이 팀의 멤버가 항목에 더 이상 액세스할 수 없게 됩니다.</translation>
@@ -422,13 +420,13 @@
 <translation id="4694604912444486114">원숭이</translation>
 <translation id="469612310041132144">중국어(속성수입법)</translation>
 <translation id="4697043402264950621">파일 목록이 <ph name="COLUMN_NAME" /> 기준 오름차순으로 정렬되어 있습니다.</translation>
+<translation id="469897186246626197">이 파일은 Windows 소프트웨어를 사용하는 PC용으로 설계되었습니다. 따라서 ChromeOS를 실행하는 기기와는 호환되지 않습니다. ChromeOS에서 파일을 여는 방법을 <ph name="BEGIN_LINK_HELP" />자세히 알아보세요<ph name="END_LINK_HELP" />.</translation>
 <translation id="4706042980341760088">타밀어(타자기 키보드)</translation>
 <translation id="4711094779914110278">터키어</translation>
 <translation id="4712283082407695269">‘<ph name="PATH" />’ 여는 중</translation>
 <translation id="4720185134442950733">모바일 데이터 네트워크</translation>
 <translation id="4724850507808590449">사진 <ph name="FILE_COUNT" />장을 백업했습니다.</translation>
 <translation id="4725511304875193254">웰시 코기</translation>
-<translation id="4732760563705710320">죄송합니다. 사용 중인 전송 기기에서 지원하지 않는 동영상입니다.</translation>
 <translation id="4737050008115666127">착륙</translation>
 <translation id="4747271164117300400">마케도니아어</translation>
 <translation id="4759238208242260848">다운로드</translation>
@@ -543,6 +541,7 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5602622065581044566">불가리아어(표음 키보드)</translation>
 <translation id="5605830556594064952">영어(미국) 드보락</translation>
+<translation id="5618330573454123917">이 파일은 Macintosh 소프트웨어를 사용하는 컴퓨터용으로 설계되었습니다. 따라서 ChromeOS를 실행하는 기기와는 호환되지 않습니다. ChromeOS에서 파일을 여는 방법을 <ph name="BEGIN_LINK_HELP" />자세히 알아보세요<ph name="END_LINK_HELP" />.</translation>
 <translation id="5625294776298156701">타밀어(Tamil99 키보드)</translation>
 <translation id="5633226425545095130">이 항목을 옮기면 '<ph name="DESTINATION_NAME" />' 공유 폴더를 볼 수 있는 모든 사용자와 항목이 공유됩니다.</translation>
 <translation id="5649768706273821470">듣기</translation>
@@ -618,7 +617,6 @@
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> 포맷</translation>
 <translation id="6227235786875481728">이 파일은 재생할 수 없습니다.</translation>
 <translation id="6241349547798190358">네덜란드어(벨기에)</translation>
-<translation id="6248400709929739064">자막 사용</translation>
 <translation id="6267547857941397424">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 휴대전화 배터리 <ph name="BATTERY_STATUS" />%, 연결</translation>
 <translation id="6269630227984243955">말레이어</translation>
 <translation id="6287852322318138013">이 파일을 열 때 사용할 앱 선택</translation>
@@ -636,7 +634,6 @@
 <translation id="637062427944097960">파일이 다른 데스크톱에서 열려 있습니다. 파일을 보려면 <ph name="USER_NAME" />(<ph name="MAIL_ADDRESS" />)(으)로 이동하세요.</translation>
 <translation id="6394388407447716302">읽기 전용</translation>
 <translation id="6395575651121294044">항목 <ph name="NUMBER_OF_FILES" />개</translation>
-<translation id="6398765197997659313">전체화면 닫기</translation>
 <translation id="642282551015776456">폴더 이름의 파일으로 사용할 수 없는 이름입니다.</translation>
 <translation id="6423031066725912715">베트남어(TCVN 키보드)</translation>
 <translation id="6485131920355264772">남은 용량을 알 수 없습니다.</translation>
@@ -672,7 +669,6 @@
 <translation id="6820687829547641339">Gzip으로 압축된 tar 압축 파일</translation>
 <translation id="6823166707458800069">이 폴더에 저장된 모든 파일은 온라인으로 자동 백업됩니다.</translation>
 <translation id="6825883775269213504">러시아어</translation>
-<translation id="6827236167376090743">이 동영상이 계속 반복 재생됩니다.</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> 항목이 선택 해제되었습니다.</translation>
 <translation id="6856459657722366306">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>
 <translation id="6861394552169064235">페르시아어</translation>
@@ -738,6 +734,7 @@
 <translation id="7309413087278791451">독일어(벨기에)</translation>
 <translation id="7339898014177206373">새 창</translation>
 <translation id="7343393116438664539">베트남어(텔렉스)</translation>
+<translation id="7357762654218998920">지원되지 않는 파일 형식입니다. ChromeOS에서 파일을 여는 방법을 <ph name="BEGIN_LINK_HELP" />자세히 알아보세요<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347">항목 <ph name="NUMBER_OF_ITEMS" />개 복사 중...</translation>
 <translation id="7375951387215729722">파일 목록이 <ph name="COLUMN_NAME" /> 기준 내림차순으로 정렬되어 있습니다.</translation>
 <translation id="7402503521691663770">ChromeOS Flex 기기</translation>
@@ -809,7 +806,6 @@
 <translation id="7857117644404132472">예외 추가</translation>
 <translation id="7868774406711971383">폴란드어</translation>
 <translation id="7874321682039004450">필리핀어</translation>
-<translation id="7881969471599061635">자막 사용 중지</translation>
 <translation id="78946041517601018">공유 드라이브</translation>
 <translation id="7908793776359722643">파티션을 포맷하면 파티션에 저장된 모든 데이터가 삭제됩니다. 이 작업은 되돌릴 수 없습니다.</translation>
 <translation id="7925247922861151263">AAA 확인 실패</translation>
@@ -886,7 +882,6 @@
 <translation id="8492972329130824181">홈 네트워크를 사용할 수 없습니다. 연결하려면 모바일 데이터 로밍이 사용 설정되어 있어야 합니다.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" />개 항목 추출 중…</translation>
 <translation id="8521441079177373948">영어(영국)</translation>
-<translation id="8525306231823319788">전체화면</translation>
 <translation id="853494022971700746">프랑스어(프랑스)</translation>
 <translation id="8540608333167683902">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>
 <translation id="8545476925160229291">영어(미국)</translation>

@@ -199,8 +199,6 @@
 <translation id="2649120831653069427">I-Rainbowfish</translation>
 <translation id="2663066752008346276">Isi-Burmese/Myanmar ngekhibhodi ye-Myansan</translation>
 <translation id="2664412712123763093">Indawo yefayela</translation>
-<translation id="2672394958563893062">Kuvele iphutha. Chofoza ukuze uqalise kabusha kusukela ekuqaleni.</translation>
-<translation id="2676946222714718093">Idlala ku</translation>
 <translation id="2718540689505416944">Faka uhlelo lokusebenza nge-Linux</translation>
 <translation id="2719020180254996569">Inethiwekhi <ph name="NETWORK_INDEX" /> ye-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, imininingwane</translation>
 <translation id="2724954091494693138">Isi-Turkish esinekhibhodi ye-F</translation>
@@ -342,7 +340,6 @@
 <translation id="3901991538546252627">Ixhumeka ku-<ph name="NAME" /></translation>
 <translation id="3906232975181435906">Ifaka iphrofayela leselula, Inethiwekhi engu-<ph name="NETWORK_INDEX" /> kwangu-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">I-Meta</translation>
-<translation id="3930521966936686665">Dlala ku-</translation>
 <translation id="3943857333388298514">Namathisela</translation>
 <translation id="3952872973865944257">I-Telugu Phonetic</translation>
 <translation id="3958548648197196644">I-Kiwi</translation>
@@ -414,7 +411,6 @@
 <translation id="4631887759990505102">Umculi</translation>
 <translation id="4642769377300286600">Ifaka iphrofayela leselula, Inethiwekhi engu-<ph name="NETWORK_INDEX" /> kwangu-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Isi-Czech esinekhibhodi ye-Qwerty</translation>
-<translation id="4656293982926141856">Le khompyutha</translation>
 <translation id="4656777537938206294">Yenza amafayela atholakala ngokungaxhunyiwe kwi-inthanethi</translation>
 <translation id="4658782175094886150">Umuntu okwisthwathwa</translation>
 <translation id="4669606053856530811">Amalungu e-'<ph name="SOURCE_NAME" />' azolahlekelwa ukufinyelela ngaphandle kokuthi lezi zinto zabiwe nabo.</translation>
@@ -431,7 +427,6 @@
 <translation id="4720185134442950733">Inethiwekhi yedatha yeselula</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> izithombe ezenziwe isipele</translation>
 <translation id="4725511304875193254">I-Corgi</translation>
-<translation id="4732760563705710320">Uxolo, le vidiyo ayisekelwe yidivayisi yakho yokusakaza.</translation>
 <translation id="4737050008115666127">Ukufika</translation>
 <translation id="4747271164117300400">Isi-Macedonian</translation>
 <translation id="4759238208242260848">Ukulanda</translation>
@@ -621,7 +616,6 @@
 <translation id="6224253798271602650">Ifomethi <ph name="DRIVE_NAME" /></translation>
 <translation id="6227235786875481728">Leli fayela alikwazanga ukudlalwa.</translation>
 <translation id="6241349547798190358">Isi-Dutch (Belgium)</translation>
-<translation id="6248400709929739064">Nika amandla imibhalo engezansi</translation>
 <translation id="6267547857941397424">Inethiwekhi <ph name="NETWORK_INDEX" /> ye-<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, amandla esignali <ph name="SIGNAL_STRENGTH" />%, Ibhethri lefoni <ph name="BATTERY_STATUS" />%, xhuma</translation>
 <translation id="6269630227984243955">Isi-Malay</translation>
 <translation id="6287852322318138013">Khetha uhlelo lokusebenza ukuze livule leli fayela</translation>
@@ -639,7 +633,6 @@
 <translation id="637062427944097960">Leli fayela livuleke kudeskithophu ehlukile. Iya ku-<ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ukuze ulibuke.</translation>
 <translation id="6394388407447716302">Funda kuphela</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> izinto</translation>
-<translation id="6398765197997659313">Phuma kusikrini esigcwele</translation>
 <translation id="642282551015776456">Leli gama akumele lisetshenziswe njengefayela noma igama lefayela</translation>
 <translation id="6423031066725912715">Isi-Vietnamese esinekhibhodi ye-TCVN</translation>
 <translation id="6485131920355264772">Yehlulekile ukuthola ulwazi lesikhala</translation>
@@ -675,7 +668,6 @@
 <translation id="6820687829547641339">Ingobo yomlando yotiyela wokuminyanisa i-Gzip</translation>
 <translation id="6823166707458800069">Wonke amafayela alondolozwe kule folda enziwe ikhophi yasenqolabaneni ngokuzenzakalelayo ku-inthanethi.</translation>
 <translation id="6825883775269213504">Isi-Russian</translation>
-<translation id="6827236167376090743">Le vidiyo izoqhubeka idlale kuze izinkomo zibuye ekhaya.</translation>
 <translation id="6847101934483209767">Isusiwe i-<ph name="ENTRY_NAME" /> kusuka okhethweni.</translation>
 <translation id="6856459657722366306">Inethiwkehi <ph name="NETWORK_INDEX" /> ye-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, amandla esignali <ph name="SIGNAL_STRENGTH" />%, imininingwane</translation>
 <translation id="6861394552169064235">Isi-Persian</translation>
@@ -813,7 +805,6 @@
 <translation id="7857117644404132472">Engeza okuhlukile</translation>
 <translation id="7868774406711971383">Isi-Polish</translation>
 <translation id="7874321682039004450">Isi-Filipino</translation>
-<translation id="7881969471599061635">Khubaza imibhalo engezansi</translation>
 <translation id="78946041517601018">Amadrayivu abiwayo</translation>
 <translation id="7908793776359722643">Ukufometha ingxenye kuzosula yonke idatha egcinwe kuyo. Lesi senzo asikwazi ukuhlehliswa.</translation>
 <translation id="7925247922861151263">Ukuhlolwa kwe-AAA kuhlulekile</translation>
@@ -890,7 +881,6 @@
 <translation id="8492972329130824181">Inethiwekhi yasekhaya ayitholakali. Ukuzulazula kwedatha yeselula kufanele kunikwe amandla ukuze kuxhume.</translation>
 <translation id="8499098729323186194">Ikhipha izinto ezingu-<ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="8521441079177373948">I-UK</translation>
-<translation id="8525306231823319788">Isikrini esigcwele</translation>
 <translation id="853494022971700746">Isi-French (France)</translation>
 <translation id="8540608333167683902">Inethiwekhi <ph name="NETWORK_INDEX" /> ye-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, amandla esignali <ph name="SIGNAL_STRENGTH" />%, imininingwane</translation>
 <translation id="8545476925160229291">I-English(US)</translation>

@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
 <translation id="1113173431709655881">Cameramodus</translation>
+<translation id="1153190633558910465">Raster uit</translation>
 <translation id="1175958423215084756">Link gevonden. <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">90 graden rechtsom draaien</translation>
 <translation id="1276998909102132017">Galerij-afbeeldingen</translation>
 <translation id="1300209025925956156">Je document scannen</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Zoeken + pijl-links om ze te openen.</translation>
+<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">Afdrukken</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> is niet aangesloten.</translation>
 <translation id="1473110567575736769">Timer 3 seconden</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">Timerduur</translation>
 <translation id="2050339315714019657">Staand</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> actief</translation>
+<translation id="2134029355740465625">Video-instellingen</translation>
 <translation id="2144806332417375165">Aangepaste videoparameters</translation>
 <translation id="2175927920773552910">QR-code</translation>
 <translation id="2271433936731426666">Videomomentopname op volledig formaat aanzetten</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">Camera aan achterzijde</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Scantype</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">Voorbeeld van spiegelen</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> is aangesloten.</translation>
 <translation id="2968794441791257519">Foto's en video's die zijn gemaakt met de camera worden verplaatst naar de map Downloads. Je kunt ze vinden via Bestanden.
 
@@ -52,6 +57,8 @@
 <translation id="3240426699337459095">Link gekopieerd</translation>
 <translation id="3259149966178251584">Cameraresolutie</translation>
 <translation id="3305962767867348165">Corrigeren</translation>
+<translation id="3354465018370944241">Foto-instellingen</translation>
+<translation id="3411958449466169012">Timer uit</translation>
 <translation id="3448774564454087943">De video is niet opgeslagen omdat deze te kort is</translation>
 <translation id="346539236881580388">Opnieuw maken</translation>
 <translation id="3517926952904427380">Kan geen portretfoto maken</translation>
@@ -63,9 +70,12 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Streepjescode scannen</translation>
 <translation id="3892148308691398805">Tekst kopiëren</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Opname onderbreken</translation>
 <translation id="4121305183798804752">Document waargenomen</translation>
+<translation id="414641094616694804">Deze camera kan de resolutie niet wijzigen</translation>
 <translation id="4269820728363426813">Linkadres kopiëren</translation>
+<translation id="4281620174117014503">Gemiddelde resolutie</translation>
 <translation id="4329152592498422850">Schakel over om vierkante foto te maken</translation>
 <translation id="4383571725254449280">Prestatielogboeken afdrukken</translation>
 <translation id="4445542136948522167">Foto maken stoppen</translation>
@@ -74,12 +84,15 @@
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4649291346448517080">Kan het bestand niet opslaan</translation>
 <translation id="4695379108709712600">Beweegt naar boven</translation>
+<translation id="4705093842003735294">Volledige resolutie</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Multistream-video opnemen</translation>
+<translation id="5034763830503483128">Beeldverhouding van foto</translation>
 <translation id="5057360777601936059">Je camera is momenteel niet beschikbaar.
         Controleer of de camera correct is aangesloten.</translation>
 <translation id="5163387177077603948">Beweegt naar rechts</translation>
 <translation id="520537883758714667">Documenten scannen is nu beschikbaar</translation>
+<translation id="5235304959032763950">16 bij 9</translation>
 <translation id="5266635337630551423">Linkerbovenhoek van document</translation>
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5320594929574852403">Beweegt naar links</translation>
@@ -94,6 +107,7 @@
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5975083100439434680">Uitzoomen</translation>
 <translation id="5976160379964388480">Overige</translation>
+<translation id="603973421174355542">Full HD</translation>
 <translation id="6073451960410192870">Opname stoppen</translation>
 <translation id="6197807149213783179">Metadata opslaan</translation>
 <translation id="6233780560267770709">3 bij 3</translation>
@@ -104,6 +118,7 @@
 Als je feedback over de afbeeldings- of videokwaliteit gaat, voeg dan een voorbeeldfoto of -video bij en beschrijf wat het probleem is. (Voorbeeld: de foto is te donker of het onderwerp is niet scherp in beeld.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="6527303717912515753">Delen</translation>
+<translation id="6631515515009660915">Spiegelen uit</translation>
 <translation id="6652737148136672975">Hoekpositie verplaatsen met pijltoetsen</translation>
 <translation id="667999046851023355">Document</translation>
 <translation id="6681668084120808868">Foto nemen</translation>
@@ -114,6 +129,7 @@ Als je feedback over de afbeeldings- of videokwaliteit gaat, voeg dan een voorbe
 <translation id="698156982839284926">3 seconden</translation>
 <translation id="712848772518857951">Weet je zeker dat je <ph name="COUNT" /> items wilt verwijderen?</translation>
 <translation id="7134221860976209830">Timer van 10 seconden</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Opnametype</translation>
 <translation id="7243947652761655814">Videoresolutie</translation>
 <translation id="7337660886763914220">Bestandssysteemfouten.</translation>
@@ -146,9 +162,11 @@ Als je feedback over de afbeeldings- of videokwaliteit gaat, voeg dan een voorbe
 <translation id="8815966864175525708">Schakel over om portretfoto te maken</translation>
 <translation id="8828441885228359828">Opname hervatten</translation>
 <translation id="8870695351537079478">Kan opname niet starten</translation>
+<translation id="8880167521484863515">4 bij 3</translation>
 <translation id="8903921497873541725">Inzoomen</translation>
 <translation id="9045010116236796332">Plaats alle randen van het document binnen het frame</translation>
 <translation id="9045155556724273246">10 seconden</translation>
 <translation id="906331135292332864">Afbeelding verwerken...</translation>
+<translation id="922762992951083513">Spiegelen aan</translation>
 <translation id="945522503751344254">Feedback sturen</translation>
 </translationbundle>

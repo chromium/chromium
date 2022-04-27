@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">Hebreeraren transliterazioa</translation>
 <translation id="1747761757048858544">Nederlandarra (Herbehereak)</translation>
 <translation id="174937106936716857">Fitxategi kopurua guztira</translation>
+<translation id="1755345808328621801">Windows sistema eragilea darabilen PC baterako diseinatuta dago fitxategia. Gailua Chrome OS-koa denez, fitxategia ez da harekin bateragarria. Bilatu ordezko aplikazio egoki bat Chrome Web Store-n.</translation>
 <translation id="1773212559869067373">Autentifikazio-ziurtagiria lokalki baztertu da</translation>
 <translation id="1775381402323441512">Bideoari buruzko informazioa</translation>
 <translation id="180035236176489073">Konektatuta egon behar zara fitxategiak atzitzeko.</translation>
@@ -198,8 +199,6 @@
 <translation id="2649120831653069427">Arrain koloretsua</translation>
 <translation id="2663066752008346276">Birmaniarra, MyanSan teklatuarekin</translation>
 <translation id="2664412712123763093">Fitxategiaren kokapena</translation>
-<translation id="2672394958563893062">Errore bat gertatu da. Berriro hasieratik hasteko, sakatu hau.</translation>
-<translation id="2676946222714718093">Hemen erreproduzitzen:</translation>
 <translation id="2718540689505416944">Instalatu aplikazioa Linux-ekin</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="CONNECTION_STATUS" />). Xehetasunak.</translation>
 <translation id="2724954091494693138">Turkiarra (F teklatua)</translation>
@@ -225,6 +224,7 @@
 <translation id="2943503720238418293">Erabili izen laburrago bat</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> formateatzen…</translation>
 <translation id="2951236788251446349">Marmoka</translation>
+<translation id="2977940621473452797">macOS sistema eragilea darabilen ordenagailu baterako diseinatuta dago fitxategia. Gailua Chrome OS-koa denez, fitxategia ez da harekin bateragarria. Bilatu ordezko aplikazio egoki bat Chrome Web Store-n.</translation>
 <translation id="2984337792991268709">Gaur, <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> elementu leheneratzen…</translation>
 <translation id="2994669386200004489">Ezin izan da egin <ph name="FILE_NAME" /> fitxategiaren babeskopia</translation>
@@ -340,7 +340,6 @@
 <translation id="3901991538546252627"><ph name="NAME" /> sarera konektatzen</translation>
 <translation id="3906232975181435906">Mugikorreko profila instalatzen, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Erreproduzitu gailu honetan</translation>
 <translation id="3943857333388298514">Itsatsi</translation>
 <translation id="3952872973865944257">Teluguar fonetikoa</translation>
 <translation id="3958548648197196644">Kiwia</translation>
@@ -412,7 +411,6 @@
 <translation id="4631887759990505102">Artista</translation>
 <translation id="4642769377300286600">Mugikorreko profila instalatzen, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Txekiarra, QWERTY teklatuarekin</translation>
-<translation id="4656293982926141856">Ordenagailu hau</translation>
 <translation id="4656777537938206294">Jarri fitxategiak konexiorik gabe erabilgarri</translation>
 <translation id="4658782175094886150">Gainazal elurtu batean dagoen pertsona</translation>
 <translation id="4669606053856530811">Haiekin partekatu ezean, fitxategietarako sarbidea galduko dute "<ph name="SOURCE_NAME" />" unitateko kideek.</translation>
@@ -422,13 +420,13 @@
 <translation id="4694604912444486114">Tximinoa</translation>
 <translation id="469612310041132144">Txinatarra (cangjie sinplifikatua)</translation>
 <translation id="4697043402264950621">"<ph name="COLUMN_NAME" />" zutabearen arabera ageri da fitxategien zerrenda, gorantz ordenatuta.</translation>
+<translation id="469897186246626197">Windows sistema eragilea darabilen PC baterako diseinatuta dago fitxategia. Gailua Chrome OS-koa denez, fitxategia ez da harekin bateragarria. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-n irekitzeari buruz.</translation>
 <translation id="4706042980341760088">Tamildarra, idazmakinaren teklatuarekin</translation>
 <translation id="4711094779914110278">Turkiarra</translation>
 <translation id="4712283082407695269">"<ph name="PATH" />" irekitzen</translation>
 <translation id="4720185134442950733">Datu-konexioaren sarea</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> argazkiren babeskopiak egin dira</translation>
 <translation id="4725511304875193254">Txakurra</translation>
-<translation id="4732760563705710320">Igorpen-gailuak ez du bideo hau onartzen.</translation>
 <translation id="4737050008115666127">Lurreratzea</translation>
 <translation id="4747271164117300400">Mazedoniarra</translation>
 <translation id="4759238208242260848">Deskargak</translation>
@@ -542,6 +540,7 @@
 <translation id="5583640892426849032">Atzera tekla</translation>
 <translation id="5602622065581044566">Bulgariarra, teklatu fonetikoarekin</translation>
 <translation id="5605830556594064952">Dvorak estatubatuarra</translation>
+<translation id="5618330573454123917">macOS sistema eragilea darabilen ordenagailu baterako diseinatuta dago fitxategia. Gailua Chrome OS-koa denez, fitxategia ez da harekin bateragarria. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-n irekitzeari buruz.</translation>
 <translation id="5625294776298156701">Tamildarra, Tamil99 teklatuarekin</translation>
 <translation id="5633226425545095130">Elementu hau mugituz gero, "<ph name="DESTINATION_NAME" />" karpeta partekatua ikus dezakeen edonorekin partekatuko da.</translation>
 <translation id="5649768706273821470">Entzun</translation>
@@ -617,7 +616,6 @@
 <translation id="6224253798271602650">Formateatu <ph name="DRIVE_NAME" /></translation>
 <translation id="6227235786875481728">Ezin izan da fitxategia erreproduzitu.</translation>
 <translation id="6241349547798190358">Nederlandarra (Belgika)</translation>
-<translation id="6248400709929739064">Gaitu azpitituluak</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Telefonoaren bateria: % <ph name="BATTERY_STATUS" />. Konektatu.</translation>
 <translation id="6269630227984243955">Malaysiarra</translation>
 <translation id="6287852322318138013">Hautatu fitxategia irekitzeko aplikazioa</translation>
@@ -635,7 +633,6 @@
 <translation id="637062427944097960">Fitxategi hau beste mahaigain batean ireki da. Ikusteko, joan <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) kontura.</translation>
 <translation id="6394388407447716302">Irakurtzeko soilik</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elementu</translation>
-<translation id="6398765197997659313">Irten pantaila osoko modutik</translation>
 <translation id="642282551015776456">Izena ezin da erabili fitxategi- edo karpeta-izen gisa</translation>
 <translation id="6423031066725912715">Vietnamdarra, TCVN teklatuarekin</translation>
 <translation id="6485131920355264772">Ezin izan da berreskuratu zuriuneei buruzko informazioa</translation>
@@ -671,7 +668,6 @@
 <translation id="6820687829547641339">Gzip bidez konprimatutako .tar artxiboa</translation>
 <translation id="6823166707458800069">Automatikoki egingo da karpeta honetan gordetako fitxategi guztien babeskopia.</translation>
 <translation id="6825883775269213504">Errusiarra</translation>
-<translation id="6827236167376090743">Bideo hau etengabe erreproduzituko da.</translation>
 <translation id="6847101934483209767">Kendu da <ph name="ENTRY_NAME" /> hautapenetik.</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="NETWORK_PROVIDER_NAME" />; <ph name="CONNECTION_STATUS" />). Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Xehetasunak.</translation>
 <translation id="6861394552169064235">Persiarra</translation>
@@ -737,6 +733,7 @@
 <translation id="7309413087278791451">Alemana (Belgika)</translation>
 <translation id="7339898014177206373">Leiho berria</translation>
 <translation id="7343393116438664539">Vietnamdarra (telex)</translation>
+<translation id="7357762654218998920">Fitxategi mota hau ez da bateragarria. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-n irekitzeari buruz.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> elementu kopiatzen…</translation>
 <translation id="7375951387215729722">"<ph name="COLUMN_NAME" />" zutabearen arabera ageri da fitxategien zerrenda, beherantz ordenatuta.</translation>
 <translation id="7402503521691663770">ChromeOS Flex-eko gailuak</translation>
@@ -808,7 +805,6 @@
 <translation id="7857117644404132472">Gehitu salbuespena</translation>
 <translation id="7868774406711971383">Poloniarra</translation>
 <translation id="7874321682039004450">Filipinarra</translation>
-<translation id="7881969471599061635">Desgaitu azpitituluak</translation>
 <translation id="78946041517601018">Unitate partekatuak</translation>
 <translation id="7908793776359722643">Partizio bat formateatuz gero, bertan gordetako datu guztiak ezabatuko dira. Ezin da desegin ekintza.</translation>
 <translation id="7925247922861151263">Ezin izan da AAA egiaztapena egin</translation>
@@ -885,7 +881,6 @@
 <translation id="8492972329130824181">Ez dago erabilgarri etxeko sarea. Datu-ibiltaritzak gaituta egon behar du konektatu ahal izateko.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> elementu ateratzen…</translation>
 <translation id="8521441079177373948">Erresuma Batukoa</translation>
-<translation id="8525306231823319788">Pantaila osoa</translation>
 <translation id="853494022971700746">Frantsesa (Frantzia)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="CONNECTION_STATUS" />). Seinalearen indarra % <ph name="SIGNAL_STRENGTH" />. Xehetasunak.</translation>
 <translation id="8545476925160229291">Ingelesa (AEB)</translation>

@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
 <translation id="1113173431709655881">カメラモード</translation>
+<translation id="1153190633558910465">グリッド線をオフにする</translation>
 <translation id="1175958423215084756">リンクが検出されました。<ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">時計回りに 90 度回転</translation>
 <translation id="1276998909102132017">ギャラリー画像</translation>
 <translation id="1300209025925956156">ドキュメントをスキャンします</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />。アクセスするには検索+左矢印キーを押します。</translation>
+<translation id="1393338179284529051">クアッド HD</translation>
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> が外されました。</translation>
 <translation id="1473110567575736769">3 秒タイマー</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">タイマーの時間</translation>
 <translation id="2050339315714019657">縦</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" />（有効）</translation>
+<translation id="2134029355740465625">動画の設定</translation>
 <translation id="2144806332417375165">カスタム動画パラメータ</translation>
 <translation id="2175927920773552910">QR コード</translation>
 <translation id="2271433936731426666">フルサイズの動画スナップショットを有効にする</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">背面カメラ</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> 秒</translation>
 <translation id="2761536921376153655">スキャンの種類</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">ミラー プレビュー</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> が接続されました。</translation>
 <translation id="2968794441791257519">カメラで撮影した写真と動画を [ダウンロード] フォルダに移動します。これらの写真や動画には、[ファイル] からアクセスできます。
 
@@ -52,6 +57,8 @@
 <translation id="3240426699337459095">リンクをコピーしました</translation>
 <translation id="3259149966178251584">カメラの解像度</translation>
 <translation id="3305962767867348165">修正</translation>
+<translation id="3354465018370944241">写真の設定</translation>
+<translation id="3411958449466169012">タイマーをオフにする</translation>
 <translation id="3448774564454087943">短すぎるため動画は保存されません</translation>
 <translation id="346539236881580388">撮り直し</translation>
 <translation id="3517926952904427380">縦向きの写真を撮影できません</translation>
@@ -63,9 +70,12 @@
 <translation id="3810838688059735925">動画</translation>
 <translation id="3838931309141338733">バーコード スキャン</translation>
 <translation id="3892148308691398805">テキストをコピー</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">録画を一時停止</translation>
 <translation id="4121305183798804752">ドキュメントを検出しました</translation>
+<translation id="414641094616694804">このカメラでは解像度を変更できません</translation>
 <translation id="4269820728363426813">リンクアドレスをコピー</translation>
+<translation id="4281620174117014503">解像度: 中</translation>
 <translation id="4329152592498422850">スクエア写真の撮影に切り替え</translation>
 <translation id="4383571725254449280">パフォーマンス ログを印刷する</translation>
 <translation id="4445542136948522167">写真の撮影をキャンセル</translation>
@@ -74,12 +84,15 @@
 <translation id="4628948037717959914">写真</translation>
 <translation id="4649291346448517080">ファイルを保存できません</translation>
 <translation id="4695379108709712600">上に移動しています</translation>
+<translation id="4705093842003735294">解像度: 高</translation>
 <translation id="4890010094662541459">3x3</translation>
 <translation id="491895758387112773">マルチストリーム動画の録画</translation>
+<translation id="5034763830503483128">写真のアスペクト比</translation>
 <translation id="5057360777601936059">カメラを使用できません。
         カメラが正しく接続されているかご確認ください。</translation>
 <translation id="5163387177077603948">右側に移動しています</translation>
 <translation id="520537883758714667">ドキュメント スキャンをご利用いただけるようになりました</translation>
+<translation id="5235304959032763950">16 対 9</translation>
 <translation id="5266635337630551423">ドキュメントの左上の角</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5320594929574852403">左側に移動しています</translation>
@@ -94,6 +107,7 @@
 <translation id="5916664084637901428">オン</translation>
 <translation id="5975083100439434680">縮小する</translation>
 <translation id="5976160379964388480">その他</translation>
+<translation id="603973421174355542">フル HD</translation>
 <translation id="6073451960410192870">撮影を停止</translation>
 <translation id="6197807149213783179">メタデータを保存</translation>
 <translation id="6233780560267770709">3 かける 3</translation>
@@ -104,6 +118,7 @@
 画質に関するフィードバックの場合は、サンプルの写真や動画を添付し、問題の内容を詳しくご説明ください（写真が暗すぎる、ピントが合わないなど）。</translation>
 <translation id="6420689864531458495">（<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />×<ph name="HEIGHT" />）<ph name="MEGAPIXEL" /> メガピクセル</translation>
 <translation id="6527303717912515753">共有</translation>
+<translation id="6631515515009660915">ミラーをオフにする</translation>
 <translation id="6652737148136672975">矢印キーで角の位置を移動します</translation>
 <translation id="667999046851023355">ドキュメント</translation>
 <translation id="6681668084120808868">写真を撮る</translation>
@@ -114,6 +129,7 @@
 <translation id="698156982839284926">3 秒</translation>
 <translation id="712848772518857951"><ph name="COUNT" /> 個のアイテムを削除してもよろしいですか？</translation>
 <translation id="7134221860976209830">10 秒タイマー</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">記録の種類</translation>
 <translation id="7243947652761655814">動画の解像度</translation>
 <translation id="7337660886763914220">ファイル システムのエラーが発生しました。</translation>
@@ -146,9 +162,11 @@
 <translation id="8815966864175525708">縦向きの写真の撮影に切り替え</translation>
 <translation id="8828441885228359828">録画を再開</translation>
 <translation id="8870695351537079478">録画を開始できません</translation>
+<translation id="8880167521484863515">4 対 3</translation>
 <translation id="8903921497873541725">拡大する</translation>
 <translation id="9045010116236796332">ドキュメントのすべての端をフレーム内に収めてください</translation>
 <translation id="9045155556724273246">10 秒</translation>
 <translation id="906331135292332864">画像を処理しています...</translation>
+<translation id="922762992951083513">ミラーをオンにする</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>
 </translationbundle>

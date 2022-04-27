@@ -199,8 +199,6 @@
 <translation id="2649120831653069427">Riba mavričarka</translation>
 <translation id="2663066752008346276">burmanščina/mjanmarščina s tipkovnico za mjanmarščino</translation>
 <translation id="2664412712123763093">Mesto datoteke</translation>
-<translation id="2672394958563893062">Prišlo je do napake. Kliknite, da začnete znova od začetka.</translation>
-<translation id="2676946222714718093">Predvajanje v:</translation>
 <translation id="2718540689505416944">Namestitev aplikacije z Linuxom</translation>
 <translation id="2719020180254996569">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, podrobnosti</translation>
 <translation id="2724954091494693138">turščina s tipkovnico F</translation>
@@ -342,7 +340,6 @@
 <translation id="3901991538546252627">Vzpostavljanje povezave z omrežjem <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Nameščanje profila v mobilni napravi, omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Predvajanje v</translation>
 <translation id="3943857333388298514">Prilepi</translation>
 <translation id="3952872973865944257">teluščina (fonetična)</translation>
 <translation id="3958548648197196644">Kivi</translation>
@@ -414,7 +411,6 @@
 <translation id="4631887759990505102">Izvajalec</translation>
 <translation id="4642769377300286600">Nameščanje profila v mobilni napravi, omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">češčina s tipkovnico Qwerty</translation>
-<translation id="4656293982926141856">V tem računalniku</translation>
 <translation id="4656777537938206294">Omogočite datoteke za dostop brez povezave</translation>
 <translation id="4658782175094886150">Oseba na snegu</translation>
 <translation id="4669606053856530811">Člani skupine »<ph name="SOURCE_NAME" />« bodo izgubili dostop, razen če te elemente delite z njimi.</translation>
@@ -431,7 +427,6 @@
 <translation id="4720185134442950733">Mobilno podatkovno omrežje</translation>
 <translation id="4724850507808590449">Št. varnostno kopiranih fotografij: <ph name="FILE_COUNT" /></translation>
 <translation id="4725511304875193254">Valižanski ovčar</translation>
-<translation id="4732760563705710320">Oprostite, vaša naprava za predvajanje ne podpira tega videoposnetka.</translation>
 <translation id="4737050008115666127">Pristanek</translation>
 <translation id="4747271164117300400">makedonščina</translation>
 <translation id="4759238208242260848">Prenosi</translation>
@@ -622,7 +617,6 @@
 <translation id="6224253798271602650">Formatiraj <ph name="DRIVE_NAME" /></translation>
 <translation id="6227235786875481728">Te datoteke ni bilo mogoče predvajati.</translation>
 <translation id="6241349547798190358">nizozemščina (Belgija)</translation>
-<translation id="6248400709929739064">Omogoči podnapise</translation>
 <translation id="6267547857941397424">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, stanje baterije telefona je <ph name="BATTERY_STATUS" /> %, vzpostavitev povezave</translation>
 <translation id="6269630227984243955">malajščina</translation>
 <translation id="6287852322318138013">Izberite aplikacijo za odpiranje te datoteke</translation>
@@ -640,7 +634,6 @@
 <translation id="637062427944097960">Ta datoteka je odprta na drugem namizju. Če si jo želite ogledati, preklopite na uporabnika <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Samo za branje</translation>
 <translation id="6395575651121294044">Št. datotek: <ph name="NUMBER_OF_FILES" /></translation>
-<translation id="6398765197997659313">Izhod iz celozaslonskega načina</translation>
 <translation id="642282551015776456">Tega imena ne morete uporabiti kot ime za datoteko ali mapo</translation>
 <translation id="6423031066725912715">vietnamščina s tipkovnico TCVN</translation>
 <translation id="6485131920355264772">Podatkov o prostoru ni bilo mogoče prenesti</translation>
@@ -676,7 +669,6 @@
 <translation id="6820687829547641339">Stisnjen arhiv tar Gzip</translation>
 <translation id="6823166707458800069">Datoteke, shranjene v tej mapi, se samodejno varnostno kopirajo v splet.</translation>
 <translation id="6825883775269213504">ruščina</translation>
-<translation id="6827236167376090743">Ta videoposnetek se bo neprekinjeno stalno predvajal.</translation>
 <translation id="6847101934483209767">Vnos <ph name="ENTRY_NAME" /> je bil odstranjen iz izbora.</translation>
 <translation id="6856459657722366306">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="6861394552169064235">perzijščina</translation>
@@ -814,7 +806,6 @@
 <translation id="7857117644404132472">Dodaj izjemo</translation>
 <translation id="7868774406711971383">poljščina</translation>
 <translation id="7874321682039004450">filipinščina</translation>
-<translation id="7881969471599061635">Onemogočanje podnapisov</translation>
 <translation id="78946041517601018">Diski v skupni rabi</translation>
 <translation id="7908793776359722643">Če formatirate particijo, se izbrišejo vsi podatki, shranjeni na njej. Tega dejanja ni mogoče razveljaviti.</translation>
 <translation id="7925247922861151263">Preverjanje AAA ni uspelo</translation>
@@ -891,7 +882,6 @@
 <translation id="8492972329130824181">Domače omrežje ni na voljo. Za povezavo mora biti omogočeno mobilno podatkovno gostovanje.</translation>
 <translation id="8499098729323186194">Razširjanje elementov (<ph name="NUMBER_OF_ITEMS" />) …</translation>
 <translation id="8521441079177373948">Združeno kraljestvo</translation>
-<translation id="8525306231823319788">Celozaslonsko</translation>
 <translation id="853494022971700746">francoščina (Francija)</translation>
 <translation id="8540608333167683902">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="8545476925160229291">angleščina (ZDA)</translation>

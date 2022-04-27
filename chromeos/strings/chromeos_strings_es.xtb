@@ -42,6 +42,7 @@
 <translation id="1394661041439318933">Nivel de batería de la funda del dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Se puede hacer ping a la pasarela</translation>
 <translation id="1398634363027580500">Latencia de HTTPS muy alta</translation>
+<translation id="1407069428457324124">Tema oscuro</translation>
 <translation id="1413240736185167732">No se ha podido imprimir - Error de filtro</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Tengo un par de claves</translation>
@@ -63,6 +64,7 @@
 <translation id="1565038567006703504">No se puede actualizar <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Álbumes</translation>
 <translation id="1572585716423026576">Configurar como fondo de pantalla</translation>
+<translation id="1578784163189013834">Elegir fondo del salvapantallas</translation>
 <translation id="1615335640928990664">Uso de datos desde el <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Realizar prueba de carga</translation>
 <translation id="1639239467298939599">Cargando</translation>
@@ -85,12 +87,15 @@
 <translation id="1768959921651994223">Tipo de autenticación</translation>
 <translation id="1782199038061388045">traducción</translation>
 <translation id="1792647875738159689">Cancelando análisis</translation>
+<translation id="1801418420130173017">Inhabilitar tema oscuro</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1827738518074806965">Galería de arte</translation>
 <translation id="1851218745569890714">Videoconferencias</translation>
 <translation id="1852934301711881861">Instalar ChromeOS Flex</translation>
 <translation id="1856388568474281774">Flecha hacia abajo</translation>
+<translation id="1871569928317311284">Desactivar tema oscuro</translation>
 <translation id="1874612839560830905">MTU</translation>
+<translation id="188114911237521550">Desactivar modo Oscuro</translation>
 <translation id="1887850431809612466">Revisión de hardware</translation>
 <translation id="1905710495812624430">Se ha superado el máximo de intentos permitidos.</translation>
 <translation id="1908234395526491708">Errores de solicitud UDP</translation>
@@ -115,6 +120,7 @@
 <translation id="2157959690810728433">EN COLA</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Reintentar</translation>
 <translation id="2161394479394250669">Cancelar trabajo de impresión</translation>
+<translation id="2163937499206714165">Activar modo Oscuro</translation>
 <translation id="2180197493692062006">Algo ha fallado. Prueba a abrir de nuevo la aplicación.</translation>
 <translation id="2209788852729124853">Restablecer contadores de tráfico</translation>
 <translation id="2212733584906323460">Resolución de nombres</translation>
@@ -126,8 +132,10 @@
 <translation id="2236746079896696523">Interruptor de retroiluminación de teclado</translation>
 <translation id="2240366984605217732">Cambiar diseño</translation>
 <translation id="225692081236532131">Estado de la activación</translation>
+<translation id="2271469253353559191">Horario del modo Oscuro</translation>
 <translation id="2287186687001756809">No hay imágenes disponibles. Para añadir fotos, accede a <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Usar par de claves actual</translation>
+<translation id="2320295602967756579">Habilitar tema claro</translation>
 <translation id="2323506179655536734">SALTADA</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> PPP</translation>
 <translation id="2338501278241028356">Activa el Bluetooth para encontrar dispositivos cercanos</translation>
@@ -147,13 +155,16 @@
 <translation id="2493126929778606526">Tus mejores fotos, seleccionadas automáticamente</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Actualizar la imagen de fondo de pantalla actual</translation>
+<translation id="2513396635448525189">Imagen de inicio de sesión</translation>
 <translation id="2517472476991765520">Escanear</translation>
+<translation id="2526590354069164005">Escritorio</translation>
 <translation id="253029298928638905">Reiniciando...</translation>
 <translation id="2536159006530886390">No es posible conectarse a Internet.</translation>
 <translation id="2570743873672969996">Ejecutando prueba <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Para configurar la red, ve a Configuración</translation>
 <translation id="2619761439309613843">Actualiz. diaria</translation>
 <translation id="2620436844016719705">Sistema</translation>
+<translation id="2638662041295312666">Imagen de inicio de sesión</translation>
 <translation id="2640549051766135490">Álbum <ph name="TITLE" /> <ph name="DESC" /> seleccionado</translation>
 <translation id="2695514675076754339">Introduce el código de desbloqueo de 8 caracteres</translation>
 <translation id="2712812801627182647">Clave de autenticación TLS</translation>
@@ -173,11 +184,13 @@
 <translation id="2926057806159140518">Escribe tu nombre de usuario y tu contraseña o escanea tu código QR</translation>
 <translation id="3008341117444806826">RENOVAR</translation>
 <translation id="3009958530611748826">Selecciona la carpeta donde quieras guardar</translation>
+<translation id="3017079585324758401">Fondo</translation>
 <translation id="3031560714565892478">El dispositivo es una cámara de vídeo.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Punto final</translation>
 <translation id="3069085583900247081">Error en la prueba</translation>
 <translation id="3083667275341675831">Diagnóstico de conectividad</translation>
+<translation id="3084958266922136097">Inhabilitar salvapantallas</translation>
 <translation id="3091839911843451378">No se ha podido imprimir - Se ha detenido</translation>
 <translation id="3102119246920354026">Caché</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -201,6 +214,7 @@
 <translation id="3340011300870565703">Nivel de batería del auricular derecho del dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Conectado</translation>
 <translation id="3369013195428705271">¿Seguro que quieres borrar todo el historial de impresión? Los trabajos de impresión en curso no se borrarán.</translation>
+<translation id="3404249063913988450">Habilitar salvapantallas</translation>
 <translation id="3413935475507503304">Para continuar con la actualización, haz clic en Siguiente.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Seguridad</translation>
@@ -215,6 +229,7 @@
 <translation id="3532980081107202182">Quedan unos <ph name="MIN_REMAINING" /> minutos</translation>
 <translation id="3557205324756024651">Identidad local (opcional)</translation>
 <translation id="3565064564551103223">IPs permitidas</translation>
+<translation id="3569407787324516067">Salvapantallas</translation>
 <translation id="3577473026931028326">Se ha producido un error. Inténtalo de nuevo.</translation>
 <translation id="357889014807611375">Wi‑Fi de uso medido</translation>
 <translation id="3583278742022654445">Intensidad de la señal débil. Acércate a la fuente de la señal Wi-Fi.</translation>
@@ -249,6 +264,7 @@
 <translation id="3954678691475912818">Se desconoce el tipo de dispositivo.</translation>
 <translation id="3966286471246132217">Para obtener resultados más precisos, cierra todas las aplicaciones hasta que se haya completado la prueba.</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
+<translation id="3969602104473960991">Contraseña de Chrome OS actualizada</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="39823212440917567">Los trabajos de impresión con más de <ph name="NUMBER_OF_DAYS" /> días de antigüedad se eliminarán</translation>
 <translation id="3993704782688964914">Tu <ph name="DEVICE_NAME" /> está actualizado</translation>
@@ -257,9 +273,11 @@
 <translation id="4044093238444069296">No se puede contactar con la pasarela</translation>
 <translation id="4046123991198612571">Pista siguiente</translation>
 <translation id="404928562651467259">ADVERTENCIA</translation>
+<translation id="4093865285251893588">Imagen de perfil</translation>
 <translation id="409427325554347132">Guardar detalles de la prueba</translation>
 <translation id="4110686435123617899">Seleccionar álbum <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Panel táctil USB</translation>
+<translation id="4117637339509843559">Modo Oscuro</translation>
 <translation id="4131410914670010031">Blanco y negro</translation>
 <translation id="4140251671072434548">Realizar RMA Server Unlock</translation>
 <translation id="4145784616224233563">Cortafuegos de HTTP</translation>
@@ -269,6 +287,7 @@
 <translation id="4170700058716978431">ERROR</translation>
 <translation id="4176463684765177261">Inhabilitado</translation>
 <translation id="4176659219503619100">Panel de control</translation>
+<translation id="420283545744377356">Desactivar salvapantallas</translation>
 <translation id="4213104098953699324">Teclado USB</translation>
 <translation id="4227825898293920515">La contraseña caducará dentro de <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No hay ningún trabajo de impresión en curso</translation>
@@ -331,6 +350,7 @@
 <translation id="4793756956024303490">Algoritmo de compresión</translation>
 <translation id="4794140124556169553">Si ejecutas una prueba de CPU, es posible que el rendimiento del sistema se vea afectado</translation>
 <translation id="4808449224298348341">Trabajo de impresión <ph name="DOCUMENT_TITLE" /> cancelado</translation>
+<translation id="4809927044794281115">Tema claro</translation>
 <translation id="4813136279048157860">Mis imágenes</translation>
 <translation id="4813345808229079766">Conexión</translation>
 <translation id="4832079907277790330">Seleccionar carpeta en aplicación Files...</translation>
@@ -377,6 +397,7 @@
 <translation id="5212543919916444558">No encuentro nada en la pantalla con lo que pueda ayudarte. Toca el micrófono para pedirme algo.</translation>
 <translation id="5212593641110061691">Tabloide</translation>
 <translation id="5222676887888702881">Cerrar sesión</translation>
+<translation id="5227902338748591677">Horario del tema oscuro</translation>
 <translation id="5234764350956374838">Cerrar</translation>
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5257811368506016604">Habilitar modo de color claro</translation>
@@ -397,6 +418,7 @@
 <translation id="5346687412805619883">Red local</translation>
 <translation id="5358174242040570474">Se ha producido un error. Prueba a elegir un fondo de pantalla de nuevo o vuelve a abrir la aplicación.</translation>
 <translation id="5372659122375744710">La red Wi-Fi no es segura</translation>
+<translation id="5376354385557966694">Modo Claro automático</translation>
 <translation id="5400907029458559844">El dispositivo se está conectando.</translation>
 <translation id="5401938042319910061">Ejecutar todas las rutinas</translation>
 <translation id="5423849171846380976">Activado</translation>
@@ -432,6 +454,7 @@
 <translation id="583281660410589416">Desconocido</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Código del proveedor inicial</translation>
+<translation id="5859603669299126575">Álbum de galería de arte</translation>
 <translation id="5860033963881614850">Desactivado</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5866840822086176774">Óptima</translation>
@@ -462,6 +485,7 @@
 <translation id="6113701710518389813">Flecha hacia arriba</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> álbumes</translation>
 <translation id="6122191549521593678">Online</translation>
+<translation id="6122277663991249694">Servicio de método de introducción de texto de Chrome OS</translation>
 <translation id="6137767437444130246">Certificado de usuario</translation>
 <translation id="6146993107019042706">Para finalizar, introduce tu contraseña nueva</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -477,11 +501,15 @@
 <translation id="6275224645089671689">Flecha hacia la derecha</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6284632978374966585">Activar tema oscuro</translation>
 <translation id="6302401976930124515">La prueba <ph name="TEST_NAME" /> se ha cancelado</translation>
 <translation id="6319207335391420837">Actualizar el firmware de <ph name="DEVICE_NAME" /></translation>
+<translation id="6321407676395378991">Activar salvapantallas</translation>
 <translation id="6325525973963619867">Se ha producido un error.</translation>
+<translation id="6331191339300272798">Tema oscuro automático</translation>
 <translation id="6340526405444716530">Personalización</translation>
 <translation id="6348738456043757611">Nombre de usuario y contraseña</translation>
+<translation id="6359706544163531585">Inhabilitar tema claro</translation>
 <translation id="636850387210749493">Registro de empresa</translation>
 <translation id="6379086450106841622">Pantalla táctil</translation>
 <translation id="6381741036071372448">Prueba tu teclado</translation>
@@ -556,6 +584,7 @@
 <translation id="714876143603641390">Conectividad LAN</translation>
 <translation id="7155171745945906037">Foto de la cámara o archivo</translation>
 <translation id="7162487448488904999">Galería</translation>
+<translation id="7170236477717446850">Imagen de perfil</translation>
 <translation id="7172721935181587524">1 imagen</translation>
 <translation id="7175037578838465313">Configurar <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> gestiona este <ph name="DEVICE_TYPE" />. Los administradores pueden configurar el dispositivo de forma remota.</translation>
@@ -577,6 +606,7 @@
 <translation id="7359657277149375382">Tipo de archivo</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378886533986123738">Cambiar salvapantallas</translation>
+<translation id="7397270852490618635">Desactivar tema claro</translation>
 <translation id="741244894080940828">conversión</translation>
 <translation id="7415801143053185905">Latencia de HTTP muy alta</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -588,6 +618,7 @@
 <translation id="7497215489070763236">Certificado AC del servidor</translation>
 <translation id="7502658306369382406">Dirección IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7535791657097741517">Activar tema claro</translation>
 <translation id="7550715992156305117">Rutinas de diagnóstico</translation>
 <translation id="7551123448725492271">El dispositivo es un dispositivo de audio.</translation>
 <translation id="7561454561030345039">Esta acción la gestiona tu administrador</translation>
@@ -609,11 +640,14 @@
 <translation id="7763470514545477072">Coincidencia de sufijo de dominio</translation>
 <translation id="7769672763586021400">ID de modelo</translation>
 <translation id="7784116172884276937">No hay servidores DNS configurados</translation>
+<translation id="7799817062559422778">Modo Claro</translation>
 <translation id="780301667611848630">No, gracias</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7819857487979277519">PSK (WPA o RSN)</translation>
+<translation id="7841134249932030522">Habilitar modo Oscuro</translation>
 <translation id="7846634333498149051">Teclado</translation>
 <translation id="7856267634822906833">Pantalla táctil Bluetooth</translation>
+<translation id="7869143217755017858">Inhabilitar modo Oscuro</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de proveedor</translation>
 <translation id="7882501334836096755">Clave pública</translation>
@@ -653,6 +687,7 @@
 <translation id="8297006494302853456">Débil</translation>
 <translation id="8302368968391049045">Cortafuegos de HTTPS</translation>
 <translation id="8318753676953949627">Sin imágenes</translation>
+<translation id="8336739000755212683">Cambiar imagen de cuenta de dispositivo</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
 <translation id="8352772353338965963">Se puede añadir una cuenta al inicio de sesión múltiple y acceder a todas las cuentas en las que se haya iniciado sesión sin una contraseña, por lo que esta función solo se debe utilizar con cuentas de confianza.</translation>
 <translation id="8364946094152050673">Servidores de nombres vacíos</translation>
@@ -661,8 +696,10 @@
 <translation id="8398927464629426868">La velocidad a la que se carga o descarga el dispositivo en este momento</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Teclado interno</translation>
+<translation id="8431300646573772016">Novedades de Chrome OS</translation>
 <translation id="843568408673868420">Conexión a Internet</translation>
 <translation id="844521431886043384">No se ha configurado el DNS</translation>
+<translation id="8456761643544401578">Modo Oscuro automático</translation>
 <translation id="8461329675984532579">Nombre del proveedor inicial</translation>
 <translation id="8475690821716466388">La red Wi-Fi está protegida con un protocolo poco seguro WEP PSK</translation>
 <translation id="8477551185774834963">La latencia DNS supera ligeramente el umbral permitido</translation>
@@ -689,6 +726,7 @@
 <translation id="8730621377337864115">Hecho</translation>
 <translation id="8747900814994928677">Confirmar cambio</translation>
 <translation id="8764414543112028321">WireGuard</translation>
+<translation id="87646919272181953">Álbum de Google Fotos</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Puede que esta red tenga un portal cautivo</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
@@ -698,6 +736,7 @@
 <translation id="8834539327799336565">Conectados ahora</translation>
 <translation id="8845001906332463065">Obtener ayuda</translation>
 <translation id="8855781559874488009">No se puede conectar con sitios web HTTP usando un cortafuegos</translation>
+<translation id="8863170912498892583">Habilitar tema oscuro</translation>
 <translation id="8863888432376731307">Consulta información sobre "<ph name="QUERY" />", como su <ph name="INTENT" /></translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">El dispositivo es un tablet.</translation>

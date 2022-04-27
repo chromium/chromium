@@ -199,8 +199,6 @@
 <translation id="2649120831653069427">Rainbowfish</translation>
 <translation id="2663066752008346276">Myansan কীব’ৰ্ডৰ সৈতে বাৰ্মীজ/ম্যানমাৰ</translation>
 <translation id="2664412712123763093">ফাইলৰ অৱস্থান</translation>
-<translation id="2672394958563893062">কোনো আসোঁৱাহ হৈছে। আৰম্ভণিৰে পৰা পুনৰাৰম্ভ কৰিবলৈ ক্লিক কৰক৷</translation>
-<translation id="2676946222714718093">ইয়াত প্লে’ কৰি থকা হৈছে</translation>
 <translation id="2718540689505416944">Linuxৰ জৰিয়তে এপ্ ইনষ্টল কৰক</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, সবিশেষ</translation>
 <translation id="2724954091494693138">F-কীব’ৰ্ডৰ সৈতে তুৰ্কী</translation>
@@ -342,7 +340,6 @@
 <translation id="3901991538546252627"><ph name="NAME" />ৰ সৈতে সংযোগ কৰি থকা হৈছে</translation>
 <translation id="3906232975181435906">ম’বাইলৰ প্ৰ’ফাইল ইনষ্টল কৰি থকা হৈছে, <ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰটো, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">মেটা</translation>
-<translation id="3930521966936686665">ইয়াত প্লে‘ কৰক</translation>
 <translation id="3943857333388298514">পেষ্ট কৰক</translation>
 <translation id="3952872973865944257">তেলুগু ফ’নেটিক</translation>
 <translation id="3958548648197196644">কিৱি</translation>
@@ -414,7 +411,6 @@
 <translation id="4631887759990505102">শিল্পী</translation>
 <translation id="4642769377300286600">ম’বাইলৰ প্ৰ’ফাইল ইনষ্টল কৰি থকা হৈছে, <ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰটো, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Qwerty কীব’ৰ্ডৰ সৈতে চেক</translation>
-<translation id="4656293982926141856">এই কম্পিউটাৰত</translation>
 <translation id="4656777537938206294">ফাইলসমূহ অনলাইনত উপলব্ধ কৰক</translation>
 <translation id="4658782175094886150">বৰফৰ মাজত থকা ব্যক্তিৰ ছবি</translation>
 <translation id="4669606053856530811">’<ph name="SOURCE_NAME" />’ৰ সদস্যসকলে তেতিয়ালৈকে এক্সেছ নাপাব যেতিয়ালৈকে তেওঁলোকৰ সৈতে এই বস্তুবোৰ শ্বেয়াৰ কৰা নহয়।</translation>
@@ -431,7 +427,6 @@
 <translation id="4720185134442950733">ম’বাইল ডেটা নেটৱৰ্ক</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> খন ফট‘ৰ বেক আপ লোৱা হ‘ল</translation>
 <translation id="4725511304875193254">কৰ্গি</translation>
-<translation id="4732760563705710320">দুঃখিত, এই ভিডিঅ’টো আপোনাৰ কাষ্ট ডিভাইচৰ দ্বাৰা সমৰ্থিত নহয়।</translation>
 <translation id="4737050008115666127">লেণ্ড হৈ আছে</translation>
 <translation id="4747271164117300400">Macedonian</translation>
 <translation id="4759238208242260848">ডাউনল'ডসমূহ</translation>
@@ -621,7 +616,6 @@
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ফর্মেট কৰক</translation>
 <translation id="6227235786875481728">এই ফাইলটো প্লে’ কৰিব পৰা নগ’ল।</translation>
 <translation id="6241349547798190358">ডাট্‌চ (বেলজিয়াম)</translation>
-<translation id="6248400709929739064">ছাবটাইটেল সক্ষম কৰক</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, ফ’নৰ বেটাৰী <ph name="BATTERY_STATUS" />%, সংযোগ কৰক</translation>
 <translation id="6269630227984243955">মালয়</translation>
 <translation id="6287852322318138013">এই লিংকটো খুলিবলৈ এটা এপ্‌ বাছনি কৰক</translation>
@@ -639,7 +633,6 @@
 <translation id="637062427944097960">এই ফাইলটো বিভিন্ন ডেস্কটেপত খোলা হৈছে। ফাইলটো চাবলৈ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) লৈ নিয়ক।</translation>
 <translation id="6394388407447716302">কেৱল পঢ়িব পৰা</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" />টা বস্তু</translation>
-<translation id="6398765197997659313">সম্পূর্ণ স্ক্ৰীণ ম’ডৰ পৰা বাহিৰ হওক</translation>
 <translation id="642282551015776456">এই নামটো ফ'ল্ডাৰ নামৰ ফাইল হিচাপে ব্যৱহাৰ কৰা নহ'ব পাৰে</translation>
 <translation id="6423031066725912715">TCVN কীব’ৰ্ডৰ সৈতে ভিয়েটনামিজ</translation>
 <translation id="6485131920355264772">খালী ঠাইৰ বিষয়ে তথ্য সংগ্ৰহ কৰিব পৰা নগ’ল</translation>
@@ -675,7 +668,6 @@
 <translation id="6820687829547641339">Gzip সংকুচিত কৰা টাৰ আৰ্কাইভ</translation>
 <translation id="6823166707458800069">এই ফ’ল্ডাৰটোত ছেভ হৈ থকা সকলো ফাইল স্বয়ংক্ৰিয়ভাৱে অনলাইনত বেক আপ কৰা হয়।</translation>
 <translation id="6825883775269213504">ৰাছিয়ান</translation>
-<translation id="6827236167376090743">এই ভিডিঅ'টো সন্ধিয়া পর্যন্ত চলি থাকিব।</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" />ক বাছনিৰ পৰা আঁতৰোৱা হ’ল।</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, সবিশেষ</translation>
 <translation id="6861394552169064235">পাৰ্ছিয়ান</translation>
@@ -813,7 +805,6 @@
 <translation id="7857117644404132472">ব্যতিক্ৰম যোগ কৰক</translation>
 <translation id="7868774406711971383">প’লিশ্ব</translation>
 <translation id="7874321682039004450">ফিলিপিন’</translation>
-<translation id="7881969471599061635">ছাবটাইটেল অক্ষম কৰক</translation>
 <translation id="78946041517601018">শ্বেয়াৰ কৰা ড্ৰাইভসমূহ</translation>
 <translation id="7908793776359722643">এটা বিভাজন ফৰ্মেট কৰা কাৰ্যই তাত ষ্ট'ৰ কৰি ৰখা সকলো ডেটা মচিব। এই কাৰ্যটো আনডু কৰিব নোৱাৰি।</translation>
 <translation id="7925247922861151263">AAA পৰীক্ষা কৰিব পৰা নগ’ল</translation>
@@ -890,7 +881,6 @@
 <translation id="8492972329130824181">গৃহ নেটৱৰ্ক উপলব্ধ নহয়। সংযোগ কৰিবলৈ ম’বাইল ডেটা ৰ’মিং সক্ৰিয় কৰিবই লাগিব।</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> টা বস্তু আহৰণ কৰি থকা হৈছে...</translation>
 <translation id="8521441079177373948">ইউ.কে.</translation>
-<translation id="8525306231823319788">সম্পূর্ণ স্ক্ৰীণ</translation>
 <translation id="853494022971700746">ফৰাচী (ফ্ৰান্স)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, সবিশেষ</translation>
 <translation id="8545476925160229291">ইংৰাজী (যুক্তৰাষ্ট্ৰ)</translation>

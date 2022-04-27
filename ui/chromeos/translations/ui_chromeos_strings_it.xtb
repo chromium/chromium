@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">Traslitterazione ebraico</translation>
 <translation id="1747761757048858544">Olandese (Paesi Bassi)</translation>
 <translation id="174937106936716857">Numero totale di file</translation>
+<translation id="1755345808328621801">Questo file è supportato su PC con software Windows. Non è compatibile con il tuo dispositivo che esegue Chrome OS. Cerca sul Chrome Web Store un'app sostitutiva adatta.</translation>
 <translation id="1773212559869067373">Certificato di autenticazione rifiutato localmente</translation>
 <translation id="1775381402323441512">Info video</translation>
 <translation id="180035236176489073">Per poter accedere a questi file devi essere online.</translation>
@@ -198,8 +199,6 @@
 <translation id="2649120831653069427">Pesce arcobaleno</translation>
 <translation id="2663066752008346276">Birmano/Myanmar con tastiera Myansan</translation>
 <translation id="2664412712123763093">Posizione file</translation>
-<translation id="2672394958563893062">Si è verificato un errore. Fai clic per ricominciare dall'inizio.</translation>
-<translation id="2676946222714718093">In riproduzione su:</translation>
 <translation id="2718540689505416944">Installa app con Linux</translation>
 <translation id="2719020180254996569">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, dettagli</translation>
 <translation id="2724954091494693138">Turco con tastiera F</translation>
@@ -225,6 +224,7 @@
 <translation id="2943503720238418293">Utilizza un nome più corto</translation>
 <translation id="2949781154072577687">Formattazione di <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Medusa</translation>
+<translation id="2977940621473452797">Questo file è supportato su computer con software Macintosh. Non è compatibile con il tuo dispositivo che esegue Chrome OS. Cerca sul Chrome Web Store un'app sostitutiva adatta.</translation>
 <translation id="2984337792991268709">Oggi alle <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Ripristino di <ph name="COUNT" /> elementi in corso…</translation>
 <translation id="2994669386200004489">Impossibile effettuare il backup di <ph name="FILE_NAME" /></translation>
@@ -340,7 +340,6 @@
 <translation id="3901991538546252627">Connessione a: <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Installazione del profilo per dispositivi mobili in corso, rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Riproduci su</translation>
 <translation id="3943857333388298514">Incolla</translation>
 <translation id="3952872973865944257">Telugu fonetica</translation>
 <translation id="3958548648197196644">Kiwi</translation>
@@ -412,7 +411,6 @@
 <translation id="4631887759990505102">Artista</translation>
 <translation id="4642769377300286600">Installazione del profilo per dispositivi mobili in corso, rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Ceco con tastiera Qwerty</translation>
-<translation id="4656293982926141856">Questo computer</translation>
 <translation id="4656777537938206294">Rendi i file disponibili offline</translation>
 <translation id="4658782175094886150">Persona nella neve</translation>
 <translation id="4669606053856530811">I membri di "<ph name="SOURCE_NAME" />" non avranno più accesso, a meno che questi elementi vengano condivisi con loro.</translation>
@@ -422,13 +420,13 @@
 <translation id="4694604912444486114">Scimmia</translation>
 <translation id="469612310041132144">Cinese rapido</translation>
 <translation id="4697043402264950621">Elenco di file ordinato per <ph name="COLUMN_NAME" /> in ordine crescente.</translation>
+<translation id="469897186246626197">Questo file è supportato su PC con software Windows. Non è compatibile con il tuo dispositivo, che esegue Chrome OS. <ph name="BEGIN_LINK_HELP" />Scopri di più<ph name="END_LINK_HELP" /> sull'apertura di file in Chrome OS.</translation>
 <translation id="4706042980341760088">Tamil con tastiera Macchina da scrivere</translation>
 <translation id="4711094779914110278">Turco</translation>
 <translation id="4712283082407695269">Apertura di "<ph name="PATH" />"…</translation>
 <translation id="4720185134442950733">Rete di dati mobili</translation>
 <translation id="4724850507808590449">Backup di <ph name="FILE_COUNT" /> foto completato</translation>
 <translation id="4725511304875193254">Corgi</translation>
-<translation id="4732760563705710320">Spiacenti, questo video non è supportato dal tuo dispositivo di trasmissione.</translation>
 <translation id="4737050008115666127">Atterraggio</translation>
 <translation id="4747271164117300400">Macedone</translation>
 <translation id="4759238208242260848">Download</translation>
@@ -542,6 +540,7 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5602622065581044566">Bulgaro con tastiera fonetica</translation>
 <translation id="5605830556594064952">Dvorak USA</translation>
+<translation id="5618330573454123917">Questo file è supportato su computer con software Macintosh. Non è compatibile con il tuo dispositivo, che esegue Chrome OS. <ph name="BEGIN_LINK_HELP" />Scopri di più<ph name="END_LINK_HELP" /> sull'apertura di file in Chrome OS.</translation>
 <translation id="5625294776298156701">Tamil con tastiera Tamil99</translation>
 <translation id="5633226425545095130">Se lo sposti, questo elemento verrà condiviso con chiunque abbia accesso alla cartella condivisa "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Ascolta</translation>
@@ -617,7 +616,6 @@
 <translation id="6224253798271602650">Formatta <ph name="DRIVE_NAME" /></translation>
 <translation id="6227235786875481728">Impossibile riprodurre il file.</translation>
 <translation id="6241349547798190358">Olandese (Belgio)</translation>
-<translation id="6248400709929739064">Attiva i sottotitoli</translation>
 <translation id="6267547857941397424">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, batteria del telefono <ph name="BATTERY_STATUS" />%, connetti</translation>
 <translation id="6269630227984243955">Malese</translation>
 <translation id="6287852322318138013">Seleziona un'app per aprire questo file</translation>
@@ -635,7 +633,6 @@
 <translation id="637062427944097960">Questo file è aperto su un desktop differente. Passa a <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) per visualizzarlo.</translation>
 <translation id="6394388407447716302">Sola lettura</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elementi</translation>
-<translation id="6398765197997659313">Esci da schermo intero</translation>
 <translation id="642282551015776456">Questo nome non può essere utilizzato per un file o una cartella</translation>
 <translation id="6423031066725912715">Vietnamita con tastiera TCVN</translation>
 <translation id="6485131920355264772">Impossibile recuperare le informazioni sullo spazio</translation>
@@ -671,7 +668,6 @@
 <translation id="6820687829547641339">Archivio tar compresso con gzip</translation>
 <translation id="6823166707458800069">Viene effettuato automaticamente il backup online di tutti i file salvati in questa cartella.</translation>
 <translation id="6825883775269213504">Russo</translation>
-<translation id="6827236167376090743">La riproduzione di questo video continuerà indefinitamente.</translation>
 <translation id="6847101934483209767">L'elemento <ph name="ENTRY_NAME" /> è stato rimosso dalla selezione.</translation>
 <translation id="6856459657722366306">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, dettagli</translation>
 <translation id="6861394552169064235">Persiano</translation>
@@ -737,6 +733,7 @@
 <translation id="7309413087278791451">Tedesco (Belgio)</translation>
 <translation id="7339898014177206373">Nuova finestra</translation>
 <translation id="7343393116438664539">Vietnamita Telex</translation>
+<translation id="7357762654218998920">Questo tipo di file non è supportato. <ph name="BEGIN_LINK_HELP" />Scopri di più<ph name="END_LINK_HELP" /> sull'apertura di file in Chrome OS.</translation>
 <translation id="7359359531237882347">Copia di <ph name="NUMBER_OF_ITEMS" /> elementi...</translation>
 <translation id="7375951387215729722">Elenco di file ordinato per <ph name="COLUMN_NAME" /> in ordine decrescente.</translation>
 <translation id="7402503521691663770">Dispositivi Chrome OS Flex</translation>
@@ -808,7 +805,6 @@
 <translation id="7857117644404132472">Aggiungi eccezione</translation>
 <translation id="7868774406711971383">Polacco</translation>
 <translation id="7874321682039004450">Filippino</translation>
-<translation id="7881969471599061635">Disattiva i sottotitoli</translation>
 <translation id="78946041517601018">Drive condivisi</translation>
 <translation id="7908793776359722643">La formattazione di una partizione eliminerà tutti i dati archiviati al suo interno. L'operazione non potrà essere annullata.</translation>
 <translation id="7925247922861151263">Controllo AAA non riuscito</translation>
@@ -885,7 +881,6 @@
 <translation id="8492972329130824181">La rete di casa non è disponibile. Il roaming dei dati mobili deve essere attivato per connettersi.</translation>
 <translation id="8499098729323186194">Estrazione di <ph name="NUMBER_OF_ITEMS" /> elementi in corso…</translation>
 <translation id="8521441079177373948">Regno Unito</translation>
-<translation id="8525306231823319788">Schermo intero</translation>
 <translation id="853494022971700746">Francese (Francia)</translation>
 <translation id="8540608333167683902">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, dettagli</translation>
 <translation id="8545476925160229291">Inglese (USA)</translation>

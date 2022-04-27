@@ -42,6 +42,7 @@
 <translation id="1394661041439318933">डिवाइस के केस में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>
 <translation id="1397738625398125236">गेटवे को पिंग किया जा सकता है</translation>
 <translation id="1398634363027580500">एचटीटीपीएस अनुरोधों में इंतज़ार का समय बहुत ज़्यादा है</translation>
+<translation id="1407069428457324124">गहरे रंग वाली थीम</translation>
 <translation id="1413240736185167732">प्रिंट नहीं हो पाया - फ़िल्टर में कोई गड़बड़ी हुई</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">मेरे पास कुंजी का जोड़ा है</translation>
@@ -63,6 +64,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> को अपडेट नहीं किया जा सकता</translation>
 <translation id="1567064801249837505">एल्बम</translation>
 <translation id="1572585716423026576">वॉलपेपर के तौर पर सेट करें</translation>
+<translation id="1578784163189013834">स्क्रीन सेवर का बैकग्राउंड चुनें</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> से लेकर अब तक इस्तेमाल किया गया डेटा</translation>
 <translation id="1621067168122174824">चार्ज टेस्ट चलाएं</translation>
 <translation id="1639239467298939599">लोड हो रहा है</translation>
@@ -85,12 +87,15 @@
 <translation id="1768959921651994223">पुष्टि करने का तरीका</translation>
 <translation id="1782199038061388045">अनुवाद</translation>
 <translation id="1792647875738159689">स्कैन करने की प्रोसेस रद्द की जा रही है</translation>
+<translation id="1801418420130173017">गहरे रंग वाली थीम बंद करें</translation>
 <translation id="1807246157184219062">हल्का</translation>
 <translation id="1827738518074806965">आर्ट गैलरी</translation>
 <translation id="1851218745569890714">वीडियो कॉन्फ़्रेंसिंग</translation>
 <translation id="1852934301711881861">ChromeOS Flex इंस्टॉल करें</translation>
 <translation id="1856388568474281774">डाउन ऐरो</translation>
+<translation id="1871569928317311284">गहरे रंग वाली थीम बंद करें</translation>
 <translation id="1874612839560830905">MTU</translation>
+<translation id="188114911237521550">गहरे रंग वाला मोड बंद करें</translation>
 <translation id="1887850431809612466">हार्डवेयर पुनरीक्षण</translation>
 <translation id="1905710495812624430">अधिकतम स्वीकार्य प्रयासों की सीमा पार हो गई है.</translation>
 <translation id="1908234395526491708">यूडीपी अनुरोध पूरे नहीं हो पाए</translation>
@@ -115,6 +120,7 @@
 <translation id="2157959690810728433">कतार में है</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: फिर से कोशिश करें</translation>
 <translation id="2161394479394250669">प्रिंट करना रद्द करें</translation>
+<translation id="2163937499206714165">गहरे रंग वाला मोड चालू करें</translation>
 <translation id="2180197493692062006">कोई गड़बड़ी हुई. ऐप्लिकेशन को फिर से खोलने की कोशिश करें.</translation>
 <translation id="2209788852729124853">ट्रैफ़िक काउंटर रीसेट करें</translation>
 <translation id="2212733584906323460">होस्ट के नाम से आईपी पता बनाएं</translation>
@@ -126,8 +132,10 @@
 <translation id="2236746079896696523">कीबोर्ड की बैकलाइट के लिए टॉगल बटन</translation>
 <translation id="2240366984605217732">लेआउट स्विच करने वाला बटन</translation>
 <translation id="225692081236532131">सक्रियण की स्थिति</translation>
+<translation id="2271469253353559191">गहरे रंग वाला मोड शेड्यूल करें</translation>
 <translation id="2287186687001756809">कोई इमेज उपलब्ध नहीं है. फ़ोटो जोड़ने के लिए, <ph name="LINK" /> पर जाएं</translation>
 <translation id="2307344026739914387">मौजूदा कुंजी के जोड़े का इस्तेमाल करें</translation>
+<translation id="2320295602967756579">हल्के रंग वाली थीम चालू करें</translation>
 <translation id="2323506179655536734">छोड़ दिया गया</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> डीपीआई</translation>
 <translation id="2338501278241028356">आस-पास के डिवाइस खोजने के लिए ब्लूटूथ चालू करें</translation>
@@ -147,13 +155,16 @@
 <translation id="2493126929778606526">आपकी सबसे अच्छी फ़ोटो, अपने-आप चुन ली गईं</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">मौजूदा वॉलपेपर रीफ़्रेश करें</translation>
+<translation id="2513396635448525189">लॉगिन इमेज बदलें</translation>
 <translation id="2517472476991765520">स्कैन करें</translation>
+<translation id="2526590354069164005">डेस्कटॉप</translation>
 <translation id="253029298928638905">रीस्टार्ट हो रहा है…</translation>
 <translation id="2536159006530886390">इंटरनेट से कनेक्ट नहीं किया जा सका.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> की जांच की जा रही है...</translation>
 <translation id="2584559707064218956">सेट अप के लिए, सेटिंग पर जाएं</translation>
 <translation id="2619761439309613843">हर दिन रीफ़्रेश करें</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
+<translation id="2638662041295312666">साइन इन इमेज</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> एल्बम चुना गया</translation>
 <translation id="2695514675076754339">आठ वर्णों वाला अनलॉक कोड डालें</translation>
 <translation id="2712812801627182647">TLS ऑथेंटिकेशन कुंजी</translation>
@@ -173,11 +184,13 @@
 <translation id="2926057806159140518">अपना उपयोगकर्ता नाम और पासवर्ड डालें या अपना क्यूआर कोड स्कैन करें</translation>
 <translation id="3008341117444806826">रीफ़्रेश करें</translation>
 <translation id="3009958530611748826">सेव करने के लिए कोई फ़ोल्डर चुनें</translation>
+<translation id="3017079585324758401">बैकग्राउंड</translation>
 <translation id="3031560714565892478">डिवाइस एक वीडियो कैमरा है.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">एंडपॉइंट</translation>
 <translation id="3069085583900247081">टेस्ट असफल रहा</translation>
 <translation id="3083667275341675831">कनेक्टिविटी डाइग्नोस्टिक्स</translation>
+<translation id="3084958266922136097">स्क्रीन सेवर बंद करें</translation>
 <translation id="3091839911843451378">प्रिंट नहीं हो पाया - प्रिंटर बंद हो गया</translation>
 <translation id="3102119246920354026">संचय</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -201,6 +214,7 @@
 <translation id="3340011300870565703">डिवाइस के दाएं बड में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>
 <translation id="3368922792935385530">कनेक्ट है</translation>
 <translation id="3369013195428705271">क्या आप वाकई अपना पूरा प्रिंट इतिहास मिटाना चाहते हैं? प्रिंट का जो काम अभी चल रहा है उसकी जानकारी (प्रिंट जॉब) नहीं मिटाई जाएगी.</translation>
+<translation id="3404249063913988450">स्क्रीन सेवर चालू करें</translation>
 <translation id="3413935475507503304">अपडेट करने के लिए 'आगे बढ़ें' पर क्लिक करें.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">सुरक्षा</translation>
@@ -215,6 +229,7 @@
 <translation id="3532980081107202182">करीब <ph name="MIN_REMAINING" /> मिनट बचे हैं</translation>
 <translation id="3557205324756024651">लोकल आइडेंटिटी (ज़रूरी नहीं)</translation>
 <translation id="3565064564551103223">जिन आईपी को अनुमति दी गई है</translation>
+<translation id="3569407787324516067">स्क्रीन सेवर</translation>
 <translation id="3577473026931028326">कोई गड़बड़ी हुई. फिर से कोशिश करें.</translation>
 <translation id="357889014807611375">सीमित डेटा वाला वाई-फ़ाई</translation>
 <translation id="3583278742022654445">कमज़ोर सिग्नल. वाई-फ़ाई सिग्नल सोर्स के नज़दीक जाकर देखें.</translation>
@@ -257,9 +272,11 @@
 <translation id="4044093238444069296">गेटवे से संपर्क नहीं किया जा सकता</translation>
 <translation id="4046123991198612571">अगला ट्रैक</translation>
 <translation id="404928562651467259">चेतावनी</translation>
+<translation id="4093865285251893588">प्रोफ़ाइल फ़ोटो</translation>
 <translation id="409427325554347132">जांच की जानकारी सेव करें</translation>
 <translation id="4110686435123617899">एल्बम चुनें <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">यूएसबी टचपैड</translation>
+<translation id="4117637339509843559">गहरे रंग वाला मोड</translation>
 <translation id="4131410914670010031">श्याम और श्वेत</translation>
 <translation id="4140251671072434548">आरएमए सर्वर को अनलॉक करें</translation>
 <translation id="4145784616224233563">एचटीटीपी फ़ायरवॉल</translation>
@@ -269,6 +286,7 @@
 <translation id="4170700058716978431">असफल</translation>
 <translation id="4176463684765177261">बंद किया गया</translation>
 <translation id="4176659219503619100">कंट्रोल पैनल</translation>
+<translation id="420283545744377356">स्क्रीन सेवर बंद करें</translation>
 <translation id="4213104098953699324">यूएसबी कीबोर्ड</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> में पासवर्ड की समयसीमा खत्म हो जाएगी</translation>
 <translation id="4238516577297848345">फ़िलहाल, कुछ प्रिंट नहीं हो रहा</translation>
@@ -331,6 +349,7 @@
 <translation id="4793756956024303490">कंप्रेस करने का एल्गोरिदम</translation>
 <translation id="4794140124556169553">सीपीयू की जांच करने से सिस्टम की परफ़ॉर्मेंस पर असर पड़ सकता है</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> के प्रिंट का काम बंद किया गया</translation>
+<translation id="4809927044794281115">हल्के रंग वाली थीम</translation>
 <translation id="4813136279048157860">मेरी इमेज</translation>
 <translation id="4813345808229079766">कनेक्शन</translation>
 <translation id="4832079907277790330">फ़ाइल ऐप्लिकेशन में कोई फ़ोल्डर चुनें...</translation>
@@ -378,6 +397,7 @@
 मुझे कुछ पूछने के लिए माइक टैप करके देखें.</translation>
 <translation id="5212593641110061691">टैबलॉइड</translation>
 <translation id="5222676887888702881">साइन आउट करें</translation>
+<translation id="5227902338748591677">गहरे रंग वाली थीम शेड्यूल करें</translation>
 <translation id="5234764350956374838">खारिज करें</translation>
 <translation id="5252456968953390977">रोमिंग</translation>
 <translation id="5257811368506016604">हल्के रंग वाला मोड चालू करें</translation>
@@ -398,6 +418,7 @@
 <translation id="5346687412805619883">लोकल नेटवर्क</translation>
 <translation id="5358174242040570474">कोई गड़बड़ी हुई. कोई वॉलपेपर चुनकर कोशिश करें या ऐप्लिकेशन को फिर से खोलें.</translation>
 <translation id="5372659122375744710">यह वाई-फ़ाई नेटवर्क सुरक्षित नहीं है</translation>
+<translation id="5376354385557966694">अपने-आप हल्के रंग वाला मोड</translation>
 <translation id="5400907029458559844">डिवाइस कनेक्ट हो रहा है.</translation>
 <translation id="5401938042319910061">सभी रूटीन चलाएं</translation>
 <translation id="5423849171846380976">सक्रिय हुआ</translation>
@@ -433,6 +454,7 @@
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5843706793424741864">फ़ैरनहाइट</translation>
 <translation id="5849570051105887917">'होम' पर काम करने वाली सेवाओं का कोड</translation>
+<translation id="5859603669299126575">आर्ट गैलरी एल्बम</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5860491529813859533">चालू करें</translation>
 <translation id="5866840822086176774">बहुत सशक्त</translation>
@@ -478,11 +500,15 @@
 <translation id="6275224645089671689">राइट ऐरो</translation>
 <translation id="6278428485366576908">थीम</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6284632978374966585">गहरे रंग वाली थीम चालू करें</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> टेस्ट को रद्द कर दिया गया है</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> के लिए फ़र्मवेयर अपडेट करें</translation>
+<translation id="6321407676395378991">स्क्रीन सेवर चालू करें</translation>
 <translation id="6325525973963619867">विफल</translation>
+<translation id="6331191339300272798">अपने-आप गहरे रंग वाली थीम</translation>
 <translation id="6340526405444716530">मनमुताबिक बनाना</translation>
 <translation id="6348738456043757611">उपयोगकर्ता नाम और पासवर्ड</translation>
+<translation id="6359706544163531585">हल्के रंग वाली थीम बंद करें</translation>
 <translation id="636850387210749493">एंटरप्राइज़ नामांकन</translation>
 <translation id="6379086450106841622">टचस्क्रीन</translation>
 <translation id="6381741036071372448">अपना कीबोर्ड इस्तेमाल करके देखें</translation>
@@ -557,6 +583,7 @@
 <translation id="714876143603641390">LAN कनेक्टिविटी</translation>
 <translation id="7155171745945906037">कैमरा या फ़ाइल से मौजूदा फ़ोटो</translation>
 <translation id="7162487448488904999">गैलरी</translation>
+<translation id="7170236477717446850">प्रोफ़ाइल फ़ोटो</translation>
 <translation id="7172721935181587524">एक इमेज</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> को कॉन्फ़िगर करें</translation>
 <translation id="7177485034254901881">इस <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> मैनेज करता है. एडमिन इस डिवाइस को किसी दूसरी जगह से भी कॉन्फ़िगर कर सकते हैं.</translation>
@@ -578,6 +605,7 @@
 <translation id="7359657277149375382">फ़ाइल प्रकार</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378886533986123738">स्क्रीन सेवर बदलें</translation>
+<translation id="7397270852490618635">हल्के रंग वाली थीम बंद करें</translation>
 <translation id="741244894080940828">एक यूनिट से दूसरी यूनिट में बदलना</translation>
 <translation id="7415801143053185905">एचटीटीपी अनुरोधों में इंतज़ार का समय बहुत ज़्यादा है</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -589,6 +617,7 @@
 <translation id="7497215489070763236">सर्वर CA प्रमाणपत्र</translation>
 <translation id="7502658306369382406">IPv6 पता</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7535791657097741517">हल्के रंग वाली थीम चालू करें</translation>
 <translation id="7550715992156305117">डाइग्नोस्टिक्स रूटीन</translation>
 <translation id="7551123448725492271">डिवाइस एक ऑडियो डिवाइस है.</translation>
 <translation id="7561454561030345039">इस कार्रवाई को आपका एडमिन मैनेज करता है</translation>
@@ -610,11 +639,14 @@
 <translation id="7763470514545477072">डोमेन सफ़िक्स से मिलते-जुलते</translation>
 <translation id="7769672763586021400">मॉडल आईडी</translation>
 <translation id="7784116172884276937">कोई भी डीएनएस सर्वर सेट अप नहीं है</translation>
+<translation id="7799817062559422778">हल्के रंग वाला मोड</translation>
 <translation id="780301667611848630">नहीं, रहने दें</translation>
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7819857487979277519">PSK (WPA या RSN)</translation>
+<translation id="7841134249932030522">गहरे रंग वाला मोड चालू करें</translation>
 <translation id="7846634333498149051">कीबोर्ड</translation>
 <translation id="7856267634822906833">टचस्क्रीन ब्लूटूथ</translation>
+<translation id="7869143217755017858">गहरे रंग वाला मोड बंद करें</translation>
 <translation id="7881066108824108340">डीएनएस</translation>
 <translation id="7882358943899516840">कंपनी का प्रकार</translation>
 <translation id="7882501334836096755">सार्वजनिक कुंजी</translation>
@@ -654,6 +686,7 @@
 <translation id="8297006494302853456">कमज़ोर</translation>
 <translation id="8302368968391049045">एचटीटीपीएस फ़ायरवॉल</translation>
 <translation id="8318753676953949627">कोई इमेज नहीं</translation>
+<translation id="8336739000755212683">डिवाइस खाते की इमेज बदलें</translation>
 <translation id="8347227221149377169">प्रिंट जॉब</translation>
 <translation id="8352772353338965963">एक से ज़्यादा साइन-इन के लिए कोई खाता जोड़ें. सभी साइन इन किए गए खातों को पासवर्ड के बिना एक्सेस किया जा सकता है, इसलिए इस सुविधा का इस्तेमाल सिर्फ़ विश्वसनीय खातों के साथ किया जाना चाहिए.</translation>
 <translation id="8364946094152050673">ये नाम सर्वर खाली हैं</translation>
@@ -664,6 +697,7 @@
 <translation id="8428073762635678092">डिवाइस में पहले से मौजूद कीबोर्ड</translation>
 <translation id="843568408673868420">इंटरनेट कनेक्टिविटी</translation>
 <translation id="844521431886043384">डीएनएस सेट अप नहीं किया गया है</translation>
+<translation id="8456761643544401578">अपने-आप गहरे रंग वाला मोड</translation>
 <translation id="8461329675984532579">'होम' पर सेवाएं देने वाली कंपनी का नाम</translation>
 <translation id="8475690821716466388">यह वाई-फ़ाई नेटवर्क एक कमज़ोर प्रोटोकॉल WEP PSK से सुरक्षित है</translation>
 <translation id="8477551185774834963">डीएनएस, इंतज़ार की समयसीमा से थोड़ा ऊपर है</translation>
@@ -690,6 +724,7 @@
 <translation id="8730621377337864115">हो गया</translation>
 <translation id="8747900814994928677">बदलाव की पुष्टि करें</translation>
 <translation id="8764414543112028321">WireGuard</translation>
+<translation id="87646919272181953">Google Photos की एल्बम</translation>
 <translation id="877985182522063539">ए4</translation>
 <translation id="879568662008399081">इस नेटवर्क में कैप्टिव पोर्टल हो सकता है</translation>
 <translation id="8798099450830957504">सामान्य</translation>
@@ -699,6 +734,7 @@
 <translation id="8834539327799336565">फ़िलहाल, कनेक्ट किए गए डिवाइस</translation>
 <translation id="8845001906332463065">सहायता पाएं</translation>
 <translation id="8855781559874488009">फ़ायरवॉल के ज़रिए, एचटीटीपी वेबसाइटों से नहीं जोड़ा जा सकता</translation>
+<translation id="8863170912498892583">गहरे रंग वाली थीम चालू करें</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" और बाकी चीज़ों के लिए <ph name="INTENT" /> पाएं</translation>
 <translation id="8868741746785112895">GUID (ग्लोबली यूनीक आइडेंटिफ़ायर)</translation>
 <translation id="8876270629542503161">डिवाइस एक टैबलेट है.</translation>

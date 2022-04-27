@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">translitteroitu heprea</translation>
 <translation id="1747761757048858544">hollanti (Alankomaat)</translation>
 <translation id="174937106936716857">Tiedostoja yhteensä</translation>
+<translation id="1755345808328621801">Tämä tiedosto on tarkoitettu Windows-käyttöjärjestelmää käyttävälle tietokoneelle. Se ei ole yhteensopiva Chrome-käyttöjärjestelmää käyttävän laitteesi kanssa. Etsi sopiva korvaava sovellus Chrome Web Storesta.</translation>
 <translation id="1773212559869067373">Todennusvarmenne on hylätty paikallisesti</translation>
 <translation id="1775381402323441512">Videon tiedot</translation>
 <translation id="180035236176489073">Sinun täytyy olla online-tilassa käyttääksesi näitä tiedostoja.</translation>
@@ -198,8 +199,6 @@
 <translation id="2649120831653069427">Kala</translation>
 <translation id="2663066752008346276">burma (Myanmar), myansan-näppäimistö</translation>
 <translation id="2664412712123763093">Tiedoston sijainti</translation>
-<translation id="2672394958563893062">Tapahtui virhe. Aloita alusta klikkaamalla.</translation>
-<translation id="2676946222714718093">Toistetaan Chromecastilla</translation>
 <translation id="2718540689505416944">Asenna Linux-sovellus</translation>
 <translation id="2719020180254996569">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, lisätietoja</translation>
 <translation id="2724954091494693138">turkki, F-näppäimistö</translation>
@@ -225,6 +224,7 @@
 <translation id="2943503720238418293">Nimi on liian pitkä.</translation>
 <translation id="2949781154072577687">Alustetaan (<ph name="DRIVE_NAME" />)…</translation>
 <translation id="2951236788251446349">Meduusa</translation>
+<translation id="2977940621473452797">Tämä tiedosto on tarkoitettu Macintosh-käyttöjärjestelmää käyttävälle tietokoneelle. Se ei ole yhteensopiva Chrome-käyttöjärjestelmää käyttävän laitteesi kanssa. Etsi sopiva korvaava sovellus Chrome Web Storesta.</translation>
 <translation id="2984337792991268709">tänään <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Palautetaan <ph name="COUNT" /> kohdetta…</translation>
 <translation id="2994669386200004489"><ph name="FILE_NAME" />: varmuuskopiointi epäonnistui</translation>
@@ -340,7 +340,6 @@
 <translation id="3901991538546252627">Yhdistetään verkkoon <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Asennetaan mobiiliprofiilia, verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Toista kohteessa</translation>
 <translation id="3943857333388298514">Liitä</translation>
 <translation id="3952872973865944257">foneettinen telugu</translation>
 <translation id="3958548648197196644">Kiivi</translation>
@@ -412,7 +411,6 @@
 <translation id="4631887759990505102">Esittäjä</translation>
 <translation id="4642769377300286600">Asennetaan mobiiliprofiilia, verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">tšekki, qwerty-näppäimistö</translation>
-<translation id="4656293982926141856">Tällä tietokoneella</translation>
 <translation id="4656777537938206294">Muuta tiedostot käytettäviksi ilman verkkoyhteyttä</translation>
 <translation id="4658782175094886150">Henkilö lumessa</translation>
 <translation id="4669606053856530811">Jäsenet (<ph name="SOURCE_NAME" />) menettävät käyttöoikeuden, ellei näitä kohteita jaeta heille.</translation>
@@ -422,13 +420,13 @@
 <translation id="4694604912444486114">Apina</translation>
 <translation id="469612310041132144">kiina (nopea)</translation>
 <translation id="4697043402264950621">Tiedostoluettelo lajiteltu nousevassa järjestyksessä (<ph name="COLUMN_NAME" />).</translation>
+<translation id="469897186246626197">Tämä tiedosto on tarkoitettu Windows-käyttöjärjestelmää käyttävälle tietokoneelle. Se ei ole yhteensopiva Chrome-käyttöjärjestelmää käyttävän laitteesi kanssa. <ph name="BEGIN_LINK_HELP" />Lue lisää<ph name="END_LINK_HELP" /> tiedostojen avaamisesta Chrome-käyttöjärjestelmällä.</translation>
 <translation id="4706042980341760088">tamil, kirjoituskonenäppäimistö</translation>
 <translation id="4711094779914110278">turkki</translation>
 <translation id="4712283082407695269">Avataan <ph name="PATH" /></translation>
 <translation id="4720185134442950733">Mobiiliverkko</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> kuvaa on varmuuskopioitu.</translation>
 <translation id="4725511304875193254">Corgi</translation>
-<translation id="4732760563705710320">Lähetyslaitteesi ei valitettavasti tue tätä videota.</translation>
 <translation id="4737050008115666127">Kiitorata</translation>
 <translation id="4747271164117300400">makedonia</translation>
 <translation id="4759238208242260848">Lataukset</translation>
@@ -543,6 +541,7 @@
 <translation id="5583640892426849032">Askelpalautin</translation>
 <translation id="5602622065581044566">bulgaria, foneettinen näppäimistö</translation>
 <translation id="5605830556594064952">USA, Dvorak</translation>
+<translation id="5618330573454123917">Tämä tiedosto on tarkoitettu Windows-ohjelmistoa käyttävälle tietokoneelle. Se ei ole yhteensopiva Chrome-käyttöjärjestelmää käyttävän laitteesi kanssa. <ph name="BEGIN_LINK_HELP" />Lue lisää<ph name="END_LINK_HELP" /> tiedostojen avaamisesta Chrome-käyttöjärjestelmällä.</translation>
 <translation id="5625294776298156701">tamil, tamil99-näppäimistö</translation>
 <translation id="5633226425545095130">Kun tämä siirretään, se jaetaan kaikille, jotka voivat nähdä jaetun kansion "<ph name="DESTINATION_NAME" />"</translation>
 <translation id="5649768706273821470">Kuuntele</translation>
@@ -618,7 +617,6 @@
 <translation id="6224253798271602650">Alusta <ph name="DRIVE_NAME" /></translation>
 <translation id="6227235786875481728">Tätä tiedostoa ei voi toistaa.</translation>
 <translation id="6241349547798190358">hollanti (Belgia)</translation>
-<translation id="6248400709929739064">Ota tekstitykset käyttöön</translation>
 <translation id="6267547857941397424">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, puhelimen akun varaus <ph name="BATTERY_STATUS" /> %, yhdistä</translation>
 <translation id="6269630227984243955">malaiji</translation>
 <translation id="6287852322318138013">Valitse sovellus, jolla haluat avata tämän tiedoston</translation>
@@ -636,7 +634,6 @@
 <translation id="637062427944097960">Tämä tiedosto avattiin toisella työpöydällä. Näet tiedoston siirtymällä profiiliin <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Vain luku</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> kohdetta</translation>
-<translation id="6398765197997659313">Poistu koko näytön tilasta</translation>
 <translation id="642282551015776456">Tätä nimeä ei voi käyttää tiedoston tai kansion nimenä.</translation>
 <translation id="6423031066725912715">vietnam, TCVN-näppäimistö</translation>
 <translation id="6485131920355264772">Tilatietojen noutaminen epäonnistui</translation>
@@ -672,7 +669,6 @@
 <translation id="6820687829547641339">Gzip-pakattu Tar-arkisto</translation>
 <translation id="6823166707458800069">Kaikki tähän kansioon tallennetut tiedostot varmuuskopioidaan verkkoon automaattisesti.</translation>
 <translation id="6825883775269213504">venäjä</translation>
-<translation id="6827236167376090743">Tätä videota näytetään niin kauan, kunnes lehmät tulevat kotiin.</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> poistettiin valinnasta.</translation>
 <translation id="6856459657722366306">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /> %, lisätietoja</translation>
 <translation id="6861394552169064235">persia</translation>
@@ -738,6 +734,7 @@
 <translation id="7309413087278791451">saksa (Belgia)</translation>
 <translation id="7339898014177206373">Uusi ikkuna</translation>
 <translation id="7343393116438664539">vietnam (telex)</translation>
+<translation id="7357762654218998920">Tätä tiedostotyyppiä ei tueta. <ph name="BEGIN_LINK_HELP" />Lue lisää<ph name="END_LINK_HELP" /> tiedostojen avaamisesta Chrome-käyttöjärjestelmällä.</translation>
 <translation id="7359359531237882347">Kopioidaan <ph name="NUMBER_OF_ITEMS" /> kohdetta…</translation>
 <translation id="7375951387215729722">Tiedostoluettelo lajiteltu laskevassa järjestyksessä (<ph name="COLUMN_NAME" />).</translation>
 <translation id="7402503521691663770">ChromeOS Flex ‑laitteet</translation>
@@ -809,7 +806,6 @@
 <translation id="7857117644404132472">Lisää poikkeus</translation>
 <translation id="7868774406711971383">puola</translation>
 <translation id="7874321682039004450">filipino</translation>
-<translation id="7881969471599061635">Poista tekstitykset käytöstä</translation>
 <translation id="78946041517601018">Jaetut Drivet</translation>
 <translation id="7908793776359722643">Osion alustaminen poistaa kaiken sille tallennetun datan. Tätä toimintoa ei voi kumota.</translation>
 <translation id="7925247922861151263">AAA-testi epäonnistui</translation>
@@ -886,7 +882,6 @@
 <translation id="8492972329130824181">Kotiverkko ei ole käytettävissä. Yhteyden muodostaminen edellyttää roamingia.</translation>
 <translation id="8499098729323186194">Puretaan <ph name="NUMBER_OF_ITEMS" /> kohdetta…</translation>
 <translation id="8521441079177373948">UK</translation>
-<translation id="8525306231823319788">Koko näyttö</translation>
 <translation id="853494022971700746">ranska (Ranska)</translation>
 <translation id="8540608333167683902">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, lisätietoja</translation>
 <translation id="8545476925160229291">englanti (Yhdysvallat)</translation>

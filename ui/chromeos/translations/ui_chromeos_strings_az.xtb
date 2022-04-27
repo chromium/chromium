@@ -199,8 +199,6 @@
 <translation id="2649120831653069427">Göyqurşaqlı balıq</translation>
 <translation id="2663066752008346276">Myansan klaviaturası ilə Birma/Myanma dili</translation>
 <translation id="2664412712123763093">Faylın yeri</translation>
-<translation id="2672394958563893062">Xəta oldu. Əvvəldən başlamaq üçün klikləyin.</translation>
-<translation id="2676946222714718093">Playing</translation>
 <translation id="2718540689505416944">Linux ilə tətbiqi quraşdırın</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Detallar</translation>
 <translation id="2724954091494693138">F klaviaturası ilə Türk dili</translation>
@@ -342,7 +340,6 @@
 <translation id="3901991538546252627"><ph name="NAME" /> qoşulur</translation>
 <translation id="3906232975181435906">Mobil profil quraşdırılır, Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Burada oxudun:</translation>
 <translation id="3943857333388298514">Yapışdırın.</translation>
 <translation id="3952872973865944257">Teluqu (Fonetik)</translation>
 <translation id="3958548648197196644">Kivi</translation>
@@ -414,7 +411,6 @@
 <translation id="4631887759990505102">Artist</translation>
 <translation id="4642769377300286600">Mobil profil quraşdırılır, Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Qwerty klaviaturası ilə Çex dili</translation>
-<translation id="4656293982926141856">Bu kompüter</translation>
 <translation id="4656777537938206294">Faylları oflayn əlçatan edin</translation>
 <translation id="4658782175094886150">Qarda adam</translation>
 <translation id="4669606053856530811">"<ph name="SOURCE_NAME" />" bu element onlarla paylaşılmadığı halda, daxil ola bilməyəcəklər.</translation>
@@ -431,7 +427,6 @@
 <translation id="4720185134442950733">Mobil data şəbəkəsi</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> foto yedəkləndi</translation>
 <translation id="4725511304875193254">Korqi</translation>
-<translation id="4732760563705710320">Üzr istəyirik, bu video yayım cihazınız tərəfindən dəstəklənmir.</translation>
 <translation id="4737050008115666127">Eniş</translation>
 <translation id="4747271164117300400">Makedoniya</translation>
 <translation id="4759238208242260848">Endirmələr</translation>
@@ -621,7 +616,6 @@
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> cihazını format edin</translation>
 <translation id="6227235786875481728">Bu fayl oynadıla bilmədi.</translation>
 <translation id="6241349547798190358">Holland dili (Belçika)</translation>
-<translation id="6248400709929739064">Subtitri aktiv edin</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="PHONE_NAME" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Telefonun Batareyası <ph name="BATTERY_STATUS" />%, Qoşulun</translation>
 <translation id="6269630227984243955">Malay</translation>
 <translation id="6287852322318138013">Bu faylı açmaq üçün bir tətbiq seçin</translation>
@@ -639,7 +633,6 @@
 <translation id="637062427944097960">Bu fayl başqa masaüstündə açıldı. Ona baxmaq üçün <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) köçürün.</translation>
 <translation id="6394388407447716302">Yalnız oxunan</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> element</translation>
-<translation id="6398765197997659313">Tam ekrandan çıxın</translation>
 <translation id="642282551015776456">Bu ad qovluq adının faylı kimi istifadə edilə bilməz</translation>
 <translation id="6423031066725912715">TCVN klaviaturası ilə Vyetnam dili</translation>
 <translation id="6485131920355264772">Boşluq infosunu əldə etmək alınmadı</translation>
@@ -675,7 +668,6 @@
 <translation id="6820687829547641339">Gzip sıxılmış tar arxivi</translation>
 <translation id="6823166707458800069">Bu qovluqda saxlanan bütün fayllar avtomatik olaraq onlayn yedəklənir.</translation>
 <translation id="6825883775269213504">Rus</translation>
-<translation id="6827236167376090743">Bu video uzun müddət ərzində göstəriləcək.</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> seçimdən silindi.</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Detallar</translation>
 <translation id="6861394552169064235">Fars</translation>
@@ -811,7 +803,6 @@
 <translation id="7857117644404132472">İstisna əlavə edin</translation>
 <translation id="7868774406711971383">Polyak</translation>
 <translation id="7874321682039004450">Filippin</translation>
-<translation id="7881969471599061635">Subtitri deaktiv edin</translation>
 <translation id="78946041517601018">Paylaşılmış disklər</translation>
 <translation id="7908793776359722643">Hissənin format edilməsi ilə orada saxlanılan bütün data silinəcək. Bu əməliyyat geri qaytarıla bilməz.</translation>
 <translation id="7925247922861151263">AAA yoxlanışı uğursuz oldu</translation>
@@ -888,7 +879,6 @@
 <translation id="8492972329130824181">Ev şəbəkəsi əlçatan deyil. Qoşulmaq üçün mobil data rouminqi aktiv edilməlidir.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> element çıxarılır...</translation>
 <translation id="8521441079177373948">Böyük Britaniya</translation>
-<translation id="8525306231823319788">Tam ekran</translation>
 <translation id="853494022971700746">Fransız (Fransa)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Detallar</translation>
 <translation id="8545476925160229291">İngilis (ABŞ)</translation>

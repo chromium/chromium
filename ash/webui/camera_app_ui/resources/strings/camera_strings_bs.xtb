@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
 <translation id="1113173431709655881">Način rada kamere</translation>
+<translation id="1153190633558910465">Rešetka je isključena</translation>
 <translation id="1175958423215084756">Link je otkriven. <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">Rotiranje 90 stepeni udesno</translation>
 <translation id="1276998909102132017">Slike iz Galerije</translation>
 <translation id="1300209025925956156">Skenirajte dokument</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Za pristup pritisnite Pretraživanje + strelicu ulijevo.</translation>
+<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">Štampaj</translation>
 <translation id="1467231725790366244">Kamera <ph name="CAMERA" /> je isključena iz uređaja.</translation>
 <translation id="1473110567575736769">Tajmer za 3 sekunde</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">Trajanje tajmera</translation>
 <translation id="2050339315714019657">Uspravno</translation>
 <translation id="2064538373111010176">Kamera <ph name="CAMERA" /> je aktivna</translation>
+<translation id="2134029355740465625">Postavke videozapisa</translation>
 <translation id="2144806332417375165">Prilagođeni parametri videozapisa</translation>
 <translation id="2175927920773552910">QR kôd</translation>
 <translation id="2271433936731426666">Omogući pregled videozapisa pune veličine</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">Zadnja kamera</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Vrsta skeniranja</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">Pregled preslikavanja</translation>
 <translation id="2879583609344924966">Kamera <ph name="CAMERA" /> je priključena.</translation>
 <translation id="2968794441791257519">Fotografije i videozapisi snimljeni kamerom premjestit će se u folder Preuzimanja. Možete im pristupiti u aplikaciji Files.
 
@@ -52,6 +57,8 @@
 <translation id="3240426699337459095">Link je kopiran</translation>
 <translation id="3259149966178251584">Rezolucija kamere</translation>
 <translation id="3305962767867348165">Ispravi</translation>
+<translation id="3354465018370944241">Postavke fotografije</translation>
+<translation id="3411958449466169012">Tajmer je isključen</translation>
 <translation id="3448774564454087943">Videozapis nije sačuvan jer je prekratak</translation>
 <translation id="346539236881580388">Ponovo snimi</translation>
 <translation id="3517926952904427380">Snimanje uspravne fotografije nije uspjelo</translation>
@@ -63,9 +70,12 @@
 <translation id="3810838688059735925">Videozapis</translation>
 <translation id="3838931309141338733">Skeniraj bar kôd</translation>
 <translation id="3892148308691398805">Kopiraj tekst</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pauziraj snimanje</translation>
 <translation id="4121305183798804752">Otkriven je dokument</translation>
+<translation id="414641094616694804">Nije moguće promijeniti rezoluciju ove kamere</translation>
 <translation id="4269820728363426813">Kopiraj adresu linka</translation>
+<translation id="4281620174117014503">Srednja rezolucija</translation>
 <translation id="4329152592498422850">Pređi na snimanje kvadratne fotografije</translation>
 <translation id="4383571725254449280">Zapisnici o radu štampača</translation>
 <translation id="4445542136948522167">Zaustavi fotografiranje</translation>
@@ -74,12 +84,15 @@
 <translation id="4628948037717959914">Fotografija</translation>
 <translation id="4649291346448517080">Nije moguće sačuvati fajl</translation>
 <translation id="4695379108709712600">Pomjeranje nagore</translation>
+<translation id="4705093842003735294">Puna rezolucija</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Snimanje videozapisa s više prijenosa</translation>
+<translation id="5034763830503483128">Omjer formata fotografije</translation>
 <translation id="5057360777601936059">Kamera je trenutno nedostupna.
         Provjerite je li kamera pravilno povezana.</translation>
 <translation id="5163387177077603948">Pomjeranje udesno</translation>
 <translation id="520537883758714667">Skeniranje dokumenta je sada dostupno</translation>
+<translation id="5235304959032763950">16 naprema 9</translation>
 <translation id="5266635337630551423">Gornji lijevi ugao dokumenta</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5320594929574852403">Pomjeranje ulijevo</translation>
@@ -94,6 +107,7 @@
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5975083100439434680">Smanji</translation>
 <translation id="5976160379964388480">Ostalo</translation>
+<translation id="603973421174355542">Full HD</translation>
 <translation id="6073451960410192870">Zaustavi snimanje</translation>
 <translation id="6197807149213783179">Sačuvaj metapodatke</translation>
 <translation id="6233780560267770709">3 sa 3</translation>
@@ -104,6 +118,7 @@
 Ako se vaše povratne informacije odnose na kvalitet slike ili videozapisa, priložite uzorak fotografije ili videozapisa i opišite šta nije uredu. (Naprimjer, fotografija je suviše tamna ili subjekt nije u fokusu.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapiksela</translation>
 <translation id="6527303717912515753">Dijeli</translation>
+<translation id="6631515515009660915">Preslikavanje je isključeno</translation>
 <translation id="6652737148136672975">Pomjeranje položaja ugla tipkama sa strelicama</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6681668084120808868">Snimi fotografiju</translation>
@@ -114,6 +129,7 @@ Ako se vaše povratne informacije odnose na kvalitet slike ili videozapisa, pril
 <translation id="698156982839284926">3 sekunde</translation>
 <translation id="712848772518857951">Jeste li sigurni da želite ukloniti sljedeći broj stavki: <ph name="COUNT" />?</translation>
 <translation id="7134221860976209830">Tajmer za 10 sekundi</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Vrsta snimanja</translation>
 <translation id="7243947652761655814">Rezolucija videozapisa</translation>
 <translation id="7337660886763914220">Greške sistema fajlova.</translation>
@@ -146,9 +162,11 @@ Ako se vaše povratne informacije odnose na kvalitet slike ili videozapisa, pril
 <translation id="8815966864175525708">Prijeđi na snimanje portretne fotografije</translation>
 <translation id="8828441885228359828">Nastavi snimanje</translation>
 <translation id="8870695351537079478">Nije moguće pokrenuti snimanje</translation>
+<translation id="8880167521484863515">4 naprema 3</translation>
 <translation id="8903921497873541725">Uvećaj</translation>
 <translation id="9045010116236796332">Postavite sve ivice dokumenta unutar okvira</translation>
 <translation id="9045155556724273246">10 sekundi</translation>
 <translation id="906331135292332864">Obrađivanje slike...</translation>
+<translation id="922762992951083513">Preslikavanje je uključeno</translation>
 <translation id="945522503751344254">Pošaljite povratne informacije</translation>
 </translationbundle>

@@ -42,6 +42,7 @@
 <translation id="1394661041439318933">यो डिभाइसको केसमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="1397738625398125236">गेटवे पिङ गर्न सकिन्छ</translation>
 <translation id="1398634363027580500">HTTPS को विलम्बता अति धेरै छ</translation>
+<translation id="1407069428457324124">अँध्यारो थिम</translation>
 <translation id="1413240736185167732">प्रिन्ट गर्न सकिएन - फिल्टरमा समस्या आयो</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">मसँग किपेयर छ</translation>
@@ -63,6 +64,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> अपडेट गर्न सकिएन</translation>
 <translation id="1567064801249837505">एल्बमहरू</translation>
 <translation id="1572585716423026576">वालपेपरका रूपमा सेट गर्नुहोस्</translation>
+<translation id="1578784163189013834">स्क्रिन सेभरको ब्याकग्राउन्ड चयन गर्नुहोस्</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> देखि प्रयोग गरिएको डेटा</translation>
 <translation id="1621067168122174824">ब्याट्रीको चार्जसम्बन्धी परीक्षण गर्नुहोस्</translation>
 <translation id="1639239467298939599">लोड गर्दै</translation>
@@ -85,12 +87,15 @@
 <translation id="1768959921651994223">प्रमाणीकरणको प्रकार</translation>
 <translation id="1782199038061388045">अनुवाद</translation>
 <translation id="1792647875738159689">स्क्यान गर्ने कार्य रद्द गरिँदै छ</translation>
+<translation id="1801418420130173017">अँध्यारो थिम अफ गर्नुहोस्</translation>
 <translation id="1807246157184219062">हल्का</translation>
 <translation id="1827738518074806965">आर्ट ग्यालेरी</translation>
 <translation id="1851218745569890714">भिडियो कन्फ्रेन्स</translation>
 <translation id="1852934301711881861">ChromeOS Flex इन्स्टल गर्नुहोस्</translation>
 <translation id="1856388568474281774">डाउन एरो</translation>
+<translation id="1871569928317311284">अँध्यारो थिम अफ गर्नुहोस्‌</translation>
 <translation id="1874612839560830905">MTU</translation>
+<translation id="188114911237521550">अँध्यारो मोड अफ गर्नुहोस्</translation>
 <translation id="1887850431809612466">हार्डवेयरको पुनरावृत्ति</translation>
 <translation id="1905710495812624430">अनुमति दिइएका प्रयासहरूको अधिकतम संख्या नाघ्यो।</translation>
 <translation id="1908234395526491708">UDP सम्बन्धी अनुरोध गर्न सकिएन</translation>
@@ -115,6 +120,7 @@
 <translation id="2157959690810728433">लाइनमा राखिएको छ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: फेरि प्रयास गर्नुहोस्</translation>
 <translation id="2161394479394250669">प्रिन्ट गर्ने कार्य रद्द गर्नुहोस्</translation>
+<translation id="2163937499206714165">अँध्यारो मोड अन गर्नुहोस्</translation>
 <translation id="2180197493692062006">केही चिज गडबड भयो। यो एप फेरि खोली हेर्नुहोस्।</translation>
 <translation id="2209788852729124853">ट्राफिक काउन्टर रिसेट गर्नुहोस्</translation>
 <translation id="2212733584906323460">नेम रिजोल्युसन</translation>
@@ -126,8 +132,10 @@
 <translation id="2236746079896696523">किबोर्डको ब्याकलाइट अन/अफ गर्ने की</translation>
 <translation id="2240366984605217732">लेआउट बदल्ने की</translation>
 <translation id="225692081236532131">सक्रियताको वस्तुस्थिति</translation>
+<translation id="2271469253353559191">अँध्यारो मोडको समयतालिका</translation>
 <translation id="2287186687001756809">कुनै पनि फोटो छैन। तपाईं फोटो हाल्न चाहनुहुन्छ भने <ph name="LINK" /> मा जानुहोस्</translation>
 <translation id="2307344026739914387">हालको किपेयर प्रयोग गर्नुहोस्</translation>
+<translation id="2320295602967756579">उज्यालो थिम अन गर्नुहोस्</translation>
 <translation id="2323506179655536734">स्किप गरिएको छ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">नजिकैका डिभाइसहरू पत्ता लगाउन ब्लुटुथ अन गर्नुहोस्</translation>
@@ -147,13 +155,16 @@
 <translation id="2493126929778606526">स्वतः चयन गरिएका तपाईंका उत्कृष्ट फोटोहरू</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">हालको वालपेपर रिफ्रेस गर्नुहोस्</translation>
+<translation id="2513396635448525189">प्रोफाइल फोटो</translation>
 <translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
+<translation id="2526590354069164005">डेस्कटप</translation>
 <translation id="253029298928638905">रिस्टार्ट गरिँदै छ...</translation>
 <translation id="2536159006530886390">इन्टरनेटमा कनेक्ट हुन सकेन।</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> परीक्षण गरिँदै छ...</translation>
 <translation id="2584559707064218956">नेटवर्क सेटअप गर्न सेटिङमा जानुहोस्</translation>
 <translation id="2619761439309613843">दैनिक पुनः ताजा गर्नुहोस्</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
+<translation id="2638662041295312666">प्रोफाइल फोटो</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> एल्बम चयन गरियो</translation>
 <translation id="2695514675076754339">८ वर्णको अनलक कोड हाल्नुहोस्</translation>
 <translation id="2712812801627182647">TLS प्रमाणीकरण की</translation>
@@ -173,11 +184,13 @@
 <translation id="2926057806159140518">आफ्नो युजरनेम र पासवर्ड हाल्नुहोस् वा आफ्नो QR कोड स्क्यान गर्नुहोस्</translation>
 <translation id="3008341117444806826">पुनः ताजा गर्नुहोस्</translation>
 <translation id="3009958530611748826">सुरक्षित गर्न कुनै फोल्डर चयन गर्नुहोस्</translation>
+<translation id="3017079585324758401">पृष्ठभूमि</translation>
 <translation id="3031560714565892478">यो डिभाइस भिडियो क्यामेरा हो।</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">इन्डपोइन्ट</translation>
 <translation id="3069085583900247081">परीक्षण गर्न सकिएन</translation>
 <translation id="3083667275341675831">कनेक्टिभिटी डाइगोनेस्टिक्स</translation>
+<translation id="3084958266922136097">स्क्रिन सेभर असक्षम पार्नुहोस्</translation>
 <translation id="3091839911843451378">प्रिन्ट गर्न सकिएन - प्रिन्ट गर्दा गर्दै रोकियो</translation>
 <translation id="3102119246920354026">केस</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -201,6 +214,7 @@
 <translation id="3340011300870565703">यो डिभाइसको दायाँपट्टिको बडमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="3368922792935385530">जडित</translation>
 <translation id="3369013195428705271">आफूले गरेका प्रिन्टको सबै इतिहास मेटाउन खोज्नुभएकै हो? भइरहेका प्रिन्टिङ कार्यहरू मेटाइने छैनन्।</translation>
+<translation id="3404249063913988450">स्क्रिन सेभर सक्षम पार्नुहोस्</translation>
 <translation id="3413935475507503304">तपाईं यो अपडेट प्राप्त गर्न चाहनुहुन्छ भने अर्को नामक बटन क्लिक गर्नुहोस्।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">सुरक्षा</translation>
@@ -215,6 +229,7 @@
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> मिनेट जति बाँकी छ</translation>
 <translation id="3557205324756024651">लोकल आइडेन्टिटी (ऐच्छिक)</translation>
 <translation id="3565064564551103223">अनुमति दिइएका IP</translation>
+<translation id="3569407787324516067">स्क्रिन सेभर</translation>
 <translation id="3577473026931028326">केही चिज गडबड भयो। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="357889014807611375">मिटर चढ्ने Wi-Fi</translation>
 <translation id="3583278742022654445">सिग्नल कमजोर छ। Wi-Fi सिग्नलको स्रोतको नजिक गई हेर्नुहोस्।</translation>
@@ -249,6 +264,7 @@
 <translation id="3954678691475912818">यो डिभाइस कुन प्रकारको डिभाइस हो भन्ने जानकारी उपलब्ध छैन।</translation>
 <translation id="3966286471246132217">अझ सटीक परिणामहरू प्राप्त गर्न जाँच पूरा नहुँदासम्म सबै एप बन्द राख्नुहोस्।</translation>
 <translation id="3967822245660637423">डाउनलोड पूर्ण भयो</translation>
+<translation id="3969602104473960991">ChromeOS को पासवर्ड परिवर्तन गरिएको छ</translation>
 <translation id="397105322502079400">हिसाब गर्दै...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> दिनभन्दा पहिलेका प्रिन्टसम्बन्धी कार्यहरू हटाइने छ</translation>
 <translation id="3993704782688964914">तपाईंको <ph name="DEVICE_NAME" /> अप टु डेट छ</translation>
@@ -257,9 +273,11 @@
 <translation id="4044093238444069296">गेटवेमा सम्पर्क गर्न सकिएन</translation>
 <translation id="4046123991198612571">अर्को ट्र्याक</translation>
 <translation id="404928562651467259">चेतावनी</translation>
+<translation id="4093865285251893588">प्रोफाइल फोटो</translation>
 <translation id="409427325554347132">जाँचसम्बन्धी विवरण सेभ गर्नुहोस्</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> एल्बम चयन गर्नुहोस्</translation>
 <translation id="4111761024568264522">USB टचप्याड</translation>
+<translation id="4117637339509843559">अँध्यारो मोड</translation>
 <translation id="4131410914670010031">कालो र सेतो</translation>
 <translation id="4140251671072434548">RMA सर्भर अनलक गर्नुहोस्</translation>
 <translation id="4145784616224233563">HTTP फायरवाल</translation>
@@ -269,6 +287,7 @@
 <translation id="4170700058716978431">असफल भयो</translation>
 <translation id="4176463684765177261">असक्षम गरिएको</translation>
 <translation id="4176659219503619100">कन्ट्रोल प्यानल</translation>
+<translation id="420283545744377356">स्क्रिन सेभर अफ गर्नुहोस्</translation>
 <translation id="4213104098953699324">USB किबोर्ड</translation>
 <translation id="4227825898293920515">पासवर्डको म्याद <ph name="TIME" /> मा सकिन्छ</translation>
 <translation id="4238516577297848345">प्रिन्टसम्बन्धी कुनै पनि काम भइरहेको छैन</translation>
@@ -331,6 +350,7 @@
 <translation id="4793756956024303490">कम्प्रेसनसम्बन्धी एल्गोरिदम</translation>
 <translation id="4794140124556169553">तपाईंले CPU को जाँच गर्नुभयो भने तपाईंको प्रणालीको कार्यसम्पादनमा असर पर्न सक्छ</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> प्रिन्ट गर्ने कार्य रद्द गरियो</translation>
+<translation id="4809927044794281115">उज्यालो थिम</translation>
 <translation id="4813136279048157860">मेरा फोटो</translation>
 <translation id="4813345808229079766">जडान</translation>
 <translation id="4832079907277790330">Files एप खोलेर कुनै फोल्डर चयन गर्नु...</translation>
@@ -377,6 +397,7 @@
 <translation id="5212543919916444558">मैले तपाईंको स्क्रिनमा आफूले मद्दत गर्न मिल्ने कुनै पनि कुरा फेला पार्न सकिन। मलाई केही कुरा सोध्न माइकमा ट्याप गरी हेर्नुहोस्।</translation>
 <translation id="5212593641110061691">ट्याब्लोइड</translation>
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>
+<translation id="5227902338748591677">अँध्यारो थिमको समयतालिका</translation>
 <translation id="5234764350956374838">खारेज गर्नुहोस्</translation>
 <translation id="5252456968953390977">रोमिङ</translation>
 <translation id="5257811368506016604">उज्यालो रङ मोड अन गर्नुहोस्</translation>
@@ -397,6 +418,7 @@
 <translation id="5346687412805619883">स्थानीय नेटवर्क</translation>
 <translation id="5358174242040570474">केही चिज गडबड भयो। फेरि कुनै वालपेपर छनौट गरी हेर्नुहोस् वा यो एप पुनः खोल्नुहोस्।</translation>
 <translation id="5372659122375744710">WiFi नेटवर्क सुरक्षित छैन</translation>
+<translation id="5376354385557966694">स्वचालित उज्यालो मोड</translation>
 <translation id="5400907029458559844">डिभाइस कनेक्ट गरिँदै छ।</translation>
 <translation id="5401938042319910061">सबै रुटिनहरू चलाउनुहोस्</translation>
 <translation id="5423849171846380976">सक्रिय भयो</translation>
@@ -432,6 +454,7 @@
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5843706793424741864">फरेनहाइट</translation>
 <translation id="5849570051105887917">गृहपृष्ठ प्रदायकको कोड</translation>
+<translation id="5859603669299126575">आर्ट ग्यालेरी एल्बम</translation>
 <translation id="5860033963881614850">बन्द</translation>
 <translation id="5860491529813859533">अन गर्नुहोस्</translation>
 <translation id="5866840822086176774">अत्यन्त बलियो</translation>
@@ -462,6 +485,7 @@
 <translation id="6113701710518389813">अप एरो</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, थप <ph name="NUMBER" /> एल्बमहरू</translation>
 <translation id="6122191549521593678">अनलाइन</translation>
+<translation id="6122277663991249694">ChromeOS को इनपुट विधिसम्बन्धी सेवा</translation>
 <translation id="6137767437444130246">प्रयोगकर्ताको प्रमाणपत्र</translation>
 <translation id="6146993107019042706">यो कार्य पूरा गर्न आफ्नो नयाँ पासवर्ड प्रविष्टि गर्नुहोस्</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -477,11 +501,15 @@
 <translation id="6275224645089671689">राइट एरो</translation>
 <translation id="6278428485366576908">विषयवस्तु</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6284632978374966585">अँध्यारो थिम अन गर्नुहोस्‌</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> परीक्षण रद्द गरिएको छ</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> को फर्मवेयर अपडेट गर्नुहोस्</translation>
+<translation id="6321407676395378991">स्क्रिन सेभर अन गर्नुहोस्</translation>
 <translation id="6325525973963619867">चलाउन सकिएन</translation>
+<translation id="6331191339300272798">स्वचालित अँध्यारो थिम</translation>
 <translation id="6340526405444716530">वैयक्तीकरण</translation>
 <translation id="6348738456043757611">युजरनेम र पासवर्ड</translation>
+<translation id="6359706544163531585">उज्यालो थिम अफ गर्नुहोस्</translation>
 <translation id="636850387210749493">उद्यम भर्ना</translation>
 <translation id="6379086450106841622">टचस्क्रिन</translation>
 <translation id="6381741036071372448">आफ्नो किबोर्ड जाँच्नुहोस्</translation>
@@ -556,6 +584,7 @@
 <translation id="714876143603641390">Lan कनेक्टिभिटी</translation>
 <translation id="7155171745945906037">क्यामेरा वा फाइलको विद्यमान तस्बिर</translation>
 <translation id="7162487448488904999">Gallery</translation>
+<translation id="7170236477717446850">प्रोफाइल तस्बिर</translation>
 <translation id="7172721935181587524">एउटा फोटो छ</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> कन्फिगर गर्नुहोस्</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> ले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ। एड्मिनहरू टाढैबाट यो डिभाइस कन्फिगर गर्न सक्छन्।</translation>
@@ -577,6 +606,7 @@
 <translation id="7359657277149375382">फाइलको प्रकार</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378886533986123738">स्क्रिनसेभर बदल्नुहोस्</translation>
+<translation id="7397270852490618635">उज्यालो थिम अफ गर्नुहोस्</translation>
 <translation id="741244894080940828">रूपान्तरण</translation>
 <translation id="7415801143053185905">HTTP को विलम्बता अति धेरै छ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -588,6 +618,7 @@
 <translation id="7497215489070763236">सर्भरको CA को सर्टिफिकेट</translation>
 <translation id="7502658306369382406">IPv6 ठेगाना</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7535791657097741517">उज्यालो थिम अन गर्नुहोस्</translation>
 <translation id="7550715992156305117">डायग्नोस्टिक रुटिनहरू</translation>
 <translation id="7551123448725492271">यो डिभाइस अडियो डिभाइस हो।</translation>
 <translation id="7561454561030345039">यो कार्य तपाईंका एड्मिनले व्यवस्थापन गर्नुभएको छ</translation>
@@ -609,11 +640,14 @@
 <translation id="7763470514545477072">डोमेन सफिक्ससँग मिल्दोजुल्दो</translation>
 <translation id="7769672763586021400">मोडेलको ID</translation>
 <translation id="7784116172884276937">कुनै पनि DNS सर्भर सेटअप गरिएको छैन</translation>
+<translation id="7799817062559422778">उज्यालो मोड</translation>
 <translation id="780301667611848630">भयो, धन्यवाद</translation>
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7819857487979277519">PSK (WPA वा RSN)</translation>
+<translation id="7841134249932030522">अँध्यारो मोड अन गर्नुहोस्</translation>
 <translation id="7846634333498149051">किबोर्ड</translation>
 <translation id="7856267634822906833">ब्लुटुथ भएको टचस्क्रिन</translation>
+<translation id="7869143217755017858">अँध्यारो मोड अफ गर्नुहोस्</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">प्रदायकको प्रकार</translation>
 <translation id="7882501334836096755">सार्वजनिक की</translation>
@@ -653,6 +687,7 @@
 <translation id="8297006494302853456">कमजोर</translation>
 <translation id="8302368968391049045">HTTPS फायरवाल</translation>
 <translation id="8318753676953949627">कुनै पनि फोटो छैन</translation>
+<translation id="8336739000755212683">यन्त्रको खाताको छवि बदल्नुहोस्</translation>
 <translation id="8347227221149377169">प्रिन्टसम्बन्धी कार्यहरू</translation>
 <translation id="8352772353338965963">बहुविध साइन-इन को लागि एउटा खाता थप्नुहोस्। सबै साइन-इन भएका खाताहरू पासवर्ड विना नै पहुँच गर्न सकिन्छ, त्यसैले यो सुविधा विश्वसनीय खाताहरूसँग मात्रै प्रयोग गर्नुपर्छ।</translation>
 <translation id="8364946094152050673">डोमेन नेम सर्भरहरू खाली छन्</translation>
@@ -661,8 +696,10 @@
 <translation id="8398927464629426868">यन्त्र हाल चार्ज वा डिस्चार्ज भइरहेको दर</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">इन्टर्नल किबोर्ड</translation>
+<translation id="8431300646573772016">ChromeOS मा नयाँ के छ</translation>
 <translation id="843568408673868420">इन्टरनेट कनेक्सन</translation>
 <translation id="844521431886043384">DNS सेट अप गरिएको छैन</translation>
+<translation id="8456761643544401578">स्वचालित अँध्यारो मोड</translation>
 <translation id="8461329675984532579">गृह प्रदायकको नाम</translation>
 <translation id="8475690821716466388">WiFi नेटवर्क WEP PSK नामक कमजोर प्रोटोकोल प्रयोग गरी सुरक्षित गरिएको छ</translation>
 <translation id="8477551185774834963">DNS को विलम्बता तोकिएको समयसीमाभन्दा थोरै बढी छ</translation>
@@ -689,6 +726,7 @@
 <translation id="8730621377337864115">गरियो</translation>
 <translation id="8747900814994928677">परिवर्तनको पुष्टि गर्नुहोस्</translation>
 <translation id="8764414543112028321">WireGuard</translation>
+<translation id="87646919272181953">Google Photos को एल्बम</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">यो नेटवर्कमा कुनै क्याप्टिभ पोर्टल हुन सक्छ</translation>
 <translation id="8798099450830957504">डिफल्ट</translation>
@@ -698,6 +736,7 @@
 <translation id="8834539327799336565">हाल कनेक्ट गरिएका डिभाइस</translation>
 <translation id="8845001906332463065">मद्दत प्राप्त गर्नुहोस्</translation>
 <translation id="8855781559874488009">फायरवाल पार गरेर HTTP वेबसाइटहरूमा कनेक्ट गर्न सकिएन</translation>
+<translation id="8863170912498892583">अँध्यारो थिम अन गर्नुहोस्</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" को <ph name="INTENT" /> र अन्य कुरा हेर्नुहोस्</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">यो डिभाइस ट्याब्लेट हो।</translation>

@@ -42,6 +42,7 @@
 <translation id="1394661041439318933">Cihazın kılıf pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
 <translation id="1397738625398125236">Ağ geçidi için Ping Testi çalıştırılabilir</translation>
 <translation id="1398634363027580500">Çok yüksek HTTPS gecikmesi</translation>
+<translation id="1407069428457324124">Koyu tema</translation>
 <translation id="1413240736185167732">İşlem başarısız - Filtre başarısız</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Anahtar çiftim var</translation>
@@ -63,6 +64,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> güncellenemiyor</translation>
 <translation id="1567064801249837505">Albümler</translation>
 <translation id="1572585716423026576">Duvar kağıdı yap</translation>
+<translation id="1578784163189013834">Ekran koruyucu arka planı seç</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> sonrası veri kullanımı</translation>
 <translation id="1621067168122174824">Şarj testini çalıştır</translation>
 <translation id="1639239467298939599">Yükleniyor</translation>
@@ -85,12 +87,15 @@
 <translation id="1768959921651994223">Kimlik doğrulama türü</translation>
 <translation id="1782199038061388045">çeviri</translation>
 <translation id="1792647875738159689">Tarama iptal ediliyor</translation>
+<translation id="1801418420130173017">Koyu temayı devre dışı bırak</translation>
 <translation id="1807246157184219062">Açık</translation>
 <translation id="1827738518074806965">Sanat galerisi</translation>
 <translation id="1851218745569890714">Video Konferansı</translation>
 <translation id="1852934301711881861">ChromeOS Flex'i yükle</translation>
 <translation id="1856388568474281774">Aşağı ok</translation>
+<translation id="1871569928317311284">Koyu temayı kapat</translation>
 <translation id="1874612839560830905">MTU</translation>
+<translation id="188114911237521550">Koyu modu kapat</translation>
 <translation id="1887850431809612466">Donanım düzeltmesi</translation>
 <translation id="1905710495812624430">İzin verilen maksimum deneme sayısı aşıldı.</translation>
 <translation id="1908234395526491708">UDP istek hataları</translation>
@@ -115,6 +120,7 @@
 <translation id="2157959690810728433">SIRAYA ALINDI</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Yeniden dene</translation>
 <translation id="2161394479394250669">Yazdırma işini iptal et</translation>
+<translation id="2163937499206714165">Koyu modu aç</translation>
 <translation id="2180197493692062006">Bir sorun oldu. Uygulamayı yeniden açmayı deneyin.</translation>
 <translation id="2209788852729124853">Trafik Sayaçlarını Sıfırla</translation>
 <translation id="2212733584906323460">Ad Çözümlemesi</translation>
@@ -126,8 +132,10 @@
 <translation id="2236746079896696523">Klavye arka ışığını açma/kapatma</translation>
 <translation id="2240366984605217732">Düzeni değiştir</translation>
 <translation id="225692081236532131">Etkinleştirme durumu</translation>
+<translation id="2271469253353559191">Koyu mod programı</translation>
 <translation id="2287186687001756809">Resim yok. Fotoğraf eklemek için <ph name="LINK" /> adresine gidin</translation>
 <translation id="2307344026739914387">Mevcut anahtar çiftini kullanın</translation>
+<translation id="2320295602967756579">Açık temayı etkinleştir</translation>
 <translation id="2323506179655536734">ATLANDI</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Yakındaki cihazları keşfetmek için Bluetooth'u aç</translation>
@@ -147,13 +155,16 @@
 <translation id="2493126929778606526">Otomatik olarak seçilen en iyi fotoğraflarınız</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" />, <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Mevcut duvar kağıdı resmini yenile</translation>
+<translation id="2513396635448525189">Giriş resmi</translation>
 <translation id="2517472476991765520">Tara</translation>
+<translation id="2526590354069164005">Masaüstü</translation>
 <translation id="253029298928638905">Yeniden başlatılıyor…</translation>
 <translation id="2536159006530886390">İnternete bağlanamıyor.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> adlı test çalıştırılıyor...</translation>
 <translation id="2584559707064218956">Kurulum yapmak için Ayarlar'a gidin</translation>
 <translation id="2619761439309613843">Günlük Yenileme</translation>
 <translation id="2620436844016719705">Sistem</translation>
+<translation id="2638662041295312666">Oturum açma resmi</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> albümü seçildi</translation>
 <translation id="2695514675076754339">8 karakterli kilit açma kodunu girin</translation>
 <translation id="2712812801627182647">TLS kimlik doğrulama anahtarı</translation>
@@ -173,11 +184,13 @@
 <translation id="2926057806159140518">Kullanıcı adınızı ve şifrenizi girin ya da QR kodunuzu tarayın</translation>
 <translation id="3008341117444806826">YENİLE</translation>
 <translation id="3009958530611748826">Kaydedilecek bir klasör seçin</translation>
+<translation id="3017079585324758401">Arka plan</translation>
 <translation id="3031560714565892478">Cihazın türü video kamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Uç nokta</translation>
 <translation id="3069085583900247081">Test başarısız oldu</translation>
 <translation id="3083667275341675831">Bağlantı Teşhisi</translation>
+<translation id="3084958266922136097">Ekran koruyucuyu devre dışı bırak</translation>
 <translation id="3091839911843451378">İşlem başarısız - Durdu</translation>
 <translation id="3102119246920354026">Önbellek</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -201,6 +214,7 @@
 <translation id="3340011300870565703">Cihazın sağ kulaklık pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
 <translation id="3368922792935385530">Bağlı</translation>
 <translation id="3369013195428705271">Tüm yazdırma geçmişini temizlemek istediğinizden emin misiniz? Devam eden yazdırma işleriniz silinmez.</translation>
+<translation id="3404249063913988450">Ekran koruyucuyu etkinleştir</translation>
 <translation id="3413935475507503304">Güncelleme işlemine devam etmek için İleri'yi tıklayın.</translation>
 <translation id="3434107140712555581">%<ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="3435738964857648380">Güvenlik</translation>
@@ -215,6 +229,7 @@
 <translation id="3532980081107202182">Yaklaşık <ph name="MIN_REMAINING" /> dakika kaldı</translation>
 <translation id="3557205324756024651">Yerel kimlik (isteğe bağlı)</translation>
 <translation id="3565064564551103223">İzin verilen IP'ler</translation>
+<translation id="3569407787324516067">Ekran koruyucu</translation>
 <translation id="3577473026931028326">Bir sorun oldu. Tekrar deneyin.</translation>
 <translation id="357889014807611375">sayaçlı kablosuz ağ</translation>
 <translation id="3583278742022654445">Düşük sinyal gücü. Kablosuz sinyal kaynağına yaklaşmayı deneyin.</translation>
@@ -249,6 +264,7 @@
 <translation id="3954678691475912818">Cihazın türü bilinmiyor.</translation>
 <translation id="3966286471246132217">Daha doğru sonuçlar için test tamamlanana kadar tüm uygulamaları kapatın.</translation>
 <translation id="3967822245660637423">İndirme tamamlandı</translation>
+<translation id="3969602104473960991">ChromeOS şifresi güncellendi</translation>
 <translation id="397105322502079400">Hesaplanııyor...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> günden eski yazdırma işleri silinir</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> cihazınız artık güncel</translation>
@@ -257,9 +273,11 @@
 <translation id="4044093238444069296">Ağ geçidiyle iletişim kurulamıyor</translation>
 <translation id="4046123991198612571">Sonraki parça</translation>
 <translation id="404928562651467259">UYARI</translation>
+<translation id="4093865285251893588">Profil resmi</translation>
 <translation id="409427325554347132">Test ayrıntılarını kaydet</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> albümünü seçin</translation>
 <translation id="4111761024568264522">USB dokunmatik alan</translation>
+<translation id="4117637339509843559">Koyu mod</translation>
 <translation id="4131410914670010031">Siyah beyaz</translation>
 <translation id="4140251671072434548">RMA Sunucu Kilidini Açma İşlemi Yapın</translation>
 <translation id="4145784616224233563">HTTP Güvenlik Duvarı</translation>
@@ -269,6 +287,7 @@
 <translation id="4170700058716978431">BAŞARISIZ</translation>
 <translation id="4176463684765177261">Devre dışı</translation>
 <translation id="4176659219503619100">Kontrol Paneli</translation>
+<translation id="420283545744377356">Ekran koruyucuyu kapat</translation>
 <translation id="4213104098953699324">USB klavye</translation>
 <translation id="4227825898293920515">Şifrenin süresi <ph name="TIME" /> içinde doluyor</translation>
 <translation id="4238516577297848345">Devam eden bir yazdırma işi yok</translation>
@@ -331,6 +350,7 @@
 <translation id="4793756956024303490">Sıkıştırma algoritması</translation>
 <translation id="4794140124556169553">CPU testi çalıştırmak sisteminizin performansını etkileyebilir</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> yazdırma işi iptal edildi</translation>
+<translation id="4809927044794281115">Açık tema</translation>
 <translation id="4813136279048157860">Görsellerim</translation>
 <translation id="4813345808229079766">Bağlantı</translation>
 <translation id="4832079907277790330">Dosyalar uygulamasında klasör seç...</translation>
@@ -378,6 +398,7 @@
 Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Çıkış</translation>
+<translation id="5227902338748591677">Koyu tema programı</translation>
 <translation id="5234764350956374838">Kapat</translation>
 <translation id="5252456968953390977">Dolaşım</translation>
 <translation id="5257811368506016604">Açık renk modunu etkinleştir</translation>
@@ -398,6 +419,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5346687412805619883">Yerel Ağ</translation>
 <translation id="5358174242040570474">Bir sorun oldu. Tekrar bir duvar kağıdı seçmeyi deneyin veya uygulamayı yeniden açın.</translation>
 <translation id="5372659122375744710">Kablosuz ağ güvenli değil</translation>
+<translation id="5376354385557966694">Otomatik açık mod</translation>
 <translation id="5400907029458559844">Cihaz bağlanıyor.</translation>
 <translation id="5401938042319910061">Tüm Rutinleri Çalıştır</translation>
 <translation id="5423849171846380976">Etkin</translation>
@@ -433,6 +455,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="583281660410589416">Bilinmiyor</translation>
 <translation id="5843706793424741864">Fahrenhayt</translation>
 <translation id="5849570051105887917">Ev sağlayıcı kodu</translation>
+<translation id="5859603669299126575">Sanat galerisi albümü</translation>
 <translation id="5860033963881614850">Kapalı</translation>
 <translation id="5860491529813859533">Etkinleştir</translation>
 <translation id="5866840822086176774">Çok güçlü</translation>
@@ -463,6 +486,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6113701710518389813">Yukarı ok</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> albüm daha</translation>
 <translation id="6122191549521593678">Çevrimiçi</translation>
+<translation id="6122277663991249694">ChromeOS Giriş Yöntemi Hizmeti</translation>
 <translation id="6137767437444130246">Kullanıcı sertifikası</translation>
 <translation id="6146993107019042706">Bitirmek için yeni şifrenizi girin</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -478,11 +502,15 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6275224645089671689">Sağ ok</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6284632978374966585">Koyu temayı aç</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> testi iptal edildi</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> cihazındaki donanım yazılımını güncelleyin</translation>
+<translation id="6321407676395378991">Ekran koruyucuyu aç</translation>
 <translation id="6325525973963619867">Başarısız</translation>
+<translation id="6331191339300272798">Otomatik koyu tema</translation>
 <translation id="6340526405444716530">Kişiselleştirme</translation>
 <translation id="6348738456043757611">Kullanıcı adı ve şifre</translation>
+<translation id="6359706544163531585">Açık temayı devre dışı bırak</translation>
 <translation id="636850387210749493">Kurumsal kayıt</translation>
 <translation id="6379086450106841622">Dokunmatik ekran</translation>
 <translation id="6381741036071372448">Klavyenizi test edin</translation>
@@ -557,6 +585,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="714876143603641390">LAN Bağlantısı</translation>
 <translation id="7155171745945906037">Kameradan veya dosyadan mevcut fotoğraf</translation>
 <translation id="7162487448488904999">Galeri</translation>
+<translation id="7170236477717446850">Profil resmi</translation>
 <translation id="7172721935181587524">1 Resim</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> adlı ağı yapılandırın</translation>
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor. Yöneticiler bu cihazı uzaktan yapılandırabilir.</translation>
@@ -578,6 +607,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7359657277149375382">Dosya türü</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378886533986123738">Ekran koruyucuyu değiştir</translation>
+<translation id="7397270852490618635">Açık temayı kapat</translation>
 <translation id="741244894080940828">dönüştürme</translation>
 <translation id="7415801143053185905">Çok yüksek HTTP gecikmesi</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -589,6 +619,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7497215489070763236">Sunucu CA sertifikası</translation>
 <translation id="7502658306369382406">IPv6 adresi</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7535791657097741517">Açık temayı aç</translation>
 <translation id="7550715992156305117">Teşhis Rutinleri</translation>
 <translation id="7551123448725492271">Cihazın türü ses sistemi.</translation>
 <translation id="7561454561030345039">Bu işlem, yöneticiniz tarafından yönetilir.</translation>
@@ -610,11 +641,14 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7763470514545477072">Alan adı son eki eşleşmesi</translation>
 <translation id="7769672763586021400">Model kimliği</translation>
 <translation id="7784116172884276937">DNS sunucusu ayarlanmamış</translation>
+<translation id="7799817062559422778">Açık mod</translation>
 <translation id="780301667611848630">Hayır, teşekkürler</translation>
 <translation id="7805768142964895445">Durum</translation>
 <translation id="7819857487979277519">PSK (WPA veya RSN)</translation>
+<translation id="7841134249932030522">Koyu modu etkinleştir</translation>
 <translation id="7846634333498149051">Klavye</translation>
 <translation id="7856267634822906833">Bluetooth dokunmatik ekran</translation>
+<translation id="7869143217755017858">Koyu modu devre dışı bırak</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Sağlayıcı türü</translation>
 <translation id="7882501334836096755">Ortak anahtar</translation>
@@ -654,6 +688,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8297006494302853456">Zayıf</translation>
 <translation id="8302368968391049045">HTTPS Güvenlik Duvarı</translation>
 <translation id="8318753676953949627">Resim Yok</translation>
+<translation id="8336739000755212683">Cihaz hesap görüntüsünü değiştir</translation>
 <translation id="8347227221149377169">Yazdırma işleri</translation>
 <translation id="8352772353338965963">Çoklu oturum açmaya bir hesap ekleyin. Oturum açılmış tüm hesaplara şifresiz erişilebileceği için bu özellik sadece güvenilir hesaplarla kullanılmalıdır.</translation>
 <translation id="8364946094152050673">Alan adı sunucuları boş</translation>
@@ -662,8 +697,10 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8398927464629426868">Cihazın şu andaki şarj olma veya şarjının boşalma hızı</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Dahili klavye</translation>
+<translation id="8431300646573772016">ChromeOS yenilikleri</translation>
 <translation id="843568408673868420">İnternet Bağlantısı</translation>
 <translation id="844521431886043384">DNS ayarlanmamış</translation>
+<translation id="8456761643544401578">Otomatik koyu mod</translation>
 <translation id="8461329675984532579">Ev sağlayıcısının adı</translation>
 <translation id="8475690821716466388">Kablosuz ağ, zayıf bir protokol olan WEP PSK ile güvenlik altına alınmış</translation>
 <translation id="8477551185774834963">DNS gecikmesi, izin verilen eşiğin biraz üzerinde</translation>
@@ -690,6 +727,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8730621377337864115">Bitti</translation>
 <translation id="8747900814994928677">Değişikliği onaylayın</translation>
 <translation id="8764414543112028321">WireGuard</translation>
+<translation id="87646919272181953">Google Fotoğraflar albümü</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Bu ağda giriş portalı olabilir</translation>
 <translation id="8798099450830957504">Varsayılan</translation>
@@ -699,6 +737,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8834539327799336565">Şu anda bağlı</translation>
 <translation id="8845001906332463065">Yardım alın</translation>
 <translation id="8855781559874488009">HTTP web sitelerine güvenlik duvarı aracılığıyla bağlanılamıyor</translation>
+<translation id="8863170912498892583">Koyu temayı etkinleştir</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" için <ph name="INTENT" /> ve daha fazlasını alın</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Cihazın türü tablet.</translation>

@@ -42,6 +42,7 @@
 <translation id="1394661041439318933">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in de case.</translation>
 <translation id="1397738625398125236">Gateway kan worden gepingd</translation>
 <translation id="1398634363027580500">Zeer lange HTTPS-latentie</translation>
+<translation id="1407069428457324124">Donker thema</translation>
 <translation id="1413240736185167732">Mislukt - Filter mislukt</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Ik heb een sleutelpaar</translation>
@@ -63,6 +64,7 @@
 <translation id="1565038567006703504">Kan <ph name="DEVICE_NAME" /> niet updaten</translation>
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Instellen als achtergrond</translation>
+<translation id="1578784163189013834">Achtergrond voor screensaver selecteren</translation>
 <translation id="1615335640928990664">Datagebruik sinds <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Batterijlading testen</translation>
 <translation id="1639239467298939599">Laden</translation>
@@ -85,12 +87,15 @@
 <translation id="1768959921651994223">Verificatietype</translation>
 <translation id="1782199038061388045">vertaling</translation>
 <translation id="1792647875738159689">Scannen annuleren</translation>
+<translation id="1801418420130173017">Donker thema uitzetten</translation>
 <translation id="1807246157184219062">Licht</translation>
 <translation id="1827738518074806965">Kunstgalerie</translation>
 <translation id="1851218745569890714">Videovergaderingen</translation>
 <translation id="1852934301711881861">Chrome OS Flex installeren</translation>
 <translation id="1856388568474281774">Pijl-omlaag</translation>
+<translation id="1871569928317311284">Donker thema uitzetten</translation>
 <translation id="1874612839560830905">MTU</translation>
+<translation id="188114911237521550">Donkere modus uitzetten</translation>
 <translation id="1887850431809612466">Hardwarerevisie</translation>
 <translation id="1905710495812624430">Maximumaantal toegestane pogingen overschreden.</translation>
 <translation id="1908234395526491708">Mislukte UDP-verzoeken</translation>
@@ -115,6 +120,7 @@
 <translation id="2157959690810728433">IN DE WACHTRIJ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Opnieuw proberen</translation>
 <translation id="2161394479394250669">Afdruktaak annuleren</translation>
+<translation id="2163937499206714165">Donkere modus aanzetten</translation>
 <translation id="2180197493692062006">Er is iets misgegaan. Open de app opnieuw.</translation>
 <translation id="2209788852729124853">Verkeerstellers resetten</translation>
 <translation id="2212733584906323460">Naamresolutie</translation>
@@ -126,8 +132,10 @@
 <translation id="2236746079896696523">Schakelaar voor achtergrondverlichting toetsenbord</translation>
 <translation id="2240366984605217732">Indelingsschakelaar</translation>
 <translation id="225692081236532131">Activeringsstatus</translation>
+<translation id="2271469253353559191">Planning voor donkere modus</translation>
 <translation id="2287186687001756809">Geen afbeelding beschikbaar. Ga naar <ph name="LINK" /> als je foto's wilt toevoegen.</translation>
 <translation id="2307344026739914387">Huidig sleutelpaar gebruiken</translation>
+<translation id="2320295602967756579">Licht thema aanzetten</translation>
 <translation id="2323506179655536734">OVERGESLAGEN</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Zet Bluetooth aan om apparaten in de buurt te vinden</translation>
@@ -147,13 +155,16 @@
 <translation id="2493126929778606526">Je beste foto's, automatisch geselecteerd</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">De huidige achtergrondafbeelding vernieuwen</translation>
+<translation id="2513396635448525189">Inlogafbeelding</translation>
 <translation id="2517472476991765520">Scannen</translation>
+<translation id="2526590354069164005">Bureaublad</translation>
 <translation id="253029298928638905">Opnieuw opstarten…</translation>
 <translation id="2536159006530886390">Kan geen verbinding met internet maken.</translation>
 <translation id="2570743873672969996">Test <ph name="TEST_NAME" /> wordt uitgevoerd...</translation>
 <translation id="2584559707064218956">Ga naar Instellingen om het netwerk in te stellen</translation>
 <translation id="2619761439309613843">Dagelijks vernieuwen</translation>
 <translation id="2620436844016719705">Systeem</translation>
+<translation id="2638662041295312666">Inlogafbeelding</translation>
 <translation id="2640549051766135490">Album geselecteerd: <ph name="TITLE" /> (<ph name="DESC" />)</translation>
 <translation id="2695514675076754339">Geef de ontgrendelingscode van 8 tekens op</translation>
 <translation id="2712812801627182647">TLS-verificatiesleutel</translation>
@@ -173,11 +184,13 @@
 <translation id="2926057806159140518">Geef je gebruikersnaam en wachtwoord op of scan je QR-code</translation>
 <translation id="3008341117444806826">VERNIEUWEN</translation>
 <translation id="3009958530611748826">Selecteer een map voor opslaan</translation>
+<translation id="3017079585324758401">Achtergrond</translation>
 <translation id="3031560714565892478">Apparaat is een videocamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Eindpunt</translation>
 <translation id="3069085583900247081">Test mislukt</translation>
 <translation id="3083667275341675831">Verbindingsdiagnose</translation>
+<translation id="3084958266922136097">Screensaver uitzetten</translation>
 <translation id="3091839911843451378">Mislukt - Gestopt</translation>
 <translation id="3102119246920354026">Cachegeheugen</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -201,6 +214,7 @@
 <translation id="3340011300870565703">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in het rechteroordopje.</translation>
 <translation id="3368922792935385530">Verbonden</translation>
 <translation id="3369013195428705271">Weet je zeker dat je je hele afdrukgeschiedenis wilt verwijderen? Je actieve afdruktaken worden niet verwijderd.</translation>
+<translation id="3404249063913988450">Screensaver aanzetten</translation>
 <translation id="3413935475507503304">Klik op Volgende om door te gaan met de update.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Beveiliging</translation>
@@ -215,6 +229,7 @@
 <translation id="3532980081107202182">Nog ongeveer <ph name="MIN_REMAINING" /> minuten</translation>
 <translation id="3557205324756024651">Lokale identiteit (optioneel)</translation>
 <translation id="3565064564551103223">Toegestane IP's</translation>
+<translation id="3569407787324516067">Screensaver</translation>
 <translation id="3577473026931028326">Er is iets misgegaan. Probeer het opnieuw.</translation>
 <translation id="357889014807611375">wifi met datalimiet</translation>
 <translation id="3583278742022654445">Zwak signaal. Ga dichter bij de wifi-signaalbron staan.</translation>
@@ -249,6 +264,7 @@
 <translation id="3954678691475912818">Apparaattype is onbekend.</translation>
 <translation id="3966286471246132217">Sluit voor nauwkeurigere resultaten alle apps totdat de test is afgerond.</translation>
 <translation id="3967822245660637423">Downloaden voltooid</translation>
+<translation id="3969602104473960991">Wachtwoord voor Chrome OS geüpdatet</translation>
 <translation id="397105322502079400">Berekenen...</translation>
 <translation id="39823212440917567">Afdruktaken ouder dan <ph name="NUMBER_OF_DAYS" /> dagen worden verwijderd</translation>
 <translation id="3993704782688964914">Je <ph name="DEVICE_NAME" /> is nu up-to-date</translation>
@@ -257,9 +273,11 @@
 <translation id="4044093238444069296">Kan geen verbinding maken met de gateway</translation>
 <translation id="4046123991198612571">Volgend nummer</translation>
 <translation id="404928562651467259">WAARSCHUWING</translation>
+<translation id="4093865285251893588">Profielafbeelding</translation>
 <translation id="409427325554347132">Testgegevens opslaan</translation>
 <translation id="4110686435123617899">Album selecteren: <ph name="TITLE" /> (<ph name="DESC" />)</translation>
 <translation id="4111761024568264522">USB-touchpad</translation>
+<translation id="4117637339509843559">Donkere modus</translation>
 <translation id="4131410914670010031">Zwart/wit</translation>
 <translation id="4140251671072434548">RMA Server Unlock uitvoeren</translation>
 <translation id="4145784616224233563">HTTP-firewall</translation>
@@ -269,6 +287,7 @@
 <translation id="4170700058716978431">MISLUKT</translation>
 <translation id="4176463684765177261">Uitgezet</translation>
 <translation id="4176659219503619100">Dashboard</translation>
+<translation id="420283545744377356">Screensaver uitzetten</translation>
 <translation id="4213104098953699324">USB-toetsenbord</translation>
 <translation id="4227825898293920515">Wachtwoord verloopt over <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Er worden geen afdruktaken uitgevoerd</translation>
@@ -331,6 +350,7 @@
 <translation id="4793756956024303490">Compressiealgoritme</translation>
 <translation id="4794140124556169553">Als je een CPU-test uitvoert, kan dit je systeemprestaties beïnvloeden</translation>
 <translation id="4808449224298348341">Afdruktaak <ph name="DOCUMENT_TITLE" /> geannuleerd</translation>
+<translation id="4809927044794281115">Licht thema</translation>
 <translation id="4813136279048157860">Mijn afbeeldingen</translation>
 <translation id="4813345808229079766">Verbinding</translation>
 <translation id="4832079907277790330">Map selecteren in de app Bestanden...</translation>
@@ -378,6 +398,7 @@
 Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Uitloggen</translation>
+<translation id="5227902338748591677">Planning voor donker thema</translation>
 <translation id="5234764350956374838">Sluiten</translation>
 <translation id="5252456968953390977">Roaming</translation>
 <translation id="5257811368506016604">Modus voor lichte kleuren aanzetten</translation>
@@ -398,6 +419,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5346687412805619883">Lokaal netwerk</translation>
 <translation id="5358174242040570474">Er is iets misgegaan. Probeer nog een keer een achtergrond te kiezen of open de app opnieuw.</translation>
 <translation id="5372659122375744710">Wifi-netwerk is niet beveiligd</translation>
+<translation id="5376354385557966694">Automatisch lichte modus</translation>
 <translation id="5400907029458559844">Apparaat maakt verbinding.</translation>
 <translation id="5401938042319910061">Alle routines uitvoeren</translation>
 <translation id="5423849171846380976">Geactiveerd</translation>
@@ -433,6 +455,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="583281660410589416">Onbekend</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Code thuisprovider</translation>
+<translation id="5859603669299126575">Kunstgalerie-album</translation>
 <translation id="5860033963881614850">Uit</translation>
 <translation id="5860491529813859533">Aanzetten</translation>
 <translation id="5866840822086176774">Zeer sterk</translation>
@@ -463,6 +486,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6113701710518389813">Pijl-omhoog</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, + nog <ph name="NUMBER" /> albums</translation>
 <translation id="6122191549521593678">Online</translation>
+<translation id="6122277663991249694">Invoermethodeservice voor Chrome OS</translation>
 <translation id="6137767437444130246">Gebruikerscertificaat</translation>
 <translation id="6146993107019042706">Geef je nieuwe wachtwoord opnieuw op om te voltooien</translation>
 <translation id="6147514244879357420">Png</translation>
@@ -478,11 +502,15 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6275224645089671689">Pijl-rechts</translation>
 <translation id="6278428485366576908">Thema</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6284632978374966585">Donker thema aanzetten</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> is geannuleerd</translation>
 <translation id="6319207335391420837">Firmware updaten op <ph name="DEVICE_NAME" /></translation>
+<translation id="6321407676395378991">Screensaver altijd aanzetten</translation>
 <translation id="6325525973963619867">Mislukt</translation>
+<translation id="6331191339300272798">Automatisch donker thema</translation>
 <translation id="6340526405444716530">Personalisatie</translation>
 <translation id="6348738456043757611">Gebruikersnaam en wachtwoord</translation>
+<translation id="6359706544163531585">Licht thema uitzetten</translation>
 <translation id="636850387210749493">Aanmelding voor Enterprise</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
 <translation id="6381741036071372448">Je toetsenbord testen</translation>
@@ -557,6 +585,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="714876143603641390">LAN-connectiviteit</translation>
 <translation id="7155171745945906037">Bestaande foto van camera of uit bestand</translation>
 <translation id="7162487448488904999">Galerij</translation>
+<translation id="7170236477717446850">Profielfoto</translation>
 <translation id="7172721935181587524">1 afbeelding</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> configureren</translation>
 <translation id="7177485034254901881">Dit <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" />. Beheerders kunnen het apparaat op afstand instellen.</translation>
@@ -578,6 +607,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7359657277149375382">Bestandstype</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378886533986123738">Screensaver wijzigen</translation>
+<translation id="7397270852490618635">Licht thema uitzetten</translation>
 <translation id="741244894080940828">conversie</translation>
 <translation id="7415801143053185905">Zeer hoge HTTP-vertraging</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -589,6 +619,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7497215489070763236">CA-certificaat van server</translation>
 <translation id="7502658306369382406">IPv6-adres</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7535791657097741517">Licht thema aanzetten</translation>
 <translation id="7550715992156305117">Diagnostische routines</translation>
 <translation id="7551123448725492271">Apparaat is een audioapparaat.</translation>
 <translation id="7561454561030345039">Deze actie wordt beheerd door je beheerder</translation>
@@ -610,11 +641,14 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7763470514545477072">Overeenkomst voor domeinextensie</translation>
 <translation id="7769672763586021400">Model-ID</translation>
 <translation id="7784116172884276937">Er zijn geen DNS-servers ingesteld</translation>
+<translation id="7799817062559422778">Lichte modus</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA of RSN)</translation>
+<translation id="7841134249932030522">Donkere modus aanzetten</translation>
 <translation id="7846634333498149051">Toetsenbord</translation>
 <translation id="7856267634822906833">Bluetooth-touchscreen</translation>
+<translation id="7869143217755017858">Donkere modus uitzetten</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Type provider</translation>
 <translation id="7882501334836096755">Openbare sleutel</translation>
@@ -654,6 +688,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8297006494302853456">Zwak</translation>
 <translation id="8302368968391049045">HTTPS-firewall</translation>
 <translation id="8318753676953949627">Geen afbeeldingen</translation>
+<translation id="8336739000755212683">Accountafbeelding van apparaat wijzigen</translation>
 <translation id="8347227221149377169">Afdruktaken</translation>
 <translation id="8352772353338965963">Een account toevoegen aan Toegang tot meerdere accounts. Alle ingelogde accounts zijn toegankelijk zonder wachtwoord, dus deze functie moet alleen worden gebruikt voor vertrouwde accounts.</translation>
 <translation id="8364946094152050673">Lege naamservers</translation>
@@ -662,8 +697,10 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8398927464629426868">De snelheid waarmee het apparaat op dit moment wordt opgeladen of ontladen</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Intern toetsenbord</translation>
+<translation id="8431300646573772016">Nieuw bij Chrome OS</translation>
 <translation id="843568408673868420">Internetverbinding</translation>
 <translation id="844521431886043384">DNS is niet ingesteld</translation>
+<translation id="8456761643544401578">Automatisch donkere modus</translation>
 <translation id="8461329675984532579">Naam thuisprovider</translation>
 <translation id="8475690821716466388">Wifi-netwerk is beveiligd met het zwakke protocol WEP PSK</translation>
 <translation id="8477551185774834963">DNS-latentie is iets langer dan de toelaatbare drempel</translation>
@@ -690,6 +727,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8730621377337864115">Klaar</translation>
 <translation id="8747900814994928677">Wijziging bevestigen</translation>
 <translation id="8764414543112028321">WireGuard</translation>
+<translation id="87646919272181953">Google Foto's-album</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Dit netwerk heeft misschien een captive portal</translation>
 <translation id="8798099450830957504">Standaard</translation>
@@ -699,6 +737,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8834539327799336565">Momenteel verbonden</translation>
 <translation id="8845001906332463065">Hulp nodig?</translation>
 <translation id="8855781559874488009">Kan geen verbinding maken met HTTP-websites via een firewall</translation>
+<translation id="8863170912498892583">Donker thema aanzetten</translation>
 <translation id="8863888432376731307"><ph name="INTENT" /> ophalen voor <ph name="QUERY" /> en meer</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Apparaat is een tablet.</translation>

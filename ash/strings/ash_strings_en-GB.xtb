@@ -26,7 +26,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="109942774857561566">I'm bored</translation>
 <translation id="1104084341931202936">Show accessibility settings</translation>
 <translation id="1104621072296271835">Your devices work even better together</translation>
-<translation id="1111781754511998498">Projector</translation>
 <translation id="112308213915226829">Autohide shelf</translation>
 <translation id="1142002900084379065">Recent photos</translation>
 <translation id="1148499908455722006">Open info dialogue for <ph name="USER_NAME" /></translation>
@@ -185,11 +184,9 @@ Here are some things that you can try to get started.</translation>
 <translation id="2021864487439853900">Click to unlock</translation>
 <translation id="2023558322300866873">You can stop packet capture at any time</translation>
 <translation id="2034971124472263449">Save anyway</translation>
-<translation id="2047639699071423250">Add key idea</translation>
 <translation id="2049240716062114887">Desk name was changed to <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2064048859448024834">Camera preview on</translation>
-<translation id="2066708475850724665">Stop magnifier</translation>
 <translation id="2067602449040652523">Keyboard brightness</translation>
 <translation id="2078034614700056995">Swipe right with four fingers to switch to the next desk</translation>
 <translation id="2079504693865562705">Hide apps in shelf</translation>
@@ -213,6 +210,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2220572644011485463">PIN or password</translation>
 <translation id="2222841058024245321">Desk 7</translation>
 <translation id="2224075387478458881">Screen recording is not allowed when protected content is visible</translation>
+<translation id="2227179592712503583">Remove suggestion</translation>
 <translation id="225680501294068881">Scanning for devices...</translation>
 <translation id="2257486738914982088">Something went wrong while downloading <ph name="FILENAME" /></translation>
 <translation id="2268130516524549846">Bluetooth disabled</translation>
@@ -283,7 +281,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2704781753052663061">Join other Wi-Fi networks</translation>
 <translation id="2705001408393684014">Toggle mic. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
-<translation id="2713444072780614174">White</translation>
 <translation id="2718395828230677721">Night Light</translation>
 <translation id="2726420622004325180">Your phone must have mobile data to provide a hotspot</translation>
 <translation id="2727175239389218057">Reply</translation>
@@ -352,7 +349,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="3100274880412651815">Dismiss capture mode</translation>
 <translation id="3105917916468784889">Take screenshot</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
-<translation id="3113926042639749131">Remove suggestion</translation>
 <translation id="3120421559657122717">Shut down device?</translation>
 <translation id="3126069444801937830">Restart to update</translation>
 <translation id="3139942575505304791">Desk 1</translation>
@@ -430,7 +426,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="3542066395059568317">You’ll see recommendations so that you can continue where you left off. You can right-click to remove recommendations.</translation>
 <translation id="3552189655002856821">Wi-Fi is turned off</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> was pinned</translation>
-<translation id="3560866052109807830">Marker drawing tools</translation>
 <translation id="3563775809269155755">Enable hotspot</translation>
 <translation id="3566240529365775567">Opened just now</translation>
 <translation id="3571734092741541777">Set up</translation>
@@ -455,7 +450,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="3638400994746983214">Toggle privacy screen. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Update overdue</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> managed user</translation>
-<translation id="3680908746918359504">Clear all markers</translation>
 <translation id="36813544980941320">Wi-Fi networks will be shared between your phone and <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Websites</translation>
 <translation id="3701206655856637070">You can now change where screen captures are saved</translation>
@@ -521,7 +515,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Off for an app}other{Off for # apps}}</translation>
 <translation id="4066027111132117168">On, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Medium signal</translation>
-<translation id="4095366824370681039">Ink pen</translation>
 <translation id="4112140312785995938">Seek backwards</translation>
 <translation id="4114315158543974537">Turn on Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -553,7 +546,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="4279490309300973883">Mirroring</translation>
 <translation id="4283888303416325161">Enter password for more security</translation>
 <translation id="4285498937028063278">Unpin</translation>
-<translation id="429402653707266969">Toggle toolbar location</translation>
 <translation id="4294319844246081198">Good morning <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Clear all <ph name="COUNT" /> notifications</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> moved to folder <ph name="FOLDER_NAME" />.</translation>
@@ -617,7 +609,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="4587299710837179226">Microphone is off</translation>
 <translation id="4596144739579517758">Dark theme is off</translation>
 <translation id="4611292653554630842">Log in</translation>
-<translation id="4614295562446151104">Expand marker tools</translation>
 <translation id="4623167406982293031">Verify account</translation>
 <translation id="4628757576491864469">Devices</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, star rating <ph name="RATING_SCORE" /></translation>
@@ -687,7 +678,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="504465286040788597">Previous paragraph</translation>
 <translation id="5045550434625856497">Incorrect password</translation>
 <translation id="5071064518267176975">An app wants to use the microphone</translation>
-<translation id="5075554201838155866">Start closed captions</translation>
 <translation id="5078796286268621944">Incorrect PIN</translation>
 <translation id="5083553833479578423">Unlock more Assistant features.</translation>
 <translation id="5106223312672646208">Personalise</translation>
@@ -795,7 +785,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="5790085346892983794">Success</translation>
 <translation id="5805809050170488595">Click to activate <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Connected devices settings</translation>
-<translation id="583281660410589416">Unknown</translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> on <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Hold to maximise</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> is not activated.</translation>
@@ -840,7 +829,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="6043212731627905357">This monitor isn't getting along with your <ph name="DEVICE_TYPE" /> (the monitor is not supported).</translation>
 <translation id="6043994281159824495">Sign out now</translation>
 <translation id="6047696787498798094">Screen sharing will stop when you switch to another user. Do you want to continue?</translation>
-<translation id="6050368268239407309">Presentation tools</translation>
 <translation id="6054305421211936131">Sign in with smart card</translation>
 <translation id="6059276912018042191">Recent Chrome tabs</translation>
 <translation id="6062360702481658777">You will automatically be signed out in <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -994,7 +982,6 @@ New install</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">Collapse status area</translation>
 <translation id="7045033600005038336">Replace template?</translation>
-<translation id="7045595904618419789">Start magnifier</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> disconnected</translation>
 <translation id="7055910611768509537">Stylus has not been used in over a week</translation>
 <translation id="7066646422045619941">This network is disabled by your administrator.</translation>
@@ -1022,7 +1009,6 @@ New install</translation>
 <translation id="7258828758145722155">Edited yesterday</translation>
 <translation id="726276584504105859">Drag here to use split screen</translation>
 <translation id="7262906531272962081">Create reminder</translation>
-<translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> marker colour</translation>
 <translation id="7302889331339392448">Live Caption is off.</translation>
 <translation id="7303365578352795231">Answering on another device.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1049,7 +1035,6 @@ New install</translation>
 <translation id="742594950370306541">Camera is in use.</translation>
 <translation id="742608627846767349">Good morning,</translation>
 <translation id="743058460480092004">Camera and microphone are in use.</translation>
-<translation id="7434543979546293336">Marked as a key idea</translation>
 <translation id="7452560014878697800">An application is using your camera</translation>
 <translation id="7453330308669753048">Search history result removed</translation>
 <translation id="7461924472993315131">Pin</translation>
@@ -1057,7 +1042,6 @@ New install</translation>
 <translation id="7466449121337984263">Please touch the sensor</translation>
 <translation id="7477793887173910789">Control your music, videos and more</translation>
 <translation id="7483025031359818980">Selection area set to full screen</translation>
-<translation id="7486227320194954040">Collapse marker tools</translation>
 <translation id="7497767806359279797">Choose language and keyboard</translation>
 <translation id="7508690557411636492">Opened in the past month</translation>
 <translation id="7509246181739783082">Verify your identity</translation>
@@ -1074,7 +1058,6 @@ New install</translation>
 <translation id="7561982940498449837">Close menu</translation>
 <translation id="7564874036684306347">Moving windows to another desktop may result in unexpected behaviour. Subsequent notifications, windows and dialogues may be split between desktops.</translation>
 <translation id="7569509451529460200">Braille and ChromeVox are enabled</translation>
-<translation id="7569983096843329377">Black</translation>
 <translation id="7573585051776738856">Active window docked on right.</translation>
 <translation id="7579778809502851308">Screen capture</translation>
 <translation id="7590883480672980941">Input settings</translation>
@@ -1082,7 +1065,6 @@ New install</translation>
 <translation id="7600875258240007829">See all notifications</translation>
 <translation id="7607002721634913082">Paused</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7631906263969450674">Marker pen</translation>
 <translation id="7633755430369750696">Show Nearby Share settings.</translation>
 <translation id="7641938616688887143">Record</translation>
 <translation id="7642647758716480637">Open settings for <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
@@ -1154,7 +1136,6 @@ New install</translation>
 <translation id="8029247720646289474">Hotspot connection failed</translation>
 <translation id="8029629653277878342">PIN or password required for more security</translation>
 <translation id="8030169304546394654">Disconnected</translation>
-<translation id="8035152190676905274">Pen</translation>
 <translation id="8036504271468642248">Previous sentence</translation>
 <translation id="8042893070933512245">Open accessibility settings menu</translation>
 <translation id="8042925093898452104">Close detail information</translation>
@@ -1163,6 +1144,7 @@ New install</translation>
 <translation id="8051716679295756675">Template named <ph name="DESK_TEMPLATE_NAME" /> already exists</translation>
 <translation id="8052898407431791827">Copied to clipboard</translation>
 <translation id="8054466585765276473">Calculating battery time.</translation>
+<translation id="8055510977240456975">Hide continue suggestions</translation>
 <translation id="8061464966246066292">High contrast</translation>
 <translation id="8098591350844501178">Stop casting screen to <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">On, all apps</translation>
@@ -1170,7 +1152,6 @@ New install</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Confirm</translation>
 <translation id="8131994907636310308">Close sort toast</translation>
-<translation id="8132487352815776550">Stop closed captions</translation>
 <translation id="8132793192354020517">Connected to <ph name="NAME" /></translation>
 <translation id="813913629614996137">Initialising...</translation>
 <translation id="8142441511840089262">Double click</translation>

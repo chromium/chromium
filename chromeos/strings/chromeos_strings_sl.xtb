@@ -42,6 +42,7 @@
 <translation id="1394661041439318933">Raven napolnjenosti baterije škatlice: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Prehod je mogoče preveriti</translation>
 <translation id="1398634363027580500">Precejšnja zakasnitev HTTPS</translation>
+<translation id="1407069428457324124">Temna tema</translation>
 <translation id="1413240736185167732">Napaka – napaka filtra</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Imam par ključev</translation>
@@ -63,6 +64,7 @@
 <translation id="1565038567006703504">Naprave <ph name="DEVICE_NAME" /> ni mogoče posodobiti.</translation>
 <translation id="1567064801249837505">Albumi</translation>
 <translation id="1572585716423026576">Nastavi kot ozadje</translation>
+<translation id="1578784163189013834">Izbira ozadja ohranjevalnika zaslona</translation>
 <translation id="1615335640928990664">Prenesena količina podatkov od tega dne: <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Zaženi preizkus napolnjenosti</translation>
 <translation id="1639239467298939599">Nalaganje</translation>
@@ -85,12 +87,15 @@
 <translation id="1768959921651994223">Vrsta preverjanja pristnosti</translation>
 <translation id="1782199038061388045">prevod</translation>
 <translation id="1792647875738159689">Preklic optičnega branja</translation>
+<translation id="1801418420130173017">Onemogočanje temne teme</translation>
 <translation id="1807246157184219062">Svetlo</translation>
 <translation id="1827738518074806965">Umetnostna galerija</translation>
 <translation id="1851218745569890714">Videokonference</translation>
 <translation id="1852934301711881861">Namesti ChromeOS Flex</translation>
 <translation id="1856388568474281774">Puščica dol</translation>
+<translation id="1871569928317311284">Izklop temne teme</translation>
 <translation id="1874612839560830905">MTU</translation>
+<translation id="188114911237521550">Izklop temnega načina</translation>
 <translation id="1887850431809612466">Različica strojne opreme</translation>
 <translation id="1905710495812624430">Preseženo je največje dovoljeno število dovoljenih poskusov.</translation>
 <translation id="1908234395526491708">Neuspele zahteve UDP</translation>
@@ -115,6 +120,7 @@
 <translation id="2157959690810728433">NA ČAKANJU</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Poskusi znova</translation>
 <translation id="2161394479394250669">Preklic tiskalnega opravila</translation>
+<translation id="2163937499206714165">Vklop temnega načina</translation>
 <translation id="2180197493692062006">Prišlo je do napake. Poskusite znova odpreti aplikacijo.</translation>
 <translation id="2209788852729124853">Ponastavi števce prometa</translation>
 <translation id="2212733584906323460">Ločljivost imena</translation>
@@ -126,8 +132,10 @@
 <translation id="2236746079896696523">Preklop osvetlitve tipkovnice</translation>
 <translation id="2240366984605217732">Preklop postavitve</translation>
 <translation id="225692081236532131">Stanje aktiviranja</translation>
+<translation id="2271469253353559191">Urnik za temni način</translation>
 <translation id="2287186687001756809">Na voljo ni nobene slike. Fotografije lahko dodate na <ph name="LINK" />.</translation>
 <translation id="2307344026739914387">Uporaba trenutnega para ključev</translation>
+<translation id="2320295602967756579">Omogočanje svetle teme</translation>
 <translation id="2323506179655536734">PRESKOČENO</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> pik na palec</translation>
 <translation id="2338501278241028356">Vklopite Bluetooth, če želite odkriti naprave v bližini</translation>
@@ -147,13 +155,16 @@
 <translation id="2493126929778606526">Vaše najboljše fotografije, izbrane samodejno</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Osveži trenutno sliko zaslonskega ozadja</translation>
+<translation id="2513396635448525189">Slika za prijavo</translation>
 <translation id="2517472476991765520">Išči</translation>
+<translation id="2526590354069164005">Namizje</translation>
 <translation id="253029298928638905">Vnovičen zagon …</translation>
 <translation id="2536159006530886390">Internetne povezave ni mogoče vzpostaviti.</translation>
 <translation id="2570743873672969996">Izvajanje preizkusa <ph name="TEST_NAME" /> …</translation>
 <translation id="2584559707064218956">Če želite nastaviti, odprite nastavitve.</translation>
 <translation id="2619761439309613843">Dnevno osveževanje</translation>
 <translation id="2620436844016719705">Sistem</translation>
+<translation id="2638662041295312666">Slika za prijavo</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> je bil izbran</translation>
 <translation id="2695514675076754339">Vnesite 8-mestno kodo za odklepanje</translation>
 <translation id="2712812801627182647">Ključ za preverjanje pristnost TLS</translation>
@@ -173,11 +184,13 @@
 <translation id="2926057806159140518">Vnesite uporabniško ime in geslo ali optično preberite kodo QR.</translation>
 <translation id="3008341117444806826">OSVEŽI</translation>
 <translation id="3009958530611748826">Izberite mapo za shranjevanje</translation>
+<translation id="3017079585324758401">Ozadje</translation>
 <translation id="3031560714565892478">Naprava je videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Končna točka</translation>
 <translation id="3069085583900247081">Preizkus ni uspel</translation>
 <translation id="3083667275341675831">Diagnosticiranje povezav</translation>
+<translation id="3084958266922136097">Onemogočanje ohranjevalnika zaslona</translation>
 <translation id="3091839911843451378">Napaka – ustavljeno</translation>
 <translation id="3102119246920354026">Predpomnilnik</translation>
 <translation id="3122464029669770682">CPE</translation>
@@ -201,6 +214,7 @@
 <translation id="3340011300870565703">Raven napolnjenosti baterije desne slušalke: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Povezano</translation>
 <translation id="3369013195428705271">Ali ste prepričani, da želite izbrisati vso zgodovino tiskanja? Tiskalna opravila, ki potekajo, ne bodo izbrisana.</translation>
+<translation id="3404249063913988450">Omogočanje ohranjevalnika zaslona</translation>
 <translation id="3413935475507503304">Če želite nadaljevati posodobitev, kliknite Naprej.</translation>
 <translation id="3434107140712555581">Akumulator: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Varnost</translation>
@@ -215,6 +229,7 @@
 <translation id="3532980081107202182">Še približno <ph name="MIN_REMAINING" /> min</translation>
 <translation id="3557205324756024651">Lokalna identiteta (izbirno)</translation>
 <translation id="3565064564551103223">Dovoljeni IP-ji</translation>
+<translation id="3569407787324516067">Ohranjevalnik zaslona</translation>
 <translation id="3577473026931028326">Prišlo je do napake. Poskusite znova.</translation>
 <translation id="357889014807611375">Wi‑Fi z omejeno količino prenosa</translation>
 <translation id="3583278742022654445">Šibka moč signala. Poskusite se premakniti bliže viru signala omrežja Wi-Fi.</translation>
@@ -258,9 +273,11 @@
 <translation id="4044093238444069296">Ni mogoče vzpostaviti stika s prehodom.</translation>
 <translation id="4046123991198612571">Naslednja skladba</translation>
 <translation id="404928562651467259">OPOZORILO</translation>
+<translation id="4093865285251893588">Slika profila</translation>
 <translation id="409427325554347132">Shrani podrobnosti preizkusa</translation>
 <translation id="4110686435123617899">Izberite album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Sledilna ploščica USB</translation>
+<translation id="4117637339509843559">Temni način</translation>
 <translation id="4131410914670010031">Črno-belo</translation>
 <translation id="4140251671072434548">Odklepanje strežnika RMA</translation>
 <translation id="4145784616224233563">Požarni zid HTTP</translation>
@@ -270,6 +287,7 @@
 <translation id="4170700058716978431">NI USPEL</translation>
 <translation id="4176463684765177261">Onemogočeno</translation>
 <translation id="4176659219503619100">Nadzorna plošča</translation>
+<translation id="420283545744377356">Izklop ohranjevalnika zaslona</translation>
 <translation id="4213104098953699324">Tipkovnica USB</translation>
 <translation id="4227825898293920515">Geslo poteče čez toliko časa: <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nobeno tiskalno opravilo ne poteka</translation>
@@ -332,6 +350,7 @@
 <translation id="4793756956024303490">Algoritem stiskanja</translation>
 <translation id="4794140124556169553">Izvajanje preizkusa CPE-ja lahko vpliva na delovanje sistema.</translation>
 <translation id="4808449224298348341">Preklicano tiskalno opravilo za dokument <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4809927044794281115">Svetla tema</translation>
 <translation id="4813136279048157860">Moje slike</translation>
 <translation id="4813345808229079766">Povezava</translation>
 <translation id="4832079907277790330">Izberite mapo v aplikaciji Datoteke ...</translation>
@@ -379,6 +398,7 @@
 Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Odjava</translation>
+<translation id="5227902338748591677">Urnik za temno temo</translation>
 <translation id="5234764350956374838">Opusti</translation>
 <translation id="5252456968953390977">Gostovanje</translation>
 <translation id="5257811368506016604">Omogoči način svetle barve</translation>
@@ -399,6 +419,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="5346687412805619883">Lokalno omrežje</translation>
 <translation id="5358174242040570474">Prišlo je do napake. Poskusite znova izbrati zaslonsko ozadje ali znova odpreti aplikacijo.</translation>
 <translation id="5372659122375744710">Omrežje Wi-Fi ni varno</translation>
+<translation id="5376354385557966694">Samodejni svetli način</translation>
 <translation id="5400907029458559844">Naprava se povezuje.</translation>
 <translation id="5401938042319910061">Izvedi vse rutine</translation>
 <translation id="5423849171846380976">Aktivirano</translation>
@@ -434,6 +455,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="583281660410589416">Neznano</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Koda domačega ponudnika</translation>
+<translation id="5859603669299126575">Album umetnostne galerije</translation>
 <translation id="5860033963881614850">Izklopljeno</translation>
 <translation id="5860491529813859533">Vklopi</translation>
 <translation id="5866840822086176774">Zelo močan</translation>
@@ -480,11 +502,15 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6275224645089671689">Puščica desno</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6284632978374966585">Vklop temne teme</translation>
 <translation id="6302401976930124515">Preizkus <ph name="TEST_NAME" /> je preklican.</translation>
 <translation id="6319207335391420837">Posodobitev vdelane programske opreme v napravi <ph name="DEVICE_NAME" /></translation>
+<translation id="6321407676395378991">Vklop ohranjevalnika zaslona</translation>
 <translation id="6325525973963619867">Ni uspelo</translation>
+<translation id="6331191339300272798">Samodejna temna tema</translation>
 <translation id="6340526405444716530">Prilagoditev</translation>
 <translation id="6348738456043757611">Uporabniško ime in geslo</translation>
+<translation id="6359706544163531585">Onemogočanje svetle teme</translation>
 <translation id="636850387210749493">Prijava v podjetje</translation>
 <translation id="6379086450106841622">Zaslon na dotik</translation>
 <translation id="6381741036071372448">Preizkusite tipkovnico</translation>
@@ -559,6 +585,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="714876143603641390">Povezava z omrežjem LAN</translation>
 <translation id="7155171745945906037">Obstoječa fotografija iz fotoaparata ali datoteke</translation>
 <translation id="7162487448488904999">Galerija</translation>
+<translation id="7170236477717446850">Profilna slika</translation>
 <translation id="7172721935181587524">1 slika</translation>
 <translation id="7175037578838465313">Konfiguriranje omrežja <ph name="NAME" /></translation>
 <translation id="7177485034254901881">To napravo <ph name="DEVICE_TYPE" /> upravlja domena <ph name="MANAGER" />. Skrbniki lahko napravo konfigurirajo na daljavo.</translation>
@@ -580,6 +607,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378886533986123738">Spremeni ohranjevalnik zaslona</translation>
+<translation id="7397270852490618635">Izklop svetle teme</translation>
 <translation id="741244894080940828">pretvorba</translation>
 <translation id="7415801143053185905">Precejšnja zakasnitev HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -591,6 +619,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7497215489070763236">Strežniško overjeno potrdilo</translation>
 <translation id="7502658306369382406">Naslov IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7535791657097741517">Vklop svetle teme</translation>
 <translation id="7550715992156305117">Rutine za diagnostiko</translation>
 <translation id="7551123448725492271">Naprava je zvočna naprava.</translation>
 <translation id="7561454561030345039">To dejanje upravlja skrbnik</translation>
@@ -612,11 +641,14 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7763470514545477072">Ujemanje pripone domene</translation>
 <translation id="7769672763586021400">ID modela</translation>
 <translation id="7784116172884276937">Strežniki DNS niso nastavljeni.</translation>
+<translation id="7799817062559422778">Svetli način</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7805768142964895445">Stanje</translation>
 <translation id="7819857487979277519">PSK (WPA ali RSN)</translation>
+<translation id="7841134249932030522">Omogočanje temnega načina</translation>
 <translation id="7846634333498149051">Tipkovnica</translation>
 <translation id="7856267634822906833">Zaslon na dotik Bluetooth</translation>
+<translation id="7869143217755017858">Onemogočanje temnega načina</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Vrsta ponudnika</translation>
 <translation id="7882501334836096755">Javni ključ</translation>
@@ -656,6 +688,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8297006494302853456">Šibek</translation>
 <translation id="8302368968391049045">Požarni zid HTTPS</translation>
 <translation id="8318753676953949627">Ni slik</translation>
+<translation id="8336739000755212683">Spremeni sliko računa v napravi</translation>
 <translation id="8347227221149377169">Tiskalna opravila</translation>
 <translation id="8352772353338965963">Dodajte račun za prijavo z več računi. Do vseh prijavljenih računov je mogoče dostopati brez gesla, zato to funkcijo uporabljajte samo z zaupanja vrednimi računi.</translation>
 <translation id="8364946094152050673">Prazni imenski strežniki</translation>
@@ -667,6 +700,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8431300646573772016">Novosti v Chromu OS</translation>
 <translation id="843568408673868420">Internetna povezava</translation>
 <translation id="844521431886043384">DNS ni nastavljen.</translation>
+<translation id="8456761643544401578">Samodejni temni način</translation>
 <translation id="8461329675984532579">Ime domačega ponudnika</translation>
 <translation id="8475690821716466388">Omrežje Wi-Fi je zavarovano s šibkim protokolom WEP PSK</translation>
 <translation id="8477551185774834963">Zakasnitev DNS-ja je nekoliko nad dovoljenim pragom</translation>
@@ -693,6 +727,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8730621377337864115">Končano</translation>
 <translation id="8747900814994928677">Potrditev spremembe</translation>
 <translation id="8764414543112028321">WireGuard</translation>
+<translation id="87646919272181953">Album v Googlu Foto</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">To omrežje ima morda prestrezni portal.</translation>
 <translation id="8798099450830957504">Privzeto</translation>
@@ -702,6 +737,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8834539327799336565">Trenutno povezano</translation>
 <translation id="8845001906332463065">Poiščite pomoč</translation>
 <translation id="8855781559874488009">Ni mogoče vzpostaviti povezave s spletnimi mesti HTTP prek požarnega zidu.</translation>
+<translation id="8863170912498892583">Omogočanje temne teme</translation>
 <translation id="8863888432376731307"><ph name="INTENT" /> za poizvedbo »<ph name="QUERY" />« in drugo</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Naprava je tablični računalnik.</translation>

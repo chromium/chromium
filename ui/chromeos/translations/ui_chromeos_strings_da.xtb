@@ -199,8 +199,6 @@
 <translation id="2649120831653069427">Regnbuefisk</translation>
 <translation id="2663066752008346276">Burmesisk/myanmarsk Myansan-tastatur</translation>
 <translation id="2664412712123763093">Filplacering</translation>
-<translation id="2672394958563893062">Der opstod en fejl. Klik her for at starte forfra.</translation>
-<translation id="2676946222714718093">Afspilles i</translation>
 <translation id="2718540689505416944">Installer app med Linux</translation>
 <translation id="2719020180254996569">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, info</translation>
 <translation id="2724954091494693138">Tyrkisk med F-tastatur</translation>
@@ -342,7 +340,6 @@
 <translation id="3901991538546252627">Opretter forbindelse til <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Mobilprofil installeres. Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Spil på</translation>
 <translation id="3943857333388298514">Indsæt</translation>
 <translation id="3952872973865944257">Telugu fonetisk</translation>
 <translation id="3958548648197196644">Kiwi</translation>
@@ -414,7 +411,6 @@
 <translation id="4631887759990505102">Kunstner</translation>
 <translation id="4642769377300286600">Mobilprofil installeres. Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Tjekkisk med Qwerty-tastatur</translation>
-<translation id="4656293982926141856">Denne computer</translation>
 <translation id="4656777537938206294">Gør filer tilgængelige offline</translation>
 <translation id="4658782175094886150">Person i sne</translation>
 <translation id="4669606053856530811">Medlemmer af "<ph name="SOURCE_NAME" />" mister adgang, medmindre disse elementer deles med dem.</translation>
@@ -431,7 +427,6 @@
 <translation id="4720185134442950733">Mobildatanetværk</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> billeder blev sikkerhedskopieret</translation>
 <translation id="4725511304875193254">Corgi</translation>
-<translation id="4732760563705710320">Beklager, men denne video er ikke understøttet af din Cast-enhed.</translation>
 <translation id="4737050008115666127">Landingsbane</translation>
 <translation id="4747271164117300400">Makedonisk</translation>
 <translation id="4759238208242260848">Downloads</translation>
@@ -622,7 +617,6 @@
 <translation id="6224253798271602650">Formatér <ph name="DRIVE_NAME" /></translation>
 <translation id="6227235786875481728">Denne fil kunne ikke afspilles.</translation>
 <translation id="6241349547798190358">Hollandsk (Belgien)</translation>
-<translation id="6248400709929739064">Aktivér undertekster</translation>
 <translation id="6267547857941397424">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, telefonbatteri <ph name="BATTERY_STATUS" /> %, opret forbindelse</translation>
 <translation id="6269630227984243955">Malajisk</translation>
 <translation id="6287852322318138013">Vælg en app, der skal åbne denne fil</translation>
@@ -640,7 +634,6 @@
 <translation id="637062427944097960">Denne fil blev åbnet på en anden computer. Skift til <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) for at se den.</translation>
 <translation id="6394388407447716302">Skrivebeskyttet</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elementer</translation>
-<translation id="6398765197997659313">Afslut fuld skærm</translation>
 <translation id="642282551015776456">Dette navn kan ikke bruges som fil- eller mappenavn</translation>
 <translation id="6423031066725912715">Vietnamesisk med TCVN-tastatur</translation>
 <translation id="6485131920355264772">Pladsoplysningerne kunne ikke hentes</translation>
@@ -676,7 +669,6 @@
 <translation id="6820687829547641339">Gzip-komprimeret tar-arkiv</translation>
 <translation id="6823166707458800069">Alle filer, der er gemt i denne mappe, sikkerhedskopieres automatisk online.</translation>
 <translation id="6825883775269213504">Russisk</translation>
-<translation id="6827236167376090743">Denne video vil spille lige til juleaften.</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> blev fjernet fra det valgte.</translation>
 <translation id="6856459657722366306">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, info</translation>
 <translation id="6861394552169064235">Persisk</translation>
@@ -814,7 +806,6 @@
 <translation id="7857117644404132472">Tilføj undtagelse</translation>
 <translation id="7868774406711971383">Polsk</translation>
 <translation id="7874321682039004450">Filippinsk</translation>
-<translation id="7881969471599061635">Deaktiver undertekster</translation>
 <translation id="78946041517601018">Fællesdrev</translation>
 <translation id="7908793776359722643">Formatering af en partition sletter alle de data, der er gemt på den. Denne handling kan ikke fortrydes.</translation>
 <translation id="7925247922861151263">AAA-kontrol mislykkedes</translation>
@@ -891,7 +882,6 @@
 <translation id="8492972329130824181">Hjemmenetværket er ikke tilgængeligt. Dataroaming med mobildata skal være aktiveret, før du kan oprette forbindelse.</translation>
 <translation id="8499098729323186194">Udtrækker <ph name="NUMBER_OF_ITEMS" /> elementer…</translation>
 <translation id="8521441079177373948">Britisk</translation>
-<translation id="8525306231823319788">Fuld skærm</translation>
 <translation id="853494022971700746">Fransk (Frankrig)</translation>
 <translation id="8540608333167683902">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, info</translation>
 <translation id="8545476925160229291">Engelsk (USA)</translation>

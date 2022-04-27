@@ -199,8 +199,6 @@
 <translation id="2649120831653069427">رینبو فش</translation>
 <translation id="2663066752008346276">میانسان کی بورڈ کے ساتھ برمی/میانمار</translation>
 <translation id="2664412712123763093">فائل کا مقام</translation>
-<translation id="2672394958563893062">ایک خرابی پیش آگئی۔ ابتدا سے دوبارہ شروع کرنے کیلئے کلک کریں۔</translation>
-<translation id="2676946222714718093">اس پر چل رہا ہے</translation>
 <translation id="2718540689505416944">‏Linux والی ایپ انسٹال کریں</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، تفصیلات</translation>
 <translation id="2724954091494693138">‏F کی بورڈ کے ساتھ ترکی</translation>
@@ -342,7 +340,6 @@
 <translation id="3901991538546252627"><ph name="NAME" /> سے منسلک کیا جا رہا ہے</translation>
 <translation id="3906232975181435906">موبائل پروفائل انسٹال ہو رہی ہے، نیٹ ورک <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">ان پر چلائیں</translation>
 <translation id="3943857333388298514">پیسٹ کریں</translation>
 <translation id="3952872973865944257">تیلگو فونیٹک</translation>
 <translation id="3958548648197196644">کیوی</translation>
@@ -414,7 +411,6 @@
 <translation id="4631887759990505102">فن کار</translation>
 <translation id="4642769377300286600">موبائل کی پروفائل انسٹال ہو رہی ہے، نیٹ ورک <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">‏Qwerty کی بورڈ کے ساتھ چیک زبان</translation>
-<translation id="4656293982926141856">اس کمپیوٹر پر</translation>
 <translation id="4656777537938206294">فائلز کو آف لائن دستیاب کرائیں</translation>
 <translation id="4658782175094886150">برف سے ڈھکا ہوا شخص</translation>
 <translation id="4669606053856530811">جب تک ان آئٹمز کا ان کے ساتھ اشتراک نہیں کیا جاتا ہے، <ph name="SOURCE_NAME" /> کے اراکین کی رسائی منقطع ہو جائے گي۔</translation>
@@ -431,7 +427,6 @@
 <translation id="4720185134442950733">موبائل ڈیٹا نیٹ ورک</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> تصاویر کا بیک اپ لے لیا گیا</translation>
 <translation id="4725511304875193254">کورگی</translation>
-<translation id="4732760563705710320">معذرت، یہ ویڈیو آپ کے کاسٹ آلہ کی جانب سے تعاون یافتہ نہیں ہے۔</translation>
 <translation id="4737050008115666127">لینڈنگ</translation>
 <translation id="4747271164117300400">مقدونيائی</translation>
 <translation id="4759238208242260848">ڈاؤن لوڈز</translation>
@@ -621,7 +616,6 @@
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> کو فارمیٹ کریں</translation>
 <translation id="6227235786875481728">یہ فائل نہیں چلائی جا سکی۔</translation>
 <translation id="6241349547798190358">ڈچ (بیلجیم)</translation>
-<translation id="6248400709929739064">سب ٹائٹلز کو فعال کریں</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="PHONE_NAME" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، فون کی بیٹری <ph name="BATTERY_STATUS" />%، منسلک کریں</translation>
 <translation id="6269630227984243955">مالے</translation>
 <translation id="6287852322318138013">یہ فائل کھولنے کیلئے ایک ایپ منتخب کریں</translation>
@@ -639,7 +633,6 @@
 <translation id="637062427944097960">یہ فائل ایک مختلف ڈیسک ٹاپ پر کھولی گئی ہے۔ اسے دیکھنے کیلئے <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) پر منتقل ہوں۔</translation>
 <translation id="6394388407447716302">صرف پڑھنے کے لیے</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> آئٹمز</translation>
-<translation id="6398765197997659313">پوری سکرین سے خارج ہوں</translation>
 <translation id="642282551015776456">یہ نام کسی فائل یا فولڈر نام کے بطور استعمال نہیں کیا جا سکتا ہے</translation>
 <translation id="6423031066725912715">‏TCVN کی بورڈ کے ساتھ ویتنامی</translation>
 <translation id="6485131920355264772">اسپیس کی معلومات کی بازيابی میں ناکام ہوگیا</translation>
@@ -675,7 +668,6 @@
 <translation id="6820687829547641339">‏Gzip کمپریس کردہ tar آرکائیو</translation>
 <translation id="6823166707458800069">اس فولڈر میں محفوظ کردہ سبھی فائلوں کا خودکار طور پر آن لائن بیک اپ لیا جاتا ہے۔</translation>
 <translation id="6825883775269213504">روسی</translation>
-<translation id="6827236167376090743">یہ ویڈیو بہت دیر تک چلتی رہے گی۔</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> کو انتخاب سے ہٹا دیا گیا۔</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی %<ph name="SIGNAL_STRENGTH" />، تفصیلات</translation>
 <translation id="6861394552169064235">فارسی</translation>
@@ -813,7 +805,6 @@
 <translation id="7857117644404132472">استثناء شامل کریں</translation>
 <translation id="7868774406711971383">پولش</translation>
 <translation id="7874321682039004450">فلپینو</translation>
-<translation id="7881969471599061635">سب ٹائٹلز کو غیر فعال کریں</translation>
 <translation id="78946041517601018">مشترکہ ڈرائیوز</translation>
 <translation id="7908793776359722643">پارٹیشن کو فارمیٹ کرنے سے اس پر اسٹور کردہ تمام ڈیٹا مٹا دیا جائے گا۔ اس عمل کو کالعدم نہیں کیا جا سکتا۔</translation>
 <translation id="7925247922861151263">‏AAA چیک ناکام ہوگیا</translation>
@@ -890,7 +881,6 @@
 <translation id="8492972329130824181">ہوم نیٹ ورک دستیاب نہیں ہے۔ منسلک ہونے کیلئے موبائل ڈیٹا رومنگ کو فعال کرنا ہوگا۔</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> آئٹمز کو اخذ کیا جا رہا ہے…</translation>
 <translation id="8521441079177373948">UK</translation>
-<translation id="8525306231823319788">پوری اسکرین</translation>
 <translation id="853494022971700746">فرانسیسی (فرانس)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" /> میں سے <ph name="NETWORK_INDEX" /> نیٹ ورک، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی<ph name="SIGNAL_STRENGTH" />%، تفصیلات</translation>
 <translation id="8545476925160229291">انگریزی (امریکہ)</translation>

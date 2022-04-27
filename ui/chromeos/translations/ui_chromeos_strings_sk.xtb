@@ -199,8 +199,6 @@
 <translation id="2649120831653069427">Dúhovka</translation>
 <translation id="2663066752008346276">Mjanmarská klávesnica s rozložením Myansan</translation>
 <translation id="2664412712123763093">Umiestnenie súboru</translation>
-<translation id="2672394958563893062">Vyskytla sa chyba. Kliknutím spustíte prehrávanie od začiatku.</translation>
-<translation id="2676946222714718093">Prehráva sa na zariadení</translation>
 <translation id="2718540689505416944">Inštalovať aplikáciu pomocou systému Linux</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, podrobnosti</translation>
 <translation id="2724954091494693138">Turecká klávesnica (typ F)</translation>
@@ -342,7 +340,6 @@
 <translation id="3901991538546252627">Pripája sa k sieti <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Inštaluje sa mobilný profil. Sieť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Prehrať na zariadení:</translation>
 <translation id="3943857333388298514">Prilepiť</translation>
 <translation id="3952872973865944257">Telugská fonetická klávesnica</translation>
 <translation id="3958548648197196644">Kiwi</translation>
@@ -414,7 +411,6 @@
 <translation id="4631887759990505102">Interpret</translation>
 <translation id="4642769377300286600">Inštaluje sa mobilný profil. Sieť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Česká klávesnica s rozložením Qwerty</translation>
-<translation id="4656293982926141856">Tento počítač</translation>
 <translation id="4656777537938206294">Sprístupnite súbory offline</translation>
 <translation id="4658782175094886150">Osoba v snehu</translation>
 <translation id="4669606053856530811">Členovia zdroja <ph name="SOURCE_NAME" /> stratia prístup, pokiaľ s nimi tieto položky nezačnete zdieľať.</translation>
@@ -431,7 +427,6 @@
 <translation id="4720185134442950733">Mobilná dátová sieť</translation>
 <translation id="4724850507808590449">Počet zálohovaných fotiek: <ph name="FILE_COUNT" /></translation>
 <translation id="4725511304875193254">Corgi</translation>
-<translation id="4732760563705710320">Je nám to ľúto, ale vaše zariadenie na prenos nepodporuje toto video</translation>
 <translation id="4737050008115666127">Pristátie</translation>
 <translation id="4747271164117300400">Macedónčina</translation>
 <translation id="4759238208242260848">Stiahnuté</translation>
@@ -622,7 +617,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6224253798271602650">Formátovať: <ph name="DRIVE_NAME" /></translation>
 <translation id="6227235786875481728">Tento súbor nie je možné prehrať.</translation>
 <translation id="6241349547798190358">Holandská (Belgicko) klávesnica</translation>
-<translation id="6248400709929739064">Povoliť titulky</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, batéria telefónu <ph name="BATTERY_STATUS" /> %, pripojenie</translation>
 <translation id="6269630227984243955">Malajská klávesnica</translation>
 <translation id="6287852322318138013">Vyberte aplikáciu na otvorenie tohto súboru</translation>
@@ -640,7 +634,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="637062427944097960">Tento súbor je otvorený na inej pracovnej ploche. Ak ho chcete zobraziť, prejdite do profilu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Iba na čítanie</translation>
 <translation id="6395575651121294044">Počet položiek: <ph name="NUMBER_OF_FILES" /></translation>
-<translation id="6398765197997659313">Ukončiť zobrazenie na celú obrazovku</translation>
 <translation id="642282551015776456">Tento názov nie je možné použiť na pomenovanie súboru ani priečinka.</translation>
 <translation id="6423031066725912715">Vietnamská klávesnica s rozložením TCVN</translation>
 <translation id="6485131920355264772">Nepodarilo sa získať informácie o voľnom mieste</translation>
@@ -676,7 +669,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6820687829547641339">Archív vo formáte Tar komprimovaný metódou Gzip</translation>
 <translation id="6823166707458800069">Všetky súbory uložené v tomto priečinku sa automaticky zálohujú online.</translation>
 <translation id="6825883775269213504">Ruština</translation>
-<translation id="6827236167376090743">Toto video sa bude prehrávať počas neurčitej doby.</translation>
 <translation id="6847101934483209767">Položka <ph name="ENTRY_NAME" /> bola odstránená z výberu.</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intenzita signálu <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="6861394552169064235">Perzská klávesnica</translation>
@@ -814,7 +806,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7857117644404132472">Pridať výnimku</translation>
 <translation id="7868774406711971383">Poľská klávesnica</translation>
 <translation id="7874321682039004450">Filipínska klávesnica</translation>
-<translation id="7881969471599061635">Zakázať titulky</translation>
 <translation id="78946041517601018">Spoločné disky</translation>
 <translation id="7908793776359722643">Formátovaním oddielu vymažete všetky dáta, ktoré sú v ňom uložené. Táto akcia sa nedá vrátiť späť.</translation>
 <translation id="7925247922861151263">Kontrola AAA zlyhala</translation>
@@ -891,7 +882,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8492972329130824181">Domáca sieť nie je k dispozícii. Ak sa chcete pripojiť, musíte zapnúť mobilný dátový roaming.</translation>
 <translation id="8499098729323186194">Extrahujú sa položky (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="8521441079177373948">Anglická klávesnica</translation>
-<translation id="8525306231823319788">Celá obrazovka</translation>
 <translation id="853494022971700746">Francúzska (Francúzsko) klávesnica</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="8545476925160229291">Anglická (US) klávesnica</translation>

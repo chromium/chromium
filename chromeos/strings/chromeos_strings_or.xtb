@@ -42,6 +42,7 @@
 <translation id="1394661041439318933">ଡିଭାଇସ କେସରେ <ph name="BATTERY_PERCENTAGE" />% ବ୍ୟାଟେରୀ ଚାର୍ଜ ଅଛି।</translation>
 <translation id="1397738625398125236">ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରାଯାଇପାରିବ</translation>
 <translation id="1398634363027580500">HTTPSର ଅଧିକ ଲାଟେନ୍ସି</translation>
+<translation id="1407069428457324124">ଗାଢ଼ ଥିମ୍</translation>
 <translation id="1413240736185167732">ବିଫଳ ହୋଇଛି - ଫିଲ୍ଟର୍ ବିଫଳ ହୋଇଛି</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">ମୋ ପାଖରେ ଏକ କୀପେୟାର ଅଛି</translation>
@@ -63,6 +64,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" />କୁ ଅପଡେଟ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="1567064801249837505">ଆଲବମ</translation>
 <translation id="1572585716423026576">ୱାଲ୍‌‌ପେପର୍‌ ଭାବରେ ସେଟ୍‍ କରନ୍ତୁ</translation>
+<translation id="1578784163189013834">ସ୍କ୍ରିନ୍ ସେଭରର ବ୍ୟାକଗ୍ରାଉଣ୍ଡ ବାଛନ୍ତୁ</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />ଠାରୁ ଡାଟା ବ୍ୟବହାର</translation>
 <translation id="1621067168122174824">ବ୍ୟାଟେରୀ ଚାର୍ଜ ଟେଷ୍ଟ ଚଲାନ୍ତୁ</translation>
 <translation id="1639239467298939599">ଲୋଡ୍ ହେଉଛି</translation>
@@ -85,12 +87,15 @@
 <translation id="1768959921651994223">ପ୍ରମାଣୀକରଣର ପ୍ରକାର</translation>
 <translation id="1782199038061388045">ଅନୁବାଦ</translation>
 <translation id="1792647875738159689">ସ୍କାନିଂ ବାତିଲ୍ କରାଯାଉଛି</translation>
+<translation id="1801418420130173017">ଗାଢ଼ା ଥିମକୁ ଅକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="1807246157184219062">ଫିକା</translation>
 <translation id="1827738518074806965">ଆର୍ଟ ଗ୍ୟାଲେରୀ</translation>
 <translation id="1851218745569890714">ଭିଡିଓ କନଫରେନସିଂ</translation>
 <translation id="1852934301711881861">ChromeOS Flexକୁ ଇନଷ୍ଟଲ କରନ୍ତୁ</translation>
 <translation id="1856388568474281774">ତଳ ତୀର</translation>
+<translation id="1871569928317311284">ଗାଢ଼ା ଥିମ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1874612839560830905">MTU</translation>
+<translation id="188114911237521550">ଡାର୍କ ମୋଡ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1887850431809612466">ହାର୍ଡୱେୟାର୍ ପୁନରାବୃତ୍ତି</translation>
 <translation id="1905710495812624430">ସର୍ବାଧିକ ଅନୁମୋଦିତ ପ୍ରଚେଷ୍ଟା ସୀମା ଅତିକ୍ରମ କଲା।</translation>
 <translation id="1908234395526491708">UDP ଅନୁରୋଧ ବିଫଳ</translation>
@@ -115,6 +120,7 @@
 <translation id="2157959690810728433">ଧାଡ଼ିରେ ରଖାଯାଇଛି</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="2161394479394250669">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟକୁ ବାତିଲ୍ କରନ୍ତୁ</translation>
+<translation id="2163937499206714165">ଡାର୍କ ମୋଡ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="2180197493692062006">କିଛି ତ୍ରୁଟି ହୋଇଛି। ଆପକୁ ପୁଣି ଖୋଲିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="2209788852729124853">ଟ୍ରାଫିକ୍ କାଉଣ୍ଟରଗୁଡ଼ିକୁ ରିସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="2212733584906323460">ନାମ ରିଜୋଲ୍ୟୁସନ</translation>
@@ -126,8 +132,10 @@
 <translation id="2236746079896696523">କୀବୋର୍ଡ ବ୍ୟାକଲାଇଟ ଟୋଗଲ</translation>
 <translation id="2240366984605217732">ଲେଆଉଟ ସ୍ୱିଚ</translation>
 <translation id="225692081236532131">ସକ୍ରିୟକରଣ ସ୍ଥିତି</translation>
+<translation id="2271469253353559191">ଡାର୍କ ମୋଡ୍ ସିଡୁଲ୍</translation>
 <translation id="2287186687001756809">କୌଣସି ଇମେଜ ଉପଲବ୍ଧ ନାହିଁ। ଫଟୋଗୁଡ଼ିକୁ ଯୋଗ କରିବା ପାଇଁ <ph name="LINK" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2307344026739914387">ବର୍ତ୍ତମାନର କୀପେୟାର ବ୍ୟବହାର କରନ୍ତୁ</translation>
+<translation id="2320295602967756579">ହାଲୁକା ଥିମ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="2323506179655536734">ବାଦ୍ ଦିଆଯାଇଛି</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ଆଖପାଖରେ ଥିବା ଡିଭାଇସ୍‌ଗୁଡ଼ିକୁ ଖୋଜିବାକୁ ବ୍ଲୁଟୁଥ୍‌ ଚାଲୁ କରନ୍ତୁ</translation>
@@ -147,13 +155,16 @@
 <translation id="2493126929778606526">ସ୍ୱଚାଳିତ ଭାବେ ଚୟନିତ, ଆପଣଙ୍କର ଶ୍ରେଷ୍ଠ ଫଟୋଗୁଡ଼ିକ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">ବର୍ତ୍ତମାନର ୱାଲପେପର୍ ଛବିକୁ ରିଫ୍ରେସ୍ କରନ୍ତୁ</translation>
+<translation id="2513396635448525189">ଲଗଇନ୍ ଛବି</translation>
 <translation id="2517472476991765520">ସ୍କାନ୍ କରନ୍ତୁ</translation>
+<translation id="2526590354069164005">ଡେସ୍କଟପ୍</translation>
 <translation id="253029298928638905">ରିଷ୍ଟାର୍ଟ କରାଯାଉଛି...</translation>
 <translation id="2536159006530886390">ଇଣ୍ଟରନେଟ୍ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ପରୀକ୍ଷା ଚଲାଯାଉଛି...</translation>
 <translation id="2584559707064218956">ସେଟ ଅପ କରିବାକୁ, ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2619761439309613843">ଦୈନିକ ରିଫ୍ରେଶ୍</translation>
 <translation id="2620436844016719705">ସିଷ୍ଟମ୍‌</translation>
+<translation id="2638662041295312666">ସାଇନ୍-ଇନ୍ ଛବି</translation>
 <translation id="2640549051766135490">ଆଲବମ୍ <ph name="TITLE" /> <ph name="DESC" /> ଚୟନ କରାଯାଇଛି</translation>
 <translation id="2695514675076754339">8-ଅକ୍ଷର ବିଶିଷ୍ଟ ଅନଲକ କୋଡ ଲେଖନ୍ତୁ</translation>
 <translation id="2712812801627182647">TLS ପ୍ରମାଣୀକରଣ କୀ</translation>
@@ -173,11 +184,13 @@
 <translation id="2926057806159140518">ଆପଣଙ୍କ ଉପଯୋଗକର୍ତ୍ତା ନାମ ଏବଂ ପାସୱାର୍ଡ ଲେଖନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର QR କୋଡ ସ୍କାନ କରନ୍ତୁ</translation>
 <translation id="3008341117444806826">ରିଫ୍ରେଶ୍ କରନ୍ତୁ</translation>
 <translation id="3009958530611748826">ଏଥିରେ ସେଭ୍ କରିବାକୁ ଏକ ଫୋଲ୍ଡର୍ ଚୟନ କରନ୍ତୁ</translation>
+<translation id="3017079585324758401">ପୃଷ୍ଠପଟ</translation>
 <translation id="3031560714565892478">ଡିଭାଇସଟି ଏକ ଭିଡିଓ କ୍ୟାମେରା ଅଟେ।</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">ଏଣ୍ଡପଏଣ୍ଟ</translation>
 <translation id="3069085583900247081">ଟେଷ୍ଟ ବିଫଳ ହୋଇଛି</translation>
 <translation id="3083667275341675831">ସଂଯୋଗ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ</translation>
+<translation id="3084958266922136097">ସ୍କ୍ରିନ୍ ସେଭର୍ ଅକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="3091839911843451378">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟର୍ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="3102119246920354026">କ୍ୟାଶ୍</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -201,6 +214,7 @@
 <translation id="3340011300870565703">ଡିଭାଇସର ଡାହାଣପଟ ବଡରେ <ph name="BATTERY_PERCENTAGE" />% ବ୍ୟାଟେରୀ ଚାର୍ଜ ଅଛି।</translation>
 <translation id="3368922792935385530">ସଂଯୁକ୍ତ ହୋଇଛି</translation>
 <translation id="3369013195428705271">ଆପଣ ସମସ୍ତ ପ୍ରିଣ୍ଟ ଇତିହାସ ଖାଲି କରିବାକୁ ଚାହୁଁଥିବା ନିଶ୍ଚିତ କି? ଆପଣଙ୍କ ଚାଲୁଥିବା ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକ ଖାଲି ହେବ ନାହିଁ।</translation>
+<translation id="3404249063913988450">ସ୍କ୍ରିନ୍ ସେଭର୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="3413935475507503304">ଅପଡେଟ କରିବାକୁ ଆଗକୁ ବଢ଼ିବା ପାଇଁ, "ପରବର୍ତ୍ତୀ"କୁ କ୍ଲିକ କରନ୍ତୁ।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">ସୁରକ୍ଷା</translation>
@@ -215,6 +229,7 @@
 <translation id="3532980081107202182">ପ୍ରାୟ <ph name="MIN_REMAINING" /> ମିନିଟ୍ ବାକି ଅଛି</translation>
 <translation id="3557205324756024651">ସ୍ଥାନୀୟ ପରିଚୟ (ଇଚ୍ଛାଧୀନ)</translation>
 <translation id="3565064564551103223">ଅନୁମତି ଦିଆଯାଇଥିବା IPଗୁଡ଼ିକ</translation>
+<translation id="3569407787324516067">ସ୍କ୍ରିନ୍ ସେଭର୍</translation>
 <translation id="3577473026931028326">କିଛି ତ୍ରୁଟି ହୋଇଛି। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="357889014807611375">ମିଟର୍ ହୋଇଥିବା ୱାଇ-ଫାଇ</translation>
 <translation id="3583278742022654445">ସିଗନାଲ କ୍ଷମତା ଦୁର୍ବଳ ଅଟେ। ୱାଇ-ଫାଇ ସିଗନାଲ ସୋର୍ସ ନିକଟକୁ ଯାଇ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -258,9 +273,11 @@
 <translation id="4044093238444069296">ଗେଟୱେ ସହ ଯୋଗାଯୋଗ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="4046123991198612571">ପରବର୍ତ୍ତୀ ଟ୍ରାକ୍</translation>
 <translation id="404928562651467259">ଚେତାବନୀ</translation>
+<translation id="4093865285251893588">ପ୍ରୋଫାଇଲ୍ ଛବି</translation>
 <translation id="409427325554347132">ଟେଷ୍ଟ ବିବରଣୀ ସେଭ୍ କରନ୍ତୁ</translation>
 <translation id="4110686435123617899">ଆଲବମ୍ <ph name="TITLE" /> <ph name="DESC" /> ଚୟନ କରନ୍ତୁ</translation>
 <translation id="4111761024568264522">USB ଟଚପ୍ୟାଡ</translation>
+<translation id="4117637339509843559">ଡାର୍କ ମୋଡ୍</translation>
 <translation id="4131410914670010031">କଳା ଏବଂ ଧଳା</translation>
 <translation id="4140251671072434548">RMA ସର୍ଭର ଅନଲକ ପରଫର୍ମ କରନ୍ତୁ</translation>
 <translation id="4145784616224233563">HTTP ଫାୟାରୱାଲ୍</translation>
@@ -270,6 +287,7 @@
 <translation id="4170700058716978431">ବିଫଳ ହୋଇଛି</translation>
 <translation id="4176463684765177261">ଅକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="4176659219503619100">କଣ୍ଟ୍ରୋଲ ପ୍ୟାନେଲ</translation>
+<translation id="420283545744377356">ସ୍କ୍ରିନ୍ ସେଭର ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="4213104098953699324">USB କୀବୋର୍ଡ</translation>
 <translation id="4227825898293920515"><ph name="TIME" />ରେ ପାସ୍‌ୱାର୍ଡର ମିଆଦ ଶେଷ ହେଉଛି</translation>
 <translation id="4238516577297848345">କୌଣସି ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟ ଚାଲୁ ନାହିଁ</translation>
@@ -332,6 +350,7 @@
 <translation id="4793756956024303490">କମ୍ପ୍ରେସନ ଆଲଗୋରିଦମ</translation>
 <translation id="4794140124556169553">ଏକ CPU ଟେଷ୍ଟ ଚଲାଇବା ଫଳରେ ଏହା ଆପଣଙ୍କ ସିଷ୍ଟମର ପରଫରମାନ୍ସକୁ ପ୍ରଭାବିତ କରିପାରେ</translation>
 <translation id="4808449224298348341">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟ <ph name="DOCUMENT_TITLE" /> ବାତିଲ୍ କରାଯାଇଛି</translation>
+<translation id="4809927044794281115">ହାଲୁକା ଥିମ୍</translation>
 <translation id="4813136279048157860">ମୋ ଛବି</translation>
 <translation id="4813345808229079766">ସଂଯୋଜନ</translation>
 <translation id="4832079907277790330">Files ଆପରେ ଫୋଲ୍ଡର୍ ଚୟନ କରନ୍ତୁ...</translation>
@@ -379,6 +398,7 @@
 ମୋତେ ଯାହା କିଛି ପଚାରିବା ପାଇଁ ମାଇକ୍‌ ଟାପ୍‌ କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="5212593641110061691">ଟାବଲଏଡ୍</translation>
 <translation id="5222676887888702881">ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ</translation>
+<translation id="5227902338748591677">ଗାଢ଼ା ଥିମ୍ ସିଡୁଲ୍</translation>
 <translation id="5234764350956374838">ଖାରଜ କରନ୍ତୁ</translation>
 <translation id="5252456968953390977">ରୋମିଂ</translation>
 <translation id="5257811368506016604">ଲାଇଟ କଲର ମୋଡକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
@@ -399,6 +419,7 @@
 <translation id="5346687412805619883">ସ୍ଥାନୀୟ ନେଟୱାର୍କ</translation>
 <translation id="5358174242040570474">କିଛି ତ୍ରୁଟି ହୋଇଛି। ପୁଣି ଏକ ୱାଲପେପର ବାଛିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପକୁ ପୁଣି ଖୋଲନ୍ତୁ।</translation>
 <translation id="5372659122375744710">ୱାଇଫାଇ ନେଟୱାର୍କ ସୁରକ୍ଷିତ ନୁହେଁ</translation>
+<translation id="5376354385557966694">ସ୍ଵଚାଳିତ ଲାଇଟ୍ ମୋଡ୍</translation>
 <translation id="5400907029458559844">ଡିଭାଇସ ସଂଯୋଗ କରାଯାଉଛି।</translation>
 <translation id="5401938042319910061">ସମସ୍ତ ରୁଟିନ୍ ଚଲାନ୍ତୁ</translation>
 <translation id="5423849171846380976">ସକ୍ରିୟ କରାଯାଇଛି</translation>
@@ -434,6 +455,7 @@
 <translation id="583281660410589416">ଅଜ୍ଞାତ</translation>
 <translation id="5843706793424741864">ଫାରେନହାଇଟ୍</translation>
 <translation id="5849570051105887917">ମୂଳ ପ୍ରଦାତା କୋଡ୍‍</translation>
+<translation id="5859603669299126575">ଆର୍ଟ ଗ୍ୟାଲେରୀ ଆଲବମ</translation>
 <translation id="5860033963881614850">ବନ୍ଦ ଅଛି</translation>
 <translation id="5860491529813859533">ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="5866840822086176774">ଅତି ଦୃଢ଼</translation>
@@ -480,11 +502,15 @@
 <translation id="6275224645089671689">ଡାହାଣ ତୀର</translation>
 <translation id="6278428485366576908">ଥିମ୍</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6284632978374966585">ଗାଢ଼ା ଥିମ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ଟେଷ୍ଟକୁ ବାତିଲ୍ କରାଯାଇଛି</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" />ରେ ଫାର୍ମୱେର ଅପଡେଟ କରନ୍ତୁ</translation>
+<translation id="6321407676395378991">ସ୍କ୍ରିନ୍ ସେଭର୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="6325525973963619867">ବିଫଳ ହୋଇଛି</translation>
+<translation id="6331191339300272798">ସ୍ୱଚାଳିତ ଗାଢ଼ା ଥିମ୍</translation>
 <translation id="6340526405444716530">ବ୍ୟକ୍ତିଗତକରଣ</translation>
 <translation id="6348738456043757611">ଉପଯୋଗକର୍ତ୍ତାନାମ ଏବଂ ପାସୱାର୍ଡ</translation>
+<translation id="6359706544163531585">ହାଲୁକା ଥିମକୁ ଅକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="636850387210749493">ଏଣ୍ଟର୍‌ପ୍ରାଇଜ୍ ନାମାଙ୍କନ</translation>
 <translation id="6379086450106841622">ଟଚସ୍କ୍ରିନ୍</translation>
 <translation id="6381741036071372448">ଆପଣଙ୍କ କୀବୋର୍ଡକୁ ପରୀକ୍ଷା କରନ୍ତୁ</translation>
@@ -559,6 +585,7 @@
 <translation id="714876143603641390">LAN ସଂଯୋଗ</translation>
 <translation id="7155171745945906037">କ୍ୟାମେରା କିମ୍ବା ଫାଇଲ୍‍‍ରେ ବିଦ୍ୟମାନ ଥିବା ଫଟୋ</translation>
 <translation id="7162487448488904999">ଗ୍ୟାଲେରୀ</translation>
+<translation id="7170236477717446850">ପ୍ରୋଫାଇଲ୍ ଛବି</translation>
 <translation id="7172721935181587524">1ଟି ଛବି</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> କନ୍‌ଫିଗର୍‌ କରନ୍ତୁ</translation>
 <translation id="7177485034254901881">ଏହି <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି। ଆଡମିନିଷ୍ଟ୍ରେଟରମାନେ ଡିଭାଇସଟିକୁ ରିମୋଟ୍ ଭାବେ କନଫିଗର୍ କରିପାରନ୍ତି।</translation>
@@ -580,6 +607,7 @@
 <translation id="7359657277149375382">ଫାଇଲର ପ୍ରକାର</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378886533986123738">ସ୍କ୍ରିନସେଭର ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
+<translation id="7397270852490618635">ହାଲୁକା ଥିମକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="741244894080940828">କନଭର୍ସନ୍</translation>
 <translation id="7415801143053185905">HTTPର ବହୁତ ଅଧିକ ଲାଟେନ୍ସି</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -591,6 +619,7 @@
 <translation id="7497215489070763236">CA ସାର୍ଟିଫିକେଟ୍ ସର୍ଭର୍</translation>
 <translation id="7502658306369382406">IPv6 ଠିକଣା</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7535791657097741517">ହାଲୁକା ଥିମ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="7550715992156305117">ଡାଇଗ୍ନୋଷ୍ଟିକ୍ ରୁଟିନ୍</translation>
 <translation id="7551123448725492271">ଡିଭାଇସଟି ଏକ ଅଡିଓ ଡିଭାଇସ ଅଟେ।</translation>
 <translation id="7561454561030345039">ଏହି କାର୍ଯ୍ୟ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ</translation>
@@ -612,11 +641,14 @@
 <translation id="7763470514545477072">ଡୋମେନ୍ ସଫିକ୍ସ ସହ ମେଳ</translation>
 <translation id="7769672763586021400">ମଡେଲ୍ ID</translation>
 <translation id="7784116172884276937">କୌଣସି DNS ସର୍ଭର ସେଟ ଅପ କରାଯାଇନାହିଁ</translation>
+<translation id="7799817062559422778">ଲାଇଟ୍ ମୋଡ୍</translation>
 <translation id="780301667611848630">ନାଁ, ଥାଉ</translation>
 <translation id="7805768142964895445">ସ୍ଥିତି</translation>
 <translation id="7819857487979277519">PSK (WPA or RSN)</translation>
+<translation id="7841134249932030522">ଡାର୍କ ମୋଡ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="7846634333498149051">କୀ'ବୋର୍ଡ</translation>
 <translation id="7856267634822906833">ବ୍ଲୁଟୁଥ ଟଚସ୍କ୍ରିନ</translation>
+<translation id="7869143217755017858">ଡାର୍କ ମୋଡକୁ ଅକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ପ୍ରଦାତା ପ୍ରକାର</translation>
 <translation id="7882501334836096755">ସାର୍ବଜନୀନ କୀ</translation>
@@ -656,6 +688,7 @@
 <translation id="8297006494302853456">ଦୁର୍ବଳ</translation>
 <translation id="8302368968391049045">HTTPS ଫାୟାରୱାଲ୍</translation>
 <translation id="8318753676953949627">କୌଣସି ଇମେଜ୍ ନାହିଁ</translation>
+<translation id="8336739000755212683">ଡିଭାଇସ୍ ଆକାଉଣ୍ଟ ଛବି ବଦଳାନ୍ତୁ</translation>
 <translation id="8347227221149377169">ପ୍ରିଣ୍ଟ ଜବ୍</translation>
 <translation id="8352772353338965963">ଏକାଧିକ ସାଇନ୍-ଇନ୍ କରିବାକୁ ଏକ ଆକାଉଣ୍ଟ ଯୋଗ କରନ୍ତୁ। ସାଇନ୍-ଇନ୍ ହୋଇଥିବା ସମସ୍ତ ଆକାଉଣ୍ଟ ବିନା ପାସ୍‌ୱର୍ଡରେ ଆକ୍ସେସ୍ କରାଯାଇପାରିବ, ତେଣୁ ଏହି ସୁବିଧା କେବଳ ବିଶ୍ୱସ୍ତ ଆକାଉଣ୍ଟ ସହ ବ୍ୟବହାର କରାଯିବା ଉଚିତ୍।</translation>
 <translation id="8364946094152050673">ନେମ୍ ସର୍ଭର୍ ଖାଲି ଅଛି</translation>
@@ -667,6 +700,7 @@
 <translation id="8431300646573772016">ChromeOSରେ ନୂଆ କଣ ଅଛି</translation>
 <translation id="843568408673868420">ଇଣ୍ଟରନେଟ ସଂଯୋଗ</translation>
 <translation id="844521431886043384">DNS ସେଟ ଅପ କରାଯାଇନାହିଁ</translation>
+<translation id="8456761643544401578">ସ୍ୱଚାଳିତ ଡାର୍କ ମୋଡ୍</translation>
 <translation id="8461329675984532579">ମୂଳ ପ୍ରଦାତା ନାମ</translation>
 <translation id="8475690821716466388">ଦୁର୍ବଳ ପ୍ରୋଟୋକଲ୍ WEP PSK ବ୍ୟବହାର କରି ୱାଇଫାଇ ନେଟୱାର୍କକୁ ସୁରକ୍ଷିତ କରାଯାଇଛି</translation>
 <translation id="8477551185774834963">DNS ଲାଟେନ୍ସି ଅନୁମୋଦିତ ସୀମା ଠାରୁ ଅଳ୍ପ ଉପରେ ଅଛି</translation>
@@ -693,6 +727,7 @@
 <translation id="8730621377337864115">ସମାପ୍ତ ହୋଇଛି</translation>
 <translation id="8747900814994928677">ପରିବର୍ତ୍ତନକୁ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="8764414543112028321">WireGuard</translation>
+<translation id="87646919272181953">Google Photos ଆଲବମ</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">ଏହି ନେଟୱାର୍କରେ ଏକ କ୍ୟାପ୍ଟିଭ ପୋର୍ଟାଲ ଥାଇପାରେ</translation>
 <translation id="8798099450830957504">ଡିଫଲ୍ଟ</translation>
@@ -702,6 +737,7 @@
 <translation id="8834539327799336565">ବର୍ତ୍ତମାନ ସଂଯୁକ୍ତ ଅଛି</translation>
 <translation id="8845001906332463065">ସାହାଯ୍ୟ ପାଆନ୍ତୁ</translation>
 <translation id="8855781559874488009">ଫାୟାରୱାଲ ମାଧ୍ୟମରେ HTTP ୱେବସାଇଟଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ</translation>
+<translation id="8863170912498892583">ଗାଢ଼ା ଥିମ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇଁ <ph name="INTENT" /> ପାଆନ୍ତୁ</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ଡିଭାଇସଟି ଏକ ଟାବଲେଟ ଅଟେ।</translation>

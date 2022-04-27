@@ -26,7 +26,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="109942774857561566">Rydw i wedi diflasu</translation>
 <translation id="1104084341931202936">Dangos y gosodiadau hygyrchedd</translation>
 <translation id="1104621072296271835">Mae'ch dyfeisiau'n gweithio hyd yn oed yn well gyda'i gilydd</translation>
-<translation id="1111781754511998498">Taflunydd</translation>
 <translation id="112308213915226829">Cuddio silff yn awtomatig</translation>
 <translation id="1142002900084379065">Lluniau diweddar</translation>
 <translation id="1148499908455722006">Agor y deialog gwybodaeth ar gyfer <ph name="USER_NAME" /></translation>
@@ -80,6 +79,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1312604459020188865">Cryfder Signal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Dangos y silff bob amser</translation>
 <translation id="1316811122439383437">Tôt: sgrinliniau, lawrlwythiadau, a ffeiliau sydd wedi'u pinio diweddar</translation>
+<translation id="132346741904777634">Mae'r camera wedi'i snapio i'r gornel chwith uchaf. Gwrthdaro ag arwyneb y system.</translation>
 <translation id="1333308631814936910">Mae <ph name="DISPLAY_NAME" /> wedi cysylltu</translation>
 <translation id="1341651618736211726">Gorlif</translation>
 <translation id="1346748346194534595">De</translation>
@@ -163,6 +163,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1885785240814121742">Gallwch ddatgloi gyda'ch olion bysedd</translation>
 <translation id="1888656773939766144">Nid yw <ph name="DISPLAY_NAME" /> yn cefnogi <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Cafodd y cydraniad ei newid i <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Cliciwch Cadarnhau i gadw'r newidiadau. Bydd y gosodiadau blaenorol yn cael eu hadfer mewn <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1915307458270490472">Dod â'r sgwrs i ben</translation>
+<translation id="1918022425394817322">Mae'r camera wedi'i snapio i'r gornel dde uchaf</translation>
 <translation id="1919743966458266018">Mae'r llwybr byr i agor y rheolwr tasgau wedi newid. Defnyddiwch <ph name="NEW_SHORTCUT" /> yn lle <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Cliciau awtomatig</translation>
 <translation id="1928739107511554905">I gael y diweddariad, defnyddiwch y sgrîn gyffwrdd i ailgychwyn eich Chromebook gyda'r bysellfwrdd wedi'i atodi.</translation>
@@ -185,11 +186,9 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2021864487439853900">Cliciwch i ddatgloi</translation>
 <translation id="2023558322300866873">Gallwch stopio cipio pecynnau ar unrhyw bryd</translation>
 <translation id="2034971124472263449">Cadw beth bynnag</translation>
-<translation id="2047639699071423250">Ychwanegu syniad allweddol</translation>
 <translation id="2049240716062114887">Newidiwyd enw'r ddesg i <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portread</translation>
 <translation id="2064048859448024834">Rhagolwg camera ymlaen</translation>
-<translation id="2066708475850724665">Stopio'r chwyddwydr</translation>
 <translation id="2067602449040652523">Disgleirdeb bysellfwrdd</translation>
 <translation id="2078034614700056995">Sweipiwch i'r dde gyda phedwar bys i newid i'r ddesg nesaf</translation>
 <translation id="2079504693865562705">Cuddio apiau yn y silff</translation>
@@ -199,6 +198,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2107914222138020205">Nid yw eich cebl USB-C yn cefnogi Thunderbolt. Mae'n bosib y bydd perfformiad y ddyfais yn gyfyngedig.</translation>
 <translation id="2108303511227308752">Mae'r llwybr byr bysellfwrdd Alt + Backspace wedi newid. I ddefnyddio'r fysell Delete, pwyswch y fysell <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
 <translation id="211328683600082144">TROI'R MEICROFFON YMLAEN</translation>
+<translation id="2123115117533398272">Mae ChromeOS yn dangos awgrymiadau ar gyfer cynnwys newydd i'w archwilio. Yn anfon ystadegau i wella ansawdd dim ond os ydych wedi dewis rhannu data defnydd. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">Desg newydd</translation>
 <translation id="2127372758936585790">Gwefrydd pŵer isel</translation>
 <translation id="2132302418721800944">Recordio'r sgrîn lawn</translation>
@@ -212,6 +212,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2220572644011485463">PIN neu gyfrinair</translation>
 <translation id="2222841058024245321">Desg 7</translation>
 <translation id="2224075387478458881">Ni chaniateir recordio'r sgrîn pan fydd cynnwys gwarchodedig yn weladwy</translation>
+<translation id="2227179592712503583">Tynnu'r awgrym</translation>
 <translation id="225680501294068881">Wrthi'n chwilio am ddyfeisiau…</translation>
 <translation id="2257486738914982088">Aeth rhywbeth o'i le wrth lawrlwytho <ph name="FILENAME" /></translation>
 <translation id="2268130516524549846">Mae Bluetooth wedi'i analluogi</translation>
@@ -269,6 +270,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2621713457727696555">Diogel</translation>
 <translation id="263399434338050016">"Dewis y cyfan"</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Tynnu sgrinlun o'r ffenestr</translation>
 <translation id="2653659639078652383">Danfon</translation>
 <translation id="2658778018866295321">Clicio a llusgo</translation>
@@ -281,7 +283,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2704781753052663061">Ymuno â rhwydweithiau Wi-Fi eraill</translation>
 <translation id="2705001408393684014">Toglo'r Meicroffon. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">I fyny</translation>
-<translation id="2713444072780614174">Gwyn</translation>
 <translation id="2718395828230677721">Golau nos</translation>
 <translation id="2726420622004325180">Rhaid bod gan eich ffôn ddata symudol i ddarparu poethfan</translation>
 <translation id="2727175239389218057">Ateb</translation>
@@ -350,7 +351,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3100274880412651815">Diystyru'r modd tynnu sgrinlun</translation>
 <translation id="3105917916468784889">Tynnu sgrinlun</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
-<translation id="3113926042639749131">Tynnu'r Awgrym</translation>
 <translation id="3120421559657122717">Diffodd y ddyfais?</translation>
 <translation id="3126069444801937830">Ailgychwynnwch i ddiweddaru</translation>
 <translation id="3139942575505304791">Desg 1</translation>
@@ -394,6 +394,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3375634426936648815">Wedi cysylltu</translation>
 <translation id="3378442621503952303">Wrthi'n cysylltu â'r proffil. Arhoswch ychydig funudau.</translation>
 <translation id="3386978599540877378">y chwyddwydr sgrîn lawn</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">Gosodiadau ychwanegol</translation>
 <translation id="3410336247007142655">Dangos gosodiadau thema dywyll</translation>
 <translation id="3413817803639110246">Dim byd i'w weld eto</translation>
@@ -427,7 +428,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3542066395059568317">Byddwch yn gweld argymhellion fel eich bod yn gallu parhau lle y gwnaethoch adael. Gallwch dde-glicio i dynnu argymhellion.</translation>
 <translation id="3552189655002856821">Mae Wi-Fi wedi'i ddiffodd</translation>
 <translation id="3554637740840164787">Cafodd <ph name="ITEM_TITLE" /> ei binio</translation>
-<translation id="3560866052109807830">Offer lluniadu marcio</translation>
 <translation id="3563775809269155755">Galluogi poethfan</translation>
 <translation id="3566240529365775567">Newydd ei hagor</translation>
 <translation id="3571734092741541777">Gosod</translation>
@@ -452,7 +452,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3638400994746983214">Toglo'r sgrîn preifatrwydd. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Mae Diweddariad yn hwyr</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Defnyddiwr a Reolir</translation>
-<translation id="3680908746918359504">Clirio'r holl farcwyr</translation>
 <translation id="36813544980941320">Bydd rhwydweithiau yn cael eu rhannu rhwng eich ffôn a <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Gwefannau</translation>
 <translation id="3701206655856637070">Gallwch bellach newid ble mae sgrinluniau yn cael eu cadw</translation>
@@ -518,7 +517,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Wedi'i ddiffodd ar gyfer ap}zero{Wedi'i ddiffodd ar gyfer # ap}two{Wedi'i ddiffodd ar gyfer # ap}few{Wedi'i ddiffodd ar gyfer # ap}many{Wedi'i ddiffodd ar gyfer # ap}other{Wedi'i ddiffodd ar gyfer # ap}}</translation>
 <translation id="4066027111132117168">Ymlaen, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Signal canolig</translation>
-<translation id="4095366824370681039">Pen inc</translation>
 <translation id="4112140312785995938">Mynd yn ôl</translation>
 <translation id="4114315158543974537">Troi Phone Hub ymlaen</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -550,12 +548,12 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="4279490309300973883">Adlewyrchu</translation>
 <translation id="4283888303416325161">Rhowch gyfrinair i gael rhagor o ddiogelwch</translation>
 <translation id="4285498937028063278">Dad-binio</translation>
-<translation id="429402653707266969">Toglo lleoliad y bar offer</translation>
 <translation id="4294319844246081198">Bore da <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Clirio'r holl <ph name="COUNT" /> hysbysiad</translation>
 <translation id="430191667033048642">Symudwyd <ph name="MOVED_APP_NAME" /> i'r ffolder <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Ddim ar gael</translation>
 <translation id="4303223480529385476">Ehangu'r ardal statws</translation>
+<translation id="4312840429157639164">Mae'r camera wedi'i snapio i'r gornel dde uchaf. Gwrthdaro ag arwyneb y system.</translation>
 <translation id="4316910396681052118">POB AP</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Gwnaethoch bwyso llwybr byr y bysellfwrdd i gael cyferbyniad uchel. Ydych chi am ei droi ymlaen?</translation>
@@ -614,7 +612,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="4587299710837179226">Mae'r meicroffon wedi'i ddiffodd</translation>
 <translation id="4596144739579517758">Mae'r thema dywyll wedi'i diffodd</translation>
 <translation id="4611292653554630842">Mewngofnodi</translation>
-<translation id="4614295562446151104">Ehangu offer marcio</translation>
 <translation id="4623167406982293031">Dilyswch eich cyfrif</translation>
 <translation id="4628757576491864469">Dyfeisiau</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, Sgôr seren <ph name="RATING_SCORE" /></translation>
@@ -684,7 +681,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="504465286040788597">Paragraff blaenorol</translation>
 <translation id="5045550434625856497">Cyfrinair anghywir</translation>
 <translation id="5071064518267176975">Mae ap eisiau defnyddio'r meicroffon</translation>
-<translation id="5075554201838155866">Dechrau capsiynau caeedig</translation>
 <translation id="5078796286268621944">PIN anghywir</translation>
 <translation id="5083553833479578423">Datgloi rhagor o nodweddion Assistant.</translation>
 <translation id="5106223312672646208">Personoleiddio</translation>
@@ -792,7 +788,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="5790085346892983794">Llwyddiant</translation>
 <translation id="5805809050170488595">Cliciwch i weithredu <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Gosodiadau dyfeisiau cysylltiedig</translation>
-<translation id="583281660410589416">Anhysbys</translation>
 <translation id="5837036133683224804">Stopio <ph name="ROUTE_TITLE" /> ar <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Daliwch i fwyhau</translation>
 <translation id="5856638668464565213">Nid yw <ph name="NETWORK_NAME" /> wedi'i weithredu.</translation>
@@ -837,7 +832,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="6043212731627905357">Nid yw'r monitor hwn yn dod ymlaen gyda'ch <ph name="DEVICE_TYPE" /> (nid yw'r monitor wedi'i gefnogi).</translation>
 <translation id="6043994281159824495">Allgofnodi nawr</translation>
 <translation id="6047696787498798094">Bydd rhannu sgrîn yn stopio pan fyddwch yn newid i ddefnyddiwr arall. Ydych chi am barhau?</translation>
-<translation id="6050368268239407309">Offer cyflwyno</translation>
 <translation id="6054305421211936131">Mewngofnodi gyda cherdyn smart</translation>
 <translation id="6059276912018042191">Tabiau Chrome diweddar</translation>
 <translation id="6062360702481658777">Byddwch yn cael eich allgofnodi yn awtomatig <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -866,6 +860,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="6254629735336163724">Wedi'i gloi i lorweddol</translation>
 <translation id="6259254695169772643">Defnyddiwch eich pwyntil i ddewis</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Wrthi'n gweithredu...</translation>
+<translation id="6274202259872570803">Sgrinlediad</translation>
 <translation id="6283712521836204486">Mae peidiwch ag aflonyddu wedi'i ddiffodd.</translation>
 <translation id="6284232397434400372">Newidiwyd y Cydraniad</translation>
 <translation id="6288235558961782912">Gall <ph name="USER_EMAIL_ADDRESS" /> gael ei ychwanegu eto yn nes ymlaen gyda chaniatâd rhiant.</translation>
@@ -897,6 +892,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="649452524636452238">PIN cerdyn smart</translation>
 <translation id="6495400115277918834">Wedi cychwyn llun mewn llun, Alt+Shift+V i ffocysu</translation>
 <translation id="6501401484702599040">Yn castio'r sgrîn i <ph name="RECEIVER_NAME" /></translation>
+<translation id="6515727200518652613">Mae'r camera wedi'i golli, wrthi'n ceisio ailgysylltu.</translation>
 <translation id="6520517963145875092">Dewiswch ffenestr i'w chipio</translation>
 <translation id="652139407789908527">Bydd eich sgrîn yn mynd yn wag am fwy o amser nag arfer (hyd at funud) yn ystod y diweddariad hwn. Peidiwch â phwyso'r botwm pŵer tra bo'r diweddariad ar y gweill.</translation>
 <translation id="6528179044667508675">Peidiwch ag Aflonyddu</translation>
@@ -915,6 +911,7 @@ Gosodiad newydd</translation>
 <translation id="6578407462441924264">Dienw</translation>
 <translation id="6585808820553845416">Mae'r sesiwn yn dod i ben mewn <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597278316891651699">Mae'r camera wedi'i snapio i'r gornel chwith isaf. Gwrthdaro ag arwyneb y system.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />, Rheolir gan eich Gweinyddwr</translation>
 <translation id="6612802754306526077">Dewiswyd y modd recordio sgrîn</translation>
 <translation id="6614169507485700968">Mae'r sgrîn preifatrwydd ymlaen</translation>
@@ -952,6 +949,7 @@ Gosodiad newydd</translation>
 <translation id="6801878137098616817">Golygwyd yn ddiweddar</translation>
 <translation id="6803622936009808957">Methu ag adlewyrchu'r sgriniau gan na chanfuwyd unrhyw gydraniadau a gefnogir. Dechreuwyd bwrdd gwaith estynedig yn lle.</translation>
 <translation id="6818242057446442178">Nôl yn ôl gair</translation>
+<translation id="6819327813400217281">Mae'r camera wedi'i snapio i'r gornel chwith isaf</translation>
 <translation id="6820676911989879663">Cael seibiant!</translation>
 <translation id="6827049576281411231">Cau'r panel digwyddiadau</translation>
 <translation id="6836499262298959512">Ffeil beryglus</translation>
@@ -980,6 +978,7 @@ Gosodiad newydd</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Hygyrchedd</translation>
 <translation id="698231206551913481">Bydd yr holl ffeiliau a data lleol sy'n gysylltiedig â'r defnyddiwr hwn yn cael eu dileu'n barhaol unwaith y bydd y defnyddiwr hwn wedi'i dynnu.</translation>
+<translation id="7005239792648594238">Agorwch ap i gychwyn arni</translation>
 <translation id="7007983414944123363">Ni ellid dilysu eich PIN neu gyfrinair. Rhowch gynnig arall arni.</translation>
 <translation id="7014684956566476813">Wedi'i gysylltu â dyfais o'r enw <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Dewch yn ôl am <ph name="COME_BACK_TIME" />.</translation>
@@ -991,9 +990,9 @@ Gosodiad newydd</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">Crebachu'r ardal statws</translation>
 <translation id="7045033600005038336">Disoli'r templed?</translation>
-<translation id="7045595904618419789">Dechrau'r chwyddwydr</translation>
 <translation id="7051244143160304048">Mae <ph name="DEVICE_NAME" /> wedi’i ddatgysylltu</translation>
 <translation id="7055910611768509537">Nid yw'r pwyntil wedi'i ddefnyddio mewn dros wythnos</translation>
+<translation id="7061457967428964661">Rhagolwg camera, pwyswch Control + bysellau saeth i symud y rhagolwg i gornel wahanol</translation>
 <translation id="7066646422045619941">Mae'r rhwydwaith hwn wedi'i analluogi gan eich gweinyddwr.</translation>
 <translation id="7067196344162293536">Awtogylchdroi</translation>
 <translation id="7068360136237591149">Agor ffeiliau</translation>
@@ -1014,12 +1013,12 @@ Gosodiad newydd</translation>
 <translation id="718361511487535372">Agor yn Google Calendar</translation>
 <translation id="7188494361780961876">Cafodd y ddewislen ei symud i gornel chwith uchaf y sgrîn.</translation>
 <translation id="7189412385142492784">Pa mor bell yw'r blaned Gwener</translation>
+<translation id="7198435252016571249">Mae'r camera wedi'i snapio i'r gornel dde isaf. Gwrthdaro ag arwyneb y system.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Mae angen i'r Chromebook hwn ailgychwyn i gymhwyso diweddariad. Gall hyn gymryd hyd at 1 funud.</translation>
 <translation id="7256634071279256947">Meicroffon cefn</translation>
 <translation id="7258828758145722155">Golygwyd ddoe</translation>
 <translation id="726276584504105859">Llusgwch yma i ddefnyddio sgrîn hollt</translation>
 <translation id="7262906531272962081">Creu nodyn atgoffa</translation>
-<translation id="7279434993080105272">Lliw'r marciwr <ph name="COLOR_PARAMETER" /></translation>
 <translation id="7302889331339392448">Mae Capsiynau Byw wedi'u diffodd.</translation>
 <translation id="7303365578352795231">Yn ateb ar ddyfais arall.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1046,7 +1045,6 @@ Gosodiad newydd</translation>
 <translation id="742594950370306541">Mae'r camera'n cael ei ddefnyddio.</translation>
 <translation id="742608627846767349">Bore da,</translation>
 <translation id="743058460480092004">Mae'r camera a'r meicroffon yn cael eu defnyddio.</translation>
-<translation id="7434543979546293336">Marciwyd fel syniad allweddol</translation>
 <translation id="7452560014878697800">Mae ap yn defnyddio'ch camera</translation>
 <translation id="7453330308669753048">Canlyniad hanes chwilio wedi'i dynnu</translation>
 <translation id="7461924472993315131">Pinio</translation>
@@ -1054,7 +1052,6 @@ Gosodiad newydd</translation>
 <translation id="7466449121337984263">Cyffyrddwch â'r synhwyrydd</translation>
 <translation id="7477793887173910789">Rheoli eich cerddoriaeth, eich fideos, a rhagor</translation>
 <translation id="7483025031359818980">Ardal dewis wedi'i gosod i sgrîn lawn</translation>
-<translation id="7486227320194954040">Crebachu offer marcio</translation>
 <translation id="7497767806359279797">Dewis iaith a bysellfwrdd</translation>
 <translation id="7508690557411636492">Agorwyd yn y mis diwethaf</translation>
 <translation id="7509246181739783082">Cadarnhewch eich hunaniaeth</translation>
@@ -1071,16 +1068,16 @@ Gosodiad newydd</translation>
 <translation id="7561982940498449837">Cau'r ddewislen</translation>
 <translation id="7564874036684306347">Gall symud ffenestri i fwrdd gwaith arall arwain at ymddygiad annisgwyl. Gellir rhannu hysbysiadau, ffenestri a deialogau dilynol rhwng byrddau gwaith.</translation>
 <translation id="7569509451529460200">Mae Braille a ChromeVox wedi'u galluogi</translation>
-<translation id="7569983096843329377">Du</translation>
 <translation id="7573585051776738856">Mae'r ffenestr weithredol wedi'i docio ar y dde.</translation>
 <translation id="7579778809502851308">Tynnu sgrinlun</translation>
 <translation id="7590883480672980941">Gosodiadau mewnbynnu</translation>
 <translation id="7593891976182323525">Search neu Shift</translation>
 <translation id="7600875258240007829">Gweld pob hysbysiad</translation>
 <translation id="7607002721634913082">Wedi seibio</translation>
+<translation id="7611213136657090146">Mae'r camera wedi'i ailgysylltu.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7631906263969450674">Pen marcio</translation>
 <translation id="7633755430369750696">Dangos gosodiadau Rhannu Gerllaw.</translation>
+<translation id="7634648064048557203">Mae'r camera wedi'i snapio i'r gornel dde isaf</translation>
 <translation id="7641938616688887143">Recordio</translation>
 <translation id="7642647758716480637">Agor y gosodiadau ar gyfer <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (perchennog)</translation>
@@ -1093,6 +1090,7 @@ Gosodiad newydd</translation>
 <translation id="7662283695561029522">Tapiwch i ffurfweddu</translation>
 <translation id="7670953955701272011">Agor y dyddiad hwn yn Google Calendar</translation>
 <translation id="7671610481353807627">Mae apiau'n cael eu trefnu yn ôl lliw</translation>
+<translation id="7684531502177797067">Mae mewnbwn y camera wedi'i osod i <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Ychwanegu rhwydwaith symudol newydd</translation>
 <translation id="7720410380936703141">RHOI CYNNIG ARALL ARNI</translation>
@@ -1151,7 +1149,6 @@ Gosodiad newydd</translation>
 <translation id="8029247720646289474">Methwyd y cysylltiad â'r poethfan</translation>
 <translation id="8029629653277878342">Mae angen PIN neu gyfrinair ar gyfer rhagor o ddiogelwch</translation>
 <translation id="8030169304546394654">Wedi datgysylltu</translation>
-<translation id="8035152190676905274">Pen</translation>
 <translation id="8036504271468642248">Brawddeg flaenorol</translation>
 <translation id="8042893070933512245">Agor dewislen gosodiadau hygyrchedd</translation>
 <translation id="8042925093898452104">Cau'r wybodaeth fanwl</translation>
@@ -1160,6 +1157,7 @@ Gosodiad newydd</translation>
 <translation id="8051716679295756675">Mae'r templed o'r enw <ph name="DESK_TEMPLATE_NAME" /> eisoes yn bodoli</translation>
 <translation id="8052898407431791827">Wedi'i gopïo i'r clipfwrdd</translation>
 <translation id="8054466585765276473">Wrthi'n cyfrifo amser y batri.</translation>
+<translation id="8055510977240456975">Cuddio awgrymiadau parhau</translation>
 <translation id="8061464966246066292">Cyferbyniad uchel</translation>
 <translation id="8098591350844501178">Stopio castio'r sgrîn i <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Ymlaen, pob ap</translation>
@@ -1167,7 +1165,6 @@ Gosodiad newydd</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Cadarnhau</translation>
 <translation id="8131994907636310308">Cau'r neges trefnu</translation>
-<translation id="8132487352815776550">Stopio capsiynau caeedig</translation>
 <translation id="8132793192354020517">Wedi cysylltu â <ph name="NAME" /></translation>
 <translation id="813913629614996137">Wrthi'n cychwyn…</translation>
 <translation id="8142441511840089262">Clicio dwywaith</translation>
@@ -1316,6 +1313,7 @@ Gosodiad newydd</translation>
 <translation id="9077404278023321866">Templedi</translation>
 <translation id="9077515519330855811">Rheolyddion cyfryngau, nawr yn chwarae <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
+<translation id="9080073830732419341">Mae'r camera wedi'i snapio i'r gornel chwith uchaf</translation>
 <translation id="9080132581049224423">Sweipiwch i fyny i fynd i'r dudalen hafan</translation>
 <translation id="9080206825613744995">Mae'r meicroffon yn cael ei ddefnyddio.</translation>
 <translation id="9084606467167974638">Toglo safle'r ddewislen</translation>

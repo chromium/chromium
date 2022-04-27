@@ -26,7 +26,6 @@
 <translation id="109942774857561566">我好无聊</translation>
 <translation id="1104084341931202936">显示无障碍设置</translation>
 <translation id="1104621072296271835">协同运作可使您的各部设备更好地发挥作用</translation>
-<translation id="1111781754511998498">投影仪</translation>
 <translation id="112308213915226829">自动隐藏任务栏</translation>
 <translation id="1142002900084379065">近期照片</translation>
 <translation id="1148499908455722006">打开“<ph name="USER_NAME" />”的信息对话框</translation>
@@ -77,6 +76,7 @@
 <translation id="1312604459020188865">信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">一律显示任务栏</translation>
 <translation id="1316811122439383437">Tote：近期的屏幕截图、下载内容和已固定的文件</translation>
+<translation id="132346741904777634">相机已对准左上角。与系统界面冲突。</translation>
 <translation id="1333308631814936910">已与“<ph name="DISPLAY_NAME" />”连接</translation>
 <translation id="1341651618736211726">溢出</translation>
 <translation id="1346748346194534595">向右</translation>
@@ -160,6 +160,7 @@
 <translation id="1885785240814121742">使用指纹解锁</translation>
 <translation id="1888656773939766144">“<ph name="DISPLAY_NAME" />”不支持 <ph name="SPECIFIED_RESOLUTION" />（<ph name="SPECIFIED_REFRESH_RATE" /> 赫兹）。分辨率已改为 <ph name="FALLBACK_RESOLUTION" />（<ph name="FALLBACK_REFRESH_RATE" />）。点击“确认”即可保留更改。系统将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>
 <translation id="1915307458270490472">中止</translation>
+<translation id="1918022425394817322">相机已对准右上角</translation>
 <translation id="1919743966458266018">用于打开任务管理器的快捷键已更改。请使用 <ph name="NEW_SHORTCUT" />，而不是 <ph name="OLD_SHORTCUT" />。</translation>
 <translation id="1923539912171292317">自动点击</translation>
 <translation id="1928739107511554905">要想获取此项更新，请在已连接该键盘的情况下使用触摸屏重新启动您的 Chromebook。</translation>
@@ -182,11 +183,9 @@
 <translation id="2021864487439853900">点击即可解锁</translation>
 <translation id="2023558322300866873">您可随时停止捕获数据包</translation>
 <translation id="2034971124472263449">仍然保存</translation>
-<translation id="2047639699071423250">添加核心观点</translation>
 <translation id="2049240716062114887">桌面名称已更改为“<ph name="DESK_NAME" />”</translation>
 <translation id="2050339315714019657">纵向</translation>
 <translation id="2064048859448024834">已显示相机预览画面</translation>
-<translation id="2066708475850724665">停用放大镜</translation>
 <translation id="2067602449040652523">键盘亮度</translation>
 <translation id="2078034614700056995">若要切换到下一个桌面，请用四根手指向右滑动</translation>
 <translation id="2079504693865562705">隐藏任务栏中的应用</translation>
@@ -196,6 +195,7 @@
 <translation id="2107914222138020205">您的 USB-C 数据线不支持 Thunderbolt。设备性能可能会受到限制。</translation>
 <translation id="2108303511227308752">键盘快捷键“Alt + 退格键”已更改。若要使用 Delete 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 退格键。</translation>
 <translation id="211328683600082144">开启麦克风</translation>
+<translation id="2123115117533398272">Chrome 操作系统会显示有关新内容的建议以供探索。仅当您已选择分享使用情况数据时，系统才会向 Google 发送统计信息用于提升内容建议的质量。<ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">新桌面</translation>
 <translation id="2127372758936585790">低功率充电器</translation>
 <translation id="2132302418721800944">录制整个屏幕</translation>
@@ -209,6 +209,7 @@
 <translation id="2220572644011485463">PIN 码或密码</translation>
 <translation id="2222841058024245321">桌面 7</translation>
 <translation id="2224075387478458881">禁止在屏幕显示受保护内容时录制屏幕</translation>
+<translation id="2227179592712503583">移除推荐内容</translation>
 <translation id="225680501294068881">正在查找设备...</translation>
 <translation id="2257486738914982088">下载“<ph name="FILENAME" />”时出了点问题</translation>
 <translation id="2268130516524549846">蓝牙已停用</translation>
@@ -266,6 +267,7 @@
 <translation id="2620436844016719705">系统</translation>
 <translation id="2621713457727696555">受保护</translation>
 <translation id="263399434338050016">“全选”</translation>
+<translation id="2645435784669275700">Chrome 操作系统</translation>
 <translation id="2653019840645008922">窗口截取/录制</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2658778018866295321">点击并拖动</translation>
@@ -278,7 +280,6 @@
 <translation id="2704781753052663061">连接到其他 Wi-Fi 网络</translation>
 <translation id="2705001408393684014">开启/关闭麦克风。<ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">向上箭头键</translation>
-<translation id="2713444072780614174">白色</translation>
 <translation id="2718395828230677721">护眼模式</translation>
 <translation id="2726420622004325180">您的手机必须有移动数据网络，才能提供热点</translation>
 <translation id="2727175239389218057">回复</translation>
@@ -347,7 +348,6 @@
 <translation id="3100274880412651815">关闭截屏/录屏模式</translation>
 <translation id="3105917916468784889">生成屏幕截图</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" />（蓝牙）</translation>
-<translation id="3113926042639749131">移除推荐内容</translation>
 <translation id="3120421559657122717">要关机吗？</translation>
 <translation id="3126069444801937830">重新启动以进行更新</translation>
 <translation id="3139942575505304791">桌面 1</translation>
@@ -391,6 +391,7 @@
 <translation id="3375634426936648815">已连接</translation>
 <translation id="3378442621503952303">正在连接到配置文件。请稍等几分钟。</translation>
 <translation id="3386978599540877378">全屏放大镜</translation>
+<translation id="3387527074123400161">Chromium 操作系统</translation>
 <translation id="3400357268283240774">其他设置</translation>
 <translation id="3410336247007142655">显示深色主题设置</translation>
 <translation id="3413817803639110246">目前尚无可查看的内容</translation>
@@ -424,7 +425,6 @@
 <translation id="3542066395059568317">系统会显示建议项目，以便您继续使用上次打开的内容。您可以通过右键点击建议项目将其移除。</translation>
 <translation id="3552189655002856821">Wi-Fi 处于关闭状态</translation>
 <translation id="3554637740840164787">“<ph name="ITEM_TITLE" />”已被固定</translation>
-<translation id="3560866052109807830">标记绘制工具</translation>
 <translation id="3563775809269155755">启用热点</translation>
 <translation id="3566240529365775567">刚才打开过</translation>
 <translation id="3571734092741541777">设置</translation>
@@ -449,7 +449,6 @@
 <translation id="3638400994746983214">开启/关闭隐私保护屏。<ph name="STATE_TEXT" />。</translation>
 <translation id="3649505501900178324">更新逾期</translation>
 <translation id="366222428570480733">受管用户：<ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="3680908746918359504">清除所有标记</translation>
 <translation id="36813544980941320">您的手机和 <ph name="DEVICE_NAME" />将会共用 Wi-Fi 网络</translation>
 <translation id="3694122362646626770">网站</translation>
 <translation id="3701206655856637070">现在您可以更改屏幕截图的保存位置</translation>
@@ -515,7 +514,6 @@
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{对 1 个应用关闭}other{对 # 个应用关闭}}</translation>
 <translation id="4066027111132117168">已开启，<ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">信号中等</translation>
-<translation id="4095366824370681039">墨水笔</translation>
 <translation id="4112140312785995938">快退</translation>
 <translation id="4114315158543974537">开启手机中心</translation>
 <translation id="4115378294792113321">洋红色</translation>
@@ -547,12 +545,12 @@
 <translation id="4279490309300973883">正在镜像</translation>
 <translation id="4283888303416325161">请输入密码以增强安全性</translation>
 <translation id="4285498937028063278">取消固定</translation>
-<translation id="429402653707266969">切换工具栏位置</translation>
 <translation id="4294319844246081198"><ph name="GIVEN_NAME" />，上午好！</translation>
 <translation id="4296136865091727875">清除所有 <ph name="COUNT" /> 条通知</translation>
 <translation id="430191667033048642">“<ph name="MOVED_APP_NAME" />”已移至文件夹“<ph name="FOLDER_NAME" />”</translation>
 <translation id="4302592941791324970">不可用</translation>
 <translation id="4303223480529385476">展开状态区</translation>
+<translation id="4312840429157639164">相机已对准右上角。与系统界面冲突。</translation>
 <translation id="4316910396681052118">所有应用</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">您按下了高对比度的键盘快捷键。要开启这项功能吗？</translation>
@@ -611,7 +609,6 @@
 <translation id="4587299710837179226">麦克风已关闭</translation>
 <translation id="4596144739579517758">深色主题已关闭</translation>
 <translation id="4611292653554630842">登录</translation>
-<translation id="4614295562446151104">展开标记工具</translation>
 <translation id="4623167406982293031">验证帐号</translation>
 <translation id="4628757576491864469">设备</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />，星级评分为 <ph name="RATING_SCORE" /></translation>
@@ -681,7 +678,6 @@
 <translation id="504465286040788597">上一个段落</translation>
 <translation id="5045550434625856497">密码不正确</translation>
 <translation id="5071064518267176975">有一款应用想使用麦克风</translation>
-<translation id="5075554201838155866">启用字幕</translation>
 <translation id="5078796286268621944">PIN 不正确</translation>
 <translation id="5083553833479578423">启用更多 Google 助理功能。</translation>
 <translation id="5106223312672646208">个性化</translation>
@@ -789,7 +785,6 @@
 <translation id="5790085346892983794">成功</translation>
 <translation id="5805809050170488595">点击即可激活“<ph name="NETWORK_NAME" />”</translation>
 <translation id="5825969630400862129">设置已连接的设备</translation>
-<translation id="583281660410589416">未知</translation>
 <translation id="5837036133683224804">停止将“<ph name="ROUTE_TITLE" />”投射至“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="584525477304726060">按住即可最大化</translation>
 <translation id="5856638668464565213">尚未启用“<ph name="NETWORK_NAME" />”。</translation>
@@ -834,7 +829,6 @@
 <translation id="6043212731627905357">该显示器与您的<ph name="DEVICE_TYPE" />不兼容（系统不支持该显示器）。</translation>
 <translation id="6043994281159824495">立即退出</translation>
 <translation id="6047696787498798094">切换到其他用户后将停止屏幕共享。要继续吗？</translation>
-<translation id="6050368268239407309">演示工具</translation>
 <translation id="6054305421211936131">使用智能卡登录</translation>
 <translation id="6059276912018042191">最近打开的 Chrome 标签页</translation>
 <translation id="6062360702481658777">您将在<ph name="LOGOUT_TIME_LEFT" />后自动退出。</translation>
@@ -863,6 +857,7 @@
 <translation id="6254629735336163724">已锁定为横向</translation>
 <translation id="6259254695169772643">请使用您的触控笔进行选择</translation>
 <translation id="6267036997247669271"><ph name="NAME" />：正在激活…</translation>
+<translation id="6274202259872570803">抓屏</translation>
 <translation id="6283712521836204486">“勿扰”模式已关闭。</translation>
 <translation id="6284232397434400372">分辨率已更改</translation>
 <translation id="6288235558961782912">日后在获得家长允许的情况下可以重新添加 <ph name="USER_EMAIL_ADDRESS" />。</translation>
@@ -894,6 +889,7 @@
 <translation id="649452524636452238">智能卡 PIN 码</translation>
 <translation id="6495400115277918834">已启动“画中画”模式，按 Alt+Shift+V 可聚焦</translation>
 <translation id="6501401484702599040">正在将屏幕投射到“<ph name="RECEIVER_NAME" />”</translation>
+<translation id="6515727200518652613">相机连接已中断，正在尝试重新连接。</translation>
 <translation id="6520517963145875092">选择一个窗口即可截图</translation>
 <translation id="652139407789908527">在此次更新期间，您的屏幕变为空白的时间会比平时长（可长达 1 分钟）。在更新过程中，请不要按电源按钮。</translation>
 <translation id="6528179044667508675">请勿打扰</translation>
@@ -912,6 +908,7 @@
 <translation id="6578407462441924264">未命名</translation>
 <translation id="6585808820553845416">会话将在<ph name="SESSION_TIME_REMAINING" />后结束。</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />，<ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597278316891651699">相机已对准左下角。与系统界面冲突。</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
 <translation id="6612802754306526077">已选择录屏模式</translation>
 <translation id="6614169507485700968">已开启隐私保护屏</translation>
@@ -949,6 +946,7 @@
 <translation id="6801878137098616817">最近修改过</translation>
 <translation id="6803622936009808957">找不到系统支持的分辨率，因此无法镜像显示屏。已改为进入扩展桌面。</translation>
 <translation id="6818242057446442178">后退一个字词</translation>
+<translation id="6819327813400217281">相机已对准左下角</translation>
 <translation id="6820676911989879663">休息一下！</translation>
 <translation id="6827049576281411231">关闭事件面板</translation>
 <translation id="6836499262298959512">危险文件</translation>
@@ -977,6 +975,7 @@
 <translation id="6979158407327259162">Google 云端硬盘</translation>
 <translation id="6981982820502123353">无障碍</translation>
 <translation id="698231206551913481">移除该用户后，与其关联的所有文件和本地数据都会被永久删除。</translation>
+<translation id="7005239792648594238">打开一款应用即可开始使用</translation>
 <translation id="7007983414944123363">无法验证您的 PIN 码或密码。请重试。</translation>
 <translation id="7014684956566476813">已连接到一部名为“<ph name="DEVICE_NAME" />”的设备</translation>
 <translation id="7015766095477679451">您需要等到<ph name="COME_BACK_TIME" /> 才能再次使用此设备。</translation>
@@ -988,9 +987,9 @@
 <translation id="703425375924687388"><ph name="QUERY_NAME" />，Google 助理</translation>
 <translation id="7042322267639375032">收起状态区</translation>
 <translation id="7045033600005038336">替换此模板？</translation>
-<translation id="7045595904618419789">启用放大镜</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" />已断开连接</translation>
 <translation id="7055910611768509537">触控笔已被闲置不止 1 周了</translation>
+<translation id="7061457967428964661">相机预览画面，按 Ctrl + 箭头键即可让预览画面显示一个不同的角落</translation>
 <translation id="7066646422045619941">您的管理员已禁用此网络。</translation>
 <translation id="7067196344162293536">自动旋转</translation>
 <translation id="7068360136237591149">打开文件</translation>
@@ -1011,12 +1010,12 @@
 <translation id="718361511487535372">在 Google 日历中打开</translation>
 <translation id="7188494361780961876">菜单已移至屏幕的左上角。</translation>
 <translation id="7189412385142492784">金星有多远</translation>
+<translation id="7198435252016571249">相机已对准右下角。与系统界面冲突。</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />。此 Chromebook 需要重新启动才能让更新生效。此过程最多可能需要 1 分钟的时间。</translation>
 <translation id="7256634071279256947">后置麦克风</translation>
 <translation id="7258828758145722155">昨天修改过</translation>
 <translation id="726276584504105859">拖到此处即可使用分屏模式</translation>
 <translation id="7262906531272962081">创建提醒</translation>
-<translation id="7279434993080105272">标记颜色：<ph name="COLOR_PARAMETER" /></translation>
 <translation id="7302889331339392448">“实时字幕”功能已关闭。</translation>
 <translation id="7303365578352795231">正在通过另一设备答复。</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1043,7 +1042,6 @@
 <translation id="742594950370306541">摄像头处于使用状态。</translation>
 <translation id="742608627846767349">上午好！</translation>
 <translation id="743058460480092004">摄像头和麦克风处于使用状态。</translation>
-<translation id="7434543979546293336">已标记为核心观点</translation>
 <translation id="7452560014878697800">有一个应用正在使用您的摄像头</translation>
 <translation id="7453330308669753048">已移除搜索记录结果</translation>
 <translation id="7461924472993315131">固定</translation>
@@ -1051,7 +1049,6 @@
 <translation id="7466449121337984263">请轻触传感器</translation>
 <translation id="7477793887173910789">控制您的音乐、视频等媒体内容</translation>
 <translation id="7483025031359818980">所选区域设为全屏</translation>
-<translation id="7486227320194954040">收起标记工具</translation>
 <translation id="7497767806359279797">选择语言和键盘布局</translation>
 <translation id="7508690557411636492">过去一个月内打开过</translation>
 <translation id="7509246181739783082">验证您的身份</translation>
@@ -1068,16 +1065,16 @@
 <translation id="7561982940498449837">关闭菜单</translation>
 <translation id="7564874036684306347">将窗口移至另一桌面可能会导致出现意外行为 - 后续的通知、窗口和对话框可能会被拆分到不同的桌面中。</translation>
 <translation id="7569509451529460200">已启用盲文和 ChromeVox</translation>
-<translation id="7569983096843329377">黑色</translation>
 <translation id="7573585051776738856">将活动窗口停靠在右侧。</translation>
 <translation id="7579778809502851308">截取屏幕</translation>
 <translation id="7590883480672980941">输入设置</translation>
 <translation id="7593891976182323525">搜索键或 Shift</translation>
 <translation id="7600875258240007829">查看所有通知</translation>
 <translation id="7607002721634913082">已暂停</translation>
+<translation id="7611213136657090146">已重新连接相机。</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> 华氏度</translation>
-<translation id="7631906263969450674">标记笔</translation>
 <translation id="7633755430369750696">显示“附近分享”设置。</translation>
+<translation id="7634648064048557203">相机已对准右下角</translation>
 <translation id="7641938616688887143">录制</translation>
 <translation id="7642647758716480637">打开<ph name="NETWORK_NAME" />（<ph name="CONNECTION_STATUS" />）的设置</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" />（所有者）</translation>
@@ -1090,6 +1087,7 @@
 <translation id="7662283695561029522">点按即可配置</translation>
 <translation id="7670953955701272011">在 Google 日历中打开此日期</translation>
 <translation id="7671610481353807627">应用已按颜色排序</translation>
+<translation id="7684531502177797067">相机输入已设为“<ph name="CAMERA_NAME" />”。</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">添加新的移动网络</translation>
 <translation id="7720410380936703141">重试</translation>
@@ -1147,7 +1145,6 @@
 <translation id="8029247720646289474">热点连接失败</translation>
 <translation id="8029629653277878342">需要输入 PIN 码或密码以增强安全性</translation>
 <translation id="8030169304546394654">连接已断开</translation>
-<translation id="8035152190676905274">钢笔</translation>
 <translation id="8036504271468642248">上一句</translation>
 <translation id="8042893070933512245">打开无障碍功能设置菜单</translation>
 <translation id="8042925093898452104">关闭详情信息</translation>
@@ -1156,6 +1153,7 @@
 <translation id="8051716679295756675">名为“<ph name="DESK_TEMPLATE_NAME" />”的模板已存在</translation>
 <translation id="8052898407431791827">已复制到剪贴板</translation>
 <translation id="8054466585765276473">正在计算续航时间。</translation>
+<translation id="8055510977240456975">隐藏“继续建议”</translation>
 <translation id="8061464966246066292">高对比度</translation>
 <translation id="8098591350844501178">停止将屏幕投射到“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="8113423164597455979">开启，所有应用</translation>
@@ -1163,7 +1161,6 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">确认</translation>
 <translation id="8131994907636310308">关闭排序消息框</translation>
-<translation id="8132487352815776550">停用字幕</translation>
 <translation id="8132793192354020517">已连接到 <ph name="NAME" /></translation>
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8142441511840089262">双击</translation>
@@ -1312,6 +1309,7 @@
 <translation id="9077404278023321866">模板</translation>
 <translation id="9077515519330855811">媒体控件，正在播放《<ph name="MEDIA_TITLE" />》</translation>
 <translation id="9079731690316798640">Wi-Fi：<ph name="ADDRESS" /></translation>
+<translation id="9080073830732419341">相机已对准左上角</translation>
 <translation id="9080132581049224423">向上滑动可转到主屏幕</translation>
 <translation id="9080206825613744995">麦克风目前处于使用状态。</translation>
 <translation id="9084606467167974638">切换菜单位置</translation>

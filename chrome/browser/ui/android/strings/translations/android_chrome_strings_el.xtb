@@ -30,6 +30,7 @@
 <translation id="1146678959555564648">Εισαγωγή VR</translation>
 <translation id="114825011539563458">Τα σημαντικότερα στοιχεία ελέγχου για το απόρρητο και την ασφάλεια σε μία τοποθεσία</translation>
 <translation id="1149401351239820326">Μήνας λήξης</translation>
+<translation id="1150263420752757504">Η εφαρμογή <ph name="APP_NAME" /> θα ανοίξει στο Chrome. Εάν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους <ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154704303112745282">Η σελίδα δεν είναι διαθέσιμη εκτός σύνδεσης: <ph name="VIOLATED_URL" /></translation>
 <translation id="1171770572613082465">Δείτε δημοφιλείς ιστοτόπους πατώντας το κουμπί "Κορυφαίοι ιστότοποι"</translation>
 <translation id="1173894706177603556">Μετονομασία</translation>
@@ -133,7 +134,6 @@
 <translation id="1672586136351118594">Να μην εμφανιστεί ξανά</translation>
 <translation id="1680919990519905526">Αγορά εικόνας με Google Lens <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Δοκιμάστε τώρα</translation>
-<translation id="1697284962337958118">Προσθήκη σε</translation>
 <translation id="1702543251015153180">Αλλαγή των ρυθμίσεων σκούρου θέματος;</translation>
 <translation id="1702907158640575240">Διαχειριζόμενο πρόγραμμα περιήγησης</translation>
 <translation id="1710099199314114079">Εναλλαγή ή κλείσιμο καρτελών</translation>
@@ -145,7 +145,6 @@
 <translation id="1749561566933687563">Συγχρονίστε τους σελιδοδείκτες σας</translation>
 <translation id="17513872634828108">Ανοικτές καρτέλες</translation>
 <translation id="1754404134430936718">Το κείμενο αντιγράφηκε.</translation>
-<translation id="1772137089884020309">Η λίστα φακέλων σελιδοδεικτών έκλεισε</translation>
 <translation id="1779766957982586368">Κλείσιμο παραθύρου</translation>
 <translation id="1791662854739702043">Εγκατεστημένο</translation>
 <translation id="1792959175193046959">Αλλάξτε την προεπιλεγμένη τοποθεσία λήψης ανά πάσα στιγμή</translation>
@@ -209,6 +208,7 @@
 <translation id="2126426811489709554">Με την υποστήριξη του Chrome</translation>
 <translation id="2132122640199389833">Κατάργηση όλων των συνδεδεμένων συσκευών</translation>
 <translation id="213279576345780926">Η καρτέλα <ph name="TAB_TITLE" /> έκλεισε</translation>
+<translation id="2134927169889348449">Χρησιμοποιώντας το Chrome, συμφωνείτε με τους <ph name="BEGIN_TOS_LINK" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_TOS_LINK" /> και τους <ph name="BEGIN_ATOS_LINK" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Προσθήκη στην αρχική οθόνη</translation>
 <translation id="2141396931810938595">Βάσει της χρήσης σας</translation>
 <translation id="214888715418183969">Επιλέξτε τα δεδομένα που νιώθετε άνετα να κοινοποιείτε στο Chrome. Οι μετρήσεις που θα κοινοποιήσετε θα χρησιμοποιηθούν για τη βελτίωση των λειτουργιών, της απόδοσης και της σταθερότητας του Chrome.</translation>
@@ -392,6 +392,7 @@
 <translation id="3062802207422175757">Άρθρα για τα ενδιαφέροντά σας στο Chrome</translation>
 <translation id="3066573403916685335">Μετακίνηση κάτω</translation>
 <translation id="3070005020161560471">Να γίνεται μετάφραση αυτόματα</translation>
+<translation id="3072980200212375806">Η εφαρμογή <ph name="APP_NAME" /> θα ανοίξει στο Chrome. Εάν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους <ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_LINK2" />. Επίσης, ισχύει η <ph name="BEGIN_LINK3" />Πολιτική απορρήτου<ph name="END_LINK3" />.</translation>
 <translation id="3091010850649238832">Εμφάνιση περιεχομένων πρόχειρου</translation>
 <translation id="3098745985164956033">Ορισμένες εικόνες αποστέλλονται στην Google για τη βελτίωση των περιγραφών για εσάς.</translation>
 <translation id="3114507951000454849">Διαβάστε τις σημερινές ειδήσεις <ph name="NEWS_ICON" /></translation>
@@ -583,6 +584,7 @@
 <translation id="4269820728363426813">Αντιγρ. διεύθυνσης συνδέσμου</translation>
 <translation id="4290281343757112331">Εναλλακτικά, να γίνει λήψη αργότερα;</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Ενεργοποίηση κλειδώματος οθόνης στις ρυθμίσεις Android<ph name="END_LINK" /></translation>
+<translation id="4293476595220860475">Χρησιμοποιώντας το Chrome, συμφωνείτε με τους <ph name="BEGIN_TOS_LINK" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_TOS_LINK" /> και τους <ph name="BEGIN_ATOS_LINK" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_ATOS_LINK" />. Επίσης, ισχύει η <ph name="BEGIN_PRIVACY_LINK" />Πολιτική απορρήτου<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="4296252229500326964">Νέα καρτ. ανών. περιήγ.</translation>
 <translation id="4298388696830689168">Συνδεδεμένοι ιστότοποι</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -802,6 +804,7 @@
 <translation id="5517095782334947753">Έχετε σελιδοδείκτες, ιστορικό, κωδικούς πρόσβασης και άλλες ρυθμίσεις από τον λογαριασμό <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524761631371622910">Όταν είναι ενεργοποιημένες οι δοκιμές και εάν το Chrome σας έχει τοποθετήσει τυχαία σε μια ενεργή δοκιμή, το ιστορικό περιήγησής σας επηρεάζει τις διαφημίσεις που βλέπετε και τις εκτιμήσεις για τα ενδιαφέροντά σας παρακάτω. Για την προστασία του απορρήτου σας, το Chrome διαγράφει τα ενδιαφέροντά σας σε κυλιόμενη βάση κάθε μήνα.</translation>
 <translation id="5524843473235508879">Η ανακατεύθυνση αποκλείστηκε.</translation>
+<translation id="5528459307536571064">1 ομάδα καρτελών</translation>
 <translation id="5548606607480005320">Έλεγχος ασφαλείας</translation>
 <translation id="5555525474779371165">Επιλέξτε την προστασία σας στην Ασφαλή περιήγηση</translation>
 <translation id="5556459405103347317">Επαναφόρτωση</translation>
@@ -985,7 +988,6 @@
 <translation id="6475951671322991020">Λήψη βίντεο</translation>
 <translation id="6477928892249167417">Αυτοί οι ιστότοποι φαίνονται σημαντικοί για εσάς:</translation>
 <translation id="6482749332252372425">Η λήψη του αρχείου <ph name="FILE_NAME" /> απέτυχε λόγω έλλειψης αποθηκευτικού χώρου.</translation>
-<translation id="6489610539826642779">Λίστα ανάγνωσης <ph name="BEGIN_NEW" />Νέα<ph name="END_NEW" /></translation>
 <translation id="6496823230996795692">Για να χρησιμοποιήσετε την εφαρμογή <ph name="APP_NAME" /> για πρώτη φορά, συνδεθείτε στο διαδίκτυο.</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Η λήψη του αρχείου ολοκληρώθηκε.}other{# ολοκληρωμένες λήψεις}}</translation>
 <translation id="6508722015517270189">Επανεκκινήστε το Chrome</translation>
@@ -1046,7 +1048,7 @@
 <translation id="6756507620369789050">Υποβολή σχολίων</translation>
 <translation id="6767294960381293877">Άνοιγμα σε μισό ύψος της λίστας συσκευών στις οποίες θα κοινοποιηθεί μια καρτέλα.</translation>
 <translation id="6770602306803890733">Βελτιώνει την ασφάλεια τη δική σας και όλων των ατόμων στον ιστό.</translation>
-<translation id="6783942555455976443">Αποθηκεύστε αυτήν τη σελίδα για αργότερα και λάβετε σχετική υπενθύμιση.</translation>
+<translation id="6785476624617658922">Πρόσθετοι Όροι Παροχής Υπηρεσιών Chrome και Chrome OS</translation>
 <translation id="6795633245022906657">Ανοίξτε γρήγορα μια νέα καρτέλα. Για να επεξεργαστείτε αυτήν τη συντόμευση, μεταβείτε στις Ρυθμίσεις.</translation>
 <translation id="6802555630140434547">Το παράθυρο θα κλείσει</translation>
 <translation id="6811034713472274749">Σελίδα έτοιμη για προβολή</translation>
@@ -1117,7 +1119,6 @@
 <translation id="7177959540995930968">Μπορείτε να μάθετε περισσότερα σχετικά με αυτές τις λειτουργίες στις ρυθμίσεις του Chrome.</translation>
 <translation id="718226107353899806">Μπορείτε να προσθέσετε έως <ph name="MAX_NUM_REACTIONS" /> αντιδράσεις.</translation>
 <translation id="7187993566681480880">Διατηρεί την ασφάλειά σας στο Chrome και μπορεί να χρησιμοποιηθεί για τη βελτίωση της ασφάλειάς σας σε άλλες εφαρμογές Google όταν είστε συνδεδεμένοι.</translation>
-<translation id="718926126787620637">Η λίστα φακέλων σελιδοδεικτών άνοιξε σε πλήρες ύψος</translation>
 <translation id="7191430249889272776">Η καρτέλα άνοιξε στο παρασκήνιο.</translation>
 <translation id="7196215469483532480">Η επεξήγηση Οδηγού απορρήτου άνοιξε σε πλήρες ύψος.</translation>
 <translation id="7208109991155904980">Η αντίδραση μεταφέρθηκε</translation>
@@ -1137,7 +1138,6 @@
 <translation id="7304873321153398381">Εκτός σύνδεσης. Το Chrome δεν μπορεί να ελέγξει τους κωδικούς πρόσβασής σας.</translation>
 <translation id="7313188324932846546">Πατήστε για ρύθμιση συγχρονισμού</translation>
 <translation id="7332075081379534664">Η σύνδεση ήταν επιτυχής</translation>
-<translation id="7333031090786104871">Η προσθήκη του προηγούμενου ιστοτόπου δεν έχει ολοκληρωθεί</translation>
 <translation id="7339898014177206373">Νέο παράθυρο</translation>
 <translation id="7340958967809483333">Επιλογές για Discover</translation>
 <translation id="7352339641508007922">Σύρετε για να τραβήξετε ένα μεγάλο στιγμιότυπο οθόνης</translation>
@@ -1417,6 +1417,7 @@
 <translation id="8730621377337864115">Ολοκληρώθηκε</translation>
 <translation id="8746155870861185046">Κοινοποίηση επισήμανσης</translation>
 <translation id="8748850008226585750">Κρυφό περιεχόμενο</translation>
+<translation id="8756969031206844760">Ενημέρωση κωδικού πρόσβασης;</translation>
 <translation id="8766529642647037772">Δημιουργία ενός συνδέσμου που επισημαίνεται όπως αυτός;</translation>
 <translation id="8773160212632396039">Αίτημα επεξεργασίας</translation>
 <translation id="8788265440806329501">Το Ιστορικό πλοήγηση έκλεισε</translation>
@@ -1445,7 +1446,6 @@
 <translation id="8922289737868596582">Κατεβάστε σελίδες από το κουμπί "Περισσότερες επιλογές" για να τις χρησιμοποιήσετε εκτός σύνδεσης</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Η γλώσσα <ph name="LANG" /> είναι έτοιμη</translation>
-<translation id="8928626432984354940">Η λίστα φακέλων σελιδοδεικτών άνοιξε στο μισό ύψος</translation>
 <translation id="8937267401510745927">Για να σας βοηθήσει να ολοκληρώνετε τις εργασίες σας, η Google θα λάβει τα URL και το περιεχόμενο των ιστοτόπων στους οποίους χρησιμοποιείτε τον Βοηθό, καθώς και τις πληροφορίες που υποβάλετε μέσω του Βοηθού. Αυτές οι πληροφορίες μπορεί να αποθηκεύονται στον Λογαριασμό σας Google. Μπορείτε να απενεργοποιήσετε τον Βοηθό στις ρυθμίσεις του Chrome.</translation>
 <translation id="8937772741022875483">Να καταργηθεί η δραστηριότητα του Chrome από το Digital Wellbeing;</translation>
 <translation id="8942627711005830162">Άνοιγμα σε άλλο παράθυρο</translation>
@@ -1509,7 +1509,6 @@
 <translation id="932327136139879170">Αρχική σελίδα</translation>
 <translation id="938850635132480979">Σφάλμα: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Εισαγωγή φράσης πρόσβασης</translation>
-<translation id="948039501338975565">Λίστα φακέλων σελιδοδεικτών</translation>
 <translation id="95817756606698420">Το Chrome μπορεί να χρησιμοποιήσει το <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> για την αναζήτηση στην Κίνα. Μπορείτε να αλλάξετε αυτήν την επιλογή στις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="962979164594783469">Εγκατάσταση αυτής της εφαρμογής</translation>
 <translation id="96681097142096641">Προβολή απλοποιημένης σελίδας;</translation>
@@ -1518,5 +1517,6 @@
 <translation id="981121421437150478">Εκτός σύνδεσης</translation>
 <translation id="983192555821071799">Κλείσιμο όλων των καρτελών</translation>
 <translation id="987264212798334818">Γενικά</translation>
+<translation id="992745192656291733"><ph name="TAB_COUNT" /> καρτέλες</translation>
 <translation id="996149300115483134">Το μενού της κάρτας ροής είναι κλειστό</translation>
 </translationbundle>

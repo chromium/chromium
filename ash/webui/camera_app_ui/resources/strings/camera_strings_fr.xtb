@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
 <translation id="1113173431709655881">Mode caméra</translation>
+<translation id="1153190633558910465">Grille désactivée</translation>
 <translation id="1175958423215084756">Lien détecté. <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">Faire pivoter de 90 degrés vers la droite</translation>
 <translation id="1276998909102132017">Images de la galerie</translation>
 <translation id="1300209025925956156">Scanner votre document</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Recherche+Flèche vers la gauche pour y accéder.</translation>
+<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">Imprimer</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> est débranchée.</translation>
 <translation id="1473110567575736769">Minuteur de 3 secondes</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">Durée du retardateur</translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2064538373111010176">Option <ph name="CAMERA" /> activée</translation>
+<translation id="2134029355740465625">Paramètres vidéo</translation>
 <translation id="2144806332417375165">Paramètres vidéo personnalisés</translation>
 <translation id="2175927920773552910">Code QR</translation>
 <translation id="2271433936731426666">Activer les instantanés vidéo en taille réelle</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">Caméra arrière</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Type de recherche</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">Aperçu en mode miroir</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> est branchée.</translation>
 <translation id="2968794441791257519">Les photos et les vidéos prises avec l'appareil photo seront déplacées vers le dossier "Téléchargements". Vous pouvez y accéder via l'application Fichiers.
 
@@ -52,6 +57,8 @@
 <translation id="3240426699337459095">Le lien a bien été copié.</translation>
 <translation id="3259149966178251584">Résolution de la caméra</translation>
 <translation id="3305962767867348165">Corriger</translation>
+<translation id="3354465018370944241">Paramètres des photos</translation>
+<translation id="3411958449466169012">Retardateur désactivé</translation>
 <translation id="3448774564454087943">Impossible d'enregistrer la vidéo, car elle est trop courte</translation>
 <translation id="346539236881580388">Reprendre</translation>
 <translation id="3517926952904427380">Impossible de prendre une photo en mode portrait</translation>
@@ -63,9 +70,12 @@
 <translation id="3810838688059735925">Vidéo</translation>
 <translation id="3838931309141338733">Lire le code-barres</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
 <translation id="4118525110028899586">Suspendre l'enregistrement</translation>
 <translation id="4121305183798804752">Document détecté</translation>
+<translation id="414641094616694804">Impossible de modifier la résolution de cet appareil photo</translation>
 <translation id="4269820728363426813">Copier l'adresse du lien</translation>
+<translation id="4281620174117014503">Résolution moyenne</translation>
 <translation id="4329152592498422850">Bouton permettant de prendre une photo carrée</translation>
 <translation id="4383571725254449280">Imprimer les journaux concernant les performances</translation>
 <translation id="4445542136948522167">Arrêter de prendre la photo</translation>
@@ -74,12 +84,15 @@
 <translation id="4628948037717959914">Photo</translation>
 <translation id="4649291346448517080">Impossible d'enregistrer le fichier</translation>
 <translation id="4695379108709712600">Déplacement vers le haut</translation>
+<translation id="4705093842003735294">Haute résolution</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Enregistrement vidéo sur plusieurs flux</translation>
+<translation id="5034763830503483128">Format photo</translation>
 <translation id="5057360777601936059">Votre appareil photo est actuellement indisponible.
         Vérifiez qu'il est bien connecté.</translation>
 <translation id="5163387177077603948">Déplacement vers la droite</translation>
 <translation id="520537883758714667">Numérisation de documents désormais disponible</translation>
+<translation id="5235304959032763950">Seize neuvièmes</translation>
 <translation id="5266635337630551423">Angle supérieur gauche du document</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5320594929574852403">Déplacement vers la gauche</translation>
@@ -94,6 +107,7 @@
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5975083100439434680">Zoom arrière</translation>
 <translation id="5976160379964388480">Autres</translation>
+<translation id="603973421174355542">Full HD</translation>
 <translation id="6073451960410192870">Arrêter l'enregistrement</translation>
 <translation id="6197807149213783179">Enregistrer les métadonnées</translation>
 <translation id="6233780560267770709">3 par 3</translation>
@@ -104,6 +118,7 @@
 S'ils concernent la qualité de l'image ou de la vidéo, veuillez joindre un exemple de photo ou de vidéo et décrire le problème. (Par exemple, la photo est trop sombre ou le sujet n'est pas net.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" /> × <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> mégapixels</translation>
 <translation id="6527303717912515753">Partager</translation>
+<translation id="6631515515009660915">Miroir désactivé</translation>
 <translation id="6652737148136672975">Déplacer les angles avec les touches fléchées</translation>
 <translation id="667999046851023355">Document</translation>
 <translation id="6681668084120808868">Prendre une photo</translation>
@@ -114,6 +129,7 @@ S'ils concernent la qualité de l'image ou de la vidéo, veuillez joindre un exe
 <translation id="698156982839284926">3 secondes</translation>
 <translation id="712848772518857951">Voulez-vous vraiment supprimer <ph name="COUNT" /> éléments ?</translation>
 <translation id="7134221860976209830">Minuteur de 10 secondes</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Type d'enregistrement</translation>
 <translation id="7243947652761655814">Résolution vidéo</translation>
 <translation id="7337660886763914220">Erreurs du système de fichiers.</translation>
@@ -146,9 +162,11 @@ S'ils concernent la qualité de l'image ou de la vidéo, veuillez joindre un exe
 <translation id="8815966864175525708">Bouton permettant de prendre une photo en mode portrait</translation>
 <translation id="8828441885228359828">Reprendre l'enregistrement</translation>
 <translation id="8870695351537079478">Impossible de démarrer l'enregistrement</translation>
+<translation id="8880167521484863515">Quatre tiers</translation>
 <translation id="8903921497873541725">Zoom avant</translation>
 <translation id="9045010116236796332">Placez le document dans le cadre</translation>
 <translation id="9045155556724273246">10 secondes</translation>
 <translation id="906331135292332864">Traitement de l'image…</translation>
+<translation id="922762992951083513">Miroir activé</translation>
 <translation id="945522503751344254">Envoyer un commentaire</translation>
 </translationbundle>

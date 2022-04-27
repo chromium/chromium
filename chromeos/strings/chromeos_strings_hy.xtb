@@ -42,6 +42,7 @@
 <translation id="1394661041439318933">Պատյանի մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%։</translation>
 <translation id="1397738625398125236">Անցախուցը պատասխանում է փինգ հարցմանը</translation>
 <translation id="1398634363027580500">HTTPS-ի շատ բարձր հապաղում</translation>
+<translation id="1407069428457324124">Մուգ թեմա</translation>
 <translation id="1413240736185167732">Չհաջողվեց տպել – Զտիչը չաշխատեց</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Ես ունեմ բանալիների զույգ</translation>
@@ -63,6 +64,7 @@
 <translation id="1565038567006703504">Չհաջողվեց թարմացնել <ph name="DEVICE_NAME" /> սարքը</translation>
 <translation id="1567064801249837505">Ալբոմներ</translation>
 <translation id="1572585716423026576">Օգտագործել որպես պաստառ</translation>
+<translation id="1578784163189013834">Ընտրել էկրանապահի ֆոն</translation>
 <translation id="1615335640928990664">Տվյալների օգտագործում <ph name="FRIENDLY_DATE" />-ից ի վեր</translation>
 <translation id="1621067168122174824">Փորձարկել լիցքավորումը</translation>
 <translation id="1639239467298939599">Բեռնում</translation>
@@ -85,12 +87,15 @@
 <translation id="1768959921651994223">Իսկորոշման տեսակը</translation>
 <translation id="1782199038061388045">թարգմանություն</translation>
 <translation id="1792647875738159689">Սկանավորումը չեղարկվում է</translation>
+<translation id="1801418420130173017">Անջատել մուգ թեման</translation>
 <translation id="1807246157184219062">Բաց</translation>
 <translation id="1827738518074806965">Ցուցասրահ</translation>
 <translation id="1851218745569890714">Տեսակոնֆերանս</translation>
 <translation id="1852934301711881861">Տեղադրել ChromeOS Flex-ը</translation>
 <translation id="1856388568474281774">Ներքև սլաք</translation>
+<translation id="1871569928317311284">Անջատել մուգ թեման</translation>
 <translation id="1874612839560830905">MTU</translation>
+<translation id="188114911237521550">Անջատել մուգ ռեժիմը</translation>
 <translation id="1887850431809612466">Սարքի տարբերակը</translation>
 <translation id="1905710495812624430">Փորձերի առավելագույն թույլատրելի քանակը սպառվել է:</translation>
 <translation id="1908234395526491708">Ձախողված UDP հարցումներ</translation>
@@ -115,6 +120,7 @@
 <translation id="2157959690810728433">ՀԵՐԹԱԳՐՎԱԾ Է</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />՝ նորից փորձել</translation>
 <translation id="2161394479394250669">Չեղարկել տպման առաջադրանքը</translation>
+<translation id="2163937499206714165">Միացնել մուգ ռեժիմը</translation>
 <translation id="2180197493692062006">Սխալ առաջացավ։ Փորձեք նորից բացել հավելվածը։</translation>
 <translation id="2209788852729124853">Զրոյացնել թրաֆիկի հաշվիչները</translation>
 <translation id="2212733584906323460">Անվանել լուծաչափը</translation>
@@ -126,8 +132,10 @@
 <translation id="2236746079896696523">Ստեղնաշարի հետնալույսի փոխանջատիչ</translation>
 <translation id="2240366984605217732">Դասավորության փոխանջատիչ</translation>
 <translation id="225692081236532131">Ակտիվացման կարգավիճակը</translation>
+<translation id="2271469253353559191">Մուգ ռեժիմի ժամանակացույց</translation>
 <translation id="2287186687001756809">Ոչ մի պատկեր չկա։ Լուսանկարներ ավելացնելու համար անցեք <ph name="LINK" />։</translation>
 <translation id="2307344026739914387">Օգտագործել ընթացիկ բանալիների զույգը</translation>
+<translation id="2320295602967756579">Միացնել բաց թեման</translation>
 <translation id="2323506179655536734">ԲԱՑ ԹՈՂՆՎԵՑ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Մոտակա սարքերը գտնելու համար միացրեք Bluetooth-ը</translation>
@@ -147,13 +155,16 @@
 <translation id="2493126929778606526">Ավտոմատ ընտրված լավագույն լուսանկարները</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Թարմացնել ընթացիկ պաստառը</translation>
+<translation id="2513396635448525189">Մուտքի պատկեր</translation>
 <translation id="2517472476991765520">Որոնել</translation>
+<translation id="2526590354069164005">Աշխատասեղան</translation>
 <translation id="253029298928638905">Վերագործարկում…</translation>
 <translation id="2536159006530886390">Չհաջողվեց միանալ ինտերնետին։</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" />ը ստուգվում է…</translation>
 <translation id="2584559707064218956">Ցանցը կարգավորելու համար անցեք Կարգավորումներ</translation>
 <translation id="2619761439309613843">Ամենօրյա թարմացում</translation>
 <translation id="2620436844016719705">Համակարգ</translation>
+<translation id="2638662041295312666">Մուտքի պատկեր</translation>
 <translation id="2640549051766135490">Ընտրվել է «<ph name="TITLE" />» (<ph name="DESC" />) ալբոմը</translation>
 <translation id="2695514675076754339">Մուտքագրեք ապակողպման 8 նիշանոց կոդը</translation>
 <translation id="2712812801627182647">TLS իսկորոշման բանալի</translation>
@@ -173,11 +184,13 @@
 <translation id="2926057806159140518">Մուտքագրեք ձեր անունը և գաղտնաբառը կամ սկանավորեք QR կոդը</translation>
 <translation id="3008341117444806826">ԹԱՐՄԱՑՆԵԼ</translation>
 <translation id="3009958530611748826">Ընտրեք պանակ, որում պետք է պահել</translation>
+<translation id="3017079585324758401">Ֆոն</translation>
 <translation id="3031560714565892478">Սարքը տեսախցիկ է։</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> մԱ</translation>
 <translation id="3056720590588772262">Վերջնակետ</translation>
 <translation id="3069085583900247081">Փորձարկումը ձախողվեց</translation>
 <translation id="3083667275341675831">Կապի դիագնոստիկա</translation>
+<translation id="3084958266922136097">Անջատել էկրանապահը</translation>
 <translation id="3091839911843451378">Չհաջողվեց տպել – Տպիչի աշխատանքը դադարեցվել է</translation>
 <translation id="3102119246920354026">Հիշապահեստ</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -201,6 +214,7 @@
 <translation id="3340011300870565703">Աջ ականջակալի մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%։</translation>
 <translation id="3368922792935385530">Միացված է</translation>
 <translation id="3369013195428705271">Մաքրե՞լ ամբողջ տպման պատմությունը: Ընթացիկ տպման աշխատանքները չեն ջնջվի։</translation>
+<translation id="3404249063913988450">Միացնել էկրանապահը</translation>
 <translation id="3413935475507503304">Թարմացումը շարունակելու համար սեղմեք «Առաջ»։</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Անվտանգություն</translation>
@@ -215,6 +229,7 @@
 <translation id="3532980081107202182">Մնացել է մոտ <ph name="MIN_REMAINING" /> րոպե</translation>
 <translation id="3557205324756024651">Տեղային իսկորոշում (պարտադիր չէ)</translation>
 <translation id="3565064564551103223">Թույլատրված IP-ներ</translation>
+<translation id="3569407787324516067">Էկրանապահ</translation>
 <translation id="3577473026931028326">Սխալ առաջացավ։ Նորից փորձեք։</translation>
 <translation id="357889014807611375">սահմանափակ Wi-Fi</translation>
 <translation id="3583278742022654445">Ազդանշանը թույլ է։ Փորձեք սարքը մոտեցնել Wi-Fi ազդանշանի աղբյուրին։</translation>
@@ -258,9 +273,11 @@
 <translation id="4044093238444069296">Չհաջողվեց կապ հաստատել անցախուցի հետ</translation>
 <translation id="4046123991198612571">Հաջորդը</translation>
 <translation id="404928562651467259">ԶԳՈՒՇԱՑՈՒՄ</translation>
+<translation id="4093865285251893588">Պրոֆիլի պատկեր</translation>
 <translation id="409427325554347132">Պահել թեստի մանրամասները</translation>
 <translation id="4110686435123617899">Ընտրեք ալբոմը՝ «<ph name="TITLE" />» (<ph name="DESC" />)</translation>
 <translation id="4111761024568264522">USB հպահարթակ</translation>
+<translation id="4117637339509843559">Մուգ ռեժիմ</translation>
 <translation id="4131410914670010031">Սև ու սպիտակ</translation>
 <translation id="4140251671072434548">Ապակողպեք RMA սերվերը</translation>
 <translation id="4145784616224233563">HTTP հրապատ</translation>
@@ -270,6 +287,7 @@
 <translation id="4170700058716978431">ՁԱԽՈՂՎԵՑ</translation>
 <translation id="4176463684765177261">Անջատված է</translation>
 <translation id="4176659219503619100">Կառավարման վահանակ</translation>
+<translation id="420283545744377356">Անջատել էկրանապահը</translation>
 <translation id="4213104098953699324">USB ստեղնաշար</translation>
 <translation id="4227825898293920515">Գաղտնաբառի գործողության ժամկետը <ph name="TIME" />ից կսպառվի</translation>
 <translation id="4238516577297848345">Տպելու ընթացիկ առաջադրանքներ չկան</translation>
@@ -310,7 +328,7 @@
 <translation id="4561801978359312462">SIM քարտն ապակողպված է</translation>
 <translation id="4562494484721939086">Ցանցը չի գտնվել</translation>
 <translation id="458794348635939462">Չհաջողվեց կապ հաստատել բոլոր խնամորդների հետ</translation>
-<translation id="4593212453765072419">Պահանջվում է միջնորդ սերվերի նույնականացում</translation>
+<translation id="4593212453765072419">Պահանջվում է պրոքսի սերվերի նույնականացում</translation>
 <translation id="4609350030397390689">Ստեղնաշարի պայծառության նվազեցում</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />։ Հպեք Enter՝ տպումը չեղարկելու համար։</translation>
 <translation id="463791356324567266">Սկանավորումը չեղարկվում է...</translation>
@@ -332,6 +350,7 @@
 <translation id="4793756956024303490">Սեղմման ալգորիթմ</translation>
 <translation id="4794140124556169553">CPU-ի թեստի գործարկումը կարող է ազդել ձեր համակարգի աշխատանքի վրա</translation>
 <translation id="4808449224298348341">Տպման առաջադրանքը չեղարկվեց՝ <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4809927044794281115">Բաց թեմա</translation>
 <translation id="4813136279048157860">Իմ պատկերները</translation>
 <translation id="4813345808229079766">Միացում</translation>
 <translation id="4832079907277790330">Ընտրել պանակ «Ֆայլեր» հավելվածում…</translation>
@@ -379,6 +398,7 @@
 Փորձեք օգտագործել խոսափողը` առաջադրանքներ տալու համար:</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Դուրս գրվել</translation>
+<translation id="5227902338748591677">Մուգ թեմայի ժամանակացույց</translation>
 <translation id="5234764350956374838">Փակել</translation>
 <translation id="5252456968953390977">Ռոումինգ</translation>
 <translation id="5257811368506016604">Միացնել բաց գույների ռեժիմը</translation>
@@ -399,6 +419,7 @@
 <translation id="5346687412805619883">Լոկալ ցանց</translation>
 <translation id="5358174242040570474">Սխալ առաջացավ։ Նորից ընտրեք պաստառ կամ հավելվածը փակեք ու նորից բացեք։</translation>
 <translation id="5372659122375744710">Wi-Fi ցանցն անվտանգ չէ</translation>
+<translation id="5376354385557966694">Ավտոմատ բաց ռեժիմ</translation>
 <translation id="5400907029458559844">Սարքը միանում է։</translation>
 <translation id="5401938042319910061">Գործարկել բոլոր հերթականությունները</translation>
 <translation id="5423849171846380976">Ակտիվացված է</translation>
@@ -434,6 +455,7 @@
 <translation id="583281660410589416">Անհայտ</translation>
 <translation id="5843706793424741864">Ֆարենհայտ</translation>
 <translation id="5849570051105887917">Տան ծառայությունների մատակարարի կոդը</translation>
+<translation id="5859603669299126575">Ցուցասրահի ալբոմ</translation>
 <translation id="5860033963881614850">Անջատ.</translation>
 <translation id="5860491529813859533">Միացնել</translation>
 <translation id="5866840822086176774">Շատ ուժեղ</translation>
@@ -480,11 +502,15 @@
 <translation id="6275224645089671689">Աջ սլաք</translation>
 <translation id="6278428485366576908">Թեմա</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6284632978374966585">Միացնել մուգ թեման</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> թեստը չեղարկվել է</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> սարքի ներկառուցված ծրագրի թարմացում</translation>
+<translation id="6321407676395378991">Միացնել էկրանապահը</translation>
 <translation id="6325525973963619867">Սխալ առաջացավ</translation>
+<translation id="6331191339300272798">Ավտոմատ մուգ թեմա</translation>
 <translation id="6340526405444716530">Անհատականացում</translation>
 <translation id="6348738456043757611">Օգտանուն և գաղտնաբառ</translation>
+<translation id="6359706544163531585">Անջատել բաց թեման</translation>
 <translation id="636850387210749493">Ձեռնարկության գրանցում</translation>
 <translation id="6379086450106841622">հպէկրան</translation>
 <translation id="6381741036071372448">Փորձարկեք ձեր ստեղնաշարը</translation>
@@ -559,6 +585,7 @@
 <translation id="714876143603641390">LAN-ի կապ</translation>
 <translation id="7155171745945906037">Առկա լուսանկար խցիկից կամ ֆայլից</translation>
 <translation id="7162487448488904999">Ցուցասրահ</translation>
+<translation id="7170236477717446850">Պրոֆիլի նկար</translation>
 <translation id="7172721935181587524">1 պատկեր</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> ցանցի կարգավորում</translation>
 <translation id="7177485034254901881">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից։ Ադմինիստրատորները կարող են հեռակա փոխել սարքի կարգավորումները։</translation>
@@ -580,6 +607,7 @@
 <translation id="7359657277149375382">Ֆայլի տեսակ</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378886533986123738">Փոխել էկրանապահը</translation>
+<translation id="7397270852490618635">Անջատել բաց թեման</translation>
 <translation id="741244894080940828">փոխարկում</translation>
 <translation id="7415801143053185905">HTTP-ի շատ բարձր հապաղում</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -591,6 +619,7 @@
 <translation id="7497215489070763236">Սերվերի CA հավաստագիր</translation>
 <translation id="7502658306369382406">IPv6 հասցե</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7535791657097741517">Միացնել բաց թեման</translation>
 <translation id="7550715992156305117">Դիագնոստիկայի ծրագրեր</translation>
 <translation id="7551123448725492271">Սարքն աուդիո սարք է։</translation>
 <translation id="7561454561030345039">Այս գործողությունը կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
@@ -612,11 +641,14 @@
 <translation id="7763470514545477072">Համընկնում տիրույթի վերջածանցի հետ</translation>
 <translation id="7769672763586021400">Մոդելի ID-ն</translation>
 <translation id="7784116172884276937">DNS սերվերներ կարգավորված չեն</translation>
+<translation id="7799817062559422778">Բաց ռեժիմ</translation>
 <translation id="780301667611848630">Ոչ</translation>
 <translation id="7805768142964895445">Կարգավիճակ</translation>
 <translation id="7819857487979277519">PSK (WPA կամ RSN)</translation>
+<translation id="7841134249932030522">Միացնել մուգ ռեժիմը</translation>
 <translation id="7846634333498149051">Ստեղնաշար</translation>
 <translation id="7856267634822906833">Bluetooth հպէկրան</translation>
+<translation id="7869143217755017858">Անջատել մուգ ռեժիմը</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Մատակարարի տեսակը</translation>
 <translation id="7882501334836096755">Բաց բանալի</translation>
@@ -656,6 +688,7 @@
 <translation id="8297006494302853456">Թույլ</translation>
 <translation id="8302368968391049045">HTTPS հրապատ</translation>
 <translation id="8318753676953949627">Պատկերներ չկան</translation>
+<translation id="8336739000755212683">Փոխել հաշվի պատկերը սարքում</translation>
 <translation id="8347227221149377169">Տպելու առաջադրանքներ</translation>
 <translation id="8352772353338965963">Ավելացնել հաշիվ բազմակի մուտքի համակարգում: Բոլոր մուտք գործած հաշիվները մատչելի են առանց գաղտնաբառի մուտքագրման, ուստի այս գործառույթը պետք է միայն օգտագործվի վստահելի հաշիվների հետ:</translation>
 <translation id="8364946094152050673">DNS սերվերները դատարկ են</translation>
@@ -667,6 +700,7 @@
 <translation id="8431300646573772016">Ինչն է ChromeOS-ում նոր</translation>
 <translation id="843568408673868420">Ինտերնետ կապ</translation>
 <translation id="844521431886043384">DNS-ը կարգավորված չէ</translation>
+<translation id="8456761643544401578">Ավոտմատ մուգ ռեժիմ</translation>
 <translation id="8461329675984532579">Տան ծառայությունների մատակարարի անունը</translation>
 <translation id="8475690821716466388">Wi-Fi ցանցը պաշտպանված է WEP PSK թույլ հաղորդակարգով</translation>
 <translation id="8477551185774834963">DNS-ի հապաղումը փոքր առավելություն ունի թույլատրելի սահմանափակման նկատմամբ</translation>
@@ -693,6 +727,7 @@
 <translation id="8730621377337864115">Պատրաստ է</translation>
 <translation id="8747900814994928677">Հաստատեք փոփոխությունը</translation>
 <translation id="8764414543112028321">WireGuard</translation>
+<translation id="87646919272181953">Google Լուսանկարների ալբոմ</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Այս ցանցը կարող է մուտքի էջ ունենալ</translation>
 <translation id="8798099450830957504">Կանխադրված</translation>
@@ -702,6 +737,7 @@
 <translation id="8834539327799336565">Միացված է</translation>
 <translation id="8845001906332463065">Օգնություն</translation>
 <translation id="8855781559874488009">Չհաջողվեց միանալ HTTP կայքերին հրապատի միջոցով</translation>
+<translation id="8863170912498892583">Միացնել մուգ թեման</translation>
 <translation id="8863888432376731307">Ստացեք «<ph name="QUERY" />» բառի <ph name="INTENT" />ը և ավելին</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Սարքը պլանշետ է։</translation>

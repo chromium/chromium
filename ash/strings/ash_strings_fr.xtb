@@ -26,7 +26,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="109942774857561566">Je m'ennuie</translation>
 <translation id="1104084341931202936">Afficher les paramètres d'accessibilité</translation>
 <translation id="1104621072296271835">Vos appareils fonctionnent encore mieux ensemble</translation>
-<translation id="1111781754511998498">Projecteur</translation>
 <translation id="112308213915226829">Masquer automatiquement l'étagère</translation>
 <translation id="1142002900084379065">Photos récentes</translation>
 <translation id="1148499908455722006">Ouvrir la boîte de dialogue d'infos pour <ph name="USER_NAME" /></translation>
@@ -80,6 +79,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1312604459020188865">Force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Toujours afficher l'étagère</translation>
 <translation id="1316811122439383437">Tote : captures d'écran, téléchargements et fichiers épinglés récents</translation>
+<translation id="132346741904777634">Appareil photo aligné sur l'angle supérieur gauche. Conflit avec la surface du système.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> connecté</translation>
 <translation id="1341651618736211726">Dépassement</translation>
 <translation id="1346748346194534595">À droite</translation>
@@ -163,6 +163,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1885785240814121742">Déverrouillage avec empreinte</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> n'est pas compatible avec la résolution <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). La résolution <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) sera utilisée à la place. Cliquez sur "Confirmer" pour valider cette modification. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1915307458270490472">Raccrocher</translation>
+<translation id="1918022425394817322">Appareil photo aligné sur l'angle supérieur droit</translation>
 <translation id="1919743966458266018">Le raccourci permettant d'ouvrir le gestionnaire de tâches a été modifié. Utilisez "<ph name="NEW_SHORTCUT" />" au lieu de "<ph name="OLD_SHORTCUT" />".</translation>
 <translation id="1923539912171292317">Clics automatiques</translation>
 <translation id="1928739107511554905">Pour télécharger la mise à jour, utilisez l'écran tactile pour redémarrer votre Chromebook avec le clavier branché.</translation>
@@ -185,11 +186,9 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2021864487439853900">Cliquez pour le déverrouiller</translation>
 <translation id="2023558322300866873">Vous pouvez interrompre la capture de paquets à tout moment</translation>
 <translation id="2034971124472263449">Enregistrer quand même</translation>
-<translation id="2047639699071423250">Ajouter une idée principale</translation>
 <translation id="2049240716062114887">Le nom du bureau a été remplacé par <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2064048859448024834">Aperçu de la caméra affiché</translation>
-<translation id="2066708475850724665">Fermer la loupe</translation>
 <translation id="2067602449040652523">Luminosité du clavier</translation>
 <translation id="2078034614700056995">Balayez l'écran vers la droite avec quatre doigts pour passer au bureau suivant</translation>
 <translation id="2079504693865562705">Masquer les applis sur l'étagère</translation>
@@ -212,6 +211,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2220572644011485463">Code ou mot de passe</translation>
 <translation id="2222841058024245321">Bureau 7</translation>
 <translation id="2224075387478458881">L'enregistrement d'écran n'est pas autorisé lorsqu'un contenu protégé est affiché</translation>
+<translation id="2227179592712503583">Supprimer la suggestion</translation>
 <translation id="225680501294068881">Recherche d'appareils…</translation>
 <translation id="2257486738914982088">Une erreur s'est produite lors du téléchargement de <ph name="FILENAME" /></translation>
 <translation id="2268130516524549846">Bluetooth désactivé</translation>
@@ -281,7 +281,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2704781753052663061">Rejoindre d'autres réseaux Wi-Fi</translation>
 <translation id="2705001408393684014"><ph name="STATE_TEXT" /> Déplacez le curseur vers la droite pour activer le son.</translation>
 <translation id="2706462751667573066">Haut</translation>
-<translation id="2713444072780614174">Blanc</translation>
 <translation id="2718395828230677721">Écl. nocturne</translation>
 <translation id="2726420622004325180">Les données mobiles doivent être activées sur votre téléphone pour qu'il puisse fournir un point d'accès</translation>
 <translation id="2727175239389218057">Répondre</translation>
@@ -350,7 +349,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3100274880412651815">Ignorer le mode de capture</translation>
 <translation id="3105917916468784889">Faire une capture d'écran</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
-<translation id="3113926042639749131">Supprimer la suggestion</translation>
 <translation id="3120421559657122717">Éteindre l'appareil ?</translation>
 <translation id="3126069444801937830">Redémarrer pour mettre à jour</translation>
 <translation id="3139942575505304791">Bureau 1</translation>
@@ -427,7 +425,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3542066395059568317">Des recommandations s'affichent pour vous proposer de reprendre où vous avez arrêté. Vous pouvez les supprimer en effectuant un clic droit.</translation>
 <translation id="3552189655002856821">Le Wi-Fi est désactivé</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> a été épinglé</translation>
-<translation id="3560866052109807830">Outils de dessin Marqueur</translation>
 <translation id="3563775809269155755">Activer le point d'accès</translation>
 <translation id="3566240529365775567">Ouvert à l'instant</translation>
 <translation id="3571734092741541777">Configurer</translation>
@@ -452,7 +449,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3638400994746983214">Activer/Désactiver l'écran de confidentialité. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Mise à jour à effectuer</translation>
 <translation id="366222428570480733">Utilisateur géré, <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="3680908746918359504">Supprimer tous les repères</translation>
 <translation id="36813544980941320">Les réseaux Wi-Fi seront synchronisés sur votre téléphone et votre <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Sites Web</translation>
 <translation id="3701206655856637070">Vous pouvez maintenant modifier l'endroit où les captures d'écran sont enregistrées</translation>
@@ -518,7 +514,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Notif. désactivées pour une appli}one{Notif. désactivées pour # appli}other{Notif. désactivées pour # applis}}</translation>
 <translation id="4066027111132117168">Activé, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Signal de moyenne intensité</translation>
-<translation id="4095366824370681039">Stylo-plume</translation>
 <translation id="4112140312785995938">Retour rapide</translation>
 <translation id="4114315158543974537">Activer Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -550,12 +545,12 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4279490309300973883">Mise en miroir</translation>
 <translation id="4283888303416325161">Veuillez saisir votre mot de passe pour renforcer la sécurité</translation>
 <translation id="4285498937028063278">Retirer</translation>
-<translation id="429402653707266969">Activer/Désactiver la position de la barre d'outils</translation>
 <translation id="4294319844246081198">Bonjour <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Effacer les <ph name="COUNT" /> notifications</translation>
 <translation id="430191667033048642">L'application <ph name="MOVED_APP_NAME" /> a été déplacée vers le dossier "<ph name="FOLDER_NAME" />".</translation>
 <translation id="4302592941791324970">Non disponible</translation>
 <translation id="4303223480529385476">Développer la zone d'état</translation>
+<translation id="4312840429157639164">Appareil photo aligné sur l'angle supérieur droit. Conflit avec la surface du système.</translation>
 <translation id="4316910396681052118">TOUTES LES APPLICATIONS</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Vous avez appuyé sur le raccourci clavier du contraste élevé. Voulez-vous l'activer ?</translation>
@@ -614,7 +609,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4587299710837179226">Micro désactivé</translation>
 <translation id="4596144739579517758">Le thème sombre est désactivé.</translation>
 <translation id="4611292653554630842">Connexion</translation>
-<translation id="4614295562446151104">Développer les outils Marqueur</translation>
 <translation id="4623167406982293031">Vérifiez le compte</translation>
 <translation id="4628757576491864469">Appareils</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, note : <ph name="RATING_SCORE" /></translation>
@@ -684,7 +678,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="504465286040788597">Paragraphe précédent</translation>
 <translation id="5045550434625856497">Mot de passe incorrect</translation>
 <translation id="5071064518267176975">Une appli souhaite utiliser le micro</translation>
-<translation id="5075554201838155866">Lancer les sous-titres</translation>
 <translation id="5078796286268621944">Code PIN incorrect</translation>
 <translation id="5083553833479578423">Déverrouiller plus de fonctionnalités de l'Assistant.</translation>
 <translation id="5106223312672646208">Personnaliser</translation>
@@ -792,7 +785,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5790085346892983794">Succès</translation>
 <translation id="5805809050170488595">Cliquer pour activer <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Paramètres des appareils connectés</translation>
-<translation id="583281660410589416">Inconnu</translation>
 <translation id="5837036133683224804">Arrêter <ph name="ROUTE_TITLE" /> vers <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Maintenez pour agrandir</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> n'est pas activé.</translation>
@@ -837,7 +829,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6043212731627905357">Ce moniteur ne fonctionne pas avec votre <ph name="DEVICE_TYPE" /> (il n'est pas compatible).</translation>
 <translation id="6043994281159824495">Se déconnecter maintenant</translation>
 <translation id="6047696787498798094">Le partage d'écran s'arrête lorsque vous passez à un autre utilisateur. Voulez-vous continuer ?</translation>
-<translation id="6050368268239407309">Outils de présentation</translation>
 <translation id="6054305421211936131">Se connecter avec une carte à puce</translation>
 <translation id="6059276912018042191">Onglets Chrome récents</translation>
 <translation id="6062360702481658777">Vous allez être déconnecté automatiquement dans <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -866,6 +857,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6254629735336163724">Verrouillée en position horizontale</translation>
 <translation id="6259254695169772643">Effectuez une sélection à l'aide de votre stylet</translation>
 <translation id="6267036997247669271"><ph name="NAME" /> : activation en cours…</translation>
+<translation id="6274202259872570803">Screencast</translation>
 <translation id="6283712521836204486">Le mode Ne pas déranger est désactivé.</translation>
 <translation id="6284232397434400372">Résolution modifiée</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> pourra être ajouté à nouveau ultérieurement avec l'autorisation d'un des parents.</translation>
@@ -897,6 +889,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="649452524636452238">Code de la carte à puce</translation>
 <translation id="6495400115277918834">Picture-in-picture a démarré, Alt+Shift+V pour sélectionner</translation>
 <translation id="6501401484702599040">Diffusion de l'écran sur "<ph name="RECEIVER_NAME" />"</translation>
+<translation id="6515727200518652613">Appareil photo déconnecté, tentative de reconnexion en cours.</translation>
 <translation id="6520517963145875092">Sélectionner une fenêtre à capturer</translation>
 <translation id="652139407789908527">Votre écran restera éteint plus longtemps que d'habitude (jusqu'à une minute) le temps de la mise à jour. Veuillez ne pas appuyer sur le bouton Marche/Arrêt tant que la mise à jour n'est pas terminée.</translation>
 <translation id="6528179044667508675">Ne pas déranger</translation>
@@ -915,6 +908,7 @@ Nouvelle installation</translation>
 <translation id="6578407462441924264">Sans nom</translation>
 <translation id="6585808820553845416">Fin de la session dans <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597278316891651699">Appareil photo aligné sur l'angle inférieur gauche. Conflit avec la surface du système.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="6612802754306526077">Mode d'enregistreur d'écran sélectionné</translation>
 <translation id="6614169507485700968">L'écran de confidentialité est activé</translation>
@@ -952,6 +946,7 @@ Nouvelle installation</translation>
 <translation id="6801878137098616817">Modifié récemment</translation>
 <translation id="6803622936009808957">Impossible de dupliquer les écrans, car aucune résolution compatible n'a été détectée. Le bureau étendu a été activé à la place.</translation>
 <translation id="6818242057446442178">Reculer par mot</translation>
+<translation id="6819327813400217281">Appareil photo aligné sur l'angle inférieur gauche</translation>
 <translation id="6820676911989879663">Faites une pause !</translation>
 <translation id="6827049576281411231">Fermer le panneau d'événements</translation>
 <translation id="6836499262298959512">Fichier dangereux</translation>
@@ -980,6 +975,7 @@ Nouvelle installation</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Accessibilité</translation>
 <translation id="698231206551913481">L'ensemble des données locales et des fichiers associés à cet utilisateur seront définitivement supprimés en même temps que ce dernier.</translation>
+<translation id="7005239792648594238">Ouvrez une appli pour commencer</translation>
 <translation id="7007983414944123363">Impossible de valider votre code ou votre mot de passe. Réessayez.</translation>
 <translation id="7014684956566476813">Connecté à un appareil nommé "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7015766095477679451">Revenez à <ph name="COME_BACK_TIME" />.</translation>
@@ -991,9 +987,9 @@ Nouvelle installation</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Assistant Google</translation>
 <translation id="7042322267639375032">Réduire la zone d'état</translation>
 <translation id="7045033600005038336">Remplacer le modèle ?</translation>
-<translation id="7045595904618419789">Utiliser la loupe</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> s'est déconnecté</translation>
 <translation id="7055910611768509537">Stylet inutilisé depuis plus d'une semaine</translation>
+<translation id="7061457967428964661">Aperçu de l'appareil photo, appuyez sur Contrôle et les touches fléchées pour déplacer l'aperçu dans un autre angle</translation>
 <translation id="7066646422045619941">Votre administrateur a désactivé ce réseau.</translation>
 <translation id="7067196344162293536">Rotation automatique</translation>
 <translation id="7068360136237591149">Ouvre des fichiers</translation>
@@ -1014,12 +1010,12 @@ Nouvelle installation</translation>
 <translation id="718361511487535372">Ouvrir dans Google Agenda</translation>
 <translation id="7188494361780961876">Le menu a été déplacé dans l'angle supérieur gauche de l'écran.</translation>
 <translation id="7189412385142492784">À quelle distance se trouve Vénus</translation>
+<translation id="7198435252016571249">Appareil photo aligné sur l'angle inférieur droit. Conflit avec la surface du système.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ce Chromebook doit redémarrer pour installer une mise à jour. Ceci peut prendre jusqu'à une minute.</translation>
 <translation id="7256634071279256947">Micro arrière</translation>
 <translation id="7258828758145722155">Modifié hier</translation>
 <translation id="726276584504105859">Faire glisser ici pour utiliser l'écran partagé</translation>
 <translation id="7262906531272962081">Créer un rappel</translation>
-<translation id="7279434993080105272">Couleur du repère : <ph name="COLOR_PARAMETER" /></translation>
 <translation id="7302889331339392448">Sous-titres instantanés désactivés.</translation>
 <translation id="7303365578352795231">Réponse sur un autre appareil.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1046,7 +1042,6 @@ Nouvelle installation</translation>
 <translation id="742594950370306541">La caméra est en cours d'utilisation.</translation>
 <translation id="742608627846767349">Bonjour,</translation>
 <translation id="743058460480092004">La caméra et le micro sont en cours d'utilisation.</translation>
-<translation id="7434543979546293336">Indiquée comme idée principale</translation>
 <translation id="7452560014878697800">Une application utilise la caméra</translation>
 <translation id="7453330308669753048">Résultat de l'historique des recherches supprimé</translation>
 <translation id="7461924472993315131">Épingler</translation>
@@ -1054,7 +1049,6 @@ Nouvelle installation</translation>
 <translation id="7466449121337984263">Veuillez toucher le capteur</translation>
 <translation id="7477793887173910789">Contrôler votre musique, vos vidéos et d'autres contenus</translation>
 <translation id="7483025031359818980">Zone de sélection définie sur l'écran entier</translation>
-<translation id="7486227320194954040">Réduire les outils Marqueur</translation>
 <translation id="7497767806359279797">Choisir la langue et le clavier</translation>
 <translation id="7508690557411636492">Ouvert le mois dernier</translation>
 <translation id="7509246181739783082">Valider votre identité</translation>
@@ -1071,16 +1065,16 @@ Nouvelle installation</translation>
 <translation id="7561982940498449837">Fermer le menu</translation>
 <translation id="7564874036684306347">Le déplacement de fenêtres vers un autre écran peut entraîner un comportement inattendu. Par exemple, les notifications, les fenêtres et les boîtes de dialogue peuvent s'afficher sur les deux écrans.</translation>
 <translation id="7569509451529460200">Braille et ChromeVox activés</translation>
-<translation id="7569983096843329377">Noir</translation>
 <translation id="7573585051776738856">Fenêtre active épinglée à droite.</translation>
 <translation id="7579778809502851308">Capture d'écran</translation>
 <translation id="7590883480672980941">Paramètres de saisie</translation>
 <translation id="7593891976182323525">Recherche ou Maj</translation>
 <translation id="7600875258240007829">Afficher toutes les notifications</translation>
 <translation id="7607002721634913082">Suspendu</translation>
+<translation id="7611213136657090146">Appareil photo reconnecté.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
-<translation id="7631906263969450674">Stylo marqueur</translation>
 <translation id="7633755430369750696">Afficher les paramètres du Partage à proximité.</translation>
+<translation id="7634648064048557203">Appareil photo aligné sur l'angle inférieur droit</translation>
 <translation id="7641938616688887143">Enregistrer</translation>
 <translation id="7642647758716480637">Ouvrir les paramètres du réseau <ph name="NETWORK_NAME" /> <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propriétaire)</translation>
@@ -1093,6 +1087,7 @@ Nouvelle installation</translation>
 <translation id="7662283695561029522">Appuyer pour configurer</translation>
 <translation id="7670953955701272011">Ouvrir cette date dans Google Agenda</translation>
 <translation id="7671610481353807627">Les applis sont triées par couleur</translation>
+<translation id="7684531502177797067">Saisie par photo définie sur <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Ajouter un réseau mobile</translation>
 <translation id="7720410380936703141">RÉESSAYER</translation>
@@ -1151,7 +1146,6 @@ Nouvelle installation</translation>
 <translation id="8029247720646289474">Échec de la connexion au point d'accès</translation>
 <translation id="8029629653277878342">Veuillez saisir le code ou mot de passe pour renforcer la sécurité</translation>
 <translation id="8030169304546394654">Déconnecté</translation>
-<translation id="8035152190676905274">Stylo</translation>
 <translation id="8036504271468642248">Phrase précédente</translation>
 <translation id="8042893070933512245">Ouvrir le menu des paramètres d'accessibilité</translation>
 <translation id="8042925093898452104">Fermer les informations détaillées</translation>
@@ -1167,7 +1161,6 @@ Nouvelle installation</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8131994907636310308">Fermer le toast de tri</translation>
-<translation id="8132487352815776550">Fermer les sous-titres</translation>
 <translation id="8132793192354020517">Connecté à <ph name="NAME" /></translation>
 <translation id="813913629614996137">Initialisation…</translation>
 <translation id="8142441511840089262">Double-clic</translation>
@@ -1316,6 +1309,7 @@ Nouvelle installation</translation>
 <translation id="9077404278023321866">Modèles</translation>
 <translation id="9077515519330855811">Commandes multimédias sélectionnées. Vous écoutez actuellement <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi : <ph name="ADDRESS" /></translation>
+<translation id="9080073830732419341">Appareil photo aligné sur l'angle supérieur gauche</translation>
 <translation id="9080132581049224423">Balayer l'écran vers le haut pour revenir à l'accueil</translation>
 <translation id="9080206825613744995">Le micro est en cours d'utilisation.</translation>
 <translation id="9084606467167974638">Activer/Désactiver la position du menu</translation>

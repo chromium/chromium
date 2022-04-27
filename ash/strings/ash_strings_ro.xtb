@@ -26,7 +26,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="109942774857561566">M-am plictisit</translation>
 <translation id="1104084341931202936">Afișează setările de accesibilitate</translation>
 <translation id="1104621072296271835">Dispozitivele funcționează și mai bine împreună</translation>
-<translation id="1111781754511998498">Projector</translation>
 <translation id="112308213915226829">Ascundeți automat raftul</translation>
 <translation id="1142002900084379065">Fotografii recente</translation>
 <translation id="1148499908455722006">Deschide fereastra de dialog cu informații pentru <ph name="USER_NAME" /></translation>
@@ -185,11 +184,9 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2021864487439853900">Dă clic pentru deblocare</translation>
 <translation id="2023558322300866873">Poți opri oricând capturarea pachetelor</translation>
 <translation id="2034971124472263449">Salvează oricum</translation>
-<translation id="2047639699071423250">Adaugă o idee importantă</translation>
 <translation id="2049240716062114887">Numele desktopului a fost schimbat în <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2064048859448024834">Previzualizarea camerei este activată</translation>
-<translation id="2066708475850724665">Dezactivează lupa</translation>
 <translation id="2067602449040652523">Luminozitatea tastaturii</translation>
 <translation id="2078034614700056995">Glisează spre dreapta cu patru degete pentru a comuta la desktopul următor</translation>
 <translation id="2079504693865562705">Ascunde aplicațiile din raft</translation>
@@ -213,6 +210,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2220572644011485463">PIN sau parolă</translation>
 <translation id="2222841058024245321">Desktop 7</translation>
 <translation id="2224075387478458881">Înregistrarea ecranului nu este permisă atunci când se afișează conținut protejat</translation>
+<translation id="2227179592712503583">Elimină sugestia</translation>
 <translation id="225680501294068881">Se caută gadgeturi...</translation>
 <translation id="2257486738914982088">A apărut o eroare în timpul descărcării <ph name="FILENAME" /></translation>
 <translation id="2268130516524549846">Bluetooth dezactivat</translation>
@@ -283,7 +281,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2704781753052663061">Alătură-te altor rețele Wi-Fi</translation>
 <translation id="2705001408393684014">Comută microfonul. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">În sus</translation>
-<translation id="2713444072780614174">Alb</translation>
 <translation id="2718395828230677721">Lum. de noapte</translation>
 <translation id="2726420622004325180">Telefonul trebuie să aibă date mobile pentru a crea un hotspot</translation>
 <translation id="2727175239389218057">Răspunde</translation>
@@ -352,7 +349,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3100274880412651815">Închide modul de capturare</translation>
 <translation id="3105917916468784889">Realizează o captură de ecran</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
-<translation id="3113926042639749131">Elimină sugestia</translation>
 <translation id="3120421559657122717">Închizi dispozitivul?</translation>
 <translation id="3126069444801937830">Reporniți pentru a actualiza</translation>
 <translation id="3139942575505304791">Desktop 1</translation>
@@ -430,7 +426,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3542066395059568317">Vei vedea recomandări ca să poți continua de unde ai rămas. Poți da clic dreapta ca să elimini recomandările.</translation>
 <translation id="3552189655002856821">Conexiunea Wi-Fi este dezactivată</translation>
 <translation id="3554637740840164787">S-a fixat <ph name="ITEM_TITLE" /></translation>
-<translation id="3560866052109807830">Instrumente de desenare cu markerul</translation>
 <translation id="3563775809269155755">Activează hotspotul</translation>
 <translation id="3566240529365775567">Deschis adineauri</translation>
 <translation id="3571734092741541777">Configurează</translation>
@@ -455,7 +450,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3638400994746983214">Activează/dezactivează ecranul de confidențialitate. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Actualizare întârziată</translation>
 <translation id="366222428570480733">Utilizatorul gestionat <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="3680908746918359504">Șterge toate markerele</translation>
 <translation id="36813544980941320">Se va permite accesul la rețelele Wi-Fi de pe telefon și de pe <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Site-uri</translation>
 <translation id="3701206655856637070">Acum poți schimba locul în care se salvează capturile de ecran</translation>
@@ -521,7 +515,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Dezac., o apl.}few{Dezac., # apl.}other{Dezac., # apl.}}</translation>
 <translation id="4066027111132117168">Activată, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Semnal mediu</translation>
-<translation id="4095366824370681039">Stilou cu cerneală</translation>
 <translation id="4112140312785995938">Derulează înapoi</translation>
 <translation id="4114315158543974537">Activează Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -553,7 +546,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4279490309300973883">Oglindire</translation>
 <translation id="4283888303416325161">Introdu parola pentru mai multă siguranță</translation>
 <translation id="4285498937028063278">Anulați fixarea</translation>
-<translation id="429402653707266969">Activează / dezactivează locația barei de instrumente</translation>
 <translation id="4294319844246081198">Bună dimineața, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Șterge toate cele <ph name="COUNT" /> notificări</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> s-a mutat în dosarul <ph name="FOLDER_NAME" />.</translation>
@@ -617,7 +609,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4587299710837179226">Microfonul este dezactivat</translation>
 <translation id="4596144739579517758">Tema întunecată este dezactivată</translation>
 <translation id="4611292653554630842">Conectează-te</translation>
-<translation id="4614295562446151104">Extinde instrumentele pentru marker</translation>
 <translation id="4623167406982293031">Confirmă contul</translation>
 <translation id="4628757576491864469">Dispozitive</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, evaluare cu stele: <ph name="RATING_SCORE" /></translation>
@@ -687,7 +678,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="504465286040788597">Paragraful anterior</translation>
 <translation id="5045550434625856497">Parolă incorectă</translation>
 <translation id="5071064518267176975">O aplicație solicită permisiunea de a folosi microfonul</translation>
-<translation id="5075554201838155866">Pornește subtitrările</translation>
 <translation id="5078796286268621944">Cod PIN incorect</translation>
 <translation id="5083553833479578423">Deblochează mai multe funcții ale Asistentului.</translation>
 <translation id="5106223312672646208">Personalizează</translation>
@@ -795,7 +785,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5790085346892983794">Ai reușit</translation>
 <translation id="5805809050170488595">Dă clic pentru a activa <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Setări pentru dispozitivele conectate</translation>
-<translation id="583281660410589416">Necunoscut</translation>
 <translation id="5837036133683224804">Întrerupe <ph name="ROUTE_TITLE" /> pe <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Apasă lung pentru a maximiza</translation>
 <translation id="5856638668464565213">Rețeaua <ph name="NETWORK_NAME" /> nu este activată.</translation>
@@ -840,7 +829,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6043212731627905357">Monitorul nu funcționează cu <ph name="DEVICE_TYPE" /> (monitorul nu este compatibil).</translation>
 <translation id="6043994281159824495">Deconectați-vă acum</translation>
 <translation id="6047696787498798094">Permiterea accesului la ecran încetează când comuți la alt utilizator. Dorești să continui?</translation>
-<translation id="6050368268239407309">Instrumente de prezentare</translation>
 <translation id="6054305421211936131">Conectează-te cu cardul inteligent</translation>
 <translation id="6059276912018042191">File Chrome recente</translation>
 <translation id="6062360702481658777">Veți fi deconectat(ă) automat peste <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -994,7 +982,6 @@ Instalare nouă</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Asistent Google</translation>
 <translation id="7042322267639375032">Restrânge zona de stare</translation>
 <translation id="7045033600005038336">Înlocuiești șablonul?</translation>
-<translation id="7045595904618419789">Activează lupa</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> s-a deconectat</translation>
 <translation id="7055910611768509537">Creionul nu a fost folosit de mai mult de o săptămână</translation>
 <translation id="7066646422045619941">Această rețea este dezactivată de administrator.</translation>
@@ -1022,7 +1009,6 @@ Instalare nouă</translation>
 <translation id="7258828758145722155">Editat ieri</translation>
 <translation id="726276584504105859">Trage aici pentru a folosi ecranul împărțit</translation>
 <translation id="7262906531272962081">Creează un memento</translation>
-<translation id="7279434993080105272">Marker <ph name="COLOR_PARAMETER" /></translation>
 <translation id="7302889331339392448">Funcția Subtitrări live este dezactivată.</translation>
 <translation id="7303365578352795231">Se răspunde pe alt dispozitiv.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1049,7 +1035,6 @@ Instalare nouă</translation>
 <translation id="742594950370306541">Camera foto este în uz.</translation>
 <translation id="742608627846767349">Bună dimineața!</translation>
 <translation id="743058460480092004">Camera foto și microfonul sunt în uz.</translation>
-<translation id="7434543979546293336">Marcată ca idee importantă</translation>
 <translation id="7452560014878697800">O aplicație folosește camera</translation>
 <translation id="7453330308669753048">S-a eliminat rezultatul din istoricul căutărilor</translation>
 <translation id="7461924472993315131">Fixează</translation>
@@ -1057,7 +1042,6 @@ Instalare nouă</translation>
 <translation id="7466449121337984263">Atinge senzorul</translation>
 <translation id="7477793887173910789">Gestionează muzica, videoclipurile și altele</translation>
 <translation id="7483025031359818980">Zona de selectare este setată la ecran complet</translation>
-<translation id="7486227320194954040">Restrânge instrumentele pentru marker</translation>
 <translation id="7497767806359279797">Alege limba și tastatura</translation>
 <translation id="7508690557411636492">Deschis în ultima lună</translation>
 <translation id="7509246181739783082">Confirmă-ți identitatea</translation>
@@ -1074,7 +1058,6 @@ Instalare nouă</translation>
 <translation id="7561982940498449837">Închide meniul</translation>
 <translation id="7564874036684306347">Mutarea ferestrelor pe alt desktop poate duce la un comportament neașteptat. Notificările, ferestrele și casetele de dialog ulterioare ar putea fi împărțite între ecrane.</translation>
 <translation id="7569509451529460200">Braille și ChromeVox sunt activate</translation>
-<translation id="7569983096843329377">Negru</translation>
 <translation id="7573585051776738856">Fereastra activă a fost fixată în dreapta.</translation>
 <translation id="7579778809502851308">Captură de ecran</translation>
 <translation id="7590883480672980941">Setări de introducere a textului</translation>
@@ -1082,7 +1065,6 @@ Instalare nouă</translation>
 <translation id="7600875258240007829">Vezi toate notificările</translation>
 <translation id="7607002721634913082">Întreruptă</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
-<translation id="7631906263969450674">Marker</translation>
 <translation id="7633755430369750696">Afișează setările Trimiterii în apropiere.</translation>
 <translation id="7641938616688887143">Înregistrează</translation>
 <translation id="7642647758716480637">Deschide setările pentru <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
@@ -1154,7 +1136,6 @@ Instalare nouă</translation>
 <translation id="8029247720646289474">Conectarea la hotspot nu a reușit</translation>
 <translation id="8029629653277878342">Este necesar codul PIN sau parola pentru mai multă siguranță</translation>
 <translation id="8030169304546394654">Deconectat</translation>
-<translation id="8035152190676905274">Stilou</translation>
 <translation id="8036504271468642248">Propoziția anterioară</translation>
 <translation id="8042893070933512245">Deschide meniul cu setări de accesibilitate</translation>
 <translation id="8042925093898452104">Închide informațiile detaliate</translation>
@@ -1170,7 +1151,6 @@ Instalare nouă</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmați</translation>
 <translation id="8131994907636310308">Închide notificarea toast de sortare</translation>
-<translation id="8132487352815776550">Oprește subtitrările</translation>
 <translation id="8132793192354020517">Conectat la <ph name="NAME" /></translation>
 <translation id="813913629614996137">Se inițializează...</translation>
 <translation id="8142441511840089262">Dublu clic</translation>

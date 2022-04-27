@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
 <translation id="1113173431709655881">Kamera rejimi</translation>
+<translation id="1153190633558910465">Tor deaktivdir</translation>
 <translation id="1175958423215084756">Keçid aşkarlanıb. <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">Saat əqrəbi istiqamətində 90 dərəcə fırladın</translation>
 <translation id="1276998909102132017">Qalereya şəkilləri</translation>
 <translation id="1300209025925956156">Sənədinizi skanlayın</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Daxil olmaq üçün Axtarış + Sol ox.</translation>
+<translation id="1393338179284529051">Dördqat HD</translation>
 <translation id="1430915738399379752">Çap edin</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> kabeli çıxarılıb.</translation>
 <translation id="1473110567575736769">3 saniyəlik taymer</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">Taymer müddəti</translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktivdir</translation>
+<translation id="2134029355740465625">Video ayarları</translation>
 <translation id="2144806332417375165">Fərdi video parametrləri</translation>
 <translation id="2175927920773552910">QR Kod</translation>
 <translation id="2271433936731426666">Tam ölçülü video snepşotunu aktivləşdirin</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">Arxa kamera</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> san</translation>
 <translation id="2761536921376153655">Skan növü</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">Önizləməni əks etdirin</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> kabeli birləşdirilib.</translation>
 <translation id="2968794441791257519">Kamera ilə çəkilmiş foto və videolar Endirmələr qovluğuna köçürüləcək. Onlara Fayllardan daxil ola bilərsiniz. Yaddaş icazəsi olan tətbiqlər foto və videolara daxil ola biləcək.</translation>
 <translation id="3067436040345934772">Sağı görüntüləyin</translation>
@@ -50,6 +55,8 @@
 <translation id="3240426699337459095">Link kopyalandı</translation>
 <translation id="3259149966178251584">Kameranın ayırdetmə dəqiqliyi</translation>
 <translation id="3305962767867348165">Düzəldin</translation>
+<translation id="3354465018370944241">Foto ayarları</translation>
+<translation id="3411958449466169012">Taymer deaktivdir</translation>
 <translation id="3448774564454087943">Çox qısa olduğuna görə video saxlanılmadı</translation>
 <translation id="346539236881580388">Yenidən çəkin</translation>
 <translation id="3517926952904427380">Portret fotosu çəkmək alınmadı</translation>
@@ -61,9 +68,12 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Barkodu skan edin</translation>
 <translation id="3892148308691398805">Mətni kopyalayın</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Səsi yazmağa fasilə verin</translation>
 <translation id="4121305183798804752">Sənəd aşkar edilib</translation>
+<translation id="414641094616694804">Bu kamera ayırdetmə dəqiqliyini dəyişə bilmir</translation>
 <translation id="4269820728363426813">Link ünvanını kopyalayın</translation>
+<translation id="4281620174117014503">Orta ayırdetmə dəqiqliyi</translation>
 <translation id="4329152592498422850">Kvadrat foto çəkmək üçün keçid edin</translation>
 <translation id="4383571725254449280">Performans jurnallarını çap edin</translation>
 <translation id="4445542136948522167">Foto çəkməyi dayandırın</translation>
@@ -72,12 +82,15 @@
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4649291346448517080">Faylı yadda saxlamaq mümkün deyil</translation>
 <translation id="4695379108709712600">Yuxarı tərəfə daşınır</translation>
+<translation id="4705093842003735294">Tam ayırdetmə dəqiqliyi</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Çox-yayımlı video çəkilişi</translation>
+<translation id="5034763830503483128">Fotonun tərəflər nisbəti</translation>
 <translation id="5057360777601936059">Kamera hazırda əlçatan deyil.
         Kameranın düzgün qoşulub-qoşulmadığını yoxlayın.</translation>
 <translation id="5163387177077603948">Sağ tərəfə daşınır</translation>
 <translation id="520537883758714667">Sənəd skanlama əlçatan deyil</translation>
+<translation id="5235304959032763950">16-9</translation>
 <translation id="5266635337630551423">Sənədin yuxarı sol küncü</translation>
 <translation id="5317780077021120954">Yadda saxlayın</translation>
 <translation id="5320594929574852403">Sol tərəfə daşınır</translation>
@@ -92,6 +105,7 @@
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5975083100439434680">Kiçildin</translation>
 <translation id="5976160379964388480">Digərləri</translation>
+<translation id="603973421174355542">Tam HD</translation>
 <translation id="6073451960410192870">Çəkməyi dayandırın</translation>
 <translation id="6197807149213783179">Metadatanı yadda saxlayın</translation>
 <translation id="6233780560267770709">3x3</translation>
@@ -102,6 +116,7 @@
 Rəyiniz şəkil və ya video keyfiyyəti ilə bağlıdırsa, nümunə foto və ya video əlavə edərək problemi təsvir edin. (Məsələn, foto çox qaranlıqdır və ya subyekt fokusda deyil.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> meqa piksel</translation>
 <translation id="6527303717912515753">Paylaşın</translation>
+<translation id="6631515515009660915">Əksetmə deaktivdir</translation>
 <translation id="6652737148136672975">Ox düymələri ilə küncləri hərəkət etdirin</translation>
 <translation id="667999046851023355">Sənəd</translation>
 <translation id="6681668084120808868">Fotoşəkil çəkin</translation>
@@ -112,6 +127,7 @@ Rəyiniz şəkil və ya video keyfiyyəti ilə bağlıdırsa, nümunə foto və 
 <translation id="698156982839284926">3 saniyə</translation>
 <translation id="712848772518857951"><ph name="COUNT" /> elementi silmək istəyirsiniz?</translation>
 <translation id="7134221860976209830">10 saniyəlik taymer</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Qeydəalma növü</translation>
 <translation id="7243947652761655814">Videonun ayırdetmə dəqiqliyi</translation>
 <translation id="7337660886763914220">Fayl sistemi xətaları.</translation>
@@ -144,9 +160,11 @@ Rəyiniz şəkil və ya video keyfiyyəti ilə bağlıdırsa, nümunə foto və 
 <translation id="8815966864175525708">Portret fotosu çəkmək üçün keçid edin</translation>
 <translation id="8828441885228359828">Səs yazmağa davam edin</translation>
 <translation id="8870695351537079478">Çəkimə başlamaq mümkün deyil</translation>
+<translation id="8880167521484863515">4-3</translation>
 <translation id="8903921497873541725">Zoom</translation>
 <translation id="9045010116236796332">Sənədin bütün kənarlarını çərçivənin daxilinə yerləşdirin</translation>
 <translation id="9045155556724273246">10 saniyə</translation>
 <translation id="906331135292332864">Şəkil emal edilir...</translation>
+<translation id="922762992951083513">Əksetmə aktivdir</translation>
 <translation id="945522503751344254">Geri əlaqə göndərin</translation>
 </translationbundle>

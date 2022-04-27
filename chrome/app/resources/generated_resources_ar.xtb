@@ -580,6 +580,7 @@
 <translation id="156793199942386351">سبق وتم تخصيص مفتاح "<ph name="CURRENTKEY" />" للإجراء "<ph name="ACTION" />". يمكنك الضغط على أي مفتاح لاختيار <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">‏وحدة تحكم JavaScript</translation>
 <translation id="1568323446248056064">فتح إعدادات الجهاز للعرض</translation>
+<translation id="1569044524074707727">فتح قفل الهاتف</translation>
 <translation id="1570604804919108255">إعادة صوت الاشعارات</translation>
 <translation id="1571304935088121812">نسخ اسم المستخدم</translation>
 <translation id="1571738973904005196">عرض علامة التبويب <ph name="TAB_ORIGIN" /></translation>
@@ -1004,7 +1005,6 @@
 <translation id="1942600407708803723">إيقاف التشغيل عند غلق الغلاف</translation>
 <translation id="1944528062465413897">رمز إقران البلوتوث:</translation>
 <translation id="1944921356641260203">تم العثور على التحديث</translation>
-<translation id="1946577776959096882">عرض الحسابات</translation>
 <translation id="1949584741547056205">إجابات سريعة</translation>
 <translation id="1951012854035635156">المساعد</translation>
 <translation id="1954597385941141174">‏السماح للمواقع الإلكترونية بطلب الاتصال بأجهزة USB</translation>
@@ -1139,6 +1139,24 @@
 <translation id="2090165459409185032">‏لاسترداد معلومات حسابك، انتقل إلى: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">الاتصال تلقائيًا عند تسجيل الدخول</translation>
 <translation id="2090876986345970080">إعداد أمان النظام</translation>
+<translation id="2092356157625807382">‏<ph name="BEGIN_H3" />ميزات تصحيح الأخطاء<ph name="END_H3" />
+      <ph name="BR" />
+      يمكنك تفعيل ميزات تصحيح الأخطاء على جهازك الذي يعمل بنظام التشغيل Chrome لتثبيت رمز مُخصَّص واختباره على جهازك، وبالتالي يمكنك إجراء الآتي:<ph name="BR" />
+      <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />إزالة ميزة التحقق من نظام الملفات الجذري (Rootfs Verification) لتتمكّن من تعديل ملفات نظام التشغيل
+        <ph name="LIST_ITEM" />إتاحة الوصول عبر بروتوكول النقل الآمن (SSH) إلى الجهاز باستخدام مفاتيح الاختبار العادية لتتمكن من استخدام أدوات مثل <ph name="BEGIN_CODE" />cros flash<ph name="END_CODE" /> للوصول إلى الجهاز
+        <ph name="LIST_ITEM" />إتاحة تشغيل النظام باستخدام محرّك أقراص USB لتتمكّن من تثبيت نسخة لنظام التشغيل من محرّك أقراص USB
+      <ph name="LIST_ITEM" />ضبط كلمة المرور على قيمة مُخصّصة لتسجيل الدخول إلى كلٍ من جذر النظام والجهاز لتتمكّن من الوصول يدويًا إلى الجهاز عبر بروتوكول النقل الآمن (SSH)
+      <ph name="END_LIST" />
+      <ph name="BR" />
+      عند تفعيل ميزات تصحيح الأخطاء، ستظل معظمها مُفعّلة حتى بعد تنفيذ وظيفة Powerwash أو حجب البيانات على جهاز مؤسسة مُدار. ولإيقاف جميع ميزات تصحيح الأخطاء بشكل كامل، يُرجى إكمال عملية استرداد نظام التشغيل Chrome‏(https://support.google.com/chromebook/answer/1080595).
+      <ph name="BR" />
+      <ph name="BR" />
+      للحصول على مزيد من المعلومات حول ميزات تصحيح الأخطاء، يمكنك الاطّلاع على:<ph name="BR" />
+      https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+      <ph name="BR" />
+      <ph name="BR" />
+      <ph name="BEGIN_BOLD" />ملاحظة:<ph name="END_BOLD" /> ستتم إعادة تشغيل النظام أثناء تنفيذ العملية.</translation>
 <translation id="2095774564753225041">أنواع الملفات المتوافقة</translation>
 <translation id="2096715839409389970">حذف ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="2098805196501063469">التحقُّق من كلمات المرور المتبقية</translation>
@@ -1357,6 +1375,24 @@
 <translation id="2300383962156589922">تخصيص <ph name="APP_NAME" /> والتحكّم فيه</translation>
 <translation id="2301382460326681002">دليل الجذر للإضافة غير صالح.</translation>
 <translation id="2301402091755573488">علامة تبويب تمت مشاركتها</translation>
+<translation id="2302342861452486996">‏<ph name="BEGIN_H3" />ميزات تصحيح الأخطاء<ph name="END_H3" />
+      <ph name="BR" />
+      يمكنك تفعيل ميزات تصحيح الأخطاء على جهازك الذي يعمل بنظام التشغيل Chrome Flex لتثبيت رمز مُخصَّص واختباره على جهازك، وبالتالي يمكنك إجراء الآتي:<ph name="BR" />
+      <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />إزالة ميزة التحقق من نظام الملفات الجذري (Rootfs Verification) لتتمكّن من تعديل ملفات نظام التشغيل
+        <ph name="LIST_ITEM" />إتاحة الوصول عبر بروتوكول النقل الآمن (SSH) إلى الجهاز باستخدام مفاتيح الاختبار العادية لتتمكّن من استخدام أدوات مثل <ph name="BEGIN_CODE" />cros flash<ph name="END_CODE" /> للوصول إلى الجهاز
+        <ph name="LIST_ITEM" />إتاحة تشغيل النظام باستخدام محرّك أقراص USB لتتمكّن من تثبيت نسخة لنظام التشغيل من محرّك أقراص USB
+      <ph name="LIST_ITEM" />ضبط كلمة المرور على قيمة مُخصّصة لتسجيل الدخول إلى كلٍ من جذر النظام والجهاز لتتمكّن من الوصول يدويًا إلى الجهاز عبر بروتوكول النقل الآمن (SSH)
+      <ph name="END_LIST" />
+      <ph name="BR" />
+      عند تفعيل ميزات تصحيح الأخطاء، ستظل معظمها مُفعّلة حتى بعد تنفيذ وظيفة Powerwash أو حجب البيانات على جهاز مؤسسة مُدار. لإيقاف جميع ميزات تصحيح الأخطاء بشكل كامل، يُرجى إكمال عملية استرداد نظام التشغيل Chrome‏(https://support.google.com/chromebook/answer/1080595).
+      <ph name="BR" />
+      <ph name="BR" />
+      للحصول على مزيد من المعلومات حول ميزات تصحيح الأخطاء، يمكنك الاطّلاع على:<ph name="BR" />
+      https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+      <ph name="BR" />
+      <ph name="BR" />
+      <ph name="BEGIN_BOLD" />ملاحظة:<ph name="END_BOLD" /> ستتم إعادة تشغيل النظام أثناء تنفيذ العملية.</translation>
 <translation id="23030561267973084">تتطلب الإضافة "<ph name="EXTENSION_NAME" />" أذونات إضافية.</translation>
 <translation id="23055578400314116">اختيار اسم مستخدم</translation>
 <translation id="2307462900900812319">إعداد الشبكة</translation>
@@ -1386,7 +1422,6 @@
 <translation id="2322622365472107569">وقت الانتهاء: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">‏شبكات Wi-Fi المحفوظة</translation>
 <translation id="2325444234681128157">تذكّر كلمة المرور</translation>
-<translation id="2325760149602186433">إزالة البطاقة الافتراضية</translation>
 <translation id="2326188115274135041">يُرجى تأكيد رقم التعريف الشخصي لتفعيل فتح القفل التلقائي.</translation>
 <translation id="2326931316514688470">&amp;إعادة تحميل التطبيق</translation>
 <translation id="2327492829706409234">تفعيل التطبيق</translation>
@@ -1718,7 +1753,9 @@
 <translation id="2642111877055905627">كرة القدم</translation>
 <translation id="2643698698624765890">يمكنك إدارة الإضافات من خلال النقر على "الإضافات" في القائمة "نافذة".</translation>
 <translation id="2645047101481282803">تتم إدارة جهازك من قِبل <ph name="PROFILE_NAME" />.</translation>
+<translation id="2645435784669275700">‏نظام التشغيل Chrome</translation>
 <translation id="2649045351178520408">‏حفظ سلسلة شهادات بتشفير ASCII المرمّز باستخدام Base64</translation>
+<translation id="2652129567809778422">اختيار كلمة مرور</translation>
 <translation id="2653033005692233957">تعذّر البحث</translation>
 <translation id="2653266418988778031">‏في حالة حذف شهادة مرجع مصدق (CA)، لن يثق المتصفح في أي شهادات يصدرها ذلك المرجع المصدق.</translation>
 <translation id="2653275834716714682">استبدال النص</translation>
@@ -1929,6 +1966,7 @@
 <translation id="2839032553903800133">تم حظر الإشعارات.</translation>
 <translation id="2841013758207633010">الوقت</translation>
 <translation id="2841837950101800123">المزود</translation>
+<translation id="2843560154284403323">‏لإكمال عملية إعداد نظام التشغيل Linux، عليك تحديث نظام التشغيل Chrome ثم إعادة المحاولة.</translation>
 <translation id="2844169650293029770">‏جهاز USB-C (المنفذ الأمامي الأيسر)</translation>
 <translation id="2844809857160214557">عرض مهام الطباعة وإدارتها</translation>
 <translation id="2845382757467349449">عرض شريط الإشارات المرجعية دائمًا</translation>
@@ -1946,6 +1984,7 @@
 <translation id="2854896010770911740">إزالة ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="2856776373509145513">إنشاء حاوية جديدة</translation>
 <translation id="2858138569776157458">أهم المواقع</translation>
+<translation id="2859383038987078242">‏إجراء الاختبارات التشخيصية على نظام التشغيل Chrome</translation>
 <translation id="2861301611394761800">اكتمل تحديث النظام. يُرجى إعادة تشغيل النظام.</translation>
 <translation id="2861941300086904918">‏إدارة الأمان لـ Native Client</translation>
 <translation id="2862815659905780618">‏إزالة بيئة تطوير نظام التشغيل Linux</translation>
@@ -1972,6 +2011,7 @@
 <translation id="288042212351694283">الوصول إلى أجهزة العامل الثاني العالمي</translation>
 <translation id="2881076733170862447">عند النقر على "الإضافة"</translation>
 <translation id="2882943222317434580">ستتم إعادة تشغيل <ph name="IDS_SHORT_PRODUCT_NAME" /> وإعادة تعيينه بعد وهلة.</translation>
+<translation id="2883470649061584386">الخلاصة</translation>
 <translation id="2885378588091291677">إدارة المهام</translation>
 <translation id="2885729872133513017">حدثت مشكلة في فك رمز استجابة الخادم.</translation>
 <translation id="2886119409731773154">يمكن أن تستغرق عملية الاحتفاظ بنسخة احتياطية ما يصل إلى 30 دقيقة.</translation>
@@ -2307,6 +2347,8 @@
 <translation id="3238192140106069382">جارٍ الاتصال والتحقق</translation>
 <translation id="3239373508713281971">تمت إزالة المهلة المحددّة لتطبيق <ph name="APP_NAME" />.</translation>
 <translation id="3241680850019875542">حدد الدليل الجذر للإضافة المراد إنشاء حزمة لها، ولتحديث إضافة، حدد أيضًا ملف المفتاح الخاص لإعادة استخدامه.</translation>
+<translation id="3242289508736283383">‏يجب تثبيت التطبيق الذي يحمل سمة البيان "kiosk_only" في وضع الكشك على نظام التشغيل Chrome.</translation>
+<translation id="3242665648857227438">‏يستخدم هذا الملف الشخصي إعدادات الخادم الوكيل لنظام التشغيل Chrome.</translation>
 <translation id="3244294424315804309">استمرار كتم الصوت</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - خطأ في الشبكة</translation>
 <translation id="3248902735035392926">الحفاظ على الأمان من أهم أولوياتنا. يُرجى <ph name="BEGIN_LINK" />التحقُّق من الإضافات الآن<ph name="END_LINK" />.</translation>
@@ -2385,6 +2427,8 @@
 <translation id="3315442055907669208">الدخول إلى وضع القارئ</translation>
 <translation id="3317459757438853210">طباعة على الجانبين</translation>
 <translation id="3317678681329786349">تم حظر استخدام الكاميرا والميكروفون</translation>
+<translation id="3320620783302968370">إذا استمرّت المشكلة، يُرجى إعادة تشغيل جهازك.
+    رمز الخطأ: <ph name="ERROR_CODE" /></translation>
 <translation id="3320630259304269485">التصفُّح الآمن (يوفّر حماية من المواقع الإلكترونية الضارة) وإعدادات الأمان الأخرى</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{تشتمل هذه البيانات على محتوى حسّاس أو خطير. يُرجى إزالة هذا المحتوى وإعادة المحاولة.}=1{يشتمل هذا الملف على محتوى حسّاس أو خطير. يُرجى إزالة هذا المحتوى وإعادة المحاولة.}two{يشتمل هذان الملفان على محتوى حسّاس أو خطير. يُرجى إزالة هذا المحتوى وإعادة المحاولة.}few{تشتمل هذه الملفات على محتوى حسّاس أو خطير. يُرجى إزالة هذا المحتوى وإعادة المحاولة.}many{تشتمل هذه الملفات على محتوى حسّاس أو خطير. يُرجى إزالة هذا المحتوى وإعادة المحاولة.}other{تشتمل هذه الملفات على محتوى حسّاس أو خطير. يُرجى إزالة هذا المحتوى وإعادة المحاولة.}}</translation>
 <translation id="3323521181261657960">إليك مكافأة. ستحظى بالمزيد من وقت النظر إلى الشاشة.</translation>
@@ -2683,6 +2727,7 @@
 <translation id="3617891479562106823">الخلفيات غير متاحة. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="3619115746895587757">كابتشينو</translation>
 <translation id="3619962278978697442">اختَر أيًا منهما في كل مرة تسجِّل فيها الدخول.</translation>
+<translation id="3621807901162200696">‏المساعدة على تحسين ميزات نظام التشغيل Chrome وأدائه</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{تطبيق واحد}zero{# تطبيق}two{تطبيقان}few{# تطبيقات}many{# تطبيقًا}other{# تطبيق}}</translation>
 <translation id="362333465072914957">‏في انتظار إصدار شهادة CA</translation>
 <translation id="3624567683873126087">‏فتح قفل الجهاز وتسجيل الدخول إلى حساب Google</translation>
@@ -3004,6 +3049,7 @@
 <translation id="3915280005470252504">البحث الصوتي</translation>
 <translation id="3916233823027929090">اكتملت عمليات فحص الأمان.</translation>
 <translation id="3916445069167113093">هذا النوع من الملفات قد يلحق الضرر بالكمبيوتر. هل تريد الاحتفاظ بـ <ph name="FILE_NAME" /> على أيّ حال؟</translation>
+<translation id="3917184139185490151">‏يحتوي الكمبيوتر على وحدة أمان يتم استخدامها لتفعيل العديد من ميزات الأمان المُهمة في نظام التشغيل Chrome. يمكنك الانتقال إلى مركز مساعدة Chromebook للتعرّف على مزيد من المعلومات: https://support.google.com/chromebook/?p=sm.</translation>
 <translation id="3918972485393593704">‏إبلاغ Google بالتفاصيل</translation>
 <translation id="3919145445993746351">للحصول على الإضافات على جميع أجهزة الكمبيوتر، يُرجى تفعيل المزامنة</translation>
 <translation id="3919229493046408863">إيقاف الإشعارات عندما تكون الأجهزة قريبة</translation>
@@ -3430,6 +3476,7 @@
 <translation id="4354073718307267720">طلب الإذن عند محاولة موقع إلكتروني إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك أو تتبُّع موضع الكاميرا</translation>
 <translation id="4354344420232759511">ستظهر المواقع التي تزورها هنا.</translation>
 <translation id="435527878592612277">اختيار صورتك</translation>
+<translation id="4358302248024731679">‏لتشخيص مشاكل البلوتوث بشكل أفضل، يمكن لمستخدمي Google تضمين سجلّات بلوتوث إضافية مع تقارير ملاحظاتهم. وعند تحديد هذا الخيار، سيتضمَّن تقريرك للجلسة الحالية ملفات بتنسيقات btsnoop وسجلّات واجهة وحدة تحكُّم المُضيف (HCI) مُصحَّحة لإزالة أكبر قدر ممكن من معلومات تحديد الهوية الشخصية (PII). سيقتصر الوصول إلى هذه السجلّات على مدراء الفريق المسؤول عن نظام التشغيل Chrome في Listnr. ستُزال السجلّات نهائيًا بعد 90 يومًا.</translation>
 <translation id="4358313196493694334">تثبيت النقر على الموقع الجغرافي</translation>
 <translation id="4359408040881008151">تم التثبيت بسبب الإضافة (الإضافات) التابعة.</translation>
 <translation id="4359717112757026264">مناظر المدن</translation>
@@ -3559,6 +3606,7 @@
 <translation id="4487489714832036847">‏تستخدم أجهزة Chromebook تطبيقات بدلاً من برامج تقليدية. يمكنك الحصول على تطبيقات لزيادة الإنتاجية والترفيه والمزيد.</translation>
 <translation id="4488257340342212116">المواقع الإلكترونية التي يُسمح لها باستخدام الكاميرا</translation>
 <translation id="4488502501195719518">هل تريد محو جميع البيانات؟</translation>
+<translation id="4490086832405043258">‏يمكنك استخدام إعدادات الخادم الوكيل في نظام التشغيل Chrome لهذا الملف الشخصي.</translation>
 <translation id="449126573531210296">‏ترميز كلمات المرور التي تمت مزامنتها باستخدام حسابك على Google</translation>
 <translation id="449232563137139956">تعمل المواقع الإلكترونية عادةً على عرض الصور لتوفير صور توضيحية مثل صور متاجر على الإنترنت أو مقالات إخبارية.</translation>
 <translation id="4492698018379445570">يمكنك الاطّلاع على المنتجات التي أضفتها إلى سلات التسوّق وإتمام الدفع عندما تكون جاهزًا.</translation>
@@ -3756,6 +3804,8 @@
 <translation id="4675828034887792601">يمكنك إنشاء اختصارات للبحث في المواقع الإلكتروني وإدارة محرك البحث الخاص بك.</translation>
 <translation id="4676595058027112862">ميزة "مركز التحكم بالهاتف"، مزيد من المعلومات</translation>
 <translation id="4677772697204437347">ذاكرة وحدة معالج الرسومات</translation>
+<translation id="4677970983462111944">‏لا يُسمح بتثبيت تطبيق Steam على هذا الجهاز. يُرجى التواصل مع المشرف للحصول على إذن بالتثبيت.
+    رمز الخطأ: <ph name="ERROR_CODE" /></translation>
 <translation id="467823995058589466">تم إيقاف الكاميرا.</translation>
 <translation id="4680105648806843642">تم كتم الصوت في هذه الصفحة.</translation>
 <translation id="4681453295291708042">إيقاف ميزة "المشاركة عن قرب"</translation>
@@ -4119,6 +4169,7 @@
 <translation id="5062930723426326933">تعذّر تسجيل الدخول، يُرجى الاتصال بالإنترنت وإعادة المحاولة.</translation>
 <translation id="5063480226653192405">الاستخدام</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
+<translation id="5066100345385738837">‏إدارة "نظام أسماء النطاقات" (DNS) الآمن من خلال إعدادات نظام التشغيل Chrome</translation>
 <translation id="5067399438976153555">قيد التفعيل دائمًا</translation>
 <translation id="5067867186035333991">الرجوع إليك عند رغبة <ph name="HOST" /> في الدخول إلى الميكروفون</translation>
 <translation id="5068918910148307423">عدم السماح للمواقع الإلكترونية التي تم إغلاقها مؤخرًا بإنهاء إرسال البيانات واستلامها</translation>
@@ -4261,6 +4312,7 @@
 <translation id="520621735928254154">خطأ في استيراد الشهادة</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{‏تمّ تغيير كلمة المرور المحتمَل تعرّضها للاختراق بنجاح. لديك كلمة مرور واحدة إضافية محتمَل تعرّضها للاختراق. لذا ينصح متصفِّح Chrome بالتحقُّق منها الآن.}zero{‏تمّ تغيير كلمة المرور المحتمَل تعرّضها للاختراق بنجاح. لديك # كلمة مرور إضافية محتمَل تعرّضها للاختراق. لذا ينصح متصفّح Chrome بالتحقُّق منها الآن.}two{‏تمّ تغيير كلمة المرور المحتمَل تعرّضها للاختراق بنجاح. لديك كلمتا مرور إضافيتان محتمَل تعرّضهما للاختراق. لذا ينصح متصفّح Chrome بالتحقُّق منهما الآن.}few{‏تمّ تغيير كلمة المرور المحتمَل تعرّضها للاختراق بنجاح. لديك # كلمات مرور إضافية محتمَل تعرّضها للاختراق. لذا ينصح متصفّح Chrome بالتحقُّق منها الآن.}many{‏تمّ تغيير كلمة المرور المحتمَل تعرّضها للاختراق بنجاح. لديك # كلمة مرور إضافية محتمَل تعرّضها للاختراق. لذا ينصح متصفّح Chrome بالتحقُّق منها الآن.}other{‏تمّ تغيير كلمة المرور المحتمَل تعرّضها للاختراق بنجاح. لديك # كلمة مرور إضافية محتمَل تعرّضها للاختراق. لذا ينصح متصفّح Chrome بالتحقُّق منها الآن.}}</translation>
 <translation id="5207949376430453814">تمييز علامة إقحام النص</translation>
+<translation id="520840839826327499">‏تريد خدمة <ph name="SERVICE_NAME" /> التحقق من أنّك تستخدم جهازًا مؤهَّلاً يعمل بنظام التشغيل Chrome.</translation>
 <translation id="5208548918290612795">حفظ الرمز المميز لمصادقة <ph name="WEB_DRIVE" /></translation>
 <translation id="520902706163766447">‏يمكنك فتح نافذة منبثقة في أعلى واجهة مستخدم Chrome للبحث عن علامات التبويب المفتوحة حاليًا.</translation>
 <translation id="5209320130288484488">لم يتم العثور على أي أجهزة</translation>
@@ -4382,6 +4434,7 @@
 <translation id="5329858601952122676">&amp;حذف</translation>
 <translation id="5331069282670671859">ليس لديك أي شهادات في هذه الفئة</translation>
 <translation id="5331425616433531170">تريد "<ph name="CHROME_EXTENSION_NAME" />" الاقتران</translation>
+<translation id="5331568967879689647">‏تطبيق نظام التشغيل Chrome</translation>
 <translation id="5331975486040154427">‏جهاز USB-C (المنفذ الخلفي الأيسر)</translation>
 <translation id="5333896723098573627">‏لإزالة التطبيقات، انتقِل إلى الإعدادات &gt; التطبيقات &gt; "متجر Google Play" &gt; إدارة إعدادات Android المفضّلة &gt; التطبيقات أو مدير التطبيقات. وبعد ذلك، انقر على التطبيق الذي تريد إلغاء تثبيته (قد تحتاج إلى التمرير سريعًا جهة اليمين أو اليسار للبحث عن التطبيق)، ثم انقر على "إلغاء التثبيت" أو "إيقاف".</translation>
 <translation id="5334142896108694079">ذاكرة التخزين المؤقت للنص البرمجي</translation>
@@ -4647,9 +4700,7 @@
 <translation id="5585912436068747822">تعذّر إتمام عملية التنسيق</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">جارٍ تحميل التطبيقات...</translation>
-<translation id="5591644692203457362">أي طُرق أخرى لاستخدام المفتاح</translation>
 <translation id="5592595402373377407">لم تتوفر بيانات كافية بعد.</translation>
-<translation id="5593564924968945303">‏متصفّح Chrome</translation>
 <translation id="5595485650161345191">تعديل العنوان</translation>
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="5600348067066185292">تتطلب عملية التثبيت اتخاذ بضع خطوات سهلة. وستُتاح لك فرصة أخرى للتأكيد قبل تطبيق التغييرات على الكمبيوتر.</translation>
@@ -4976,7 +5027,6 @@
 <translation id="5935158534896975820">جارٍ تحضير طلب توقيع الشهادة (في انتظار الخادم)</translation>
 <translation id="5935656526031444304">إدارة "التصّفح الآمن"</translation>
 <translation id="5938002010494270685">ترقية الأمان متاحة</translation>
-<translation id="5938153366081463283">إضافة بطاقة افتراضية</translation>
 <translation id="5939518447894949180">إعادة الضبط</translation>
 <translation id="5939719276406088041">يتعذّر إنشاء الاختصار.</translation>
 <translation id="594048410531370124">لم يتم التعرُّف على المفتاح. يمكنك الضغط على أي مفتاح لاختيار <ph name="RESPONSE" />.</translation>
@@ -5266,6 +5316,7 @@
 <translation id="6227002569366039565">يمكنك الضغط على |<ph name="ACCELERATOR" />| للتركيز على فقاعة المساعدة هذه، وإذا ضغطت مرة أخرى، سيتم التركيز على العنصر الذي تشير إليه الفقاعة.</translation>
 <translation id="6227280783235722609">إضافة</translation>
 <translation id="6229849828796482487">‏إلغاء الاتصال بشبكة Wi-Fi</translation>
+<translation id="6230165830166519105">تجربة طريقة أخرى</translation>
 <translation id="6231782223312638214">مقترح</translation>
 <translation id="6231881193380278751">‏أضف معلمة طلب بحث في عنوان URL لإجراء تحديث تلقائية لصفحة: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">البطارية</translation>
@@ -5297,6 +5348,7 @@
 <translation id="624789221780392884">التحديث جاهز</translation>
 <translation id="6248988683584659830">بحث في الإعدادات</translation>
 <translation id="6249200942125593849">إدارة إمكانية الوصول</translation>
+<translation id="6250186368828697007">يتم إخفاء محتوى الإشعارات أثناء مشاركة الشاشة.</translation>
 <translation id="6251870443722440887">معالجات واجهة الجهاز الرسومية</translation>
 <translation id="625369703868467034">جودة الشبكة</translation>
 <translation id="6254503684448816922">اختراق المفتاح</translation>
@@ -5364,6 +5416,7 @@
 <translation id="6313950457058510656">إيقاف "التوصيل الفوري"</translation>
 <translation id="6314819609899340042">لقد نجحت في تفعيل ميزات تصحيح الأخطاء على هذا الجهاز <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="6315493146179903667">إحضار الكل للمقدمة</translation>
+<translation id="6316432269411143858">‏نصوص بنود نظام التشغيل Chrome من Google</translation>
 <translation id="6317369057005134371">جارٍ انتظار نافذة التطبيق...</translation>
 <translation id="6318125393809743217">‏إدراج ملف policies.json في إعدادات السياسة</translation>
 <translation id="6318407754858604988">بدأ التنزيل</translation>
@@ -5409,6 +5462,7 @@
 <translation id="6363990818884053551">لبدء المزامنة، يجب إثبات هويّتك.</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">إضافة العائلة والأصدقاء</translation>
+<translation id="6367097275976877956">‏هل تريد تفعيل قارئ الشاشة ChromeVox المضمّن في نظام التشغيل Chrome؟ اضغط على شريط المسافة لتفعيل ChromeVox.</translation>
 <translation id="6367985768157257101">هل تريد الاستلام عبر ميزة "المشاركة عن قرب"؟</translation>
 <translation id="6368276408895187373">تفعيل – <ph name="VARIATION_NAME" /></translation>
 <translation id="636850387210749493">التسجيل في المؤسسة</translation>
@@ -5442,6 +5496,7 @@
 <translation id="6398715114293939307">‏إزالة متجر Google Play</translation>
 <translation id="6398765197997659313">إنهاء وضع ملء الشاشة</translation>
 <translation id="6399774419735315745">الجاسوسة</translation>
+<translation id="6401597285454423070">‏يحتوي الكمبيوتر على جهاز الأمان "وحدة النظام الأساسي الموثوقة" (TPM) الذي يُستخدم لتفعيل العديد من ميزات الأمان المُهمة في نظام التشغيل Chrome. يمكنك الانتقال إلى مركز مساعدة Chromebook للتعرّف على مزيد من المعلومات: https://support.google.com/chromebook/?p=tpm.</translation>
 <translation id="6404187344102273690">‏ألعاب الفيديو على أجهزة Chromebook</translation>
 <translation id="6404511346730675251">تعديل الإشارة المرجعية</translation>
 <translation id="6406303162637086258">محاكاة إعادة تشغيل المتصفح</translation>
@@ -5617,7 +5672,6 @@
 <translation id="656293578423618167">اسم الملف أو مساره طويل جدًا. يُرجى الحفظ باستخدام اسم أقصر أو في مكان آخر.</translation>
 <translation id="6563469144985748109">لم يوافق عليه مديرك حتى الآن</translation>
 <translation id="6568283005472142698">البحث عن علامات تبويب</translation>
-<translation id="6569911211938664415">‏يتم حفظ كلمات المرور في حسابك (<ph name="ACCOUNT" />) على Google حتى تتمكَّن من استخدامها على أي جهاز.</translation>
 <translation id="65711204837946324">يجب الحصول على إذن لإجراء عملية التنزيل.</translation>
 <translation id="6571772921213691236">تعديل بيانات تسجيل الدخول</translation>
 <translation id="6573497332121198392">تتعذَّر إزالة الاختصار.</translation>
@@ -5744,7 +5798,6 @@
 <translation id="6697492270171225480">عرض اقتراحات للصفحات المشابهة عند تعذّر العثور على صفحة</translation>
 <translation id="6697690052557311665">‏للمشاركة، انقر بزر الماوس الأيمن على مجلَّد في تطبيق "الملفات"، ثم اختَر "المشاركة مع نظام التشغيل Linux".</translation>
 <translation id="6698810901424468597">قراءة بياناتك وتغييرها في <ph name="WEBSITE_1" />و <ph name="WEBSITE_2" /></translation>
-<translation id="6699883973579689168">‏يمكنك الآن إدارة جميع حساباتك على Google من مكان واحد. قد ينطبق الآن الوصول والأذونات التي منحتها للتطبيقات ومواقع الويب والإضافات في Chrome وGoogle Play على جميع حساباتك التي تم تسجيل الدخول إليها. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="6700093763382332031">‏قفل شريحة SIM الخاص بشبكة الجوّال</translation>
 <translation id="6700480081846086223">إرسال <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">تعذر الحصول على الملف الشخصي.</translation>
@@ -5794,6 +5847,7 @@
 <translation id="6748980958975836188">‏لقد قرأت <ph name="BEGIN_LINK1" />بنود خدمة Google<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة الإضافية لكل من متصفّح Chrome ونظام التشغيل Chrome<ph name="END_LINK2" /> وأوافق عليها.</translation>
 <translation id="6750757184909117990">إيقاف شبكة الجوّال</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (التصفح المتخفي)</translation>
+<translation id="6756157672127672536">‏يتيح تطبيق "الملفات" الوصول سريعًا إلى الملفات التي حفظتها على Google Drive، أو وحدة تخزين خارجية، أو جهازك الذي يعمل بنظام التشغيل Chrome.</translation>
 <translation id="6758056191028427665">يُرجى تقييم أدائنا.</translation>
 <translation id="6759193508432371551">إعادة الضبط على الإعدادات الأصلية</translation>
 <translation id="6761431452438552910">يُرجى التأكّد من أنّ جهازك الذي يتضمّن بلوتوث في وضع الإقران وأنّه في مكان مجاور. ولا تقرِنه إلا بأجهزة تثق بها.</translation>
@@ -5873,6 +5927,7 @@
 <translation id="6825184156888454064">تصنيف بحسب الاسم</translation>
 <translation id="6826872289184051766">‏التحقُّق عبر USB</translation>
 <translation id="6827121912381363404">السماح لجميع الإضافات بقراءة اسم الموقع الإلكتروني <ph name="PERMITTED_SITE" /> وتغييره</translation>
+<translation id="6827517233063803343">‏ستتم مزامنة التطبيقات والإعدادات على جميع الأجهزة التي تعمل بنظام التشغيل Chrome والتي سجّلت الدخول إليها باستخدام حسابك على Google. للوصول إلى خيارات مزامنة المتصفّح، انتقِل إلى <ph name="LINK_BEGIN" />إعدادات Chrome<ph name="LINK_END" />.</translation>
 <translation id="6828153365543658583">قصر تسجيل الدخول على المستخدمين التالين:</translation>
 <translation id="6828182567531805778">أدخِل عبارة المرور لمزامنة بياناتك.</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5953,6 +6008,7 @@
 <translation id="6902066522699286937">صوت للمعاينة</translation>
 <translation id="6902336033320348843">القسم غير متاح: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">انضمام الجهاز إلى النطاق</translation>
+<translation id="6903022061658753260">‏ستتم مزامنة بياناتك على كل متصفّحات Chrome التي تم تفعيل المزامنة فيها لهذا الحساب. لمعرفة خيارات المزامنة على نظام التشغيل Chrome، يمكنك الانتقال إلى <ph name="LINK_BEGIN" />إعدادات نظام التشغيل Chrome<ph name="LINK_END" />.</translation>
 <translation id="6903590427234129279">فتح كل الـ (<ph name="URL_COUNT" />) عنوان</translation>
 <translation id="6903907808598579934">تفعيل المزامنة</translation>
 <translation id="6904344821472985372">إلغاء الوصول إلى الملف</translation>
@@ -5965,6 +6021,7 @@
 <translation id="691289340230098384">الإعدادات المفضّلة للشرح</translation>
 <translation id="6914783257214138813">ستكون كلمات مرورك مرئية لأي شخص يمكنه الاطلاع على الملف الذي تم تصديره.</translation>
 <translation id="6916590542764765824">إدارة الإضافات</translation>
+<translation id="6918677045355889289">‏مطلوب تحديث نظام التشغيل Chrome</translation>
 <translation id="6919354101107095996">جرِّب تسجيل الدخول إلى الموقع الإلكتروني، ثم حاوِل تنزيل الملف مرة أخرى.</translation>
 <translation id="6919868320029503575">كلمات مرور ضعيفة</translation>
 <translation id="6919952941889172531">‏هل تريد أيضًا تفعيل ميزة "الحماية المُحسَّنة للتصفّح الآمن" لهذا الملف الشخصي في Chrome؟</translation>
@@ -5999,6 +6056,7 @@
 <translation id="6952242901357037157">‏يمكنك أيضًا عرض كلمات المرور من <ph name="BEGIN_LINK" />حسابك على Google<ph name="END_LINK" /> هنا.</translation>
 <translation id="6955446738988643816">فحص النوافذ المنبثقة</translation>
 <translation id="6955535239952325894">لقد تم إيقاف هذا الإعداد على متصفّحات مُدارة.</translation>
+<translation id="6955698182324067397">‏يتم حاليًا تفعيل ميزات تصحيح الأخطاء لنظام التشغيل Chrome التي ستثبِّت البرنامج الخفي لبروتوكول النقل الآمن (SSHD) وتتيح تشغيل النظام من محرّكات أقراص USB.</translation>
 <translation id="6955893174999506273">تخصيص مفتاح تحكّم إضافي واحد</translation>
 <translation id="6957044667612803194">لا يوفّر مفتاح الأمان هذا أرقام التعريف الشخصية</translation>
 <translation id="6960507406838246615">‏يجب تحديث نظام التشغيل Linux.</translation>
@@ -6481,6 +6539,7 @@
 <translation id="7450761244949417357">سيتم الفتح في <ph name="ALTERNATIVE_BROWSER_NAME" /> الآن.</translation>
 <translation id="7452166281927983300">التحذيرات التي تم إغلاقها (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">عند تحديد الطابعة، فإنك تمنح الإضافة التالية الإذن للدخول إلى الطابعة.</translation>
+<translation id="7453467225369441013">‏سيتم تسجيل الخروج من معظم المواقع الإلكترونية، لكن لن يتم تسجيل الخروج من حسابك على Google.</translation>
 <translation id="7454548535253569100">البوابة: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">إدارة الحاويات الإضافية</translation>
 <translation id="7456142309650173560">مطوري البرامج</translation>
@@ -6566,6 +6625,7 @@
 <translation id="7535730537657706072">لمحو سجل التصفّح في وضع التصفّح المتخفي على جهازك، عليك إغلاق كل علامات التبويب في وضع التصفُّح المتخفي.</translation>
 <translation id="7535791657097741517">تشغيل المظهر الفاتح</translation>
 <translation id="7537451260744431038">يمنع هذا الإجراء المواقع الإلكترونية من استخدام ملفات تعريف الارتباط لتحسين تجربة التصفُّح، مثل إبقائك مُسجِّلاً الدخول أو تذكُّر عناصر في سلة التسوق.</translation>
+<translation id="7538932151125743389">‏الاطّلاع على الأرقام التسلسلية للمكوِّنات والأجهزة التي تعمل بنظام التشغيل Chrome</translation>
 <translation id="7540972813190816353">حدث خطأ أثناء التحقق من التحديثات: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232">أعاد <ph name="MANAGER" /> هذا الجهاز إلى إصدار سابق من نظام التشغيل. يُرجى حفظ الملفات المُهمة، ثم إعادة تشغيل الجهاز. سيتم حذف كل البيانات على الجهاز.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> في التطبيق <ph name="APP_NAME" /></translation>
@@ -6765,6 +6825,7 @@
 <translation id="7717845620320228976">البحث عن تحديثات</translation>
 <translation id="7719367874908701697">تكبير/تصغير الصفحة</translation>
 <translation id="7719588063158526969">اسم الجهاز طويل جدًا.</translation>
+<translation id="7720216670798402294">‏الاطّلاع على معلومات وبيانات الجهاز الذي يعمل بنظام التشغيل Chrome</translation>
 <translation id="7721179060400456005">السماح للنوافذ بتوحيد العروض</translation>
 <translation id="7721237513035801311"><ph name="SWITCH" /> (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="7721258531237831532">تفرض مؤسستك استخدام ملف شخصي</translation>
@@ -6815,6 +6876,7 @@
 <translation id="7766082757934713382">تساعدك الشبكة التي تفرض تكلفة استخدام في تخفيض استخدام بيانات الشبكة من خلال إيقاف التحديثات التلقائية للنظام والتطبيقات بشكل مؤقت.</translation>
 <translation id="7766807826975222231">إجراء جولة</translation>
 <translation id="7766838926148951335">قبول الأذونات</translation>
+<translation id="7767554953520855281">يتم إخفاء محتوى الإشعارات أثناء مشاركة الشاشة.</translation>
 <translation id="7768507955883790804">ستتبع المواقع الإلكترونية هذا الإعداد تلقائيًا عند زيارتك لها.</translation>
 <translation id="7768526219335215384">سيتمكّن <ph name="ORIGIN" /> من الاطّلاع على الملفات في <ph name="FOLDERNAME" />.</translation>
 <translation id="7768770796815395237">تغيير</translation>
@@ -7303,6 +7365,7 @@
 <translation id="8228783756378591900">جارٍ التحقُّق من توافق هذا المستند مع سياسات أمان مؤسستك...</translation>
 <translation id="8230134520748321204">هل تريد حفظ كلمة المرور لـ <ph name="ORIGIN" />؟</translation>
 <translation id="8230446983261649357">عدم السماح للمواقع الإلكترونية بعرض الصور</translation>
+<translation id="8233028084277069927">فتح الآن</translation>
 <translation id="8234795456569844941">يُرجى مساعدة مهندسينا في حل هذه المشكلة. أخبرنا بما حدث مباشرة قبل ظهور رسالة خطأ الملف الشخصي:</translation>
 <translation id="8235418492073272647">تمت مشاركة الصفحة من <ph name="DEVICE_NAME" />.</translation>
 <translation id="8236911020904880539">خروج</translation>
@@ -7477,6 +7540,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">تمت الموافقة على إذن <ph name="PERMISSION" /> و<ph name="COUNT" /> إذن آخر.</translation>
 <translation id="8413385045638830869">السؤال أولاً (موصى به)</translation>
+<translation id="8413956290606243087">‏هل تريد تفعيل قارئ الشاشة ChromeVox المضمّن في نظام التشغيل Chrome؟</translation>
 <translation id="8414249071344507766">ذكريات تم إخفاؤها لمدة يومين</translation>
 <translation id="8414685983518053656">ملاحظات</translation>
 <translation id="8416730306157376817">%<ph name="BATTERY_PERCENTAGE" /> (الحافظة)</translation>
@@ -7724,6 +7788,7 @@
 <translation id="867085395664725367">حدث خطأ مؤقَّت في الخادم.</translation>
 <translation id="8673026256276578048">البحث في الويب...</translation>
 <translation id="8673383193459449849">مشكلة في الخادم</translation>
+<translation id="8674903726754070732">‏تم إعداد جهاز الكمبيوتر باستخدام معرّف جهاز غير صحيح. يؤدي ذلك إلى منع تحديث نظام التشغيل Chrome وتوفير أحدث الإصلاحات المتعلّقة بالأمان، وقد يكون جهاز الكمبيوتر <ph name="BEGIN_BOLD" />عرضة للهجمات الضارة<ph name="END_BOLD" />.</translation>
 <translation id="8675704450909805533">تعذَّر على أداة التثبيت الوصول إلى وجهة صالحة لتثبيت نظام التشغيل <ph name="DEVICE_OS" />.</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{فيديو واحد}zero{# فيديو}two{فيديوهان}few{# فيديوهات}many{# فيديو}other{# فيديو}}</translation>
 <translation id="8676313779986170923">شكرًا لك على إرسال الملاحظات.</translation>
@@ -7916,6 +7981,7 @@
 <translation id="8855977033756560989">‏يأتي جهاز Chromebook Enterprise هذا مزودًا بترقية Chrome Enterprise. للاستفادة من إمكانات المؤسسة، يُرجى تسجيل هذا الجهاز باستخدام حساب مشرف Google.</translation>
 <translation id="8856028055086294840">استعادة التطبيقات والصفحات</translation>
 <translation id="885701979325669005">التخزين</translation>
+<translation id="885746075120788020">‏ستكون إعداداتك المفضّلة وبيانات نشاطك المحفوظة جاهزة على أي جهاز يعمل بنظام التشغيل Chrome عند تسجيل الدخول باستخدام حسابك على Google. من خلال الإعدادات، يمكنك اختيار البيانات التي تريد مزامنتها.</translation>
 <translation id="8859174528519900719">هيكل سفلي: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">تعذَّر تحميل بنود الخدمة</translation>
 <translation id="8859662783913000679">حساب أحد الوالدَين</translation>
@@ -8103,6 +8169,7 @@
 <translation id="9037818663270399707">اتصالك بهذا الموقع الإلكتروني ليس خاصًا لجميع حركة بيانات الشبكة.</translation>
 <translation id="9037965129289936994">عرض الصفحة الأصلية</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{يتبقى لديك محاولة واحدة.}zero{يتبقى لديك # محاولة.}two{يتبقى لديك محاولتان.}few{يتبقى لديك # محاولات.}many{يتبقى لديك # محاولةً.}other{يتبقى لديك # محاولة.}}</translation>
+<translation id="9040473193163777637">‏هل تريد تفعيل قارئ الشاشة ChromeVox المضمّن في نظام التشغيل Chrome؟ اضغط مع الاستمرار على مفتاحَي مستوى الصوت لمدة خمس ثوانٍ لتفعيل ChromeVox.</translation>
 <translation id="9040661932550800571">هل تريد تحديث كلمة المرور لـ <ph name="ORIGIN" />؟</translation>
 <translation id="9041692268811217999">أوقف المشرف إمكانية الوصول إلى الملفات المحلية على جهازك.</translation>
 <translation id="904224458472510106">لا يمكن التراجع عن هذه العملية.</translation>
@@ -8278,6 +8345,7 @@
 <translation id="9220525904950070496">إزالة الحساب</translation>
 <translation id="9220820413868316583">ارفع إصبعك ثم أعد المحاولة.</translation>
 <translation id="923467487918828349">عرض الكل</translation>
+<translation id="924818813611903184">‏إدارة اللغات في إعدادات نظام التشغيل Chrome</translation>
 <translation id="929117907539171075">سيتم أيضًا محو البيانات المتوفرة بلا اتصال بالإنترنت في التطبيق المثبّت.</translation>
 <translation id="930268624053534560">الطوابع الزمنية المفصلة</translation>
 <translation id="930893132043726269">يتم حاليًا استخدام خدمة التجوال.</translation>

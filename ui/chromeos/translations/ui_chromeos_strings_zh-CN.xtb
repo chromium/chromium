@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">希伯来语音译</translation>
 <translation id="1747761757048858544">荷兰语（荷兰）</translation>
 <translation id="174937106936716857">文件总数</translation>
+<translation id="1755345808328621801">此文件适用于运行 Windows 软件的 PC，不适用于运行 Chrome 操作系统的设备。请在 Chrome 网上应用店中搜索合适的替代应用。</translation>
 <translation id="1773212559869067373">身份验证证书遭到本地拒绝</translation>
 <translation id="1775381402323441512">视频信息</translation>
 <translation id="180035236176489073">您必须在线访问这些文件。</translation>
@@ -198,8 +199,6 @@
 <translation id="2649120831653069427">彩虹鱼</translation>
 <translation id="2663066752008346276">缅甸语 Myansan 键盘</translation>
 <translation id="2664412712123763093">文件位置</translation>
-<translation id="2672394958563893062">出现错误。点击可从头开始重新播放。</translation>
-<translation id="2676946222714718093">当前播放设备：</translation>
 <translation id="2718540689505416944">通过 Linux 安装应用</translation>
 <translation id="2719020180254996569">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，详细信息</translation>
 <translation id="2724954091494693138">土耳其语 F 键盘</translation>
@@ -225,6 +224,7 @@
 <translation id="2943503720238418293">请使用一个较短的名称</translation>
 <translation id="2949781154072577687">正在将“<ph name="DRIVE_NAME" />”格式化…</translation>
 <translation id="2951236788251446349">海蜇</translation>
+<translation id="2977940621473452797">此文件适用于运行 Macintosh 软件的计算机，不适用于运行 Chrome 操作系统的设备。请在 Chrome 网上应用店中搜索合适的替代应用。</translation>
 <translation id="2984337792991268709">今天<ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">正在恢复 <ph name="COUNT" /> 项内容…</translation>
 <translation id="2994669386200004489">无法备份 <ph name="FILE_NAME" /></translation>
@@ -340,7 +340,6 @@
 <translation id="3901991538546252627">正在连接：<ph name="NAME" /></translation>
 <translation id="3906232975181435906">正在安装移动网络配置文件，第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），网络名称为“<ph name="NETWORK_NAME" />”</translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">播放设备</translation>
 <translation id="3943857333388298514">粘贴</translation>
 <translation id="3952872973865944257">泰卢固语注音</translation>
 <translation id="3958548648197196644">猕猴桃</translation>
@@ -412,7 +411,6 @@
 <translation id="4631887759990505102">艺术家</translation>
 <translation id="4642769377300286600">正在安装移动网络配置文件，第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），网络名称为“<ph name="NETWORK_NAME" />”，网络服务提供商为“<ph name="NETWORK_PROVIDER_NAME" />”</translation>
 <translation id="4646813851450205600">捷克语 Qwerty 键盘</translation>
-<translation id="4656293982926141856">此计算机</translation>
 <translation id="4656777537938206294">将文件设为“可离线使用”</translation>
 <translation id="4658782175094886150">一个人站在雪地里</translation>
 <translation id="4669606053856530811">“<ph name="SOURCE_NAME" />”的成员将不再能够访问这些内容（除非与他们共享了这些内容）。</translation>
@@ -422,13 +420,13 @@
 <translation id="4694604912444486114">猴子</translation>
 <translation id="469612310041132144">中文速成</translation>
 <translation id="4697043402264950621">文件列表按<ph name="COLUMN_NAME" />升序排序。</translation>
+<translation id="469897186246626197">此文件适用于运行 Windows 软件的 PC，不适用于运行 Chrome 操作系统的设备。<ph name="BEGIN_LINK_HELP" />详细了解<ph name="END_LINK_HELP" />如何在 Chrome 操作系统中打开文件。</translation>
 <translation id="4706042980341760088">泰米尔语打字机键盘</translation>
 <translation id="4711094779914110278">土耳其语</translation>
 <translation id="4712283082407695269">正在打开“<ph name="PATH" />”</translation>
 <translation id="4720185134442950733">移动数据网络</translation>
 <translation id="4724850507808590449">已备份 <ph name="FILE_COUNT" /> 张照片</translation>
 <translation id="4725511304875193254">柯基犬</translation>
-<translation id="4732760563705710320">抱歉，您的投射设备不支持此视频。</translation>
 <translation id="4737050008115666127">起落场</translation>
 <translation id="4747271164117300400">马其顿语</translation>
 <translation id="4759238208242260848">下载内容</translation>
@@ -538,6 +536,7 @@
 <translation id="5583640892426849032">退格</translation>
 <translation id="5602622065581044566">保加利亚语注音键盘</translation>
 <translation id="5605830556594064952">美国英语(Dvorak)</translation>
+<translation id="5618330573454123917">此文件适用于运行 Macintosh 软件的计算机，不适用于运行 Chrome 操作系统的设备。<ph name="BEGIN_LINK_HELP" />详细了解<ph name="END_LINK_HELP" />如何在 Chrome 操作系统中打开文件。</translation>
 <translation id="5625294776298156701">泰米尔语 Tamil99 键盘</translation>
 <translation id="5633226425545095130">移动此内容会将其分享给所有能看到共享文件夹“<ph name="DESTINATION_NAME" />”的人。</translation>
 <translation id="5649768706273821470">收听</translation>
@@ -613,7 +612,6 @@
 <translation id="6224253798271602650">将“<ph name="DRIVE_NAME" />”格式化</translation>
 <translation id="6227235786875481728">此文件无法播放。</translation>
 <translation id="6241349547798190358">荷兰语（比利时）</translation>
-<translation id="6248400709929739064">启用字幕</translation>
 <translation id="6267547857941397424">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="PHONE_NAME" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，剩余电量为 <ph name="BATTERY_STATUS" />%，连接</translation>
 <translation id="6269630227984243955">马来语</translation>
 <translation id="6287852322318138013">选择用于打开此文件的应用</translation>
@@ -631,7 +629,6 @@
 <translation id="637062427944097960">此文件已在其他桌面打开。请转至<ph name="USER_NAME" />(<ph name="MAIL_ADDRESS" />)查看此文件。</translation>
 <translation id="6394388407447716302">只读</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> 项内容</translation>
-<translation id="6398765197997659313">退出全屏模式</translation>
 <translation id="642282551015776456">该名称可能无法用作文件名或文件夹名</translation>
 <translation id="6423031066725912715">越南语 TCVN 键盘</translation>
 <translation id="6485131920355264772">检索存储空间信息失败</translation>
@@ -667,7 +664,6 @@
 <translation id="6820687829547641339">gzip 压缩的 tar 归档</translation>
 <translation id="6823166707458800069">系统会自动在线备份此文件夹中保存的所有文件。</translation>
 <translation id="6825883775269213504">俄语</translation>
-<translation id="6827236167376090743">此视频将不断循环播放。</translation>
 <translation id="6847101934483209767">已从所选项中移除<ph name="ENTRY_NAME" />。</translation>
 <translation id="6856459657722366306">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，详细信息</translation>
 <translation id="6861394552169064235">波斯语</translation>
@@ -733,6 +729,7 @@
 <translation id="7309413087278791451">德语（比利时）</translation>
 <translation id="7339898014177206373">打开新的窗口</translation>
 <translation id="7343393116438664539">越南语电传机键盘</translation>
+<translation id="7357762654218998920">此文件类型不受支持。<ph name="BEGIN_LINK_HELP" />详细了解<ph name="END_LINK_HELP" />如何在 Chrome 操作系统中打开文件。</translation>
 <translation id="7359359531237882347">正在复制 <ph name="NUMBER_OF_ITEMS" /> 项内容…</translation>
 <translation id="7375951387215729722">文件列表按<ph name="COLUMN_NAME" />降序排列。</translation>
 <translation id="7402503521691663770">ChromeOS Flex 设备</translation>
@@ -804,7 +801,6 @@
 <translation id="7857117644404132472">添加例外情况</translation>
 <translation id="7868774406711971383">波兰语</translation>
 <translation id="7874321682039004450">菲律宾语</translation>
-<translation id="7881969471599061635">停用字幕</translation>
 <translation id="78946041517601018">共享云端硬盘</translation>
 <translation id="7908793776359722643">将分区格式化会清空其中存储的所有数据。此操作无法撤消。</translation>
 <translation id="7925247922861151263">AAA 检查失败</translation>
@@ -881,7 +877,6 @@
 <translation id="8492972329130824181">无法使用家庭网络。必须启用移动数据漫游才能联网。</translation>
 <translation id="8499098729323186194">正在提取 <ph name="NUMBER_OF_ITEMS" /> 个项目…</translation>
 <translation id="8521441079177373948">英国英语</translation>
-<translation id="8525306231823319788">全屏</translation>
 <translation id="853494022971700746">法语（法国）</translation>
 <translation id="8540608333167683902">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，详细信息</translation>
 <translation id="8545476925160229291">英语（美国）</translation>

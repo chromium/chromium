@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
 <translation id="1113173431709655881">ಕ್ಯಾಮರಾ ಮೋಡ್</translation>
+<translation id="1153190633558910465">ಗ್ರಿಡ್ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="1175958423215084756">ಲಿಂಕ್ ಪತ್ತೆಯಾಗಿದೆ. <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">ಪ್ರದಕ್ಷಿಣಾಕಾರವಾಗಿ 90 ಡಿಗ್ರಿಗಳಷ್ಟು ತಿರುಗಿಸಿ</translation>
 <translation id="1276998909102132017">ಗ್ಯಾಲರಿ ಚಿತ್ರಗಳು</translation>
 <translation id="1300209025925956156">ನಿಮ್ಮ ಡಾಕ್ಯುಮೆಂಟ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. ಪ್ರವೇಶಿಸಲು Search +ಲೆಫ್ಟ್ ಆ್ಯರೋ.</translation>
+<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">ಮುದ್ರಿಸು</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> ಅನ್‌ಪ್ಲಗ್ ಆಗಿದೆ.</translation>
 <translation id="1473110567575736769">3 ಸೆಕೆಂಡುಗಳ ಟೈಮರ್</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">ಟೈಮರ್ ಅವಧಿ</translation>
 <translation id="2050339315714019657">ಪೋರ್ಟ್ರೇಟ್</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> ಸಕ್ರಿಯ</translation>
+<translation id="2134029355740465625">ವೀಡಿಯೊ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="2144806332417375165">ಕಸ್ಟಮ್ ವೀಡಿಯೊ ಪ್ಯಾರಾಮೀಟರ್‌ಗಳು</translation>
 <translation id="2175927920773552910">QR ಕೋಡ್</translation>
 <translation id="2271433936731426666">ಪೂರ್ಣ ಗಾತ್ರದ ವೀಡಿಯೊ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">ಹಿಂಬದಿ ಕ್ಯಾಮರಾ</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />ಸೆ</translation>
 <translation id="2761536921376153655">ಸ್ಕ್ಯಾನ್ ಪ್ರಕಾರ</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">ಮಿರರ್ ಪೂರ್ವವೀಕ್ಷಣೆ</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ಪ್ಲಗ್-ಇನ್ ಆಗಿದೆ.</translation>
 <translation id="2968794441791257519">ಕ್ಯಾಮರಾದಿಂದ ತೆಗೆದ ಫೋಟೋಗಳು ಮತ್ತು ವೀಡಿಯೊಗಳನ್ನು ಡೌನ್‌ಲೋಡ್‌ಗಳ ಫೋಲ್ಡರ್‌ಗೆ ವರ್ಗಾಯಿಸಲಾಗುತ್ತದೆ.
 
@@ -52,6 +57,8 @@
 <translation id="3240426699337459095">ಲಿಂಕ್ ನಕಲಿಸಲಾಗಿದೆ</translation>
 <translation id="3259149966178251584">ಕ್ಯಾಮರಾ ರೆಸಲ್ಯೂಷನ್</translation>
 <translation id="3305962767867348165">ಸರಿಪಡಿಸಿ</translation>
+<translation id="3354465018370944241">ಫೋಟೋ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
+<translation id="3411958449466169012">ಟೈಮರ್ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="3448774564454087943">ವೀಡಿಯೊ ತುಂಬಾ ಚಿಕ್ಕದಾಗಿರುವ ಕಾರಣ ಉಳಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="346539236881580388">ರೀಟೇಕ್</translation>
 <translation id="3517926952904427380">ಪೋರ್ಟ್ರೇಟ್ ಫೋಟೋ ತೆಗೆಯಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
@@ -63,9 +70,12 @@
 <translation id="3810838688059735925">ವೀಡಿಯೊ</translation>
 <translation id="3838931309141338733">ಬಾರ್‌ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="3892148308691398805">ಪಠ್ಯ ನಕಲಿಸಿ</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">ರೆಕಾರ್ಡಿಂಗ್ ವಿರಾಮಗೊಳಿಸಿ</translation>
 <translation id="4121305183798804752">ಡಾಕ್ಯುಮೆಂಟ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಲಾಗಿದೆ</translation>
+<translation id="414641094616694804">ಈ ಕ್ಯಾಮರಾ ರೆಸಲ್ಯೂಷನ್ ಅನ್ನು ಬದಲಾಯಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="4269820728363426813">ಲಿಂಕ್ ವಿಳಾಸವನ್ನು ನಕಲಿಸಿ</translation>
+<translation id="4281620174117014503">ಮೀಡಿಯಮ್ ರೆಸಲ್ಯೂಷನ್</translation>
 <translation id="4329152592498422850">ಚೌಕಾಕಾರದ ಫೋಟೋ ತೆಗೆಯಲು ಬದಲಾಯಿಸಿ</translation>
 <translation id="4383571725254449280">ಕಾರ್ಯಕ್ಷಮತೆ ಲಾಗ್‌ಗಳನ್ನು ಪ್ರಿಂಟ್ ಮಾಡಿ</translation>
 <translation id="4445542136948522167">ಫೋಟೋ ತೆಗೆಯುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
@@ -74,12 +84,15 @@
 <translation id="4628948037717959914">ಫೋಟೋ</translation>
 <translation id="4649291346448517080">ಫೈಲ್ ಉಳಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="4695379108709712600">ಮೇಲಿನ ದಿಕ್ಕಿನಲ್ಲಿ ಚಲಿಸುತ್ತಿದೆ</translation>
+<translation id="4705093842003735294">ಪೂರ್ಣ ರೆಸಲ್ಯೂಷನ್</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">ಮಲ್ಟಿಸ್ಟ್ರೀಮ್ ವೀಡಿಯೊ ರೆಕಾರ್ಡಿಂಗ್</translation>
+<translation id="5034763830503483128">ಫೋಟೋ ದೃಶ್ಯಾನುಪಾತ</translation>
 <translation id="5057360777601936059">ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಪ್ರಸ್ತುತ ಲಭ್ಯವಿಲ್ಲ.
         ಕ್ಯಾಮರಾ ಸರಿಯಾಗಿ ಸಂಪರ್ಕಗೊಂಡಿದೆಯೇ ಎಂಬುದನ್ನು ಪರೀಕ್ಷಿಸಿ.</translation>
 <translation id="5163387177077603948">ಬಲ ದಿಕ್ಕಿನಲ್ಲಿ ಚಲಿಸುತ್ತಿದೆ</translation>
 <translation id="520537883758714667">ಡಾಕ್ಯುಮೆಂಟ್ ಸ್ಕ್ಯಾನಿಂಗ್ ಈಗ ಲಭ್ಯವಿದೆ</translation>
+<translation id="5235304959032763950">16 ರಿಂದ 9</translation>
 <translation id="5266635337630551423">ಡಾಕ್ಯುಮೆಂಟ್ ಮೇಲಿನ ಎಡ ಮೂಲೆ</translation>
 <translation id="5317780077021120954">ಉಳಿಸು</translation>
 <translation id="5320594929574852403">ಎಡ ದಿಕ್ಕಿನಲ್ಲಿ ಚಲಿಸುತ್ತಿದೆ</translation>
@@ -94,6 +107,7 @@
 <translation id="5916664084637901428">ಆನ್‌</translation>
 <translation id="5975083100439434680">ಝೂಮ್ ಔಟ್</translation>
 <translation id="5976160379964388480">ಇತರರು</translation>
+<translation id="603973421174355542">ಸಂಪೂರ್ಣ HD</translation>
 <translation id="6073451960410192870">ರೆಕಾರ್ಡಿಂಗ್ ನಿಲ್ಲಿಸಿ</translation>
 <translation id="6197807149213783179">ಮೆಟಾಡೇಟಾ ಉಳಿಸಿ</translation>
 <translation id="6233780560267770709">3 x 3</translation>
@@ -104,6 +118,7 @@
 ನಿಮ್ಮ ಪ್ರತಿಕ್ರಿಯೆಯು ಚಿತ್ರ ಅಥವಾ ವೀಡಿಯೊ ಗುಣಮಟ್ಟದ ಕುರಿತಾಗಿದ್ದರೆ, ಫೋಟೋ ಅಥವಾ ವೀಡಿಯೊದ ಮಾದರಿಯೊಂದನ್ನು ಲಗತ್ತಿಸಿ ಮತ್ತು ತಪ್ಪೇನು ಎಂಬುದನ್ನು ವಿವರಿಸಿ. (ಉದಾಹರಣೆಗಾಗಿ, ಫೋಟೋ ತುಂಬಾ ಡಾರ್ಕ್ ಆಗಿದೆ ಅಥವಾ ವಿಷಯವು ಫೋಕಸ್‌ನಲ್ಲಿಲ್ಲ.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> ಮೆಗಾ ಪಿಕ್ಸೆಲ್</translation>
 <translation id="6527303717912515753">ಹಂಚಿಕೊಳ್ಳು</translation>
+<translation id="6631515515009660915">ಮಿರರ್ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="6652737148136672975">ಆ್ಯರೋ ಕೀಗಳ ಮೂಲಕ ಮೂಲೆಯ ಸ್ಥಾನವನ್ನು ಸರಿಸಿ</translation>
 <translation id="667999046851023355">ಡಾಕ್ಯುಮೆಂಟ್</translation>
 <translation id="6681668084120808868">ಫೋಟೋ ತೆಗೆಯಿರಿ</translation>
@@ -114,6 +129,7 @@
 <translation id="698156982839284926">3 ಸೆಕೆಂಡುಗಳು</translation>
 <translation id="712848772518857951">ನೀವು ನಿಜವಾಗಿಯೂ <ph name="COUNT" /> ಐಟಂಗಳನ್ನು ತೆಗೆದುಹಾಕಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="7134221860976209830">10 ಸೆಕೆಂಡುಗಳ ಟೈಮರ್</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">ರೆಕಾರ್ಡ್ ಪ್ರಕಾರ</translation>
 <translation id="7243947652761655814">ವೀಡಿಯೊ ರೆಸಲ್ಯೂಷನ್</translation>
 <translation id="7337660886763914220">ಫೈಲ್ ಸಿಸ್ಟಂ ದೋಷಗಳು.</translation>
@@ -146,9 +162,11 @@
 <translation id="8815966864175525708">ಪೋರ್ಟ್ರೇಟ್ ಫೋಟೋ ತೆಗೆಯಲು ಬದಲಾಯಿಸಿ</translation>
 <translation id="8828441885228359828">ರೆಕಾರ್ಡಿಂಗ್ ಪುನರಾರಂಭಿಸಿ</translation>
 <translation id="8870695351537079478">ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
+<translation id="8880167521484863515">4 ರಿಂದ 3</translation>
 <translation id="8903921497873541725">ಝೂಮ್ ಇನ್</translation>
 <translation id="9045010116236796332">ಡಾಕ್ಯುಮೆಂಟ್‌ನ ಎಲ್ಲಾ ಅಂಚುಗಳನ್ನು ಫ್ರೇಮ್‌ನೊಳಗೆ ಇರಿಸಿ</translation>
 <translation id="9045155556724273246">10 ಸೆಕೆಂಡುಗಳು</translation>
 <translation id="906331135292332864">ಚಿತ್ರವನ್ನು ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
+<translation id="922762992951083513">ಮಿರರ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="945522503751344254">ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಕಳುಹಿಸಿ</translation>
 </translationbundle>

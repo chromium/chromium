@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
 <translation id="1113173431709655881">कॅमेरा मोड</translation>
+<translation id="1153190633558910465">ग्रिड बंद करा</translation>
 <translation id="1175958423215084756">लिंक डिटेक्ट केली. <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">घड्याळाच्या काट्याच्या दिशेने ९० अंशात फिरवा</translation>
 <translation id="1276998909102132017">गॅलरी इमेज</translation>
 <translation id="1300209025925956156">तुमचा दस्तऐवज स्कॅन करा</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. अ‍ॅक्सेस करण्यासाठी Search + Left arrow दाबा.</translation>
+<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">प्रिंट</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> अनप्लग केला आहे.</translation>
 <translation id="1473110567575736769">तीन सेकंदांचा टायमर</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">टायमरचा कालावधी</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> अ‍ॅक्टिव्ह</translation>
+<translation id="2134029355740465625">व्हिडिओ सेटिंग्ज</translation>
 <translation id="2144806332417375165">कस्टम व्हिडिओ पॅरामीटर</translation>
 <translation id="2175927920773552910">QR कोड</translation>
 <translation id="2271433936731426666">पूर्ण आकाराचा व्हिडिओ स्नॅपशॉट सुरू करा</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">मागील कॅमेरा</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />से</translation>
 <translation id="2761536921376153655">स्कॅनचा प्रकार</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">पूर्वावलोकन मिरर करा</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> प्लग इन केला आहे.</translation>
 <translation id="2968794441791257519">कॅमेर्‍याने घेतलेले फोटो आणि व्हिडिओ डाउनलोड फोल्डरवर हलवले जातील. तुम्ही ते Files मध्ये अ‍ॅक्सेस करू शकता.
 
@@ -52,6 +57,8 @@
 <translation id="3240426699337459095">लिंक कॉपी केला</translation>
 <translation id="3259149966178251584">कॅमेरा रिझोल्यूशन</translation>
 <translation id="3305962767867348165">निराकरण करा</translation>
+<translation id="3354465018370944241">फोटो सेटिंग्ज</translation>
+<translation id="3411958449466169012">टायमर बंद करा</translation>
 <translation id="3448774564454087943">व्हिडिओ खूप लहान असल्याने तो सेव्ह केलेला नाही</translation>
 <translation id="346539236881580388">पुन्हा काढा</translation>
 <translation id="3517926952904427380">पोर्ट्रेट फोटो काढता आला नाही</translation>
@@ -63,9 +70,12 @@
 <translation id="3810838688059735925">व्हिडिओ</translation>
 <translation id="3838931309141338733">बारकोड स्कॅन करा</translation>
 <translation id="3892148308691398805">मजकूर कॉपी करा</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">रेकॉर्डिंग थांबवा</translation>
 <translation id="4121305183798804752">दस्तऐवज डिटेक्ट केले</translation>
+<translation id="414641094616694804">हा कॅमेरा रेझोल्यूशन बदलू शकत नाही</translation>
 <translation id="4269820728363426813">लिंकचा पत्ता कॉपी करा</translation>
+<translation id="4281620174117014503">मध्यम रेझोल्यूशन</translation>
 <translation id="4329152592498422850">चौरस फोटो काढण्यासाठी स्विच करा</translation>
 <translation id="4383571725254449280">परफॉर्मन्स लॉग प्रिंट करा</translation>
 <translation id="4445542136948522167">फोटो घेणे थांबवा</translation>
@@ -74,12 +84,15 @@
 <translation id="4628948037717959914">फोटो</translation>
 <translation id="4649291346448517080">फाइल सेव्‍ह करता आली नाही</translation>
 <translation id="4695379108709712600">सर्वात वरच्या दिशेने हलत आहे</translation>
+<translation id="4705093842003735294">पूर्ण रेझोल्यूशन</translation>
 <translation id="4890010094662541459">३ x ३</translation>
 <translation id="491895758387112773">मल्टिस्ट्रीम व्हिडिओ रेकॉर्डिंग</translation>
+<translation id="5034763830503483128">फोटोचा आस्पेक्ट रेशो</translation>
 <translation id="5057360777601936059">तुमचा कॅमेरा सध्या उपलब्ध नाही.
         कॅमेरा योग्य प्रकारे कनेक्ट केला आहे का ते तपासा.</translation>
 <translation id="5163387177077603948">उजव्या दिशेने हलत आहे</translation>
 <translation id="520537883758714667">दस्तऐवज स्कॅन करणे आता उपलब्ध आहे</translation>
+<translation id="5235304959032763950">सोळास नऊ</translation>
 <translation id="5266635337630551423">दस्तऐवजाचा सर्वात वरील डावीकडील कोपरा</translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5320594929574852403">डाव्या दिशेने हलत आहे</translation>
@@ -94,6 +107,7 @@
 <translation id="5916664084637901428">सुरू</translation>
 <translation id="5975083100439434680">झूम कमी करा</translation>
 <translation id="5976160379964388480">इतर</translation>
+<translation id="603973421174355542">फुल HD</translation>
 <translation id="6073451960410192870">रेकॉर्डिंग थांबवा</translation>
 <translation id="6197807149213783179">मेटाडेटा सेव्ह करा</translation>
 <translation id="6233780560267770709">३ बाय ३</translation>
@@ -104,6 +118,7 @@
 तुमचा फीडबॅक इमेज किंवा व्हिडिओच्या गुणवत्तेबाबत असल्यास, कृपया एखादा फोटो किंवा व्हिडिओ नमुना म्हणून अटॅच करा आणि समस्येचे वर्णन करा. (उदाहरणार्थ, फोटो खूपच गडद आहे किंवा ज्या गोष्टीचा फोटो घ्यायचा त्यावर फोकस नाही)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> मेगा पिक्सेल</translation>
 <translation id="6527303717912515753">शेअर करा</translation>
+<translation id="6631515515009660915">मिरर करणे बंद करा</translation>
 <translation id="6652737148136672975">ॲरो की वापरून कोपऱ्यातील स्थान हलवा</translation>
 <translation id="667999046851023355">दस्तऐवज</translation>
 <translation id="6681668084120808868">फोटो घ्या</translation>
@@ -114,6 +129,7 @@
 <translation id="698156982839284926">तीन सेकंद</translation>
 <translation id="712848772518857951">तुम्हाला <ph name="COUNT" /> आयटम खरोखर काढायचे आहेत का?</translation>
 <translation id="7134221860976209830">१० सेकंदांचा टायमर</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">रेकॉर्डचा प्रकार</translation>
 <translation id="7243947652761655814">व्हिडिओ रिझोल्युशन</translation>
 <translation id="7337660886763914220">फाइल सिस्टम एरर.</translation>
@@ -146,9 +162,11 @@
 <translation id="8815966864175525708">पोर्ट्रेट फोटो काढण्यासाठी स्विच करा</translation>
 <translation id="8828441885228359828">रेकॉर्डिंग पुन्‍हा सुरू करा</translation>
 <translation id="8870695351537079478">रेकॉर्डिंग सुरू करता आले नाही</translation>
+<translation id="8880167521484863515">चारास तीन</translation>
 <translation id="8903921497873541725">झूम इन करा</translation>
 <translation id="9045010116236796332">दस्तऐवजाच्या सर्व कडा फ्रेमच्या आत ठेवा</translation>
 <translation id="9045155556724273246">१० सेकंद</translation>
 <translation id="906331135292332864">इमेजवर प्रक्रिया करत आहे...</translation>
+<translation id="922762992951083513">मिरर करणे सुरू करा</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
 </translationbundle>

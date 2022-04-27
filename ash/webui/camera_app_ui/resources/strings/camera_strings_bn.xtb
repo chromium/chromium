@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
 <translation id="1113173431709655881">ক্যামেরা মোড</translation>
+<translation id="1153190633558910465">গ্রিড বন্ধ আছে</translation>
 <translation id="1175958423215084756">লিঙ্ক শনাক্ত হয়েছে। <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">ঘড়ির কাঁটার দিকে ৯০ ডিগ্রি ঘোরান</translation>
 <translation id="1276998909102132017">গ্যালারির ছবি</translation>
 <translation id="1300209025925956156">আপনার ডকুমেন্ট স্ক্যান করুন</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />। অ্যাক্সেস করতে Search কীয়ের সাথে 'বাঁদিকের তীরচিহ্ন' একসাথে প্রেস করুন।</translation>
+<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">প্রিন্ট</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> আনপ্লাগ করা হয়েছে।</translation>
 <translation id="1473110567575736769">৩ সেকেন্ডের টাইমার</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">টাইমারের সময়কাল</translation>
 <translation id="2050339315714019657">প্রতিকৃতি</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> চালু আছে</translation>
+<translation id="2134029355740465625">ভিডিও সেটিংস</translation>
 <translation id="2144806332417375165">কাস্টম ভিডিও প্যারামিটার</translation>
 <translation id="2175927920773552910">QR কোড</translation>
 <translation id="2271433936731426666">সম্পূর্ণ সাইজের ভিডিও স্ন্যাপশট চালু করুন</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">পিছনের ক্যামেরা</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />সেকেন্ড</translation>
 <translation id="2761536921376153655">স্ক্যানের ধরন</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">মিরর করার প্রিভিউ</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> প্লাগ-ইন করা হয়েছে।</translation>
 <translation id="2968794441791257519">ক্যামেরায় তোলা ফটো ও ভিডিও ডাউনলোড ফোল্ডারে সরিয়ে দেওয়া হবে। আপনি সেগুলি ফাইল থেকে অ্যাক্সেস করতে পারবেন।
 
@@ -52,6 +57,8 @@
 <translation id="3240426699337459095">লিঙ্ক কপি করা হয়েছে</translation>
 <translation id="3259149966178251584">ক্যামেরার রেজোলিউশন</translation>
 <translation id="3305962767867348165">ঠিক করুন</translation>
+<translation id="3354465018370944241">ফটো সেটিংস</translation>
+<translation id="3411958449466169012">টাইমার বন্ধ আছে</translation>
 <translation id="3448774564454087943">ভিডিও খুব ছোট হওয়ার কারণে সেভ করা হয়নি</translation>
 <translation id="346539236881580388">আবার তুলুন</translation>
 <translation id="3517926952904427380">পোর্ট্রেট ফটো তোলা যাচ্ছে না</translation>
@@ -63,9 +70,12 @@
 <translation id="3810838688059735925">ভিডিও</translation>
 <translation id="3838931309141338733">বারকোড স্ক্যান করুন</translation>
 <translation id="3892148308691398805">টেক্সট কপি করুন</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> এমপি</translation>
 <translation id="4118525110028899586">রেকর্ডিং পজ করুন</translation>
 <translation id="4121305183798804752">ডকুমেন্ট শনাক্ত হয়েছে</translation>
+<translation id="414641094616694804">এই ক্যামেরা রেজোলিউশন পরিবর্তন করতে পারে না</translation>
 <translation id="4269820728363426813">লিঙ্ক অ্যাড্রেস কপি করুন</translation>
+<translation id="4281620174117014503">মাঝারি রেজোলিউশন</translation>
 <translation id="4329152592498422850">চৌকো ফটো তুলতে মোড পাল্টান</translation>
 <translation id="4383571725254449280">প্রিন্ট পারফর্ম্যান্স লগ</translation>
 <translation id="4445542136948522167">ফটো তোলা বন্ধ করুন</translation>
@@ -74,12 +84,15 @@
 <translation id="4628948037717959914">ফটো</translation>
 <translation id="4649291346448517080">ফাইল সেভ করা যাচ্ছে না</translation>
 <translation id="4695379108709712600">উপরের দিকে সরানো হচ্ছে</translation>
+<translation id="4705093842003735294">সম্পূর্ণ রেজোলিউশন</translation>
 <translation id="4890010094662541459">৩ x ৩</translation>
 <translation id="491895758387112773">মাল্টি-স্ট্রিম ভিডিও রেকর্ডিং</translation>
+<translation id="5034763830503483128">ফটো আকৃতির অনুপাত</translation>
 <translation id="5057360777601936059">আপনার ক্যামেরা বর্তমানে উপলভ্য নেই।
         ক্যামেরা ঠিকভাবে কানেক্ট করা আছে কিনা দেখুন।</translation>
 <translation id="5163387177077603948">ডানদিকে সরানো হচ্ছে</translation>
 <translation id="520537883758714667">এখন ডকুমেন্ট স্ক্যান করা উপলভ্য</translation>
+<translation id="5235304959032763950">১৬ থেকে ৯</translation>
 <translation id="5266635337630551423">উপরে-বাঁদিকের কোণার ডকুমেন্ট</translation>
 <translation id="5317780077021120954">সেভ করুন</translation>
 <translation id="5320594929574852403">বাঁদিকে সরানো হচ্ছে</translation>
@@ -94,6 +107,7 @@
 <translation id="5916664084637901428">চালু</translation>
 <translation id="5975083100439434680">ছোট করুন</translation>
 <translation id="5976160379964388480">অন্যান্য</translation>
+<translation id="603973421174355542">ফুল HD</translation>
 <translation id="6073451960410192870">রেকর্ডিং বন্ধ করুন</translation>
 <translation id="6197807149213783179">মেটাডেটা সেভ করুন</translation>
 <translation id="6233780560267770709">৩ x ৩</translation>
@@ -104,6 +118,7 @@
 যদি আপনি কোনও ছবি বা ভিডিওর কোয়ালিটির ব্যাপারে মতামত জানাতে চান, তাহলে উদাহরণস্বরূপ একটি ফটো বা ভিডিও এখানে অ্যাটাচ করুন এবং আমাদের জানান সেটিতে কোন বিষয়টি আপনার খারাপ লেগেছে। (যেমন, ফটোতে পর্যাপ্ত আলোর অভাব রয়েছে বা যার ফটো তোলা হয়েছে, তাকে ফোকাসে রেখে ফটোটি তোলা হয়নি।)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> মেগা পিক্সেল</translation>
 <translation id="6527303717912515753">শেয়ার করুন</translation>
+<translation id="6631515515009660915">মিরর করার ফিচার বন্ধ করুন</translation>
 <translation id="6652737148136672975">অ্যারো কী ব্যবহার করে কোণার অবস্থান সরান</translation>
 <translation id="667999046851023355">দস্তাবেজ</translation>
 <translation id="6681668084120808868">ফটো তুলুন</translation>
@@ -114,6 +129,7 @@
 <translation id="698156982839284926">৩ সেকেন্ড</translation>
 <translation id="712848772518857951">আপনি কি সত্যিই <ph name="COUNT" />টি আইটেম সরিয়ে ফেলতে চান?</translation>
 <translation id="7134221860976209830">১০ সেকেন্ডের টাইমার</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">রেকর্ডের ধরন</translation>
 <translation id="7243947652761655814">ভিডিও রেজোলিউশন</translation>
 <translation id="7337660886763914220">ফাইল সিস্টেমে সমস্যা হয়েছে।</translation>
@@ -146,9 +162,11 @@
 <translation id="8815966864175525708">পোর্ট্রেট ফটো তুলতে মোড পাল্টান</translation>
 <translation id="8828441885228359828">আবার রেকর্ডিং করা চালু করুন</translation>
 <translation id="8870695351537079478">রেকর্ডিং শুরু করা যাচ্ছে না</translation>
+<translation id="8880167521484863515">৪ থেকে ৩</translation>
 <translation id="8903921497873541725">জুম বাড়ান</translation>
 <translation id="9045010116236796332">ডকুমেন্টের সমস্ত প্রান্ত ফ্রেমের মধ্যে রাখুন</translation>
 <translation id="9045155556724273246">১০ সেকেন্ড</translation>
 <translation id="906331135292332864">ছবি প্রসেস করা হচ্ছে...</translation>
+<translation id="922762992951083513">মিরর করার ফিচার চালু করুন</translation>
 <translation id="945522503751344254">মতামত জানান</translation>
 </translationbundle>

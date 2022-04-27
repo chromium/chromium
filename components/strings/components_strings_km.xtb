@@ -514,6 +514,7 @@
 <translation id="2298855485018661510">គ្រប់គ្រងប៊ូតុងខូគី, ចុច "Enter" ដើម្បីគ្រប់គ្រងចំណូលចិត្តខូគីរបស់អ្នកនៅក្នុងការកំណត់ Chrome</translation>
 <translation id="2300306941146563769">មិនបាន​បង្ហោះទេ</translation>
 <translation id="2310021320168182093">Chou2 (ស្រោម​សំបុត្រ)</translation>
+<translation id="2316159751672436664">កំណត់ឧបករណ៍​ភាពងាយស្រួល​ឱ្យស្របនឹងអ្នក​នៅក្នុង​ការកំណត់ ChromeOS</translation>
 <translation id="2316887270356262533">បង្កើន​ទំហំផ្ទុក​តិចជាង 1 MB ។ ទំព័រ​មួយចំនួន​អាចផ្ទុកយឺត​ជាងមុន នៅពេលដែល​អ្នកចូល​លើកក្រោយ។</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> តម្រូវឲ្យមានឈ្មោះអ្នកប្រើ និងពាក្យសម្ងាត់។</translation>
 <translation id="2318594867107319532">ពេលវេលានៃគោលការណ៍ចុងក្រោយ៖</translation>
@@ -1673,6 +1674,7 @@
 <translation id="5518670652865028077">សិល្បៈ និង​ការកម្សាន្ត</translation>
 <translation id="5519516356611866228">ជាមួយការផ្លាស់ប្ដូររបស់អ្នក</translation>
 <translation id="5523118979700054094">ឈ្មោះគោលការណ៍</translation>
+<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច tab រួចចុច Enter ដើម្បីកំណត់​ឧបករណ៍ភាពងាយស្រួល​ឱ្យស្របនឹងអ្នកនៅក្នុង​ការកំណត់ ChromeOS</translation>
 <translation id="5528532273234423708">ប្រព័ន្ធ​ស្វ័យប្រវត្តិក្នុងផ្ទះ</translation>
 <translation id="55293785478302737">ដេរ​គែម</translation>
 <translation id="553484882784876924">Prc6 (ស្រោម​សំបុត្រ)</translation>
@@ -2251,6 +2253,7 @@
 <translation id="722454870747268814">ផ្ទាំងអនាមិកថ្មី</translation>
 <translation id="7233592378249864828">បោះពុម្ព​សន្លឹកបញ្ជាក់</translation>
 <translation id="7234638337680728591">ស្ថានីយ​ប្រេងឥន្ធនៈ និងតម្លៃប្រេងឥន្ធនៈ</translation>
+<translation id="7237492777898608035">កុំបង្ហាញ​សារនេះ​ម្ដងទៀត​សម្រាប់​គេហទំព័រនេះ</translation>
 <translation id="7238585580608191973">ស្នាមម្រាមដៃ SHA-256</translation>
 <translation id="7240120331469437312">ឈ្មោះជម្រើសភាគីវិញ្ញាបនប័ត្រ</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -2635,6 +2638,7 @@
 <translation id="8242426110754782860">បន្ត</translation>
 <translation id="8249296373107784235">បោះបង់</translation>
 <translation id="8249463483885748674">ការធ្វើតេស្ត​បែបស្តង់ដារ និង​ការធ្វើតេស្ត​ចូលរៀន</translation>
+<translation id="8252991034201168845">ប៊ូតុង "គ្រប់គ្រងការកំណត់ភាពងាយស្រួល" ចុច Enter ដើម្បីកំណត់​ឧបករណ៍ភាពងាយស្រួល​ឱ្យស្របនឹងអ្នក​នៅក្នុងការកំណត់ ChromeOS</translation>
 <translation id="8253091569723639551">តម្រូវឲ្យមានអាសយដ្ឋានបញ្ចូលវិក្កយបត្រ</translation>
 <translation id="8257387598443225809">កម្មវិធីនេះត្រូវបានរចនាសម្រាប់ឧបករណ៍ចល័ត</translation>
 <translation id="825929999321470778">បង្ហាញ​ពាក្យ​សម្ងាត់​ដែល​បាន​រក្សាទុក​ទាំងអស់</translation>

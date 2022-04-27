@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">Transliterasi Ibrani</translation>
 <translation id="1747761757048858544">Belanda (Belanda)</translation>
 <translation id="174937106936716857">Jumlah file total</translation>
+<translation id="1755345808328621801">File ini dirancang untuk PC yang menggunakan software Windows. File ini tidak kompatibel dengan perangkat Anda yang menjalankan ChromeOS. Telusuri di Chrome Web Store untuk mendapatkan aplikasi pengganti yang sesuai.</translation>
 <translation id="1773212559869067373">Sertifikat autentikasi ditolak secara lokal</translation>
 <translation id="1775381402323441512">Info video</translation>
 <translation id="180035236176489073">Anda harus online untuk mengakses file ini.</translation>
@@ -198,8 +199,6 @@
 <translation id="2649120831653069427">Ikan Pelangi</translation>
 <translation id="2663066752008346276">Burma/Myanmar dengan keyboard Myansan</translation>
 <translation id="2664412712123763093">Lokasi file</translation>
-<translation id="2672394958563893062">Terjadi kesalahan. Klik untuk memulai ulang dari awal.</translation>
-<translation id="2676946222714718093">Diputar di</translation>
 <translation id="2718540689505416944">Instal aplikasi dengan Linux</translation>
 <translation id="2719020180254996569">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Detail</translation>
 <translation id="2724954091494693138">Turki dengan Keyboard-F</translation>
@@ -225,6 +224,7 @@
 <translation id="2943503720238418293">Gunakan nama yang lebih pendek</translation>
 <translation id="2949781154072577687">Memformat <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Ubur-ubur</translation>
+<translation id="2977940621473452797">File ini dirancang untuk komputer yang menggunakan software Macintosh. File ini tidak kompatibel dengan perangkat Anda yang menjalankan ChromeOS. Telusuri di Chrome Web Store untuk mendapatkan aplikasi pengganti yang sesuai.</translation>
 <translation id="2984337792991268709"><ph name="TODAY_DAYTIME" /> hari ini</translation>
 <translation id="2994320653639462337">Memulihkan <ph name="COUNT" /> item ...</translation>
 <translation id="2994669386200004489">Tidak dapat mencadangkan <ph name="FILE_NAME" /></translation>
@@ -340,7 +340,6 @@
 <translation id="3901991538546252627">Menghubungkan ke <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Menginstal profil seluler, Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Putar di</translation>
 <translation id="3943857333388298514">Sisipkan</translation>
 <translation id="3952872973865944257">Fonetik Telugu</translation>
 <translation id="3958548648197196644">Burung Kiwi</translation>
@@ -412,7 +411,6 @@
 <translation id="4631887759990505102">Artis</translation>
 <translation id="4642769377300286600">Menginstal profil seluler, Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Ceko dengan keyboard Qwerty</translation>
-<translation id="4656293982926141856">Komputer ini</translation>
 <translation id="4656777537938206294">Buat file tersedia offline</translation>
 <translation id="4658782175094886150">Orang di salju</translation>
 <translation id="4669606053856530811">Anggota '<ph name="SOURCE_NAME" />' akan kehilangan akses kecuali jika item berikut dibagikan dengan mereka.</translation>
@@ -422,13 +420,13 @@
 <translation id="4694604912444486114">Kera</translation>
 <translation id="469612310041132144">Cangjie Sederhana China</translation>
 <translation id="4697043402264950621">Daftar file diurutkan berdasarkan <ph name="COLUMN_NAME" /> dari atas ke bawah.</translation>
+<translation id="469897186246626197">File ini dirancang untuk PC yang menggunakan software Windows. File ini tidak kompatibel dengan perangkat Anda yang menjalankan ChromeOS. <ph name="BEGIN_LINK_HELP" />Pelajari Lebih Lanjut<ph name="END_LINK_HELP" /> cara membuka file di ChromeOS.</translation>
 <translation id="4706042980341760088">Tamil dengan keyboard Mesin ketik</translation>
 <translation id="4711094779914110278">Turki</translation>
 <translation id="4712283082407695269">Membuka "<ph name="PATH" />"</translation>
 <translation id="4720185134442950733">Jaringan data seluler</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> foto dicadangkan</translation>
 <translation id="4725511304875193254">Corgi</translation>
-<translation id="4732760563705710320">Maaf, video ini tidak didukung oleh perangkat transmisi Anda.</translation>
 <translation id="4737050008115666127">Mendarat</translation>
 <translation id="4747271164117300400">Makedonia</translation>
 <translation id="4759238208242260848">Download</translation>
@@ -543,6 +541,7 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5602622065581044566">Bulgaria dengan keyboard Fonetik</translation>
 <translation id="5605830556594064952">Dvorak AS</translation>
+<translation id="5618330573454123917">File ini dirancang untuk komputer yang menggunakan software Macintosh. File ini tidak kompatibel dengan perangkat Anda yang menjalankan ChromeOS. <ph name="BEGIN_LINK_HELP" />Pelajari Lebih Lanjut<ph name="END_LINK_HELP" /> cara membuka file di ChromeOS.</translation>
 <translation id="5625294776298156701">Tamil dengan keyboard Tamil99</translation>
 <translation id="5633226425545095130">Memindahkan item ini akan membagikannya ke siapa saja yang dapat melihat folder bersama '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="5649768706273821470">Dengar</translation>
@@ -618,7 +617,6 @@
 <translation id="6224253798271602650">Format <ph name="DRIVE_NAME" /></translation>
 <translation id="6227235786875481728">File ini tidak dapat diputar.</translation>
 <translation id="6241349547798190358">Belanda (Belgia)</translation>
-<translation id="6248400709929739064">Aktifkan subtitel</translation>
 <translation id="6267547857941397424">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Baterai Ponsel <ph name="BATTERY_STATUS" />%, Sambungkan</translation>
 <translation id="6269630227984243955">Malaysia</translation>
 <translation id="6287852322318138013">Pilih aplikasi untuk membuka file ini</translation>
@@ -636,7 +634,6 @@
 <translation id="637062427944097960">File ini dibuka pada desktop yang berbeda. Pindahkan ke <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) untuk melihatnya.</translation>
 <translation id="6394388407447716302">Hanya baca</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> item</translation>
-<translation id="6398765197997659313">Keluar dari tampilan layar penuh</translation>
 <translation id="642282551015776456">Nama ini tidak dapat digunakan sebagai nama file atau folder</translation>
 <translation id="6423031066725912715">Vietnam dengan keyboard TCVN</translation>
 <translation id="6485131920355264772">Gagal mengambil info ruang</translation>
@@ -672,7 +669,6 @@
 <translation id="6820687829547641339">Arsip tar terkompresi Gzip</translation>
 <translation id="6823166707458800069">Semua file yang disimpan dalam folder ini otomatis dicadangkan secara online.</translation>
 <translation id="6825883775269213504">Rusia</translation>
-<translation id="6827236167376090743">Video ini akan terus berputar sampai sapinya pulang.</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> dihapus dari pilihan.</translation>
 <translation id="6856459657722366306">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Detail</translation>
 <translation id="6861394552169064235">Farsi</translation>
@@ -738,6 +734,7 @@
 <translation id="7309413087278791451">Jerman (Belgia)</translation>
 <translation id="7339898014177206373">Jendela baru</translation>
 <translation id="7343393116438664539">Telex Vietnam</translation>
+<translation id="7357762654218998920">Jenis file ini tidak didukung. <ph name="BEGIN_LINK_HELP" />Pelajari Lebih Lanjut<ph name="END_LINK_HELP" /> cara membuka file di ChromeOS.</translation>
 <translation id="7359359531237882347">Menyalin <ph name="NUMBER_OF_ITEMS" /> item...</translation>
 <translation id="7375951387215729722">Daftar file diurutkan berdasarkan <ph name="COLUMN_NAME" /> dari bawah ke atas.</translation>
 <translation id="7402503521691663770">Perangkat ChromeOS Flex</translation>
@@ -809,7 +806,6 @@
 <translation id="7857117644404132472">Tambahkan pengecualian</translation>
 <translation id="7868774406711971383">Polandia</translation>
 <translation id="7874321682039004450">Filipina</translation>
-<translation id="7881969471599061635">Nonaktifkan subtitel</translation>
 <translation id="78946041517601018">Drive bersama</translation>
 <translation id="7908793776359722643">Memformat partisi akan menghapus semua data yang tersimpan di dalamnya. Tindakan ini tidak dapat diurungkan.</translation>
 <translation id="7925247922861151263">Pemeriksaan AAA gagal</translation>
@@ -886,7 +882,6 @@
 <translation id="8492972329130824181">Jaringan rumah tidak tersedia. Roaming data seluler harus diaktifkan agar dapat terhubung.</translation>
 <translation id="8499098729323186194">Mengekstrak <ph name="NUMBER_OF_ITEMS" /> item ...</translation>
 <translation id="8521441079177373948">Inggris</translation>
-<translation id="8525306231823319788">Layar penuh</translation>
 <translation id="853494022971700746">Prancis (Prancis)</translation>
 <translation id="8540608333167683902">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Detail</translation>
 <translation id="8545476925160229291">Inggris (AS)</translation>

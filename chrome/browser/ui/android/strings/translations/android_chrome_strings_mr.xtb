@@ -117,6 +117,7 @@
 <translation id="1558391695376153246">गुप्त टॅब बंद करा</translation>
 <translation id="1571304935088121812">वापरकर्ता नाव कॉपी करा</translation>
 <translation id="1592864538817356322">साधारण संरक्षण:</translation>
+<translation id="1594635596540195766">खालील सूचीमध्ये <ph name="SUGGESTIONS_COUNT" /> आयटम सुचवले आहेत.</translation>
 <translation id="161647866166517041">स्पॅम आणि घोटाळा कमी करणे हे विश्वास टोकनवर अवलंबून असते, ज्यामुळे साइटना घोटाळ्याविरुद्ध लढण्यात आणि लोक व बॉट वेगळे करण्यात मदत होते.
 
 नियमितपणे खात्यामध्ये साइन इन करणे यासारख्या एखाद्या साइटशी तुमच्या संवादावर आधारित, ती साइट तुमच्या ब्राउझरला विश्वास टोकन जारी करू शकते. तुम्ही भेट दिलेल्या इतर साइटनी एखाद्या वैध विश्वास टोकनासाठी तपासल्यास आणि ते त्यांना सापडल्यास, त्या तुम्हाला बॉट नव्हे तर एखाद्या व्यक्ती मानण्याची शक्यता जास्त आहे.
@@ -134,7 +135,6 @@
 <translation id="1672586136351118594">पुन्हा दाखवू नका</translation>
 <translation id="1680919990519905526">Google Lens ने इमेज खरेदी करा <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">आता करून पहा</translation>
-<translation id="1697284962337958118">यामध्ये जोडा</translation>
 <translation id="1702543251015153180">तुमची गडद थीम सेटिंग्ज बदलायची आहे का?</translation>
 <translation id="1702907158640575240">ब्राउझर व्यवस्थापित करा</translation>
 <translation id="1710099199314114079">टॅब स्विच किंवा बंद करा</translation>
@@ -146,7 +146,6 @@
 <translation id="1749561566933687563">तुमचे बुकमार्क सिंक करा</translation>
 <translation id="17513872634828108">खुले टॅब</translation>
 <translation id="1754404134430936718">मजकूर कॉपी केला</translation>
-<translation id="1772137089884020309">बुकमार्क फोल्डरची सूची बंद आहे</translation>
 <translation id="1779766957982586368">विंडो बंद करा</translation>
 <translation id="1791662854739702043">इंस्टॉल केले</translation>
 <translation id="1792959175193046959">डीफॉल्ट डाउनलोडचे स्थान केव्हाही बदला</translation>
@@ -806,6 +805,7 @@
 <translation id="5517095782334947753">आपल्याकडे <ph name="FROM_ACCOUNT" /> मधील बुकमार्क, इतिहास, पासवर्ड आणि अन्य सेटिंग्ज आहेत.</translation>
 <translation id="5524761631371622910">चाचण्या सुरू असताना Chrome ने तुम्हाला रँडम पद्धतीने अ‍ॅक्टिव्ह चाचणीमध्ये सामील केल्यास, तुमचा ब्राउझिंग इतिहास हा तुम्ही पाहता त्या जाहिराती आणि खाली दिलेली अंदाजित स्वारस्ये यांवर परिणाम करतो. तुमच्या गोपनीयतेचे संरक्षण करण्यासाठी, Chrome दर महिन्याला रोलिंगच्या आधारे तुमची स्वारस्ये हटवते.</translation>
 <translation id="5524843473235508879">रीडिरेक्‍ट ब्लॉक केले.</translation>
+<translation id="5528459307536571064">एक टॅब गट</translation>
 <translation id="5548606607480005320">सुरक्षा तपासणी</translation>
 <translation id="5555525474779371165">तुमचे सुरक्षित ब्राउझिंग संरक्षण निवडा</translation>
 <translation id="5556459405103347317">रीलोड करा</translation>
@@ -989,7 +989,6 @@
 <translation id="6475951671322991020">व्हिडिओ डाउनलोड करा</translation>
 <translation id="6477928892249167417">या साइट तुमच्यासाठी महत्त्वाच्या आहेत असे दिसते:</translation>
 <translation id="6482749332252372425">स्टोरेज स्थानाच्या अभावामुळे <ph name="FILE_NAME" /> डाउनलोड अयशस्वी झाले.</translation>
-<translation id="6489610539826642779">वाचन सूची <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
 <translation id="6496823230996795692"><ph name="APP_NAME" /> पहिल्यांदा वापरण्यासाठी, कृपया इंटरनेटशी कनेक्ट करा.</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{फाइल डाउनलोड केली}other{# डाउनलोड पूर्ण झाले}}</translation>
 <translation id="6508722015517270189">Chrome रीस्टार्ट करा</translation>
@@ -1050,7 +1049,6 @@
 <translation id="6756507620369789050">फीडबॅक शेअर करा</translation>
 <translation id="6767294960381293877">अर्ध्या उंचीवर उघडलेल्या टॅबसह शेअर करण्यासाठी डिव्हाइसची सूची.</translation>
 <translation id="6770602306803890733">तुमच्यासाठी आणि वेबवरील प्रत्येकजणासाठी सुरक्षिततेत सुधारणा करते</translation>
-<translation id="6783942555455976443">हे पेज नंतर वाचण्यासाठी सेव्ह करा आणि रिमाइंडर मिळवा</translation>
 <translation id="6785476624617658922">Chrome आणि ChromeOS च्या अतिरिक्त सेवा अटी</translation>
 <translation id="6795633245022906657">झटपट नवीन टॅब उघडा. हा शॉर्टकट संपादित करण्यासाठी, सेटिंग्ज वर जा.</translation>
 <translation id="6802555630140434547">विंडो बंद केली जाईल</translation>
@@ -1122,7 +1120,6 @@
 <translation id="7177959540995930968">तुम्ही Chrome सेटिंग्जमध्ये या वैशिष्ट्यांबाबत अधिक जाणून घेऊ शकता.</translation>
 <translation id="718226107353899806">तुम्ही कमाल <ph name="MAX_NUM_REACTIONS" /> प्रतिक्रिया जोडू शकता</translation>
 <translation id="7187993566681480880">तुम्हाला Chrome वर सुरक्षित ठेवते आणि तुम्ही साइन इन केलेले असताना इतर Google अ‍ॅप्समध्ये तुमच्या सुरक्षेत सुधारणा करण्यासाठी वापरले जाऊ शकते.</translation>
-<translation id="718926126787620637">पूर्ण उंचीवर उघडलेल्या बुकमार्क फोल्डरची सूची</translation>
 <translation id="7191430249889272776">पार्श्वभूमीवर उघडा असलेला टॅब.</translation>
 <translation id="7196215469483532480">गोपनीयता मार्गदर्शक स्पष्टीकरण पूर्ण उंचीवर उघडले आहे</translation>
 <translation id="7208109991155904980">प्रतिक्रिया हलवली</translation>
@@ -1142,7 +1139,6 @@
 <translation id="7304873321153398381">ऑफलाइन. Chrome तुमचे पासवर्ड तपासू शकत नाही.</translation>
 <translation id="7313188324932846546">सिंक सेट करण्यासाठी टॅप करा</translation>
 <translation id="7332075081379534664">यशस्वीरीत्या साइन इन केले</translation>
-<translation id="7333031090786104871">अद्याप मागील साइट जोडत आहे</translation>
 <translation id="7339898014177206373">नवीन विंडो</translation>
 <translation id="7340958967809483333">Discover चे पर्याय</translation>
 <translation id="7352339641508007922">मोठा स्क्रीनशॉट काढण्यासाठी ड्रॅग करा</translation>
@@ -1422,6 +1418,7 @@
 <translation id="8730621377337864115">पूर्ण झाले</translation>
 <translation id="8746155870861185046">हायलाइट करा</translation>
 <translation id="8748850008226585750">आशय लपविली</translation>
+<translation id="8756969031206844760">पासवर्ड अपडेट करायचा आहे का?</translation>
 <translation id="8766529642647037772">यासारखी हायलाइट केलेली लिंक तयार करायची आहे का?</translation>
 <translation id="8773160212632396039">विनंतीवर प्रक्रिया सुरू आहे</translation>
 <translation id="8788265440806329501">नेव्हिगेशन इतिहास बंद आहे</translation>
@@ -1450,7 +1447,6 @@
 <translation id="8922289737868596582">पेज ऑफलाइन वापरता येण्यासाठी ती अधिक पर्यायांमधून डाउनलोड करा</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> तयार आहे</translation>
-<translation id="8928626432984354940">अर्ध्या उंचीवर उघडलेल्या बुकमार्क फोल्डरची सूची</translation>
 <translation id="8937267401510745927">तुम्हाला टास्क पूर्ण करण्यात मदत करण्यासाठी, तुम्ही ज्या साइटवर Assistant वापरता त्यांच्या URL आणि आशय, तसेच तुम्ही Assistant द्वारे सबमिट करता ती माहिती Google मिळवेल. ही माहिती तुमच्या Google खात्यामध्ये स्टोअर केली जाऊ शकते. तुम्ही Chrome सेटिंग्जमध्ये Assistant बंद करू शकता.</translation>
 <translation id="8937772741022875483">Digital wellbeing वरून तुमची Chrome ॲक्टिव्हिटी काढून टाकायची का?</translation>
 <translation id="8942627711005830162">इतर विंडोमध्ये उघडा</translation>
@@ -1514,7 +1510,6 @@
 <translation id="932327136139879170">होम</translation>
 <translation id="938850635132480979">एरर: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">सांकेतिक पासफ्रेझ एंटर करा</translation>
-<translation id="948039501338975565">बुकमार्क फोल्डरची सूची</translation>
 <translation id="95817756606698420">Chrome चीनमध्ये शोध करण्‍यासाठी <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> चा वापर करू शकते. तुम्ही हे <ph name="BEGIN_LINK" />सेटिंग्जमध्ये<ph name="END_LINK" /> बदलू शकता.</translation>
 <translation id="962979164594783469">हे ॲप इंस्टॉल करा</translation>
 <translation id="96681097142096641">सरलीकृत पेज पाहायचे आहे का?</translation>
@@ -1523,5 +1518,6 @@
 <translation id="981121421437150478">ऑफलाइन</translation>
 <translation id="983192555821071799">सर्व टॅब बंद करा</translation>
 <translation id="987264212798334818">सामान्य</translation>
+<translation id="992745192656291733"><ph name="TAB_COUNT" /> टॅब</translation>
 <translation id="996149300115483134">फीड कार्ड मेनू बंद केला गेला आहे</translation>
 </translationbundle>

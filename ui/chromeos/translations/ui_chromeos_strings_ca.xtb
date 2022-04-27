@@ -94,6 +94,7 @@
 <translation id="1742316578210444689">Hebreu (transliteració)</translation>
 <translation id="1747761757048858544">Neerlandès (Països Baixos)</translation>
 <translation id="174937106936716857">Total de fitxers</translation>
+<translation id="1755345808328621801">Aquest fitxer està dissenyat per a un ordinador amb programari Windows. No és compatible amb el teu dispositiu, que funciona amb Chrome OS. Cerca una aplicació alternativa adequada a Chrome Web Store.</translation>
 <translation id="1773212559869067373">S'ha rebutjat el certificat d'autenticació de manera local</translation>
 <translation id="1775381402323441512">Informació del vídeo</translation>
 <translation id="180035236176489073">Heu d'estar en línia per accedir a aquests fitxers.</translation>
@@ -198,8 +199,6 @@
 <translation id="2649120831653069427">Peix arc iris</translation>
 <translation id="2663066752008346276">Birmà (Birmània) amb teclat myansan</translation>
 <translation id="2664412712123763093">Ubicació del fitxer</translation>
-<translation id="2672394958563893062">S'ha produït un error. Feu clic per reiniciar des del principi.</translation>
-<translation id="2676946222714718093">En reproducció</translation>
 <translation id="2718540689505416944">Instal·la l'aplicació per a Linux</translation>
 <translation id="2719020180254996569">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, detalls</translation>
 <translation id="2724954091494693138">Turc amb teclat F</translation>
@@ -225,6 +224,7 @@
 <translation id="2943503720238418293">Utilitza un nom més curt</translation>
 <translation id="2949781154072577687">S'està formatant <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Medusa</translation>
+<translation id="2977940621473452797">Aquest fitxer està dissenyat per a un ordinador amb programari Macintosh. No és compatible amb el teu dispositiu, que funciona amb Chrome OS. Cerca una aplicació alternativa adequada a Chrome Web Store.</translation>
 <translation id="2984337792991268709">Avui a les <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">S'estan restaurant <ph name="COUNT" /> elements...</translation>
 <translation id="2994669386200004489">No s'ha pogut afegir <ph name="FILE_NAME" /> a la còpia de seguretat</translation>
@@ -340,7 +340,6 @@
 <translation id="3901991538546252627">S'està connectant amb <ph name="NAME" /></translation>
 <translation id="3906232975181435906">S'està instal·lant el perfil mòbil, xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />.</translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">Reprodueix a</translation>
 <translation id="3943857333388298514">Enganxa</translation>
 <translation id="3952872973865944257">Telugu fonètic</translation>
 <translation id="3958548648197196644">Kiwi</translation>
@@ -412,7 +411,6 @@
 <translation id="4631887759990505102">Artista</translation>
 <translation id="4642769377300286600">S'està instal·lant el perfil mòbil, xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Txec amb teclat QWERTY</translation>
-<translation id="4656293982926141856">Aquest ordinador</translation>
 <translation id="4656777537938206294">Fes que els fitxers estiguin disponibles sense connexió</translation>
 <translation id="4658782175094886150">Persona a la neu</translation>
 <translation id="4669606053856530811">Els membres de l'equip <ph name="SOURCE_NAME" /> ja no podran accedir a aquests elements, tret que es comparteixin amb ells.</translation>
@@ -422,13 +420,13 @@
 <translation id="4694604912444486114">Mico</translation>
 <translation id="469612310041132144">Xinès ràpid</translation>
 <translation id="4697043402264950621">La llista de fitxers es mostra per <ph name="COLUMN_NAME" /> en ordre ascendent.</translation>
+<translation id="469897186246626197">Aquest fitxer està dissenyat per a un ordinador amb programari Windows. No és compatible amb el teu dispositiu, que funciona amb Chrome OS. <ph name="BEGIN_LINK_HELP" />Obtén més informació<ph name="END_LINK_HELP" /> sobre com pots obrir fitxers a Chrome OS.</translation>
 <translation id="4706042980341760088">Tàmil amb teclat de màquina d'escriure</translation>
 <translation id="4711094779914110278">Turc</translation>
 <translation id="4712283082407695269">S'està obrint <ph name="PATH" /></translation>
 <translation id="4720185134442950733">Xarxa de dades mòbils</translation>
 <translation id="4724850507808590449">S'ha creat una còpia de seguretat de <ph name="FILE_COUNT" /> fotos</translation>
 <translation id="4725511304875193254">Corgi</translation>
-<translation id="4732760563705710320">El dispositiu d'emissió no admet aquest vídeo.</translation>
 <translation id="4737050008115666127">Aterratge</translation>
 <translation id="4747271164117300400">Macedoni</translation>
 <translation id="4759238208242260848">Baixades</translation>
@@ -543,6 +541,7 @@
 <translation id="5583640892426849032">Retrocés</translation>
 <translation id="5602622065581044566">Búlgar amb teclat fonètic</translation>
 <translation id="5605830556594064952">Dvorak nord-americà</translation>
+<translation id="5618330573454123917">Aquest fitxer està dissenyat per a un ordinador amb programari Macintosh. No és compatible amb el teu dispositiu, que funciona amb Chrome OS. <ph name="BEGIN_LINK_HELP" />Obtén més informació<ph name="END_LINK_HELP" /> sobre com pots obrir fitxers a Chrome OS.</translation>
 <translation id="5625294776298156701">Tàmil amb teclat Tamil99</translation>
 <translation id="5633226425545095130">En moure aquest element, es compartirà amb tothom que pugui veure la carpeta compartida "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Escolta</translation>
@@ -618,7 +617,6 @@
 <translation id="6224253798271602650">Formata <ph name="DRIVE_NAME" /></translation>
 <translation id="6227235786875481728">No s'ha pogut reproduir aquest fitxer.</translation>
 <translation id="6241349547798190358">Neerlandès (Bèlgica)</translation>
-<translation id="6248400709929739064">Activa els subtítols</translation>
 <translation id="6267547857941397424">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, <ph name="BATTERY_STATUS" />% de bateria al telèfon, connecta</translation>
 <translation id="6269630227984243955">Malai</translation>
 <translation id="6287852322318138013">Selecció d'una aplicació per obrir el fitxer</translation>
@@ -636,7 +634,6 @@
 <translation id="637062427944097960">Aquest fitxer s'ha obert en un altre escriptori. Aneu a <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) per veure'l.</translation>
 <translation id="6394388407447716302">Només de lectura</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elements</translation>
-<translation id="6398765197997659313">Surt del mode de pantalla completa</translation>
 <translation id="642282551015776456">Aquest nom no es pot utilitzar com a nom de fitxer o de carpeta</translation>
 <translation id="6423031066725912715">Vietnamita amb teclat TCVN</translation>
 <translation id="6485131920355264772">No s'ha pogut recuperar informació sobre l'espai</translation>
@@ -672,7 +669,6 @@
 <translation id="6820687829547641339">Arxiu tar comprimit Gzip</translation>
 <translation id="6823166707458800069">Es crea automàticament una còpia de seguretat en línia de tots els fitxers desats en aquesta carpeta.</translation>
 <translation id="6825883775269213504">Rus</translation>
-<translation id="6827236167376090743">La reproducció d'aquest vídeo continuarà indefinidament.</translation>
 <translation id="6847101934483209767">S'ha suprimit <ph name="ENTRY_NAME" /> de la selecció.</translation>
 <translation id="6856459657722366306">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, detalls</translation>
 <translation id="6861394552169064235">Persa</translation>
@@ -738,6 +734,7 @@
 <translation id="7309413087278791451">Alemany (Bèlgica)</translation>
 <translation id="7339898014177206373">Finestra nova</translation>
 <translation id="7343393116438664539">Vietnamita (tèlex)</translation>
+<translation id="7357762654218998920">Aquest tipus de fitxer no és compatible. <ph name="BEGIN_LINK_HELP" />Obtén més informació<ph name="END_LINK_HELP" /> sobre com pots obrir fitxers a Chrome OS.</translation>
 <translation id="7359359531237882347">S'estan copiant <ph name="NUMBER_OF_ITEMS" /> elements...</translation>
 <translation id="7375951387215729722">La llista de fitxers es mostra per <ph name="COLUMN_NAME" /> en ordre descendent.</translation>
 <translation id="7402503521691663770">Dispositius ChromeOS Flex</translation>
@@ -809,7 +806,6 @@
 <translation id="7857117644404132472">Afegeix una excepció</translation>
 <translation id="7868774406711971383">Polonès</translation>
 <translation id="7874321682039004450">Filipí</translation>
-<translation id="7881969471599061635">Desactiva els subtítols</translation>
 <translation id="78946041517601018">Unitats compartides</translation>
 <translation id="7908793776359722643">En formatar una partició, se n'esborren totes les dades que s'hi hagin emmagatzemat. Aquesta acció no es pot desfer.</translation>
 <translation id="7925247922861151263">Error en la comprovació d'AAA</translation>
@@ -886,7 +882,6 @@
 <translation id="8492972329130824181">La xarxa domèstica no està disponible. La itinerància de dades mòbils ha d'estar activada per poder connectar-t'hi.</translation>
 <translation id="8499098729323186194">S'estan extraient <ph name="NUMBER_OF_ITEMS" /> elements...</translation>
 <translation id="8521441079177373948">Regne Unit</translation>
-<translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="853494022971700746">Francès (França)</translation>
 <translation id="8540608333167683902">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, detalls</translation>
 <translation id="8545476925160229291">Anglès (EUA)</translation>

@@ -894,6 +894,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8588404856427128947">Desactivada</translation>
 <translation id="8590913940444621808">No preguntar nunca</translation>
 <translation id="8591976964826315682">Bloquear cookies de terceros en incógnito</translation>
+<translation id="8592752150819985187">Autocompletar contraseñas</translation>
 <translation id="8605219856220328675">Cerrar pestaña.</translation>
 <translation id="8620640915598389714">Editar</translation>
 <translation id="8626393685701737946">Puedes cambiar la vista predeterminada de los sitios a Ordenador en Configuración &gt; Configuración de contenido</translation>
@@ -912,6 +913,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8741995161408053644">Es posible que tu cuenta de Google tenga otras formas del historial de navegación en la página <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Aquí verás tus pestañas</translation>
 <translation id="8756969031206844760">¿Quieres actualizar la contraseña?</translation>
+<translation id="8764015330924122850">Dejar de seguir a <ph name="DOMAIN_NAME" /></translation>
 <translation id="8775144690796719618">La URL no es válida</translation>
 <translation id="8787968206789828143">Buscar en Web</translation>
 <translation id="8803639129939845298">Es seguro</translation>

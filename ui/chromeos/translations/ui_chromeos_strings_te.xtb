@@ -199,8 +199,6 @@
 <translation id="2649120831653069427">రెయిన్‌బోఫిష్</translation>
 <translation id="2663066752008346276">మయన్‌సన్ కీబోర్డ్‌తో బర్మీస్/మయన్మార్</translation>
 <translation id="2664412712123763093">ఫైల్ లొకేషన్</translation>
-<translation id="2672394958563893062">ఎర్ర‌ర్ ఏర్ప‌డింది. మొదటి నుండి పునఃప్రారంభించడానికి క్లిక్ చేయండి.</translation>
-<translation id="2676946222714718093">ఇందులో ప్లే అవుతోంది</translation>
 <translation id="2718540689505416944">Linuxతో యాప్‌ను ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, వివరాలు</translation>
 <translation id="2724954091494693138">F-కీబోర్డ్‌తో టర్కిష్</translation>
@@ -342,7 +340,6 @@
 <translation id="3901991538546252627"><ph name="NAME" />కి కనెక్ట్ చేస్తోంది</translation>
 <translation id="3906232975181435906"><ph name="NETWORK_NAME" />నుండి <ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" />వ నెట్‌వర్క్ మొబైల్ ప్రొఫైల్‌ను ఇన్‌స్టాల్ చేస్తోంది</translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3930521966936686665">దీనిలో ప్లే చేయండి</translation>
 <translation id="3943857333388298514">అతికించు</translation>
 <translation id="3952872973865944257">తెలుగు ఫొనెటిక్</translation>
 <translation id="3958548648197196644">కివి</translation>
@@ -414,7 +411,6 @@
 <translation id="4631887759990505102">చిత్రకారుడు</translation>
 <translation id="4642769377300286600"><ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> నుండి <ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" />వ నెట్‌వర్క్ మొబైల్ ప్రొఫైల్‌ను ఇన్‌స్టాల్ చేస్తోంది</translation>
 <translation id="4646813851450205600">Qwerty కీబోర్డ్‌తో చెక్(Czech)</translation>
-<translation id="4656293982926141856">ఈ కంప్యూటర్</translation>
 <translation id="4656777537938206294">ఫైళ్లను ఆఫ్‌లైన్‌లో అందుబాటులో ఉంచండి</translation>
 <translation id="4658782175094886150">మంచు ప్రదేశంలో ఉన్న వ్యక్తి</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' యొక్క సభ్యులతో ఈ అంశాలను షేర్ చేస్తే మినహా వారు యాక్సెస్‌ను కోల్పోతారు.</translation>
@@ -431,7 +427,6 @@
 <translation id="4720185134442950733">మొబైల్ డేటా నెట్‌వర్క్</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> ఫోటోలు బ్యాకప్ చేయబడ్డాయి</translation>
 <translation id="4725511304875193254">కార్గి</translation>
-<translation id="4732760563705710320">క్షమించండి, మీ cast పరికరం ఈ వీడియోకు మద్దతివ్వదు.</translation>
 <translation id="4737050008115666127">ల్యాండింగ్</translation>
 <translation id="4747271164117300400">మాసిడోనియన్</translation>
 <translation id="4759238208242260848">డౌన్‌లోడ్‌లు</translation>
@@ -622,7 +617,6 @@
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" />ను ఫార్మాట్ చేయండి</translation>
 <translation id="6227235786875481728">ఈ ఫైల్‌ని ప్లే చేయడం సాధ్యం కాలేదు.</translation>
 <translation id="6241349547798190358">డచ్ (బెల్జియం)</translation>
-<translation id="6248400709929739064">ఉపశీర్షికలను ప్రారంభించు</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="PHONE_NAME" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, ఫోన్ బ్యాటరీ <ph name="BATTERY_STATUS" />%, కనెక్ట్ చేయండి</translation>
 <translation id="6269630227984243955">మలయ్</translation>
 <translation id="6287852322318138013">ఈ ఫైల్‌ను తెరవడానికి యాప్‌ను ఎంచుకోండి</translation>
@@ -640,7 +634,6 @@
 <translation id="637062427944097960">ఈ పైల్ వేరే డెస్క్‌టాప్‌లో తెరవబడింది. దీన్ని వీక్షించడానికి <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)కు తరలించండి.</translation>
 <translation id="6394388407447716302">చదవడానికి మాత్రమే</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> అంశాలు</translation>
-<translation id="6398765197997659313">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించు</translation>
 <translation id="642282551015776456">ఈ పేరును ఫైల్ యొక్క ఫోల్డర్ పేరుగా ఉపయోగించలేము.</translation>
 <translation id="6423031066725912715">TCVN కీబోర్డ్‌తో వియత్నామీస్</translation>
 <translation id="6485131920355264772">ఖాళీ సమాచారాన్ని తిరిగి పొందడం విఫలమైంది</translation>
@@ -676,7 +669,6 @@
 <translation id="6820687829547641339">Gzip కుదించిన tar ఆర్కైవ్</translation>
 <translation id="6823166707458800069">ఈ ఫోల్డర్‌లో సేవ్ చేసిన అన్ని ఫైల్స్ ఆన్‌లైన్‌లో ఆటోమేటిక్‌గా బ్యాకప్ చేయబడతాయి.</translation>
 <translation id="6825883775269213504">రష్యన్</translation>
-<translation id="6827236167376090743">ఈ వీడియో నిరంతరంగా ప్లే అవుతూనే ఉంటుంది.</translation>
 <translation id="6847101934483209767">ఎంచుకున్న అంశాల నుండి <ph name="ENTRY_NAME" /> తీసివేయబడింది.</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, వివరాలు</translation>
 <translation id="6861394552169064235">పర్షియన్</translation>
@@ -814,7 +806,6 @@
 <translation id="7857117644404132472">మినహాయింపును జోడించు</translation>
 <translation id="7868774406711971383">పోలిష్</translation>
 <translation id="7874321682039004450">ఫిలిప్పినో</translation>
-<translation id="7881969471599061635">ఉపశీర్షికలను నిలిపివేయి</translation>
 <translation id="78946041517601018">షేర్ చేసిన డ్రైవ్‌లు</translation>
 <translation id="7908793776359722643">విభజనను ఫార్మాట్ చేయడం వలన దానిలో స్టోర్ చేయబడిన మొత్తం డేటా తొలగించబడుతుంది. ఈ చర్యను రద్దు చేయలేరు.</translation>
 <translation id="7925247922861151263">AAA తనిఖీ విఫలమైంది</translation>
@@ -891,7 +882,6 @@
 <translation id="8492972329130824181">ఇంటి నెట్‌వర్క్ అందుబాటులో లేదు. కనెక్ట్ చేయడానికి మొబైల్ డేటా రోమింగ్‌ను తప్పనిసరిగా ఎనేబుల్ చేయాలి.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లను సంగ్రహిస్తోంది...</translation>
 <translation id="8521441079177373948">యుకె</translation>
-<translation id="8525306231823319788">ఫుల్-స్క్రీన్‌</translation>
 <translation id="853494022971700746">ఫ్రెంచ్ (ఫ్రాన్స్)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, వివరాలు</translation>
 <translation id="8545476925160229291">ఇంగ్లీష్ (US)</translation>
