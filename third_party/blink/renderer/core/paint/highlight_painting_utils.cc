@@ -182,12 +182,6 @@ HighlightPseudoStyleWithOriginatingInheritance(
 // highlight color properties default to initial, rather than the UA default.
 // https://drafts.csswg.org/css-pseudo-4/#highlight-cascade
 bool UseUaHighlightColors(PseudoId pseudo, const ComputedStyle& pseudo_style) {
-  // TODO(crbug.com/1024156): spec issue: should we limit this to ::selection?
-  // TODO(crbug.com/1024156): https://github.com/w3c/csswg-drafts/issues/6386
-  // NOTE: to limit this to ::selection without breaking our default highlight
-  // colors for ::target-text, we would need to split HasAuthorHighlightColors
-  // into bits for foreground and background, or impl ::target-text defaults
-  // as a UA stylesheet rule of MarkText on Mark (as recommended by the spec).
   return !pseudo_style.HasAuthorHighlightColors();
 }
 
