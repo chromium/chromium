@@ -267,6 +267,11 @@ absl::optional<InAppShelfGestures> CalculateHotseatGestureToRecord(
   return absl::nullopt;
 }
 
+bool IsInImmersiveFullscreen() {
+  WindowState* active_window = WindowState::ForActiveWindow();
+  return active_window && active_window->IsInImmersiveFullscreen();
+}
+
 // Forwards gesture events to ShelfLayoutManager to hide the hotseat
 // when it is kExtended.
 class HotseatEventHandler : public ui::EventHandler,
@@ -2388,9 +2393,10 @@ bool ShelfLayoutManager::StartShelfDrag(const ui::LocatedEvent& event_in_screen,
   }
 
   // Clamshell ProductivityLauncher does not support shelf drags unless autohide
-  // is enabled.
+  // is enabled or the shelf is autohidden for immersive fullscreen.
   if (!is_tablet_mode && features::IsProductivityLauncherEnabled() &&
-      CalculateShelfVisibility() != SHELF_AUTO_HIDE) {
+      CalculateShelfVisibility() != SHELF_AUTO_HIDE &&
+      !IsInImmersiveFullscreen()) {
     return false;
   }
 
