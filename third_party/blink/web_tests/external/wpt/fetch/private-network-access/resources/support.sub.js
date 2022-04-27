@@ -176,6 +176,14 @@ const PreflightBehavior = {
     "preflight-uuid": uuid,
     "preflight-headers": "cors+pna",
   }),
+
+  // The preflight response should succeed only if it is the first preflight.
+  // `uuid` should be a UUID that uniquely identifies the preflight request.
+  singlePreflight: (uuid) => ({
+    "preflight-uuid": uuid,
+    "preflight-headers": "cors+pna",
+    "expect-single-preflight": true,
+  }),
 };
 
 // Methods generate behavior specifications for how `resources/preflight.py`
