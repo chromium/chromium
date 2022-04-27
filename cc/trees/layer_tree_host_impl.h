@@ -344,7 +344,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void DidAnimateScrollOffset();
   void SetFullViewportDamage();
   void SetViewportDamage(const gfx::Rect& damage_rect);
-  void SetEnableFrameRateThrottling(bool enable_frame_rate_throttling);
 
   // Interface for ThreadedInputHandler
   void BindToInputHandler(
@@ -1275,8 +1274,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   FrameRateEstimator frame_rate_estimator_;
   bool has_observed_first_scroll_delay_ = false;
-
-  bool enable_frame_rate_throttling_ = false;
 
   // True if we are measuring smoothness in TotalFrameCounter and
   // DroppedFrameCounter. Currently true when first contentful paint is done.

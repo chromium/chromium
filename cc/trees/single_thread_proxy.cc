@@ -896,11 +896,6 @@ void SingleThreadProxy::SetRenderFrameObserver(
   host_impl_->SetRenderFrameObserver(std::move(observer));
 }
 
-void SingleThreadProxy::SetEnableFrameRateThrottling(
-    bool enable_frame_rate_throttling) {
-  DCHECK(task_runner_provider_->IsMainThread());
-}
-
 uint32_t SingleThreadProxy::GetAverageThroughput() const {
   DebugScopedSetImplThread impl(task_runner_provider_);
   return host_impl_->dropped_frame_counter()->GetAverageThroughput();

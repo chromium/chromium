@@ -892,11 +892,6 @@ void ProxyImpl::SetRenderFrameObserver(
   host_impl_->SetRenderFrameObserver(std::move(observer));
 }
 
-void ProxyImpl::SetEnableFrameRateThrottling(
-    bool enable_frame_rate_throttling) {
-  host_impl_->SetEnableFrameRateThrottling(enable_frame_rate_throttling);
-}
-
 ProxyImpl::DataForCommit::DataForCommit(
     std::unique_ptr<ScopedCommitCompletionEvent> commit_completion_event,
     std::unique_ptr<CommitState> commit_state,

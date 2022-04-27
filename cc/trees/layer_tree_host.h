@@ -441,10 +441,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
         ->event_listener_properties[static_cast<size_t>(event_class)];
   }
 
-  // Indicates that its acceptable to throttle the frame rate for this content
-  // to prioritize lower power/CPU use.
-  void SetEnableFrameRateThrottling(bool enable_frame_rate_throttling);
-
   void SetViewportRectAndScale(
       const gfx::Rect& device_viewport_rect,
       float device_scale_factor,

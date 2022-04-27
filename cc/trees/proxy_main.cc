@@ -760,14 +760,6 @@ void ProxyMain::SetRenderFrameObserver(
                      base::Unretained(proxy_impl_.get()), std::move(observer)));
 }
 
-void ProxyMain::SetEnableFrameRateThrottling(
-    bool enable_frame_rate_throttling) {
-  ImplThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&ProxyImpl::SetEnableFrameRateThrottling,
-                                base::Unretained(proxy_impl_.get()),
-                                enable_frame_rate_throttling));
-}
-
 uint32_t ProxyMain::GetAverageThroughput() const {
   NOTIMPLEMENTED();
   return 0u;

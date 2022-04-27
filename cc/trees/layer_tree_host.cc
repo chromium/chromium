@@ -1921,12 +1921,6 @@ void LayerTreeHost::SetRenderFrameObserver(
   proxy_->SetRenderFrameObserver(std::move(observer));
 }
 
-void LayerTreeHost::SetEnableFrameRateThrottling(
-    bool enable_frame_rate_throttling) {
-  DCHECK(IsMainThread());
-  proxy_->SetEnableFrameRateThrottling(enable_frame_rate_throttling);
-}
-
 void LayerTreeHost::SetDelegatedInkMetadata(
     std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
   pending_commit_state()->delegated_ink_metadata = std::move(metadata);

@@ -117,7 +117,6 @@ class CC_EXPORT ProxyMain : public Proxy {
       base::WritableSharedMemoryMapping ukm_smoothness_data) override;
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer) override;
-  void SetEnableFrameRateThrottling(bool enable_frame_rate_throttling) override;
   uint32_t GetAverageThroughput() const override;
 
   // Returns |true| if the request was actually sent, |false| if one was
