@@ -126,10 +126,6 @@ html.files-ng cr-menu.files-menu > cr-menu-item {
   padding: 0 16px;
 }
 
-html.files-ng:not(.pointer-active) cr-menu-item > paper-ripple {
-  display: none;
-}
-
 html.files-ng.pointer-active cr-menu-item > paper-ripple {
   --paper-ripple-opacity: 100%;
   color: var(--cros-ripple-color);

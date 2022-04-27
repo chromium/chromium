@@ -454,6 +454,51 @@ testcase.keyboardFocusOutlineVisibleMouse = async () => {
 };
 
 /**
+ * Tests that the root html element .pointer-active class will be removed with
+ * pointerup event triggered by touch.
+ */
+testcase.pointerActiveRemovedByTouch = async () => {
+  // Open Files app.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+
+  // Send pointerdown to the list container.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeEvent', appId, ['#list-container', 'pointerdown']));
+
+  // Check: the html element should have pointer-active class.
+  const htmlPointerActive = ['html.pointer-active'];
+  await remoteCall.waitForElementsCount(appId, htmlPointerActive, 1);
+
+  // Send pointerup with touch to the list container.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeEvent', appId,
+      ['#list-container', 'pointerup', {pointerType: 'touch'}]));
+
+  // Check: the html element should not have pointer-active class.
+  await remoteCall.waitForElementLost(appId, htmlPointerActive);
+};
+
+/**
+ * Tests that the root html element .pointer-active class should not be added if
+ * the PointerDown event is triggered by touch.
+ */
+testcase.noPointerActiveOnTouch = async () => {
+  // Open Files app.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+
+  // Send pointerdown with touch to the list container.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeEvent', appId,
+      ['#list-container', 'pointerdown', {pointerType: 'touch'}]));
+
+  // Check: the html element should not have pointer-active class.
+  const htmlPointerActive = ['html.pointer-active'];
+  await remoteCall.waitForElementLost(appId, htmlPointerActive);
+};
+
+/**
  * Test that selecting "Google Drive" in the directory tree with the keyboard
  * expands it and selects "My Drive".
  */

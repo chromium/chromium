@@ -470,7 +470,11 @@ export class FileManagerUI {
     }
     pointerActive.forEach((eventType) => {
       document.addEventListener(eventType, (e) => {
-        rootElement.classList.toggle('pointer-active', /down$/.test(e.type));
+        if (/down$/.test(e.type) === false) {
+          rootElement.classList.toggle('pointer-active', false);
+        } else if (e.pointerType !== 'touch') {  // http://crbug.com/1311472
+          rootElement.classList.toggle('pointer-active', true);
+        }
       }, true);
     });
 
