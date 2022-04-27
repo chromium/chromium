@@ -336,6 +336,10 @@ class GritNode(base.Node):
     self._predetermined_ids_file = None
     self._id_map = None  # Dict of textual_id -> numeric_id.
 
+    # Option to skip any post-parsing validation, useful when only interested
+    # in getting a reference to the parse tree.
+    self.skip_validation_checks = False
+
   def _IsValidChild(self, child):
     from grit.node import empty
     return isinstance(child, (ReleaseNode, empty.TranslationsNode,
@@ -371,6 +375,9 @@ class GritNode(base.Node):
         > int(self.attrs['current_release'])):
       raise exception.Parsing('latest_public_release cannot have a greater '
                               'value than current_release')
+
+    if self.skip_validation_checks:
+      return
 
     self.ValidateUniqueIds()
 

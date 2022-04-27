@@ -22,6 +22,7 @@ from grit import grd_reader
 from grit import util
 from grit.node import empty
 from grit.node import message
+from grit.exception import DuplicateKey
 
 
 class GrdReaderUnittest(unittest.TestCase):
@@ -340,6 +341,32 @@ class GrdReaderUnittest(unittest.TestCase):
     with util.TempDir({}) as temp_dir:
       grd_reader.Parse(StringIO(grd_text), temp_dir.GetPath(),
                        target_platform='android')
+
+  def testSkipValidationChecks(self):
+    input = u'''<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="2" source_lang_id="en-US" current_release="3" base_dir=".">
+  <release seq="3">
+    <messages>
+      <message name="IDS_MESSAGE1" desc="description 1">
+        Message1
+      </message>
+      <message name="IDS_MESSAGE1" desc="description 1">
+        Another message with the same |name|
+      </message>
+    </messages>
+  </release>
+</grit>'''
+    pseudo_file = StringIO(input)
+
+    # Test when |skip_validation_checks| is set, no error is thrown.
+    grd_reader.Parse(pseudo_file, '.', skip_validation_checks=True)
+
+    # Test when |skip_validation_checks| is set, an error is thrown.
+    with self.assertRaises(DuplicateKey) as cm:
+      pseudo_file = StringIO(input)
+      grd_reader.Parse(pseudo_file, '.')
+    self.assertTrue(
+        str(cm.exception).startswith('A duplicate key attribute was found.'))
 
 
 if __name__ == '__main__':

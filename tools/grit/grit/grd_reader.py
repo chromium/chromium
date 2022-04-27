@@ -28,7 +28,7 @@ class StopParsingException(Exception):
 
 class GrdContentHandler(xml.sax.handler.ContentHandler):
   def __init__(self, stop_after, debug, dir, defines, tags_to_ignore,
-               target_platform, source):
+               target_platform, source, skip_validation_checks):
     # Invariant of data:
     # 'root' is the root of the parse tree being created, or None if we haven't
     # parsed out any elements.
@@ -45,6 +45,7 @@ class GrdContentHandler(xml.sax.handler.ContentHandler):
     self.ignore_depth = 0
     self.target_platform = target_platform
     self.source = source
+    self.skip_validation_checks = skip_validation_checks
 
   def startElement(self, name, attrs):
     if self.ignore_depth or name in self.tags_to_ignore:
@@ -74,6 +75,7 @@ class GrdContentHandler(xml.sax.handler.ContentHandler):
       node.StartParsing(name, None)
       if self.defines:
         node.SetDefines(self.defines)
+      node.skip_validation_checks = self.skip_validation_checks
     self.stack.append(node)
 
     for attr, attrval in attrs.items():
@@ -146,9 +148,16 @@ class GrdPartContentHandler(xml.sax.handler.ContentHandler):
     self.parent.ignorableWhitespace(whitespace)
 
 
-def Parse(filename_or_stream, dir=None, stop_after=None, first_ids_file=None,
-          debug=False, defines=None, tags_to_ignore=None, target_platform=None,
-          predetermined_ids_file=None):
+def Parse(filename_or_stream,
+          dir=None,
+          stop_after=None,
+          first_ids_file=None,
+          debug=False,
+          defines=None,
+          tags_to_ignore=None,
+          target_platform=None,
+          predetermined_ids_file=None,
+          skip_validation_checks=False):
   '''Parses a GRD file into a tree of nodes (from grit.node).
 
   If filename_or_stream is a stream, 'dir' should point to the directory
@@ -180,6 +189,9 @@ def Parse(filename_or_stream, dir=None, stop_after=None, first_ids_file=None,
     predetermined_ids_file: File path to a file containing a pre-determined
         mapping from resource names to resource ids which will be used to assign
         resource ids to those resources.
+    skip_validation_checks: Whether to skip any validation after successfull
+        parsing, for example uniqueness of IDs, or that all variables encountered
+        in <if expr> statements are defined.
 
   Return:
     Subclass of grit.node.base.Node
@@ -195,9 +207,14 @@ def Parse(filename_or_stream, dir=None, stop_after=None, first_ids_file=None,
   else:
     source = None
 
-  handler = GrdContentHandler(stop_after=stop_after, debug=debug, dir=dir,
-                              defines=defines, tags_to_ignore=tags_to_ignore,
-                              target_platform=target_platform, source=source)
+  handler = GrdContentHandler(stop_after=stop_after,
+                              debug=debug,
+                              dir=dir,
+                              defines=defines,
+                              tags_to_ignore=tags_to_ignore,
+                              target_platform=target_platform,
+                              source=source,
+                              skip_validation_checks=skip_validation_checks)
   try:
     xml.sax.parse(filename_or_stream, handler)
   except StopParsingException:
