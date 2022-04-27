@@ -50,6 +50,7 @@ class DesksTemplatesIconView : public views::View {
   // all unavailable icons.
   void SetIconIdentifierAndCount(const std::string& icon_identifier,
                                  const std::string& app_id,
+                                 const std::string& app_title,
                                  int count,
                                  bool show_plus);
 

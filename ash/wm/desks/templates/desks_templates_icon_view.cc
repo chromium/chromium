@@ -65,6 +65,7 @@ DesksTemplatesIconView::~DesksTemplatesIconView() = default;
 void DesksTemplatesIconView::SetIconIdentifierAndCount(
     const std::string& icon_identifier,
     const std::string& app_id,
+    const std::string& app_title,
     int count,
     bool show_plus) {
   icon_identifier_ = icon_identifier;
@@ -98,11 +99,14 @@ void DesksTemplatesIconView::SetIconIdentifierAndCount(
   if (icon_identifier_.empty())
     return;
 
+  // Add the icon to the front so that it gets read out before `count_label_` by
+  // spoken feedback.
   DCHECK(!icon_view_);
   icon_view_ =
-      AddChildView(views::Builder<RoundedImageView>()
-                       .SetCornerRadius(DesksTemplatesIconView::kIconSize / 2)
-                       .Build());
+      AddChildViewAt(views::Builder<RoundedImageView>()
+                         .SetCornerRadius(DesksTemplatesIconView::kIconSize / 2)
+                         .Build(),
+                     0);
 
   // First check if the `icon_identifier_` is a special value, i.e. NTP url or
   // incognito window. If it is, use the corresponding icon for the special
@@ -114,6 +118,7 @@ void DesksTemplatesIconView::SetIconIdentifierAndCount(
                                 ->incognito_window_color_provider());
 
   icon_view_->GetViewAccessibility().OverrideRole(ax::mojom::Role::kImage);
+  icon_view_->GetViewAccessibility().OverrideName(app_title);
 
   // PWAs (e.g. Messages) should use icon identifier as they share the same app
   // id as Chrome and would return short name for app id as "Chromium" (see
@@ -122,12 +127,8 @@ void DesksTemplatesIconView::SetIconIdentifierAndCount(
   // duplicate favicons (see https://crbug.com/1281391).
   if (chrome_icon.has_value()) {
     icon_view_->SetImage(CreateResizedImageToIconSize(chrome_icon.value()));
-    icon_view_->GetViewAccessibility().OverrideName(
-        delegate->GetAppShortName(app_id));
     return;
   }
-  icon_view_->GetViewAccessibility().OverrideName(
-      delegate->GetAppShortName(icon_identifier_));
 
   // It's not a special value so `icon_identifier_` is either a favicon or an
   // app id. If `icon_identifier_` is not a valid url then it's an app id.
@@ -194,13 +195,15 @@ void DesksTemplatesIconView::LoadDefaultIcon() {
                                        .AsImageSkia()));
 
   // Move `this` to the back of the visible icons, i.e. before any invisible
-  // siblings and before the overflow counter,
+  // siblings and before the overflow counter. Notify the a11y API so that the
+  // spoken feedback order matches the view order.
   auto siblings = parent()->children();
   if (siblings.size() >= 2) {
     size_t i = 0;
     while (i < siblings.size() - 2 && siblings[i]->GetVisible())
       ++i;
     parent()->ReorderChildView(this, i);
+    parent()->NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
   }
 }
 

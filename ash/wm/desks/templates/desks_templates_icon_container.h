@@ -44,6 +44,7 @@ class DesksTemplatesIconContainer : public views::BoxLayoutView {
   // icons/favicons to display.
   struct IconInfo {
     std::string app_id;
+    std::string app_title;
     int activation_index;
     int count;
   };

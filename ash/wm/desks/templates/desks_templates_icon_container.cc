@@ -71,6 +71,7 @@ SortIconIdentifierToIconInfo(
 // its values.
 void InsertIconIdentifierToIconInfo(
     const std::string& app_id,
+    const std::u16string& app_title,
     const std::string& identifier,
     int activation_index,
     std::map<std::string, DesksTemplatesIconContainer::IconInfo>*
@@ -78,8 +79,9 @@ void InsertIconIdentifierToIconInfo(
   // A single app/site can have multiple windows so count their occurrences and
   // use the smallest activation index for sorting purposes.
   if (!base::Contains(*out_icon_identifier_to_icon_info, identifier)) {
-    (*out_icon_identifier_to_icon_info)[identifier] = {app_id, activation_index,
-                                                       /*count=*/1};
+    (*out_icon_identifier_to_icon_info)[identifier] = {
+        app_id, base::UTF16ToASCII(app_title), activation_index,
+        /*count=*/1};
   } else {
     ++(*out_icon_identifier_to_icon_info)[identifier].count;
     (*out_icon_identifier_to_icon_info)[identifier].activation_index = std::min(
@@ -113,13 +115,14 @@ void InsertIconIdentifierToIconInfoFromLaunchList(
     const int activation_index = restore_data.second->activation_index.value();
     const int active_tab_index =
         restore_data.second->active_tab_index.value_or(-1);
+    const std::u16string app_title = restore_data.second->title.value_or(u"");
     if (restore_data.second->urls.has_value() && is_browser) {
       const auto& urls = restore_data.second->urls.value();
       for (int i = 0; i < static_cast<int>(urls.size()); ++i) {
         // Strip extra information from the url so urls with the same host but
         // different queries are treated the same.
         InsertIconIdentifierToIconInfo(
-            app_id, urls[i].GetWithEmptyPath().spec(),
+            app_id, app_title, urls[i].GetWithEmptyPath().spec(),
             active_tab_index == i ? activation_index
                                   : kInactiveTabOffset + activation_index,
             out_icon_identifier_to_icon_info);
@@ -132,7 +135,8 @@ void InsertIconIdentifierToIconInfoFromLaunchList(
       if (IsBrowserAppId(app_id) && app_name.has_value())
         new_app_id = app_restore::GetAppIdFromAppName(app_name.value());
 
-      InsertIconIdentifierToIconInfo(app_id, new_app_id, activation_index,
+      InsertIconIdentifierToIconInfo(app_id, app_title, new_app_id,
+                                     activation_index,
                                      out_icon_identifier_to_icon_info);
     }
   }
@@ -196,8 +200,9 @@ void DesksTemplatesIconContainer::PopulateIconContainerFromWindows(
 
     // Since there were no modifications to `app_id`, app id and icon identifier
     // are both `app_id`.
-    InsertIconIdentifierToIconInfo(/*app_id=*/app_id, /*identifier=*/app_id, i,
-                                   &icon_identifier_to_icon_info);
+    InsertIconIdentifierToIconInfo(
+        /*app_id=*/app_id, /*app_title=*/window->GetTitle(),
+        /*identifier=*/app_id, i, &icon_identifier_to_icon_info);
   }
 
   CreateIconViewsFromIconIdentifiers(
@@ -277,7 +282,8 @@ void DesksTemplatesIconContainer::CreateIconViewsFromIconIdentifiers(
                   DesksTemplatesIconView::kIconSize / 2))
               .Build());
       icon_view->SetIconIdentifierAndCount(icon_identifier, icon_info.app_id,
-                                           icon_info.count, /*show_plus=*/true);
+                                           icon_info.app_title, icon_info.count,
+                                           /*show_plus=*/true);
     } else {
       num_hidden_icons += icon_info.count;
     }
@@ -298,10 +304,11 @@ void DesksTemplatesIconContainer::CreateIconViewsFromIconIdentifiers(
                            DesksTemplatesIconView::kIconSize / 2))
                        .Build());
 
-  // Set both `icon_identifier` and `app_id` to be empty strings for overflow
-  // icon views, since only the count should matter.
+  // Set `icon_identifier`, `app_id` and `app_title` to be empty strings for
+  // overflow icon views, since only the count should matter.
   overflow_icon_view->SetIconIdentifierAndCount(
       /*icon_identifier=*/std::string(), /*app_id=*/std::string(),
+      /*app_title=*/std::string(),
       /*count=*/num_hidden_icons, show_plus);
 }
 

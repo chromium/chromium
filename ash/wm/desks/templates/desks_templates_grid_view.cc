@@ -231,6 +231,7 @@ void DesksTemplatesGridView::SortTemplateGridItems(
   // be the new template, while the rest will be sorted alphabetically.
   for (size_t i = 0; i < grid_items_.size(); i++)
     ReorderChildView(grid_items_[i], i);
+  NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
 
   if (bounds_animator_.IsAnimating())
     bounds_animator_.Cancel();
@@ -265,10 +266,8 @@ void DesksTemplatesGridView::AddOrUpdateTemplates(
   // and sort the remaining templates after it.
   SortTemplateGridItems(last_saved_template_uuid);
 
-  if (!initializing_grid_view) {
+  if (!initializing_grid_view)
     AnimateGridItems(new_grid_items);
-    NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
-  }
 }
 
 void DesksTemplatesGridView::DeleteTemplates(
