@@ -424,16 +424,11 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
     UpdatePluginGeometry(device_scale, window_rect);
     canvas_.DrawColor(kDefaultColor);
 
-    // Fill the graphics device with `kPaintColor` and update the plugin's
-    // snapshot.
-    const gfx::Rect& plugin_rect = plugin_->GetPluginRectForTesting();
-    std::unique_ptr<Graphics> graphics =
-        plugin_->CreatePaintGraphics(plugin_rect.size());
-    graphics->PaintImage(
-        CreateSkiaImageForTesting(plugin_rect.size(), kPaintColor),
-        gfx::Rect(plugin_rect.width(), plugin_rect.height()));
-    graphics->Flush(base::DoNothing());
-
+    // Paint the plugin with `kPaintColor`.
+    plugin_->UpdateSnapshot(
+        CreateSkiaImageForTesting(plugin_->GetPluginRectForTesting().size(),
+                                  kPaintColor)
+            .asImage());
     plugin_->Paint(canvas_.sk_canvas(), paint_rect);
 
     // Expect the clipped area on canvas to be filled with `kPaintColor`.

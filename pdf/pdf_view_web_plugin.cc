@@ -43,7 +43,6 @@
 #include "pdf/post_message_receiver.h"
 #include "pdf/post_message_sender.h"
 #include "pdf/ppapi_migration/bitmap.h"
-#include "pdf/ppapi_migration/graphics.h"
 #include "pdf/ppapi_migration/result_codes.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/ui/document_properties.h"
@@ -821,19 +820,6 @@ bool PdfViewWebPlugin::IsValidLink(const std::string& url) {
   return base::Value(url).is_string();
 }
 
-std::unique_ptr<Graphics> PdfViewWebPlugin::CreatePaintGraphics(
-    const gfx::Size& size) {
-  // `this` must be valid when creating new graphics. `this` is guaranteed to
-  // outlive `graphics`; the implemented client interface owns the paint manager
-  // in which the graphics device exists.
-  auto graphics = SkiaGraphics::Create(this, size);
-  DCHECK(graphics);
-
-  // TODO(crbug.com/1317832): Can we guarantee repainting some other way?
-  InvalidatePluginContainer();
-  return graphics;
-}
-
 void PdfViewWebPlugin::SetCaretPosition(const gfx::PointF& position) {
   PdfViewPluginBase::SetCaretPosition(position);
 }
@@ -876,6 +862,10 @@ PdfViewWebPlugin::CreateAssociatedURLLoader(
 
 void PdfViewWebPlugin::OnMessage(const base::Value::Dict& message) {
   PdfViewPluginBase::HandleMessage(message);
+}
+
+void PdfViewWebPlugin::InvalidatePluginContainer() {
+  container_wrapper_->Invalidate();
 }
 
 void PdfViewWebPlugin::UpdateSnapshot(sk_sp<SkImage> snapshot) {
@@ -1058,10 +1048,6 @@ void PdfViewWebPlugin::OnViewportChanged(
   // `plugin_rect_in_css_pixel` needs to be converted to device pixels before
   // getting passed into PdfViewPluginBase::UpdateGeometryOnPluginRectChanged().
   UpdateGeometryOnPluginRectChanged(plugin_rect_in_css_pixel, new_device_scale);
-}
-
-void PdfViewWebPlugin::InvalidatePluginContainer() {
-  container_wrapper_->Invalidate();
 }
 
 bool PdfViewWebPlugin::SelectAll() {

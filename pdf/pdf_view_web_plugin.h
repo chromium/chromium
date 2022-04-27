@@ -20,7 +20,6 @@
 #include "pdf/pdf_accessibility_action_handler.h"
 #include "pdf/pdf_view_plugin_base.h"
 #include "pdf/post_message_receiver.h"
-#include "pdf/ppapi_migration/graphics.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/v8_value_converter.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -62,7 +61,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                                public pdf::mojom::PdfListener,
                                public BlinkUrlLoader::Client,
                                public PostMessageReceiver::Client,
-                               public SkiaGraphics::Client,
                                public PdfAccessibilityActionHandler {
  public:
   class ContainerWrapper {
@@ -253,9 +251,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void SetSelectedText(const std::string& selected_text) override;
   bool IsValidLink(const std::string& url) override;
 
-  // PdfViewPluginBase:
-  std::unique_ptr<Graphics> CreatePaintGraphics(const gfx::Size& size) override;
-
   // pdf::mojom::PdfListener:
   void SetCaretPosition(const gfx::PointF& position) override;
   void MoveRangeSelectionExtent(const gfx::PointF& extent) override;
@@ -274,7 +269,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // PostMessageReceiver::Client:
   void OnMessage(const base::Value::Dict& message) override;
 
-  // SkiaGraphics::Client:
+  // PaintManager::Client:
+  void InvalidatePluginContainer() override;
   void UpdateSnapshot(sk_sp<SkImage> snapshot) override;
   void UpdateScale(float scale) override;
   void UpdateLayerTransform(float scale,
@@ -341,10 +337,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   void OnViewportChanged(const gfx::Rect& plugin_rect_in_css_pixel,
                          float new_device_scale);
-
-  // Invalidates the entire web plugin container and schedules a paint of the
-  // page in it.
-  void InvalidatePluginContainer();
 
   // Text editing methods.
   bool SelectAll();

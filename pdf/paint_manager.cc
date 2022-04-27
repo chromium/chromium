@@ -189,7 +189,12 @@ void PaintManager::DoPaint() {
     gfx::Size old_size = graphics_ ? graphics_->size() : gfx::Size();
     gfx::Size new_size = GetNewContextSize(old_size, pending_size_);
     if (old_size != new_size || !graphics_) {
-      graphics_ = client_->CreatePaintGraphics(new_size);
+      graphics_ = SkiaGraphics::Create(client_, new_size);
+      DCHECK(graphics_);
+
+      // TODO(crbug.com/1317832): Can we guarantee repainting some other way?
+      client_->InvalidatePluginContainer();
+
       device_scale_ = 1.0f;
 
       // Since we're binding a new one, all of the callbacks have been canceled.

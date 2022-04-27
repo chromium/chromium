@@ -32,21 +32,15 @@ base::FilePath GetTestDataFilePath(base::StringPiece filename) {
       .AppendASCII(filename);
 }
 
-class FakeClient : public PaintManager::Client, public SkiaGraphics::Client {
+class FakeClient : public PaintManager::Client {
  public:
-  // `PaintManager::Client`:
-  MOCK_METHOD(std::unique_ptr<Graphics>,
-              CreatePaintGraphics,
-              (const gfx::Size& size),
-              (override));
+  MOCK_METHOD(void, InvalidatePluginContainer, (), (override));
   MOCK_METHOD(void,
               OnPaint,
               (const std::vector<gfx::Rect>& paint_rects,
                std::vector<PaintReadyRect>& ready,
                std::vector<gfx::Rect>& pending),
               (override));
-
-  // `SkiaGraphics::Client`:
   MOCK_METHOD(void, UpdateSnapshot, (sk_sp<SkImage> snapshot), (override));
   MOCK_METHOD(void, UpdateScale, (float scale), (override));
   MOCK_METHOD(void,
@@ -57,13 +51,6 @@ class FakeClient : public PaintManager::Client, public SkiaGraphics::Client {
 
 class PaintManagerTest : public testing::Test {
  protected:
-  void SetUp() override {
-    ON_CALL(client_, CreatePaintGraphics)
-        .WillByDefault([this](const gfx::Size& size) {
-          return SkiaGraphics::Create(&client_, size);
-        });
-  }
-
   void WaitForOnPaint() {
     base::RunLoop run_loop;
     EXPECT_CALL(client_, OnPaint).WillOnce([&run_loop] { run_loop.Quit(); });
@@ -133,7 +120,7 @@ TEST_F(PaintManagerTest, Create) {
 }
 
 TEST_F(PaintManagerTest, SetSizeWithoutPaint) {
-  EXPECT_CALL(client_, CreatePaintGraphics).Times(0);
+  EXPECT_CALL(client_, InvalidatePluginContainer).Times(0);
   paint_manager_.SetSize({400, 300}, 2.0f);
 
   EXPECT_EQ(gfx::Size(400, 300), paint_manager_.GetEffectiveSize());
@@ -143,7 +130,7 @@ TEST_F(PaintManagerTest, SetSizeWithoutPaint) {
 TEST_F(PaintManagerTest, SetSizeWithPaint) {
   paint_manager_.SetSize({400, 300}, 2.0f);
 
-  EXPECT_CALL(client_, CreatePaintGraphics(gfx::Size(450, 350)));
+  EXPECT_CALL(client_, InvalidatePluginContainer);
   EXPECT_CALL(client_, UpdateScale(0.5f));
   WaitForOnPaint();
 }

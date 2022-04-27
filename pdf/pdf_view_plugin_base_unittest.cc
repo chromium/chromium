@@ -119,9 +119,12 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
 
   MOCK_METHOD(bool, IsValidLink, (const std::string&), (override));
 
-  MOCK_METHOD(std::unique_ptr<Graphics>,
-              CreatePaintGraphics,
-              (const gfx::Size&),
+  MOCK_METHOD(void, InvalidatePluginContainer, (), (override));
+  MOCK_METHOD(void, UpdateSnapshot, (sk_sp<SkImage>), (override));
+  MOCK_METHOD(void, UpdateScale, (float), (override));
+  MOCK_METHOD(void,
+              UpdateLayerTransform,
+              (float, const gfx::Vector2dF&),
               (override));
 
   MOCK_METHOD(std::unique_ptr<PDFiumEngine>,

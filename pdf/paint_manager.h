@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "pdf/paint_aggregator.h"
+#include "pdf/ppapi_migration/graphics.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace gfx {
@@ -24,8 +25,6 @@ class Vector2d;
 
 namespace chrome_pdf {
 
-class Graphics;
-
 // Custom PaintManager for the PDF plugin.  This is branched from the Pepper
 // version.  The difference is that this supports progressive rendering of dirty
 // rects, where multiple calls to the rendering engine are needed.  It also
@@ -35,12 +34,10 @@ class Graphics;
 // The client's OnPaint
 class PaintManager {
  public:
-  class Client {
+  class Client : public SkiaGraphics::Client {
    public:
-    // Creates a new `Graphics` for the paint manager, with the given `size` and
-    // always-opaque rendering.
-    virtual std::unique_ptr<Graphics> CreatePaintGraphics(
-        const gfx::Size& size) = 0;
+    // Invalidates the entire plugin container, scheduling a repaint.
+    virtual void InvalidatePluginContainer() = 0;
 
     // Paints the given invalid area of the plugin to the given graphics
     // device. Returns true if anything was painted.
@@ -65,8 +62,8 @@ class PaintManager {
                          std::vector<gfx::Rect>& pending) = 0;
 
    protected:
-    // You shouldn't be doing deleting through this interface.
-    ~Client() = default;
+    // You shouldn't delete through this interface.
+    ~Client() override = default;
   };
 
   // The Client is a non-owning pointer and must remain valid (normally the
