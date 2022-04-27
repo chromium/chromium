@@ -196,7 +196,7 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url,
 
     // The navigation prefetch should replace the existing prefetch.
     if (navigation_prefetch)
-      prefetches_.erase(search_terms);
+      DeletePrefetch(search_terms);
   }
 
   if (prefetches_.size() >= SearchPrefetchMaxAttemptsPerCachingDuration()) {
