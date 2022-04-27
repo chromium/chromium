@@ -1182,8 +1182,11 @@ void FormStructure::RetrieveFromCache(
       if (!only_server_and_autofill_state) {
         // Transfer attributes of the cached AutofillField to the newly created
         // AutofillField.
-        field->set_heuristic_type(PredictionSource::kDefaultHeuristics,
-                                  cached_field->heuristic_type());
+        for (int i = 0; i <= static_cast<int>(PredictionSource::kMaxValue);
+             ++i) {
+          PredictionSource s = static_cast<PredictionSource>(i);
+          field->set_heuristic_type(s, cached_field->heuristic_type(s));
+        }
         field->SetHtmlType(cached_field->html_type(),
                            cached_field->html_mode());
         field->section = cached_field->section;
@@ -2703,7 +2706,7 @@ void FormStructure::ExtractParseableFieldNames() {
   std::vector<base::StringPiece16> names;
   names.reserve(field_count());
   for (const auto& field : *this) {
-    names.push_back(base::StringPiece16(field->name));
+    names.emplace_back(field->name);
   }
 
   // Determine the parseable names and write them into the corresponding field.

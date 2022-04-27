@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/form_structure.h"
 
 namespace autofill {
@@ -20,8 +21,21 @@ class TestFormStructure : public FormStructure {
 
   ~TestFormStructure() override;
 
+  // Set the heuristic and server types for each field. The `heuristic_types`
+  // and `server_types` vectors must be aligned with the indices of the fields
+  // in the form.
   void SetFieldTypes(const std::vector<ServerFieldType>& heuristic_types,
                      const std::vector<ServerFieldType>& server_types);
+
+  // Set the heuristic and server types for each field. The `heuristic_types`
+  // and `server_types` vectors must be aligned with the indices of the fields
+  // in the form. For each field in `heuristic_types` there must be exactly
+  // `PredictionSource::kDefaultHeuristics` prediction and any number of
+  // alternative predictions.
+  void SetFieldTypes(
+      const std::vector<std::vector<
+          std::pair<PredictionSource, ServerFieldType>>>& heuristic_types,
+      const std::vector<ServerFieldType>& server_types);
 };
 
 }  // namespace autofill

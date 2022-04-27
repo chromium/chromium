@@ -664,6 +664,7 @@ static_library("test_support") {
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//skia",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/libaddressinput:test_support",
     "//third_party/libaddressinput:util",
