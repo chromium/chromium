@@ -234,8 +234,6 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   void SetCursorForPlugin(const ui::Cursor&, LocalFrame*) override {}
   void InstallSupplements(LocalFrame&) override {}
   void MainFrameScrollOffsetChanged(LocalFrame& main_frame) const override {}
-  void BatterySavingsChanged(LocalFrame& main_frame,
-                             BatterySavingsFlags savings) override {}
 
  private:
   const display::ScreenInfos empty_screen_infos_{display::ScreenInfo()};

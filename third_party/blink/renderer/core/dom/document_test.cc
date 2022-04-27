@@ -73,7 +73,6 @@
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
-#include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
@@ -1371,72 +1370,6 @@ INSTANTIATE_TEST_SUITE_P(
         ViewportTestCase("contain", mojom::ViewportFit::kContain),
         ViewportTestCase("cover", mojom::ViewportFit::kCover),
         ViewportTestCase("invalid", mojom::ViewportFit::kAuto)));
-
-class BatterySavingsChromeClient : public EmptyChromeClient {
- public:
-  MOCK_METHOD2(BatterySavingsChanged, void(LocalFrame&, BatterySavingsFlags));
-};
-
-class DocumentBatterySavingsTest : public PageTestBase,
-                                   private ScopedBatterySavingsMetaForTest {
- protected:
-  DocumentBatterySavingsTest() : ScopedBatterySavingsMetaForTest(true) {}
-
-  void SetUp() override {
-    chrome_client_ = MakeGarbageCollected<BatterySavingsChromeClient>();
-    SetupPageWithClients(chrome_client_);
-  }
-
-  Persistent<BatterySavingsChromeClient> chrome_client_;
-};
-
-TEST_F(DocumentBatterySavingsTest, ChromeClientCalls) {
-  testing::InSequence s;
-  // The client is called twice, once for each meta element, but is called with
-  // the same parameter both times because the first meta in DOM order takes
-  // precedence.
-  EXPECT_CALL(*chrome_client_,
-              BatterySavingsChanged(testing::_, kAllowReducedFrameRate))
-      .Times(2);
-
-  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
-      WebFeature::kBatterySavingsMeta));
-
-  SetHtmlInnerHTML(R"HTML(
-    <meta id="first" name="battery-savings" content="allow-reduced-framerate">
-    <meta id="second" name="battery-savings" content="allow-reduced-script-speed">
-  )HTML");
-
-  EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().IsCounted(
-      WebFeature::kBatterySavingsMeta));
-
-  // Remove the first meta causing the second to apply.
-  EXPECT_CALL(*chrome_client_,
-              BatterySavingsChanged(testing::_, kAllowReducedScriptSpeed))
-      .Times(1);
-
-  GetDocument().getElementById("first")->remove();
-
-  // Change the content attribute to an unsupported value.
-  EXPECT_CALL(*chrome_client_, BatterySavingsChanged(testing::_, 0)).Times(1);
-
-  Element* second = GetDocument().getElementById("second");
-  second->setAttribute(html_names::kContentAttr, "allow-blah");
-
-  // Change the content attribute to both supported values.
-  EXPECT_CALL(*chrome_client_,
-              BatterySavingsChanged(testing::_, kAllowReducedFrameRate |
-                                                    kAllowReducedScriptSpeed))
-      .Times(1);
-
-  second->setAttribute(html_names::kContentAttr,
-                       "allow-reduced-framerate allow-reduced-script-speed");
-
-  // Change the meta name to "viewport".
-  EXPECT_CALL(*chrome_client_, BatterySavingsChanged(testing::_, 0)).Times(1);
-
-  second->setAttribute(html_names::kNameAttr, "viewport");
-}
 
 namespace {
 class MockReportingContext final : public ReportingContext {

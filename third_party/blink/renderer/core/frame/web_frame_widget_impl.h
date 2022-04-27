@@ -56,7 +56,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/exported/web_page_popup_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
-#include "third_party/blink/renderer/core/html/battery_savings.h"
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
 #include "third_party/blink/renderer/core/page/page_widget_delegate.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
@@ -568,10 +567,6 @@ class CORE_EXPORT WebFrameWidgetImpl
                                   float maximum);
   void UpdateViewportDescription(
       const ViewportDescription& viewport_description);
-
-  // The value of the applied battery-savings META element in the document
-  // changed.
-  void BatterySavingsChanged(BatterySavingsFlags savings);
 
   const viz::LocalSurfaceId& LocalSurfaceIdFromParent();
 

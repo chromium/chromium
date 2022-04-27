@@ -1276,14 +1276,6 @@ void ChromeClientImpl::SetDelegatedInkMetadata(
   frame->GetWidgetForLocalRoot()->SetDelegatedInkMetadata(std::move(metadata));
 }
 
-void ChromeClientImpl::BatterySavingsChanged(LocalFrame& main_frame,
-                                             BatterySavingsFlags savings) {
-  DCHECK(main_frame.IsMainFrame());
-  WebLocalFrameImpl::FromFrame(main_frame)
-      ->FrameWidgetImpl()
-      ->BatterySavingsChanged(savings);
-}
-
 void ChromeClientImpl::FormElementReset(HTMLFormElement& element) {
   Document& doc = element.GetDocument();
   if (auto* fill_client = AutofillClientFromFrame(doc.GetFrame()))

@@ -2698,7 +2698,7 @@ enum WebFeature {
   kDOMWindowOpenPositioningFeaturesCrossScreen = 3392,
   kDOMWindowSetWindowRectCrossScreen = 3393,
   kFullscreenCrossScreen = 3394,
-  kBatterySavingsMeta = 3395,
+  kOBSOLETE_BatterySavingsMeta = 3395,
   kDigitalGoodsGetDigitalGoodsService = 3396,
   kDigitalGoodsGetDetails = 3397,
   kDigitalGoodsAcknowledge = 3398,

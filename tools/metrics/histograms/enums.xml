@@ -37177,7 +37177,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3392" label="DOMWindowOpenPositioningFeaturesCrossScreen"/>
   <int value="3393" label="DOMWindowSetWindowRectCrossScreen"/>
   <int value="3394" label="FullscreenCrossScreen"/>
-  <int value="3395" label="BatterySavingsMeta"/>
+  <int value="3395" label="OBSOLETE_BatterySavingsMeta"/>
   <int value="3396" label="DigitalGoodsGetDigitalGoodsService"/>
   <int value="3397" label="DigitalGoodsGetDetails"/>
   <int value="3398" label="DigitalGoodsAcknowledge"/>

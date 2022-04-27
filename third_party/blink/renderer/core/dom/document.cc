@@ -195,7 +195,6 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
-#include "third_party/blink/renderer/core/html/battery_savings.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
@@ -6879,34 +6878,6 @@ void Document::ColorSchemeMetaChanged() {
     }
   }
   GetStyleEngine().SetPageColorSchemes(color_scheme);
-}
-
-void Document::BatterySavingsMetaChanged() {
-  if (!RuntimeEnabledFeatures::BatterySavingsMetaEnabled(GetExecutionContext()))
-    return;
-
-  if (!IsInOutermostMainFrame())
-    return;
-
-  UseCounter::Count(GetExecutionContext(), WebFeature::kBatterySavingsMeta);
-  auto* root_element = documentElement();
-  if (!root_element)
-    return;
-
-  BatterySavingsFlags savings = 0;
-  for (HTMLMetaElement& meta_element :
-       Traversal<HTMLMetaElement>::DescendantsOf(*root_element)) {
-    if (EqualIgnoringASCIICase(meta_element.GetName(), "battery-savings")) {
-      SpaceSplitString split_content(
-          AtomicString(meta_element.Content().GetString().LowerASCII()));
-      if (split_content.Contains("allow-reduced-framerate"))
-        savings |= kAllowReducedFrameRate;
-      if (split_content.Contains("allow-reduced-script-speed"))
-        savings |= kAllowReducedScriptSpeed;
-      break;
-    }
-  }
-  GetPage()->GetChromeClient().BatterySavingsChanged(*GetFrame(), savings);
 }
 
 void Document::SupportsReducedMotionMetaChanged() {

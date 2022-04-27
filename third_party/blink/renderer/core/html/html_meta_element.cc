@@ -496,8 +496,6 @@ void HTMLMetaElement::NameRemoved(const AtomicString& name_value) {
         /*update_theme_color_cache=*/true);
   } else if (EqualIgnoringASCIICase(name_value, "color-scheme")) {
     GetDocument().ColorSchemeMetaChanged();
-  } else if (EqualIgnoringASCIICase(name_value, "battery-savings")) {
-    GetDocument().BatterySavingsMetaChanged();
   } else if (EqualIgnoringASCIICase(name_value, "supports-reduced-motion")) {
     GetDocument().SupportsReducedMotionMetaChanged();
   }
@@ -582,10 +580,6 @@ void HTMLMetaElement::ProcessContent() {
   }
   if (EqualIgnoringASCIICase(name_value, "color-scheme")) {
     GetDocument().ColorSchemeMetaChanged();
-    return;
-  }
-  if (EqualIgnoringASCIICase(name_value, "battery-savings")) {
-    GetDocument().BatterySavingsMetaChanged();
     return;
   }
 
