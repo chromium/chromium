@@ -84,8 +84,9 @@ const NGInlineBreakToken* NGBlockBreakToken::InlineBreakTokenFor(
 
 String NGBlockBreakToken::ToString() const {
   StringBuilder string_builder;
-  string_builder.Append(NGBreakToken::ToString());
-  string_builder.Append(" consumed:");
+  string_builder.Append("(");
+  string_builder.Append(InputNode().ToString());
+  string_builder.Append(") consumed:");
   string_builder.Append(ConsumedBlockSize().ToString());
   string_builder.Append("px");
 
