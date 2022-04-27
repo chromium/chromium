@@ -774,6 +774,13 @@ bool IsRuleGeneric(const flat::UrlRule& rule) {
   return !rule.initiator_domains_included();
 }
 
+// Returns whether the `host` matches the domain conditions. It's considered a
+// match if both:
+//  1. An included domain matches the `host`, or `domains_included` is omitted
+//     entirely (since rules match all domains by default).
+//  2. No excluded domain match the `host`, or the longest matching excluded
+//     domain is shorter than the longest matching included domain (since
+//     longer, more specific domain matches take precedence).
 bool DoesHostMatchDomainLists(
     base::StringPiece host,
     const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>*
