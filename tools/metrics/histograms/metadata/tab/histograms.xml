@@ -28,6 +28,12 @@ chromium-metrics-reviews@google.com.
   <variant name=".PluggedIn"/>
 </variants>
 
+<variants name="RecentlyClosedType">
+  <variant name="Bulk" summary="RecentlyClosedBulkEvent"/>
+  <variant name="Group" summary="RecentlyClosedGroup"/>
+  <variant name="Tab" summary="RecentlyClosedTab"/>
+</variants>
+
 <variants name="TabActiveState">
   <variant name="Active" summary="active"/>
   <variant name="Inactive" summary="inactive"/>
@@ -1930,6 +1936,56 @@ chromium-metrics-reviews@google.com.
     FilePersistedTabData storage stores serialized PersistedTabData (metadata
     persisted across restarts) in a file. This metric records how long it took
     to save the file in the event of a successful save.
+  </summary>
+</histogram>
+
+<histogram
+    name="Tabs.RecentlyClosed.EntriesRestoredInPage.{RecentlyClosedType}"
+    units="entries restored" expires_after="2022-10-01">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    The number of distinct entries from TabRestoreService of
+    {RecentlyClosedType} type that were restored in one Recent Tabs page session
+    on Android. This is recorded when destroying the Recent Tabs page if any
+    entires of {RecentlyClosedType} type were shown.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.RecentlyClosed.EntriesShownInPage.{RecentlyClosedType}"
+    units="entries shown" expires_after="2022-10-01">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    The number of distinct entries from TabRestoreService of
+    {RecentlyClosedType} type shown in one Recent Tabs page session on Android.
+    This is recorded when destroying the Recent Tabs page.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.RecentlyClosed.HistoricalSaverCloseType"
+    enum="HistoricalSaverCloseType" expires_after="2022-10-01">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    Recorded once for each tab closure event processed by HistoricalTabSaverImpl
+    on Android. Enum categories correspond to the the type of closure that was
+    saved to the native TabRestoreService. Tab for single tab, Group for a
+    single tab group and Bulk for a combination of tabs and groups or more than
+    one of either.
+  </summary>
+</histogram>
+
+<histogram
+    name="Tabs.RecentlyClosed.PercentOfEntriesRestoredInPage.{RecentlyClosedType}"
+    units="percentage restored" expires_after="2022-10-01">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    The percentage of entries from TabRestoreService of {RecentlyClosedType}
+    type that were restored relative to the number shown in one Recent Tabs page
+    session on Android. This is recorded when destroying the Recent Tabs page if
+    any entires of {RecentlyClosedType} type were shown.
   </summary>
 </histogram>
 

@@ -18629,6 +18629,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileRecentTabManagerRecentTabsCleared">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <description>
+    Recorded on Android when a user clears all entries using the context menu
+    from Recent Tabs &gt; Recently Closed. This corresponds to clearing the
+    native TabRestoreService.
+  </description>
+</action>
+
 <action name="MobileRecentTabManagerShowFullHistory">
   <owner>gambard@google.com</owner>
   <owner>sczs@chromium.org</owner>

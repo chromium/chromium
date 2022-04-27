@@ -44815,6 +44815,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2147480259" label="Sqlite.Vfs_Fetch"/>
 </enum>
 
+<enum name="HistoricalSaverCloseType">
+  <int value="0" label="Tab"/>
+  <int value="1" label="Group"/>
+  <int value="2" label="Bulk"/>
+</enum>
+
 <enum name="HistoryClustersFinalState">
   <summary>
     The final state, or outcome, of an interaction on the HistoryClusters, or
@@ -52704,6 +52710,7 @@ from previous Chrome versions.
   <int value="-1863962664" label="LockScreenNotifications:enabled"/>
   <int value="-1863020461" label="PasswordChangeInSettings:enabled"/>
   <int value="-1861814223" label="MidiManagerDynamicInstantiation:enabled"/>
+  <int value="-1861278695" label="BulkTabRestore:enabled"/>
   <int value="-1860481724" label="ChromeHomeExpandButton:enabled"/>
   <int value="-1860477300" label="DefaultStyleSheetsEarlyInit:disabled"/>
   <int value="-1859437916"
@@ -57689,6 +57696,7 @@ from previous Chrome versions.
   <int value="1498398756" label="TemporaryHoldingSpace:disabled"/>
   <int value="1499163193" label="PostScriptPrinting:disabled"/>
   <int value="1500390299" label="NtpCustomizationMenuV2:disabled"/>
+  <int value="1502417134" label="BulkTabRestore:disabled"/>
   <int value="1505194447" label="disable-transition-compositing"/>
   <int value="1506372577" label="NearbySharingSelfShare:disabled"/>
   <int value="1507233295" label="FilesTrash:disabled"/>

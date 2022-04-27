@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.tab.tab_restore;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab.WebContentsStateBridge;
@@ -20,6 +22,8 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,6 +39,18 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
                     UrlConstants.CHROME_NATIVE_SCHEME, ContentUrlConstants.ABOUT_SCHEME));
     private final TabModel mTabModel;
     private boolean mIgnoreUrlSchemesForTesting;
+
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    @IntDef({HistoricalSaverCloseType.TAB, HistoricalSaverCloseType.GROUP,
+            HistoricalSaverCloseType.BULK, HistoricalSaverCloseType.COUNT})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface HistoricalSaverCloseType {
+        int TAB = 0;
+        int GROUP = 1;
+        int BULK = 2;
+        int COUNT = 3;
+    }
 
     /**
      * @param tabModel The model from which tabs are being saved.
@@ -96,18 +112,25 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
 
         // If there is only a single entry and more than one tab remaining so this is a group.
         if (validEntries.size() == 1 && !validEntries.get(0).isSingleTab()) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Tabs.RecentlyClosed.HistoricalSaverCloseType", HistoricalSaverCloseType.GROUP,
+                    HistoricalSaverCloseType.COUNT);
             HistoricalTabSaverImplJni.get().createHistoricalGroup(
                     mTabModel, groupTitles.get(0), allTabs.toArray(new Tab[0]));
             return;
         }
 
         // IDs are passed only to group tabs. New IDs are generated when saving.
+        RecordHistogram.recordEnumeratedHistogram("Tabs.RecentlyClosed.HistoricalSaverCloseType",
+                HistoricalSaverCloseType.BULK, HistoricalSaverCloseType.COUNT);
         HistoricalTabSaverImplJni.get().createHistoricalBulkClosure(mTabModel,
                 CollectionUtil.integerListToIntArray(groupIds), groupTitles.toArray(new String[0]),
                 CollectionUtil.integerListToIntArray(perTabGroupId), allTabs.toArray(new Tab[0]));
     }
 
     private void createHistoricalTabInternal(Tab tab) {
+        RecordHistogram.recordEnumeratedHistogram("Tabs.RecentlyClosed.HistoricalSaverCloseType",
+                HistoricalSaverCloseType.TAB, HistoricalSaverCloseType.COUNT);
         HistoricalTabSaverImplJni.get().createHistoricalTab(tab);
     }
 

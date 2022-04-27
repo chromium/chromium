@@ -2981,6 +2981,11 @@ const char kBackGestureRefactorAndroidName[] = "Back Gesture Refactor";
 const char kBackGestureRefactorAndroidDescription[] =
     "Enable Back Gesture Refactor.";
 
+const char kBulkTabRestoreAndroidName[] = "Recent Tabs Bulk Restore";
+const char kBulkTabRestoreAndroidDescription[] =
+    "Enables restoration of bulk tab closures (e.g. close all tabs, close "
+    "a group, etc.) from Recent Tabs > Recently Closed.";
+
 const char kCCTIncognitoName[] = "Chrome Custom Tabs Incognito mode";
 const char kCCTIncognitoDescription[] =
     "Enables incognito mode for Chrome Custom Tabs, on Android.";
