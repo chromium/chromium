@@ -1128,7 +1128,7 @@ TEST_F(LabelTest, GetSubstringBounds) {
 }
 
 // TODO(crbug.com/1139395): Enable on ChromeOS along with the DCHECK in Label.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ChecksSubpixelRenderingOntoOpaqueSurface \
   DISABLED_ChecksSubpixelRenderingOntoOpaqueSurface
 #else

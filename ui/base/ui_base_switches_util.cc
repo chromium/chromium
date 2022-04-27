@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 
@@ -36,8 +35,7 @@ bool IsElasticOverscrollEnabled() {
 
 bool IsTouchDragDropEnabled() {
   const auto* const command_line = base::CommandLine::ForCurrentProcess();
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   return !command_line->HasSwitch(kDisableTouchDragDrop);
 #else
   return command_line->HasSwitch(kEnableTouchDragDrop);

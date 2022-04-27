@@ -1292,7 +1292,7 @@ TYPED_TEST(ClipboardTest, WriteImageEmptyParams) {
 
 // Policy controller is only intended to be used in Chrome OS, so the following
 // policy related tests are only run on Chrome OS.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Test that copy/paste would work normally if the policy controller didn't
 // restrict the clipboard data.
 TYPED_TEST(ClipboardTest, PolicyAllowDataRead) {
@@ -1400,7 +1400,7 @@ TYPED_TEST(ClipboardTest, ClipboardSourceDteCanBeRetrievedByLacros) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace ui
 
