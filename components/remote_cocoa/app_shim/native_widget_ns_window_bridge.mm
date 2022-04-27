@@ -539,9 +539,9 @@ void NativeWidgetNSWindowBridge::SetBounds(
             display:YES
             animate:NO];
 
-  // If the window has focus but is not on the
-  // active space and the window was moved to a different display, re-activate
-  // it to switch the space to the active window. (crbug.com/1316543)
+  // If the window has focus but is not on the active space and the window was
+  // moved to a different display, re-activate it to switch the space to the
+  // active window. (crbug.com/1316543)
   if ([window_ isKeyWindow] && ![window_ isOnActiveSpace] &&
       [window_ screen] != previous_screen) {
     SetVisibilityState(WindowVisibilityState::kShowAndActivateWindow);
