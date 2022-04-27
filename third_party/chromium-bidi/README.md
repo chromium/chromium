@@ -197,7 +197,7 @@ npm run build
   --binary "$WPT_BROWSER_PATH" \
   --manifest ./wpt/MANIFEST.json \
   --metadata ./wpt-metadata \
-  chrome \
+  chromium \
   webdriver/tests/bidi/
 ```
 
@@ -212,7 +212,7 @@ npm run build
   --manifest ./wpt/MANIFEST.json \
   --metadata ./wpt-metadata \
   --log-wptreport wptreport.json \
-  chrome \
+  chromium \
   webdriver/tests/bidi/
 ```
 
@@ -220,7 +220,7 @@ npm run build
 
 ```sh
 ./wpt/wpt update-expectations \
-  --product chrome \
+  --product chromium \
   --manifest ./wpt/MANIFEST.json \
   --metadata ./wpt-metadata \
   ./wptreport.json

@@ -34,16 +34,16 @@ jobs:
         working-directory: wpt
       # TODO: Install a pinned version of Chromium. This may become possible
       # after https://github.com/web-platform-tests/wpt/issues/28970.
-      - name: Install Chrome
-        run: ./wpt install chrome browser
+      - name: Install Chromium
+        run: ./wpt install chromium browser
         working-directory: wpt
       - name: Run tests
         # For verbose logging, add --log-mach - --log-mach-level info
-        run: ./wpt run --webdriver-binary ../runBiDiServer.sh --binary _venv3/browsers/nightly/chrome-linux/chrome --manifest MANIFEST.json --metadata ../wpt-metadata --log-wptreport wptreport.json chrome webdriver/tests/bidi/
+        run: ./wpt run --webdriver-binary ../runBiDiServer.sh --binary _venv3/browsers/nightly/chrome-linux/chrome --manifest MANIFEST.json --metadata ../wpt-metadata --log-wptreport wptreport.json chromium webdriver/tests/bidi/
         working-directory: wpt
       - name: Update expectations
         if: ${{ always() }}
-        run: ./wpt update-expectations --product chrome --manifest MANIFEST.json --metadata ../wpt-metadata wptreport.json
+        run: ./wpt update-expectations --product chromium --manifest MANIFEST.json --metadata ../wpt-metadata wptreport.json
         working-directory: wpt
       - name: Upload expectations
         if: ${{ always() }}
