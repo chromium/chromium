@@ -29,11 +29,13 @@ class PermissionQuietChip : public PermissionChip {
  private:
   // PermissionChip:
   views::View* CreateBubble() override;
+  void ShowBubble() override;
 
   void RecordChipButtonPressed();
   LocationBarView* GetLocationBarView();
 
   raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<views::Widget> bubble_widget_ = nullptr;
 
   // The time when the chip was displayed.
   base::TimeTicks chip_shown_time_;

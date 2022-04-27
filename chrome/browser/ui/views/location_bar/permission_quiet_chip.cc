@@ -82,10 +82,8 @@ views::View* PermissionQuietChip::CreateBubble() {
             std::move(content_setting_bubble_model), web_contents, lbv,
             views::BubbleBorder::TOP_LEFT);
     quiet_request_bubble->SetHighlightedButton(button());
-    views::Widget* bubble_widget =
+    bubble_widget_ =
         views::BubbleDialogDelegateView::CreateBubble(quiet_request_bubble);
-    bubble_widget->AddObserver(this);
-    bubble_widget->Show();
 
     quiet_request_bubble->set_close_on_deactivate(false);
 
@@ -93,6 +91,13 @@ views::View* PermissionQuietChip::CreateBubble() {
   }
 
   return nullptr;
+}
+
+void PermissionQuietChip::ShowBubble() {
+  if (bubble_widget_) {
+    bubble_widget_->Show();
+    bubble_widget_->AddObserver(this);
+  }
 }
 
 void PermissionQuietChip::RecordChipButtonPressed() {

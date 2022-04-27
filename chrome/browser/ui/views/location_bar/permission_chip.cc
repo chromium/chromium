@@ -90,6 +90,7 @@ void PermissionChip::OpenBubble() {
   DCHECK(!IsBubbleShowing());
 
   prompt_bubble_tracker_.SetView(CreateBubble());
+  ShowBubble();
   delegate_->SetBubbleShown();
 }
 

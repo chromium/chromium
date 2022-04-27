@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/location_bar/permission_chip.h"
 
 class Browser;
+class PermissionPromptBubbleView;
 
 // A chip view shown in the location bar to notify user about a permission
 // request. Shows a permission bubble on click.
@@ -31,10 +32,12 @@ class PermissionRequestChip : public PermissionChip {
  private:
   // PermissionChip:
   views::View* CreateBubble() override;
+  void ShowBubble() override;
 
   void RecordChipButtonPressed();
 
   raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<PermissionPromptBubbleView> prompt_bubble_ = nullptr;
 
   // The time when the chip was displayed.
   base::TimeTicks chip_shown_time_;
