@@ -6877,6 +6877,21 @@
             ]
         }
     ],
+    "ShutdownConfirmationBubble": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220414",
+                    "enable_features": [
+                        "ShutdownConfirmationBubble"
+                    ]
+                }
+            ]
+        }
+    ],
     "SidePanelDragAndDrop": [
         {
             "platforms": [
