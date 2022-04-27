@@ -1003,7 +1003,7 @@ void RenderViewContextMenu::InitMenu() {
   }
 
   // Show Read Anything option if text is selected.
-  if (base::FeatureList::IsEnabled(features::kReadAnything)) {
+  if (features::IsReadAnythingEnabled()) {
     if (content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_COPY) ||
         content_type_->SupportsGroup(
             ContextMenuContentType::ITEM_GROUP_EDITABLE)) {
