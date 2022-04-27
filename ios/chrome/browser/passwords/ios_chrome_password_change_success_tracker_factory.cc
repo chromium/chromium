@@ -39,5 +39,6 @@ IOSChromePasswordChangeSuccessTrackerFactory::
 std::unique_ptr<KeyedService>
 IOSChromePasswordChangeSuccessTrackerFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  return std::make_unique<password_manager::PasswordChangeSuccessTrackerImpl>();
+  return std::make_unique<password_manager::PasswordChangeSuccessTrackerImpl>(
+      ChromeBrowserState::FromBrowserState(context)->GetPrefs());
 }

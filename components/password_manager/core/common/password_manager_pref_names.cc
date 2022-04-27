@@ -78,5 +78,10 @@ const char kProfileStoreDateLastUsedForFilling[] =
 const char kAccountStoreDateLastUsedForFilling[] =
     "password_manager.account_store_date_last_used_for_filling";
 
+const char kPasswordChangeSuccessTrackerFlows[] =
+    "password_manager.password_change_success_tracker.flows";
+const char kPasswordChangeSuccessTrackerVersion[] =
+    "password_manager.password_change_success_tracker.version";
+
 }  // namespace prefs
 }  // namespace password_manager

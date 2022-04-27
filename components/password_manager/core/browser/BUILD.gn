@@ -688,6 +688,7 @@ source_set("unit_tests") {
     "password_account_storage_settings_watcher_unittest.cc",
     "password_autofill_manager_unittest.cc",
     "password_bubble_experiment_unittest.cc",
+    "password_change_success_tracker_impl_unittest.cc",
     "password_feature_manager_impl_unittest.cc",
     "password_form_filling_unittest.cc",
     "password_form_manager_unittest.cc",

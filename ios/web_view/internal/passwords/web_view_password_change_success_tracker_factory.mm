@@ -45,7 +45,8 @@ WebViewPasswordChangeSuccessTrackerFactory::
 std::unique_ptr<KeyedService>
 WebViewPasswordChangeSuccessTrackerFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  return std::make_unique<password_manager::PasswordChangeSuccessTrackerImpl>();
+  return std::make_unique<password_manager::PasswordChangeSuccessTrackerImpl>(
+      WebViewBrowserState::FromBrowserState(context)->GetPrefs());
 }
 
 }  // namespace ios_web_view

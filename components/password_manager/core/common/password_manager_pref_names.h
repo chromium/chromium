@@ -135,6 +135,15 @@ extern const char kPasswordDismissCompromisedAlertEnabled[];
 extern const char kProfileStoreDateLastUsedForFilling[];
 extern const char kAccountStoreDateLastUsedForFilling[];
 
+// A list of ongoing PasswordChangeSuccessTracker flows that is persisted in
+// case Chrome is temporarily shut down while, e.g., a user retrieves a
+// password reset email.
+extern const char kPasswordChangeSuccessTrackerFlows[];
+
+// Integer indicating the format version of the list saved under
+// |kPasswordChangeSuccessTrackerFlows|.
+extern const char kPasswordChangeSuccessTrackerVersion[];
+
 }  // namespace prefs
 }  // namespace password_manager
 

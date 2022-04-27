@@ -5,6 +5,7 @@ include_rules = [
   "+components/keyed_service/content",
   "+components/keyed_service/core",
   "+components/safe_browsing/buildflags.h",
+  "+components/user_prefs",
   "+content/public/browser",
   "+net",
   "+services/service_manager/public/cpp",

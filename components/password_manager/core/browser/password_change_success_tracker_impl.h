@@ -7,14 +7,20 @@
 
 #include "components/password_manager/core/browser/password_change_success_tracker.h"
 
-class GURL;
+#include "base/memory/raw_ptr.h"
+#include "url/gurl.h"
+
+class PrefService;
 
 namespace password_manager {
 
 class PasswordChangeSuccessTrackerImpl
     : public password_manager::PasswordChangeSuccessTracker {
  public:
-  PasswordChangeSuccessTrackerImpl();
+  // Current record version for flows that are persisted in preferences.
+  static constexpr int kTrackerVersion = 1;
+
+  explicit PasswordChangeSuccessTrackerImpl(PrefService* pref_service);
 
   ~PasswordChangeSuccessTrackerImpl() override;
 
@@ -37,6 +43,10 @@ class PasswordChangeSuccessTrackerImpl
   void OnChangePasswordFlowCompleted(const GURL& url,
                                      const std::string& username,
                                      EndEvent event_type) override;
+
+ private:
+  // Pointer to the preference service used for persisting events.
+  raw_ptr<PrefService> pref_service_;
 };
 
 }  // namespace password_manager

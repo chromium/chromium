@@ -3,13 +3,26 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/password_change_success_tracker_impl.h"
-#include "base/notreached.h"
 
+#include "base/notreached.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "url/gurl.h"
 
 namespace password_manager {
 
-PasswordChangeSuccessTrackerImpl::PasswordChangeSuccessTrackerImpl() = default;
+PasswordChangeSuccessTrackerImpl::PasswordChangeSuccessTrackerImpl(
+    PrefService* pref_service)
+    : pref_service_(pref_service) {
+  // Check whether the saved entries belong to an old version. If so,
+  // remove all old flows.
+  if (pref_service->GetInteger(prefs::kPasswordChangeSuccessTrackerVersion) <
+      kTrackerVersion) {
+    pref_service->SetInteger(prefs::kPasswordChangeSuccessTrackerVersion,
+                             kTrackerVersion);
+    pref_service->ClearPref(prefs::kPasswordChangeSuccessTrackerFlows);
+  }
+}
 
 PasswordChangeSuccessTrackerImpl::~PasswordChangeSuccessTrackerImpl() = default;
 
