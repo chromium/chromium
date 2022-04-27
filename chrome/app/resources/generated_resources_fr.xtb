@@ -8002,7 +8002,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9063208415146866933">Erreur de la ligne <ph name="ERROR_LINE_START" /> à la ligne <ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">Impossible de capturer un contenu confidentiel</translation>
 <translation id="9064275926664971810">Activer la saisie automatique pour remplir les formulaires d'un simple clic</translation>
-<translation id="9064599787951583960">Lire les infos provenant de CloudReady 2.0 et ses données.</translation>
+<translation id="9064599787951583960">Lire les infos provenant de l'appareil CloudReady 2.0 et les données de l'appareil.</translation>
 <translation id="9065203028668620118">Modifier</translation>
 <translation id="9066394310994446814">Cet élément s'affiche en raison de vos activités précédentes sur les services Google. Vous pouvez consulter vos données, les supprimer et modifier vos paramètres, sur <ph name="BEGIN_LINK1" />myactivity.google.com<ph name="END_LINK1" />.
         <ph name="BREAK" />

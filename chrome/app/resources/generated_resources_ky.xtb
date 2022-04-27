@@ -358,7 +358,7 @@
 <translation id="1355088139103479645">Бардык дайын-даректер өчүрүлсүнбү?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> плагини бөгөттөлгөн</translation>
 <translation id="1358741672408003399">Орфография жана грамматика</translation>
-<translation id="1359923111303110318">Түзмөгүңүздүн кулпусун Smart Lock менен ачууга болот. Кулпусун ачуу үчүн, "Enter" баскычын басыңыз.</translation>
+<translation id="1359923111303110318">Түзмөгүңүздүн кулпусун Smart Lock менен ачууга болот. Кулпусун ачуу үчүн "Enter" баскычын басыңыз.</translation>
 <translation id="1361164813881551742">Кол менен кошуу</translation>
 <translation id="1361655923249334273">Колдонулбаган</translation>
 <translation id="1361872463926621533">Иштетилгенде добуш ойнотулсун</translation>
@@ -1388,7 +1388,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2323018538045954000">Сакталган Wi-Fi тармактары</translation>
 <translation id="2325444234681128157">Сырсөздү эстеп калуу</translation>
 <translation id="2325760149602186433">Виртуалдык картаны өчүрүү</translation>
-<translation id="2326188115274135041">Кулпуну автоматтык түрдө ачуу үчүн, PIN кодду ырастаңыз</translation>
+<translation id="2326188115274135041">Кулпуну автоматтык түрдө ачуу үчүн PIN кодду ырастаңыз</translation>
 <translation id="2326931316514688470">&amp;Колдонмону кайра жүктөө</translation>
 <translation id="2327492829706409234">Колдонмону иштетүү</translation>
 <translation id="2327920026543055248"><ph name="TOTAL" /> ичинен <ph name="CHARACTER" /> символду киргизиңиз</translation>
@@ -3094,7 +3094,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3988996860813292272">Убакыт алкагын тандоо</translation>
 <translation id="399179161741278232">Импорттолгон</translation>
 <translation id="3993887353483242788"><ph name="DEVICE_TYPE" /> түзмөгүңүздү шайкештирсеңиз, параметрлериңиз Google аккаунтуңуз менен кирген бардык түзмөктөрдө колдонулат. Параметрлерге колдонмолор, жөндөөлөр, Wi-Fi сырсөздөрү, тилдер, тушкагаз, ыкчам баскычтар жана башка нерселер кирет.</translation>
-<translation id="3994374631886003300">Телефонуңуздун кулпусун ачып туруп, <ph name="DEVICE_TYPE" /> түзмөгүн ачуу үчүн, аны жакыныраак алып келиңиз.</translation>
+<translation id="3994374631886003300">Телефонуңуздун кулпусун ачып туруп, <ph name="DEVICE_TYPE" /> түзмөгүн ачуу үчүн аны жакыныраак алып келиңиз.</translation>
 <translation id="3994878504415702912">&amp;Ченөлчөм</translation>
 <translation id="3995138139523574647">USB-C түзмөгү (оң жактагы арткы оюкча)</translation>
 <translation id="3995963973192100066">Анимацияны ойнотуу</translation>
@@ -4417,7 +4417,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5414566801737831689">Каралган вебсайттардын сүрөтчөлөрүн окуңуз</translation>
 <translation id="5417312524372586921">Серепчинин темалары</translation>
 <translation id="5419405654816502573">Voice match</translation>
-<translation id="5420274697768050645">Кошумча коопсуздук максатында түзмөктү ачуу үчүн, сырсөздү талап кылуу</translation>
+<translation id="5420274697768050645">Кошумча коопсуздук максатында түзмөктү ачуу үчүн сырсөздү талап кылуу</translation>
 <translation id="5420438158931847627">Тексттин жана сүрөттөрдүн дааналыгын аныктайт</translation>
 <translation id="5422781158178868512">Кечиресиз, тышкы сактагыч түзмөгүңүз таанылбай койду.</translation>
 <translation id="5423505005476604112">Crostini</translation>
@@ -5548,7 +5548,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6549038875972762904">Кайра жөндөө</translation>
 <translation id="6550675742724504774">Параметрлер</translation>
 <translation id="65513682072153627">Параметр же функция администратор тарабынан башкарылса, "Башкарылат" сүрөтчөсүн көрөсүз.</translation>
-<translation id="6551508934388063976">Буйрук жок. Жаңы терезени ачуу үчүн, control-N'ди басыңыз.</translation>
+<translation id="6551508934388063976">Буйрук жок. Жаңы терезени ачуу үчүн control-N'ди басыңыз.</translation>
 <translation id="6551606359270386381">"Сүйрү" куралы</translation>
 <translation id="6551612971599078809">Сайт USB'ни колдонууда</translation>
 <translation id="6551739526055143276">Family Link аркылуу башкарылат</translation>

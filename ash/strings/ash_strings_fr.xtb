@@ -1144,7 +1144,7 @@ Nouvelle installation</translation>
 <translation id="8236042855478648955">Une pause s'impose !</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, batterie du téléphone à <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, application</translation>
-<translation id="8248728785693203669">Votre câble USB-C n'est peut-être pas connecté correctement à l'écran</translation>
+<translation id="8248728785693203669">Votre câble USB-C peut ne pas se connecter correctement aux écrans</translation>
 <translation id="8255234195843591763">Réinitialiser pour mettre à jour</translation>
 <translation id="826107067893790409">Appuyez sur Entrée pour déverrouiller l'appareil pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Supprimer</translation>
