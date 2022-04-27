@@ -5,12 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_GLOBAL_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_GLOBAL_CONTEXT_H_
 
+#include "base/containers/lru_cache.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/lru_cache.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
@@ -56,8 +56,9 @@ class PLATFORM_EXPORT FontGlobalContext {
   FontCache font_cache_;
   std::unique_ptr<HarfBuzzFontCache> harfbuzz_font_cache_;
   std::unique_ptr<FontUniqueNameLookup> font_unique_name_lookup_;
-  WTF::LruCache<SkFontID, IdentifiableToken> typeface_digest_cache_;
-  WTF::LruCache<SkFontID, IdentifiableToken> postscript_name_digest_cache_;
+  base::HashingLRUCache<SkFontID, IdentifiableToken> typeface_digest_cache_;
+  base::HashingLRUCache<SkFontID, IdentifiableToken>
+      postscript_name_digest_cache_;
 };
 
 }  // namespace blink

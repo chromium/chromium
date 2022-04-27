@@ -69,14 +69,11 @@ IdentifiableToken FontGlobalContext::GetOrComputeTypefaceDigest(
 
   SkFontID font_id = typeface->uniqueID();
 
-  IdentifiableToken* cached_value = typeface_digest_cache_.Get(font_id);
-  if (!cached_value) {
-    typeface_digest_cache_.Put(font_id, source.ComputeTypefaceDigest());
-    cached_value = typeface_digest_cache_.Get(font_id);
-  } else {
-    DCHECK(*cached_value == source.ComputeTypefaceDigest());
-  }
-  return *cached_value;
+  auto iter = typeface_digest_cache_.Get(font_id);
+  if (iter == typeface_digest_cache_.end())
+    iter = typeface_digest_cache_.Put(font_id, source.ComputeTypefaceDigest());
+  DCHECK(iter->second == source.ComputeTypefaceDigest());
+  return iter->second;
 }
 
 IdentifiableToken FontGlobalContext::GetOrComputePostScriptNameDigest(
@@ -87,16 +84,13 @@ IdentifiableToken FontGlobalContext::GetOrComputePostScriptNameDigest(
 
   SkFontID font_id = typeface->uniqueID();
 
-  IdentifiableToken* cached_value = postscript_name_digest_cache_.Get(font_id);
-  if (!cached_value) {
-    postscript_name_digest_cache_.Put(
+  auto iter = postscript_name_digest_cache_.Get(font_id);
+  if (iter == postscript_name_digest_cache_.end())
+    iter = postscript_name_digest_cache_.Put(
         font_id, IdentifiabilityBenignStringToken(source.GetPostScriptName()));
-    cached_value = postscript_name_digest_cache_.Get(font_id);
-  } else {
-    DCHECK(*cached_value ==
-           IdentifiabilityBenignStringToken(source.GetPostScriptName()));
-  }
-  return *cached_value;
+  DCHECK(iter->second ==
+         IdentifiabilityBenignStringToken(source.GetPostScriptName()));
+  return iter->second;
 }
 
 void FontGlobalContext::ClearMemory() {
