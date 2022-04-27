@@ -219,7 +219,7 @@ static const float viewportAnchorCoordY = 0;
 
 // Constants for zooming in on a focused text field.
 static constexpr base::TimeDelta kScrollAndScaleAnimationDuration =
-    base::Microseconds(200);
+    base::Milliseconds(200);
 static const int minReadableCaretHeight = 16;
 static const int minReadableCaretHeightForTextArea = 13;
 static const float minScaleChangeToTriggerZoom = 1.5f;
