@@ -37,6 +37,7 @@
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_accelerators.h"
+#include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/smartlock_state.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -696,6 +697,16 @@ LockContentsView::LockContentsView(
   OnLockScreenNoteStateChanged(initial_note_action_state);
   chromeos::PowerManagerClient::Get()->AddObserver(this);
   RegisterAccelerators();
+
+  // If feature is enabled, update the boolean kiosk_license_mode_. Otherwise,
+  // it's false by default.
+  if (features::IsKioskEnrollmentInOobeEnabled()) {
+    kiosk_license_mode_ =
+        Shell::Get()
+            ->system_tray_model()
+            ->enterprise_domain()
+            ->management_device_mode() == ManagementDeviceMode::kKioskSku;
+  }
 }
 
 LockContentsView::~LockContentsView() {
@@ -962,7 +973,6 @@ void LockContentsView::OnUsersChanged(const std::vector<LoginUserInfo>& users) {
   main_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  // TODO(crbug.com/1307303): Determine if this is a kiosk license device.
   if (kiosk_license_mode_)
     return;
 

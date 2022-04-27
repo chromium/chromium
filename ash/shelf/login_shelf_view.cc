@@ -19,6 +19,7 @@
 #include "ash/metrics/login_metrics_recorder.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/login_accelerators.h"
+#include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
@@ -33,6 +34,8 @@
 #include "ash/style/default_color_constants.h"
 #include "ash/style/default_colors.h"
 #include "ash/style/style_util.h"
+#include "ash/system/model/enterprise_domain_model.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
@@ -653,6 +656,16 @@ LoginShelfView::LoginShelfView(
       lock_screen_action_background);
   login_data_dispatcher_observation_.Observe(
       Shell::Get()->login_screen_controller()->data_dispatcher());
+
+  // If feature is enabled, update the boolean kiosk_license_mode_. Otherwise,
+  // it's false by default.
+  if (features::IsKioskEnrollmentInOobeEnabled()) {
+    kiosk_license_mode_ =
+        Shell::Get()
+            ->system_tray_model()
+            ->enterprise_domain()
+            ->management_device_mode() == ManagementDeviceMode::kKioskSku;
+  }
   UpdateUi();
 }
 
