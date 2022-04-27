@@ -173,11 +173,11 @@
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel',
       'linux-ash-chromium-generator-rel': 'chromeos_with_codecs_release_bot',
       'linux-chromeos-rel': 'chromeos_with_codecs_with_lacros_release_bot',
-      'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot',
+      'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot_reclient',
       'linux-lacros-builder-rel': 'lacros_on_linux_release_bot',
       'linux-lacros-dbg': 'lacros_on_linux_debug_bot',
       'linux-lacros-tester-rel': 'lacros_on_linux_release_bot',
-      'linux-cfm-rel': 'linux_cfm_release_bot',
+      'linux-cfm-rel': 'linux_cfm_release_bot_reclient',
     },
 
     'chromium.clang': {
@@ -376,12 +376,12 @@
       'lacros-amd64-generic-rel (goma cache silo)': 'chromeos_amd64-generic_lacros_rel',
       'lacros-amd64-generic-rel (reclient)': 'chromeos_amd64-generic-vm_lacros_rel_reclient',
       'linux-annotator-rel': 'release_bot_reclient',
-      'linux-chromeos-annotator-rel': 'chromeos_with_codecs_release_bot',
+      'linux-chromeos-annotator-rel': 'chromeos_with_codecs_release_bot_reclient',
       'linux-blink-animation-use-time-delta': 'debug_bot_enable_blink_animation_use_time_delta',
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_minimal_symbols_tsan',
       'linux-blink-heap-verification': 'release_bot_enable_blink_heap_verification_dcheck_always_on_reclient',
       'linux-blink-v8-sandbox-future-dbg': 'debug_bot_enable_v8_sandbox_future_reclient',
-      'linux-chromeos-code-coverage': 'chromeos_with_codecs_release_bot_coverage',
+      'linux-chromeos-code-coverage': 'chromeos_with_codecs_release_bot_coverage_reclient',
       'linux-chromeos-js-code-coverage': 'chromeos_with_codecs_release_bot_javascript_coverage',
       'linux-code-coverage': 'clang_code_coverage',
       'linux-example-builder': 'release_bot_reclient',
@@ -2103,6 +2103,10 @@
       'chromeos_with_codecs', 'debug_bot',
     ],
 
+    'chromeos_with_codecs_debug_bot_reclient': [
+      'chromeos_with_codecs', 'debug_bot_reclient',
+    ],
+
     'chromeos_with_codecs_release_bot': [
       'chromeos_with_codecs', 'release_bot',
     ],
@@ -2115,8 +2119,8 @@
       'chromeos_with_codecs', 'release_bot', 'also_build_lacros_chrome'
     ],
 
-    'chromeos_with_codecs_release_bot_coverage': [
-      'chromeos_with_codecs', 'release_bot', 'use_clang_coverage',
+    'chromeos_with_codecs_release_bot_coverage_reclient': [
+      'chromeos_with_codecs', 'release_bot_reclient', 'use_clang_coverage',
     ],
 
     'chromeos_with_codecs_release_bot_javascript_coverage': [
@@ -2900,8 +2904,8 @@
       'libfuzzer', 'asan', 'release_trybot', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'mojo_fuzzer', 'skip_generate_fuzzer_owners', 'no_symbols',
     ],
 
-    'linux_cfm_release_bot': [
-      'cfm', 'release_bot', 'chromeos',
+    'linux_cfm_release_bot_reclient': [
+      'cfm', 'release_bot_reclient', 'chromeos',
     ],
 
     'linux_cfm_release_trybot': [

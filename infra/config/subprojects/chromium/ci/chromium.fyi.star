@@ -351,7 +351,9 @@ ci.builder(
     ),
     execution_timeout = 3 * time.hour,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
-    goma_enable_ats = True,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -1161,6 +1163,9 @@ fyi_coverage_builder(
     coverage_test_types = ["overall", "unit"],
     schedule = "triggered",
     triggered_by = [],
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 fyi_coverage_builder(

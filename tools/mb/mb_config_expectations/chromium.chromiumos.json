@@ -219,7 +219,8 @@
       "is_component_build": false,
       "is_debug": false,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "linux-chromeos-dbg": {
@@ -230,7 +231,8 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "linux-chromeos-rel": {

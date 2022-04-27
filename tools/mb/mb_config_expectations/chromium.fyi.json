@@ -1062,7 +1062,8 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "linux-chromeos-code-coverage": {
@@ -1074,7 +1075,8 @@
       "proprietary_codecs": true,
       "target_os": "chromeos",
       "use_clang_coverage": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "linux-chromeos-js-code-coverage": {
