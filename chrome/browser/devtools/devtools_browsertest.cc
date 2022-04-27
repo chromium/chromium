@@ -1983,7 +1983,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestToolboxLoadedUndocked) {
 }
 
 // Tests that toolbox window is not loaded when DevTools window is docked.
-IN_PROC_BROWSER_TEST_F(DevToolsTest, TestToolboxNotLoadedDocked) {
+// TODO(crbug.com/1320168): Re-enable this test
+IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_TestToolboxNotLoadedDocked) {
   OpenDevToolsWindow(kDebuggerTestPage, true);
   ASSERT_FALSE(toolbox_web_contents());
   DevToolsWindow* on_self =
