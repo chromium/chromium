@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
@@ -55,13 +54,12 @@ class CORE_EXPORT ModuleScript : public Script {
   virtual void ProduceCache() {}
   const KURL& SourceURL() const { return source_url_; }
 
-  // https://html.spec.whatwg.org/C/#run-a-module-script
-  // Callers must enter a `v8::HandleScope` before calling.
-  // See the class comments of `RethrowErrorsOption` and
-  // `ScriptEvaluationResult` for exception handling and return value semantics.
-  [[nodiscard]] ScriptEvaluationResult RunScriptAndReturnValue(
+  [[nodiscard]] ScriptEvaluationResult RunScriptOnScriptStateAndReturnValue(
+      ScriptState*,
+      ExecuteScriptPolicy =
+          ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled,
       V8ScriptRunner::RethrowErrorsOption =
-          V8ScriptRunner::RethrowErrorsOption::DoNotRethrow());
+          V8ScriptRunner::RethrowErrorsOption::DoNotRethrow()) override;
 
   Modulator* SettingsObject() const { return settings_object_; }
 
@@ -76,7 +74,6 @@ class CORE_EXPORT ModuleScript : public Script {
   mojom::blink::ScriptType GetScriptType() const override {
     return mojom::blink::ScriptType::kModule;
   }
-  void RunScript(LocalDOMWindow*) override;
   bool RunScriptOnWorkerOrWorklet(WorkerOrWorkletGlobalScope&) override;
 
   std::pair<size_t, size_t> GetClassicScriptSizes() const override;

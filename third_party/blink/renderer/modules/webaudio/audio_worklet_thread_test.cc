@@ -129,7 +129,7 @@ class AudioWorkletThreadTest : public PageTestBase, public ModuleTestBase {
     ScriptEvaluationResult result =
         JSModuleScript::CreateForTest(Modulator::From(script_state), module,
                                       js_url)
-            ->RunScriptAndReturnValue();
+            ->RunScriptOnScriptStateAndReturnValue(script_state);
     EXPECT_EQ(result.GetResultType(),
               ScriptEvaluationResult::ResultType::kSuccess);
     wait_event->Signal();

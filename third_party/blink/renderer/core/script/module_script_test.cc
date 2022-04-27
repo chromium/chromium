@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/script/js_module_script.h"
@@ -174,7 +175,9 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithoutDiscarding) {
                                           module_script->V8Module(),
                                           module_script->SourceURL())
                     .IsEmpty());
-    ASSERT_EQ(module_script->RunScriptAndReturnValue().GetResultType(),
+    ASSERT_EQ(module_script
+                  ->RunScriptOnScriptStateAndReturnValue(scope.GetScriptState())
+                  .GetResultType(),
               ScriptEvaluationResult::ResultType::kSuccess);
     TestFoo(scope);
 
@@ -292,7 +295,9 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithDiscarding) {
                                           module_script->V8Module(),
                                           module_script->SourceURL())
                     .IsEmpty());
-    ASSERT_EQ(module_script->RunScriptAndReturnValue().GetResultType(),
+    ASSERT_EQ(module_script
+                  ->RunScriptOnScriptStateAndReturnValue(scope.GetScriptState())
+                  .GetResultType(),
               ScriptEvaluationResult::ResultType::kSuccess);
     TestFoo(scope);
 
@@ -461,7 +466,9 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithHashChecking) {
                                           module_script->V8Module(),
                                           module_script->SourceURL())
                     .IsEmpty());
-    ASSERT_EQ(module_script->RunScriptAndReturnValue().GetResultType(),
+    ASSERT_EQ(module_script
+                  ->RunScriptOnScriptStateAndReturnValue(scope.GetScriptState())
+                  .GetResultType(),
               ScriptEvaluationResult::ResultType::kSuccess);
     TestFoo(scope);
 

@@ -147,13 +147,11 @@ void ScheduledAction::Execute(ExecutionContext* context) {
   // not set in https://html.spec.whatwg.org/C/#timer-initialisation-steps
   // TODO(crbug.com/1133238): Plumb base URL etc. from the initializing script.
   DVLOG(1) << "ScheduledAction::execute " << this << ": executing from source";
-  v8::HandleScope scope(script_state_->GetIsolate());
   ClassicScript* script =
       ClassicScript::Create(code_, KURL(), KURL(), ScriptFetchOptions(),
                             ScriptSourceLocationType::kEvalForScheduledAction,
                             SanitizeScriptErrors::kDoNotSanitize);
-  std::ignore =
-      script->RunScriptOnScriptStateAndReturnValue(script_state_->Get());
+  script->RunScriptOnScriptState(script_state_->Get());
 }
 
 void ScheduledAction::Trace(Visitor* visitor) const {

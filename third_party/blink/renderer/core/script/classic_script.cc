@@ -177,24 +177,6 @@ ScriptEvaluationResult ClassicScript::RunScriptOnScriptStateAndReturnValue(
                                              std::move(rethrow_errors));
 }
 
-void ClassicScript::RunScript(LocalDOMWindow* window) {
-  return RunScript(window,
-                   ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled);
-}
-
-void ClassicScript::RunScript(LocalDOMWindow* window,
-                              ExecuteScriptPolicy policy) {
-  v8::HandleScope handle_scope(window->GetIsolate());
-  RunScriptAndReturnValue(window, policy);
-}
-
-ScriptEvaluationResult ClassicScript::RunScriptAndReturnValue(
-    LocalDOMWindow* window,
-    ExecuteScriptPolicy policy) {
-  return RunScriptOnScriptStateAndReturnValue(
-      ToScriptStateForMainWorld(window->GetFrame()), policy);
-}
-
 ScriptEvaluationResult ClassicScript::RunScriptInIsolatedWorldAndReturnValue(
     LocalDOMWindow* window,
     int32_t world_id) {

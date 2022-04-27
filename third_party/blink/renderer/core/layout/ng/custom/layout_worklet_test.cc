@@ -70,7 +70,7 @@ class LayoutWorkletTest : public PageTestBase, public ModuleTestBase {
 
     return JSModuleScript::CreateForTest(Modulator::From(script_state), module,
                                          js_url)
-        ->RunScriptAndReturnValue();
+        ->RunScriptOnScriptStateAndReturnValue(script_state);
   }
 
  private:

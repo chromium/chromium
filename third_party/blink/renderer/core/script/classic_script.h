@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/core/script/script.h"
@@ -99,26 +98,16 @@ class CORE_EXPORT ClassicScript final : public Script {
 
   const String& SourceMapUrl() const { return source_map_url_; }
 
-  // TODO(crbug.com/1111134): Methods with ExecuteScriptPolicy are declared and
-  // overloaded here to avoid modifying Script::RunScript*(), because this is a
-  // tentative interface. When crbug/1111134 is done, these should be gone.
-  // TODO(crbug.com/1111134): Refactor RunScript*() interfaces.
-  void RunScript(LocalDOMWindow*) override;
-  void RunScript(LocalDOMWindow*, ExecuteScriptPolicy);
   bool RunScriptOnWorkerOrWorklet(WorkerOrWorkletGlobalScope&) override;
 
   // Unlike RunScript() and RunScriptOnWorkerOrWorklet(), callers of the
   // following methods must enter a v8::HandleScope before calling.
-  ScriptEvaluationResult RunScriptOnScriptStateAndReturnValue(
+  [[nodiscard]] ScriptEvaluationResult RunScriptOnScriptStateAndReturnValue(
       ScriptState*,
       ExecuteScriptPolicy =
           ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled,
       V8ScriptRunner::RethrowErrorsOption =
-          V8ScriptRunner::RethrowErrorsOption::DoNotRethrow());
-  ScriptEvaluationResult RunScriptAndReturnValue(
-      LocalDOMWindow*,
-      ExecuteScriptPolicy =
-          ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled);
+          V8ScriptRunner::RethrowErrorsOption::DoNotRethrow()) override;
   ScriptEvaluationResult RunScriptInIsolatedWorldAndReturnValue(
       LocalDOMWindow*,
       int32_t world_id);

@@ -163,7 +163,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     ScriptEvaluationResult result =
         JSModuleScript::CreateForTest(Modulator::From(script_state), module,
                                       js_url)
-            ->RunScriptAndReturnValue();
+            ->RunScriptOnScriptStateAndReturnValue(script_state);
     if (expect_success) {
       EXPECT_FALSE(GetResult(script_state, result).IsEmpty());
     } else {

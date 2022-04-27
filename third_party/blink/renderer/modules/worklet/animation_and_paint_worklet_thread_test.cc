@@ -90,7 +90,7 @@ class AnimationAndPaintWorkletThreadTest : public PageTestBase,
     ScriptEvaluationResult result =
         JSModuleScript::CreateForTest(Modulator::From(script_state), module,
                                       js_url)
-            ->RunScriptAndReturnValue();
+            ->RunScriptOnScriptStateAndReturnValue(script_state);
     EXPECT_FALSE(GetResult(script_state, result).IsEmpty());
     wait_event->Signal();
   }

@@ -7,6 +7,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -32,10 +33,43 @@ class CORE_EXPORT Script : public GarbageCollected<Script> {
   // https://html.spec.whatwg.org/C/#run-a-classic-script
   // or
   // https://html.spec.whatwg.org/C/#run-a-module-script,
-  // depending on the script type,
-  // on Window or on WorkerGlobalScope, respectively.
-  // RunScriptOnWorkerOrWorklet returns true if evaluated successfully.
-  virtual void RunScript(LocalDOMWindow*) = 0;
+  // depending on the script type.
+  // - Callers of `RunScript*AndReturnValue()` must enter a v8::HandleScope
+  //   before calling.
+  // - `ScriptState` == the script's modulator's `ScriptState` for modules.
+  // - `ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled` is allowed only
+  //   for classic scripts with clear or historical reasons.
+  //
+  // On a ScriptState:
+  void RunScriptOnScriptState(
+      ScriptState*,
+      ExecuteScriptPolicy =
+          ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled,
+      V8ScriptRunner::RethrowErrorsOption =
+          V8ScriptRunner::RethrowErrorsOption::DoNotRethrow());
+  [[nodiscard]] virtual ScriptEvaluationResult
+  RunScriptOnScriptStateAndReturnValue(
+      ScriptState*,
+      ExecuteScriptPolicy =
+          ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled,
+      V8ScriptRunner::RethrowErrorsOption =
+          V8ScriptRunner::RethrowErrorsOption::DoNotRethrow()) = 0;
+  // On the main world of LocalDOMWindow:
+  void RunScript(
+      LocalDOMWindow*,
+      ExecuteScriptPolicy =
+          ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled,
+      V8ScriptRunner::RethrowErrorsOption =
+          V8ScriptRunner::RethrowErrorsOption::DoNotRethrow());
+  [[nodiscard]] ScriptEvaluationResult RunScriptAndReturnValue(
+      LocalDOMWindow*,
+      ExecuteScriptPolicy =
+          ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled,
+      V8ScriptRunner::RethrowErrorsOption =
+          V8ScriptRunner::RethrowErrorsOption::DoNotRethrow());
+  // For worker top-level scripts and worklets.
+  // Returns true if evaluated successfully.
+  // TODO(crbug.com/1111134): Remove RunScriptOnWorkerOrWorklet().
   virtual bool RunScriptOnWorkerOrWorklet(WorkerOrWorkletGlobalScope&) = 0;
 
   const ScriptFetchOptions& FetchOptions() const { return fetch_options_; }

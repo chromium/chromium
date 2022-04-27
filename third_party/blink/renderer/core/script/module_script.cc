@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/script/module_record_resolver.h"
@@ -107,24 +108,19 @@ void ModuleScript::Trace(Visitor* visitor) const {
   Script::Trace(visitor);
 }
 
-void ModuleScript::RunScript(LocalDOMWindow*) {
-  // We need a HandleScope for the `ScriptEvaluationResult` returned from
-  // `RunScriptAndReturnValue`.
-  v8::HandleScope scope(SettingsObject()->GetScriptState()->GetIsolate());
-  DVLOG(1) << *this << "::RunScript()";
-  std::ignore = RunScriptAndReturnValue();
-}
-
 bool ModuleScript::RunScriptOnWorkerOrWorklet(
     WorkerOrWorkletGlobalScope& global_scope) {
   // We need a HandleScope for the `ScriptEvaluationResult` returned from
   // `RunScriptAndReturnValue`.
   v8::HandleScope scope(SettingsObject()->GetScriptState()->GetIsolate());
+  DCHECK_EQ(global_scope.ScriptController()->GetScriptState(),
+            SettingsObject()->GetScriptState());
   DCHECK(global_scope.IsContextThread());
 
   // TODO(nhiroki): Catch an error when an evaluation error happens.
   // (https://crbug.com/680046)
-  ScriptEvaluationResult result = RunScriptAndReturnValue();
+  ScriptEvaluationResult result =
+      RunScriptOnScriptStateAndReturnValue(SettingsObject()->GetScriptState());
 
   // Service workers prohibit async module graphs (those with top-level await),
   // so the promise result from executing a service worker module is always
@@ -142,8 +138,13 @@ bool ModuleScript::RunScriptOnWorkerOrWorklet(
   return result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess;
 }
 
-ScriptEvaluationResult ModuleScript::RunScriptAndReturnValue(
+ScriptEvaluationResult ModuleScript::RunScriptOnScriptStateAndReturnValue(
+    ScriptState* script_state,
+    ExecuteScriptPolicy execute_script_policy,
     V8ScriptRunner::RethrowErrorsOption rethrow_errors) {
+  DCHECK_EQ(execute_script_policy,
+            ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled);
+  DCHECK_EQ(script_state, SettingsObject()->GetScriptState());
   return V8ScriptRunner::EvaluateModule(this, std::move(rethrow_errors));
 }
 
