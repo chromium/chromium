@@ -340,25 +340,25 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
           'Options for configuring Android devices and tooling.')
       add_emulator_args(group)
       group.add_argument(
-          '--apk',
+          '--browser-apk',
           # Aliases for backwards compatibility.
           '--chrome-apk',
-          '--weblayer-support',
-          action='append',
-          default=[],
-          help='Path to an APK to install.')
-      group.add_argument(
-          '--shell-apk',
-          # Aliases for backwards compatibility.
           '--system-webview-shell',
           '--weblayer-shell',
-          help=('Path to a shell APK to install. '
-                '(WebView and WebLayer only. '
+          help=('Path to the browser APK to install and run. '
+                '(For WebView and WebLayer, this value is the shell. '
                 'Defaults to an on-device APK if not provided.)'))
       group.add_argument(
           '--webview-provider',
           help=('Path to a WebView provider APK to install. '
                 '(WebView only.)'))
+      group.add_argument(
+          '--additional-apk',
+          # Aliases for backwards compatibility.
+          '--weblayer-support',
+          action='append',
+          default=[],
+          help='Paths to additional APKs to install.')
       group.add_argument(
           '--release-channel',
           help='Install WebView from release channel. (WebView only.)')
@@ -612,7 +612,12 @@ class ChromeAndroidBase(Product):
         See Also:
             https://github.com/web-platform-tests/wpt/blob/merge_pr_33203/tools/wpt/browser.py#L867-L924
         """
-        return self._options.package_name
+        if self._options.package_name:
+            return self._options.package_name
+        if self._options.browser_apk:
+            with contextlib.suppress(apk_helper.ApkHelperError):
+                return apk_helper.GetPackageName(self._options.browser_apk)
+        return None
 
     def get_version_provider_package_name(self):
         """Get the name of the package containing the product version.
@@ -634,7 +639,10 @@ class ChromeAndroidBase(Product):
 
     def provision_device(self, device):
         """Provision an Android device for a test."""
-        for apk in self._options.apk:
+        if self._options.browser_apk:
+            self._tasks.enter_context(
+                _install_apk(device, self._options.browser_apk))
+        for apk in self._options.additional_apk:
             self._tasks.enter_context(_install_apk(device, apk))
         logger.info('Provisioned device (serial: %s)', device.serial)
 
@@ -658,25 +666,7 @@ def _install_webview_from_release(device, channel, python_executable=None):
     yield
 
 
-class ChromeAndroidShellBase(ChromeAndroidBase):
-    def get_browser_package_name(self):
-        package_name = super(ChromeAndroidShellBase,
-                             self).get_browser_package_name()
-        if package_name:
-            return package_name
-        elif self._options.shell_apk:
-            with contextlib.suppress(apk_helper.ApkHelperError):
-                return apk_helper.GetPackageName(self._options.shell_apk)
-        return None
-
-    def provision_device(self, device):
-        if self._options.shell_apk:
-            self._tasks.enter_context(_install_apk(device,
-                                                   self._options.shell_apk))
-        super(ChromeAndroidShellBase, self).provision_device(device)
-
-
-class WebLayer(ChromeAndroidShellBase):
+class WebLayer(ChromeAndroidBase):
     name = ANDROID_WEBLAYER
     aliases = ['weblayer']
 
@@ -691,14 +681,14 @@ class WebLayer(ChromeAndroidShellBase):
                 or 'org.chromium.weblayer.shell')
 
     def get_version_provider_package_name(self):
-        # Read version from support APK.
-        if self._options.apk:
+        if self._options.additional_apk:
+            support_apk = self._options.additional_apk[0]
             with contextlib.suppress(apk_helper.ApkHelperError):
-                return apk_helper.GetPackageName(self._options.apk[0])
+                return apk_helper.GetPackageName(support_apk)
         return super(WebLayer, self).get_version_provider_package_name()
 
 
-class WebView(ChromeAndroidShellBase):
+class WebView(ChromeAndroidBase):
     name = ANDROID_WEBVIEW
     aliases = ['webview']
 
@@ -747,19 +737,10 @@ class ChromeAndroid(ChromeAndroidBase):
 
     def _validate_options(self):
         super(ChromeAndroid, self)._validate_options()
-        if not self._options.package_name and not self._options.apk:
+        if not self._options.package_name and not self._options.browser_apk:
             raise ValueError(
-                "Must provide either '--package-name' or '--apk' "
+                "Must provide either '--package-name' or '--browser-apk' "
                 'for %r.' % self.name)
-
-    def get_browser_package_name(self):
-        package_name = super(ChromeAndroid, self).get_browser_package_name()
-        if package_name:
-            return package_name
-        elif self._options.apk:
-            with contextlib.suppress(apk_helper.ApkHelperError):
-                return apk_helper.GetPackageName(self._options.apk[0])
-        return None
 
 
 def add_emulator_args(parser):
