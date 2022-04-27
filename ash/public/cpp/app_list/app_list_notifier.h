@@ -75,6 +75,11 @@ class ASH_PUBLIC_EXPORT AppListNotifier {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
+  // Called when visibility of a container within the launcher continue section
+  // (continue task suggestions, or recent apps) changes.
+  virtual void NotifyContinueSectionVisibilityChanged(Location location,
+                                                      bool visible) = 0;
+
   // Called to indicate a search |result| has been launched at the UI surface
   // |location|.
   virtual void NotifyLaunched(Location location, const Result& result) = 0;

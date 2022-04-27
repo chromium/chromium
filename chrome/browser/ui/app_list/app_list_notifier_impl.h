@@ -140,6 +140,8 @@ class AppListNotifierImpl : public ash::AppListNotifier,
   void NotifyLaunched(Location location, const Result& result) override;
   void NotifyResultsUpdated(Location location,
                             const std::vector<Result>& results) override;
+  void NotifyContinueSectionVisibilityChanged(Location location,
+                                              bool visible) override;
   void NotifySearchQueryChanged(const std::u16string& query) override;
   bool FireImpressionTimerForTesting(Location location) override;
 
@@ -171,12 +173,22 @@ class AppListNotifierImpl : public ash::AppListNotifier,
   // Returns the stored results for |location|.
   std::vector<Result> ResultsForLocation(Location location);
 
+  // Returns whether a continue section container (or recent apps container) are
+  // reported to be visible.
+  bool GetContinueSectionVisibility(Location location) const;
+
   ash::AppListController* const app_list_controller_;
 
   base::ObserverList<Observer> observers_;
 
   // The current state of each state machine.
   base::flat_map<Location, State> states_;
+
+  // The reported visibility state of app list continue section - used for
+  // `Location::kContinue` and `Location::kRecentApps`, which may remain hidden
+  // while app list is visible.
+  base::flat_map<Location, bool> continue_section_visibility_;
+
   // An impression timer for each state machine.
   base::flat_map<Location, std::unique_ptr<base::OneShotTimer>> timers_;
 

@@ -65,6 +65,23 @@ void AppListNotifierImpl::NotifyResultsUpdated(
   }
 }
 
+void AppListNotifierImpl::NotifyContinueSectionVisibilityChanged(
+    Location location,
+    bool visible) {
+  DCHECK(location == Location::kContinue || location == Location::kRecentApps);
+
+  continue_section_visibility_[location] = visible;
+  DoStateTransition(location, shown_ && query_.empty() && visible
+                                  ? State::kShown
+                                  : State::kNone);
+}
+
+bool AppListNotifierImpl::GetContinueSectionVisibility(
+    Location location) const {
+  const auto it = continue_section_visibility_.find(location);
+  return it != continue_section_visibility_.cend() && it->second;
+}
+
 void AppListNotifierImpl::NotifySearchQueryChanged(
     const std::u16string& query) {
   // In some cases the query can change after the launcher is closed, in
@@ -73,8 +90,14 @@ void AppListNotifierImpl::NotifySearchQueryChanged(
   if (shown_) {
     if (query.empty()) {
       DoStateTransition(Location::kList, State::kNone);
-      DoStateTransition(Location::kContinue, State::kShown);
-      DoStateTransition(Location::kRecentApps, State::kShown);
+      DoStateTransition(Location::kContinue,
+                        GetContinueSectionVisibility(Location::kContinue)
+                            ? State::kShown
+                            : State::kNone);
+      DoStateTransition(Location::kRecentApps,
+                        GetContinueSectionVisibility(Location::kRecentApps)
+                            ? State::kShown
+                            : State::kNone);
     } else {
       DoStateTransition(Location::kList, State::kShown);
       DoStateTransition(Location::kContinue, State::kNone);
@@ -110,8 +133,10 @@ void AppListNotifierImpl::OnAppListVisibilityWillChange(bool shown,
   shown_ = shown;
 
   if (shown) {
-    DoStateTransition(Location::kContinue, State::kShown);
-    DoStateTransition(Location::kRecentApps, State::kShown);
+    if (GetContinueSectionVisibility(Location::kContinue))
+      DoStateTransition(Location::kContinue, State::kShown);
+    if (GetContinueSectionVisibility(Location::kRecentApps))
+      DoStateTransition(Location::kRecentApps, State::kShown);
     // kList is not shown until a search query is entered.
   } else {
     DoStateTransition(Location::kList, State::kNone);

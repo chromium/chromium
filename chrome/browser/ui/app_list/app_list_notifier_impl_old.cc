@@ -39,6 +39,14 @@ void AppListNotifierImplOld::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void AppListNotifierImplOld::NotifyContinueSectionVisibilityChanged(
+    Location location,
+    bool visible) {
+  // App list is not expected to have continue section when "old" app list
+  // notifier is active.
+  NOTREACHED();
+}
+
 void AppListNotifierImplOld::NotifyLaunched(Location location,
                                             const Result& result) {
   launched_result_ = result;

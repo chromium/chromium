@@ -212,8 +212,12 @@ void RecentAppsView::UpdateResults(
       items.push_back(item);
   }
 
-  if (items.size() < kMinRecommendedApps)
+  if (items.size() < kMinRecommendedApps) {
+    if (auto* notifier = view_delegate_->GetNotifier()) {
+      notifier->NotifyResultsUpdated(SearchResultDisplayType::kRecentApps, {});
+    }
     return;
+  }
 
   if (auto* notifier = view_delegate_->GetNotifier()) {
     std::vector<AppListNotifier::Result> notifier_results;
@@ -253,7 +257,12 @@ void RecentAppsView::SetModels(SearchModel* search_model, AppListModel* model) {
 void RecentAppsView::UpdateVisibility() {
   const bool has_enough_apps = item_views_.size() >= kMinRecommendedApps;
   const bool hidden_by_user = view_delegate_->ShouldHideContinueSection();
-  SetVisible(has_enough_apps && !hidden_by_user);
+  const bool visible = has_enough_apps && !hidden_by_user;
+  SetVisible(visible);
+  if (auto* notifier = view_delegate_->GetNotifier()) {
+    notifier->NotifyContinueSectionVisibilityChanged(
+        SearchResultDisplayType::kRecentApps, visible);
+  }
 }
 
 int RecentAppsView::GetItemViewCount() const {

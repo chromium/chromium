@@ -139,6 +139,8 @@ class AppListNotifierImplOld : public ash::AppListNotifier,
   // AppListNotifier:
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  void NotifyContinueSectionVisibilityChanged(Location location,
+                                              bool visible) override;
   void NotifyLaunched(Location location, const Result& result) override;
   void NotifyResultsUpdated(Location location,
                             const std::vector<Result>& results) override;

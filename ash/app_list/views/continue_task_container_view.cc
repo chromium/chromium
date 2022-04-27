@@ -174,6 +174,15 @@ void ContinueTaskContainerView::VisibilityChanged(views::View* starting_from,
   } else {
     animations_timer_.Start(FROM_HERE, base::Seconds(2), base::DoNothing());
   }
+
+  auto* notifier = view_delegate_->GetNotifier();
+  if (notifier) {
+    // NOTE: Use `IsDrawn()` instead of `is_visible` to account for parent
+    // container visibility - `IsDrawn()` will return false if this view is
+    // visible but its parent is not.
+    notifier->NotifyContinueSectionVisibilityChanged(
+        SearchResultDisplayType::kContinue, IsDrawn());
+  }
 }
 
 bool ContinueTaskContainerView::OnKeyPressed(const ui::KeyEvent &event) {
