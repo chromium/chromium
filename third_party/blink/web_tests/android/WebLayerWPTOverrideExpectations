@@ -240,7 +240,6 @@ crbug.com/1198079 external/wpt/content-security-policy/navigate-to/spv-only-sent
 crbug.com/1198079 external/wpt/content-security-policy/object-src/object-src-url-allowed.html [ Crash Failure Pass ]
 crbug.com/1198079 external/wpt/content-security-policy/object-src/object-src-url-embed-allowed.html [ Crash Failure Pass ]
 crbug.com/1198079 external/wpt/content-security-policy/object-src/object-src-url-redirect-allowed.html [ Crash Failure Pass ]
-crbug.com/1198079 external/wpt/content-security-policy/object-src/object-src-url-redirect-blocked.sub.html [ Crash Failure Pass ]
 crbug.com/1198079 external/wpt/content-security-policy/sandbox/service-worker-sandbox.https.html [ Failure ]
 crbug.com/1198079 external/wpt/content-security-policy/script-src/hash-always-converted-to-utf-8/iso-8859-1.html [ Failure ]
 crbug.com/1198079 external/wpt/content-security-policy/script-src/hash-always-converted-to-utf-8/iso-8859-3.html [ Failure ]
