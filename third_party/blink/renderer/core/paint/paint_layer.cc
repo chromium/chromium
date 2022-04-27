@@ -724,8 +724,6 @@ bool PaintLayer::UpdateSize() {
   } else if (LayoutBox* box = GetLayoutBox()) {
     size_ = box->Size();
   }
-  if (old_size != size_)
-    MarkAncestorChainForFlagsUpdate();
 
   return old_size != size_;
 }
