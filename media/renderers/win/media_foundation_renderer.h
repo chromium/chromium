@@ -129,7 +129,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
   // Callback for `content_protection_manager_`.
   void OnProtectionManagerWaiting(WaitingReason reason);
 
-  void OnCdmProxyReceived(scoped_refptr<MediaFoundationCdmProxy> cdm_proxy);
+  void OnCdmProxyReceived();
   void OnBufferingStateChange(BufferingState state,
                               BufferingStateChangeReason reason);
 

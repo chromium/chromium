@@ -113,8 +113,7 @@ class MEDIA_EXPORT MediaFoundationCdm final : public ContentDecryptionModule,
 
   // CdmContext implementation.
   bool RequiresMediaFoundationRenderer() override;
-  bool GetMediaFoundationCdmProxy(
-      GetMediaFoundationCdmProxyCB get_mf_cdm_proxy_cb) override;
+  scoped_refptr<MediaFoundationCdmProxy> GetMediaFoundationCdmProxy() override;
 
  private:
   ~MediaFoundationCdm() override;

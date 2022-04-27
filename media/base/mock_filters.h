@@ -658,8 +658,8 @@ class MockCdmContext : public CdmContext {
 
 #if BUILDFLAG(IS_WIN)
   MOCK_METHOD0(RequiresMediaFoundationRenderer, bool());
-  MOCK_METHOD1(GetMediaFoundationCdmProxy,
-               bool(GetMediaFoundationCdmProxyCB get_mf_cdm_proxy_cb));
+  MOCK_METHOD0(GetMediaFoundationCdmProxy,
+               scoped_refptr<MediaFoundationCdmProxy>());
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   MOCK_METHOD0(GetChromeOsCdmContext, chromeos::ChromeOsCdmContext*());

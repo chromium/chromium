@@ -17,7 +17,6 @@
 #include "base/win/scoped_propvariant.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_promise.h"
 #include "media/base/win/media_foundation_cdm_proxy.h"
 #include "media/base/win/mf_helpers.h"
@@ -509,13 +508,13 @@ bool MediaFoundationCdm::RequiresMediaFoundationRenderer() {
   return true;
 }
 
-bool MediaFoundationCdm::GetMediaFoundationCdmProxy(
-    GetMediaFoundationCdmProxyCB get_mf_cdm_proxy_cb) {
+scoped_refptr<MediaFoundationCdmProxy>
+MediaFoundationCdm::GetMediaFoundationCdmProxy() {
   DVLOG_FUNC(1);
 
   if (!mf_cdm_) {
     DLOG(ERROR) << __func__ << ": Invalid state with null `mf_cdm_`";
-    return false;
+    return nullptr;
   }
 
   if (!cdm_proxy_) {
@@ -527,8 +526,7 @@ bool MediaFoundationCdm::GetMediaFoundationCdmProxy(
                             weak_factory_.GetWeakPtr()));
   }
 
-  BindToCurrentLoop(std::move(get_mf_cdm_proxy_cb)).Run(cdm_proxy_);
-  return true;
+  return cdm_proxy_;
 }
 
 bool MediaFoundationCdm::OnSessionId(
@@ -596,7 +594,8 @@ void MediaFoundationCdm::CloseSessionInternal(
     return;
   }
 
-  // EME requires running session closed algorithm before resolving the promise.
+  // EME requires running session closed algorithm before resolving the
+  // promise.
   sessions_.erase(session_id);
   session_closed_cb_.Run(session_id, reason);
   promise->resolve();

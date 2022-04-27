@@ -191,6 +191,16 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
   if (!InitializeMediaFoundation())
     return E_FAIL;
 
+  // Set `cdm_proxy_` early on so errors can be reported via the CDM for better
+  // error aggregation. See `CdmDocumentServiceImpl::OnCdmEvent()`.
+  if (cdm_context_) {
+    cdm_proxy_ = cdm_context_->GetMediaFoundationCdmProxy();
+    if (!cdm_proxy_) {
+      DLOG(ERROR) << __func__ << ": CDM does not support MF CDM interface";
+      return MF_E_UNEXPECTED;
+    }
+  }
+
   // TODO(frankli): Only call the followings when there is a video stream.
   RETURN_IF_FAILED(InitializeDXGIDeviceManager());
   RETURN_IF_FAILED(InitializeVirtualVideoWindow());
@@ -302,18 +312,13 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
       content_protection_manager_.Get()));
 
   waiting_for_mf_cdm_ = true;
-  if (!cdm_context_)
+  if (!cdm_context_) {
+    DCHECK(!cdm_proxy_);
     return S_OK;
-
-  // Has |cdm_context_|.
-  if (!cdm_context_->GetMediaFoundationCdmProxy(
-          base::BindOnce(&MediaFoundationRenderer::OnCdmProxyReceived,
-                         weak_factory_.GetWeakPtr()))) {
-    DLOG(ERROR) << __func__
-                << ": CdmContext does not support MF CDM interface.";
-    return MF_E_UNEXPECTED;
   }
 
+  DCHECK(cdm_proxy_);
+  OnCdmProxyReceived();
   return S_OK;
 }
 
@@ -400,13 +405,14 @@ void MediaFoundationRenderer::SetCdm(CdmContext* cdm_context,
   cdm_context_ = cdm_context;
 
   if (waiting_for_mf_cdm_) {
-    if (!cdm_context_->GetMediaFoundationCdmProxy(
-            base::BindOnce(&MediaFoundationRenderer::OnCdmProxyReceived,
-                           weak_factory_.GetWeakPtr()))) {
-      DLOG(ERROR) << "Decryptor does not support MF CDM interface.";
+    cdm_proxy_ = cdm_context_->GetMediaFoundationCdmProxy();
+    if (!cdm_proxy_) {
+      DLOG(ERROR) << "CDM does not support MediaFoundationCdmProxy";
       std::move(cdm_attached_cb).Run(false);
       return;
     }
+
+    OnCdmProxyReceived();
   }
 
   std::move(cdm_attached_cb).Run(true);
@@ -418,9 +424,9 @@ void MediaFoundationRenderer::SetLatencyHint(
   NOTIMPLEMENTED() << "We do not use the latency hint today";
 }
 
-void MediaFoundationRenderer::OnCdmProxyReceived(
-    scoped_refptr<MediaFoundationCdmProxy> cdm_proxy) {
+void MediaFoundationRenderer::OnCdmProxyReceived() {
   DVLOG_FUNC(1);
+  DCHECK(cdm_proxy_);
 
   if (!waiting_for_mf_cdm_ || !content_protection_manager_) {
     OnError(PIPELINE_ERROR_INVALID_STATE,
@@ -429,7 +435,6 @@ void MediaFoundationRenderer::OnCdmProxyReceived(
   }
 
   waiting_for_mf_cdm_ = false;
-  cdm_proxy_ = std::move(cdm_proxy);
   content_protection_manager_->SetCdmProxy(cdm_proxy_);
   mf_source_->SetCdmProxy(cdm_proxy_);
 

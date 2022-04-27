@@ -35,9 +35,9 @@ bool CdmContext::RequiresMediaFoundationRenderer() {
   return false;
 }
 
-bool CdmContext::GetMediaFoundationCdmProxy(
-    GetMediaFoundationCdmProxyCB get_mf_cdm_proxy_cb) {
-  return false;
+scoped_refptr<MediaFoundationCdmProxy>
+CdmContext::GetMediaFoundationCdmProxy() {
+  return nullptr;
 }
 #endif
 

@@ -151,10 +151,6 @@ class MediaFoundationCdmTest : public testing::Test {
     EXPECT_EQ(session_id_, kSessionId);
   }
 
-  void OnCdmProxyReceived(scoped_refptr<MediaFoundationCdmProxy> mf_cdm_proxy) {
-    mf_cdm_proxy_ = std::move(mf_cdm_proxy);
-  }
-
  protected:
   base::test::TaskEnvironment task_environment_;
 
@@ -491,8 +487,7 @@ TEST_F(MediaFoundationCdmTest, HardwareContextReset) {
   CreateSessionAndGenerateRequest();
 
   CdmContext* cdm_context = cdm_->GetCdmContext();
-  cdm_context->GetMediaFoundationCdmProxy(base::BindOnce(
-      &MediaFoundationCdmTest::OnCdmProxyReceived, base::Unretained(this)));
+  mf_cdm_proxy_ = cdm_context->GetMediaFoundationCdmProxy();
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(mf_cdm_proxy_);
 
@@ -511,8 +506,7 @@ TEST_F(MediaFoundationCdmTest, HardwareContextReset_InitializeFailure) {
   CreateSessionAndGenerateRequest();
 
   CdmContext* cdm_context = cdm_->GetCdmContext();
-  cdm_context->GetMediaFoundationCdmProxy(base::BindOnce(
-      &MediaFoundationCdmTest::OnCdmProxyReceived, base::Unretained(this)));
+  mf_cdm_proxy_ = cdm_context->GetMediaFoundationCdmProxy();
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(mf_cdm_proxy_);
 
