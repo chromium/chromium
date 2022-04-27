@@ -18,8 +18,8 @@ using ::testing::Eq;
 
 struct TbtTestCase {
   std::string test_name;
-  cros_healthd::ThunderboltSecurityLevel healthd_security_level;
-  reporting::ThunderboltSecurityLevel reporting_security_level;
+  std::vector<cros_healthd::ThunderboltSecurityLevel> healthd_security_levels;
+  std::vector<reporting::ThunderboltSecurityLevel> reporting_security_levels;
 };
 
 struct MemoryEncryptionTestCase {
@@ -75,17 +75,18 @@ cros_healthd::TelemetryInfoPtr CreateUsbBusResult(
 }
 
 cros_healthd::TelemetryInfoPtr CreateThunderboltBusResult(
-    cros_healthd::ThunderboltSecurityLevel security_level) {
+    std::vector<cros_healthd::ThunderboltSecurityLevel> security_levels) {
   auto telemetry_info = cros_healthd::TelemetryInfo::New();
   std::vector<cros_healthd::BusDevicePtr> bus_devices;
 
-  auto tbt_device = cros_healthd::BusDevice::New();
-  // Subtract one from security level to offset the unspecified index.
-  tbt_device->bus_info = cros_healthd::BusInfo::NewThunderboltBusInfo(
-      cros_healthd::ThunderboltBusInfo::New(
-          security_level,
-          std::vector<cros_healthd::ThunderboltBusInterfaceInfoPtr>()));
-  bus_devices.push_back(std::move(tbt_device));
+  for (const auto& security_level : security_levels) {
+    auto tbt_device = cros_healthd::BusDevice::New();
+    tbt_device->bus_info = cros_healthd::BusInfo::NewThunderboltBusInfo(
+        cros_healthd::ThunderboltBusInfo::New(
+            security_level,
+            std::vector<cros_healthd::ThunderboltBusInterfaceInfoPtr>()));
+    bus_devices.push_back(std::move(tbt_device));
+  }
 
   telemetry_info->bus_result =
       cros_healthd::BusResult::NewBusDevices(std::move(bus_devices));
@@ -347,15 +348,20 @@ TEST_P(CrosHealthdMetricSamplerMemoryEncryptionTest,
 TEST_P(CrosHealthdMetricSamplerTbtTest, TestTbtSecurityLevels) {
   const TbtTestCase& test_case = GetParam();
   MetricData result =
-      CollectData(CreateThunderboltBusResult(test_case.healthd_security_level),
+      CollectData(CreateThunderboltBusResult(test_case.healthd_security_levels),
                   cros_healthd::ProbeCategoryEnum::kBus,
                   CrosHealthdMetricSampler::MetricType::kInfo);
   ASSERT_TRUE(result.has_info_data());
   ASSERT_TRUE(result.info_data().has_bus_device_info());
-  ASSERT_TRUE(result.info_data().bus_device_info().has_thunderbolt_info());
-  EXPECT_EQ(
-      result.info_data().bus_device_info().thunderbolt_info().security_level(),
-      test_case.reporting_security_level);
+  ASSERT_EQ(test_case.healthd_security_levels.size(),
+            result.info_data().bus_device_info().thunderbolt_info_size());
+  for (int i = 0; i < test_case.healthd_security_levels.size(); i++) {
+    EXPECT_EQ(result.info_data()
+                  .bus_device_info()
+                  .thunderbolt_info(i)
+                  .security_level(),
+              test_case.reporting_security_levels[i]);
+  }
 }
 
 TEST_F(CrosHealthdMetricSamplerTest, TestKeylockerConfigured) {
@@ -532,23 +538,43 @@ INSTANTIATE_TEST_SUITE_P(
     CrosHealthdMetricSamplerTbtTests,
     CrosHealthdMetricSamplerTbtTest,
     testing::ValuesIn<TbtTestCase>({
-        {"TbtSecurityNoneLevel", cros_healthd::ThunderboltSecurityLevel::kNone,
-         THUNDERBOLT_SECURITY_NONE_LEVEL},
+        {"TbtSecurityNoneLevel",
+         std::vector<cros_healthd::ThunderboltSecurityLevel>{
+             cros_healthd::ThunderboltSecurityLevel::kNone},
+         std::vector<reporting::ThunderboltSecurityLevel>{
+             THUNDERBOLT_SECURITY_NONE_LEVEL}},
         {"TbtSecurityUserLevel",
-         cros_healthd::ThunderboltSecurityLevel::kUserLevel,
-         THUNDERBOLT_SECURITY_USER_LEVEL},
+         std::vector<cros_healthd::ThunderboltSecurityLevel>{
+             cros_healthd::ThunderboltSecurityLevel::kUserLevel},
+         std::vector<reporting::ThunderboltSecurityLevel>{
+             THUNDERBOLT_SECURITY_USER_LEVEL}},
         {"TbtSecuritySecureLevel",
-         cros_healthd::ThunderboltSecurityLevel::kSecureLevel,
-         THUNDERBOLT_SECURITY_SECURE_LEVEL},
+         std::vector<cros_healthd::ThunderboltSecurityLevel>{
+             cros_healthd::ThunderboltSecurityLevel::kSecureLevel},
+         std::vector<reporting::ThunderboltSecurityLevel>{
+             THUNDERBOLT_SECURITY_SECURE_LEVEL}},
         {"TbtSecurityDpOnlyLevel",
-         cros_healthd::ThunderboltSecurityLevel::kDpOnlyLevel,
-         THUNDERBOLT_SECURITY_DP_ONLY_LEVEL},
+         std::vector<cros_healthd::ThunderboltSecurityLevel>{
+             cros_healthd::ThunderboltSecurityLevel::kDpOnlyLevel},
+         std::vector<reporting::ThunderboltSecurityLevel>{
+             THUNDERBOLT_SECURITY_DP_ONLY_LEVEL}},
         {"TbtSecurityUsbOnlyLevel",
-         cros_healthd::ThunderboltSecurityLevel::kUsbOnlyLevel,
-         THUNDERBOLT_SECURITY_USB_ONLY_LEVEL},
+         std::vector<cros_healthd::ThunderboltSecurityLevel>{
+             cros_healthd::ThunderboltSecurityLevel::kUsbOnlyLevel},
+         std::vector<reporting::ThunderboltSecurityLevel>{
+             THUNDERBOLT_SECURITY_USB_ONLY_LEVEL}},
         {"TbtSecurityNoPcieLevel",
-         cros_healthd::ThunderboltSecurityLevel::kNoPcieLevel,
-         THUNDERBOLT_SECURITY_NO_PCIE_LEVEL},
+         std::vector<cros_healthd::ThunderboltSecurityLevel>{
+             cros_healthd::ThunderboltSecurityLevel::kNoPcieLevel},
+         std::vector<reporting::ThunderboltSecurityLevel>{
+             THUNDERBOLT_SECURITY_NO_PCIE_LEVEL}},
+        {"TbtMultipleControllers",
+         std::vector<cros_healthd::ThunderboltSecurityLevel>{
+             cros_healthd::ThunderboltSecurityLevel::kNoPcieLevel,
+             cros_healthd::ThunderboltSecurityLevel::kUsbOnlyLevel},
+         std::vector<reporting::ThunderboltSecurityLevel>{
+             THUNDERBOLT_SECURITY_NO_PCIE_LEVEL,
+             THUNDERBOLT_SECURITY_USB_ONLY_LEVEL}},
     }),
     [](const testing::TestParamInfo<CrosHealthdMetricSamplerTbtTest::ParamType>&
            info) { return info.param.test_name; });
