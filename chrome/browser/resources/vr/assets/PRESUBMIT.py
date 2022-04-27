@@ -44,13 +44,16 @@ def CheckVersionAndAssetParity(input_api, output_api):
         extension in {'sha1', 'png', 'wav'} and action in {'A', 'D'}):
       changed_asset_files[dirname].append((action, basename_without_extension))
     if (extension == 'sha1' or basename == 'vr_assets_component_files.json'):
-      changed_assets = True
+      # See if there are actually changes or if it's just --files or --all:
+      if file.ChangedContents():
+        changed_assets = True
     if basename == 'vr_assets_component_files.json':
       changed_component_list = True
     if basename == 'VERSION':
-      changed_version = True
       old_version = parse_version.ParseVersion(file.OldContents())
       new_version = parse_version.ParseVersion(file.NewContents())
+      if new_version != old_version:
+        changed_version = True
 
   local_version_filename = input_api.os_path.join(
       input_api.os_path.dirname(input_api.AffectedFiles()[0].LocalPath()),
