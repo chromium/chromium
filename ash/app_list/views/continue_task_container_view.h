@@ -65,7 +65,9 @@ class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
   bool OnKeyPressed(const ui::KeyEvent& event) override;
 
   void Update();
+
   size_t num_results() const { return num_results_; }
+  size_t num_file_results() const { return num_file_results_; }
 
   void SetResults(SearchModel::SearchResults* results);
 
@@ -179,8 +181,16 @@ class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
 
   // The list of tasks views for the container.
   std::vector<ContinueTaskView*> suggestion_tasks_views_;
-  // The number of results shown on the container. Each result has one view.
+
+  // The number of results shown in the container. Each result has one view.
   size_t num_results_ = 0;
+
+  // The number of file results shown in the container - different from
+  // num_results_ when release notes result is shown in the container. Release
+  // note result does not count towards min number of items needed to show
+  // continue section, so `num_files_results_` should be used to determine
+  // whether continue section can be shown.
+  size_t num_file_results_ = 0;
 
   // The number of columns available for the view. This is ignored in tablet
   // mode.

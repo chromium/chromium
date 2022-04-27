@@ -164,7 +164,7 @@ class ContinueSectionViewTestBase : public AshTestBase {
   void AddTestSearchResults(int count) {
     for (int i = 0; i < count; ++i)
       AddSearchResult(base::StringPrintf("id_%d", i),
-                      AppListSearchResultType::kFileChip);
+                      AppListSearchResultType::kZeroStateFile);
   }
 
   void AddSearchResult(const std::string& id, AppListSearchResultType type) {
@@ -384,8 +384,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Bool());
 
 TEST_P(ContinueSectionViewTest, CreatesViewsForTasks) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
 
   EnsureLauncherShown();
 
@@ -394,9 +394,9 @@ TEST_P(ContinueSectionViewTest, CreatesViewsForTasks) {
 }
 
 TEST_P(ContinueSectionViewTest, VerifyAddedViewsOrder) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
 
   EnsureLauncherShown();
   VerifyResultViewsUpdated();
@@ -408,10 +408,53 @@ TEST_P(ContinueSectionViewTest, VerifyAddedViewsOrder) {
   EXPECT_EQ(GetResultViewAt(2)->result()->id(), "id3");
 }
 
+TEST_P(ContinueSectionViewTest, ShowsHelpAppResults) {
+  AddSearchResult("id1", AppListSearchResultType::kHelpApp);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id4", AppListSearchResultType::kZeroStateDrive);
+
+  EnsureLauncherShown();
+  VerifyResultViewsUpdated();
+  EXPECT_TRUE(GetContinueSectionView()->GetVisible());
+
+  ContinueSectionView* view = GetContinueSectionView();
+  ASSERT_EQ(view->GetTasksSuggestionsCount(), 4u);
+  EXPECT_EQ(GetResultViewAt(0)->result()->id(), "id1");
+  EXPECT_EQ(GetResultViewAt(1)->result()->id(), "id2");
+  EXPECT_EQ(GetResultViewAt(2)->result()->id(), "id3");
+  EXPECT_EQ(GetResultViewAt(3)->result()->id(), "id4");
+}
+
+TEST_P(ContinueSectionViewTest, HelpAppResultNotShownWithoutEnoughOtherFiles) {
+  AddSearchResult("id1", AppListSearchResultType::kHelpApp);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+
+  EnsureLauncherShown();
+  VerifyResultViewsUpdated();
+
+  ContinueSectionView* view = GetContinueSectionView();
+  ASSERT_EQ(view->GetTasksSuggestionsCount(), 2u);
+  EXPECT_FALSE(GetContinueSectionView()->GetVisible());
+}
+
+TEST_P(ContinueSectionViewTest, HelpAppShownInTabletModeWith2FileResults) {
+  AddSearchResult("id1", AppListSearchResultType::kHelpApp);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateFile);
+
+  EnsureLauncherShown();
+  VerifyResultViewsUpdated();
+
+  ContinueSectionView* view = GetContinueSectionView();
+  ASSERT_EQ(view->GetTasksSuggestionsCount(), 3u);
+  EXPECT_EQ(GetParam(), GetContinueSectionView()->GetVisible());
+}
+
 TEST_P(ContinueSectionViewTest, ModelObservers) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
 
   EnsureLauncherShown();
 
@@ -422,7 +465,7 @@ TEST_P(ContinueSectionViewTest, ModelObservers) {
   VerifyResultViewsUpdated();
 
   // Insert a new result.
-  AddSearchResult("id4", AppListSearchResultType::kFileChip);
+  AddSearchResult("id4", AppListSearchResultType::kZeroStateFile);
   VerifyResultViewsUpdated();
 
   // Delete from start.
@@ -431,12 +474,12 @@ TEST_P(ContinueSectionViewTest, ModelObservers) {
 }
 
 TEST_P(ContinueSectionViewTest, HideContinueSectionWhenResultRemoved) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
 
   // Minimum files for clamshell mode are 3.
   if (!tablet_mode_param())
-    AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+    AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
 
   EnsureLauncherShown();
   VerifyResultViewsUpdated();
@@ -450,26 +493,26 @@ TEST_P(ContinueSectionViewTest, HideContinueSectionWhenResultRemoved) {
 }
 
 TEST_P(ContinueSectionViewTest, ShowContinueSectionWhenResultAdded) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
 
   // Minimum files for clamshell mode are 3.
   if (!tablet_mode_param())
-    AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+    AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
 
   EnsureLauncherShown();
   VerifyResultViewsUpdated();
   EXPECT_FALSE(GetContinueSectionView()->GetVisible());
 
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
   VerifyResultViewsUpdated();
 
   EXPECT_TRUE(GetContinueSectionView()->GetVisible());
 }
 
 TEST_P(ContinueSectionViewTest, ClickOpensSearchResult) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
 
   EnsureLauncherShown();
 
@@ -488,9 +531,9 @@ TEST_P(ContinueSectionViewTest, ClickOpensSearchResult) {
 }
 
 TEST_P(ContinueSectionViewTest, TapOpensSearchResult) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
 
   EnsureLauncherShown();
 
@@ -509,9 +552,9 @@ TEST_P(ContinueSectionViewTest, TapOpensSearchResult) {
 }
 
 TEST_F(ContinueSectionViewClamshellModeTest, PressEnterOpensSearchResult) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
 
   EnsureLauncherShown();
 
@@ -534,10 +577,10 @@ TEST_F(ContinueSectionViewClamshellModeTest, PressEnterOpensSearchResult) {
 }
 
 TEST_F(ContinueSectionViewClamshellModeTest, DownArrowMovesFocusVertically) {
-  AddSearchResult("id0", AppListSearchResultType::kFileChip);
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id0", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
   EnsureLauncherShown();
   VerifyResultViewsUpdated();
 
@@ -574,10 +617,10 @@ TEST_F(ContinueSectionViewClamshellModeTest, DownArrowMovesFocusVertically) {
 }
 
 TEST_F(ContinueSectionViewClamshellModeTest, UpArrowMovesFocusVertically) {
-  AddSearchResult("id0", AppListSearchResultType::kFileChip);
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id0", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
   EnsureLauncherShown();
   VerifyResultViewsUpdated();
 
@@ -670,9 +713,9 @@ TEST_F(ContinueSectionViewClamshellModeTest,
 
 // Regression test for https://crbug.com/1273170.
 TEST_F(ContinueSectionViewClamshellModeTest, SearchAndCancelDoesNotChangeSize) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
   EnsureLauncherShown();
 
   auto* apps_grid_view = GetAppListTestHelper()->GetScrollableAppsGridView();
@@ -687,9 +730,9 @@ TEST_F(ContinueSectionViewClamshellModeTest, SearchAndCancelDoesNotChangeSize) {
 
   // Simulate the suggestions changing.
   GetResults()->RemoveAll();
-  AddSearchResult("id3", AppListSearchResultType::kFileChip);
-  AddSearchResult("id4", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id5", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id4", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id5", AppListSearchResultType::kZeroStateDrive);
 
   // Cancel the search.
   PressAndReleaseKey(ui::VKEY_ESCAPE);
@@ -704,9 +747,9 @@ TEST_F(ContinueSectionViewClamshellModeTest, SearchAndCancelDoesNotChangeSize) {
 }
 
 TEST_P(ContinueSectionViewTest, RightClickOpensContextMenu) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
 
   EnsureLauncherShown();
 
@@ -721,9 +764,9 @@ TEST_P(ContinueSectionViewTest, RightClickOpensContextMenu) {
 }
 
 TEST_P(ContinueSectionViewTest, OpenWithContextMenuOption) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
 
   EnsureLauncherShown();
 
@@ -744,9 +787,9 @@ TEST_P(ContinueSectionViewTest, OpenWithContextMenuOption) {
 }
 
 TEST_P(ContinueSectionViewTest, SelectCancelOptionCloseDialogNoRemove) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
 
   EnsureLauncherShown();
 
@@ -768,9 +811,9 @@ TEST_P(ContinueSectionViewTest, SelectCancelOptionCloseDialogNoRemove) {
 }
 
 TEST_P(ContinueSectionViewTest, SelectRemoveOptionCloseDialogAndRemove) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
 
   EnsureLauncherShown();
 
@@ -794,10 +837,10 @@ TEST_P(ContinueSectionViewTest, SelectRemoveOptionCloseDialogAndRemove) {
 }
 
 TEST_P(ContinueSectionViewTest, RemoveResultShowsFeedbackDialogOnce) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id4", AppListSearchResultType::kFileChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id4", AppListSearchResultType::kZeroStateFile);
 
   EnsureLauncherShown();
 
@@ -834,10 +877,10 @@ TEST_P(ContinueSectionViewTest, RemoveResultShowsFeedbackDialogOnce) {
 }
 
 TEST_P(ContinueSectionViewTest, RemoveResultShowsFeedbackUntilFeedbackSent) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id4", AppListSearchResultType::kFileChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id4", AppListSearchResultType::kZeroStateFile);
 
   EnsureLauncherShown();
 
@@ -891,10 +934,10 @@ TEST_P(ContinueSectionViewTest, RemoveResultShowsFeedbackUntilFeedbackSent) {
 
 TEST_P(ContinueSectionViewTest,
        RemoveResultShowsFeedbackDialogAgainIfCancelled) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id4", AppListSearchResultType::kFileChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id4", AppListSearchResultType::kZeroStateFile);
 
   EnsureLauncherShown();
 
@@ -929,9 +972,9 @@ TEST_P(ContinueSectionViewTest,
 }
 
 TEST_P(ContinueSectionViewTest, SecondaryPanelOnFeedbackDialogStartsHidden) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
 
   EnsureLauncherShown();
 
@@ -948,9 +991,9 @@ TEST_P(ContinueSectionViewTest, SecondaryPanelOnFeedbackDialogStartsHidden) {
 
 TEST_P(ContinueSectionViewTest,
        SingleSuggestionOnFeedbackDialogShowsSecondaryPanel) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
 
   EnsureLauncherShown();
 
@@ -970,9 +1013,9 @@ TEST_P(ContinueSectionViewTest,
 
 TEST_P(ContinueSectionViewTest,
        AllSuggestionsOnFeedbackDialogHidesSecondaryPanel) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
 
   EnsureLauncherShown();
 
@@ -995,9 +1038,9 @@ TEST_P(ContinueSectionViewTest,
 }
 
 TEST_P(ContinueSectionViewTest, RemoveWithContextMenuOption) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
 
   EnsureLauncherShown();
 
@@ -1020,10 +1063,10 @@ TEST_P(ContinueSectionViewTest, RemoveWithContextMenuOption) {
 
 TEST_P(ContinueSectionViewTest, ResultRemovedLogsMetricInBucket) {
   base::HistogramTester histogram_tester;
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id4", AppListSearchResultType::kFileChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id4", AppListSearchResultType::kZeroStateFile);
 
   EnsureLauncherShown();
 
@@ -1061,10 +1104,10 @@ TEST_P(ContinueSectionViewTest, ResultRemovedLogsMetricInBucket) {
 }
 
 TEST_P(ContinueSectionViewTest, ResultRemovedContextMenuCloses) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id4", AppListSearchResultType::kFileChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id4", AppListSearchResultType::kZeroStateFile);
 
   EnsureLauncherShown();
 
@@ -1094,10 +1137,10 @@ TEST_P(ContinueSectionViewTest, ResultRemovedContextMenuCloses) {
 }
 
 TEST_P(ContinueSectionViewTest, UpdateAppsOnModelChange) {
-  AddSearchResult("id11", AppListSearchResultType::kFileChip);
-  AddSearchResult("id12", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id13", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id14", AppListSearchResultType::kFileChip);
+  AddSearchResult("id11", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id12", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id13", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id14", AppListSearchResultType::kZeroStateFile);
   UpdateDisplay("1200x800");
   EnsureLauncherShown();
 
@@ -1109,11 +1152,11 @@ TEST_P(ContinueSectionViewTest, UpdateAppsOnModelChange) {
   auto model_override = std::make_unique<test::AppListTestModel>();
   auto search_model_override = std::make_unique<SearchModel>();
 
-  AddSearchResultToModel("id21", AppListSearchResultType::kFileChip,
+  AddSearchResultToModel("id21", AppListSearchResultType::kZeroStateFile,
                          search_model_override.get(), "Fake Title");
-  AddSearchResultToModel("id22", AppListSearchResultType::kFileChip,
+  AddSearchResultToModel("id22", AppListSearchResultType::kZeroStateFile,
                          search_model_override.get(), "Fake Title");
-  AddSearchResultToModel("id23", AppListSearchResultType::kFileChip,
+  AddSearchResultToModel("id23", AppListSearchResultType::kZeroStateFile,
                          search_model_override.get(), "Fake Title");
 
   Shell::Get()->app_list_controller()->SetActiveModel(
@@ -1136,9 +1179,9 @@ TEST_P(ContinueSectionViewTest, UpdateAppsOnModelChange) {
 
 TEST_F(ContinueSectionViewTabletModeTest,
        TabletModeLayoutWithThreeSuggestions) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
 
   UpdateDisplay("1200x800");
   EnsureLauncherShown();
@@ -1167,10 +1210,10 @@ TEST_F(ContinueSectionViewTabletModeTest,
 }
 
 TEST_F(ContinueSectionViewTabletModeTest, TabletModeLayoutWithFourSuggestions) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id4", AppListSearchResultType::kFileChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id4", AppListSearchResultType::kZeroStateFile);
 
   UpdateDisplay("1200x800");
   EnsureLauncherShown();
@@ -1200,10 +1243,10 @@ TEST_F(ContinueSectionViewTabletModeTest, TabletModeLayoutWithFourSuggestions) {
 }
 
 TEST_P(ContinueSectionViewTest, NoOverlapsWithRecentApps) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id4", AppListSearchResultType::kFileChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id4", AppListSearchResultType::kZeroStateFile);
   GetAppListTestHelper()->AddRecentApps(5);
   GetAppListTestHelper()->AddAppItems(5);
 
@@ -1217,10 +1260,10 @@ TEST_P(ContinueSectionViewTest, NoOverlapsWithRecentApps) {
 }
 
 TEST_P(ContinueSectionViewTest, NoOverlapsWithAppsGridItems) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id4", AppListSearchResultType::kFileChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id4", AppListSearchResultType::kZeroStateFile);
   GetAppListTestHelper()->AddAppItems(5);
 
   EnsureLauncherShown();
@@ -1240,10 +1283,10 @@ TEST_P(ContinueSectionViewTest, NoOverlapsWithAppsGridItems) {
 // all fit into the available space (while maintaining min width).
 TEST_F(ContinueSectionViewTabletModeTest,
        TabletModeLayoutWithFourSuggestionsWithRestrictedSpace) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id4", AppListSearchResultType::kFileChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id4", AppListSearchResultType::kZeroStateFile);
 
   // Set the display width so only 2 continue section tasks fit into available
   // space.
@@ -1267,12 +1310,14 @@ TEST_F(ContinueSectionViewTabletModeTest,
 }
 
 TEST_P(ContinueSectionViewTest, AllTasksShareTheSameWidth) {
-  AddSearchResultWithTitle("id1", AppListSearchResultType::kFileChip, "title");
+  AddSearchResultWithTitle("id1", AppListSearchResultType::kZeroStateFile,
+                           "title");
   AddSearchResultWithTitle(
-      "id2", AppListSearchResultType::kDriveChip,
+      "id2", AppListSearchResultType::kZeroStateDrive,
       "Really really really long title text for the label");
-  AddSearchResultWithTitle("id3", AppListSearchResultType::kDriveChip, "-");
-  AddSearchResultWithTitle("id4", AppListSearchResultType::kFileChip,
+  AddSearchResultWithTitle("id3", AppListSearchResultType::kZeroStateDrive,
+                           "-");
+  AddSearchResultWithTitle("id4", AppListSearchResultType::kZeroStateFile,
                            "medium title");
 
   UpdateDisplay("1200x800");
@@ -1291,11 +1336,11 @@ TEST_P(ContinueSectionViewTest, AllTasksShareTheSameWidth) {
 }
 
 TEST_P(ContinueSectionViewTest, HideContinueSectionWhithLessThanMinimumFiles) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
 
   // Minimum files for clamshell mode are 3.
   if (!tablet_mode_param())
-    AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+    AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
 
   EnsureLauncherShown();
 
@@ -1306,12 +1351,12 @@ TEST_P(ContinueSectionViewTest, HideContinueSectionWhithLessThanMinimumFiles) {
 }
 
 TEST_P(ContinueSectionViewTest, ShowContinueSectionWhithMinimumFiles) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
 
   // Minimum files for clamshell mode are 3.
   if (!tablet_mode_param())
-    AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+    AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
 
   EnsureLauncherShown();
 
@@ -1322,9 +1367,9 @@ TEST_P(ContinueSectionViewTest, ShowContinueSectionWhithMinimumFiles) {
 }
 
 TEST_P(ContinueSectionViewTest, TaskViewHasRippleWithMenuOpen) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
 
   EnsureLauncherShown();
   VerifyResultViewsUpdated();
@@ -1343,9 +1388,9 @@ TEST_P(ContinueSectionViewTest, TaskViewHasRippleWithMenuOpen) {
 }
 
 TEST_P(ContinueSectionViewTest, TaskViewHidesRippleAfterMenuCloses) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
 
   EnsureLauncherShown();
   VerifyResultViewsUpdated();
@@ -1371,9 +1416,9 @@ TEST_P(ContinueSectionViewTest, TaskViewHidesRippleAfterMenuCloses) {
 }
 
 TEST_P(ContinueSectionViewWithReorderNudgeTest, ShowPrivacyNotice) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
   ResetPrivacyNoticePref();
 
   EnsureLauncherShown();
@@ -1387,9 +1432,9 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest, ShowPrivacyNotice) {
 }
 
 TEST_P(ContinueSectionViewWithReorderNudgeTest, AcceptPrivacyNotice) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
   ResetPrivacyNoticePref();
 
   EnsureLauncherShown();
@@ -1417,9 +1462,9 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest, AcceptPrivacyNotice) {
 }
 
 TEST_P(ContinueSectionViewWithReorderNudgeTest, TimeDismissPrivacyNotice) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
   ResetPrivacyNoticePref();
 
   EnsureLauncherShown();
@@ -1444,9 +1489,9 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest, TimeDismissPrivacyNotice) {
 // when this feature works in tablet mode.
 TEST_F(ContinueSectionViewClamshellModeTest,
        HidingContinueSectionHidesPrivacyNotice) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
   ResetPrivacyNoticePref();
 
   EnsureLauncherShown();
@@ -1468,9 +1513,9 @@ TEST_F(ContinueSectionViewClamshellModeTest,
 
 TEST_P(ContinueSectionViewWithReorderNudgeTest,
        DoNotShowPrivacyNoticeAndReorderNudgeAlternitively) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
   ResetPrivacyNoticePref();
 
   EnsureLauncherShown();
@@ -1515,9 +1560,9 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest,
 
   // After hiding the launcher, add some search results and open the launcher
   // again.
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
   ResetPrivacyNoticePref();
 
   EnsureLauncherShown();
@@ -1571,9 +1616,9 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest,
             AppListToastType::kReorderNudge);
 
   // Add some search results while the launcher is open.
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
   VerifyResultViewsUpdated();
 
   // Neither the privacy notice nor the search results should show.
@@ -1615,9 +1660,9 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest,
 }
 
 TEST_F(ContinueSectionViewTabletModeTest, PrivacyNoticeIsShownInBackground) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
+  AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
+  AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
   ResetPrivacyNoticePref();
 
   EnsureLauncherShown();
@@ -1965,7 +2010,7 @@ TEST_P(ContinueSectionViewTest, AnimatesWhenItemInserted) {
   ASSERT_EQ(4u, initial_bounds.size());
 
   GetResults()->AddAt(
-      1, CreateTestResult("id5", AppListSearchResultType::kDriveChip,
+      1, CreateTestResult("id5", AppListSearchResultType::kZeroStateDrive,
                           "new result"));
 
   ContinueTaskContainerView* const container_view =

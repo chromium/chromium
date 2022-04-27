@@ -172,7 +172,7 @@ void ContinueSectionView::OnSearchResultContainerResultsChanged() {
 }
 
 bool ContinueSectionView::HasMinimumFilesToShow() const {
-  return suggestions_container_->num_results() >=
+  return suggestions_container_->num_file_results() >=
          (tablet_mode_ ? kMinFilesForContinueSectionTabletMode
                        : kMinFilesForContinueSectionClamshellMode);
 }

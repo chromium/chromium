@@ -161,7 +161,7 @@ void AppListTestHelper::AddContinueSuggestionResults(int num_results) {
   for (int i = 0; i < num_results; i++) {
     auto result = std::make_unique<TestSearchResult>();
     result->set_result_id(base::NumberToString(i));
-    result->set_result_type(AppListSearchResultType::kFileChip);
+    result->set_result_type(AppListSearchResultType::kZeroStateFile);
     result->set_display_type(SearchResultDisplayType::kContinue);
     GetSearchResults()->Add(std::move(result));
   }
