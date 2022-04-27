@@ -69,6 +69,10 @@ class MediaStreamManager::StreamUi : public content::MediaStreamUI {
       manager_->RegisterStream(this);
     return 0;
   }
+  void OnDeviceStoppedForSourceChange(
+      const std::string& label,
+      const content::DesktopMediaID& old_media_id,
+      const content::DesktopMediaID& new_media_id) override {}
   void OnDeviceStopped(const std::string& label,
                        const content::DesktopMediaID& media_id) override {}
 

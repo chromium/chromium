@@ -117,6 +117,14 @@ class MediaStreamUI {
       std::vector<DesktopMediaID> screen_capture_ids,
       StateChangeCallback state_change) = 0;
 
+  // Called when the device is stopped because desktop capture identified by
+  // |label| source is about to be changed from |old_media_id| to
+  // |new_media_id|. Note that the switch is not necessarily completed.
+  virtual void OnDeviceStoppedForSourceChange(
+      const std::string& label,
+      const DesktopMediaID& old_media_id,
+      const DesktopMediaID& new_media_id) = 0;
+
   virtual void OnDeviceStopped(const std::string& label,
                                const DesktopMediaID& media_id) = 0;
 

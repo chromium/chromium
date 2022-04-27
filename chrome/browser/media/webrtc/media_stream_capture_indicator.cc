@@ -257,6 +257,16 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
     return 0;
   }
 
+  void OnDeviceStoppedForSourceChange(
+      const std::string& label,
+      const content::DesktopMediaID& old_media_id,
+      const content::DesktopMediaID& new_media_id) override {
+#if BUILDFLAG(IS_CHROMEOS)
+    policy::DlpContentManager::Get()->OnScreenShareSourceChanging(
+        label, old_media_id, new_media_id);
+#endif
+  }
+
   void OnDeviceStopped(const std::string& label,
                        const content::DesktopMediaID& media_id) override {
 #if BUILDFLAG(IS_CHROMEOS)

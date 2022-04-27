@@ -253,8 +253,8 @@ void DlpContentManagerAsh::OnScreenShareStarted(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   for (const content::DesktopMediaID& id : screen_share_ids) {
-    AddScreenShare(label, id, application_title, stop_callback,
-                   state_change_callback, source_callback);
+    AddOrUpdateScreenShare(label, id, application_title, stop_callback,
+                           state_change_callback, source_callback);
   }
   CheckRunningScreenShares();
 }

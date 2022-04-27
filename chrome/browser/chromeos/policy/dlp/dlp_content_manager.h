@@ -21,6 +21,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -97,6 +98,15 @@ class DlpContentManager : public DlpContentObserver,
       const std::string& label,
       const content::DesktopMediaID& media_id) = 0;
 
+  // Called when a screen share is being stopped before processing a source
+  // change from |old_media_id| to |new_media_id|. The share might have been
+  // paused by DLP due to restricted content, so should be resumed before the
+  // change source request proceeds.
+  virtual void OnScreenShareSourceChanging(
+      const std::string& label,
+      const content::DesktopMediaID& old_media_id,
+      const content::DesktopMediaID& new_media_id);
+
   void AddObserver(DlpContentManagerObserver* observer,
                    DlpContentRestriction restriction);
 
@@ -122,6 +132,14 @@ class DlpContentManager : public DlpContentObserver,
   // Used to keep track of running screen shares.
   class ScreenShareInfo {
    public:
+    enum class State {
+      kRunning,
+      kPaused,
+      kStopped,
+      kRunningBeforeSourceChange,
+      kPausedBeforeSourceChange
+    };
+
     ScreenShareInfo(
         const std::string& label,
         const content::DesktopMediaID& media_id,
@@ -131,21 +149,48 @@ class DlpContentManager : public DlpContentObserver,
         content::MediaStreamUI::SourceCallback source_callback);
     ~ScreenShareInfo();
 
+    // Updates an existing ScreenShareInfo instance. Should only be called for
+    // tab shares and after a source change has occurred. In addition to the
+    // passed parameters, restores the state to a correct value and updates
+    // notifications if necessary.
+    void UpdateAfterSourceChange(
+        const content::DesktopMediaID& media_id,
+        const std::u16string& application_title,
+        base::OnceClosure stop_callback,
+        content::MediaStreamUI::StateChangeCallback state_change_callback,
+        content::MediaStreamUI::SourceCallback source_callback);
+
     bool operator==(const ScreenShareInfo& other) const;
     bool operator!=(const ScreenShareInfo& other) const;
 
-    const content::DesktopMediaID& GetMediaId() const;
-    const std::string& GetLabel() const;
-    const std::u16string& GetApplicationTitle() const;
-    bool IsRunning() const;
-    base::WeakPtr<content::WebContents> GetWebContents() const;
+    const content::DesktopMediaID& media_id() const;
+    const content::DesktopMediaID& new_media_id() const;
+    void set_new_media_id(const content::DesktopMediaID& media_id);
+    const std::string& label() const;
+    const std::u16string& application_title() const;
+    State state() const;
+    base::WeakPtr<content::WebContents> web_contents() const;
+    void set_latest_confidential_contents_info(
+        ConfidentialContentsInfo confidential_contents_info);
+    // Returns the restriction information that was the last enforced on this
+    // screen share.
+    const RestrictionLevelAndUrl& GetLatestRestriction() const;
+    // Returns the confidential contents that caused the latest restriction.
+    const DlpConfidentialContents& GetConfidentialContents() const;
 
     // Pauses a running screen share.
     // No-op if the screen share is already paused.
     void Pause();
     // Resumes a paused screen share.
+    // For tab shares, resuming can be a consequence of navigating within a page
+    // so calls the |source_callback_| to ensure that the |media_id| is updated.
     // No-op if the screen share is already running.
     void Resume();
+    // Changes the state to indicate that the source is being changed.
+    // Every source change stops the share and starts a new one, so this is
+    // needed to store all the required information in the meantime and update
+    // it if the source change is successful.
+    void ChangeStateBeforeSourceChange();
     // Stops the screen share. Can only be called once.
     void Stop();
 
@@ -158,15 +203,6 @@ class DlpContentManager : public DlpContentObserver,
     // share.
     void HideNotifications();
 
-    // Returns the restriction information that was the last enforced on this
-    // screen share.
-    const RestrictionLevelAndUrl& GetLatestRestriction() const;
-    // Returns the confidential contents that caused the latest restriction.
-    const DlpConfidentialContents& GetConfidentialContents() const;
-    // Saves |confidential_contents_info| as the latest information on the
-    // restriction and causing contents.
-    void SetConfidentialContentsInfo(
-        ConfidentialContentsInfo confidential_contents_info);
     // If currently opened, closes the associated DlpWarnDialog widget.
     void MaybeCloseDialogWidget();
     // Saves the |dialog_widget| as the current dialog handle.
@@ -183,7 +219,6 @@ class DlpContentManager : public DlpContentObserver,
       kShowingPausedNotification,
       kShowingResumedNotification
     };
-    enum class State { kRunning, kPaused, kStopped };
     // Shows (if |show| is true) or hides (if |show| is false) paused
     // notification for this screen share. Does nothing if the notification is
     // already in the required state.
@@ -195,6 +230,7 @@ class DlpContentManager : public DlpContentObserver,
 
     std::string label_;
     content::DesktopMediaID media_id_;
+    content::DesktopMediaID new_media_id_;
     // TODO(crbug.com/1264793): Don't cache the application name.
     std::u16string application_title_;
     base::OnceClosure stop_callback_;
@@ -285,10 +321,12 @@ class DlpContentManager : public DlpContentObserver,
       const content::DesktopMediaID& media_id,
       content::WebContents* web_contents) const = 0;
 
-  // Adds screen share to be tracked in |running_screen_shares_|.
-  // Callbacks are used to control the screen share state in case it should be
-  // paused, resumed or completely stopped by DLP.
-  void AddScreenShare(
+  // If a screen share with the same |label| already exists in
+  // |running_screen_shares_|, updates the existing object. Otherwise adds a new
+  // screen share to be tracked in |running_screen_shares_|. Callbacks are used
+  // to control the screen share state in case it should be paused, resumed or
+  // completely stopped by DLP.
+  void AddOrUpdateScreenShare(
       const std::string& label,
       const content::DesktopMediaID& media_id,
       const std::u16string& application_title,

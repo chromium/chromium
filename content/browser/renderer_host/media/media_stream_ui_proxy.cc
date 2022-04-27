@@ -14,6 +14,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/common/content_switches.h"
 #include "media/capture/video/fake_video_capture_device.h"
@@ -55,6 +56,9 @@ class MediaStreamUIProxy::Core {
                  std::vector<DesktopMediaID> screen_capture_ids);
   void OnDeviceStopped(const std::string& label,
                        const DesktopMediaID& media_id);
+  void OnDeviceStoppedForSourceChange(const std::string& label,
+                                      const DesktopMediaID& old_media_id,
+                                      const DesktopMediaID& new_media_id);
 
   void OnRegionCaptureRectChanged(
       const absl::optional<gfx::Rect>& region_capture_rect);
@@ -173,6 +177,17 @@ void MediaStreamUIProxy::Core::OnDeviceStopped(const std::string& label,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (ui_) {
     ui_->OnDeviceStopped(label, media_id);
+  }
+}
+
+void MediaStreamUIProxy::Core::OnDeviceStoppedForSourceChange(
+    const std::string& label,
+    const DesktopMediaID& old_media_id,
+    const DesktopMediaID& new_media_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (ui_) {
+    ui_->OnDeviceStoppedForSourceChange(label, old_media_id, new_media_id);
+    ui_->OnDeviceStopped(label, old_media_id);
   }
 }
 
@@ -350,6 +365,18 @@ void MediaStreamUIProxy::OnDeviceStopped(const std::string& label,
                                 label, media_id));
 }
 
+void MediaStreamUIProxy::OnDeviceStoppedForSourceChange(
+    const std::string& label,
+    const DesktopMediaID& old_media_id,
+    const DesktopMediaID& new_media_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Core::OnDeviceStoppedForSourceChange, core_->GetWeakPtr(),
+                     label, old_media_id, new_media_id));
+}
+
 void MediaStreamUIProxy::OnRegionCaptureRectChanged(
     const absl::optional<gfx::Rect>& region_capture_rec) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -421,7 +448,7 @@ FakeMediaStreamUIProxy::FakeMediaStreamUIProxy(
   core_->tests_use_fake_render_frame_hosts_ = tests_use_fake_render_frame_hosts;
 }
 
-FakeMediaStreamUIProxy::~FakeMediaStreamUIProxy() {}
+FakeMediaStreamUIProxy::~FakeMediaStreamUIProxy() = default;
 
 void FakeMediaStreamUIProxy::SetAvailableDevices(
     const blink::MediaStreamDevices& devices) {
@@ -510,5 +537,10 @@ void FakeMediaStreamUIProxy::OnStarted(
 
 void FakeMediaStreamUIProxy::OnDeviceStopped(const std::string& label,
                                              const DesktopMediaID& media_id) {}
+
+void FakeMediaStreamUIProxy::OnDeviceStoppedForSourceChange(
+    const std::string& label,
+    const DesktopMediaID& old_media_id,
+    const DesktopMediaID& new_media_id) {}
 
 }  // namespace content

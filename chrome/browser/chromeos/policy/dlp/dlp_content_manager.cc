@@ -216,6 +216,34 @@ DlpContentManager::ScreenShareInfo::~ScreenShareInfo() {
   HideNotifications();
 }
 
+void DlpContentManager::ScreenShareInfo::UpdateAfterSourceChange(
+    const content::DesktopMediaID& media_id,
+    const std::u16string& application_title,
+    base::OnceClosure stop_callback,
+    content::MediaStreamUI::StateChangeCallback state_change_callback,
+    content::MediaStreamUI::SourceCallback source_callback) {
+  DCHECK(state_ == State::kRunningBeforeSourceChange ||
+         state_ == State::kPausedBeforeSourceChange);
+  DCHECK(new_media_id_ == media_id);
+  DCHECK(media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS);
+
+  media_id_ = media_id;
+  stop_callback_ = std::move(stop_callback);
+  state_change_callback_ = std::move(state_change_callback);
+  source_callback_ = std::move(source_callback);
+  auto* web_contents = GetWebContentsFromMediaId(media_id);
+  web_contents_ = web_contents ? web_contents->GetWeakPtr() : nullptr;
+  // This is called from AddScreenShare() which is only called when a new stream
+  // is starting or when the source was successfully changed and the stream is
+  // running again, so we can set the state to running.
+  if (state_ == State::kPausedBeforeSourceChange) {
+    state_ = State::kRunning;
+    MaybeUpdateNotifications();
+  } else {
+    state_ = State::kRunning;
+  }
+}
+
 bool DlpContentManager::ScreenShareInfo::operator==(
     const DlpContentManager::ScreenShareInfo& other) const {
   return label_ == other.label_ && media_id_ == other.media_id_;
@@ -226,29 +254,55 @@ bool DlpContentManager::ScreenShareInfo::operator!=(
   return !(*this == other);
 }
 
-const content::DesktopMediaID& DlpContentManager::ScreenShareInfo::GetMediaId()
+const content::DesktopMediaID& DlpContentManager::ScreenShareInfo::media_id()
     const {
   return media_id_;
 }
 
-const std::string& DlpContentManager::ScreenShareInfo::GetLabel() const {
+const content::DesktopMediaID&
+DlpContentManager::ScreenShareInfo::new_media_id() const {
+  return new_media_id_;
+}
+
+void DlpContentManager::ScreenShareInfo::set_new_media_id(
+    const content::DesktopMediaID& media_id) {
+  new_media_id_ = media_id;
+}
+
+const std::string& DlpContentManager::ScreenShareInfo::label() const {
   return label_;
 }
 
-const std::u16string& DlpContentManager::ScreenShareInfo::GetApplicationTitle()
+const std::u16string& DlpContentManager::ScreenShareInfo::application_title()
     const {
   // TODO(crbug.com/1264793): Don't cache the application name, but compute it
   // here.
   return application_title_;
 }
 
-bool DlpContentManager::ScreenShareInfo::IsRunning() const {
-  return state_ == State::kRunning;
+DlpContentManager::ScreenShareInfo::State
+DlpContentManager::ScreenShareInfo::state() const {
+  return state_;
 }
 
 base::WeakPtr<content::WebContents>
-DlpContentManager::ScreenShareInfo::GetWebContents() const {
+DlpContentManager::ScreenShareInfo::web_contents() const {
   return web_contents_;
+}
+
+void DlpContentManager::ScreenShareInfo::set_latest_confidential_contents_info(
+    ConfidentialContentsInfo confidential_contents_info) {
+  latest_confidential_contents_info_ = confidential_contents_info;
+}
+
+const RestrictionLevelAndUrl&
+DlpContentManager::ScreenShareInfo::GetLatestRestriction() const {
+  return latest_confidential_contents_info_.restriction_info;
+}
+
+const DlpConfidentialContents&
+DlpContentManager::ScreenShareInfo::GetConfidentialContents() const {
+  return latest_confidential_contents_info_.confidential_contents;
 }
 
 void DlpContentManager::ScreenShareInfo::Pause() {
@@ -280,6 +334,19 @@ void DlpContentManager::ScreenShareInfo::Resume() {
   state_ = State::kRunning;
 }
 
+void DlpContentManager::ScreenShareInfo::ChangeStateBeforeSourceChange() {
+  DCHECK(state_ == State::kPaused || state_ == State::kRunning);
+  DCHECK(media_id_.type == content::DesktopMediaID::TYPE_WEB_CONTENTS);
+  if (state_ == State::kPaused) {
+    state_ = ScreenShareInfo::State::kPausedBeforeSourceChange;
+  } else if (state_ == State::kRunning) {
+    state_ = State::kRunningBeforeSourceChange;
+  } else {
+    // This should only be called if state_ is Running or Paused.
+    NOTREACHED();
+  }
+}
+
 void DlpContentManager::ScreenShareInfo::Stop() {
   DCHECK_NE(state_, State::kStopped);
   if (stop_callback_) {
@@ -298,21 +365,6 @@ void DlpContentManager::ScreenShareInfo::MaybeUpdateNotifications() {
 void DlpContentManager::ScreenShareInfo::HideNotifications() {
   UpdatePausedNotification(/*show=*/false);
   UpdateResumedNotification(/*show=*/false);
-}
-
-const RestrictionLevelAndUrl&
-DlpContentManager::ScreenShareInfo::GetLatestRestriction() const {
-  return latest_confidential_contents_info_.restriction_info;
-}
-
-const DlpConfidentialContents&
-DlpContentManager::ScreenShareInfo::GetConfidentialContents() const {
-  return latest_confidential_contents_info_.confidential_contents;
-}
-
-void DlpContentManager::ScreenShareInfo::SetConfidentialContentsInfo(
-    ConfidentialContentsInfo confidential_contents_info) {
-  latest_confidential_contents_info_ = confidential_contents_info;
 }
 
 void DlpContentManager::ScreenShareInfo::MaybeCloseDialogWidget() {
@@ -363,6 +415,19 @@ void DlpContentManager::ScreenShareInfo::UpdateResumedNotification(bool show) {
 void DlpContentManager::AddObserver(DlpContentManagerObserver* observer,
                                     DlpContentRestriction restriction) {
   observer_lists_[static_cast<int>(restriction)].AddObserver(observer);
+}
+
+void DlpContentManager::OnScreenShareSourceChanging(
+    const std::string& label,
+    const content::DesktopMediaID& old_media_id,
+    const content::DesktopMediaID& new_media_id) {
+  for (auto& screen_share : running_screen_shares_) {
+    if (screen_share->label() == label &&
+        screen_share->media_id() == old_media_id) {
+      screen_share->ChangeStateBeforeSourceChange();
+      screen_share->set_new_media_id(new_media_id);
+    }
+  }
 }
 
 void DlpContentManager::RemoveObserver(
@@ -554,24 +619,41 @@ void DlpContentManager::ProcessScreenShareRestriction(
   std::move(callback).Run(true);
 }
 
-void DlpContentManager::AddScreenShare(
+void DlpContentManager::AddOrUpdateScreenShare(
     const std::string& label,
     const content::DesktopMediaID& media_id,
     const std::u16string& application_title,
     base::RepeatingClosure stop_callback,
     content::MediaStreamUI::StateChangeCallback state_change_callback,
     content::MediaStreamUI::SourceCallback source_callback) {
-  auto screen_share_info = std::make_unique<ScreenShareInfo>(
-      label, media_id, application_title, std::move(stop_callback),
-      state_change_callback, source_callback);
-  DCHECK(
-      std::find_if(running_screen_shares_.begin(), running_screen_shares_.end(),
-                   [&screen_share_info](
-                       const std::unique_ptr<ScreenShareInfo>& info) -> bool {
-                     return info && *info == *screen_share_info;
-                   }) == running_screen_shares_.end());
-
-  running_screen_shares_.push_back(std::move(screen_share_info));
+  auto screen_share_it = std::find_if(
+      running_screen_shares_.begin(), running_screen_shares_.end(),
+      [&label, media_id](const std::unique_ptr<ScreenShareInfo>& info) -> bool {
+        return info && info->label() == label &&
+               info->new_media_id() == media_id;
+      });
+  if (screen_share_it != running_screen_shares_.end()) {
+    // This should only happen for tab shares, and only if there was a source
+    // change.
+    DCHECK(media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS);
+    ScreenShareInfo* screen_share = screen_share_it->get();
+    DCHECK(screen_share->state() ==
+               ScreenShareInfo::State::kPausedBeforeSourceChange ||
+           screen_share->state() ==
+               ScreenShareInfo::State::kRunningBeforeSourceChange);
+    if (screen_share->state() ==
+        ScreenShareInfo::State::kPausedBeforeSourceChange) {
+      DlpBooleanHistogram(dlp::kScreenSharePausedOrResumedUMA, false);
+    }
+    screen_share->UpdateAfterSourceChange(
+        media_id, application_title, std::move(stop_callback),
+        state_change_callback, source_callback);
+  } else {
+    auto screen_share_info = std::make_unique<ScreenShareInfo>(
+        label, media_id, application_title, std::move(stop_callback),
+        state_change_callback, source_callback);
+    running_screen_shares_.push_back(std::move(screen_share_info));
+  }
 }
 
 void DlpContentManager::RemoveScreenShare(
@@ -580,19 +662,23 @@ void DlpContentManager::RemoveScreenShare(
   base::EraseIf(
       running_screen_shares_,
       [=](const std::unique_ptr<ScreenShareInfo>& screen_share_info) -> bool {
-        return screen_share_info->GetLabel() == label &&
-               screen_share_info->GetMediaId() == media_id;
+        return screen_share_info->label() == label &&
+               screen_share_info->media_id() == media_id &&
+               screen_share_info->state() !=
+                   ScreenShareInfo::State::kRunningBeforeSourceChange &&
+               screen_share_info->state() !=
+                   ScreenShareInfo::State::kPausedBeforeSourceChange;
       });
 }
 
 void DlpContentManager::CheckRunningScreenShares() {
   for (auto& screen_share : running_screen_shares_) {
     ConfidentialContentsInfo info = GetScreenShareConfidentialContentsInfo(
-        screen_share->GetMediaId(), screen_share->GetWebContents().get());
+        screen_share->media_id(), screen_share->web_contents().get());
 
     if (IsReported(info.restriction_info) && reporting_manager_ &&
         last_reported_screen_share_.ShouldReportAndUpdate(
-            screen_share->GetLabel(), info.confidential_contents)) {
+            screen_share->label(), info.confidential_contents)) {
       ReportEvent(info.restriction_info.url,
                   DlpRulesManager::Restriction::kScreenShare,
                   info.restriction_info.level, reporting_manager_);
@@ -608,14 +694,14 @@ void DlpContentManager::CheckRunningScreenShares() {
       // Close previously opened dialog, if any.
       screen_share->MaybeCloseDialogWidget();
     }
-    screen_share->SetConfidentialContentsInfo(info);
+    screen_share->set_latest_confidential_contents_info(info);
 
     DlpBooleanHistogram(dlp::kScreenShareBlockedUMA,
                         IsBlocked(info.restriction_info));
     DlpBooleanHistogram(dlp::kScreenShareWarnedUMA,
                         IsWarn(info.restriction_info));
     if (IsBlocked(info.restriction_info)) {
-      if (screen_share->IsRunning()) {
+      if (screen_share->state() == ScreenShareInfo::State::kRunning) {
         screen_share->Pause();
         DlpBooleanHistogram(dlp::kScreenSharePausedOrResumedUMA, true);
         screen_share->MaybeUpdateNotifications();
@@ -632,19 +718,19 @@ void DlpContentManager::CheckRunningScreenShares() {
         // The user already allowed all the visible content.
         if (reporting_manager_ &&
             last_reported_screen_share_.ShouldReportAndUpdate(
-                screen_share->GetLabel(), info.confidential_contents)) {
+                screen_share->label(), info.confidential_contents)) {
           ReportWarningProceededEvent(
               info.restriction_info.url,
               DlpRulesManager::Restriction::kScreenShare, reporting_manager_);
         }
-        if (!screen_share->IsRunning()) {
+        if (screen_share->state() == ScreenShareInfo::State::kPaused) {
           screen_share->Resume();
           screen_share->MaybeUpdateNotifications();
         }
         DlpBooleanHistogram(dlp::kScreenShareWarnSilentProceededUMA, true);
         continue;
       }
-      if (screen_share->IsRunning()) {
+      if (screen_share->state() == ScreenShareInfo::State::kRunning) {
         screen_share->Pause();
         screen_share->HideNotifications();
       }
@@ -659,12 +745,12 @@ void DlpContentManager::CheckRunningScreenShares() {
               base::BindOnce(
                   &DlpContentManager::OnDlpScreenShareWarnDialogReply,
                   base::Unretained(this), info, screen_share->GetWeakPtr()),
-              info.confidential_contents, screen_share->GetApplicationTitle()));
+              info.confidential_contents, screen_share->application_title()));
       continue;
     }
 
     // No restrictions apply, only resume if necessary.
-    if (!screen_share->IsRunning()) {
+    if (screen_share->state() == ScreenShareInfo::State::kPaused) {
       screen_share->Resume();
       DlpBooleanHistogram(dlp::kScreenSharePausedOrResumedUMA, false);
       screen_share->MaybeUpdateNotifications();
@@ -687,7 +773,7 @@ void DlpContentManager::OnDlpScreenShareWarnDialogReply(
   if (should_proceed) {
     if (reporting_manager_ &&
         last_reported_screen_share_.ShouldReportAndUpdate(
-            screen_share->GetLabel(), info.confidential_contents))
+            screen_share->label(), info.confidential_contents))
       ReportWarningProceededEvent(info.restriction_info.url,
                                   DlpRulesManager::Restriction::kScreenShare,
                                   reporting_manager_);
@@ -700,7 +786,7 @@ void DlpContentManager::OnDlpScreenShareWarnDialogReply(
     screen_share->MaybeUpdateNotifications();
   } else {
     screen_share->Stop();
-    RemoveScreenShare(screen_share->GetLabel(), screen_share->GetMediaId());
+    RemoveScreenShare(screen_share->label(), screen_share->media_id());
   }
 }
 

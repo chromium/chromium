@@ -124,8 +124,8 @@ void DlpContentManagerLacros::OnScreenShareStarted(
     content::MediaStreamUI::SourceCallback source_callback) {
   for (const content::DesktopMediaID& media_id : screen_share_ids) {
     if (media_id.type == content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
-      AddScreenShare(label, media_id, application_title, stop_callback,
-                     state_change_callback, source_callback);
+      AddOrUpdateScreenShare(label, media_id, application_title, stop_callback,
+                             state_change_callback, source_callback);
     } else {
       chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
       auto delegate = std::make_unique<ScreenShareStateChangeDelegate>(

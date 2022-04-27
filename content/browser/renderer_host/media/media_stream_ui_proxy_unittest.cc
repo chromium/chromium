@@ -74,6 +74,11 @@ class MockMediaStreamUI : public MediaStreamUI {
     return MockOnStarted(std::move(stop), source);
   }
 
+  void OnDeviceStoppedForSourceChange(
+      const std::string& label,
+      const DesktopMediaID& old_media_id,
+      const DesktopMediaID& new_media_id) override {}
+
   void OnDeviceStopped(const std::string& label,
                        const DesktopMediaID& media_id) override {}
 

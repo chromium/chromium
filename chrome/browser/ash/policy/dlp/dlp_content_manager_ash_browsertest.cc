@@ -153,6 +153,9 @@ class DlpContentManagerAshBrowserTest : public InProcessBrowserTest {
         .WillRepeatedly(testing::Return(kSrcPattern));
     EXPECT_CALL(*mock_rules_manager_, IsRestricted(_, _))
         .WillRepeatedly(testing::Return(DlpRulesManager::Level::kAllow));
+    EXPECT_CALL(*mock_rules_manager_, GetReportingManager())
+        .Times(testing::AnyNumber());
+    ;
   }
 
   void SetupReporting() {
@@ -927,6 +930,83 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   EXPECT_FALSE(
       display_service_tester.GetNotification(kScreenSharePausedNotificationId));
   EXPECT_FALSE(display_service_tester.GetNotification(
+      kScreenShareResumedNotificationId));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, false, 1);
+  CheckEvents(DlpRulesManager::Restriction::kScreenShare,
+              DlpRulesManager::Level::kBlock, 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
+                       ScreenShareStoppedForSourceChange) {
+  SetupReporting();
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+  DlpContentManagerAsh* manager =
+      static_cast<DlpContentManagerAsh*>(helper_->GetContentManager());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  const content::DesktopMediaID media_id(
+      content::DesktopMediaID::TYPE_WEB_CONTENTS,
+      content::DesktopMediaID::kNullId,
+      content::WebContentsMediaCaptureId(
+          web_contents->GetMainFrame()->GetProcess()->GetID(),
+          web_contents->GetMainFrame()->GetRoutingID()));
+  base::MockCallback<content::MediaStreamUI::StateChangeCallback>
+      state_change_cb;
+  manager->OnScreenShareStarted(
+      kLabel, {media_id}, kApplicationTitle, base::BindRepeating([]() {
+        FAIL() << "Stop callback should not be called.";
+      }),
+      state_change_cb.Get(), base::DoNothing());
+
+  testing::InSequence s;
+  EXPECT_CALL(state_change_cb,
+              Run(testing::_, blink::mojom::MediaStreamStateChange::PAUSE))
+      .Times(1);
+  EXPECT_CALL(state_change_cb,
+              Run(testing::_, blink::mojom::MediaStreamStateChange::PLAY))
+      .Times(0);
+
+  helper_->ChangeConfidentiality(web_contents, kScreenShareRestricted);
+
+  CheckEvents(DlpRulesManager::Restriction::kScreenShare,
+              DlpRulesManager::Level::kBlock, 1u);
+  EXPECT_TRUE(
+      display_service_tester.GetNotification(kScreenSharePausedNotificationId));
+  EXPECT_FALSE(display_service_tester.GetNotification(
+      kScreenShareResumedNotificationId));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, false, 0);
+
+  // Open new tab and navigate to a url.
+  chrome::NewTab(browser());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kGoogleUrl)));
+  content::WebContents* new_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_EQ(new_web_contents->GetLastCommittedURL(), GURL(kGoogleUrl));
+  const content::DesktopMediaID new_media_id(
+      content::DesktopMediaID::TYPE_WEB_CONTENTS,
+      content::DesktopMediaID::kNullId,
+      content::WebContentsMediaCaptureId(
+          new_web_contents->GetMainFrame()->GetProcess()->GetID(),
+          new_web_contents->GetMainFrame()->GetRoutingID()));
+  // Simulate changing the source to another tab.
+  manager->OnScreenShareSourceChanging(kLabel, media_id, new_media_id);
+  EXPECT_FALSE(display_service_tester.GetNotification(
+      kScreenShareResumedNotificationId));
+  manager->OnScreenShareStopped(kLabel, media_id);
+  manager->OnScreenShareStarted(kLabel, {new_media_id}, kApplicationTitle,
+                                base::DoNothing(), base::DoNothing(),
+                                base::DoNothing());
+
+  EXPECT_FALSE(
+      display_service_tester.GetNotification(kScreenSharePausedNotificationId));
+  EXPECT_TRUE(display_service_tester.GetNotification(
       kScreenShareResumedNotificationId));
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 1);

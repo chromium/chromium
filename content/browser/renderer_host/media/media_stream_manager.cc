@@ -2832,7 +2832,8 @@ void MediaStreamManager::ChangeMediaStreamSourceFromBrowser(
     for (const MediaStreamDevice& device : request->devices) {
       const DesktopMediaID old_media_id = DesktopMediaID::Parse(device.id);
       if (!old_media_id.is_null()) {
-        request->ui_proxy->OnDeviceStopped(label, old_media_id);
+        request->ui_proxy->OnDeviceStoppedForSourceChange(label, old_media_id,
+                                                          media_id);
       }
     }
   }
