@@ -17,6 +17,7 @@ div { contain: paint; }
   background: pink;
   width: 10px;
   height: 10px;
+  page-transition-tag: hidden;
 }
 .target {
   width: 100px;
@@ -58,8 +59,6 @@ html::page-transition { background: lightpink; }
 <script>
 async function runTest() {
   let t = document.createDocumentTransition();
-  t.setElement(hidden, "hidden");
-
   t.setElement(from, "target1");
   t.setElement(from, "target2");
   t.start(() => {

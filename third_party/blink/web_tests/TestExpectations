@@ -3381,9 +3381,7 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 [ Mac10.12 ] virtual/document-transition/wpt_internal/document-transition/one-element-two-targets.html [ Failure ]
 crbug.com/626703 [ Mac10.12 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/navigate-ancestor-nested-fenced-frame.https.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] virtual/document-transition/wpt_internal/document-transition/one-element-two-targets.html [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/redirect.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/shared-worker.https.window.html [ Timeout ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/permissions-policy/reporting/xr-report-only.https.html [ Crash ]
@@ -3428,7 +3426,6 @@ crbug.com/626703 [ Mac11-arm64 ] external/wpt/websockets/cookies/003.html?wpt_fl
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/websockets/interfaces/WebSocket/bufferedAmount/bufferedAmount-unicode.html?wpt_flags=h2 [ Failure Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/websockets/interfaces/WebSocket/send/009.html?wpt_flags=h2 [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/focus/activeelement-after-focusing-different-site-iframe-then-immediately-focusing-back.html [ Failure Timeout ]
-crbug.com/626703 [ Mac10.15 ] virtual/document-transition/wpt_internal/document-transition/one-element-two-targets.html [ Failure ]
 crbug.com/626703 external/wpt/scroll-to-text-fragment/scroll-to-text-fragment.html [ Failure Skip Timeout ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/service-workers/service-worker/same-site-cookies.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/signed-exchange/subresource/sxg-subresource-header-integrity-mismatch.tentative.html [ Timeout ]
@@ -7604,10 +7601,6 @@ crbug.com/1311786 external/wpt/navigation-api/navigation-methods/sandboxing-back
 crbug.com/1311431 [ Mac ] fast/scroll-behavior/overscroll-behavior.html [ Failure Pass ]
 crbug.com/1248581 fast/scrolling/resize-corner-tracking-touch.html [ Failure Pass ]
 crbug.com/1312036 virtual/hidpi/fast/scrolling/scrollbars/dsf-ready/mouse-interactions-dsf-2.html [ Failure Pass ]
-
-# Sheriff 2022-03-29
-crbug.com/1311138 [ Mac10.13 ] virtual/document-transition/wpt_internal/document-transition/one-element-two-targets.html [ Skip ]
-crbug.com/1311138 [ Mac10.14 ] virtual/document-transition/wpt_internal/document-transition/one-element-two-targets.html [ Skip ]
 
 # These tests fail on SwiftShader FEMU due to a change in log/exp implementation.
 crbug.com/1311456 [ Fuchsia ] fast/css3-text/css3-text-decoration/text-decoration-style-inherit.html [ Skip ]
