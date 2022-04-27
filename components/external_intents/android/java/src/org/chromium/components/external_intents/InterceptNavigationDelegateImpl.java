@@ -4,8 +4,11 @@
 
 package org.chromium.components.external_intents;
 
+import android.util.Pair;
+
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -35,7 +38,7 @@ import org.chromium.url.Origin;
 public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate {
     private final AuthenticatorNavigationInterceptor mAuthenticatorHelper;
     private InterceptNavigationDelegateClient mClient;
-    private OverrideUrlLoadingResult mLastOverrideUrlLoadingResultForTesting;
+    private Callback<Pair<GURL, OverrideUrlLoadingResult>> mResultCallbackForTesting;
     private WebContents mWebContents;
     private ExternalNavigationHandler mExternalNavHandler;
 
@@ -91,19 +94,11 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                                                   .setIsMainFrame(true)
                                                   .build();
         OverrideUrlLoadingResult result = mExternalNavHandler.shouldOverrideUrlLoading(params);
-        mLastOverrideUrlLoadingResultForTesting = result;
+        if (mResultCallbackForTesting != null) {
+            mResultCallbackForTesting.onResult(Pair.create(url, result));
+        }
         return result.getResultType()
                 != ExternalNavigationHandler.OverrideUrlLoadingResultType.NO_OVERRIDE;
-    }
-
-    @VisibleForTesting
-    public void clearLastOverrideUrlLoadingResultForTests() {
-        mLastOverrideUrlLoadingResultForTesting = null;
-    }
-
-    @VisibleForTesting
-    public OverrideUrlLoadingResult getLastOverrideUrlLoadingResultForTests() {
-        return mLastOverrideUrlLoadingResultForTesting;
     }
 
     @Override
@@ -146,7 +141,9 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 navigationHandle, redirectHandler, shouldCloseTab, escapedUrl)
                                                   .build();
         OverrideUrlLoadingResult result = mExternalNavHandler.shouldOverrideUrlLoading(params);
-        mLastOverrideUrlLoadingResultForTesting = result;
+        if (mResultCallbackForTesting != null) {
+            mResultCallbackForTesting.onResult(Pair.create(url, result));
+        }
 
         mClient.onDecisionReachedForNavigation(navigationHandle, result);
 
@@ -323,6 +320,12 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 : R.string.unreachable_navigation_warning;
         mClient.getWebContents().addMessageToDevToolsConsole(ConsoleMessageLevel.WARNING,
                 ContextUtils.getApplicationContext().getString(resId, url.getSpec()));
+    }
+
+    @VisibleForTesting
+    public void setResultCallbackForTesting(
+            Callback<Pair<GURL, OverrideUrlLoadingResult>> callback) {
+        mResultCallbackForTesting = callback;
     }
 
     @NativeMethods
