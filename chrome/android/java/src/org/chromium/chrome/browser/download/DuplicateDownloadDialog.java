@@ -14,8 +14,8 @@ import androidx.annotation.NonNull;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.download.dialogs.DownloadDialogUtils;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -86,7 +86,8 @@ public class DuplicateDownloadDialog {
                                 context.getResources().getString(R.string.cancel))
                         .build();
 
-        if (shouldShowIncognitoWarning(otrProfileID)) {
+        if (DownloadDialogUtils.shouldShowIncognitoWarning(
+                    OTRProfileID.isOffTheRecord(otrProfileID))) {
             mPropertyModel.set(ModalDialogProperties.MESSAGE_PARAGRAPH_2,
                     context.getResources().getString(R.string.download_location_incognito_warning));
         }
@@ -94,11 +95,6 @@ public class DuplicateDownloadDialog {
         modalDialogManager.showDialog(mPropertyModel, ModalDialogManager.ModalDialogType.TAB);
         recordDuplicateDownloadDialogEvent(
                 !pageUrl.isEmpty(), DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_SHOW);
-    }
-
-    private boolean shouldShowIncognitoWarning(OTRProfileID otrProfileID) {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_DOWNLOADS_WARNING)
-                && OTRProfileID.isOffTheRecord(otrProfileID);
     }
 
     @NonNull

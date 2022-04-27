@@ -457,7 +457,7 @@ void ChromeDownloadManagerDelegate::ShowDownloadDialog(
   DCHECK(download_dialog_bridge_);
   auto connection_type = net::NetworkChangeNotifier::GetConnectionType();
   bool show_date_time_picker = DownloadDialogBridge::ShouldShowDateTimePicker();
-  bool is_incognito = profile_->IsIncognitoProfile();
+  bool is_incognito = profile_->IsOffTheRecord();
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           download::switches::kDownloadLaterDebugOnWifi)) {

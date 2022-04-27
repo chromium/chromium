@@ -57,11 +57,17 @@ void MixedContentDownloadDialogBridge::CreateDialog(
   intptr_t callback_id = reinterpret_cast<intptr_t>(
       new MixedContentDialogCallback(std::move(callback)));
   validator_.AddJavaCallback(callback_id);
+
+  content::BrowserContext* browser_context =
+      content::DownloadItemUtils::GetBrowserContext(download);
+  bool isOffTheRecord =
+      Profile::FromBrowserContext(browser_context)->IsOffTheRecord();
+
   Java_MixedContentDownloadDialogBridge_showDialog(
       env, java_object_, window_android->GetJavaObject(),
       base::android::ConvertUTF16ToJavaString(
           env, base::UTF8ToUTF16(base_name.value())),
-      download->GetTotalBytes(), callback_id);
+      download->GetTotalBytes(), isOffTheRecord, callback_id);
 }
 
 void MixedContentDownloadDialogBridge::OnConfirmed(JNIEnv* env,

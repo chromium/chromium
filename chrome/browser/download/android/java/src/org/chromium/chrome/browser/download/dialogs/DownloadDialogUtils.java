@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.download.dialogs;
 
 import org.chromium.chrome.browser.download.DirectoryOption;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 
@@ -49,6 +50,16 @@ public class DownloadDialogUtils {
             shouldSuggestDownloadLocation = true;
         }
         return shouldSuggestDownloadLocation;
+    }
+
+    /**
+     * Helper method which decide whether to show the Incognito warning message or not.
+     * @param isOffTheRecord Whether the profile is an off-the-record profile.
+     * @return Boolean indicating whether to show the Incognito warning message.
+     */
+    public static boolean shouldShowIncognitoWarning(boolean isOffTheRecord) {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_DOWNLOADS_WARNING)
+                && isOffTheRecord;
     }
 
     private DownloadDialogUtils() {}
