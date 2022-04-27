@@ -265,12 +265,24 @@ void MultiThreadedCertVerifier::SetConfig(const CertVerifier::Config& config) {
   // Not yet implemented.
   DCHECK(config.additional_untrusted_authorities.empty());
 #else
+  // Construct a temporary list and then swap that into the member variable, to
+  // be polite to any verifications that might be in progress in a background
+  // thread. This ensures that, at least for certs that are present in both the
+  // old and new config, there will not be a time when the refcount drops to
+  // zero. For the case where a cert was in the old config and is not in the
+  // new config, it might be removed while a verification is still going on
+  // that might be able to use it. Oh well. Ideally the list should be passed
+  // into CertVerifyProc as noted by the TODO(https://crbug.com/978854), since
+  // the workers could then keep a reference to the appropriate certs as long
+  // as they need.
+  net::ScopedCERTCertificateList temp_certs;
   for (const auto& cert : config.additional_untrusted_authorities) {
-    ScopedCERTCertificate x509_cert =
+    ScopedCERTCertificate nss_cert =
         x509_util::CreateCERTCertificateFromX509Certificate(cert.get());
-    DCHECK(x509_cert);
-    temp_certs_.push_back(std::move(x509_cert));
+    if (nss_cert)
+      temp_certs.push_back(std::move(nss_cert));
   }
+  temp_certs_ = std::move(temp_certs);
 #endif
 
   config_ = config;
