@@ -4,6 +4,7 @@
 
 #include "components/services/screen_ai/screen_ai_service_impl.h"
 
+#include "base/process/process.h"
 #include "components/services/screen_ai/proto/chrome_screen_ai.pb.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
 #include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
@@ -15,6 +16,12 @@ namespace {
 // TODO(https://crbug.com/1278249): Add experiment or heuristics to better
 // adjust this threshold.
 const float kScreenAIMinConfidenceThreshold = 0.1;
+
+enum class InitializationResult {
+  kOk = 0,
+  kErrorInvalidLibraryFunctions = 1,
+  kErrorInitializationFailed = 2,
+};
 
 }  // namespace
 
@@ -28,13 +35,19 @@ ScreenAIService::ScreenAIService(
       annotator_function_(reinterpret_cast<ScreenAIAnnotateFunction>(
           library_.GetFunctionPointer("Annotate"))),
       receiver_(this, std::move(receiver)) {
-  if (!init_function_ || !init_function_()) {
-    VLOG(1) << "Screen AI library initialization failed.";
-    annotator_function_ = nullptr;
-  }
+  auto init_result = InitializationResult::kOk;
+  if (!init_function_ || !annotator_function_)
+    init_result = InitializationResult::kErrorInvalidLibraryFunctions;
+  else if (!init_function_())
+    init_result = InitializationResult::kErrorInitializationFailed;
 
-  // TODO(https://crbug.com/1278249): Try to refrain from creating the service
-  // if library functions are not available.
+  if (init_result != InitializationResult::kOk) {
+    // TODO(https://crbug.com/1278249): Add UMA metrics to monitor failures.
+    VLOG(1) << "Screen AI library initialization failed: "
+            << static_cast<int>(init_result);
+    base::Process::TerminateCurrentProcessImmediately(
+        static_cast<int>(init_result));
+  }
 }
 
 ScreenAIService::~ScreenAIService() = default;
@@ -48,20 +61,16 @@ void ScreenAIService::Annotate(const SkBitmap& image,
                                AnnotationCallback callback) {
   ui::AXTreeUpdate updates;
 
-  if (annotator_function_ == nullptr) {
-    VLOG(1) << "Screen AI library binary was not found.";
-  } else {
-    VLOG(2) << "Screen AI library starting to process " << image.width() << "x"
-            << image.height() << " snapshot.";
+  VLOG(2) << "Screen AI library starting to process " << image.width() << "x"
+          << image.height() << " snapshot.";
 
-    std::string annotation_text;
-    // TODO(https://crbug.com/1278249): Consider adding a signature that
-    // verifies the data integrity and source.
-    if (annotator_function_(image, annotation_text)) {
-      updates = DecodeProto(annotation_text);
-    } else {
-      VLOG(1) << "Screen AI library could not process snapshot.";
-    }
+  std::string annotation_text;
+  // TODO(https://crbug.com/1278249): Consider adding a signature that
+  // verifies the data integrity and source.
+  if (annotator_function_(image, annotation_text)) {
+    updates = DecodeProto(annotation_text);
+  } else {
+    VLOG(1) << "Screen AI library could not process snapshot.";
   }
 
   std::move(callback).Run(updates);
