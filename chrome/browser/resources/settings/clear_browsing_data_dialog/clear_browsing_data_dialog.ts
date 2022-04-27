@@ -383,6 +383,11 @@ export class SettingsClearBrowsingDataDialogElement extends
     if (shouldShowCookieException) {
       return cookiesSummarySignedIn;
     }
+    // <if expr="chromeos_lacros">
+    if (!loadTimeData.getBoolean('isSecondaryUser')) {
+      return loadTimeData.getString('clearCookiesSummarySignedInMainProfile');
+    }
+    // </if>
     return cookiesSummary;
   }
 
