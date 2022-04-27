@@ -37,6 +37,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.LegalMessageLine;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.ui.autofill.FakeModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 
@@ -57,7 +59,7 @@ public class AutofillVirtualCardEnrollmentDialogTest {
 
     @Before
     public void setUp() {
-        mModalDialogManager = new FakeModalDialogManager();
+        mModalDialogManager = new FakeModalDialogManager(ModalDialogType.APP);
         mVirtualCardEnrollmentFields = VirtualCardEnrollmentFields.create(
                 "card label", Bitmap.createBitmap(100, 100, Bitmap.Config.ALPHA_8));
         mVirtualCardEnrollmentFields.mGoogleLegalMessages.add(createLegalMessageLine("google"));

@@ -32,6 +32,8 @@ import org.robolectric.shadows.ShadowActivity;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.ui.autofill.FakeModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 
@@ -50,7 +52,7 @@ public class AutofillVirtualCardUnenrollmentDialogTest {
 
     @Before
     public void setUp() {
-        mModalDialogManager = new FakeModalDialogManager();
+        mModalDialogManager = new FakeModalDialogManager(ModalDialogType.APP);
         mDialog = new AutofillVirtualCardUnenrollmentDialog(
                 ApplicationProvider.getApplicationContext(), mModalDialogManager, mCallbackMock);
         mDialog.show();

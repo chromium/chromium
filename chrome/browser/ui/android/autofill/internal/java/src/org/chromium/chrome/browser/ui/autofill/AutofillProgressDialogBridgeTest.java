@@ -20,16 +20,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
-import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
-import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Unit tests for {@link AutofillProgressDialogBridge}
@@ -53,34 +51,6 @@ public class AutofillProgressDialogBridgeTest {
     private AutofillProgressDialogBridge mAutofillProgressDialogBridge;
     private FakeModalDialogManager mModalDialogManager;
 
-    private class FakeModalDialogManager extends ModalDialogManager {
-        private PropertyModel mShownDialogModel;
-
-        public FakeModalDialogManager() {
-            super(Mockito.mock(Presenter.class), 0);
-        }
-
-        @Override
-        public void showDialog(PropertyModel model, int dialogType) {
-            mShownDialogModel = model;
-        }
-
-        @Override
-        public void dismissDialog(PropertyModel model, int dismissalCause) {
-            model.get(ModalDialogProperties.CONTROLLER).onDismiss(model, dismissalCause);
-            mShownDialogModel = null;
-        }
-
-        public void clickNegativeButton() {
-            mShownDialogModel.get(ModalDialogProperties.CONTROLLER)
-                    .onClick(mShownDialogModel, ModalDialogProperties.ButtonType.NEGATIVE);
-        }
-
-        public PropertyModel getShownDialogModel() {
-            return mShownDialogModel;
-        }
-    }
-
     private void showProgressDialog() {
         mAutofillProgressDialogBridge.showDialog(PROGRESS_DIALOG_TITLE, PROGRESS_DIALOG_MESSAGE,
                 PROGRESS_DIALOG_BUTTON_LABEL, /* iconId= */ 0);
@@ -89,7 +59,7 @@ public class AutofillProgressDialogBridgeTest {
     @Before
     public void setUp() {
         reset(mNativeMock);
-        mModalDialogManager = new FakeModalDialogManager();
+        mModalDialogManager = new FakeModalDialogManager(ModalDialogType.TAB);
         mAutofillProgressDialogBridge =
                 new AutofillProgressDialogBridge(NATIVE_AUTOFILL_PROGRESS_DIALOG_VIEW,
                         mModalDialogManager, ApplicationProvider.getApplicationContext());

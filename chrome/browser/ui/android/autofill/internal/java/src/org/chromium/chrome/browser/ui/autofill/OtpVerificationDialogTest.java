@@ -21,13 +21,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
-import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -48,38 +47,10 @@ public class OtpVerificationDialogTest {
     @Mock
     private OtpVerificationDialogCoordinator.Delegate mDelegate;
 
-    private class FakeModalDialogManager extends ModalDialogManager {
-        private PropertyModel mShownDialogModel;
-
-        public FakeModalDialogManager() {
-            super(Mockito.mock(Presenter.class), 0);
-        }
-
-        @Override
-        public void showDialog(PropertyModel model, int dialogType) {
-            mShownDialogModel = model;
-        }
-
-        @Override
-        public void dismissDialog(PropertyModel model, int dismissalCause) {
-            model.get(ModalDialogProperties.CONTROLLER).onDismiss(model, dismissalCause);
-            mShownDialogModel = null;
-        }
-
-        public void clickPositiveButton() {
-            mShownDialogModel.get(ModalDialogProperties.CONTROLLER)
-                    .onClick(mShownDialogModel, ModalDialogProperties.ButtonType.POSITIVE);
-        }
-
-        public PropertyModel getShownDialogModel() {
-            return mShownDialogModel;
-        }
-    }
-
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mModalDialogManager = new FakeModalDialogManager();
+        mModalDialogManager = new FakeModalDialogManager(ModalDialogType.TAB);
         mOtpVerificationDialogView = (OtpVerificationDialogView) LayoutInflater
                                              .from(ApplicationProvider.getApplicationContext())
                                              .inflate(R.layout.otp_verification_dialog, null);

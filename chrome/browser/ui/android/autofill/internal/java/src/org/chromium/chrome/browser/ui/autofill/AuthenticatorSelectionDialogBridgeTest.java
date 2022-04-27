@@ -17,7 +17,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -25,9 +24,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ui.autofill.data.AuthenticatorOption;
-import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modaldialog.ModalDialogProperties;
-import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,38 +63,6 @@ public class AuthenticatorSelectionDialogBridgeTest {
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule
     public JniMocker mMocker = new JniMocker();
-    private class FakeModalDialogManager extends ModalDialogManager {
-        private PropertyModel mShownDialogModel;
-
-        public FakeModalDialogManager() {
-            super(Mockito.mock(Presenter.class), 0);
-        }
-
-        @Override
-        public void showDialog(PropertyModel model, int dialogType) {
-            mShownDialogModel = model;
-        }
-
-        @Override
-        public void dismissDialog(PropertyModel model, int dismissalCause) {
-            model.get(ModalDialogProperties.CONTROLLER).onDismiss(model, dismissalCause);
-            mShownDialogModel = null;
-        }
-
-        public void clickPositiveButton() {
-            mShownDialogModel.get(ModalDialogProperties.CONTROLLER)
-                    .onClick(mShownDialogModel, ModalDialogProperties.ButtonType.POSITIVE);
-        }
-
-        public void clickNegativeButton() {
-            mShownDialogModel.get(ModalDialogProperties.CONTROLLER)
-                    .onClick(mShownDialogModel, ModalDialogProperties.ButtonType.NEGATIVE);
-        }
-
-        public PropertyModel getShownDialogModel() {
-            return mShownDialogModel;
-        }
-    }
 
     @Before
     public void setUp() {
@@ -105,7 +70,7 @@ public class AuthenticatorSelectionDialogBridgeTest {
         reset(mNativeMock);
         mOptions.add(OPTION_1);
         mOptions.add(OPTION_2);
-        mModalDialogManager = new FakeModalDialogManager();
+        mModalDialogManager = new FakeModalDialogManager(ModalDialogType.TAB);
         mAuthenticatorSelectionDialogBridge =
                 new AuthenticatorSelectionDialogBridge(NATIVE_AUTHENTICATOR_SELECTION_DIALOG_VIEW,
                         ApplicationProvider.getApplicationContext(), mModalDialogManager);
