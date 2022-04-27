@@ -263,9 +263,8 @@ void FakeServiceConnectionImpl::SetOutputValue(
     const std::vector<double>& value) {
   output_tensor_->shape = mojom::Int64List::New();
   output_tensor_->shape->value = shape;
-  output_tensor_->data = mojom::ValueList::New();
-  output_tensor_->data->set_float_list(mojom::FloatList::New());
-  output_tensor_->data->get_float_list()->value = value;
+  output_tensor_->data =
+      mojom::ValueList::NewFloatList(mojom::FloatList::New(value));
 }
 
 void FakeServiceConnectionImpl::SetAsyncMode(bool async_mode) {

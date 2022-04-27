@@ -394,8 +394,7 @@ TEST_F(ServiceConnectionTest,
       &fake_service_connection);
   ServiceConnection::GetInstance()->Initialize();
 
-  auto dummy_data = mojom::TextEntityData::New();
-  dummy_data->set_numeric_value(123456789.);
+  auto dummy_data = mojom::TextEntityData::NewNumericValue(123456789.);
   std::vector<mojom::TextEntityPtr> entities;
   entities.emplace_back(
       mojom::TextEntity::New("dummy",                      // Entity name.
@@ -713,8 +712,7 @@ TEST_F(ServiceConnectionTest, FakeTextSuggester) {
   multi_word->text = "hello";
   multi_word->normalized_score = 0.5f;
   mojom::TextSuggestionCandidatePtr candidate =
-      mojom::TextSuggestionCandidate::New();
-  candidate->set_multi_word(std::move(multi_word));
+      mojom::TextSuggestionCandidate::NewMultiWord(std::move(multi_word));
 
   result->candidates.emplace_back(std::move(candidate));
   fake_service_connection.SetOutputTextSuggesterResult(result);
