@@ -8,7 +8,6 @@
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/process/process_metrics.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"

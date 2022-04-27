@@ -9,7 +9,6 @@
 #import "base/files/file_util.h"
 #import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/task/post_task.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
 #import "ios/web/download/download_result.h"
