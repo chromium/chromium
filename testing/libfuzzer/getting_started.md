@@ -311,18 +311,16 @@ fuzzing engine.
 [AddressSanitizer]: http://clang.llvm.org/docs/AddressSanitizer.html
 [ClusterFuzz status]: libFuzzer_integration.md#Status-Links
 [Efficient Fuzzing Guide]: efficient_fuzzing.md
-[FuzzedDataProvider]: https://cs.chromium.org/chromium/src/third_party/libFuzzer/src/utils/FuzzedDataProvider.h
+[FuzzedDataProvider]: https://cs.chromium.org/chromium/src/third_party/re2/src/re2/fuzzing/compiler-rt/include/fuzzer/FuzzedDataProvider.h
 [Fuzzer Dictionary]: efficient_fuzzing.md#Fuzzer-dictionary
 [GN]: https://gn.googlesource.com/gn/+/master/README.md
-[GN config]: https://source.chromium.org/chromium/chromium/src/tools/mb/mb_config_expectations/chromium.fuzz.json
+[GN config]: https://cs.chromium.org/chromium/src/tools/mb/mb_config_expectations/chromium.fuzz.json
 [Getting Started with libprotobuf-mutator in Chromium]: libprotobuf-mutator.md
 [Integration Reference]: reference.md
 [MemorySanitizer]: http://clang.llvm.org/docs/MemorySanitizer.html
 [Seed Corpus]: efficient_fuzzing.md#Seed-corpus
 [UndefinedBehaviorSanitizer]: http://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
 [code coverage report]: efficient_fuzzing.md#Code-coverage
-[crbug/598448]: https://bugs.chromium.org/p/chromium/issues/detail?id=598448
 [upstream documentation]: https://github.com/google/fuzzing/blob/master/docs/split-inputs.md#fuzzed-data-provider
 [libFuzzer's output documentation]: http://llvm.org/docs/LibFuzzer.html#output
 [quic_stream_factory_fuzzer.cc]: https://cs.chromium.org/chromium/src/net/quic/quic_stream_factory_fuzzer.cc
-[sanitizers]: https://github.com/google/sanitizers
