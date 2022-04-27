@@ -45,12 +45,6 @@ bool IsDiscoverFeedAppFlowsEnabled();
 // Whether the Discover feed shorter cache is enabled.
 bool IsDiscoverFeedShorterCacheEnabled();
 
-// TODO(crbug.com/1264872): Cleanup deprecated API.
-// Whether the Following Feed is enabled on NTP.
-inline bool IsWebChannelsEnabled() {
-  return false;
-}
-
 // Whether the NTP view hierarchy repair is enabled.
 bool IsNTPViewHierarchyRepairEnabled();
 
