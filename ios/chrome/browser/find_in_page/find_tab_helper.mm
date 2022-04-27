@@ -9,6 +9,7 @@
 #include "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/find_in_page/find_in_page_controller.h"
 #import "ios/chrome/browser/find_in_page/find_in_page_model.h"
+#import "ios/web/public/navigation/navigation_context.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -102,6 +103,9 @@ void FindTabHelper::WebStateDestroyed(web::WebState* web_state) {
 void FindTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
+  if (navigation_context->IsSameDocument()) {
+    return;
+  }
   if (IsFindUIActive()) {
     StopFinding();
   }
