@@ -280,6 +280,56 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_PartPseudoElements) {
   ASSERT_EQ(2u, rules->size());
 }
 
+TEST(RuleSetTest, findBestRuleSetAndAdd_IsSingleArg) {
+  css_test_helpers::TestStyleSheet sheet;
+
+  sheet.AddCSSRules(":is(.a) { }");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules("a");
+  ASSERT_TRUE(rules);
+  ASSERT_EQ(1u, rules->size());
+}
+
+TEST(RuleSetTest, findBestRuleSetAndAdd_WhereSingleArg) {
+  css_test_helpers::TestStyleSheet sheet;
+
+  sheet.AddCSSRules(":where(.a) { }");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules("a");
+  ASSERT_TRUE(rules);
+  ASSERT_EQ(1u, rules->size());
+}
+
+TEST(RuleSetTest, findBestRuleSetAndAdd_WhereSingleArgNested) {
+  css_test_helpers::TestStyleSheet sheet;
+
+  sheet.AddCSSRules(":where(:is(.a)) { }");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  const HeapVector<Member<const RuleData>>* rules = rule_set.ClassRules("a");
+  ASSERT_TRUE(rules);
+  ASSERT_EQ(1u, rules->size());
+}
+
+TEST(RuleSetTest, findBestRuleSetAndAdd_IsMultiArg) {
+  css_test_helpers::TestStyleSheet sheet;
+
+  sheet.AddCSSRules(":is(.a, .b) { }");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  const HeapVector<Member<const RuleData>>* rules = rule_set.UniversalRules();
+  ASSERT_TRUE(rules);
+  ASSERT_EQ(1u, rules->size());
+}
+
+TEST(RuleSetTest, findBestRuleSetAndAdd_WhereMultiArg) {
+  css_test_helpers::TestStyleSheet sheet;
+
+  sheet.AddCSSRules(":where(.a, .b) { }");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  const HeapVector<Member<const RuleData>>* rules = rule_set.UniversalRules();
+  ASSERT_TRUE(rules);
+  ASSERT_EQ(1u, rules->size());
+}
+
 TEST(RuleSetTest, SelectorIndexLimit) {
   // It's not feasible to run this test for a large number of bits. If the
   // number of bits have increased to a large number, consider removing this

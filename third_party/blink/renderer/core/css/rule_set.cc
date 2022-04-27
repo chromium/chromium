@@ -198,6 +198,19 @@ static void ExtractSelectorValues(const CSSSelector* selector,
         case CSSSelector::kPseudoPart:
           part_name = selector->Value();
           break;
+        case CSSSelector::kPseudoIs:
+        case CSSSelector::kPseudoWhere: {
+          const CSSSelectorList* selector_list = selector->SelectorList();
+          DCHECK(selector_list);
+          // If the :is/:where has only a single argument, it effectively acts
+          // like a normal selector (save for specificity), and we can put it
+          // into a bucket based on that selector.
+          if (selector_list->HasOneSelector()) {
+            ExtractSelectorValues(selector_list->First(), id, class_name,
+                                  attr_name, custom_pseudo_element_name,
+                                  tag_name, part_name, pseudo_type);
+          }
+        } break;
         default:
           break;
       }
