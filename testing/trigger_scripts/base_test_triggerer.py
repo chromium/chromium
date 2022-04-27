@@ -20,7 +20,6 @@ import os
 import subprocess
 import sys
 import tempfile
-import time
 import logging
 import six
 
@@ -32,8 +31,6 @@ EXECUTABLE_SUFFIX = '.exe' if sys.platform == 'win32' else ''
 
 SWARMING_GO = os.path.join(SRC_DIR, 'tools', 'luci-go',
                            'swarming' + EXECUTABLE_SUFFIX)
-
-_A_WEEK_IN_SECONDS = 60 * 60 * 24 * 7
 
 
 def _convert_to_go_swarming_args(args):
@@ -184,11 +181,6 @@ class BaseTestTriggerer(object): # pylint: disable=useless-object-inheritance
 
         for tag in sorted(tags):
             args.extend(['-tag', tag])
-
-        # If a query uses a general dimension value, e.g., os:Mac, it will take
-        # forever. We now limited the time range to be within a week.
-        start_epoch_time = int(time.time()) - _A_WEEK_IN_SECONDS
-        args.extend(['-start', start_epoch_time])
 
         if limit is not None:
             args.extend(['-limit', str(limit)])
