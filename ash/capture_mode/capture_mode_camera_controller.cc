@@ -656,6 +656,15 @@ void CaptureModeCameraController::OnFrameHandlerFatalError() {
   GetCameraDevices();
 }
 
+void CaptureModeCameraController::OnShuttingDown() {
+  // At this point `CaptureModeController` should have already ended any ongoing
+  // recording, and there should be no camera previews available.
+  DCHECK(!should_show_preview_);
+  DCHECK(!camera_preview_widget_);
+
+  is_shutting_down_ = true;
+}
+
 void CaptureModeCameraController::OnDevicesChanged(
     base::SystemMonitor::DeviceType device_type) {
   if (device_type == base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE)
@@ -667,6 +676,9 @@ void CaptureModeCameraController::OnSystemTrayBubbleShown() {
 }
 
 void CaptureModeCameraController::ReconnectToVideoSourceProvider() {
+  if (is_shutting_down_)
+    return;
+
   video_source_provider_remote_.reset();
   most_recent_request_id_ = 0;
   delegate_->ConnectToVideoSourceProvider(
@@ -678,6 +690,9 @@ void CaptureModeCameraController::ReconnectToVideoSourceProvider() {
 }
 
 void CaptureModeCameraController::GetCameraDevices() {
+  if (is_shutting_down_)
+    return;
+
   DCHECK(video_source_provider_remote_);
 
   video_source_provider_remote_->GetSourceInfos(base::BindOnce(
@@ -725,6 +740,9 @@ void CaptureModeCameraController::OnCameraDevicesReceived(
 }
 
 void CaptureModeCameraController::RefreshCameraPreview() {
+  if (is_shutting_down_)
+    return;
+
   bool was_visible_before = false;
   aura::Window* old_root = nullptr;
   if (camera_preview_widget_) {

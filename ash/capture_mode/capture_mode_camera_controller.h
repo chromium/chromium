@@ -222,6 +222,10 @@ class ASH_EXPORT CaptureModeCameraController
   // https://crbug/1316230.
   void OnFrameHandlerFatalError();
 
+  // Called when the device is shutting down. After this call, we don't do any
+  // operations that interacts with the video capture service.
+  void OnShuttingDown();
+
   // base::SystemMonitor::DevicesChangedObserver:
   void OnDevicesChanged(base::SystemMonitor::DeviceType device_type) override;
 
@@ -386,6 +390,10 @@ class ASH_EXPORT CaptureModeCameraController
   // True if it's the first time to update the camera preview's bounds after
   // it's created.
   bool is_first_bounds_update_ = false;
+
+  // True when the device is shutting down, and we should no longer make any
+  // requests to the video capture service.
+  bool is_shutting_down_ = false;
 
   // Valid only during recording to track the number of camera disconnections
   // while recording is in progress.
