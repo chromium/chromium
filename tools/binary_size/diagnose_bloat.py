@@ -770,7 +770,8 @@ def _ValidateRevs(rev, reference_rev, subrepo, extra_rev):
   if extra_rev:
     git_fatal(['cat-file', '-e', extra_rev], no_obj_message % extra_rev)
   git_fatal(['merge-base', '--is-ancestor', reference_rev, rev],
-            'reference-rev is newer than rev')
+            f'reference-rev ({reference_rev}) is not an ancestor of '
+            f'rev ({rev})')
 
 
 def _VerifyUserAccepts(message):
