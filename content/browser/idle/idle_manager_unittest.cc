@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include <tuple>
 #include <utility>
 
@@ -20,7 +19,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/idle_time_provider.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/idle_test_utils.h"
 #include "content/public/test/mock_permission_manager.h"
@@ -31,6 +29,7 @@
 #include "services/service_manager/public/cpp/bind_source_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom.h"
 
 using blink::mojom::IdleManagerError;
@@ -110,7 +109,7 @@ class IdleManagerTest : public RenderViewHostTestHarness {
   void SetPermissionStatus(blink::mojom::PermissionStatus permission_status) {
     ON_CALL(*permission_manager_,
             GetPermissionStatusForCurrentDocument(
-                PermissionType::IDLE_DETECTION, main_rfh()))
+                blink::PermissionType::IDLE_DETECTION, main_rfh()))
         .WillByDefault(Return(permission_status));
   }
 

@@ -15,6 +15,7 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "services/device/public/mojom/nfc.mojom.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 namespace content {
@@ -58,7 +59,7 @@ void NFCHost::GetNFC(RenderFrameHost* render_frame_host,
 
   if (render_frame_host->GetBrowserContext()
           ->GetPermissionController()
-          ->GetPermissionStatusForCurrentDocument(PermissionType::NFC,
+          ->GetPermissionStatusForCurrentDocument(blink::PermissionType::NFC,
                                                   render_frame_host) !=
       blink::mojom::PermissionStatus::GRANTED) {
     return;
@@ -70,7 +71,8 @@ void NFCHost::GetNFC(RenderFrameHost* render_frame_host,
     // TODO(crbug.com/1271543) : Move `SubscribePermissionStatusChange` to
     // `PermissionController`.
     subscription_id_ = permission_controller_->SubscribePermissionStatusChange(
-        PermissionType::NFC, /*render_process_host=*/nullptr, render_frame_host,
+        blink::PermissionType::NFC, /*render_process_host=*/nullptr,
+        render_frame_host,
         render_frame_host->GetMainFrame()->GetLastCommittedOrigin().GetURL(),
         base::BindRepeating(&NFCHost::OnPermissionStatusChange,
                             base::Unretained(this)));

@@ -9,10 +9,10 @@
 #include "base/bind.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 namespace content {
@@ -37,7 +37,7 @@ void GeolocationServiceImplContext::RequestPermission(
   render_frame_host->GetBrowserContext()
       ->GetPermissionController()
       ->RequestPermissionFromCurrentDocument(
-          PermissionType::GEOLOCATION, render_frame_host, user_gesture,
+          blink::PermissionType::GEOLOCATION, render_frame_host, user_gesture,
           base::BindOnce(&GeolocationServiceImplContext::HandlePermissionStatus,
                          weak_factory_.GetWeakPtr(), std::move(callback)));
 }

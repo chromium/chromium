@@ -53,12 +53,12 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/renderer_preferences_util.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
@@ -1140,10 +1140,10 @@ bool TabImpl::CheckMediaAccessPermission(
     blink::mojom::MediaStreamType type) {
   DCHECK(type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE ||
          type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
-  content::PermissionType permission_type =
+  blink::PermissionType permission_type =
       type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE
-          ? content::PermissionType::AUDIO_CAPTURE
-          : content::PermissionType::VIDEO_CAPTURE;
+          ? blink::PermissionType::AUDIO_CAPTURE
+          : blink::PermissionType::VIDEO_CAPTURE;
   CHECK_EQ(render_frame_host->GetLastCommittedOrigin().GetURL(),
            security_origin);
   // It is OK to ignore `security_origin` because it will be calculated from

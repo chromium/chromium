@@ -64,7 +64,6 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/weak_document_ptr.h"
@@ -77,6 +76,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/window_open_disposition.h"
@@ -1011,7 +1011,7 @@ void ContentSettingMediaStreamBubbleModel::SetRadioGroup() {
             ->GetBrowserContext()
             ->GetPermissionController()
             ->GetPermissionStatusForCurrentDocument(
-                content::PermissionType::CAMERA_PAN_TILT_ZOOM,
+                blink::PermissionType::CAMERA_PAN_TILT_ZOOM,
                 &GetPage().GetMainDocument()) ==
         blink::mojom::PermissionStatus::GRANTED;
 

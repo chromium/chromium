@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
 
 namespace platform_verification {
@@ -35,7 +36,7 @@ bool IsPermittedByContentSettings(content::RenderFrameHost* render_frame_host) {
   return render_frame_host->GetBrowserContext()
              ->GetPermissionController()
              ->GetPermissionStatusForCurrentDocument(
-                 content::PermissionType::PROTECTED_MEDIA_IDENTIFIER,
+                 blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER,
                  render_frame_host) == blink::mojom::PermissionStatus::GRANTED;
 }
 

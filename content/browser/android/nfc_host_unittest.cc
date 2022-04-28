@@ -12,6 +12,7 @@
 #include "content/test/test_web_contents.h"
 #include "services/device/public/mojom/nfc.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 using testing::_;
 using testing::Return;
@@ -53,12 +54,13 @@ TEST_F(NFCHostTest, GetNFCTwice) {
 
   NavigateAndCommit(GURL(kTestUrl));
 
-  EXPECT_CALL(mock_permission_manager(), GetPermissionStatusForCurrentDocument(
-                                             PermissionType::NFC, main_rfh()))
+  EXPECT_CALL(mock_permission_manager(),
+              GetPermissionStatusForCurrentDocument(blink::PermissionType::NFC,
+                                                    main_rfh()))
       .WillOnce(Return(blink::mojom::PermissionStatus::GRANTED))
       .WillOnce(Return(blink::mojom::PermissionStatus::GRANTED));
   EXPECT_CALL(mock_permission_manager(),
-              SubscribePermissionStatusChange(PermissionType::NFC,
+              SubscribePermissionStatusChange(blink::PermissionType::NFC,
                                               /*render_process_host=*/nullptr,
                                               main_rfh(), GURL(kTestUrl), _))
       .WillOnce(Return(kSubscriptionId));

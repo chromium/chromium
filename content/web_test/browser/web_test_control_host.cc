@@ -94,6 +94,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/unique_name/unique_name_helper.h"
 #include "ui/base/ui_base_switches.h"
@@ -1428,45 +1429,45 @@ void WebTestControlHost::SetPermission(const std::string& name,
                                        blink::mojom::PermissionStatus status,
                                        const GURL& origin,
                                        const GURL& embedding_origin) {
-  content::PermissionType type;
+  blink::PermissionType type;
   if (name == "midi") {
-    type = PermissionType::MIDI;
+    type = blink::PermissionType::MIDI;
   } else if (name == "midi-sysex") {
-    type = PermissionType::MIDI_SYSEX;
+    type = blink::PermissionType::MIDI_SYSEX;
   } else if (name == "push-messaging" || name == "notifications") {
-    type = PermissionType::NOTIFICATIONS;
+    type = blink::PermissionType::NOTIFICATIONS;
   } else if (name == "geolocation") {
-    type = PermissionType::GEOLOCATION;
+    type = blink::PermissionType::GEOLOCATION;
   } else if (name == "protected-media-identifier") {
-    type = PermissionType::PROTECTED_MEDIA_IDENTIFIER;
+    type = blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER;
   } else if (name == "background-sync") {
-    type = PermissionType::BACKGROUND_SYNC;
+    type = blink::PermissionType::BACKGROUND_SYNC;
   } else if (name == "accessibility-events") {
-    type = PermissionType::ACCESSIBILITY_EVENTS;
+    type = blink::PermissionType::ACCESSIBILITY_EVENTS;
   } else if (name == "clipboard-read-write") {
-    type = PermissionType::CLIPBOARD_READ_WRITE;
+    type = blink::PermissionType::CLIPBOARD_READ_WRITE;
   } else if (name == "clipboard-sanitized-write") {
-    type = PermissionType::CLIPBOARD_SANITIZED_WRITE;
+    type = blink::PermissionType::CLIPBOARD_SANITIZED_WRITE;
   } else if (name == "payment-handler") {
-    type = PermissionType::PAYMENT_HANDLER;
+    type = blink::PermissionType::PAYMENT_HANDLER;
   } else if (name == "accelerometer" || name == "gyroscope" ||
              name == "magnetometer" || name == "ambient-light-sensor") {
-    type = PermissionType::SENSORS;
+    type = blink::PermissionType::SENSORS;
   } else if (name == "background-fetch") {
-    type = PermissionType::BACKGROUND_FETCH;
+    type = blink::PermissionType::BACKGROUND_FETCH;
   } else if (name == "periodic-background-sync") {
-    type = PermissionType::PERIODIC_BACKGROUND_SYNC;
+    type = blink::PermissionType::PERIODIC_BACKGROUND_SYNC;
   } else if (name == "wake-lock-screen") {
-    type = PermissionType::WAKE_LOCK_SCREEN;
+    type = blink::PermissionType::WAKE_LOCK_SCREEN;
   } else if (name == "wake-lock-system") {
-    type = PermissionType::WAKE_LOCK_SYSTEM;
+    type = blink::PermissionType::WAKE_LOCK_SYSTEM;
   } else if (name == "nfc") {
-    type = PermissionType::NFC;
+    type = blink::PermissionType::NFC;
   } else if (name == "storage-access") {
-    type = PermissionType::STORAGE_ACCESS_GRANT;
+    type = blink::PermissionType::STORAGE_ACCESS_GRANT;
   } else {
     NOTREACHED();
-    type = PermissionType::NOTIFICATIONS;
+    type = blink::PermissionType::NOTIFICATIONS;
   }
 
   WebTestContentBrowserClient::Get()

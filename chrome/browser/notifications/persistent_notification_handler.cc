@@ -21,8 +21,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_event_dispatcher.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/common/persistent_notification_status.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -108,7 +108,7 @@ void PersistentNotificationHandler::OnClick(
   blink::mojom::PermissionStatus permission_status =
       profile->GetPermissionController()
           ->GetPermissionStatusForOriginWithoutContext(
-              content::PermissionType::NOTIFICATIONS,
+              blink::PermissionType::NOTIFICATIONS,
               url::Origin::Create(origin));
 
   // Don't process click events when the |origin| doesn't have permission. This

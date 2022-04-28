@@ -24,6 +24,7 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace performance_manager {
 
@@ -74,7 +75,7 @@ void ScheduleLoadForRestoredTabs(
 
     bool has_notifications_permission =
         permission_controller->GetPermissionStatusForCurrentDocument(
-            content::PermissionType::NOTIFICATIONS, content->GetMainFrame()) ==
+            blink::PermissionType::NOTIFICATIONS, content->GetMainFrame()) ==
         blink::mojom::PermissionStatus::GRANTED;
 
     BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission

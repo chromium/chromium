@@ -32,6 +32,7 @@
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "services/device/public/cpp/test/fake_usb_device_info.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -391,7 +392,7 @@ class SensorsPolicyTest : public PolicyTest {
         browser()->profile()->GetPermissionController();
     EXPECT_EQ(
         permission_controller->GetPermissionStatusForOriginWithoutContext(
-            content::PermissionType::SENSORS, url::Origin::Create(GURL(url))),
+            blink::PermissionType::SENSORS, url::Origin::Create(GURL(url))),
         status);
   }
 

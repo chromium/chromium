@@ -10,10 +10,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/permissions/permission_service_context.h"
-#include "content/public/browser/permission_type.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "url/origin.h"
+
+namespace blink {
+enum class PermissionType;
+}
 
 namespace content {
 
@@ -68,8 +71,8 @@ class PermissionServiceImpl : public blink::mojom::PermissionService {
   blink::mojom::PermissionStatus GetPermissionStatus(
       const blink::mojom::PermissionDescriptorPtr& permission);
   blink::mojom::PermissionStatus GetPermissionStatusFromType(
-      PermissionType type);
-  void ResetPermissionStatus(PermissionType type);
+      blink::PermissionType type);
+  void ResetPermissionStatus(blink::PermissionType type);
   void ReceivedBadMessage();
 
   RequestsMap pending_requests_;

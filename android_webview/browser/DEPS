@@ -98,6 +98,7 @@ include_rules = [
 
   "+third_party/blink/public/common/page_state/page_state.h",
   "+third_party/blink/public/common/features.h",
+  "+third_party/blink/public/common/permissions/permission_utils.h",
   "+third_party/blink/public/common/storage_key/storage_key.h",
   "+third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h",
   "+third_party/crashpad/crashpad/client",

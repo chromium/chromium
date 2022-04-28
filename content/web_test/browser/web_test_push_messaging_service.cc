@@ -8,12 +8,12 @@
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/web_test/browser/web_test_browser_context.h"
 #include "content/web_test/browser/web_test_content_browser_client.h"
 #include "content/web_test/browser/web_test_permission_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
@@ -79,7 +79,7 @@ void WebTestPushMessagingService::SubscribeFromWorker(
           ->browser_context()
           ->GetPermissionController()
           ->GetPermissionStatusForWorker(
-              content::PermissionType::NOTIFICATIONS,
+              blink::PermissionType::NOTIFICATIONS,
               content::RenderProcessHost::FromID(render_process_id),
               url::Origin::Create(requesting_origin));
 

@@ -3,14 +3,16 @@
 // found in the LICENSE file.
 
 #include "content/public/test/permissions_test_utils.h"
+
 #include "content/browser/permissions/permission_controller_impl.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace content {
 
 void SetPermissionControllerOverrideForDevTools(
     PermissionController* permission_controller,
     const absl::optional<url::Origin>& origin,
-    PermissionType permission,
+    blink::PermissionType permission,
     const blink::mojom::PermissionStatus& status) {
   PermissionControllerImpl* permission_controller_impl =
       static_cast<PermissionControllerImpl*>(permission_controller);

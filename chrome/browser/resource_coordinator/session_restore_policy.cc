@@ -32,6 +32,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
@@ -208,7 +209,7 @@ void TabDataAccess::SetUsedInBgFromSiteData(
       contents->GetBrowserContext()->GetPermissionController();
 
   if (permission_controller->GetPermissionStatusForCurrentDocument(
-          content::PermissionType::NOTIFICATIONS, contents->GetMainFrame()) ==
+          blink::PermissionType::NOTIFICATIONS, contents->GetMainFrame()) ==
       blink::mojom::PermissionStatus::GRANTED) {
     used_in_bg = true;
   }

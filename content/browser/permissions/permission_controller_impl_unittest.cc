@@ -10,7 +10,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/test/mock_callback.h"
 #include "content/public/browser/permission_controller_delegate.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/test_browser_context.h"
@@ -18,6 +17,9 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
+
+using blink::PermissionType;
 
 namespace content {
 

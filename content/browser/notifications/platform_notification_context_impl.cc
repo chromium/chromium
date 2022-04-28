@@ -24,11 +24,11 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/browser/platform_notification_service.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace content {
 namespace {
@@ -365,7 +365,7 @@ void PlatformNotificationContextImpl::CheckPermissionsAndDeleteBlocked(
   // Erase all valid origins so we're left with invalid ones.
   base::EraseIf(origins, [controller](const GURL& origin) {
     auto permission = controller->GetPermissionStatusForOriginWithoutContext(
-        PermissionType::NOTIFICATIONS, url::Origin::Create(origin));
+        blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin));
     return permission == blink::mojom::PermissionStatus::GRANTED;
   });
 

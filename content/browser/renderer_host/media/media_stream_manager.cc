@@ -77,6 +77,7 @@
 #include "services/video_capture/public/uma/video_capture_service_event.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/switches.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -3296,7 +3297,7 @@ void MediaStreamManager::SubscribeToPermissionControllerOnUIThread(
     // It is safe to bind base::Unretained(this) because MediaStreamManager is
     // owned by BrowserMainLoop.
     audio_subscription_id = controller->SubscribePermissionStatusChange(
-        PermissionType::AUDIO_CAPTURE,
+        blink::PermissionType::AUDIO_CAPTURE,
         /*render_process_host=*/nullptr,
         RenderFrameHost::FromID(requesting_process_id, requesting_frame_id),
         origin,
@@ -3310,7 +3311,7 @@ void MediaStreamManager::SubscribeToPermissionControllerOnUIThread(
     // It is safe to bind base::Unretained(this) because MediaStreamManager is
     // owned by BrowserMainLoop.
     video_subscription_id = controller->SubscribePermissionStatusChange(
-        PermissionType::VIDEO_CAPTURE,
+        blink::PermissionType::VIDEO_CAPTURE,
         /*render_process_host=*/nullptr,
         RenderFrameHost::FromID(requesting_process_id, requesting_frame_id),
         origin,

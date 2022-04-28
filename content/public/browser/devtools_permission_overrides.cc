@@ -5,6 +5,7 @@
 #include "content/public/browser/devtools_permission_overrides.h"
 
 #include "base/no_destructor.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace content {
 using PermissionOverrides = DevToolsPermissionOverrides::PermissionOverrides;
@@ -19,7 +20,7 @@ DevToolsPermissionOverrides& DevToolsPermissionOverrides::operator=(
 
 void DevToolsPermissionOverrides::Set(
     const absl::optional<url::Origin>& origin,
-    PermissionType permission,
+    blink::PermissionType permission,
     const blink::mojom::PermissionStatus& status) {
   PermissionOverrides& origin_overrides =
       overrides_[origin.value_or(global_overrides_origin_)];
@@ -28,18 +29,18 @@ void DevToolsPermissionOverrides::Set(
   // Special override status - MIDI_SYSEX is stronger than MIDI, meaning that
   // granting MIDI_SYSEX implies granting MIDI, while denying MIDI implies
   // denying MIDI_SYSEX.
-  if (permission == PermissionType::MIDI &&
+  if (permission == blink::PermissionType::MIDI &&
       status != PermissionStatus::GRANTED) {
-    origin_overrides[PermissionType::MIDI_SYSEX] = status;
-  } else if (permission == PermissionType::MIDI_SYSEX &&
+    origin_overrides[blink::PermissionType::MIDI_SYSEX] = status;
+  } else if (permission == blink::PermissionType::MIDI_SYSEX &&
              status == PermissionStatus::GRANTED) {
-    origin_overrides[PermissionType::MIDI] = status;
+    origin_overrides[blink::PermissionType::MIDI] = status;
   }
 }
 
 absl::optional<PermissionStatus> DevToolsPermissionOverrides::Get(
     const url::Origin& origin,
-    PermissionType permission) const {
+    blink::PermissionType permission) const {
   auto current_override = overrides_.find(origin);
   if (current_override == overrides_.end())
     current_override = overrides_.find(global_overrides_origin_);
@@ -70,8 +71,8 @@ void DevToolsPermissionOverrides::Reset(
 
 void DevToolsPermissionOverrides::GrantPermissions(
     const absl::optional<url::Origin>& origin,
-    const std::vector<PermissionType>& permissions) {
-  const std::vector<PermissionType>& kAllPermissionTypes =
+    const std::vector<blink::PermissionType>& permissions) {
+  const std::vector<blink::PermissionType>& kAllPermissionTypes =
       blink::GetAllPermissionTypes();
   PermissionOverrides granted_overrides;
   for (const auto& permission : kAllPermissionTypes)

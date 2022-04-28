@@ -17,6 +17,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/origin.h"
 
 namespace content {
@@ -120,7 +121,7 @@ void PermissionServiceContext::CreateServiceForWorker(
 }
 
 void PermissionServiceContext::CreateSubscription(
-    PermissionType permission_type,
+    blink::PermissionType permission_type,
     const url::Origin& origin,
     blink::mojom::PermissionStatus current_status,
     blink::mojom::PermissionStatus last_known_status,

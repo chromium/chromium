@@ -21,6 +21,7 @@
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace {
 
@@ -54,7 +55,7 @@ class SubscriptionInterceptingPermissionManager
   }
 
   SubscriptionId SubscribePermissionStatusChange(
-      content::PermissionType permission,
+      blink::PermissionType permission,
       content::RenderProcessHost* render_process_host,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,

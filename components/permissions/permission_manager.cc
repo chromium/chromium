@@ -24,13 +24,13 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
+using blink::PermissionType;
 using blink::mojom::PermissionStatus;
-using content::PermissionType;
 
 namespace permissions {
 namespace {
@@ -574,7 +574,7 @@ PermissionStatus PermissionManager::GetPermissionStatusForWorker(
 }
 
 bool PermissionManager::IsPermissionOverridableByDevTools(
-    content::PermissionType permission,
+    PermissionType permission,
     const absl::optional<url::Origin>& origin) {
   ContentSettingsType type =
       PermissionUtil::PermissionTypeToContentSettingSafe(permission);

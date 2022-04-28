@@ -15,6 +15,7 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace performance_manager {
 namespace mechanism {
@@ -35,7 +36,7 @@ void MaybeFreezePageOnUIThread(const WebContentsProxy& contents_proxy) {
   // it's in background. This information isn't available in the PM graph, this
   // has to be checked on the UI thread.
   if (permission_controller->GetPermissionStatusForCurrentDocument(
-          content::PermissionType::NOTIFICATIONS, contents->GetMainFrame()) ==
+          blink::PermissionType::NOTIFICATIONS, contents->GetMainFrame()) ==
       blink::mojom::PermissionStatus::GRANTED) {
     return;
   }

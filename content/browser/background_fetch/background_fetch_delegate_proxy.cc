@@ -19,8 +19,8 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
@@ -94,10 +94,10 @@ void BackgroundFetchDelegateProxy::GetPermissionForOrigin(
     if (rfh) {
       DCHECK(origin == rfh->GetLastCommittedOrigin());
       permission_status = controller->GetPermissionStatusForCurrentDocument(
-          PermissionType::BACKGROUND_FETCH, rfh);
+          blink::PermissionType::BACKGROUND_FETCH, rfh);
     } else if (rph) {
       permission_status = controller->GetPermissionStatusForWorker(
-          PermissionType::BACKGROUND_FETCH, rph, origin);
+          blink::PermissionType::BACKGROUND_FETCH, rph, origin);
     }
     switch (permission_status) {
       case blink::mojom::PermissionStatus::GRANTED:

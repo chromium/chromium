@@ -16,6 +16,10 @@
 #include "third_party/blink/public/mojom/permissions/permission_automation.mojom.h"
 #include "url/gurl.h"
 
+namespace blink {
+enum class PermissionType;
+}
+
 namespace content {
 
 class WebTestPermissionManager
@@ -31,40 +35,40 @@ class WebTestPermissionManager
 
   // PermissionManager overrides.
   void RequestPermission(
-      PermissionType permission,
+      blink::PermissionType permission,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       bool user_gesture,
       base::OnceCallback<void(blink::mojom::PermissionStatus)> callback)
       override;
   void RequestPermissions(
-      const std::vector<PermissionType>& permission,
+      const std::vector<blink::PermissionType>& permission,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       bool user_gesture,
       base::OnceCallback<
           void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
       override;
-  void ResetPermission(PermissionType permission,
+  void ResetPermission(blink::PermissionType permission,
                        const GURL& requesting_origin,
                        const GURL& embedding_origin) override;
   blink::mojom::PermissionStatus GetPermissionStatus(
-      PermissionType permission,
+      blink::PermissionType permission,
       const GURL& requesting_origin,
       const GURL& embedding_origin) override;
   blink::mojom::PermissionStatus GetPermissionStatusForFrame(
-      content::PermissionType permission,
+      blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin) override;
   blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
-      content::PermissionType permission,
+      blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host) override;
   blink::mojom::PermissionStatus GetPermissionStatusForWorker(
-      content::PermissionType permission,
+      blink::PermissionType permission,
       RenderProcessHost* render_process_host,
       const GURL& worker_origin) override;
   SubscriptionId SubscribePermissionStatusChange(
-      PermissionType permission,
+      blink::PermissionType permission,
       RenderProcessHost* render_process_host,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
@@ -73,7 +77,7 @@ class WebTestPermissionManager
   void UnsubscribePermissionStatusChange(
       SubscriptionId subscription_id) override;
 
-  void SetPermission(PermissionType permission,
+  void SetPermission(blink::PermissionType permission,
                      blink::mojom::PermissionStatus status,
                      const GURL& url,
                      const GURL& embedding_url);
@@ -94,7 +98,7 @@ class WebTestPermissionManager
   // Representation of a permission for the WebTestPermissionManager.
   struct PermissionDescription {
     PermissionDescription() = default;
-    PermissionDescription(PermissionType type,
+    PermissionDescription(blink::PermissionType type,
                           const GURL& origin,
                           const GURL& embedding_origin);
     bool operator==(const PermissionDescription& other) const;
@@ -105,7 +109,7 @@ class WebTestPermissionManager
       size_t operator()(const PermissionDescription& description) const;
     };
 
-    PermissionType type;
+    blink::PermissionType type;
     GURL origin;
     GURL embedding_origin;
   };

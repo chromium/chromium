@@ -81,6 +81,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1218,7 +1219,7 @@ bool ContentBrowserClientImpl::IsClipboardPasteAllowed(
       browser_context->GetPermissionController();
   blink::mojom::PermissionStatus status =
       permission_controller->GetPermissionStatusForCurrentDocument(
-          content::PermissionType::CLIPBOARD_READ_WRITE, render_frame_host);
+          blink::PermissionType::CLIPBOARD_READ_WRITE, render_frame_host);
 
   if (!render_frame_host->HasTransientUserActivation() &&
       status != blink::mojom::PermissionStatus::GRANTED) {

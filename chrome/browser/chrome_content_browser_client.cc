@@ -312,6 +312,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
@@ -6099,7 +6100,7 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
       browser_context->GetPermissionController();
   blink::mojom::PermissionStatus status =
       permission_controller->GetPermissionStatusForCurrentDocument(
-          content::PermissionType::CLIPBOARD_READ_WRITE, render_frame_host);
+          blink::PermissionType::CLIPBOARD_READ_WRITE, render_frame_host);
 
   // True if this paste is executed from an extension URL with read permission.
   bool is_extension_paste_allowed = false;

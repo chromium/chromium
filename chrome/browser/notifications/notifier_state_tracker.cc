@@ -20,6 +20,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/permission_controller.h"
 #include "extensions/buildflags/buildflags.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "url/origin.h"
 
@@ -69,7 +70,7 @@ bool NotifierStateTracker::IsNotifierEnabled(
     case message_center::NotifierType::WEB_PAGE:
       return profile_->GetPermissionController()
                  ->GetPermissionStatusForOriginWithoutContext(
-                     content::PermissionType::NOTIFICATIONS,
+                     blink::PermissionType::NOTIFICATIONS,
                      url::Origin::Create(notifier_id.url)) ==
              blink::mojom::PermissionStatus::GRANTED;
     case message_center::NotifierType::SYSTEM_COMPONENT:

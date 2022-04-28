@@ -160,6 +160,7 @@
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -489,7 +490,7 @@ bool IsWindowPlacementGranted(RenderFrameHost* host) {
   DCHECK(permission_controller);
 
   return permission_controller->GetPermissionStatusForCurrentDocument(
-             PermissionType::WINDOW_PLACEMENT, host) ==
+             blink::PermissionType::WINDOW_PLACEMENT, host) ==
          blink::mojom::PermissionStatus::GRANTED;
 }
 

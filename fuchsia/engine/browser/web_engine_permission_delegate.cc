@@ -10,20 +10,20 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
 #include "fuchsia/engine/browser/frame_impl.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/origin.h"
 
 WebEnginePermissionDelegate::WebEnginePermissionDelegate() = default;
 WebEnginePermissionDelegate::~WebEnginePermissionDelegate() = default;
 
 void WebEnginePermissionDelegate::RequestPermission(
-    content::PermissionType permission,
+    blink::PermissionType permission,
     content::RenderFrameHost* render_frame_host,
     const GURL& origin,
     bool user_gesture,
     base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) {
-  std::vector<content::PermissionType> permissions{permission};
+  std::vector<blink::PermissionType> permissions{permission};
   RequestPermissions(
       permissions, render_frame_host, origin, user_gesture,
       base::BindOnce(
@@ -36,7 +36,7 @@ void WebEnginePermissionDelegate::RequestPermission(
 }
 
 void WebEnginePermissionDelegate::RequestPermissions(
-    const std::vector<content::PermissionType>& permissions,
+    const std::vector<blink::PermissionType>& permissions,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     bool user_gesture,
@@ -50,7 +50,7 @@ void WebEnginePermissionDelegate::RequestPermissions(
 }
 
 void WebEnginePermissionDelegate::ResetPermission(
-    content::PermissionType permission,
+    blink::PermissionType permission,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
   // TODO(crbug.com/1063094): Implement when the PermissionManager protocol is
@@ -59,7 +59,7 @@ void WebEnginePermissionDelegate::ResetPermission(
 }
 
 blink::mojom::PermissionStatus WebEnginePermissionDelegate::GetPermissionStatus(
-    content::PermissionType permission,
+    blink::PermissionType permission,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
   // Although GetPermissionStatusForFrame() should be used for most permissions,
@@ -72,7 +72,7 @@ blink::mojom::PermissionStatus WebEnginePermissionDelegate::GetPermissionStatus(
 
 blink::mojom::PermissionStatus
 WebEnginePermissionDelegate::GetPermissionStatusForFrame(
-    content::PermissionType permission,
+    blink::PermissionType permission,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin) {
   FrameImpl* frame = FrameImpl::FromRenderFrameHost(render_frame_host);
@@ -83,7 +83,7 @@ WebEnginePermissionDelegate::GetPermissionStatusForFrame(
 
 blink::mojom::PermissionStatus
 WebEnginePermissionDelegate::GetPermissionStatusForCurrentDocument(
-    content::PermissionType permission,
+    blink::PermissionType permission,
     content::RenderFrameHost* render_frame_host) {
   FrameImpl* frame = FrameImpl::FromRenderFrameHost(render_frame_host);
   DCHECK(frame);
@@ -93,7 +93,7 @@ WebEnginePermissionDelegate::GetPermissionStatusForCurrentDocument(
 
 blink::mojom::PermissionStatus
 WebEnginePermissionDelegate::GetPermissionStatusForWorker(
-    content::PermissionType permission,
+    blink::PermissionType permission,
     content::RenderProcessHost* render_process_host,
     const GURL& worker_origin) {
   // Use |worker_origin| for requesting_origin and embedding_origin because
@@ -103,7 +103,7 @@ WebEnginePermissionDelegate::GetPermissionStatusForWorker(
 
 WebEnginePermissionDelegate::SubscriptionId
 WebEnginePermissionDelegate::SubscribePermissionStatusChange(
-    content::PermissionType permission,
+    blink::PermissionType permission,
     content::RenderProcessHost* render_process_host,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,

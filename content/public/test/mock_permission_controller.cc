@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "content/public/test/mock_permission_controller.h"
+
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -12,20 +14,20 @@ MockPermissionController::MockPermissionController() = default;
 MockPermissionController::~MockPermissionController() = default;
 
 void MockPermissionController::RequestPermission(
-    PermissionType permission,
+    blink::PermissionType permission,
     RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     bool user_gesture,
     base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) {}
 
 void MockPermissionController::RequestPermissionFromCurrentDocument(
-    PermissionType permission,
+    blink::PermissionType permission,
     RenderFrameHost* render_frame_host,
     bool user_gesture,
     base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) {}
 
 void MockPermissionController::RequestPermissionsFromCurrentDocument(
-    const std::vector<PermissionType>& permission,
+    const std::vector<blink::PermissionType>& permission,
     RenderFrameHost* render_frame_host,
     bool user_gesture,
     base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>

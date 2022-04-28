@@ -11,13 +11,16 @@
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "url/gurl.h"
+
+namespace blink {
+enum class PermissionType;
+}
 
 namespace url {
 class Origin;
@@ -57,7 +60,7 @@ class PermissionServiceContext : public RenderProcessHostObserver {
       mojo::PendingReceiver<blink::mojom::PermissionService> receiver);
 
   void CreateSubscription(
-      PermissionType permission_type,
+      blink::PermissionType permission_type,
       const url::Origin& origin,
       blink::mojom::PermissionStatus current_status,
       blink::mojom::PermissionStatus last_known_status,

@@ -9,6 +9,10 @@
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/permission_controller_delegate.h"
 
+namespace blink {
+enum class PermissionType;
+}
+
 namespace content {
 class BrowserContext;
 }
@@ -27,40 +31,40 @@ class HeadlessPermissionManager : public content::PermissionControllerDelegate {
 
   // PermissionManager implementation.
   void RequestPermission(
-      content::PermissionType permission,
+      blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       bool user_gesture,
       base::OnceCallback<void(blink::mojom::PermissionStatus)> callback)
       override;
   void RequestPermissions(
-      const std::vector<content::PermissionType>& permission,
+      const std::vector<blink::PermissionType>& permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       bool user_gesture,
       base::OnceCallback<
           void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
       override;
-  void ResetPermission(content::PermissionType permission,
+  void ResetPermission(blink::PermissionType permission,
                        const GURL& requesting_origin,
                        const GURL& embedding_origin) override;
   blink::mojom::PermissionStatus GetPermissionStatus(
-      content::PermissionType permission,
+      blink::PermissionType permission,
       const GURL& requesting_origin,
       const GURL& embedding_origin) override;
   blink::mojom::PermissionStatus GetPermissionStatusForFrame(
-      content::PermissionType permission,
+      blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin) override;
   blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
-      content::PermissionType permission,
+      blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host) override;
   blink::mojom::PermissionStatus GetPermissionStatusForWorker(
-      content::PermissionType permission,
+      blink::PermissionType permission,
       content::RenderProcessHost* render_process_host,
       const GURL& worker_origin) override;
   SubscriptionId SubscribePermissionStatusChange(
-      content::PermissionType permission,
+      blink::PermissionType permission,
       content::RenderProcessHost* render_process_host,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,

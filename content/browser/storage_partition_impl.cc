@@ -127,6 +127,7 @@
 #include "storage/browser/quota/quota_settings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-shared.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
@@ -2012,7 +2013,7 @@ void StoragePartitionImpl::OnCanSendReportingReports(
   for (auto& origin : origins) {
     bool allowed =
         permission_controller->GetPermissionStatusForOriginWithoutContext(
-            PermissionType::BACKGROUND_SYNC, origin) ==
+            blink::PermissionType::BACKGROUND_SYNC, origin) ==
         blink::mojom::PermissionStatus::GRANTED;
     if (allowed)
       origins_out.push_back(origin);
@@ -2029,7 +2030,7 @@ void StoragePartitionImpl::OnCanSendDomainReliabilityUpload(
       browser_context_->GetPermissionController();
   std::move(callback).Run(
       permission_controller->GetPermissionStatusForOriginWithoutContext(
-          content::PermissionType::BACKGROUND_SYNC,
+          blink::PermissionType::BACKGROUND_SYNC,
           url::Origin::Create(origin)) ==
       blink::mojom::PermissionStatus::GRANTED);
 }

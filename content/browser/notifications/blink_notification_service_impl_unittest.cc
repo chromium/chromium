@@ -20,7 +20,6 @@
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -37,6 +36,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
@@ -405,10 +405,11 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
             browser_context_.GetPermissionControllerDelegate());
 
     ON_CALL(*mock_permission_manager,
-            GetPermissionStatus(PermissionType::NOTIFICATIONS, _, _))
+            GetPermissionStatus(blink::PermissionType::NOTIFICATIONS, _, _))
         .WillByDefault(Return(permission_status));
     ON_CALL(*mock_permission_manager,
-            GetPermissionStatusForWorker(PermissionType::NOTIFICATIONS, _, _))
+            GetPermissionStatusForWorker(blink::PermissionType::NOTIFICATIONS,
+                                         _, _))
         .WillByDefault(Return(permission_status));
   }
 

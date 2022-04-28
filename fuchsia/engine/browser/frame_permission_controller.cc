@@ -10,7 +10,7 @@
 #include "url/origin.h"
 
 using PermissionStatus = blink::mojom::PermissionStatus;
-using PermissionType = content::PermissionType;
+using PermissionType = blink::PermissionType;
 
 namespace {
 
@@ -69,10 +69,10 @@ void FramePermissionController::SetPermissionState(PermissionType permission,
   // TODO(crbug.com/1063094): This check is necessary mainly because
   // GetCanonicalOrigin() may not work correctly for other permission. See
   // comemnts in GetCanonicalOrigin(). Remove it once that issue is resolved.
-  DCHECK(permission == content::PermissionType::AUDIO_CAPTURE ||
-         permission == content::PermissionType::VIDEO_CAPTURE ||
-         permission == content::PermissionType::PROTECTED_MEDIA_IDENTIFIER ||
-         permission == content::PermissionType::DURABLE_STORAGE);
+  DCHECK(permission == PermissionType::AUDIO_CAPTURE ||
+         permission == PermissionType::VIDEO_CAPTURE ||
+         permission == PermissionType::PROTECTED_MEDIA_IDENTIFIER ||
+         permission == PermissionType::DURABLE_STORAGE);
 
   auto it = per_origin_permissions_.find(origin);
   if (it == per_origin_permissions_.end()) {

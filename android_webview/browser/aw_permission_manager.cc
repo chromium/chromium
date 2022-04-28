@@ -16,13 +16,13 @@
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
+using blink::PermissionType;
 using blink::mojom::PermissionStatus;
-using content::PermissionType;
 
 using RequestPermissionsCallback =
     base::OnceCallback<void(const std::vector<PermissionStatus>&)>;

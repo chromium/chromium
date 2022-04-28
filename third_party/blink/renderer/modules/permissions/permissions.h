@@ -24,7 +24,7 @@ class NavigatorBase;
 class ScriptPromiseResolver;
 class ScriptState;
 class ScriptValue;
-enum class BlinkPermissionType;
+enum class PermissionType;
 
 class Permissions final : public ScriptWrappable,
                           public Supplement<NavigatorBase>,
@@ -86,14 +86,14 @@ class Permissions final : public ScriptWrappable,
   PermissionStatusListener* GetOrCreatePermissionStatusListener(
       mojom::blink::PermissionStatus status,
       mojom::blink::PermissionDescriptorPtr descriptor);
-  absl::optional<BlinkPermissionType> GetPermissionType(
+  absl::optional<PermissionType> GetPermissionType(
       const mojom::blink::PermissionDescriptor& descriptor);
   mojom::blink::PermissionDescriptorPtr CreatePermissionVerificationDescriptor(
-      BlinkPermissionType descriptor_type);
+      PermissionType descriptor_type);
 
   int created_permission_status_objects_ = 0;
 
-  HeapHashMap<BlinkPermissionType, Member<PermissionStatusListener>> listeners_;
+  HeapHashMap<PermissionType, Member<PermissionStatusListener>> listeners_;
 
   HeapMojoRemote<mojom::blink::PermissionService> service_;
 };

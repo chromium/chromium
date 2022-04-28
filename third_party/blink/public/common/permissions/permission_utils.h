@@ -20,7 +20,7 @@ namespace blink {
 // or deprecate permission types.
 // Never delete or reorder an entry; only add new entries
 // immediately before PermissionType::NUM
-enum class BlinkPermissionType {
+enum class PermissionType {
   MIDI_SYSEX = 1,
   // PUSH_MESSAGING = 2,
   NOTIFICATIONS = 3,
@@ -64,11 +64,10 @@ BLINK_COMMON_EXPORT mojom::PermissionStatus ToPermissionStatus(
     const std::string& status);
 
 // Get a list of all permission types.
-BLINK_COMMON_EXPORT const std::vector<BlinkPermissionType>&
-GetAllPermissionTypes();
+BLINK_COMMON_EXPORT const std::vector<PermissionType>& GetAllPermissionTypes();
 
 // Given |descriptor|, set |permission_type| to a corresponding PermissionType.
-BLINK_COMMON_EXPORT absl::optional<BlinkPermissionType>
+BLINK_COMMON_EXPORT absl::optional<PermissionType>
 PermissionDescriptorToPermissionType(
     const mojom::PermissionDescriptorPtr& descriptor);
 
@@ -79,7 +78,7 @@ PermissionDescriptorToPermissionType(
 // dependency. Instead we provide this function that requires the relevant
 // information for making the decision and the caller needs to extract it from
 // the descriptor and provide it.
-BLINK_COMMON_EXPORT absl::optional<BlinkPermissionType>
+BLINK_COMMON_EXPORT absl::optional<PermissionType>
 PermissionDescriptorInfoToPermissionType(
     mojom::PermissionName name,
     bool midi_sysex,

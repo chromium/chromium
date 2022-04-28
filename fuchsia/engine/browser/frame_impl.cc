@@ -59,6 +59,7 @@
 #include "third_party/blink/public/common/logging/logging_utils.h"
 #include "third_party/blink/public/common/messaging/web_message_port.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
@@ -185,17 +186,17 @@ FrameImplMap& WebContentsToFrameImplMap() {
   return frame_impl_map;
 }
 
-content::PermissionType FidlPermissionTypeToContentPermissionType(
+blink::PermissionType FidlPermissionTypeToContentPermissionType(
     fuchsia::web::PermissionType fidl_type) {
   switch (fidl_type) {
     case fuchsia::web::PermissionType::MICROPHONE:
-      return content::PermissionType::AUDIO_CAPTURE;
+      return blink::PermissionType::AUDIO_CAPTURE;
     case fuchsia::web::PermissionType::CAMERA:
-      return content::PermissionType::VIDEO_CAPTURE;
+      return blink::PermissionType::VIDEO_CAPTURE;
     case fuchsia::web::PermissionType::PROTECTED_MEDIA_IDENTIFIER:
-      return content::PermissionType::PROTECTED_MEDIA_IDENTIFIER;
+      return blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER;
     case fuchsia::web::PermissionType::PERSISTENT_STORAGE:
-      return content::PermissionType::DURABLE_STORAGE;
+      return blink::PermissionType::DURABLE_STORAGE;
   }
 }
 
@@ -1147,7 +1148,7 @@ void FrameImpl::SetPermissionState(
     return;
   }
 
-  content::PermissionType type =
+  blink::PermissionType type =
       FidlPermissionTypeToContentPermissionType(fidl_permission.type());
 
   blink::mojom::PermissionStatus state =
@@ -1158,7 +1159,7 @@ void FrameImpl::SetPermissionState(
   // TODO(crbug.com/1136994): Remove this once the PermissionManager API is
   // available.
   if (web_origin_string == "*" &&
-      type == content::PermissionType::PROTECTED_MEDIA_IDENTIFIER) {
+      type == blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER) {
     permission_controller_.SetDefaultPermissionState(type, state);
     return;
   }
@@ -1232,11 +1233,11 @@ void FrameImpl::RequestMediaAccessPermission(
     content::MediaResponseCallback callback) {
   DCHECK_EQ(web_contents_.get(), web_contents);
 
-  std::vector<content::PermissionType> permissions;
+  std::vector<blink::PermissionType> permissions;
 
   if (request.audio_type ==
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
-    permissions.push_back(content::PermissionType::AUDIO_CAPTURE);
+    permissions.push_back(blink::PermissionType::AUDIO_CAPTURE);
   } else if (request.audio_type != blink::mojom::MediaStreamType::NO_SERVICE) {
     std::move(callback).Run(
         blink::MediaStreamDevices(),
@@ -1246,7 +1247,7 @@ void FrameImpl::RequestMediaAccessPermission(
 
   if (request.video_type ==
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
-    permissions.push_back(content::PermissionType::VIDEO_CAPTURE);
+    permissions.push_back(blink::PermissionType::VIDEO_CAPTURE);
   } else if (request.video_type != blink::mojom::MediaStreamType::NO_SERVICE) {
     std::move(callback).Run(
         blink::MediaStreamDevices(),
@@ -1279,13 +1280,13 @@ bool FrameImpl::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const GURL& security_origin,
     blink::mojom::MediaStreamType type) {
-  content::PermissionType permission;
+  blink::PermissionType permission;
   switch (type) {
     case blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE:
-      permission = content::PermissionType::AUDIO_CAPTURE;
+      permission = blink::PermissionType::AUDIO_CAPTURE;
       break;
     case blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE:
-      permission = content::PermissionType::VIDEO_CAPTURE;
+      permission = blink::PermissionType::VIDEO_CAPTURE;
       break;
     default:
       NOTREACHED();

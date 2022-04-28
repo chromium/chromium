@@ -39,7 +39,6 @@
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/permission_controller_delegate.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -54,6 +53,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -1236,8 +1236,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithFencedFrameTest,
   base::MockOnceCallback<void(blink::mojom::PermissionStatus)> callback;
   EXPECT_CALL(callback, Run(blink::mojom::PermissionStatus::DENIED));
   auto* delegate = browser()->profile()->GetPermissionControllerDelegate();
-  delegate->RequestPermission(content::PermissionType::SENSORS,
-                              fenced_frame_host, fenced_frame_url,
+  delegate->RequestPermission(blink::PermissionType::SENSORS, fenced_frame_host,
+                              fenced_frame_url,
                               /* user_gesture = */ true, callback.Get());
   console_observer.Wait();
   ASSERT_EQ(1u, console_observer.messages().size());

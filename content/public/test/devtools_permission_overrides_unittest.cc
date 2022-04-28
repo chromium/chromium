@@ -4,9 +4,9 @@
 
 #include "content/public/browser/devtools_permission_overrides.h"
 
-#include "content/public/browser/permission_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -14,6 +14,7 @@
 namespace content {
 
 namespace {
+using blink::PermissionType;
 using blink::mojom::PermissionStatus;
 using PermissionOverrides = DevToolsPermissionOverrides::PermissionOverrides;
 using url::Origin;

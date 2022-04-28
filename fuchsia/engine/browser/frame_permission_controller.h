@@ -10,7 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
-#include "content/public/browser/permission_type.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 namespace url {
@@ -33,7 +33,7 @@ class FramePermissionController {
   FramePermissionController& operator=(FramePermissionController&) = delete;
 
   // Sets the |state| for the specified |permission| and |origin|.
-  void SetPermissionState(content::PermissionType permission,
+  void SetPermissionState(blink::PermissionType permission,
                           const url::Origin& origin,
                           blink::mojom::PermissionStatus state);
 
@@ -42,13 +42,13 @@ class FramePermissionController {
   // this origin.
   // TODO(crbug.com/1063094): Allow ASK to be the default state, to indicate
   // that the user should be prompted.
-  void SetDefaultPermissionState(content::PermissionType permission,
+  void SetDefaultPermissionState(blink::PermissionType permission,
                                  blink::mojom::PermissionStatus state);
 
   // Returns current permission state of the specified |permission| and
   // |requesting_origin|.
   blink::mojom::PermissionStatus GetPermissionState(
-      content::PermissionType permission,
+      blink::PermissionType permission,
       const url::Origin& requesting_origin);
 
   // Requests permission state for the specified |permissions|. When the request
@@ -59,7 +59,7 @@ class FramePermissionController {
   // user: all permissions in the ASK state are denied silently. Define
   // fuchsia.web.PermissionManager protocol and use it to request permissions.
   void RequestPermissions(
-      const std::vector<content::PermissionType>& permissions,
+      const std::vector<blink::PermissionType>& permissions,
       const url::Origin& requesting_origin,
       bool user_gesture,
       base::OnceCallback<
@@ -74,7 +74,7 @@ class FramePermissionController {
     PermissionSet& operator=(const PermissionSet& other);
 
     std::array<blink::mojom::PermissionStatus,
-               static_cast<int>(content::PermissionType::NUM)>
+               static_cast<int>(blink::PermissionType::NUM)>
         permission_states;
   };
 

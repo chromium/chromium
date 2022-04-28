@@ -12,7 +12,6 @@
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
@@ -23,6 +22,7 @@
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 using blink::mojom::GeolocationService;
@@ -43,12 +43,12 @@ class TestPermissionManager : public MockPermissionManager {
   TestPermissionManager() = default;
   ~TestPermissionManager() override = default;
 
-  void RequestPermission(PermissionType permissions,
+  void RequestPermission(blink::PermissionType permissions,
                          RenderFrameHost* render_frame_host,
                          const GURL& requesting_origin,
                          bool user_gesture,
                          PermissionCallback callback) override {
-    EXPECT_EQ(permissions, PermissionType::GEOLOCATION);
+    EXPECT_EQ(permissions, blink::PermissionType::GEOLOCATION);
     EXPECT_TRUE(user_gesture);
     request_callback_.Run(std::move(callback));
   }

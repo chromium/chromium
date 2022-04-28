@@ -12,9 +12,9 @@
 #include "base/callback.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/web_test/browser/web_test_content_browser_client.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace content {
 
@@ -25,7 +25,7 @@ struct WebTestPermissionManager::Subscription {
 };
 
 WebTestPermissionManager::PermissionDescription::PermissionDescription(
-    PermissionType type,
+    blink::PermissionType type,
     const GURL& origin,
     const GURL& embedding_origin)
     : type(type), origin(origin), embedding_origin(embedding_origin) {}
@@ -55,7 +55,7 @@ WebTestPermissionManager::WebTestPermissionManager()
 WebTestPermissionManager::~WebTestPermissionManager() {}
 
 void WebTestPermissionManager::RequestPermission(
-    PermissionType permission,
+    blink::PermissionType permission,
     RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     bool user_gesture,
@@ -74,7 +74,7 @@ void WebTestPermissionManager::RequestPermission(
 }
 
 void WebTestPermissionManager::RequestPermissions(
-    const std::vector<PermissionType>& permissions,
+    const std::vector<blink::PermissionType>& permissions,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     bool user_gesture,
@@ -101,7 +101,7 @@ void WebTestPermissionManager::RequestPermissions(
   std::move(callback).Run(result);
 }
 
-void WebTestPermissionManager::ResetPermission(PermissionType permission,
+void WebTestPermissionManager::ResetPermission(blink::PermissionType permission,
                                                const GURL& requesting_origin,
                                                const GURL& embedding_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -116,7 +116,7 @@ void WebTestPermissionManager::ResetPermission(PermissionType permission,
 }
 
 blink::mojom::PermissionStatus WebTestPermissionManager::GetPermissionStatus(
-    PermissionType permission,
+    blink::PermissionType permission,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
@@ -132,7 +132,7 @@ blink::mojom::PermissionStatus WebTestPermissionManager::GetPermissionStatus(
   // Immitates the behaviour of the NotificationPermissionContext in that
   // permission cannot be requested from cross-origin iframes, which the current
   // permission status should reflect when it's status is ASK.
-  if (permission == PermissionType::NOTIFICATIONS) {
+  if (permission == blink::PermissionType::NOTIFICATIONS) {
     if (requesting_origin != embedding_origin &&
         it->second == blink::mojom::PermissionStatus::ASK) {
       return blink::mojom::PermissionStatus::DENIED;
@@ -144,7 +144,7 @@ blink::mojom::PermissionStatus WebTestPermissionManager::GetPermissionStatus(
 
 blink::mojom::PermissionStatus
 WebTestPermissionManager::GetPermissionStatusForFrame(
-    PermissionType permission,
+    blink::PermissionType permission,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin) {
   if (render_frame_host->IsNestedWithinFencedFrame())
@@ -158,7 +158,7 @@ WebTestPermissionManager::GetPermissionStatusForFrame(
 
 blink::mojom::PermissionStatus
 WebTestPermissionManager::GetPermissionStatusForCurrentDocument(
-    PermissionType permission,
+    blink::PermissionType permission,
     content::RenderFrameHost* render_frame_host) {
   if (render_frame_host->IsNestedWithinFencedFrame())
     return blink::mojom::PermissionStatus::DENIED;
@@ -171,7 +171,7 @@ WebTestPermissionManager::GetPermissionStatusForCurrentDocument(
 
 blink::mojom::PermissionStatus
 WebTestPermissionManager::GetPermissionStatusForWorker(
-    content::PermissionType permission,
+    blink::PermissionType permission,
     RenderProcessHost* render_process_host,
     const GURL& worker_origin) {
   return GetPermissionStatus(permission, worker_origin, worker_origin);
@@ -179,7 +179,7 @@ WebTestPermissionManager::GetPermissionStatusForWorker(
 
 WebTestPermissionManager::SubscriptionId
 WebTestPermissionManager::SubscribePermissionStatusChange(
-    PermissionType permission,
+    blink::PermissionType permission,
     RenderProcessHost* render_process_host,
     RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
@@ -219,7 +219,7 @@ void WebTestPermissionManager::UnsubscribePermissionStatusChange(
 }
 
 void WebTestPermissionManager::SetPermission(
-    PermissionType permission,
+    blink::PermissionType permission,
     blink::mojom::PermissionStatus status,
     const GURL& url,
     const GURL& embedding_url) {

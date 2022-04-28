@@ -12,11 +12,12 @@
 #include "components/permissions/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using content::PermissionType;
+using blink::PermissionType;
 
 namespace permissions {
 

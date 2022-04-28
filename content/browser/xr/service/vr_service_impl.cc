@@ -22,7 +22,6 @@
 #include "content/browser/xr/service/xr_runtime_manager_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -33,6 +32,7 @@
 #include "device/vr/buildflags/buildflags.h"
 #include "device/vr/public/cpp/session_mode.h"
 #include "device/vr/public/mojom/vr_service.mojom-shared.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace {
 
@@ -44,23 +44,23 @@ device::mojom::XRRuntimeSessionOptionsPtr GetRuntimeOptions(
   return runtime_options;
 }
 
-std::vector<content::PermissionType> GetRequiredPermissions(
+std::vector<blink::PermissionType> GetRequiredPermissions(
     device::mojom::XRSessionMode mode,
     const std::unordered_set<device::mojom::XRSessionFeature>&
         required_features,
     const std::unordered_set<device::mojom::XRSessionFeature>&
         optional_features) {
-  std::vector<content::PermissionType> permissions;
+  std::vector<blink::PermissionType> permissions;
 
   switch (mode) {
     case device::mojom::XRSessionMode::kInline:
-      permissions.push_back(content::PermissionType::SENSORS);
+      permissions.push_back(blink::PermissionType::SENSORS);
       break;
     case device::mojom::XRSessionMode::kImmersiveVr:
-      permissions.push_back(content::PermissionType::VR);
+      permissions.push_back(blink::PermissionType::VR);
       break;
     case device::mojom::XRSessionMode::kImmersiveAr:
-      permissions.push_back(content::PermissionType::AR);
+      permissions.push_back(blink::PermissionType::AR);
       break;
   }
 
@@ -68,7 +68,7 @@ std::vector<content::PermissionType> GetRequiredPermissions(
                      device::mojom::XRSessionFeature::CAMERA_ACCESS) ||
       base::Contains(optional_features,
                      device::mojom::XRSessionFeature::CAMERA_ACCESS)) {
-    permissions.push_back(content::PermissionType::VIDEO_CAPTURE);
+    permissions.push_back(blink::PermissionType::VIDEO_CAPTURE);
   }
 
   return permissions;
@@ -499,7 +499,7 @@ void VRServiceImpl::GetPermissionStatus(SessionRequestData request,
 
   // Need to calculate the permissions before the call below, as otherwise
   // std::move nulls options out before GetRequiredPermissions runs.
-  const std::vector<PermissionType> permissions =
+  const std::vector<blink::PermissionType> permissions =
       GetRequiredPermissions(request.options->mode, request.required_features,
                              request.optional_features);
 
@@ -512,7 +512,7 @@ void VRServiceImpl::GetPermissionStatus(SessionRequestData request,
 
 void VRServiceImpl::OnPermissionResults(
     SessionRequestData request,
-    const std::vector<content::PermissionType>& permissions,
+    const std::vector<blink::PermissionType>& permissions,
     const std::vector<blink::mojom::PermissionStatus>& permission_statuses) {
   DVLOG(2) << __func__;
   DCHECK_EQ(permissions.size(), permission_statuses.size());

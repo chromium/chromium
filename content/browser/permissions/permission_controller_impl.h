@@ -13,12 +13,18 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace blink {
+enum class PermissionType;
+}
+
 namespace content {
 
 class BrowserContext;
 class PermissionControllerImplTest;
 class RenderProcessHost;
 class PermissionServiceImpl;
+
+using blink::PermissionType;
 
 // Implementation of the PermissionController interface. This
 // is used by content/ layer to manage permissions.

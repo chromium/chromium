@@ -333,7 +333,7 @@ PermissionStatusListener* Permissions::GetOrCreatePermissionStatusListener(
   return listeners_.at(*type);
 }
 
-absl::optional<BlinkPermissionType> Permissions::GetPermissionType(
+absl::optional<PermissionType> Permissions::GetPermissionType(
     const mojom::blink::PermissionDescriptor& descriptor) {
   return PermissionDescriptorInfoToPermissionType(
       descriptor.name,
@@ -347,8 +347,8 @@ absl::optional<BlinkPermissionType> Permissions::GetPermissionType(
 
 mojom::blink::PermissionDescriptorPtr
 Permissions::CreatePermissionVerificationDescriptor(
-    BlinkPermissionType descriptor_type) {
-  if (descriptor_type == BlinkPermissionType::CAMERA_PAN_TILT_ZOOM) {
+    PermissionType descriptor_type) {
+  if (descriptor_type == PermissionType::CAMERA_PAN_TILT_ZOOM) {
     return CreateVideoCapturePermissionDescriptor(false /* pan_tilt_zoom */);
   }
   return nullptr;

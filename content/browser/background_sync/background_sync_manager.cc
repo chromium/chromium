@@ -29,8 +29,8 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_process_host.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
@@ -137,12 +137,12 @@ SyncAndNotificationPermissions GetBackgroundSyncPermission(
   // The requesting origin always matches the embedding origin.
   auto sync_permission = permission_controller->GetPermissionStatusForWorker(
       sync_type == BackgroundSyncType::ONE_SHOT
-          ? PermissionType::BACKGROUND_SYNC
-          : PermissionType::PERIODIC_BACKGROUND_SYNC,
+          ? blink::PermissionType::BACKGROUND_SYNC
+          : blink::PermissionType::PERIODIC_BACKGROUND_SYNC,
       render_process_host, origin);
   auto notification_permission =
       permission_controller->GetPermissionStatusForWorker(
-          PermissionType::NOTIFICATIONS, render_process_host, origin);
+          blink::PermissionType::NOTIFICATIONS, render_process_host, origin);
   return {sync_permission, notification_permission};
 }
 

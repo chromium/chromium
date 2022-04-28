@@ -55,7 +55,6 @@
 #include "content/public/browser/devtools_background_services_context.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
@@ -63,6 +62,7 @@
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom.h"
@@ -775,7 +775,7 @@ void PushMessagingServiceImpl::SubscribeFromDocument(
   // `render_frame_host` and we always use `requesting_origin` for
   // NOTIFICATIONS.
   profile_->GetPermissionController()->RequestPermissionFromCurrentDocument(
-      content::PermissionType::NOTIFICATIONS, render_frame_host, user_gesture,
+      blink::PermissionType::NOTIFICATIONS, render_frame_host, user_gesture,
       base::BindOnce(&PushMessagingServiceImpl::DoSubscribe,
                      weak_factory_.GetWeakPtr(), std::move(app_identifier),
                      std::move(options), std::move(callback), render_process_id,
@@ -831,14 +831,13 @@ blink::mojom::PermissionStatus PushMessagingServiceImpl::GetPermissionStatus(
   // |origin| when checking whether permission to use the API has been granted.
   if (render_process_id_ != content::ChildProcessHost::kInvalidUniqueID) {
     return profile_->GetPermissionController()->GetPermissionStatusForWorker(
-        content::PermissionType::NOTIFICATIONS,
+        blink::PermissionType::NOTIFICATIONS,
         content::RenderProcessHost::FromID(render_process_id_),
         url::Origin::Create(origin));
   } else {
     return profile_->GetPermissionController()
         ->GetPermissionStatusForOriginWithoutContext(
-            content::PermissionType::NOTIFICATIONS,
-            url::Origin::Create(origin));
+            blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin));
   }
 }
 

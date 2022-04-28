@@ -18,6 +18,7 @@
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
@@ -191,7 +192,7 @@ void ChromeWebViewPermissionHelperDelegate::OnGeolocationPermissionResponse(
       ->browser_context()
       ->GetPermissionController()
       ->RequestPermissionFromCurrentDocument(
-          content::PermissionType::GEOLOCATION,
+          blink::PermissionType::GEOLOCATION,
           web_view_guest()->embedder_web_contents()->GetMainFrame(),
           user_gesture, std::move(callback));
 }

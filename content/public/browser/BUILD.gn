@@ -284,7 +284,6 @@ source_set("browser_sources") {
     "permission_controller.h",
     "permission_controller_delegate.cc",
     "permission_controller_delegate.h",
-    "permission_type.h",
     "picture_in_picture_window_controller.h",
     "platform_notification_context.h",
     "platform_notification_service.h",

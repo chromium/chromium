@@ -29,9 +29,9 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include <vector>
@@ -177,10 +177,10 @@ bool PermissionBubbleMediaAccessHandler::CheckMediaAccessPermission(
     const GURL& security_origin,
     blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
-  content::PermissionType permission_type =
+  blink::PermissionType permission_type =
       type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE
-          ? content::PermissionType::AUDIO_CAPTURE
-          : content::PermissionType::VIDEO_CAPTURE;
+          ? blink::PermissionType::AUDIO_CAPTURE
+          : blink::PermissionType::VIDEO_CAPTURE;
 
   CHECK_EQ(render_frame_host->GetLastCommittedOrigin().GetURL(),
            security_origin);

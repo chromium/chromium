@@ -37,6 +37,7 @@
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -253,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
   EXPECT_CALL(callback, Run(blink::mojom::PermissionStatus::ASK));
   // PermissionManagerFactory::GetForProfile(browser()->profile())
   browser()->profile()->GetPermissionController()->RequestPermission(
-      content::PermissionType::GEOLOCATION, rfh_a.get(), url_a,
+      blink::PermissionType::GEOLOCATION, rfh_a.get(), url_a,
       /* user_gesture = */ true, callback.Get());
 
   // Ensure |rfh_a| is evicted from the cache because it is not allowed to

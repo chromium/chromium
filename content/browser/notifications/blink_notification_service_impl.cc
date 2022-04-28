@@ -17,7 +17,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/browser/platform_notification_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
@@ -25,6 +24,7 @@
 #include "third_party/blink/public/common/notifications/notification_constants.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 
 namespace content {
@@ -187,7 +187,7 @@ BlinkNotificationServiceImpl::CheckPermissionStatus() {
   // for cross-origin subframes, yet the instance is completely oblivious of
   // whether it is serving a top-level browsing context or an embedded one.
   return browser_context_->GetPermissionController()
-      ->GetPermissionStatusForWorker(PermissionType::NOTIFICATIONS, rph,
+      ->GetPermissionStatusForWorker(blink::PermissionType::NOTIFICATIONS, rph,
                                      origin_);
 }
 

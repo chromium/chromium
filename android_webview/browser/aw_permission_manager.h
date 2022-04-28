@@ -12,6 +12,10 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/permission_controller_delegate.h"
 
+namespace blink {
+enum class PermissionType;
+}
+
 namespace android_webview {
 
 class AwBrowserPermissionRequestDelegate;
@@ -28,40 +32,40 @@ class AwPermissionManager : public content::PermissionControllerDelegate {
 
   // PermissionControllerDelegate implementation.
   void RequestPermission(
-      content::PermissionType permission,
+      blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       bool user_gesture,
       base::OnceCallback<void(blink::mojom::PermissionStatus)> callback)
       override;
   void RequestPermissions(
-      const std::vector<content::PermissionType>& permissions,
+      const std::vector<blink::PermissionType>& permissions,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       bool user_gesture,
       base::OnceCallback<
           void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
       override;
-  void ResetPermission(content::PermissionType permission,
+  void ResetPermission(blink::PermissionType permission,
                        const GURL& requesting_origin,
                        const GURL& embedding_origin) override;
   blink::mojom::PermissionStatus GetPermissionStatus(
-      content::PermissionType permission,
+      blink::PermissionType permission,
       const GURL& requesting_origin,
       const GURL& embedding_origin) override;
   blink::mojom::PermissionStatus GetPermissionStatusForFrame(
-      content::PermissionType permission,
+      blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin) override;
   blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
-      content::PermissionType permission,
+      blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host) override;
   blink::mojom::PermissionStatus GetPermissionStatusForWorker(
-      content::PermissionType permission,
+      blink::PermissionType permission,
       content::RenderProcessHost* render_process_host,
       const GURL& worker_origin) override;
   SubscriptionId SubscribePermissionStatusChange(
-      content::PermissionType permission,
+      blink::PermissionType permission,
       content::RenderProcessHost* render_process_host,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
@@ -91,7 +95,7 @@ class AwPermissionManager : public content::PermissionControllerDelegate {
   static void OnRequestResponse(
       const base::WeakPtr<AwPermissionManager>& manager,
       int request_id,
-      content::PermissionType permission,
+      blink::PermissionType permission,
       bool allowed);
 
   PendingRequestsMap pending_requests_;

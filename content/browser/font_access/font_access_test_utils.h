@@ -7,6 +7,10 @@
 
 #include "content/public/test/mock_permission_manager.h"
 
+namespace blink {
+enum class PermissionType;
+}
+
 namespace content {
 
 class TestFontAccessPermissionManager : public MockPermissionManager {
@@ -23,19 +27,19 @@ class TestFontAccessPermissionManager : public MockPermissionManager {
   using PermissionCallback =
       base::OnceCallback<void(blink::mojom::PermissionStatus)>;
 
-  void RequestPermission(PermissionType permissions,
+  void RequestPermission(blink::PermissionType permissions,
                          RenderFrameHost* render_frame_host,
                          const GURL& requesting_origin,
                          bool user_gesture,
                          PermissionCallback callback) override;
 
   blink::mojom::PermissionStatus GetPermissionStatusForFrame(
-      PermissionType permission,
+      blink::PermissionType permission,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin) override;
 
   blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
-      PermissionType permission,
+      blink::PermissionType permission,
       RenderFrameHost* render_frame_host) override;
 
   void SetRequestCallback(

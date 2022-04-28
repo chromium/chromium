@@ -8,11 +8,13 @@
 #include "base/command_line.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_switches.h"
 #include "content/shell/common/shell_switches.h"
 #include "media/base/media_switches.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
+
+using blink::PermissionType;
 
 namespace content {
 
@@ -159,7 +161,7 @@ ShellPermissionManager::GetPermissionStatusForCurrentDocument(
 
 blink::mojom::PermissionStatus
 ShellPermissionManager::GetPermissionStatusForWorker(
-    content::PermissionType permission,
+    PermissionType permission,
     content::RenderProcessHost* render_process_host,
     const GURL& worker_origin) {
   return GetPermissionStatus(permission, worker_origin, worker_origin);

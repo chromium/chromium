@@ -20,7 +20,6 @@
 #include "components/permissions/test/permission_test_util.h"
 #include "components/permissions/test/test_permissions_client.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -28,14 +27,15 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+using blink::PermissionType;
 using blink::mojom::PermissionsPolicyFeature;
 using blink::mojom::PermissionStatus;
-using content::PermissionType;
 
 namespace permissions {
 namespace {
@@ -167,7 +167,7 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
   }
 
   PermissionStatus GetPermissionStatusForWorker(
-      content::PermissionType permission,
+      PermissionType permission,
       content::RenderProcessHost* render_process_host,
       const GURL& worker_origin) {
     return GetPermissionManager()->GetPermissionStatusForWorker(

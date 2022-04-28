@@ -14,9 +14,9 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 using device::mojom::SensorType;
@@ -76,7 +76,7 @@ void SensorProviderProxyImpl::GetSensor(SensorType type,
   render_frame_host_->GetBrowserContext()
       ->GetPermissionController()
       ->RequestPermissionFromCurrentDocument(
-          PermissionType::SENSORS, render_frame_host_, false,
+          blink::PermissionType::SENSORS, render_frame_host_, false,
           base::BindOnce(&SensorProviderProxyImpl::OnPermissionRequestCompleted,
                          weak_factory_.GetWeakPtr(), type,
                          std::move(callback)));
