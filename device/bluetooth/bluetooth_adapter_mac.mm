@@ -766,6 +766,11 @@ void BluetoothAdapterMac::LowEnergyCentralManagerUpdatedState() {
     DVLOG(1)
         << "Central no longer powered on. Notifying of device disconnection.";
     for (BluetoothDevice* device : GetDevices()) {
+      // GetDevices() returns instances of BluetoothClassicDeviceMac and
+      // BluetoothLowEnergyDeviceMac. The DidDisconnectPeripheral() method is
+      // only available on BluetoothLowEnergyDeviceMac.
+      if (!static_cast<BluetoothDeviceMac*>(device)->IsLowEnergyDevice())
+        continue;
       BluetoothLowEnergyDeviceMac* device_mac =
           static_cast<BluetoothLowEnergyDeviceMac*>(device);
       if (device_mac->IsGattConnected()) {
@@ -903,9 +908,16 @@ BluetoothAdapterMac::GetBluetoothLowEnergyDeviceMac(CBPeripheral* peripheral) {
       BluetoothLowEnergyDeviceMac::GetPeripheralHashAddress(peripheral);
   auto iter = devices_.find(device_address);
   if (iter == devices_.end()) {
-    return nil;
+    return nullptr;
   }
-  return static_cast<BluetoothLowEnergyDeviceMac*>(iter->second.get());
+  // device_mac can be BluetoothClassicDeviceMac* or
+  // BluetoothLowEnergyDeviceMac* To return valid BluetoothLowEnergyDeviceMac*
+  // we need to first check with IsLowEnergyDevice()
+  BluetoothDeviceMac* device_mac =
+      static_cast<BluetoothDeviceMac*>(iter->second.get());
+  return device_mac->IsLowEnergyDevice()
+             ? static_cast<BluetoothLowEnergyDeviceMac*>(device_mac)
+             : nullptr;
 }
 
 bool BluetoothAdapterMac::DoesCollideWithKnownDevice(

@@ -83,6 +83,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceMac
       const device::BluetoothUUID& uuid,
       ConnectToServiceCallback callback,
       ConnectToServiceErrorCallback error_callback) override;
+  bool IsLowEnergyDevice() override;
 
  protected:
   // BluetoothDevice override.

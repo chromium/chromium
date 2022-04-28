@@ -82,6 +82,7 @@ class BluetoothClassicDeviceMac : public BluetoothDeviceMac {
   // Returns the Bluetooth address for the |device|. The returned address has a
   // normalized format (see below).
   static std::string GetDeviceAddress(IOBluetoothDevice* device);
+  bool IsLowEnergyDevice() override;
 
  protected:
   // BluetoothDevice override
