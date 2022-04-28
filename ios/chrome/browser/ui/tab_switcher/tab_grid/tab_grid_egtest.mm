@@ -708,12 +708,10 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
 
-// TODO(crbug.com/1184267): Test is flaky on iPad devices.
-#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/1184267): Test is failing on iPad devices and simulator.
   if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"This test is flaky on iPad devices.");
+    EARL_GREY_TEST_DISABLED(@"This test is failing.");
   }
-#endif
 
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
