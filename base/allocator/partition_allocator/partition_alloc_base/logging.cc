@@ -10,7 +10,6 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
 #include "base/base_export.h"
-#include "base/cxx17_backports.h"
 #include "base/immediate_crash.h"
 #include "build/build_config.h"
 
