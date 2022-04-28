@@ -235,7 +235,8 @@ export class ModulesElement extends PolymerElement {
             !moduleContainer.hidden &&
             moduleContainer.classList.contains(SHORT_CLASS_NAME) &&
             index + 1 !== moduleContainers.length &&
-            moduleContainers[index + 1].classList.contains(SHORT_CLASS_NAME)) {
+            (moduleContainers[index + 1].classList.contains(SHORT_CLASS_NAME) ||
+             moduleContainers[index + 1].hidden)) {
           // Add current short module to a new container since the next one is
           // short as well by setting its parent to be
           // 'shortModuleSiblingsContainer'.
