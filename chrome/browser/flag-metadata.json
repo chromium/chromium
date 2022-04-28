@@ -5050,7 +5050,7 @@
   {
     "name": "quick-dim",
     "owners": [ "charleszhao", "martis", "napper" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 106
   },
   {
     "name": "quick-settings-network-revamp",
@@ -5518,7 +5518,7 @@
   {
     "name": "snooping-protection",
     "owners": [ "martis", "charleszhao", "napper" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 106
   },
   {
     "name": "spectre-v2-mitigation",
