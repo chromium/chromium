@@ -3098,11 +3098,15 @@ bool RenderViewContextMenu::IsQRCodeGeneratorEnabled() const {
   if (!GetBrowser())
     return false;
 
+  if (params_.media_type == ContextMenuDataMediaType::kImage) {
+    return qrcode_generator::QRCodeGeneratorBubbleController::
+        IsGeneratorAvailable(params_.src_url);
+  }
+
   NavigationEntry* entry =
       embedder_web_contents_->GetController().GetLastCommittedEntry();
   if (!entry)
     return false;
-
   return qrcode_generator::QRCodeGeneratorBubbleController::
       IsGeneratorAvailable(entry->GetURL());
 }
