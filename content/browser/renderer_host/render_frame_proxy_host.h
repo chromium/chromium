@@ -31,6 +31,7 @@ class AssociatedInterfaceProvider;
 
 namespace gfx {
 class Rect;
+class RectF;
 }
 
 namespace perfetto {
@@ -177,7 +178,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // element in the frame's parent. Calling this continues a scroll started in
   // the frame's current process. |rect_to_scroll| is with respect to the
   // coordinates of the originating frame in OOPIF process.
-  void ScrollRectToVisible(const gfx::Rect& rect_to_scroll,
+  void ScrollRectToVisible(const gfx::RectF& rect_to_scroll,
                            blink::mojom::ScrollIntoViewParamsPtr params);
 
   // Sets render frame proxy created state. If |created| is false, any existing

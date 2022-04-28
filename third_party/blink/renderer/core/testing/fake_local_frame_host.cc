@@ -80,7 +80,7 @@ void FakeLocalFrameHost::HadStickyUserActivationBeforeNavigationChanged(
     bool value) {}
 
 void FakeLocalFrameHost::ScrollRectToVisibleInParentFrame(
-    const gfx::Rect& rect_to_scroll,
+    const gfx::RectF& rect_to_scroll,
     blink::mojom::blink::ScrollIntoViewParamsPtr params) {}
 
 void FakeLocalFrameHost::BubbleLogicalScrollInParentFrame(

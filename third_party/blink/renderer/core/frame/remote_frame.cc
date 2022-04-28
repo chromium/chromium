@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -706,7 +707,7 @@ void RemoteFrame::SetPageFocus(bool is_focused) {
 }
 
 void RemoteFrame::ScrollRectToVisible(
-    const gfx::Rect& rect_to_scroll,
+    const gfx::RectF& rect_to_scroll,
     mojom::blink::ScrollIntoViewParamsPtr params) {
   Element* owner_element = DeprecatedLocalOwner();
   LayoutObject* owner_object = owner_element->GetLayoutObject();
@@ -719,11 +720,7 @@ void RemoteFrame::ScrollRectToVisible(
 
   // Schedule the scroll.
   PhysicalRect absolute_rect = owner_object->LocalToAncestorRect(
-      PhysicalRect(LayoutUnit(rect_to_scroll.x()),
-                   LayoutUnit(rect_to_scroll.y()),
-                   LayoutUnit(rect_to_scroll.width()),
-                   LayoutUnit(rect_to_scroll.height())),
-      owner_object->View());
+      PhysicalRect::EnclosingRect(rect_to_scroll), owner_object->View());
 
   if (!params->zoom_into_rect ||
       !owner_object->GetDocument().GetFrame()->LocalFrameRoot().IsMainFrame()) {

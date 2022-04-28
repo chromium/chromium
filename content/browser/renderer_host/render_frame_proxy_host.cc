@@ -47,6 +47,7 @@
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace content {
 
@@ -384,7 +385,7 @@ void RenderFrameProxyHost::SetFocusedFrame() {
 }
 
 void RenderFrameProxyHost::ScrollRectToVisible(
-    const gfx::Rect& rect_to_scroll,
+    const gfx::RectF& rect_to_scroll,
     blink::mojom::ScrollIntoViewParamsPtr params) {
   GetAssociatedRemoteFrame()->ScrollRectToVisible(rect_to_scroll,
                                                   std::move(params));

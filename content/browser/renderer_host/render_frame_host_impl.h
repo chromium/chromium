@@ -2048,7 +2048,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::mojom::SuddenTerminationDisablerType disabler_type) override;
   void HadStickyUserActivationBeforeNavigationChanged(bool value) override;
   void ScrollRectToVisibleInParentFrame(
-      const gfx::Rect& rect_to_scroll,
+      const gfx::RectF& rect_to_scroll,
       blink::mojom::ScrollIntoViewParamsPtr params) override;
   void BubbleLogicalScrollInParentFrame(
       blink::mojom::ScrollDirection direction,

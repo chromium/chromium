@@ -3851,9 +3851,7 @@ void LocalFrameView::ScrollRectToVisibleInRemoteParent(
              ->CanAccess(GetFrame().GetSecurityContext()->GetSecurityOrigin()));
   PhysicalRect new_rect = ConvertToRootFrame(rect_to_scroll);
   GetFrame().GetLocalFrameHostRemote().ScrollRectToVisibleInParentFrame(
-      gfx::Rect(new_rect.X().ToInt(), new_rect.Y().ToInt(),
-                new_rect.Width().ToInt(), new_rect.Height().ToInt()),
-      std::move(params));
+      gfx::RectF(new_rect), std::move(params));
 }
 
 bool LocalFrameView::AllowedToPropagateScrollIntoView(

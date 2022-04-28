@@ -6419,7 +6419,7 @@ void RenderFrameHostImpl::HadStickyUserActivationBeforeNavigationChanged(
 }
 
 void RenderFrameHostImpl::ScrollRectToVisibleInParentFrame(
-    const gfx::Rect& rect_to_scroll,
+    const gfx::RectF& rect_to_scroll,
     blink::mojom::ScrollIntoViewParamsPtr params) {
   RenderFrameProxyHost* proxy = GetProxyToParent();
   if (!proxy)

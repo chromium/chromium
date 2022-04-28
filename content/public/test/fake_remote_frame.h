@@ -71,7 +71,7 @@ class FakeRemoteFrame : public blink::mojom::RemoteFrame {
       blink::mojom::ResourceTimingInfoPtr timing) override;
 
   void ScrollRectToVisible(
-      const gfx::Rect& rect,
+      const gfx::RectF& rect,
       blink::mojom::ScrollIntoViewParamsPtr params) override;
   void DidStartLoading() override;
   void DidStopLoading() override;

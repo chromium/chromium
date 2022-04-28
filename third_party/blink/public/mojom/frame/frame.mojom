@@ -320,7 +320,7 @@ interface LocalFrameHost {
   HadStickyUserActivationBeforeNavigationChanged(bool has_gesture);
 
   // Sent by a local root to request scrolling in its parent process.
-  ScrollRectToVisibleInParentFrame(gfx.mojom.Rect rect_to_scroll,
+  ScrollRectToVisibleInParentFrame(gfx.mojom.RectF rect_to_scroll,
                                    ScrollIntoViewParams params);
 
   // Sent by a local root to continue bubbling a logical scroll in its parent
@@ -1091,7 +1091,7 @@ interface RemoteFrame {
 
   // Sent to the remote frame placeholder in the parent process to request
   // scrolling.
-  ScrollRectToVisible(gfx.mojom.Rect rect, ScrollIntoViewParams params);
+  ScrollRectToVisible(gfx.mojom.RectF rect, ScrollIntoViewParams params);
 
   // Notifies this remote frame that its corresponding document has started
   // loading.

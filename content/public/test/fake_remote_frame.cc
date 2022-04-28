@@ -72,7 +72,7 @@ void FakeRemoteFrame::AddResourceTimingFromChild(
     blink::mojom::ResourceTimingInfoPtr timing) {}
 
 void FakeRemoteFrame::ScrollRectToVisible(
-    const gfx::Rect& rect,
+    const gfx::RectF& rect,
     blink::mojom::ScrollIntoViewParamsPtr params) {}
 
 void FakeRemoteFrame::DidStartLoading() {}
