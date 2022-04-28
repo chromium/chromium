@@ -1230,6 +1230,54 @@ TEST_F(DesksTemplatesTest, IconsOrderWithInactiveTabs) {
   EXPECT_EQ(kTabs1[2].spec(), icon_views[3]->icon_identifier());
 }
 
+// Tests that when two tabs are put into a desk template that have the same
+// domain but different query parameters, only one icon shows up in the template
+// to represent both tabs.
+TEST_F(DesksTemplatesTest, IdenticalURL) {
+  const std::string kAppId = app_constants::kChromeAppId;
+  constexpr int kWindowId = 1;
+  constexpr int kActiveTabIndex = 1;
+  const std::vector<GURL> kTabs{GURL("http://google.com/?query=a"),
+                                GURL("http://google.com/?query=b")};
+
+  // Create `restore_data` for the template.
+  auto restore_data = std::make_unique<app_restore::RestoreData>();
+
+  // Add app launch info.
+  auto app_launch_info =
+      std::make_unique<app_restore::AppLaunchInfo>(kAppId, kWindowId);
+  app_launch_info->active_tab_index = kActiveTabIndex;
+  app_launch_info->urls = absl::make_optional(kTabs);
+  restore_data->AddAppLaunchInfo(std::move(app_launch_info));
+  app_restore::WindowInfo window_info;
+  window_info.activation_index = absl::make_optional<int32_t>(kWindowId);
+  restore_data->ModifyWindowInfo(kAppId, kWindowId, window_info);
+
+  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+           DeskTemplateSource::kUser, DeskTemplateType::kTemplate,
+           std::move(restore_data));
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  // Get the icon views.
+  DesksTemplatesItemView* item_view = GetItemViewFromTemplatesGrid(
+      /*grid_item_index=*/0);
+  const std::vector<DesksTemplatesIconView*>& icon_views =
+      DesksTemplatesItemViewTestApi(item_view).GetIconViews();
+
+  // There should be one icon view for both the urls, and another icon view for
+  // the overflow icon.
+  ASSERT_EQ(2u, icon_views.size());
+  // The first icon view should have the first url including the query parameter
+  // as its identifier, and have a count of 2 because its representing both
+  // urls.
+  EXPECT_EQ(kTabs[0].spec(), icon_views[0]->icon_identifier());
+  EXPECT_EQ(2, icon_views[0]->count());
+  // The second icon view should have a count of 0, because there are no
+  // overflow windows.
+  EXPECT_EQ(0, icon_views[1]->count());
+}
+
 // Tests that the overflow count view is visible, in bounds, displays the right
 // count when there is more than `DesksTemplatesIconContainer::kMaxIcons` icons.
 TEST_F(DesksTemplatesTest, OverflowIconView) {

@@ -118,11 +118,19 @@ void InsertIconIdentifierToIconInfoFromLaunchList(
     const std::u16string app_title = restore_data.second->title.value_or(u"");
     if (restore_data.second->urls.has_value() && is_browser) {
       const auto& urls = restore_data.second->urls.value();
+      // Make all urls that have the same domain identical.
+      std::map<GURL, GURL> seen_urls_by_domain;
       for (int i = 0; i < static_cast<int>(urls.size()); ++i) {
-        // Strip extra information from the url so urls with the same host but
-        // different queries are treated the same.
+        // For each domain, if we have seen the domain before in another url,
+        // use that url instead. If we haven't, register this url as the url to
+        // use for this domain.
+        GURL url = seen_urls_by_domain[urls[i].GetWithEmptyPath()];
+        if (!url.is_valid()) {
+          url = urls[i];
+          seen_urls_by_domain[url.GetWithEmptyPath()] = url;
+        }
         InsertIconIdentifierToIconInfo(
-            app_id, app_title, urls[i].GetWithEmptyPath().spec(),
+            app_id, app_title, url.spec(),
             active_tab_index == i ? activation_index
                                   : kInactiveTabOffset + activation_index,
             out_icon_identifier_to_icon_info);
