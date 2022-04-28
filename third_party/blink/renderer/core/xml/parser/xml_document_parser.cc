@@ -111,8 +111,8 @@ static inline bool HasNoStyleInformation(Document* document) {
   if (!document->GetFrame() || !document->GetFrame()->GetPage())
     return false;
 
-  if (document->GetFrame()->Tree().Parent())
-    return false;  // This document is not in a top frame
+  if (!document->IsInMainFrame() || document->GetFrame()->IsInFencedFrameTree())
+    return false;  // This document has style information from a parent.
 
   if (SVGImage::IsInSVGImage(document))
     return false;
