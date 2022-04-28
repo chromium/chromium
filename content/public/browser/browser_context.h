@@ -84,7 +84,6 @@ class DownloadManager;
 class DownloadManagerDelegate;
 class FederatedIdentityActiveSessionPermissionContextDelegate;
 class FederatedIdentityApiPermissionContextDelegate;
-class FederatedIdentityRequestPermissionContextDelegate;
 class FederatedIdentitySharingPermissionContextDelegate;
 class FileSystemAccessPermissionContext;
 class PermissionController;
@@ -420,10 +419,6 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // nullptr otherwise.
   virtual FederatedIdentityActiveSessionPermissionContextDelegate*
   GetFederatedIdentityActiveSessionPermissionContext();
-  // Gets the permission context for issuing WebID requests if one exists, or
-  // nullptr otherwise.
-  virtual FederatedIdentityRequestPermissionContextDelegate*
-  GetFederatedIdentityRequestPermissionContext();
   // Gets the permission context for WebID identity token sharing if one
   // exists, or nullptr otherwise.
   virtual FederatedIdentitySharingPermissionContextDelegate*

@@ -77,3 +77,39 @@ TEST_F(FederatedIdentitySharingPermissionContextTest,
   EXPECT_FALSE(context()->HasSharingPermission(rp, idp, account_a));
   EXPECT_FALSE(context()->HasSharingPermission(rp, idp, account_b));
 }
+
+// Test granting permissions for multiple IDPs mapped to the same RP and
+// multiple RPs mapped to the same IDP.
+TEST_F(FederatedIdentitySharingPermissionContextTest,
+       GrantPermissionsMultipleRpsMultipleIdps) {
+  const auto rp1 = url::Origin::Create(GURL("https://rp1.example"));
+  const auto rp2 = url::Origin::Create(GURL("https://rp2.example"));
+  const auto idp1 = url::Origin::Create(GURL("https://idp1.example"));
+  const auto idp2 = url::Origin::Create(GURL("https://idp2.example"));
+
+  context()->GrantSharingPermission(rp1, idp1, "consestogo");
+  context()->GrantSharingPermission(rp1, idp2, "woolwich");
+  context()->GrantSharingPermission(rp2, idp1, "wilmot");
+
+  EXPECT_EQ(3u, context()->GetAllGrantedObjects().size());
+  EXPECT_EQ(2u, context()->GetGrantedObjects(rp1).size());
+  EXPECT_EQ(1u, context()->GetGrantedObjects(rp2).size());
+}
+
+// Test that granting a permission for an account, if the permission has already
+// been granted, is a noop.
+TEST_F(FederatedIdentitySharingPermissionContextTest,
+       GrantPermissionForSameAccount) {
+  const auto rp = url::Origin::Create(GURL("https://rp.example"));
+  const auto idp = url::Origin::Create(GURL("https://idp.example"));
+  std::string account{"consetogo"};
+
+  EXPECT_FALSE(context()->HasSharingPermission(rp, idp, account));
+
+  context()->GrantSharingPermission(rp, idp, account);
+  context()->GrantSharingPermission(rp, idp, account);
+  EXPECT_TRUE(context()->HasSharingPermission(rp, idp, account));
+  auto granted_object = context()->GetGrantedObject(rp, idp.Serialize());
+  EXPECT_EQ(1u,
+            granted_object->value.GetDict().FindList("account-ids")->size());
+}

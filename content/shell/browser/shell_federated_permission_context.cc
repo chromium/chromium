@@ -10,27 +10,16 @@ ShellFederatedPermissionContext::ShellFederatedPermissionContext() = default;
 
 ShellFederatedPermissionContext::~ShellFederatedPermissionContext() = default;
 
-// FederatedIdentityRequestPermissionContextDelegate
-bool ShellFederatedPermissionContext::HasRequestPermission(
+bool ShellFederatedPermissionContext::HasSharingPermissionForAnyAccount(
     const url::Origin& relying_party,
     const url::Origin& identity_provider) {
-  return request_permissions_.find(std::make_pair(
-             relying_party.Serialize(), identity_provider.Serialize())) !=
-         request_permissions_.end();
-}
-
-void ShellFederatedPermissionContext::GrantRequestPermission(
-    const url::Origin& relying_party,
-    const url::Origin& identity_provider) {
-  request_permissions_.insert(
-      std::make_pair(relying_party.Serialize(), identity_provider.Serialize()));
-}
-
-void ShellFederatedPermissionContext::RevokeRequestPermission(
-    const url::Origin& relying_party,
-    const url::Origin& identity_provider) {
-  request_permissions_.erase(
-      std::make_pair(relying_party.Serialize(), identity_provider.Serialize()));
+  for (const std::tuple<std::string, std::string, std::string>& permission :
+       sharing_permissions_) {
+    if (std::get<0>(permission) == relying_party.Serialize() &&
+        std::get<1>(permission) == identity_provider.Serialize())
+      return true;
+  }
+  return false;
 }
 
 bool ShellFederatedPermissionContext::HasSharingPermission(

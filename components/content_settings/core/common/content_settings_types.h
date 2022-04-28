@@ -242,18 +242,11 @@ enum class ContentSettingsType : int32_t {
   // the corresponding "guard" setting.
   FILE_SYSTEM_ACCESS_CHOOSER_DATA,
 
-  // Stores a grant for the browser to intermediate or allow without
-  // restriction sharing of identity information by an identity provider to
-  // specified relying parties. The setting is associated with the identity
-  // provider's origin.
-  // This is managed by WebID.
-  FEDERATED_IDENTITY_SHARING,
-
   // Stores a grant that allows a relying party to send a request for identity
   // information to specified identity providers, potentially through any
   // anti-tracking measures that would otherwise prevent it. This setting is
   // associated with the relying party's origin.
-  FEDERATED_IDENTITY_REQUEST,
+  FEDERATED_IDENTITY_SHARING,
 
   // Whether to use the v8 optimized JIT for running JavaScript on the page.
   JAVASCRIPT_JIT,

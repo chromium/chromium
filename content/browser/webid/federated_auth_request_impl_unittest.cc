@@ -22,7 +22,6 @@
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
-#include "content/browser/webid/test/mock_request_permission_delegate.h"
 #include "content/browser/webid/test/mock_sharing_permission_delegate.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
@@ -559,8 +558,6 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
         std::make_unique<TestApiPermissionDelegate>();
     mock_sharing_permission_delegate_ =
         std::make_unique<NiceMock<MockSharingPermissionDelegate>>();
-    mock_request_permission_delegate_ =
-        std::make_unique<NiceMock<MockRequestPermissionDelegate>>();
     mock_active_session_permission_delegate_ =
         std::make_unique<NiceMock<MockActiveSessionPermissionDelegate>>();
 
@@ -583,6 +580,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
         test_api_permission_delegate_.get());
     federated_auth_request_impl_->SetSharingPermissionDelegateForTests(
         mock_sharing_permission_delegate_.get());
+    federated_auth_request_impl()->SetActiveSessionPermissionDelegateForTests(
+        mock_active_session_permission_delegate_.get());
 
     std::unique_ptr<TestIdpNetworkRequestManager> network_request_manager =
         std::make_unique<TestIdpNetworkRequestManager>();
@@ -723,9 +722,6 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
 
   LogoutRpsStatus PerformLogoutRequest(
       std::vector<LogoutRpsRequestPtr> logout_requests) {
-    federated_auth_request_impl()->SetActiveSessionPermissionDelegateForTests(
-        mock_active_session_permission_delegate_.get());
-
     LogoutRpsRequestCallbackHelper logout_helper;
     request_remote_->LogoutRps(std::move(logout_requests),
                                logout_helper.callback());
@@ -875,8 +871,6 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
       mock_dialog_controller_;
 
   std::unique_ptr<TestApiPermissionDelegate> test_api_permission_delegate_;
-  std::unique_ptr<NiceMock<MockRequestPermissionDelegate>>
-      mock_request_permission_delegate_;
   std::unique_ptr<NiceMock<MockActiveSessionPermissionDelegate>>
       mock_active_session_permission_delegate_;
   std::unique_ptr<NiceMock<MockSharingPermissionDelegate>>
@@ -1421,17 +1415,14 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
 TEST_F(FederatedAuthRequestImplTest, Revoke) {
   constexpr char kHint[] = "foo@bar.com";
 
-  federated_auth_request_impl()->SetRequestPermissionDelegateForTests(
-      mock_request_permission_delegate_.get());
-
   // Pretend the request permission has been granted for this account.
-  EXPECT_CALL(
-      *mock_request_permission_delegate_,
-      HasRequestPermission(_, url::Origin::Create(GURL(kIdpTestOrigin))))
+  EXPECT_CALL(*mock_sharing_permission_delegate_,
+              HasSharingPermissionForAnyAccount(
+                  _, url::Origin::Create(GURL(kIdpTestOrigin))))
       .WillOnce(Return(true));
-  EXPECT_CALL(
-      *mock_request_permission_delegate_,
-      RevokeRequestPermission(_, url::Origin::Create(GURL(kIdpTestOrigin))));
+  EXPECT_CALL(*mock_sharing_permission_delegate_,
+              RevokeSharingPermission(
+                  _, url::Origin::Create(GURL(kIdpTestOrigin)), kHint));
 
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
       std::make_unique<IdpNetworkRequestManagerParamChecker>();
@@ -1460,13 +1451,10 @@ TEST_F(FederatedAuthRequestImplTest, Revoke) {
 TEST_F(FederatedAuthRequestImplTest, RevokeNoPermission) {
   constexpr char kHint[] = "foo@bar.com";
 
-  federated_auth_request_impl()->SetRequestPermissionDelegateForTests(
-      mock_request_permission_delegate_.get());
-
   // Pretend the request permission has been denied for this account.
-  EXPECT_CALL(
-      *mock_request_permission_delegate_,
-      HasRequestPermission(_, url::Origin::Create(GURL(kIdpTestOrigin))))
+  EXPECT_CALL(*mock_sharing_permission_delegate_,
+              HasSharingPermissionForAnyAccount(
+                  _, url::Origin::Create(GURL(kIdpTestOrigin))))
       .WillOnce(Return(false));
 
   base::RunLoop ukm_loop;

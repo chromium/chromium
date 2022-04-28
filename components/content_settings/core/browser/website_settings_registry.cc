@@ -230,12 +230,7 @@ void WebsiteSettingsRegistry::Init() {
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
            WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, DESKTOP,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
-  Register(ContentSettingsType::FEDERATED_IDENTITY_SHARING, "webid-share",
-           base::Value(), WebsiteSettingsInfo::UNSYNCABLE,
-           WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, ALL_PLATFORMS,
-           WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
-  Register(ContentSettingsType::FEDERATED_IDENTITY_REQUEST, "webid-request",
+  Register(ContentSettingsType::FEDERATED_IDENTITY_SHARING, "fedcm-share",
            base::Value(), WebsiteSettingsInfo::UNSYNCABLE,
            WebsiteSettingsInfo::NOT_LOSSY,
            WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, ALL_PLATFORMS,
@@ -251,7 +246,7 @@ void WebsiteSettingsRegistry::Init() {
            WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, ALL_PLATFORMS,
            WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::FEDERATED_IDENTITY_ACTIVE_SESSION,
-           "webid-active-session", base::Value(),
+           "fedcm-active-session", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
            WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, ALL_PLATFORMS,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);

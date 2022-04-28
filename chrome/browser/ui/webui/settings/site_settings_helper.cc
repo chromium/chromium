@@ -160,7 +160,6 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, nullptr},
     {ContentSettingsType::DISPLAY_CAPTURE, nullptr},
     {ContentSettingsType::FEDERATED_IDENTITY_SHARING, nullptr},
-    {ContentSettingsType::FEDERATED_IDENTITY_REQUEST, nullptr},
     {ContentSettingsType::JAVASCRIPT_JIT, nullptr},
     {ContentSettingsType::HTTP_ALLOWED, nullptr},
     {ContentSettingsType::FORMFILL_METADATA, nullptr},

@@ -17,6 +17,15 @@ class FederatedIdentitySharingPermissionContextDelegate {
   FederatedIdentitySharingPermissionContextDelegate() = default;
   virtual ~FederatedIdentitySharingPermissionContextDelegate() = default;
 
+  // Determine whether the request has an existing permission grant to share
+  // identity information for the given relying party. This searches all
+  // FedCM user accounts associated to the passed-in relying party. This method
+  // is scoped to a single content::BrowserContext. FedCM user accounts have
+  // no relationship to content::BrowserContexts.
+  virtual bool HasSharingPermissionForAnyAccount(
+      const url::Origin& relying_party,
+      const url::Origin& identity_provider) = 0;
+
   // Determine whether the requester has an existing permission grant to share
   // identity information for the given account to the relying party.
   virtual bool HasSharingPermission(const url::Origin& relying_party,
@@ -24,7 +33,7 @@ class FederatedIdentitySharingPermissionContextDelegate {
                                     const std::string& account_id) = 0;
 
   // Grant permission for the requester to share identity information for the
-  // given account to the  relying party.
+  // given account to the relying party.
   virtual void GrantSharingPermission(const url::Origin& relying_party,
                                       const url::Origin& identity_provider,
                                       const std::string& account_id) = 0;

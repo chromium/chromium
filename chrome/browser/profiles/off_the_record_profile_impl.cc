@@ -52,8 +52,6 @@
 #include "chrome/browser/webid/federated_identity_active_session_permission_context_factory.h"
 #include "chrome/browser/webid/federated_identity_api_permission_context.h"
 #include "chrome/browser/webid/federated_identity_api_permission_context_factory.h"
-#include "chrome/browser/webid/federated_identity_request_permission_context.h"
-#include "chrome/browser/webid/federated_identity_request_permission_context_factory.h"
 #include "chrome/browser/webid/federated_identity_sharing_permission_context.h"
 #include "chrome/browser/webid/federated_identity_sharing_permission_context_factory.h"
 #include "chrome/common/buildflags.h"
@@ -680,11 +678,6 @@ content::FederatedIdentityActiveSessionPermissionContextDelegate*
 OffTheRecordProfileImpl::GetFederatedIdentityActiveSessionPermissionContext() {
   return FederatedIdentityActiveSessionPermissionContextFactory::GetForProfile(
       this);
-}
-
-content::FederatedIdentityRequestPermissionContextDelegate*
-OffTheRecordProfileImpl::GetFederatedIdentityRequestPermissionContext() {
-  return FederatedIdentityRequestPermissionContextFactory::GetForProfile(this);
 }
 
 content::FederatedIdentitySharingPermissionContextDelegate*

@@ -18,8 +18,9 @@ namespace content {
 class BrowserContext;
 }
 
-// Context for storing permissions associated with the ability to share user
-// identity from an identity provider to a relying party via a Javascript API.
+// Context for storing permissions associated with the ability for a relying
+// party site to pass an identity request to an identity provider through a
+// Javascript API.
 class FederatedIdentitySharingPermissionContext
     : public content::FederatedIdentitySharingPermissionContextDelegate,
       public permissions::ObjectPermissionContextBase {
@@ -35,6 +36,9 @@ class FederatedIdentitySharingPermissionContext
       const FederatedIdentitySharingPermissionContext&) = delete;
 
   // content::FederatedIdentitySharingPermissionContextDelegate:
+  bool HasSharingPermissionForAnyAccount(
+      const url::Origin& relying_party,
+      const url::Origin& identity_provider) override;
   bool HasSharingPermission(const url::Origin& relying_party,
                             const url::Origin& identity_provider,
                             const std::string& account_id) override;
@@ -46,7 +50,7 @@ class FederatedIdentitySharingPermissionContext
                                const std::string& account_id) override;
 
  private:
-  // ObjectPermissionContextBase:
+  // permissions::ObjectPermissionContextBase:
   bool IsValidObject(const base::Value& object) override;
   std::u16string GetObjectDisplayName(const base::Value& object) override;
   std::string GetKeyForObject(const base::Value& object) override;

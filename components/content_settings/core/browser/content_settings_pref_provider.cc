@@ -44,6 +44,12 @@ namespace {
 // These settings are no longer used, and should be deleted on profile startup.
 const char kObsoleteDomainToOriginMigrationStatus[] =
     "profile.content_settings.domain_to_origin_migration_status";
+const char kObsoleteWebIdActiveSessionPref[] =
+    "profile.content_settings.exceptions.webid_active_session";
+const char kObsoleteWebIdRequestPref[] =
+    "profile.content_settings.exceptions.webid_request";
+const char kObsoleteWebIdSharePref[] =
+    "profile.content_settings.exceptions.webid_share";
 
 #if !BUILDFLAG(IS_IOS)
 const char kObsoleteFullscreenExceptionsPref[] =
@@ -91,6 +97,9 @@ void PrefProvider::RegisterProfilePrefs(
   // These prefs have been removed, but need to be registered so they can
   // be deleted on startup.
   registry->RegisterIntegerPref(kObsoleteDomainToOriginMigrationStatus, 0);
+  registry->RegisterDictionaryPref(kObsoleteWebIdActiveSessionPref);
+  registry->RegisterDictionaryPref(kObsoleteWebIdRequestPref);
+  registry->RegisterDictionaryPref(kObsoleteWebIdSharePref);
 #if !BUILDFLAG(IS_IOS)
   registry->RegisterDictionaryPref(
       kObsoleteFullscreenExceptionsPref,
@@ -279,6 +288,9 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
     return;
 
   prefs_->ClearPref(kObsoleteDomainToOriginMigrationStatus);
+  prefs_->ClearPref(kObsoleteWebIdActiveSessionPref);
+  prefs_->ClearPref(kObsoleteWebIdRequestPref);
+  prefs_->ClearPref(kObsoleteWebIdSharePref);
 
   // These prefs were never stored on iOS/Android so they don't need to be
   // deleted.

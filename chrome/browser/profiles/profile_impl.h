@@ -96,8 +96,6 @@ class ProfileImpl : public Profile {
   GetFederatedIdentityApiPermissionContext() override;
   content::FederatedIdentityActiveSessionPermissionContextDelegate*
   GetFederatedIdentityActiveSessionPermissionContext() override;
-  content::FederatedIdentityRequestPermissionContextDelegate*
-  GetFederatedIdentityRequestPermissionContext() override;
   content::FederatedIdentitySharingPermissionContextDelegate*
   GetFederatedIdentitySharingPermissionContext() override;
 

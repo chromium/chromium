@@ -2350,8 +2350,6 @@ test("content_unittests") {
     "../browser/webid/test/mock_identity_request_dialog_controller.h",
     "../browser/webid/test/mock_idp_network_request_manager.cc",
     "../browser/webid/test/mock_idp_network_request_manager.h",
-    "../browser/webid/test/mock_request_permission_delegate.cc",
-    "../browser/webid/test/mock_request_permission_delegate.h",
     "../browser/webid/test/mock_sharing_permission_delegate.cc",
     "../browser/webid/test/mock_sharing_permission_delegate.h",
     "../browser/webid/test/webid_test_content_browser_client.cc",

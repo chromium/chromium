@@ -20,7 +20,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/federated_identity_active_session_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
-#include "content/public/browser/federated_identity_request_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_sharing_permission_context_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -374,8 +373,8 @@ void FederatedAuthRequestImpl::Revoke(
     return;
   }
 
-  if (!GetRequestPermissionContext() ||
-      !GetRequestPermissionContext()->HasRequestPermission(
+  if (!GetSharingPermissionContext() ||
+      !GetSharingPermissionContext()->HasSharingPermissionForAnyAccount(
           origin_, url::Origin::Create(provider_))) {
     RecordRevokeStatus(RevokeStatusForMetrics::kNoAccountToRevoke,
                        render_frame_host_->GetPageUkmSourceId());
@@ -829,10 +828,6 @@ void FederatedAuthRequestImpl::OnRevokeResponse(
   if (status == RevokeStatus::kSuccess) {
     url::Origin idp_origin{url::Origin::Create(provider_)};
     // Since the account is now deleted, revoke the permission.
-    if (GetRequestPermissionContext()) {
-      GetRequestPermissionContext()->RevokeRequestPermission(origin_,
-                                                             idp_origin);
-    }
     if (GetSharingPermissionContext()) {
       GetSharingPermissionContext()->RevokeSharingPermission(origin_,
                                                              idp_origin, hint_);
@@ -1079,13 +1074,6 @@ void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
   }
 
   RecordIsSignInUser(is_sign_in);
-
-  // Account selection is considered sufficient for granting request permission
-  // (which also implies the logout permission).
-  if (GetRequestPermissionContext()) {
-    GetRequestPermissionContext()->GrantRequestPermission(
-        origin_, url::Origin::Create(provider_));
-  }
 
   if (GetApiPermissionContext()) {
     GetApiPermissionContext()->RemoveEmbargoAndResetCounts(origin_);
@@ -1364,12 +1352,6 @@ void FederatedAuthRequestImpl::SetActiveSessionPermissionDelegateForTests(
   active_session_permission_delegate_ = active_session_permission_delegate;
 }
 
-void FederatedAuthRequestImpl::SetRequestPermissionDelegateForTests(
-    FederatedIdentityRequestPermissionContextDelegate*
-        request_permission_delegate) {
-  request_permission_delegate_ = request_permission_delegate;
-}
-
 void FederatedAuthRequestImpl::SetSharingPermissionDelegateForTests(
     FederatedIdentitySharingPermissionContextDelegate*
         sharing_permission_delegate) {
@@ -1398,16 +1380,6 @@ FederatedAuthRequestImpl::GetApiPermissionContext() {
                                    ->GetFederatedIdentityApiPermissionContext();
   }
   return api_permission_delegate_;
-}
-
-FederatedIdentityRequestPermissionContextDelegate*
-FederatedAuthRequestImpl::GetRequestPermissionContext() {
-  if (!request_permission_delegate_) {
-    request_permission_delegate_ =
-        render_frame_host_->GetBrowserContext()
-            ->GetFederatedIdentityRequestPermissionContext();
-  }
-  return request_permission_delegate_;
 }
 
 FederatedIdentitySharingPermissionContextDelegate*

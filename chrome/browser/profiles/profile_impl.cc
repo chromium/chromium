@@ -107,8 +107,6 @@
 #include "chrome/browser/webid/federated_identity_active_session_permission_context_factory.h"
 #include "chrome/browser/webid/federated_identity_api_permission_context.h"
 #include "chrome/browser/webid/federated_identity_api_permission_context_factory.h"
-#include "chrome/browser/webid/federated_identity_request_permission_context.h"
-#include "chrome/browser/webid/federated_identity_request_permission_context_factory.h"
 #include "chrome/browser/webid/federated_identity_sharing_permission_context.h"
 #include "chrome/browser/webid/federated_identity_sharing_permission_context_factory.h"
 #include "chrome/common/buildflags.h"
@@ -161,7 +159,6 @@
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/federated_identity_active_session_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
-#include "content/public/browser/federated_identity_request_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_sharing_permission_context_delegate.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/permission_controller.h"
@@ -1333,11 +1330,6 @@ content::FederatedIdentityActiveSessionPermissionContextDelegate*
 ProfileImpl::GetFederatedIdentityActiveSessionPermissionContext() {
   return FederatedIdentityActiveSessionPermissionContextFactory::GetForProfile(
       this);
-}
-
-content::FederatedIdentityRequestPermissionContextDelegate*
-ProfileImpl::GetFederatedIdentityRequestPermissionContext() {
-  return FederatedIdentityRequestPermissionContextFactory::GetForProfile(this);
 }
 
 content::FederatedIdentitySharingPermissionContextDelegate*
