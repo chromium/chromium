@@ -188,17 +188,15 @@ class MockWorkerReportingProxy final : public WorkerReportingProxy {
   ~MockWorkerReportingProxy() override = default;
 
   MOCK_METHOD1(DidCreateWorkerGlobalScope, void(WorkerOrWorkletGlobalScope*));
-  MOCK_METHOD2(WillEvaluateClassicScriptMock,
-               void(size_t scriptSize, size_t cachedMetadataSize));
+  MOCK_METHOD0(WillEvaluateClassicScriptMock, void());
   MOCK_METHOD1(DidEvaluateTopLevelScript, void(bool success));
   MOCK_METHOD0(DidCloseWorkerGlobalScope, void());
   MOCK_METHOD0(WillDestroyWorkerGlobalScope, void());
   MOCK_METHOD0(DidTerminateWorkerThread, void());
 
-  void WillEvaluateClassicScript(size_t script_size,
-                                 size_t cached_metadata_size) override {
+  void WillEvaluateClassicScript() override {
     script_evaluation_event_.Signal();
-    WillEvaluateClassicScriptMock(script_size, cached_metadata_size);
+    WillEvaluateClassicScriptMock();
   }
 
   void WaitUntilScriptEvaluation() { script_evaluation_event_.Wait(); }

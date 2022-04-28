@@ -148,10 +148,6 @@ ScriptEvaluationResult ModuleScript::RunScriptOnScriptStateAndReturnValue(
   return V8ScriptRunner::EvaluateModule(this, std::move(rethrow_errors));
 }
 
-std::pair<size_t, size_t> ModuleScript::GetClassicScriptSizes() const {
-  return std::pair<size_t, size_t>(0, 0);
-}
-
 std::ostream& operator<<(std::ostream& stream,
                          const ModuleScript& module_script) {
   stream << "ModuleScript[" << &module_script;

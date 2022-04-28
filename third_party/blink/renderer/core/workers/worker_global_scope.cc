@@ -493,8 +493,7 @@ void WorkerGlobalScope::RunWorkerScript() {
 
   switch (worker_script_->GetScriptType()) {
     case mojom::blink::ScriptType::kClassic: {
-      auto sizes = worker_script_->GetClassicScriptSizes();
-      ReportingProxy().WillEvaluateClassicScript(sizes.first, sizes.second);
+      ReportingProxy().WillEvaluateClassicScript();
       break;
     }
     case mojom::blink::ScriptType::kModule:

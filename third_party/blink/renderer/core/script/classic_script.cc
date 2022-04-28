@@ -206,10 +206,4 @@ bool ClassicScript::RunScriptOnWorkerOrWorklet(
   return result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess;
 }
 
-std::pair<size_t, size_t> ClassicScript::GetClassicScriptSizes() const {
-  size_t cached_metadata_size =
-      CacheHandler() ? CacheHandler()->GetCodeCacheSize() : 0;
-  return std::pair<size_t, size_t>(SourceText().length(), cached_metadata_size);
-}
-
 }  // namespace blink

@@ -168,9 +168,7 @@ void ServiceWorkerGlobalScopeProxy::DidFailToFetchModuleScript() {
   Client().FailedToFetchModuleScript();
 }
 
-void ServiceWorkerGlobalScopeProxy::WillEvaluateClassicScript(
-    size_t script_size,
-    size_t cached_metadata_size) {
+void ServiceWorkerGlobalScopeProxy::WillEvaluateClassicScript() {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "ServiceWorker", "ServiceWorkerGlobalScopeProxy::EvaluateTopLevelScript",

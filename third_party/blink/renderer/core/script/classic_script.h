@@ -117,8 +117,6 @@ class CORE_EXPORT ClassicScript final : public Script {
     return mojom::blink::ScriptType::kClassic;
   }
 
-  std::pair<size_t, size_t> GetClassicScriptSizes() const override;
-
   const ParkableString source_text_;
 
   // The URL of the script, which is primarily intended for DevTools

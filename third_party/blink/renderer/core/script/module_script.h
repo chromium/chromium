@@ -76,8 +76,6 @@ class CORE_EXPORT ModuleScript : public Script {
   }
   bool RunScriptOnWorkerOrWorklet(WorkerOrWorkletGlobalScope&) override;
 
-  std::pair<size_t, size_t> GetClassicScriptSizes() const override;
-
   friend class ModuleTreeLinkerTestModulator;
 
   // https://html.spec.whatwg.org/C/#settings-object

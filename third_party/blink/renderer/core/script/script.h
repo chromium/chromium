@@ -75,13 +75,6 @@ class CORE_EXPORT Script : public GarbageCollected<Script> {
   const ScriptFetchOptions& FetchOptions() const { return fetch_options_; }
   const KURL& BaseURL() const { return base_url_; }
 
-  // Returns a pair of (script's size, cached metadata's size) only for classic
-  // scripts. This is used only for metrics via
-  // ServiceWorkerGlobalScopeProxy::WillEvaluateClassicScript().
-  // TODO(asamidoi, hiroshige): Remove this once the metrics are no longer
-  // referenced.
-  virtual std::pair<size_t, size_t> GetClassicScriptSizes() const = 0;
-
  protected:
   explicit Script(const ScriptFetchOptions& fetch_options, const KURL& base_url)
       : fetch_options_(fetch_options), base_url_(base_url) {}
