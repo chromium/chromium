@@ -46,9 +46,9 @@ enum MenuSourceType {
 
 // Mapped to ui::WindowShowState. Any new type here needs to be synced with
 // ui::MenuSourceType in ui_base_types.h.
-[Stable]
+[Stable, Extensible]
 enum WindowShowState {
-  SHOW_STATE_DEFAULT = 0,
+  [Default] SHOW_STATE_DEFAULT = 0,
   SHOW_STATE_NORMAL = 1,
   SHOW_STATE_MINIMIZED = 2,
   SHOW_STATE_MAXIMIZED = 3,

@@ -92,7 +92,6 @@ _STABLE_ONLY_ALLOWLISTED_ENUMS = {
     'network.mojom.ReferrerPolicy',
     'skia.mojom.AlphaType',
     'skia.mojom.ColorType',
-    'ui.mojom.WindowShowState',
 }
 
 
