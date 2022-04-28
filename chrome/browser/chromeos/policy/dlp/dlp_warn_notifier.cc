@@ -23,10 +23,6 @@ DlpWarnNotifier::~DlpWarnNotifier() {
   }
 }
 
-void DlpWarnNotifier::OnWidgetClosing(views::Widget* widget) {
-  RemoveWidget(widget);
-}
-
 void DlpWarnNotifier::OnWidgetDestroying(views::Widget* widget) {
   RemoveWidget(widget);
 }

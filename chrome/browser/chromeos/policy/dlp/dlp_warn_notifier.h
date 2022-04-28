@@ -25,8 +25,6 @@ class DlpWarnNotifier : public views::WidgetObserver {
   ~DlpWarnNotifier() override;
 
   // WidgetObserver:
-  // TODO(crbug.com/1284296): Remove this and use only OnWidgetDestroying().
-  void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // Shows a warning dialog that informs the user that printing is not
