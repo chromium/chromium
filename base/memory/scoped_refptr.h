@@ -65,7 +65,7 @@ constexpr bool IsRefCountPreferenceOverridden(
 template <typename T, typename U>
 constexpr bool IsRefCountPreferenceOverridden(
     const T*,
-    const RefCountedDeleteOnSequence<U*>) {
+    const RefCountedDeleteOnSequence<U>*) {
   return !std::is_same<std::decay_t<decltype(T::kRefCountPreference)>,
                        std::decay_t<decltype(U::kRefCountPreference)>>::value;
 }
