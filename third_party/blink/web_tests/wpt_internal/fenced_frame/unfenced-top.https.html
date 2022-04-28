@@ -82,11 +82,12 @@ async function createAndValidateWindow() {
   return [new_window, fenced_frame_url, nested_iframe_url];
 }
 
-async function checkNavigationSucceeded(new_window, new_referrer) {
+async function checkNavigationSucceeded(
+    new_window, new_referrer, expected_history_length) {
   message_received = new Promise(resolve => window.onmessage = () => resolve());
 
   // Check that the navigation happened in the correct frame.
-  await new_window.execute((expected_referrer) => {
+  await new_window.execute((expected_referrer, expected_history_length) => {
     assert_not_equals(window.opener, null,
                       `The browsing context has a window.opener, because it
                        is the top-level frame in the opened window.`);
@@ -97,14 +98,17 @@ async function checkNavigationSucceeded(new_window, new_referrer) {
     assert_equals(window.fenced_frame, undefined,
                   `The browsing context has been refreshed, so old variables
                    are gone.`);
-  }, [new_referrer]);
+    assert_equals(history.length, expected_history_length,
+                  `The history length should be as expected.`);
+  }, [new_referrer, expected_history_length]);
 
   // Await the postMessage from inside the frame to confirm that the opener
   // is unchanged.
   await message_received;
 }
 
-// Test successful top-level navigation from an opaque-ads fenced frame.
+// Test successful top-level navigation (non-refresh) from an opaque-ads
+// fenced frame.
 promise_test(async () => {
   // Create a new window, where we'll navigate the outermost frame.
   // (We can't do it in this window, or we'd lose the testing harness.)
@@ -112,11 +116,41 @@ promise_test(async () => {
   // become the document.referrer of the navigated outermost frame).
   const [new_window, new_referrer,] = await createAndValidateWindow();
 
+  // Check the history length before navigation.
+  const history_length = await new_window.execute(() => {
+    return history.length;
+  });
+
   // Navigate the window's top-level frame from inside the fenced frame.
   // (Navigate to the original URL, i.e. refresh the page, so that we can
   // still communicate via RemoteContext.)
   // Suspend the remote executor so that the next command we send will be
   // handled by the refreshed page, not the moribund old page.
+  await new_window.execute(() => {
+    window.executor.suspend(() => {
+      window.fenced_frame.execute((refresh_url) => {
+        var norefresh_url = new URL(refresh_url);
+        norefresh_url.searchParams.append('norefresh', '');
+        const window_handle = window.open(norefresh_url, '_unfencedTop');
+        assert_equals(window_handle, null,
+                      `There should be no window handle returned from
+                       navigations through _unfencedTop.`);
+      }, [location.href]);
+    });
+  });
+
+  // Because this is a non-refresh navigation, the history should be extended.
+  await checkNavigationSucceeded(new_window, new_referrer, history_length+1);
+}, '_unfencedTop opaque-ads non-refresh success case');
+
+// Test successful top-level refresh from an opaque-ads fenced frame.
+promise_test(async () => {
+  const [new_window, new_referrer,] = await createAndValidateWindow();
+
+  const history_length = await new_window.execute(() => {
+    return history.length;
+  });
+
   await new_window.execute(() => {
     window.executor.suspend(() => {
       window.fenced_frame.execute((refresh_url) => {
@@ -128,13 +162,19 @@ promise_test(async () => {
     });
   });
 
- await checkNavigationSucceeded(new_window, new_referrer);
-}, '_unfencedTop opaque-ads success case');
+  // Because this is a refresh, the history should not be extended.
+  await checkNavigationSucceeded(new_window, new_referrer, history_length);
+}, '_unfencedTop opaque-ads refresh success case');
 
-// Test successful top-level navigation out of an iframe nested inside an
-// opaque-ads fenced frame.
+// Test successful top-level navigation (non-refresh) out of an iframe nested
+// inside an opaque-ads fenced frame.
 promise_test(async () => {
   const [new_window,, new_referrer] = await createAndValidateWindow();
+
+  // Check the history length before navigation.
+  const history_length = await new_window.execute(() => {
+    return history.length;
+  });
 
   // Navigate the window's top-level frame from inside the fenced frame's
   // nested iframe.
@@ -142,7 +182,9 @@ promise_test(async () => {
     window.executor.suspend(() => {
       window.fenced_frame.execute((refresh_url) => {
         window.nested_iframe.execute((refresh_url) => {
-          const window_handle = window.open(refresh_url, '_unfencedTop');
+          var norefresh_url = new URL(refresh_url);
+          norefresh_url.searchParams.append('norefresh', '');
+          const window_handle = window.open(norefresh_url, '_unfencedTop');
           assert_equals(window_handle, null,
                         `There should be no window handle returned from
                          navigations through _unfencedTop.`);
@@ -151,7 +193,8 @@ promise_test(async () => {
     });
   });
 
-  await checkNavigationSucceeded(new_window, new_referrer);
+  // Because this is a non-refresh navigation, the history should be extended.
+  await checkNavigationSucceeded(new_window, new_referrer, history_length+1);
 }, '_unfencedTop opaque-ads nested iframe success case');
 
 // Test unsuccessful navigation out of a fenced frame using _unfencedTop and

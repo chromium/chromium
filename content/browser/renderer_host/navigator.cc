@@ -844,6 +844,16 @@ void Navigator::RequestOpenURL(
       frame_tree_node_id = render_frame_host->GetOutermostMainFrame()
                                ->frame_tree_node()
                                ->frame_tree_node_id();
+
+      // Fenced frames are enforced to have a history of length 1. Because the
+      // renderer thinks this navigation is to the fenced frame root, it sets
+      // `should_replace_current_entry` to true, but we do not want this
+      // restriction for navigations outside the fenced frame.
+      // TODO(crbug.com/1315802): Make sure that the browser doesn't rely on
+      // whether the renderer says we should replace the current entry, i.e.
+      // make sure there are no situations where we should actually replace the
+      // current entry but don't, due to this line.
+      should_replace_current_entry = false;
     } else {
       // Otherwise, proceed normally.
       frame_tree_node_id =
