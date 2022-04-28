@@ -252,6 +252,37 @@ TEST_F(BluetoothFlossTest, RemoveBonding) {
   EXPECT_FALSE(device->IsPaired());
 }
 
+TEST_F(BluetoothFlossTest, Disconnect) {
+  InitializeAdapter();
+  DiscoverDevices();
+
+  BluetoothDevice* device =
+      adapter_->GetDevice(FakeFlossAdapterClient::kJustWorksAddress);
+  ASSERT_TRUE(device);
+  ASSERT_FALSE(device->IsPaired());
+
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_FALSE(error.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  EXPECT_TRUE(device->IsPaired());
+
+  base::RunLoop run_loop2;
+  device->Disconnect(base::BindLambdaForTesting([&run_loop2]() {
+                       SUCCEED();
+                       run_loop2.Quit();
+                     }),
+                     base::BindLambdaForTesting([]() { FAIL(); }));
+  run_loop2.Run();
+}
+
 TEST_F(BluetoothFlossTest, UpdatesDeviceConnectionState) {
   InitializeAdapter();
   DiscoverDevices();
@@ -301,6 +332,14 @@ TEST_F(BluetoothFlossTest, AdapterInitialDevices) {
   EXPECT_TRUE(device2->IsPaired());
   EXPECT_TRUE(device1->IsConnected());
   EXPECT_FALSE(device2->IsConnected());
+  EXPECT_EQ(device1->GetBluetoothClass(),
+            FakeFlossAdapterClient::kHeadsetClassOfDevice);
+  EXPECT_EQ(device2->GetBluetoothClass(),
+            FakeFlossAdapterClient::kHeadsetClassOfDevice);
+  EXPECT_EQ(device1->GetType(),
+            device::BluetoothTransport::BLUETOOTH_TRANSPORT_LE);
+  EXPECT_EQ(device2->GetType(),
+            device::BluetoothTransport::BLUETOOTH_TRANSPORT_LE);
 }
 
 TEST_F(BluetoothFlossTest, DisabledAdapterClearsDevices) {

@@ -44,6 +44,24 @@ bool ReadReturnFromResponse(dbus::MessageReader* reader, FlossDeviceId* value) {
   return FlossAdapterClient::ParseFlossDeviceId(reader, value);
 }
 
+template <>
+bool ReadReturnFromResponse(dbus::MessageReader* reader,
+                            FlossAdapterClient::BluetoothDeviceType* value) {
+  uint32_t val;
+  bool success;
+
+  success = reader->PopUint32(&val);
+  *value = static_cast<FlossAdapterClient::BluetoothDeviceType>(val);
+
+  return success;
+}
+
+template <>
+bool ReadReturnFromResponse(dbus::MessageReader* reader,
+                            device::BluetoothUUID* value) {
+  return FlossAdapterClient::ParseUUID(reader, value);
+}
+
 // Specialization for vector of anything.
 template <typename T>
 bool ReadReturnFromResponse(dbus::MessageReader* reader,
@@ -86,9 +104,13 @@ const char kCancelDiscovery[] = "CancelDiscovery";
 const char kCreateBond[] = "CreateBond";
 const char kCancelBondProcess[] = "CancelBondProcess";
 const char kRemoveBond[] = "RemoveBond";
+const char kGetRemoteType[] = "GetRemoteType";
+const char kGetRemoteClass[] = "GetRemoteClass";
 const char kGetConnectionState[] = "GetConnectionState";
+const char kGetRemoteUuids[] = "GetRemoteUuids";
 const char kGetBondState[] = "GetBondState";
 const char kConnectAllEnabledProfiles[] = "ConnectAllEnabledProfiles";
+const char kDisconnectAllEnabledProfiles[] = "DisconnectAllEnabledProfiles";
 const char kRegisterCallback[] = "RegisterCallback";
 const char kRegisterConnectionCallback[] = "RegisterConnectionCallback";
 const char kSetPairingConfirmation[] = "SetPairingConfirmation";
@@ -237,6 +259,16 @@ template void FlossDBusClient::DefaultResponseWithCallback(
 
 template void FlossDBusClient::DefaultResponseWithCallback(
     ResponseCallback<std::vector<FlossDeviceId>> callback,
+    dbus::Response* response,
+    dbus::ErrorResponse* error_response);
+
+template void FlossDBusClient::DefaultResponseWithCallback(
+    ResponseCallback<FlossAdapterClient::BluetoothDeviceType> callback,
+    dbus::Response* response,
+    dbus::ErrorResponse* error_response);
+
+template void FlossDBusClient::DefaultResponseWithCallback(
+    ResponseCallback<device::BluetoothDevice::UUIDList> callback,
     dbus::Response* response,
     dbus::ErrorResponse* error_response);
 

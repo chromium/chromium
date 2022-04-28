@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -41,9 +42,13 @@ extern DEVICE_BLUETOOTH_EXPORT const char kCancelDiscovery[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCreateBond[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCancelBondProcess[];
 extern DEVICE_BLUETOOTH_EXPORT const char kRemoveBond[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGetRemoteType[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGetRemoteClass[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetConnectionState[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGetRemoteUuids[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetBondState[];
 extern DEVICE_BLUETOOTH_EXPORT const char kConnectAllEnabledProfiles[];
+extern DEVICE_BLUETOOTH_EXPORT const char kDisconnectAllEnabledProfiles[];
 extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
 extern DEVICE_BLUETOOTH_EXPORT const char kRegisterConnectionCallback[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];

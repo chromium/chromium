@@ -55,15 +55,11 @@ using VendorIDSource = device::BluetoothDevice::VendorIDSource;
 BluetoothDeviceFloss::~BluetoothDeviceFloss() = default;
 
 uint32_t BluetoothDeviceFloss::GetBluetoothClass() const {
-  NOTIMPLEMENTED();
-
-  return 0;
+  return cod_;
 }
 
 device::BluetoothTransport BluetoothDeviceFloss::GetType() const {
-  NOTIMPLEMENTED();
-
-  return device::BluetoothTransport::BLUETOOTH_TRANSPORT_INVALID;
+  return transport_;
 }
 
 std::string BluetoothDeviceFloss::GetAddress() const {
@@ -150,9 +146,7 @@ bool BluetoothDeviceFloss::IsConnecting() const {
 }
 
 device::BluetoothDevice::UUIDSet BluetoothDeviceFloss::GetUUIDs() const {
-  NOTIMPLEMENTED();
-
-  return {};
+  return device_uuids_.GetUUIDs();
 }
 
 absl::optional<int8_t> BluetoothDeviceFloss::GetInquiryRSSI() const {
@@ -228,7 +222,9 @@ void BluetoothDeviceFloss::ConnectClassic(
     device::BluetoothDevice::PairingDelegate* pairing_delegate,
     ConnectCallback callback) {
   // TODO(b/215621933): Explicitly create a classic Bluetooth connection.
-  NOTIMPLEMENTED();
+  // Currently Floss doesn't have the BlueZ-equivalent of ConnectClassic() at
+  // the stack level, so just call the existing Connect().
+  Connect(pairing_delegate, std::move(callback));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -260,7 +256,12 @@ void BluetoothDeviceFloss::CancelPairing() {
 
 void BluetoothDeviceFloss::Disconnect(base::OnceClosure callback,
                                       ErrorCallback error_callback) {
-  NOTIMPLEMENTED();
+  // TODO (b/223832034): Create API that does hard disconnect of a peer device
+  FlossDBusManager::Get()->GetAdapterClient()->DisconnectAllEnabledProfiles(
+      base::BindOnce(&BluetoothDeviceFloss::OnDisconnectAllEnabledProfiles,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(error_callback)),
+      AsFlossDeviceId());
 }
 
 void BluetoothDeviceFloss::Forget(base::OnceClosure callback,
@@ -411,6 +412,51 @@ void BluetoothDeviceFloss::OnForgetError(ErrorCallback error_callback,
   NOTIMPLEMENTED();
 }
 
+void BluetoothDeviceFloss::OnGetRemoteType(
+    const absl::optional<FlossAdapterClient::BluetoothDeviceType>& ret,
+    const absl::optional<Error>& error) {
+  if (error.has_value()) {
+    BLUETOOTH_LOG(ERROR) << "GetRemoteType() failed: " << error->message;
+    return;
+  }
+
+  switch (*ret) {
+    case FlossAdapterClient::BluetoothDeviceType::kBredr:
+      transport_ = device::BluetoothTransport::BLUETOOTH_TRANSPORT_CLASSIC;
+      break;
+    case FlossAdapterClient::BluetoothDeviceType::kBle:
+      transport_ = device::BluetoothTransport::BLUETOOTH_TRANSPORT_LE;
+      break;
+    case FlossAdapterClient::BluetoothDeviceType::kDual:
+      transport_ = device::BluetoothTransport::BLUETOOTH_TRANSPORT_DUAL;
+      break;
+    default:
+      transport_ = device::BluetoothTransport::BLUETOOTH_TRANSPORT_INVALID;
+  }
+}
+
+void BluetoothDeviceFloss::OnGetRemoteClass(
+    const absl::optional<uint32_t>& ret,
+    const absl::optional<Error>& error) {
+  if (error.has_value()) {
+    BLUETOOTH_LOG(ERROR) << "GetRemoteClass() failed: " << error->message;
+    return;
+  }
+
+  cod_ = *ret;
+}
+
+void BluetoothDeviceFloss::OnGetRemoteUuids(
+    const absl::optional<UUIDList>& ret,
+    const absl::optional<Error>& error) {
+  if (error.has_value()) {
+    BLUETOOTH_LOG(ERROR) << "GetRemoteUuids() failed: " << error->message;
+    return;
+  }
+
+  device_uuids_.ReplaceServiceUUIDs(*ret);
+}
+
 void BluetoothDeviceFloss::OnConnectAllEnabledProfiles(
     const absl::optional<Void>& ret,
     const absl::optional<Error>& error) {
@@ -431,6 +477,37 @@ void BluetoothDeviceFloss::TriggerConnectCallback(
     std::move(*pending_callback_on_connect_profiles_).Run(error_code);
     pending_callback_on_connect_profiles_ = absl::nullopt;
   }
+}
+
+void BluetoothDeviceFloss::OnDisconnectAllEnabledProfiles(
+    base::OnceClosure callback,
+    ErrorCallback error_callback,
+    const absl::optional<Void>& ret,
+    const absl::optional<Error>& error) {
+  if (error.has_value()) {
+    BLUETOOTH_LOG(ERROR) << "Failed to discconnect all enabled profiles: "
+                         << error->name << ": " << error->message;
+    std::move(error_callback).Run();
+    return;
+  }
+
+  std::move(callback).Run();
+}
+
+void BluetoothDeviceFloss::InitializeDeviceProperties() {
+  // TODO(b/204708206): Update with property framework when available
+  FlossDBusManager::Get()->GetAdapterClient()->GetRemoteType(
+      base::BindOnce(&BluetoothDeviceFloss::OnGetRemoteType,
+                     weak_ptr_factory_.GetWeakPtr()),
+      AsFlossDeviceId());
+  FlossDBusManager::Get()->GetAdapterClient()->GetRemoteClass(
+      base::BindOnce(&BluetoothDeviceFloss::OnGetRemoteClass,
+                     weak_ptr_factory_.GetWeakPtr()),
+      AsFlossDeviceId());
+  FlossDBusManager::Get()->GetAdapterClient()->GetRemoteUuids(
+      base::BindOnce(&BluetoothDeviceFloss::OnGetRemoteUuids,
+                     weak_ptr_factory_.GetWeakPtr()),
+      AsFlossDeviceId());
 }
 
 }  // namespace floss

@@ -538,6 +538,8 @@ void BluetoothAdapterFloss::AdapterFoundDevice(
     BluetoothDeviceFloss* device_ptr = device_floss.get();
     devices_.emplace(canonical_address, std::move(device_floss));
 
+    device_ptr->InitializeDeviceProperties();
+
     // TODO(b/204708206): Convert "Paired" and "Connected" property into a
     // property framework.
     FlossDBusManager::Get()->GetAdapterClient()->GetBondState(

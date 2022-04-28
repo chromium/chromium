@@ -113,6 +113,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
 
   BluetoothPairingFloss* pairing() const { return pairing_.get(); }
 
+  void InitializeDeviceProperties();
+
  protected:
   // BluetoothDevice override
   void CreateGattConnectionImpl(
@@ -137,9 +139,19 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
 
   void OnCancelPairingError(const Error& error);
   void OnForgetError(ErrorCallback error_callback, const Error& error);
-
+  void OnGetRemoteType(
+      const absl::optional<FlossAdapterClient::BluetoothDeviceType>& ret,
+      const absl::optional<Error>& error);
+  void OnGetRemoteClass(const absl::optional<uint32_t>& ret,
+                        const absl::optional<Error>& error);
+  void OnGetRemoteUuids(const absl::optional<UUIDList>& ret,
+                        const absl::optional<Error>& error);
   void OnConnectAllEnabledProfiles(const absl::optional<Void>& ret,
                                    const absl::optional<Error>& error);
+  void OnDisconnectAllEnabledProfiles(base::OnceClosure callback,
+                                      ErrorCallback error_callback,
+                                      const absl::optional<Void>& ret,
+                                      const absl::optional<Error>& error);
 
   absl::optional<ConnectCallback> pending_callback_on_connect_profiles_ =
       absl::nullopt;
@@ -150,6 +162,14 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
 
   // Name of this device. Can be queried later and isn't mandatory for creation.
   std::string name_;
+
+  // Transport type of device.
+  // TODO(b/204708206): Update with property framework when available
+  device::BluetoothTransport transport_;
+
+  // Class of device.
+  // TODO(b/204708206): Update with property framework when available
+  uint32_t cod_;
 
   // Whether the device is bonded/paired.
   FlossAdapterClient::BondState bond_state_ =

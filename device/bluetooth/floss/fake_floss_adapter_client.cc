@@ -28,6 +28,7 @@ const char FakeFlossAdapterClient::kKeyboardAddress[] = "aa:aa:aa:aa:aa:aa";
 const char FakeFlossAdapterClient::kPhoneAddress[] = "bb:bb:bb:bb:bb:bb";
 const char FakeFlossAdapterClient::kOldDeviceAddress[] = "cc:cc:cc:cc:cc:cc";
 const uint32_t FakeFlossAdapterClient::kPasskey = 123456;
+const uint32_t FakeFlossAdapterClient::kHeadsetClassOfDevice = 2360344;
 
 void FakeFlossAdapterClient::Init(dbus::Bus* bus,
                                   const std::string& service_name,
@@ -120,6 +121,21 @@ void FakeFlossAdapterClient::RemoveBond(ResponseCallback<bool> callback,
                                  /*err=*/absl::nullopt));
 }
 
+void FakeFlossAdapterClient::GetRemoteType(
+    ResponseCallback<BluetoothDeviceType> callback,
+    FlossDeviceId device) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), BluetoothDeviceType::kBle,
+                                /*err=*/absl::nullopt));
+}
+
+void FakeFlossAdapterClient::GetRemoteClass(ResponseCallback<uint32_t> callback,
+                                            FlossDeviceId device) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), kHeadsetClassOfDevice,
+                                /*err=*/absl::nullopt));
+}
+
 void FakeFlossAdapterClient::GetConnectionState(
     ResponseCallback<uint32_t> callback,
     const FlossDeviceId& device) {
@@ -128,6 +144,14 @@ void FakeFlossAdapterClient::GetConnectionState(
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), conn_state, /*err=*/absl::nullopt));
+}
+
+void FakeFlossAdapterClient::GetRemoteUuids(
+    ResponseCallback<device::BluetoothDevice::UUIDList> callback,
+    FlossDeviceId device) {
+  device::BluetoothDevice::UUIDList uuid_list;
+  PostDelayedTask(base::BindOnce(std::move(callback), /*ret=*/uuid_list,
+                                 /*err=*/absl::nullopt));
 }
 
 void FakeFlossAdapterClient::GetBondState(ResponseCallback<uint32_t> callback,
@@ -143,6 +167,13 @@ void FakeFlossAdapterClient::GetBondState(ResponseCallback<uint32_t> callback,
 }
 
 void FakeFlossAdapterClient::ConnectAllEnabledProfiles(
+    ResponseCallback<Void> callback,
+    const FlossDeviceId& device) {
+  PostDelayedTask(base::BindOnce(std::move(callback), /*ret=*/absl::nullopt,
+                                 /*err=*/absl::nullopt));
+}
+
+void FakeFlossAdapterClient::DisconnectAllEnabledProfiles(
     ResponseCallback<Void> callback,
     const FlossDeviceId& device) {
   PostDelayedTask(base::BindOnce(std::move(callback), /*ret=*/absl::nullopt,
