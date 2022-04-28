@@ -4,40 +4,24 @@
 
 #include "pdf/ppapi_migration/graphics.h"
 
-#include <utility>
+#include <memory>
 
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "pdf/ppapi_migration/bitmap.h"
 #include "pdf/test/test_helpers.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/include/core/SkCanvas.h"
-#include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSize.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace chrome_pdf {
 
 namespace {
-
-struct FakeSkiaGraphicsClient : public SkiaGraphics::Client {
-  FakeSkiaGraphicsClient() = default;
-  ~FakeSkiaGraphicsClient() override = default;
-
-  MOCK_METHOD(void, UpdateScale, (float), (override));
-  MOCK_METHOD(void,
-              UpdateLayerTransform,
-              (float, const gfx::Vector2dF&),
-              (override));
-};
 
 SkBitmap GenerateExpectedBitmap(const SkISize& graphics_size,
                                 const SkIRect& rect) {
@@ -71,7 +55,7 @@ class SkiaGraphicsTest : public testing::Test {
     surface_ = SkSurface::MakeRasterN32Premul(graphics_size.width(),
                                               graphics_size.height());
     ASSERT_TRUE(surface_);
-    graphics_ = std::make_unique<SkiaGraphics>(&client_, surface_.get());
+    graphics_ = std::make_unique<SkiaGraphics>(surface_.get());
 
     // Paint and snapshot.
     graphics_->PaintImage(CreateSkiaImageForTesting(src_size, SK_ColorRED),
@@ -99,7 +83,6 @@ class SkiaGraphicsTest : public testing::Test {
     return bitmap;
   }
 
-  FakeSkiaGraphicsClient client_;
   sk_sp<SkSurface> surface_;
 
   std::unique_ptr<Graphics> graphics_;
@@ -114,7 +97,7 @@ class SkiaGraphicsScrollTest : public SkiaGraphicsTest {
     surface_ = SkSurface::MakeRasterN32Premul(kGraphicsRect.width(),
                                               kGraphicsRect.height());
     ASSERT_TRUE(surface_);
-    graphics_ = std::make_unique<SkiaGraphics>(&client_, surface_.get());
+    graphics_ = std::make_unique<SkiaGraphics>(surface_.get());
 
     // Paint a nonuniform SkBitmap to graphics.
     initial_bitmap_ =
@@ -172,25 +155,6 @@ TEST_F(SkiaGraphicsTest, PaintImage) {
   for (const auto& params : kPaintImageTestParams)
     TestPaintImageResult(params.graphics_size, params.src_size,
                          params.paint_rect, params.overlapped_rect);
-}
-
-TEST_F(SkiaGraphicsTest, SetScale) {
-  sk_sp<SkSurface> surface = SkSurface::MakeRasterN32Premul(400, 300);
-  ASSERT_TRUE(surface);
-  auto graphics = std::make_unique<SkiaGraphics>(&client_, surface.get());
-  EXPECT_CALL(client_, UpdateScale(0.123f));
-
-  graphics->SetScale(0.123f);
-}
-
-TEST_F(SkiaGraphicsTest, SetLayerTransform) {
-  sk_sp<SkSurface> surface = SkSurface::MakeRasterN32Premul(400, 300);
-  ASSERT_TRUE(surface);
-  auto graphics = std::make_unique<SkiaGraphics>(&client_, surface.get());
-  EXPECT_CALL(client_,
-              UpdateLayerTransform(0.25f, gfx::Vector2dF(116.5f, 29.5f)));
-
-  graphics->SetLayerTransform(0.25f, gfx::Point(150, 50), gfx::Vector2d(-4, 8));
 }
 
 TEST_F(SkiaGraphicsScrollTest, InvalidScroll) {

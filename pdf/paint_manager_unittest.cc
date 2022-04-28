@@ -135,6 +135,31 @@ TEST_F(PaintManagerTest, SetSizeWithPaint) {
   WaitForOnPaint();
 }
 
+TEST_F(PaintManagerTest, SetTransformWithoutSurface) {
+  EXPECT_CALL(client_, UpdateLayerTransform).Times(0);
+  paint_manager_.SetTransform(0.25f, {150, 50}, {-4, 8},
+                              /*schedule_flush=*/true);
+}
+
+TEST_F(PaintManagerTest, SetTransformWithSurface) {
+  paint_manager_.SetSize({400, 300}, 2.0f);
+  WaitForOnPaint();
+
+  EXPECT_CALL(client_,
+              UpdateLayerTransform(0.25f, gfx::Vector2dF(116.5f, 29.5f)));
+  paint_manager_.SetTransform(0.25f, {150, 50}, {-4, 8},
+                              /*schedule_flush=*/true);
+  WaitForOnPaint();
+}
+
+TEST_F(PaintManagerTest, ClearTransform) {
+  paint_manager_.SetSize({400, 300}, 2.0f);
+  WaitForOnPaint();
+
+  EXPECT_CALL(client_, UpdateLayerTransform(1.0f, gfx::Vector2dF()));
+  paint_manager_.ClearTransform();
+}
+
 TEST_F(PaintManagerTest, DoPaintFirst) {
   paint_manager_.SetSize({400, 300}, 2.0f);
 

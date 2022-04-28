@@ -16,6 +16,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/location.h"
+#include "base/notreached.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "pdf/paint_ready_rect.h"
@@ -29,6 +30,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace chrome_pdf {
 
@@ -95,7 +97,17 @@ void PaintManager::SetTransform(float scale,
   if (!graphics_)
     return;
 
-  graphics_->SetLayerTransform(scale, origin, translate);
+  if (scale <= 0.0f) {
+    NOTREACHED();
+  } else {
+    // translate_with_origin = origin - scale * origin - translate
+    gfx::Vector2dF translate_with_origin = origin.OffsetFromOrigin();
+    translate_with_origin.Scale(1.0f - scale);
+    translate_with_origin.Subtract(translate);
+
+    // TODO(crbug.com/1263614): Should update be deferred until `Flush()`?
+    client_->UpdateLayerTransform(scale, translate_with_origin);
+  }
 
   if (!schedule_flush)
     return;
@@ -202,7 +214,7 @@ void PaintManager::DoPaint() {
       surface_ =
           SkSurface::MakeRasterN32Premul(new_size.width(), new_size.height());
       DCHECK(surface_);
-      graphics_ = std::make_unique<SkiaGraphics>(client_, surface_.get());
+      graphics_ = std::make_unique<SkiaGraphics>(surface_.get());
 
       // TODO(crbug.com/1317832): Can we guarantee repainting some other way?
       client_->InvalidatePluginContainer();
@@ -216,7 +228,7 @@ void PaintManager::DoPaint() {
     }
 
     if (pending_device_scale_ != device_scale_)
-      graphics_->SetScale(1.0 / pending_device_scale_);
+      client_->UpdateScale(1.0f / pending_device_scale_);
     device_scale_ = pending_device_scale_;
 
     // This must be cleared before calling into the plugin since it may do

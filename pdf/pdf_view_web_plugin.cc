@@ -886,6 +886,11 @@ void PdfViewWebPlugin::UpdateScaledValues() {
 }
 
 void PdfViewWebPlugin::UpdateScale(float scale) {
+  if (scale <= 0.0f) {
+    NOTREACHED();
+    return;
+  }
+
   viewport_to_dip_scale_ = scale;
   device_to_css_scale_ = 1.0f;
   UpdateScaledValues();

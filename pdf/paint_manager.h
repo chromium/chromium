@@ -25,6 +25,7 @@ namespace gfx {
 class Point;
 class Rect;
 class Vector2d;
+class Vector2dF;
 }  // namespace gfx
 
 namespace chrome_pdf {
@@ -38,7 +39,7 @@ namespace chrome_pdf {
 // The client's OnPaint
 class PaintManager {
  public:
-  class Client : public SkiaGraphics::Client {
+  class Client {
    public:
     // Invalidates the entire plugin container, scheduling a repaint.
     virtual void InvalidatePluginContainer() = 0;
@@ -68,9 +69,16 @@ class PaintManager {
     // Updates the client with the latest snapshot created by `Flush()`.
     virtual void UpdateSnapshot(sk_sp<SkImage> snapshot) = 0;
 
+    // Updates the client with the latest output scale.
+    virtual void UpdateScale(float scale) = 0;
+
+    // Updates the client with the latest output layer transform.
+    virtual void UpdateLayerTransform(float scale,
+                                      const gfx::Vector2dF& translate) = 0;
+
    protected:
     // You shouldn't delete through this interface.
-    ~Client() override = default;
+    ~Client() = default;
   };
 
   // The Client is a non-owning pointer and must remain valid (normally the
