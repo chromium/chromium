@@ -24,6 +24,7 @@ class PasswordSettingsUpdaterAndroidBridgeImpl
   ~PasswordSettingsUpdaterAndroidBridgeImpl() override;
 
   // PasswordSettingsUpdaterAndroidBridge implementation.
+  void SetConsumer(base::WeakPtr<Consumer> consumer) override;
   void GetPasswordSettingValue(
       absl::optional<SyncingAccount> account,
       password_manager::PasswordManagerSetting setting) override;
@@ -47,6 +48,9 @@ class PasswordSettingsUpdaterAndroidBridgeImpl
                              jint api_error_code);
 
  private:
+  // The consumer to be notified when a setting request finishes.
+  base::WeakPtr<Consumer> consumer_;
+
   // This object is an instance of PasswordSettingsUpdaterBridge, i.e.
   // the Java counterpart to this class.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

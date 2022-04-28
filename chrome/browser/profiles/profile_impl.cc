@@ -206,6 +206,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/profile_key_startup_accessor.h"
+#include "chrome/browser/password_manager/android/password_settings_updater_service_factory.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #else
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/guest_profile_creation_logger.h"
@@ -819,6 +821,14 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   // The Privacy Sandbox service must be created with the profile to ensure that
   // preference reconciliation occurs.
   PrivacySandboxServiceFactory::GetForProfile(this);
+
+#if BUILDFLAG(IS_ANDROID)
+  if (password_manager::features::UsesUnifiedPasswordManagerUi()) {
+    // The password settings service needs to start listening to settings
+    // changes from Google Mobile Services, as early as possible.
+    PasswordSettingsUpdaterServiceFactory::GetForProfile(this);
+  }
+#endif
 
   AnnouncementNotificationServiceFactory::GetForProfile(this)
       ->MaybeShowNotification();

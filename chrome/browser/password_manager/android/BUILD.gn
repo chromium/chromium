@@ -19,8 +19,26 @@ android_library("android_backend_java_enums") {
   srcjar_deps = [ ":android_backend_java_enums_srcjar" ]
 }
 
+source_set("backend_public") {
+  sources = [
+    "password_settings_updater_service.cc",
+    "password_settings_updater_service.h",
+  ]
+
+  deps = [
+    ":backend",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/content:content",
+    "//components/password_manager/core/browser:browser",
+    "//components/prefs:prefs",
+    "//components/sync/driver:driver",
+    "//content/public/browser",
+  ]
+}
+
 source_set("backend") {
   visibility = [
+    ":backend_public",
     ":unit_tests",
     "//chrome/browser/password_manager:backend_factory",
   ]
@@ -303,6 +321,7 @@ source_set("unit_tests") {
     "mock_password_sync_controller_delegate_bridge.h",
     "password_accessory_controller_impl_unittest.cc",
     "password_generation_controller_impl_unittest.cc",
+    "password_settings_updater_service_unittest.cc",
     "password_store_android_backend_unittest.cc",
     "password_sync_controller_delegate_android_unittest.cc",
     "save_password_infobar_delegate_android_unittest.cc",
@@ -312,6 +331,7 @@ source_set("unit_tests") {
 
   deps = [
     ":backend",
+    ":backend_public",
     "//base/test:test_support",
     "//chrome/app:generated_resources",
     "//chrome/browser",

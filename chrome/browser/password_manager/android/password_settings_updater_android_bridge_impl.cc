@@ -29,6 +29,13 @@ base::android::ScopedJavaLocalRef<jstring> GetJavaStringFromAccount(
 
 namespace password_manager {
 
+// static
+bool PasswordSettingsUpdaterAndroidBridge::CanCreateAccessor() {
+  return Java_PasswordSettingsUpdaterBridge_canCreateAccessor(
+      base::android::AttachCurrentThread());
+}
+
+// static
 std::unique_ptr<PasswordSettingsUpdaterAndroidBridge>
 PasswordSettingsUpdaterAndroidBridge::Create() {
   DCHECK(Java_PasswordSettingsUpdaterBridge_canCreateAccessor(
@@ -52,6 +59,11 @@ PasswordSettingsUpdaterAndroidBridgeImpl::
       base::android::AttachCurrentThread(), java_object_);
 }
 
+void PasswordSettingsUpdaterAndroidBridgeImpl::SetConsumer(
+    base::WeakPtr<Consumer> consumer) {
+  consumer_ = std::move(consumer);
+}
+
 void PasswordSettingsUpdaterAndroidBridgeImpl::GetPasswordSettingValue(
     absl::optional<SyncingAccount> account,
     PasswordManagerSetting setting) {
@@ -72,14 +84,19 @@ void PasswordSettingsUpdaterAndroidBridgeImpl::SetPasswordSettingValue(
 void PasswordSettingsUpdaterAndroidBridgeImpl::OnSettingValueFetched(
     JNIEnv* env,
     jint setting,
-    jboolean offerToSavePasswordsEnabled) {
-  // TODO(crbug.com/1289700): Notify a consumer.
+    jboolean setting_value) {
+  if (!consumer_)
+    return;
+  consumer_->OnSettingValueFetched(static_cast<PasswordManagerSetting>(setting),
+                                   setting_value);
 }
 
 void PasswordSettingsUpdaterAndroidBridgeImpl::OnSettingValueAbsent(
     JNIEnv* env,
     jint setting) {
-  // TODO(crbug.com/1289700): Notify a consumer.
+  if (!consumer_)
+    return;
+  consumer_->OnSettingValueAbsent(static_cast<PasswordManagerSetting>(setting));
 }
 
 void PasswordSettingsUpdaterAndroidBridgeImpl::OnSettingFetchingError(
@@ -87,13 +104,13 @@ void PasswordSettingsUpdaterAndroidBridgeImpl::OnSettingFetchingError(
     jint setting,
     jint error,
     jint api_error_code) {
-  // TODO(crbug.com/1289700): Notify a consumer.
+  // TODO(crbug.com/1289700): Notify a consumer/record metrics.
 }
 
 void PasswordSettingsUpdaterAndroidBridgeImpl::OnSuccessfulSettingChange(
     JNIEnv* env,
     jint setting) {
-  // TODO(crbug.com/1289700): Notify a consumer.
+  // TODO(crbug.com/1289700): Notify a consumer/record metrics.
 }
 
 void PasswordSettingsUpdaterAndroidBridgeImpl::OnFailedSettingChange(
@@ -101,5 +118,5 @@ void PasswordSettingsUpdaterAndroidBridgeImpl::OnFailedSettingChange(
     jint setting,
     jint error,
     jint api_error_code) {
-  // TODO(crbug.com/1289700): Notify a consumer.
+  // TODO(crbug.com/1289700): Notify a consumer/record metrics.
 }
