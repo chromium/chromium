@@ -47,8 +47,12 @@
 @protocol AutocompleteResultConsumer <NSObject>
 // Updates the current data and forces a redraw. If animation is YES, adds
 // CALayer animations to fade the OmniboxPopupRows in.
+// `preselectedMatchGroupIndex` is the section selected by default when no row
+// is highlighted.
 - (void)updateMatches:(NSArray<id<AutocompleteSuggestionGroup>>*)result
-        withAnimation:(BOOL)animation;
+    preselectedMatchGroupIndex:(NSInteger)groupIndex
+                 withAnimation:(BOOL)animation;
+
 // Sets the text alignment of the popup content.
 - (void)setTextAlignment:(NSTextAlignment)alignment;
 // Sets the semantic content attribute of the popup content.

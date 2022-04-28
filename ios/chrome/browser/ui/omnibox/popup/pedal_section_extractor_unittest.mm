@@ -51,9 +51,13 @@ TEST_F(PedalSectionExtractorTest, ForwardsWhenNoPedals) {
       [AutocompleteSuggestionGroupImpl groupWithTitle:@""
                                           suggestions:@[ mockSuggestion ]];
 
-  [[data_sink_ expect] updateMatches:@[ group ] withAnimation:NO];
+  [[data_sink_ expect] updateMatches:@[ group ]
+          preselectedMatchGroupIndex:0
+                       withAnimation:NO];
 
-  [extractor_ updateMatches:@[ group ] withAnimation:NO];
+  [extractor_ updateMatches:@[ group ]
+      preselectedMatchGroupIndex:0
+                   withAnimation:NO];
 
   [data_sink_ verify];
 }
@@ -78,7 +82,10 @@ TEST_F(PedalSectionExtractorTest, ExtractsPedalsIntoSeparateSection) {
   void (^verifyGroups)(NSInvocation*) = ^(NSInvocation* invocation) {
     __unsafe_unretained NSArray<id<AutocompleteSuggestionGroup>>* groups = nil;
     [invocation getArgument:&groups atIndex:2];
+    NSInteger preselectedMatchGroupIndex = -1;
+    [invocation getArgument:&preselectedMatchGroupIndex atIndex:3];
 
+    EXPECT_EQ(preselectedMatchGroupIndex, 1);
     EXPECT_EQ(groups.count, 2u);
     EXPECT_EQ(groups[0].suggestions.count, 1u);
 
@@ -87,9 +94,12 @@ TEST_F(PedalSectionExtractorTest, ExtractsPedalsIntoSeparateSection) {
   };
 
   [[[data_sink_ stub] andDo:verifyGroups] updateMatches:[OCMArg any]
+                             preselectedMatchGroupIndex:1
                                           withAnimation:NO];
 
-  [extractor_ updateMatches:@[ group ] withAnimation:NO];
+  [extractor_ updateMatches:@[ group ]
+      preselectedMatchGroupIndex:0
+                   withAnimation:NO];
 
   [data_sink_ verify];
 }
@@ -111,8 +121,12 @@ TEST_F(PedalSectionExtractorTest, ResetsOnEachRun) {
       groupWithTitle:@""
          suggestions:@[ mockSuggestionNoPedal, mockSuggestionWithPedal ]];
 
-  [[data_sink_ expect] updateMatches:[OCMArg any] withAnimation:NO];
-  [extractor_ updateMatches:@[ group ] withAnimation:NO];
+  [[data_sink_ expect] updateMatches:[OCMArg any]
+          preselectedMatchGroupIndex:1
+                       withAnimation:NO];
+  [extractor_ updateMatches:@[ group ]
+      preselectedMatchGroupIndex:0
+                   withAnimation:NO];
   [data_sink_ verify];
 
   AutocompleteSuggestionGroupImpl* groupNoPedals =
@@ -120,8 +134,12 @@ TEST_F(PedalSectionExtractorTest, ResetsOnEachRun) {
           groupWithTitle:@""
              suggestions:@[ mockSuggestionNoPedal ]];
 
-  [[data_sink_ expect] updateMatches:@[ groupNoPedals ] withAnimation:NO];
-  [extractor_ updateMatches:@[ groupNoPedals ] withAnimation:NO];
+  [[data_sink_ expect] updateMatches:@[ groupNoPedals ]
+          preselectedMatchGroupIndex:0
+                       withAnimation:NO];
+  [extractor_ updateMatches:@[ groupNoPedals ]
+      preselectedMatchGroupIndex:0
+                   withAnimation:NO];
   [data_sink_ verify];
 }
 
@@ -171,15 +189,21 @@ TEST_F(PedalSectionExtractorTest, OnlyExtractFirstFewRows) {
   void (^verifyGroups)(NSInvocation*) = ^(NSInvocation* invocation) {
     __unsafe_unretained NSArray<id<AutocompleteSuggestionGroup>>* groups = nil;
     [invocation getArgument:&groups atIndex:2];
+    NSInteger preselectedMatchGroupIndex = -1;
+    [invocation getArgument:&preselectedMatchGroupIndex atIndex:3];
 
+    EXPECT_EQ(preselectedMatchGroupIndex, 0);
     EXPECT_EQ(groups.count, 1u);
     EXPECT_EQ(groups[0].suggestions.count, 4u);
   };
 
   [[[data_sink_ stub] andDo:verifyGroups] updateMatches:[OCMArg any]
+                             preselectedMatchGroupIndex:0
                                           withAnimation:NO];
 
-  [extractor_ updateMatches:@[ group ] withAnimation:NO];
+  [extractor_ updateMatches:@[ group ]
+      preselectedMatchGroupIndex:0
+                   withAnimation:NO];
 
   [data_sink_ verify];
 }
@@ -210,16 +234,22 @@ TEST_F(PedalSectionExtractorTest, OnlyExtractOnePedal) {
   void (^verifyGroups)(NSInvocation*) = ^(NSInvocation* invocation) {
     __unsafe_unretained NSArray<id<AutocompleteSuggestionGroup>>* groups = nil;
     [invocation getArgument:&groups atIndex:2];
+    NSInteger preselectedMatchGroupIndex = -1;
+    [invocation getArgument:&preselectedMatchGroupIndex atIndex:3];
 
+    EXPECT_EQ(preselectedMatchGroupIndex, 1);
     EXPECT_EQ(groups.count, 2u);
     EXPECT_EQ(groups[0].suggestions.count, 1u);
     EXPECT_EQ(groups[1].suggestions.count, 3u);
   };
 
   [[[data_sink_ stub] andDo:verifyGroups] updateMatches:[OCMArg any]
+                             preselectedMatchGroupIndex:1
                                           withAnimation:NO];
 
-  [extractor_ updateMatches:@[ group ] withAnimation:NO];
+  [extractor_ updateMatches:@[ group ]
+      preselectedMatchGroupIndex:0
+                   withAnimation:NO];
 
   [data_sink_ verify];
 }
@@ -250,8 +280,12 @@ class PedalSectionExtractorHighlightTest : public PedalSectionExtractorTest {
         groupWithTitle:@""
            suggestions:@[ mockSuggestionNoPedal, mockSuggestionWithPedal ]];
 
-    [[data_sink_ expect] updateMatches:[OCMArg any] withAnimation:NO];
-    [extractor_ updateMatches:@[ group ] withAnimation:NO];
+    [[data_sink_ expect] updateMatches:[OCMArg any]
+            preselectedMatchGroupIndex:1
+                         withAnimation:NO];
+    [extractor_ updateMatches:@[ group ]
+        preselectedMatchGroupIndex:0
+                     withAnimation:NO];
   }
 
   OCMockObject<OmniboxPedal>* mock_pedal_;

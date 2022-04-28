@@ -75,7 +75,8 @@ const CGFloat kOmniboxIconSize = 16;
   [self.consumer updateMatches:@[ [AutocompleteSuggestionGroupImpl
                                    groupWithTitle:nil
                                       suggestions:matches] ]
-                 withAnimation:animation];
+      preselectedMatchGroupIndex:0
+                   withAnimation:animation];
 
   [self loadModelImages];
 }

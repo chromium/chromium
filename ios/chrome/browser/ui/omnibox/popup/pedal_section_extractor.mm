@@ -52,7 +52,8 @@ const NSUInteger kMaxPedalExtractionRow = 3;
 #pragma mark - AutocompleteResultConsumer
 
 - (void)updateMatches:(NSArray<id<AutocompleteSuggestionGroup>>*)result
-        withAnimation:(BOOL)animation {
+    preselectedMatchGroupIndex:(NSInteger)groupIndex
+                 withAnimation:(BOOL)animation {
   [self.extractedPedals removeAllObjects];
   self.highlightedPedalIndex = NSNotFound;
   self.originalResult = result;
@@ -69,7 +70,9 @@ const NSUInteger kMaxPedalExtractionRow = 3;
   }
 
   if (self.extractedPedals.count == 0) {
-    [self.dataSink updateMatches:self.originalResult withAnimation:animation];
+    [self.dataSink updateMatches:self.originalResult
+        preselectedMatchGroupIndex:groupIndex
+                     withAnimation:animation];
     return;
   }
 
@@ -89,8 +92,11 @@ const NSUInteger kMaxPedalExtractionRow = 3;
 
   NSArray* combinedGroups = @[ pedalGroup ];
   combinedGroups = [combinedGroups arrayByAddingObjectsFromArray:result];
+  const NSInteger suggestionGroupIndexInCombinedGroups = 1;
 
-  [self.dataSink updateMatches:combinedGroups withAnimation:animation];
+  [self.dataSink updateMatches:combinedGroups
+      preselectedMatchGroupIndex:suggestionGroupIndexInCombinedGroups
+                   withAnimation:animation];
 }
 
 - (void)setTextAlignment:(NSTextAlignment)alignment {

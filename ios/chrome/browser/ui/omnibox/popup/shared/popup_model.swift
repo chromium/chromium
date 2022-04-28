@@ -55,6 +55,9 @@ import UIKit
 
   @Published var highlightedMatchIndexPath: IndexPath?
 
+  /// Index of the preselected section when no row is highlighted.
+  var preselectedSectionIndex: Int
+
   weak var delegate: AutocompleteResultConsumerDelegate?
 
   /// Holds how much leading space there is from the edge of the popup view to
@@ -73,13 +76,18 @@ import UIKit
       PopupMatchSection(header: tuple.0, matches: tuple.1)
     }
     self.delegate = delegate
+    preselectedSectionIndex = 0
   }
 
   // MARK: AutocompleteResultConsumer
 
-  public func updateMatches(_ matchGroups: [AutocompleteSuggestionGroup], withAnimation: Bool) {
+  public func updateMatches(
+    _ matchGroups: [AutocompleteSuggestionGroup], preselectedMatchGroupIndex: NSInteger,
+    withAnimation: Bool
+  ) {
     // Reset highlight state.
     self.highlightedMatchIndexPath = nil
+    self.preselectedSectionIndex = preselectedMatchGroupIndex
 
     self.sections = matchGroups.map { group in
       PopupMatchSection(
@@ -102,8 +110,18 @@ extension PopupModel: OmniboxSuggestionCommands {
     if sections.isEmpty || sections.first!.matches.isEmpty {
       return
     }
-    guard var indexPath = self.highlightedMatchIndexPath else {
-      // When nothing is highlighted, pressing Up Arrow doesn't do anything.
+    var indexPath = IndexPath()
+    if self.highlightedMatchIndexPath != nil {
+      indexPath = self.highlightedMatchIndexPath!
+    } else if self.preselectedSectionIndex > 0 && self.preselectedSectionIndex - 1 < sections.count
+    {
+      /// When no row is highlighted, highlight the first row of the preselected section.
+      /// If there is a row above the preselected row, select this row.
+      indexPath = IndexPath(
+        row: sections[preselectedSectionIndex - 1].matches.count,
+        section: self.preselectedSectionIndex - 1)
+    } else {
+      /// If there are no rows above the preselected row, do nothing.
       return
     }
 
@@ -135,9 +153,11 @@ extension PopupModel: OmniboxSuggestionCommands {
     if sections.isEmpty || sections.first!.matches.isEmpty {
       return
     }
-    // Initialize the highlighted index path to section:0, row:-1, so that pressing down when nothing
-    // is highlighted highlights the first row (at index 0).
-    var indexPath = self.highlightedMatchIndexPath ?? IndexPath(row: -1, section: 0)
+    assert(self.preselectedSectionIndex < sections.count)
+    /// Initialize the highlighted index path to (`preselectedSectionIndex`, -1)
+    /// so that pressing down when nothing is highlighted highlights the first row of the preselected section.
+    var indexPath =
+      self.highlightedMatchIndexPath ?? IndexPath(row: -1, section: self.preselectedSectionIndex)
 
     // If there's a row below in current section, move highlight there
     if indexPath.row < sections[indexPath.section].matches.count - 1 {
