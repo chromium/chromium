@@ -9,15 +9,21 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/location.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "pdf/paint_ready_rect.h"
 #include "pdf/ppapi_migration/graphics.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkSamplingOptions.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -272,9 +278,17 @@ void PaintManager::DoPaint() {
 
 void PaintManager::Flush() {
   flush_requested_ = false;
-  flush_pending_ = graphics_->Flush(base::BindOnce(
-      &PaintManager::OnFlushComplete, weak_factory_.GetWeakPtr()));
-  DCHECK(flush_pending_);
+
+  sk_sp<SkImage> snapshot = surface_->makeImageSnapshot();
+  surface_->getCanvas()->drawImage(snapshot.get(), /*x=*/0, /*y=*/0,
+                                   SkSamplingOptions(), /*paint=*/nullptr);
+  client_->UpdateSnapshot(std::move(snapshot));
+
+  // TODO(crbug.com/1302059): Complete flush synchronously.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&PaintManager::OnFlushComplete,
+                                weak_factory_.GetWeakPtr()));
+  flush_pending_ = true;
 }
 
 void PaintManager::OnFlushComplete() {

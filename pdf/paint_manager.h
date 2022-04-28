@@ -18,6 +18,7 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/size.h"
 
+class SkImage;
 class SkSurface;
 
 namespace gfx {
@@ -63,6 +64,9 @@ class PaintManager {
     virtual void OnPaint(const std::vector<gfx::Rect>& paint_rects,
                          std::vector<PaintReadyRect>& ready,
                          std::vector<gfx::Rect>& pending) = 0;
+
+    // Updates the client with the latest snapshot created by `Flush()`.
+    virtual void UpdateSnapshot(sk_sp<SkImage> snapshot) = 0;
 
    protected:
     // You shouldn't delete through this interface.

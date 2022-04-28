@@ -5,12 +5,9 @@
 #ifndef PDF_PPAPI_MIGRATION_GRAPHICS_H_
 #define PDF_PPAPI_MIGRATION_GRAPHICS_H_
 
-#include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkBitmap;
-class SkImage;
 class SkSurface;
 
 namespace gfx {
@@ -23,14 +20,9 @@ class Vector2dF;
 namespace chrome_pdf {
 
 // Abstraction for a Pepper or Skia graphics device.
-// TODO(crbug.com/1099020): Implement the Skia graphics device.
 class Graphics {
  public:
   virtual ~Graphics() = default;
-
-  // Flushes pending operations, invoking the callback on completion. Returns
-  // `true` if the callback is still pending.
-  virtual bool Flush(base::OnceClosure callback) = 0;
 
   // Paints the `src_rect` region of `image` to the graphics device. The image
   // must be compatible with the concrete `Graphics` implementation.
@@ -60,9 +52,6 @@ class SkiaGraphics final : public Graphics {
    public:
     virtual ~Client() = default;
 
-    // Updates the client with the latest snapshot created by Flush().
-    virtual void UpdateSnapshot(sk_sp<SkImage> snapshot) = 0;
-
     // Updates the client with the latest output scale.
     virtual void UpdateScale(float scale) = 0;
 
@@ -74,8 +63,6 @@ class SkiaGraphics final : public Graphics {
   // `client` and `surface` must outlive this object.
   SkiaGraphics(Client* client, SkSurface* surface);
   ~SkiaGraphics() override;
-
-  bool Flush(base::OnceClosure callback) override;
 
   void PaintImage(const SkBitmap& image, const gfx::Rect& src_rect) override;
 
