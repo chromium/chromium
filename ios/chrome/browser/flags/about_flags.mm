@@ -873,6 +873,14 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          optimization_guide::features::kOptimizationTargetPrediction)},
+    {"sync-standalone-invalidations", flag_descriptions::kSyncInvalidationsName,
+     flag_descriptions::kSyncInvalidationsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(::syncer::kUseSyncInvalidations)},
+    {"sync-standalone-invalidations-wallet-and-offer",
+     flag_descriptions::kSyncInvalidationsWalletAndOfferName,
+     flag_descriptions::kSyncInvalidationsWalletAndOfferDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(::syncer::kUseSyncInvalidationsForWalletAndOffer)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

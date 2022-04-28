@@ -53074,6 +53074,8 @@ from previous Chrome versions.
   <int value="-1661282561" label="SharingHubDesktopOmnibox:enabled"/>
   <int value="-1660972490" label="gpu-rasterization-msaa-sample-count"/>
   <int value="-1660884825" label="ReadLaterNewBadgePromo:enabled"/>
+  <int value="-1656667928"
+      label="UseSyncInvalidationsForWalletAndOffer:disabled"/>
   <int value="-1656179450" label="EnableOmniboxRichEntities:enabled"/>
   <int value="-1655535052" label="enable-pointer-events"/>
   <int value="-1655281250" label="DefaultCalculatorWebApp:enabled"/>
@@ -54130,6 +54132,7 @@ from previous Chrome versions.
   <int value="-990704221" label="TerminalSSH:enabled"/>
   <int value="-990187062" label="SendTabToSelfShowSendingUI:enabled"/>
   <int value="-989671895" label="OfflineIndicatorAlwaysHttpProbe:enabled"/>
+  <int value="-989140298" label="UseSyncInvalidations:disabled"/>
   <int value="-989050085" label="AppStoreBillingDebug:enabled"/>
   <int value="-987470173" label="ClickToCallOpenDialerDirectly:disabled"/>
   <int value="-987191098" label="FontAccessPersistent:disabled"/>
@@ -54314,6 +54317,8 @@ from previous Chrome versions.
   <int value="-867087281" label="enable-virtual-keyboard"/>
   <int value="-867085393" label="WebNotesDynamicTemplates:enabled"/>
   <int value="-866993841" label="OfflinePagesCTV2:disabled"/>
+  <int value="-866162444"
+      label="UseSyncInvalidationsForWalletAndOffer:enabled"/>
   <int value="-866097797"
       label="ExperimentalAccessibilityDictationOffline:disabled"/>
   <int value="-864266073" label="cros-regions-mode"/>
@@ -56098,6 +56103,7 @@ from previous Chrome versions.
       label="AutofillEnableVirtualCardsRiskBasedAuthentication:disabled"/>
   <int value="360391863" label="NTPOfflineBadge:enabled"/>
   <int value="360599302" label="enable-gpu-rasterization"/>
+  <int value="360697704" label="UseSyncInvalidations:enabled"/>
   <int value="361984896"
       label="ExperimentalAccessibilityDictationOffline:enabled"/>
   <int value="362623880"
