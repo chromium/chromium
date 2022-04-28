@@ -50,6 +50,32 @@ std::ostream& operator<<(std::ostream& out,
              << ",cookie=" << c.cookie.DebugString() << "}";
 }
 
+bool operator==(const AttributionDataClear& a, const AttributionDataClear& b) {
+  return a.time == b.time && a.delete_begin == b.delete_begin &&
+         a.delete_end == b.delete_end && a.origins == b.origins;
+}
+
+std::ostream& operator<<(std::ostream& out, const AttributionDataClear& c) {
+  out << "{time=" << c.time << ",delete_begin=" << c.delete_begin
+      << ",delete_end=" << c.delete_end << ",origins=";
+
+  if (c.origins.has_value()) {
+    out << "[";
+
+    const char* separator = "";
+    for (const url::Origin& origin : *c.origins) {
+      out << separator << origin;
+      separator = ", ";
+    }
+
+    out << "]";
+  } else {
+    out << "null";
+  }
+
+  return out;
+}
+
 namespace {
 
 using ::testing::_;
@@ -454,6 +480,47 @@ TEST(AttributionSimulatorInputParserTest, ValidCookieParses) {
               .source_url = GURL("https://r.test/x"),
           },
           _))));
+  EXPECT_THAT(error_stream.str(), IsEmpty());
+}
+
+TEST(AttributionSimulatorInputParserTest, ValidDataClearParses) {
+  constexpr char kJson[] = R"json({"data_clears": [
+    {
+      "timestamp": 1643235574,
+      "delete_begin": 1643235573,
+    },
+    {
+      "timestamp": 1643235574,
+      "delete_end": 1643235575,
+      "origins": [
+        "https://r.test",
+        "https://s.test"
+      ]
+    }
+  ]})json";
+
+  base::Value value = base::test::ParseJson(kJson);
+  std::ostringstream error_stream;
+  EXPECT_THAT(
+      ParseAttributionSimulationInput(std::move(value), kOffsetTime,
+                                      error_stream),
+      Optional(ElementsAre(
+          Pair(AttributionDataClear(
+                   /*time=*/kOffsetTime + base::Seconds(1643235574),
+                   /*delete_begin=*/kOffsetTime + base::Seconds(1643235573),
+                   /*delete_end=*/base::Time::Max(),
+                   /*origins=*/absl::nullopt),
+               _),
+          Pair(AttributionDataClear(
+                   /*time=*/kOffsetTime + base::Seconds(1643235574),
+                   /*delete_begin=*/base::Time::Min(),
+                   /*delete_end=*/kOffsetTime + base::Seconds(1643235575),
+                   /*origins=*/
+                   base::flat_set<url::Origin>{
+                       url::Origin::Create(GURL("https://r.test")),
+                       url::Origin::Create(GURL("https://s.test")),
+                   }),
+               _))));
   EXPECT_THAT(error_stream.str(), IsEmpty());
 }
 
@@ -898,7 +965,29 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         "url": "https://r.test",
         "Set-Cookie": ""
       }]})json",
-    }};
+    },
+    {R"(["data_clears"][0]["timestamp"]: must be an integer number of seconds)",
+     R"json({"data_clears": [{}]})json"},
+    {R"(["data_clears"][0]["delete_begin"]: must be an integer number of seconds)",
+     R"json({"data_clears": [{
+        "timestamp": 1643235576,
+        "delete_begin": ""
+      }]})json"},
+    {R"(["data_clears"][0]["delete_end"]: must be an integer number of seconds)",
+     R"json({"data_clears": [{
+        "timestamp": 1643235576,
+        "delete_end": ""
+      }]})json"},
+    {R"(["data_clears"][0]["origins"]: must be a list)",
+     R"json({"data_clears": [{
+        "timestamp": 1643235576,
+        "origins": ""
+      }]})json"},
+    {R"(["data_clears"][0]["origins"][0]: must be a string)",
+     R"json({"data_clears": [{
+        "timestamp": 1643235576,
+        "origins": [1]
+      }]})json"}};
 
 INSTANTIATE_TEST_SUITE_P(AttributionSimulatorInputParserInvalidInputs,
                          AttributionSimulatorInputParseErrorTest,

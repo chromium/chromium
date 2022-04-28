@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -17,6 +18,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
@@ -30,9 +35,31 @@ struct AttributionSimulatorCookie {
   GURL source_url;
 };
 
+struct AttributionDataClear {
+  base::Time time;
+  base::Time delete_begin;
+  base::Time delete_end;
+  // If null, matches all origins.
+  absl::optional<base::flat_set<url::Origin>> origins;
+
+  AttributionDataClear(base::Time time,
+                       base::Time delete_begin,
+                       base::Time delete_end,
+                       absl::optional<base::flat_set<url::Origin>> origins);
+
+  ~AttributionDataClear();
+
+  AttributionDataClear(const AttributionDataClear&);
+  AttributionDataClear(AttributionDataClear&&);
+
+  AttributionDataClear& operator=(const AttributionDataClear&);
+  AttributionDataClear& operator=(AttributionDataClear&&);
+};
+
 using AttributionSimulationEvent = absl::variant<StorableSource,
                                                  AttributionTriggerAndTime,
-                                                 AttributionSimulatorCookie>;
+                                                 AttributionSimulatorCookie,
+                                                 AttributionDataClear>;
 
 // The value is the raw JSON associated with the event.
 using AttributionSimulationEventAndValue =

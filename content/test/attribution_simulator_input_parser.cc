@@ -79,6 +79,15 @@ class AttributionSimulatorInputParser {
                               base::Unretained(this)));
     }
 
+    static constexpr char kKeyDataClears[] = "data_clears";
+    if (base::Value* data_clears = input.FindKey(kKeyDataClears)) {
+      auto context = PushContext(kKeyDataClears);
+      ParseList(
+          std::move(*data_clears),
+          base::BindRepeating(&AttributionSimulatorInputParser::ParseDataClear,
+                              base::Unretained(this)));
+    }
+
     static constexpr char kKeySources[] = "sources";
     if (base::Value* sources = input.FindKey(kKeySources)) {
       auto context = PushContext(kKeySources);
@@ -175,6 +184,49 @@ class AttributionSimulatorInputParser {
             .source_url = std::move(url),
         },
         std::move(cookie));
+  }
+
+  void ParseDataClear(base::Value&& data_clear) {
+    if (!EnsureDictionary(data_clear))
+      return;
+
+    const base::Value::Dict& dict = data_clear.GetDict();
+
+    base::Time time = ParseTime(dict, kTimestampKey);
+
+    static constexpr char kKeyDeleteBegin[] = "delete_begin";
+    base::Time delete_begin = base::Time::Min();
+    if (dict.contains(kKeyDeleteBegin))
+      delete_begin = ParseTime(dict, kKeyDeleteBegin);
+
+    static constexpr char kKeyDeleteEnd[] = "delete_end";
+    base::Time delete_end = base::Time::Max();
+    if (dict.contains(kKeyDeleteEnd))
+      delete_end = ParseTime(dict, kKeyDeleteEnd);
+
+    absl::optional<base::flat_set<url::Origin>> origin_set;
+
+    static constexpr char kKeyOrigins[] = "origins";
+    if (const base::Value* origins = dict.Find(kKeyOrigins)) {
+      auto context = PushContext(kKeyOrigins);
+      origin_set.emplace();
+
+      ParseList(
+          *origins, base::BindLambdaForTesting([&](const base::Value& value) {
+            if (!value.is_string()) {
+              *Error() << "must be a string";
+            } else {
+              origin_set->emplace(url::Origin::Create(GURL(value.GetString())));
+            }
+          }));
+    }
+
+    if (has_error())
+      return;
+
+    events_.emplace_back(AttributionDataClear(time, delete_begin, delete_end,
+                                              std::move(origin_set)),
+                         std::move(data_clear));
   }
 
   void ParseSource(base::Value&& source) {
@@ -698,6 +750,29 @@ class AttributionSimulatorInputParser {
 };
 
 }  // namespace
+
+AttributionDataClear::AttributionDataClear(
+    base::Time time,
+    base::Time delete_begin,
+    base::Time delete_end,
+    absl::optional<base::flat_set<url::Origin>> origins)
+    : time(time),
+      delete_begin(delete_begin),
+      delete_end(delete_end),
+      origins(std::move(origins)) {}
+
+AttributionDataClear::~AttributionDataClear() = default;
+
+AttributionDataClear::AttributionDataClear(const AttributionDataClear&) =
+    default;
+
+AttributionDataClear::AttributionDataClear(AttributionDataClear&&) = default;
+
+AttributionDataClear& AttributionDataClear::operator=(
+    const AttributionDataClear&) = default;
+
+AttributionDataClear& AttributionDataClear::operator=(AttributionDataClear&&) =
+    default;
 
 absl::optional<AttributionSimulationEventAndValues>
 ParseAttributionSimulationInput(base::Value input,
