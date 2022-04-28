@@ -40,6 +40,9 @@ const char kTranslateCaptureText[] = "Translate.CaptureText";
 // with language_detection.js.
 const char kCommandPrefix[] = "languageDetection";
 
+// The old CLD model version.
+const char kCLDModelVersion[] = "CLD3";
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class LanguageDetectionMethod {
@@ -148,6 +151,7 @@ void LanguageDetectionController::OnTextRetrieved(
                             ? base::UTF8ToUTF16(text_content->GetString())
                             : std::u16string();
   std::string language;
+  std::string detection_model_version = kCLDModelVersion;
 
   if (IsTFLiteLanguageDetectionEnabled() && language_detection_model_ &&
       language_detection_model_->IsAvailable()) {
@@ -160,6 +164,7 @@ void LanguageDetectionController::OnTextRetrieved(
         http_content_language, html_lang,
         GetStringByClippingLastWord(text, kMaxIndexChars),
         &model_detected_language, &is_model_reliable, model_reliability_score);
+    detection_model_version = language_detection_model_->GetModelVersion();
   } else {
     if (IsTFLiteLanguageDetectionEnabled()) {
       // TODO(crbug/1309448): Remove logging
@@ -194,6 +199,7 @@ void LanguageDetectionController::OnTextRetrieved(
   details.is_model_reliable = is_model_reliable;
   details.html_root_language = html_lang;
   details.adopted_language = language;
+  details.detection_model_version = detection_model_version;
 
   language::IOSLanguageDetectionTabHelper::FromWebState(web_state_)
       ->OnLanguageDetermined(details);

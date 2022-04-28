@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "components/translate/core/common/translate_util.h"
 #import "components/translate/translate_internals/translate_internals_handler.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
@@ -42,8 +43,12 @@ web::WebUIIOSDataSource* CreateTranslateInternalsHTMLSource() {
     source->AddString(key, value);
   }
 
-  // Current language detection model is "CLD3".
-  source->AddString("model-version", "CLD3");
+  if (translate::IsTFLiteLanguageDetectionEnabled()) {
+    source->AddString("model-version", "TFLite_v1");
+  } else {
+    // The default language detection model is "CLD3".
+    source->AddString("model-version", "CLD3");
+  }
 
   return source;
 }
