@@ -1016,12 +1016,15 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.KeyPermissionsManager.Migration"
-    enum="KeyPermissionsManagerMigrationStatus" expires_after="2022-05-01">
+    enum="KeyPermissionsManagerMigrationStatus" expires_after="2022-11-01">
   <owner>omorsi@google.com</owner>
   <owner>pmarko@google.com</owner>
   <summary>
     Counts the number of times the migration started as well as the number of
-    times it succeeded and failed.
+    times it succeeded and failed. It also counts the number of necessary
+    migrations. Necessary migrations are the ones that work on migrating
+    permissions for at least one key. Currently, some migration processes start
+    when there are 0 keys saved in preferences.
   </summary>
 </histogram>
 

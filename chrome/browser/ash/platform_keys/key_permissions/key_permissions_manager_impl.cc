@@ -71,7 +71,10 @@ enum class MigrationStatus {
   kStarted = 0,
   kSucceeded = 1,
   kFailed = 2,
-  kMaxValue = kFailed,
+  // Necessary key permission migrations are the ones that migrates permissions
+  // from prefs to Chaps for at least one key.
+  kNecessary = 3,
+  kMaxValue = kNecessary,
 };
 
 // These values are logged to UMA. Entries should not be renumbered and
@@ -125,6 +128,12 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::UpdateWithAllKeys(
     std::vector<std::string> public_key_spki_der_list,
     Status keys_retrieval_status) {
   DCHECK(public_key_spki_der_queue_.empty());
+
+  if (!public_key_spki_der_list.empty() &&
+      mode_ == Mode::kMigratePermissionsFromPrefs) {
+    base::UmaHistogramEnumeration(kMigrationStatusHistogramName,
+                                  MigrationStatus::kNecessary);
+  }
 
   for (auto& public_key : public_key_spki_der_list) {
     public_key_spki_der_queue_.push(std::move(public_key));
