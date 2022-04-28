@@ -39,7 +39,6 @@ class ExternallyInstalledWebAppPrefsTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     web_app_provider_ = web_app::FakeWebAppProvider::Get(profile());
-    web_app_provider_->SkipAwaitingExtensionSystem();
     web_app_provider_->StartWithSubsystems();
     // TODO(https://crbug.com/891172): Use an extension agnostic test registry.
     extensions::TestExtensionSystem* test_system =

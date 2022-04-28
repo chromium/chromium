@@ -71,8 +71,6 @@ class WebApkManagerTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-    auto* const provider = web_app::FakeWebAppProvider::Get(&profile_);
-    provider->SkipAwaitingExtensionSystem();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 

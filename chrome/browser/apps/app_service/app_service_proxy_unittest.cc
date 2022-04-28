@@ -287,8 +287,6 @@ class AppServiceProxyPreferredAppsTest : public AppServiceProxyTest {
   void SetUp() override {
     proxy_ = AppServiceProxyFactory::GetForProfile(&profile_);
 
-    auto* const provider = web_app::FakeWebAppProvider::Get(&profile_);
-    provider->SkipAwaitingExtensionSystem();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(&profile_);
   }
 

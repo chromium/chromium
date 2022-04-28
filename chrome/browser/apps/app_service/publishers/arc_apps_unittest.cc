@@ -147,8 +147,6 @@ class ArcAppsPublisherTest : public testing::Test {
     arc_bridge_service->file_system()->SetInstance(file_system_instance());
     arc::WaitForInstanceReady(arc_bridge_service->file_system());
 
-    auto* const provider = web_app::FakeWebAppProvider::Get(&profile_);
-    provider->SkipAwaitingExtensionSystem();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     app_service_test_.SetUp(&profile_);

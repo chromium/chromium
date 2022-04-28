@@ -109,8 +109,6 @@ class WebApkInstallTaskTest : public testing::Test {
     testing::Test::SetUp();
     app_service_test_.SetUp(&profile_);
 
-    auto* const provider = web_app::FakeWebAppProvider::Get(&profile_);
-    provider->SkipAwaitingExtensionSystem();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     // Disable WebApkManager by policy. This allows us to unit test

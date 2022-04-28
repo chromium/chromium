@@ -95,7 +95,6 @@ class FakeWebAppProvider : public WebAppProvider {
   WebAppIconManager& GetIconManager() const;
   AbstractWebAppDatabaseFactory& GetDatabaseFactory() const;
 
-  void SkipAwaitingExtensionSystem();
   // Starts this WebAppProvider and its subsystems. It does not wait for systems
   // to be ready.
   void StartWithSubsystems();

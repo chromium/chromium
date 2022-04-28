@@ -231,18 +231,6 @@ void WebAppProvider::Shutdown() {
 }
 
 void WebAppProvider::StartImpl() {
-  if (!skip_awaiting_extension_system_) {
-    // Basically the WebAppUiManagerImpl is dependent on ExtensionSystem
-    // initialization.
-    // TODO(crbug.com/1201878): Make WebAppUiManagerImpl lazily check
-    // ExtensionSystem readiness.
-    WaitForExtensionSystemReady();
-  } else {
-    OnExtensionSystemReady();
-  }
-}
-
-void WebAppProvider::OnExtensionSystemReady() {
   StartSyncBridge();
 }
 

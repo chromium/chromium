@@ -94,7 +94,6 @@ class RunOnOsLoginCommandUnitTest : public WebAppTest {
     os_integration_manager_ = os_integration_manager.get();
     provider_ = provider;
     provider->SetOsIntegrationManager(std::move(os_integration_manager));
-    provider->SkipAwaitingExtensionSystem();
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 

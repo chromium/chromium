@@ -297,10 +297,6 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   }
 
   void InitWebAppProvider() {
-    auto* provider = web_app::FakeWebAppProvider::Get(profile());
-    // FakeWebAppProvider should not wait for a test extension system, that is
-    // never started, to be ready.
-    provider->SkipAwaitingExtensionSystem();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 

@@ -17,7 +17,6 @@ class ClearBrowsingDataCommandTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
     web_app_provider_ = web_app::FakeWebAppProvider::Get(profile());
-    web_app_provider_->SkipAwaitingExtensionSystem();
     web_app_provider_->StartWithSubsystems();
   }
 

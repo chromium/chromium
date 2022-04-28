@@ -159,8 +159,6 @@ class WebAppProvider : public KeyedService {
 
  protected:
   virtual void StartImpl();
-  void WaitForExtensionSystemReady();
-  void OnExtensionSystemReady();
 
   void CreateSubsystems(Profile* profile);
 
@@ -200,8 +198,6 @@ class WebAppProvider : public KeyedService {
   bool started_ = false;
   bool connected_ = false;
   bool is_registry_ready_ = false;
-
-  bool skip_awaiting_extension_system_ = false;
 
   base::WeakPtrFactory<WebAppProvider> weak_ptr_factory_{this};
 };

@@ -13,12 +13,7 @@
 
 namespace web_app {
 
-void WebAppProvider::WaitForExtensionSystemReady() {
-  extensions::ExtensionSystem::Get(profile_)->ready().Post(
-      FROM_HERE, base::BindOnce(&WebAppProvider::OnExtensionSystemReady,
-                                weak_ptr_factory_.GetWeakPtr()));
-}
-
+// TODO(crbug.com/1201878): Delete bookmark_app_provider.cc.
 void WebAppProviderFactory::DependsOnExtensionsSystem() {
   DependsOn(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());

@@ -102,9 +102,6 @@ class WebAppShimManagerDelegateTest : public WebAppTest {
             /*protocol_handler_manager=*/nullptr,
             /*url_handler_manager*/ nullptr));
 
-    // FakeWebAppProvider should not wait for a test extension system, that is
-    // never started, to be ready.
-    provider->SkipAwaitingExtensionSystem();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     // Install a dummy app

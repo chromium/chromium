@@ -1128,7 +1128,6 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
     web_app_provider_ = web_app::FakeWebAppProvider::Get(profile_.get());
-    web_app_provider_->SkipAwaitingExtensionSystem();
     web_app_provider_->StartWithSubsystems();
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
