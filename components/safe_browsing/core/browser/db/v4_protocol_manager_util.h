@@ -301,9 +301,16 @@ enum V4OperationResult {
   // Identical operation already pending.
   ALREADY_PENDING_ERROR = 6,
 
+  // A network error that can be retried without backoff (e.g.
+  // NETWORK_DISCONNECTED).
+  RETRIABLE_NETWORK_ERROR = 7,
+
+  // An HTTP error code that can be retried without backoff.
+  RETRIABLE_HTTP_ERROR = 8,
+
   // Memory space for histograms is determined by the max.  ALWAYS
   // ADD NEW VALUES BEFORE THIS ONE.
-  OPERATION_RESULT_MAX = 7
+  OPERATION_RESULT_MAX = 9
 };
 
 // A class that provides static methods related to the Pver4 protocol.

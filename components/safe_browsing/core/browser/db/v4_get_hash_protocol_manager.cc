@@ -124,6 +124,12 @@ void RecordV4GetHashCheckResult(V4GetHashCheckResultType result_type) {
                             GET_HASH_CHECK_RESULT_MAX);
 }
 
+bool ErrorIsRetriable(int net_error, int http_error) {
+  return (net_error == net::ERR_INTERNET_DISCONNECTED ||
+          net_error == net::ERR_NETWORK_CHANGED) &&
+         http_error != net::HTTP_OK;
+}
+
 const char kPermission[] = "permission";
 const char kPhaPatternType[] = "pha_pattern_type";
 const char kMalwareThreatType[] = "malware_threat_type";
@@ -806,6 +812,12 @@ void V4GetHashProtocolManager::OnURLLoaderCompleteInternal(
     if (!ParseHashResponse(data, &full_hash_infos, &negative_cache_expire)) {
       full_hash_infos.clear();
       RecordGetHashResult(V4OperationResult::PARSE_ERROR);
+    }
+  } else if (ErrorIsRetriable(net_error, response_code)) {
+    if (net_error != net::OK) {
+      RecordGetHashResult(V4OperationResult::RETRIABLE_NETWORK_ERROR);
+    } else {
+      RecordGetHashResult(V4OperationResult::RETRIABLE_HTTP_ERROR);
     }
   } else {
     HandleGetHashError(clock_->Now());

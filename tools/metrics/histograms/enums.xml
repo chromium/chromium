@@ -80106,6 +80106,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="BACKOFF_ERROR"/>
   <int value="5" label="MIN_WAIT_DURATION_ERROR"/>
   <int value="6" label="ALREADY_PENDING_ERROR"/>
+  <int value="7" label="RETRIABLE_NETWORK_ERROR"/>
+  <int value="8" label="RETRIABLE_HTTP_ERROR"/>
 </enum>
 
 <enum name="SafeBrowsingV4StoreReadResult">
