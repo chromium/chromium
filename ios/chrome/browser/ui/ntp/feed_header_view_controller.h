@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/discover_feed/feed_constants.h"
 
 @protocol FeedControlDelegate;
+@protocol NewTabPageDelegate;
 
 @interface FeedHeaderViewController : UIViewController
 
@@ -22,18 +23,17 @@
 // Delegate for controlling the presented feed.
 @property(nonatomic, weak) id<FeedControlDelegate> feedControlDelegate;
 
+// Delegate to communicate back to the New Tab Page coordinator.
+@property(nonatomic, weak) id<NewTabPageDelegate> ntpDelegate;
+
 // The currently selected sorting for the Following feed.
 @property(nonatomic, assign) FollowingFeedSortType followingFeedSortType;
-
-// Whether Google is the user's default search engine.
-@property(nonatomic, assign) BOOL isGoogleDefaultSearchEngine;
 
 // Initializes the header with the currently selected feed and the Following
 // feed's sort type.
 - (instancetype)initWithFollowingFeedSortType:
                     (FollowingFeedSortType)followingFeedSortType
                    followingSegmentDotVisible:(BOOL)followingSegmentDotVisible
-                  isGoogleDefaultSearchEngine:(BOOL)isGoogleDefaultSearchEngine
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -56,6 +56,10 @@
 // dot if there is unseen content and if the user is not currently on the
 // Following feed.
 - (void)updateFollowingSegmentDotForUnseenContent:(BOOL)hasUnseenContent;
+
+// Updates the header view and re-applies constraints in response to the default
+// search engine changing.
+- (void)updateForDefaultSearchEngineChanged;
 
 @end
 

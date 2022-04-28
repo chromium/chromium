@@ -721,6 +721,7 @@ namespace {
 }
 
 - (BOOL)isGoogleDefaultSearchEngine {
+  DCHECK(self.templateURLService);
   const TemplateURL* defaultURL =
       self.templateURLService->GetDefaultSearchProvider();
   BOOL isGoogleDefaultSearchProvider =
@@ -1069,8 +1070,7 @@ namespace {
 - (void)defaultSearchEngineDidChange {
   [self updateFeedHeaderLabelText:self.feedHeaderViewController];
   if (IsWebChannelsEnabled()) {
-    self.feedHeaderViewController.isGoogleDefaultSearchEngine =
-        [self isGoogleDefaultSearchEngine];
+    [self.feedHeaderViewController updateForDefaultSearchEngineChanged];
     [self.feedHeaderViewController.view setNeedsLayout];
     [self.feedHeaderViewController.view layoutIfNeeded];
   }
@@ -1171,9 +1171,9 @@ namespace {
                                           self.prefService->GetInteger(
                                               prefs::kNTPFollowingFeedSortType)
            followingSegmentDotVisible:self.discoverFeedService
-                                          ->GetFollowingFeedHasUnseenContent()
-          isGoogleDefaultSearchEngine:[self isGoogleDefaultSearchEngine]];
+                                          ->GetFollowingFeedHasUnseenContent()];
     _feedHeaderViewController.feedControlDelegate = self;
+    _feedHeaderViewController.ntpDelegate = self;
     [_feedHeaderViewController.menuButton
                addTarget:self
                   action:@selector(openFeedMenu)

@@ -8,6 +8,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -103,15 +105,13 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
 
 @implementation FeedHeaderViewController
 
-- (instancetype)
-    initWithFollowingFeedSortType:(FollowingFeedSortType)followingFeedSortType
-       followingSegmentDotVisible:(BOOL)followingSegmentDotVisible
-      isGoogleDefaultSearchEngine:(BOOL)isGoogleDefaultSearchEngine {
+- (instancetype)initWithFollowingFeedSortType:
+                    (FollowingFeedSortType)followingFeedSortType
+                   followingSegmentDotVisible:(BOOL)followingSegmentDotVisible {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _followingFeedSortType = followingFeedSortType;
     _followingSegmentDotVisible = followingSegmentDotVisible;
-    _isGoogleDefaultSearchEngine = isGoogleDefaultSearchEngine;
 
     // The menu button is created early so that it can be assigned a tap action
     // before the view loads.
@@ -156,7 +156,7 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
       self.blurBackgroundView.hidden = YES;
     }
 
-    if (!self.isGoogleDefaultSearchEngine) {
+    if (![self.ntpDelegate isGoogleDefaultSearchEngine]) {
       [self addCustomSearchEngineView];
     }
   } else {
@@ -205,9 +205,10 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
 }
 
 - (CGFloat)customSearchEngineViewHeight {
-  return self.isGoogleDefaultSearchEngine || !IsWebChannelsEnabled()
-             ? 0
-             : kCustomSearchEngineLabelHeight;
+  return
+      [self.ntpDelegate isGoogleDefaultSearchEngine] || !IsWebChannelsEnabled()
+          ? 0
+          : kCustomSearchEngineLabelHeight;
 }
 
 - (void)updateFollowingSegmentDotForUnseenContent:(BOOL)hasUnseenContent {
@@ -225,6 +226,16 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
                    animations:^{
                      self.followingSegmentDot.alpha = hasUnseenContent ? 1 : 0;
                    }];
+}
+
+- (void)updateForDefaultSearchEngineChanged {
+  DCHECK(IsWebChannelsEnabled());
+  if ([self.ntpDelegate isGoogleDefaultSearchEngine]) {
+    [self removeCustomSearchEngineView];
+  } else {
+    [self addCustomSearchEngineView];
+  }
+  [self applyHeaderConstraints];
 }
 
 #pragma mark - Setters
@@ -245,19 +256,6 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
   if (self.sortButton) {
     self.sortButton.menu = [self createSortMenu];
   }
-}
-
-// Sets whether Google is the default search engine and adds a view to inform
-// the users if needed.
-- (void)setIsGoogleDefaultSearchEngine:(BOOL)isGoogleDefaultSearchEngine {
-  DCHECK(IsWebChannelsEnabled());
-  _isGoogleDefaultSearchEngine = isGoogleDefaultSearchEngine;
-  if (isGoogleDefaultSearchEngine) {
-    [self removeCustomSearchEngineView];
-  } else {
-    [self addCustomSearchEngineView];
-  }
-  [self applyHeaderConstraints];
 }
 
 #pragma mark - Private
@@ -548,7 +546,7 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
             constraintEqualToAnchor:self.container.bottomAnchor],
       ]];
     }
-    if (!self.isGoogleDefaultSearchEngine) {
+    if (![self.ntpDelegate isGoogleDefaultSearchEngine]) {
       [self.feedHeaderConstraints addObjectsFromArray:@[
         // Anchors custom search engine view.
         [self.customSearchEngineView.widthAnchor
