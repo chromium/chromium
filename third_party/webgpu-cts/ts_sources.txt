@@ -287,6 +287,7 @@ src/webgpu/shader/execution/expression/call/builtin/countLeadingZeros.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/countOneBits.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/countTrailingZeros.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/cross.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/degrees.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/distance.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/exp.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/exp2.spec.ts
@@ -324,6 +325,7 @@ src/webgpu/shader/validation/shader_validation_test.ts
 src/webgpu/shader/validation/parse/blankspace.spec.ts
 src/webgpu/shader/validation/parse/comments.spec.ts
 src/webgpu/shader/validation/parse/identifiers.spec.ts
+src/webgpu/shader/validation/parse/literal.spec.ts
 src/webgpu/shader/validation/parse/source.spec.ts
 src/webgpu/shader/validation/parse/var_and_let.spec.ts
 src/webgpu/shader/validation/shader_io/util.ts
