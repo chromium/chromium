@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
-import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
-import {CustomElement} from 'chrome://resources/js/custom_element.js';
+import {assert} from '../../js/assert_ts.js';
+import {FocusOutlineManager} from '../../js/cr/ui/focus_outline_manager.m.js';
+import {CustomElement} from '../../js/custom_element.js';
+import {getTrustedHTML} from '../../js/static_types.js';
 
 export class CrTabBoxElement extends CustomElement {
   static override get template() {
-    return `{__html_template__}`;
+    return getTrustedHTML`{__html_template__}`;
   }
 
   private selectedIndex_: number = -1;

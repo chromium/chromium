@@ -4,6 +4,12 @@
     "allowJs": true,
     "noPropertyAccessFromIndexSignature": false,
     "noUnusedLocals": false,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "typeRoots": [
+      "../../../../third_party/node/node_modules/@types"
+    ],
+    "types": [
+      "trusted-types"
+    ]
   }
 }

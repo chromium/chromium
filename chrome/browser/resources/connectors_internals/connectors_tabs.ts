@@ -6,6 +6,7 @@ import './strings.m.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 
 import {ZeroTrustConnectorElement} from './zero_trust_connector.js';
 
@@ -36,7 +37,7 @@ export class ConnectorsTabsElement extends CustomElement {
   }
 
   static override get template() {
-    return `{__html_template__}`;
+    return getTrustedHTML`{__html_template__}`;
   }
 
   private get tabHeaders(): NodeList {

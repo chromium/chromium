@@ -9,6 +9,7 @@
 import './download_item.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 
 import {DownloadItemElement} from './download_item.js';
@@ -17,7 +18,7 @@ import {DownloadShelfApiProxy, DownloadShelfApiProxyImpl} from './download_shelf
 
 export class DownloadListElement extends CustomElement {
   static override get template() {
-    return `{__html_template__}`;
+    return getTrustedHTML`{__html_template__}`;
   }
 
   private elements_: Array<DownloadItemElement> = [];

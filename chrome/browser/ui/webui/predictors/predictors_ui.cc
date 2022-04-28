@@ -13,6 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 
 namespace {
 
@@ -24,10 +25,13 @@ content::WebUIDataSource* CreatePredictorsUIHTMLSource() {
   source->AddResourcePath("predictors.js", IDR_PREDICTORS_JS);
   source->AddResourcePath("resource_prefetch_predictor.js",
                           IDR_PREDICTORS_RESOURCE_PREFETCH_PREDICTOR_JS);
-  // TODO (https://crbug.com/1317384): This is needed because custom_element.ts,
-  // which is imported by cr_tab_box.ts, directly assigns innerHTML.
-  source->DisableTrustedTypesCSP();
   source->SetDefaultResource(IDR_PREDICTORS_HTML);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::RequireTrustedTypesFor,
+      "require-trusted-types-for 'script';");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types static-types;");
   return source;
 }
 

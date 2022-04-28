@@ -7,6 +7,7 @@ import './strings.m.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 
 import {ConnectorsTabsElement} from './connectors_tabs.js';
 
@@ -16,7 +17,7 @@ class ConnectorsInternalsAppElement extends CustomElement {
   }
 
   static override get template() {
-    return `{__html_template__}`;
+    return getTrustedHTML`{__html_template__}`;
   }
 
   constructor() {

@@ -20,6 +20,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 
 namespace {
 
@@ -53,6 +54,9 @@ DownloadShelfUI::DownloadShelfUI(content::WebUI* web_ui)
       source,
       base::make_span(kDownloadShelfResources, kDownloadShelfResourcesSize),
       IDR_DOWNLOAD_SHELF_DOWNLOAD_SHELF_HTML);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types static-types;");
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);
 }

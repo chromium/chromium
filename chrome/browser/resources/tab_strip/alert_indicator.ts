@@ -6,6 +6,7 @@ import './strings.m.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 
 import {TabAlertState} from './tabs.mojom-webui.js';
 
@@ -69,7 +70,7 @@ function getAlertStateAttribute(alertState: TabAlertState): string {
 
 export class AlertIndicatorElement extends CustomElement {
   static override get template() {
-    return `{__html_template__}`;
+    return getTrustedHTML`{__html_template__}`;
   }
 
   private alertState_: TabAlertState;

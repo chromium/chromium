@@ -11,6 +11,7 @@ import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://res
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
 
 import {DragManager, DragManagerDelegate} from './drag_manager.js';
@@ -148,7 +149,7 @@ export class TabListElement extends CustomElement implements
   private scrollListener_: (e: Event) => void;
 
   static override get template() {
-    return `{__html_template__}`;
+    return getTrustedHTML`{__html_template__}`;
   }
 
   constructor() {

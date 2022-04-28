@@ -4,13 +4,14 @@
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 
 import {TabGroupVisualData} from './tab_strip.mojom-webui.js';
 import {TabsApiProxy, TabsApiProxyImpl} from './tabs_api_proxy.js';
 
 export class TabGroupElement extends CustomElement {
   static override get template() {
-    return `{__html_template__}`;
+    return getTrustedHTML`{__html_template__}`;
   }
 
   private tabsApi_: TabsApiProxy;

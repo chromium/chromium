@@ -193,6 +193,7 @@ checked_in_dts_files = [
   "js/list_property_update_behavior.m.d.ts",
   "js/parse_html_subset.m.d.ts",
   "js/promise_resolver.m.d.ts",
+  "js/static_types.d.ts",
   "js/web_ui_listener_behavior.m.d.ts",
 ]
 
@@ -296,7 +297,6 @@ if (include_polymer) {
       "js/cr/ui/splitter.js",
       "js/cr/ui/store_client.js",
       "js/cr/ui/tree.js",
-      "js/static_types.js",
     ]
   }
 }

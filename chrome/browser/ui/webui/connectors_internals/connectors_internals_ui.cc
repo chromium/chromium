@@ -17,6 +17,7 @@
 #include "chrome/grit/connectors_internals_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 
 namespace enterprise_connectors {
 
@@ -36,6 +37,9 @@ ConnectorsInternalsUI::ConnectorsInternalsUI(content::WebUI* web_ui)
       base::make_span(kConnectorsInternalsResources,
                       kConnectorsInternalsResourcesSize),
       IDR_CONNECTORS_INTERNALS_INDEX_HTML);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types static-types;");
 
   content::WebUIDataSource::Add(profile, source);
 }

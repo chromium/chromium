@@ -12,11 +12,13 @@ import './strings.m.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
+
 import {DownloadShelfApiProxy, DownloadShelfApiProxyImpl} from './download_shelf_api_proxy.js';
 
 export class DownloadShelfAppElement extends CustomElement {
   static override get template() {
-    return `{__html_template__}`;
+    return getTrustedHTML`{__html_template__}`;
   }
 
   private apiProxy_: DownloadShelfApiProxy;

@@ -49,6 +49,10 @@ def main(argv):
   tsconfig['files'] = [os.path.join(root_dir, f) for f in args.js_files]
   tsconfig['compilerOptions']['rootDir'] = root_dir
   tsconfig['compilerOptions']['outDir'] = out_dir
+  if tsconfig['compilerOptions']['typeRoots'] is not None:
+    tsconfig['compilerOptions']['typeRoots'] = \
+        [os.path.relpath(os.path.join(_HERE_DIR, f), args.gen_dir) for f \
+             in tsconfig['compilerOptions']['typeRoots']]
 
   # Handle custom path mappings, for example chrome://resources/ URLs.
   if args.path_mappings is not None:
