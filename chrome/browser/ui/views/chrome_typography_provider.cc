@@ -87,7 +87,7 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetails(
     // Secondary font is for double-digit counts. Because we have control over
     // system fonts on ChromeOS, we can just choose a condensed font. For other
     // platforms we adjust size.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     details.typeface = "Roboto Condensed";
 #else
     details.size_delta -= 2;

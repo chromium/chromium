@@ -7,7 +7,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 #endif
 
@@ -18,7 +18,7 @@
 namespace chrome {
 
 std::unique_ptr<ImmersiveModeController> CreateImmersiveModeController() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<ImmersiveModeControllerChromeos>();
 #elif BUILDFLAG(IS_MAC)
   return CreateImmersiveModeControllerMac();

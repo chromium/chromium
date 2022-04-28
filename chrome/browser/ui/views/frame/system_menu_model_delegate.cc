@@ -16,7 +16,7 @@
 #include "components/sessions/core/tab_restore_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ui/frame/desks/move_to_desks_menu_delegate.h"
 #include "chromeos/ui/frame/desks/move_to_desks_menu_model.h"
 #endif
@@ -50,7 +50,7 @@ bool SystemMenuModelDelegate::IsCommandIdChecked(int command_id) const {
 }
 
 bool SystemMenuModelDelegate::IsCommandIdEnabled(int command_id) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (command_id == chromeos::MoveToDesksMenuModel::kMenuCommandId) {
     return chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(
         browser_->window()->GetNativeWindow());
@@ -71,7 +71,7 @@ bool SystemMenuModelDelegate::IsCommandIdVisible(int command_id) const {
       return is_maximized;
   }
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (command_id == chromeos::MoveToDesksMenuModel::kMenuCommandId) {
     return chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(
         browser_->window()->GetNativeWindow());

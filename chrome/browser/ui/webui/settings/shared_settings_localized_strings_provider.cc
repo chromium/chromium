@@ -84,7 +84,7 @@ bool ShouldShowLacrosSideBySideWarningInLacros() {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 std::string BuildOSSettingsUrl(const std::string& sub_page) {
   std::string os_settings_url = chrome::kChromeUIOSSettingsURL;
   os_settings_url.append(sub_page);
@@ -307,7 +307,7 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
     {"syncSettingsLacrosSideBySideWarning",
      IDS_SYNC_SETTINGS_SIDE_BY_SIDE_WARNING_LACROS},
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     {"browserSyncFeatureLabel", IDS_BROWSER_SETTINGS_SYNC_FEATURE_LABEL},
 #endif
   };
@@ -376,7 +376,7 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
       BuildOSSettingsUrl(chromeos::settings::mojom::kSyncSetupSubpagePath));
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   html_source->AddString(
       "osSyncSettingsUrl",
       BuildOSSettingsUrl(chromeos::settings::mojom::kSyncSubpagePath));

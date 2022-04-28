@@ -1993,7 +1993,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS)
 web_app::AppId InstallPWA(Profile* profile, const GURL& start_url) {
   auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = start_url;
@@ -2122,7 +2122,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
     }
   }
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // An observer that returns back to test code after a new browser is added to
 // the BrowserList.
@@ -3998,7 +3998,7 @@ IN_PROC_BROWSER_TEST_F(SearchQueryStartupBrowserCreatorPickerTest,
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 class StartupBrowserCreatorPickerInfobarTest
     : public StartupBrowserCreatorPickerTestBase,
@@ -4096,7 +4096,7 @@ INSTANTIATE_TEST_SUITE_P(
       return name;
     });
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 class StartupBrowserCreatorLacrosNoWindowTest

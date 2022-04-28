@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SHARED_SETTINGS_LOCALIZED_STRINGS_PROVIDER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SHARED_SETTINGS_LOCALIZED_STRINGS_PROVIDER_H_
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
 namespace content {
@@ -28,7 +29,7 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source);
 // Adds strings used by the <settings-sync-account-control> element.
 void AddSyncAccountControlStrings(content::WebUIDataSource* html_source);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Adds strings used by the <settings-password-prompt-dialog> element.
 void AddPasswordPromptDialogStrings(content::WebUIDataSource* html_source);
 #endif

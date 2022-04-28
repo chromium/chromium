@@ -82,9 +82,7 @@ class BrowserNonClientFrameViewTabbedTest
 };
 
 // TODO(crbug.com/1011339): Flaky on Linux TSAN.
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-     BUILDFLAG(IS_CHROMEOS_LACROS)) &&                    \
-    defined(THREAD_SANITIZER)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(THREAD_SANITIZER)
 #define MAYBE_HitTestTabstrip DISABLED_HitTestTabstrip
 #else
 #define MAYBE_HitTestTabstrip HitTestTabstrip
@@ -122,7 +120,7 @@ TEST_F(BrowserNonClientFrameViewTabbedTest, MAYBE_HitTestTabstrip) {
 // ChromeOS, so there is no non-client area in the tab strip to test for.
 // TODO (tbergquist): Investigate whether we can key off this condition in an
 // OS-agnostic way.
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Hits non-client portions of the tab strip (the top left corner of the
   // first tab).
   EXPECT_TRUE(frame_view_->HitTestRect(

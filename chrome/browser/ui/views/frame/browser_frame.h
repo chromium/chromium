@@ -203,7 +203,7 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
   // contents for smoother dragging.
   TabDragKind tab_drag_kind_ = TabDragKind::kNone;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Store the number of virtual desks that currently exist. Used to determine
   // whether the system menu should be reset. If the value is -1, then either
   // the ash::DesksHelper does not exist or haven't retrieved the system menu

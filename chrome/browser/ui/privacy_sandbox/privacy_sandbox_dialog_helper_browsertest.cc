@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam, UnsuitableUrl) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(ash::kChromeUIHelpAppURL)));
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(chrome::kChromeUIOSSettingsURL)));
 #endif
