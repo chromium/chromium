@@ -55,8 +55,6 @@ using ::testing::SaveArg;
 namespace {
 
 const char kAppLocale[] = "en-US";
-const BrowserAutofillManager::AutofillDownloadManagerState kDownloadState =
-    BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER;
 
 class FakeAutofillAgent : public mojom::AutofillAgent {
  public:
@@ -286,8 +284,11 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
 class MockBrowserAutofillManager : public BrowserAutofillManager {
  public:
   MockBrowserAutofillManager(AutofillDriver* driver, AutofillClient* client)
-      : BrowserAutofillManager(driver, client, kAppLocale, kDownloadState) {}
-  ~MockBrowserAutofillManager() override {}
+      : BrowserAutofillManager(driver,
+                               client,
+                               kAppLocale,
+                               EnableDownloadManager(false)) {}
+  ~MockBrowserAutofillManager() override = default;
 
   MOCK_METHOD(void, Reset, (), (override));
   MOCK_METHOD(bool, ShouldParseForms, (const std::vector<FormData>&), ());

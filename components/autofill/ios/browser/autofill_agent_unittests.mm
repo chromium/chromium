@@ -129,7 +129,7 @@ TEST_F(AutofillAgentTests,
   std::string locale("en");
   autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
       &fake_web_state_, &client_, nil, locale,
-      autofill::BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
+      autofill::AutofillManager::EnableDownloadManager(false));
 
   autofill::FormData form;
   form.url = GURL("https://myform.com");
@@ -369,7 +369,7 @@ TEST_F(AutofillAgentTests, FrameInitializationOrderFrames) {
   std::string locale("en");
   autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
       &fake_web_state_, &client_, nil, locale,
-      autofill::BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
+      autofill::AutofillManager::EnableDownloadManager(false));
 
   // Remove the current main frame.
   RemoveWebFrame(fake_main_frame_->GetFrameId());

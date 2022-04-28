@@ -328,11 +328,8 @@ void AwContents::InitAutofillIfNecessary(bool autocomplete_enabled) {
   if (!autofill_provider && !autocomplete_enabled)
     return;
 
-  autofill::AutofillManager::AutofillDownloadManagerState
-      enable_download_manager =
-          autofill::AutofillProvider::is_download_manager_disabled_for_testing()
-              ? autofill::AutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER
-              : autofill::AutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER;
+  autofill::AutofillManager::EnableDownloadManager enable_download_manager(
+      !autofill::AutofillProvider::is_download_manager_disabled_for_testing());
 
   AwAutofillClient::CreateForWebContents(web_contents);
 

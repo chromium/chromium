@@ -102,28 +102,15 @@ bool AutofillManager::IsRawMetadataUploadingEnabled(
          channel == version_info::Channel::DEV;
 }
 
-AutofillManager::AutofillManager(
-    AutofillDriver* driver,
-    AutofillClient* client,
-    AutofillDownloadManagerState enable_download_manager)
-    : AutofillManager(driver,
-                      client,
-                      enable_download_manager,
-                      client->GetChannel()) {
-  DCHECK(driver);
-  DCHECK(client);
-}
-
-AutofillManager::AutofillManager(
-    AutofillDriver* driver,
-    AutofillClient* client,
-    AutofillDownloadManagerState enable_download_manager,
-    version_info::Channel channel)
+AutofillManager::AutofillManager(AutofillDriver* driver,
+                                 AutofillClient* client,
+                                 version_info::Channel channel,
+                                 EnableDownloadManager enable_download_manager)
     : driver_(driver),
       client_(client),
       log_manager_(client ? client->GetLogManager() : nullptr),
       form_interactions_ukm_logger_(CreateFormInteractionsUkmLogger()) {
-  if (enable_download_manager == ENABLE_AUTOFILL_DOWNLOAD_MANAGER) {
+  if (enable_download_manager) {
     download_manager_ = std::make_unique<AutofillDownloadManager>(
         driver, this, GetAPIKeyForUrl(channel),
         AutofillDownloadManager::IsRawMetadataUploadingEnabled(

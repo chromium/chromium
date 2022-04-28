@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_driver.h"
@@ -47,17 +48,15 @@ class AutofillManager
     : public AutofillDownloadManager::Observer,
       public translate::TranslateDriver::LanguageDetectionObserver {
  public:
-  enum AutofillDownloadManagerState {
-    ENABLE_AUTOFILL_DOWNLOAD_MANAGER,
-    DISABLE_AUTOFILL_DOWNLOAD_MANAGER,
-  };
-
   // An observer class used by browsertests that gets notified whenever
   // particular actions occur.
   class ObserverForTest {
    public:
     virtual void OnFormParsed() = 0;
   };
+
+  using EnableDownloadManager =
+      base::StrongAlias<struct EnableDownloadManagerTag, bool>;
 
   // Raw metadata uploading enabled iff this Chrome instance is on Canary or Dev
   // channel.
@@ -264,11 +263,8 @@ class AutofillManager
  protected:
   AutofillManager(AutofillDriver* driver,
                   AutofillClient* client,
-                  AutofillDownloadManagerState enable_download_manager);
-  AutofillManager(AutofillDriver* driver,
-                  AutofillClient* client,
-                  AutofillDownloadManagerState enable_download_manager,
-                  version_info::Channel channel);
+                  version_info::Channel channel,
+                  EnableDownloadManager enable_download_manager);
 
   LogManager* log_manager() { return log_manager_; }
 

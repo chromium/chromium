@@ -50,7 +50,10 @@ class MockAutofillDriver : public TestAutofillDriver {
 class MockAutofillManager : public AutofillManager {
  public:
   MockAutofillManager(AutofillDriver* driver, AutofillClient* client)
-      : AutofillManager(driver, client, DISABLE_AUTOFILL_DOWNLOAD_MANAGER) {}
+      : AutofillManager(driver,
+                        client,
+                        client->GetChannel(),
+                        EnableDownloadManager(false)) {}
   MOCK_METHOD(bool, ShouldClearPreviewedForm, (), (override));
   MOCK_METHOD(AutofillOfferManager*, GetOfferManager, (), (override));
   MOCK_METHOD(CreditCardAccessManager*,

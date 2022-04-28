@@ -44,7 +44,7 @@ void BrowserDriverInitHook(AutofillClient* client,
                            ContentAutofillDriver* driver) {
   driver->set_autofill_manager(std::make_unique<BrowserAutofillManager>(
       driver, client, app_locale,
-      AutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER));
+      AutofillManager::EnableDownloadManager(true)));
   if (client && ShouldEnableHeavyFormDataScraping(client->GetChannel()))
     driver->GetAutofillAgent()->EnableHeavyFormDataScraping();
 }

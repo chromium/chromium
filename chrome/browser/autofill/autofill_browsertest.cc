@@ -792,11 +792,10 @@ class PrerenderAutofillTest : public InProcessBrowserTest {
     MockPrerenderBrowserAutofillManager(AutofillDriver* driver,
                                         AutofillClient* client,
                                         content::RenderFrameHost* rfh)
-        : BrowserAutofillManager(
-              driver,
-              client,
-              "en-US",
-              BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER) {
+        : BrowserAutofillManager(driver,
+                                 client,
+                                 "en-US",
+                                 EnableDownloadManager(false)) {
       // We need to set these expectations immediately to catch any premature
       // calls while prerendering.
       if (rfh->GetLifecycleState() ==
@@ -904,11 +903,10 @@ class FormSubmissionDetectionTest
     MockFormSubmissionAutofillManager(AutofillDriver* driver,
                                       AutofillClient* client,
                                       content::RenderFrameHost* rhf)
-        : BrowserAutofillManager(
-              driver,
-              client,
-              "en-US",
-              BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER) {}
+        : BrowserAutofillManager(driver,
+                                 client,
+                                 "en-US",
+                                 EnableDownloadManager(false)) {}
     MOCK_METHOD(void,
                 OnFormSubmittedImpl,
                 (const FormData&, bool, mojom::SubmissionSource),

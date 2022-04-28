@@ -105,7 +105,7 @@ class BrowserAutofillManager : public AutofillManager,
   BrowserAutofillManager(AutofillDriver* driver,
                          AutofillClient* client,
                          const std::string& app_locale,
-                         AutofillDownloadManagerState enable_download_manager);
+                         EnableDownloadManager enable_download_manager);
 
   BrowserAutofillManager(const BrowserAutofillManager&) = delete;
   BrowserAutofillManager& operator=(const BrowserAutofillManager&) = delete;
@@ -341,8 +341,8 @@ class BrowserAutofillManager : public AutofillManager,
                          AutofillClient* client,
                          PersonalDataManager* personal_data,
                          const std::string app_locale = "en-US",
-                         AutofillDownloadManagerState enable_download_manager =
-                             DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
+                         EnableDownloadManager enable_download_manager =
+                             EnableDownloadManager(false));
 
   // Uploads the form data to the Autofill server. |observed_submission|
   // indicates that upload is the result of a submission event.

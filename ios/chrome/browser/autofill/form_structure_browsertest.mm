@@ -231,7 +231,7 @@ void FormStructureBrowserTest::SetUp() {
   std::string locale("en");
   autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
       web_state(), autofill_client_.get(), /*autofill_agent=*/nil, locale,
-      autofill::BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
+      autofill::AutofillManager::EnableDownloadManager(false));
 }
 
 void FormStructureBrowserTest::TearDown() {

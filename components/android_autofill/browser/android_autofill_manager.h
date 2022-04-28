@@ -25,7 +25,7 @@ class ContentAutofillDriver;
 // other implementations.
 void AndroidDriverInitHook(
     AutofillClient* client,
-    AutofillManager::AutofillDownloadManagerState enable_download_manager,
+    AutofillManager::EnableDownloadManager enable_download_manager,
     ContentAutofillDriver* driver);
 
 // This class forwards AutofillManager calls to AutofillProvider.
@@ -78,13 +78,13 @@ class AndroidAutofillManager : public AutofillManager {
  protected:
   friend void AndroidDriverInitHook(
       AutofillClient* client,
-      AutofillManager::AutofillDownloadManagerState enable_download_manager,
+      AutofillManager::EnableDownloadManager enable_download_manager,
       ContentAutofillDriver* driver);
 
   AndroidAutofillManager(
       AutofillDriver* driver,
       AutofillClient* client,
-      AutofillManager::AutofillDownloadManagerState enable_download_manager);
+      AutofillManager::EnableDownloadManager enable_download_manager);
 
   void OnFormSubmittedImpl(const FormData& form,
                            bool known_success,

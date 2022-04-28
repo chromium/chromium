@@ -60,7 +60,7 @@ AutofillTabHelper::AutofillTabHelper(
   autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
       web_state, autofill_client_.get(), autofill_agent_,
       GetApplicationContext()->GetApplicationLocale(),
-      autofill::BrowserAutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER);
+      autofill::AutofillManager::EnableDownloadManager(true));
 }
 
 void AutofillTabHelper::WebStateDestroyed(web::WebState* web_state) {

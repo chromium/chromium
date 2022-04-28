@@ -135,7 +135,7 @@ using UserDecision =
 
     autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
         _webState, _autofillClient.get(), self, applicationLocale,
-        autofill::BrowserAutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER);
+        autofill::AutofillManager::EnableDownloadManager(true));
 
     _passwordManagerClient = std::move(passwordManagerClient);
     _passwordManagerClient->set_bridge(self);

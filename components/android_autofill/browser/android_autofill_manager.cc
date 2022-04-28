@@ -16,7 +16,7 @@ using base::TimeTicks;
 
 void AndroidDriverInitHook(
     AutofillClient* client,
-    AutofillManager::AutofillDownloadManagerState enable_download_manager,
+    AutofillManager::EnableDownloadManager enable_download_manager,
     ContentAutofillDriver* driver) {
   driver->set_autofill_manager(base::WrapUnique(
       new AndroidAutofillManager(driver, client, enable_download_manager)));
@@ -29,11 +29,11 @@ void AndroidDriverInitHook(
 AndroidAutofillManager::AndroidAutofillManager(
     AutofillDriver* driver,
     AutofillClient* client,
-    AutofillManager::AutofillDownloadManagerState enable_download_manager)
+    EnableDownloadManager enable_download_manager)
     : AutofillManager(driver,
                       client,
-                      enable_download_manager,
-                      version_info::Channel::UNKNOWN) {}
+                      version_info::Channel::UNKNOWN,
+                      enable_download_manager) {}
 
 AndroidAutofillManager::~AndroidAutofillManager() = default;
 
