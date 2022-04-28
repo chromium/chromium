@@ -42,9 +42,16 @@
 #include "base/win/windows_types.h"
 #endif
 
+#if defined(OFFICIAL_BUILD)
+// The annotation changed compiler output and increased binary size so disable
+// for official builds.
+// TODO(crbug.com/1320670): Remove when issue is resolved.
+#define RAW_PTR_EXCLUSION
+#else
 // Marks a field as excluded from the raw_ptr usage enforcement clang plugin.
 // Example: RAW_PTR_EXCLUSION Foo* foo_;
 #define RAW_PTR_EXCLUSION __attribute__((annotate("raw_ptr_exclusion")))
+#endif
 
 namespace cc {
 class Scheduler;
