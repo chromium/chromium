@@ -47,12 +47,12 @@ export class TaskModuleElement extends I18nMixin
 
       title_: {
         type: String,
-        computed: 'computeTitle_(task)',
+        computed: 'computeTitle_()',
       },
 
       dismissName_: {
         type: String,
-        computed: 'computeDismissName_(task)',
+        computed: 'computeDismissName_()',
       },
 
       disableName_: {
@@ -70,15 +70,21 @@ export class TaskModuleElement extends I18nMixin
   private intersectionObserver_: IntersectionObserver|null = null;
 
   private computeTitle_(): string {
-    return loadTimeData.getString('modulesRecipeTasksSentence');
+    return loadTimeData.getBoolean('modulesRecipeHistoricalExperimentEnabled') ?
+        loadTimeData.getString('modulesRecipeViewedTasksSentence') :
+        loadTimeData.getString('modulesRecipeTasksSentence');
   }
 
   private computeDismissName_(): string {
-    return loadTimeData.getString('modulesRecipeTasksLowerThese');
+    return loadTimeData.getBoolean('modulesRecipeHistoricalExperimentEnabled') ?
+        loadTimeData.getString('modulesRecipeViewedTasksLowerThese') :
+        loadTimeData.getString('modulesRecipeTasksLowerThese');
   }
 
   private computeDisableName_(): string {
-    return loadTimeData.getString('modulesRecipeTasksLower');
+    return loadTimeData.getBoolean('modulesRecipeHistoricalExperimentEnabled') ?
+        loadTimeData.getString('modulesRecipeViewedTasksLower') :
+        loadTimeData.getString('modulesRecipeTasksLower');
   }
 
   private onTaskItemClick_(e: DomRepeatEvent<TaskItem>) {
@@ -99,12 +105,12 @@ export class TaskModuleElement extends I18nMixin
 
   private onDismissButtonClick_() {
     TaskModuleHandlerProxy.getHandler().dismissTask(this.task.name);
-    const taskName = loadTimeData.getString('modulesRecipeTasksSentence');
     this.dispatchEvent(new CustomEvent('dismiss-module', {
       bubbles: true,
       composed: true,
       detail: {
-        message: loadTimeData.getStringF('dismissModuleToastMessage', taskName),
+        message:
+            loadTimeData.getStringF('dismissModuleToastMessage', this.title_),
         restoreCallback: this.onRestore_.bind(this),
       },
     }));
@@ -156,5 +162,8 @@ async function createModule(): Promise<HTMLElement|null> {
 
 export const recipeTasksDescriptor: ModuleDescriptor = new ModuleDescriptor(
     /*id=*/ 'recipe_tasks',
-    /*name=*/ loadTimeData.getString('modulesRecipeTasksSentence'),
+    /*name=*/
+    loadTimeData.getBoolean('modulesRecipeHistoricalExperimentEnabled') ?
+        loadTimeData.getString('modulesRecipeViewedTasksSentence') :
+        loadTimeData.getString('modulesRecipeTasksSentence'),
     createModule);

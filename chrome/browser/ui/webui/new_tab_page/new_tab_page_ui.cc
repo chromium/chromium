@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -291,6 +292,12 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesRecipeTasksLower", IDS_NTP_MODULES_RECIPE_TASKS_LOWER},
       {"modulesRecipeTasksLowerThese",
        IDS_NTP_MODULES_RECIPE_TASKS_LOWER_THESE},
+      {"modulesRecipeViewedTasksSentence",
+       IDS_NTP_MODULES_RECIPE_VIEWED_TASKS_SENTENCE},
+      {"modulesRecipeViewedTasksLower",
+       IDS_NTP_MODULES_RECIPE_VIEWED_TASKS_LOWER},
+      {"modulesRecipeViewedTasksLowerThese",
+       IDS_NTP_MODULES_RECIPE_VIEWED_TASKS_LOWER_THESE},
       {"modulesTasksInfo", IDS_NTP_MODULES_TASKS_INFO},
       {"modulesCartInfo", IDS_NTP_MODULES_CART_INFO},
       {"modulesCartSentence", IDS_NTP_MODULES_CART_SENTENCE},
@@ -435,6 +442,15 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean(
       "modulesRedesignedLayoutEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesignedLayout));
+
+  std::vector<std::string> splitExperimentGroup = base::SplitString(
+      base::GetFieldTrialParamValueByFeature(
+          ntp_features::kNtpRecipeTasksModule,
+          ntp_features::kNtpRecipeTasksModuleExperimentGroupParam),
+      "-", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  source->AddBoolean(
+      "modulesRecipeHistoricalExperimentEnabled",
+      !splitExperimentGroup.empty() && splitExperimentGroup[0] == "historical");
 
   RealboxHandler::SetupWebUIDataSource(source);
 

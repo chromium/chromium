@@ -6527,6 +6527,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_RECIPE_TASKS_LOWER_THESE" desc="Name of the recipe tasks module in lowercase shown in various UIs.">
         these recipe ideas
       </message>
+      <message name="IDS_NTP_MODULES_RECIPE_VIEWED_TASKS_SENTENCE" desc="Name of the historical version of the recipe tasks module in sentence case shown in various UIs.">
+        Recently viewed recipes
+      </message>
+      <message name="IDS_NTP_MODULES_RECIPE_VIEWED_TASKS_LOWER" desc="Name of the historical version of the recipe tasks module in lowercase shown in various UIs.">
+        recently viewed recipes
+      </message>
+      <message name="IDS_NTP_MODULES_RECIPE_VIEWED_TASKS_LOWER_THESE" desc="Name of the historical veresion of the recipe tasks module in lowercase shown in various UIs.">
+        these recently viewed recipes
+      </message>
       <message name="IDS_NTP_MODULES_CART_SENTENCE" desc="Name of the chrome cart module in sentence case shown in various UIs.">
         Your carts
       </message>
