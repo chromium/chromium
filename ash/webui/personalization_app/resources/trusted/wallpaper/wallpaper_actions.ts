@@ -19,7 +19,6 @@ export enum WallpaperActionName {
   APPEND_GOOGLE_PHOTOS_PHOTOS = 'append_google_photos_photos',
   BEGIN_LOAD_GOOGLE_PHOTOS_ALBUM = 'begin_load_google_photos_album',
   BEGIN_LOAD_GOOGLE_PHOTOS_ALBUMS = 'begin_load_google_photos_albums',
-  BEGIN_LOAD_GOOGLE_PHOTOS_COUNT = 'begin_load_google_photos_count',
   BEGIN_LOAD_GOOGLE_PHOTOS_ENABLED = 'begin_load_google_photos_enabled',
   BEGIN_LOAD_GOOGLE_PHOTOS_PHOTOS = 'begin_load_google_photos_photos',
   BEGIN_LOAD_IMAGES_FOR_COLLECTIONS = 'begin_load_images_for_collections',
@@ -31,7 +30,6 @@ export enum WallpaperActionName {
   END_SELECT_IMAGE = 'end_select_image',
   SET_COLLECTIONS = 'set_collections',
   SET_DAILY_REFRESH_COLLECTION_ID = 'set_daily_refresh_collection_id',
-  SET_GOOGLE_PHOTOS_COUNT = 'set_google_photos_count',
   SET_GOOGLE_PHOTOS_ENABLED = 'set_google_photos_enabled',
   SET_IMAGES_FOR_COLLECTION = 'set_images_for_collection',
   SET_LOCAL_IMAGES = 'set_local_images',
@@ -44,13 +42,12 @@ export enum WallpaperActionName {
 export type WallpaperActions =
     AppendGooglePhotosAlbumAction|AppendGooglePhotosAlbumsAction|
     AppendGooglePhotosPhotosAction|BeginLoadGooglePhotosAlbumAction|
-    BeginLoadGooglePhotosAlbumsAction|BeginLoadGooglePhotosCountAction|
-    BeginLoadGooglePhotosEnabledAction|BeginLoadGooglePhotosPhotosAction|
-    BeginLoadImagesForCollectionsAction|BeginLoadLocalImagesAction|
-    BeginLoadLocalImageDataAction|BeginUpdateDailyRefreshImageAction|
-    BeginLoadSelectedImageAction|BeginSelectImageAction|EndSelectImageAction|
-    SetCollectionsAction|SetDailyRefreshCollectionIdAction|
-    SetGooglePhotosCountAction|SetGooglePhotosEnabledAction|
+    BeginLoadGooglePhotosAlbumsAction|BeginLoadGooglePhotosEnabledAction|
+    BeginLoadGooglePhotosPhotosAction|BeginLoadImagesForCollectionsAction|
+    BeginLoadLocalImagesAction|BeginLoadLocalImageDataAction|
+    BeginUpdateDailyRefreshImageAction|BeginLoadSelectedImageAction|
+    BeginSelectImageAction|EndSelectImageAction|SetCollectionsAction|
+    SetDailyRefreshCollectionIdAction|SetGooglePhotosEnabledAction|
     SetImagesForCollectionAction|SetLocalImageDataAction|SetLocalImagesAction|
     SetUpdatedDailyRefreshImageAction|SetSelectedImageAction|
     SetFullscreenEnabledAction;
@@ -141,18 +138,6 @@ export type BeginLoadGooglePhotosAlbumsAction = Action&{
 export function beginLoadGooglePhotosAlbumsAction():
     BeginLoadGooglePhotosAlbumsAction {
   return {name: WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUMS};
-}
-
-export type BeginLoadGooglePhotosCountAction = Action&{
-  name: WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_COUNT,
-};
-
-/**
- * Notify that the app is loading the count of Google Photos photos.
- */
-export function beginLoadGooglePhotosCountAction():
-    BeginLoadGooglePhotosCountAction {
-  return {name: WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_COUNT};
 }
 
 export type BeginLoadGooglePhotosEnabledAction = Action&{
@@ -305,17 +290,6 @@ export function setDailyRefreshCollectionIdAction(collectionId: string|null):
     collectionId,
     name: WallpaperActionName.SET_DAILY_REFRESH_COLLECTION_ID,
   };
-}
-
-export type SetGooglePhotosCountAction = Action&{
-  name: WallpaperActionName.SET_GOOGLE_PHOTOS_COUNT,
-  count: number | null,
-};
-
-/** Sets the count of Google Photos photos. May be called with null on error. */
-export function setGooglePhotosCountAction(count: number|
-                                           null): SetGooglePhotosCountAction {
-  return {count, name: WallpaperActionName.SET_GOOGLE_PHOTOS_COUNT};
 }
 
 export type SetGooglePhotosEnabledAction = Action&{

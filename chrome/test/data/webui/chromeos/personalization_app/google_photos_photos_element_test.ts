@@ -5,7 +5,6 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {getNumberOfGridItemsPerRow, GooglePhotosPhoto, GooglePhotosPhotos, GooglePhotosPhotosSection, initializeGooglePhotosData, PersonalizationActionName, SetErrorAction, WallpaperGridItem, WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
@@ -93,8 +92,6 @@ suite('GooglePhotosPhotosTest', function() {
   }
 
   setup(() => {
-    loadTimeData.overrideValues({'isGooglePhotosIntegrationEnabled': true});
-
     const mocks = baseSetup();
     personalizationStore = mocks.personalizationStore;
     personalizationStore.setReducersEnabled(true);
@@ -110,7 +107,6 @@ suite('GooglePhotosPhotosTest', function() {
       (dismissFromUser: boolean) =>
           test('displays error when photos fail to load', async () => {
             // Set values returned by |wallpaperProvider|.
-            wallpaperProvider.setGooglePhotosCount(1);
             wallpaperProvider.setGooglePhotosPhotos(undefined);
 
             // Initialize |googlePhotosPhotosElement|.
@@ -204,7 +200,6 @@ suite('GooglePhotosPhotosTest', function() {
 
     // Set values returned by |wallpaperProvider|.
     wallpaperProvider.setGooglePhotosPhotos(photos);
-    wallpaperProvider.setGooglePhotosCount(photos.length);
 
     // Initialize |googlePhotosPhotosElement|.
     googlePhotosPhotosElement =
@@ -292,7 +287,6 @@ suite('GooglePhotosPhotosTest', function() {
 
     // Set values returned by |wallpaperProvider|.
     wallpaperProvider.setGooglePhotosPhotos([photo, anotherPhoto]);
-    wallpaperProvider.setGooglePhotosCount(2);
 
     // Initialize Google Photos data in the |personalizationStore|.
     await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
@@ -429,7 +423,6 @@ suite('GooglePhotosPhotosTest', function() {
     assertEquals(wallpaperProvider.getCallCount(clickHandler), 0);
 
     // Provide Google Photos data.
-    personalizationStore.data.wallpaper.googlePhotos.count = photosCount;
     personalizationStore.data.wallpaper.googlePhotos.photos = photos;
     personalizationStore.notifyObservers();
 
@@ -451,12 +444,9 @@ suite('GooglePhotosPhotosTest', function() {
   });
 
   test('incrementally loads photos', async () => {
-    // Set photos count returned by |wallpaperProvider|.
-    const photosCount = 200;
-    wallpaperProvider.setGooglePhotosCount(photosCount);
-
     // Set initial list of photos returned by |wallpaperProvider|.
     let nextPhotoId = 1;
+    const photosCount = 200;
     wallpaperProvider.setGooglePhotosPhotos(
         Array.from({length: photosCount / 2}).map(() => {
           return {
@@ -577,7 +567,6 @@ suite('GooglePhotosPhotosTest', function() {
 
   test('reattempts failed photos load on show', async () => {
     // Set values returned by |wallpaperProvider|.
-    wallpaperProvider.setGooglePhotosCount(1);
     wallpaperProvider.setGooglePhotosPhotos(undefined);
 
     // Initialize Google Photos data in the |personalizationStore|.
@@ -616,7 +605,6 @@ suite('GooglePhotosPhotosTest', function() {
 
     // Set values returned by |wallpaperProvider|.
     wallpaperProvider.setGooglePhotosPhotos([photo]);
-    wallpaperProvider.setGooglePhotosCount(1);
 
     // Initialize Google Photos data in the |personalizationStore|.
     await initializeGooglePhotosData(wallpaperProvider, personalizationStore);

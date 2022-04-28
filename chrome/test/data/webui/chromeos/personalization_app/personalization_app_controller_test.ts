@@ -53,15 +53,13 @@ suite('Personalization app controller', () => {
 
       await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
 
-      let expectedEnabled, expectedCount, expectedAlbums, expectedPhotos;
+      let expectedEnabled, expectedAlbums, expectedPhotos;
       if (isGooglePhotosIntegrationEnabled) {
         expectedEnabled = GooglePhotosEnablementState.kEnabled;
-        expectedCount = 0;
         expectedAlbums = [];
         expectedPhotos = [];
       } else {
         expectedEnabled = GooglePhotosEnablementState.kError;
-        expectedCount = null;
         expectedAlbums = null;
         expectedPhotos = null;
       }
@@ -74,13 +72,6 @@ suite('Personalization app controller', () => {
             {
               name: 'set_google_photos_enabled',
               enabled: expectedEnabled,
-            },
-            {
-              name: 'begin_load_google_photos_count',
-            },
-            {
-              name: 'set_google_photos_count',
-              count: expectedCount,
             },
             {
               name: 'begin_load_google_photos_albums',
@@ -107,14 +98,12 @@ suite('Personalization app controller', () => {
             {
               'wallpaper.loading.googlePhotos': {
                 enabled: true,
-                count: false,
                 albums: false,
                 photos: false,
                 photosByAlbumId: {},
               },
               'wallpaper.googlePhotos': {
                 enabled: undefined,
-                count: undefined,
                 albums: undefined,
                 photos: undefined,
                 photosByAlbumId: {},
@@ -125,50 +114,12 @@ suite('Personalization app controller', () => {
             {
               'wallpaper.loading.googlePhotos': {
                 enabled: false,
-                count: false,
                 albums: false,
                 photos: false,
                 photosByAlbumId: {},
               },
               'wallpaper.googlePhotos': {
                 enabled: expectedEnabled,
-                count: undefined,
-                albums: undefined,
-                photos: undefined,
-                photosByAlbumId: {},
-                resumeTokens: {albums: null, photos: null, photosByAlbumId: {}},
-              },
-            },
-            // BEGIN_LOAD_GOOGLE_PHOTOS_COUNT.
-            {
-              'wallpaper.loading.googlePhotos': {
-                enabled: false,
-                count: true,
-                albums: false,
-                photos: false,
-                photosByAlbumId: {},
-              },
-              'wallpaper.googlePhotos': {
-                enabled: expectedEnabled,
-                count: undefined,
-                albums: undefined,
-                photos: undefined,
-                photosByAlbumId: {},
-                resumeTokens: {albums: null, photos: null, photosByAlbumId: {}},
-              },
-            },
-            // SET_GOOGLE_PHOTOS_COUNT.
-            {
-              'wallpaper.loading.googlePhotos': {
-                enabled: false,
-                count: false,
-                albums: false,
-                photos: false,
-                photosByAlbumId: {},
-              },
-              'wallpaper.googlePhotos': {
-                enabled: expectedEnabled,
-                count: expectedCount,
                 albums: undefined,
                 photos: undefined,
                 photosByAlbumId: {},
@@ -179,14 +130,12 @@ suite('Personalization app controller', () => {
             {
               'wallpaper.loading.googlePhotos': {
                 enabled: false,
-                count: false,
                 albums: true,
                 photos: false,
                 photosByAlbumId: {},
               },
               'wallpaper.googlePhotos': {
                 enabled: expectedEnabled,
-                count: expectedCount,
                 albums: undefined,
                 photos: undefined,
                 photosByAlbumId: {},
@@ -197,14 +146,12 @@ suite('Personalization app controller', () => {
             {
               'wallpaper.loading.googlePhotos': {
                 enabled: false,
-                count: false,
                 albums: true,
                 photos: true,
                 photosByAlbumId: {},
               },
               'wallpaper.googlePhotos': {
                 enabled: expectedEnabled,
-                count: expectedCount,
                 albums: undefined,
                 photos: undefined,
                 photosByAlbumId: {},
@@ -215,14 +162,12 @@ suite('Personalization app controller', () => {
             {
               'wallpaper.loading.googlePhotos': {
                 enabled: false,
-                count: false,
                 albums: false,
                 photos: true,
                 photosByAlbumId: {},
               },
               'wallpaper.googlePhotos': {
                 enabled: expectedEnabled,
-                count: expectedCount,
                 albums: expectedAlbums,
                 photos: undefined,
                 photosByAlbumId: {},
@@ -233,14 +178,12 @@ suite('Personalization app controller', () => {
             {
               'wallpaper.loading.googlePhotos': {
                 enabled: false,
-                count: false,
                 albums: false,
                 photos: false,
                 photosByAlbumId: {},
               },
               'wallpaper.googlePhotos': {
                 enabled: expectedEnabled,
-                count: expectedCount,
                 albums: expectedAlbums,
                 photos: expectedPhotos,
                 photosByAlbumId: {},
@@ -268,7 +211,6 @@ suite('Personalization app controller', () => {
       location: 'home'
     }];
 
-    wallpaperProvider.setGooglePhotosCount(photos.length);
     wallpaperProvider.setGooglePhotosAlbums([album]);
     wallpaperProvider.setGooglePhotosPhotos(photos);
     wallpaperProvider.setGooglePhotosPhotosByAlbumId(album.id, photos);
@@ -306,7 +248,6 @@ suite('Personalization app controller', () => {
           {
             'wallpaper.loading.googlePhotos': {
               enabled: false,
-              count: false,
               albums: false,
               photos: false,
               photosByAlbumId: {
@@ -315,7 +256,6 @@ suite('Personalization app controller', () => {
             },
             'wallpaper.googlePhotos': {
               enabled: GooglePhotosEnablementState.kEnabled,
-              count: photos.length,
               albums: [
                 {
                   id: album.id,
@@ -331,7 +271,6 @@ suite('Personalization app controller', () => {
           {
             'wallpaper.loading.googlePhotos': {
               enabled: false,
-              count: false,
               albums: false,
               photos: false,
               photosByAlbumId: {
@@ -340,7 +279,6 @@ suite('Personalization app controller', () => {
             },
             'wallpaper.googlePhotos': {
               enabled: GooglePhotosEnablementState.kEnabled,
-              count: photos.length,
               albums: [
                 {
                   id: album.id,

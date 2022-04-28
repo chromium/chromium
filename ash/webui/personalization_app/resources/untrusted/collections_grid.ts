@@ -12,7 +12,7 @@ import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {Events, EventType, kMaximumGooglePhotosPreviews, kMaximumLocalImagePreviews} from '../common/constants.js';
-import {getCountText, getLoadingPlaceholderAnimationDelay, getLoadingPlaceholders, isNonEmptyArray, isNullOrArray, isNullOrNumber, isSelectionEvent} from '../common/utils.js';
+import {getCountText, getLoadingPlaceholderAnimationDelay, getLoadingPlaceholders, isNonEmptyArray, isNullOrArray, isSelectionEvent} from '../common/utils.js';
 import {GooglePhotosEnablementState, WallpaperCollection} from '../trusted/personalization_app.mojom-webui.js';
 import {selectCollection, selectGooglePhotosCollection, selectLocalCollection, validateReceivedData} from '../untrusted/iframe_api.js';
 
@@ -57,7 +57,7 @@ type ImageTile = {
   type: TileType.IMAGE_GOOGLE_PHOTOS|TileType.IMAGE_LOCAL|TileType.IMAGE_ONLINE,
   id: string,
   name: string,
-  count: string,
+  count?: string,
   preview: Url[],
 };
 
@@ -70,12 +70,10 @@ interface RepeaterEvent extends CustomEvent {
 }
 
 /** Returns the tile to display for the Google Photos collection. */
-function getGooglePhotosTile(
-    googlePhotos: Url[]|null, googlePhotosCount: number|null): ImageTile {
+function getGooglePhotosTile(googlePhotos: Url[]|null): ImageTile {
   return {
     name: loadTimeData.getString('googlePhotosLabel'),
     id: kGooglePhotosCollectionId,
-    count: getCountText(googlePhotosCount || 0),
     preview: Array.isArray(googlePhotos) ?
         googlePhotos.slice(0, kMaximumGooglePhotosPreviews) :
         [],
@@ -155,11 +153,6 @@ export class CollectionsGrid extends PolymerElement {
       googlePhotos_: Array,
 
       /**
-       * The count of Google Photos photos.
-       */
-      googlePhotosCount_: Number,
-
-      /**
        * Whether the user is allowed to access Google Photos.
        */
       googlePhotosEnabled_: Number,
@@ -193,7 +186,6 @@ export class CollectionsGrid extends PolymerElement {
 
   private collections_: WallpaperCollection[];
   private googlePhotos_: unknown[]|null;
-  private googlePhotosCount_: number|null;
   private googlePhotosEnabled_: GooglePhotosEnablementState;
   private imageCounts_: {[key: string]: number|null};
   private localImages_: FilePath[];
@@ -204,7 +196,7 @@ export class CollectionsGrid extends PolymerElement {
     return [
       'onLocalImagesLoaded_(localImages_, localImageData_)',
       'onCollectionLoaded_(collections_, imageCounts_)',
-      'onGooglePhotosLoaded_(googlePhotos_, googlePhotosCount_)',
+      'onGooglePhotosLoaded_(googlePhotos_)',
     ];
   }
 
@@ -275,12 +267,10 @@ export class CollectionsGrid extends PolymerElement {
     });
   }
 
-  /** Invoked on changes to the list and count of Google Photos photos. */
-  private onGooglePhotosLoaded_(
-      googlePhotos: Url[]|null|undefined,
-      googlePhotosCount: number|null|undefined) {
-    if (isNullOrArray(googlePhotos) && isNullOrNumber(googlePhotosCount)) {
-      const tile = getGooglePhotosTile(googlePhotos, googlePhotosCount);
+  /** Invoked on changes to the list of Google Photos photos. */
+  private onGooglePhotosLoaded_(googlePhotos: Url[]|null|undefined) {
+    if (isNullOrArray(googlePhotos)) {
+      const tile = getGooglePhotosTile(googlePhotos);
       this.set('tiles_.1', tile);
     }
   }
@@ -313,29 +303,15 @@ export class CollectionsGrid extends PolymerElement {
       case EventType.SEND_COLLECTIONS:
         this.collections_ = isValid ? event.collections : [];
         break;
-      case EventType.SEND_GOOGLE_PHOTOS_COUNT:
-        if (isValid) {
-          this.googlePhotosCount_ = event.count;
-        } else {
-          this.googlePhotos_ = null;
-          this.googlePhotosCount_ = null;
-        }
-        break;
       case EventType.SEND_GOOGLE_PHOTOS_ENABLED:
         if (isValid) {
           this.googlePhotosEnabled_ = event.enabled;
         } else {
           this.googlePhotos_ = null;
-          this.googlePhotosCount_ = null;
         }
         break;
       case EventType.SEND_GOOGLE_PHOTOS_PHOTOS:
-        if (isValid) {
-          this.googlePhotos_ = event.photos;
-        } else {
-          this.googlePhotos_ = null;
-          this.googlePhotosCount_ = null;
-        }
+        this.googlePhotos_ = isValid ? event.photos : null;
         break;
       case EventType.SEND_IMAGE_COUNTS:
         this.imageCounts_ = event.counts;

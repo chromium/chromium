@@ -14,7 +14,6 @@ export const kMaximumLocalImagePreviews = 3;
 
 export enum EventType {
   SEND_COLLECTIONS = 'send_collections',
-  SEND_GOOGLE_PHOTOS_COUNT = 'send_google_photos_count',
   SEND_GOOGLE_PHOTOS_ENABLED = 'send_google_photos_enabled',
   SEND_GOOGLE_PHOTOS_PHOTOS = 'send_google_photos_photos',
   SELECT_COLLECTION = 'select_collection',
@@ -34,11 +33,6 @@ export enum EventType {
 export type SendCollectionsEvent = {
   type: EventType.SEND_COLLECTIONS,
   collections: WallpaperCollection[],
-};
-
-export type SendGooglePhotosCountEvent = {
-  type: EventType.SEND_GOOGLE_PHOTOS_COUNT,
-  count: number|null,
 };
 
 export type SendGooglePhotosEnabledEvent = {
@@ -120,10 +114,9 @@ export type SendVisibleEvent = {
   visible: boolean,
 };
 
-export type Events = SendCollectionsEvent|SendGooglePhotosCountEvent|
-    SendGooglePhotosEnabledEvent|SendGooglePhotosPhotosEvent|
-    SelectCollectionEvent|SelectGooglePhotosCollectionEvent|
-    SelectLocalCollectionEvent|SendImageCountsEvent|SendImageTilesEvent|
-    SendLocalImagesEvent|SendLocalImageDataEvent|
-    SendCurrentWallpaperAssetIdEvent|SendPendingWallpaperAssetIdEvent|
-    SelectImageEvent|SendVisibleEvent;
+export type Events = SendCollectionsEvent|SendGooglePhotosEnabledEvent|
+    SendGooglePhotosPhotosEvent|SelectCollectionEvent|
+    SelectGooglePhotosCollectionEvent|SelectLocalCollectionEvent|
+    SendImageCountsEvent|SendImageTilesEvent|SendLocalImagesEvent|
+    SendLocalImageDataEvent|SendCurrentWallpaperAssetIdEvent|
+    SendPendingWallpaperAssetIdEvent|SelectImageEvent|SendVisibleEvent;

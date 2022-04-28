@@ -18,8 +18,6 @@ export interface BackdropState {
  * Stores Google Photos state.
  * |enabled| is whether the user is allowed to access Google Photos. It is
  * undefined only until it has been initialized.
- * |count| is the count of Google Photos photos. It is undefined only until it
- * has been initialized, then either null (in error state) or a valid integer.
  * |albums| is the list of Google Photos albums. It is undefined only until it
  * has been initialized, then either null (in error state) or a valid Array.
  * |photos| is the list of Google Photos photos. It is undefined only until it
@@ -30,7 +28,6 @@ export interface BackdropState {
  */
 export interface GooglePhotosState {
   enabled: GooglePhotosEnablementState|undefined;
-  count: number|null|undefined;
   albums: GooglePhotosAlbum[]|null|undefined;
   photos: GooglePhotosPhoto[]|null|undefined;
   photosByAlbumId: Record<string, GooglePhotosPhoto[]|null|undefined>;
@@ -68,7 +65,6 @@ export interface LoadingState {
   setImage: number;
   googlePhotos: {
     enabled: boolean,
-    count: boolean,
     albums: boolean,
     photos: boolean,
     photosByAlbumId: Record<string, boolean>,
@@ -111,7 +107,6 @@ export function emptyState(): WallpaperState {
       setImage: 0,
       googlePhotos: {
         enabled: false,
-        count: false,
         albums: false,
         photos: false,
         photosByAlbumId: {},
@@ -124,7 +119,6 @@ export function emptyState(): WallpaperState {
     fullscreen: false,
     googlePhotos: {
       enabled: undefined,
-      count: undefined,
       albums: undefined,
       photos: undefined,
       photosByAlbumId: {},

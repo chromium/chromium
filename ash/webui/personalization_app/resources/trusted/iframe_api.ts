@@ -37,17 +37,6 @@ export class IFrameApi {
   }
 
   /**
-   * Sends the count of Google Photos photos to untrusted.
-   */
-  sendGooglePhotosCount(target: CollectionsGrid, count: number|null) {
-    const event: constants.SendGooglePhotosCountEvent = {
-      type: constants.EventType.SEND_GOOGLE_PHOTOS_COUNT,
-      count
-    };
-    target.onMessageReceived(event);
-  }
-
-  /**
    * Sends whether the user is allowed to access Google Photos to untrusted.
    */
   sendGooglePhotosEnabled(

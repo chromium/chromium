@@ -6,7 +6,6 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {fetchGooglePhotosAlbum, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, GooglePhotosPhotosByAlbumId, initializeGooglePhotosData, PersonalizationActionName, SetErrorAction, WallpaperGridItem, WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -37,8 +36,6 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
   }
 
   setup(() => {
-    loadTimeData.overrideValues({'isGooglePhotosIntegrationEnabled': true});
-
     const mocks = baseSetup();
     personalizationStore = mocks.personalizationStore;
     wallpaperProvider = mocks.wallpaperProvider;
@@ -63,7 +60,6 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
 
             // Set values returned by |wallpaperProvider|.
             wallpaperProvider.setGooglePhotosAlbums([album]);
-            wallpaperProvider.setGooglePhotosCount(1);
             wallpaperProvider.setGooglePhotosPhotosByAlbumId(
                 album.id, undefined);
 
@@ -272,7 +268,6 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
 
     // Set values returned by |wallpaperProvider|.
     wallpaperProvider.setGooglePhotosAlbums([album]);
-    wallpaperProvider.setGooglePhotosCount(2);
     wallpaperProvider.setGooglePhotosPhotos([photo, anotherPhoto]);
     wallpaperProvider.setGooglePhotosPhotosByAlbumId(
         album.id, [photo, anotherPhoto]);
@@ -421,7 +416,6 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
     assertEquals(wallpaperProvider.getCallCount(clickHandler), 0);
 
     // Provide Google Photos data.
-    personalizationStore.data.wallpaper.googlePhotos.count = photosCount;
     personalizationStore.data.wallpaper.googlePhotos.albums = [album];
     personalizationStore.data.wallpaper.googlePhotos.photos = photos;
     personalizationStore.data.wallpaper.googlePhotos
@@ -451,9 +445,6 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
     const photosCount = 200;
     const album: GooglePhotosAlbum =
         {id: '1', title: '', photoCount: photosCount, preview: {url: ''}};
-
-    // Set photos count returned by |wallpaperProvider|.
-    wallpaperProvider.setGooglePhotosCount(photosCount);
 
     // Set albums returned by |wallpaperProvider|.
     wallpaperProvider.setGooglePhotosAlbums([album]);

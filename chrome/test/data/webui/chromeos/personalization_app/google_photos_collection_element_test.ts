@@ -42,7 +42,6 @@ suite('GooglePhotosCollectionTest', function() {
   test('displays only photos content', async () => {
     // Tabs and albums content are not displayed if albums are absent.
     wallpaperProvider.setGooglePhotosAlbums(undefined);
-    wallpaperProvider.setGooglePhotosCount(1);
     wallpaperProvider.setGooglePhotosPhotos([{
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
       name: 'foo',
@@ -77,7 +76,6 @@ suite('GooglePhotosCollectionTest', function() {
     // NOTE: Intentionally set photos count to a non-zero value while setting an
     // empty array of photos to simulate an unlikely but possible scenario in
     // which server-side APIs temporarily disagree with one another.
-    wallpaperProvider.setGooglePhotosCount(1);
     wallpaperProvider.setGooglePhotosPhotos([]);
     wallpaperProvider.setGooglePhotosAlbums([{
       id: '1',
@@ -148,7 +146,6 @@ suite('GooglePhotosCollectionTest', function() {
       preview: {url: 'foo.com'}
     }];
     wallpaperProvider.setGooglePhotosAlbums(albums);
-    wallpaperProvider.setGooglePhotosCount(1);
     wallpaperProvider.setGooglePhotosPhotos([{
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
       name: 'foo',
@@ -253,7 +250,6 @@ suite('GooglePhotosCollectionTest', function() {
 
   test('displays zero state when there is no content', async () => {
     wallpaperProvider.setGooglePhotosAlbums([]);
-    wallpaperProvider.setGooglePhotosCount(0);
     wallpaperProvider.setGooglePhotosPhotos([]);
 
     googlePhotosCollectionElement =

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import * as constants from '../common/constants.js';
-import {isNullOrArray, isNullOrNumber} from '../common/utils.js';
+import {isNullOrArray} from '../common/utils.js';
 import {GooglePhotosEnablementState} from '../trusted/personalization_app.mojom-webui.js';
 import {onMessageReceived} from '../trusted/wallpaper/untrusted_message_handler.js';
 
@@ -64,8 +64,6 @@ export function validateReceivedData(event: constants.Events): boolean {
     case constants.EventType.SEND_COLLECTIONS: {
       return isNullOrArray(event.collections);
     }
-    case constants.EventType.SEND_GOOGLE_PHOTOS_COUNT:
-      return isNullOrNumber(event.count);
     case constants.EventType.SEND_GOOGLE_PHOTOS_ENABLED:
       return typeof event.enabled === 'number' &&
           event.enabled >= GooglePhotosEnablementState.MIN_VALUE &&

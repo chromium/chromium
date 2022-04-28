@@ -59,31 +59,6 @@ suite('WallpaperCollectionsTest', function() {
     assertDeepEquals(wallpaperProvider!.collections, data);
   });
 
-  test('sends Google Photos count when loaded', async () => {
-    const testProxy = setupTestIFrameApi();
-
-    wallpaperCollectionsElement = initElement(WallpaperCollections);
-
-    personalizationStore.data.wallpaper.googlePhotos.count = 1234;
-    personalizationStore.data.wallpaper.loading.googlePhotos.count = false;
-    personalizationStore.notifyObservers();
-
-    // Wait for |sendGooglePhotosCount| to be called.
-    const [target, data] =
-        await testProxy.whenCalled('sendGooglePhotosCount') as
-        Parameters<IFrameApi['sendGooglePhotosCount']>;
-    await waitAfterNextRender(wallpaperCollectionsElement);
-
-    const main = wallpaperCollectionsElement.shadowRoot!.querySelector('main');
-    assertFalse(main!.hidden);
-
-    assertEquals(
-        wallpaperCollectionsElement.$.collectionsGrid, target,
-        'Google Photos count is sent to collections-grid');
-    assertDeepEquals(
-        personalizationStore.data.wallpaper.googlePhotos.count, data);
-  });
-
   test('sends Google Photos photos when loaded', async () => {
     const testProxy = setupTestIFrameApi();
 
@@ -132,8 +107,7 @@ suite('WallpaperCollectionsTest', function() {
                     enabled;
                 personalizationStore.notifyObservers();
 
-                // Set Google Photos count and photos.
-                personalizationStore.data.wallpaper.googlePhotos.count = null;
+                // Set Google Photos photos.
                 personalizationStore.data.wallpaper.googlePhotos.photos = null;
                 personalizationStore.notifyObservers();
 
@@ -147,7 +121,8 @@ suite('WallpaperCollectionsTest', function() {
                 // Verify text expectations.
                 const text = googlePhotosTile!.querySelectorAll('p');
                 assertEquals(text?.[0]?.innerHTML, 'Google Photos');
-                assertEquals(text?.[1]?.innerHTML, 'No Images');
+                assertEquals(
+                    window.getComputedStyle(text?.[1]!).visibility, 'hidden');
 
                 // Verify icon expectations.
                 const icon = googlePhotosTile!.querySelector('iron-icon');

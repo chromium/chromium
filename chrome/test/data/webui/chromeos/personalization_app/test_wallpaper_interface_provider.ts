@@ -5,7 +5,7 @@
 import {CurrentWallpaper, FetchGooglePhotosAlbumsResponse, FetchGooglePhotosPhotosResponse, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperObserverInterface, WallpaperObserverRemote, WallpaperProviderInterface, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestWallpaperProvider extends
@@ -108,7 +108,6 @@ export class TestWallpaperProvider extends
   private images_: WallpaperImage[]|null;
   private googlePhotosAlbums_: GooglePhotosAlbum[]|undefined = [];
   private googlePhotosAlbumsResumeToken_: string|undefined;
-  private googlePhotosCount_: number = 0;
   private googlePhotosEnabled_: GooglePhotosEnablementState =
       GooglePhotosEnablementState.kEnabled;
   private googlePhotosPhotos_: GooglePhotosPhoto[]|undefined = [];
@@ -171,11 +170,8 @@ export class TestWallpaperProvider extends
   }
 
   fetchGooglePhotosCount() {
-    this.methodCalled('fetchGooglePhotosCount');
-    const count = loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled') ?
-        this.googlePhotosCount_ :
-        -1;
-    return Promise.resolve({count});
+    assertNotReached();
+    return Promise.resolve({count: -1});
   }
 
   fetchGooglePhotosEnabled() {
@@ -286,10 +282,6 @@ export class TestWallpaperProvider extends
   setGooglePhotosAlbumsResumeToken(googlePhotosAlbumsResumeToken: string|
                                    undefined) {
     this.googlePhotosAlbumsResumeToken_ = googlePhotosAlbumsResumeToken;
-  }
-
-  setGooglePhotosCount(googlePhotosCount: number) {
-    this.googlePhotosCount_ = googlePhotosCount;
   }
 
   setGooglePhotosEnabled(googlePhotosEnabled: GooglePhotosEnablementState) {

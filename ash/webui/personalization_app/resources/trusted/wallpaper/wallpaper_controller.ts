@@ -150,19 +150,6 @@ async function fetchGooglePhotosEnabled(
   store.dispatch(action.setGooglePhotosEnabledAction(state));
 }
 
-/** Fetches the count of Google Photos photos and saves it to the store. */
-async function fetchGooglePhotosCount(
-    provider: WallpaperProviderInterface,
-    store: PersonalizationStore): Promise<void> {
-  // Count should only be fetched after confirming access is allowed.
-  const enabled = store.data.wallpaper.googlePhotos.enabled;
-  assert(enabled === GooglePhotosEnablementState.kEnabled);
-
-  store.dispatch(action.beginLoadGooglePhotosCountAction());
-  const {count} = await provider.fetchGooglePhotosCount();
-  store.dispatch(action.setGooglePhotosCountAction(count >= 0 ? count : null));
-}
-
 /** Fetches the list of Google Photos photos and saves it to the store. */
 export async function fetchGooglePhotosPhotos(
     provider: WallpaperProviderInterface,
@@ -394,19 +381,12 @@ export async function initializeGooglePhotosData(
   // Only proceed to fetch Google Photos data if the user is allowed.
   const enabled = store.data.wallpaper.googlePhotos.enabled;
   if (enabled === GooglePhotosEnablementState.kEnabled) {
-    await fetchGooglePhotosCount(provider, store);
+    await Promise.all([
+      fetchGooglePhotosAlbums(provider, store),
+      fetchGooglePhotosPhotos(provider, store),
+    ]);
   } else {
-    store.beginBatchUpdate();
-    store.dispatch(action.beginLoadGooglePhotosCountAction());
-    store.dispatch(action.setGooglePhotosCountAction(null));
-    store.endBatchUpdate();
-  }
-
-  // If the count of Google Photos photos is zero or null, it's not necesssary
-  // to query the server for the list of albums/photos.
-  const count = store.data.wallpaper.googlePhotos.count;
-  if (count === 0 || count === null) {
-    const result = count === 0 ? [] : null;
+    const result = null;
     const resumeToken = null;
     store.beginBatchUpdate();
     store.dispatch(action.beginLoadGooglePhotosAlbumsAction());
@@ -414,13 +394,7 @@ export async function initializeGooglePhotosData(
     store.dispatch(action.appendGooglePhotosAlbumsAction(result, resumeToken));
     store.dispatch(action.appendGooglePhotosPhotosAction(result, resumeToken));
     store.endBatchUpdate();
-    return;
   }
-
-  await Promise.all([
-    fetchGooglePhotosAlbums(provider, store),
-    fetchGooglePhotosPhotos(provider, store),
-  ]);
 }
 
 /**
