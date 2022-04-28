@@ -48,144 +48,93 @@ class CONTENT_EXPORT WebContentsAndroid {
   bool InitializeRenderFrameForJavaScript();
 
   // Methods called from Java
-  void ClearNativeReference(JNIEnv* env,
-                            const base::android::JavaParamRef<jobject>& obj);
+  void ClearNativeReference(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetTopLevelNativeWindow(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+      JNIEnv* env);
   void SetTopLevelNativeWindow(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& jwindow_android);
   void SetViewAndroidDelegate(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& jview_delegate);
-  base::android::ScopedJavaLocalRef<jobject> GetMainFrame(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj) const;
-  base::android::ScopedJavaLocalRef<jobject> GetFocusedFrame(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj) const;
+  base::android::ScopedJavaLocalRef<jobject> GetMainFrame(JNIEnv* env) const;
+  base::android::ScopedJavaLocalRef<jobject> GetFocusedFrame(JNIEnv* env) const;
   base::android::ScopedJavaLocalRef<jobject> GetRenderFrameHostFromId(
       JNIEnv* env,
       jint render_process_id,
       jint render_frame_id) const;
   base::android::ScopedJavaLocalRef<jobjectArray> GetAllRenderFrameHosts(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj) const;
-  base::android::ScopedJavaLocalRef<jstring> GetTitle(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj) const;
-  base::android::ScopedJavaLocalRef<jobject> GetVisibleURL(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj) const;
+      JNIEnv* env) const;
+  base::android::ScopedJavaLocalRef<jstring> GetTitle(JNIEnv* env) const;
+  base::android::ScopedJavaLocalRef<jobject> GetVisibleURL(JNIEnv* env) const;
 
-  bool IsLoading(JNIEnv* env,
-                 const base::android::JavaParamRef<jobject>& obj) const;
-  bool ShouldShowLoadingUI(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj) const;
+  bool IsLoading(JNIEnv* env) const;
+  bool ShouldShowLoadingUI(JNIEnv* env) const;
 
-  void DispatchBeforeUnload(JNIEnv* env,
-                            const base::android::JavaParamRef<jobject>& obj,
-                            bool auto_cancel);
+  void DispatchBeforeUnload(JNIEnv* env, bool auto_cancel);
 
-  void Stop(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
-  void Cut(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
-  void Copy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
-  void Paste(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
-  void PasteAsPlainText(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& obj);
-  void Replace(JNIEnv* env,
-               const base::android::JavaParamRef<jobject>& obj,
-               const base::android::JavaParamRef<jstring>& jstr);
-  void SelectAll(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
-  void CollapseSelection(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj);
-  jint GetBackgroundColor(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj);
+  void Stop(JNIEnv* env);
+  void Cut(JNIEnv* env);
+  void Copy(JNIEnv* env);
+  void Paste(JNIEnv* env);
+  void PasteAsPlainText(JNIEnv* env);
+  void Replace(JNIEnv* env, const base::android::JavaParamRef<jstring>& jstr);
+  void SelectAll(JNIEnv* env);
+  void CollapseSelection(JNIEnv* env);
+  jint GetBackgroundColor(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetLastCommittedURL(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>&) const;
-  jboolean IsIncognito(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& obj);
+      JNIEnv* env) const;
+  jboolean IsIncognito(JNIEnv* env);
 
-  void ResumeLoadingCreatedWebContents(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  void ResumeLoadingCreatedWebContents(JNIEnv* env);
 
-  void OnHide(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
-  void OnShow(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
-  void SetImportance(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& obj,
-                     jint importance);
-  void SuspendAllMediaPlayers(JNIEnv* env,
-                              const base::android::JavaParamRef<jobject>& jobj);
-  void SetAudioMuted(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& jobj,
-                     jboolean mute);
+  void OnHide(JNIEnv* env);
+  void OnShow(JNIEnv* env);
+  void SetImportance(JNIEnv* env, jint importance);
+  void SuspendAllMediaPlayers(JNIEnv* env);
+  void SetAudioMuted(JNIEnv* env, jboolean mute);
 
-  jboolean FocusLocationBarByDefault(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  bool IsFullscreenForCurrentTab(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  void ExitFullscreen(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& obj);
-  void ScrollFocusedEditableNodeIntoView(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  jboolean FocusLocationBarByDefault(JNIEnv* env);
+  bool IsFullscreenForCurrentTab(JNIEnv* env);
+  void ExitFullscreen(JNIEnv* env);
+  void ScrollFocusedEditableNodeIntoView(JNIEnv* env);
   void SelectAroundCaret(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj,
                          jint granularity,
                          jboolean should_show_handle,
                          jboolean should_show_context_menu);
-  void AdjustSelectionByCharacterOffset(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      jint start_adjust,
-      jint end_adjust,
-      jboolean show_selection_menu);
+  void AdjustSelectionByCharacterOffset(JNIEnv* env,
+                                        jint start_adjust,
+                                        jint end_adjust,
+                                        jboolean show_selection_menu);
   void EvaluateJavaScript(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj,
                           const base::android::JavaParamRef<jstring>& script,
                           const base::android::JavaParamRef<jobject>& callback);
   void EvaluateJavaScriptForTests(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& script,
       const base::android::JavaParamRef<jobject>& callback);
 
   void AddMessageToDevToolsConsole(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
       jint level,
       const base::android::JavaParamRef<jstring>& message);
 
   void PostMessageToMainFrame(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& jmessage,
       const base::android::JavaParamRef<jstring>& jsource_origin,
       const base::android::JavaParamRef<jstring>& jtarget_origin,
       const base::android::JavaParamRef<jobjectArray>& jports);
 
-  jboolean HasAccessedInitialDocument(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj);
+  jboolean HasAccessedInitialDocument(JNIEnv* env);
 
   // No theme color is represented by SK_ColorTRANSPARENT.
-  jint GetThemeColor(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& obj);
+  jint GetThemeColor(JNIEnv* env);
 
-  jfloat GetLoadProgress(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj);
+  jfloat GetLoadProgress(JNIEnv* env);
 
   void RequestSmartClipExtract(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& callback,
       jint x,
       jint y,
@@ -198,88 +147,56 @@ class CONTENT_EXPORT WebContentsAndroid {
       const base::android::JavaParamRef<jobject>& view_structure_builder,
       const base::android::JavaParamRef<jobject>& callback);
 
-  base::android::ScopedJavaLocalRef<jstring> GetEncoding(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj) const;
+  base::android::ScopedJavaLocalRef<jstring> GetEncoding(JNIEnv* env) const;
 
   void SetOverscrollRefreshHandler(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& overscroll_refresh_handler);
 
-  void SetSpatialNavigationDisabled(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      bool disabled);
+  void SetSpatialNavigationDisabled(JNIEnv* env, bool disabled);
 
   int DownloadImage(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& obj,
                     const base::android::JavaParamRef<jobject>& url,
                     jboolean is_fav_icon,
                     jint max_bitmap_size,
                     jboolean bypass_cache,
                     const base::android::JavaParamRef<jobject>& jcallback);
-  void SetHasPersistentVideo(JNIEnv* env,
-                             const base::android::JavaParamRef<jobject>& obj,
-                             jboolean value);
-  bool HasActiveEffectivelyFullscreenVideo(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  bool IsPictureInPictureAllowedForFullscreenVideo(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  void SetHasPersistentVideo(JNIEnv* env, jboolean value);
+  bool HasActiveEffectivelyFullscreenVideo(JNIEnv* env);
+  bool IsPictureInPictureAllowedForFullscreenVideo(JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jobject> GetFullscreenVideoSize(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  void SetSize(JNIEnv* env,
-               const base::android::JavaParamRef<jobject>& obj,
-               jint width,
-               jint height);
-  int GetWidth(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
-  int GetHeight(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+      JNIEnv* env);
+  void SetSize(JNIEnv* env, jint width, jint height);
+  int GetWidth(JNIEnv* env);
+  int GetHeight(JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jobject> GetOrCreateEventForwarder(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+      JNIEnv* env);
 
   void SetMediaSession(
       const base::android::ScopedJavaLocalRef<jobject>& j_media_session);
 
-  void SendOrientationChangeEvent(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      jint orientation);
+  void SendOrientationChangeEvent(JNIEnv* env, jint orientation);
 
-  void OnScaleFactorChanged(JNIEnv* env,
-                            const base::android::JavaParamRef<jobject>& obj);
-  void SetFocus(JNIEnv* env,
-                const base::android::JavaParamRef<jobject>& obj,
-                jboolean focused);
-  bool IsBeingDestroyed(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& obj);
+  void OnScaleFactorChanged(JNIEnv* env);
+  void SetFocus(JNIEnv* env, jboolean focused);
+  bool IsBeingDestroyed(JNIEnv* env);
 
   void SetDisplayCutoutSafeArea(JNIEnv* env,
-                                const base::android::JavaParamRef<jobject>& obj,
                                 int top,
                                 int left,
                                 int bottom,
                                 int right);
-  void NotifyRendererPreferenceUpdate(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  void NotifyRendererPreferenceUpdate(JNIEnv* env);
 
-  void NotifyBrowserControlsHeightChanged(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  void NotifyBrowserControlsHeightChanged(JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jobject> GetRenderWidgetHostView(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+      JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jobjectArray> GetInnerWebContents(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+      JNIEnv* env);
 
   jint GetVisibility(JNIEnv* env);
 
