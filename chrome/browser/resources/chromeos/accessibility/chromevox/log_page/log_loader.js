@@ -7,6 +7,8 @@
  *
  */
 
+goog.require('BackgroundBridge');
 goog.require('LogStore');
+goog.require('LogType');
 goog.require('Msgs');
 goog.require('TreeLog');

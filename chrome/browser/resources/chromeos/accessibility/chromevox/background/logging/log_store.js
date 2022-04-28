@@ -11,6 +11,7 @@ goog.provide('LogStore');
 goog.require('TreeDumper');
 goog.require('BaseLog');
 goog.require('EventLog');
+goog.require('LogType');
 goog.require('SpeechLog');
 goog.require('TextLog');
 goog.require('TreeLog');
@@ -19,8 +20,7 @@ LogStore = class {
   constructor() {
     /**
      * Ring buffer of size this.LOG_LIMIT
-     * @type {!Array<BaseLog>}
-     * @private
+     * @private {!Array<BaseLog>}
      */
     this.logs_ = Array(LogStore.LOG_LIMIT);
 
@@ -38,17 +38,17 @@ LogStore = class {
    * Creates logs of type |type| in order.
    * This is not the best way to create logs fast but
    * getLogsOfType() is not called often.
-   * @param {!LogStore.LogType} LogType
+   * @param {!LogType} logType
    * @return {!Array<BaseLog>}
    */
-  getLogsOfType(LogType) {
+  getLogsOfType(logType) {
     const returnLogs = [];
     for (let i = 0; i < LogStore.LOG_LIMIT; i++) {
       const index = (this.startIndex_ + i) % LogStore.LOG_LIMIT;
       if (!this.logs_[index]) {
         continue;
       }
-      if (this.logs_[index].logType === LogType) {
+      if (this.logs_[index].logType === logType) {
         returnLogs.push(this.logs_[index]);
       }
     }
@@ -77,14 +77,14 @@ LogStore = class {
    * Write a text log to this.logs_.
    * To add a message to logs, this function should be called.
    * @param {string} logContent
-   * @param {!LogStore.LogType} LogType
+   * @param {!LogType} logType
    */
-  writeTextLog(logContent, LogType) {
+  writeTextLog(logContent, logType) {
     if (this.shouldSkipOutput_()) {
       return;
     }
 
-    this.writeLog(new TextLog(logContent, LogType));
+    this.writeLog(new TextLog(logContent, logType));
   }
 
   /**
@@ -128,8 +128,6 @@ LogStore = class {
 
   /** @private @return {boolean} */
   shouldSkipOutput_() {
-    const ChromeVoxState =
-        chrome.extension.getBackgroundPage()['ChromeVoxState'];
     if (ChromeVoxState.instance && ChromeVoxState.instance.currentRange &&
         ChromeVoxState.instance.currentRange.start &&
         ChromeVoxState.instance.currentRange.start.node &&
@@ -159,24 +157,14 @@ LogStore = class {
 LogStore.LOG_LIMIT = 3000;
 
 /**
- * List of all LogType.
- * Note that filter type checkboxes are shown in this order at the log page.
- * @enum {string}
- */
-LogStore.LogType = {
-  SPEECH: 'speech',
-  SPEECH_RULE: 'speechRule',
-  BRAILLE: 'braille',
-  BRAILLE_RULE: 'brailleRule',
-  EARCON: 'earcon',
-  EVENT: 'event',
-  TEXT: 'text',
-  TREE: 'tree',
-};
-
-
-/**
  * Global instance.
  * @type {LogStore}
  */
 LogStore.instance;
+
+BridgeHelper.registerHandler(
+    BridgeTarget.LOG_STORE, BridgeAction.CLEAR_LOG,
+    () => LogStore.instance.clearLog());
+BridgeHelper.registerHandler(
+    BridgeTarget.LOG_STORE, BridgeAction.GET_LOGS,
+    () => LogStore.instance.getLogs());

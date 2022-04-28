@@ -78,3 +78,21 @@ BackgroundBridge.ChromeVoxState = {
         punctuationEcho);
   },
 };
+
+BackgroundBridge.LogStore = {
+  /** Clear the log buffer. */
+  async clearLog() {
+    return BridgeHelper.sendMessage(
+        BridgeTarget.LOG_STORE, BridgeAction.CLEAR_LOG);
+  },
+
+  /**
+   * Create logs in order.
+   * This function is not currently optimized for speed.
+   * @return {!Promise<!Array<BaseLog>>}
+   */
+  async getLogs() {
+    return BridgeHelper.sendMessage(
+        BridgeTarget.LOG_STORE, BridgeAction.GET_LOGS);
+  },
+};

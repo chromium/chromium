@@ -565,7 +565,7 @@ Output = class {
     }
     if (this.speechRulesStr_.str) {
       LogStore.getInstance().writeTextLog(
-          this.speechRulesStr_.str, LogStore.LogType.SPEECH_RULE);
+          this.speechRulesStr_.str, LogType.SPEECH_RULE);
     }
 
     // Braille.
@@ -590,7 +590,7 @@ Output = class {
       ChromeVox.braille.write(output);
       if (this.brailleRulesStr_.str) {
         LogStore.getInstance().writeTextLog(
-            this.brailleRulesStr_.str, LogStore.LogType.BRAILLE_RULE);
+            this.brailleRulesStr_.str, LogType.BRAILLE_RULE);
       }
     }
 

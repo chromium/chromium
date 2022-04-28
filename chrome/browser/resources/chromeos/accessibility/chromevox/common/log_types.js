@@ -8,16 +8,33 @@
 
 goog.provide('BaseLog');
 goog.provide('EventLog');
+goog.provide('LogType');
 goog.provide('SpeechLog');
 goog.provide('TextLog');
 goog.provide('TreeLog');
 
 goog.require('QueueMode');
 
+/**
+ * List of all types of logs supported.
+ * Note that filter type checkboxes are shown in this order at the log page.
+ * @enum {string}
+ */
+LogType = {
+  SPEECH: 'speech',
+  SPEECH_RULE: 'speechRule',
+  BRAILLE: 'braille',
+  BRAILLE_RULE: 'brailleRule',
+  EARCON: 'earcon',
+  EVENT: 'event',
+  TEXT: 'text',
+  TREE: 'tree',
+};
+
 BaseLog = class {
   constructor(logType) {
     /**
-     * @type {!LogStore.LogType}
+     * @type {!LogType}
      */
     this.logType = logType;
 
@@ -39,7 +56,7 @@ EventLog = class extends BaseLog {
    * @param {!chrome.automation.AutomationEvent} event
    */
   constructor(event) {
-    super(LogStore.LogType.EVENT);
+    super(LogType.EVENT);
 
     /**
      * @type {chrome.automation.EventType}
@@ -81,7 +98,7 @@ SpeechLog = class extends BaseLog {
    * @param {?string} category
    */
   constructor(textString, queueMode, category) {
-    super(LogStore.LogType.SPEECH);
+    super(LogType.SPEECH);
 
     /**
      * @type {string}
@@ -126,7 +143,7 @@ SpeechLog = class extends BaseLog {
 TextLog = class extends BaseLog {
   /**
    * @param {string} logStr
-   * @param {!LogStore.LogType} logType
+   * @param {!LogType} logType
    */
   constructor(logStr, logType) {
     super(logType);
@@ -150,7 +167,7 @@ TreeLog = class extends BaseLog {
    * @param {!TreeDumper} logTree
    */
   constructor(logTree) {
-    super(LogStore.LogType.TREE);
+    super(LogType.TREE);
 
     /**
      * @type {!TreeDumper}

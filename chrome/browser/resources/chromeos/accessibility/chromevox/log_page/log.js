@@ -11,12 +11,9 @@
  * Class to manage the log page.
  */
 export class LogPage {
-  static init() {
-    LogPage.backgroundWindow = chrome.extension.getBackgroundPage();
-    LogPage.LogStore = LogPage.backgroundWindow.LogStore.getInstance();
-
+  static async init() {
     /** Create filter checkboxes. */
-    for (const type of Object.values(LogStore.LogType)) {
+    for (const type of Object.values(LogType)) {
       const label = document.createElement('label');
       const input = document.createElement('input');
       input.id = type + 'Filter';
@@ -32,13 +29,13 @@ export class LogPage {
     }
 
     const clearLogButton = document.getElementById('clearLog');
-    clearLogButton.onclick = function(event) {
-      LogPage.LogStore.clearLog();
+    clearLogButton.onclick = async function(event) {
+      await BackgroundBridge.LogStore.clearLog();
       location.reload();
     };
 
     const params = new URLSearchParams(location.search);
-    for (const type of Object.values(LogStore.LogType)) {
+    for (const type of Object.values(LogType)) {
       const typeFilter = type + 'Filter';
       LogPage.setFilterTypeEnabled(typeFilter, params.get(typeFilter));
     }
@@ -55,7 +52,7 @@ export class LogPage {
       checkboxes[i].onclick = filterEventListener;
     }
 
-    LogPage.update();
+    await LogPage.update();
   }
 
   /**
@@ -90,14 +87,14 @@ export class LogPage {
    * Update the states of checkboxes and
    * update logs.
    */
-  static update() {
-    for (const type of Object.values(LogStore.LogType)) {
+  static async update() {
+    for (const type of Object.values(LogType)) {
       const typeFilter = type + 'Filter';
       const element = document.getElementById(typeFilter);
       element.checked = LogPage.urlPrefs_[typeFilter];
     }
 
-    const log = LogPage.LogStore.getLogs();
+    const log = await BackgroundBridge.LogStore.getLogs();
     LogPage.updateLog(log, document.getElementById('logList'));
   }
 
@@ -128,7 +125,7 @@ export class LogPage {
       p.appendChild(timeStamp);
 
       /** Add hide tree button when logType is tree. */
-      if (log[i].logType === LogStore.LogType.TREE) {
+      if (log[i].logType === LogType.TREE) {
         const toggle = document.createElement('label');
         const toggleCheckbox = document.createElement('input');
         toggleCheckbox.type = 'checkbox';
@@ -167,7 +164,7 @@ export class LogPage {
    */
   static createUrlParams() {
     const urlParams = [];
-    for (const type of Object.values(LogStore.LogType)) {
+    for (const type of Object.values(LogType)) {
       const typeFilter = type + 'Filter';
       urlParams.push(typeFilter + '=' + LogPage.urlPrefs_[typeFilter]);
     }
@@ -194,18 +191,6 @@ export class LogPage {
 }
 
 /**
- * The Background object.
- * @type {Window}
- */
-LogPage.backgroundWindow;
-
-/**
- * The LogStore object.
- * @type {LogStore}
- */
-LogPage.LogStore;
-
-/**
  * Store the preferences of filters.
  * @type {Object<string, boolean>}
  * @private
@@ -213,6 +198,6 @@ LogPage.LogStore;
 LogPage.urlPrefs_ = {};
 
 
-document.addEventListener('DOMContentLoaded', function() {
-  LogPage.init();
+document.addEventListener('DOMContentLoaded', async function() {
+  await LogPage.init();
 }, false);

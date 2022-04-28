@@ -1186,7 +1186,7 @@ export class CommandHandler extends CommandHandlerInterface {
         const logString = outString.concat(`Language spans:
         ${JSON.stringify(annotation)}`);
         console.error(logString);
-        LogStore.getInstance().writeTextLog(logString, LogStore.LogType.TEXT);
+        LogStore.getInstance().writeTextLog(logString, LogType.TEXT);
       }
         return false;
       default:

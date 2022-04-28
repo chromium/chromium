@@ -14,7 +14,6 @@ goog.require('EventStreamLogger');
 goog.require('ExtensionBridge');
 goog.require('ExtraCellsSpan');
 goog.require('LibLouis');
-goog.require('LogStore');
 goog.require('Msgs');
 goog.require('PanelCommand');
 goog.require('Spannable');

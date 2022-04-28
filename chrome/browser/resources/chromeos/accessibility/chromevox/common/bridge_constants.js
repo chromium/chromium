@@ -16,6 +16,7 @@ BridgeTarget = {
   BRAILLE_BACKGROUND: 'BrailleBackground',
   CHROMEVOX_PREFS: 'ChromeVoxPrefs',
   CHROMEVOX_STATE: 'ChromeVoxState',
+  LOG_STORE: 'LogStore',
 };
 
 /**
@@ -24,6 +25,8 @@ BridgeTarget = {
  */
 BridgeAction = {
   BACK_TRANSLATE: 'backTranslate',
+  CLEAR_LOG: 'clearLog',
+  GET_LOGS: 'getLogs',
   GET_PREFS: 'getPrefs',
   REFRESH_BRAILLE_TABLE: 'refreshBrailleTable',
   SET_LOGGING_PREFS: 'setLoggingPrefs',
