@@ -125,6 +125,12 @@ void CartHandler::OnDiscountConsentContinued() {
   cart_service_->InterestedInDiscountConsent();
 }
 
+void CartHandler::ShowNativeConsentDialog(
+    ShowNativeConsentDialogCallback callback) {
+  cart_service_->InterestedInDiscountConsent();
+  cart_service_->ShowNativeConsentDialog(std::move(callback));
+}
+
 void CartHandler::GetDiscountEnabled(GetDiscountEnabledCallback callback) {
   std::move(callback).Run(cart_service_->IsCartDiscountEnabled());
 }

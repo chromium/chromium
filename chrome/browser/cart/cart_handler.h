@@ -40,6 +40,8 @@ class CartHandler : public chrome_cart::mojom::CartHandler {
   void OnDiscountConsentAcknowledged(bool accept) override;
   void OnDiscountConsentDismissed() override;
   void OnDiscountConsentContinued() override;
+  void ShowNativeConsentDialog(
+      ShowNativeConsentDialogCallback callback) override;
   void GetDiscountEnabled(GetDiscountEnabledCallback callback) override;
   void SetDiscountEnabled(bool enabled) override;
   void PrepareForNavigation(const GURL& cart_url, bool is_navigating) override;

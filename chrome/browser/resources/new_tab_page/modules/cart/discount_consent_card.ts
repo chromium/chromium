@@ -44,8 +44,13 @@ interface Step {
 
 /**
  * Indicate the variation of the consent card.
- *   * Default, StringChange, and Dialog has one step.
+ *   * Default, StringChange, Dialog, and NativeDialog has one step.
  *   * Inline has two steps.
+ *
+ * This is the same enum in commerce_feature_list.h,
+ * commerce::DiscountConsentNtpVariation.
+ *
+ * TODO(meiliang@): Use a mojo enum instead.
  */
 export enum DiscountConsentVariation {
   // These values are persisted to logs. Entries should not be renumbered and
@@ -53,7 +58,8 @@ export enum DiscountConsentVariation {
   Default = 0,
   StringChange = 1,
   Inline = 2,
-  Dialog = 3
+  Dialog = 3,
+  NativeDialog = 4
 }
 
 // This is a configurable multi-step card. Each step is represented by the Step
@@ -135,15 +141,19 @@ export class DiscountConsentCard extends I18nMixin
       actionButton: {
         text: loadTimeData.getString('modulesCartConsentStepOneButton'),
         onClickHandler: () => {
+          chrome.metricsPrivate.recordUserAction(
+              'NewTabPage.Carts.ShowInterestInDiscountConsent');
+          this.dispatchEvent(
+              new CustomEvent('discount-consent-continued', {composed: true}));
+          if (loadTimeData.getInteger('modulesCartDiscountConsentVariation') ===
+              DiscountConsentVariation.NativeDialog) {
+            return;
+          }
           if (this.currentStep + 1 < this.getTotalStep_()) {
             this.currentStep++;
           } else {
             this.showDiscountConsentDialog_ = true;
           }
-          chrome.metricsPrivate.recordUserAction(
-              'NewTabPage.Carts.ShowInterestInDiscountConsent');
-          this.dispatchEvent(
-              new CustomEvent('discount-consent-continued', {composed: true}));
         },
       }
     });

@@ -15,6 +15,7 @@
 #include "chrome/browser/cart/cart_discount_link_fetcher.h"
 #include "chrome/browser/cart/cart_metrics_tracker.h"
 #include "chrome/browser/cart/cart_service_factory.h"
+#include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/cart/discount_url_loader.h"
 #include "chrome/browser/cart/fetch_discount_worker.h"
 #include "chrome/browser/commerce/coupons/coupon_service.h"
@@ -132,6 +133,12 @@ class CartService : public history::HistoryServiceObserver,
   // Gets called when user has click the 'Continue' button in the discount
   // consent.
   void InterestedInDiscountConsent() override;
+
+  // This is used when the NativeDialog variation is active. It gets called
+  // when user has clicked the 'Continue' button in the discount consent.
+  void ShowNativeConsentDialog(
+      base::OnceCallback<void(chrome_cart::mojom::ConsentStatus)>
+          consent_status_callback);
   // Appends UTM tags to the end of |base_url|. It will always append
   // "utm_source=chrome" and "utm_medium=app". It will also append
   // "utm_campaign" which can be one of the below three values:

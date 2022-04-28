@@ -13,10 +13,11 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {DomIf, DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MerchantCart} from '../../chrome_cart.mojom-webui.js';
+import {ConsentStatus, MerchantCart} from '../../chrome_cart.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
 import {recordOccurence} from '../../metrics_utils.js';
 import {InfoDialogElement} from '../info_dialog.js';
@@ -455,8 +456,28 @@ export class ChromeCartModuleElement extends I18nMixin
         'NewTabPage.Carts.DismissDiscountConsent');
   }
 
-  private onDiscountConsentContinued_() {
-    ChromeCartProxy.getHandler().onDiscountConsentContinued();
+  private async onDiscountConsentContinued_() {
+    if (loadTimeData.getInteger('modulesCartDiscountConsentVariation') ===
+        DiscountConsentVariation.NativeDialog) {
+      const {consentStatus} =
+          await ChromeCartProxy.getHandler().showNativeConsentDialog();
+
+      switch (consentStatus) {
+        case ConsentStatus.ACCEPTED:
+          this.onDiscountConsentAccepted_();
+          break;
+        case ConsentStatus.DISMISSED:
+          this.onDiscountConsentDismissed_();
+          break;
+        case ConsentStatus.REJECTED:
+          this.onDiscountConsentRejected_();
+          break;
+        default:
+          assertNotReached();
+      }
+    } else {
+      ChromeCartProxy.getHandler().onDiscountConsentContinued();
+    }
   }
 
   private onConfirmDiscountConsentClick_() {
