@@ -4,6 +4,7 @@
 """Definitions of builders in the chromium builder group."""
 
 load("//lib/args.star", "args")
+load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "goma", "os", "sheriff_rotations")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
@@ -534,4 +535,19 @@ ci.builder(
     # TODO(crbug.com/1155416) builds with PGO change take long time.
     execution_timeout = 7 * time.hour,
     os = os.WINDOWS_DEFAULT,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "checkout_pgo_profiles",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            target_bits = 32,
+        ),
+    ),
 )
