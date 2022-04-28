@@ -23890,6 +23890,9 @@ Called by update_debug_scenarios.py.-->
   <int value="15" label="Receive error"/>
   <int value="16" label="Other client error"/>
   <int value="17" label="Other server error"/>
+  <int value="18" label="Empty nameservers"/>
+  <int value="19" label="Empty DoH providers"/>
+  <int value="20" label="Client initialization error"/>
 </enum>
 
 <enum name="DnsProxy.QueryResult">

@@ -934,6 +934,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Network.DnsProxy.{Type}Query.ResultsWithRetries"
+    enum="DnsProxy.QueryResult" expires_after="2022-12-31">
+  <owner>garrick@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Diagnostic metric for Chrome OS DNS proxy that records the results of the
+    DNS queries made by the service. A value will be recorded whenever the
+    request completes. If there are retries, only the last result will be
+    recorded.
+  </summary>
+  <token key="Type">
+    <variant name="DnsOverHttps"/>
+    <variant name="PlainText"/>
+  </token>
+</histogram>
+
 <histogram name="Network.EarlyHints.Preload.RequestDestination"
     enum="RequestDestination" expires_after="2022-10-23">
   <owner>bashi@chromium.org</owner>
