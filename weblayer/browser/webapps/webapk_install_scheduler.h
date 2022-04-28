@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "weblayer/browser/webapps/weblayer_webapps_client.h"
 
 namespace content {
 class WebContents;
@@ -36,6 +37,8 @@ class WebApkInstallScheduler {
   using FinishCallback = base::OnceCallback<void(webapps::WebApkInstallResult)>;
 
   virtual ~WebApkInstallScheduler();
+  using WebApkInstallFinishedCallback =
+      weblayer::WebLayerWebappsClient::WebApkInstallFinishedCallback;
 
   WebApkInstallScheduler(const WebApkInstallScheduler&) = delete;
   WebApkInstallScheduler& operator=(const WebApkInstallScheduler&) = delete;
@@ -44,7 +47,8 @@ class WebApkInstallScheduler {
       content::WebContents* web_contents,
       const webapps::ShortcutInfo& shortcut_info,
       const SkBitmap& primary_icon,
-      bool is_primary_icon_maskable);
+      bool is_primary_icon_maskable,
+      WebApkInstallFinishedCallback callback);
 
   void FetchProtoAndScheduleInstallForTesting(
       content::WebContents* web_contents);
@@ -54,7 +58,9 @@ class WebApkInstallScheduler {
  private:
   WebApkInstallScheduler(const webapps::ShortcutInfo& shortcut_info,
                          const SkBitmap& primary_icon,
-                         bool is_primary_icon_maskable);
+                         bool is_primary_icon_maskable,
+                         WebApkInstallFinishedCallback callback);
+
   friend class TestWebApkInstallScheduler;
 
   void FetchMurmur2Hashes(content::WebContents* web_contents);
@@ -68,6 +74,7 @@ class WebApkInstallScheduler {
 
   virtual void OnResult(webapps::WebApkInstallResult result);
 
+  WebApkInstallFinishedCallback webapps_client_callback_;
   std::unique_ptr<webapps::ShortcutInfo> shortcut_info_;
   const SkBitmap primary_icon_;
   bool is_primary_icon_maskable_;

@@ -28,8 +28,10 @@ namespace weblayer {
 WebApkInstallScheduler::WebApkInstallScheduler(
     const webapps::ShortcutInfo& shortcut_info,
     const SkBitmap& primary_icon,
-    bool is_primary_icon_maskable)
-    : primary_icon_(primary_icon),
+    bool is_primary_icon_maskable,
+    WebApkInstallFinishedCallback callback)
+    : webapps_client_callback_(std::move(callback)),
+      primary_icon_(primary_icon),
       is_primary_icon_maskable_(is_primary_icon_maskable) {
   shortcut_info_ = std::make_unique<webapps::ShortcutInfo>(shortcut_info);
 }
@@ -41,12 +43,14 @@ void WebApkInstallScheduler::FetchProtoAndScheduleInstall(
     content::WebContents* web_contents,
     const webapps::ShortcutInfo& shortcut_info,
     const SkBitmap& primary_icon,
-    bool is_primary_icon_maskable) {
+    bool is_primary_icon_maskable,
+    WebApkInstallFinishedCallback callback) {
   // Self owned WebApkInstallScheduler that destroys itself as soon as its
   // OnResult function is called when the scheduled installation failed or
   // finished.
-  WebApkInstallScheduler* scheduler = new WebApkInstallScheduler(
-      shortcut_info, primary_icon, is_primary_icon_maskable);
+  WebApkInstallScheduler* scheduler =
+      new WebApkInstallScheduler(shortcut_info, primary_icon,
+                                 is_primary_icon_maskable, std::move(callback));
   scheduler->FetchMurmur2Hashes(web_contents);
 }
 
@@ -109,6 +113,8 @@ void WebApkInstallScheduler::OnResult(webapps::WebApkInstallResult result) {
   // WebApkInstallSchedulerClient already makes sure that the callback, which is
   // triggered by the Chrome-service, is invoked on the UI thread.
   webapps::WebappsUtils::ShowWebApkInstallResultToast(result);
+
+  std::move(webapps_client_callback_).Run(shortcut_info_->manifest_url);
   delete this;
 }
 

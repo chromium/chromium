@@ -32,6 +32,9 @@ using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
+WebLayerWebappsClient::WebLayerWebappsClient() = default;
+WebLayerWebappsClient::~WebLayerWebappsClient() = default;
+
 // static
 void WebLayerWebappsClient::Create() {
   static base::NoDestructor<WebLayerWebappsClient> instance;
@@ -71,8 +74,7 @@ webapps::AppBannerManager* WebLayerWebappsClient::GetAppBannerManager(
 bool WebLayerWebappsClient::IsInstallationInProgress(
     content::WebContents* web_contents,
     const GURL& manifest_url) {
-  // TODO(swestphal): Implement this in a follow up CL.
-  return false;
+  return current_installs_.count(manifest_url) > 0;
 }
 
 bool WebLayerWebappsClient::CanShowAppBanners(
@@ -86,9 +88,13 @@ void WebLayerWebappsClient::OnWebApkInstallInitiatedFromAppMenu(
 void WebLayerWebappsClient::InstallWebApk(
     content::WebContents* web_contents,
     const webapps::AddToHomescreenParams& params) {
+  DCHECK(current_installs_.count(params.shortcut_info->manifest_url) == 0);
+  current_installs_.insert(params.shortcut_info->manifest_url);
   WebApkInstallScheduler::FetchProtoAndScheduleInstall(
       web_contents, *(params.shortcut_info), params.primary_icon,
-      params.has_maskable_primary_icon);
+      params.has_maskable_primary_icon,
+      base::BindOnce(&WebLayerWebappsClient::OnInstallFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WebLayerWebappsClient::InstallShortcut(
@@ -99,6 +105,11 @@ void WebLayerWebappsClient::InstallShortcut(
   webapps::addShortcutToHomescreen(base::GenerateGUID(), info.url,
                                    info.user_title, params.primary_icon,
                                    params.has_maskable_primary_icon);
+}
+
+void WebLayerWebappsClient::OnInstallFinished(GURL manifest_url) {
+  DCHECK(current_installs_.count(manifest_url) == 1);
+  current_installs_.erase(manifest_url);
 }
 
 }  // namespace weblayer

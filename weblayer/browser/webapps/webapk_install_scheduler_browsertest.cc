@@ -43,10 +43,12 @@ class TestWebApkInstallScheduler : public WebApkInstallScheduler {
  public:
   TestWebApkInstallScheduler(const webapps::ShortcutInfo& shortcut_info,
                              const SkBitmap& primary_icon,
-                             bool is_primary_icon_maskable)
+                             bool is_primary_icon_maskable,
+                             WebApkInstallFinishedCallback callback)
       : WebApkInstallScheduler(shortcut_info,
                                primary_icon,
-                               is_primary_icon_maskable) {}
+                               is_primary_icon_maskable,
+                               std::move(callback)) {}
 
   TestWebApkInstallScheduler(const TestWebApkInstallScheduler&) = delete;
   TestWebApkInstallScheduler& operator=(const TestWebApkInstallScheduler&) =
@@ -154,7 +156,10 @@ class WebApkInstallSchedulerTest : public WebLayerBrowserTest {
   std::unique_ptr<TestWebApkInstallScheduler> DefaultWebApkInstallScheduler(
       webapps::ShortcutInfo info) {
     std::unique_ptr<TestWebApkInstallScheduler> scheduler_bridge(
-        new TestWebApkInstallScheduler(info, SkBitmap(), false));
+        new TestWebApkInstallScheduler(
+            info, SkBitmap(), false,
+            base::BindOnce(&WebApkInstallSchedulerTest::OnInstallFinished,
+                           base::Unretained(this))));
     return scheduler_bridge;
   }
 
@@ -171,6 +176,8 @@ class WebApkInstallSchedulerTest : public WebLayerBrowserTest {
   content::WebContents* web_contents_;
 
   net::EmbeddedTestServer test_server_;
+
+  void OnInstallFinished(GURL manifest_url) {}
 };
 
 // Test building the WebAPK-proto is succeeding.
