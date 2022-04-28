@@ -20,6 +20,11 @@ class FakeAreaSource : public GarbageCollected<FakeAreaSource>,
                           const LocalDOMWindow* local_dom_window)
       : page_url_(page_url), local_dom_window_(local_dom_window) {}
 
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(local_dom_window_);
+    CachedStorageArea::Source::Trace(visitor);
+  }
+
   KURL GetPageUrl() const override { return page_url_; }
   bool EnqueueStorageEvent(const String& key,
                            const String& old_value,
@@ -50,7 +55,7 @@ class FakeAreaSource : public GarbageCollected<FakeAreaSource>,
 
  private:
   KURL page_url_;
-  UntracedMember<const LocalDOMWindow> local_dom_window_;
+  Member<const LocalDOMWindow> local_dom_window_;
 };
 
 }  // namespace blink
