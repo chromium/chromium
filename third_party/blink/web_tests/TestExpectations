@@ -7406,9 +7406,6 @@ crbug.com/1038139 [ Mac ] virtual/gpu-rasterization/images/2-comp.html [ Failure
 
 crbug.com/1309664 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/render-blocked-apis-by-preload-link.tentative.html [ Failure ]
 
-# Sheriff 2022-02-07
-crbug.com/1289759 [ Linux ] http/tests/loading/slow-parsing-subframe.html [ Failure Pass ]
-
 # Sheriff 2022-02-08
 crbug.com/1295317 [ Mac11-arm64 ] compositing/geometry/video-fixed-scrolling.html [ Failure ]
 crbug.com/1295317 [ Mac11-arm64 ] compositing/geometry/video-opacity-overlay.html [ Failure ]
@@ -7701,3 +7698,7 @@ crbug.com/1288741 external/wpt/scroll-to-text-fragment/find-range-from-text-dire
 
 # Sheriff 2022-04-27
 crbug.com/1320418 [ Win7 ] external/wpt/dom/nodes/Document-createEvent.https.html [ Failure ]
+
+# Sheriff 2022-04-28
+crbug.com/1289759 [ Linux ] http/tests/loading/slow-parsing-subframe.html [ Failure Pass ]
+crbug.com/1289759 [ Win ] http/tests/loading/slow-parsing-subframe.html [ Failure Pass ]
