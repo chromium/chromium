@@ -24,6 +24,7 @@
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/clustering_backend.h"
+#include "components/history_clusters/core/history_clusters_service_task_get_most_recent_clusters.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -74,10 +75,6 @@ class HistoryClustersService : public base::SupportsUserData,
    public:
     virtual void OnDebugMessage(const std::string& message) = 0;
   };
-
-  // Used to track incomplete, unpersisted visits.
-  using IncompleteVisitMap =
-      std::map<int64_t, IncompleteVisitContextAnnotations>;
 
   // Use std::unordered_set here because we have ~1000 elements at the 99th
   // percentile, and we do synchronous lookups as the user types in the omnibox.
@@ -159,11 +156,11 @@ class HistoryClustersService : public base::SupportsUserData,
   //
   // TODO(tommycli): Investigate entirely hiding access to this low-level method
   // behind QueryClustersState.
-  void QueryClusters(ClusteringRequestSource clustering_request_source,
-                     base::Time begin_time,
-                     QueryClustersContinuationParams continuation_params,
-                     QueryClustersCallback callback,
-                     base::CancelableTaskTracker* task_tracker);
+  std::unique_ptr<HistoryClustersServiceTaskGetMostRecentClusters>
+  QueryClusters(ClusteringRequestSource clustering_request_source,
+                base::Time begin_time,
+                QueryClustersContinuationParams continuation_params,
+                QueryClustersCallback callback);
 
   // Removes all visits to the specified URLs in the specified time ranges in
   // `expire_list`. Calls `closure` when done.
@@ -207,20 +204,6 @@ class HistoryClustersService : public base::SupportsUserData,
       std::vector<history::Cluster> clusters,
       QueryClustersContinuationParams continuation_params);
 
-  // Internally used callback for `QueryClusters()`.
-  void OnGotHistoryVisits(
-      ClusteringRequestSource clustering_request_source,
-      base::TimeTicks query_visits_start,
-      QueryClustersCallback callback,
-      std::vector<history::AnnotatedVisit> annotated_visits,
-      QueryClustersContinuationParams continuation_params) const;
-
-  // Runs on UI thread. Internally used callback for `OnGotHistoryVisits()`.
-  void OnGotRawClusters(QueryClustersContinuationParams continuation_params,
-                        base::TimeTicks cluster_start_time,
-                        QueryClustersCallback callback,
-                        std::vector<history::Cluster> clusters) const;
-
   // True if Journeys is enabled based on field trial and locale checks.
   const bool is_journeys_enabled_;
 
@@ -257,7 +240,11 @@ class HistoryClustersService : public base::SupportsUserData,
   URLKeywordSet short_url_keywords_cache_;
   base::Time short_keyword_cache_timestamp_;
 
-  base::CancelableTaskTracker cache_query_task_tracker_;
+  // Tracks the current keyword task. Will be `nullptr` or
+  // `cache_keyword_query_task_.Done()` will be true if there is no ongoing
+  // task.
+  std::unique_ptr<HistoryClustersServiceTaskGetMostRecentClusters>
+      cache_keyword_query_task_;
 
   // A list of observers for this service.
   base::ObserverList<Observer> observers_;

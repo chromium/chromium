@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history_clusters/core/history_clusters_service_task_get_most_recent_clusters.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -89,7 +90,8 @@ class QueryClustersState {
   bool is_continuation_ = false;
 
   // Used only to fast-cancel tasks in case we are destroyed.
-  base::CancelableTaskTracker task_tracker_;
+  std::unique_ptr<HistoryClustersServiceTaskGetMostRecentClusters>
+      query_clusters_task;
 
   // A task runner to run all the post-processing tasks on.
   scoped_refptr<base::SequencedTaskRunner> post_processing_task_runner_;

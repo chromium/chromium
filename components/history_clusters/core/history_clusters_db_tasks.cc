@@ -15,6 +15,7 @@
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/config.h"
+#include "components/history_clusters/core/history_clusters_types.h"
 
 namespace history_clusters {
 
@@ -40,7 +41,7 @@ base::Time GetAnnotatedVisitsToCluster::GetBeginTimeOnDayBoundary(
 }
 
 GetAnnotatedVisitsToCluster::GetAnnotatedVisitsToCluster(
-    HistoryClustersService::IncompleteVisitMap incomplete_visit_map,
+    IncompleteVisitMap incomplete_visit_map,
     base::Time begin_time,
     QueryClustersContinuationParams continuation_params,
     Callback callback)

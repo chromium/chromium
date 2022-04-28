@@ -27,6 +27,15 @@ struct QueryClustersContinuationParams {
         exhausted_history(exhausted_history),
         is_done(is_done) {}
 
+  // Returns a `QueryClustersContinuationParams` representing the done state.
+  // Most of the values don't matter, but `exhausted_history` and `is_done`
+  // should be true.
+  static const QueryClustersContinuationParams DoneParams() {
+    static QueryClustersContinuationParams kDoneParams = {base::Time(), true,
+                                                          false, true, true};
+    return kDoneParams;
+  }
+
   // The time already fetched visits up to and where the next request will
   // continue.
   base::Time continuation_time = base::Time();
@@ -76,6 +85,9 @@ struct IncompleteVisitContextAnnotations {
   history::VisitRow visit_row;
   history::VisitContextAnnotations context_annotations;
 };
+
+// Used to track incomplete, unpersisted visits.
+using IncompleteVisitMap = std::map<int64_t, IncompleteVisitContextAnnotations>;
 
 }  // namespace history_clusters
 

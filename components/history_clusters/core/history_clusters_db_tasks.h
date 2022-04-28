@@ -12,6 +12,7 @@
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_service.h"
+#include "components/history_clusters/core/history_clusters_types.h"
 
 namespace history_clusters {
 
@@ -34,7 +35,7 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
   static base::Time GetBeginTimeOnDayBoundary(base::Time end_time);
 
   GetAnnotatedVisitsToCluster(
-      HistoryClustersService::IncompleteVisitMap incomplete_visit_map,
+      IncompleteVisitMap incomplete_visit_map,
       base::Time begin_time,
       QueryClustersContinuationParams continuation_params,
       Callback callback);
@@ -75,7 +76,7 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
   // the completed visits fetched will be appended to the annotated visits
   // returned for clustering. It's used in the DB thread as each filtered visit
   // will need to fetch its `referring_visit_of_redirect_chain_start`.
-  HistoryClustersService::IncompleteVisitMap incomplete_visit_map_;
+  IncompleteVisitMap incomplete_visit_map_;
 
   // The lower bound of the begin times used in the history requests for
   // completed visits. This is a lower bound time of all the visits fetched,

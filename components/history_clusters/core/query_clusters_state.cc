@@ -67,12 +67,12 @@ void QueryClustersState::LoadNextBatchOfClusters(ResultCallback callback) {
     return;
 
   base::TimeTicks query_start_time = base::TimeTicks::Now();
-  service_->QueryClusters(ClusteringRequestSource::kJourneysPage,
-                          /*begin_time=*/base::Time(), continuation_params_,
-                          base::BindOnce(&QueryClustersState::OnGotRawClusters,
-                                         weak_factory_.GetWeakPtr(),
-                                         query_start_time, std::move(callback)),
-                          &task_tracker_);
+  query_clusters_task = service_->QueryClusters(
+      ClusteringRequestSource::kJourneysPage,
+      /*begin_time=*/base::Time(), continuation_params_,
+      base::BindOnce(&QueryClustersState::OnGotRawClusters,
+                     weak_factory_.GetWeakPtr(), query_start_time,
+                     std::move(callback)));
 }
 
 void QueryClustersState::OnGotRawClusters(

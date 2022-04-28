@@ -227,8 +227,6 @@ class HistoryClustersServiceTestBase : public testing::Test {
   // Non-owning pointer. The actual owner is `history_clusters_service_`.
   TestClusteringBackend* test_clustering_backend_;
 
-  base::CancelableTaskTracker task_tracker_;
-
   // Used to verify the async callback is invoked.
   base::RunLoop run_loop_;
   base::RepeatingClosure run_loop_quit_;
@@ -284,11 +282,11 @@ TEST_F(HistoryClustersServiceTest, HardCapOnVisitsFetchedFromHistory) {
   }
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
 
-  history_clusters_service_->QueryClusters(
+  const auto task = history_clusters_service_->QueryClusters(
       ClusteringRequestSource::kKeywordCacheGeneration,
       /*begin_time=*/base::Time(), /*continuation_params=*/{},
-      base::DoNothing(),  // Only need to verify the correct request is sent.
-      &task_tracker_);
+      base::DoNothing()  // Only need to verify the correct request is sent
+  );
 
   test_clustering_backend_->WaitForGetClustersCall();
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
@@ -320,15 +318,14 @@ TEST_F(HistoryClustersServiceTest, QueryClustersIncompleteAndPersistedVisits) {
   QueryClustersContinuationParams continuation_params = {};
   continuation_params.continuation_time = base::Time::Now();
   const auto next_query_clusters = [&]() {
-    history_clusters_service_->QueryClusters(
+    const auto task = history_clusters_service_->QueryClusters(
         ClusteringRequestSource::kJourneysPage,
         /*begin_time=*/base::Time(), continuation_params,
         base::BindLambdaForTesting(
             [&](std::vector<history::Cluster> clusters,
                 QueryClustersContinuationParams continuation_params_temp) {
               continuation_params = continuation_params_temp;
-            }),
-        &task_tracker_);
+            }));
 
     test_clustering_backend_->WaitForGetClustersCall();
     history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
@@ -374,15 +371,15 @@ TEST_F(HistoryClustersServiceTest, EndToEndWithBackend) {
   base::RunLoop run_loop;
   auto run_loop_quit = run_loop.QuitClosure();
 
-  history_clusters_service_->QueryClusters(
-      ClusteringRequestSource::kJourneysPage,
-      /*begin_time=*/base::Time(),
-      /*continuation_params=*/{},
-      // This "expect" block is not run until after the fake response is sent
-      // further down in this method.
-      base::BindLambdaForTesting(
-          [&](std::vector<history::Cluster> clusters,
-              QueryClustersContinuationParams) {
+  const auto task =
+      history_clusters_service_->QueryClusters(
+          ClusteringRequestSource::kJourneysPage,
+          /*begin_time=*/base::Time(),
+          /*continuation_params=*/{},
+          // This "expect" block is not run until after the fake response is
+          // sent further down in this method.
+          base::BindLambdaForTesting([&](std::vector<history::Cluster> clusters,
+                                         QueryClustersContinuationParams) {
             ASSERT_EQ(clusters.size(), 2U);
 
             auto& cluster = clusters[0];
@@ -430,8 +427,7 @@ TEST_F(HistoryClustersServiceTest, EndToEndWithBackend) {
             EXPECT_TRUE(cluster.keywords.empty());
 
             run_loop_quit.Run();
-          }),
-      &task_tracker_);
+          }));
 
   AwaitAndVerifyTestClusteringBackendRequest();
 
