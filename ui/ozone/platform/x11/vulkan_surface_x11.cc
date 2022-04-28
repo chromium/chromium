@@ -41,6 +41,7 @@ std::unique_ptr<VulkanSurfaceX11> VulkanSurfaceX11::Create(
     return nullptr;
   }
 
+  // TODO(penghuang): using the same xcb connection for VulkanSurface.
   VkSurfaceKHR vk_surface;
   const VkXcbSurfaceCreateInfoKHR surface_create_info = {
       .sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR,
@@ -104,10 +105,13 @@ bool VulkanSurfaceX11::Reshape(const gfx::Size& size,
                                gfx::OverlayTransform pre_transform) {
   DCHECK_EQ(pre_transform, gfx::OVERLAY_TRANSFORM_NONE);
 
-  auto* connection = x11::Connection::Get();
-  connection->ConfigureWindow(x11::ConfigureWindowRequest{
-      .window = window_, .width = size.width(), .height = size.height()});
-  connection->Flush();
+  // Vulkan WSI uses a separate xcb connection, so we need to synchronize
+  // ConfigureWindow call.
+  x11::Connection::Get()
+      ->ConfigureWindow(x11::ConfigureWindowRequest{
+          .window = window_, .width = size.width(), .height = size.height()})
+      .Sync();
+
   return VulkanSurface::Reshape(size, pre_transform);
 }
 
