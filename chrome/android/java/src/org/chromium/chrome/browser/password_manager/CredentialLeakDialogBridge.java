@@ -13,7 +13,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -23,10 +22,6 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 
 /** JNI call glue between the native password manager CredentialLeak class and Java objects. */
 public class CredentialLeakDialogBridge {
-    // Variation param for ChromeFeatureList.PASSWORD_CHANGE that determines whether the "change
-    // password automatically" button should contain an assistant icon.
-    private static final String VARIATION_PARAM_USE_ASSISTANT_ICON = "use_assistant_icon";
-
     private long mNativeCredentialLeakDialogViewAndroid;
     private final PasswordManagerDialogCoordinator mCredentialLeakDialog;
     private final WindowAndroid mWindowAndroid;
@@ -53,11 +48,6 @@ public class CredentialLeakDialogBridge {
             boolean isChangeAutomaticallyAvailable, String positiveButton, String negativeButton) {
         Activity activity = mWindowAndroid.getActivity().get();
         if (activity == null) return;
-
-        boolean useAssistantIcon = isChangeAutomaticallyAvailable
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.PASSWORD_CHANGE, VARIATION_PARAM_USE_ASSISTANT_ICON,
-                        true);
 
         @DrawableRes
         int headerDrawableId;
