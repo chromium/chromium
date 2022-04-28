@@ -37,11 +37,6 @@ class TestQuicServerStream
     task_runner_->PostTask(FROM_HERE, run_loop_.QuitClosure());
   }
 
-  void SendStreamData(absl::string_view /*data*/,
-                      bool /*close_stream*/) override {}
-  void TerminateStreamWithError(quic::QuicResetStreamError /*error*/) override {
-  }
-
   base::RunLoop* run_loop() { return &run_loop_; }
 
  private:
