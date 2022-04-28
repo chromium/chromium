@@ -131,9 +131,15 @@ using chrome_test_util::WindowWithNumber;
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
   // TODO(crbug.com/1285974).
-  if ([ChromeEarlGrey isNewOverflowMenuEnabled])
+  if ([ChromeEarlGrey isNewOverflowMenuEnabled]) {
     EARL_GREY_TEST_DISABLED(
         @"Earl Grey doesn't work properly with SwiftUI and multiwindow");
+  }
+
+  // TODO(crbug.com/1320858).
+#if TARGET_OS_SIMULATOR
+  EARL_GREY_TEST_DISABLED(@"This test fails on iPad Simulator");
+#endif
 
   [ChromeEarlGrey openNewWindow];
   [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
