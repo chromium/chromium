@@ -1567,10 +1567,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterBooleanPref(policy::policy_prefs::kUrlParamFilterEnabled,
                                 true);
 
-#if BUILDFLAG(IS_MAC)
-  registry->RegisterBooleanPref(policy::policy_prefs::kScreenTimeEnabled, true);
-#endif
-
   RegisterProfilePrefsForMigration(registry);
 }
 

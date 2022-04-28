@@ -21,7 +21,6 @@ POLICY_EXPORT extern const char kDlpReportingEnabled[];
 POLICY_EXPORT extern const char kDlpRulesList[];
 #if BUILDFLAG(IS_MAC)
 POLICY_EXPORT extern const char kEnterpriseMDMManagementMac[];
-POLICY_EXPORT extern const char kScreenTimeEnabled[];
 #endif
 POLICY_EXPORT extern const char kLastPolicyStatisticsUpdate[];
 POLICY_EXPORT extern const char kNativeWindowOcclusionEnabled[];

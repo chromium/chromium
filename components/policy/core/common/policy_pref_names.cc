@@ -21,9 +21,6 @@ const char kEnterpriseMDMManagementWindows[] =
 // Integer pref that stores the Mac enterprise MDM management authority.
 const char kEnterpriseMDMManagementMac[] =
     "management.platform.enterprise_mdm_mac";
-// Boolean pref that indicates whether integration with macOS Screen Time should
-// be enabled.
-const char kScreenTimeEnabled[] = "policy.screen_time";
 #endif
 
 // 64-bit serialization of the time last policy usage statistics were collected
