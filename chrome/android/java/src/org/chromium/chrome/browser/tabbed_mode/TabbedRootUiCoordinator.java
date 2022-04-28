@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadLaterIPHController;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.share.crow.CrowButtonDelegateImpl;
 import org.chromium.chrome.browser.share.crow.CrowIphController;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextIPHController;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
@@ -665,9 +666,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         () -> mToolbarManager.getMenuButtonView(), R.id.add_to_homescreen_id);
         AppBannerInProductHelpControllerFactory.attach(
                 mWindowAndroid, mAppBannerInProductHelpController);
-        mCrowIphController =
-                new CrowIphController(mActivity, mAppMenuCoordinator.getAppMenuHandler(),
-                        mActivityTabProvider, mToolbarManager.getMenuButtonView());
+        mCrowIphController = new CrowIphController(mActivity,
+                mAppMenuCoordinator.getAppMenuHandler(), new CrowButtonDelegateImpl(),
+                mActivityTabProvider, mToolbarManager.getMenuButtonView());
 
         if (!didTriggerPromo
                 && ChromeFeatureList.isEnabled(

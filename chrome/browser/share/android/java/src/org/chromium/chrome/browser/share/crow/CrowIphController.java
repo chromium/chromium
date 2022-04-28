@@ -10,7 +10,6 @@ import android.view.View;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -31,6 +30,7 @@ public class CrowIphController {
 
     private final Activity mActivity;
     private final AppMenuHandler mAppMenuHandler;
+    private final CrowButtonDelegate mCrowButtonDelegate;
     private final CurrentTabObserver mPageLoadObserver;
     private final UserEducationHelper mUserEducationHelper;
     private final View mMenuButtonAnchorView;
@@ -40,23 +40,26 @@ public class CrowIphController {
      *
      * @param activity The current activity.
      * @param appMenuHandler The app menu containing the menu entry to highlight.
+     * @param crowButtonDelegate The delegate that determines whether Crow is enabled for the site.
      * @param tabSupplier The supplier for the currently active {@link Tab}.
      * @param menuButtonAnchorView The menu button view to anchor the bubble to.
      */
     public CrowIphController(Activity activity, AppMenuHandler appMenuHandler,
-            ObservableSupplier<Tab> tabSupplier, View menuButtonAnchorView) {
+            CrowButtonDelegate crowButtonDelegate, ObservableSupplier<Tab> tabSupplier,
+            View menuButtonAnchorView) {
         mActivity = activity;
         mAppMenuHandler = appMenuHandler;
+        mCrowButtonDelegate = crowButtonDelegate;
         mMenuButtonAnchorView = menuButtonAnchorView;
         mUserEducationHelper = new UserEducationHelper(activity, new Handler());
 
         mPageLoadObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
             @Override
             public void onPageLoadFinished(Tab tab, GURL url) {
-                if (tab.isShowingErrorPage()) {
+                if (tab.isShowingErrorPage() || !mCrowButtonDelegate.isEnabledForSite(url)) {
                     return;
                 }
-                maybeShowCrowIph(tab.getUrl());
+                maybeShowCrowIph(url);
             }
         });
     }
@@ -66,10 +69,6 @@ public class CrowIphController {
     }
 
     private void maybeShowCrowIph(GURL url) {
-        // TODO(crbug/1314455): Finish implementing heuristics for showing the IPH.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_CROW_BUTTON)) {
-            return;
-        }
         CrowBridge.getVisitCountsToHost(url, NUM_HISTORY_DAYS, result -> {
             if (result.dailyVisits >= MIN_DAYS && result.visits >= MIN_VISITS) {
                 requestShowCrowIph();
