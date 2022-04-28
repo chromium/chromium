@@ -22,6 +22,11 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="DownloadBubbleViewType">
+  <variant name="Full"/>
+  <variant name="Partial"/>
+</variants>
+
 <variants name="DownloadClient">
   <variant name="__Test__"/>
   <variant name="BackgroundFetch"/>
@@ -30,6 +35,29 @@ chromium-metrics-reviews@google.com.
   <variant name="OfflinePage"/>
   <variant name="OptimizationGuidePredictionModels"/>
   <variant name="PluginVmImage"/>
+</variants>
+
+<variants name="DownloadDangerTypeString">
+  <variant name="AllowlistedByPolicy"/>
+  <variant name="AsyncScanning"/>
+  <variant name="BlockedPasswordProtected"/>
+  <variant name="BlockedTooLarge"/>
+  <variant name="BlockedUnsupportedFiletype"/>
+  <variant name="DangerousAccountCompromise"/>
+  <variant name="DangerousContent"/>
+  <variant name="DangerousFile"/>
+  <variant name="DangerousHost"/>
+  <variant name="DangerousURL"/>
+  <variant name="DeepScannedOpenedDangerous"/>
+  <variant name="DeepScannedSafe"/>
+  <variant name="MaybeDangerousContent"/>
+  <variant name="NotDangerous"/>
+  <variant name="PotentiallyUnwanted"/>
+  <variant name="PromptForScanning"/>
+  <variant name="SensitiveContentBlock"/>
+  <variant name="SensitiveContentWarning"/>
+  <variant name="UncommonContent"/>
+  <variant name="UserValidated"/>
 </variants>
 
 <histogram name="Download.ApiFunctions" enum="DownloadFunctions"
@@ -58,6 +86,66 @@ chromium-metrics-reviews@google.com.
     after file write is completed (e.g. safe browsing scanning). The maximum
     bucket range is 200Mbps.
   </summary>
+</histogram>
+
+<histogram name="Download.Bubble.PartialToFullViewLatency" units="ms"
+    expires_after="2022-10-18">
+  <owner>bhatiarohit@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <summary>
+    Measures the time (in ms) the user takes to open a full view (opened
+    manually) after seeing a partial view (opened by the browser for new and
+    completed downloads). Recorded only if the user has launched a full view
+    after a partial view was opened in the past, with no full view launch in
+    between. Recorded only for Desktop platforms, where Download Bubble is
+    enabled.
+  </summary>
+</histogram>
+
+<histogram
+    name="Download.Bubble.Subpage.{DownloadDangerTypeString}.{ButtonNum}ButtonActionTime"
+    units="ms" expires_after="2022-10-18">
+  <owner>bhatiarohit@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <summary>
+    Measures the time (in ms) between the Download bubble warning subpage being
+    shown, and one of the buttons being acted upon. The warning subpage is shown
+    when the user sees a download warning on the full or the partial view, and
+    navigates to the subpage for more actions. Recorded only for Desktop
+    platforms, where Download Bubble is enabled.
+  </summary>
+  <token key="ButtonNum">
+    <variant name="First"/>
+    <variant name="Second"/>
+  </token>
+  <token key="DownloadDangerTypeString" variants="DownloadDangerTypeString"/>
+</histogram>
+
+<histogram name="Download.Bubble.{DownloadBubbleViewType}View.VisibleTime"
+    units="ms" expires_after="2022-10-18">
+  <owner>bhatiarohit@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <summary>
+    Measures the time (in ms) for which the full view (opened manually) or the
+    partial view (opened by the browser for new and completed downloads) are
+    visible. Recorded only for Desktop platforms, where Download Bubble is
+    enabled.
+  </summary>
+  <token key="DownloadBubbleViewType" variants="DownloadBubbleViewType"/>
+</histogram>
+
+<histogram name="Download.Bubble.{DownloadBubbleViewType}ViewSize"
+    units="items" expires_after="2022-10-18">
+  <owner>bhatiarohit@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <summary>
+    Measures the size of the full view (opened manually) or the partial view
+    (opened by the browser for new and completed downloads). The full view
+    contains all recent downloads (last 24 hours), and the partial view contains
+    all recent downloads that user has not paid attention to, or acted upon.
+    Recorded only for Desktop platforms, where Download Bubble is enabled.
+  </summary>
+  <token key="DownloadBubbleViewType" variants="DownloadBubbleViewType"/>
 </histogram>
 
 <histogram name="Download.CancelReason" enum="DownloadCancelReason"

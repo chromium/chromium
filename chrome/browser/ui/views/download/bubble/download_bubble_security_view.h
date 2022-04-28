@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_SECURITY_VIEW_H_
 
 #include "chrome/browser/download/download_ui_model.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -47,8 +48,10 @@ class DownloadBubbleSecurityView : public views::View {
   void AddIconAndText();
   void UpdateButtons();
   void AddButtons();
-  void ProcessButtonClick(DownloadCommands::Command command);
+  void ProcessButtonClick(DownloadCommands::Command command,
+                          bool is_first_button);
   views::MdTextButton* GetButtonForCommand(DownloadCommands::Command command);
+  void RecordWarningActionTime(bool is_first_button);
 
   raw_ptr<DownloadBubbleRowView> download_row_view_;
   raw_ptr<DownloadBubbleUIController> bubble_controller_ = nullptr;
@@ -58,6 +61,7 @@ class DownloadBubbleSecurityView : public views::View {
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::ImageView> icon_ = nullptr;
   raw_ptr<views::StyledLabel> styled_label_ = nullptr;
+  absl::optional<base::Time> warning_time_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_SECURITY_VIEW_H_

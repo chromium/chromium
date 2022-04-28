@@ -21,6 +21,7 @@ component("public") {
     "base_file.h",
     "download_content.h",
     "download_create_info.h",
+    "download_danger_type.cc",
     "download_danger_type.h",
     "download_destination_observer.cc",
     "download_destination_observer.h",
