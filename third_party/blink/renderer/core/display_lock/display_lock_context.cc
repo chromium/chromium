@@ -954,8 +954,10 @@ const char* DisplayLockContext::ShouldForceUnlock() const {
     if (!object_element->UseFallbackContent())
       return nullptr;
   } else if (IsA<HTMLImageElement>(*element_) ||
-             element_->IsFormControlElement() || element_->IsMediaElement() ||
-             element_->IsFrameOwnerElement() || element_->IsSVGElement()) {
+             (element_->IsFormControlElement() &&
+              !element_->IsOutputElement()) ||
+             element_->IsMediaElement() || element_->IsFrameOwnerElement() ||
+             element_->IsSVGElement()) {
     return nullptr;
   }
 

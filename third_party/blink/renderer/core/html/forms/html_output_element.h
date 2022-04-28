@@ -56,6 +56,8 @@ class CORE_EXPORT HTMLOutputElement final : public HTMLFormControlElement {
     return is_default_value_mode_;
   }
 
+  bool IsOutputElement() const override { return true; }
+
   void Trace(Visitor*) const override;
 
  private:
