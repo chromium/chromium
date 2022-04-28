@@ -98,6 +98,8 @@ struct PopupMatchRowView: View {
 
       button
 
+      let highlightColor = isHighlighted ? foregroundColorPrimary : nil
+
       // The content is in front of the button, for proper hit testing.
       HStack(alignment: .center, spacing: 0) {
         HStack(alignment: .center, spacing: 0) {
@@ -105,7 +107,7 @@ struct PopupMatchRowView: View {
           match.image
             .map { image in
               PopupMatchImageView(
-                image: image, highlightColor: isHighlighted ? foregroundColorPrimary : nil
+                image: image, highlightColor: highlightColor
               )
               .accessibilityHidden(true)
             }
@@ -113,24 +115,25 @@ struct PopupMatchRowView: View {
         }.frame(width: Dimensions.leadingSpacing)
         VStack(alignment: .leading, spacing: 0) {
           VStack(alignment: .leading, spacing: 0) {
-            OmniboxText(match.text, highlightColor: isHighlighted ? foregroundColorPrimary : nil)
+            GradientTextView(match.text, highlightColor: highlightColor)
               .lineLimit(1)
-              .truncatedWithGradient()
               .accessibilityHidden(true)
 
             if let subtitle = match.detailText, !subtitle.string.isEmpty {
-              let subtitleView = OmniboxText(
-                subtitle, highlightColor: isHighlighted ? foregroundColorPrimary : nil
-              )
-              .font(.footnote)
-              .foregroundColor(foregroundColorSecondary)
-              .lineLimit(match.hasAnswer ? match.numberOfLines : 1)
-              .accessibilityHidden(true)
-
               if match.hasAnswer {
-                subtitleView
+                OmniboxText(subtitle, highlightColor: highlightColor)
+                  .font(.footnote)
+                  .foregroundColor(foregroundColorSecondary)
+                  .lineLimit(match.numberOfLines)
+                  .accessibilityHidden(true)
               } else {
-                subtitleView.truncatedWithGradient()
+                GradientTextView(
+                  subtitle, highlightColor: highlightColor
+                )
+                .font(.footnote)
+                .foregroundColor(foregroundColorSecondary)
+                .lineLimit(1)
+                .accessibilityHidden(true)
               }
             }
           }

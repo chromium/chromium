@@ -380,6 +380,7 @@ struct PopupView_Previews: PreviewProvider {
 
     sample.environment(\.popupUIVariation, .one)
     sample.environment(\.popupUIVariation, .two)
+    sample.environment(\.locale, .init(identifier: "ar"))
 
     let darkSample = sample.environment(\.colorScheme, .dark)
 
