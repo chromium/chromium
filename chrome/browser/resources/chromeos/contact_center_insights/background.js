@@ -13,9 +13,15 @@ goog.require('proto.reporting.Priority');
 goog.require('proto.reporting.NetworksTelemetry');
 goog.require('proto.reporting.MetricData');
 goog.require('proto.reporting.TelemetryData');
+goog.require('proto.reporting.UserStatusTelemetry');
+goog.require('proto.reporting.UserStatusTelemetry.DeviceActivityState');
 
 const NETWORK_BANDWIDTH_ALARM = 'NetworkBandwidth';
 const REPORT_NETWORK_BANDWIDTH_PERIOD_MINUTES = 12 /** hours **/ * 60;
+
+const DEVICE_ACTIVITY_STATE_ALARM = 'DeviceActivityState';
+const REPORT_DEVICE_ACTIVITY_STATE_PERIOD_MINUTES = 15;
+const IDLE_THRESHOLD_SECONDS = 5 /** minutes **/ * 60;
 
 function reportBandwidthData() {
   // Extract bandwidth data
@@ -37,6 +43,47 @@ function reportBandwidthData() {
   const telemetryData = new proto.reporting.TelemetryData();
   telemetryData.setNetworksTelemetry(networksTelemetry);
 
+  reportTelemetryData(telemetryData);
+}
+
+function reportDeviceActivityState() {
+  chrome.idle.queryState(IDLE_THRESHOLD_SECONDS, (state) => {
+    const userStatusTelemetry = new proto.reporting.UserStatusTelemetry();
+    const mappedState = getMappedDeviceActivityState(state);
+    userStatusTelemetry.setDeviceActivityState(mappedState);
+
+    const telemetryData = new proto.reporting.TelemetryData();
+    telemetryData.setUserStatusTelemetry(userStatusTelemetry);
+
+    reportTelemetryData(telemetryData);
+  });
+}
+
+/**
+ * Returns the internal representation for the current device activity state.
+ * @param {string} activityState Device activity state.
+ * @return {!proto.reporting.UserStatusTelemetry.DeviceActivityState} internal
+ *     proto enum representation.
+ */
+function getMappedDeviceActivityState(activityState) {
+  switch (activityState) {
+    case 'active':
+      return proto.reporting.UserStatusTelemetry.DeviceActivityState.ACTIVE;
+    case 'idle':
+      return proto.reporting.UserStatusTelemetry.DeviceActivityState.IDLE;
+    case 'locked':
+      return proto.reporting.UserStatusTelemetry.DeviceActivityState.LOCKED;
+    default:
+      return proto.reporting.UserStatusTelemetry.DeviceActivityState
+          .DEVICE_ACTIVITY_STATE_UNKNOWN;
+  }
+}
+
+/**
+ * Reports collected telemetry data.
+ * @param {!proto.reporting.TelemetryData} telemetryData Data to report.
+ */
+function reportTelemetryData(telemetryData) {
   const metricData = new proto.reporting.MetricData();
   metricData.setTelemetryData(telemetryData);
 
@@ -55,20 +102,34 @@ function reportBandwidthData() {
   chrome.enterprise.reportingPrivate.enqueueRecord(request);
 }
 
+/**
+ * Creates an alarm with specified polling interval if one is not registered
+ * already.
+ * @param {string} name Alarm name.
+ * @param {number} periodInMinutes Polling interval in minutes
+ */
+function createAlarm(name, periodInMinutes) {
+  chrome.alarms.get(name, (alarm) => {
+    if (!alarm) {
+      chrome.alarms.create(name, {periodInMinutes});
+    }
+  });
+}
+
 // Global listener for all alarms
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === NETWORK_BANDWIDTH_ALARM) {
     reportBandwidthData();
   }
+
+  if (alarm.name === DEVICE_ACTIVITY_STATE_ALARM) {
+    reportDeviceActivityState();
+  }
 });
 
-// Register alarm for periodically reporting network bandwidth
+// Register alarms for periodically reporting telemetry data.
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.alarms.get(NETWORK_BANDWIDTH_ALARM, (alarm) => {
-    if (!alarm) {
-      chrome.alarms.create(
-          NETWORK_BANDWIDTH_ALARM,
-          {periodInMinutes: REPORT_NETWORK_BANDWIDTH_PERIOD_MINUTES});
-    }
-  });
+  createAlarm(NETWORK_BANDWIDTH_ALARM, REPORT_NETWORK_BANDWIDTH_PERIOD_MINUTES);
+  createAlarm(
+      DEVICE_ACTIVITY_STATE_ALARM, REPORT_DEVICE_ACTIVITY_STATE_PERIOD_MINUTES);
 });

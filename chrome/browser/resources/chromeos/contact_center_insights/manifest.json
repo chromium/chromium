@@ -10,6 +10,7 @@
   "permissions": [
     "alarms",
     "background",
-    "enterprise.reportingPrivate"
+    "enterprise.reportingPrivate",
+    "idle"
   ]
 }
