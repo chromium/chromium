@@ -84,7 +84,7 @@ struct FrameEvent {
   // encoded. Only set for video FRAME_ENCODED event.
   int target_bitrate;
 
-  // Encoding performance metrics. See media/cast/sender/sender_encoded_frame.h
+  // Encoding performance metrics. See media/cast/common/sender_encoded_frame.h
   // for a description of these values.
   double encoder_cpu_utilization;
   double idealized_bitrate_utilization;

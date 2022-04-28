@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/sender/audio_encoder.h"
+#include "media/cast/encoding/audio_encoder.h"
 
 #include <stdint.h>
 
@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "media/base/audio_sample_types.h"
 #include "media/cast/common/rtp_time.h"
+#include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
 
 #if !BUILDFLAG(IS_IOS)
@@ -80,18 +81,14 @@ class AudioEncoder::ImplBase
   ImplBase(const ImplBase&) = delete;
   ImplBase& operator=(const ImplBase&) = delete;
 
-  OperationalStatus InitializationResult() const {
-    return operational_status_;
-  }
+  OperationalStatus InitializationResult() const { return operational_status_; }
 
-  int samples_per_frame() const {
-    return samples_per_frame_;
-  }
+  int samples_per_frame() const { return samples_per_frame_; }
 
   base::TimeDelta frame_duration() const { return frame_duration_; }
 
   void EncodeAudio(std::unique_ptr<AudioBus> audio_bus,
-                   const base::TimeTicks& recorded_time) {
+                   const base::TimeTicks recorded_time) {
     DCHECK_EQ(operational_status_, STATUS_INITIALIZED);
     DCHECK(!recorded_time.is_null());
 
@@ -117,9 +114,9 @@ class AudioEncoder::ImplBase
                  << num_frames_missed * samples_per_frame_
                  << " samples' worth of underrun.";
         TRACE_EVENT_INSTANT2("cast.stream", "Audio Skip",
-                             TRACE_EVENT_SCOPE_THREAD,
-                             "frames missed", num_frames_missed,
-                             "samples dropped", samples_dropped_from_buffer_);
+                             TRACE_EVENT_SCOPE_THREAD, "frames missed",
+                             num_frames_missed, "samples dropped",
+                             samples_dropped_from_buffer_);
       }
     }
     frame_capture_time_ = recorded_time - buffer_fill_duration;
@@ -135,8 +132,8 @@ class AudioEncoder::ImplBase
       const int num_samples_to_xfer = std::min(
           samples_per_frame_ - buffer_fill_end_, audio_bus->frames() - src_pos);
       DCHECK_EQ(audio_bus->channels(), num_channels_);
-      TransferSamplesIntoBuffer(
-          audio_bus.get(), src_pos, buffer_fill_end_, num_samples_to_xfer);
+      TransferSamplesIntoBuffer(audio_bus.get(), src_pos, buffer_fill_end_,
+                                num_samples_to_xfer);
       src_pos += num_samples_to_xfer;
       buffer_fill_end_ += num_samples_to_xfer;
 
@@ -253,9 +250,7 @@ class AudioEncoder::OpusImpl final : public AudioEncoder::ImplBase {
         !IsValidFrameDuration(frame_duration_)) {
       return;
     }
-    if (opus_encoder_init(opus_encoder_,
-                          sampling_rate,
-                          num_channels,
+    if (opus_encoder_init(opus_encoder_, sampling_rate, num_channels,
                           OPUS_APPLICATION_AUDIO) != OPUS_OK) {
       ImplBase::operational_status_ = STATUS_INVALID_CONFIGURATION;
       return;
@@ -419,11 +414,8 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
     out_asbd.mFormatID = kAudioFormatMPEG4AAC;
     out_asbd.mChannelsPerFrame = num_channels_;
     UInt32 prop_size = sizeof(out_asbd);
-    if (AudioFormatGetProperty(kAudioFormatProperty_FormatInfo,
-                               0,
-                               nullptr,
-                               &prop_size,
-                               &out_asbd) != noErr) {
+    if (AudioFormatGetProperty(kAudioFormatProperty_FormatInfo, 0, nullptr,
+                               &prop_size, &out_asbd) != noErr) {
       return false;
     }
 
@@ -436,8 +428,7 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
     prop_size = sizeof(out_asbd);
     if (AudioConverterGetProperty(converter_,
                                   kAudioConverterCurrentOutputStreamDescription,
-                                  &prop_size,
-                                  &out_asbd) != noErr) {
+                                  &prop_size, &out_asbd) != noErr) {
       return false;
     }
 
@@ -446,9 +437,8 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
     // or compatible with the output sampling rate or channels).
     if (bitrate > 0) {
       prop_size = sizeof(int);
-      if (AudioConverterSetProperty(
-              converter_, kAudioConverterEncodeBitRate, prop_size, &bitrate) !=
-          noErr) {
+      if (AudioConverterSetProperty(converter_, kAudioConverterEncodeBitRate,
+                                    prop_size, &bitrate) != noErr) {
         return false;
       }
     }
@@ -460,10 +450,8 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
     if (max_access_unit_size == 0) {
       prop_size = sizeof(max_access_unit_size);
       if (AudioConverterGetProperty(
-              converter_,
-              kAudioConverterPropertyMaximumOutputPacketSize,
-              &prop_size,
-              &max_access_unit_size) != noErr) {
+              converter_, kAudioConverterPropertyMaximumOutputPacketSize,
+              &prop_size, &max_access_unit_size) != noErr) {
         return false;
       }
     }
@@ -490,34 +478,25 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
     UInt32 cookie_size;
     if (AudioConverterGetPropertyInfo(converter_,
                                       kAudioConverterCompressionMagicCookie,
-                                      &cookie_size,
-                                      nullptr) != noErr) {
+                                      &cookie_size, nullptr) != noErr) {
       return false;
     }
     std::unique_ptr<uint8_t[]> cookie_data(new uint8_t[cookie_size]);
     if (AudioConverterGetProperty(converter_,
                                   kAudioConverterCompressionMagicCookie,
-                                  &cookie_size,
-                                  cookie_data.get()) != noErr) {
+                                  &cookie_size, cookie_data.get()) != noErr) {
       return false;
     }
 
-    if (AudioFileInitializeWithCallbacks(this,
-                                         &FileReadCallback,
-                                         &FileWriteCallback,
-                                         &FileGetSizeCallback,
-                                         &FileSetSizeCallback,
-                                         kAudioFileAAC_ADTSType,
-                                         &out_asbd,
-                                         0,
-                                         &file_) != noErr) {
+    if (AudioFileInitializeWithCallbacks(
+            this, &FileReadCallback, &FileWriteCallback, &FileGetSizeCallback,
+            &FileSetSizeCallback, kAudioFileAAC_ADTSType, &out_asbd, 0,
+            &file_) != noErr) {
       return false;
     }
 
-    if (AudioFileSetProperty(file_,
-                             kAudioFilePropertyMagicCookieData,
-                             cookie_size,
-                             cookie_data.get()) != noErr) {
+    if (AudioFileSetProperty(file_, kAudioFilePropertyMagicCookieData,
+                             cookie_size, cookie_data.get()) != noErr) {
       return false;
     }
 
@@ -552,8 +531,8 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
 
     // Copy the samples into the input buffer.
     DCHECK_EQ(input_bus_->channel(0), input_buffer_->channel(0));
-    audio_bus->CopyPartialFramesTo(
-        source_offset, num_samples, buffer_fill_offset, input_buffer_.get());
+    audio_bus->CopyPartialFramesTo(source_offset, num_samples,
+                                   buffer_fill_offset, input_buffer_.get());
   }
 
   bool EncodeFromFilledBuffer(std::string* out) final {
@@ -564,12 +543,9 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
     OSStatus oserr;
     UInt32 io_num_packets = 1;
     AudioStreamPacketDescription packet_description;
-    oserr = AudioConverterFillComplexBuffer(converter_,
-                                            &ConverterFillDataCallback,
-                                            this,
-                                            &io_num_packets,
-                                            &converter_abl_,
-                                            &packet_description);
+    oserr = AudioConverterFillComplexBuffer(
+        converter_, &ConverterFillDataCallback, this, &io_num_packets,
+        &converter_abl_, &packet_description);
     if (oserr != noErr || io_num_packets == 0) {
       return false;
     }
@@ -580,13 +556,10 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
     // Set the current output buffer and emit an ADTS-wrapped AAC access unit.
     // This is a synchronous call. After it returns, reset the output buffer.
     output_buffer_ = out;
-    oserr = AudioFileWritePackets(file_,
-                                  false,
-                                  converter_abl_.mBuffers[0].mDataByteSize,
-                                  &packet_description,
-                                  num_access_units_,
-                                  &io_num_packets,
-                                  converter_abl_.mBuffers[0].mData);
+    oserr = AudioFileWritePackets(
+        file_, false, converter_abl_.mBuffers[0].mDataByteSize,
+        &packet_description, num_access_units_, &io_num_packets,
+        converter_abl_.mBuffers[0].mData);
     output_buffer_ = nullptr;
     if (oserr != noErr || io_num_packets == 0) {
       return false;
@@ -765,7 +738,7 @@ AudioEncoder::AudioEncoder(
     : cast_environment_(cast_environment) {
   // Note: It doesn't matter which thread constructs AudioEncoder, just so long
   // as all calls to InsertAudio() are by the same thread.
-  insert_thread_checker_.DetachFromThread();
+  DETACH_FROM_THREAD(insert_thread_checker_);
   switch (codec) {
 #if !BUILDFLAG(IS_IOS)
     case CODEC_AUDIO_OPUS:
@@ -792,7 +765,7 @@ AudioEncoder::AudioEncoder(
 AudioEncoder::~AudioEncoder() = default;
 
 OperationalStatus AudioEncoder::InitializationResult() const {
-  DCHECK(insert_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(insert_thread_checker_);
   if (impl_.get()) {
     return impl_->InitializationResult();
   }
@@ -800,7 +773,7 @@ OperationalStatus AudioEncoder::InitializationResult() const {
 }
 
 int AudioEncoder::GetSamplesPerFrame() const {
-  DCHECK(insert_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(insert_thread_checker_);
   if (InitializationResult() != STATUS_INITIALIZED) {
     NOTREACHED();
     return std::numeric_limits<int>::max();
@@ -809,7 +782,7 @@ int AudioEncoder::GetSamplesPerFrame() const {
 }
 
 base::TimeDelta AudioEncoder::GetFrameDuration() const {
-  DCHECK(insert_thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(insert_thread_checker_);
   if (InitializationResult() != STATUS_INITIALIZED) {
     NOTREACHED();
     return base::TimeDelta();
@@ -818,8 +791,8 @@ base::TimeDelta AudioEncoder::GetFrameDuration() const {
 }
 
 void AudioEncoder::InsertAudio(std::unique_ptr<AudioBus> audio_bus,
-                               const base::TimeTicks& recorded_time) {
-  DCHECK(insert_thread_checker_.CalledOnValidThread());
+                               const base::TimeTicks recorded_time) {
+  DCHECK_CALLED_ON_VALID_THREAD(insert_thread_checker_);
   DCHECK(audio_bus.get());
   if (InitializationResult() != STATUS_INITIALIZED) {
     NOTREACHED();

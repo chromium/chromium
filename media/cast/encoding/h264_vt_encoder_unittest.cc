@@ -22,9 +22,10 @@
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/cast/common/rtp_time.h"
+#include "media/cast/common/sender_encoded_frame.h"
+#include "media/cast/common/video_frame_factory.h"
 #include "media/cast/constants.h"
-#include "media/cast/sender/h264_vt_encoder.h"
-#include "media/cast/sender/video_frame_factory.h"
+#include "media/cast/encoding/h264_vt_encoder.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/video_utility.h"
 #include "media/ffmpeg/ffmpeg_common.h"
@@ -81,11 +82,10 @@ class MetadataRecorder : public base::RefCountedThreadSafe<MetadataRecorder> {
   void PushExpectation(FrameId expected_frame_id,
                        FrameId expected_last_referenced_frame_id,
                        RtpTimeTicks expected_rtp_timestamp,
-                       const base::TimeTicks& expected_reference_time) {
-    expectations_.push(Expectation{expected_frame_id,
-                                   expected_last_referenced_frame_id,
-                                   expected_rtp_timestamp,
-                                   expected_reference_time});
+                       base::TimeTicks expected_reference_time) {
+    expectations_.push(
+        Expectation{expected_frame_id, expected_last_referenced_frame_id,
+                    expected_rtp_timestamp, expected_reference_time});
   }
 
   void CompareFrameWithExpected(
@@ -185,8 +185,9 @@ void CreateFrameAndMemsetPlane(VideoFrameFactory* const video_frame_factory) {
   CVPixelBufferLockBaseAddress(cv_pixel_buffer, 0);
   auto* ptr = CVPixelBufferGetBaseAddressOfPlane(cv_pixel_buffer, 0);
   ASSERT_TRUE(ptr);
-  memset(ptr, 0xfe, CVPixelBufferGetBytesPerRowOfPlane(cv_pixel_buffer, 0) *
-                        CVPixelBufferGetHeightOfPlane(cv_pixel_buffer, 0));
+  memset(ptr, 0xfe,
+         CVPixelBufferGetBytesPerRowOfPlane(cv_pixel_buffer, 0) *
+             CVPixelBufferGetHeightOfPlane(cv_pixel_buffer, 0));
   CVPixelBufferUnlockBaseAddress(cv_pixel_buffer, 0);
 }
 

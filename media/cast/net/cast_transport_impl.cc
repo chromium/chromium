@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "media/cast/common/encoded_frame.h"
 #include "media/cast/net/cast_transport_defines.h"
 #include "media/cast/net/rtcp/sender_rtcp_session.h"
 #include "media/cast/net/transport_util.h"

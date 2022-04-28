@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAST_SENDER_VIDEO_FRAME_FACTORY_H_
-#define MEDIA_CAST_SENDER_VIDEO_FRAME_FACTORY_H_
+#ifndef MEDIA_CAST_COMMON_VIDEO_FRAME_FACTORY_H_
+#define MEDIA_CAST_COMMON_VIDEO_FRAME_FACTORY_H_
 
 #include "base/time/time.h"
 
@@ -41,10 +41,11 @@ class VideoFrameFactory {
   // this means that |MaybeCreateFrame| must somehow signal the encoder to
   // perform whatever initialization is needed to eventually produce frames.
   virtual scoped_refptr<VideoFrame> MaybeCreateFrame(
-      const gfx::Size& frame_size, base::TimeDelta timestamp) = 0;
+      const gfx::Size& frame_size,
+      base::TimeDelta timestamp) = 0;
 };
 
 }  // namespace cast
 }  // namespace media
 
-#endif  // MEDIA_CAST_SENDER_VIDEO_FRAME_FACTORY_H_
+#endif  // MEDIA_CAST_COMMON_VIDEO_FRAME_FACTORY_H_

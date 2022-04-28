@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/sender/video_encoder_impl.h"
+#include "media/cast/encoding/video_encoder_impl.h"
 #include "third_party/libaom/libaom_buildflags.h"
 
 #include <utility>
@@ -13,10 +13,11 @@
 #include "base/check.h"
 #include "media/base/video_frame.h"
 #if BUILDFLAG(ENABLE_LIBAOM)
-#include "media/cast/sender/av1_encoder.h"
+#include "media/cast/encoding/av1_encoder.h"
 #endif
-#include "media/cast/sender/fake_software_video_encoder.h"
-#include "media/cast/sender/vpx_encoder.h"
+#include "media/cast/common/sender_encoded_frame.h"
+#include "media/cast/encoding/fake_software_video_encoder.h"
+#include "media/cast/encoding/vpx_encoder.h"
 
 namespace media {
 namespace cast {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAST_SENDER_VIDEO_ENCODER_H_
-#define MEDIA_CAST_SENDER_VIDEO_ENCODER_H_
+#ifndef MEDIA_CAST_ENCODING_VIDEO_ENCODER_H_
+#define MEDIA_CAST_ENCODING_VIDEO_ENCODER_H_
 
 #include <memory>
 
@@ -11,14 +11,15 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "media/base/video_frame.h"
+#include "media/cast/cast_callbacks.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
-#include "media/cast/cast_sender.h"
-#include "media/cast/sender/sender_encoded_frame.h"
-#include "media/cast/sender/video_frame_factory.h"
+#include "media/cast/common/video_frame_factory.h"
 
 namespace media {
 namespace cast {
+
+struct SenderEncodedFrame;
 
 // All these functions are called from the main cast thread.
 class VideoEncoder {
@@ -74,4 +75,4 @@ class VideoEncoder {
 }  // namespace cast
 }  // namespace media
 
-#endif  // MEDIA_CAST_SENDER_VIDEO_ENCODER_H_
+#endif  // MEDIA_CAST_ENCODING_VIDEO_ENCODER_H_

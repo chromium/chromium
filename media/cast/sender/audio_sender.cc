@@ -10,8 +10,9 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "media/cast/common/rtp_time.h"
+#include "media/cast/common/sender_encoded_frame.h"
+#include "media/cast/encoding/audio_encoder.h"
 #include "media/cast/net/cast_transport_config.h"
-#include "media/cast/sender/audio_encoder.h"
 
 namespace media {
 namespace cast {

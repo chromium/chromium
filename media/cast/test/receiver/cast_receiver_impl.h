@@ -20,6 +20,7 @@ namespace media {
 namespace cast {
 
 class AudioDecoder;
+struct EncodedFrame;
 class VideoDecoder;
 
 // This is a pure owner class that groups all required receiver-related objects

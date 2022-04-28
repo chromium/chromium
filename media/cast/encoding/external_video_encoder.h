@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAST_SENDER_EXTERNAL_VIDEO_ENCODER_H_
-#define MEDIA_CAST_SENDER_EXTERNAL_VIDEO_ENCODER_H_
+#ifndef MEDIA_CAST_ENCODING_EXTERNAL_VIDEO_ENCODER_H_
+#define MEDIA_CAST_ENCODING_EXTERNAL_VIDEO_ENCODER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -12,8 +12,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "media/cast/cast_environment.h"
-#include "media/cast/sender/size_adaptable_video_encoder_base.h"
-#include "media/cast/sender/video_encoder.h"
+#include "media/cast/encoding/size_adaptable_video_encoder_base.h"
+#include "media/cast/encoding/video_encoder.h"
 #include "media/video/video_encode_accelerator.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -170,4 +170,4 @@ class QuantizerEstimator {
 }  // namespace cast
 }  // namespace media
 
-#endif  // MEDIA_CAST_SENDER_EXTERNAL_VIDEO_ENCODER_H_
+#endif  // MEDIA_CAST_ENCODING_EXTERNAL_VIDEO_ENCODER_H_

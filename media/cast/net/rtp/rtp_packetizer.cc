@@ -9,6 +9,7 @@
 #include "base/big_endian.h"
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "media/cast/common/encoded_frame.h"
 #include "media/cast/net/pacing/paced_sender.h"
 #include "media/cast/net/rtp/rtp_defines.h"
 

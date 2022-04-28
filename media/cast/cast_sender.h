@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/video_frame.h"
+#include "media/cast/cast_callbacks.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/constants.h"
@@ -75,15 +76,6 @@ class AudioFrameInput : public base::RefCountedThreadSafe<AudioFrameInput> {
  private:
   friend class base::RefCountedThreadSafe<AudioFrameInput>;
 };
-
-// Callback that is run to update the client with current status.  This is used
-// to allow the client to wait for asynchronous initialization to complete
-// before sending frames, and also to be notified of any runtime errors that
-// have halted the session.
-using StatusChangeCallback = base::RepeatingCallback<void(OperationalStatus)>;
-
-// The equivalent of StatusChangeCallback when only one change is expected.
-using StatusChangeOnceCallback = base::OnceCallback<void(OperationalStatus)>;
 
 // All methods of CastSender must be called on the main thread.
 // Provided CastTransport will also be called on the main thread.

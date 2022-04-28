@@ -11,7 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "media/base/video_frame.h"
-#include "media/cast/sender/video_frame_factory.h"
+#include "media/cast/common/video_frame_factory.h"
 
 namespace media {
 namespace cast {

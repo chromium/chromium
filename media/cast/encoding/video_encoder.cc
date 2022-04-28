@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/sender/video_encoder.h"
+#include "media/cast/encoding/video_encoder.h"
 
+#include "base/memory/ptr_util.h"
 #include "build/build_config.h"
-#include "media/cast/sender/external_video_encoder.h"
-#include "media/cast/sender/video_encoder_impl.h"
+#include "media/cast/encoding/external_video_encoder.h"
+#include "media/cast/encoding/video_encoder_impl.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "media/cast/sender/h264_vt_encoder.h"
+#include "media/cast/encoding/h264_vt_encoder.h"
 #endif
 
 namespace media {
@@ -25,7 +26,7 @@ std::unique_ptr<VideoEncoder> VideoEncoder::Create(
 // perform optimized H.264 encoding.
 #if BUILDFLAG(IS_MAC)
   if (H264VideoToolboxEncoder::IsSupported(video_config)) {
-    return std::unique_ptr<VideoEncoder>(new H264VideoToolboxEncoder(
+    return base::WrapUnique<VideoEncoder>(new H264VideoToolboxEncoder(
         cast_environment, video_config, status_change_cb));
   }
 #endif  // BUILDFLAG(IS_MAC)
@@ -33,14 +34,14 @@ std::unique_ptr<VideoEncoder> VideoEncoder::Create(
 #if !BUILDFLAG(IS_IOS)
   // If the system provides a hardware-accelerated encoder, use it.
   if (ExternalVideoEncoder::IsSupported(video_config)) {
-    return std::unique_ptr<VideoEncoder>(new SizeAdaptableExternalVideoEncoder(
+    return base::WrapUnique<VideoEncoder>(new SizeAdaptableExternalVideoEncoder(
         cast_environment, video_config, std::move(status_change_cb),
         create_vea_cb));
   }
 
   // Attempt to use the software encoder implementation.
   if (VideoEncoderImpl::IsSupported(video_config)) {
-    return std::unique_ptr<VideoEncoder>(
+    return base::WrapUnique<VideoEncoder>(
         new VideoEncoderImpl(cast_environment, video_config, status_change_cb));
   }
 #endif  // !BUILDFLAG(IS_IOS)
@@ -53,8 +54,7 @@ std::unique_ptr<VideoFrameFactory> VideoEncoder::CreateVideoFrameFactory() {
   return nullptr;
 }
 
-void VideoEncoder::EmitFrames() {
-}
+void VideoEncoder::EmitFrames() {}
 
 }  // namespace cast
 }  // namespace media

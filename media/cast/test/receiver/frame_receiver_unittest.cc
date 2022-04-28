@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "media/cast/cast_environment.h"
+#include "media/cast/common/encoded_frame.h"
 #include "media/cast/logging/simple_event_subscriber.h"
 #include "media/cast/net/cast_transport_impl.h"
 #include "media/cast/net/rtcp/rtcp_utility.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/sender/vpx_quantizer_parser.h"
+#include "media/cast/encoding/vpx_quantizer_parser.h"
 #include "base/logging.h"
 
 namespace media {

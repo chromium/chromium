@@ -14,6 +14,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
+#include "media/cast/common/encoded_frame.h"
 #include "media/cast/constants.h"
 #include "media/cast/net/rtcp/rtcp_utility.h"
 

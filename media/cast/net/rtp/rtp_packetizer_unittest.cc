@@ -11,6 +11,7 @@
 
 #include "base/test/simple_test_tick_clock.h"
 #include "media/base/fake_single_thread_task_runner.h"
+#include "media/cast/common/encoded_frame.h"
 #include "media/cast/net/pacing/paced_sender.h"
 #include "media/cast/net/rtp/packet_storage.h"
 #include "media/cast/net/rtp/rtp_parser.h"

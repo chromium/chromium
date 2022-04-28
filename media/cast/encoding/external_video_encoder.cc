@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/sender/external_video_encoder.h"
+#include "media/cast/encoding/external_video_encoder.h"
 
 #include <array>
 #include <cmath>
+#include <list>
 #include <sstream>
 #include <utility>
 
@@ -35,10 +36,11 @@
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "media/cast/cast_config.h"
+#include "media/cast/common/encoded_frame.h"
 #include "media/cast/common/rtp_time.h"
+#include "media/cast/common/sender_encoded_frame.h"
+#include "media/cast/encoding/vpx_quantizer_parser.h"
 #include "media/cast/logging/logging_defines.h"
-#include "media/cast/net/cast_transport_config.h"
-#include "media/cast/sender/vpx_quantizer_parser.h"
 #include "media/video/h264_parser.h"
 
 namespace {
@@ -925,8 +927,7 @@ double QuantizerEstimator::EstimateForKeyFrame(const VideoFrame& frame) {
 
     // Copy the row of pixels into the buffer.  This will be used when
     // generating histograms for future delta frames.
-    memcpy(last_frame_pixel_buffer_.get() + i * size.width(),
-           row_begin,
+    memcpy(last_frame_pixel_buffer_.get() + i * size.width(), row_begin,
            size.width());
   }
 
@@ -986,8 +987,7 @@ double QuantizerEstimator::EstimateForDeltaFrame(const VideoFrame& frame) {
 bool QuantizerEstimator::CanExamineFrame(const VideoFrame& frame) {
   DCHECK_EQ(8, VideoFrame::PlaneHorizontalBitsPerPixel(frame.format(),
                                                        VideoFrame::kYPlane));
-  return media::IsYuvPlanar(frame.format()) &&
-      !frame.visible_rect().IsEmpty();
+  return media::IsYuvPlanar(frame.format()) && !frame.visible_rect().IsEmpty();
 }
 
 // static

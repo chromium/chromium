@@ -5,6 +5,7 @@
 #include "media/cast/test/receiver/framer.h"
 
 #include "base/logging.h"
+#include "media/cast/common/encoded_frame.h"
 #include "media/cast/constants.h"
 
 namespace media {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAST_SENDER_H264_VT_ENCODER_H_
-#define MEDIA_CAST_SENDER_H264_VT_ENCODER_H_
+#ifndef MEDIA_CAST_ENCODING_H264_VT_ENCODER_H_
+#define MEDIA_CAST_ENCODING_H264_VT_ENCODER_H_
 
 #include <stdint.h>
 
@@ -11,8 +11,8 @@
 #include "base/power_monitor/power_observer.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/mac/videotoolbox_helpers.h"
-#include "media/cast/sender/size_adaptable_video_encoder_base.h"
-#include "media/cast/sender/video_encoder.h"
+#include "media/cast/encoding/size_adaptable_video_encoder_base.h"
+#include "media/cast/encoding/video_encoder.h"
 
 namespace media {
 namespace cast {
@@ -96,7 +96,7 @@ class H264VideoToolboxEncoder final : public VideoEncoder,
   const StatusChangeCallback status_change_cb_;
 
   // Thread checker to enforce that this object is used on a specific thread.
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
 
   // The compression session.
   base::ScopedCFTypeRef<VTCompressionSessionRef> compression_session_;
@@ -120,4 +120,4 @@ class H264VideoToolboxEncoder final : public VideoEncoder,
 }  // namespace cast
 }  // namespace media
 
-#endif  // MEDIA_CAST_SENDER_H264_VT_ENCODER_H_
+#endif  // MEDIA_CAST_ENCODING_H264_VT_ENCODER_H_

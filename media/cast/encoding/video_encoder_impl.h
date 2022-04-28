@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAST_SENDER_VIDEO_ENCODER_IMPL_H_
-#define MEDIA_CAST_SENDER_VIDEO_ENCODER_IMPL_H_
+#ifndef MEDIA_CAST_ENCODING_VIDEO_ENCODER_IMPL_H_
+#define MEDIA_CAST_ENCODING_VIDEO_ENCODER_IMPL_H_
 
 #include <memory>
 
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
-#include "media/cast/sender/software_video_encoder.h"
-#include "media/cast/sender/video_encoder.h"
+#include "media/cast/encoding/software_video_encoder.h"
+#include "media/cast/encoding/video_encoder.h"
 
 namespace media {
 class VideoFrame;
@@ -59,4 +59,4 @@ class VideoEncoderImpl final : public VideoEncoder {
 }  // namespace cast
 }  // namespace media
 
-#endif  // MEDIA_CAST_SENDER_VIDEO_ENCODER_IMPL_H_
+#endif  // MEDIA_CAST_ENCODING_VIDEO_ENCODER_IMPL_H_

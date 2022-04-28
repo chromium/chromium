@@ -18,6 +18,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/values.h"
 #include "media/base/fake_single_thread_task_runner.h"
+#include "media/cast/common/encoded_frame.h"
 #include "media/cast/net/cast_transport_config.h"
 #include "media/cast/net/rtcp/rtcp_defines.h"
 #include "testing/gtest/include/gtest/gtest.h"

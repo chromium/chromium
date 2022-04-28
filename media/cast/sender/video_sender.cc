@@ -13,9 +13,10 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
+#include "media/cast/common/sender_encoded_frame.h"
+#include "media/cast/encoding/video_encoder.h"
 #include "media/cast/net/cast_transport_config.h"
 #include "media/cast/sender/performance_metrics_overlay.h"
-#include "media/cast/sender/video_encoder.h"
 
 namespace media {
 namespace cast {

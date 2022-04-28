@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include "media/cast/common/encoded_frame.h"
 #include "media/cast/net/cast_transport_defines.h"
 #include "media/cast/test/receiver/frame_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"

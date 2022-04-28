@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/sender/video_encoder.h"
+#include "media/cast/encoding/video_encoder.h"
 
 #include <stdint.h>
 
@@ -22,7 +22,8 @@
 #include "media/base/video_frame.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/common/rtp_time.h"
-#include "media/cast/sender/video_frame_factory.h"
+#include "media/cast/common/sender_encoded_frame.h"
+#include "media/cast/common/video_frame_factory.h"
 #include "media/cast/test/fake_video_encode_accelerator_factory.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/video_utility.h"
@@ -30,7 +31,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/threading/platform_thread.h"
-#include "media/cast/sender/h264_vt_encoder.h"
+#include "media/cast/encoding/h264_vt_encoder.h"
 #endif
 
 namespace media {
@@ -91,13 +92,11 @@ class VideoEncoderTest
       ASSERT_EQ(STATUS_INITIALIZED, operational_status_);
   }
 
-  bool is_encoder_present() const {
-    return !!video_encoder_;
-  }
+  bool is_encoder_present() const { return !!video_encoder_; }
 
   bool is_testing_software_vp8_encoder() const {
     return video_config_.codec == CODEC_VIDEO_VP8 &&
-        !video_config_.use_external_encoder;
+           !video_config_.use_external_encoder;
   }
 
   bool is_testing_video_toolbox_encoder() const {
@@ -111,20 +110,16 @@ class VideoEncoderTest
 
   bool is_testing_platform_encoder() const {
     return video_config_.use_external_encoder ||
-        is_testing_video_toolbox_encoder();
+           is_testing_video_toolbox_encoder();
   }
 
   bool encoder_has_resize_delay() const {
     return is_testing_platform_encoder() && !is_testing_video_toolbox_encoder();
   }
 
-  VideoEncoder* video_encoder() const {
-    return video_encoder_.get();
-  }
+  VideoEncoder* video_encoder() const { return video_encoder_.get(); }
 
-  void DestroyEncoder() {
-    video_encoder_.reset();
-  }
+  void DestroyEncoder() { video_encoder_.reset(); }
 
   base::TimeTicks Now() { return testing_clock_.NowTicks(); }
 

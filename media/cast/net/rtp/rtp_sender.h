@@ -27,6 +27,8 @@
 namespace media {
 namespace cast {
 
+struct EncodedFrame;
+
 // This object is only called from the main cast thread.
 // This class handles splitting encoded audio and video frames into packets and
 // add an RTP header to each packet. The sent packets are stored until they are

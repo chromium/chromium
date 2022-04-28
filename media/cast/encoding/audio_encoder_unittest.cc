@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/sender/audio_encoder.h"
+#include "media/cast/encoding/audio_encoder.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -22,6 +22,7 @@
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/common/rtp_time.h"
+#include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/test/utility/audio_utility.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,8 +45,8 @@ class TestEncodedAudioFrameReceiver {
 
   int frames_received() const { return frames_received_; }
 
-  void SetCaptureTimeBounds(const base::TimeTicks& lower_bound,
-                            const base::TimeTicks& upper_bound) {
+  void SetCaptureTimeBounds(base::TimeTicks lower_bound,
+                            base::TimeTicks upper_bound) {
     lower_bound_ = lower_bound;
     upper_bound_ = upper_bound;
   }
@@ -156,10 +157,8 @@ class AudioEncoderTest : public ::testing::TestWithParam<TestScenario> {
  private:
   void CreateObjectsForCodec(Codec codec) {
     audio_bus_factory_.reset(
-        new TestAudioBusFactory(kNumChannels,
-                                kDefaultAudioSamplingRate,
-                                TestAudioBusFactory::kMiddleANoteFreq,
-                                0.5f));
+        new TestAudioBusFactory(kNumChannels, kDefaultAudioSamplingRate,
+                                TestAudioBusFactory::kMiddleANoteFreq, 0.5f));
 
     receiver_.reset(new TestEncodedAudioFrameReceiver());
 

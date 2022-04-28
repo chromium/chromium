@@ -5,6 +5,7 @@
 #include "media/cast/test/receiver/frame_buffer.h"
 
 #include "base/check_op.h"
+#include "media/cast/common/encoded_frame.h"
 
 namespace media {
 namespace cast {

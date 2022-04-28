@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/sender/size_adaptable_video_encoder_base.h"
+#include "media/cast/encoding/size_adaptable_video_encoder_base.h"
 
 #include <utility>
 
@@ -10,6 +10,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "media/base/video_frame.h"
+#include "media/cast/common/sender_encoded_frame.h"
 
 namespace media {
 namespace cast {
@@ -49,7 +50,8 @@ bool SizeAdaptableVideoEncoderBase::EncodeVideoFrame(
   }
   if (frame_size != frame_size_ || !encoder_) {
     VLOG(1) << "Dropping this frame, and future frames until a replacement "
-               "encoder is spun-up to handle size " << frame_size.ToString();
+               "encoder is spun-up to handle size "
+            << frame_size.ToString();
     TrySpawningReplacementEncoder(frame_size);
     return false;
   }
@@ -94,7 +96,7 @@ void SizeAdaptableVideoEncoderBase::EmitFrames() {
 }
 
 StatusChangeCallback
-    SizeAdaptableVideoEncoderBase::CreateEncoderStatusChangeCallback() {
+SizeAdaptableVideoEncoderBase::CreateEncoderStatusChangeCallback() {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
   return base::BindRepeating(
       &SizeAdaptableVideoEncoderBase::OnEncoderStatusChange,
@@ -136,8 +138,7 @@ void SizeAdaptableVideoEncoderBase::TrySpawningReplacementEncoder(
   frames_in_encoder_ = kEncoderIsInitializing;
   OnEncoderStatusChange(STATUS_CODEC_REINIT_PENDING);
   VLOG(1) << "Creating replacement video encoder (for frame size change from "
-          << frame_size_.ToString() << " to "
-          << size_needed.ToString() << ").";
+          << frame_size_.ToString() << " to " << size_needed.ToString() << ").";
   frame_size_ = size_needed;
   encoder_ = CreateEncoder();
   DCHECK(encoder_);

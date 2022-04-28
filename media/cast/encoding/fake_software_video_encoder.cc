@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/sender/fake_software_video_encoder.h"
+#include "media/cast/encoding/fake_software_video_encoder.h"
 
 #include <stddef.h>
 
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "media/base/video_frame.h"
+#include "media/cast/common/encoded_frame.h"
+#include "media/cast/common/frame_id.h"
 #include "media/cast/common/rtp_time.h"
+#include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
 
 namespace media {

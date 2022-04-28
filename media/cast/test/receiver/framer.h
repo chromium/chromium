@@ -20,6 +20,8 @@
 namespace media {
 namespace cast {
 
+struct EncodedFrame;
+
 class Framer {
  public:
   Framer(const base::TickClock* clock,

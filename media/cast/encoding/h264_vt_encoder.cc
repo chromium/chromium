@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/sender/h264_vt_encoder.h"
+#include "media/cast/encoding/h264_vt_encoder.h"
 
 #include <stddef.h>
 
@@ -15,14 +15,16 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/mac/video_frame_mac.h"
 #include "media/cast/common/rtp_time.h"
+#include "media/cast/common/sender_encoded_frame.h"
+#include "media/cast/common/video_frame_factory.h"
 #include "media/cast/constants.h"
-#include "media/cast/sender/video_frame_factory.h"
 
 namespace media {
 namespace cast {
@@ -198,7 +200,7 @@ H264VideoToolboxEncoder::~H264VideoToolboxEncoder() {
 }
 
 void H264VideoToolboxEncoder::ResetCompressionSession() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Ignore reset requests while power suspended.
   if (power_suspended_)
@@ -321,7 +323,7 @@ void H264VideoToolboxEncoder::ConfigureCompressionSession() {
 }
 
 void H264VideoToolboxEncoder::DestroyCompressionSession() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // If the compression session exists, invalidate it. This blocks until all
   // pending output callbacks have returned and any internal threads have
@@ -347,7 +349,7 @@ bool H264VideoToolboxEncoder::EncodeVideoFrame(
     scoped_refptr<media::VideoFrame> video_frame,
     base::TimeTicks reference_time,
     FrameEncodedCallback frame_encoded_callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!frame_encoded_callback.is_null());
 
   // Reject empty video frames.
@@ -415,7 +417,7 @@ bool H264VideoToolboxEncoder::EncodeVideoFrame(
 }
 
 void H264VideoToolboxEncoder::UpdateFrameSize(const gfx::Size& size_needed) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Our video frame factory posts a task to update the frame size when its
   // cache of the frame size differs from what the client requested. To avoid
@@ -441,24 +443,24 @@ void H264VideoToolboxEncoder::UpdateFrameSize(const gfx::Size& size_needed) {
 }
 
 void H264VideoToolboxEncoder::SetBitRate(int /*new_bit_rate*/) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // VideoToolbox does not seem to support bitrate reconfiguration.
 }
 
 void H264VideoToolboxEncoder::GenerateKeyFrame() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   encode_next_frame_as_keyframe_ = true;
 }
 
 std::unique_ptr<VideoFrameFactory>
 H264VideoToolboxEncoder::CreateVideoFrameFactory() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  return std::unique_ptr<VideoFrameFactory>(
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return base::WrapUnique<VideoFrameFactory>(
       new VideoFrameFactoryImpl::Proxy(video_frame_factory_));
 }
 
 void H264VideoToolboxEncoder::EmitFrames() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!compression_session_)
     return;
 

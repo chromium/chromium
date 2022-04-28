@@ -17,6 +17,7 @@
 namespace media {
 namespace cast {
 
+struct EncodedFrame;
 class PacedSender;
 
 struct RtpPacketizerConfig {

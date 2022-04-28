@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/cast/cast_config.h"
+#include "media/cast/common/encoded_frame.h"
 #include "media/cast/test/utility/audio_utility.h"
 #include "media/cast/test/utility/standalone_cast_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

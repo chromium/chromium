@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAST_SENDER_AUDIO_ENCODER_H_
-#define MEDIA_CAST_SENDER_AUDIO_ENCODER_H_
+#ifndef MEDIA_CAST_ENCODING_AUDIO_ENCODER_H_
+#define MEDIA_CAST_ENCODING_AUDIO_ENCODER_H_
 
 #include <memory>
 
@@ -11,8 +11,8 @@
 #include "base/threading/thread_checker.h"
 #include "media/base/audio_bus.h"
 #include "media/cast/cast_environment.h"
+#include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
-#include "media/cast/sender/sender_encoded_frame.h"
 
 namespace base {
 class TimeTicks;
@@ -46,7 +46,7 @@ class AudioEncoder {
   base::TimeDelta GetFrameDuration() const;
 
   void InsertAudio(std::unique_ptr<AudioBus> audio_bus,
-                   const base::TimeTicks& recorded_time);
+                   base::TimeTicks recorded_time);
 
  private:
   class ImplBase;
@@ -58,10 +58,10 @@ class AudioEncoder {
   scoped_refptr<ImplBase> impl_;
 
   // Used to ensure only one thread invokes InsertAudio().
-  base::ThreadChecker insert_thread_checker_;
+  THREAD_CHECKER(insert_thread_checker_);
 };
 
 }  // namespace cast
 }  // namespace media
 
-#endif  // MEDIA_CAST_SENDER_AUDIO_ENCODER_H_
+#endif  // MEDIA_CAST_ENCODING_AUDIO_ENCODER_H_

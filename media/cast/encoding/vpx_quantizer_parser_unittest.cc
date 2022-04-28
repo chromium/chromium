@@ -9,9 +9,9 @@
 
 #include "base/time/time.h"
 #include "media/cast/cast_config.h"
-#include "media/cast/sender/sender_encoded_frame.h"
-#include "media/cast/sender/vpx_encoder.h"
-#include "media/cast/sender/vpx_quantizer_parser.h"
+#include "media/cast/common/sender_encoded_frame.h"
+#include "media/cast/encoding/vpx_encoder.h"
+#include "media/cast/encoding/vpx_quantizer_parser.h"
 #include "media/cast/test/receiver/video_decoder.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/video_utility.h"

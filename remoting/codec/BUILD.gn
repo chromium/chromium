@@ -70,7 +70,8 @@ source_set("encoder") {
     deps += [
       "//media",
       "//media:shared_memory_support",
-      "//media/cast:sender",
+      "//media/cast:common",
+      "//media/cast:encoding",
     ]
   }
 }

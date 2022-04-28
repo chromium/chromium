@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAST_SENDER_VPX_QUANTIZER_PARSER_H_
-#define MEDIA_CAST_SENDER_VPX_QUANTIZER_PARSER_H_
+#ifndef MEDIA_CAST_ENCODING_VPX_QUANTIZER_PARSER_H_
+#define MEDIA_CAST_ENCODING_VPX_QUANTIZER_PARSER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -20,4 +20,4 @@ int ParseVpxHeaderQuantizer(const uint8_t* data, size_t size);
 }  // namespace cast
 }  // namespace media
 
-#endif  // MEDIA_CAST_SENDER_VPX_QUANTIZER_PARSER_H_
+#endif  // MEDIA_CAST_ENCODING_VPX_QUANTIZER_PARSER_H_

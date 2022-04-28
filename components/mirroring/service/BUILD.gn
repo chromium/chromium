@@ -51,6 +51,7 @@ component("mirroring_service") {
     "//media/capture:capture_base",
     "//media/capture/mojom:video_capture",
     "//media/cast:common",
+    "//media/cast:encoding",
     "//media/cast:net",
     "//media/cast:sender",
     "//media/gpu",

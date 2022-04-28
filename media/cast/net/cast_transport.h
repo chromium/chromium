@@ -40,6 +40,7 @@ class DictionaryValue;
 namespace media {
 namespace cast {
 
+struct EncodedFrame;
 struct RtcpTimeData;
 
 // Following the initialization of either audio or video an initialization

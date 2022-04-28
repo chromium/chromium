@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAST_SENDER_FAKE_SOFTWARE_VIDEO_ENCODER_H_
-#define MEDIA_CAST_SENDER_FAKE_SOFTWARE_VIDEO_ENCODER_H_
+#ifndef MEDIA_CAST_ENCODING_FAKE_SOFTWARE_VIDEO_ENCODER_H_
+#define MEDIA_CAST_ENCODING_FAKE_SOFTWARE_VIDEO_ENCODER_H_
 
 #include <stdint.h>
 
 #include "media/cast/cast_config.h"
-#include "media/cast/sender/software_video_encoder.h"
+#include "media/cast/common/frame_id.h"
+#include "media/cast/encoding/software_video_encoder.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -16,7 +17,7 @@ namespace cast {
 
 class FakeSoftwareVideoEncoder final : public SoftwareVideoEncoder {
  public:
-  FakeSoftwareVideoEncoder(const FrameSenderConfig& video_config);
+  explicit FakeSoftwareVideoEncoder(const FrameSenderConfig& video_config);
   ~FakeSoftwareVideoEncoder() final;
 
   // SoftwareVideoEncoder implementations.
@@ -38,4 +39,4 @@ class FakeSoftwareVideoEncoder final : public SoftwareVideoEncoder {
 }  // namespace cast
 }  // namespace media
 
-#endif  // MEDIA_CAST_SENDER_FAKE_SOFTWARE_VIDEO_ENCODER_H_
+#endif  // MEDIA_CAST_ENCODING_FAKE_SOFTWARE_VIDEO_ENCODER_H_

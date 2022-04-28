@@ -31,6 +31,7 @@ namespace media {
 namespace cast {
 
 class CastEnvironment;
+struct EncodedFrame;
 
 // The following callback delivers encoded frame data and metadata.  The client
 // should examine the |frame_id| field to determine whether any frames have been

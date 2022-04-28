@@ -14,8 +14,8 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
-#include "media/cast/sender/sender_encoded_frame.h"
 
 namespace media {
 namespace cast {

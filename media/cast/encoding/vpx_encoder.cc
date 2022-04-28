@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/sender/vpx_encoder.h"
+#include "media/cast/encoding/vpx_encoder.h"
 
 #include "base/logging.h"
 #include "media/base/video_frame.h"
+#include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
 

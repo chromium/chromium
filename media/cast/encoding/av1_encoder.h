@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAST_SENDER_AV1_ENCODER_H_
-#define MEDIA_CAST_SENDER_AV1_ENCODER_H_
+#ifndef MEDIA_CAST_ENCODING_AV1_ENCODER_H_
+#define MEDIA_CAST_ENCODING_AV1_ENCODER_H_
 
 #include <stdint.h>
 
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "media/base/feedback_signal_accumulator.h"
 #include "media/cast/cast_config.h"
-#include "media/cast/sender/software_video_encoder.h"
+#include "media/cast/common/frame_id.h"
+#include "media/cast/encoding/software_video_encoder.h"
 #include "third_party/libaom/source/libaom/aom/aom_encoder.h"
-
-#include "base/time/time.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -87,4 +87,4 @@ class Av1Encoder final : public SoftwareVideoEncoder {
 }  // namespace cast
 }  // namespace media
 
-#endif  // MEDIA_CAST_SENDER_AV1_ENCODER_H_
+#endif  // MEDIA_CAST_ENCODING_AV1_ENCODER_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAST_SENDER_SIZE_ADAPTABLE_VIDEO_ENCODER_BASE_H_
-#define MEDIA_CAST_SENDER_SIZE_ADAPTABLE_VIDEO_ENCODER_BASE_H_
+#ifndef MEDIA_CAST_ENCODING_SIZE_ADAPTABLE_VIDEO_ENCODER_BASE_H_
+#define MEDIA_CAST_ENCODING_SIZE_ADAPTABLE_VIDEO_ENCODER_BASE_H_
 
 #include <stdint.h>
 
@@ -14,11 +14,13 @@
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/constants.h"
-#include "media/cast/sender/video_encoder.h"
+#include "media/cast/encoding/video_encoder.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
 namespace cast {
+
+struct SenderEncodedFrame;
 
 // Creates and owns a VideoEncoder instance.  The owned instance is an
 // implementation that does not support changing frame sizes, and so
@@ -49,13 +51,9 @@ class SizeAdaptableVideoEncoderBase : public VideoEncoder {
 
  protected:
   // Accessors for subclasses.
-  CastEnvironment* cast_environment() const {
-    return cast_environment_.get();
-  }
+  CastEnvironment* cast_environment() const { return cast_environment_.get(); }
   const FrameSenderConfig& video_config() const { return video_config_; }
-  const gfx::Size& frame_size() const {
-    return frame_size_;
-  }
+  const gfx::Size& frame_size() const { return frame_size_; }
   FrameId next_frame_id() const { return next_frame_id_; }
 
   // Returns a callback that calls OnEncoderStatusChange().  The callback is
@@ -117,4 +115,4 @@ class SizeAdaptableVideoEncoderBase : public VideoEncoder {
 }  // namespace cast
 }  // namespace media
 
-#endif  // MEDIA_CAST_SENDER_SIZE_ADAPTABLE_VIDEO_ENCODER_BASE_H_
+#endif  // MEDIA_CAST_ENCODING_SIZE_ADAPTABLE_VIDEO_ENCODER_BASE_H_

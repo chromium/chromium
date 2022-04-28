@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "media/cast/common/encoded_frame.h"
 #include "media/cast/net/rtcp/rtcp_utility.h"
 #include "media/cast/test/receiver/audio_decoder.h"
 #include "media/cast/test/receiver/video_decoder.h"

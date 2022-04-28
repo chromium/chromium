@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/sender/av1_encoder.h"
+#include "media/cast/encoding/av1_encoder.h"
 
 #include "base/logging.h"
 #include "media/base/video_frame.h"
+#include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
 #include "third_party/libaom/source/libaom/aom/aomcx.h"
 

@@ -17,19 +17,25 @@ proto_library("logging_proto") {
 # Common code shared by all cast components.
 source_set("common") {
   sources = [
+    "cast_callbacks.h",
     "cast_config.cc",
     "cast_config.h",
     "cast_environment.cc",
     "cast_environment.h",
     "common/clock_drift_smoother.cc",
     "common/clock_drift_smoother.h",
+    "common/encoded_frame.cc",
+    "common/encoded_frame.h",
     "common/expanded_value_base.h",
     "common/frame_id.cc",
     "common/frame_id.h",
     "common/rtp_time.cc",
     "common/rtp_time.h",
+    "common/sender_encoded_frame.cc",
+    "common/sender_encoded_frame.h",
     "common/transport_encryption_handler.cc",
     "common/transport_encryption_handler.h",
+    "common/video_frame_factory.h",
     "constants.h",
     "logging/encoding_event_subscriber.cc",
     "logging/encoding_event_subscriber.h",
@@ -118,49 +124,31 @@ source_set("net") {
   public_deps = [ ":common" ]
 }
 
-source_set("sender") {
+source_set("encoding") {
   sources = [
-    "cast_sender.h",
-    "cast_sender_impl.cc",
-    "cast_sender_impl.h",
-    "sender/audio_encoder.cc",
-    "sender/audio_encoder.h",
-    "sender/audio_sender.cc",
-    "sender/audio_sender.h",
-    "sender/congestion_control.cc",
-    "sender/congestion_control.h",
-    "sender/external_video_encoder.cc",
-    "sender/external_video_encoder.h",
-    "sender/fake_software_video_encoder.cc",
-    "sender/fake_software_video_encoder.h",
-    "sender/frame_sender.cc",
-    "sender/frame_sender.h",
-    "sender/performance_metrics_overlay.cc",
-    "sender/performance_metrics_overlay.h",
-    "sender/sender_encoded_frame.cc",
-    "sender/sender_encoded_frame.h",
-    "sender/size_adaptable_video_encoder_base.cc",
-    "sender/size_adaptable_video_encoder_base.h",
-    "sender/software_video_encoder.h",
-    "sender/video_encoder.cc",
-    "sender/video_encoder.h",
-    "sender/video_encoder_impl.cc",
-    "sender/video_encoder_impl.h",
-    "sender/video_frame_factory.h",
-    "sender/video_sender.cc",
-    "sender/video_sender.h",
-    "sender/vpx_encoder.cc",
-    "sender/vpx_encoder.h",
-    "sender/vpx_quantizer_parser.cc",
-    "sender/vpx_quantizer_parser.h",
+    "encoding/audio_encoder.cc",
+    "encoding/audio_encoder.h",
+    "encoding/external_video_encoder.cc",
+    "encoding/external_video_encoder.h",
+    "encoding/fake_software_video_encoder.cc",
+    "encoding/fake_software_video_encoder.h",
+    "encoding/size_adaptable_video_encoder_base.cc",
+    "encoding/size_adaptable_video_encoder_base.h",
+    "encoding/software_video_encoder.h",
+    "encoding/video_encoder.cc",
+    "encoding/video_encoder.h",
+    "encoding/video_encoder_impl.cc",
+    "encoding/video_encoder_impl.h",
+    "encoding/vpx_encoder.cc",
+    "encoding/vpx_encoder.h",
+    "encoding/vpx_quantizer_parser.cc",
+    "encoding/vpx_quantizer_parser.h",
   ]
 
   deps = [
     ":common",
-    ":net",
     "//base",
     "//media",
-    "//media/capture:capture_base",
     "//third_party/libaom:libaom_buildflags",
     "//third_party/libvpx",
     "//third_party/opus",
@@ -170,8 +158,8 @@ source_set("sender") {
   # iOS and OS X encoders
   if (is_apple) {
     sources += [
-      "sender/h264_vt_encoder.cc",
-      "sender/h264_vt_encoder.h",
+      "encoding/h264_vt_encoder.cc",
+      "encoding/h264_vt_encoder.h",
     ]
 
     frameworks = [
@@ -185,12 +173,44 @@ source_set("sender") {
 
   if (enable_libaom) {
     sources += [
-      "sender/av1_encoder.cc",
-      "sender/av1_encoder.h",
+      "encoding/av1_encoder.cc",
+      "encoding/av1_encoder.h",
     ]
 
     deps += [ "//third_party/libaom" ]
   }
+
+  if (is_chromeos) {
+    deps += [ "//third_party/re2" ]
+  }
+}
+
+source_set("sender") {
+  sources = [
+    "cast_sender.h",
+    "cast_sender_impl.cc",
+    "cast_sender_impl.h",
+    "sender/audio_sender.cc",
+    "sender/audio_sender.h",
+    "sender/congestion_control.cc",
+    "sender/congestion_control.h",
+    "sender/frame_sender.cc",
+    "sender/frame_sender.h",
+    "sender/performance_metrics_overlay.cc",
+    "sender/performance_metrics_overlay.h",
+    "sender/video_sender.cc",
+    "sender/video_sender.h",
+  ]
+
+  deps = [
+    ":common",
+    ":encoding",
+    ":net",
+    "//base",
+    "//media",
+    "//media/capture:capture_base",
+    "//ui/gfx/geometry",
+  ]
 
   if (is_chromeos) {
     deps += [ "//third_party/re2" ]
@@ -299,6 +319,9 @@ test("cast_unittests") {
   sources = [
     "common/expanded_value_base_unittest.cc",
     "common/rtp_time_unittest.cc",
+    "encoding/external_video_encoder_unittest.cc",
+    "encoding/video_encoder_unittest.cc",
+    "encoding/vpx_quantizer_parser_unittest.cc",
     "logging/encoding_event_subscriber_unittest.cc",
     "logging/receiver_time_offset_estimator_impl_unittest.cc",
     "logging/simple_event_subscriber_unittest.cc",
@@ -314,6 +337,7 @@ test("cast_unittests") {
 
     # TODO(jophba): The following two are test utility modules.  Rename/move the
     # files.
+    "encoding/audio_encoder_unittest.cc",
     "net/rtcp/test_rtcp_packet_builder.cc",
     "net/rtcp/test_rtcp_packet_builder.h",
     "net/rtp/mock_rtp_payload_feedback.cc",
@@ -325,13 +349,9 @@ test("cast_unittests") {
     "net/rtp/rtp_parser_unittest.cc",
     "net/udp_packet_pipe_unittest.cc",
     "net/udp_transport_unittest.cc",
-    "sender/audio_encoder_unittest.cc",
     "sender/audio_sender_unittest.cc",
     "sender/congestion_control_unittest.cc",
-    "sender/external_video_encoder_unittest.cc",
-    "sender/video_encoder_unittest.cc",
     "sender/video_sender_unittest.cc",
-    "sender/vpx_quantizer_parser_unittest.cc",
     "test/end2end_unittest.cc",
     "test/receiver/audio_decoder_unittest.cc",
     "test/receiver/cast_message_builder_unittest.cc",
@@ -346,6 +366,7 @@ test("cast_unittests") {
 
   deps = [
     ":common",
+    ":encoding",
     ":net",
     ":sender",
     ":test_receiver",
@@ -372,7 +393,7 @@ test("cast_unittests") {
   }
 
   if (is_apple) {
-    sources += [ "sender/h264_vt_encoder_unittest.cc" ]
+    sources += [ "encoding/h264_vt_encoder_unittest.cc" ]
 
     deps += [ "//third_party/ffmpeg" ]
   }

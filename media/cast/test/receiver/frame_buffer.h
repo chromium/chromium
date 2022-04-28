@@ -18,6 +18,8 @@
 namespace media {
 namespace cast {
 
+struct EncodedFrame;
+
 typedef std::map<uint16_t, std::vector<uint8_t>> PacketMap;
 
 class FrameBuffer {
