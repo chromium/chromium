@@ -31,6 +31,13 @@ chromium-metrics-reviews@google.com.
   <variant name="TalkBack"/>
 </variants>
 
+<variants name="ArcBootTypes">
+  <variant name="FirstBoot" summary="For the very first boot, aka opt-in."/>
+  <variant name="FirstBootAfterUpdate"
+      summary="For the first boot after Chrome OS update."/>
+  <variant name="RegularBoot" summary="For a regular boot."/>
+</variants>
+
 <variants name="ArcPerformanceAppCategories">
   <variant name=".GachaClub" summary="Casual game 2: Gacha Club"/>
   <variant name=".GarenaFreeFire" summary="Shooter game: Garena Free Fire"/>
@@ -1140,6 +1147,45 @@ chromium-metrics-reviews@google.com.
   <owner>sstan@chromium.org</owner>
   <owner>nancylingwang@chromium.org</owner>
   <summary>The number of ARC apps launched with ghost window.</summary>
+</histogram>
+
+<histogram
+    name="Arc.LoadAverageX100PerProcessor15MinutesAfterArcStart.{ArcBootType}"
+    units="0.01 jobs/processor" expires_after="2022-11-01">
+  <owner>hashimoto@google.com</owner>
+  <owner>yusukes@google.com</owner>
+  <owner>arc-performance@google.com</owner>
+  <summary>
+    The 15-minute load average multiplied by 100 and divided by the number of
+    logical processors online. Recorded 15 minutes after ARC start.
+  </summary>
+  <token key="ArcBootType" variants="ArcBootTypes"/>
+</histogram>
+
+<histogram
+    name="Arc.LoadAverageX100PerProcessor1MinuteAfterArcStart.{ArcBootType}"
+    units="0.01 jobs/processor" expires_after="2022-11-01">
+  <owner>hashimoto@google.com</owner>
+  <owner>yusukes@google.com</owner>
+  <owner>arc-performance@google.com</owner>
+  <summary>
+    The 1-minute load average multiplied by 100 and divided by the number of
+    logical processors online. Recorded 1 minute after ARC start.
+  </summary>
+  <token key="ArcBootType" variants="ArcBootTypes"/>
+</histogram>
+
+<histogram
+    name="Arc.LoadAverageX100PerProcessor5MinutesAfterArcStart.{ArcBootType}"
+    units="0.01 jobs/processor" expires_after="2022-11-01">
+  <owner>hashimoto@google.com</owner>
+  <owner>yusukes@google.com</owner>
+  <owner>arc-performance@google.com</owner>
+  <summary>
+    The 5-minute load average multiplied by 100 and divided by the number of
+    logical processors online. Recorded 5 minutes after ARC start.
+  </summary>
+  <token key="ArcBootType" variants="ArcBootTypes"/>
 </histogram>
 
 <histogram name="Arc.LowLatencyStylusLibrary.PredictionTarget" units="ms"

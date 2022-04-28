@@ -16,30 +16,30 @@ FakeProcessInstance::FakeProcessInstance() = default;
 FakeProcessInstance::~FakeProcessInstance() = default;
 
 void FakeProcessInstance::KillProcess(uint32_t pid, const std::string& reason) {
-  DCHECK(false);
+  NOTIMPLEMENTED();
 }
 
 void FakeProcessInstance::RequestProcessList(
     RequestProcessListCallback callback) {
-  DCHECK(false);
+  NOTIMPLEMENTED();
 }
 
 void FakeProcessInstance::RequestApplicationProcessMemoryInfo(
     RequestApplicationProcessMemoryInfoCallback callback) {
-  DCHECK(false);
+  NOTIMPLEMENTED();
 }
 
 void FakeProcessInstance::RequestSystemProcessMemoryInfo(
     const std::vector<uint32_t>& nspids,
     RequestSystemProcessMemoryInfoCallback callback) {
-  DCHECK(false);
+  NOTIMPLEMENTED();
 }
 
 void FakeProcessInstance::ApplyHostMemoryPressureDeprecated(
     mojom::ProcessState level,
     int64_t reclaim_target,
     ApplyHostMemoryPressureCallback callback) {
-  DCHECK(false);
+  NOTIMPLEMENTED();
 }
 
 void FakeProcessInstance::ApplyHostMemoryPressure(

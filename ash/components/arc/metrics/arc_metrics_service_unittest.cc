@@ -262,6 +262,36 @@ TEST_F(ArcMetricsServiceTest, ReportBootProgress_InvalidBootType) {
   }
 }
 
+TEST_F(ArcMetricsServiceTest, RecordLoadAveragePerProcessor) {
+  service()->OnArcStarted();
+  service()->ReportBootProgress({}, mojom::BootType::REGULAR_BOOT);
+  base::HistogramTester tester;
+  FastForwardBy(base::Minutes(15));
+  tester.ExpectTotalCount(
+      "Arc.LoadAverageX100PerProcessor1MinuteAfterArcStart.RegularBoot", 1);
+  tester.ExpectTotalCount(
+      "Arc.LoadAverageX100PerProcessor5MinutesAfterArcStart.RegularBoot", 1);
+  tester.ExpectTotalCount(
+      "Arc.LoadAverageX100PerProcessor15MinutesAfterArcStart.RegularBoot", 1);
+}
+
+// Tests that load average histograms are recorded even if ReportBootProgress()
+// is called after measuring the load average values.
+TEST_F(ArcMetricsServiceTest,
+       RecordLoadAveragePerProcessor_LateReportBootProgress) {
+  service()->OnArcStarted();
+  base::HistogramTester tester;
+  FastForwardBy(base::Minutes(2));
+  service()->ReportBootProgress({}, mojom::BootType::REGULAR_BOOT);
+  FastForwardBy(base::Minutes(15));
+  tester.ExpectTotalCount(
+      "Arc.LoadAverageX100PerProcessor1MinuteAfterArcStart.RegularBoot", 1);
+  tester.ExpectTotalCount(
+      "Arc.LoadAverageX100PerProcessor5MinutesAfterArcStart.RegularBoot", 1);
+  tester.ExpectTotalCount(
+      "Arc.LoadAverageX100PerProcessor15MinutesAfterArcStart.RegularBoot", 1);
+}
+
 TEST_F(ArcMetricsServiceTest, ReportNativeBridge) {
   // SetArcNativeBridgeType should be called once ArcMetricsService is
   // constructed.

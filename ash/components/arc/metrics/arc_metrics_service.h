@@ -5,6 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_METRICS_ARC_METRICS_SERVICE_H_
 #define ASH_COMPONENTS_ARC_METRICS_ARC_METRICS_SERVICE_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -293,6 +294,12 @@ class ArcMetricsService : public KeyedService,
   void NotifyLowMemoryKill();
   void NotifyOOMKillCount(unsigned long count);
 
+  // Calls sysinfo() to get the load average value and store it.
+  void MeasureLoadAverage(size_t index);
+
+  // Records load average with the appropriate histogram name if ready.
+  void MaybeRecordLoadAveragePerProcessor();
+
   THREAD_CHECKER(thread_checker_);
 
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
@@ -329,6 +336,12 @@ class ArcMetricsService : public KeyedService,
   // For reporting Arc.Provisioning.PreSignInTimeDelta.
   absl::optional<base::TimeTicks> arc_provisioning_start_time_;
   absl::optional<std::string> arc_provisioning_account_type_suffix_;
+
+  // Load average values returned by sysinfo() after ARC start.
+  // Maps from the index of the value to the value itself.
+  std::map<size_t, int> load_averages_after_arc_start_;
+
+  mojom::BootType boot_type_ = mojom::BootType::UNKNOWN;
 
   // Always keep this the last member of this class to make sure it's the
   // first thing to be destructed.

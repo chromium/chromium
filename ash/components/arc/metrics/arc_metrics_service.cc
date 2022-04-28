@@ -4,6 +4,8 @@
 
 #include "ash/components/arc/metrics/arc_metrics_service.h"
 
+#include <sys/sysinfo.h>
+
 #include <string>
 #include <utility>
 
@@ -108,6 +110,17 @@ const char* DnsQueryToString(mojom::ArcDnsQuery query) {
   NOTREACHED();
   return "";
 }
+
+struct LoadAverageHistogram {
+  const char* name;
+  base::TimeDelta duration;
+};
+constexpr LoadAverageHistogram kLoadAverageHistograms[] = {
+    {"Arc.LoadAverageX100PerProcessor1MinuteAfterArcStart", base::Minutes(1)},
+    {"Arc.LoadAverageX100PerProcessor5MinutesAfterArcStart", base::Minutes(5)},
+    {"Arc.LoadAverageX100PerProcessor15MinutesAfterArcStart",
+     base::Minutes(15)},
+};
 
 }  // namespace
 
@@ -366,6 +379,7 @@ void ArcMetricsService::ReportBootProgress(
     LOG(WARNING) << "boot_type is unknown. Skip recording UMA.";
     return;
   }
+  boot_type_ = boot_type;
 
   if (IsArcVmEnabled()) {
     // For VM builds, do not call into session_manager since we don't use it
@@ -381,6 +395,9 @@ void ArcMetricsService::ReportBootProgress(
   chromeos::SessionManagerClient::Get()->GetArcStartTime(base::BindOnce(
       &ArcMetricsService::OnArcStartTimeRetrieved,
       weak_ptr_factory_.GetWeakPtr(), std::move(events), boot_type));
+
+  // Record load average in case they are already measured.
+  MaybeRecordLoadAveragePerProcessor();
 }
 
 void ArcMetricsService::ReportNativeBridge(
@@ -692,9 +709,19 @@ void ArcMetricsService::OnArcStarted() {
   DCHECK(prefs_);
 
   metrics_anr_ = std::make_unique<ArcMetricsAnr>(prefs_);
+
+  // Post tasks to record load average.
+  for (size_t index = 0; index < std::size(kLoadAverageHistograms); ++index) {
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ArcMetricsService::MeasureLoadAverage,
+                       weak_ptr_factory_.GetWeakPtr(), index),
+        kLoadAverageHistograms[index].duration);
+  }
 }
 
 void ArcMetricsService::OnArcSessionStopped() {
+  boot_type_ = mojom::BootType::UNKNOWN;
   metrics_anr_.reset();
 }
 
@@ -748,6 +775,44 @@ void ArcMetricsService::ReportArcNetworkEvent(mojom::ArcNetworkEvent event) {
 void ArcMetricsService::ReportArcNetworkError(mojom::ArcNetworkError error) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   base::UmaHistogramEnumeration("Arc.Net.ArcNetworkError", error);
+}
+
+void ArcMetricsService::MeasureLoadAverage(size_t index) {
+  struct sysinfo info = {};
+  if (sysinfo(&info) < 0) {
+    DCHECK_LT(index, std::size(kLoadAverageHistograms));
+    PLOG(ERROR) << "sysinfo() failed when trying to record "
+                << kLoadAverageHistograms[index].name;
+    return;
+  }
+  DCHECK_LT(index, std::size(info.loads));
+  // Load average values returned by sysinfo() are scaled up by
+  // 1 << SI_LOAD_SHIFT.
+  const int loadx100 = info.loads[index] * 100 / (1 << SI_LOAD_SHIFT);
+  // _SC_NPROCESSORS_ONLN instead of base::SysInfo::NumberOfProcessors() which
+  // uses _SC_NPROCESSORS_CONF to get the number of online processors in case
+  // some cores are disabled.
+  const int loadx100_per_processor = loadx100 / sysconf(_SC_NPROCESSORS_ONLN);
+  load_averages_after_arc_start_[index] = loadx100_per_processor;
+
+  MaybeRecordLoadAveragePerProcessor();
+}
+
+void ArcMetricsService::MaybeRecordLoadAveragePerProcessor() {
+  if (boot_type_ == mojom::BootType::UNKNOWN) {
+    // Not ready because the boot type is still unknown.
+    return;
+  }
+  for (const auto& value : load_averages_after_arc_start_) {
+    const size_t index = value.first;
+    const int loadx100_per_processor = value.second;
+    DCHECK_LT(index, std::size(kLoadAverageHistograms));
+    base::UmaHistogramCustomCounts(
+        kLoadAverageHistograms[index].name + BootTypeToString(boot_type_),
+        loadx100_per_processor, 0, 5000, 50);
+  }
+  // Erase the values to avoid recording them again.
+  load_averages_after_arc_start_.clear();
 }
 
 ArcMetricsService::ProcessObserver::ProcessObserver(
