@@ -1,4 +1,4 @@
-# WebDriver BiDi for Chromium
+# WebDriver BiDi for Chromium [![chromium-bidi on npm](https://img.shields.io/npm/v/chromium-bidi)](https://www.npmjs.com/package/chromium-bidi)
 
 This is an implementation of the
 [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) protocol for Chromium,

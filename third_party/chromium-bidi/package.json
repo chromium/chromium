@@ -7,6 +7,7 @@
     "unit": "cross-env TS_NODE_PROJECT='src/tsconfig.json' mocha",
     "e2e": "npm run server-no-build & npm run e2e-only",
     "e2e-only": "python3 -m pytest --rootdir=tests",
+    "test": "npm run unit && npm run e2e-only",
     "server": "npm run build && npm run server-no-build --",
     "server-no-build": "node ./src/.build/bidiServer/index.js",
     "build": "npm run prettier && npm run clean && npm run build-mapper && npm run build-server",
