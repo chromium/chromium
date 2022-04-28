@@ -657,8 +657,7 @@ bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
              download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT)) {
       DVLOG(2) << __func__
                << "() SB service disabled. Marking download as DANGEROUS FILE";
-      if (ShouldBlockFile(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
-                          item)) {
+      if (ShouldBlockFile(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE)) {
         MaybeReportDangerousDownloadBlocked(
             download_prefs_->download_restriction(), "DANGEROUS_FILE_TYPE",
             item->GetTargetFilePath().AsUTF8Unsafe(), item);
@@ -1397,7 +1396,7 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
       } else {
         item->OnAsyncScanningCompleted(danger_type);
       }
-    } else if (ShouldBlockFile(danger_type, item)) {
+    } else if (ShouldBlockFile(danger_type)) {
       // Specifying a dangerous type here would take precedence over the
       // blocking of the file. For BLOCKED_TOO_LARGE and
       // BLOCKED_PASSWORD_PROTECTED, we want to display more clear UX, so
@@ -1547,7 +1546,7 @@ void ChromeDownloadManagerDelegate::OnDownloadTargetDetermined(
 
     DownloadItemModel(item).SetDangerLevel(target_info->danger_level);
   }
-  if (ShouldBlockFile(target_info->danger_type, item)) {
+  if (ShouldBlockFile(target_info->danger_type)) {
     MaybeReportDangerousDownloadBlocked(
         download_prefs_->download_restriction(), "DANGEROUS_FILE_TYPE",
         target_info->target_path.AsUTF8Unsafe(), item);
@@ -1622,8 +1621,7 @@ bool ChromeDownloadManagerDelegate::IsOpenInBrowserPreferreredForFile(
 }
 
 bool ChromeDownloadManagerDelegate::ShouldBlockFile(
-    download::DownloadDangerType danger_type,
-    download::DownloadItem* item) const {
+    download::DownloadDangerType danger_type) const {
   DownloadPrefs::DownloadRestriction download_restriction =
       download_prefs_->download_restriction();
 

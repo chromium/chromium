@@ -154,7 +154,7 @@ EventResult GetEventResult(download::DownloadDangerType danger_type,
   if (download_core_service) {
     ChromeDownloadManagerDelegate* delegate =
         download_core_service->GetDownloadManagerDelegate();
-    if (delegate && delegate->ShouldBlockFile(danger_type, item)) {
+    if (delegate && delegate->ShouldBlockFile(danger_type)) {
       return EventResult::BLOCKED;
     }
   }

@@ -182,8 +182,7 @@ class ChromeDownloadManagerDelegate
 
   // Return true if the downloaded file should be blocked based on the current
   // download restriction pref and |danger_type|.
-  bool ShouldBlockFile(download::DownloadDangerType danger_type,
-                       download::DownloadItem* item) const;
+  bool ShouldBlockFile(download::DownloadDangerType danger_type) const;
 
  protected:
   virtual safe_browsing::DownloadProtectionService*
