@@ -1158,6 +1158,8 @@ source_set("chromeos") {
     "../ash/borealis/borealis_engagement_metrics.h",
     "../ash/borealis/borealis_features.cc",
     "../ash/borealis/borealis_features.h",
+    "../ash/borealis/borealis_features_util.cc",
+    "../ash/borealis/borealis_features_util.h",
     "../ash/borealis/borealis_game_mode_controller.cc",
     "../ash/borealis/borealis_game_mode_controller.h",
     "../ash/borealis/borealis_installer.cc",

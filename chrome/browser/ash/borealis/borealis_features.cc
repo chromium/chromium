@@ -10,17 +10,13 @@
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/components/tpm/install_attributes.h"
 #include "ash/constants/ash_features.h"
-#include "base/base64.h"
 #include "base/callback.h"
-#include "base/cpu.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/scoped_blocking_call.h"
+#include "borealis_features_util.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/guest_os/infra/cached_callback.h"
 #include "chrome/browser/ash/guest_os/virtual_machines/virtual_machines_util.h"
@@ -30,11 +26,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
-#include "chromeos/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
-#include "crypto/sha2.h"
-#include "third_party/re2/src/re2/re2.h"
 
 using AllowStatus = borealis::BorealisFeatures::AllowStatus;
 
@@ -42,233 +35,94 @@ namespace borealis {
 
 namespace {
 
-// The special borealis variants distinguish internal developer-only boards
-// used by the borealis team for testing. They are not publicly available.
-constexpr char kOverrideHardwareChecksBoardSuffix[] = "-borealis";
-
-constexpr const char* kAllowedModelNames[] = {
-    "delbin", "voxel", "volta", "lindar", "elemi", "volet", "drobit"};
-
 constexpr int64_t kGibi = 1024 * 1024 * 1024;
-constexpr int64_t kMinimumMemoryBytes = 7 * kGibi;
-
-// Matches i5 and i7 of the 11th generation and up.
-constexpr char kMinimumCpuRegex[] = "[1-9][1-9].. Gen.*i[57]-";
 
 // Used to make it difficult to tell what someone's token is based on their
 // prefs.
 constexpr char kSaltForPrefStorage[] = "/!RoFN8,nDxiVgTI6CvU";
 
-// A prime number chosen to give ~0.1s of wait time on my DUT.
-constexpr unsigned kHashIterations = 100129;
-
-// Returns the Board's name according to /etc/lsb-release. Strips any variant
-// except the "-borealis" variant.
-//
-// Note: the comment on GetLsbReleaseBoard() (rightly) points out that we're
-// not supposed to use LsbReleaseBoard directly, but rather set a flag in
-// the overlay. I am not doing that as the following check is only a
-// temporary hack necessary while we release borealis, but will be removed
-// shortly afterwards. This check can fail in either direction and we won't
-// be too upset.
-std::string GetBoardName() {
-  // In a developer build, the name "volteer" or "volteer-borealis" will become
-  // "volteer-signed-mp-blahblah" and "volteer-borealis-signed..." on a signed
-  // build, so we want to stop everything after the "-" unless its "-borealis".
-  //
-  // This means a variant like "volteer-kernelnext" will be treated as "volteer"
-  // by us.
-  std::vector<std::string> pieces =
-      base::SplitString(base::SysInfo::GetLsbReleaseBoard(), "-",
-                        base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (pieces.size() >= 2 && pieces[1] == "borealis") {
-    return pieces[0] + "-" + pieces[1];
-  }
-  DCHECK(!pieces.empty());
-  return pieces[0];
-}
-
-// The below mechanism is not secure, and is not intended to be. It is a
-// temporary measure that does not warrant any more effort. You might say
-// it can be gamed 😎.
-//
-// Reminder: Don't Roll Your Own Crypto! Security should be left to the
-// experts.
-//
-// TODO(b/218403711): This mechanism is temporary. It exists to allow borealis
-// developers to verify that borealis functions correctly on the target
-// platforms before releasing borealis broadly. We only need it because the
-// boards we are targeting are publicly available, and going forward we will
-// verify borealis is functioning on hardware before its public release.
-std::string H(std::string input, const std::string& salt) {
-  // Hashing is not strictly "blocking" since the cpu is probably busy, but best
-  // not to call this method if you're on a thread that disallows blocking.
-  base::ScopedBlockingCall sbc(FROM_HERE, base::BlockingType::WILL_BLOCK);
-  std::string ret = std::move(input);
-  for (int i = 0; i < kHashIterations; ++i) {
-    std::string raw_sha = crypto::SHA256HashString(ret + salt);
-    base::Base64Encode(raw_sha, &ret);
-  }
-  return ret;
-}
-
-enum class TokenAuthority {
-  kRejected,
-  kAllowedRequiresHardwareChecks,
-  kAllowedOverridesHardwareChecks,
-};
-
-// Returns the degree to which we authorize the user's provided token. Some
-// tokens are intended to allow developers/tests to avoid the hardware checks.
+// Checks the current hardware+token configuration to determine if the user
+// should be able to run borealis.
 //
 // If you are supposed to know the correct token, then you will be able to
 // find it ~if you go to the place we all know and love~.
-//
-// For the maintainer:
-//
-// H(H("token", kSaltForPrefStorage), "salt") =
-//   "aT79k1Uv7v7D5s2/rpYUJYRXTUq4EkPN2FK4JBQJWgw=";
-TokenAuthority GetAuthorityForToken(const std::string& board,
-                                    const std::string& hash_of_current_token) {
-  // Tokens provide more fine-grained control over whether borealis can be run
-  // on a specific device. The different kinds of token are:
-  //  * "Super" token: Allows borealis on any device.
-  //  * "Test" token: Allows borealis on any device with sufficient hardware
-  //    (where *-borealis boards are always considered sufficient).
-  //  * /board token: Similar to the super token, but only works for a subset of
-  //    baords.
-  //
-  // All tokens will only function if borealis is already available on that
-  // board based on its use flags.
+class FullChecker : public TokenHardwareChecker {
+ public:
+  explicit FullChecker(Data data) : TokenHardwareChecker(std::move(data)) {}
 
-  // The "super" token.
-  if (H(hash_of_current_token, "i9n6HT3+3Bo:C1p^_qk!\\") ==
-      "X1391g+2yiuBQrceA3gRGrT7+DQcaYGR/GkmFscyOfQ=") {
-    LOG(WARNING) << "Super-token provided, bypassing hardware checks.";
-    return TokenAuthority::kAllowedOverridesHardwareChecks;
-  }
+  AllowStatus Check() const {
+    // Tokens provide more fine-grained control over whether borealis can be run
+    // on a specific device. The different kinds of token are:
+    //  * "Super" token: Allows borealis on any device.
+    //  * "Test" token: Allows borealis on any device with sufficient hardware
+    //    (where *-borealis boards are always considered sufficient).
+    //  * /board token: Similar to the super token, but only works for a subset
+    //  of baords.
+    //
+    // All tokens will only function if borealis is already available on that
+    // board based on its use flags.
 
-  // The "test" token.
-  if (H(hash_of_current_token, "MpOI9+d58she4,97rI") ==
-      "Eec1m+UrIkLUu3L6mV+5zTYZId6HJ+vz+50MseJJaGw=") {
-    bool bypass_hardware =
-        base::EndsWith(board, kOverrideHardwareChecksBoardSuffix);
-    LOG(WARNING) << "Test-token provided, bypass_hardware=" << bypass_hardware;
-    return bypass_hardware ? TokenAuthority::kAllowedOverridesHardwareChecks
-                           : TokenAuthority::kAllowedRequiresHardwareChecks;
-  }
-
-  // The board-specific tokens.
-  if (base::EndsWith(board, kOverrideHardwareChecksBoardSuffix)) {
-    if (H(hash_of_current_token, "MXlY+SFZ!2,P_k^02]hK") ==
-        "FbxB2mxNa/uqskX4X+NqHhAE6ebHeWC0u+Y+UlGEB/4=") {
-      LOG(WARNING) << "Dogfooder token provided for " << board
-                   << ", bypassing hardware checks.";
-      return TokenAuthority::kAllowedOverridesHardwareChecks;
+    // The "super" token.
+    if (TokenHashMatches("i9n6HT3+3Bo:C1p^_qk!\\",
+                         "X1391g+2yiuBQrceA3gRGrT7+DQcaYGR/GkmFscyOfQ=")) {
+      LOG(WARNING) << "Super-token provided, bypassing hardware checks.";
+      return AllowStatus::kAllowed;
     }
-    return TokenAuthority::kRejected;
-  } else if (board == "volteer") {
-    if (H(hash_of_current_token, "w/8GMLXyB.EOkFaP/-AA") ==
-        "waiTIRjxZCFjFIRkuUVlnAbiDOMBSzyp3iSJl5x3YwA=") {
-      LOG(WARNING) << "Vendor token provided for " << board
-                   << ", bypassing hardware checks.";
-      return TokenAuthority::kAllowedOverridesHardwareChecks;
+
+    // The "test" token.
+    if (TokenHashMatches("MpOI9+d58she4,97rI",
+                         "Eec1m+UrIkLUu3L6mV+5zTYZId6HJ+vz+50MseJJaGw=")) {
+      LOG(WARNING) << "Test-token provided, bypassing hardware checks.";
+      return AllowStatus::kAllowed;
     }
-    // Volteer is released, so it is allowed as long as hardware checks pass.
-    return TokenAuthority::kAllowedRequiresHardwareChecks;
-  } else if (board == "brya" || board == "adlrvp" || board == "brask") {
-    if (H(hash_of_current_token, "tPl24iMxXNR,w$h6,g") ==
-        "LWULWUcemqmo6Xvdu2LalOYOyo/V4/CkljTmAneXF+U=") {
-      LOG(WARNING) << "Vendor token provided for " << board
-                   << ", bypassing hardware checks.";
-      return TokenAuthority::kAllowedOverridesHardwareChecks;
+
+    // The board-specific tokens.
+    if (BoardIn({"hatch-borealis", "puff-borealis", "zork-borealis",
+                 "volteer-borealis"})) {
+      if (TokenHashMatches("MXlY+SFZ!2,P_k^02]hK",
+                           "FbxB2mxNa/uqskX4X+NqHhAE6ebHeWC0u+Y+UlGEB/4=")) {
+        LOG(WARNING) << "Dogfooder token provided, bypassing hardware checks.";
+        return AllowStatus::kAllowed;
+      }
+      return AllowStatus::kIncorrectToken;
+    } else if (IsBoard("volteer")) {
+      if (TokenHashMatches("w/8GMLXyB.EOkFaP/-AA",
+                           "waiTIRjxZCFjFIRkuUVlnAbiDOMBSzyp3iSJl5x3YwA=")) {
+        LOG(WARNING) << "Vendor token provided, bypassing hardware checks.";
+        return AllowStatus::kAllowed;
+      }
+      // Volteer is released, so it is allowed as long as the device has an 11th
+      // gen i5-i7 with 8G memory and is the correct model.
+      if (!ModelIn({"delbin", "voxel", "volta", "lindar", "elemi", "volet",
+                    "drobit"})) {
+        return AllowStatus::kUnsupportedModel;
+      }
+      return CpuRegexMatches("[1-9][1-9].. Gen.*i[57]-") && HasMemory(7 * kGibi)
+                 ? AllowStatus::kAllowed
+                 : AllowStatus::kHardwareChecksFailed;
+    } else if (BoardIn({"brya", "adlrvp", "brask"})) {
+      if (TokenHashMatches("tPl24iMxXNR,w$h6,g",
+                           "LWULWUcemqmo6Xvdu2LalOYOyo/V4/CkljTmAneXF+U=")) {
+        LOG(WARNING) << "Vendor token provided, bypassing hardware checks.";
+        return AllowStatus::kAllowed;
+      }
+      return AllowStatus::kIncorrectToken;
+    } else if (BoardIn({"guybrush", "majolica"})) {
+      if (TokenHashMatches("^_GkTVWDP.FQo5KclS",
+                           "ftqv2wT3qeJKajioXqd+VrEW34CciMsigH3MGfMiMsU=")) {
+        LOG(WARNING) << "Vendor token provided, bypassing hardware checks.";
+        return AllowStatus::kAllowed;
+      }
+      return AllowStatus::kIncorrectToken;
     }
-    return TokenAuthority::kRejected;
-  } else if (board == "guybrush" || board == "majolica") {
-    if (H(hash_of_current_token, "^_GkTVWDP.FQo5KclS") ==
-        "ftqv2wT3qeJKajioXqd+VrEW34CciMsigH3MGfMiMsU=") {
-      LOG(WARNING) << "Vendor token provided for " << board
-                   << ", bypassing hardware checks.";
-      return TokenAuthority::kAllowedOverridesHardwareChecks;
-    }
-    return TokenAuthority::kRejected;
-  }
-  return TokenAuthority::kRejected;
-}
-
-// Returns the model name of this device (either from its CustomizationId or by
-// parsing its hardware class). Returns "" if it fails.
-std::string GetModelName() {
-  std::string ret;
-  if (chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
-          chromeos::system::kCustomizationIdKey, &ret)) {
-    return ret;
-  }
-  LOG(WARNING)
-      << "CustomizationId unavailable, attempting to parse hardware class";
-
-  // As a fallback when the CustomizationId is not available, we try to parse it
-  // out of the hardware class. If The hardware class is unavailable, all bets
-  // are off.
-  std::string hardware_class;
-  if (!chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
-          chromeos::system::kHardwareClassKey, &hardware_class)) {
-    return "";
-  }
-
-  // Hardware classes for the "modelname" model might look like this:
-  //
-  //    MODELNAME-FFFF DEAD-BEEF-HEX-JUNK
-  //
-  // (or "unknown" if we can't find it). So we only care about converting the
-  // stuff before the first "-" into lowercase.
-  //
-  // Naively searching for the first hyphen is fine until we start caring about
-  // models with hyphens in the name.
-  size_t hyphen_pos = hardware_class.find('-');
-  if (hyphen_pos != std::string::npos)
-    hardware_class = hardware_class.substr(0, hyphen_pos);
-  return base::ToLowerASCII(hardware_class);
-}
-
-AllowStatus GetAsyncAllowStatus(const std::string& hash_of_current_token) {
-  // First, check the token.
-  std::string board = GetBoardName();
-  TokenAuthority auth = GetAuthorityForToken(board, hash_of_current_token);
-  if (auth == TokenAuthority::kRejected) {
-    LOG(WARNING) << "Incorrect token hash '" << hash_of_current_token
-                 << "' for board=" << board;
     return AllowStatus::kIncorrectToken;
-  } else if (auth == TokenAuthority::kAllowedOverridesHardwareChecks) {
-    return AllowStatus::kAllowed;
   }
 
-  // Next, exclude variants of the boards that we don't expect to work on.
-  std::string model_name = GetModelName();
-  bool found = false;
-  for (const char* allowed_model : kAllowedModelNames) {
-    if (model_name == allowed_model) {
-      found = true;
-      break;
-    }
+  // Similar to the above, but also constructs the checker.
+  static AllowStatus BuildAndCheck(Data data) {
+    return FullChecker(std::move(data)).Check();
   }
-  if (!found) {
-    LOG(WARNING) << "Borealis is not supported on \"" << model_name
-                 << "\" models";
-    return AllowStatus::kUnsupportedModel;
-  }
-
-  // Finally, check system requirements.
-  if (base::SysInfo::AmountOfPhysicalMemory() < kMinimumMemoryBytes) {
-    return AllowStatus::kHardwareChecksFailed;
-  } else if (!RE2::PartialMatch(
-                 base::CPU::GetInstanceNoAllocation().cpu_brand(),
-                 kMinimumCpuRegex)) {
-    return AllowStatus::kHardwareChecksFailed;
-  }
-
-  return AllowStatus::kAllowed;
-}
+};
 
 }  // namespace
 
@@ -296,12 +150,13 @@ class AsyncAllowChecker : public guest_os::CachedCallback<AllowStatus, bool> {
       return;
     }
 
-    chromeos::system::StatisticsProvider::GetInstance()
-        ->ScheduleOnMachineStatisticsLoaded(base::BindOnce(
-            [](RealCallback callback, const std::string& token_hash) {
+    TokenHardwareChecker::GetData(
+        profile_->GetPrefs()->GetString(prefs::kBorealisVmTokenHash),
+        base::BindOnce(
+            [](RealCallback callback, TokenHardwareChecker::Data data) {
               base::ThreadPool::PostTaskAndReplyWithResult(
                   FROM_HERE, base::MayBlock(),
-                  base::BindOnce(&GetAsyncAllowStatus, token_hash),
+                  base::BindOnce(&FullChecker::BuildAndCheck, std::move(data)),
                   base::BindOnce(
                       [](RealCallback callback, AllowStatus status) {
                         // "Success" here means we successfully determined the
@@ -312,8 +167,7 @@ class AsyncAllowChecker : public guest_os::CachedCallback<AllowStatus, bool> {
                       },
                       std::move(callback)));
             },
-            std::move(callback),
-            profile_->GetPrefs()->GetString(prefs::kBorealisVmTokenHash)));
+            std::move(callback)));
   }
 
   Profile* const profile_;
@@ -397,7 +251,8 @@ void BorealisFeatures::SetVmToken(
     base::OnceCallback<void(AllowStatus)> callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, base::MayBlock(),
-      base::BindOnce(&H, std::move(token), kSaltForPrefStorage),
+      base::BindOnce(&TokenHardwareChecker::H, std::move(token),
+                     kSaltForPrefStorage),
       base::BindOnce(&BorealisFeatures::OnVmTokenDetermined,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
