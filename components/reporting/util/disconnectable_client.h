@@ -60,9 +60,11 @@ class DisconnectableClient {
   bool is_available_ GUARDED_BY_CONTEXT(sequence_checker_){false};
 
   // Map of delegates indexed by unique ids (all delegates will fail with error
-  // Status if service disconnects).
+  // Status if service disconnects). last_id_ is used for generation of these
+  // unique ids.
   base::flat_map<uint64_t, std::unique_ptr<Delegate>> outstanding_delegates_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  uint64_t last_id_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   // Weak pointer factory - must be last member of the class.
   base::WeakPtrFactory<DisconnectableClient> weak_ptr_factory_{this};

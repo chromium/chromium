@@ -5,6 +5,8 @@
 #include "components/reporting/util/status_macros.h"
 
 #include <stdio.h>
+#include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"

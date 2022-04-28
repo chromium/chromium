@@ -4,6 +4,8 @@
 
 #include "components/reporting/resources/resource_interface.h"
 
+#include <utility>
+
 #include <cstdint>
 
 namespace reporting {

@@ -9,9 +9,9 @@
 #include "base/strings/string_piece.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/proto/synced/record.pb.h"
-#include "components/reporting/util/statusor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 namespace test {

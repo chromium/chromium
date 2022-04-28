@@ -45,31 +45,30 @@ void ReportQueueFactory::Create(EventType event_type,
 }
 
 // static
-std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>
+std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>
 ReportQueueFactory::CreateSpeculativeReportQueue(EventType event_type,
                                                  Destination destination) {
   DCHECK(base::SequencedTaskRunnerHandle::IsSet());
 
-  auto config_result = ::reporting::ReportQueueConfiguration::Create(
+  auto config_result = ReportQueueConfiguration::Create(
       event_type, destination,
-      base::BindRepeating([]() { return ::reporting::Status::StatusOK(); }));
+      base::BindRepeating([]() { return Status::StatusOK(); }));
 
   if (!config_result.ok()) {
     DVLOG(1)
         << "Cannot initialize report queue. Invalid ReportQueueConfiguration: "
         << config_result.status();
-    return std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
+    return std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>(
         nullptr,
         base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
   }
 
-  auto speculative_queue_result =
-      ::reporting::ReportQueueProvider::CreateSpeculativeQueue(
-          std::move(config_result.ValueOrDie()));
+  auto speculative_queue_result = ReportQueueProvider::CreateSpeculativeQueue(
+      std::move(config_result.ValueOrDie()));
   if (!speculative_queue_result.ok()) {
     DVLOG(1) << "Failed to create speculative queue: "
              << speculative_queue_result.status();
-    return std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
+    return std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>(
         nullptr,
         base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
   }
@@ -81,7 +80,7 @@ ReportQueueFactory::TrySetReportQueueCallback
 ReportQueueFactory::CreateTrySetCallback(
     Destination destination,
     SuccessCallback success_cb,
-    std::unique_ptr<net::BackoffEntry> backoff_entry) {
+    std::unique_ptr<::net::BackoffEntry> backoff_entry) {
   return base::BindPostTask(
       base::ThreadTaskRunnerHandle::Get(),
       base::BindOnce(&ReportQueueFactory::TrySetReportQueue,

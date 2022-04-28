@@ -11,10 +11,10 @@
 #include "components/reporting/client/dm_token_retriever.h"
 #include "components/reporting/util/statusor.h"
 
-namespace reporting {
-
 using ::base::test::RunOnceCallback;
 using ::testing::_;
+
+namespace reporting {
 
 MockDMTokenRetriever::MockDMTokenRetriever() = default;
 

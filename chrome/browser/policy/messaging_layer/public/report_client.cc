@@ -361,7 +361,7 @@ ReportingClient::GetDefaultUploadProvider(
     UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
     UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb,
     GetCloudPolicyClientCallback build_cloud_policy_client_cb) {
-  return std::make_unique<::reporting::EncryptedReportingUploadProvider>(
+  return std::make_unique<EncryptedReportingUploadProvider>(
       report_successful_upload_cb, encryption_key_attached_cb,
       build_cloud_policy_client_cb);
 }

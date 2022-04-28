@@ -4,10 +4,13 @@
 
 #include "components/reporting/compression/test_compression_module.h"
 
+#include <string>
+#include <utility>
+
 #include "base/callback.h"
 #include "base/strings/string_piece.h"
 #include "components/reporting/proto/synced/record.pb.h"
-#include "components/reporting/util/statusor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::Invoke;
 

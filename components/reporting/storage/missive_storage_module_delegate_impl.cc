@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/reporting/storage/missive_storage_module_delegate_impl.h"
+
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"

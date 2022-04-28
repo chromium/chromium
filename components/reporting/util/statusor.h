@@ -57,6 +57,7 @@
 #define COMPONENTS_REPORTING_UTIL_STATUSOR_H_
 
 #include <new>
+#include <string>
 #include <type_traits>
 #include <utility>
 

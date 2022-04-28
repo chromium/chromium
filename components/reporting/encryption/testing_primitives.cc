@@ -6,7 +6,6 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <memory>
 #include <string>
 
 #include "base/strings/string_piece.h"

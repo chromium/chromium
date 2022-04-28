@@ -5,6 +5,7 @@
 #include "components/reporting/util/status.h"
 
 #include <stdio.h>
+#include <utility>
 
 #include "base/logging.h"
 #include "components/reporting/util/status.pb.h"

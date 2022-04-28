@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_REPORTING_STORAGE_MISSIVE_STORAGE_MODULE_H_
 #define COMPONENTS_REPORTING_STORAGE_MISSIVE_STORAGE_MODULE_H_
 
+#include <memory>
 #include <utility>
 
 #include "base/callback.h"

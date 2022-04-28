@@ -6,10 +6,12 @@
 #define COMPONENTS_REPORTING_UTIL_TEST_SUPPORT_CALLBACKS_H_
 
 #include <tuple>
+#include <utility>
 
 #include "base/atomic_ref_count.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"

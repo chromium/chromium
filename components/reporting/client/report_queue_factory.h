@@ -48,7 +48,7 @@ class ReportQueueFactory {
                      Destination destination,
                      SuccessCallback done_cb);
 
-  static std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>
+  static std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>
   CreateSpeculativeReportQueue(EventType event_type, Destination destination);
 
  private:
@@ -59,7 +59,7 @@ class ReportQueueFactory {
   static TrySetReportQueueCallback CreateTrySetCallback(
       Destination destination,
       SuccessCallback success_cb,
-      std::unique_ptr<net::BackoffEntry> backoff_entry);
+      std::unique_ptr<::net::BackoffEntry> backoff_entry);
 };
 
 }  // namespace reporting
