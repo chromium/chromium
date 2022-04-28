@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -118,6 +120,15 @@ class NotificationViewTest : public views::ViewObserver,
 
   // views::ViewsTestBase:
   void SetUp() override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Since ash will use ash::AshNotificationView instead of
+    // message_center::NotificationView when kNotificationsRefresh is enabled,
+    // these unit tests are only applicable when the feature is disabled.
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitAndDisableFeature(
+        ash::features::kNotificationsRefresh);
+#endif  // IS_CHROMEOS_ASH
+
     views::ViewsTestBase::SetUp();
     MessageCenter::Initialize();
     delegate_ = new NotificationTestDelegate();
@@ -245,6 +256,9 @@ class NotificationViewTest : public views::ViewObserver,
   views::View* inline_settings_row() {
     return notification_view_->inline_settings_row();
   }
+  std::vector<views::LabelButton*> action_buttons() {
+    return notification_view()->action_buttons();
+  }
   views::RadioButton* block_all_button() {
     return notification_view_->block_all_button_;
   }
@@ -294,6 +308,7 @@ class NotificationViewTest : public views::ViewObserver,
   raw_ptr<NotificationView> notification_view_ = nullptr;
   bool delete_on_notification_removed_ = false;
   bool ink_drop_stopped_ = false;
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
 TEST_F(NotificationViewTest, UpdateViewsOrderingTest) {
@@ -733,6 +748,39 @@ TEST_F(NotificationViewTest, TestDeleteOnDisableNotification) {
   // https://crbug.com/924922
   set_delete_on_notification_removed(true);
   views::test::ButtonTestApi(settings_done_button()).NotifyClick(DummyEvent());
+}
+
+// Tests that action buttons (e.g. the inline reply button) ignores the
+// notification's accent color when the flag is present.
+TEST_F(NotificationViewTest, TestAccentColorTextFlagAffectsActionButtons) {
+  RichNotificationData data;
+  data.settings_button_handler = SettingsButtonHandler::INLINE;
+  data.accent_color = SK_ColorGREEN;
+  std::unique_ptr<Notification> notification;
+
+  data.ignore_accent_color_for_text = true;
+  notification = CreateSimpleNotificationWithRichData(data);
+  notification->set_buttons(CreateButtons(2));
+  notification->set_type(NotificationType::NOTIFICATION_TYPE_SIMPLE);
+  UpdateNotificationViews(*notification);
+  EXPECT_EQ(action_buttons().size(), 2u);
+  for (views::LabelButton* action_button : action_buttons()) {
+    EXPECT_NE(
+        notification_view()->GetActionButtonColorForTesting(action_button),
+        data.accent_color);
+  }
+
+  data.ignore_accent_color_for_text = false;
+  notification = CreateSimpleNotificationWithRichData(data);
+  notification->set_buttons(CreateButtons(2));
+  notification->set_type(NotificationType::NOTIFICATION_TYPE_SIMPLE);
+  UpdateNotificationViews(*notification);
+  EXPECT_EQ(action_buttons().size(), 2u);
+  for (views::LabelButton* action_button : action_buttons()) {
+    EXPECT_EQ(
+        notification_view()->GetActionButtonColorForTesting(action_button),
+        data.accent_color);
+  }
 }
 
 }  // namespace message_center

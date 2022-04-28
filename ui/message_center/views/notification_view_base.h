@@ -297,8 +297,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, NotificationWithoutIcon);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, ShowProgress);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, ShowTimestamp);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest,
-                           TestAccentColorTextFlagAffectsActionButtons);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, TestActionButtonClick);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, TestClick);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, TestClickExpanded);

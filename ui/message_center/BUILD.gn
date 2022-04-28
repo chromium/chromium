@@ -224,6 +224,10 @@ if (enable_message_center) {
         "//ui/views",
         "//ui/views:test_support",
       ]
+
+      if (is_chromeos_ash) {
+        deps += [ "//ash/constants" ]
+      }
     }
 
     if (is_fuchsia) {

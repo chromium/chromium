@@ -142,6 +142,8 @@ class NotificationTextButton : public views::MdTextButton {
     label()->SetAutoColorReadabilityEnabled(true);
   }
 
+  absl::optional<SkColor> color() const { return color_; }
+
  private:
   absl::optional<SkColor> color_;
 };
@@ -316,6 +318,13 @@ NotificationView::~NotificationView() {
   // gets called in the destructor of InkDrop which would've called the wrong
   // override if it destroys in a parent destructor.
   views::InkDrop::Remove(this);
+}
+
+SkColor NotificationView::GetActionButtonColorForTesting(
+    views::LabelButton* action_button) {
+  NotificationTextButton* button =
+      static_cast<NotificationTextButton*>(action_button);
+  return button->color().value_or(SkColor());
 }
 
 void NotificationView::CreateOrUpdateHeaderView(

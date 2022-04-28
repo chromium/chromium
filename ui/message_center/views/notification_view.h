@@ -32,6 +32,8 @@ class MESSAGE_CENTER_EXPORT NotificationView : public NotificationViewBase {
   // does not depend on this class.
   void Layout() override;
 
+  SkColor GetActionButtonColorForTesting(views::LabelButton* action_button);
+
  private:
   friend class NotificationViewTest;
 

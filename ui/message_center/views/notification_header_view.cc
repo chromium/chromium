@@ -132,6 +132,9 @@ void ExpandButton::OnThemeChanged() {
 void ExpandButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kButton;
   node_data->SetName(GetTooltipText(gfx::Point()));
+
+  if (GetTooltipText().empty())
+    node_data->SetNameFrom(ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 }
 
 BEGIN_METADATA(ExpandButton, views::ImageView)

@@ -1155,35 +1155,4 @@ TEST_F(NotificationViewBaseTest, ShowTimestamp) {
                    ->GetVisible());
 }
 
-// Tests that action buttons (e.g. the inline reply button) ignores the
-// notification's accent color when the flag is present.
-TEST_F(NotificationViewBaseTest, TestAccentColorTextFlagAffectsActionButtons) {
-  RichNotificationData data;
-  data.settings_button_handler = SettingsButtonHandler::INLINE;
-  data.accent_color = SK_ColorGREEN;
-  std::unique_ptr<Notification> notification;
-
-  data.ignore_accent_color_for_text = true;
-  notification = CreateSimpleNotificationWithRichData(data);
-  notification->set_buttons(CreateButtons(2));
-  notification->set_type(NotificationType::NOTIFICATION_TYPE_SIMPLE);
-  UpdateNotificationViews(*notification);
-  EXPECT_EQ(notification_view()->action_buttons_.size(), 2u);
-  for (views::LabelButton* action_button :
-       notification_view()->action_buttons_) {
-    EXPECT_NE(action_button->GetCurrentTextColor(), data.accent_color);
-  }
-
-  data.ignore_accent_color_for_text = false;
-  notification = CreateSimpleNotificationWithRichData(data);
-  notification->set_buttons(CreateButtons(2));
-  notification->set_type(NotificationType::NOTIFICATION_TYPE_SIMPLE);
-  UpdateNotificationViews(*notification);
-  EXPECT_EQ(notification_view()->action_buttons_.size(), 2u);
-  for (views::LabelButton* action_button :
-       notification_view()->action_buttons_) {
-    EXPECT_EQ(action_button->GetCurrentTextColor(), data.accent_color);
-  }
-}
-
 }  // namespace message_center
