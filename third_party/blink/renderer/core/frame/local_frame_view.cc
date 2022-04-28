@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/css/font_face_set_document.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
@@ -860,7 +861,13 @@ void LocalFrameView::PerformLayout() {
           RuntimeEnabledFeatures::DeferredShapingEnabled() &&
               default_allow_deferred_shaping_ && !frame_->PagePopupOwner() &&
               !FirstMeaningfulPaintDetector::From(*frame_->GetDocument())
-                   .SeenFirstMeaningfulPaint());
+                   .SeenFirstMeaningfulPaint() &&
+              // Locking many shaping-deferred elements is very slow if we have
+              // ScopedForcedUpdate instances.
+              // Without this check, PerformPostLayoutTasks() takes 200 seconds
+              // in editing/deleting/delete-many-lines-of-text.html with a
+              // debug build.
+              !document->GetDisplayLockDocumentState().HasForcedScopes());
       DeferredShapingViewportScope viewport_scope(*this, *GetLayoutView());
       GetLayoutView()->UpdateLayout();
     }

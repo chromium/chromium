@@ -108,6 +108,9 @@ class CORE_EXPORT DisplayLockDocumentState final
       const Range* range,
       DisplayLockUtilities::ScopedForcedUpdate::Impl* chain);
   void EndForcedScope(DisplayLockUtilities::ScopedForcedUpdate::Impl* chain);
+  bool HasForcedScopes() const {
+    return forced_node_infos_.size() > 0 || forced_range_infos_.size() > 0;
+  }
 
   // This is called to make sure that any of the currently forced locks allow at
   // least the specified phase for updates. This is used when a scope is
