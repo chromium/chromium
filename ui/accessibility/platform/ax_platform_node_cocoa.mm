@@ -526,6 +526,7 @@ bool IsAXSetter(SEL selector) {
   ax::mojom::NameFrom nameFrom = _node->GetNameFrom();
   if (nameFrom == ax::mojom::NameFrom::kCaption ||
       nameFrom == ax::mojom::NameFrom::kContents ||
+      nameFrom == ax::mojom::NameFrom::kPlaceholder ||
       nameFrom == ax::mojom::NameFrom::kRelatedElement ||
       nameFrom == ax::mojom::NameFrom::kValue) {
     return false;
@@ -1750,8 +1751,13 @@ bool IsAXSetter(SEL selector) {
   if ([self titleUIElement])
     return @"";
 
-  // On macOS cell titles are empty if they came from content.
   ax::mojom::NameFrom nameFrom = _node->GetNameFrom();
+
+  // No title if it cames from placeholder.
+  if (nameFrom == ax::mojom::NameFrom::kPlaceholder)
+    return @"";
+
+  // Cell titles are empty if they came from content.
   if (nameFrom == ax::mojom::NameFrom::kContents) {
     NSString* role = [self accessibilityRole];
     if ([role isEqualToString:NSAccessibilityCellRole])
@@ -1938,7 +1944,7 @@ bool IsAXSetter(SEL selector) {
     return nil;
 
   if (_node->GetNameFrom() == ax::mojom::NameFrom::kPlaceholder)
-    return base::SysUTF8ToNSString(_node->GetName());
+    return [self getName];
 
   return [self getStringAttribute:ax::mojom::StringAttribute::kPlaceholder];
 }
