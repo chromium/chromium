@@ -857,6 +857,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cras.StreamAddError" enum="CrasStreamAddError"
+    expires_after="2022-09-20">
+  <owner>hychao@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    Record the errors happen when CRAS server adss a stream to its audio thread.
+  </summary>
+</histogram>
+
 <histogram name="Cras.StreamCallbackThreshold" units="frames"
     expires_after="2022-09-20">
 <!-- Name completed by histogram_suffixes
@@ -900,6 +909,13 @@ chromium-metrics-reviews@google.com.
     Record the errors happen when CRAS server handles the client requests to
     connect new streams.
   </summary>
+</histogram>
+
+<histogram name="Cras.StreamCreateError" enum="CrasStreamCreateError"
+    expires_after="2022-09-20">
+  <owner>hychao@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>Record the errors happen when CRAS server creats a stream.</summary>
 </histogram>
 
 <histogram name="Cras.StreamEffects" units="value" expires_after="2022-09-20">

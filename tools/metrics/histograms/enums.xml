@@ -19087,6 +19087,21 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="2" label="CRAS_NOISE_CANCELLATION_ENABLED"/>
 </enum>
 
+<enum name="CrasStreamAddError">
+  <summary>
+    List of errors could happen when CRAS adds a stream to its audio thread.
+    Cras side definition in
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_server_metrics.h
+  </summary>
+  <int value="0" label="CRAS_STREAM_ADD_IO_ERROR">
+    The IO device has encountered error.
+  </int>
+  <int value="1" label="CRAS_STREAM_ADD_INVALID_ARG">
+    Certain arguments are invalid.
+  </int>
+  <int value="2" label="CRAS_STREAM_ADD_OTHER_ERR">Other errors.</int>
+</enum>
+
 <enum name="CrasStreamConnectError">
   <summary>
     List of errors could thrown when client requests to connect a stream to
@@ -19107,6 +19122,21 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   </int>
   <int value="4" label="CRAS_STREAM_CONN_REPLY_FAIL">
     Fails to send reply to CRAS client.
+  </int>
+</enum>
+
+<enum name="CrasStreamCreateError">
+  <summary>
+    List of errors could happen when CRAS creates a stream. Cras side definition
+    in
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_server_metrics.h
+  </summary>
+  <int value="0" label="CRAS_STREAM_CREATE_ERROR_INVALID_PARAM">
+    Certain arguments are invalid.
+  </int>
+  <int value="1" label="CRAS_STREAM_CREATE_ERROR_NO_MEMORY">No memory.</int>
+  <int value="2" label="CRAS_STREAM_CREATE_ERROR_SHM_SETUP_FAILURE">
+    Fail to set up shared memory.
   </int>
 </enum>
 
