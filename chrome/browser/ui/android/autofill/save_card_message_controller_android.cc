@@ -101,6 +101,14 @@ void SaveCardMessageControllerAndroid::Show(
     message_->DisableIconTint();
   }
 
+  message_->SetSecondaryIconResourceId(
+      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
+  message_->SetSecondaryButtonMenuText(
+      l10n_util::GetStringUTF16(IDS_NO_THANKS));
+  message_->SetSecondaryActionCallback(base::BindOnce(
+      &SaveCardMessageControllerAndroid::HandleMessageSecondaryButtonClicked,
+      base::Unretained(this)));
+
   // Client won't request both name and expiration date at the same time.
   request_more_info_ = options.should_request_name_from_user ||
                        options.should_request_expiration_date_from_user;
@@ -154,6 +162,11 @@ void SaveCardMessageControllerAndroid::HandleMessageDismiss(
 
 void SaveCardMessageControllerAndroid::HandleMessageAction() {
   MaybeShowDialog();
+}
+
+void SaveCardMessageControllerAndroid::HandleMessageSecondaryButtonClicked() {
+  messages::MessageDispatcherBridge::Get()->DismissMessage(
+      message_.get(), messages::DismissReason::SECONDARY_ACTION);
 }
 
 void SaveCardMessageControllerAndroid::DismissMessage() {

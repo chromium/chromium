@@ -54,6 +54,7 @@ class SaveCardMessageControllerAndroid : public SaveCardMessageConfirmDelegate {
 
   void HandleMessageDismiss(messages::DismissReason dismiss_reason);
   void HandleMessageAction();
+  void HandleMessageSecondaryButtonClicked();
   void DismissMessage();
 
   void MaybeShowDialog();
