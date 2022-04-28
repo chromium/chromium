@@ -635,11 +635,20 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
   if (HasReflection() && !HasLayer())
     SetHasReflection(false);
 
-  auto* parent_flow_block = DynamicTo<LayoutBlockFlow>(Parent());
-  if (IsFloatingOrOutOfFlowPositioned() && old_style &&
-      !old_style->IsFloating() && !old_style->HasOutOfFlowPosition() &&
-      parent_flow_block)
-    parent_flow_block->ChildBecameFloatingOrOutOfFlow(this);
+  if (old_style) {
+    bool was_float_or_oof =
+        old_style->IsFloating() || old_style->HasOutOfFlowPosition();
+    if (IsFloatingOrOutOfFlowPositioned()) {
+      if (!was_float_or_oof) {
+        if (auto* parent_flow_block = DynamicTo<LayoutBlockFlow>(Parent()))
+          parent_flow_block->ChildBecameFloatingOrOutOfFlow(this);
+      }
+    } else if (was_float_or_oof && !IsInline()) {
+      // As a float or OOF, this object may have been part of an inline
+      // formatting context, but that's definitely no longer the case.
+      SetIsInLayoutNGInlineFormattingContext(false);
+    }
+  }
 
   const ComputedStyle& new_style = StyleRef();
   if (NeedsLayout() && old_style)
