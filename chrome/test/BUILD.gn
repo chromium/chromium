@@ -5146,6 +5146,7 @@ test("unit_tests") {
     "../browser/policy/messaging_layer/upload/upload_client_unittest.cc",
     "../browser/policy/messaging_layer/upload/upload_provider_unittest.cc",
     "../browser/policy/messaging_layer/util/dm_token_retriever_provider_unittest.cc",
+    "../browser/policy/messaging_layer/util/get_cloud_policy_client_unittest.cc",
     "../browser/policy/messaging_layer/util/report_queue_manual_test_context_unittest.cc",
     "../browser/policy/messaging_layer/util/test_request_payload.cc",
     "../browser/policy/messaging_layer/util/test_request_payload.h",
