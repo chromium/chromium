@@ -185,6 +185,10 @@ void AddStrings(content::WebUIDataSource* source) {
       {"ariaLabelChangeScreensaver",
        IDS_PERSONALIZATION_APP_ARIA_LABEL_CHANGE_SCREENSAVER},
 
+      // Keyboard backlight strings
+      {"keyboardBacklightTitle",
+       IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_TITLE},
+
       // Google Photos strings
       // TODO(b/229149314): Finalize error and retry strings.
       {"googlePhotosLabel", IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS},
@@ -228,6 +232,8 @@ void AddBooleans(content::WebUIDataSource* source) {
                      features::IsDarkLightModeEnabled());
 
   source->AddBoolean("isAmbientModeAllowed", IsAmbientModeAllowed());
+
+  source->AddBoolean("isRgbKeyboardEnabled", features::IsRgbKeyboardEnabled());
 }
 
 }  // namespace

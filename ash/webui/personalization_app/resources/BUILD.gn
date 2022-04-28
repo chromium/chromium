@@ -81,6 +81,7 @@ web_component_files = [
   "trusted/ambient/topic_source_item_element.ts",
   "trusted/ambient/topic_source_list_element.ts",
   "trusted/ambient/zero_state_element.ts",
+  "trusted/keyboard_backlight/keyboard_backlight_element.ts",
   "trusted/personalization_main_element.ts",
   "trusted/personalization_router_element.ts",
   "trusted/personalization_theme_element.ts",
