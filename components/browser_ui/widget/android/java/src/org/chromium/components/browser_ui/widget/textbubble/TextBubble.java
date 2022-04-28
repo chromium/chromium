@@ -27,6 +27,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.widget.AnchoredPopupWindow;
@@ -51,6 +53,10 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
      * bubbles on a back press event.
      */
     private static final Set<TextBubble> sBubbles = new HashSet<>();
+
+    /** A supplier which notifies of changes of text bubbles count. */
+    private static final ObservableSupplierImpl<Integer> sCountSupplier =
+            new ObservableSupplierImpl<>();
 
     protected final Context mContext;
     private final Handler mHandler;
@@ -84,6 +90,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         @Override
         public void onDismiss() {
             sBubbles.remove(TextBubble.this);
+            sCountSupplier.set(sBubbles.size());
         }
     };
 
@@ -346,6 +353,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
 
         mPopupWindow.show();
         sBubbles.add(this);
+        sCountSupplier.set(sBubbles.size());
         mBubbleShowStartTime = System.currentTimeMillis();
     }
 
@@ -378,6 +386,13 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         for (TextBubble bubble : bubbles) {
             bubble.dismiss();
         }
+    }
+
+    /**
+     * @return A supplier which notifies of changes of text bubbles count.
+     * */
+    public static ObservableSupplier<Integer> getCountSupplier() {
+        return sCountSupplier;
     }
 
     /**

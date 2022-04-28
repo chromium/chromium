@@ -80,6 +80,7 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingDelegateFact
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -205,8 +206,10 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
+import org.chromium.components.browser_ui.widget.textbubble.TextBubbleBackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -397,6 +400,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private boolean mLastPictureInPictureModeForTesting;
     private SubscriptionsManager mSubscriptionsManager;
 
+    protected BackPressManager mBackPressManager = new BackPressManager();
+    private TextBubbleBackPressHandler mTextBubbleBackPressHandler;
+
     protected ChromeActivity() {
         mIntentHandler = new IntentHandler(this, createIntentHandlerDelegate());
         mManualFillingComponentSupplier.set(ManualFillingComponentFactory.createComponent());
@@ -406,13 +412,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     protected void onPreCreate() {
         CachedFeatureFlags.onStartOrResumeCheckpoint();
         super.onPreCreate();
-        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                ChromeActivity.this.handleOnBackPressed();
-            }
-        };
-        getOnBackPressedDispatcher().addCallback(this, callback);
+        initializeBackPressHandling();
     }
 
     @Override
@@ -1598,6 +1598,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mDisplayAndroidObserver = null;
         }
 
+        if (mTextBubbleBackPressHandler != null) {
+            mTextBubbleBackPressHandler.destroy();
+            mTextBubbleBackPressHandler = null;
+        }
+
         mActivityTabProvider.destroy();
         ChromeActivitySessionTracker.getInstance().unregisterTabModelSelectorSupplier(this);
 
@@ -2332,7 +2337,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     protected final void handleOnBackPressed() {
         if (mNativeInitialized) RecordUserAction.record("SystemBack");
 
-        TextBubble.dismissBubbles();
+        if (!BackPressManager.isEnabled()) {
+            // TODO(crbug.com/1279941): should this stop propagating the event?
+            TextBubble.dismissBubbles();
+        }
+
         if (VrModuleProvider.getDelegate().onBackPressed()) return;
 
         ArDelegate arDelegate = ArDelegateProvider.getDelegate();
@@ -2351,6 +2360,25 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         handleBackPressed();
+    }
+
+    private void initializeBackPressHandling() {
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                ChromeActivity.this.handleOnBackPressed();
+            }
+        };
+        // Order matters here: first-come, last-served.
+        // TODO(crbug.com/1279941): remove this line when all contents of handleOnBackPressed are
+        // migrated to BackGestureManager.
+        getOnBackPressedDispatcher().addCallback(this, callback);
+        if (BackPressManager.isEnabled()) {
+            getOnBackPressedDispatcher().addCallback(this, mBackPressManager.getCallback());
+            // TODO(crbug.com/1279941): consider move to RootUiCoordinator.
+            mTextBubbleBackPressHandler = new TextBubbleBackPressHandler();
+            mBackPressManager.addHandler(mTextBubbleBackPressHandler, Type.TEXT_BUBBLE);
+        }
     }
 
     @Override
