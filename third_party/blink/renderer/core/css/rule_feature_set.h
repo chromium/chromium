@@ -39,6 +39,7 @@ class ContainerNode;
 struct InvalidationLists;
 class QualifiedName;
 class RuleData;
+class StyleScope;
 
 // Summarizes and indexes the contents of RuleData objects. It creates
 // invalidation sets from rule data and makes them available via several
@@ -423,6 +424,7 @@ class CORE_EXPORT RuleFeatureSet {
   // For top-level complex selectors, the PseudoType is kPseudoUnknown.
   FeatureInvalidationType UpdateInvalidationSetsForComplex(
       const CSSSelector&,
+      const StyleScope*,
       InvalidationSetFeatures&,
       PositionType,
       CSSSelector::PseudoType);
@@ -443,6 +445,9 @@ class CORE_EXPORT RuleFeatureSet {
       InvalidationSetFeatures& last_compound_in_adjacent_chain_features,
       InvalidationSetFeatures*& sibling_features,
       InvalidationSetFeatures& descendant_features);
+  void UpdateFeaturesFromStyleScope(
+      const StyleScope&,
+      InvalidationSetFeatures& descendant_features);
 
   void AddFeaturesToInvalidationSet(InvalidationSet&,
                                     const InvalidationSetFeatures&);
@@ -461,6 +466,9 @@ class CORE_EXPORT RuleFeatureSet {
   void AddFeaturesToInvalidationSetsForSelectorList(
       const CSSSelector&,
       InvalidationSetFeatures* sibling_features,
+      InvalidationSetFeatures& descendant_features);
+  void AddFeaturesToInvalidationSetsForStyleScope(
+      const StyleScope&,
       InvalidationSetFeatures& descendant_features);
   void AddFeaturesToUniversalSiblingInvalidationSet(
       const InvalidationSetFeatures& sibling_features,

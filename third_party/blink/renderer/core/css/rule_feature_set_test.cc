@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
+#include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -49,12 +51,9 @@ class RuleFeatureSetTest : public testing::Test {
   }
 
   static RuleFeatureSet::SelectorPreMatch CollectFeaturesTo(
-      const String& selector_text,
+      CSSSelectorList selector_list,
+      const StyleScope* style_scope,
       RuleFeatureSet& set) {
-    CSSSelectorList selector_list = CSSParser::ParseSelector(
-        StrictCSSParserContext(SecureContextMode::kInsecureContext), nullptr,
-        selector_text);
-
     Vector<wtf_size_t> indices;
     for (const CSSSelector* s = selector_list.First(); s;
          s = selector_list.Next(*s)) {
@@ -70,12 +69,22 @@ class RuleFeatureSetTest : public testing::Test {
     for (unsigned i = 0; i < indices.size(); ++i) {
       RuleData* rule_data = RuleData::MaybeCreate(
           style_rule, indices[i], 0, kRuleHasNoSpecialState,
-          nullptr /* container_query */, nullptr /* scope */);
+          nullptr /* container_query */, style_scope);
       DCHECK(rule_data);
       if (set.CollectFeaturesFromRuleData(rule_data))
         result = RuleFeatureSet::SelectorPreMatch::kSelectorMayMatch;
     }
     return result;
+  }
+
+  static RuleFeatureSet::SelectorPreMatch CollectFeaturesTo(
+      const String& selector_text,
+      RuleFeatureSet& set) {
+    CSSSelectorList selector_list = CSSParser::ParseSelector(
+        StrictCSSParserContext(SecureContextMode::kInsecureContext), nullptr,
+        selector_text);
+    return CollectFeaturesTo(std::move(selector_list),
+                             nullptr /* style_scope */, set);
   }
 
   void ClearFeatures() { rule_feature_set_.Clear(); }
@@ -1730,17 +1739,25 @@ class RuleFeatureSetRefTest : public RuleFeatureSetTest {
     SCOPED_TRACE(testing::Message() << "Main: " << data.main);
     SCOPED_TRACE("Please see RuleFeatureSet::ToString for documentation");
 
-    CollectFeaturesTo(data.main, main_set);
-    CollectFeaturesTo(data.ref, ref_set);
+    CollectTo(data.main, main_set);
+    CollectTo(data.ref, ref_set);
 
     Compare(main_set, ref_set);
   }
 
+  virtual void CollectTo(const char*, RuleFeatureSet&) const = 0;
   virtual void Compare(const RuleFeatureSet&, const RuleFeatureSet&) const = 0;
 };
 
+class RuleFeatureSetSelectorRefTest : public RuleFeatureSetRefTest {
+ public:
+  void CollectTo(const char* text, RuleFeatureSet& set) const override {
+    CollectFeaturesTo(text, set);
+  }
+};
+
 class RuleFeatureSetRefEqualTest
-    : public RuleFeatureSetRefTest,
+    : public RuleFeatureSetSelectorRefTest,
       public testing::WithParamInterface<RefTestData> {
  public:
   void Compare(const RuleFeatureSet& main,
@@ -1758,7 +1775,7 @@ TEST_P(RuleFeatureSetRefEqualTest, All) {
 }
 
 class RuleFeatureSetRefNotEqualTest
-    : public RuleFeatureSetRefTest,
+    : public RuleFeatureSetSelectorRefTest,
       public testing::WithParamInterface<RefTestData> {
  public:
   void Compare(const RuleFeatureSet& main,
@@ -1772,6 +1789,96 @@ INSTANTIATE_TEST_SUITE_P(RuleFeatureSetTest,
                          testing::ValuesIn(ref_not_equal_test_data));
 
 TEST_P(RuleFeatureSetRefNotEqualTest, All) {
+  Run(GetParam());
+}
+
+RefTestData ref_scope_equal_test_data[] = {
+    // Note that for ordering consistency :is() is sometimes used
+    // "unnecessarily" in the refs below.
+    {"@scope (.a) { div {} }", ".a div, .a:is(div) {}"},
+    {"@scope (#a) { div {} }", "#a div, #a:is(div) {}"},
+    {"@scope (main) { div {} }", "main div, main:is(div) {}"},
+    {"@scope ([foo]) { div {} }", "[foo] div, [foo]:is(div) {}"},
+    {"@scope (.a) { .b {} }", ".a .b, .a.b {}"},
+    {"@scope (.a) { #b {} }", ".a #b, .a#b {}"},
+    {"@scope (.a) { [foo] {} }", ".a [foo], .a[foo] {}"},
+    {"@scope (.a) { .a {} }", ".a .a, .a.a {}"},
+
+    // Multiple items in selector lists:
+    {"@scope (.a, .b) { div {} }", ":is(.a, .b) div, :is(.a, .b):is(div) {}"},
+    {"@scope (.a, :is(.b, .c)) { div {} }",
+     ":is(.a, .b, .c) div, :is(.a, .b, .c):is(div) {}"},
+
+    // Using "to" keyword:
+    {"@scope (.a, .b) to (.c, .d) { div {} }",
+     ":is(.a, .b, .c, .d) div, :is(.a, .b):is(div) {}"},
+
+    // TODO(crbug.com/1280240): Many of the following tests current expect
+    // whole-subtree invalidation, because we don't extract any features from
+    // :scope. That should be improved.
+
+    // Explicit :scope:
+    {"@scope (.a) { :scope {} }", ".a *, .a {}"},
+    {"@scope (.a) { .b :scope {} }", ".a :is(.b *), .b .a {}"},
+    {"@scope (.a, .b) { :scope {} }", ":is(.a, .b) *, :is(.a, .b) {}"},
+
+    {"@scope (.a) to (:scope) { .b {} }", ".a .b, .a.b {}"},
+    {"@scope (.a) to (:scope) { :scope {} }", ".a *, .a {}"},
+
+    // Nested @scopes
+    {"@scope (.a, .b) { @scope (.c, .d) { .e {} } }",
+     ":is(.a, .b, .c, .d) .e, :is(.a, .b, .c, .d):is(.e) {}"},
+    {"@scope (.a, .b) { @scope (.c, .d) { :scope {} } }",
+     ":is(.a, .b, .c, .d) *, :is(.a, .b, .c, .d) {}"},
+    {"@scope (.a, .b) { @scope (:scope, .c) { :scope {} } }",
+     ":is(.a, .b, .c) *, :is(.a, .b, .c) {}"},
+    {"@scope (.a) to (.b) { @scope (.c) to (.d) { .e {} } }",
+     ":is(.a, .b, .c, .d) .e, :is(.a, .c):is(.e) {}"},
+};
+
+class RuleFeatureSetScopeRefTest
+    : public RuleFeatureSetRefTest,
+      public testing::WithParamInterface<RefTestData>,
+      private ScopedCSSScopeForTest {
+ public:
+  RuleFeatureSetScopeRefTest() : ScopedCSSScopeForTest(true) {}
+
+  void CollectTo(const char* text, RuleFeatureSet& set) const override {
+    Document* document = Document::CreateForTest();
+    StyleRuleBase* rule = css_test_helpers::ParseRule(*document, text);
+    ASSERT_TRUE(rule);
+
+    const StyleScope* scope = nullptr;
+
+    // Find the inner StyleRule.
+    while (IsA<StyleRuleScope>(rule)) {
+      auto& scope_rule = To<StyleRuleScope>(*rule);
+      scope = scope_rule.GetStyleScope().CopyWithParent(scope);
+      const HeapVector<Member<StyleRuleBase>>& child_rules =
+          scope_rule.ChildRules();
+      ASSERT_EQ(1u, child_rules.size());
+      rule = child_rules[0].Get();
+    }
+
+    auto* style_rule = DynamicTo<StyleRule>(rule);
+    ASSERT_TRUE(style_rule);
+
+    DCHECK(style_rule->SelectorList().IsValid());
+
+    CollectFeaturesTo(style_rule->SelectorList().Copy(), scope, set);
+  }
+
+  void Compare(const RuleFeatureSet& main,
+               const RuleFeatureSet& ref) const override {
+    EXPECT_EQ(main, ref);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(SelectorChecker,
+                         RuleFeatureSetScopeRefTest,
+                         testing::ValuesIn(ref_scope_equal_test_data));
+
+TEST_P(RuleFeatureSetScopeRefTest, All) {
   Run(GetParam());
 }
 
