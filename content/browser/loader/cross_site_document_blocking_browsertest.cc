@@ -707,6 +707,9 @@ IMG_TEST(js_html_polyglot2_html,
 // image.  CORB allows, because CORB doesn't care about
 // 'application/octet-stream'.
 IMG_TEST(nosniff_png, "nosniff.png.octet-stream", kShouldBeSniffedAndAllowed)
+// Like nosniff_png above, except that ORB v0.1 allows because HLS/m3u8 doesn't
+// sniff as HTML/XML/JSON.
+IMG_TEST(m3u8_octet_stream, "m3u8.octet-stream", kShouldBeSniffedAndAllowed)
 
 class CrossSiteDocumentBlockingTest
     : public CrossSiteDocumentBlockingTestBase,
