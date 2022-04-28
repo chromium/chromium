@@ -2733,12 +2733,6 @@ extern const char kExoPointerLockDescription[];
 extern const char kExoLockNotificationName[];
 extern const char kExoLockNotificationDescription[];
 
-extern const char kExperimentalAccessibilityDictationExtensionName[];
-extern const char kExperimentalAccessibilityDictationExtensionDescription[];
-
-extern const char kExperimentalAccessibilityDictationOfflineName[];
-extern const char kExperimentalAccessibilityDictationOfflineDescription[];
-
 extern const char kExperimentalAccessibilityDictationCommandsName[];
 extern const char kExperimentalAccessibilityDictationCommandsDescription[];
 

@@ -565,7 +565,6 @@ class AccessibilityManager
 
   bool app_terminating_ = false;
 
-  std::unique_ptr<Dictation> dictation_;
   bool dictation_active_ = false;
   bool network_dictation_dialog_is_showing_ = false;
   // Whether a SODA download failed notification has been shown. This is

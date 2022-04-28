@@ -93,7 +93,6 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
       enabled: [
         'features::kExperimentalAccessibilityDictationHints',
         'features::kExperimentalAccessibilityDictationCommands',
-        'features::kExperimentalAccessibilityDictationExtension'
       ]
     };
   }

@@ -105,13 +105,6 @@ AX_BASE_EXPORT extern const base::Feature
 // text editing commands is enabled.
 AX_BASE_EXPORT bool IsExperimentalAccessibilityDictationCommandsEnabled();
 
-// Enables the accessibility Dictation extension.
-AX_BASE_EXPORT extern const base::Feature
-    kExperimentalAccessibilityDictationExtension;
-
-// Returns true if experimental accessibility dictation extension is enabled.
-AX_BASE_EXPORT bool IsExperimentalAccessibilityDictationExtensionEnabled();
-
 // Enables accessibility Dictation UI hints.
 AX_BASE_EXPORT extern const base::Feature
     kExperimentalAccessibilityDictationHints;

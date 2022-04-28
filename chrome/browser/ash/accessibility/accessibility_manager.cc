@@ -720,11 +720,6 @@ void AccessibilityManager::OnAccessibilityCommonChanged(
   if ((pref_count != 0 && enabled) || (pref_count == 0 && !enabled))
     return;
 
-  if (pref_name == ash::prefs::kAccessibilityDictationEnabled &&
-      !::features::IsExperimentalAccessibilityDictationExtensionEnabled()) {
-    return;
-  }
-
   if (enabled) {
     accessibility_common_enabled_features_.insert(pref_name);
     if (!accessibility_common_extension_loader_->loaded()) {
@@ -1282,9 +1277,6 @@ void AccessibilityManager::SetProfile(Profile* profile) {
   pref_change_registrar_.reset();
   local_state_pref_change_registrar_.reset();
 
-  // Clear all dictation state on profile change.
-  dictation_.reset();
-
   // All features supported by accessibility common which don't need
   // separate pref change handlers.
   static const char* kAccessibilityCommonFeatures[] = {
@@ -1793,16 +1785,7 @@ bool AccessibilityManager::ToggleDictation() {
   if (!profile_)
     return false;
 
-  if (!::features::IsExperimentalAccessibilityDictationExtensionEnabled()) {
-    if (!dictation_.get())
-      dictation_ = std::make_unique<Dictation>(profile_);
-
-    return dictation_->OnToggleDictation();
-  }
-
-  // We are using AccessibilityCommon extension instead of Dictation C++,
-  // so track Dictation state and simply send a notification to the
-  // AccessibilityPrivate API.
+  // Send an event to accessibility common, where Dictation logic lives.
   dictation_active_ = !dictation_active_;
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);

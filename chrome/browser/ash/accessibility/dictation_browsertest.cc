@@ -78,7 +78,6 @@ const char16_t kDelete[] = u"\"Delete\"";
 const char16_t kSelectAll[] = u"\"Select all\"";
 const char16_t kUnselect[] = u"\"Unselect\"";
 const char16_t kCopy[] = u"\"Copy\"";
-const int kNoSpeechTimeoutInSeconds = 10;
 const char* kOnDeviceListeningDurationMetric =
     "Accessibility.CrosDictation.ListeningDuration.OnDeviceRecognition";
 const char* kNetworkListeningDurationMetric =
@@ -322,390 +321,6 @@ class DictationBaseTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class DictationTest : public DictationBaseTest {
- protected:
-  DictationTest() {
-    input_context_handler_ = std::make_unique<ui::MockIMEInputContextHandler>();
-    empty_composition_text_ =
-        ui::MockIMEInputContextHandler::UpdateCompositionTextArg()
-            .composition_text;
-  }
-  ~DictationTest() override = default;
-  DictationTest(const DictationTest&) = delete;
-  DictationTest& operator=(const DictationTest&) = delete;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DictationBaseTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitAndDisableFeature(
-        ::features::kExperimentalAccessibilityDictationExtension);
-  }
-
-  void SetUpOnMainThread() override {
-    DictationBaseTest::SetUpOnMainThread();
-
-    ui::IMEBridge::Get()->SetInputContextHandler(input_context_handler_.get());
-    generator_ = std::make_unique<ui::test::EventGenerator>(
-        ash::Shell::Get()->GetPrimaryRootWindow());
-    GetActiveUserPrefs()->SetBoolean(
-        prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
-    ash::Shell::Get()->accessibility_controller()->dictation().SetEnabled(true);
-  }
-
-  void NotifyTextInputStateChanged(ui::TextInputClient* client) {
-    GetManager()->dictation_->OnTextInputStateChanged(client);
-  }
-
-  bool IsDictationOff() {
-    return !GetManager()->dictation_ ||
-           GetManager()->dictation_->current_state_ == SPEECH_RECOGNIZER_OFF;
-  }
-
-  base::OneShotTimer* GetTimer() {
-    if (!GetManager()->dictation_)
-      return nullptr;
-    return &(GetManager()->dictation_->speech_timeout_);
-  }
-
-  void ToggleDictation() {
-    // We are trying to toggle on if Dictation is currently off.
-    bool will_toggle_on = IsDictationOff();
-    generator_->PressAndReleaseKey(ui::VKEY_D, ui::EF_COMMAND_DOWN);
-    if (will_toggle_on) {
-      // SpeechRecognition may be turned on asynchronously. Wait for it to
-      // complete before moving on to ensures that we are ready to receive
-      // speech. In Dictation, a tone is played when recognition starts,
-      // indicating to the user that they can begin speaking.
-      WaitForRecognitionStarted();
-    }
-    // Now wait for the callbacks to propagate on the UI thread.
-    base::RunLoop().RunUntilIdle();
-  }
-
-  ui::CompositionText GetLastCompositionText() {
-    return input_context_handler_->last_update_composition_arg()
-        .composition_text;
-  }
-
-  const base::flat_map<std::string, Dictation::LocaleData>
-  GetAllSupportedLocales() {
-    return GetManager()->dictation_->GetAllSupportedLocales();
-  }
-
-  std::unique_ptr<ui::MockIMEInputContextHandler> input_context_handler_;
-  std::unique_ptr<ui::test::EventGenerator> generator_;
-  ui::CompositionText empty_composition_text_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    Network,
-    DictationTest,
-    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
-
-INSTANTIATE_TEST_SUITE_P(
-    OnDevice,
-    DictationTest,
-    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
-
-IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEnds) {
-  ToggleDictation();
-  EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
-
-  SendResultAndWait(kFirstSpeechResult, false /* is_final */);
-  EXPECT_EQ(kFirstSpeechResult16, GetLastCompositionText().text);
-
-  SendResultAndWait(kSecondSpeechResult, false /* is_final */);
-  EXPECT_EQ(kSecondSpeechResult16, GetLastCompositionText().text);
-
-  SendResultAndWait(kFinalSpeechResult, true /* is_final */);
-  // Wait for interim results to be finalized.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
-  EXPECT_EQ(kFinalSpeechResult16, input_context_handler_->last_commit_text());
-
-  EXPECT_FALSE(IsDictationOff());
-  base::OneShotTimer* timer = GetTimer();
-  ASSERT_TRUE(timer);
-  EXPECT_EQ(timer->GetCurrentDelay(), base::Seconds(kNoSpeechTimeoutInSeconds));
-}
-
-IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithChromeVoxEnabled) {
-  AccessibilityManager* manager = GetManager();
-  EnableChromeVox();
-  EXPECT_TRUE(manager->IsSpokenFeedbackEnabled());
-
-  // Toggle Dictation on directly.
-  GetManager()->ToggleDictation();
-  WaitForRecognitionStarted();
-  // Now wait for the callbacks to propagate on the UI thread.
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
-
-  SendResultAndWait(kFirstSpeechResult, false /* is_final */);
-  EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
-
-  SendResultAndWait(kSecondSpeechResult, false /* is_final */);
-  EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
-
-  SendResultAndWait(kFinalSpeechResult, true /* is_final */);
-  // Wait for interim results to be finalized.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
-  EXPECT_EQ(kFinalSpeechResult16, input_context_handler_->last_commit_text());
-
-  EXPECT_FALSE(IsDictationOff());
-  base::OneShotTimer* timer = GetTimer();
-  ASSERT_TRUE(timer);
-  EXPECT_EQ(timer->GetCurrentDelay(), base::Seconds(kNoSpeechTimeoutInSeconds));
-}
-
-IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithNoSpeech) {
-  ToggleDictation();
-  EXPECT_FALSE(IsDictationOff());
-  base::OneShotTimer* timer = GetTimer();
-  ASSERT_TRUE(timer);
-  EXPECT_EQ(timer->GetCurrentDelay(), base::Seconds(kNoSpeechTimeoutInSeconds));
-  // Firing the timer, which simluates waiting for some time with no events,
-  // should end dictation.
-  timer->FireNow();
-  EXPECT_TRUE(IsDictationOff());
-}
-
-IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithoutFinalizedSpeech) {
-  ToggleDictation();
-  EXPECT_FALSE(IsDictationOff());
-  SendResultAndWait(kFirstSpeechResult, false /* is_final */);
-  base::OneShotTimer* timer = GetTimer();
-  ASSERT_TRUE(timer);
-  EXPECT_EQ(timer->GetCurrentDelay(), base::Seconds(kNoSpeechTimeoutInSeconds));
-  // Firing the timer, which simluates waiting for some time without new speech,
-  // should end dictation.
-  timer->FireNow();
-  // Wait for interim results to be finalized.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(IsDictationOff());
-  EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
-  EXPECT_EQ(kFirstSpeechResult16, input_context_handler_->last_commit_text());
-}
-
-IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictationBeforeSpeech) {
-  ToggleDictation();
-  ToggleDictation();
-  EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
-  EXPECT_EQ(0, input_context_handler_->commit_text_call_count());
-}
-
-IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictation) {
-  ToggleDictation();
-  EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
-
-  SendResultAndWait(kFinalSpeechResult, false /* is_final */);
-  EXPECT_EQ(kFinalSpeechResult16, GetLastCompositionText().text);
-
-  ToggleDictation();
-  EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
-  EXPECT_EQ(kFinalSpeechResult16, input_context_handler_->last_commit_text());
-}
-
-// TODO(https://crbug.com/1299805): Re-enable in debug mode once flaky timeouts
-// are fixed.
-#if defined(NDEBUG)
-#define MAYBE_UserEndsDictationWhenChromeVoxEnabled \
-  UserEndsDictationWhenChromeVoxEnabled
-#else
-#define MAYBE_UserEndsDictationWhenChromeVoxEnabled \
-  DISABLED_UserEndsDictationWhenChromeVoxEnabled
-#endif
-IN_PROC_BROWSER_TEST_P(DictationTest,
-                       MAYBE_UserEndsDictationWhenChromeVoxEnabled) {
-  AccessibilityManager* manager = GetManager();
-
-  EnableChromeVox();
-  EXPECT_TRUE(manager->IsSpokenFeedbackEnabled());
-
-  // Toggle Dictation on directly.
-  GetManager()->ToggleDictation();
-  WaitForRecognitionStarted();
-  // Now wait for the callbacks to propagate on the UI thread.
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
-
-  SendResultAndWait(kFinalSpeechResult, false /* is_final */);
-  EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
-
-  // Toggle Dictation off.
-  GetManager()->ToggleDictation();
-  base::RunLoop().RunUntilIdle();
-
-  // Wait for interim results to be finalized.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
-  EXPECT_EQ(kFinalSpeechResult16, input_context_handler_->last_commit_text());
-}
-
-IN_PROC_BROWSER_TEST_P(DictationTest, SwitchInputContext) {
-  // Turn on dictation and say something.
-  ToggleDictation();
-  SendResultAndWait(kFirstSpeechResult, true /* is final */);
-  // Wait for interim results to be finalized.
-  base::RunLoop().RunUntilIdle();
-
-  // Speech goes to the default IMEInputContextHandler.
-  EXPECT_EQ(kFirstSpeechResult16, input_context_handler_->last_commit_text());
-
-  // Simulate a remote app instantiating a new IMEInputContextHandler, like
-  // the keyboard shortcut viewer app creating a second `InputMethodAsh`.
-  ui::MockIMEInputContextHandler input_context_handler2;
-  ui::IMEBridge::Get()->SetInputContextHandler(&input_context_handler2);
-
-  SendResultAndWait(kSecondSpeechResult, true /* is final*/);
-  // Wait for interim results to be finalized.
-  base::RunLoop().RunUntilIdle();
-
-  std::u16string expected = u" ";
-  expected += kSecondSpeechResult16;
-
-  // Speech goes to the new IMEInputContextHandler.
-  EXPECT_EQ(expected, input_context_handler2.last_commit_text());
-
-  ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
-}
-
-IN_PROC_BROWSER_TEST_P(DictationTest, ChangeInputField) {
-  // Turn on dictation and start speaking.
-  ToggleDictation();
-  SendResultAndWait(kFinalSpeechResult, false /* is_final */);
-
-  // Change the input state to a new client.
-  std::unique_ptr<ui::TextInputClient> new_client =
-      std::make_unique<ui::FakeTextInputClient>(ui::TEXT_INPUT_TYPE_TEXT);
-  NotifyTextInputStateChanged(new_client.get());
-  // Wait for interim results to be finalized.
-  base::RunLoop().RunUntilIdle();
-
-  // Check that dictation has turned off.
-  EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
-  EXPECT_EQ(kFinalSpeechResult16, input_context_handler_->last_commit_text());
-}
-
-IN_PROC_BROWSER_TEST_P(DictationTest, ListensForMultipleResults) {
-  // Turn on dictation and send a final result.
-  ToggleDictation();
-  SendResultAndWait("Purple", true /* is final */);
-  // Wait for interim results to be finalized.
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(u"Purple", input_context_handler_->last_commit_text());
-  EXPECT_FALSE(IsDictationOff());
-
-  SendResultAndWait("pink", true /* is final */);
-  EXPECT_EQ(2, input_context_handler_->commit_text_call_count());
-  // Space in front of the result.
-  EXPECT_EQ(u" pink", input_context_handler_->last_commit_text());
-
-  SendResultAndWait(" blue", true /* is final */);
-  EXPECT_EQ(3, input_context_handler_->commit_text_call_count());
-  // Only one space in front of the result.
-  EXPECT_EQ(u" blue", input_context_handler_->last_commit_text());
-
-  ToggleDictation();
-  // No change expected after toggle.
-  EXPECT_EQ(3, input_context_handler_->commit_text_call_count());
-}
-
-// Tests the behavior of the GetAllSupportedLocales method, specifically how
-// it sets locale data.
-IN_PROC_BROWSER_TEST_P(DictationTest, GetAllSupportedLocales) {
-  auto locales = GetAllSupportedLocales();
-  for (auto& it : locales) {
-    const std::string locale = it.first;
-    bool works_offline = it.second.works_offline;
-    bool installed = it.second.installed;
-    if (GetParam() == speech::SpeechRecognitionType::kOnDevice &&
-        locale == speech::kUsEnglishLocale) {
-      // Currently, the only locale supported by SODA is en-US. It should work
-      // offline and be installed.
-      EXPECT_TRUE(works_offline);
-      EXPECT_TRUE(installed);
-    } else {
-      EXPECT_FALSE(works_offline);
-      EXPECT_FALSE(installed);
-    }
-  }
-
-  if (GetParam() == speech::SpeechRecognitionType::kOnDevice) {
-    // Uninstall SODA and all language packs.
-    speech::SodaInstaller::GetInstance()->UninstallSodaForTesting();
-  } else {
-    return;
-  }
-
-  locales = GetAllSupportedLocales();
-  for (auto& it : locales) {
-    const std::string locale = it.first;
-    bool works_offline = it.second.works_offline;
-    bool installed = it.second.installed;
-    if (locale == speech::kUsEnglishLocale) {
-      // en-US should be marked as "works offline", but it shouldn't be
-      // installed.
-      EXPECT_TRUE(works_offline);
-      EXPECT_FALSE(installed);
-    } else {
-      EXPECT_FALSE(works_offline);
-      EXPECT_FALSE(installed);
-    }
-  }
-}
-
-// Ensures that the correct metrics are recorded when Dictation is toggled.
-IN_PROC_BROWSER_TEST_P(DictationTest, Metrics) {
-  base::HistogramTester histogram_tester_;
-  bool on_device = GetParam() == speech::SpeechRecognitionType::kOnDevice;
-  const char* metric_name = on_device ? kOnDeviceListeningDurationMetric
-                                      : kNetworkListeningDurationMetric;
-  HistogramWaiter waiter(metric_name);
-  ToggleDictation();
-  WaitForRecognitionStarted();
-  ToggleDictation();
-  WaitForRecognitionStopped();
-  waiter.Wait();
-  content::FetchHistogramsFromChildProcesses();
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-
-  // Ensure that we recorded the correct locale.
-  const std::string locale = "en-US";
-  histogram_tester_.ExpectUniqueSample(/*name=*/kLocaleMetric,
-                                       /*sample=*/base::HashMetricName(locale),
-                                       /*expected_bucket_count=*/1);
-  // Ensure that we recorded the type of speech recognition and listening
-  // duration.
-  if (on_device) {
-    histogram_tester_.ExpectUniqueSample(/*name=*/kOnDeviceSpeechMetric,
-                                         /*sample=*/true,
-                                         /*expected_bucket_count=*/1);
-    ASSERT_EQ(1u,
-              histogram_tester_.GetAllSamples(kOnDeviceListeningDurationMetric)
-                  .size());
-    // Ensure there are no metrics for the other type of speech recognition.
-    ASSERT_EQ(0u,
-              histogram_tester_.GetAllSamples(kNetworkListeningDurationMetric)
-                  .size());
-  } else {
-    histogram_tester_.ExpectUniqueSample(/*name=*/kOnDeviceSpeechMetric,
-                                         /*sample=*/false,
-                                         /*expected_bucket_count=*/1);
-    ASSERT_EQ(1u,
-              histogram_tester_.GetAllSamples(kNetworkListeningDurationMetric)
-                  .size());
-    // Ensure there are no metrics for the other type of speech recognition.
-    ASSERT_EQ(0u,
-              histogram_tester_.GetAllSamples(kOnDeviceListeningDurationMetric)
-                  .size());
-  }
-}
-
 class DictationExtensionTest : public DictationBaseTest {
  protected:
   DictationExtensionTest() {}
@@ -744,8 +359,7 @@ class DictationExtensionTest : public DictationBaseTest {
     // DictationCommandsExtensionTest once Dictation commands have successfully
     // launched.
     DictationBaseTest::SetUpCommandLine(command_line);
-    std::vector<base::Feature> enabled_features = {
-        ::features::kExperimentalAccessibilityDictationExtension};
+    std::vector<base::Feature> enabled_features = {};
     std::vector<base::Feature> disabled_features = {
         ::features::kExperimentalAccessibilityDictationCommands,
         ::features::kExperimentalAccessibilityDictationHints};
@@ -856,6 +470,11 @@ class DictationExtensionTest : public DictationBaseTest {
         .Wait();
   }
 
+  const base::flat_map<std::string, Dictation::LocaleData>
+  GetAllSupportedLocales() {
+    return Dictation::GetAllSupportedLocales();
+  }
+
  private:
   std::unique_ptr<ui::MockIMEInputContextHandler> input_context_handler_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
@@ -872,6 +491,50 @@ INSTANTIATE_TEST_SUITE_P(
     OnDevice,
     DictationExtensionTest,
     ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
+
+// Tests the behavior of the GetAllSupportedLocales method, specifically how
+// it sets locale data.
+IN_PROC_BROWSER_TEST_P(DictationExtensionTest, GetAllSupportedLocales) {
+  auto locales = GetAllSupportedLocales();
+  for (auto& it : locales) {
+    const std::string locale = it.first;
+    bool works_offline = it.second.works_offline;
+    bool installed = it.second.installed;
+    if (GetParam() == speech::SpeechRecognitionType::kOnDevice &&
+        locale == speech::kUsEnglishLocale) {
+      // Currently, the only locale supported by SODA is en-US. It should work
+      // offline and be installed.
+      EXPECT_TRUE(works_offline);
+      EXPECT_TRUE(installed);
+    } else {
+      EXPECT_FALSE(works_offline);
+      EXPECT_FALSE(installed);
+    }
+  }
+
+  if (GetParam() == speech::SpeechRecognitionType::kOnDevice) {
+    // Uninstall SODA and all language packs.
+    speech::SodaInstaller::GetInstance()->UninstallSodaForTesting();
+  } else {
+    return;
+  }
+
+  locales = GetAllSupportedLocales();
+  for (auto& it : locales) {
+    const std::string locale = it.first;
+    bool works_offline = it.second.works_offline;
+    bool installed = it.second.installed;
+    if (locale == speech::kUsEnglishLocale) {
+      // en-US should be marked as "works offline", but it shouldn't be
+      // installed.
+      EXPECT_TRUE(works_offline);
+      EXPECT_FALSE(installed);
+    } else {
+      EXPECT_FALSE(works_offline);
+      EXPECT_FALSE(installed);
+    }
+  }
+}
 
 IN_PROC_BROWSER_TEST_P(DictationExtensionTest, StartsAndStopsRecognition) {
   ToggleDictationWithKeystroke();

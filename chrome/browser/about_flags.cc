@@ -4525,12 +4525,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kVirtualKeyboardMultitouchName,
      flag_descriptions::kVirtualKeyboardMultitouchDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kVirtualKeyboardMultitouch)},
-    {"enable-experimental-accessibility-dictation-extension",
-     flag_descriptions::kExperimentalAccessibilityDictationExtensionName,
-     flag_descriptions::kExperimentalAccessibilityDictationExtensionDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         features::kExperimentalAccessibilityDictationExtension)},
     {"enable-experimental-accessibility-dictation-commands",
      flag_descriptions::kExperimentalAccessibilityDictationCommandsName,
      flag_descriptions::kExperimentalAccessibilityDictationCommandsDescription,
