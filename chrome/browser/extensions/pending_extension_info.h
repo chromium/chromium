@@ -41,10 +41,11 @@ class PendingExtensionInfo {
                        bool mark_acknowledged,
                        bool remote_install);
 
-  // Required for STL container membership.  Should not be used directly.
-  PendingExtensionInfo();
+  PendingExtensionInfo(PendingExtensionInfo&& other);
+  PendingExtensionInfo& operator=(PendingExtensionInfo&& other);
 
-  PendingExtensionInfo(const PendingExtensionInfo& other);
+  PendingExtensionInfo(const PendingExtensionInfo& other) = delete;
+  PendingExtensionInfo& operator=(const PendingExtensionInfo& other) = delete;
 
   ~PendingExtensionInfo();
 

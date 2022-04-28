@@ -72,7 +72,7 @@ bool PendingExtensionManager::HasPendingExtensions() const {
 bool PendingExtensionManager::HasPendingExtensionFromSync() const {
   return std::any_of(
       pending_extensions_.begin(), pending_extensions_.end(),
-      [](const std::pair<std::string, PendingExtensionInfo>& it) {
+      [](const std::pair<const std::string, PendingExtensionInfo>& it) {
         return it.second.is_from_sync();
       });
 }
@@ -80,7 +80,7 @@ bool PendingExtensionManager::HasPendingExtensionFromSync() const {
 bool PendingExtensionManager::HasHighPriorityPendingExtension() const {
   return std::any_of(
       pending_extensions_.begin(), pending_extensions_.end(),
-      [](const std::pair<std::string, PendingExtensionInfo>& it) {
+      [](const std::pair<const std::string, PendingExtensionInfo>& it) {
         return it.second.install_source() ==
                    ManifestLocation::kExternalPolicyDownload ||
                it.second.install_source() ==
@@ -272,7 +272,9 @@ bool PendingExtensionManager::AddExtensionImpl(
                             should_allow_install, is_from_sync, install_source,
                             creation_flags, mark_acknowledged, remote_install);
 
-  if (const PendingExtensionInfo* pending = GetById(id)) {
+  auto it = pending_extensions_.find(id);
+  if (it != pending_extensions_.end()) {
+    const PendingExtensionInfo* pending = &(it->second);
     // Bugs in this code will manifest as sporadic incorrect extension
     // locations in situations where multiple install sources run at the
     // same time. For example, on first login to a chrome os machine, an
@@ -296,9 +298,9 @@ bool PendingExtensionManager::AddExtensionImpl(
 
     VLOG(1) << "Overwrite existing record.";
 
-    pending_extensions_[info.id()] = std::move(info);
+    it->second = std::move(info);
   } else {
-    pending_extensions_.emplace(info.id(), std::move(info));
+    pending_extensions_.emplace(id, std::move(info));
   }
 
   return true;
@@ -322,9 +324,9 @@ void PendingExtensionManager::
 }
 
 void PendingExtensionManager::AddForTesting(
-    const PendingExtensionInfo& pending_extension_info) {
-  pending_extensions_.emplace(pending_extension_info.id(),
-                              pending_extension_info);
+    PendingExtensionInfo pending_extension_info) {
+  std::string id = pending_extension_info.id();
+  pending_extensions_.emplace(id, std::move(pending_extension_info));
 }
 
 }  // namespace extensions

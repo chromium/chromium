@@ -30,17 +30,10 @@ PendingExtensionInfo::PendingExtensionInfo(
       mark_acknowledged_(mark_acknowledged),
       remote_install_(remote_install) {}
 
-PendingExtensionInfo::PendingExtensionInfo()
-    : update_url_(),
-      should_allow_install_(NULL),
-      is_from_sync_(true),
-      install_source_(mojom::ManifestLocation::kInvalidLocation),
-      creation_flags_(Extension::NO_FLAGS),
-      mark_acknowledged_(false),
-      remote_install_(false) {}
-
-PendingExtensionInfo::PendingExtensionInfo(const PendingExtensionInfo& other) =
+PendingExtensionInfo::PendingExtensionInfo(PendingExtensionInfo&& other) =
     default;
+PendingExtensionInfo& PendingExtensionInfo::operator=(
+    PendingExtensionInfo&& other) = default;
 
 PendingExtensionInfo::~PendingExtensionInfo() {}
 

@@ -145,7 +145,7 @@ class PendingExtensionManager {
   // Add a pending extension record directly.  Used for unit tests that need
   // to set an inital state. Use friendship to allow the tests to call this
   // method.
-  void AddForTesting(const PendingExtensionInfo& pending_extension_info);
+  void AddForTesting(PendingExtensionInfo pending_extension_info);
 
   // The BrowserContext with which the manager is associated.
   raw_ptr<content::BrowserContext> context_;
