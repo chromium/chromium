@@ -69,6 +69,13 @@ namespace content {
 
 namespace {
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables running ServiceWorkerStorageControl on IO thread instead of UI thread
+// on Android.
+const base::Feature kServiceWorkerStorageControlOnIOThread{
+    "ServiceWorkerStorageControlOnIOThread", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 void DidFindRegistrationForStartActiveWorker(
     ServiceWorkerContextWrapper::StatusCallback callback,
     blink::ServiceWorkerStatusCode status,
@@ -1469,15 +1476,25 @@ void ServiceWorkerContextWrapper::BindStorageControl(
     mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
         receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  bool run_storage_control_on_ui_thread =
+#if BUILDFLAG(IS_ANDROID)
+      // Run ServiceWorkerStorageControl mojo receiver on IO thread on Android
+      // for performance reasons if it's specified.
+      // TODO(chikamune): Use a thread pool sequence instead of IO thread.
+      !base::FeatureList::IsEnabled(kServiceWorkerStorageControlOnIOThread);
+#else
+      // The storage service always runs out of process on Desktop platforms.
+      // TODO(crbug.com/1055677): ServiceWorkerStorageControlImpl instance
+      // should live in the storage service. Currently,
+      // ServiceWorkerStorageControlImpl runs on UI thread to keep the previous
+      // behavior.
+      true;
+#endif
+
   if (storage_control_binder_for_test_) {
     storage_control_binder_for_test_.Run(std::move(receiver));
-  } else {
-    // The storage service always runs out of process on Desktop platforms.
-    // TODO(crbug.com/1055677): ServiceWorkerStorageControlImpl instance
-    // should live in the storage service. Currently,
-    // ServiceWorkerStorageControlImpl runs on UI thread to keep the previous
-    // behavior.
-
+  } else if (run_storage_control_on_ui_thread) {
     // TODO(crbug.com/1055677): Use storage_partition() to bind the control when
     // ServiceWorkerStorageControl is sandboxed in the Storage Service.
     DCHECK(!storage_control_);
@@ -1494,6 +1511,14 @@ void ServiceWorkerContextWrapper::BindStorageControl(
         std::make_unique<storage::ServiceWorkerStorageControlImpl>(
             user_data_directory_, std::move(database_task_runner),
             std::move(receiver));
+  } else {
+    // Drop `receiver` when the browser is shutting down.
+    if (!storage_partition())
+      return;
+    DCHECK(storage_partition()->GetStorageServicePartition());
+    storage_partition()
+        ->GetStorageServicePartition()
+        ->BindServiceWorkerStorageControl(std::move(receiver));
   }
 }
 

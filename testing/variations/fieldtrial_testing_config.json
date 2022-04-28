@@ -6692,6 +6692,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "ServiceWorkerStorageControlOnIOThread",
                         "ServiceWorkerStorageControlResponseQueue"
                     ]
                 }
