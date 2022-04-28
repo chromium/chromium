@@ -5418,6 +5418,8 @@ static_library("browser") {
       "download/notification/download_notification_manager.h",
       "media/platform_verification_chromeos.cc",
       "media/platform_verification_chromeos.h",
+      "memory/oom_kills_monitor.cc",
+      "memory/oom_kills_monitor.h",
       "platform_keys/extension_key_permissions_service.cc",
       "platform_keys/extension_key_permissions_service.h",
       "platform_keys/extension_key_permissions_service_factory.cc",

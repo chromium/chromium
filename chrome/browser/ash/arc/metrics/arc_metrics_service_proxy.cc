@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
+#include "chrome/browser/memory/oom_kills_monitor.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 
@@ -100,7 +101,7 @@ void ArcMetricsServiceProxy::OnArcLowMemoryKill() {
 
 void ArcMetricsServiceProxy::OnArcOOMKillCount(
     unsigned long current_oom_kills) {
-  memory::MemoryKillsMonitor::LogArcOOMKill(current_oom_kills);
+  memory::OOMKillsMonitor::GetInstance().LogArcOOMKill(current_oom_kills);
 }
 
 void ArcMetricsServiceProxy::OnArcMemoryPressureKill(int count,

@@ -4,18 +4,12 @@
 
 #include "chrome/browser/memory/memory_kills_monitor.h"
 
-#include <string>
-
-#include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/process/process_metrics.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
-#include "base/synchronization/atomic_flag.h"
+#include "base/threading/platform_thread.h"
 #include "chrome/browser/memory/memory_kills_histogram.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/memory/oom_kills_monitor.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace memory {
@@ -56,12 +50,6 @@ void MemoryKillsMonitor::LogLowMemoryKill(const std::string& type,
       type, estimated_freed_kb);
 }
 
-// static
-void MemoryKillsMonitor::LogArcOOMKill(unsigned long current_oom_kills) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  g_memory_kills_monitor_instance.Get().LogArcOOMKillImpl(current_oom_kills);
-}
-
 void MemoryKillsMonitor::LoggedInStateChanged() {
   VLOG(2) << "LoggedInStateChanged";
   auto* login_state = chromeos::LoginState::Get();
@@ -87,50 +75,13 @@ void MemoryKillsMonitor::StartMonitoring() {
 
   // Insert a zero kill record at the begining of each login session for easy
   // comparison to those with non-zero kill sessions.
-  base::UmaHistogramCustomCounts("Memory.OOMKills.Count", 0, 1, 1000, 1001);
   base::UmaHistogramCustomCounts("Memory.LowMemoryKiller.Count", 0, 1, 1000,
                                  1001);
 
   monitoring_started_.Set();
 
-  base::VmStatInfo vmstat;
-  if (base::GetVmStatInfo(&vmstat)) {
-    last_oom_kills_count_ = vmstat.oom_kill;
-  } else {
-    last_oom_kills_count_ = 0;
-  }
-
-  checking_timer_.Start(FROM_HERE, base::Seconds(1),
-                        base::BindRepeating(&MemoryKillsMonitor::CheckOOMKill,
-                                            base::Unretained(this)));
-}
-
-void MemoryKillsMonitor::CheckOOMKill() {
-  base::VmStatInfo vmstat;
-  if (base::GetVmStatInfo(&vmstat)) {
-    CheckOOMKillImpl(vmstat.oom_kill);
-  }
-}
-
-void MemoryKillsMonitor::CheckOOMKillImpl(unsigned long current_oom_kills) {
-  DCHECK(monitoring_started_.IsSet());
-
-  unsigned long oom_kills_delta = current_oom_kills - last_oom_kills_count_;
-  if (oom_kills_delta == 0)
-    return;
-
-  VLOG(1) << "OOM_KILLS " << oom_kills_delta << " times";
-
-  for (size_t i = 0; i < oom_kills_delta; ++i) {
-    ++oom_kills_count_;
-
-    // Report the cumulative count of killed process in one login session. For
-    // example if there are 3 processes killed, it would report 1 for the first
-    // kill, 2 for the second kill, then 3 for the final kill.
-    base::UmaHistogramCustomCounts("Memory.OOMKills.Count", oom_kills_count_, 1,
-                                   1000, 1001);
-  }
-  last_oom_kills_count_ = current_oom_kills;
+  // Starts the OOM kills monitor.
+  OOMKillsMonitor::GetInstance().Initialize();
 }
 
 void MemoryKillsMonitor::LogLowMemoryKillImpl(const std::string& type,
@@ -161,22 +112,6 @@ void MemoryKillsMonitor::LogLowMemoryKillImpl(const std::string& type,
                              estimated_freed_kb);
 }
 
-void MemoryKillsMonitor::LogArcOOMKillImpl(unsigned long current_oom_kills) {
-  DCHECK(monitoring_started_.IsSet());
-  unsigned long oom_kills_delta = current_oom_kills - last_arc_oom_kills_count_;
-  if (oom_kills_delta == 0)
-    return;
-
-  VLOG(1) << "ARC_OOM_KILLS " << oom_kills_delta << " times";
-
-  for (size_t i = 0; i < oom_kills_delta; ++i) {
-    ++oom_kills_count_;
-    // Report cumulative count of killed processes in one login session.
-    base::UmaHistogramCustomCounts("Memory.OOMKills.Count", oom_kills_count_, 1,
-                                   1000, 1001);
-  }
-  last_arc_oom_kills_count_ = current_oom_kills;
-}
 MemoryKillsMonitor* MemoryKillsMonitor::GetForTesting() {
   return g_memory_kills_monitor_instance.Pointer();
 }

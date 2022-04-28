@@ -28,6 +28,7 @@
 #include "chrome/browser/lacros/web_app_provider_bridge_lacros.h"
 #include "chrome/browser/lacros/web_page_info_lacros.h"
 #include "chrome/browser/lacros/webauthn_request_registrar_lacros.h"
+#include "chrome/browser/memory/oom_kills_monitor.h"
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -181,6 +182,8 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
       std::make_unique<WebAuthnRequestRegistrarLacros>();
 
   metrics::structured::ChromeStructuredMetricsRecorder::Get()->Initialize();
+
+  ::memory::OOMKillsMonitor::GetInstance().Initialize();
 }
 
 void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
