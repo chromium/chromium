@@ -3107,17 +3107,19 @@ void RTCPeerConnection::DidModifyTransceivers(
   HeapVector<std::pair<Member<MediaStream>, Member<MediaStreamTrack>>> add_list;
   HeapVector<Member<RTCRtpTransceiver>> track_events;
   MediaStreamVector previous_streams = getRemoteStreams();
+  // Remove transceivers and update their states to reflect that they are
+  // necessarily stopped.
   for (auto id : removed_transceiver_ids) {
     for (auto* it = transceivers_.begin(); it != transceivers_.end(); ++it) {
       if ((*it)->platform_transceiver()->Id() == id) {
+        // All streams are removed on stop, update `remove_list` if necessary.
         auto* track = (*it)->receiver()->track();
         for (const auto& stream : (*it)->receiver()->streams()) {
           if (stream->getTracks().Contains(track)) {
             remove_list.push_back(std::make_pair(stream, track));
           }
         }
-        (*it)->receiver()->set_streams(MediaStreamVector());
-        (*it)->platform_transceiver()->SetMid(absl::nullopt);
+        (*it)->OnTransceiverStopped();
         transceivers_.erase(it);
         break;
       }
@@ -3523,7 +3525,7 @@ void RTCPeerConnection::CloseInternal() {
   ChangeSignalingState(webrtc::PeerConnectionInterface::SignalingState::kClosed,
                        false);
   for (auto& transceiver : transceivers_) {
-    transceiver->OnPeerConnectionClosed();
+    transceiver->OnTransceiverStopped();
   }
   if (sctp_transport_) {
     sctp_transport_->Close();

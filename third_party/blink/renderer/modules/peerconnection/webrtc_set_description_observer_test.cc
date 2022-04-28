@@ -301,7 +301,6 @@ class WebRtcSetDescriptionObserverHandlerTest
     EXPECT_EQ(transceiver.get(), transceiver_state.webrtc_transceiver());
     EXPECT_TRUE(
         blink::OptionalEquals(transceiver_state.mid(), transceiver->mid()));
-    EXPECT_EQ(transceiver_state.stopped(), transceiver->stopped());
     EXPECT_TRUE(transceiver_state.direction() == transceiver->direction());
     EXPECT_TRUE(blink::OptionalEquals(transceiver_state.current_direction(),
                                       transceiver->current_direction()));

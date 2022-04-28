@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: assert_equals: RTCRtpTransceiver.stop() with closed PC throws InvalidStateError expected "InvalidStateError" but got "Error"
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: assert_equals: replaceTrack on stopped transceiver throws InvalidStateError expected "InvalidStateError" but got "InvalidModificationError"
 PASS checkAddTransceiverNoTrack
 PASS checkAddTransceiverWithTrack
 PASS checkAddTransceiverWithAddTrack
@@ -17,7 +17,7 @@ PASS checkSendrecvWithTracklessStream
 PASS checkAddTransceiverNoTrackDoesntPair
 PASS checkAddTransceiverWithTrackDoesntPair
 PASS checkAddTransceiverThenReplaceTrackDoesntPair
-FAIL checkAddTransceiverThenAddTrackPairs assert_equals: expected "[{sender:{track:{}}}]" but got "[{sender:{track:{}}},{}]"
+PASS checkAddTransceiverThenAddTrackPairs
 PASS checkAddTrackPairs
 PASS checkReplaceTrackNullDoesntPreventPairing
 PASS checkRemoveAndReadd
@@ -34,7 +34,7 @@ PASS checkStopAfterClose
 PASS checkLocalRollback
 PASS checkRollbackAndSetRemoteOfferWithDifferentType
 FAIL checkRemoteRollback assert_equals: track event from remote rollback expected 1 but got 0
-FAIL checkMsectionReuse assert_equals: expected "[{currentDirection:null,mid:null}]" but got "[{currentDirection:\"inactive\",mid:\"0\"}]"
+PASS checkMsectionReuse
 PASS checkStopAfterCreateOfferWithReusedMsection
 PASS checkAddIceCandidateToStoppedTransceiver
 PASS checkBundleTagRejected

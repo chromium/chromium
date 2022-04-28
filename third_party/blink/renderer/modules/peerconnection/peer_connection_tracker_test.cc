@@ -38,7 +38,6 @@ const char* kDefaultTransceiverString =
     "    track:'receiverTrackId',\n"
     "    streams:['receiverStreamId'],\n"
     "  },\n"
-    "  stopped:false,\n"
     "  direction:'sendonly',\n"
     "  currentDirection:null,\n"
     "}";
@@ -105,7 +104,6 @@ std::unique_ptr<RTCRtpTransceiverPlatform> CreateDefaultTransceiver(
       RTCRtpTransceiverPlatformImplementationType::kFullTransceiver) {
     transceiver = std::make_unique<blink::FakeRTCRtpTransceiverImpl>(
         absl::nullopt, std::move(sender), std::move(receiver),
-        false /* stopped */,
         webrtc::RtpTransceiverDirection::kSendOnly /* direction */,
         absl::nullopt /* current_direction */);
   } else if (implementation_type ==
@@ -300,7 +298,6 @@ TEST_F(PeerConnectionTrackerTest, AddTransceiverWithOptionalValuesPresent) {
       blink::FakeRTCRtpReceiverImpl(
           "receiverTrackId", {"streamIdC"},
           blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
-      true /* stopped */,
       webrtc::RtpTransceiverDirection::kSendRecv /* direction */,
       webrtc::RtpTransceiverDirection::kInactive /* current_direction */);
   String update_value;
@@ -325,7 +322,6 @@ TEST_F(PeerConnectionTrackerTest, AddTransceiverWithOptionalValuesPresent) {
       "    track:'receiverTrackId',\n"
       "    streams:['streamIdC'],\n"
       "  },\n"
-      "  stopped:true,\n"
       "  direction:'sendrecv',\n"
       "  currentDirection:'inactive',\n"
       "}");
@@ -343,7 +339,6 @@ TEST_F(PeerConnectionTrackerTest, AddTransceiverWithOptionalValuesNull) {
       blink::FakeRTCRtpReceiverImpl(
           "receiverTrackId", {},
           blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
-      false /* stopped */,
       webrtc::RtpTransceiverDirection::kInactive /* direction */,
       absl::nullopt /* current_direction */);
   String update_value;
@@ -368,7 +363,6 @@ TEST_F(PeerConnectionTrackerTest, AddTransceiverWithOptionalValuesNull) {
       "    track:'receiverTrackId',\n"
       "    streams:[],\n"
       "  },\n"
-      "  stopped:false,\n"
       "  direction:'inactive',\n"
       "  currentDirection:null,\n"
       "}");

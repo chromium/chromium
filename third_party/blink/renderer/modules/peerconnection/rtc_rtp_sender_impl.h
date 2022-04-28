@@ -183,7 +183,6 @@ class MODULES_EXPORT RTCRtpSenderOnlyTransceiver
   String Mid() const override;
   std::unique_ptr<RTCRtpSenderPlatform> Sender() const override;
   std::unique_ptr<RTCRtpReceiverPlatform> Receiver() const override;
-  bool Stopped() const override;
   webrtc::RtpTransceiverDirection Direction() const override;
   webrtc::RTCError SetDirection(
       webrtc::RtpTransceiverDirection direction) override;

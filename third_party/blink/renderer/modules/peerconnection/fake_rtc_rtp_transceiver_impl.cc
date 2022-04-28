@@ -193,13 +193,11 @@ FakeRTCRtpTransceiverImpl::FakeRTCRtpTransceiverImpl(
     absl::optional<std::string> mid,
     FakeRTCRtpSenderImpl sender,
     FakeRTCRtpReceiverImpl receiver,
-    bool stopped,
     webrtc::RtpTransceiverDirection direction,
     absl::optional<webrtc::RtpTransceiverDirection> current_direction)
     : mid_(std::move(mid)),
       sender_(std::move(sender)),
       receiver_(std::move(receiver)),
-      stopped_(stopped),
       direction_(std::move(direction)),
       current_direction_(std::move(current_direction)) {}
 
@@ -227,10 +225,6 @@ std::unique_ptr<blink::RTCRtpSenderPlatform> FakeRTCRtpTransceiverImpl::Sender()
 std::unique_ptr<RTCRtpReceiverPlatform> FakeRTCRtpTransceiverImpl::Receiver()
     const {
   return receiver_.ShallowCopy();
-}
-
-bool FakeRTCRtpTransceiverImpl::Stopped() const {
-  return stopped_;
 }
 
 webrtc::RtpTransceiverDirection FakeRTCRtpTransceiverImpl::Direction() const {

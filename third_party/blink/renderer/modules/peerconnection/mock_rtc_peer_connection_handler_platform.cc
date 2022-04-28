@@ -227,7 +227,6 @@ class MockRTCPeerConnectionHandlerPlatform::DummyRTCRtpTransceiverPlatform
   std::unique_ptr<RTCRtpReceiverPlatform> Receiver() const override {
     return internal_->Receiver();
   }
-  bool Stopped() const override { return true; }
   webrtc::RtpTransceiverDirection Direction() const override {
     return internal_->direction();
   }

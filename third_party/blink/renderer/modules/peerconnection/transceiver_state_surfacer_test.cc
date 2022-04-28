@@ -219,7 +219,6 @@ class TransceiverStateSurfacerTest : public ::testing::Test {
     // Inspect transceiver states.
     EXPECT_TRUE(blink::OptionalEquals(transceiver_state.mid(),
                                       webrtc_transceiver->mid()));
-    EXPECT_EQ(transceiver_state.stopped(), webrtc_transceiver->stopped());
     EXPECT_TRUE(transceiver_state.direction() ==
                 webrtc_transceiver->direction());
     EXPECT_TRUE(blink::OptionalEquals(transceiver_state.current_direction(),
@@ -340,7 +339,6 @@ TEST_F(TransceiverStateSurfacerTest, SurfaceSenderStateOnly) {
   // Expect transceiver members be be missing for optional members and have
   // sensible values for non-optional members.
   EXPECT_FALSE(transceiver_state.mid());
-  EXPECT_FALSE(transceiver_state.stopped());
   EXPECT_EQ(transceiver_state.direction(),
             webrtc::RtpTransceiverDirection::kSendOnly);
   EXPECT_FALSE(transceiver_state.current_direction());
@@ -362,7 +360,6 @@ TEST_F(TransceiverStateSurfacerTest, SurfaceReceiverStateOnly) {
   // Expect transceiver members be be missing for optional members and have
   // sensible values for non-optional members.
   EXPECT_FALSE(transceiver_state.mid());
-  EXPECT_FALSE(transceiver_state.stopped());
   EXPECT_EQ(transceiver_state.direction(),
             webrtc::RtpTransceiverDirection::kRecvOnly);
   EXPECT_FALSE(transceiver_state.current_direction());

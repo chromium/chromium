@@ -129,7 +129,7 @@ RTCRtpTransceiver::RTCRtpTransceiver(
 }
 
 String RTCRtpTransceiver::mid() const {
-  return platform_transceiver_->Mid();
+  return mid_;
 }
 
 RTCRtpSender* RTCRtpTransceiver::sender() const {
@@ -141,7 +141,9 @@ RTCRtpReceiver* RTCRtpTransceiver::receiver() const {
 }
 
 bool RTCRtpTransceiver::stopped() const {
-  return stopped_;
+  // Non-standard attribute reflecting being "stopping", whether or not we are
+  // "stopped" per current_direction_.
+  return direction_ == "stopped";
 }
 
 String RTCRtpTransceiver::direction() const {
@@ -161,9 +163,14 @@ void RTCRtpTransceiver::setDirection(String direction,
                                       "The peer connection is closed.");
     return;
   }
-  if (stopped_) {
+  if (current_direction_ == "stopped") {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The transceiver is stopped.");
+    return;
+  }
+  if (direction_ == "stopped") {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The transceiver is stopping.");
     return;
   }
   webrtc::RTCError error =
@@ -180,18 +187,27 @@ String RTCRtpTransceiver::currentDirection() const {
 }
 
 void RTCRtpTransceiver::UpdateMembers() {
-  stopped_ = platform_transceiver_->Stopped();
+  if (current_direction_ == "stopped") {
+    // No need to update, stopped is a permanent state. Also: on removal, the
+    // state of `platform_transceiver_` becomes obsolete and may not reflect
+    // being stopped, so let's not update the members anymore.
+    return;
+  }
+  mid_ = platform_transceiver_->Mid();
   direction_ = TransceiverDirectionToString(platform_transceiver_->Direction());
   current_direction_ = OptionalTransceiverDirectionToString(
       platform_transceiver_->CurrentDirection());
   fired_direction_ = platform_transceiver_->FiredDirection();
 }
 
-void RTCRtpTransceiver::OnPeerConnectionClosed() {
-  receiver_->track()->Component()->Source()->SetReadyState(
-      MediaStreamSource::kReadyStateMuted);
-  stopped_ = true;
-  current_direction_ = String();  // null
+void RTCRtpTransceiver::OnTransceiverStopped() {
+  receiver_->set_streams(MediaStreamVector());
+  mid_ = String();
+  direction_ =
+      TransceiverDirectionToString(webrtc::RtpTransceiverDirection::kStopped);
+  current_direction_ =
+      TransceiverDirectionToString(webrtc::RtpTransceiverDirection::kStopped);
+  fired_direction_ = webrtc::RtpTransceiverDirection::kStopped;
 }
 
 RTCRtpTransceiverPlatform* RTCRtpTransceiver::platform_transceiver() const {
@@ -222,12 +238,17 @@ bool RTCRtpTransceiver::FiredDirectionHasRecv() const {
 }
 
 void RTCRtpTransceiver::stop(ExceptionState& exception_state) {
+  if (pc_->IsClosed()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The peer connection is closed.");
+    return;
+  }
   webrtc::RTCError error = platform_transceiver_->Stop();
   if (!error.ok()) {
     ThrowExceptionFromRTCError(error, exception_state);
     return;
   }
-  stopped_ = true;
+  // We should become stopping, but negotiation is needed to become stopped.
   UpdateMembers();
 }
 

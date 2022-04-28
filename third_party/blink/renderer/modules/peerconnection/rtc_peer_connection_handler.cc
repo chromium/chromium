@@ -2583,7 +2583,6 @@ void RTCPeerConnectionHandler::OnModifyTransceivers(
       const auto& previous_state = (*it)->state();
       transceiver_was_modified =
           previous_state.mid() != transceiver_states[i].mid() ||
-          previous_state.stopped() != transceiver_states[i].stopped() ||
           previous_state.direction() != transceiver_states[i].direction() ||
           previous_state.current_direction() !=
               transceiver_states[i].current_direction() ||
@@ -2612,7 +2611,10 @@ void RTCPeerConnectionHandler::OnModifyTransceivers(
       }
     }
   }
-  // Search for removed transceivers by comparing to previous state.
+  // Search for removed transceivers by comparing to previous state. All of
+  // these transceivers will have been stopped in the WebRTC layers, but we do
+  // not have access to their states anymore. So it is up to `client_` to ensure
+  // removed transceivers are reflected as "stopped" in JavaScript.
   Vector<uintptr_t> removed_transceivers;
   for (auto transceiver_id : previous_transceiver_ids_) {
     if (std::find(ids.begin(), ids.end(), transceiver_id) == ids.end()) {

@@ -61,7 +61,10 @@ class RTCRtpTransceiver final : public ScriptWrappable {
   // of remote tracks:
   // https://w3c.github.io/webrtc-pc/#set-the-rtcsessiondescription.
   void UpdateMembers();
-  void OnPeerConnectionClosed();
+  // Stopped transceivers are removed, but we don't have access to removed
+  // transceivers' internal states. This method updates the states to reflect
+  // being stopped.
+  void OnTransceiverStopped();
 
   RTCRtpTransceiverPlatform* platform_transceiver() const;
   absl::optional<webrtc::RtpTransceiverDirection> fired_direction() const;
@@ -85,7 +88,7 @@ class RTCRtpTransceiver final : public ScriptWrappable {
   std::unique_ptr<RTCRtpTransceiverPlatform> platform_transceiver_;
   Member<RTCRtpSender> sender_;
   Member<RTCRtpReceiver> receiver_;
-  bool stopped_;
+  String mid_;
   String direction_;
   String current_direction_;
   absl::optional<webrtc::RtpTransceiverDirection> fired_direction_;

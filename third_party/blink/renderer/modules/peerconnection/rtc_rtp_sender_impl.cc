@@ -606,11 +606,6 @@ std::unique_ptr<RTCRtpReceiverPlatform> RTCRtpSenderOnlyTransceiver::Receiver()
   return nullptr;
 }
 
-bool RTCRtpSenderOnlyTransceiver::Stopped() const {
-  NOTIMPLEMENTED();
-  return false;
-}
-
 webrtc::RtpTransceiverDirection RTCRtpSenderOnlyTransceiver::Direction() const {
   NOTIMPLEMENTED();
   return webrtc::RtpTransceiverDirection::kSendOnly;

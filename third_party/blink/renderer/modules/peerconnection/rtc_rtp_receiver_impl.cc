@@ -395,11 +395,6 @@ RTCRtpReceiverOnlyTransceiver::Receiver() const {
   return receiver_->ShallowCopy();
 }
 
-bool RTCRtpReceiverOnlyTransceiver::Stopped() const {
-  NOTIMPLEMENTED();
-  return false;
-}
-
 webrtc::RtpTransceiverDirection RTCRtpReceiverOnlyTransceiver::Direction()
     const {
   NOTIMPLEMENTED();
