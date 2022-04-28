@@ -863,6 +863,10 @@
                   '|chrome/browser/ash/arc/enterprise/'\
                   '|docs/website/site/administrators/'
     },
+    'cros_discovery': {
+      'filepath': 'chrome/browser/apps/app_discovery_service/'\
+                  '|chrome/browser/apps/app_provisioning_service/',
+    },
     'cros_reporting': {
       'filepath': 'chrome/browser/policy/messaging_layer/'\
                   '|chrome/browser/ash/policy/status_collector/'\
@@ -2479,6 +2483,7 @@
            'yyanagisawa+cc@chromium.org'],
     'cr_elements': ['michaelpg+watch-elements@chromium.org'],
     'cros_commercial_policy': ['enterprise-policy-review@google.com'],
+    'cros_discovery': ['melzhang+watch+discovery@chromium.org'],
     'cros_reporting': ['cros-reporting-reviews@google.com'],
     'cros_sharesheet': ['melzhang+watch+sharesheet@chromium.org'],
     'crostini': ['crostini-ui@chromium.org'],
