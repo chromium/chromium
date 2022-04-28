@@ -142,7 +142,7 @@ vars = {
   # required to build C++-Rust interop codegen tools. This may break things that
   # use it when clang rolls, and is meant for prototyping. You should talk to
   # tools/clang/OWNERS before depending on it.
-  'checkout_clang_libs': False,
+  'checkout_clang_libs': 'use_rust',
 
   # By default checkout the OpenXR loader library only on Windows. The OpenXR
   # backend for VR in Chromium is currently only supported for Windows, but
@@ -226,6 +226,12 @@ vars = {
   # instead of downloading the prebuilt pinned revision.
   'llvm_force_head_revision': False,
 
+  # Fetch Rust toolchain built against our LLVM revision instead of the Android
+  # Rust toolchain. Experimental. The corresponding GN arg
+  # use_chromium_rust_toolchain directs the build to use this toolchain instead
+  # of the Android toolchain.
+  'fetch_prebuilt_chromium_rust_toolchain': 'use_rust and host_os == "linux"',
+
   # Build in-tree Rust toolchain. checkout_clang_libs must also be True. The
   # corresponding GN arg use_chromium_rust_toolchain directs the build to use
   # the in-tree toolchain instead of the Android toolchain.
@@ -246,6 +252,9 @@ vars = {
 
   # reclient CIPD package version
   'reclient_version': 're_client_version:0.62.0.0a58116-gomaip',
+
+  # Enable fetching Rust-related packages.
+  'use_rust': False,
 
   'android_git': 'https://android.googlesource.com',
   'aomedia_git': 'https://aomedia.googlesource.com',
@@ -523,7 +532,8 @@ deps = {
       },
     ],
     'dep_type': 'cipd',
-    'condition': '(host_os == "linux")',
+    # TODO(https://crbug.com/1292038): gate this on use_rust as well as host_os.
+    'condition': 'host_os == "linux"',
   },
 
   # We don't know target_cpu at deps time. At least until there's a universal
@@ -3774,6 +3784,13 @@ hooks = [
     'pattern': '.',
     'condition': 'not llvm_force_head_revision',
     'action': ['python3', 'src/tools/clang/scripts/update.py'],
+  },
+  {
+    # Update prebuilt Rust toolchain.
+    'name': 'rust-toolchain',
+    'pattern': '.',
+    'condition': 'fetch_prebuilt_chromium_rust_toolchain',
+    'action': ['python3', 'src/tools/rust/update_rust.py'],
   },
   {
     # Build the clang toolchain from tip-of-tree.
