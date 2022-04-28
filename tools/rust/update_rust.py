@@ -15,6 +15,7 @@ import argparse
 import os
 import sys
 import tempfile
+import urllib
 
 from pathlib import Path
 
@@ -66,10 +67,19 @@ def main():
     return 0
 
   from update import (DownloadAndUnpack, GetDefaultHostOs, GetPlatformUrlPrefix)
-  with tempfile.TemporaryFile() as f:
-    url = '%srust-toolchain-%s.tgz' % (GetPlatformUrlPrefix(
-        GetDefaultHostOs()), GetPackageVersion())
-    DownloadAndUnpack(url, THIRD_PARTY_DIR)
+
+  try:
+    with tempfile.TemporaryFile() as f:
+      url = '%srust-toolchain-%s.tgz' % (GetPlatformUrlPrefix(
+          GetDefaultHostOs()), GetPackageVersion())
+      DownloadAndUnpack(url, THIRD_PARTY_DIR)
+  except urllib.error.HTTPError as e:
+    # Fail softly for now. This can happen if a Rust package was not produced,
+    # e.g. if the Rust build failed upon a Clang update, or if a Rust roll and
+    # a Clang roll raced against each other.
+    #
+    # TODO(https://crbug.com/1245714): reconsider how to handle this.
+    print(f'warning: could not download Rust package')
 
 
 if __name__ == '__main__':
