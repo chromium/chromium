@@ -394,6 +394,11 @@ class CC_EXPORT InputHandler {
   // Returns true if ScrollbarController is in the middle of a scroll operation.
   virtual bool ScrollbarScrollIsActive() = 0;
 
+  // Defers posting BeginMainFrame tasks. This is used during the main thread
+  // hit test for a GestureScrollBegin, to avoid posting a frame before the
+  // compositor thread has had a chance to update the scroll offset.
+  virtual void SetDeferBeginMainFrame(bool defer_begin_main_frame) const = 0;
+
  protected:
   virtual ~InputHandler() = default;
   InputHandler() = default;

@@ -106,6 +106,7 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
   void ScrollEndForSnapFling(bool did_finish) override;
   void NotifyInputEvent() override;
   bool ScrollbarScrollIsActive() override;
+  void SetDeferBeginMainFrame(bool defer_begin_main_frame) const override;
 
   // =========== InputDelegateForCompositor Interface - This section implements
   // the interface that LayerTreeHostImpl uses to communicate with the input

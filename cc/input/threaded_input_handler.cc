@@ -2249,4 +2249,9 @@ bool ThreadedInputHandler::ScrollbarScrollIsActive() {
   return scrollbar_controller_->ScrollbarScrollIsActive();
 }
 
+void ThreadedInputHandler::SetDeferBeginMainFrame(
+    bool defer_begin_main_frame) const {
+  compositor_delegate_.SetDeferBeginMainFrame(defer_begin_main_frame);
+}
+
 }  // namespace cc

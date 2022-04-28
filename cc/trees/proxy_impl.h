@@ -56,7 +56,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void InitializeMutatorOnImpl(std::unique_ptr<LayerTreeMutator> mutator);
   void InitializePaintWorkletLayerPainterOnImpl(
       std::unique_ptr<PaintWorkletLayerPainter> painter);
-  void SetDeferBeginMainFrameOnImpl(bool defer_begin_main_frame) const;
+  void SetDeferBeginMainFrameFromMain(bool defer_begin_main_frame);
   void SetNeedsRedrawOnImpl(const gfx::Rect& damage_rect);
   void SetNeedsCommitOnImpl();
   void SetTargetLocalSurfaceIdOnImpl(
@@ -105,6 +105,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void SetNeedsPrepareTilesOnImplThread() override;
   void SetNeedsCommitOnImplThread() override;
   void SetVideoNeedsBeginFrames(bool needs_begin_frames) override;
+  void SetDeferBeginMainFrameFromImpl(bool defer_begin_main_frame) override;
   bool IsInsideDraw() override;
   void RenewTreePriority() override;
   void PostDelayedAnimationTaskOnImplThread(base::OnceClosure task,
@@ -162,6 +163,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   bool IsImplThread() const;
   bool IsMainThreadBlocked() const;
   base::SingleThreadTaskRunner* MainThreadTaskRunner();
+  bool ShouldDeferBeginMainFrame() const;
 
   const int layer_tree_host_id_;
 
@@ -218,6 +220,10 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   // A weak pointer to ProxyMain that is invalidated when LayerTreeFrameSink is
   // released.
   base::WeakPtr<ProxyMain> proxy_main_frame_sink_bound_weak_ptr_;
+
+  // Either thread can request deferring BeginMainFrame; keep track of both.
+  bool main_wants_defer_begin_main_frame_ = false;
+  bool impl_wants_defer_begin_main_frame_ = false;
 };
 
 }  // namespace cc

@@ -320,6 +320,11 @@ void LayerTreeHostImpl::SetNeedsFullViewportRedraw() {
   SetNeedsRedraw();
 }
 
+void LayerTreeHostImpl::SetDeferBeginMainFrame(
+    bool defer_begin_main_frame) const {
+  client_->SetDeferBeginMainFrameFromImpl(defer_begin_main_frame);
+}
+
 bool LayerTreeHostImpl::IsInHighLatencyMode() const {
   return impl_thread_phase_ == ImplThreadPhase::IDLE;
 }

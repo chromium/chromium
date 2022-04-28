@@ -542,7 +542,7 @@ void ProxyMain::SetDeferMainFrameUpdate(bool defer_main_frame_update) {
 
   // The impl thread needs to know that it should not issue BeginMainFrame.
   ImplThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&ProxyImpl::SetDeferBeginMainFrameOnImpl,
+      FROM_HERE, base::BindOnce(&ProxyImpl::SetDeferBeginMainFrameFromMain,
                                 base::Unretained(proxy_impl_.get()),
                                 defer_main_frame_update));
 }

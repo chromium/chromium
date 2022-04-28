@@ -98,6 +98,7 @@ class CompositorDelegateForInput {
   virtual bool HasAnimatedScrollbars() const = 0;
   virtual void SetNeedsCommit() = 0;
   virtual void SetNeedsFullViewportRedraw() = 0;
+  virtual void SetDeferBeginMainFrame(bool defer_begin_main_frame) const = 0;
   virtual void DidUpdateScrollAnimationCurve() = 0;
   virtual void AccumulateScrollDeltaForTracing(const gfx::Vector2dF& delta) = 0;
   virtual void DidStartPinchZoom() = 0;

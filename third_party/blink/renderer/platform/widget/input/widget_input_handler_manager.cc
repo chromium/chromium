@@ -793,6 +793,9 @@ void WidgetInputHandlerManager::FindScrollTargetReply(
           &WidgetInputHandlerManager::DidHandleInputEventSentToCompositor, this,
           std::move(browser_callback)),
       hit_test_result);
+
+  // Let the main frames flow.
+  input_handler_proxy_->SetDeferBeginMainFrame(false);
 }
 
 void WidgetInputHandlerManager::SendDroppedPointerDownCounts() {
@@ -847,10 +850,6 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToCompositor(
   if (event_disposition == InputHandlerProxy::REQUIRES_MAIN_THREAD_HIT_TEST) {
     TRACE_EVENT_INSTANT0("input", "PostingHitTestToMainThread",
                          TRACE_EVENT_SCOPE_THREAD);
-    // TODO(bokan): We're going to need to perform a hit test on the main thread
-    // before we can continue handling the event. This is the critical path of a
-    // scroll so we should probably ensure the scheduler can prioritize it
-    // accordingly. https://crbug.com/1082618.
     DCHECK(base::FeatureList::IsEnabled(::features::kScrollUnification));
     DCHECK_EQ(event->Event().GetType(),
               WebInputEvent::Type::kGestureScrollBegin);
@@ -867,6 +866,18 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToCompositor(
         FROM_HERE,
         base::BindOnce(&WidgetInputHandlerManager::FindScrollTargetOnMainThread,
                        this, event_position, std::move(result_callback)));
+
+    // The hit test is on the critical path of the scroll. Don't post any
+    // BeginMainFrame tasks until we've returned from the hit test and handled
+    // the rest of the input in the compositor event queue.
+    //
+    // NOTE: setting this in FindScrollTargetOnMainThread would be too late; we
+    // might have already posted a BeginMainFrame by then. Even though the
+    // scheduler prioritizes the hit test, that main frame won't see the updated
+    // scroll offset because the task is bound to CompositorCommitData from the
+    // time it was posted. We'd then have to wait for a SECOND BeginMainFrame to
+    // actually repaint the scroller at the right offset.
+    input_handler_proxy_->SetDeferBeginMainFrame(true);
     return;
   }
 

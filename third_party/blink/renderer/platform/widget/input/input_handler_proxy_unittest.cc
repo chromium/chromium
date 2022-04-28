@@ -184,6 +184,8 @@ class MockInputHandler : public cc::InputHandler {
 
   bool ScrollbarScrollIsActive() override { return false; }
 
+  void SetDeferBeginMainFrame(bool defer_begin_main_frame) const override {}
+
  private:
   bool is_scrolling_root_ = true;
 

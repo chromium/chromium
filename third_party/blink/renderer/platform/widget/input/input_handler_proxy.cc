@@ -1665,4 +1665,9 @@ const cc::InputHandlerPointerResult InputHandlerProxy::HandlePointerUp(
   return pointer_result;
 }
 
+void InputHandlerProxy::SetDeferBeginMainFrame(
+    bool defer_begin_main_frame) const {
+  input_handler_->SetDeferBeginMainFrame(defer_begin_main_frame);
+}
+
 }  // namespace blink
