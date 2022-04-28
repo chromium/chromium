@@ -1414,7 +1414,7 @@ TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
 }
 
 TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
-       MediaFeatureIdentifiableSurfaceAspectRatio) {
+       MediaFeatureIdentifiableSurfaceAspectRatioNormalized) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       @media all and (min-aspect-ratio: 8/5) {
@@ -1426,17 +1426,18 @@ TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
   )HTML");
 
   UpdateAllLifecyclePhases();
-  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(
-      static_cast<int>(IdentifiableSurface::MediaFeatureName::kAspectRatio)));
+  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(static_cast<int>(
+      IdentifiableSurface::MediaFeatureName::kAspectRatioNormalized)));
   EXPECT_EQ(collector()->entries().size(), 1u);
 
   auto& entry = collector()->entries().front();
   EXPECT_EQ(entry.metrics.size(), 1u);
-  EXPECT_EQ(entry.metrics.begin()->surface,
-            IdentifiableSurface::FromTypeAndToken(
-                IdentifiableSurface::Type::kMediaFeature,
-                IdentifiableToken(
-                    IdentifiableSurface::MediaFeatureName::kAspectRatio)));
+  EXPECT_EQ(
+      entry.metrics.begin()->surface,
+      IdentifiableSurface::FromTypeAndToken(
+          IdentifiableSurface::Type::kMediaFeature,
+          IdentifiableToken(
+              IdentifiableSurface::MediaFeatureName::kAspectRatioNormalized)));
 }
 
 TEST_F(MediaQueryEvaluatorIdentifiabilityTest,

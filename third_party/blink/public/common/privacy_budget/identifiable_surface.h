@@ -301,10 +301,11 @@ class IdentifiableSurface {
     kColor = 18,
     kColorIndex = 19,
     kMonochrome = 20,
-    kAspectRatio = 21,
+    kAspectRatio_DEPRECATED = 21,
     kResolution = 22,
     kHorizontalViewportSegments = 23,
     kVerticalViewportSegments = 24,
+    kAspectRatioNormalized = 25,
     // We can use enum values up to and including 63, see static_assert below.
     kMax = kVerticalViewportSegments
   };

@@ -410,9 +410,13 @@ static bool OrientationMediaFeatureEval(const MediaQueryExpValue& value,
 static bool AspectRatioMediaFeatureEval(const MediaQueryExpValue& value,
                                         MediaQueryOperator op,
                                         const MediaValues& media_values) {
+  double aspect_ratio =
+      std::max(*media_values.Width(), *media_values.Height()) /
+      std::min(*media_values.Width(), *media_values.Height());
   MaybeRecordMediaFeatureValue(
-      media_values, IdentifiableSurface::MediaFeatureName::kAspectRatio,
-      (*media_values.Width()) / (*media_values.Height()));
+      media_values,
+      IdentifiableSurface::MediaFeatureName::kAspectRatioNormalized,
+      aspect_ratio);
   if (value.IsValid()) {
     return CompareAspectRatioValue(value, *media_values.Width(),
                                    *media_values.Height(), op);
