@@ -7,9 +7,9 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent">
 
-    <org.chromium.ui.widget.LoadingView
-          android:layout_width="@dimen/loading_modal_loading_indicator_size"
-          android:layout_height="@dimen/loading_modal_loading_indicator_size"
+    <android.widget.ProgressBar
+        android:layout_width="@dimen/loading_modal_loading_indicator_size"
+        android:layout_height="@dimen/loading_modal_loading_indicator_size"
         android:layout_centerInParent="true"/>
 
 </RelativeLayout>

@@ -992,6 +992,7 @@ junit_binary("chrome_junit_tests") {
     "//chrome/browser/incognito:java",
     "//chrome/browser/lens:delegate_public_impl_java",
     "//chrome/browser/lens:java",
+    "//chrome/browser/loading_modal/android:junit",
     "//chrome/browser/locale:java",
     "//chrome/browser/notifications:java",
     "//chrome/browser/notifications:junit_tests",
