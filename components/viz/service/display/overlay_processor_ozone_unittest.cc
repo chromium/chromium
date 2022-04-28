@@ -302,6 +302,28 @@ TEST(OverlayProcessorOzoneTest, ObserveHardwareCapabilites) {
   EXPECT_EQ(processor.MaxOverlaysConsidered(), 3);
 }
 
+TEST(OverlayProcessorOzoneTest, NullOverlayCandidates) {
+  // Enable 4 overlays
+  const std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+      feature_and_params_list = {{features::kEnableOverlayPrioritization, {}},
+                                 {features::kUseMultipleOverlays,
+                                  {{features::kMaxOverlaysParam, "4"}}}};
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeaturesAndParameters(feature_and_params_list, {});
+  // When overlay prioritization is explicitly disabled (Lacros) we should
+  // skip multiple overlays tests.
+  if (!features::IsOverlayPrioritizationEnabled()) {
+    GTEST_SKIP();
+  }
+
+  // Verifies that MaybeObserveHardwareCapabilities() handles a null
+  // overlay_candidates_
+  TestOverlayProcessorOzone processor(nullptr, {}, nullptr);
+
+  // Max overlays is still 1.
+  EXPECT_EQ(processor.MaxOverlaysConsidered(), 1);
+}
+
 TEST(OverlayProcessorOzoneTest, NoObserveHardwareCapabilites) {
   // Multiple overlays disabled.
   base::test::ScopedFeatureList scoped_features;

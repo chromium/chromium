@@ -263,9 +263,11 @@ void OverlayProcessorOzone::MaybeObserveHardwareCapabilities() {
   if (max_overlays_config_ <= 1) {
     return;
   }
-  overlay_candidates_->ObserveHardwareCapabilities(
-      base::BindRepeating(&OverlayProcessorOzone::ReceiveHardwareCapabilities,
-                          weak_ptr_factory_.GetWeakPtr()));
+  if (overlay_candidates_) {
+    overlay_candidates_->ObserveHardwareCapabilities(
+        base::BindRepeating(&OverlayProcessorOzone::ReceiveHardwareCapabilities,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void OverlayProcessorOzone::ReceiveHardwareCapabilities(
