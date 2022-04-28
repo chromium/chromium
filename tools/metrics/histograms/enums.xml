@@ -53626,6 +53626,7 @@ from previous Chrome versions.
   <int value="-1271563519" label="enable-appcontainer"/>
   <int value="-1271441871" label="AmbientColor:enabled"/>
   <int value="-1270634957" label="PhoneHubUseBle:enabled"/>
+  <int value="-1270241570" label="TerminalDev:disabled"/>
   <int value="-1270082532" label="BluetoothRevamp:disabled"/>
   <int value="-1269962982" label="SyncUSSPasswords:disabled"/>
   <int value="-1269093329" label="AndroidOmniboxPreviewsBadge:disabled"/>
@@ -53924,6 +53925,7 @@ from previous Chrome versions.
   <int value="-1074257709" label="ScalableAppList:enabled"/>
   <int value="-1074107607" label="data-reduction-proxy-experiment"/>
   <int value="-1073479583" label="ShowArcFilesApp:disabled"/>
+  <int value="-1073388569" label="TerminalDev:enabled"/>
   <int value="-1072337227" label="FilesArchivemount2:disabled"/>
   <int value="-1071471678" label="enable-finch-seed-delta-compression"/>
   <int value="-1071043945" label="VerticalSnap:enabled"/>

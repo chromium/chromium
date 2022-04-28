@@ -18,11 +18,14 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/pref_service.h"
+#include "components/version_info/channel.h"
 #include "net/base/mime_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -33,18 +36,34 @@ constexpr base::FilePath::CharType kTerminalRoot[] =
     FILE_PATH_LITERAL("/usr/share/chromeos-assets/crosh_builtin");
 constexpr char kDefaultMime[] = "text/html";
 
-void ReadFile(const std::string& relative_path,
-              content::URLDataSource::GotDataCallback callback) {
-  std::string content;
-  base::FilePath path = base::FilePath(kTerminalRoot).Append(relative_path);
-  // First look for uncompressed resource, then try for gzipped file.
-  bool result = base::ReadFileToString(path, &content);
+// Attempts to read |path| as plain file.  If read fails, attempts to read
+// |path|.gz and decompress. Returns true if either file is read ok.
+bool ReadUncompressedOrGzip(base::FilePath path, std::string* content) {
+  bool result = base::ReadFileToString(path, content);
   if (!result) {
     result =
-        base::ReadFileToString(base::FilePath(path.value() + ".gz"), &content);
-    std::string uncompressed;
-    result = compression::GzipUncompress(content, &uncompressed);
-    content = std::move(uncompressed);
+        base::ReadFileToString(base::FilePath(path.value() + ".gz"), content);
+    result = compression::GzipUncompress(*content, content);
+  }
+  return result;
+}
+
+void ReadFile(const base::FilePath downloads,
+              const std::string& relative_path,
+              content::URLDataSource::GotDataCallback callback) {
+  base::FilePath path;
+  std::string content;
+  bool result = false;
+
+  // If chrome://flags#terminal-dev set on dev channel, check Downloads.
+  if (chrome::GetChannel() <= version_info::Channel::DEV &&
+      base::FeatureList::IsEnabled(chromeos::features::kTerminalDev)) {
+    path = downloads.Append("crosh_builtin").Append(relative_path);
+    result = ReadUncompressedOrGzip(path, &content);
+  }
+  if (!result) {
+    path = base::FilePath(kTerminalRoot).Append(relative_path);
+    result = ReadUncompressedOrGzip(path, &content);
   }
 
   // Terminal gets files from /usr/share/chromeos-assets/crosh-builtin.
@@ -99,7 +118,8 @@ TerminalSource::TerminalSource(Profile* profile,
     : profile_(profile),
       source_(source),
       default_file_(default_file),
-      ssh_allowed_(ssh_allowed) {
+      ssh_allowed_(ssh_allowed),
+      downloads_(file_manager::util::GetDownloadsFolderForProfile(profile)) {
   auto* webui_allowlist = WebUIAllowlist::GetOrCreate(profile);
   const url::Origin terminal_origin = url::Origin::Create(GURL(source));
   CHECK(!terminal_origin.opaque());
@@ -118,12 +138,6 @@ std::string TerminalSource::GetSource() {
   return source_;
 }
 
-#if !BUILDFLAG(OPTIMIZE_WEBUI)
-bool TerminalSource::AllowCaching() {
-  return false;
-}
-#endif
-
 void TerminalSource::StartDataRequest(
     const GURL& url,
     const content::WebContents::Getter& wc_getter,
@@ -141,7 +155,7 @@ void TerminalSource::StartDataRequest(
 
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&ReadFile, path, std::move(callback)));
+      base::BindOnce(&ReadFile, downloads_, path, std::move(callback)));
 }
 
 std::string TerminalSource::GetMimeType(const std::string& path) {

@@ -3055,6 +3055,9 @@ extern const char kSystemTransliterationPhysicalTypingDescription[];
 extern const char kQuickSettingsNetworkRevampName[];
 extern const char kQuickSettingsNetworkRevampDescription[];
 
+extern const char kTerminalDevName[];
+extern const char kTerminalDevDescription[];
+
 extern const char kTerminalSSHName[];
 extern const char kTerminalSSHDescription[];
 
