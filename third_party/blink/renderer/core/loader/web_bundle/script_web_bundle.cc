@@ -105,7 +105,7 @@ bool ScriptWebBundle::CanHandleRequest(const KURL& url) const {
     return false;
   if (!rule_.ResourcesOrScopesMatch(url))
     return false;
-  if (url.Protocol() == "urn" || url.Protocol() == "uuid-in-package")
+  if (url.Protocol() == "uuid-in-package")
     return true;
   DCHECK(bundle_loader_);
   if (!bundle_loader_->GetSecurityOrigin()->IsSameOriginWith(
