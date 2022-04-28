@@ -609,7 +609,7 @@ template("lacros_tast_tests") {
       # a Var is added to support pointing the tast tests to use a specified
       # pre-deployed lacros-chrome. The location is decided by:
       # https://source.chromium.org/chromium/chromium/src/+/main:third_party/chromite/scripts/deploy_chrome.py;l=80;drc=86f1234a4be8e9574442e076cdc835897f7bea61
-      tast_vars = [ "lacrosDeployedBinary=/usr/local/lacros-chrome" ]
+      tast_vars = [ "lacros.DeployedBinary=/usr/local/lacros-chrome" ]
 
       data_deps = _lacros_data_deps
 
