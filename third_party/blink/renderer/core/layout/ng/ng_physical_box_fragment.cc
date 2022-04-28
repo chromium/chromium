@@ -100,7 +100,8 @@ NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
           builder->Style().GetWritingDirection(), outer_size, inner_size),
       containing_block.RelativeOffset().ConvertToPhysical(
           builder->Style().GetWritingDirection(), outer_size, inner_size),
-      containing_block.Fragment(), containing_block.IsInsideColumnSpanner());
+      containing_block.Fragment(), containing_block.IsInsideColumnSpanner(),
+      containing_block.RequiresContentBeforeBreaking());
 }
 
 NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(

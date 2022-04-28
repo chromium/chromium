@@ -136,6 +136,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     const NGContainingBlock<LogicalOffset> fixedpos_containing_block;
     const NGInlineContainer<LogicalOffset> fixedpos_inline_container;
     bool inline_container = false;
+    bool requires_content_before_breaking = false;
 
     NodeInfo(NGBlockNode node,
              const NGConstraintSpace constraint_space,
@@ -146,7 +147,8 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
              bool is_fragmentainer_descendant,
              const NGContainingBlock<LogicalOffset>& fixedpos_containing_block,
              const NGInlineContainer<LogicalOffset>& fixedpos_inline_container,
-             bool inline_container)
+             bool inline_container,
+             bool requires_content_before_breaking)
         : node(node),
           constraint_space(constraint_space),
           static_position(static_position),
@@ -155,7 +157,8 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
           default_writing_direction(default_writing_direction),
           fixedpos_containing_block(fixedpos_containing_block),
           fixedpos_inline_container(fixedpos_inline_container),
-          inline_container(inline_container) {}
+          inline_container(inline_container),
+          requires_content_before_breaking(requires_content_before_breaking) {}
 
     void Trace(Visitor* visitor) const;
   };
@@ -285,7 +288,8 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       const LayoutUnit block_offset,
       const NGBlockBreakToken* break_token,
       const NGConstraintSpace* fragmentainer_constraint_space,
-      bool should_use_fixed_block_size);
+      bool should_use_fixed_block_size,
+      bool requires_content_before_breaking);
 
   // Performs layout on the OOFs stored in |pending_descendants| and
   // |fragmented_descendants|, adding them as children in the fragmentainer
