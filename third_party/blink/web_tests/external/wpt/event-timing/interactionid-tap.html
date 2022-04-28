@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<meta charset=utf-8 />
+<meta name="timeout" content="long">
+<title>Event Timing: interactionId-tap.</title>
+<button id='test'>Tap</button>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/resources/testdriver.js></script>
+<script src=/resources/testdriver-actions.js></script>
+<script src=/resources/testdriver-vendor.js></script>
+<script src=resources/event-timing-test-utils.js></script>
+
+<script>
+  let observedEntries = [];
+  let map = new Map();
+
+  function eventsForCheck(entry) {
+    if (entry.name === 'pointerdown' || entry.name === 'pointerup') {
+      map.set(entry.name, entry.interactionId);
+      return true;
+    }
+    return false;
+  }
+
+  async function tapOn(element_id) {
+    const element = document.getElementById(element_id);
+
+    const clickHandler = (e) => {
+      mainThreadBusy(200);
+    };
+
+    element.addEventListener("pointerdown", clickHandler);
+    element.addEventListener("pointerup", clickHandler);
+
+    let actions = new test_driver.Actions()
+      .addPointer("tapPointer", "touch")
+      .pointerMove(0, 0, { origin: element })
+      .pointerDown()
+      .pointerUp();
+    await actions.send();
+  }
+
+  async_test(function (t) {
+    assert_implements(window.PerformanceEventTiming, 'Event Timing is not supported.');
+
+    new PerformanceObserver(t.step_func(entryList => {
+      observedEntries = observedEntries.concat(entryList.getEntries().filter(eventsForCheck));
+
+      if (observedEntries.length < 2)
+        return;
+
+      assert_greater_than(map.get('pointerdown'), 0, 'Should have a non-trivial interactionId');
+      assert_greater_than(map.get('pointerup'), 0, 'Should have a non-trivial interactionId');
+      assert_equals(map.get('pointerdown'), map.get('pointerup'), 'Pointerdown and pointerup should have the same interactionId');
+      t.done();
+    })).observe({ type: "event" });
+
+    tapOn('test');
+  }, "Event Timing: compare event timing interactionId.");
+</script>
+
+</html>
