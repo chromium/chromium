@@ -714,10 +714,6 @@ const char kMultiProfileUserBehavior[] = "settings.multiprofile_user_behavior";
 // already.
 const char kFirstRunTutorialShown[] = "settings.first_run_tutorial_shown";
 
-// The total number of seconds that the machine has spent sitting on the
-// OOBE screen.
-const char kTimeOnOobe[] = "settings.time_on_oobe";
-
 // List of mounted file systems via the File System Provider API. Used to
 // restore them after a reboot.
 const char kFileSystemProviderMounted[] = "file_system_provider.mounted";

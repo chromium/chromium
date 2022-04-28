@@ -16,7 +16,6 @@
 // TODO(https://crbug.com/1164001): forward declare LanguageSwitchResult
 // after this file is moved to ash.
 #include "chrome/browser/ash/base/locale_util.h"
-#include "chrome/browser/ash/login/demo_mode/demo_mode_detector.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/chromevox_hint/chromevox_hint_detector.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
@@ -30,7 +29,6 @@ namespace ash {
 
 class WelcomeScreen : public BaseScreen,
                       public input_method::InputMethodManager::Observer,
-                      public DemoModeDetector::Observer,
                       public ChromeVoxHintDetector::Observer {
  public:
   using TView = WelcomeView;
@@ -183,8 +181,6 @@ class WelcomeScreen : public BaseScreen,
 
   WelcomeView* view_ = nullptr;
   ScreenExitCallback exit_callback_;
-
-  std::unique_ptr<DemoModeDetector> demo_mode_detector_;
 
   std::unique_ptr<ChromeVoxHintDetector> chromevox_hint_detector_;
 

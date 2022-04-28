@@ -380,8 +380,6 @@ void WelcomeScreen::ShowImpl() {
     return;
   }
 
-  demo_mode_detector_ = std::make_unique<DemoModeDetector>(
-      base::DefaultTickClock::GetInstance(), this);
   chromevox_hint_detector_ = std::make_unique<ChromeVoxHintDetector>(
       base::DefaultTickClock::GetInstance(), this);
   if (view_)
@@ -391,7 +389,6 @@ void WelcomeScreen::ShowImpl() {
 void WelcomeScreen::HideImpl() {
   if (view_)
     view_->Hide();
-  demo_mode_detector_.reset();
   CancelChromeVoxHintIdleDetection();
 }
 
@@ -536,8 +533,6 @@ void WelcomeScreen::InputMethodChanged(
 // WelcomeScreen, private:
 
 void WelcomeScreen::OnContinueButtonPressed() {
-  demo_mode_detector_.reset();
-
   if (switches::IsOsInstallAllowed())
     Exit(Result::NEXT_OS_INSTALL);
   else
@@ -545,12 +540,10 @@ void WelcomeScreen::OnContinueButtonPressed() {
 }
 
 void WelcomeScreen::OnSetupDemoMode() {
-  demo_mode_detector_.reset();
   Exit(Result::SETUP_DEMO);
 }
 
 void WelcomeScreen::OnEnableDebugging() {
-  demo_mode_detector_.reset();
   Exit(Result::ENABLE_DEBUGGING);
 }
 

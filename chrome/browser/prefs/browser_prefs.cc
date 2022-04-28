@@ -326,7 +326,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
-#include "chrome/browser/ash/login/demo_mode/demo_mode_detector.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_resources_remover.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
@@ -766,6 +765,11 @@ const char kStabilityRendererLaunchCount[] =
     "user_experience_metrics.stability.renderer_launch_count";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 04/2022.
+const char kTimeOnOobe[] = "settings.time_on_oobe";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1004,6 +1008,10 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterIntegerPref(kAccountManagerNumTimesWelcomeScreenShown, 0);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterIntegerPref(kTimeOnOobe, 0);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -1117,7 +1125,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
       RegisterLocalStatePrefs(registry);
   chromeos::bluetooth_config::DeviceNameManagerImpl::RegisterLocalStatePrefs(
       registry);
-  ash::DemoModeDetector::RegisterPrefs(registry);
   ash::DemoModeResourcesRemover::RegisterLocalStatePrefs(registry);
   ash::DemoSession::RegisterLocalStatePrefs(registry);
   ash::DemoSetupController::RegisterLocalStatePrefs(registry);
@@ -1955,6 +1962,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Added 04/2022
   profile_prefs->ClearPref(kAccountManagerNumTimesWelcomeScreenShown);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 04/2022
+  profile_prefs->ClearPref(kTimeOnOobe);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
