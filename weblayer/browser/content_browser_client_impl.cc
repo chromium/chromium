@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/content_browser_client_impl.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
@@ -392,12 +393,12 @@ bool ContentBrowserClientImpl::AllowWorkerWebLocks(
       url, CookieSettingsFactory::GetForBrowserContext(browser_context).get());
 }
 
-content::WebContentsViewDelegate*
+std::unique_ptr<content::WebContentsViewDelegate>
 ContentBrowserClientImpl::GetWebContentsViewDelegate(
     content::WebContents* web_contents) {
   performance_manager::PerformanceManagerRegistry::GetInstance()
       ->MaybeCreatePageNodeForWebContents(web_contents);
-  return new WebContentsViewDelegateImpl(web_contents);
+  return std::make_unique<WebContentsViewDelegateImpl>(web_contents);
 }
 
 bool ContentBrowserClientImpl::CanShutdownGpuProcessNowOnIOThread() {

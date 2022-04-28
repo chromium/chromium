@@ -85,7 +85,7 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
                            content::BrowserContext* browser_context,
                            const std::vector<content::GlobalRenderFrameHostId>&
                                render_frames) override;
-  content::WebContentsViewDelegate* GetWebContentsViewDelegate(
+  std::unique_ptr<content::WebContentsViewDelegate> GetWebContentsViewDelegate(
       content::WebContents* web_contents) override;
   bool CanShutdownGpuProcessNowOnIOThread() override;
   std::unique_ptr<content::DevToolsManagerDelegate>

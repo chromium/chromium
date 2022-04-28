@@ -54,13 +54,14 @@ class CONTENT_EXPORT WebContentsViewAura
       public aura::client::DragDropDelegate {
  public:
   WebContentsViewAura(WebContentsImpl* web_contents,
-                      WebContentsViewDelegate* delegate);
+                      std::unique_ptr<WebContentsViewDelegate> delegate);
+  ~WebContentsViewAura() override;
 
   WebContentsViewAura(const WebContentsViewAura&) = delete;
   WebContentsViewAura& operator=(const WebContentsViewAura&) = delete;
 
   // Allow the WebContentsViewDelegate to be set explicitly.
-  void SetDelegateForTesting(WebContentsViewDelegate* delegate);
+  void SetDelegateForTesting(std::unique_ptr<WebContentsViewDelegate> delegate);
 
   // Set a flag to pass nullptr as the parent_view argument to
   // RenderWidgetHostViewAura::InitAsChild().
@@ -140,8 +141,6 @@ class CONTENT_EXPORT WebContentsViewAura
                            StartDragFromPrivilegedWebContents);
 
   class WindowObserver;
-
-  ~WebContentsViewAura() override;
 
   // Utility to fill a DropData object from ui::OSExchangeData.
   void PrepareDropData(DropData* drop_data,

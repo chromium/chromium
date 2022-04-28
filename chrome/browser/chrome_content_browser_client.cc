@@ -275,6 +275,7 @@
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/common/content_descriptors.h"
@@ -1548,7 +1549,7 @@ ChromeContentBrowserClient::GetStoragePartitionConfigForSite(
   return storage_partition_config;
 }
 
-content::WebContentsViewDelegate*
+std::unique_ptr<content::WebContentsViewDelegate>
 ChromeContentBrowserClient::GetWebContentsViewDelegate(
     content::WebContents* web_contents) {
   if (auto* registry =

@@ -81,8 +81,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuUiTest,
   // because this wouldn't exercise the product code responsible for the
   // https://crbug.com/1257907 bug (it wouldn't go through
   // ChromeWebContentsViewDelegateViews::ShowContextMenu).
-  std::unique_ptr<content::WebContentsViewDelegate> view_delegate(
-      CreateWebContentsViewDelegate(web_contents));
+  std::unique_ptr<content::WebContentsViewDelegate> view_delegate =
+      CreateWebContentsViewDelegate(web_contents);
   view_delegate->ShowContextMenu(*subframe, params);
 
   // Simulate using the context menu to "Open link in new tab".

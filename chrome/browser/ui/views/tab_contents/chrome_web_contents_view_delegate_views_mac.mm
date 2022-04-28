@@ -135,7 +135,7 @@ ChromeWebContentsViewDelegateViewsMac::GetFocusHelper() const {
   return helper;
 }
 
-content::WebContentsViewDelegate* CreateWebContentsViewDelegate(
+std::unique_ptr<content::WebContentsViewDelegate> CreateWebContentsViewDelegate(
     content::WebContents* web_contents) {
-  return new ChromeWebContentsViewDelegateViewsMac(web_contents);
+  return std::make_unique<ChromeWebContentsViewDelegateViewsMac>(web_contents);
 }

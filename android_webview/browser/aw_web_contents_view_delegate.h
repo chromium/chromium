@@ -15,8 +15,7 @@ namespace android_webview {
 
 class AwWebContentsViewDelegate : public content::WebContentsViewDelegate {
  public:
-  static content::WebContentsViewDelegate* Create(
-      content::WebContents* web_contents);
+  explicit AwWebContentsViewDelegate(content::WebContents* web_contents);
 
   AwWebContentsViewDelegate(const AwWebContentsViewDelegate&) = delete;
   AwWebContentsViewDelegate& operator=(const AwWebContentsViewDelegate&) =
@@ -26,9 +25,6 @@ class AwWebContentsViewDelegate : public content::WebContentsViewDelegate {
 
   // content::WebContentsViewDelegate implementation.
   content::WebDragDestDelegate* GetDragDestDelegate() override;
-
- private:
-  AwWebContentsViewDelegate(content::WebContents* web_contents);
 };
 
 }  // namespace android_webview

@@ -386,7 +386,7 @@ class PrintContentBrowserClient : public ChromeContentBrowserClient {
 
  private:
   // ChromeContentBrowserClient implementation:
-  content::WebContentsViewDelegate* GetWebContentsViewDelegate(
+  std::unique_ptr<content::WebContentsViewDelegate> GetWebContentsViewDelegate(
       content::WebContents* web_contents) override {
     preview_dialog_ = web_contents;
     observer_ = std::make_unique<WebUIJsInjectionReadyObserver>(

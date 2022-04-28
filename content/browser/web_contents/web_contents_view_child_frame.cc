@@ -4,6 +4,8 @@
 
 #include "content/browser/web_contents/web_contents_view_child_frame.h"
 
+#include <utility>
+
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
@@ -21,10 +23,9 @@ namespace content {
 
 WebContentsViewChildFrame::WebContentsViewChildFrame(
     WebContentsImpl* web_contents,
-    WebContentsViewDelegate* delegate,
+    std::unique_ptr<WebContentsViewDelegate> delegate,
     RenderViewHostDelegateView** delegate_view)
-    : web_contents_(web_contents),
-    delegate_(delegate) {
+    : web_contents_(web_contents), delegate_(std::move(delegate)) {
   *delegate_view = this;
 }
 

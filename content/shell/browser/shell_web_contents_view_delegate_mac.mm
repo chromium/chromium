@@ -4,7 +4,9 @@
 
 #include "content/shell/browser/shell_web_contents_view_delegate.h"
 
-#import  <Cocoa/Cocoa.h>
+#import <Cocoa/Cocoa.h>
+
+#include <memory>
 
 #include "base/command_line.h"
 #include "content/public/browser/context_menu_params.h"
@@ -81,9 +83,9 @@ NSMenuItem* MakeContextMenuItem(NSString* title,
 
 namespace content {
 
-WebContentsViewDelegate* CreateShellWebContentsViewDelegate(
-  WebContents* web_contents) {
-  return new ShellWebContentsViewDelegate(web_contents);
+std::unique_ptr<WebContentsViewDelegate> CreateShellWebContentsViewDelegate(
+    WebContents* web_contents) {
+  return std::make_unique<ShellWebContentsViewDelegate>(web_contents);
 }
 
 ShellWebContentsViewDelegate::ShellWebContentsViewDelegate(

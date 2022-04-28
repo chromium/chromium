@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/android/tab_contents/chrome_web_contents_view_delegate_android.h"
 
+#include <memory>
+
 #include "base/notreached.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "content/public/browser/context_menu_params.h"
@@ -45,7 +47,7 @@ void ChromeWebContentsViewDelegateAndroid::DismissContextMenu() {
     helper->DismissContextMenu();
 }
 
-content::WebContentsViewDelegate* CreateWebContentsViewDelegate(
+std::unique_ptr<content::WebContentsViewDelegate> CreateWebContentsViewDelegate(
     content::WebContents* web_contents) {
-  return new ChromeWebContentsViewDelegateAndroid(web_contents);
+  return std::make_unique<ChromeWebContentsViewDelegateAndroid>(web_contents);
 }

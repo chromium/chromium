@@ -4,16 +4,12 @@
 
 #include "android_webview/browser/aw_web_contents_view_delegate.h"
 
+#include <memory>
+
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/color_space.h"
 
 namespace android_webview {
-
-// static
-content::WebContentsViewDelegate* AwWebContentsViewDelegate::Create(
-    content::WebContents* web_contents) {
-  return new AwWebContentsViewDelegate(web_contents);
-}
 
 AwWebContentsViewDelegate::AwWebContentsViewDelegate(
     content::WebContents* web_contents) {

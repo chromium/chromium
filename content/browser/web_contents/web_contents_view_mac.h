@@ -57,7 +57,7 @@ class WebContentsViewMac : public WebContentsView,
   // our lifetime. This doesn't need to be the case, but is this way currently
   // because that's what was easiest when they were split.
   WebContentsViewMac(WebContentsImpl* web_contents,
-                     WebContentsViewDelegate* delegate);
+                     std::unique_ptr<WebContentsViewDelegate> delegate);
 
   WebContentsViewMac(const WebContentsViewMac&) = delete;
   WebContentsViewMac& operator=(const WebContentsViewMac&) = delete;

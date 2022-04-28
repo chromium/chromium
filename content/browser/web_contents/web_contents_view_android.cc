@@ -4,6 +4,9 @@
 
 #include "content/browser/web_contents/web_contents_view_android.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -102,21 +105,21 @@ void SynchronousCompositor::SetClientForWebContents(
     rwhv->SetSynchronousCompositorClient(client);
 }
 
-WebContentsView* CreateWebContentsView(
+std::unique_ptr<WebContentsView> CreateWebContentsView(
     WebContentsImpl* web_contents,
-    WebContentsViewDelegate* delegate,
+    std::unique_ptr<WebContentsViewDelegate> delegate,
     RenderViewHostDelegateView** render_view_host_delegate_view) {
-  WebContentsViewAndroid* rv = new WebContentsViewAndroid(
-      web_contents, delegate);
-  *render_view_host_delegate_view = rv;
+  auto rv = std::make_unique<WebContentsViewAndroid>(web_contents,
+                                                     std::move(delegate));
+  *render_view_host_delegate_view = rv.get();
   return rv;
 }
 
 WebContentsViewAndroid::WebContentsViewAndroid(
     WebContentsImpl* web_contents,
-    WebContentsViewDelegate* delegate)
+    std::unique_ptr<WebContentsViewDelegate> delegate)
     : web_contents_(web_contents),
-      delegate_(delegate),
+      delegate_(std::move(delegate)),
       view_(ui::ViewAndroid::LayoutType::NORMAL),
       synchronous_compositor_client_(nullptr) {
   view_.SetLayer(cc::Layer::Create());

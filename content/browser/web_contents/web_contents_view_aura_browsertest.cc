@@ -647,11 +647,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, Drop_DeepScanOK) {
   drag_dest_delegate_.Reset();
   view->SetDragDestDelegateForTesting(&drag_dest_delegate_);
 
-  // The view takes ownership of the delegate.  The delegate simulates that
-  // the scans passed.
-  auto* delegate = new TestWebContentsViewDelegate(
+  auto delegate = std::make_unique<TestWebContentsViewDelegate>(
       WebContentsViewDelegate::DropCompletionResult::kContinue);
-  view->SetDelegateForTesting(delegate);
+  TestWebContentsViewDelegate* delegate_ptr = delegate.get();
+  view->SetDelegateForTesting(std::move(delegate));
 
   std::unique_ptr<ui::OSExchangeData> data =
       std::make_unique<ui::OSExchangeData>();
@@ -689,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, Drop_DeepScanOK) {
   std::move(drop_cb).Run(std::move(new_data), output_drag_op);
   EXPECT_FALSE(drag_dest_delegate_.GetOnDropCalled());
 
-  delegate->FinishScan();
+  delegate_ptr->FinishScan();
   run_loop.Run();
 
   EXPECT_TRUE(drag_dest_delegate_.GetOnDropCalled());
@@ -706,11 +705,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, Drop_DeepScanBad) {
   drag_dest_delegate_.Reset();
   view->SetDragDestDelegateForTesting(&drag_dest_delegate_);
 
-  // The view takes ownership of the delegate.  The delegate simulates that
-  // the scans failed.
-  auto* delegate = new TestWebContentsViewDelegate(
+  auto delegate = std::make_unique<TestWebContentsViewDelegate>(
       WebContentsViewDelegate::DropCompletionResult::kAbort);
-  view->SetDelegateForTesting(delegate);
+  TestWebContentsViewDelegate* delegate_ptr = delegate.get();
+  view->SetDelegateForTesting(std::move(delegate));
 
   std::unique_ptr<ui::OSExchangeData> data =
       std::make_unique<ui::OSExchangeData>();
@@ -748,7 +746,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, Drop_DeepScanBad) {
   std::move(drop_cb).Run(std::move(new_data), output_drag_op);
   EXPECT_FALSE(drag_dest_delegate_.GetOnDropCalled());
 
-  delegate->FinishScan();
+  delegate_ptr->FinishScan();
   run_loop.Run();
 
   EXPECT_FALSE(drag_dest_delegate_.GetOnDropCalled());

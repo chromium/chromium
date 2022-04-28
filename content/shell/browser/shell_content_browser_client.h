@@ -62,7 +62,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
                                       int child_process_id) override;
   std::string GetAcceptLangs(BrowserContext* context) override;
   std::string GetDefaultDownloadName() override;
-  WebContentsViewDelegate* GetWebContentsViewDelegate(
+  std::unique_ptr<WebContentsViewDelegate> GetWebContentsViewDelegate(
       WebContents* web_contents) override;
   bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
                                              const GURL& url) override;

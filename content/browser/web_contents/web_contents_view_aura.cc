@@ -93,12 +93,13 @@
 
 namespace content {
 
-WebContentsView* CreateWebContentsView(
+std::unique_ptr<WebContentsView> CreateWebContentsView(
     WebContentsImpl* web_contents,
-    WebContentsViewDelegate* delegate,
+    std::unique_ptr<WebContentsViewDelegate> delegate,
     RenderViewHostDelegateView** render_view_host_delegate_view) {
-  WebContentsViewAura* rv = new WebContentsViewAura(web_contents, delegate);
-  *render_view_host_delegate_view = rv;
+  auto rv =
+      std::make_unique<WebContentsViewAura>(web_contents, std::move(delegate));
+  *render_view_host_delegate_view = rv.get();
   return rv;
 }
 
@@ -680,24 +681,17 @@ void WebContentsViewAura::InstallCreateHookForTests(
 ////////////////////////////////////////////////////////////////////////////////
 // WebContentsViewAura, public:
 
-WebContentsViewAura::WebContentsViewAura(WebContentsImpl* web_contents,
-                                         WebContentsViewDelegate* delegate)
+WebContentsViewAura::WebContentsViewAura(
+    WebContentsImpl* web_contents,
+    std::unique_ptr<WebContentsViewDelegate> delegate)
     : web_contents_(web_contents),
-      delegate_(delegate),
+      delegate_(std::move(delegate)),
       current_drag_op_(DragOperation::kNone),
       drag_dest_delegate_(nullptr),
       current_rvh_for_drag_(ChildProcessHost::kInvalidUniqueID,
                             MSG_ROUTING_NONE),
       drag_in_progress_(false),
       init_rwhv_with_null_parent_for_testing_(false) {}
-
-void WebContentsViewAura::SetDelegateForTesting(
-    WebContentsViewDelegate* delegate) {
-  delegate_.reset(delegate);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// WebContentsViewAura, private:
 
 WebContentsViewAura::~WebContentsViewAura() {
   if (!window_)
@@ -709,6 +703,14 @@ WebContentsViewAura::~WebContentsViewAura() {
   // delete it here.
   window_.reset();
 }
+
+void WebContentsViewAura::SetDelegateForTesting(
+    std::unique_ptr<WebContentsViewDelegate> delegate) {
+  delegate_ = std::move(delegate);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// WebContentsViewAura, private:
 
 void WebContentsViewAura::PrepareDropData(
     DropData* drop_data,

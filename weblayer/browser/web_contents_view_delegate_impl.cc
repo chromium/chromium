@@ -4,6 +4,8 @@
 
 #include "weblayer/browser/web_contents_view_delegate_impl.h"
 
+#include <memory>
+
 #include "weblayer/browser/tab_impl.h"
 
 namespace weblayer {
@@ -22,9 +24,9 @@ void WebContentsViewDelegateImpl::ShowContextMenu(
     tab->ShowContextMenu(params);
 }
 
-content::WebContentsViewDelegate* CreateWebContentsViewDelegate(
+std::unique_ptr<content::WebContentsViewDelegate> CreateWebContentsViewDelegate(
     content::WebContents* web_contents) {
-  return new WebContentsViewDelegateImpl(web_contents);
+  return std::make_unique<WebContentsViewDelegateImpl>(web_contents);
 }
 
 }  // namespace weblayer

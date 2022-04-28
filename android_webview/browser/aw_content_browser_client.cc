@@ -277,10 +277,10 @@ AwContentBrowserClient::CreateBrowserMainParts(
   return std::make_unique<AwBrowserMainParts>(this);
 }
 
-content::WebContentsViewDelegate*
+std::unique_ptr<content::WebContentsViewDelegate>
 AwContentBrowserClient::GetWebContentsViewDelegate(
     content::WebContents* web_contents) {
-  return AwWebContentsViewDelegate::Create(web_contents);
+  return std::make_unique<AwWebContentsViewDelegate>(web_contents);
 }
 
 void AwContentBrowserClient::RenderProcessWillLaunch(

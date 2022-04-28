@@ -5,12 +5,14 @@
 #ifndef CONTENT_SHELL_BROWSER_SHELL_WEB_CONTENTS_VIEW_DELEGATE_CREATOR_H_
 #define CONTENT_SHELL_BROWSER_SHELL_WEB_CONTENTS_VIEW_DELEGATE_CREATOR_H_
 
+#include <memory>
+
 namespace content {
 
 class WebContents;
 class WebContentsViewDelegate;
 
-WebContentsViewDelegate* CreateShellWebContentsViewDelegate(
+std::unique_ptr<WebContentsViewDelegate> CreateShellWebContentsViewDelegate(
     WebContents* web_contents);
 
 }  // namespace content

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "content/shell/browser/shell_web_contents_view_delegate.h"
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
@@ -60,9 +60,9 @@ class ContextMenuModel : public ui::SimpleMenuModel,
 
 }  // namespace
 
-WebContentsViewDelegate* CreateShellWebContentsViewDelegate(
+std::unique_ptr<WebContentsViewDelegate> CreateShellWebContentsViewDelegate(
     WebContents* web_contents) {
-  return new ShellWebContentsViewDelegate(web_contents);
+  return std::make_unique<ShellWebContentsViewDelegate>(web_contents);
 }
 
 ShellWebContentsViewDelegate::ShellWebContentsViewDelegate(

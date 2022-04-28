@@ -303,9 +303,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool IsShuttingDown();
 
   // If content creates the WebContentsView implementation, it will ask the
-  // embedder to return an (optional) delegate to customize it. The view will
-  // own the delegate.
-  virtual WebContentsViewDelegate* GetWebContentsViewDelegate(
+  // embedder to return an (optional) delegate to customize it.
+  virtual std::unique_ptr<WebContentsViewDelegate> GetWebContentsViewDelegate(
       WebContents* web_contents);
 
   // Allow embedder control GPU process launch retry on failure behavior.

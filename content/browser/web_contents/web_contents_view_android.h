@@ -34,7 +34,7 @@ class WebContentsViewAndroid : public WebContentsView,
                                public ui::EventHandlerAndroid {
  public:
   WebContentsViewAndroid(WebContentsImpl* web_contents,
-                         WebContentsViewDelegate* delegate);
+                         std::unique_ptr<WebContentsViewDelegate> delegate);
 
   WebContentsViewAndroid(const WebContentsViewAndroid&) = delete;
   WebContentsViewAndroid& operator=(const WebContentsViewAndroid&) = delete;

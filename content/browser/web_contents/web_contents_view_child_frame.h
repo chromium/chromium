@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_WEB_CONTENTS_WEB_CONTENTS_VIEW_CHILD_FRAME_H_
 #define CONTENT_BROWSER_WEB_CONTENTS_WEB_CONTENTS_VIEW_CHILD_FRAME_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
@@ -21,7 +23,7 @@ class WebContentsViewChildFrame : public WebContentsView,
                                   public RenderViewHostDelegateView {
  public:
   WebContentsViewChildFrame(WebContentsImpl* web_contents,
-                            WebContentsViewDelegate* delegate,
+                            std::unique_ptr<WebContentsViewDelegate> delegate,
                             RenderViewHostDelegateView** delegate_view);
 
   WebContentsViewChildFrame(const WebContentsViewChildFrame&) = delete;

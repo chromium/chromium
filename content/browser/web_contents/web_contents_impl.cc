@@ -101,6 +101,7 @@
 #include "content/browser/starscan_load_observer.h"
 #include "content/browser/wake_lock/wake_lock_context_host.h"
 #include "content/browser/web_contents/java_script_dialog_commit_deferring_condition.h"
+#include "content/browser/web_contents/web_contents_view.h"
 #include "content/browser/web_contents/web_contents_view_child_frame.h"
 #include "content/browser/web_package/save_as_web_bundle_job.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
@@ -136,6 +137,7 @@
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -2579,9 +2581,9 @@ std::unique_ptr<WebContents> WebContentsImpl::DetachFromOuterWebContents() {
                                      ->current_frame_host()
                                      ->GetSiteInstance()
                                      ->group());
-  view_.reset(CreateWebContentsView(
+  view_ = CreateWebContentsView(
       this, GetContentClient()->browser()->GetWebContentsViewDelegate(this),
-      &render_view_host_delegate_view_));
+      &render_view_host_delegate_view_);
   view_->CreateView(nullptr);
   std::unique_ptr<WebContents> web_contents =
       node_.DisconnectFromOuterWebContents();
@@ -3062,15 +3064,15 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
       site_instance.get(), params.renderer_initiated_creation,
       params.main_frame_name, GetOpener(), primary_main_frame_policy);
 
-  WebContentsViewDelegate* delegate =
+  std::unique_ptr<WebContentsViewDelegate> delegate =
       GetContentClient()->browser()->GetWebContentsViewDelegate(this);
 
   if (browser_plugin_guest_) {
     view_ = std::make_unique<WebContentsViewChildFrame>(
-        this, delegate, &render_view_host_delegate_view_);
+        this, std::move(delegate), &render_view_host_delegate_view_);
   } else {
-    view_.reset(CreateWebContentsView(this, delegate,
-                                      &render_view_host_delegate_view_));
+    view_ = CreateWebContentsView(this, std::move(delegate),
+                                  &render_view_host_delegate_view_);
   }
   CHECK(render_view_host_delegate_view_);
   CHECK(view_.get());

@@ -99,8 +99,8 @@ bool ContentBrowserClient::IsBrowserStartupComplete() {
 
 void ContentBrowserClient::SetBrowserStartupIsCompleteForTesting() {}
 
-WebContentsViewDelegate* ContentBrowserClient::GetWebContentsViewDelegate(
-    WebContents* web_contents) {
+std::unique_ptr<WebContentsViewDelegate>
+ContentBrowserClient::GetWebContentsViewDelegate(WebContents* web_contents) {
   return nullptr;
 }
 
