@@ -5808,12 +5808,15 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
     return;
   }
 
-  // The Image-based upload path may still be used for WebGL-rendered
-  // canvases in the case of driver bug workarounds
-  // (e.g. CanUseTexImageViaGPU returning false).
+  // If the source is a WebGL context, then that context can blit its buffer
+  // directly into a texture in this context. This path does not perform color
+  // space conversion, so only use it if the source and unpack color spaces are
+  // the same.
   if (auto* source_canvas_webgl_context = DynamicTo<WebGLRenderingContextBase>(
           context_host->RenderingContext())) {
-    if (CanUseTexImageViaGPU(params)) {
+    if (CanUseTexImageViaGPU(params) &&
+        source_canvas_webgl_context->drawing_buffer_color_space_ ==
+            unpack_color_space_) {
       TexImageViaGPU(params, nullptr, source_canvas_webgl_context);
       return;
     }
@@ -5963,6 +5966,11 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     return;
   }
 
+  // Paths that use the PaintCanvasVideoRenderer assume the target is sRGB, and
+  // produce incorrect results when the unpack color space is not sRGB.
+  const bool unpack_color_space_is_srgb =
+      unpack_color_space_ == PredefinedColorSpace::kSRGB;
+
   // The CopyTexImage fast paths can't handle orientation, so if a non-default
   // orientation is provided, we must disable them.
   const auto transform = media_video_frame->metadata().transformation.value_or(
@@ -5984,7 +5992,8 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
       params.function_id == kTexImage2D && source_image_rect_is_default &&
       params.depth.value_or(1) == 1 && GL_TEXTURE_2D == params.target &&
       (have_image_external_essl3 || !may_need_image_external_essl3) &&
-      CanUseTexImageViaGPU(params) && transform == media::kNoTransformation;
+      CanUseTexImageViaGPU(params) && transform == media::kNoTransformation &&
+      unpack_color_space_is_srgb;
 
 #if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/1227921): When OOP GPU rasterization is disabled, uploading
@@ -6052,7 +6061,8 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   }
 
   if (source_image_rect_is_default && media_video_frame->IsMappable() &&
-      media_video_frame->format() == media::PIXEL_FORMAT_Y16) {
+      media_video_frame->format() == media::PIXEL_FORMAT_Y16 &&
+      unpack_color_space_is_srgb) {
     // Try using optimized CPU-GPU path for some formats: e.g. Y16 and Y8. It
     // leaves early for other formats or if frame is stored on GPU.
     ScopedUnpackParametersResetRestore unpack_params(
