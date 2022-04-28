@@ -56,6 +56,7 @@ namespace {
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierPrivacyContent = kSectionIdentifierEnumZero,
+  SectionIdentifierSafeBrowsing,
   SectionIdentifierWebServices,
   SectionIdentifierIncognitoAuth,
 };
@@ -170,6 +171,9 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierPrivacyContent];
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
+    [model addSectionWithIdentifier:SectionIdentifierSafeBrowsing];
+  }
   [model addSectionWithIdentifier:SectionIdentifierWebServices];
   [model addSectionWithIdentifier:SectionIdentifierIncognitoAuth];
 
@@ -180,11 +184,13 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   // Privacy Safe Browsing item.
   if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
     [model addItem:[self safeBrowsingDetailItem]
-        toSectionWithIdentifier:SectionIdentifierPrivacyContent];
+        toSectionWithIdentifier:SectionIdentifierSafeBrowsing];
+    [model setFooter:[self showPrivacyFooterItem]
+        forSectionWithIdentifier:SectionIdentifierIncognitoAuth];
+  } else {
+    [model setFooter:[self showPrivacyFooterItem]
+        forSectionWithIdentifier:SectionIdentifierPrivacyContent];
   }
-
-  [model setFooter:[self showPrivacyFooterItem]
-      forSectionWithIdentifier:SectionIdentifierPrivacyContent];
 
   // Web Services item.
   [model addItem:[self handoffDetailItem]
