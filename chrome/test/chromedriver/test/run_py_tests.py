@@ -2707,7 +2707,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     """
     def waitAndRespond():
       # Send iframe contents slowly
-      time.sleep(2)
+      time.sleep(3)
       self._sync_server.RespondWithContent(
         b'<html><div id=iframediv>IFrame contents</div></html>')
 
