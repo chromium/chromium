@@ -285,8 +285,17 @@ void DevToolsSession::DispatchProtocolMessage(
   std::string session_id(dispatchable.SessionId().begin(),
                          dispatchable.SessionId().end());
   auto it = child_sessions_.find(session_id);
-  if (it == child_sessions_.end())
+  if (it == child_sessions_.end()) {
+    auto error = crdtp::DispatchResponse::SessionNotFound(
+        "Session with given id not found.");
+    DispatchProtocolMessageToClient(
+        (dispatchable.HasCallId()
+             ? crdtp::CreateErrorResponse(dispatchable.CallId(),
+                                          std::move(error))
+             : crdtp::CreateErrorNotification(std::move(error)))
+            ->Serialize());
     return;
+  }
   DevToolsSession* session = it->second;
   DCHECK(!session->proxy_delegate_);
   session->DispatchProtocolMessageInternal(std::move(dispatchable), message);
