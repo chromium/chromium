@@ -1915,7 +1915,14 @@ class WebAppBrowserTest_FileHandler : public WebAppBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, RegKeysFileExtension) {
+// TODO(crbug.com/1320285): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RegKeysFileExtension DISABLED_RegKeysFileExtension
+#else
+#define MAYBE_RegKeysFileExtension RegKeysFileExtension
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
+                       MAYBE_RegKeysFileExtension) {
   os_hooks_suppress_.reset();
   base::ScopedAllowBlockingForTesting allow_blocking;
 
