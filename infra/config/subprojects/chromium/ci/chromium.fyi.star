@@ -177,18 +177,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "fuchsia-fyi-arm64-femu",
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "fuchsia|a64",
-            short_name = "femu",
-        ),
-    ],
-    notifies = ["cr-fuchsia"],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
-)
-
-ci.builder(
     name = "fuchsia-fyi-arm64-rel",
     console_view_entry = [
         consoles.console_view_entry(

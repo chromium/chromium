@@ -125,10 +125,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "fuchsia-fyi-arm64-femu",
-)
-
-try_.builder(
     name = "fuchsia-fyi-arm64-rel",
 )
 

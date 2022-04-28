@@ -3090,21 +3090,6 @@
           'linux-focal',
         ],
       },
-      'fuchsia-fyi-arm64-femu': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'fuchsia_web_engine_non_graphical_gtests',
-          'isolated_scripts': 'fuchsia_isolated_scripts',
-        },
-        'mixins': [
-          'arm64',
-          'docker',
-          'fuchsia-femu',
-          'linux-focal',
-        ],
-      },
       'fuchsia-fyi-arm64-rel': {
         'additional_compile_targets': [
           'all',

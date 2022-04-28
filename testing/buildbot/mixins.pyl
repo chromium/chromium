@@ -450,13 +450,6 @@
       ],
     },
   },
-  'fuchsia-femu': {
-    '$mixin_append': {
-      'args': [
-        '--device=aemu',
-      ],
-    },
-  },
   'fuchsia-test-pool': {
     # This pool is dedicated to test the test infra of fuchsia in chromium.
     'swarming': {
