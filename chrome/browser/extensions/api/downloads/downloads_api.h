@@ -406,7 +406,7 @@ class ExtensionDownloadsEventRouter
                      const std::string& event_name,
                      bool include_incognito,
                      Event::WillDispatchCallback will_dispatch_callback,
-                     std::unique_ptr<base::Value> json_arg);
+                     base::Value json_arg);
 
   // extensions::ExtensionRegistryObserver.
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
