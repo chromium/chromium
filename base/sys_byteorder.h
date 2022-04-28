@@ -30,7 +30,7 @@ inline uint16_t ByteSwap(uint16_t x) {
 #endif
 }
 
-inline uint32_t ByteSwap(uint32_t x) {
+inline constexpr uint32_t ByteSwap(uint32_t x) {
 #if defined(COMPILER_MSVC) && !defined(__clang__)
   return _byteswap_ulong(x);
 #else
