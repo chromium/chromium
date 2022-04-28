@@ -518,6 +518,17 @@ void FileSystemAccessFileHandleImpl::DidVerifyHasWritePermissions(
       std::move(callback));
 }
 
+storage::FileSystemURL FileSystemAccessFileHandleImpl::GetSwapURL(
+    const base::FilePath& swap_path) {
+  storage::FileSystemURL swap_url =
+      manager()->context()->CreateCrackedFileSystemURL(
+          url().storage_key(), url().mount_type(), swap_path);
+  if (url().bucket()) {
+    swap_url.SetBucket(url().bucket().value());
+  }
+  return swap_url;
+}
+
 void FileSystemAccessFileHandleImpl::CreateSwapFile(
     int count,
     bool keep_existing_data,
@@ -556,9 +567,7 @@ void FileSystemAccessFileHandleImpl::CreateSwapFile(
 
   // First attempt to just create the swap file in the same file system as
   // this file.
-  storage::FileSystemURL swap_url =
-      manager()->context()->CreateCrackedFileSystemURL(
-          url().storage_key(), url().mount_type(), swap_path);
+  storage::FileSystemURL swap_url = GetSwapURL(swap_path);
   DCHECK(swap_url.is_valid());
 
   manager()->DoFileSystemOperation(

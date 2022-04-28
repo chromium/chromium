@@ -64,6 +64,10 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
       override;
 
   void set_max_swap_files_for_testing(int max) { max_swap_files_ = max; }
+  storage::FileSystemURL get_swap_url_for_testing(
+      const base::FilePath& swap_path) {
+    return GetSwapURL(swap_path);
+  }
 
  private:
   void DidGetMetaDataForBlob(AsBlobCallback callback,
@@ -77,6 +81,7 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
                                     bool auto_close,
                                     CreateFileWriterCallback callback,
                                     bool can_write);
+  storage::FileSystemURL GetSwapURL(const base::FilePath& swap_path);
   void CreateSwapFile(
       int count,
       bool keep_existing_data,

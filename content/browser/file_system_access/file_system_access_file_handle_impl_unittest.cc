@@ -255,6 +255,38 @@ TEST_F(FileSystemAccessFileHandleImplTest, Remove_HasWriteAccess) {
   loop.Run();
 }
 
+TEST_F(FileSystemAccessFileHandleImplTest, GetSwapURL) {
+  const base::FilePath test_path =
+      base::FilePath::FromUTF8Unsafe("test.crswap");
+
+  // Default case (empty bucket).
+  auto default_handle = GetHandleWithPermissions(test_path, true, true);
+  storage::FileSystemURL swap_url =
+      default_handle->get_swap_url_for_testing(test_path);
+  EXPECT_EQ(swap_url.bucket(), absl::nullopt);
+
+  // Custom bucket case.
+  const auto custom_bucket = storage::BucketLocator(
+      storage::BucketId(1),
+      blink::StorageKey::CreateFromStringForTesting("test.crswap"),
+      blink::mojom::StorageType::kTemporary, /*is_default=*/false);
+  FileSystemURL base_url = file_system_context_->CreateCrackedFileSystemURL(
+      test_src_storage_key_, storage::kFileSystemTypeTest, test_path);
+  base_url.SetBucket(custom_bucket);
+  // Create a custom FileSystemAccessFileHandleImpl for the modified
+  // FileSystemURL.
+  const auto bucket_handle = std::make_unique<FileSystemAccessFileHandleImpl>(
+      manager_.get(),
+      FileSystemAccessManagerImpl::BindingContext(
+          test_src_storage_key_, test_src_url_, /*worker_process_id=J*/ 1),
+      base_url,
+      FileSystemAccessManagerImpl::SharedHandleState(
+          /*read_grant=*/allow_grant_,
+          /*write_grant=*/allow_grant_));
+  swap_url = bucket_handle->get_swap_url_for_testing(test_path);
+  ASSERT_EQ(swap_url.bucket(), custom_bucket);
+}
+
 TEST_F(FileSystemAccessAccessHandleTest, OpenAccessHandle) {
   base::RunLoop loop;
   handle_->OpenAccessHandle(
