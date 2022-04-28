@@ -760,7 +760,7 @@ def _bc_state():
             elif not parent:
                 fail(
                     "builder {} is triggered by {} which does not have a builder spec"
-                        .format(_builder_name(node), triggerers[0]),
+                        .format(_builder_name(node), list(triggerers)[0]),
                     node.trace,
                 )
         elif execution_mode == _execution_mode.COMPILE_AND_TEST:
