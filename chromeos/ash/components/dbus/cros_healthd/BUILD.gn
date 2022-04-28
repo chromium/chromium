@@ -24,7 +24,5 @@ component("cros_healthd") {
     "cros_healthd_client.h",
     "fake_cros_healthd_client.cc",
     "fake_cros_healthd_client.h",
-    "fake_cros_healthd_service.cc",
-    "fake_cros_healthd_service.h",
   ]
 }

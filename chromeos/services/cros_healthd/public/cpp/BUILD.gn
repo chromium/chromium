@@ -41,7 +41,6 @@ source_set("unit_tests") {
   deps = [
     ":cpp",
     "//base/test:test_support",
-    "//chromeos/ash/components/dbus/cros_healthd",
     "//chromeos/services/cros_healthd/public/mojom",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",

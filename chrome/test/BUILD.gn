@@ -4029,7 +4029,6 @@ if (!is_android) {
         "//chromeos/ash/components/dbus/authpolicy",
         "//chromeos/ash/components/dbus/biod",
         "//chromeos/ash/components/dbus/biod:biod_proto",
-        "//chromeos/ash/components/dbus/cros_healthd",
         "//chromeos/ash/components/dbus/rmad:rmad",
         "//chromeos/ash/components/dbus/services:test_support",
         "//chromeos/ash/components/dbus/system_clock",
