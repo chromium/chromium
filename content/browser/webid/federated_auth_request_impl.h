@@ -62,6 +62,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   void LogoutRps(std::vector<blink::mojom::LogoutRpsRequestPtr> logout_requests,
                  blink::mojom::FederatedAuthRequest::LogoutRpsCallback);
 
+  void SetIdTokenRequestDelayForTests(base::TimeDelta delay);
   void SetNetworkManagerForTests(
       std::unique_ptr<IdpNetworkRequestManager> manager);
   void SetDialogControllerForTests(
@@ -225,6 +226,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   base::TimeTicks select_account_time_;
   base::TimeTicks id_token_response_time_;
   base::DelayTimer delay_timer_;
+  base::TimeDelta id_token_request_delay_;
+  bool errors_logged_to_console_{false};
   blink::mojom::FederatedAuthRequest::RequestIdTokenCallback
       auth_request_callback_;
 

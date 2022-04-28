@@ -121,8 +121,8 @@ int FETCH_ENDPOINT_ALL_REQUEST_ID_TOKEN =
 
 // Expected return values from a call to RequestIdToken.
 struct RequestExpectations {
-  RequestIdTokenStatus return_status;
-  FederatedAuthRequestResult devtools_issue_status;
+  absl::optional<RequestIdTokenStatus> return_status;
+  absl::optional<FederatedAuthRequestResult> devtools_issue_status;
   // Any combination of FetchedEndpoint flags.
   int fetched_endpoints;
 };
@@ -156,6 +156,7 @@ struct MockConfiguration {
   FetchStatus token_response;
   RevokeResponse revoke_response;
   bool customized_dialog;
+  bool wait_for_callback;
 };
 
 static const MockClientIdConfiguration kDefaultClientMetadata{
@@ -179,7 +180,8 @@ static const MockConfiguration kConfigurationValid{
     kAccounts,
     FetchStatus::kSuccess,
     RevokeResponse::kSuccess,
-    false /* customized_dialog */};
+    false /* customized_dialog */,
+    true /* wait_for_callback */};
 
 static const RequestExpectations kExpectationSuccess{
     RequestIdTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
@@ -200,7 +202,7 @@ class AuthRequestCallbackHelper {
   AuthRequestCallbackHelper& operator=(const AuthRequestCallbackHelper&) =
       delete;
 
-  RequestIdTokenStatus status() const { return status_; }
+  absl::optional<RequestIdTokenStatus> status() const { return status_; }
   absl::optional<std::string> token() const { return token_; }
 
   // This can only be called once per lifetime of this object.
@@ -210,6 +212,8 @@ class AuthRequestCallbackHelper {
     return base::BindOnce(&AuthRequestCallbackHelper::ReceiverMethod,
                           base::Unretained(this));
   }
+
+  bool was_callback_called() const { return was_called_; }
 
   // Returns when callback() is called, which can be immediately if it has
   // already been called.
@@ -230,7 +234,7 @@ class AuthRequestCallbackHelper {
 
   bool was_called_ = false;
   base::RunLoop wait_for_callback_loop_;
-  RequestIdTokenStatus status_;
+  absl::optional<RequestIdTokenStatus> status_;
   absl::optional<std::string> token_;
 };
 
@@ -583,6 +587,9 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     std::unique_ptr<TestIdpNetworkRequestManager> network_request_manager =
         std::make_unique<TestIdpNetworkRequestManager>();
     SetNetworkRequestManager(std::move(network_request_manager));
+
+    federated_auth_request_impl_->SetIdTokenRequestDelayForTests(
+        base::TimeDelta());
   }
 
   void SetNetworkRequestManager(
@@ -602,25 +609,29 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     SetMockExpectations(request_parameters, expectation, configuration);
     auto auth_response = PerformAuthRequest(
         GURL(request_parameters.provider), request_parameters.client_id,
-        request_parameters.nonce, request_parameters.prefer_auto_sign_in);
+        request_parameters.nonce, request_parameters.prefer_auto_sign_in,
+        configuration.wait_for_callback);
     ASSERT_EQ(auth_response.first, expectation.return_status);
     if (auth_response.first == RequestIdTokenStatus::kSuccess) {
       EXPECT_EQ(configuration.token, auth_response.second);
     } else {
-      EXPECT_EQ(kEmptyToken, auth_response.second);
+      EXPECT_TRUE(auth_response.second == absl::nullopt ||
+                  auth_response.second == kEmptyToken);
     }
 
     EXPECT_EQ(expectation.fetched_endpoints,
               test_network_request_manager_->get_fetched_endpoints());
 
-    int issue_count = main_test_rfh()->GetFederatedAuthRequestIssueCount(
-        expectation.devtools_issue_status);
-    if (auth_response.first == RequestIdTokenStatus::kSuccess) {
-      EXPECT_EQ(0, issue_count);
-    } else {
-      EXPECT_LT(0, issue_count);
+    if (expectation.devtools_issue_status) {
+      int issue_count = main_test_rfh()->GetFederatedAuthRequestIssueCount(
+          *expectation.devtools_issue_status);
+      if (auth_response.first == RequestIdTokenStatus::kSuccess) {
+        EXPECT_EQ(0, issue_count);
+      } else {
+        EXPECT_LT(0, issue_count);
+      }
+      CheckConsoleMessages(*expectation.devtools_issue_status);
     }
-    CheckConsoleMessages(expectation.devtools_issue_status);
   }
 
   void CheckConsoleMessages(FederatedAuthRequestResult devtools_issue_status) {
@@ -689,18 +700,25 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     }
   }
 
-  std::pair<RequestIdTokenStatus, absl::optional<std::string>>
+  std::pair<absl::optional<RequestIdTokenStatus>, absl::optional<std::string>>
   PerformAuthRequest(const GURL& provider,
                      const std::string& client_id,
                      const std::string& nonce,
-                     bool prefer_auto_sign_in) {
-    AuthRequestCallbackHelper auth_helper;
+                     bool prefer_auto_sign_in,
+                     bool wait_for_callback) {
     request_remote_->RequestIdToken(provider, client_id, nonce,
                                     prefer_auto_sign_in,
-                                    auth_helper.callback());
-    auth_helper.WaitForCallback();
-    task_environment()->FastForwardBy(base::Seconds(3));
-    return std::make_pair(auth_helper.status(), auth_helper.token());
+                                    auth_helper_.callback());
+    // Ensure that the request makes its way to FederatedAuthRequestImpl.
+    request_remote_.FlushForTesting();
+    if (wait_for_callback) {
+      // Fast forward clock so that the pending
+      // FederatedAuthRequestImpl::OnRejectRequest() task, if any, gets a
+      // chance to run.
+      task_environment()->FastForwardBy(base::Minutes(10));
+      auth_helper_.WaitForCallback();
+    }
+    return std::make_pair(auth_helper_.status(), auth_helper_.token());
   }
 
   LogoutRpsStatus PerformLogoutRequest(
@@ -722,6 +740,14 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     RevokeRequestCallbackHelper revoke_helper;
     request_remote_->Revoke(GURL(kProviderUrl), kClientId, account_id,
                             revoke_helper.callback());
+
+    // Ensure that the request makes its way to FederatedAuthRequestImpl.
+    request_remote_.FlushForTesting();
+    // Fast forward clock so that the pending
+    // FederatedAuthRequestImpl::OnRejectRequest() task, if any, gets a
+    // chance to run.
+    task_environment()->FastForwardBy(base::Minutes(10));
+
     revoke_helper.WaitForCallback();
     return revoke_helper.status();
   }
@@ -856,7 +882,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<NiceMock<MockSharingPermissionDelegate>>
       mock_sharing_permission_delegate_;
 
-  base::OnceClosure close_idp_window_callback_;
+  AuthRequestCallbackHelper auth_helper_;
 
   // Storage for displayed accounts
   AccountList displayed_accounts_;
@@ -1717,6 +1743,43 @@ TEST_F(BasicFederatedAuthRequestImplTest, ApiBlockedForUnrelatedOrigin) {
   ASSERT_NE(main_test_rfh()->GetLastCommittedOrigin(), kUnrelatedOrigin);
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
+}
+
+class FederatedAuthRequestImplTestCancelConsistency
+    : public FederatedAuthRequestImplTest,
+      public ::testing::WithParamInterface<int> {};
+INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
+                         FederatedAuthRequestImplTestCancelConsistency,
+                         ::testing::Values(false, true),
+                         ::testing::PrintToStringParamName());
+
+// Test that the RP cannot use CancelTokenRequest() to determine whether
+// Option 1: FedCM dialog is shown but user has not interacted with it
+// Option 2: FedCM API is disabled via variations
+TEST_P(FederatedAuthRequestImplTestCancelConsistency, AccountNotSelected) {
+  const bool fedcm_disabled = GetParam();
+
+  base::test::ScopedFeatureList list;
+  if (fedcm_disabled)
+    list.InitAndDisableFeature(features::kFedCm);
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.customized_dialog = true;
+  configuration.wait_for_callback = false;
+  RequestExpectations expectation = {
+      /*return_status=*/absl::nullopt,
+      /*devtools_issue_status*/ absl::nullopt,
+      /*fetched_endpoints=*/
+      fedcm_disabled
+          ? 0
+          : FETCH_ENDPOINT_ALL_REQUEST_ID_TOKEN & ~FetchedEndpoint::TOKEN};
+  RunAuthTest(kDefaultRequestParameters, expectation, configuration);
+  EXPECT_FALSE(auth_helper_.was_callback_called());
+
+  request_remote_->CancelTokenRequest();
+  request_remote_.FlushForTesting();
+  EXPECT_TRUE(auth_helper_.was_callback_called());
+  EXPECT_EQ(RequestIdTokenStatus::kErrorCanceled, auth_helper_.status());
 }
 
 }  // namespace content

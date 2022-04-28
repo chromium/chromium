@@ -44,7 +44,7 @@ using RevokeStatusForMetrics = content::FedCmRevokeStatus;
 namespace content {
 
 namespace {
-static constexpr base::TimeDelta kIdTokenRequestDelay = base::Seconds(3);
+static constexpr base::TimeDelta kDefaultIdTokenRequestDelay = base::Seconds(3);
 // TODO(yigu): We need to make sure the delay is greater than the time required
 // for a successful flow based on `Blink.FedCm.Timing.TurnaroundTime`.
 // https://crbug.com/1298316.
@@ -230,7 +230,8 @@ FederatedAuthRequestImpl::FederatedAuthRequestImpl(RenderFrameHostImpl* host,
       delay_timer_(FROM_HERE,
                    kRequestRejectionDelay,
                    this,
-                   &FederatedAuthRequestImpl::OnRejectRequest) {}
+                   &FederatedAuthRequestImpl::OnRejectRequest),
+      id_token_request_delay_(kDefaultIdTokenRequestDelay) {}
 
 FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
   // Ensures key data members are destructed in proper order and resolves any
@@ -321,22 +322,6 @@ void FederatedAuthRequestImpl::RequestIdToken(
 void FederatedAuthRequestImpl::CancelTokenRequest() {
   if (!auth_request_callback_)
     return;
-
-  if (!IsFedCmEnabled()) {
-    RecordRequestIdTokenStatus(IdTokenStatus::kDisabledInFlags,
-                               render_frame_host_->GetPageUkmSourceId());
-    CompleteRequest(FederatedAuthRequestResult::kError, "",
-                    /*should_call_callback=*/false);
-  }
-
-  if (GetApiPermissionContext() &&
-      !GetApiPermissionContext()->HasApiPermission(origin_)) {
-    RecordRequestIdTokenStatus(IdTokenStatus::kDisabledInSettings,
-                               render_frame_host_->GetPageUkmSourceId());
-    CompleteRequest(FederatedAuthRequestResult::kErrorDisabledInSettings, "",
-                    /*should_call_callback=*/false);
-    return;
-  }
 
   // Dialog will be hidden by the destructor for request_dialog_controller_,
   // triggered by CompleteRequest.
@@ -872,8 +857,6 @@ void FederatedAuthRequestImpl::CompleteRevokeRequest(
   if (!revoke_callback_)
     return;
 
-  bool should_run_callback = should_call_callback ||
-                             network_manager_->IsMockIdpNetworkRequestManager();
   network_manager_.reset();
   provider_ = GURL();
   hint_ = std::string();
@@ -881,7 +864,7 @@ void FederatedAuthRequestImpl::CompleteRevokeRequest(
   manifest_list_checked_ = false;
   idp_metadata_.reset();
 
-  if (should_run_callback)
+  if (should_call_callback)
     std::move(revoke_callback_).Run(status);
 }
 
@@ -1127,10 +1110,10 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
   // When fetching id tokens we show a "Verify" sheet to users in case fetching
   // takes a long time due to latency etc.. In case that the fetching process is
   // fast, we still want to show the "Verify" sheet for at least
-  // |kIdTokenRequestDelay| seconds for better UX.
+  // |id_token_request_delay_| seconds for better UX.
   id_token_response_time_ = base::TimeTicks::Now();
   base::TimeDelta fetch_time = id_token_response_time_ - select_account_time_;
-  if (fetch_time >= kIdTokenRequestDelay) {
+  if (fetch_time >= id_token_request_delay_) {
     CompleteIdTokenRequest(status, id_token);
     return;
   }
@@ -1139,7 +1122,7 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
       FROM_HERE,
       base::BindOnce(&FederatedAuthRequestImpl::CompleteIdTokenRequest,
                      weak_ptr_factory_.GetWeakPtr(), status, id_token),
-      kIdTokenRequestDelay - fetch_time);
+      id_token_request_delay_ - fetch_time);
 }
 
 void FederatedAuthRequestImpl::CompleteIdTokenRequest(
@@ -1264,7 +1247,10 @@ void FederatedAuthRequestImpl::CompleteRequest(
   if (!auth_request_callback_)
     return;
 
-  if (result != FederatedAuthRequestResult::kSuccess) {
+  if (!errors_logged_to_console_ &&
+      result != FederatedAuthRequestResult::kSuccess) {
+    errors_logged_to_console_ = true;
+
     // It would be possible to add this inspector issue on the renderer, which
     // will receive the callback. However, it is preferable to do so on the
     // browser because this is closer to the source, which means adding
@@ -1276,12 +1262,11 @@ void FederatedAuthRequestImpl::CompleteRequest(
     AddConsoleErrorMessage(result);
   }
 
-  bool should_run_callback =
-      should_call_callback ||
-      (network_manager_ && network_manager_->IsMockIdpNetworkRequestManager());
   CleanUp();
 
-  if (should_run_callback) {
+  if (should_call_callback) {
+    errors_logged_to_console_ = false;
+
     RequestIdTokenStatus status =
         FederatedAuthRequestResultToRequestIdTokenStatus(result);
     std::move(auth_request_callback_).Run(status, id_token);
@@ -1356,6 +1341,11 @@ FederatedAuthRequestImpl::CreateDialogController() {
   }
 
   return GetContentClient()->browser()->CreateIdentityRequestDialogController();
+}
+
+void FederatedAuthRequestImpl::SetIdTokenRequestDelayForTests(
+    base::TimeDelta delay) {
+  id_token_request_delay_ = delay;
 }
 
 void FederatedAuthRequestImpl::SetNetworkManagerForTests(

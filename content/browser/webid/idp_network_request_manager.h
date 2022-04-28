@@ -163,8 +163,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   // Send logout request to a single target.
   virtual void SendLogout(const GURL& logout_url, LogoutCallback);
 
-  virtual bool IsMockIdpNetworkRequestManager() const;
-
  private:
   void OnManifestListLoaded(std::unique_ptr<std::string> response_body);
   void OnManifestListParsed(data_decoder::DataDecoder::ValueOrError result);
