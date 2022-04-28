@@ -5220,9 +5220,11 @@ void WebGLRenderingContextBase::TexImageStaticBitmapImage(
   // needed here.
   const char* func_name = GetTexImageFunctionName(params.function_id);
 
-  // Ensure that `image` is in the unpack color space.
+  // If `image` is accelerated, then convert to the unpack color space while
+  // still on the GPU. Unaccelerated images will be converted on the CPU below
+  // in TexImageSkImage.
   scoped_refptr<StaticBitmapImage> color_converted_image;
-  {
+  if (image->IsTextureBacked()) {
     const auto image_color_info = image->GetSkColorInfo();
     const auto image_color_space = image_color_info.colorSpace()
                                        ? image_color_info.refColorSpace()
@@ -5251,8 +5253,8 @@ void WebGLRenderingContextBase::TexImageStaticBitmapImage(
     return;
   }
 
-  // Apply orientation if necessary. This should be merged into the above
-  // color space conversion.
+  // Apply orientation if necessary. This should be merged into the
+  // transformations performed inside TexImageSkImage.
   PaintImage paint_image = image->PaintImageForCurrentFrame();
   if (!image->HasDefaultOrientation()) {
     paint_image = Image::ResizeAndOrientImage(
@@ -5578,12 +5580,22 @@ void WebGLRenderingContextBase::TexImageHelperHTMLImageElement(
 
   WebGLImageConversion::ImageExtractor image_extractor(
       image_for_render.get(), params.unpack_premultiply_alpha,
-      unpack_colorspace_conversion_ == GL_NONE);
+      unpack_colorspace_conversion_ == GL_NONE
+          ? nullptr
+          : PredefinedColorSpaceToSkColorSpace(unpack_color_space_));
   auto sk_image = image_extractor.GetSkImage();
   if (!sk_image) {
     SynthesizeGLError(GL_INVALID_VALUE, func_name, "bad image data");
     return;
   }
+  // If UNPACK_COLORSPACE_CONVERSION_WEBGL is NONE, then treat the image as
+  // though it were already in the unpack color space. This will skip any
+  // subsequent color space conversion.
+  if (unpack_colorspace_conversion_ == GL_NONE) {
+    sk_image = sk_image->reinterpretColorSpace(
+        PredefinedColorSpaceToSkColorSpace(unpack_color_space_));
+  }
+
   TexImageSkImage(params, std::move(sk_image), /*image_has_flip_y=*/false);
 }
 

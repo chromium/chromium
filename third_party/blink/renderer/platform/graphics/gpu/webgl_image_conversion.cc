@@ -3758,28 +3758,41 @@ GLenum WebGLImageConversion::ComputeImageSizeInBytes(
   return GL_NO_ERROR;
 }
 
-WebGLImageConversion::ImageExtractor::ImageExtractor(Image* image,
-                                                     bool premultiply_alpha,
-                                                     bool ignore_color_space) {
+WebGLImageConversion::ImageExtractor::ImageExtractor(
+    Image* image,
+    bool premultiply_alpha,
+    sk_sp<SkColorSpace> target_color_space) {
   if (!image)
     return;
 
   sk_sp<SkImage> skia_image = image->PaintImageForCurrentFrame().GetSwSkImage();
+  if (skia_image && !skia_image->colorSpace())
+    skia_image = skia_image->reinterpretColorSpace(SkColorSpace::MakeSRGB());
+
   if (image->HasData()) {
     bool has_alpha = skia_image ? !skia_image->isOpaque() : true;
     bool need_unpremultiplied = has_alpha && !premultiply_alpha;
-    bool need_color_conversion = !ignore_color_space && skia_image &&
-                                 skia_image->colorSpace() &&
-                                 !skia_image->colorSpace()->isSRGB();
-    if (!skia_image || ignore_color_space || need_unpremultiplied ||
+    bool need_color_conversion =
+        skia_image && target_color_space &&
+        !SkColorSpace::Equals(skia_image->colorSpace(),
+                              target_color_space.get());
+    if (!skia_image || !target_color_space || need_unpremultiplied ||
         need_color_conversion) {
       // Attempt to get raw unpremultiplied image data.
       const bool data_complete = true;
-      std::unique_ptr<ImageDecoder> decoder(ImageDecoder::Create(
-          image->Data(), data_complete, ImageDecoder::kAlphaNotPremultiplied,
-          ImageDecoder::kDefaultBitDepth,
-          ignore_color_space ? ColorBehavior::Ignore()
-                             : ColorBehavior::TransformToSRGB()));
+      // Always decode as unpremultiplied. If premultiplication is desired, it
+      // will be applied later.
+      const auto alpha_option = ImageDecoder::kAlphaNotPremultiplied;
+      // Decode to the default 8-bit depth (as opposed to floating-point).
+      // TODO(1320812): This is not always the correct choice.
+      auto bit_depth = ImageDecoder::kDefaultBitDepth;
+      // If we are not ignoring the color space, then tag the image with the
+      // target color space. It will be converted later on.
+      auto color_behavior =
+          target_color_space ? ColorBehavior::Tag() : ColorBehavior::Ignore();
+      std::unique_ptr<ImageDecoder> decoder(
+          ImageDecoder::Create(image->Data(), data_complete, alpha_option,
+                               bit_depth, color_behavior));
       if (!decoder || !decoder->FrameCount())
         return;
       ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);

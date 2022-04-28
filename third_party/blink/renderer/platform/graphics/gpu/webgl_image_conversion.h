@@ -126,7 +126,14 @@ class PLATFORM_EXPORT WebGLImageConversion final {
     STACK_ALLOCATED();
 
    public:
-    ImageExtractor(Image*, bool premultiply_alpha, bool ignore_color_space);
+    // Extract an SkImage from an Image. If the alpha channel will ultimately
+    // be premultiplied, then `premultiply_alpha` should be true. If the color
+    // space of image is to be ignored then `target_color_space` is to be
+    // nullptr. Otherwise, `target_color_space` should be set to the color space
+    // that the image will ultimately be converted to.
+    ImageExtractor(Image*,
+                   bool premultiply_alpha,
+                   sk_sp<SkColorSpace> target_color_space);
     ImageExtractor(const ImageExtractor&) = delete;
     ImageExtractor& operator=(const ImageExtractor&) = delete;
 
