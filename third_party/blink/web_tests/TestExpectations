@@ -3381,6 +3381,8 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-backgrounds/border-image-width-009.html [ Failure ]
+crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/border-image-width-009.html [ Failure ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/html/cross-origin-embedder-policy/credentialless/cross-origin-isolated.window.html [ Timeout ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Timeout ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/reporting/cross-origin-reports-isolated.https.sub.html [ Timeout ]
