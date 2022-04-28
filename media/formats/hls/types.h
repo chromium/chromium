@@ -18,47 +18,46 @@ namespace media::hls::types {
 // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=of%20the%20following%3A%0A%0A%20%20%20o-,decimal%2Dinteger,-%3A%20an%20unquoted%20string
 using DecimalInteger = uint64_t;
 
-ParseStatus::Or<DecimalInteger> MEDIA_EXPORT
-ParseDecimalInteger(SourceString source_str);
+MEDIA_EXPORT ParseStatus::Or<DecimalInteger> ParseDecimalInteger(
+    SourceString source_str);
 
 // A `DecimalFloatingPoint` is an unsigned floating-point value.
 // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=on%20its%20AttributeNames.%0A%0A%20%20%20o-,decimal%2Dfloating%2Dpoint,-%3A%20an%20unquoted%20string
 using DecimalFloatingPoint = double;
 
-ParseStatus::Or<DecimalFloatingPoint> MEDIA_EXPORT
-ParseDecimalFloatingPoint(SourceString source_str);
+MEDIA_EXPORT ParseStatus::Or<DecimalFloatingPoint> ParseDecimalFloatingPoint(
+    SourceString source_str);
 
 // A `SignedDecimalFloatingPoint` is a signed floating-point value.
 // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=decimal%20positional%20notation.%0A%0A%20%20%20o-,signed%2Ddecimal%2Dfloating%2Dpoint,-%3A%20an%20unquoted%20string
 using SignedDecimalFloatingPoint = double;
 
-ParseStatus::Or<SignedDecimalFloatingPoint> MEDIA_EXPORT
+MEDIA_EXPORT ParseStatus::Or<SignedDecimalFloatingPoint>
 ParseSignedDecimalFloatingPoint(SourceString source_str);
 
 // A `DecimalResolution` is a set of two `DecimalInteger`s describing width and
 // height.
 // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=enumerated%2Dstring%2Dlist.%0A%0A%20%20%20o-,decimal%2Dresolution,-%3A%20two%20decimal%2Dintegers
-struct DecimalResolution {
+struct MEDIA_EXPORT DecimalResolution {
   types::DecimalInteger width;
   types::DecimalInteger height;
 
-  static MEDIA_EXPORT ParseStatus::Or<DecimalResolution> Parse(
-      SourceString source_str);
+  static ParseStatus::Or<DecimalResolution> Parse(SourceString source_str);
 };
 
 // Parses a string surrounded by double-quotes ("), returning the inner string.
 // These appear in the context of attribute-lists, and are subject to variable
 // substitution. `sub_buffer` must outlive the returned string.
-ParseStatus::Or<base::StringPiece> MEDIA_EXPORT
-ParseQuotedString(SourceString source_str,
-                  const VariableDictionary& variable_dict,
-                  VariableDictionary::SubstitutionBuffer& sub_buffer);
+MEDIA_EXPORT ParseStatus::Or<base::StringPiece> ParseQuotedString(
+    SourceString source_str,
+    const VariableDictionary& variable_dict,
+    VariableDictionary::SubstitutionBuffer& sub_buffer);
 
 // Parses a string surrounded by double-quotes ("), returning the interior
 // string. These appear in the context of attribute-lists, however certain tags
 // disallow variable substitution so this function exists to serve those.
-ParseStatus::Or<SourceString> MEDIA_EXPORT
-ParseQuotedStringWithoutSubstitution(SourceString source_str);
+MEDIA_EXPORT ParseStatus::Or<SourceString> ParseQuotedStringWithoutSubstitution(
+    SourceString source_str);
 
 // Provides an iterator-style interface over attribute-lists.
 // Since the number of attributes expected in an attribute-list for a tag varies
@@ -123,10 +122,9 @@ struct MEDIA_EXPORT AttributeMap {
 // Represents a string that is guaranteed to be a non-empty, and consisting only
 // of characters in the set {[a-z], [A-Z], [0-9], _, -}. Variable names are
 // case-sensitive.
-class VariableName {
+class MEDIA_EXPORT VariableName {
  public:
-  static MEDIA_EXPORT ParseStatus::Or<VariableName> Parse(
-      SourceString source_str);
+  static ParseStatus::Or<VariableName> Parse(SourceString source_str);
 
   base::StringPiece GetName() const { return name_; }
 

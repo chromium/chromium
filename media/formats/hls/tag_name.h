@@ -84,7 +84,7 @@ constexpr TagName ToTagName(MediaPlaylistTagName name) {
   return static_cast<TagName>(name);
 }
 
-TagKind MEDIA_EXPORT GetTagKind(TagName name);
+MEDIA_EXPORT TagKind GetTagKind(TagName name);
 
 // No-op conversion function for generic code.
 constexpr TagName ToTagName(TagName name) {
@@ -93,10 +93,10 @@ constexpr TagName ToTagName(TagName name) {
 
 // Parses the tag name, converting it to one of the `*TagName` enum values.
 // If the tag is not recognized, returns `absl::nullopt`.
-absl::optional<TagName> MEDIA_EXPORT ParseTagName(base::StringPiece name);
+MEDIA_EXPORT absl::optional<TagName> ParseTagName(base::StringPiece name);
 
 // Prints the corresponding string representation of the given `TagName`.
-base::StringPiece MEDIA_EXPORT TagNameToString(TagName name);
+MEDIA_EXPORT base::StringPiece TagNameToString(TagName name);
 
 constexpr TagName kMinTagName = ToTagName(CommonTagName::kMinValue);
 constexpr TagName kMaxTagName = ToTagName(MediaPlaylistTagName::kMaxValue);
