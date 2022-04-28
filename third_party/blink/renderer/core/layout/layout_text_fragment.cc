@@ -80,6 +80,11 @@ LayoutTextFragment* LayoutTextFragment::CreateAnonymous(PseudoElement& pseudo,
   return CreateAnonymous(pseudo, text, 0, text ? text->length() : 0, legacy);
 }
 
+void LayoutTextFragment::Trace(Visitor* visitor) const {
+  visitor->Trace(first_letter_pseudo_element_);
+  LayoutText::Trace(visitor);
+}
+
 void LayoutTextFragment::WillBeDestroyed() {
   NOT_DESTROYED();
   if (is_remaining_text_layout_object_ && first_letter_pseudo_element_)

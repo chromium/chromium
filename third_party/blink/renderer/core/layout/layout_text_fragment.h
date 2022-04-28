@@ -57,6 +57,8 @@ class CORE_EXPORT LayoutTextFragment : public LayoutText {
                                              unsigned length,
                                              LegacyLayout);
 
+  void Trace(Visitor*) const override;
+
   Position PositionForCaretOffset(unsigned) const override;
   absl::optional<unsigned> CaretOffsetForPosition(
       const Position&) const override;
@@ -140,7 +142,7 @@ class CORE_EXPORT LayoutTextFragment : public LayoutText {
   scoped_refptr<StringImpl> content_string_;
   // Reference back to FirstLetterPseudoElement; cleared by
   // FirstLetterPseudoElement::detachLayoutTree() if it goes away first.
-  UntracedMember<FirstLetterPseudoElement> first_letter_pseudo_element_;
+  Member<FirstLetterPseudoElement> first_letter_pseudo_element_;
 };
 
 template <>
