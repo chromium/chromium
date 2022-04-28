@@ -503,12 +503,11 @@ NetworkingPrivateGetDeviceStatesFunction::Run() {
   if (!device_states)
     return RespondNow(Error(networking_private::kErrorNotSupported));
 
-  std::unique_ptr<base::ListValue> device_state_list(new base::ListValue);
+  base::Value::List device_state_list;
   for (const auto& properties : *device_states)
-    device_state_list->Append(
+    device_state_list.Append(
         base::Value::FromUniquePtrValue(properties->ToValue()));
-  return RespondNow(OneArgument(
-      base::Value::FromUniquePtrValue(std::move(device_state_list))));
+  return RespondNow(OneArgument(base::Value(std::move(device_state_list))));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

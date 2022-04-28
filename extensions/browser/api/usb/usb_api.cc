@@ -621,7 +621,6 @@ ExtensionFunction::ResponseAction UsbFindDevicesFunction::Run() {
 
 void UsbFindDevicesFunction::OnGetDevicesComplete(
     std::vector<device::mojom::UsbDeviceInfoPtr> devices) {
-  result_ = std::make_unique<base::ListValue>();
   barrier_ = base::BarrierClosure(
       devices.size(),
       base::BindOnce(&UsbFindDevicesFunction::OpenComplete, this));
@@ -669,8 +668,8 @@ void UsbFindDevicesFunction::OnDeviceOpened(
         ApiResourceManager<UsbDeviceResource>::Get(browser_context());
     UsbDeviceResource* resource =
         new UsbDeviceResource(extension_id(), guid, std::move(device));
-    result_->Append(PopulateConnectionHandle(manager->Add(resource), vendor_id_,
-                                             product_id_));
+    result_.Append(PopulateConnectionHandle(manager->Add(resource), vendor_id_,
+                                            product_id_));
   }
   barrier_.Run();
 }
@@ -680,7 +679,7 @@ void UsbFindDevicesFunction::OnDisconnect() {
 }
 
 void UsbFindDevicesFunction::OpenComplete() {
-  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(result_))));
+  Respond(OneArgument(base::Value(std::move(result_))));
 }
 
 UsbGetDevicesFunction::UsbGetDevicesFunction() = default;
@@ -719,17 +718,17 @@ ExtensionFunction::ResponseAction UsbGetDevicesFunction::Run() {
 
 void UsbGetDevicesFunction::OnGetDevicesComplete(
     std::vector<device::mojom::UsbDeviceInfoPtr> devices) {
-  std::unique_ptr<base::ListValue> result(new base::ListValue());
+  base::Value::List result;
   for (const auto& device : devices) {
     if (device::UsbDeviceFilterMatchesAny(filters_, *device) &&
         HasDevicePermission(*device)) {
       Device api_device;
       usb_device_manager()->GetApiDevice(*device, &api_device);
-      result->Append(base::Value::FromUniquePtrValue(api_device.ToValue()));
+      result.Append(base::Value::FromUniquePtrValue(api_device.ToValue()));
     }
   }
 
-  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+  Respond(OneArgument(base::Value(std::move(result))));
 }
 
 UsbGetUserSelectedDevicesFunction::UsbGetUserSelectedDevicesFunction() =
@@ -779,17 +778,17 @@ ExtensionFunction::ResponseAction UsbGetUserSelectedDevicesFunction::Run() {
 
 void UsbGetUserSelectedDevicesFunction::OnDevicesChosen(
     std::vector<device::mojom::UsbDeviceInfoPtr> devices) {
-  std::unique_ptr<base::ListValue> result(new base::ListValue());
+  base::Value::List result;
   auto* device_manager = usb_device_manager();
   DCHECK(device_manager);
 
   for (const auto& device : devices) {
     Device api_device;
     device_manager->GetApiDevice(*device, &api_device);
-    result->Append(base::Value::FromUniquePtrValue(api_device.ToValue()));
+    result.Append(base::Value::FromUniquePtrValue(api_device.ToValue()));
   }
 
-  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+  Respond(OneArgument(base::Value(std::move(result))));
 }
 
 UsbGetConfigurationsFunction::UsbGetConfigurationsFunction() = default;
@@ -821,7 +820,7 @@ ExtensionFunction::ResponseAction UsbGetConfigurationsFunction::Run() {
     return RespondNow(Error(kErrorNoDevice));
   }
 
-  std::unique_ptr<base::ListValue> configs(new base::ListValue());
+  base::Value::List configs;
   uint8_t active_config_value = device_info->active_configuration;
   for (const auto& config : device_info->configurations) {
     DCHECK(config);
@@ -830,10 +829,9 @@ ExtensionFunction::ResponseAction UsbGetConfigurationsFunction::Run() {
         config->configuration_value == active_config_value) {
       api_config.active = true;
     }
-    configs->Append(base::Value::FromUniquePtrValue(api_config.ToValue()));
+    configs.Append(base::Value::FromUniquePtrValue(api_config.ToValue()));
   }
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(configs))));
+  return RespondNow(OneArgument(base::Value(std::move(configs))));
 }
 
 UsbRequestAccessFunction::UsbRequestAccessFunction() = default;
@@ -1006,13 +1004,11 @@ ExtensionFunction::ResponseAction UsbListInterfacesFunction::Run() {
     DCHECK(config);
     if (config->configuration_value == active_config_value) {
       ConfigDescriptor api_config = ConvertConfigDescriptor(*config);
-      std::unique_ptr<base::ListValue> result(new base::ListValue);
-      for (size_t i = 0; i < api_config.interfaces.size(); ++i) {
-        result->Append(base::Value::FromUniquePtrValue(
-            api_config.interfaces[i].ToValue()));
+      base::Value::List result;
+      for (const auto& interface : api_config.interfaces) {
+        result.Append(base::Value::FromUniquePtrValue(interface.ToValue()));
       }
-      return RespondNow(
-          OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+      return RespondNow(OneArgument(base::Value(std::move(result))));
     }
   }
   // Respond with an error if the config object can't be found according to

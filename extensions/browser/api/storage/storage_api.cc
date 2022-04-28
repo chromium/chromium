@@ -190,9 +190,7 @@ ExtensionFunction::ResponseValue SettingsFunction::UseReadResult(
   if (!result.status().ok())
     return Error(result.status().message);
 
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->Swap(&result.settings());
-  return OneArgument(base::Value::FromUniquePtrValue(std::move(dict)));
+  return OneArgument(std::move(result.settings()));
 }
 
 ExtensionFunction::ResponseValue SettingsFunction::UseWriteResult(

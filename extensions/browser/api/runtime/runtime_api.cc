@@ -654,10 +654,10 @@ ExtensionFunction::ResponseAction RuntimeRequestUpdateCheckFunction::Run() {
 void RuntimeRequestUpdateCheckFunction::CheckComplete(
     const RuntimeAPIDelegate::UpdateCheckResult& result) {
   if (result.success) {
-    std::unique_ptr<base::DictionaryValue> details(new base::DictionaryValue);
-    details->SetStringKey("version", result.version);
+    base::Value::Dict details;
+    details.Set("version", result.version);
     Respond(TwoArguments(base::Value(result.response),
-                         base::Value::FromUniquePtrValue(std::move(details))));
+                         base::Value(std::move(details))));
   } else {
     // HMM(kalman): Why does !success not imply Error()?
     Respond(OneArgument(base::Value(result.response)));
@@ -737,11 +737,10 @@ RuntimeGetPackageDirectoryEntryFunction::Run() {
   content::ChildProcessSecurityPolicy* policy =
       content::ChildProcessSecurityPolicy::GetInstance();
   policy->GrantReadFileSystem(source_process_id(), filesystem.id());
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetStringKey("fileSystemId", filesystem.id());
-  dict->SetStringKey("baseName", relative_path);
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
+  base::Value::Dict dict;
+  dict.Set("fileSystemId", filesystem.id());
+  dict.Set("baseName", relative_path);
+  return RespondNow(OneArgument(base::Value(std::move(dict))));
 }
 
 }  // namespace extensions
