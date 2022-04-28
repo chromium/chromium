@@ -486,6 +486,13 @@ bool Portal::IsSameOrigin() const {
 std::pair<bool, blink::mojom::PortalActivateResult> Portal::CanActivate() {
   WebContentsImpl* outer_contents = GetPortalHostContents();
 
+  if (outer_contents->GetOuterWebContents()) {
+    // TODO(crbug.com/942534): Support portals in guest views.
+    NOTIMPLEMENTED();
+    return std::make_pair(false,
+                          blink::mojom::PortalActivateResult::kNotImplemented);
+  }
+
   DCHECK(owner_render_frame_host_->IsActive())
       << "The binding should have been closed when the portal's outer "
          "FrameTreeNode was deleted due to swap out.";

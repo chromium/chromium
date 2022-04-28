@@ -131,6 +131,7 @@
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/compositor/compositor.h"
@@ -5957,4 +5958,28 @@ IN_PROC_BROWSER_TEST_P(WebViewFencedFrameTest,
             guest_web_contents->GetMainFrame()
                 ->GetSiteInstance()
                 ->GetStoragePartitionConfig());
+}
+
+class WebViewPortalTest : public WebViewTest {
+ public:
+  WebViewPortalTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kPortals,
+                              blink::features::kPortalsCrossOrigin},
+        /*disabled_features=*/{});
+  }
+  ~WebViewPortalTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(WebViewTests,
+                         WebViewPortalTest,
+                         testing::Bool(),
+                         WebViewTest::DescribeParams);
+
+// Creates and activates a <portal> element inside a <webview>.
+IN_PROC_BROWSER_TEST_P(WebViewPortalTest, PortalActivationInGuest) {
+  TestHelper("testActivatePortal", "web_view/shim", NEEDS_TEST_SERVER);
 }

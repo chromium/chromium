@@ -110,6 +110,9 @@ void PortalContents::OnActivateResponse(
       // when the browser/test runner is being shut down.
       activation_delegate_->ActivationWasAbandoned();
       break;
+    case mojom::blink::PortalActivateResult::kNotImplemented:
+      reject("Not implemented.");
+      break;
     case mojom::blink::PortalActivateResult::kAbortedDueToBug:
       // This should never happen. Ignore this and wait for the frame to be
       // discarded by the browser, if it hasn't already.

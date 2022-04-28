@@ -1874,6 +1874,7 @@ void RenderFrameHostImpl::OnPortalActivated(
               case blink::mojom::PortalActivateResult::
                   kRejectedDueToErrorInPortal:
               case blink::mojom::PortalActivateResult::kDisconnected:
+              case blink::mojom::PortalActivateResult::kNotImplemented:
               case blink::mojom::PortalActivateResult::kAbortedDueToBug:
                 // The renderer is misbehaving.
                 mojo::ReportBadMessage(

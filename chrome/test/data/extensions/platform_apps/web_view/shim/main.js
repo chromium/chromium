@@ -3396,6 +3396,25 @@ function testAddFencedFrame() {
   document.body.appendChild(webview);
 }
 
+function testActivatePortal() {
+  let portalHostURL = embedder.baseGuestURL +
+      '/extensions/platform_apps/web_view/shim/portal_host.html';
+  let webview = new WebView();
+  webview.src = portalHostURL;
+  webview.addEventListener('loadstop', () => {
+    webview.contentWindow.postMessage('activate', '*');
+  });
+  window.addEventListener('message', (e) => {
+    // TODO(crbug.com/942534): Support portals in guest views.
+    // Once we do, update this test to check for correct behaviour. For now,
+    // we're basically just checking that attempting this doesn't cause a crash.
+    embedder.test.assertTrue(e.data.includes('Not implemented'));
+    embedder.test.succeed();
+  });
+
+  document.body.appendChild(webview);
+}
+
 embedder.test.testList = {
   'testAllowTransparencyAttribute': testAllowTransparencyAttribute,
   'testAutosizeHeight': testAutosizeHeight,
@@ -3526,6 +3545,7 @@ embedder.test.testList = {
   'testSelectPopupPositionInMac': testSelectPopupPositionInMac,
   'testWebRequestBlockedNavigation': testWebRequestBlockedNavigation,
   'testAddFencedFrame': testAddFencedFrame,
+  'testActivatePortal': testActivatePortal,
 };
 
 onload = function() {

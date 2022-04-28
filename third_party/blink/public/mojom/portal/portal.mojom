@@ -35,6 +35,9 @@ enum PortalActivateResult {
   // is synthesized by the renderer.
   kDisconnected,
 
+  // Activation has not yet been implemented for the current platform.
+  kNotImplemented,
+
   // The activation was attempted but was aborted due to a logic error, such as
   // a nonsensical reply from the other renderer. This should never happen; it
   // is always an indication of a bug if it does.
