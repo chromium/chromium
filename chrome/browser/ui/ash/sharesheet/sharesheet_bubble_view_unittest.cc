@@ -132,6 +132,15 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
     ASSERT_FALSE(IsSharesheetVisible());
   }
 
+  void CloseBubbleWithEscKey() {
+    GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE);
+    // |bubble_delegate_| and |sharesheet_bubble_view_| destruct on close.
+    bubble_delegate_ = nullptr;
+    sharesheet_bubble_view_ = nullptr;
+
+    ASSERT_FALSE(IsSharesheetVisible());
+  }
+
   bool IsSharesheetVisible() { return sharesheet_widget_->IsVisible(); }
 
   SharesheetBubbleView* sharesheet_bubble_view() {
@@ -444,6 +453,27 @@ TEST_F(SharesheetBubbleViewTest, URLPreviewEmojis) {
   ASSERT_EQ(url_text->GetText(), u"https://hello.com/😁/");
   ASSERT_EQ(url_text->GetTooltipText(), u"https://hello.com/😁/");
   CloseBubble();
+}
+
+TEST_F(SharesheetBubbleViewTest, CloseWithEscKey) {
+  ShowAndVerifyBubble(::sharesheet::CreateValidTextIntent(),
+                      ::sharesheet::LaunchSource::kUnknown);
+  CloseBubbleWithEscKey();
+}
+
+TEST_F(SharesheetBubbleViewTest, CloseMultipleTimes) {
+  ShowAndVerifyBubble(::sharesheet::CreateValidTextIntent(),
+                      ::sharesheet::LaunchSource::kUnknown);
+  CloseBubbleWithEscKey();
+  CloseBubbleWithEscKey();
+}
+
+TEST_F(SharesheetBubbleViewTest, HoldEscapeKey) {
+  GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EventFlags::EF_NONE);
+  ShowAndVerifyBubble(::sharesheet::CreateValidTextIntent(),
+                      ::sharesheet::LaunchSource::kUnknown);
+  GetEventGenerator()->ReleaseKey(ui::VKEY_ESCAPE, ui::EventFlags::EF_NONE);
+  CloseBubbleWithEscKey();
 }
 
 }  // namespace sharesheet
