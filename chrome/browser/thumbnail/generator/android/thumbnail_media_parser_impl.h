@@ -21,7 +21,6 @@
 #include "media/base/media_log.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 class GpuVideoAcceleratorFactories;
@@ -65,10 +64,7 @@ class ThumbnailMediaParserImpl : public ThumbnailMediaParser,
 
   // Retrieves an encoded video frame.
   void RetrieveEncodedVideoFrame();
-  void OnVideoFrameRetrieved(
-      bool success,
-      chrome::mojom::VideoFrameDataPtr video_frame_data,
-      const absl::optional<media::VideoDecoderConfig>& config);
+  void OnVideoFrameRetrieved(chrome::mojom::ExtractVideoFrameResultPtr result);
 
   // Decodes the video frame.
   void OnGpuVideoAcceleratorFactoriesReady(

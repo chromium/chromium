@@ -12,9 +12,16 @@ import "sandbox/policy/mojom/sandbox.mojom";
 
 // Contains either encoded video frame in |encoded_data|, or decoded video
 // frame in |decoded_frame|.
+[EnableIf=is_android]
 union VideoFrameData {
   array<uint8> encoded_data;
   media.mojom.VideoFrame? decoded_frame;
+};
+
+[EnableIf=is_android]
+struct ExtractVideoFrameResult {
+  VideoFrameData frame_data;
+  media.mojom.VideoDecoderConfig config;
 };
 
 interface MediaParser {
@@ -30,16 +37,15 @@ interface MediaParser {
           MediaMetadata metadata,
           array<AttachedImage> attached_images);
 
-  // Extracts one video key frame from |media_data_source|. Returns the decoded
-  // frame if decoding can be done in utility process, or an encoded frame if
-  // decoding needs to happen in other process.
+  // Extracts one video key frame from |media_data_source|. Returns a null
+  // result on failure; on success, the result will contain:
+  // - the decoded frame if the decoding can be done in the utility process or
+  // - an encoded frame if decoding needs to happen in another process
   [EnableIf=is_android]
   ExtractVideoFrame(string mime_type,
                     uint32 total_size,
                     pending_remote<MediaDataSource> media_data_source)
-      => (bool success,
-          VideoFrameData frame_data,
-          media.mojom.VideoDecoderConfig? config);
+      => (ExtractVideoFrameResult? result);
 
   // Validates the passed media file with sanity checks, and file decoding
   // for at most |decode_time| wall clock time. Returns |success| true if

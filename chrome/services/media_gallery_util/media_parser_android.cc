@@ -16,10 +16,8 @@ namespace {
 void OnVideoFrameExtracted(
     std::unique_ptr<VideoThumbnailParser>,
     MediaParser::ExtractVideoFrameCallback video_frame_callback,
-    bool success,
-    chrome::mojom::VideoFrameDataPtr frame_data,
-    const absl::optional<media::VideoDecoderConfig>& config) {
-  std::move(video_frame_callback).Run(success, std::move(frame_data), config);
+    chrome::mojom::ExtractVideoFrameResultPtr result) {
+  std::move(video_frame_callback).Run(std::move(result));
 }
 
 }  // namespace

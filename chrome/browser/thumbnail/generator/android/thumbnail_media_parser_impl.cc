@@ -168,18 +168,15 @@ void ThumbnailMediaParserImpl::RetrieveEncodedVideoFrame() {
 }
 
 void ThumbnailMediaParserImpl::OnVideoFrameRetrieved(
-    bool success,
-    chrome::mojom::VideoFrameDataPtr video_frame_data,
-    const absl::optional<media::VideoDecoderConfig>& config) {
-  if (!success) {
+    chrome::mojom::ExtractVideoFrameResultPtr result) {
+  if (!result) {
     RecordVideoThumbnailEvent(VideoThumbnailEvent::kVideoFrameExtractionFailed);
     OnError(MediaParserEvent::kVideoThumbnailFailed);
     return;
   }
 
-  video_frame_data_ = std::move(video_frame_data);
-  DCHECK(config.has_value());
-  config_ = config.value();
+  video_frame_data_ = std::move(result->frame_data);
+  config_ = result->config;
 
   // For vp8, vp9 codec, we directly do software decoding in utility process.
   // Render now.

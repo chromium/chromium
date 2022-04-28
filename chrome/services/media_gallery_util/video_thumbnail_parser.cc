@@ -32,16 +32,15 @@ void OnSoftwareVideoFrameDecoded(
   DCHECK(video_frame_callback);
 
   if (!frame) {
-    std::move(video_frame_callback)
-        .Run(false, chrome::mojom::VideoFrameData::New(), absl::nullopt);
+    std::move(video_frame_callback).Run(nullptr);
     return;
   }
 
   std::move(video_frame_callback)
-      .Run(true,
-           chrome::mojom::VideoFrameData::NewDecodedFrame(
-               media::MojoSharedBufferVideoFrame::CreateFromYUVFrame(*frame)),
-           config);
+      .Run(chrome::mojom::ExtractVideoFrameResult::New(
+          chrome::mojom::VideoFrameData::NewDecodedFrame(
+              media::MojoSharedBufferVideoFrame::CreateFromYUVFrame(*frame)),
+          config));
 }
 
 void OnEncodedVideoFrameExtracted(
@@ -51,8 +50,7 @@ void OnEncodedVideoFrameExtracted(
     std::vector<uint8_t> data,
     const media::VideoDecoderConfig& config) {
   if (!success || data.empty()) {
-    std::move(video_frame_callback)
-        .Run(false, chrome::mojom::VideoFrameData::New(), absl::nullopt);
+    std::move(video_frame_callback).Run(nullptr);
     return;
   }
 
@@ -62,17 +60,17 @@ void OnEncodedVideoFrameExtracted(
   // is provided.
   if (config.codec() == media::VideoCodec::kH264) {
     std::move(video_frame_callback)
-        .Run(success,
-             chrome::mojom::VideoFrameData::NewEncodedData(std::move(data)),
-             config);
+        .Run(chrome::mojom::ExtractVideoFrameResult::New(
+
+            chrome::mojom::VideoFrameData::NewEncodedData(std::move(data)),
+            config));
     return;
   }
 #endif
 
   if (config.codec() != media::VideoCodec::kVP8 &&
       config.codec() != media::VideoCodec::kVP9) {
-    std::move(video_frame_callback)
-        .Run(false, chrome::mojom::VideoFrameData::New(), absl::nullopt);
+    std::move(video_frame_callback).Run(nullptr);
     return;
   }
 
