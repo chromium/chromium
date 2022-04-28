@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import org.chromium.base.Promise;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -28,6 +29,8 @@ class HistoryClustersMediator {
     private final RoundedIconGenerator mIconGenerator;
     private final LargeIconBridge mLargeIconBridge;
     private final int mFaviconSize;
+    private final BottomSheetController mBottomSheetController;
+    private final HistoryClustersBottomSheetContent mBottomSheetContent;
     private Promise<HistoryClustersResult> mPromise;
 
     /**
@@ -40,18 +43,26 @@ class HistoryClustersMediator {
      */
     HistoryClustersMediator(@NonNull HistoryClustersBridge historyClustersBridge,
             LargeIconBridge largeIconBridge, @NonNull Context context, @NonNull Resources resources,
-            @NonNull ModelList modelList) {
+            @NonNull ModelList modelList, @NonNull BottomSheetController bottomSheetController,
+            @NonNull HistoryClustersBottomSheetContent bottomSheetContent) {
         mHistoryClustersBridge = historyClustersBridge;
         mLargeIconBridge = largeIconBridge;
         mModelList = modelList;
         mContext = context;
         mResources = resources;
+        mBottomSheetController = bottomSheetController;
+        mBottomSheetContent = bottomSheetContent;
         mFaviconSize = mResources.getDimensionPixelSize(R.dimen.default_favicon_min_size);
         mIconGenerator = FaviconUtils.createCircularIconGenerator(mContext);
     }
 
     void destroy() {
         mLargeIconBridge.destroy();
+    }
+
+    void showBottomSheet(String query) {
+        query(query);
+        mBottomSheetController.requestShowContent(mBottomSheetContent, true);
     }
 
     void query(String query) {

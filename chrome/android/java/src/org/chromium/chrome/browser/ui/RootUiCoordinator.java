@@ -706,7 +706,8 @@ public class RootUiCoordinator
 
     private void initHistoryClustersCoordinator(Profile profile) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.HISTORY_JOURNEYS)) {
-            mHistoryClustersCoordinator = new HistoryClustersCoordinator(profile, mActivity);
+            mHistoryClustersCoordinator =
+                    new HistoryClustersCoordinator(profile, mActivity, mBottomSheetController);
             mHistoryClustersCoordinatorSupplier.set(mHistoryClustersCoordinator);
         }
     }

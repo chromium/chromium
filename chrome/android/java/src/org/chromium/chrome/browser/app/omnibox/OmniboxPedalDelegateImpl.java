@@ -9,6 +9,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.history.HistoryActivity;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
+import org.chromium.chrome.browser.omnibox.action.OmniboxActionType;
 import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics;
@@ -37,6 +39,7 @@ import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.omnibox.action.HistoryClustersAction;
 import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
@@ -61,7 +64,11 @@ public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
 
     @Override
     public void execute(OmniboxPedal omniboxPedal) {
-        if (!omniboxPedal.hasPedalId()) return;
+        if (omniboxPedal.hasActionId()) {
+            executeNonPedalAction(omniboxPedal);
+            return;
+        }
+
         @OmniboxPedalType
         int omniboxPedalType = omniboxPedal.getPedalID();
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
@@ -132,6 +139,19 @@ public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
         return;
     }
 
+    private void executeNonPedalAction(OmniboxPedal omniboxPedal) {
+        switch (omniboxPedal.getActionID()) {
+            case OmniboxActionType.HISTORY_CLUSTERS:
+                if (mHistoryClustersCoordinator != null) {
+                    assert omniboxPedal instanceof HistoryClustersAction;
+                    String query = ((HistoryClustersAction) omniboxPedal).getQuery();
+                    assert !TextUtils.isEmpty(query);
+                    mHistoryClustersCoordinator.showBottomSheet(query);
+                }
+                break;
+        }
+    }
+
     /**
      * Creates an intent to launch a new tab with chrome://dino/ URL.
      *
@@ -167,7 +187,7 @@ public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
     @Override
     public @NonNull PedalIcon getIcon(OmniboxPedal omniboxPedal) {
         if (!omniboxPedal.hasPedalId()) {
-            new PedalIcon(R.drawable.fre_product_logo, /*tintWithTextColor=*/false);
+            return new PedalIcon(R.drawable.fre_product_logo, /*tintWithTextColor=*/false);
         }
 
         @OmniboxPedalType

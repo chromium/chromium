@@ -9,7 +9,7 @@ import("//chrome/browser/buildflags.gni")
 android_resources("java_resources") {
   sources = [
     "java/res/layout/history_cluster_visit.xml",
-    "java/res/layout/history_clusters_content_view.xml",
+    "java/res/layout/history_clusters_bottom_sheet_content.xml",
   ]
   deps = [ "//components/browser_ui/widget/android:java_resources" ]
 }
@@ -18,6 +18,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/history_clusters/ClusterVisit.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryCluster.java",
+    "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersBridge.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersCoordinator.java",
     "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersItemProperties.java",
@@ -34,8 +35,10 @@ android_library("java") {
     "//build/android:build_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/favicon:java",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/favicon/android:java",
+    "//components/strings:components_strings_grd",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
