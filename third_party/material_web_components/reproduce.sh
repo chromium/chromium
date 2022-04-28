@@ -51,7 +51,7 @@ rsync -c --delete --delete-excluded -r -v --prune-empty-dirs \
 # Resolve imports as relative paths so we can load them in chrome://resources/.
 find components-chromium/ \
    \( -name "*.js"  \) \
-   -exec node resolve_imports.js {} +
+   -exec node rewrite_imports.js {} +
 
 new=$(git status --porcelain components-chromium | grep '^??' | \
       cut -d' ' -f2 | egrep '\.(js|css)$' || true)
