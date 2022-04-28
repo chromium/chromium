@@ -44,6 +44,10 @@ class GIN_EXPORT PageAllocator final : public v8::PageAllocator {
                       size_t length,
                       Permission permissions) override;
 
+  bool RecommitPages(void* address,
+                     size_t length,
+                     Permission permissions) override;
+
   bool DiscardSystemPages(void* address, size_t size) override;
 
   bool DecommitPages(void* address, size_t size) override;

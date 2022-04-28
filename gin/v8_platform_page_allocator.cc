@@ -124,6 +124,15 @@ bool PageAllocator::SetPermissions(void* address,
   }
 }
 
+bool PageAllocator::RecommitPages(void* address,
+                                  size_t length,
+                                  Permission permissions) {
+  base::RecommitSystemPages(
+      reinterpret_cast<uintptr_t>(address), length, GetPageConfig(permissions),
+      base::PageAccessibilityDisposition::kAllowKeepForPerf);
+  return true;
+}
+
 bool PageAllocator::DiscardSystemPages(void* address, size_t size) {
   base::DiscardSystemPages(address, size);
   return true;
