@@ -5,15 +5,18 @@
 #include "chrome/browser/ash/borealis/testing/widgets.h"
 
 #include "components/exo/shell_surface_util.h"
+#include "ui/aura/client/aura_constants.h"
 
 namespace borealis {
 
 std::unique_ptr<views::Widget> CreateFakeWidget(std::string name,
                                                 bool fullscreen /*=false*/) {
-  ash::TestWidgetBuilder builder;
-  builder.SetShow(false);
-  std::unique_ptr<views::Widget> widget = builder.BuildOwnsNativeWidget();
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder().SetShow(false).BuildOwnsNativeWidget();
   exo::SetShellApplicationId(widget->GetNativeWindow(), name);
+  widget->GetNativeWindow()->SetProperty(
+      aura::client::kResizeBehaviorKey,
+      aura::client::kResizeBehaviorCanMaximize);
   if (fullscreen) {
     widget->SetFullscreen(true);
   }

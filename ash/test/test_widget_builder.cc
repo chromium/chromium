@@ -17,12 +17,13 @@ namespace {
 
 // WidgetDelegate that is resizable and creates ash's NonClientFrameView
 // implementation.
-class TestWidgetDelegate : public views::WidgetDelegateView {
+class TestWidgetDelegate : public views::WidgetDelegate {
  public:
   TestWidgetDelegate() {
     SetCanMaximize(true);
     SetCanMinimize(true);
     SetCanResize(true);
+    SetOwnedByWidget(true);
   }
   TestWidgetDelegate(const TestWidgetDelegate& other) = delete;
   TestWidgetDelegate& operator=(const TestWidgetDelegate& other) = delete;

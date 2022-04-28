@@ -358,9 +358,7 @@ TEST_F(ShellSurfaceTest, Restore) {
 
 TEST_F(ShellSurfaceTest, RestoreFromFullscreen) {
   std::unique_ptr<ShellSurface> shell_surface =
-      test::ShellSurfaceBuilder({256, 256})
-          .SetMaximumSize(gfx::Size(10, 10))
-          .BuildShellSurface();
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
 
   // Act: Restore after fullscreen
   shell_surface->SetFullscreen(true);
