@@ -21,10 +21,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-namespace gfx {
-class ImageSkia;
-}  // namespace gfx
-
 class Profile;
 
 namespace ash {
@@ -104,13 +100,6 @@ class PersonalizationAppAmbientProviderImpl
   // Update topic source if needed.
   void MaybeUpdateTopicSource(ash::AmbientModeTopicSource topic_source);
 
-  void DownloadAlbumPreviewImage();
-  void DownloadRecentHighlightsPreviewImages(
-      const std::vector<std::string>& urls);
-
-  void OnAlbumPreviewImageDownloaded(const std::string& album_id,
-                                     const gfx::ImageSkia& image);
-
   void FetchGooglePhotosAlbumsPreviews(
       const std::vector<std::string>& album_ids);
   void OnGooglePhotosAlbumsPreviewsFetched(const std::vector<GURL>& preview_urls);
@@ -165,18 +154,12 @@ class PersonalizationAppAmbientProviderImpl
   // A flag to record if the user has seen the ambient mode page.
   bool page_viewed_ = false;
 
-  std::vector<gfx::ImageSkia> recent_highlights_preview_images_;
-
   base::WeakPtrFactory<PersonalizationAppAmbientProviderImpl>
       write_weak_factory_{this};
   base::WeakPtrFactory<PersonalizationAppAmbientProviderImpl>
       read_weak_factory_{this};
   base::WeakPtrFactory<PersonalizationAppAmbientProviderImpl>
-      album_preview_weak_factory_{this};
-  base::WeakPtrFactory<PersonalizationAppAmbientProviderImpl>
       google_photos_albums_previews_weak_factory_{this};
-  base::WeakPtrFactory<PersonalizationAppAmbientProviderImpl>
-      recent_highlights_previews_weak_factory_{this};
 };
 
 }  // namespace personalization_app

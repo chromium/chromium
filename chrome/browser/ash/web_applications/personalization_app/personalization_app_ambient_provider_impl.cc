@@ -36,9 +36,6 @@
 #include "personalization_app_ambient_provider_impl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/gfx/codec/png_codec.h"
-#include "ui/gfx/geometry/size.h"
-#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -63,16 +60,6 @@ constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
     -1,         // Never discard the entry.
     true,       // Use initial delay.
 };
-
-void EncodeImage(const gfx::ImageSkia& image,
-                 std::vector<unsigned char>* output) {
-  if (!gfx::PNGCodec::EncodeBGRASkBitmap(*image.bitmap(),
-                                         /*discard_transparency=*/false,
-                                         output)) {
-    VLOG(1) << "Failed to encode image to png";
-    output->clear();
-  }
-}
 
 }  // namespace
 
@@ -477,9 +464,6 @@ void PersonalizationAppAmbientProviderImpl::OnSettingsAndAlbumsFetched(
   personal_albums_ = std::move(personal_albums);
   SyncSettingsAndAlbums();
 
-  // Will notify WebUI when downloads successfully.
-  DownloadAlbumPreviewImage();
-
   OnTemperatureUnitChanged();
 
   // Notify `OnAlbumsChanged()` first because the albums info is needed to
@@ -499,9 +483,8 @@ void PersonalizationAppAmbientProviderImpl::SyncSettingsAndAlbums() {
   // Clear the `selected` field, which will be populated with new value below.
   // It is neceessary if `UpdateSettings()` failed and we need to reset the
   // cached settings.
-  for (auto it = personal_albums_.albums.begin();
-       it != personal_albums_.albums.end(); ++it) {
-    it->selected = false;
+  for (auto& album : personal_albums_.albums) {
+    album.selected = false;
   }
 
   auto it = settings_->selected_album_ids.begin();
@@ -532,49 +515,6 @@ void PersonalizationAppAmbientProviderImpl::MaybeUpdateTopicSource(
   OnTopicSourceChanged();
 }
 
-void PersonalizationAppAmbientProviderImpl::DownloadAlbumPreviewImage() {
-  // Art gallery:
-  for (const auto& album : settings_->art_settings) {
-    ash::AmbientClient::Get()->DownloadImage(
-        album.preview_image_url,
-        base::BindOnce(&PersonalizationAppAmbientProviderImpl::
-                           OnAlbumPreviewImageDownloaded,
-                       album_preview_weak_factory_.GetWeakPtr(),
-                       album.album_id));
-  }
-
-  // GooglePhotos:
-  // TODO(b/163413738): Slow down the downloading when there are too many
-  // albums.
-  for (const auto& album : personal_albums_.albums) {
-    if (album.album_id == ash::kAmbientModeRecentHighlightsAlbumId) {
-      DownloadRecentHighlightsPreviewImages(album.preview_image_urls);
-      continue;
-    }
-
-    ash::AmbientClient::Get()->DownloadImage(
-        album.banner_image_url,
-        base::BindOnce(&PersonalizationAppAmbientProviderImpl::
-                           OnAlbumPreviewImageDownloaded,
-                       album_preview_weak_factory_.GetWeakPtr(),
-                       album.album_id));
-  }
-}
-
-void PersonalizationAppAmbientProviderImpl::OnAlbumPreviewImageDownloaded(
-    const std::string& album_id,
-    const gfx::ImageSkia& image) {
-  // Album does not exist any more.
-  if (!FindArtAlbumById(album_id) && !FindPersonalAlbumById(album_id)) {
-    return;
-  }
-
-  std::vector<unsigned char> encoded_image_bytes;
-  EncodeImage(image, &encoded_image_bytes);
-  if (encoded_image_bytes.empty())
-    return;
-}
-
 void PersonalizationAppAmbientProviderImpl::FetchGooglePhotosAlbumsPreviews(
     const std::vector<std::string>& album_ids) {
   DCHECK(!album_ids.empty());
@@ -591,42 +531,6 @@ void PersonalizationAppAmbientProviderImpl::OnGooglePhotosAlbumsPreviewsFetched(
     const std::vector<GURL>& preview_urls) {
   DVLOG(4) << __func__ << " preview_urls_size=" << preview_urls.size();
   ambient_observer_remote_->OnGooglePhotosAlbumsPreviewsFetched(preview_urls);
-}
-
-void PersonalizationAppAmbientProviderImpl::
-    DownloadRecentHighlightsPreviewImages(
-        const std::vector<std::string>& urls) {
-  recent_highlights_previews_weak_factory_.InvalidateWeakPtrs();
-
-  // Only show up to 4 previews.
-  constexpr int kMaxRecentHighlightsPreviews = 4;
-  const int total_previews =
-      std::min(kMaxRecentHighlightsPreviews, static_cast<int>(urls.size()));
-  recent_highlights_preview_images_.resize(total_previews);
-  auto on_done = base::BarrierClosure(
-      total_previews,
-      base::BindOnce(&PersonalizationAppAmbientProviderImpl::
-                         OnRecentHighlightsPreviewsChanged,
-                     recent_highlights_previews_weak_factory_.GetWeakPtr()));
-
-  for (int url_index = 0; url_index < total_previews; ++url_index) {
-    const auto& url = urls[url_index];
-    ash::AmbientClient::Get()->DownloadImage(
-        url,
-        base::BindOnce(
-            [](std::vector<gfx::ImageSkia>* preview_images, int url_index,
-               base::RepeatingClosure on_done,
-               base::WeakPtr<PersonalizationAppAmbientProviderImpl> weak_ptr,
-               const gfx::ImageSkia& image) {
-              if (!weak_ptr)
-                return;
-
-              (*preview_images)[url_index] = image;
-              on_done.Run();
-            },
-            &recent_highlights_preview_images_, url_index, on_done,
-            recent_highlights_previews_weak_factory_.GetWeakPtr()));
-  }
 }
 
 ash::PersonalAlbum*
@@ -657,9 +561,7 @@ ash::ArtSetting* PersonalizationAppAmbientProviderImpl::FindArtAlbumById(
 void PersonalizationAppAmbientProviderImpl::ResetLocalSettings() {
   write_weak_factory_.InvalidateWeakPtrs();
   read_weak_factory_.InvalidateWeakPtrs();
-  album_preview_weak_factory_.InvalidateWeakPtrs();
   google_photos_albums_previews_weak_factory_.InvalidateWeakPtrs();
-  recent_highlights_previews_weak_factory_.InvalidateWeakPtrs();
 
   settings_.reset();
   cached_settings_.reset();
