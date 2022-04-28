@@ -70,8 +70,6 @@ sync_pb::SendTabToSelfSpecifics CreateSpecifics(
   specifics.set_target_device_sync_cache_guid(kLocalDeviceCacheGuid);
   specifics.set_shared_time_usec(
       shared_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  specifics.set_navigation_time_usec(
-      navigation_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   return specifics;
 }
 
@@ -618,12 +616,6 @@ TEST_F(SendTabToSelfBridgeTest, AddInvalidEntries) {
   EXPECT_EQ(nullptr,
             bridge()->AddEntry(GURL("http//google.com"), "d",
                                AdvanceAndGetTime(), kLocalDeviceCacheGuid));
-
-  // Add Entry should succeed on an invalid navigation_time, since that is the
-  // case for sending links.
-  EXPECT_CALL(*processor(), Put(_, _, _));
-  EXPECT_NE(nullptr, bridge()->AddEntry(GURL("http://www.example.com/"), "d",
-                                        base::Time(), kLocalDeviceCacheGuid));
 }
 
 TEST_F(SendTabToSelfBridgeTest, IsBridgeReady) {
@@ -639,20 +631,22 @@ TEST_F(SendTabToSelfBridgeTest, AddDuplicateEntries) {
 
   EXPECT_CALL(*mock_observer(), EntriesAddedRemotely(_)).Times(0);
 
-  base::Time navigation_time = AdvanceAndGetTime();
   // The de-duplication code does not use the title as a comparator.
   // So they are intentionally different here.
   EXPECT_CALL(*processor(), Put(_, _, _)).Times(1);
-  bridge()->AddEntry(GURL("http://a.com"), "a", navigation_time,
+  bridge()->AddEntry(GURL("http://a.com"), "a", base::Time(),
                      kLocalDeviceCacheGuid);
-  bridge()->AddEntry(GURL("http://a.com"), "b", navigation_time,
+  bridge()->AddEntry(GURL("http://a.com"), "b", base::Time(),
                      kLocalDeviceCacheGuid);
   EXPECT_EQ(1ul, bridge()->GetAllGuids().size());
 
+  // Wait for more than the current dedupe time (5 seconds).
+  AdvanceAndGetTime(base::Seconds(6));
+
   EXPECT_CALL(*processor(), Put(_, _, _)).Times(2);
-  bridge()->AddEntry(GURL("http://a.com"), "a", AdvanceAndGetTime(),
+  bridge()->AddEntry(GURL("http://a.com"), "a", base::Time(),
                      kLocalDeviceCacheGuid);
-  bridge()->AddEntry(GURL("http://b.com"), "b", AdvanceAndGetTime(),
+  bridge()->AddEntry(GURL("http://b.com"), "b", base::Time(),
                      kLocalDeviceCacheGuid);
   EXPECT_EQ(3ul, bridge()->GetAllGuids().size());
 }

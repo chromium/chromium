@@ -50,7 +50,7 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
       new_entry_pending_notification->GetURL(),
       new_entry_pending_notification->GetTitle(),
       new_entry_pending_notification->GetSharedTime(),
-      new_entry_pending_notification->GetOriginalNavigationTime(),
+      /*unused_original_navigation_time=*/base::Time(),
       new_entry_pending_notification->GetDeviceName(),
       new_entry_pending_notification->GetTargetDeviceSyncCacheGuid());
 

@@ -23,8 +23,7 @@ bool IsEqualForTesting(const SendTabToSelfEntry& a,
          a.GetTitle() == b.GetTitle() &&
          a.GetDeviceName() == b.GetDeviceName() &&
          a.GetTargetDeviceSyncCacheGuid() == b.GetTargetDeviceSyncCacheGuid() &&
-         a.GetSharedTime() == b.GetSharedTime() &&
-         a.GetOriginalNavigationTime() == b.GetOriginalNavigationTime();
+         a.GetSharedTime() == b.GetSharedTime();
 }
 
 bool IsEqualForTesting(const SendTabToSelfEntry& entry,
@@ -37,10 +36,7 @@ bool IsEqualForTesting(const SendTabToSelfEntry& entry,
       entry.GetTargetDeviceSyncCacheGuid() ==
           specifics.target_device_sync_cache_guid() &&
       specifics.shared_time_usec() ==
-          entry.GetSharedTime().ToDeltaSinceWindowsEpoch().InMicroseconds() &&
-      specifics.navigation_time_usec() == entry.GetOriginalNavigationTime()
-                                              .ToDeltaSinceWindowsEpoch()
-                                              .InMicroseconds());
+          entry.GetSharedTime().ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
 
 TEST(SendTabToSelfEntry, CompareEntries) {
@@ -100,7 +96,6 @@ TEST(SendTabToSelfEntry, FromProto) {
   pb_entry->set_device_name("device");
   pb_entry->set_target_device_sync_cache_guid("device");
   pb_entry->set_shared_time_usec(1);
-  pb_entry->set_navigation_time_usec(1);
 
   std::unique_ptr<SendTabToSelfEntry> entry(
       SendTabToSelfEntry::FromProto(*pb_entry, base::Time::FromTimeT(10)));
@@ -156,9 +151,7 @@ TEST(SendTabToSelfEntry, InvalidStrings) {
   pb_entry->set_title(invalid_utf8);
   pb_entry->set_device_name(invalid_utf8);
   pb_entry->set_target_device_sync_cache_guid("device");
-  ;
   pb_entry->set_shared_time_usec(1);
-  pb_entry->set_navigation_time_usec(1);
 
   std::unique_ptr<SendTabToSelfEntry> invalid_entry(
       SendTabToSelfEntry::FromProto(*pb_entry, base::Time::FromTimeT(10)));
@@ -184,7 +177,6 @@ TEST(SendTabToSelfEntry, MarkAsOpened) {
   pb_entry->set_device_name("device");
   pb_entry->set_target_device_sync_cache_guid("device");
   pb_entry->set_shared_time_usec(1);
-  pb_entry->set_navigation_time_usec(1);
   pb_entry->set_opened(true);
 
   std::unique_ptr<SendTabToSelfEntry> entry2(

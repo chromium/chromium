@@ -146,8 +146,6 @@ bool SendTabToSelfModelEqualityChecker::IsExitConditionSatisfied(
         entry0->GetURL() != entry1->GetURL() ||
         entry0->GetTitle() != entry1->GetTitle() ||
         entry0->GetSharedTime() != entry1->GetSharedTime() ||
-        entry0->GetOriginalNavigationTime() !=
-            entry1->GetOriginalNavigationTime() ||
         entry0->GetDeviceName() != entry1->GetDeviceName()) {
       return false;
     }

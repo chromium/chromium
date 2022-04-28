@@ -312,7 +312,6 @@ const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
   // has the first sent tab in progress, and so we will not attempt to resend.
   base::Time shared_time = clock_->Now();
   if (mru_entry_ && url == mru_entry_->GetURL() &&
-      navigation_time == mru_entry_->GetOriginalNavigationTime() &&
       shared_time - mru_entry_->GetSharedTime() < kDedupeTime) {
     send_tab_to_self::RecordNotificationThrottled();
     return mru_entry_;

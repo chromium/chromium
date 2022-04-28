@@ -30,9 +30,6 @@ message SendTabToSelfSpecifics {
   // The time the tab was shared as measured by the client in microseconds since
   // the windows epoch.
   optional int64 shared_time_usec = 3;
-  // The time the tab was navigated to as measured by the client in microseconds
-  // since the windows epoch.
-  optional int64 navigation_time_usec = 6;
   // A non-unique but human readable name to describe this client, used in UI.
   optional string device_name = 4;
   // The stable Device_id of the device that this tab was shared with.
@@ -42,4 +39,7 @@ message SendTabToSelfSpecifics {
   optional bool opened = 8;
   // Whether the notification for this proto been dismissed.
   optional bool notification_dismissed = 9;
+
+  reserved "navigation_time_usec";
+  reserved 6;
 }

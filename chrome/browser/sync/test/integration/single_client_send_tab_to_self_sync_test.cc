@@ -112,8 +112,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
       specifics.mutable_send_tab_to_self();
   send_tab_to_self->set_url(kUrl);
   send_tab_to_self->set_guid(kGuid);
-  send_tab_to_self->set_navigation_time_usec(
-      kNavigationTime.ToDeltaSinceWindowsEpoch().InMicroseconds());
   send_tab_to_self->set_shared_time_usec(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
