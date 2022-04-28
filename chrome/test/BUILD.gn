@@ -5338,25 +5338,6 @@ test("unit_tests") {
     ]
   }
 
-  if (is_chromeos) {
-    sources += [
-      "../browser/apps/intent_helper/metrics/intent_handling_metrics_unittest.cc",
-      "../browser/download/notification/download_item_notification_unittest.cc",
-      "../browser/policy/system_features_disable_list_policy_handler_unittest.cc",
-      "chromeos/printing/fake_local_printer_chromeos.cc",
-      "chromeos/printing/fake_local_printer_chromeos.h",
-    ]
-
-    if (use_cups) {
-      sources += [
-        "../browser/chromeos/printing/test_cups_wrapper.cc",
-        "../browser/chromeos/printing/test_cups_wrapper.h",
-        "../browser/extensions/api/printing/fake_print_job_controller.cc",
-        "../browser/extensions/api/printing/fake_print_job_controller.h",
-      ]
-    }
-  }
-
   if (is_chromeos_ash) {
     sources += [
       "../browser/ash/attestation/attestation_policy_unittest.cc",
@@ -5406,10 +5387,6 @@ test("unit_tests") {
   # Currently disabled on win due to crbug.com/1311991.
   if (!is_android && !is_win) {
     sources += [ "../common/net/x509_certificate_model_unittest.cc" ]
-  }
-
-  if (is_chromeos) {
-    sources += [ "../browser/media/platform_verification_chromeos_unittest.cc" ]
   }
 
   if (is_chromeos_ash) {
@@ -6879,9 +6856,6 @@ test("unit_tests") {
       "//ui/native_theme:test_support",
       "//ui/webui/resources/js/browser_command:mojo_bindings",
     ]
-    if (is_chromeos) {
-      deps += [ "//ui/chromeos" ]
-    }
     if (is_chromeos_ash) {
       deps += [
         "//ash/assistant/model",
@@ -6961,6 +6935,36 @@ test("unit_tests") {
     }
   }
 
+  if (is_chromeos) {
+    sources += [
+      "../browser/apps/intent_helper/metrics/intent_handling_metrics_unittest.cc",
+      "../browser/apps/intent_helper/supported_links_infobar_prefs_service_unittest.cc",
+      "../browser/chromeos/arc/arc_external_protocol_dialog_unittest.cc",
+      "../browser/chromeos/arc/open_with_menu_unittest.cc",
+      "../browser/download/notification/download_item_notification_unittest.cc",
+      "../browser/media/platform_verification_chromeos_unittest.cc",
+      "../browser/policy/system_features_disable_list_policy_handler_unittest.cc",
+      "chromeos/printing/fake_local_printer_chromeos.cc",
+      "chromeos/printing/fake_local_printer_chromeos.h",
+    ]
+
+    deps += [
+      "//components/arc/common",
+      "//components/arc/common:arc_intent_helper_constants",
+      "//components/arc/common:arc_test_support",
+      "//ui/chromeos",
+    ]
+
+    if (use_cups) {
+      sources += [
+        "../browser/chromeos/printing/test_cups_wrapper.cc",
+        "../browser/chromeos/printing/test_cups_wrapper.h",
+        "../browser/extensions/api/printing/fake_print_job_controller.cc",
+        "../browser/extensions/api/printing/fake_print_job_controller.h",
+      ]
+    }
+  }
+
   if (is_chromeos_lacros) {
     sources += [
       "../browser/apps/app_service/app_service_proxy_lacros_unittest.cc",
@@ -6988,19 +6992,6 @@ test("unit_tests") {
 
       data_deps += [ "//chrome/notification_helper" ]
     }
-  }
-
-  if (is_chromeos) {
-    sources += [
-      "../browser/apps/intent_helper/supported_links_infobar_prefs_service_unittest.cc",
-      "../browser/chromeos/arc/arc_external_protocol_dialog_unittest.cc",
-      "../browser/chromeos/arc/open_with_menu_unittest.cc",
-    ]
-    deps += [
-      "//components/arc/common",
-      "//components/arc/common:arc_intent_helper_constants",
-      "//components/arc/common:arc_test_support",
-    ]
   }
 
   if (is_chromeos_lacros) {
