@@ -86,12 +86,15 @@ class PageLoadTrackerTest : public PageLoadMetricsObserverContentTestHarness {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
             {blink::features::kPrerender2, {}},
-            {blink::features::kPrerender2MemoryControls, {}},
             {blink::features::kFencedFrames,
              {{"implementation_type", "mparch"}}},
             {blink::features::kInitialNavigationEntry, {}},
         },
-        {});
+        {
+            // Disable the memory requirement of Prerender2
+            // so the test can run on any bot.
+            {blink::features::kPrerender2MemoryControls},
+        });
   }
 
  protected:
@@ -201,13 +204,7 @@ TEST_F(PageLoadTrackerTest, EventForwarding) {
   EXPECT_EQ(2u, GetEvents().sub_frame_navigation_count);
 }
 
-// TODO(https://crbug.com/1312096): Enable the test on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_PrerenderPageType DISABLED_PrerenderPageType
-#else
-#define MAYBE_PrerenderPageType PrerenderPageType
-#endif
-TEST_F(PageLoadTrackerTest, MAYBE_PrerenderPageType) {
+TEST_F(PageLoadTrackerTest, PrerenderPageType) {
   // Target URL to monitor the tracker via the test observer.
   const char kPrerenderingUrl[] = "https://a.test/prerender";
   SetTargetUrl(kPrerenderingUrl);
@@ -284,13 +281,7 @@ TEST_F(PageLoadTrackerTest, FencedFramesPageType) {
   EXPECT_TRUE(GetEvents().was_ready_to_commit_next_navigation);
 }
 
-// TODO(https://crbug.com/1312096): Enable the test on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_StopObservingOnPrerender DISABLED_StopObservingOnPrerender
-#else
-#define MAYBE_StopObservingOnPrerender StopObservingOnPrerender
-#endif
-TEST_F(PageLoadTrackerTest, MAYBE_StopObservingOnPrerender) {
+TEST_F(PageLoadTrackerTest, StopObservingOnPrerender) {
   // Target URL to monitor the tracker via the test observer.
   const char kPrerenderingUrl[] = "https://a.test/prerender";
   SetTargetUrl(kPrerenderingUrl);
