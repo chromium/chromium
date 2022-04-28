@@ -264,21 +264,20 @@ void CloudPolicyRefreshScheduler::UpdateLastRefreshFromPolicy() {
     return;
   }
 
-  // On mobile platforms the client is only registered for enterprise users.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  if (store_->has_policy() && store_->policy()->has_timestamp()) {
-    last_refresh_ = base::Time::FromJavaTime(store_->policy()->timestamp());
-    last_refresh_ticks_ =
-        GetTickClock()->NowTicks() + (last_refresh_ - GetClock()->Now());
-  }
+  // On mobile platforms the client is only registered for enterprise users.
+  constexpr bool should_update = true;
 #else
+  // Only delay refresh for a cached non-managed response.
+  const bool should_update = !store_->is_managed();
+#endif
+
   if (store_->has_policy() && store_->policy()->has_timestamp() &&
-      !store_->is_managed()) {
+      should_update) {
     last_refresh_ = base::Time::FromJavaTime(store_->policy()->timestamp());
     last_refresh_ticks_ =
         GetTickClock()->NowTicks() + (last_refresh_ - GetClock()->Now());
   }
-#endif
 }
 
 void CloudPolicyRefreshScheduler::ScheduleRefresh() {
