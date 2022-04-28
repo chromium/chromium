@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#include "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -746,17 +747,35 @@
 - (void)stickFeedHeaderToTop {
   DCHECK(self.feedHeaderViewController);
   DCHECK(IsWebChannelsEnabled());
+
   [NSLayoutConstraint deactivateConstraints:self.feedHeaderConstraints];
-  self.feedHeaderConstraints = @[
-    [self.feedHeaderViewController.view.topAnchor
-        constraintEqualToAnchor:self.headerController.view.bottomAnchor
-                       constant:-(content_suggestions::headerBottomPadding() +
-                                  [self.feedHeaderViewController
-                                          customSearchEngineViewHeight])],
-    [self.collectionView.topAnchor
-        constraintEqualToAnchor:[self contentSuggestionsViewController]
-                                    .view.bottomAnchor],
-  ];
+
+  // On iPhones, the fake omnibox is pinned to the top so we anchor the feed
+  // header to the bottom of it. The fake omnibox is not pinned for iPads, so we
+  // instead anchor the feed header to the top of the NTP.
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    self.feedHeaderConstraints = @[
+      [self.feedHeaderViewController.view.topAnchor
+          constraintEqualToAnchor:self.view.topAnchor
+                         constant:-[self.feedHeaderViewController
+                                          customSearchEngineViewHeight]],
+      [self.collectionView.topAnchor
+          constraintEqualToAnchor:[self contentSuggestionsViewController]
+                                      .view.bottomAnchor],
+    ];
+  } else {
+    self.feedHeaderConstraints = @[
+      [self.feedHeaderViewController.view.topAnchor
+          constraintEqualToAnchor:self.headerController.view.bottomAnchor
+                         constant:-(content_suggestions::headerBottomPadding() +
+                                    [self.feedHeaderViewController
+                                            customSearchEngineViewHeight])],
+      [self.collectionView.topAnchor
+          constraintEqualToAnchor:[self contentSuggestionsViewController]
+                                      .view.bottomAnchor],
+    ];
+  }
+
   [self.feedHeaderViewController toggleBackgroundBlur:YES animated:YES];
   [NSLayoutConstraint activateConstraints:self.feedHeaderConstraints];
 }
@@ -831,14 +850,18 @@
 // TODO(crbug.com/1277504): Modify this comment when Web Channels is released.
 - (void)handleStickyElementsForScrollPosition:(CGFloat)scrollPosition
                                         force:(BOOL)force {
-  if (scrollPosition > [self offsetToStickOmnibox] &&
-      !self.fakeOmniboxPinnedToTop) {
-    [self pinFakeOmniboxToTop];
-  } else if (scrollPosition <= [self offsetToStickOmnibox] &&
-             self.fakeOmniboxPinnedToTop) {
-    [self resetFakeOmniboxConstraints];
+  // Handles the sticky omnibox. Does not stick for iPads.
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    if (scrollPosition > [self offsetToStickOmnibox] &&
+        !self.fakeOmniboxPinnedToTop) {
+      [self pinFakeOmniboxToTop];
+    } else if (scrollPosition <= [self offsetToStickOmnibox] &&
+               self.fakeOmniboxPinnedToTop) {
+      [self resetFakeOmniboxConstraints];
+    }
   }
 
+  // Handles the sticky feed header.
   if (IsWebChannelsEnabled()) {
     if ((!self.isScrolledIntoFeed || force) &&
         scrollPosition > [self offsetWhenScrolledIntoFeed]) {
@@ -988,8 +1011,12 @@
 }
 
 // The y-position content offset for when the user has completely scrolled into
-// the Feed.
+// the Feed. Only takes sticky omnibox into consideration for non-iPad devices.
 - (CGFloat)offsetWhenScrolledIntoFeed {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return -[self feedHeaderHeight];
+  }
+
   return -(self.headerController.view.frame.size.height -
            [self stickyOmniboxHeight] -
            [self.feedHeaderViewController customSearchEngineViewHeight] -
@@ -1005,7 +1032,7 @@
         [self.feedHeaderViewController customSearchEngineViewHeight]);
   if (IsSplitToolbarMode(self) &&
       IsContentSuggestionsHeaderMigrationEnabled()) {
-    return offset - [self contentSuggestionsContentHeight];
+    offset -= [self contentSuggestionsContentHeight];
   }
   return offset;
 }

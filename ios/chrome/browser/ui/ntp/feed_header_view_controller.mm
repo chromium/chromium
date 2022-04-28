@@ -537,9 +537,9 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
       [self.feedHeaderConstraints addObjectsFromArray:@[
         // Anchor blur background view.
         [self.blurBackgroundView.trailingAnchor
-            constraintEqualToAnchor:self.container.trailingAnchor],
+            constraintEqualToAnchor:self.view.trailingAnchor],
         [self.blurBackgroundView.leadingAnchor
-            constraintEqualToAnchor:self.container.leadingAnchor],
+            constraintEqualToAnchor:self.view.leadingAnchor],
         [self.blurBackgroundView.topAnchor
             constraintEqualToAnchor:self.container.topAnchor],
         [self.blurBackgroundView.bottomAnchor
