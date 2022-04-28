@@ -2473,7 +2473,7 @@ void SkiaRenderer::ScheduleOverlays() {
       continue;
     }
     // Solid Color quads do not have associated resource buffers.
-    if (overlay.solid_color.has_value())
+    if (overlay.is_solid_color)
       continue;
 
     // Resources will be unlocked after the next SwapBuffers() is completed.

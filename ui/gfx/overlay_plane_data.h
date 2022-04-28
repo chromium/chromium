@@ -31,7 +31,8 @@ struct GFX_EXPORT OverlayPlaneData {
                    const gfx::RRectF& rounded_corners,
                    const gfx::ColorSpace& color_space,
                    const absl::optional<HDRMetadata>& hdr_metadata,
-                   absl::optional<SkColor> solid_color = absl::nullopt);
+                   absl::optional<SkColor> color = absl::nullopt,
+                   bool is_solid_color = false);
   ~OverlayPlaneData();
 
   OverlayPlaneData(const OverlayPlaneData& other);
@@ -73,8 +74,12 @@ struct GFX_EXPORT OverlayPlaneData {
   // Optional HDR meta data required to display this overlay.
   absl::optional<HDRMetadata> hdr_metadata;
 
+  // Represents either a background of this overlay or a color of a solid color
+  // quad, which can be checked via the |is_solid_color|.
+  absl::optional<SkColor> color;
+
   // Set if this is a solid color quad.
-  absl::optional<SkColor> solid_color;
+  bool is_solid_color;
 };
 
 }  // namespace gfx

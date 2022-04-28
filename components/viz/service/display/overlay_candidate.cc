@@ -431,7 +431,10 @@ OverlayCandidate::CandidateStatus OverlayCandidate::FromSolidColorQuad(
                                   true, primary_rect);
 
   if (rtn == CandidateStatus::kSuccess) {
-    candidate->solid_color = quad->color;
+    candidate->color = quad->color;
+    // Mark this candidate a solid color as the |color| member can be either a
+    // background of the overlay or a color of the solid color quad.
+    candidate->is_solid_color = true;
   }
   return rtn;
 }

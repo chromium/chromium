@@ -394,11 +394,12 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
     auto& overlay = overlays[i];
 
 #if defined(USE_OZONE)
-    if (overlay.solid_color.has_value()) {
+    if (overlay.is_solid_color) {
+      DCHECK(overlay.color.has_value());
       // TODO(msisov): reconsider this once Linux Wayland compositors also
       // support that. See https://bit.ly/2ZqUO0w.
       if (!supports_non_backed_solid_color_images_) {
-        overlay.mailbox = GetImageMailboxForColor(overlay.solid_color.value());
+        overlay.mailbox = GetImageMailboxForColor(overlay.color.value());
       } else {
         accesses[i] = nullptr;
         continue;
@@ -704,12 +705,13 @@ void SkiaOutputDeviceBufferQueue::MaybeScheduleBackgroundImage() {
   OverlayCandidate candidate;
   candidate.color_space = color_space_;
   candidate.display_rect = gfx::RectF(gfx::SizeF(viewport_size_));
-  candidate.solid_color = SK_ColorTRANSPARENT;
+  candidate.color = SK_ColorTRANSPARENT;
   candidate.plane_z_order = INT32_MIN;
+  candidate.is_solid_color = supports_non_backed_solid_color_images_;
 
 #if defined(USE_OZONE)
   if (!supports_non_backed_solid_color_images_) {
-    auto mailbox = GetImageMailboxForColor(candidate.solid_color.value());
+    auto mailbox = GetImageMailboxForColor(candidate.color.value());
     DCHECK(mailbox.IsSharedImage());
 
     auto* overlay_data = GetOrCreateOverlayData(mailbox);

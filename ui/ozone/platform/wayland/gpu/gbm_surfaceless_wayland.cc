@@ -136,7 +136,7 @@ bool GbmSurfacelessWayland::ScheduleOverlayPlane(
     const gfx::OverlayPlaneData& overlay_plane_data) {
   if (!image) {
     // Only solid color overlays can be non-backed.
-    if (!overlay_plane_data.solid_color.has_value()) {
+    if (!overlay_plane_data.is_solid_color) {
       LOG(WARNING) << "Only solid color overlay planes are allowed to be "
                       "scheduled without GLImage.";
       return false;
@@ -318,14 +318,14 @@ void GbmSurfacelessWayland::PendingFrame::ScheduleOverlayPlanes(
   for (auto& overlay_data : non_backed_overlays) {
     // This mustn't happen, but let's be explicit here and fail scheduling if
     // it is not a solid color overlay.
-    if (!overlay_data.solid_color.has_value()) {
+    if (!overlay_data.color.has_value()) {
       schedule_planes_succeeded = false;
       return;
     }
 
     BufferId buf_id =
         surfaceless->solid_color_buffers_holder_->GetOrCreateSolidColorBuffer(
-            overlay_data.solid_color.value(), surfaceless->buffer_manager_);
+            overlay_data.color.value(), surfaceless->buffer_manager_);
     // Invalid buffer id.
     if (buf_id == 0) {
       schedule_planes_succeeded = false;

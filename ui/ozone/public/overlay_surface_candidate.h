@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -17,6 +18,7 @@
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
+
 namespace ui {
 
 enum OverlayStatus {
@@ -77,6 +79,8 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlaySurfaceCandidate {
   gfx::OverlayPriorityHint priority_hint = gfx::OverlayPriorityHint::kNone;
   // Specifies the rounded corners of overlay in radii.
   gfx::RRectF rounded_corners;
+  // Specifies the background color of the overlay.
+  absl::optional<SkColor> background_color;
 };
 
 using OverlaySurfaceCandidateList = std::vector<OverlaySurfaceCandidate>;

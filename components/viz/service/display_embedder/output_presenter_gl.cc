@@ -416,8 +416,14 @@ void OutputPresenterGL::ScheduleOneOverlay(const OverlayCandidate& overlay,
                                            ScopedOverlayAccess* access) {
 #if BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
   auto* gl_image = access ? access->gl_image() : nullptr;
-  if (gl_image || overlay.solid_color.has_value()) {
-    DCHECK(!overlay.gpu_fence_id);
+  if (gl_image || overlay.is_solid_color) {
+#if DCHECK_IS_ON()
+    if (overlay.is_solid_color) {
+      LOG_IF(FATAL, !overlay.color.has_value())
+          << "Solid color quads must have color set.";
+    }
+    CHECK(!overlay.gpu_fence_id);
+#endif
     gl_surface_->ScheduleOverlayPlane(
         gl_image, access ? TakeGpuFence(access->TakeAcquireFences()) : nullptr,
         gfx::OverlayPlaneData(
@@ -425,7 +431,7 @@ void OutputPresenterGL::ScheduleOneOverlay(const OverlayCandidate& overlay,
             overlay.uv_rect, !overlay.is_opaque,
             ToEnclosingRect(overlay.damage_rect), overlay.opacity,
             overlay.priority_hint, overlay.rounded_corners, overlay.color_space,
-            overlay.hdr_metadata, overlay.solid_color));
+            overlay.hdr_metadata, overlay.color, overlay.is_solid_color));
   }
 #else   //  BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
   NOTREACHED();
@@ -477,8 +483,14 @@ void OutputPresenterGL::ScheduleOverlays(
     // may have a protocol that asks Wayland compositor to create a solid color
     // buffer for a client. OverlayProcessorDelegated decides if a solid color
     // overlay is an overlay candidate and should be scheduled.
-    if (gl_image || overlay.solid_color.has_value()) {
-      DCHECK(!overlay.gpu_fence_id);
+    if (gl_image || overlay.is_solid_color) {
+#if DCHECK_IS_ON()
+      if (overlay.is_solid_color) {
+        LOG_IF(FATAL, !overlay.color.has_value())
+            << "Solid color quads must have color set.";
+      }
+      CHECK(!overlay.gpu_fence_id);
+#endif
       gl_surface_->ScheduleOverlayPlane(
           gl_image,
           TakeGpuFenceForOverlay(dependency_, accesses[i], current_frame_fence),
@@ -487,7 +499,8 @@ void OutputPresenterGL::ScheduleOverlays(
               overlay.uv_rect, !overlay.is_opaque,
               ToEnclosingRect(overlay.damage_rect), overlay.opacity,
               overlay.priority_hint, overlay.rounded_corners,
-              overlay.color_space, overlay.hdr_metadata, overlay.solid_color));
+              overlay.color_space, overlay.hdr_metadata, overlay.color,
+              overlay.is_solid_color));
     }
 #elif BUILDFLAG(IS_APPLE)
     // For RenderPassDrawQuad the ddl is not nullptr, and the opacity is applied
