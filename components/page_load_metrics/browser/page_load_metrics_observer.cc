@@ -86,10 +86,6 @@ const char* PageLoadMetricsObserver::GetObserverName() const {
   return nullptr;
 }
 
-base::WeakPtr<PageLoadMetricsObserver> PageLoadMetricsObserver::GetWeakPtr() {
-  return weak_factory_.GetWeakPtr();
-}
-
 PageLoadMetricsObserver::ObservePolicy PageLoadMetricsObserver::OnStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url,

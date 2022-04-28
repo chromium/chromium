@@ -93,7 +93,7 @@ void RecordAppBackgroundPageLoadCompleted(bool completed_after_background) {
 }
 
 void DispatchEventsAfterBackForwardCacheRestore(
-    PageLoadMetricsObserver* observer,
+    PageLoadMetricsObserverInterface* observer,
     const std::vector<mojo::StructPtr<mojom::BackForwardCacheTiming>>&
         last_timings,
     const std::vector<mojo::StructPtr<mojom::BackForwardCacheTiming>>&
@@ -142,7 +142,7 @@ void DispatchEventsAfterBackForwardCacheRestore(
   }
 }
 
-void DispatchObserverTimingCallbacks(PageLoadMetricsObserver* observer,
+void DispatchObserverTimingCallbacks(PageLoadMetricsObserverInterface* observer,
                                      const mojom::PageLoadTiming& last_timing,
                                      const mojom::PageLoadTiming& new_timing) {
   if (!last_timing.Equals(new_timing))
@@ -225,7 +225,7 @@ PageLoadTracker::PageLoadTracker(
                             base::BindRepeating(
                                 [](content::NavigationHandle* navigation_handle,
                                    const GURL& currently_committed_url,
-                                   PageLoadMetricsObserver* observer) {
+                                   PageLoadMetricsObserverInterface* observer) {
                                   return observer->OnPrerenderStart(
                                       navigation_handle,
                                       currently_committed_url);
@@ -241,7 +241,7 @@ PageLoadTracker::PageLoadTracker(
                             base::BindRepeating(
                                 [](content::NavigationHandle* navigation_handle,
                                    const GURL& currently_committed_url,
-                                   PageLoadMetricsObserver* observer) {
+                                   PageLoadMetricsObserverInterface* observer) {
                                   return observer->OnFencedFramesStart(
                                       navigation_handle,
                                       currently_committed_url);
@@ -254,7 +254,7 @@ PageLoadTracker::PageLoadTracker(
         base::BindRepeating(
             [](content::NavigationHandle* navigation_handle,
                const GURL& currently_committed_url, bool started_in_foreground,
-               PageLoadMetricsObserver* observer) {
+               PageLoadMetricsObserverInterface* observer) {
               return observer->OnStart(navigation_handle,
                                        currently_committed_url,
                                        started_in_foreground);
@@ -336,7 +336,7 @@ void PageLoadTracker::PageHidden() {
   InvokeAndPruneObservers("PageLoadMetricsObserver::OnHidden",
                           base::BindRepeating(
                               [](const mojom::PageLoadTiming* timing,
-                                 PageLoadMetricsObserver* observer) {
+                                 PageLoadMetricsObserverInterface* observer) {
                                 return observer->OnHidden(*timing);
                               },
                               &metrics_update_dispatcher_.timing()));
@@ -359,7 +359,7 @@ void PageLoadTracker::PageShown() {
   visibility_tracker_.OnShown();
   InvokeAndPruneObservers(
       "PageLoadMetricsObserver::OnShown",
-      base::BindRepeating([](PageLoadMetricsObserver* observer) {
+      base::BindRepeating([](PageLoadMetricsObserverInterface* observer) {
         return observer->OnShown();
       }));
 }
@@ -415,14 +415,15 @@ void PageLoadTracker::Commit(content::NavigationHandle* navigation_handle) {
   InvokeAndPruneObservers(
       "PageLoadMetricsObserver::ShouldObserveMimeType",
       base::BindRepeating(
-          [](const std::string& mime_type, PageLoadMetricsObserver* observer) {
+          [](const std::string& mime_type,
+             PageLoadMetricsObserverInterface* observer) {
             return observer->ShouldObserveMimeType(mime_type);
           },
           navigation_handle->GetWebContents()->GetContentsMimeType()));
   InvokeAndPruneObservers("PageLoadMetricsObserver::OnCommit",
                           base::BindRepeating(
                               [](content::NavigationHandle* navigation_handle,
-                                 PageLoadMetricsObserver* observer) {
+                                 PageLoadMetricsObserverInterface* observer) {
                                 return observer->OnCommit(navigation_handle);
                               },
                               navigation_handle));
@@ -518,7 +519,7 @@ void PageLoadTracker::Redirect(content::NavigationHandle* navigation_handle) {
   InvokeAndPruneObservers("PageLoadMetricsObserver::Redirect",
                           base::BindRepeating(
                               [](content::NavigationHandle* navigation_handle,
-                                 PageLoadMetricsObserver* observer) {
+                                 PageLoadMetricsObserverInterface* observer) {
                                 return observer->OnRedirect(navigation_handle);
                               },
                               navigation_handle));
@@ -542,7 +543,7 @@ void PageLoadTracker::FlushMetricsOnAppEnterBackground() {
       "PageLoadMetricsObserver::FlushMetricsOnAppEnterBackground",
       base::BindRepeating(
           [](const mojom::PageLoadTiming* timing,
-             PageLoadMetricsObserver* observer) {
+             PageLoadMetricsObserverInterface* observer) {
             return observer->FlushMetricsOnAppEnterBackground(*timing);
           },
           &metrics_update_dispatcher_.timing()));
@@ -616,6 +617,11 @@ void PageLoadTracker::StopTracking() {
 void PageLoadTracker::AddObserver(
     std::unique_ptr<PageLoadMetricsObserver> observer) {
   observer->SetDelegate(this);
+  AddObserverInterface(std::move(observer));
+}
+
+void PageLoadTracker::AddObserverInterface(
+    std::unique_ptr<PageLoadMetricsObserverInterface> observer) {
   if (observer->GetObserverName()) {
     DCHECK(observers_map_.find(observer->GetObserverName()) ==
            observers_map_.end());
@@ -624,7 +630,7 @@ void PageLoadTracker::AddObserver(
   observers_.push_back(std::move(observer));
 }
 
-base::WeakPtr<PageLoadMetricsObserver> PageLoadTracker::FindObserver(
+base::WeakPtr<PageLoadMetricsObserverInterface> PageLoadTracker::FindObserver(
     const char* name) {
   auto it = observers_map_.find(name);
   if (it != observers_map_.end())
@@ -1049,7 +1055,7 @@ void PageLoadTracker::OnEnterBackForwardCache() {
       "PageLoadMetricsObserver::OnEnterBackForwardCache",
       base::BindRepeating(
           [](const mojom::PageLoadTiming* timing,
-             PageLoadMetricsObserver* observer) {
+             PageLoadMetricsObserverInterface* observer) {
             return observer->OnEnterBackForwardCache(*timing);
           },
           &metrics_update_dispatcher_.timing()));
@@ -1127,7 +1133,8 @@ void PageLoadTracker::InvokeAndPruneObservers(
     const char* trace_name,
     PageLoadTracker::InvokeCallback callback) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"), trace_name);
-  std::vector<std::unique_ptr<PageLoadMetricsObserver>> forward_observers;
+  std::vector<std::unique_ptr<PageLoadMetricsObserverInterface>>
+      forward_observers;
   for (auto it = observers_.begin(); it != observers_.end();) {
     auto policy = callback.Run(it->get());
     switch (policy) {
@@ -1159,7 +1166,7 @@ void PageLoadTracker::InvokeAndPruneObservers(
   for (auto& observer : forward_observers) {
     DCHECK(observers_map_.find(observer->GetObserverName()) ==
            observers_map_.end());
-    AddObserver(std::move(observer));
+    AddObserverInterface(std::move(observer));
   }
 }
 

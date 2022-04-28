@@ -44,6 +44,8 @@ source_set("browser") {
     "page_load_metrics_observer.h",
     "page_load_metrics_observer_delegate.cc",
     "page_load_metrics_observer_delegate.h",
+    "page_load_metrics_observer_interface.cc",
+    "page_load_metrics_observer_interface.h",
     "page_load_metrics_update_dispatcher.cc",
     "page_load_metrics_update_dispatcher.h",
     "page_load_metrics_util.cc",

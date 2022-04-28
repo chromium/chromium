@@ -330,7 +330,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   base::TimeTicks page_end_time() const { return page_end_time_; }
 
   void AddObserver(std::unique_ptr<PageLoadMetricsObserver> observer);
-  base::WeakPtr<PageLoadMetricsObserver> FindObserver(char const* name);
+  base::WeakPtr<PageLoadMetricsObserverInterface> FindObserver(
+      char const* name);
 
   // If the user performs some abort-like action while we are tracking this page
   // load, notify the tracker. Note that we may not classify this as an abort if
@@ -439,8 +440,11 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
 
   using InvokeCallback =
       base::RepeatingCallback<PageLoadMetricsObserver::ObservePolicy(
-          PageLoadMetricsObserver*)>;
+          PageLoadMetricsObserverInterface*)>;
   void InvokeAndPruneObservers(const char* trace_name, InvokeCallback callback);
+
+  void AddObserverInterface(
+      std::unique_ptr<PageLoadMetricsObserverInterface> observer);
 
   // Whether we stopped tracking this navigation after it was initiated. We may
   // stop tracking a navigation if it doesn't meet the criteria for tracking
@@ -507,12 +511,13 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // Interface to chrome features. Must outlive the class.
   const raw_ptr<PageLoadMetricsEmbedderInterface> embedder_interface_;
 
-  // Holds active PageLoadMetricsObserver instances bound to the tracking page.
-  std::vector<std::unique_ptr<PageLoadMetricsObserver>> observers_;
+  // Holds active PageLoadMetricsObserverInterface inheritances' instances bound
+  // to the tracking page.
+  std::vector<std::unique_ptr<PageLoadMetricsObserverInterface>> observers_;
 
   // Observer's name pointer to instance map. Can be raw_ptr as the instance is
   // owned `observers` above, and is removed from the map on destruction.
-  base::flat_map<const char*, base::raw_ptr<PageLoadMetricsObserver>>
+  base::flat_map<const char*, base::raw_ptr<PageLoadMetricsObserverInterface>>
       observers_map_;
 
   PageLoadMetricsUpdateDispatcher metrics_update_dispatcher_;
