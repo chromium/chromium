@@ -64,3 +64,17 @@ BackgroundBridge.ChromeVoxPrefs = {
         BridgeTarget.CHROMEVOX_PREFS, BridgeAction.SET_PREF, {key, value});
   },
 };
+
+BackgroundBridge.ChromeVoxState = {
+  /**
+   * Method that updates the punctuation echo level, and also persists setting
+   * to local storage.
+   * @param {number} punctuationEcho The index of the desired punctuation echo
+   * level in AbstractTts.PUNCTUATION_ECHOES.
+   */
+  async updatePunctuationEcho(punctuationEcho) {
+    return BridgeHelper.sendMessage(
+        BridgeTarget.CHROMEVOX_STATE, BridgeAction.UPDATE_PUNCTUATION_ECHO,
+        punctuationEcho);
+  },
+};

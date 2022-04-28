@@ -15,6 +15,7 @@ goog.provide('BridgeTarget');
 BridgeTarget = {
   BRAILLE_BACKGROUND: 'BrailleBackground',
   CHROMEVOX_PREFS: 'ChromeVoxPrefs',
+  CHROMEVOX_STATE: 'ChromeVoxState',
 };
 
 /**
@@ -27,4 +28,5 @@ BridgeAction = {
   REFRESH_BRAILLE_TABLE: 'refreshBrailleTable',
   SET_LOGGING_PREFS: 'setLoggingPrefs',
   SET_PREF: 'setPref',
+  UPDATE_PUNCTUATION_ECHO: 'updatePunctuationEcho',
 };
