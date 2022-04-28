@@ -231,6 +231,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // DXGI device manager for handling hardware input textures
   scoped_refptr<DXGIDeviceManager> dxgi_device_manager_;
 
+  // A buffer used as a scratch space for I420 to NV12 conversion
+  std::vector<uint8_t> resize_buffer_;
+
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.
   base::WeakPtr<MediaFoundationVideoEncodeAccelerator> encoder_weak_ptr_;
