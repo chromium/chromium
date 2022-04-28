@@ -123,8 +123,10 @@ export class Photo extends ModeBase {
     if (state.get(state.State.ENABLE_PTZ)) {
       // Workaround for b/184089334 on PTZ camera to use preview frame as
       // photo result.
+      const blob = await this.getImageCapture().grabJpegFrame();
+      this.handler.playShutterEffect();
       return {
-        blob: await this.getImageCapture().grabJpegFrame(),
+        blob,
         metadata: null,
       };
     }
