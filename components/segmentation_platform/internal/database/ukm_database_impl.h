@@ -44,6 +44,7 @@ class UkmDatabaseImpl : public UkmDatabase {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
   std::unique_ptr<UkmDatabaseBackend> backend_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace segmentation_platform
