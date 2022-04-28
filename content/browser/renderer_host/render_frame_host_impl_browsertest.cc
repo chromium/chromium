@@ -989,7 +989,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
 
   // Navigate main frame cross-site and wait for the beforeunload dialog to be
   // shown from one of the frames.
-  DOMMessageQueue msg_queue;
+  DOMMessageQueue msg_queue(web_contents());
   GURL cross_site_url(embedded_test_server()->GetURL("e.com", "/title1.html"));
   shell()->LoadURL(cross_site_url);
   dialog_manager()->Wait();
@@ -1027,7 +1027,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
 
   // Navigate and wait for the beforeunload dialog to be shown from one of the
   // frames.
-  DOMMessageQueue msg_queue;
+  DOMMessageQueue msg_queue(web_contents());
   GURL cross_site_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   shell()->LoadURL(cross_site_url);
   dialog_manager()->Wait();
@@ -1068,7 +1068,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
   // Start a same-site renderer-initiated navigation.  The beforeunload dialog
   // from the b.com frame should be shown.  The other two a.com frames should
   // send pings from their beforeunload handlers.
-  DOMMessageQueue msg_queue;
+  DOMMessageQueue msg_queue(web_contents());
   GURL new_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   TestNavigationManager navigation_manager(web_contents(), new_url);
   // Use ExecuteScriptAsync because a ping may arrive before the script
@@ -1115,7 +1115,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
   PrepContentsForBeforeUnloadTest(web_contents());
 
   // Start a renderer-initiated navigation in the middle frame.
-  DOMMessageQueue msg_queue;
+  DOMMessageQueue msg_queue(web_contents());
   GURL new_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   TestNavigationManager navigation_manager(web_contents(), new_url);
   // Use ExecuteScriptAsync because a ping may arrive before the script
@@ -1183,7 +1183,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
   PrepContentsForBeforeUnloadTest(web_contents());
 
   // Navigate the main frame.
-  DOMMessageQueue msg_queue;
+  DOMMessageQueue msg_queue(web_contents());
   GURL new_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), new_url));
 
@@ -6712,7 +6712,7 @@ IN_PROC_BROWSER_TEST_F(
   PrepContentsForBeforeUnloadTest(web_contents());
 
   // Navigate the main frame.
-  DOMMessageQueue msg_queue;
+  DOMMessageQueue msg_queue(web_contents());
   GURL new_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), new_url));
 
