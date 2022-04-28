@@ -31,6 +31,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
@@ -535,6 +536,7 @@ public class PhotoPickerDialogTest extends BlankUiTestActivityTestCase
     @MinAndroidSdkLevel(Build.VERSION_CODES.O) // Video is only supported on O+.
     @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1092104")
     @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/1092104")
+    @DisabledTest(message = "https://crbug.com/1311783")
     public void testVideoPlayerAnimations() throws Throwable {
         PickerVideoPlayer.setShortAnimationTimesForTesting(true);
 
