@@ -26,7 +26,7 @@ absl::optional<size_t> requested_read_only_shmem_size;
 absl::optional<size_t> requested_unsafe_shmem_size;
 absl::optional<size_t> requested_writable_shmem_size;
 
-MappedReadOnlyRegion ReadOnlyShmemCreateHook(size_t size) {
+MappedReadOnlyRegion ReadOnlyShmemCreateHook(size_t size, SharedMemoryMapper* mapper) {
   requested_read_only_shmem_size = size;
   return {};
 }

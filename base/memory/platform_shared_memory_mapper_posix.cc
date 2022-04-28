@@ -11,8 +11,7 @@
 
 namespace base {
 
-// static
-absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::MapInternal(
+absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
     subtle::PlatformSharedMemoryHandle handle,
     bool write_allowed,
     uint64_t offset,
@@ -29,8 +28,7 @@ absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::MapInternal(
   return make_span(reinterpret_cast<uint8_t*>(address), size);
 }
 
-// static
-void PlatformSharedMemoryMapper::UnmapInternal(span<uint8_t> mapping) {
+void PlatformSharedMemoryMapper::Unmap(span<uint8_t> mapping) {
   if (munmap(mapping.data(), mapping.size()) < 0)
     DPLOG(ERROR) << "munmap";
 }
