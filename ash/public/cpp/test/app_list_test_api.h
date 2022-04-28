@@ -147,6 +147,9 @@ class ASH_EXPORT AppListTestApi {
   // Enables/Disables the app list nudge for testing.
   void DisableAppListNudge(bool disable);
 
+  // Marks continue section privacy notice as accepted.
+  void SetContinueSectionPrivacyNoticeAccepted();
+
   // Moves the app list item at `source_index` to `target_index` by
   // drag-and-drop. `source_index` and `target_index` are view indices in the
   // root apps grid.

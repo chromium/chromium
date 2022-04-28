@@ -6,6 +6,14 @@
 
 namespace app_list {
 
+namespace {
+
+bool CategoryAffectsScore(const ChromeSearchResult* result) {
+  return result->display_type() == ash::SearchResultDisplayType::kList;
+}
+
+}  // namespace
+
 void SortCategories(CategoriesList& categories) {
   // Sort categories first by burn-in iteration number, then by score.
   std::sort(categories.begin(), categories.end(),
@@ -47,23 +55,28 @@ void SortResults(std::vector<ChromeSearchResult*>& results,
           return (a_best_match_rank ^ b_best_match_rank) < 0
                      ? a_best_match_rank > b_best_match_rank
                      : a_best_match_rank < b_best_match_rank;
-        } else if (a_best_match_rank == -1 && a->category() != b->category()) {
+        }
+
+        const bool ignore_categories =
+            !CategoryAffectsScore(a) || !CategoryAffectsScore(b);
+        if (a_best_match_rank == -1 && !ignore_categories &&
+            a->category() != b->category()) {
           // Next, sort by categories, except for within best match.
           // |categories_| has been sorted above so the first category in
           // |categories_| should be ranked more highly.
           for (const auto& category : categories) {
-            if (category.category == a->category()) {
+            if (category.category == a->category())
               return true;
-            } else if (category.category == b->category()) {
+            if (category.category == b->category())
               return false;
-            }
           }
           // Any category associated with a result should also be present
           // in |categories_|.
           NOTREACHED();
           return false;
-        } else if (a->scoring().burnin_iteration !=
-                   b->scoring().burnin_iteration) {
+        }
+
+        if (a->scoring().burnin_iteration != b->scoring().burnin_iteration) {
           // Next, sort by burn-in iteration number. This has no effect on
           // results which arrive pre-burn-in. For post-burn-in results
           // for a given category, later-arriving results are placed below
@@ -71,12 +84,14 @@ void SortResults(std::vector<ChromeSearchResult*>& results,
           // This happens before sorting on display_score, as a trade-off
           // between ranking accuracy and UX pop-in mitigation.
           return a->scoring().burnin_iteration < b->scoring().burnin_iteration;
-        } else if (a->scoring().continue_rank != b->scoring().continue_rank) {
-          return a->scoring().continue_rank > b->scoring().continue_rank;
-        } else {
-          // Lastly, sort by display score.
-          return a->display_score() > b->display_score();
         }
+
+        if (a->scoring().continue_rank != b->scoring().continue_rank) {
+          return a->scoring().continue_rank > b->scoring().continue_rank;
+        }
+
+        // Lastly, sort by display score.
+        return a->display_score() > b->display_score();
       });
 }
 

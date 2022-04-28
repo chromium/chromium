@@ -121,6 +121,7 @@ void LogIsDriveEnabled(Profile* profile) {
 void LogContinueMetrics(const std::vector<Result>& results) {
   int drive_count = 0;
   int local_count = 0;
+  int help_app_count = 0;
   for (const auto& result : results) {
     switch (result.type) {
       case ash::SearchResultType::ZERO_STATE_DRIVE:
@@ -129,10 +130,11 @@ void LogContinueMetrics(const std::vector<Result>& results) {
       case ash::SearchResultType::ZERO_STATE_FILE:
         ++local_count;
         break;
+      case ash::SearchResultType::HELP_APP_UPDATES:
+        ++help_app_count;
+        break;
       default:
-        // Only zero-state drive and local file results are expected in
-        // Continue.
-        NOTREACHED();
+        NOTREACHED() << static_cast<int>(result.type);
     }
   }
 
@@ -142,6 +144,8 @@ void LogContinueMetrics(const std::vector<Result>& results) {
                                 drive_count, 10);
   base::UmaHistogramExactLinear("Apps.AppList.Search.ContinueResultCount.Local",
                                 local_count, 10);
+  base::UmaHistogramExactLinear(
+      "Apps.AppList.Search.ContinueResultCount.HelpApp", help_app_count, 10);
   base::UmaHistogramBoolean("Apps.AppList.Search.DriveContinueResultsShown",
                             drive_count > 0);
 }

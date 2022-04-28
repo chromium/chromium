@@ -596,6 +596,10 @@ void AppListTestApi::DisableAppListNudge(bool disable) {
   AppListNudgeController::SetReorderNudgeDisabledForTest(disable);
 }
 
+void AppListTestApi::SetContinueSectionPrivacyNoticeAccepted() {
+  AppListNudgeController::SetPrivacyNoticeAcceptedForTest(true);
+}
+
 void AppListTestApi::ReorderItemInRootByDragAndDrop(int source_index,
                                                     int target_index) {
   test::AppsGridViewTestApi(GetTopLevelAppsGridView())

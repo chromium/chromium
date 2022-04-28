@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ui/app_list/search/test/search_results_changed_waiter.h"
 #include "chrome/browser/ui/browser.h"
 
 namespace app_list {
@@ -68,34 +69,13 @@ void AppListSearchBrowserTest::StartSearch(const std::string& query) {
 void AppListSearchBrowserTest::SearchAndWaitForProviders(
     const std::string& query,
     const std::set<ResultType> providers) {
-  base::RunLoop run_loop;
-  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
-  std::set<ResultType> finished_providers;
-  const SearchController::ResultsChangedCallback callback =
-      base::BindLambdaForTesting([&](ResultType provider) {
-        finished_providers.insert(provider);
-
-        // Quit the run loop if all |providers| are finished.
-        for (const auto& type : providers) {
-          if (finished_providers.find(type) == finished_providers.end())
-            return;
-        }
-        quit_closure.Run();
-      });
-
-  // The ordering of this logic is important. The results changed callback
-  // must be set before the call to StartSearch, to avoid a race between a
-  // provider returning and the callback being set, which could lead to the
-  // run loop timing out.
-  GetClient()->search_controller()->set_results_changed_callback_for_test(
-      std::move(callback));
+  // The waiter should be created before starting the search request, otherwise
+  // it may miss synchronous result changes.
+  SearchResultsChangedWaiter results_changed_waiter(
+      GetClient()->search_controller(), providers);
   ResultsWaiter results_waiter(base::ASCIIToUTF16(query));
   GetClient()->StartSearch(base::ASCIIToUTF16(query));
-  run_loop.Run();
-  // Once the run loop is finished, we have to remove the callback because the
-  // referenced variables are about to go out of scope.
-  GetClient()->search_controller()->set_results_changed_callback_for_test(
-      base::DoNothing());
+  results_changed_waiter.Wait();
   // Wait for some results to get published for the query - result publishing
   // may get delayed due to a burn in period.
   results_waiter.Wait();

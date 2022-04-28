@@ -738,6 +738,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Type">
     <variant name="Drive" summary="Count of Drive results"/>
+    <variant name="HelpApp" summary="Count of results from help app"/>
     <variant name="Local" summary="Count of local file results"/>
     <variant name="Total" summary="Count of all results"/>
   </token>

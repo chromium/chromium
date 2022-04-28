@@ -41,6 +41,7 @@ class HelpAppResult : public ChromeSearchResult {
   // Constructor for the What's new chip.
   HelpAppResult(Profile* profile,
                 const std::string& id,
+                DisplayType display_type,
                 const std::u16string& title,
                 const gfx::ImageSkia& icon);
   // Constructor for a list result.

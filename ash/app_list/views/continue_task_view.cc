@@ -63,11 +63,11 @@ constexpr int kViewCornerRadiusTablet = 20;
 constexpr int kTaskMinWidth = 204;
 constexpr int kTaskMaxWidth = 264;
 
-gfx::ImageSkia CreateIconWithCircleBackground(const gfx::ImageSkia& icon) {
+gfx::ImageSkia CreateIconWithCircleBackground(
+    const gfx::ImageSkia& icon,
+    ColorProvider::ControlsLayerType color_id) {
   return gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-      kCircleRadius,
-      ColorProvider::Get()->GetControlsLayerColor(
-          ColorProvider::ControlsLayerType::kControlBackgroundColorInactive),
+      kCircleRadius, ColorProvider::Get()->GetControlsLayerColor(color_id),
       icon);
 }
 
@@ -160,6 +160,7 @@ void ContinueTaskView::OnThemeChanged() {
   views::View::OnThemeChanged();
   bubble_utils::ApplyStyle(title_, bubble_utils::LabelStyle::kBody);
   bubble_utils::ApplyStyle(subtitle_, bubble_utils::LabelStyle::kSubtitle);
+  UpdateIcon();
   UpdateStyleForTabletMode();
 }
 
@@ -183,12 +184,21 @@ void ContinueTaskView::OnButtonPressed(const ui::Event& event) {
   OpenResult(event.flags());
 }
 
-void ContinueTaskView::SetIcon(const gfx::ImageSkia& icon) {
+void ContinueTaskView::UpdateIcon() {
+  if (!result()) {
+    icon_->SetImage(gfx::ImageSkia());
+    return;
+  }
+
+  const gfx::ImageSkia& icon = result()->chip_icon();
   icon_->SetImage(CreateIconWithCircleBackground(
       icon.size() == GetIconSize()
           ? icon
           : gfx::ImageSkiaOperations::CreateResizedImage(
-                icon, skia::ImageOperations::RESIZE_BEST, GetIconSize())));
+                icon, skia::ImageOperations::RESIZE_BEST, GetIconSize()),
+      result()->result_type() == AppListSearchResultType::kHelpApp
+          ? ColorProvider::ControlsLayerType::kControlBackgroundColorActive
+          : ColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
 }
 
 gfx::Size ContinueTaskView::GetIconSize() const {
@@ -204,16 +214,15 @@ void ContinueTaskView::UpdateResult() {
   views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
       views::InkDropState::HIDDEN);
   CloseContextMenu();
+  UpdateIcon();
 
   if (!result()) {
-    SetIcon(gfx::ImageSkia());
     title_->SetText(std::u16string());
     subtitle_->SetText(std::u16string());
     GetViewAccessibility().OverrideName(std::u16string());
     return;
   }
 
-  SetIcon(result()->chip_icon());
   title_->SetText(result()->title());
   subtitle_->SetText(result()->details());
 

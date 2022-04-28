@@ -25,6 +25,9 @@ void ContinueRanker::UpdateResultRanks(ResultsMap& results,
   } else if (provider == ProviderType::kZeroStateDrive) {
     for (auto& result : it->second)
       result->scoring().continue_rank = 2;
+  } else if (provider == ProviderType::kHelpApp) {
+    for (auto& result : it->second)
+      result->scoring().continue_rank = 3;
   }
 }
 

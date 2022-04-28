@@ -84,7 +84,7 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
   TaskResultType GetTaskResultType();
 
  private:
-  void SetIcon(const gfx::ImageSkia& icon);
+  void UpdateIcon();
   gfx::Size GetIconSize() const;
   void UpdateResult();
 

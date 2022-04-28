@@ -11,6 +11,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/webui/help_app_ui/help_app_manager.h"
 #include "ash/webui/help_app_ui/help_app_manager_factory.h"
 #include "ash/webui/help_app_ui/search/search_handler.h"
@@ -39,6 +40,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "url/gurl.h"
 
 namespace app_list {
@@ -57,6 +59,10 @@ bool ShouldShowDiscoverTabSuggestionChip(Profile* profile) {
   if (!base::FeatureList::IsEnabled(ash::features::kHelpAppDiscoverTab)) {
     return false;
   }
+
+  if (ash::features::IsProductivityLauncherEnabled())
+    return false;
+
   const int times_left_to_show = profile->GetPrefs()->GetInteger(
       prefs::kDiscoverTabSuggestionChipTimesLeftToShow);
   return times_left_to_show > 0;
@@ -102,6 +108,7 @@ void LogListSearchResultState(ListSearchResultState state) {
 
 HelpAppResult::HelpAppResult(Profile* profile,
                              const std::string& id,
+                             DisplayType display_type,
                              const std::u16string& title,
                              const gfx::ImageSkia& icon)
     : profile_(profile) {
@@ -114,7 +121,7 @@ HelpAppResult::HelpAppResult(Profile* profile,
   SetDisplayIndex(DisplayIndex::kFirstIndex);
   SetPositionPriority(1.0f);
   SetResultType(ResultType::kHelpApp);
-  SetDisplayType(DisplayType::kChip);
+  SetDisplayType(display_type);
   // Some chips have different metrics types.
   if (id == kHelpAppDiscoverResult) {
     SetMetricsType(ash::HELP_APP_DISCOVER);
@@ -269,15 +276,35 @@ void HelpAppProvider::StartZeroState() {
 
   if (ShouldShowDiscoverTabSuggestionChip(profile_)) {
     search_results.emplace_back(std::make_unique<HelpAppResult>(
-        profile_, kHelpAppDiscoverResult,
+        profile_, kHelpAppDiscoverResult, DisplayType::kChip,
         l10n_util::GetStringUTF16(IDS_HELP_APP_DISCOVER_TAB_SUGGESTION_CHIP),
         icon_));
   } else if (ash::ReleaseNotesStorage(profile_).ShouldShowSuggestionChip()) {
-    search_results.emplace_back(std::make_unique<HelpAppResult>(
-        profile_, kHelpAppUpdatesResult,
-        l10n_util::GetStringUTF16(IDS_HELP_APP_WHATS_NEW_SUGGESTION_CHIP),
-        icon_));
+    // With productivity launcher enabled, release notes are shown in continue
+    // section.
+    if (ash::features::IsProductivityLauncherEnabled()) {
+      auto* color_provider = ash::ColorProvider::Get();
+      // NOTE: Color provider may not be set in unit tests.
+      SkColor icon_color = color_provider
+                               ? color_provider->GetContentLayerColor(
+                                     ash::ColorProvider::ContentLayerType::
+                                         kButtonIconColorPrimary)
+                               : gfx::kGoogleGrey900;
+      gfx::ImageSkia icon =
+          gfx::CreateVectorIcon(ash::kReleaseNotesChipIcon,
+                                app_list::kSystemIconDimension, icon_color);
+      search_results.emplace_back(std::make_unique<HelpAppResult>(
+          profile_, kHelpAppUpdatesResult, DisplayType::kContinue,
+          l10n_util::GetStringUTF16(IDS_HELP_APP_WHATS_NEW_SUGGESTION_CHIP),
+          icon));
+    } else {
+      search_results.emplace_back(std::make_unique<HelpAppResult>(
+          profile_, kHelpAppUpdatesResult, DisplayType::kChip,
+          l10n_util::GetStringUTF16(IDS_HELP_APP_WHATS_NEW_SUGGESTION_CHIP),
+          icon_));
+    }
   }
+
   SwapResults(&search_results);
 }
 
@@ -336,8 +363,10 @@ void HelpAppProvider::OnImpression(
     ash::AppListNotifier::Location location,
     const std::vector<ash::AppListNotifier::Result>& results,
     const std::u16string& query) {
-  if (location != ash::AppListNotifier::Location::kChip)
+  if (location != ash::AppListNotifier::Location::kChip &&
+      location != ash::AppListNotifier::Location::kContinue) {
     return;
+  }
 
   for (const auto& result : results) {
     if (result.id == kHelpAppDiscoverResult) {
