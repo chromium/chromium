@@ -76,6 +76,22 @@ bool ShouldShowFeedbackChipForReason(Metrics::DropOutReason reason) {
   }
 }
 
+bool ShouldReloadData(const CollectUserDataOptions& options,
+                      UserDataEventType event_type) {
+  if (!options.use_gms_core_edit_dialogs) {
+    return false;
+  }
+  switch (event_type) {
+    case UserDataEventType::ENTRY_CREATED:
+    case UserDataEventType::ENTRY_EDITED:
+      return true;
+    case UserDataEventType::UNKNOWN:
+    case UserDataEventType::NO_NOTIFICATION:
+    case UserDataEventType::SELECTION_CHANGED:
+      return false;
+  }
+}
+
 }  // namespace
 
 UiController::UiController(
@@ -817,7 +833,7 @@ void UiController::HandleShippingAddressChange(
   if (collect_user_data_options_ == nullptr) {
     return;
   }
-  if (collect_user_data_options_->use_gms_core_edit_dialogs) {
+  if (ShouldReloadData(*collect_user_data_options_, event_type)) {
     ReloadUserData(UserDataEventField::SHIPPING_EVENT, event_type);
     return;
   }
@@ -835,7 +851,7 @@ void UiController::HandleContactInfoChange(
   if (collect_user_data_options_ == nullptr) {
     return;
   }
-  if (collect_user_data_options_->use_gms_core_edit_dialogs) {
+  if (ShouldReloadData(*collect_user_data_options_, event_type)) {
     ReloadUserData(UserDataEventField::CONTACT_EVENT, event_type);
     return;
   }
@@ -853,7 +869,7 @@ void UiController::HandlePhoneNumberChange(
   if (collect_user_data_options_ == nullptr) {
     return;
   }
-  if (collect_user_data_options_->use_gms_core_edit_dialogs) {
+  if (ShouldReloadData(*collect_user_data_options_, event_type)) {
     ReloadUserData(UserDataEventField::CONTACT_EVENT, event_type);
     return;
   }
@@ -872,7 +888,7 @@ void UiController::HandleCreditCardChange(
   if (collect_user_data_options_ == nullptr) {
     return;
   }
-  if (collect_user_data_options_->use_gms_core_edit_dialogs) {
+  if (ShouldReloadData(*collect_user_data_options_, event_type)) {
     ReloadUserData(UserDataEventField::CREDIT_CARD_EVENT, event_type);
     return;
   }
@@ -905,8 +921,8 @@ void UiController::ReloadUserData(UserDataEventField event_field,
   collect_user_data_options_->selected_user_data_changed_callback.Run(
       event_field, event_type);
 
-  auto callback = std::move(collect_user_data_options_->reload_data_callback);
-  std::move(callback).Run(GetUserData());
+  std::move(collect_user_data_options_->reload_data_callback)
+      .Run(GetUserData());
 }
 
 void UiController::SetTermsAndConditions(

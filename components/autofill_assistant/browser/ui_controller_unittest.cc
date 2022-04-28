@@ -513,6 +513,26 @@ TEST_F(UiControllerTest, UserDataFormReloadFromContactChange) {
                                           UserDataEventType::ENTRY_CREATED);
 }
 
+TEST_F(UiControllerTest, UserDataFormDoNotReloadFromContactSelectionChange) {
+  auto options = std::make_unique<FakeCollectUserDataOptions>();
+  options->contact_details_name = "CONTACT";
+  base::MockCallback<base::OnceCallback<void(UserData*)>> reload_callback;
+  options->reload_data_callback = reload_callback.Get();
+  base::MockCallback<
+      base::RepeatingCallback<void(UserDataEventField, UserDataEventType)>>
+      change_callback;
+  options->selected_user_data_changed_callback = change_callback.Get();
+  options->use_gms_core_edit_dialogs = true;
+
+  ui_controller_->SetCollectUserDataOptions(options.get());
+
+  EXPECT_CALL(change_callback, Run(UserDataEventField::CONTACT_EVENT,
+                                   UserDataEventType::SELECTION_CHANGED));
+  EXPECT_CALL(reload_callback, Run).Times(0);
+  ui_controller_->HandleContactInfoChange(nullptr,
+                                          UserDataEventType::SELECTION_CHANGED);
+}
+
 TEST_F(UiControllerTest, UserDataFormReloadFromPhoneNumberChange) {
   auto options = std::make_unique<FakeCollectUserDataOptions>();
   base::MockCallback<base::OnceCallback<void(UserData*)>> reload_callback;
