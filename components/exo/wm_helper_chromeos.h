@@ -10,6 +10,7 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/exo/vsync_timing_manager.h"
 #include "components/exo/wm_helper.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -49,7 +50,9 @@ namespace exo {
 
 // A ChromeOS-specific helper class for accessing WindowManager related
 // features.
-class WMHelperChromeOS : public WMHelper, public VSyncTimingManager::Delegate {
+class WMHelperChromeOS : public WMHelper,
+                         public chromeos::PowerManagerClient::Observer,
+                         public VSyncTimingManager::Delegate {
  public:
   WMHelperChromeOS();
 
@@ -76,6 +79,8 @@ class WMHelperChromeOS : public WMHelper, public VSyncTimingManager::Delegate {
       aura::client::FocusChangeObserver* observer) override;
   void AddDragDropObserver(DragDropObserver* observer) override;
   void RemoveDragDropObserver(DragDropObserver* observer) override;
+  void AddPowerObserver(WMHelper::PowerObserver* observer) override;
+  void RemovePowerObserver(WMHelper::PowerObserver* observer) override;
   void SetDragDropDelegate(aura::Window*) override;
   void ResetDragDropDelegate(aura::Window*) override;
   VSyncTimingManager& GetVSyncTimingManager() override;
@@ -115,6 +120,13 @@ class WMHelperChromeOS : public WMHelper, public VSyncTimingManager::Delegate {
   aura::client::DragDropDelegate::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
 
+  // Overridden from chromeos::PowerManagerClient::Observer:
+  void SuspendDone(base::TimeDelta sleep_duration) override;
+  void ScreenBrightnessChanged(
+      const power_manager::BacklightBrightnessChange& change) override;
+  void LidEventReceived(chromeos::PowerManagerClient::LidState state,
+                        base::TimeTicks timestamp) override;
+
   // Overridden from VSyncTimingManager::Delegate:
   void AddVSyncParameterObserver(
       mojo::PendingRemote<viz::mojom::VSyncParameterObserver> observer)
@@ -127,6 +139,7 @@ class WMHelperChromeOS : public WMHelper, public VSyncTimingManager::Delegate {
       ui::mojom::DragOperation& output_drag_op);
 
   base::ObserverList<DragDropObserver>::Unchecked drag_drop_observers_;
+  base::ObserverList<PowerObserver> power_observers_;
   LifetimeManager lifetime_manager_;
   VSyncTimingManager vsync_timing_manager_;
   bool default_scale_cancellation_ = true;

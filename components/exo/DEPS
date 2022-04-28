@@ -32,4 +32,12 @@ specific_include_rules = {
     "+components/viz/service/frame_sinks",
     "+components/viz/service/surfaces",
   ],
+  "ui_lock_controller_unittest\.cc": [
+    "+chromeos/dbus/power",
+    "+chromeos/dbus/power_manager",
+  ],
+  "wm_helper_chromeos\..*": [
+    "+chromeos/dbus/power",
+    "+chromeos/dbus/power_manager",
+  ]
 }

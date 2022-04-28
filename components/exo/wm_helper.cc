@@ -45,6 +45,14 @@ void WMHelper::RemoveExoWindowObserver(ExoWindowObserver* observer) {
   exo_window_observers_.RemoveObserver(observer);
 }
 
+void WMHelper::AddPowerObserver(PowerObserver* observer) {
+  NOTREACHED();
+}
+
+void WMHelper::RemovePowerObserver(PowerObserver* observer) {
+  NOTREACHED();
+}
+
 void WMHelper::NotifyExoWindowCreated(aura::Window* window) {
   for (auto& obs : exo_window_observers_)
     obs.OnExoWindowCreated(window);

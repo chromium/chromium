@@ -113,6 +113,16 @@ class WMHelper : public aura::client::DragDropDelegate {
     virtual void OnExoWindowCreated(aura::Window* window) {}
   };
 
+  // Interface for Exo classes needing to listen to PowerManagerClient events.
+  //
+  // Only implemented for ChromeOS, otherwise a no-op.
+  class PowerObserver : public base::CheckedObserver {
+   public:
+    virtual void SuspendDone() {}
+    virtual void ScreenBrightnessChanged(double percent) {}
+    virtual void LidEventReceived(bool opened) {}
+  };
+
   WMHelper();
 
   WMHelper(const WMHelper&) = delete;
@@ -133,6 +143,9 @@ class WMHelper : public aura::client::DragDropDelegate {
       aura::client::FocusChangeObserver* observer) = 0;
   void AddExoWindowObserver(ExoWindowObserver* observer);
   void RemoveExoWindowObserver(ExoWindowObserver* observer);
+
+  virtual void AddPowerObserver(PowerObserver* observer);
+  virtual void RemovePowerObserver(PowerObserver* observer);
 
   virtual void AddDragDropObserver(DragDropObserver* observer) = 0;
   virtual void RemoveDragDropObserver(DragDropObserver* observer) = 0;
