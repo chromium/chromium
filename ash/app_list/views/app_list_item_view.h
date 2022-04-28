@@ -238,6 +238,10 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // Sets the callback which will run after the context menu is shown.
   void SetContextMenuShownCallbackForTest(base::RepeatingClosure closure);
 
+  // Returns the bounds that would be used for the title if there was no blue
+  // dot for new install.
+  gfx::Rect GetDefaultTitleBoundsForTest();
+
   // Sets the most recent grid index for this item view. Also sets
   // `has_pending_row_change_` based on whether the grid index change is
   // considered a row change for the purposes of animating item views between

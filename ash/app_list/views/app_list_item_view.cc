@@ -862,10 +862,13 @@ void AppListItemView::Layout() {
 
   gfx::Rect title_bounds = GetTitleBoundsForTargetViewBounds(
       app_list_config_, rect, title_->GetPreferredSize(), icon_scale_);
-  // Reserve space for the new install dot if it is visible. Otherwise it
-  // extends outside the app grid tile bounds and gets clipped.
-  if (new_install_dot_ && new_install_dot_->GetVisible())
-    title_bounds.Inset(gfx::Insets::TLBR(0, kNewInstallDotSize, 0, 0));
+  if (new_install_dot_ && new_install_dot_->GetVisible()) {
+    // If the new install dot is showing, and the dot would extend outside the
+    // left edge of the tile, inset the title bounds to make space for the dot.
+    int dot_x = title_bounds.x() - kNewInstallDotSize - kNewInstallDotPadding;
+    if (dot_x < 0)
+      title_bounds.Inset(gfx::Insets::TLBR(0, kNewInstallDotSize, 0, 0));
+  }
   title_->SetBoundsRect(title_bounds);
 
   if (new_install_dot_) {
@@ -1105,6 +1108,12 @@ void AppListItemView::SetContextMenuShownCallbackForTest(
   context_menu_shown_callback_ = std::move(closure);
 }
 
+gfx::Rect AppListItemView::GetDefaultTitleBoundsForTest() {
+  return GetTitleBoundsForTargetViewBounds(
+      app_list_config_, GetContentsBounds(), title_->GetPreferredSize(),
+      icon_scale_);
+}
+
 void AppListItemView::SetMostRecentGridIndex(GridIndex new_grid_index,
                                              int columns) {
   if (new_grid_index == most_recent_grid_index_) {
@@ -1268,7 +1277,7 @@ void AppListItemView::ItemIsNewInstallChanged() {
   DCHECK(item_weak_);
   if (new_install_dot_) {
     new_install_dot_->SetVisible(item_weak_->is_new_install());
-    InvalidateLayout();
+    Layout();
   }
 }
 

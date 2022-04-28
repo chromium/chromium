@@ -13,6 +13,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/views/controls/label.h"
 
 namespace ash {
 
@@ -36,7 +37,7 @@ class AppListItemViewTest : public AshTestBase {
   }
 
   AppListItem* CreateAppListItem(const std::string& name) {
-    AppListItem* item = app_list_test_model_->CreateAndAddItem("id");
+    AppListItem* item = app_list_test_model_->CreateAndAddItem(name + "_id");
     item->SetName(name);
     return item;
   }
@@ -101,6 +102,30 @@ TEST_F(AppListItemViewProductivityLauncherTest, NewInstallDot) {
   item->SetIsNewInstall(true);
   EXPECT_TRUE(new_install_dot->GetVisible());
   EXPECT_EQ(item_view->GetTooltipText({}), u"Google Buzz\nNew install");
+}
+
+TEST_F(AppListItemViewProductivityLauncherTest, LabelInsetWithNewInstallDot) {
+  AppListItem* long_item = CreateAppListItem("Very very very very long name");
+  long_item->SetIsNewInstall(true);
+  AppListItem* short_item = CreateAppListItem("Short");
+  short_item->SetIsNewInstall(true);
+
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+
+  auto* apps_grid_view = helper->GetScrollableAppsGridView();
+  AppListItemView* long_item_view = apps_grid_view->GetItemViewAt(0);
+  AppListItemView* short_item_view = apps_grid_view->GetItemViewAt(1);
+
+  // The item with the long name has its title bounds left edge inset to make
+  // space for the blue dot.
+  EXPECT_LT(long_item_view->GetDefaultTitleBoundsForTest().x(),
+            long_item_view->title()->x());
+
+  // The item with the short name does not have the title bounds inset, because
+  // there is enough space for the blue dot as-is.
+  EXPECT_EQ(short_item_view->GetDefaultTitleBoundsForTest(),
+            short_item_view->title()->bounds());
 }
 
 }  // namespace ash
