@@ -3721,6 +3721,27 @@
             ]
         }
     ],
+    "HappinessTrackingSystemPerformance": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "prob": "0.001",
+                        "survey_cycle_length": "7",
+                        "survey_start_date_ms": "1641024000000",
+                        "trigger_id": "d9usFbUBd0jBnuKU19R0YEKpVBkq"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSystemPerformance"
+                    ]
+                }
+            ]
+        }
+    ],
     "HappinessTrackingSystemStability": [
         {
             "platforms": [
