@@ -423,6 +423,7 @@ TEST_F(CaptureModeCameraTest, SizeSpecsNotCollapsible) {
   EXPECT_EQ(specs.size.width(), specs.size.height());
   EXPECT_EQ(specs.size.width(),
             500 / capture_mode::kCaptureSurfaceShortSideDivider);
+  EXPECT_FALSE(specs.is_surface_too_small);
 }
 
 TEST_F(CaptureModeCameraTest, SizeSpecsHiddenPreview) {
@@ -434,6 +435,7 @@ TEST_F(CaptureModeCameraTest, SizeSpecsHiddenPreview) {
   EXPECT_FALSE(specs.should_be_visible);
   EXPECT_EQ(specs.size.width(), specs.size.height());
   EXPECT_EQ(specs.size.width(), capture_mode::kMinCameraPreviewDiameter);
+  EXPECT_TRUE(specs.is_surface_too_small);
 }
 
 TEST_F(CaptureModeCameraTest, CameraDevicesChanges) {

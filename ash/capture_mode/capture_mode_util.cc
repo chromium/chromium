@@ -40,12 +40,21 @@ namespace {
 constexpr int kBannerViewTopRadius = 0;
 constexpr int kBannerViewBottomRadius = 8;
 
+// Returns the target visibility of the camera preview, given the
+// `confine_bounds_short_side_length`. The out parameter
+// `out_is_surface_too_small` will be set to true if the preview should be
+// hidden due to the surface within which it's confined is too small. Otherwise,
+// it's unchanged.
 bool CalculateCameraPreviewTargetVisibility(
-    int confine_bounds_short_side_length) {
+    int confine_bounds_short_side_length,
+    bool* out_is_surface_too_small) {
+  DCHECK(out_is_surface_too_small);
+
   // If the short side of the bounds within which the camera preview should be
   // confined is too small, the camera should be hidden.
   if (confine_bounds_short_side_length <
       capture_mode::kMinCaptureSurfaceShortSideLengthForVisibleCamera) {
+    *out_is_surface_too_small = true;
     return false;
   }
 
@@ -314,11 +323,16 @@ CameraPreviewSizeSpecs CalculateCameraPreviewSizeSpecs(
           : std::max(expanded_diameter / capture_mode::kCollapsedPreviewDivider,
                      capture_mode::kMinCameraPreviewDiameter);
 
+  bool is_surface_too_small = false;
   const bool should_be_visible =
-      CalculateCameraPreviewTargetVisibility(short_side);
+      CalculateCameraPreviewTargetVisibility(short_side, &is_surface_too_small);
+
+  // If the surface was determined to be too small, the preview should be
+  // hidden.
+  DCHECK(!is_surface_too_small || !should_be_visible);
 
   return CameraPreviewSizeSpecs{gfx::Size(diameter, diameter), is_collapsible,
-                                should_be_visible};
+                                should_be_visible, is_surface_too_small};
 }
 
 aura::Window* GetTopMostCapturableWindowAtPoint(

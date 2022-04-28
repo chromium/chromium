@@ -110,9 +110,17 @@ struct CameraPreviewSizeSpecs {
   // to be collapsible. False otherwise.
   const bool is_collapsible;
 
-  // True if the surface within which the camera preview is confined is big
-  // enough to allow it to show. False otherwise.
+  // Whether the camera preview should be hidden or shown. The visibility of the
+  // preview can be determined by a number of things, e.g.:
+  // - The surface within which the camera preview should be confined is too
+  //   small.
+  // - We're inside a `kRegion` session and the region is being adjusted or
+  //   empty.
   const bool should_be_visible;
+
+  // True if the surface within which the camera preview is confined is too
+  // small, and the preview should be hidden.
+  const bool is_surface_too_small;
 };
 
 // Calculates the size specs of the camera preview which will be confined within

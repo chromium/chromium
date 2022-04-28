@@ -528,8 +528,11 @@ void CaptureModeCameraController::MaybeUpdatePreviewWidget(bool animate) {
 
   camera_preview_view_->SetIsCollapsible(size_specs.is_collapsible);
 
+  // If the surface within which the preview is confined becomes too small, the
+  // preview should hide immediately to avoid seeing it hide with animation
+  // outside the bounds of the new confine bounds. https://crbug.com/1320087.
   const bool should_animate_visibility =
-      !confine_bounds.IsEmpty() &&
+      !size_specs.is_surface_too_small && !confine_bounds.IsEmpty() &&
       (camera_preview_widget_->GetNativeWindow()->parent()->GetId() !=
        kShellWindowId_UnparentedContainer);
 
