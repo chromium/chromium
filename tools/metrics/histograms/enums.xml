@@ -56865,6 +56865,8 @@ from previous Chrome versions.
   <int value="886907524" label="autoplay-policy"/>
   <int value="886990840" label="ImeMojoDecoder:enabled"/>
   <int value="887011602" label="enable-spelling-auto-correct"/>
+  <int value="889816966"
+      label="TrustedWebActivityNotificationPermissionDelegation:disabled"/>
   <int value="889837286" label="EnableHostnameSetting:enabled"/>
   <int value="890560037" label="always-enable-hdcp"/>
   <int value="892899792" label="MaterialDesignIncognitoNTP:disabled"/>
@@ -57308,6 +57310,8 @@ from previous Chrome versions.
   <int value="1200407724" label="WebUITabStripContextMenuAfterTap:disabled"/>
   <int value="1201008500"
       label="EnableAmbientAuthenticationInIncognito:enabled"/>
+  <int value="1203084856"
+      label="TrustedWebActivityNotificationPermissionDelegation:enabled"/>
   <int value="1203086664"
       label="ForceEnablePasswordDomainCapabilities:disabled"/>
   <int value="1203633646" label="AutofillEnableVirtualCardMetadata:disabled"/>

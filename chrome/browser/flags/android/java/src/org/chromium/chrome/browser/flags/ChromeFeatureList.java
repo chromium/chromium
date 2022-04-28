@@ -525,6 +525,8 @@ public abstract class ChromeFeatureList {
             "TrustedWebActivityLocationDelegation";
     public static final String TRUSTED_WEB_ACTIVITY_NEW_DISCLOSURE =
             "TrustedWebActivityNewDisclosure";
+    public static final String TRUSTED_WEB_ACTIVITY_NOTIFICATION_PERMISSION_DELEGATION =
+            "TrustedWebActivityNotificationPermissionDelegation";
     public static final String TRUSTED_WEB_ACTIVITY_POST_MESSAGE = "TrustedWebActivityPostMessage";
     public static final String TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT =
             "TrustedWebActivityQualityEnforcement";

@@ -154,6 +154,7 @@ extern const base::Feature kToolbarMicIphAndroid;
 extern const base::Feature kToolbarUseHardwareBitmapDraw;
 extern const base::Feature kTrustedWebActivityLocationDelegation;
 extern const base::Feature kTrustedWebActivityNewDisclosure;
+extern const base::Feature kTrustedWebActivityNotificationPermissionDelegation;
 extern const base::Feature kTrustedWebActivityPostMessage;
 extern const base::Feature kTrustedWebActivityQualityEnforcement;
 extern const base::Feature kTrustedWebActivityQualityEnforcementForced;
