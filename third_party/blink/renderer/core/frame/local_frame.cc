@@ -2618,8 +2618,10 @@ void LocalFrame::CountUseIfFeatureWouldBeBlockedByPermissionsPolicy(
   const SecurityOrigin* topOrigin =
       Tree().Top().GetSecurityContext()->GetSecurityOrigin();
 
-  // Check if this frame is same-origin with the top-level
-  if (!GetSecurityContext()->GetSecurityOrigin()->CanAccess(topOrigin)) {
+  // Check if this frame is same-origin with the top-level or is in
+  // a fenced frame tree.
+  if (!GetSecurityContext()->GetSecurityOrigin()->CanAccess(topOrigin) ||
+      IsInFencedFrameTree()) {
     // This frame is cross-origin with the top-level frame, and so would be
     // blocked without a permissions policy.
     UseCounter::Count(GetDocument(), blocked_cross_origin);
