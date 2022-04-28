@@ -180,4 +180,29 @@ TEST_F(FocusControllerTest, NextFocusableElementForIME_NoFormTag) {
                           password, mojom::blink::FocusType::kBackward));
 }
 
+// Ignore a checkbox to streamline form submission.
+TEST_F(FocusControllerTest, NextFocusableElementForIME_Checkbox) {
+  GetDocument().body()->setInnerHTML(
+      "<form>"
+      "  <input type='text' id='username'>"
+      "  <input type='password' id='password'>"
+      "  <input type='checkbox' id='remember-me'>"
+      "  <input type='submit' value='Login'>"
+      "</form>");
+  Element* username = GetElementById("username");
+  Element* password = GetElementById("password");
+  ASSERT_TRUE(username);
+  ASSERT_TRUE(password);
+
+  EXPECT_EQ(password, GetFocusController().NextFocusableElementForIME(
+                          username, mojom::blink::FocusType::kForward));
+  EXPECT_EQ(nullptr, GetFocusController().NextFocusableElementForIME(
+                         username, mojom::blink::FocusType::kBackward));
+
+  EXPECT_EQ(nullptr, GetFocusController().NextFocusableElementForIME(
+                         password, mojom::blink::FocusType::kForward));
+  EXPECT_EQ(username, GetFocusController().NextFocusableElementForIME(
+                          password, mojom::blink::FocusType::kBackward));
+}
+
 }  // namespace blink
