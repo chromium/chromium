@@ -43,9 +43,11 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       mojo::PendingReceiver<blink::mojom::AdAuctionService> receiver);
 
   // blink::mojom::AdAuctionService.
-  void JoinInterestGroup(const blink::InterestGroup& group) override;
+  void JoinInterestGroup(const blink::InterestGroup& group,
+                         JoinInterestGroupCallback callback) override;
   void LeaveInterestGroup(const url::Origin& owner,
-                          const std::string& name) override;
+                          const std::string& name,
+                          LeaveInterestGroupCallback callback) override;
   void LeaveInterestGroupForDocument() override;
   void UpdateAdInterestGroups() override;
   void RunAdAuction(blink::mojom::AuctionAdConfigPtr config,

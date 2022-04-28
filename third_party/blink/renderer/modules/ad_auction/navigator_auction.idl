@@ -15,10 +15,10 @@
   SecureContext
 ] partial interface Navigator {
   [CallWith=ScriptState, Measure, RaisesException]
-  void joinAdInterestGroup(AuctionAdInterestGroup group, double durationSeconds);
+  Promise<void> joinAdInterestGroup(AuctionAdInterestGroup group, double durationSeconds);
 
   [CallWith=ScriptState, Measure, RaisesException]
-  void leaveAdInterestGroup(optional AuctionAdInterestGroup group);
+  Promise<void> leaveAdInterestGroup(optional AuctionAdInterestGroup group);
 
   [CallWith=ScriptState, Measure, RaisesException]
   void updateAdInterestGroups();

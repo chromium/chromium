@@ -183,16 +183,23 @@ void AdAuctionServiceImpl::CreateMojoService(
 }
 
 void AdAuctionServiceImpl::JoinInterestGroup(
-    const blink::InterestGroup& group) {
+    const blink::InterestGroup& group,
+    JoinInterestGroupCallback callback) {
   if (!JoinOrLeaveApiAllowedFromRenderer(group.owner))
     return;
 
   // If the interest group API is not allowed for this origin do nothing. This
   // is not considered a bad message because the renderer cannot currently check
   // for this state.
+  //
+  // TODO(https://crbug.com/1316549): Move this after the permissions check, and
+  // make it not affect the invocation of the callback, to avoid leaking that
+  // joining is disabled for particular owners, through timing information.
   if (!IsInterestGroupAPIAllowed(
           ContentBrowserClient::InterestGroupApiOperation::kJoin,
           group.owner)) {
+    // Claim this passed the well-known check.
+    std::move(callback).Run(/*failed_well_known_check=*/false);
     return;
   }
 
@@ -203,25 +210,34 @@ void AdAuctionServiceImpl::JoinInterestGroup(
 
   GetInterestGroupManager().CheckPermissionsAndJoinInterestGroup(
       std::move(group), main_frame_url_, origin(),
-      GetFrame()->GetNetworkIsolationKey(), *GetFrameURLLoaderFactory());
+      GetFrame()->GetNetworkIsolationKey(), *GetFrameURLLoaderFactory(),
+      std::move(callback));
 }
 
-void AdAuctionServiceImpl::LeaveInterestGroup(const url::Origin& owner,
-                                              const std::string& name) {
+void AdAuctionServiceImpl::LeaveInterestGroup(
+    const url::Origin& owner,
+    const std::string& name,
+    LeaveInterestGroupCallback callback) {
   if (!JoinOrLeaveApiAllowedFromRenderer(owner))
     return;
 
   // If the interest group API is not allowed for this origin do nothing. This
   // is not considered a bad message because the renderer cannot currently check
   // for this state.
+  //
+  // TODO(https://crbug.com/1316549): Move this after the permissions check, and
+  // make it not affect the invocation of the callback, to avoid leaking that
+  // joining is disabled for particular owners, through timing information.
   if (!IsInterestGroupAPIAllowed(
           ContentBrowserClient::InterestGroupApiOperation::kLeave, owner)) {
+    // Claim this passed the well-known check.
+    std::move(callback).Run(/*failed_well_known_check=*/false);
     return;
   }
 
   GetInterestGroupManager().CheckPermissionsAndLeaveInterestGroup(
       owner, name, origin(), GetFrame()->GetNetworkIsolationKey(),
-      *GetFrameURLLoaderFactory());
+      *GetFrameURLLoaderFactory(), std::move(callback));
 }
 
 void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {

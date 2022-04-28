@@ -514,9 +514,8 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     return observer.mapped_url();
   }
 
-  // Create a new AdAuctionServiceImpl and use it to try and join
-  // `interest_group`. Flushes the Mojo pipe to force the Mojo message to be
-  // handled before returning.
+  // Creates a new AdAuctionServiceImpl and use it to try and join
+  // `interest_group`. Waits for the operation to signal completion.
   //
   // Creates a new AdAuctionServiceImpl with each call so the RFH
   // can be navigated between different sites. And
@@ -531,8 +530,12 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     AdAuctionServiceImpl::CreateMojoService(
         rfh ? rfh : main_rfh(), interest_service.BindNewPipeAndPassReceiver());
 
-    interest_service->JoinInterestGroup(interest_group);
-    interest_service.FlushForTesting();
+    base::RunLoop run_loop;
+    interest_service->JoinInterestGroup(
+        interest_group,
+        base::BindLambdaForTesting(
+            [&](bool failed_well_known_check) { run_loop.Quit(); }));
+    run_loop.Run();
 
     // Pipe should not have been closed - if it is expected to be closed, use
     // JoinInterestGroupAndExpectPipeClosed().
@@ -554,7 +557,10 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
 
     base::RunLoop run_loop;
     interest_service.set_disconnect_handler(run_loop.QuitClosure());
-    interest_service->JoinInterestGroup(interest_group);
+    interest_service->JoinInterestGroup(
+        interest_group, base::BindOnce([](bool failed_well_known_check) {
+          ADD_FAILURE() << "This callback should not be invoked.";
+        }));
     run_loop.Run();
   }
 
@@ -567,8 +573,12 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     AdAuctionServiceImpl::CreateMojoService(
         rfh ? rfh : main_rfh(), interest_service.BindNewPipeAndPassReceiver());
 
-    interest_service->LeaveInterestGroup(owner, name);
-    interest_service.FlushForTesting();
+    base::RunLoop run_loop;
+    interest_service->LeaveInterestGroup(
+        owner, name,
+        base::BindLambdaForTesting(
+            [&](bool failed_well_known_check) { run_loop.Quit(); }));
+    run_loop.Run();
 
     // Pipe should not have been closed - if it is expected to be closed, use
     // LeaveInterestGroupAndExpectPipeClosed().
@@ -587,7 +597,10 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
 
     base::RunLoop run_loop;
     interest_service.set_disconnect_handler(run_loop.QuitClosure());
-    interest_service->LeaveInterestGroup(owner, name);
+    interest_service->LeaveInterestGroup(
+        owner, name, base::BindOnce([](bool failed_well_known_check) {
+          ADD_FAILURE() << "This callback should not be invoked.";
+        }));
     run_loop.Run();
   }
 

@@ -39,15 +39,43 @@ interface AdAuctionService {
   RunAdAuction(AuctionAdConfig config) => (url.mojom.Url? ad_display_url);
 
   // Requests that the browser process create or overwrite persisted interest
-  // group keyed by `owner` and `name` with information from `group`. The
-  // browser verifies that the owner origin matches that of the frame's origin
-  // (in the future, a mechanism will allow delegating to other origins). The
-  // caller cannot observe the status or results of this operation.
-  JoinInterestGroup(InterestGroup group);
+  // group keyed by `group.owner` and `group.name` with information from
+  // `group`. This method may only be invoked from frames with an HTTPS origin.
+  //
+  // The browser verifies that the frame's origin has permission to join the
+  // owner origin's interest groups, performing a CORS-enabled .well-known fetch
+  // if necessary, and invokes the callback on complete.
+  //
+  // `failed_well_known_check` is true if the join failed due to the
+  //  .well-known fetch failing. If it failed for other reasons, such as
+  //  per-site settings blocking joining the IG, it should still be the result
+  //  of the .well-known fetch, to avoid leaking per-site configuration to
+  //  the renderer.
+  //
+  // Neither the result nor the timing may leak anything about what interest
+  // groups the user belongs to, including whether the user was already a
+  // member of the specified interest group.
+  JoinInterestGroup(InterestGroup group) => (bool failed_well_known_check);
 
   // Deletes the interest group stored in the browser as indicated by the
-  // (`origin`, `name`) tuple. `origin` must use https.
-  LeaveInterestGroup(url.mojom.Origin owner, string name);
+  // (`origin`, `name`) tuple. This method may only be invoked from frames with
+  // an HTTPS origin. `origin` must use HTTPS. Invokes callback on completion.
+  //
+  // The browser verifies that the frame's origin has permission to leave the
+  // owner origin's interest groups, performing a CORS-enabled .well-known fetch
+  // if necessary, and invokes the callback on complete.
+  //
+  // `failed_well_known_check` is true if the join failed due to the
+  //  .well-known fetch failing. If it failed for other reasons, such as
+  //  per-site settings blocking joining the IG, it should still be the result
+  //  of the .well-known fetch, to avoid leaking per-site configuration to
+  //  the renderer.
+  //
+  // Neither the result nor the timing may leak anything about what interest
+  // groups the user belongs to, including whether the user was previously a
+  // member of the specified interest group.
+  LeaveInterestGroup(url.mojom.Origin owner, string name)
+      => (bool failed_well_known_check);
 
   // Deletes the interest group stored in the browser that created the ad in
   // in the current document. It is an error to call this function outside of a

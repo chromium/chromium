@@ -15,6 +15,7 @@
 #include "third_party/blink/public/mojom/parakeet/ad_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/web/web_console_message.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_usvstring_usvstringsequence.h"
@@ -41,6 +42,7 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "v8/include/v8-primitive.h"
 
 namespace blink {
 
@@ -109,10 +111,18 @@ bool Jsonify(const ScriptState& script_state,
              const v8::Local<v8::Value>& value,
              String& output) {
   v8::Local<v8::String> v8_string;
+  // v8::JSON throws on certain inputs that can't be converted to JSON (like
+  // recursive structures). Use TryCatch to consume them. Otherwise, they'd take
+  // precedence over the returned ExtensionState for methods that return
+  // ScriptPromises, since ExceptionState is used to generate a rejected
+  // promise, which V8 exceptions take precedence over.
+  v8::TryCatch try_catch(script_state.GetIsolate());
   if (!v8::JSON::Stringify(script_state.GetContext(), value)
-           .ToLocal(&v8_string)) {
+           .ToLocal(&v8_string) ||
+      try_catch.HasCaught()) {
     return false;
   }
+
   output = ToCoreString(v8_string);
   // JSON.stringify can fail to produce a string value in one of two ways: it
   // can throw an exception (as with unserializable objects), or it can return
@@ -868,47 +878,48 @@ NavigatorAuction& NavigatorAuction::From(ExecutionContext* context,
 
 const char NavigatorAuction::kSupplementName[] = "NavigatorAuction";
 
-void NavigatorAuction::joinAdInterestGroup(ScriptState* script_state,
-                                           const AuctionAdInterestGroup* group,
-                                           double duration_seconds,
-                                           ExceptionState& exception_state) {
+ScriptPromise NavigatorAuction::joinAdInterestGroup(
+    ScriptState* script_state,
+    const AuctionAdInterestGroup* group,
+    double duration_seconds,
+    ExceptionState& exception_state) {
   const ExecutionContext* context = ExecutionContext::From(script_state);
 
   auto mojo_group = mojom::blink::InterestGroup::New();
   mojo_group->expiry = base::Time::Now() + base::Seconds(duration_seconds);
   if (!CopyOwnerFromIdlToMojo(*context, exception_state, *group, *mojo_group))
-    return;
+    return ScriptPromise();
   mojo_group->name = group->name();
   mojo_group->priority = (group->hasPriority()) ? group->priority() : 0.0;
   if (!CopyBiddingLogicUrlFromIdlToMojo(*context, exception_state, *group,
                                         *mojo_group)) {
-    return;
+    return ScriptPromise();
   }
   if (!CopyWasmHelperUrlFromIdlToMojo(*context, exception_state, *group,
                                       *mojo_group)) {
-    return;
+    return ScriptPromise();
   }
   if (!CopyDailyUpdateUrlFromIdlToMojo(*context, exception_state, *group,
                                        *mojo_group)) {
-    return;
+    return ScriptPromise();
   }
   if (!CopyTrustedBiddingSignalsUrlFromIdlToMojo(*context, exception_state,
                                                  *group, *mojo_group)) {
-    return;
+    return ScriptPromise();
   }
   if (!CopyTrustedBiddingSignalsKeysFromIdlToMojo(*group, *mojo_group))
-    return;
+    return ScriptPromise();
   if (!CopyUserBiddingSignalsFromIdlToMojo(*script_state, exception_state,
                                            *group, *mojo_group)) {
-    return;
+    return ScriptPromise();
   }
   if (!CopyAdsFromIdlToMojo(*context, *script_state, exception_state, *group,
                             *mojo_group)) {
-    return;
+    return ScriptPromise();
   }
   if (!CopyAdComponentsFromIdlToMojo(*context, *script_state, exception_state,
                                      *group, *mojo_group)) {
-    return;
+    return ScriptPromise();
   }
 
   String error_field_name;
@@ -918,18 +929,25 @@ void NavigatorAuction::joinAdInterestGroup(ScriptState* script_state,
                                   error_field_value, error)) {
     exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
         *group, error_field_name, error_field_value, error));
-    return;
+    return ScriptPromise();
   }
 
-  ad_auction_service_->JoinInterestGroup(std::move(mojo_group));
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+  ad_auction_service_->JoinInterestGroup(
+      std::move(mojo_group),
+      resolver->WrapCallbackInScriptScope(
+          WTF::Bind(&NavigatorAuction::JoinComplete, WrapPersistent(this))));
+  return promise;
 }
 
 /* static */
-void NavigatorAuction::joinAdInterestGroup(ScriptState* script_state,
-                                           Navigator& navigator,
-                                           const AuctionAdInterestGroup* group,
-                                           double duration_seconds,
-                                           ExceptionState& exception_state) {
+ScriptPromise NavigatorAuction::joinAdInterestGroup(
+    ScriptState* script_state,
+    Navigator& navigator,
+    const AuctionAdInterestGroup* group,
+    double duration_seconds,
+    ExceptionState& exception_state) {
   RecordCommonFledgeUseCounters(navigator.DomWindow()->document());
   const ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->IsFeatureEnabled(
@@ -937,7 +955,7 @@ void NavigatorAuction::joinAdInterestGroup(ScriptState* script_state,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Feature join-ad-interest-group is not enabled by Permissions Policy");
-    return;
+    return ScriptPromise();
   }
   if (!base::FeatureList::IsEnabled(
           blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault) &&
@@ -951,21 +969,29 @@ void NavigatorAuction::joinAdInterestGroup(ScriptState* script_state,
                            exception_state);
 }
 
-void NavigatorAuction::leaveAdInterestGroup(ScriptState* script_state,
-                                            const AuctionAdInterestGroup* group,
-                                            ExceptionState& exception_state) {
+ScriptPromise NavigatorAuction::leaveAdInterestGroup(
+    ScriptState* script_state,
+    const AuctionAdInterestGroup* group,
+    ExceptionState& exception_state) {
   scoped_refptr<const SecurityOrigin> owner = ParseOrigin(group->owner());
   if (!owner) {
     exception_state.ThrowTypeError("owner '" + group->owner() +
                                    "' for AuctionAdInterestGroup with name '" +
                                    group->name() +
                                    "' must be a valid https origin.");
-    return;
+    return ScriptPromise();
   }
-  ad_auction_service_->LeaveInterestGroup(owner, group->name());
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+  ad_auction_service_->LeaveInterestGroup(
+      owner, group->name(),
+      resolver->WrapCallbackInScriptScope(
+          WTF::Bind(&NavigatorAuction::LeaveComplete, WrapPersistent(this))));
+  return promise;
 }
 
-void NavigatorAuction::leaveAdInterestGroupForDocument(
+ScriptPromise NavigatorAuction::leaveAdInterestGroupForDocument(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
@@ -974,24 +1000,31 @@ void NavigatorAuction::leaveAdInterestGroupForDocument(
     exception_state.ThrowSecurityError(
         "May not leaveAdInterestGroup from a Document that is not fully "
         "active");
-    return;
+    return ScriptPromise();
   }
   if (!window->GetFrame()->IsInFencedFrameTree()) {
     exception_state.ThrowTypeError(
         "owner and name are required outside of a fenced frame.");
-    return;
+    return ScriptPromise();
   }
   // The renderer does not have enough information to verify that this document
   // is the result of a FLEDGE auction. The browser will silently ignore
   // this request if this document is not the result of a FLEDGE auction.
   ad_auction_service_->LeaveInterestGroupForDocument();
+
+  // Return resolved promise. The browser-side code doesn't do anything
+  // meaningful in this case (no .well-known fetches), and if it ever does do
+  // them, likely don't want to expose timing information to the fenced frame,
+  // anyways.
+  return ScriptPromise::CastUndefined(script_state);
 }
 
 /* static */
-void NavigatorAuction::leaveAdInterestGroup(ScriptState* script_state,
-                                            Navigator& navigator,
-                                            const AuctionAdInterestGroup* group,
-                                            ExceptionState& exception_state) {
+ScriptPromise NavigatorAuction::leaveAdInterestGroup(
+    ScriptState* script_state,
+    Navigator& navigator,
+    const AuctionAdInterestGroup* group,
+    ExceptionState& exception_state) {
   RecordCommonFledgeUseCounters(navigator.DomWindow()->document());
   ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->IsFeatureEnabled(
@@ -999,7 +1032,7 @@ void NavigatorAuction::leaveAdInterestGroup(ScriptState* script_state,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Feature join-ad-interest-group is not enabled by Permissions Policy");
-    return;
+    return ScriptPromise();
   }
   if (!base::FeatureList::IsEnabled(
           blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault) &&
@@ -1013,9 +1046,10 @@ void NavigatorAuction::leaveAdInterestGroup(ScriptState* script_state,
 }
 
 /* static */
-void NavigatorAuction::leaveAdInterestGroup(ScriptState* script_state,
-                                            Navigator& navigator,
-                                            ExceptionState& exception_state) {
+ScriptPromise NavigatorAuction::leaveAdInterestGroup(
+    ScriptState* script_state,
+    Navigator& navigator,
+    ExceptionState& exception_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
   // According to the spec, implicit leave bypasses permission policy.
   return From(context, navigator)
@@ -1267,6 +1301,30 @@ void NavigatorAuction::FinalizeAdComplete(
         DOMExceptionCode::kNotSupportedError,
         "finalizeAd API not yet implemented"));
   }
+}
+
+void NavigatorAuction::JoinComplete(ScriptPromiseResolver* resolver,
+                                    bool failed_well_known_check) {
+  if (failed_well_known_check) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        resolver->GetScriptState()->GetIsolate(),
+        DOMExceptionCode::kNotAllowedError,
+        "Permission to join interest group denied."));
+    return;
+  }
+  resolver->Resolve();
+}
+
+void NavigatorAuction::LeaveComplete(ScriptPromiseResolver* resolver,
+                                     bool failed_well_known_check) {
+  if (failed_well_known_check) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        resolver->GetScriptState()->GetIsolate(),
+        DOMExceptionCode::kNotAllowedError,
+        "Permission to leave interest group denied."));
+    return;
+  }
+  resolver->Resolve();
 }
 
 void NavigatorAuction::AuctionComplete(ScriptPromiseResolver* resolver,

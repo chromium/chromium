@@ -25,7 +25,9 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
 #include "url/origin.h"
 
 namespace base {
@@ -87,7 +89,8 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       const GURL& joining_url,
       const url::Origin& frame_origin,
       const net::NetworkIsolationKey& network_isolation_key,
-      network::mojom::URLLoaderFactory& url_loader_factory);
+      network::mojom::URLLoaderFactory& url_loader_factory,
+      blink::mojom::AdAuctionService::JoinInterestGroupCallback callback);
 
   // Same as CheckPermissionsAndJoinInterestGroup(), except for a leave
   // operation.
@@ -96,7 +99,8 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       const std::string& name,
       const url::Origin& frame_origin,
       const net::NetworkIsolationKey& network_isolation_key,
-      network::mojom::URLLoaderFactory& url_loader_factory);
+      network::mojom::URLLoaderFactory& url_loader_factory,
+      blink::mojom::AdAuctionService::LeaveInterestGroupCallback callback);
 
   // Joins an interest group. If the interest group does not exist, a new one
   // is created based on the provided group information. If the interest group
@@ -183,12 +187,16 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // CheckPermissionsAndLeaveInterestGroup(), respectively. Call
   // JoinInterestGroup() and LeaveInterestGroup() if the results of the
   // permissions check allows it.
-  void OnJoinInterestGroupPermissionsChecked(blink::InterestGroup group,
-                                             const GURL& joining_url,
-                                             bool can_join);
-  void OnLeaveInterestGroupPermissionsChecked(const url::Origin& owner,
-                                              const std::string& name,
-                                              bool can_leave);
+  void OnJoinInterestGroupPermissionsChecked(
+      blink::InterestGroup group,
+      const GURL& joining_url,
+      blink::mojom::AdAuctionService::JoinInterestGroupCallback callback,
+      bool can_join);
+  void OnLeaveInterestGroupPermissionsChecked(
+      const url::Origin& owner,
+      const std::string& name,
+      blink::mojom::AdAuctionService::LeaveInterestGroupCallback callback,
+      bool can_leave);
 
   // Like GetInterestGroupsForOwner(), but doesn't return any interest groups
   // that are currently rate-limited for updates. Additionally, this will update

@@ -51,14 +51,16 @@ void InterestGroupManagerImpl::CheckPermissionsAndJoinInterestGroup(
     const GURL& joining_url,
     const url::Origin& frame_origin,
     const net::NetworkIsolationKey& network_isolation_key,
-    network::mojom::URLLoaderFactory& url_loader_factory) {
+    network::mojom::URLLoaderFactory& url_loader_factory,
+    blink::mojom::AdAuctionService::JoinInterestGroupCallback callback) {
   url::Origin interest_group_owner = group.owner;
   permissions_checker_.CheckPermissions(
       InterestGroupPermissionsChecker::Operation::kJoin, frame_origin,
       interest_group_owner, network_isolation_key, url_loader_factory,
       base::BindOnce(
           &InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked,
-          base::Unretained(this), std::move(group), joining_url));
+          base::Unretained(this), std::move(group), joining_url,
+          std::move(callback)));
 }
 
 void InterestGroupManagerImpl::CheckPermissionsAndLeaveInterestGroup(
@@ -66,13 +68,14 @@ void InterestGroupManagerImpl::CheckPermissionsAndLeaveInterestGroup(
     const std::string& name,
     const url::Origin& frame_origin,
     const net::NetworkIsolationKey& network_isolation_key,
-    network::mojom::URLLoaderFactory& url_loader_factory) {
+    network::mojom::URLLoaderFactory& url_loader_factory,
+    blink::mojom::AdAuctionService::LeaveInterestGroupCallback callback) {
   permissions_checker_.CheckPermissions(
       InterestGroupPermissionsChecker::Operation::kLeave, frame_origin, owner,
       network_isolation_key, url_loader_factory,
       base::BindOnce(
           &InterestGroupManagerImpl::OnLeaveInterestGroupPermissionsChecked,
-          base::Unretained(this), owner, name));
+          base::Unretained(this), owner, name, std::move(callback)));
 }
 
 void InterestGroupManagerImpl::JoinInterestGroup(blink::InterestGroup group,
@@ -173,7 +176,16 @@ void InterestGroupManagerImpl::GetLastMaintenanceTimeForTesting(
 void InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked(
     blink::InterestGroup group,
     const GURL& joining_url,
+    blink::mojom::AdAuctionService::JoinInterestGroupCallback callback,
     bool can_join) {
+  // Invoke callback before calling JoinInterestGroup(), which posts a task to
+  // another thread. Any FLEDGE call made from the renderer will need to pass
+  // through the UI thread and then bounce over the database thread, so it will
+  // see the new InterestGroup, so it's not necessary to actually wait for the
+  // database to be updated before invoking the callback. Waiting before
+  // invoking the callback may potentially leak whether the user was previously
+  // in the InterestGroup through timing differences.
+  std::move(callback).Run(/*failed_well_known_check=*/!can_join);
   if (can_join)
     JoinInterestGroup(std::move(group), joining_url);
 }
@@ -181,7 +193,16 @@ void InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked(
 void InterestGroupManagerImpl::OnLeaveInterestGroupPermissionsChecked(
     const url::Origin& owner,
     const std::string& name,
+    blink::mojom::AdAuctionService::LeaveInterestGroupCallback callback,
     bool can_leave) {
+  // Invoke callback before calling LeaveInterestGroup(), which posts a task to
+  // another thread. Any FLEDGE call made from the renderer will need to pass
+  // through the UI thread and then bounce over the database thread, so it will
+  // see the new InterestGroup, so it's not necessary to actually wait for the
+  // database to be updated before invoking the callback. Waiting before
+  // invoking the callback may potentially leak whether the user was previously
+  // in the InterestGroup through timing differences.
+  std::move(callback).Run(/*failed_well_known_check=*/!can_leave);
   if (can_leave)
     LeaveInterestGroup(owner, name);
 }

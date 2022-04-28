@@ -37,26 +37,28 @@ class MODULES_EXPORT NavigatorAuction final
   // See platform/Supplementable.h
   static NavigatorAuction& From(ExecutionContext*, Navigator&);
 
-  void joinAdInterestGroup(ScriptState*,
-                           const AuctionAdInterestGroup*,
-                           double,
-                           ExceptionState&);
-  static void joinAdInterestGroup(ScriptState*,
-                                  Navigator&,
-                                  const AuctionAdInterestGroup*,
-                                  double,
-                                  ExceptionState&);
-  void leaveAdInterestGroup(ScriptState*,
-                            const AuctionAdInterestGroup*,
-                            ExceptionState&);
-  static void leaveAdInterestGroup(ScriptState*,
-                                   Navigator&,
-                                   const AuctionAdInterestGroup*,
-                                   ExceptionState&);
+  ScriptPromise joinAdInterestGroup(ScriptState*,
+                                    const AuctionAdInterestGroup*,
+                                    double,
+                                    ExceptionState&);
+  static ScriptPromise joinAdInterestGroup(ScriptState*,
+                                           Navigator&,
+                                           const AuctionAdInterestGroup*,
+                                           double,
+                                           ExceptionState&);
+  ScriptPromise leaveAdInterestGroup(ScriptState*,
+                                     const AuctionAdInterestGroup*,
+                                     ExceptionState&);
+  static ScriptPromise leaveAdInterestGroup(ScriptState*,
+                                            Navigator&,
+                                            const AuctionAdInterestGroup*,
+                                            ExceptionState&);
   // implicit leaveAdInterestGroup - only supported when called from within
   // a fenced frame showing FLEDGE ads.
-  void leaveAdInterestGroupForDocument(ScriptState*, ExceptionState&);
-  static void leaveAdInterestGroup(ScriptState*, Navigator&, ExceptionState&);
+  ScriptPromise leaveAdInterestGroupForDocument(ScriptState*, ExceptionState&);
+  static ScriptPromise leaveAdInterestGroup(ScriptState*,
+                                            Navigator&,
+                                            ExceptionState&);
 
   void updateAdInterestGroups();
   static void updateAdInterestGroups(ScriptState*, Navigator&, ExceptionState&);
@@ -118,10 +120,16 @@ class MODULES_EXPORT NavigatorAuction final
   }
 
  private:
-  // Completion callback for createAdRequest() mojo call.
+  // Completion callback for joinInterestGroup() Mojo calls.
+  void JoinComplete(ScriptPromiseResolver* resolver,
+                    bool failed_well_known_check);
+  // Completion callback for leaveInterestGroup() Mojo calls.
+  void LeaveComplete(ScriptPromiseResolver* resolver,
+                     bool failed_well_known_check);
+  // Completion callback for createAdRequest() Mojo call.
   void AdsRequested(ScriptPromiseResolver* resolver,
                     const WTF::String& ads_guid);
-  // Completion callback for finalizeAd() mojo call.
+  // Completion callback for finalizeAd() Mojo call.
   void FinalizeAdComplete(ScriptPromiseResolver* resolver,
                           const absl::optional<KURL>& creative_url);
   // Completion callback for Mojo call made by runAdAuction().
