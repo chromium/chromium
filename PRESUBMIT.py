@@ -1047,6 +1047,7 @@ _KNOWN_TEST_DATA_AND_INVALID_JSON_FILE_PATTERNS = [
     r'^third_party[\\/]protobuf[\\/]',
     r'^third_party[\\/]blink[\\/]renderer[\\/]devtools[\\/]protocol\.json$',
     r'^third_party[\\/]blink[\\/]web_tests[\\/]external[\\/]wpt[\\/]',
+    r'^tools[\\/]perf[\\/]',
 ]
 
 # These are not checked on the public chromium-presubmit trybot.

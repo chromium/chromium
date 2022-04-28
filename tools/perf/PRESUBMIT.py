@@ -165,6 +165,10 @@ def _CheckJson(input_api, output_api):
     filename = affected_file.AbsoluteLocalPath()
     if os.path.splitext(filename)[1] != '.json':
       continue
+    if (os.path.basename(filename) == 'perf_results.json' and
+        os.path.basename(os.path.dirname(filename)) == 'speedometer2-future'):
+      # Intentionally invalid JSON file.
+      continue
     try:
       input_api.json.load(open(filename))
     except ValueError:
