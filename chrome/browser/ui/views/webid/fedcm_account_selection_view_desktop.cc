@@ -6,9 +6,8 @@
 
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 // static
@@ -51,8 +50,7 @@ void FedCmAccountSelectionView::Show(
     Account::SignInMode sign_in_mode) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(
       chrome::FindBrowserWithWebContents(delegate_->GetWebContents()));
-  views::View* anchor_view =
-      browser_view->toolbar_button_provider()->GetAppMenuButton();
+  views::View* anchor_view = browser_view->top_container();
   TabStripModel* tab_strip_model = browser_view->browser()->tab_strip_model();
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(
                        new AccountSelectionBubbleView(
