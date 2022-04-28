@@ -15,6 +15,12 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install Python dependencies
+        run: python -m pip install -r tests/requirements.txt
       - name: Test
         run: npm test
       - name: Publish
