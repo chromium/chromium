@@ -44,18 +44,25 @@ public class PasswordSettingsUpdaterBridge {
 
     @CalledByNative
     void getSettingValue(String account, @PasswordManagerSetting int setting) {
+        PasswordSettingsUpdaterMetricsRecorder metricsRecorder =
+                new PasswordSettingsUpdaterMetricsRecorder(
+                        setting, PasswordSettingsUpdaterMetricsRecorder.GET_VALUE_FUNCTION_SUFFIX);
         switch (setting) {
             case OFFER_TO_SAVE_PASSWORDS:
                 mSettingsAccessor.getOfferToSavePasswords(getAccount(account),
                         offerToSavePasswords
-                        -> onSettingValueFetched(OFFER_TO_SAVE_PASSWORDS, offerToSavePasswords),
-                        exception -> handleFetchingException(OFFER_TO_SAVE_PASSWORDS, exception));
+                        -> onSettingValueFetched(
+                                OFFER_TO_SAVE_PASSWORDS, offerToSavePasswords, metricsRecorder),
+                        exception
+                        -> handleFetchingException(
+                                OFFER_TO_SAVE_PASSWORDS, exception, metricsRecorder));
                 break;
             case AUTO_SIGN_IN:
                 mSettingsAccessor.getAutoSignIn(getAccount(account),
                         autoSignIn
-                        -> onSettingValueFetched(AUTO_SIGN_IN, autoSignIn),
-                        exception -> handleFetchingException(AUTO_SIGN_IN, exception));
+                        -> onSettingValueFetched(AUTO_SIGN_IN, autoSignIn, metricsRecorder),
+                        exception
+                        -> handleFetchingException(AUTO_SIGN_IN, exception, metricsRecorder));
                 break;
             default:
                 assert false : "All settings need to be handled.";
@@ -64,26 +71,34 @@ public class PasswordSettingsUpdaterBridge {
 
     @CalledByNative
     void setSettingValue(String account, @PasswordManagerSetting int setting, boolean value) {
+        PasswordSettingsUpdaterMetricsRecorder metricsRecorder =
+                new PasswordSettingsUpdaterMetricsRecorder(
+                        setting, PasswordSettingsUpdaterMetricsRecorder.SET_VALUE_FUNCTION_SUFFIX);
         switch (setting) {
             case OFFER_TO_SAVE_PASSWORDS:
                 mSettingsAccessor.setOfferToSavePasswords(value, getAccount(account),
                         unused
-                        -> onSettingValueSet(OFFER_TO_SAVE_PASSWORDS),
-                        exception -> handleSettingException(OFFER_TO_SAVE_PASSWORDS, exception));
+                        -> onSettingValueSet(OFFER_TO_SAVE_PASSWORDS, metricsRecorder),
+                        exception
+                        -> handleSettingException(
+                                OFFER_TO_SAVE_PASSWORDS, exception, metricsRecorder));
                 break;
             case AUTO_SIGN_IN:
                 mSettingsAccessor.setAutoSignIn(value, getAccount(account),
                         unused
-                        -> onSettingValueSet(AUTO_SIGN_IN),
-                        exception -> handleSettingException(AUTO_SIGN_IN, exception));
+                        -> onSettingValueSet(AUTO_SIGN_IN, metricsRecorder),
+                        exception
+                        -> handleSettingException(AUTO_SIGN_IN, exception, metricsRecorder));
                 break;
             default:
                 assert false : "All settings need to be handled.";
         }
     }
 
-    private void onSettingValueFetched(
-            @PasswordManagerSetting int setting, Optional<Boolean> settingValue) {
+    private void onSettingValueFetched(@PasswordManagerSetting int setting,
+            Optional<Boolean> settingValue,
+            PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
+        metricsRecorder.recordMetrics(null);
         if (mNativeSettingsUpdaterBridge == 0) return;
         if (settingValue.isPresent()) {
             PasswordSettingsUpdaterBridgeJni.get().onSettingValueFetched(
@@ -94,7 +109,9 @@ public class PasswordSettingsUpdaterBridge {
                 mNativeSettingsUpdaterBridge, setting);
     }
 
-    private void handleFetchingException(@PasswordManagerSetting int setting, Exception exception) {
+    private void handleFetchingException(@PasswordManagerSetting int setting, Exception exception,
+            PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
+        metricsRecorder.recordMetrics(exception);
         if (mNativeSettingsUpdaterBridge == 0) return;
 
         @AndroidBackendErrorType
@@ -110,13 +127,17 @@ public class PasswordSettingsUpdaterBridge {
                 mNativeSettingsUpdaterBridge, setting, error, apiErrorCode);
     }
 
-    private void onSettingValueSet(@PasswordManagerSetting int setting) {
+    private void onSettingValueSet(@PasswordManagerSetting int setting,
+            PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
+        metricsRecorder.recordMetrics(null);
         if (mNativeSettingsUpdaterBridge == 0) return;
         PasswordSettingsUpdaterBridgeJni.get().onSuccessfulSettingChange(
                 mNativeSettingsUpdaterBridge, setting);
     }
 
-    private void handleSettingException(@PasswordManagerSetting int setting, Exception exception) {
+    private void handleSettingException(@PasswordManagerSetting int setting, Exception exception,
+            PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
+        metricsRecorder.recordMetrics(exception);
         if (mNativeSettingsUpdaterBridge == 0) return;
 
         @AndroidBackendErrorType

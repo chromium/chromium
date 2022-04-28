@@ -29,6 +29,17 @@ chromium-metrics-reviews@google.com.
   <variant name=".WithoutCustomPassphrase" summary="regularly encrypted"/>
 </variants>
 
+<variants name="PasswordManagerSetting">
+  <variant name="AutoSignIn" summary="auto sign in preference"/>
+  <variant name="OfferToSavePasswords"
+      summary="offer to save passwords preference"/>
+</variants>
+
+<variants name="PasswordManagerSettingAccessorFunction">
+  <variant name="GetSettingValue" summary="retrieve the current value"/>
+  <variant name="SetSettingValue" summary="set a new value"/>
+</variants>
+
 <variants name="PasswordProtectionTriggerType">
   <variant name="AnyPasswordEntry" summary="password reuse event"/>
   <variant name="PasswordFieldOnFocus" summary="on focus event"/>
@@ -2039,6 +2050,75 @@ chromium-metrics-reviews@google.com.
   <summary>
     Response time for fetching a list of available password scripts.
   </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordSettings.{Function}.{Setting}.APIError"
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="M106">
+  <owner>maxan@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    The error codes returned by the GMS Core Password preferences 1P API while
+    attempting to {Function} for {Setting}. Recorded when the asynchronous job
+    has returned. This is currently only recorded on Android.
+  </summary>
+  <token key="Function" variants="PasswordManagerSettingAccessorFunction"/>
+  <token key="Setting" variants="PasswordManagerSetting"/>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordSettings.{Function}.{Setting}.ErrorCode"
+    enum="PasswordStoreAndroidBackendError" expires_after="M106">
+  <owner>maxan@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Records the error encountered in PasswordSettingsUpdater while attempting to
+    {Function} for {Setting}. This is recorded either before making the actual
+    request (if the preconditions are not met) or after the asynchronous call
+    comes back with an error. This is currently only recorded on Android.
+  </summary>
+  <token key="Function" variants="PasswordManagerSettingAccessorFunction"/>
+  <token key="Setting" variants="PasswordManagerSetting"/>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordSettings.{Function}.{Setting}.ErrorLatency"
+    units="ms" expires_after="M106">
+  <owner>maxan@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Real-time duration of the asynchronous attempt to {Function} for {Setting}.
+    Recorded when the asynchronous job failed. This is currently only recorded
+    on Android.
+  </summary>
+  <token key="Function" variants="PasswordManagerSettingAccessorFunction"/>
+  <token key="Setting" variants="PasswordManagerSetting"/>
+</histogram>
+
+<histogram name="PasswordManager.PasswordSettings.{Function}.{Setting}.Latency"
+    units="ms" expires_after="M106">
+  <owner>maxan@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Real-time duration of the asynchronous attempt to {Function} for {Setting}.
+    Only recorded when the asynchronous job has returned successfully. This is
+    currently only recorded on Android.
+  </summary>
+  <token key="Function" variants="PasswordManagerSettingAccessorFunction"/>
+  <token key="Setting" variants="PasswordManagerSetting"/>
+</histogram>
+
+<histogram name="PasswordManager.PasswordSettings.{Function}.{Setting}.Success"
+    enum="BooleanSuccess" expires_after="M106">
+  <owner>maxan@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Records whether PasswordSettingsUpdater attempt to {Function} for {Setting}
+    succeed. Recorded when the asynchronous job has returned. This is currently
+    only recorded on Android.
+  </summary>
+  <token key="Function" variants="PasswordManagerSettingAccessorFunction"/>
+  <token key="Setting" variants="PasswordManagerSetting"/>
 </histogram>
 
 <histogram name="PasswordManager.PasswordStore.OnLoginsChanged" enum="Boolean"
