@@ -28,7 +28,7 @@ namespace {
 // Width of the identity control if nothing is contraining it.
 constexpr CGFloat kIdentityControlMaxWidth = 327.;
 // Margin above the identity button.
-constexpr CGFloat kIdentityTopMargin = 0.;
+constexpr CGFloat kIdentityTopMargin = 16.;
 // Margin between elements in the bottom view.
 constexpr CGFloat kBottomViewInnerVerticalMargin = 8.;
 
@@ -97,8 +97,8 @@ NSAttributedString* FooterAttributedStringWithMessageIDAndURL(
 
 // Button controlling the display of the selected identity.
 @property(nonatomic, strong) IdentityButtonControl* identityControl;
-// The string to be displayed in the "Cotinue" button to personalize it. Usually
-// the given name, or the email address if no given name.
+// The string to be displayed in the "Continue" button to personalize it.
+// Usually the given name, or the email address if no given name.
 @property(nonatomic, copy) NSString* personalizedButtonPrompt;
 // Scrim displayed above the view when the UI is disabled.
 @property(nonatomic, strong) ActivityOverlayView* overlay;
