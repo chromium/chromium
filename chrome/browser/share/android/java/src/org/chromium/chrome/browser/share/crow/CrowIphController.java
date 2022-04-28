@@ -88,7 +88,9 @@ public class CrowIphController {
     }
 
     private void turnOnHighlightForCrowMenuItem() {
-        // TODO(crbug/1314450): Implement this after menu item exists.
+        if (mAppMenuHandler != null) {
+            mAppMenuHandler.setMenuHighlight(R.id.crow_chip_view);
+        }
     }
 
     private void turnOffHighlightForCrowMenuItem() {
