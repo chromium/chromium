@@ -81,12 +81,12 @@
 
 using ::autofill::metrics::kTestGuid;
 using base::ASCIIToUTF16;
-using base::Bucket;
 using base::TimeTicks;
 using ::testing::ElementsAre;
 using ::testing::HasSubstr;
 using ::testing::Matcher;
 using ::testing::NiceMock;
+using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedPointwise;
 
 namespace autofill {
@@ -325,28 +325,15 @@ std::string SerializeAndEncode(const AutofillQueryResponse& response) {
   return response_string;
 }
 
-template <typename T>
-struct HistogramBucketExpectation {
-  T bucket;
-  size_t count;
+template <typename MetricEnum>
+struct Bucket : public base::Bucket {
+  Bucket(MetricEnum bucket, base::HistogramBase::Count count)
+      : base::Bucket(static_cast<base::HistogramBase::Sample>(bucket), count) {}
 };
 
-// Checks that the given buckets have the given counts.
-// Additionally checks that the overall count is `total_count`, which defaults
-// to the sum of `expectations` counts.
-template <typename T>
-void ExpectBuckets(const base::HistogramTester& histogram_tester,
-                   base::StringPiece metric,
-                   std::vector<HistogramBucketExpectation<T>> expectations,
-                   absl::optional<size_t> total_size = absl::nullopt) {
-  if (!total_size) {
-    total_size = 0;
-    for (const auto& e : expectations)
-      *total_size += e.count;
-  }
-  histogram_tester.ExpectTotalCount(metric, *total_size);
-  for (const auto& e : expectations)
-    histogram_tester.ExpectBucketCount(metric, e.bucket, e.count);
+template <typename... MetricEnum>
+auto AreBuckets(Bucket<MetricEnum>... buckets) {
+  return ::testing::UnorderedElementsAre(buckets...);
 }
 
 }  // namespace
@@ -12648,6 +12635,10 @@ TEST_F(AutofillMetricsCrossFrameFormTest,
   };
 
   base::HistogramTester histogram_tester;
+  auto SamplesOf = [&histogram_tester](base::StringPiece metric) {
+    return histogram_tester.GetAllSamples(metric);
+  };
+
   SeeForm();
 
   fill_data().cvc = u"";
@@ -12676,52 +12667,47 @@ TEST_F(AutofillMetricsCrossFrameFormTest,
   SubmitForm();
   ResetDriverToCommitMetrics();
 
-  ExpectBuckets<Metric>(
-      histogram_tester,
-      "Autofill.CreditCard.SeamlessFillable.AtFillTimeBeforeSecurityPolicy",
-      {{Metric::kFullFill, 2}});
-  ExpectBuckets<int>(
-      histogram_tester,
-      "Autofill.CreditCard.SeamlessFillable.AtFillTimeBeforeSecurityPolicy."
-      "Bitmask",
-      {{kName | kNumber | kExp | kCvc, 2}});
+  EXPECT_THAT(SamplesOf("Autofill.CreditCard.SeamlessFillable."
+                        "AtFillTimeBeforeSecurityPolicy"),
+              AreBuckets(Bucket(Metric::kFullFill, 2)));
+  EXPECT_THAT(SamplesOf("Autofill.CreditCard.SeamlessFillable."
+                        "AtFillTimeBeforeSecurityPolicy"),
+              AreBuckets(Bucket(Metric::kFullFill, 2)));
+  EXPECT_THAT(SamplesOf("Autofill.CreditCard.SeamlessFillable."
+                        "AtFillTimeBeforeSecurityPolicy.Bitmask"),
+              AreBuckets(Bucket(kName | kNumber | kExp | kCvc, 2)));
 
-  ExpectBuckets<Metric>(
-      histogram_tester,
-      "Autofill.CreditCard.SeamlessFillable.AtFillTimeAfterSecurityPolicy",
-      {{Metric::kPartialFill, 2}});
-  ExpectBuckets<int>(
-      histogram_tester,
-      "Autofill.CreditCard.SeamlessFillable.AtFillTimeAfterSecurityPolicy."
-      "Bitmask",
-      {{kName | kExp, 1}, {kNumber | kCvc, 1}});
+  EXPECT_THAT(
+      SamplesOf(
+          "Autofill.CreditCard.SeamlessFillable.AtFillTimeAfterSecurityPolicy"),
+      AreBuckets(Bucket(Metric::kPartialFill, 2)));
+  EXPECT_THAT(SamplesOf("Autofill.CreditCard.SeamlessFillable."
+                        "AtFillTimeAfterSecurityPolicy.Bitmask"),
+              AreBuckets(Bucket(kName | kExp, 1), Bucket(kNumber | kCvc, 1)));
 
-  ExpectBuckets<Metric>(
-      histogram_tester,
-      "Autofill.CreditCard.SeamlessFills.AtFillTimeBeforeSecurityPolicy",
-      {{Metric::kOptionalCvcMissing, 1}, {Metric::kPartialFill, 1}});
-  ExpectBuckets<int>(
-      histogram_tester,
-      "Autofill.CreditCard.SeamlessFills.AtFillTimeBeforeSecurityPolicy."
-      "Bitmask",
-      {{kName | kNumber | kExp, 1}, {kNumber, 1}});
+  EXPECT_THAT(
+      SamplesOf(
+          "Autofill.CreditCard.SeamlessFills.AtFillTimeBeforeSecurityPolicy"),
+      AreBuckets(Bucket(Metric::kOptionalCvcMissing, 1),
+                 Bucket(Metric::kPartialFill, 1)));
+  EXPECT_THAT(
+      SamplesOf("Autofill.CreditCard.SeamlessFills."
+                "AtFillTimeBeforeSecurityPolicy.Bitmask"),
+      AreBuckets(Bucket(kName | kNumber | kExp, 1), Bucket(kNumber, 1)));
 
-  ExpectBuckets<Metric>(
-      histogram_tester,
-      "Autofill.CreditCard.SeamlessFills.AtFillTimeAfterSecurityPolicy",
-      {{Metric::kPartialFill, 2}});
-  ExpectBuckets<int>(
-      histogram_tester,
-      "Autofill.CreditCard.SeamlessFills.AtFillTimeAfterSecurityPolicy.Bitmask",
-      {{kName | kExp, 1}, {kNumber, 1}});
+  EXPECT_THAT(
+      SamplesOf(
+          "Autofill.CreditCard.SeamlessFills.AtFillTimeAfterSecurityPolicy"),
+      AreBuckets(Bucket(Metric::kPartialFill, 2)));
+  EXPECT_THAT(SamplesOf("Autofill.CreditCard.SeamlessFills."
+                        "AtFillTimeAfterSecurityPolicy.Bitmask"),
+              AreBuckets(Bucket(kName | kExp, 1), Bucket(kNumber, 1)));
 
-  ExpectBuckets<Metric>(histogram_tester,
-                        "Autofill.CreditCard.SeamlessFills.AtSubmissionTime",
-                        {{Metric::kOptionalCvcMissing, 1}});
-  ExpectBuckets<int>(
-      histogram_tester,
-      "Autofill.CreditCard.SeamlessFills.AtSubmissionTime.Bitmask",
-      {{kName | kNumber | kExp, 1}});
+  EXPECT_THAT(SamplesOf("Autofill.CreditCard.SeamlessFills.AtSubmissionTime"),
+              AreBuckets(Bucket(Metric::kOptionalCvcMissing, 1)));
+  EXPECT_THAT(
+      SamplesOf("Autofill.CreditCard.SeamlessFills.AtSubmissionTime.Bitmask"),
+      AreBuckets(Bucket(kName | kNumber | kExp, 1)));
 
   VerifyUkm(
       test_ukm_recorder_, form_, UkmBuilder::kEntryName,
