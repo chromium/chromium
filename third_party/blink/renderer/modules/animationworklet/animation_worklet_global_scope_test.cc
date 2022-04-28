@@ -105,8 +105,9 @@ class AnimationWorkletGlobalScopeTest : public PageTestBase {
                           base::WaitableEvent* waitable_event) {
     ASSERT_TRUE(thread->IsCurrentThread());
     auto* global_scope = To<AnimationWorkletGlobalScope>(thread->GlobalScope());
-    ASSERT_TRUE(ClassicScript::CreateUnspecifiedScript(source_code)
-                    ->RunScriptOnWorkerOrWorklet(*global_scope));
+    ClassicScript::CreateUnspecifiedScript(source_code)
+        ->RunScriptOnScriptState(
+            global_scope->ScriptController()->GetScriptState());
 
     waitable_event->Signal();
   }
@@ -126,8 +127,9 @@ class AnimationWorkletGlobalScopeTest : public PageTestBase {
               animate () {}
             });
           )JS";
-      ASSERT_TRUE(ClassicScript::CreateUnspecifiedScript(source_code)
-                      ->RunScriptOnWorkerOrWorklet(*global_scope));
+      ClassicScript::CreateUnspecifiedScript(source_code)
+          ->RunScriptOnScriptState(
+              global_scope->ScriptController()->GetScriptState());
 
       AnimatorDefinition* definition =
           global_scope->FindDefinitionForTest("test");
@@ -138,8 +140,9 @@ class AnimationWorkletGlobalScopeTest : public PageTestBase {
       // registerAnimator() with a null class definition should fail to define
       // an animator.
       String source_code = "registerAnimator('null', null);";
-      ASSERT_FALSE(ClassicScript::CreateUnspecifiedScript(source_code)
-                       ->RunScriptOnWorkerOrWorklet(*global_scope));
+      ClassicScript::CreateUnspecifiedScript(source_code)
+          ->RunScriptOnScriptState(
+              global_scope->ScriptController()->GetScriptState());
       EXPECT_FALSE(global_scope->FindDefinitionForTest("null"));
     }
 
@@ -190,8 +193,9 @@ class AnimationWorkletGlobalScopeTest : public PageTestBase {
               }
             });
         )JS";
-    ASSERT_TRUE(ClassicScript::CreateUnspecifiedScript(source_code)
-                    ->RunScriptOnWorkerOrWorklet(*global_scope));
+    ClassicScript::CreateUnspecifiedScript(source_code)
+        ->RunScriptOnScriptState(
+            global_scope->ScriptController()->GetScriptState());
 
     EXPECT_FALSE(RunScriptAndGetBoolean(
         global_scope, "Function('return this')().constructed"))
@@ -249,8 +253,9 @@ class AnimationWorkletGlobalScopeTest : public PageTestBase {
             registerAnimator('stateless_animator', Stateless);
             registerAnimator('foo', Foo);
         )JS";
-    ASSERT_TRUE(ClassicScript::CreateUnspecifiedScript(source_code)
-                    ->RunScriptOnWorkerOrWorklet(*global_scope));
+    ClassicScript::CreateUnspecifiedScript(source_code)
+        ->RunScriptOnScriptState(
+            global_scope->ScriptController()->GetScriptState());
 
     AnimatorDefinition* first_definition =
         global_scope->FindDefinitionForTest("stateful_animator");
@@ -278,7 +283,8 @@ class AnimationWorkletGlobalScopeTest : public PageTestBase {
               }
             });
           )JS")
-        ->RunScriptOnWorkerOrWorklet(*global_scope);
+        ->RunScriptOnScriptState(
+            global_scope->ScriptController()->GetScriptState());
 
     // Passing a new input state with a new animation id should cause the
     // worklet to create and animate an animator.
@@ -316,7 +322,8 @@ class AnimationWorkletGlobalScopeTest : public PageTestBase {
               }
             });
           )JS")
-        ->RunScriptOnWorkerOrWorklet(*global_scope);
+        ->RunScriptOnScriptState(
+            global_scope->ScriptController()->GetScriptState());
 
     cc::WorkletAnimationId animation_id = {1, 1};
     AnimationWorkletInput state;
@@ -363,7 +370,8 @@ class AnimationWorkletGlobalScopeTest : public PageTestBase {
               }
             });
           )JS")
-        ->RunScriptOnWorkerOrWorklet(*global_scope);
+        ->RunScriptOnScriptState(
+            global_scope->ScriptController()->GetScriptState());
 
     cc::WorkletAnimationId animation_id = {1, 1};
     AnimationWorkletInput state;

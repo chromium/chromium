@@ -10,6 +10,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_simple_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/css/cssom/cross_thread_style_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_paint_worklet_input.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
@@ -74,7 +75,8 @@ class PaintWorkletProxyClientTest : public RenderingTest {
     // standard flow.
     ClassicScript::CreateUnspecifiedScript(
         "registerPaint('add_global_scope', class { paint() { } });")
-        ->RunScriptOnWorkerOrWorklet(*worker_thread->GlobalScope());
+        ->RunScriptOnScriptState(
+            worker_thread->GlobalScope()->ScriptController()->GetScriptState());
     waitable_event->Signal();
   }
 
@@ -212,7 +214,8 @@ void RunPaintTestOnWorklet(WorkerThread* thread,
   for (const auto& global_scope : proxy_client->GetGlobalScopesForTesting()) {
     ClassicScript::CreateUnspecifiedScript(
         "registerPaint('foo', class { paint() { } });")
-        ->RunScriptOnWorkerOrWorklet(*global_scope);
+        ->RunScriptOnScriptState(
+            global_scope->ScriptController()->GetScriptState());
   }
 
   PaintWorkletStylePropertyMap::CrossThreadData data;
@@ -259,13 +262,15 @@ void RunDefinitionsMustBeCompatibleTestOnWorklet(
         static get inputProperties() { return ['border-image', 'color']; }
         paint() { }
       });)JS")
-      ->RunScriptOnWorkerOrWorklet(*global_scopes[0]);
+      ->RunScriptOnScriptState(
+          global_scopes[0]->ScriptController()->GetScriptState());
   EXPECT_NE(document_definition_map.at("test1"), nullptr);
   ClassicScript::CreateUnspecifiedScript(R"JS(registerPaint('test1', class {
         static get inputProperties() { return ['left']; }
         paint() { }
       });)JS")
-      ->RunScriptOnWorkerOrWorklet(*global_scopes[1]);
+      ->RunScriptOnScriptState(
+          global_scopes[1]->ScriptController()->GetScriptState());
   EXPECT_EQ(document_definition_map.at("test1"), nullptr);
 
   // Differing custom properties.
@@ -273,25 +278,29 @@ void RunDefinitionsMustBeCompatibleTestOnWorklet(
         static get inputProperties() { return ['--foo', '--bar']; }
         paint() { }
       });)JS")
-      ->RunScriptOnWorkerOrWorklet(*global_scopes[0]);
+      ->RunScriptOnScriptState(
+          global_scopes[0]->ScriptController()->GetScriptState());
   EXPECT_NE(document_definition_map.at("test2"), nullptr);
   ClassicScript::CreateUnspecifiedScript(R"JS(registerPaint('test2', class {
         static get inputProperties() { return ['--zoinks']; }
         paint() { }
       });)JS")
-      ->RunScriptOnWorkerOrWorklet(*global_scopes[1]);
+      ->RunScriptOnScriptState(
+          global_scopes[1]->ScriptController()->GetScriptState());
   EXPECT_EQ(document_definition_map.at("test2"), nullptr);
 
   // Differing alpha values. The default is 'true'.
   ClassicScript::CreateUnspecifiedScript(
       "registerPaint('test3', class { paint() { } });")
-      ->RunScriptOnWorkerOrWorklet(*global_scopes[0]);
+      ->RunScriptOnScriptState(
+          global_scopes[0]->ScriptController()->GetScriptState());
   EXPECT_NE(document_definition_map.at("test3"), nullptr);
   ClassicScript::CreateUnspecifiedScript(R"JS(registerPaint('test3', class {
         static get contextOptions() { return {alpha: false}; }
         paint() { }
       });)JS")
-      ->RunScriptOnWorkerOrWorklet(*global_scopes[1]);
+      ->RunScriptOnScriptState(
+          global_scopes[1]->ScriptController()->GetScriptState());
   EXPECT_EQ(document_definition_map.at("test3"), nullptr);
 
   waitable_event->Signal();
@@ -353,14 +362,16 @@ void RunAllDefinitionsMustBeRegisteredBeforePostingTestOnWorklet(
   for (wtf_size_t i = 0; i < global_scopes.size() - 1; i++) {
     ClassicScript::CreateUnspecifiedScript(
         "registerPaint('foo', class { paint() { } });")
-        ->RunScriptOnWorkerOrWorklet(*global_scopes[i]);
+        ->RunScriptOnScriptState(
+            global_scopes[i]->ScriptController()->GetScriptState());
     EXPECT_FALSE(fake_runner.TaskHasBeenPosted());
   }
 
   // Now register the final one; the task should then be posted.
   ClassicScript::CreateUnspecifiedScript(
       "registerPaint('foo', class { paint() { } });")
-      ->RunScriptOnWorkerOrWorklet(*global_scopes.back());
+      ->RunScriptOnScriptState(
+          global_scopes.back()->ScriptController()->GetScriptState());
   EXPECT_TRUE(fake_runner.TaskHasBeenPosted());
 
   waitable_event->Signal();

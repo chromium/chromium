@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet_global_scope.h"
 
 #include "base/synchronization/waitable_event.h"
+#include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/inspector/worker_devtools_params.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
@@ -80,8 +81,9 @@ class PaintWorkletGlobalScopeTest : public PageTestBase {
               paint (ctx, size) {}
             });
           )JS";
-      ASSERT_TRUE(ClassicScript::CreateUnspecifiedScript(source_code)
-                      ->RunScriptOnWorkerOrWorklet(*global_scope));
+      ClassicScript::CreateUnspecifiedScript(source_code)
+          ->RunScriptOnScriptState(
+              global_scope->ScriptController()->GetScriptState());
       CSSPaintDefinition* definition = global_scope->FindDefinition("test");
       ASSERT_TRUE(definition);
     }
@@ -90,8 +92,9 @@ class PaintWorkletGlobalScopeTest : public PageTestBase {
       // registerPaint() with a null class definition should fail to define a
       // painter.
       String source_code = "registerPaint('null', null);";
-      ASSERT_FALSE(ClassicScript::CreateUnspecifiedScript(source_code)
-                       ->RunScriptOnWorkerOrWorklet(*global_scope));
+      ClassicScript::CreateUnspecifiedScript(source_code)
+          ->RunScriptOnScriptState(
+              global_scope->ScriptController()->GetScriptState());
       EXPECT_FALSE(global_scope->FindDefinition("null"));
     }
 
