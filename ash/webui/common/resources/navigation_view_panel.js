@@ -187,6 +187,27 @@ export class NavigationViewPanelElement extends PolymerElement {
     this.push('selectorItems_', selectorItem);
   }
 
+  /**
+   * Removes a section from the top level navigation. If the section is
+   * currently selected, the selection will be reset to the top item.
+   *
+   * @param {string} id The ID of the section to remove.
+   */
+  removeSelectorById(id) {
+    const index =
+        this.selectorItems_.findIndex((selector) => selector.id === id);
+    if (index < 0) {
+      throw new Error('Cannot find selector with ID "' + id + '" to remove.');
+    }
+    if (this.selectorItems_.length === 1) {
+      throw new Error('Removing the last selector is not supported.');
+    }
+    this.splice('selectorItems_', index, 1);
+    if (this.selectedItem && this.selectedItem.id === id) {
+      this.selectedItem = this.selectorItems_[0];
+    }
+  }
+
   /** @protected */
   selectedItemChanged_() {
     if (!this.selectedItem) {
