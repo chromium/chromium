@@ -105,6 +105,12 @@ struct UsageInfo {
   }
 };
 
+struct AccumulateQuotaInternalsInfo {
+  int64_t total_space = 0;
+  int64_t available_space = 0;
+  int64_t temp_pool_size = 0;
+};
+
 // Entry point into the Quota System
 //
 // Each StoragePartition has exactly one QuotaManagerImpl instance, which
@@ -352,7 +358,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                              base::OnceClosure callback);
 
   // storage::mojom::QuotaInternalsHandler implementation
-  void GetDiskAvailability(GetDiskAvailabilityCallback callback) override;
+  void GetDiskAvailabilityAndTempPoolSize(
+      GetDiskAvailabilityAndTempPoolSizeCallback callback) override;
   void GetStatistics(GetStatisticsCallback callback) override;
   void RetrieveBucketsTable(RetrieveBucketsTableCallback callback) override;
   void GetHostUsageForInternals(
@@ -549,6 +556,16 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       GetHostUsageForInternalsCallback callback,
       int64_t usage,
       blink::mojom::UsageBreakdownPtr usage_breakdown);
+  void UpdateQuotaInternalsDiskAvailability(base::OnceClosure barrier_callback,
+                                            AccumulateQuotaInternalsInfo* info,
+                                            int64_t total_space,
+                                            int64_t available_space);
+  void UpdateQuotaInternalsTempPoolSpace(base::OnceClosure barrier_callback,
+                                         AccumulateQuotaInternalsInfo* info,
+                                         const QuotaSettings& settings);
+  void FinallySendDiskAvailabilityAndTempPoolSize(
+      GetDiskAvailabilityAndTempPoolSizeCallback callback,
+      std::unique_ptr<AccumulateQuotaInternalsInfo> info);
 
   // Runs BucketDataDeleter which calls QuotaClients to clear data for the
   // bucket. Once the task is complete, calls the QuotaDatabase to delete the

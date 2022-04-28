@@ -1446,20 +1446,67 @@ void QuotaManagerImpl::BindInternalsHandler(
   internals_handlers_receivers_.Add(this, std::move(receiver));
 }
 
-void QuotaManagerImpl::GetDiskAvailability(
-    GetDiskAvailabilityCallback callback) {
+void QuotaManagerImpl::GetDiskAvailabilityAndTempPoolSize(
+    GetDiskAvailabilityAndTempPoolSizeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
 
+  auto info = std::make_unique<AccumulateQuotaInternalsInfo>();
+  auto* info_ptr = info.get();
+
+  base::RepeatingClosure barrier = base::BarrierClosure(
+      2, base::BindOnce(
+             &QuotaManagerImpl::FinallySendDiskAvailabilityAndTempPoolSize,
+             weak_factory_.GetWeakPtr(), std::move(callback), std::move(info)));
+
+  // base::Unretained usage is safe here because BarrierClosure holds
+  // the std::unque_ptr that keeps AccumulateQuotaInternalsInfo alive, and the
+  // BarrierClosure will outlive the UpdateQuotaInternalsDiskAvailability
+  // and UpdateQuotaInternalsTempPoolSpace closures.
   GetStorageCapacity(base::BindOnce(
-      [](GetDiskAvailabilityCallback callback, int64_t total_space,
-         int64_t available_space) {
-        DCHECK(callback);
-        DCHECK_GE(total_space, 0);
-        DCHECK_GE(available_space, 0);
-        std::move(callback).Run(total_space, available_space);
-      },
-      std::move(callback)));
+      &QuotaManagerImpl::UpdateQuotaInternalsDiskAvailability,
+      weak_factory_.GetWeakPtr(), barrier, base::Unretained(info_ptr)));
+  GetQuotaSettings(base::BindOnce(
+      &QuotaManagerImpl::UpdateQuotaInternalsTempPoolSpace,
+      weak_factory_.GetWeakPtr(), barrier, base::Unretained(info_ptr)));
+}
+
+void QuotaManagerImpl::UpdateQuotaInternalsDiskAvailability(
+    base::OnceClosure barrier_callback,
+    AccumulateQuotaInternalsInfo* info,
+    int64_t total_space,
+    int64_t available_space) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_GE(total_space, 0);
+  DCHECK_GE(total_space, available_space);
+
+  info->total_space = total_space;
+  info->available_space = available_space;
+
+  std::move(barrier_callback).Run();
+}
+
+void QuotaManagerImpl::UpdateQuotaInternalsTempPoolSpace(
+    base::OnceClosure barrier_callback,
+    AccumulateQuotaInternalsInfo* info,
+    const QuotaSettings& settings) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_GE(settings.pool_size, 0);
+  info->temp_pool_size = settings.pool_size;
+
+  std::move(barrier_callback).Run();
+}
+
+void QuotaManagerImpl::FinallySendDiskAvailabilityAndTempPoolSize(
+    GetDiskAvailabilityAndTempPoolSizeCallback callback,
+    std::unique_ptr<AccumulateQuotaInternalsInfo> info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_GE(info->total_space, 0);
+  DCHECK_GE(info->total_space, info->available_space);
+  DCHECK_GE(info->temp_pool_size, 0);
+
+  std::move(callback).Run(info->total_space, info->available_space,
+                          info->temp_pool_size);
 }
 
 void QuotaManagerImpl::GetStatistics(GetStatisticsCallback callback) {

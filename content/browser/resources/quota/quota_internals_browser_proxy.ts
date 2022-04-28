@@ -18,9 +18,10 @@ type BucketTableEntry = {
   'lastModified': Time,
 };
 
-type GetDiskAvailabilityResult = {
+type GetDiskAvailabilityAndTempPoolSizeResult = {
   totalSpace: bigint,
   availableSpace: bigint,
+  tempPoolSize: bigint,
 };
 
 type GetHostUsageForInternalsResult = {
@@ -74,8 +75,9 @@ function enumerateStorageType(storageType: string): number {
 export class QuotaInternalsBrowserProxy {
   private handler = QuotaInternalsHandler.getRemote();
 
-  getDiskAvailability(): Promise<GetDiskAvailabilityResult> {
-    return this.handler.getDiskAvailability();
+  getDiskAvailabilityAndTempPoolSize():
+      Promise<GetDiskAvailabilityAndTempPoolSizeResult> {
+    return this.handler.getDiskAvailabilityAndTempPoolSize();
   }
 
   getGlobalUsage(storageType: string): Promise<GetGlobalUsageResult> {

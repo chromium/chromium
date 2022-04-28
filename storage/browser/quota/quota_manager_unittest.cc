@@ -2631,6 +2631,23 @@ TEST_F(QuotaManagerImplTest, GetHostUsageForInternals) {
   EXPECT_EQ(2, perm_result);
 }
 
+TEST_F(QuotaManagerImplTest, GetDiskAvailabilityAndTempPoolSize) {
+  const int kPoolSize = 1000;
+  const int kPerHostQuota = kPoolSize / 5;
+  SetQuotaSettings(kPoolSize, kPerHostQuota, 0);
+  storage::StorageCapacityResult storage_capacity = GetStorageCapacity();
+
+  base::test::TestFuture<int64_t, int64_t, int64_t> quota_internals_future;
+  quota_manager_impl()->GetDiskAvailabilityAndTempPoolSize(
+      quota_internals_future.GetCallback());
+  std::tuple quota_internals_result = quota_internals_future.Take();
+
+  EXPECT_EQ(storage_capacity.total_space, std::get<0>(quota_internals_result));
+  EXPECT_EQ(storage_capacity.available_space,
+            std::get<1>(quota_internals_result));
+  EXPECT_EQ(kPoolSize, std::get<2>(quota_internals_result));
+}
+
 TEST_F(QuotaManagerImplTest, NotifyAndLRUBucket) {
   static const ClientBucketData kData[] = {
       {"http://a.com/", kDefaultBucketName, kTemp, 0},

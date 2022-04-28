@@ -81,6 +81,10 @@ IN_PROC_BROWSER_TEST_F(QuotaInternalsWebUiBrowserTest,
   EXPECT_TRUE(
       ExecJsInWebUI("document.getElementsByClassName('syncable-global-and-"
                     "unlimited-usage') >= 0;"));
+  EXPECT_TRUE(
+      ExecJsInWebUI("document.body.innerHTML.search('Temp Pool Size') >= 0;"));
+  EXPECT_TRUE(
+      ExecJsInWebUI("document.getElementsByClassName('temp-pool-size') >= 0;"));
 }
 
 }  // namespace content

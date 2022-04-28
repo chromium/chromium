@@ -79,8 +79,8 @@ async function getHostUsageString(host: string, type: string): Promise<string> {
   return currentTotalUsageObj.hostUsage.toString();
 }
 
-async function renderDiskAvailability() {
-  const result = await getProxy().getDiskAvailability();
+async function renderDiskAvailabilityAndTempPoolSize() {
+  const result = await getProxy().getDiskAvailabilityAndTempPoolSize();
 
   const rowTemplate: HTMLTemplateElement =
       document.body.querySelector<HTMLTemplateElement>('#listener-row')!;
@@ -93,11 +93,15 @@ async function renderDiskAvailability() {
   const availableSpaceBytes =
       (Number(result.availableSpace) / (1024 ** 3)).toFixed(2);
   const totalSpaceBytes = (Number(result.totalSpace) / (1024 ** 3)).toFixed(2);
+  const tempPoolSizeBytes =
+      (Number(result.tempPoolSize) / (1024 ** 3)).toFixed(2);
 
   listenerRow.querySelector('.total-space')!.textContent =
       `${totalSpaceBytes} GB`;
   listenerRow.querySelector('.available-space')!.textContent =
       `${availableSpaceBytes} GB`;
+  listenerRow.querySelector('.temp-pool-size')!.textContent =
+      `${tempPoolSizeBytes} GB`;
 
   tableBody.append(listenerRow);
 }
@@ -282,7 +286,7 @@ async function renderUsageAndQuotaStats() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  renderDiskAvailability();
+  renderDiskAvailabilityAndTempPoolSize();
   renderEvictionStats();
   renderGlobalUsage();
   renderUsageAndQuotaStats();
