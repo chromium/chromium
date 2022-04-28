@@ -7703,9 +7703,6 @@ crbug.com/1320140 [ Win ] virtual/fenced-frame-shadow-dom/wpt_internal/fenced_fr
 crbug.com/1320140 [ Win ] virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/opaque-ad-sizes.https.html [ Pass Timeout ]
 crbug.com/1288741 external/wpt/scroll-to-text-fragment/find-range-from-text-directive.html [ Pass Timeout ]
 
-# Sheriff 2022-04-27
-crbug.com/1320418 [ Win7 ] external/wpt/dom/nodes/Document-createEvent.https.html [ Failure ]
-
 # Sheriff 2022-04-28
 crbug.com/1289759 [ Linux ] http/tests/loading/slow-parsing-subframe.html [ Failure Pass ]
 crbug.com/1289759 [ Win ] http/tests/loading/slow-parsing-subframe.html [ Failure Pass ]
