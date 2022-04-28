@@ -36,7 +36,17 @@ static const size_t kMaximumIgnoreLoadRequestsTime = 10;
 
 }  // namespace
 
-// static
+NewTabPageTabHelper::~NewTabPageTabHelper() = default;
+
+NewTabPageTabHelper::NewTabPageTabHelper(web::WebState* web_state)
+    : web_state_(web_state) {
+  web_state->AddObserver(this);
+  active_ = IsNTPURL(web_state_->GetVisibleURL());
+  next_ntp_feed_type_ = DefaultFeedType();
+}
+
+#pragma mark - Static
+
 void NewTabPageTabHelper::CreateForWebState(web::WebState* web_state) {
   DCHECK(web_state);
   if (!FromWebState(web_state)) {
@@ -45,14 +55,18 @@ void NewTabPageTabHelper::CreateForWebState(web::WebState* web_state) {
   }
 }
 
-NewTabPageTabHelper::~NewTabPageTabHelper() = default;
-
-NewTabPageTabHelper::NewTabPageTabHelper(web::WebState* web_state)
-    : web_state_(web_state) {
-  web_state->AddObserver(this);
-  active_ = IsNTPURL(web_state_->GetVisibleURL());
-  next_ntp_feed_type_ = GetDefaultFeedType();
+void NewTabPageTabHelper::UpdateItem(web::NavigationItem* item) {
+  if (item && item->GetURL() == GURL(kChromeUIAboutNewTabURL)) {
+    item->SetVirtualURL(GURL(kChromeUINewTabURL));
+    item->SetTitle(l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
+  }
 }
+
+FeedType NewTabPageTabHelper::DefaultFeedType() {
+  return FeedTypeDiscover;
+}
+
+#pragma mark - Public
 
 void NewTabPageTabHelper::SetDelegate(
     id<NewTabPageTabHelperDelegate> delegate) {
@@ -91,11 +105,20 @@ bool NewTabPageTabHelper::IgnoreLoadRequests() const {
   return ignore_load_requests_;
 }
 
+bool NewTabPageTabHelper::IsNTPURL(const GURL& url) {
+  // |url| can be chrome://newtab/ or about://newtab/ depending on where |url|
+  // comes from (the VisibleURL chrome:// from a navigation item or the actual
+  // webView url about://).  If the url is about://newtab/, there is no origin
+  // to match, so instead check the scheme and the path.
+  return url.DeprecatedGetOriginAsURL() == kChromeUINewTabURL ||
+         (url.SchemeIs(url::kAboutScheme) && url.path() == kAboutNewTabPath);
+}
+
 FeedType NewTabPageTabHelper::GetNextNTPFeedType() {
   FeedType feed_type = next_ntp_feed_type_;
   // Resets feed type to default in case next_ntp_feed_type_ was overriden by
   // SetNextNTPFeedType.
-  next_ntp_feed_type_ = GetDefaultFeedType();
+  next_ntp_feed_type_ = DefaultFeedType();
   return feed_type;
 }
 
@@ -115,41 +138,14 @@ void NewTabPageTabHelper::SetNextNTPScrolledToFeed(bool scrolled_to_feed) {
   next_ntp_scrolled_to_feed_ = scrolled_to_feed;
 }
 
-// static
-void NewTabPageTabHelper::UpdateItem(web::NavigationItem* item) {
-  if (item && item->GetURL() == GURL(kChromeUIAboutNewTabURL)) {
-    item->SetVirtualURL(GURL(kChromeUINewTabURL));
-    item->SetTitle(l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
-  }
+void NewTabPageTabHelper::SaveNTPState(CGFloat scroll_position,
+                                       FeedType feed_type) {
+  saved_scroll_position_ = scroll_position;
+  SetNextNTPFeedType(feed_type);
 }
 
-void NewTabPageTabHelper::EnableIgnoreLoadRequests() {
-  if (!base::FeatureList::IsEnabled(kBlockNewTabPagePendingLoad))
-    return;
-
-  ignore_load_requests_ = YES;
-
-  // |ignore_load_requests_timer_| is deleted when the tab helper is deleted, so
-  // it's safe to use Unretained here.
-  ignore_load_requests_timer_.reset(new base::OneShotTimer());
-  ignore_load_requests_timer_->Start(
-      FROM_HERE, base::Seconds(kMaximumIgnoreLoadRequestsTime),
-      base::BindOnce(&NewTabPageTabHelper::DisableIgnoreLoadRequests,
-                     base::Unretained(this)));
-}
-
-void NewTabPageTabHelper::DisableIgnoreLoadRequests() {
-  if (ignore_load_requests_timer_) {
-    ignore_load_requests_timer_->Stop();
-    ignore_load_requests_timer_.reset();
-  }
-  ignore_load_requests_ = NO;
-}
-
-FeedType NewTabPageTabHelper::GetDefaultFeedType() {
-  // TODO(crbug.com/1277974): Make sure that we always want the Discover feed as
-  // default.
-  return FeedTypeDiscover;
+CGFloat NewTabPageTabHelper::ScrollPositionFromSavedState() {
+  return saved_scroll_position_;
 }
 
 #pragma mark - WebStateObserver
@@ -199,6 +195,29 @@ void NewTabPageTabHelper::DidStopLoading(web::WebState* web_state) {
 
 #pragma mark - Private
 
+void NewTabPageTabHelper::EnableIgnoreLoadRequests() {
+  if (!base::FeatureList::IsEnabled(kBlockNewTabPagePendingLoad))
+    return;
+
+  ignore_load_requests_ = YES;
+
+  // |ignore_load_requests_timer_| is deleted when the tab helper is deleted, so
+  // it's safe to use Unretained here.
+  ignore_load_requests_timer_.reset(new base::OneShotTimer());
+  ignore_load_requests_timer_->Start(
+      FROM_HERE, base::Seconds(kMaximumIgnoreLoadRequestsTime),
+      base::BindOnce(&NewTabPageTabHelper::DisableIgnoreLoadRequests,
+                     base::Unretained(this)));
+}
+
+void NewTabPageTabHelper::DisableIgnoreLoadRequests() {
+  if (ignore_load_requests_timer_) {
+    ignore_load_requests_timer_->Stop();
+    ignore_load_requests_timer_.reset();
+  }
+  ignore_load_requests_ = NO;
+}
+
 void NewTabPageTabHelper::SetActive(bool active) {
   bool was_active = active_;
   active_ = active;
@@ -207,15 +226,6 @@ void NewTabPageTabHelper::SetActive(bool active) {
   if (active_ != was_active) {
     [delegate_ newTabPageHelperDidChangeVisibility:this forWebState:web_state_];
   }
-}
-
-bool NewTabPageTabHelper::IsNTPURL(const GURL& url) {
-  // |url| can be chrome://newtab/ or about://newtab/ depending on where |url|
-  // comes from (the VisibleURL chrome:// from a navigation item or the actual
-  // webView url about://).  If the url is about://newtab/, there is no origin
-  // to match, so instead check the scheme and the path.
-  return url.DeprecatedGetOriginAsURL() == kChromeUINewTabURL ||
-         (url.SchemeIs(url::kAboutScheme) && url.path() == kAboutNewTabPath);
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(NewTabPageTabHelper)

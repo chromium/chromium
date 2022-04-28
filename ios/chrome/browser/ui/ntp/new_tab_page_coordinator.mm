@@ -158,11 +158,7 @@ namespace {
 // change depending on Feed visibility).
 @property(nonatomic, strong) UIViewController* containerViewController;
 
-// The coordinator contained ViewController. It can be either a
-// NewTabPageViewController (When the Discover Feed is being shown) or a
-// ContentSuggestionsViewController (When the Discover Feed is hidden or when
-// the non refactored NTP is being used.)
-// TODO(crbug.com/1114792): Update this comment when the NTP refactors launches.
+// The coordinator contained ViewController.
 @property(nonatomic, strong) UIViewController* containedViewController;
 
 // PrefService used by this Coordinator.
@@ -1104,6 +1100,7 @@ namespace {
   ntpMediator.browser = self.browser;
   ntpMediator.ntpViewController = self.ntpViewController;
   ntpMediator.headerCollectionInteractionHandler = self.headerSynchronizer;
+  ntpMediator.feedControlDelegate = self;
   return ntpMediator;
 }
 

@@ -24,8 +24,6 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
-#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_view_controller.h"
@@ -36,6 +34,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/logo_vendor.h"
 #include "ios/chrome/browser/ui/ntp/metrics.h"
@@ -205,38 +204,30 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     return;
   }
 
-  web::NavigationManager* manager = webState->GetNavigationManager();
-  web::NavigationItem* item =
-      webState->GetLastCommittedURL() == kChromeUINewTabURL
-          ? manager->GetLastCommittedItem()
-          : manager->GetVisibleItem();
-  web::PageDisplayState displayState;
+  CGFloat scrollPosition = [self.ntpViewController scrollPosition];
 
-  // TODO(crbug.com/1114792): Create a protocol to stop having references to
-  // both of these ViewControllers directly.
-  UICollectionView* collectionView =
-      self.ntpViewController.discoverFeedWrapperViewController
-          .contentCollectionView;
-  UIEdgeInsets contentInset = collectionView.contentInset;
-  CGPoint contentOffset = collectionView.contentOffset;
   if ([self.suggestionsMediator mostRecentTabStartSurfaceTileIsShowing]) {
     // Return to Recent tab tile is only shown one time, so subtract it's
     // vertical space to preserve relative scroll position from top.
     CGFloat tileSectionHeight =
         [ContentSuggestionsReturnToRecentTabCell defaultSize].height +
         content_suggestions::kReturnToRecentTabSectionBottomMargin;
-    if (contentOffset.y >
+    if (scrollPosition >
         tileSectionHeight +
             [self.headerCollectionInteractionHandler pinnedOffsetY]) {
-      contentOffset.y -= tileSectionHeight;
+      scrollPosition -= tileSectionHeight;
     }
   }
 
-  contentOffset.y -=
+  scrollPosition -=
       self.headerCollectionInteractionHandler.collectionShiftingOffset;
-  displayState.scroll_state() =
-      web::PageScrollState(contentOffset, contentInset);
-  item->SetPageDisplayState(displayState);
+
+  NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
+
+  if (NTPHelper) {
+    NTPHelper->SaveNTPState(scrollPosition,
+                            [self.feedControlDelegate selectedFeed]);
+  }
 }
 
 // Opens web page for a menu item in the NTP.
@@ -376,13 +367,19 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
       kChromeUINewTabURL) {
     return;
   }
-  web::NavigationManager* navigationManager = webState->GetNavigationManager();
-  web::NavigationItem* item = navigationManager->GetVisibleItem();
-  CGFloat offset =
-      item ? item->GetPageDisplayState().scroll_state().content_offset().y : 0;
+
+  CGFloat offsetFromSavedState;
+
+  NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
+  if (NTPHelper) {
+    offsetFromSavedState = NTPHelper->ScrollPositionFromSavedState();
+  } else {
+    offsetFromSavedState = -CGFLOAT_MAX;
+  }
+
   CGFloat minimumOffset = -[self.ntpViewController heightAboveFeed];
-  if (offset > minimumOffset) {
-    [self.ntpViewController setSavedContentOffset:offset];
+  if (offsetFromSavedState > minimumOffset) {
+    [self.ntpViewController setSavedContentOffset:offsetFromSavedState];
   } else if (IsSingleNtpEnabled()) {
     // Remove this if NTPs are ever scoped back to the WebState.
     [self.ntpViewController setContentOffsetToTop];
