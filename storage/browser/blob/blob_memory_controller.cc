@@ -1123,13 +1123,7 @@ uint64_t BlobMemoryController::GetAvailableFileSpaceForBlobs() const {
 void BlobMemoryController::GrantMemoryAllocations(
     std::vector<scoped_refptr<ShareableBlobDataItem>>* items,
     size_t total_bytes) {
-  // These metrics let us calculate the global distribution of blob storage by
-  // subtracting the histograms.
-  UMA_HISTOGRAM_COUNTS_1M("Storage.Blob.StorageSizeBeforeAppend",
-                          blob_memory_used_ / 1024);
   blob_memory_used_ += total_bytes;
-  UMA_HISTOGRAM_COUNTS_1M("Storage.Blob.StorageSizeAfterAppend",
-                          blob_memory_used_ / 1024);
 
   for (auto& item : *items) {
     item->set_state(ShareableBlobDataItem::QUOTA_GRANTED);
@@ -1142,14 +1136,7 @@ void BlobMemoryController::GrantMemoryAllocations(
 void BlobMemoryController::RevokeMemoryAllocation(uint64_t item_id,
                                                   size_t length) {
   DCHECK_LE(length, blob_memory_used_);
-
-  // These metrics let us calculate the global distribution of blob storage by
-  // subtracting the histograms.
-  UMA_HISTOGRAM_COUNTS_1M("Storage.Blob.StorageSizeBeforeAppend",
-                          blob_memory_used_ / 1024);
   blob_memory_used_ -= length;
-  UMA_HISTOGRAM_COUNTS_1M("Storage.Blob.StorageSizeAfterAppend",
-                          blob_memory_used_ / 1024);
 
   auto iterator = populated_memory_items_.Get(item_id);
   if (iterator != populated_memory_items_.end()) {
