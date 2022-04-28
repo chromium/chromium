@@ -52,7 +52,7 @@ const PIN_INPUT_ALLOWED_NON_NUMBER_KEY_CODES = new Set([
   9,   // tab
   37,  // left
   39,  // right
-  // We don't allow back, forward, or refresh.
+  // We don't allow back or forward.
   183,  // ZoomToggle, aka fullscreen
   182,  // LaunchApplication1, aka overview mode
   216,  // BrightnessDown
@@ -431,6 +431,11 @@ Polymer({
     // Valid if the key is CTRL+-, CTRL+=, or CTRL+0 to zoom in, zoom out, and
     // zoom reset the screen.
     if (event.ctrlKey && [48, 187, 189].includes(event.keyCode)) {
+      return true;
+    }
+
+    // Valid if the key is Ctrl+Shift+Refresh to allow users rotate the screen
+    if (event.keyCode === 168 && event.ctrlKey && event.shiftKey) {
       return true;
     }
 
