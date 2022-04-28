@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.toolbar.HomeButton;
+import org.chromium.chrome.start_surface.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -162,10 +163,10 @@ public class StartSurfaceTabSwitcherTest {
             TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
         }
 
-        onViewWaiting(withId(org.chromium.chrome.start_surface.R.id.secondary_tasks_surface_view));
+        onViewWaiting(withId(R.id.secondary_tasks_surface_view));
 
-        onViewWaiting(allOf(withParent(withId(org.chromium.chrome.tab_ui.R.id.tasks_surface_body)),
-                              withId(org.chromium.chrome.tab_ui.R.id.tab_list_view)))
+        onViewWaiting(
+                allOf(withParent(withId(R.id.tasks_surface_body)), withId(R.id.tab_list_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         LayoutTestUtils.waitForLayout(
                 mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
@@ -185,16 +186,12 @@ public class StartSurfaceTabSwitcherTest {
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
         StartSurfaceTestUtils.waitForTabModel(cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
-        assertEquals(cta.findViewById(org.chromium.chrome.tab_ui.R.id.tab_switcher_title)
-                             .getVisibility(),
-                View.VISIBLE);
+        assertEquals(cta.findViewById(R.id.tab_switcher_title).getVisibility(), View.VISIBLE);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { cta.getTabModelSelector().getModel(false).closeAllTabs(); });
         TabUiTestHelper.verifyTabModelTabCount(cta, 0, 0);
-        assertEquals(cta.findViewById(org.chromium.chrome.tab_ui.R.id.tab_switcher_title)
-                             .getVisibility(),
-                View.GONE);
+        assertEquals(cta.findViewById(R.id.tab_switcher_title).getVisibility(), View.GONE);
     }
 
     @Test
@@ -223,50 +220,42 @@ public class StartSurfaceTabSwitcherTest {
         if (mImmediateReturn) {
             StartSurfaceTestUtils.clickFirstTabInCarousel();
         } else {
-            onViewWaiting(allOf(withId(org.chromium.chrome.tab_ui.R.id.toolbar_left_button),
-                                  isDescendantOfA(withId(
-                                          org.chromium.chrome.start_surface.R.id.bottom_controls))))
+            onViewWaiting(allOf(withId(R.id.toolbar_left_button),
+                                  isDescendantOfA(withId(R.id.bottom_controls))))
                     .perform(click());
         }
         onViewWaiting(
-                allOf(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view),
-                        withParent(withId(org.chromium.chrome.tab_ui.R.id.dialog_container_view))))
+                allOf(withId(R.id.tab_list_view), withParent(withId(R.id.dialog_container_view))))
                 .check(TabUiTestHelper.ChildrenCountAssertion.havingTabCount(2));
 
         // Show start surface through tab grid dialog toolbar plus button and create a new tab by
         // clicking on MV tiles.
-        onView(allOf(withId(org.chromium.chrome.tab_ui.R.id.toolbar_right_button),
-                       isDescendantOfA(
-                               withId(org.chromium.chrome.tab_ui.R.id.dialog_container_view))))
+        onView(allOf(withId(R.id.toolbar_right_button),
+                       isDescendantOfA(withId(R.id.dialog_container_view))))
                 .perform(click());
         StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 2);
 
         // Verify a tab is created within the group by checking the tab strip and tab model.
-        onView(withId(org.chromium.chrome.tab_ui.R.id.toolbar_container_view))
-                .check(waitForView(allOf(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view),
-                        isCompletelyDisplayed())));
-        onView(allOf(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view),
-                       withParent(withId(org.chromium.chrome.tab_ui.R.id.toolbar_container_view))))
+        onView(withId(R.id.toolbar_container_view))
+                .check(waitForView(allOf(withId(R.id.tab_list_view), isCompletelyDisplayed())));
+        onView(allOf(withId(R.id.tab_list_view), withParent(withId(R.id.toolbar_container_view))))
                 .check(TabUiTestHelper.ChildrenCountAssertion.havingTabCount(3));
         assertEquals(1, filter.getTabGroupCount());
 
         // Show start surface through tab strip plus button and create a new tab by perform a query
         // search in fake box.
-        onView(allOf(withId(org.chromium.chrome.tab_ui.R.id.toolbar_right_button),
-                       isDescendantOfA(withId(org.chromium.chrome.tab_ui.R.id.bottom_controls))))
+        onView(allOf(withId(R.id.toolbar_right_button),
+                       isDescendantOfA(withId(R.id.bottom_controls))))
                 .perform(click());
-        onViewWaiting(withId(org.chromium.chrome.start_surface.R.id.search_box_text))
+        onViewWaiting(withId(R.id.search_box_text))
                 .check(matches(isCompletelyDisplayed()))
                 .perform(replaceText("wfh tips"));
-        onView(withId(org.chromium.chrome.start_surface.R.id.url_bar))
-                .perform(pressKey(KeyEvent.KEYCODE_ENTER));
+        onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
 
         // Verify a tab is created within the group by checking the tab strip and tab model.
-        onView(withId(org.chromium.chrome.tab_ui.R.id.toolbar_container_view))
-                .check(waitForView(allOf(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view),
-                        isCompletelyDisplayed())));
-        onView(allOf(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view),
-                       withParent(withId(org.chromium.chrome.tab_ui.R.id.toolbar_container_view))))
+        onView(withId(R.id.toolbar_container_view))
+                .check(waitForView(allOf(withId(R.id.tab_list_view), isCompletelyDisplayed())));
+        onView(allOf(withId(R.id.tab_list_view), withParent(withId(R.id.toolbar_container_view))))
                 .check(TabUiTestHelper.ChildrenCountAssertion.havingTabCount(4));
         assertEquals(4, cta.getTabModelSelector().getCurrentModel().getCount());
         assertEquals(1, filter.getTabGroupCount());
@@ -290,17 +279,13 @@ public class StartSurfaceTabSwitcherTest {
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
 
         StartSurfaceTestUtils.clickMoreTabs(cta);
-        waitForView(withId(org.chromium.chrome.start_surface.R.id.secondary_tasks_surface_view));
-        onView(withId(org.chromium.chrome.tab_ui.R.id.home_button_on_tab_switcher))
-                .check(matches(isDisplayed()));
-        HomeButton homeButton =
-                cta.findViewById(org.chromium.chrome.tab_ui.R.id.home_button_on_tab_switcher);
+        waitForView(withId(R.id.secondary_tasks_surface_view));
+        onView(withId(R.id.home_button_on_tab_switcher)).check(matches(isDisplayed()));
+        HomeButton homeButton = cta.findViewById(R.id.home_button_on_tab_switcher);
         Assert.assertFalse(homeButton.isLongClickable());
-        onView(withId(org.chromium.chrome.start_surface.R.id.home_button_on_tab_switcher))
-                .perform(click());
+        onView(withId(R.id.home_button_on_tab_switcher)).perform(click());
 
-        onView(withId(org.chromium.chrome.start_surface.R.id.primary_tasks_surface_view))
-                .check(matches(isDisplayed()));
+        onView(withId(R.id.primary_tasks_surface_view)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -317,7 +302,7 @@ public class StartSurfaceTabSwitcherTest {
         CriteriaHelper.pollUiThread(
                 () -> cta.getLayoutManager() != null && cta.getLayoutManager().overviewVisible());
         StartSurfaceTestUtils.waitForTabModel(cta);
-        onViewWaiting(withId(org.chromium.chrome.start_surface.R.id.logo));
+        onViewWaiting(withId(R.id.logo));
         Tab tab1 = cta.getCurrentTabModel().getTabAt(0);
 
         // Launches the first site in MV tiles.
@@ -330,24 +315,21 @@ public class StartSurfaceTabSwitcherTest {
         // Returns to the Start surface.
         StartSurfaceTestUtils.pressHomePageButton(cta);
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
-        waitForView(allOf(
-                withParent(withId(org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container)),
-                withId(org.chromium.chrome.tab_ui.R.id.tab_list_view)));
+        waitForView(allOf(withParent(withId(R.id.carousel_tab_switcher_container)),
+                withId(R.id.tab_list_view)));
 
-        RecyclerView recyclerView = cta.findViewById(org.chromium.chrome.tab_ui.R.id.tab_list_view);
+        RecyclerView recyclerView = cta.findViewById(R.id.tab_list_view);
         CriteriaHelper.pollUiThread(() -> 2 == recyclerView.getChildCount());
         // Verifies that the tabs are shown in MRU order: the first card in the carousel Tab
         // switcher is the last created Tab by tapping the MV tile; the second card is the Tab
         // created or restored in setup().
         RecyclerView.ViewHolder firstViewHolder = recyclerView.findViewHolderForAdapterPosition(0);
-        TextView title1 =
-                firstViewHolder.itemView.findViewById(org.chromium.chrome.tab_ui.R.id.tab_title);
+        TextView title1 = firstViewHolder.itemView.findViewById(R.id.tab_title);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> Assert.assertEquals(tab2.getTitle(), title1.getText()));
 
         RecyclerView.ViewHolder secondViewHolder = recyclerView.findViewHolderForAdapterPosition(1);
-        TextView title2 =
-                secondViewHolder.itemView.findViewById(org.chromium.chrome.tab_ui.R.id.tab_title);
+        TextView title2 = secondViewHolder.itemView.findViewById(R.id.tab_title);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> Assert.assertEquals(tab1.getTitle(), title2.getText()));
     }
@@ -382,7 +364,7 @@ public class StartSurfaceTabSwitcherTest {
         CriteriaHelper.pollUiThread(() -> cta.getLayoutManager() != null);
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
         StartSurfaceTestUtils.waitForTabModel(cta);
-        onViewWaiting(withId(org.chromium.chrome.start_surface.R.id.logo));
+        onViewWaiting(withId(R.id.logo));
         Tab tab1 = cta.getCurrentTabModel().getTabAt(0);
 
         // Launches the first site in MV tiles.
@@ -400,28 +382,22 @@ public class StartSurfaceTabSwitcherTest {
         }
         // Enter the Tab switcher.
         TabUiTestHelper.enterTabSwitcher(cta);
-        waitForView(
-                allOf(withParent(withId(
-                              org.chromium.chrome.start_surface.R.id.secondary_tasks_surface_view)),
-                        withId(org.chromium.chrome.tab_ui.R.id.tab_list_view)));
+        waitForView(allOf(
+                withParent(withId(R.id.secondary_tasks_surface_view)), withId(R.id.tab_list_view)));
 
-        ViewGroup secondaryTaskSurface = cta.findViewById(
-                org.chromium.chrome.start_surface.R.id.secondary_tasks_surface_view);
-        RecyclerView recyclerView =
-                secondaryTaskSurface.findViewById(org.chromium.chrome.tab_ui.R.id.tab_list_view);
+        ViewGroup secondaryTaskSurface = cta.findViewById(R.id.secondary_tasks_surface_view);
+        RecyclerView recyclerView = secondaryTaskSurface.findViewById(R.id.tab_list_view);
         CriteriaHelper.pollUiThread(() -> 2 == recyclerView.getChildCount());
         // Verifies that the tabs are shown in MRU order: the first card in the Tab switcher is the
         // last created Tab by tapping the MV tile; the second card is the Tab created or restored
         // in setup().
         RecyclerView.ViewHolder firstViewHolder = recyclerView.findViewHolderForAdapterPosition(0);
-        TextView title1 =
-                firstViewHolder.itemView.findViewById(org.chromium.chrome.tab_ui.R.id.tab_title);
+        TextView title1 = firstViewHolder.itemView.findViewById(R.id.tab_title);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> Assert.assertEquals(tab1.getTitle(), title1.getText()));
 
         RecyclerView.ViewHolder secondViewHolder = recyclerView.findViewHolderForAdapterPosition(1);
-        TextView title2 =
-                secondViewHolder.itemView.findViewById(org.chromium.chrome.tab_ui.R.id.tab_title);
+        TextView title2 = secondViewHolder.itemView.findViewById(R.id.tab_title);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> Assert.assertEquals(tab2.getTitle(), title2.getText()));
     }

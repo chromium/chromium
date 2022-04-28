@@ -12,6 +12,8 @@ import("//chrome/android/chrome_common_shared_library.gni")
 import("//chrome/android/chrome_java_resources.gni")
 import("//chrome/android/chrome_public_apk_tmpl.gni")
 import("//chrome/android/features/dev_ui/dev_ui_module.gni")
+import(
+    "//chrome/android/features/start_surface/public/start_surface_public_java_sources.gni")
 import("//chrome/android/features/tab_ui/buildflags.gni")
 import("//chrome/android/features/tab_ui/tab_management_java_sources.gni")
 import("//chrome/android/features/vr/public_vr_java_sources.gni")
@@ -685,6 +687,7 @@ android_library("chrome_java") {
 
   # Include sources from public_tab_management_java_sources.gni.
   sources += public_tab_management_java_sources
+  sources += start_surface_public_java_sources
 
   if (enable_arcore) {
     deps += [
