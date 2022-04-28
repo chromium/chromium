@@ -144,7 +144,7 @@ TEST_F(MediaParserAndroidTest, VideoFrameExtractionH264) {
       ExtractFrame(media::GetTestDataFilePath("bear.mp4"), "video/mp4");
   EXPECT_TRUE(result.success);
   EXPECT_EQ(result.video_frame_data->which(),
-            chrome::mojom::VideoFrameData::Tag::ENCODED_DATA);
+            chrome::mojom::VideoFrameData::Tag::kEncodedData);
   EXPECT_FALSE(result.video_frame_data->get_encoded_data().empty());
   EXPECT_TRUE(HasH264StartCode(result.video_frame_data->get_encoded_data()));
 }
@@ -157,7 +157,7 @@ TEST_F(MediaParserAndroidTest, VideoFrameExtractionVp8) {
                              "video/webm");
   EXPECT_TRUE(result.success);
   EXPECT_EQ(result.video_frame_data->which(),
-            chrome::mojom::VideoFrameData::Tag::DECODED_FRAME);
+            chrome::mojom::VideoFrameData::Tag::kDecodedFrame);
   const auto& frame = result.video_frame_data->get_decoded_frame();
   EXPECT_TRUE(frame);
   EXPECT_TRUE(HasValidYUVData(*frame));
@@ -175,7 +175,7 @@ TEST_F(MediaParserAndroidTest, VideoFrameExtractionVp8WithAlphaPlane) {
   EXPECT_TRUE(result.success);
 
   EXPECT_EQ(result.video_frame_data->which(),
-            chrome::mojom::VideoFrameData::Tag::DECODED_FRAME);
+            chrome::mojom::VideoFrameData::Tag::kDecodedFrame);
   const auto& frame = result.video_frame_data->get_decoded_frame();
   EXPECT_TRUE(frame);
   EXPECT_TRUE(HasValidYUVData(*frame));

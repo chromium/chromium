@@ -347,7 +347,7 @@ bool ToProto(
 {%-       set raw_name = field.name %}
 {%-       set name = field.name|camel_to_under %}
 {%-       set kind = field.kind %}
-    case {{enum_name}}::{{field.name|upper}}: {
+    case {{enum_name}}::k{{field.name|under_to_camel}}: {
 {%-       if kind|is_integral_kind or kind|is_enum_kind or kind|is_float_kind or kind|is_double_kind %}
   {{kind|cpp_wrapper_proto_type(add_same_module_namespaces=true)}} tmp_{{name}};
   mojolpm_result &= ToProto(input->get_{{raw_name}}(), tmp_{{name}});

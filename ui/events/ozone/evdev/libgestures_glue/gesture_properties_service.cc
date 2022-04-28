@@ -34,15 +34,15 @@ bool PropertyTypeMatchesValues(ui::GesturePropertyProvider::PropertyType type,
                                GesturePropValue::Tag values_tag) {
   switch (type) {
     case ui::GesturePropertyProvider::PT_INT:
-      return values_tag == GesturePropValue::Tag::INTS;
+      return values_tag == GesturePropValue::Tag::kInts;
     case ui::GesturePropertyProvider::PT_SHORT:
-      return values_tag == GesturePropValue::Tag::SHORTS;
+      return values_tag == GesturePropValue::Tag::kShorts;
     case ui::GesturePropertyProvider::PT_BOOL:
-      return values_tag == GesturePropValue::Tag::BOOLS;
+      return values_tag == GesturePropValue::Tag::kBools;
     case ui::GesturePropertyProvider::PT_STRING:
-      return values_tag == GesturePropValue::Tag::STR;
+      return values_tag == GesturePropValue::Tag::kStr;
     case ui::GesturePropertyProvider::PT_REAL:
-      return values_tag == GesturePropValue::Tag::REALS;
+      return values_tag == GesturePropValue::Tag::kReals;
   }
   // This should never happen.
   return false;
@@ -121,19 +121,19 @@ void GesturePropertiesService::SetProperty(
   }
   size_t num_values;
   switch (values->which()) {
-    case ozone::mojom::GesturePropValue::Tag::INTS:
+    case ozone::mojom::GesturePropValue::Tag::kInts:
       num_values = values->get_ints().size();
       break;
-    case ozone::mojom::GesturePropValue::Tag::SHORTS:
+    case ozone::mojom::GesturePropValue::Tag::kShorts:
       num_values = values->get_shorts().size();
       break;
-    case ozone::mojom::GesturePropValue::Tag::BOOLS:
+    case ozone::mojom::GesturePropValue::Tag::kBools:
       num_values = values->get_bools().size();
       break;
-    case ozone::mojom::GesturePropValue::Tag::STR:
+    case ozone::mojom::GesturePropValue::Tag::kStr:
       num_values = 1;
       break;
-    case ozone::mojom::GesturePropValue::Tag::REALS:
+    case ozone::mojom::GesturePropValue::Tag::kReals:
       num_values = values->get_reals().size();
       break;
   }

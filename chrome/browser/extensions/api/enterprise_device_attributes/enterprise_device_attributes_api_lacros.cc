@@ -46,12 +46,12 @@ void EnterpriseDeviceAttributesBase::OnCrosapiResult(
     crosapi::mojom::DeviceAttributesStringResultPtr result) {
   using Result = crosapi::mojom::DeviceAttributesStringResult;
   switch (result->which()) {
-    case Result::Tag::ERROR_MESSAGE:
+    case Result::Tag::kErrorMessage:
       // We intentionally drop the error message here because the extension API
       // is expected to return "" on validation error.
       OnResult("");
       return;
-    case Result::Tag::CONTENTS:
+    case Result::Tag::kContents:
       OnResult(result->get_contents());
       return;
   }

@@ -184,7 +184,7 @@ void ThumbnailMediaParserImpl::OnVideoFrameRetrieved(
   // For vp8, vp9 codec, we directly do software decoding in utility process.
   // Render now.
   if (video_frame_data_->which() ==
-      chrome::mojom::VideoFrameData::Tag::DECODED_FRAME) {
+      chrome::mojom::VideoFrameData::Tag::kDecodedFrame) {
     decode_done_ = true;
     RenderVideoFrame(std::move(video_frame_data_->get_decoded_frame()));
     return;

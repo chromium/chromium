@@ -1167,14 +1167,14 @@ absl::optional<uint64_t> ArCoreImpl::SubscribeToHitTest(
     mojom::XRRayPtr ray) {
   // First, check if we recognize the type of the native origin.
   switch (native_origin_information->which()) {
-    case mojom::XRNativeOriginInformation::Tag::INPUT_SOURCE_SPACE_INFO:
+    case mojom::XRNativeOriginInformation::Tag::kInputSourceSpaceInfo:
       // Input sources are verified in the higher layer as ArCoreImpl does
       // not carry input source state.
       break;
-    case mojom::XRNativeOriginInformation::Tag::REFERENCE_SPACE_TYPE:
+    case mojom::XRNativeOriginInformation::Tag::kReferenceSpaceType:
       // Reference spaces are implicitly recognized and don't carry an ID.
       break;
-    case mojom::XRNativeOriginInformation::Tag::PLANE_ID:
+    case mojom::XRNativeOriginInformation::Tag::kPlaneId:
       // Validate that we know which plane's space the hit test is interested in
       // tracking.
       if (!plane_manager_ || !plane_manager_->PlaneExists(PlaneId(
@@ -1182,14 +1182,14 @@ absl::optional<uint64_t> ArCoreImpl::SubscribeToHitTest(
         return absl::nullopt;
       }
       break;
-    case mojom::XRNativeOriginInformation::Tag::HAND_JOINT_SPACE_INFO:
+    case mojom::XRNativeOriginInformation::Tag::kHandJointSpaceInfo:
       // Unsupported by ARCore:
       return absl::nullopt;
-    case mojom::XRNativeOriginInformation::Tag::IMAGE_INDEX:
+    case mojom::XRNativeOriginInformation::Tag::kImageIndex:
       // TODO(https://crbug.com/1143575): Add hit test support for tracked
       // images.
       return absl::nullopt;
-    case mojom::XRNativeOriginInformation::Tag::ANCHOR_ID:
+    case mojom::XRNativeOriginInformation::Tag::kAnchorId:
       // Validate that we know which anchor's space the hit test is interested
       // in tracking.
       if (!anchor_manager_ ||
@@ -1391,7 +1391,7 @@ bool ArCoreImpl::NativeOriginExists(
     const mojom::XRNativeOriginInformation& native_origin_information,
     const std::vector<mojom::XRInputSourceStatePtr>& input_state) {
   switch (native_origin_information.which()) {
-    case mojom::XRNativeOriginInformation::Tag::INPUT_SOURCE_SPACE_INFO: {
+    case mojom::XRNativeOriginInformation::Tag::kInputSourceSpaceInfo: {
       mojom::XRInputSourceSpaceInfo* input_source_space_info =
           native_origin_information.get_input_source_space_info().get();
 
@@ -1414,21 +1414,21 @@ bool ArCoreImpl::NativeOriginExists(
 
       return false;
     }
-    case mojom::XRNativeOriginInformation::Tag::REFERENCE_SPACE_TYPE:
+    case mojom::XRNativeOriginInformation::Tag::kReferenceSpaceType:
       // All reference spaces are known to ARCore.
       return true;
 
-    case mojom::XRNativeOriginInformation::Tag::PLANE_ID:
+    case mojom::XRNativeOriginInformation::Tag::kPlaneId:
       return plane_manager_ ? plane_manager_->PlaneExists(PlaneId(
                                   native_origin_information.get_plane_id()))
                             : false;
-    case mojom::XRNativeOriginInformation::Tag::ANCHOR_ID:
+    case mojom::XRNativeOriginInformation::Tag::kAnchorId:
       return anchor_manager_ ? anchor_manager_->AnchorExists(AnchorId(
                                    native_origin_information.get_anchor_id()))
                              : false;
-    case mojom::XRNativeOriginInformation::Tag::HAND_JOINT_SPACE_INFO:
+    case mojom::XRNativeOriginInformation::Tag::kHandJointSpaceInfo:
       return false;
-    case mojom::XRNativeOriginInformation::Tag::IMAGE_INDEX:
+    case mojom::XRNativeOriginInformation::Tag::kImageIndex:
       // TODO(https://crbug.com/1143575): Needed for anchor creation relaitve to
       // tracked images.
       return false;
@@ -1440,7 +1440,7 @@ absl::optional<gfx::Transform> ArCoreImpl::GetMojoFromNativeOrigin(
     const gfx::Transform& mojo_from_viewer,
     const std::vector<mojom::XRInputSourceStatePtr>& input_state) {
   switch (native_origin_information.which()) {
-    case mojom::XRNativeOriginInformation::Tag::INPUT_SOURCE_SPACE_INFO: {
+    case mojom::XRNativeOriginInformation::Tag::kInputSourceSpaceInfo: {
       mojom::XRInputSourceSpaceInfo* input_source_space_info =
           native_origin_information.get_input_source_space_info().get();
 
@@ -1463,22 +1463,22 @@ absl::optional<gfx::Transform> ArCoreImpl::GetMojoFromNativeOrigin(
 
       return absl::nullopt;
     }
-    case mojom::XRNativeOriginInformation::Tag::REFERENCE_SPACE_TYPE:
+    case mojom::XRNativeOriginInformation::Tag::kReferenceSpaceType:
       return GetMojoFromReferenceSpace(
           native_origin_information.get_reference_space_type(),
           mojo_from_viewer);
-    case mojom::XRNativeOriginInformation::Tag::PLANE_ID:
+    case mojom::XRNativeOriginInformation::Tag::kPlaneId:
       return plane_manager_ ? plane_manager_->GetMojoFromPlane(PlaneId(
                                   native_origin_information.get_plane_id()))
                             : absl::nullopt;
-    case mojom::XRNativeOriginInformation::Tag::ANCHOR_ID:
+    case mojom::XRNativeOriginInformation::Tag::kAnchorId:
       return anchor_manager_ ? anchor_manager_->GetMojoFromAnchor(AnchorId(
                                    native_origin_information.get_anchor_id()))
                              : absl::nullopt;
-    case mojom::XRNativeOriginInformation::Tag::HAND_JOINT_SPACE_INFO:
+    case mojom::XRNativeOriginInformation::Tag::kHandJointSpaceInfo:
       return absl::nullopt;
 
-    case mojom::XRNativeOriginInformation::Tag::IMAGE_INDEX:
+    case mojom::XRNativeOriginInformation::Tag::kImageIndex:
       // TODO(https://crbug.com/1143575): Needed for hit test and anchors
       // support for tracked images.
       return absl::nullopt;
