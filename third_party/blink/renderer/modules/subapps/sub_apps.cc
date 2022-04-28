@@ -28,50 +28,6 @@ namespace blink {
 using mojom::blink::SubAppsServiceListResultPtr;
 using mojom::blink::SubAppsServiceResult;
 
-namespace {
-
-// We get called back from the SubAppsService mojo service (inside the browser
-// process), pass on the result to the calling context.
-void OnAddSubApp(ScriptPromiseResolver* resolver, SubAppsServiceResult result) {
-  if (result == SubAppsServiceResult::kSuccess) {
-    resolver->Resolve();
-  } else {
-    resolver->Reject(V8ThrowDOMException::CreateOrDie(
-        resolver->GetScriptState()->GetIsolate(),
-        DOMExceptionCode::kOperationError,
-        "Unable to add given sub-app. Check whether the calling app is "
-        "installed."));
-  }
-}
-
-void OnListSubApp(ScriptPromiseResolver* resolver,
-                  SubAppsServiceListResultPtr result) {
-  if (result->code == SubAppsServiceResult::kSuccess) {
-    resolver->Resolve(result->sub_app_ids);
-  } else {
-    resolver->Reject(V8ThrowDOMException::CreateOrDie(
-        resolver->GetScriptState()->GetIsolate(),
-        DOMExceptionCode::kOperationError,
-        "Unable to list sub-apps. Check whether the calling app is "
-        "installed."));
-  }
-}
-
-void OnRemoveSubApp(ScriptPromiseResolver* resolver,
-                    SubAppsServiceResult result) {
-  if (result == SubAppsServiceResult::kSuccess) {
-    resolver->Resolve();
-  } else {
-    resolver->Reject(V8ThrowDOMException::CreateOrDie(
-        resolver->GetScriptState()->GetIsolate(),
-        DOMExceptionCode::kOperationError,
-        "Unable to remove given sub-app. Check whether the calling app is "
-        "installed."));
-  }
-}
-
-}  // namespace
-
 // static
 const char SubApps::kSupplementName[] = "SubApps";
 
@@ -143,7 +99,18 @@ ScriptPromise SubApps::add(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   GetService()->Add(
       completed_url.GetPath(),
-      resolver->WrapCallbackInScriptScope(WTF::Bind(&OnAddSubApp)));
+      resolver->WrapCallbackInScriptScope(WTF::Bind(
+          [](ScriptPromiseResolver* resolver, SubAppsServiceResult result) {
+            if (result == SubAppsServiceResult::kSuccess) {
+              resolver->Resolve();
+            } else {
+              resolver->Reject(V8ThrowDOMException::CreateOrDie(
+                  resolver->GetScriptState()->GetIsolate(),
+                  DOMExceptionCode::kOperationError,
+                  "Unable to add given sub-app. Check whether the calling app "
+                  "is installed."));
+            }
+          })));
 
   return resolver->Promise();
 }
@@ -155,8 +122,18 @@ ScriptPromise SubApps::list(ScriptState* script_state,
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  GetService()->List(
-      resolver->WrapCallbackInScriptScope(WTF::Bind(&OnListSubApp)));
+  GetService()->List(resolver->WrapCallbackInScriptScope(WTF::Bind(
+      [](ScriptPromiseResolver* resolver, SubAppsServiceListResultPtr result) {
+        if (result->code == SubAppsServiceResult::kSuccess) {
+          resolver->Resolve(result->sub_app_ids);
+        } else {
+          resolver->Reject(V8ThrowDOMException::CreateOrDie(
+              resolver->GetScriptState()->GetIsolate(),
+              DOMExceptionCode::kOperationError,
+              "Unable to list sub-apps. Check whether the calling app is "
+              "installed."));
+        }
+      })));
 
   return resolver->Promise();
 }
@@ -169,8 +146,20 @@ ScriptPromise SubApps::remove(ScriptState* script_state,
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  GetService()->Remove(unhashed_app_id, resolver->WrapCallbackInScriptScope(
-                                            WTF::Bind(&OnRemoveSubApp)));
+  GetService()->Remove(
+      unhashed_app_id,
+      resolver->WrapCallbackInScriptScope(WTF::Bind(
+          [](ScriptPromiseResolver* resolver, SubAppsServiceResult result) {
+            if (result == SubAppsServiceResult::kSuccess) {
+              resolver->Resolve();
+            } else {
+              resolver->Reject(V8ThrowDOMException::CreateOrDie(
+                  resolver->GetScriptState()->GetIsolate(),
+                  DOMExceptionCode::kOperationError,
+                  "Unable to remove given sub-app. Check whether the calling "
+                  "app is installed."));
+            }
+          })));
 
   return resolver->Promise();
 }
