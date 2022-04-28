@@ -256,23 +256,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)addItem:(FollowedWebChannelItem*)item
     AtIndexPath:(NSIndexPath*)indexPath {
   TableViewModel* model = self.tableViewModel;
+  NSInteger sectionID =
+      [model sectionIdentifierForSectionIndex:indexPath.section];
+  [model insertItem:item
+      inSectionWithIdentifier:sectionID
+                      atIndex:indexPath.row];
+  [self.tableView insertRowsAtIndexPaths:@[ indexPath ]
+                        withRowAnimation:UITableViewRowAnimationAutomatic];
 
-  NSInteger section =
-      [model sectionForSectionIdentifier:DefaultSectionIdentifier];
-  NSInteger itemCount = [model numberOfItemsInSection:section];
-  if (itemCount == 0) {
-    [model addItem:item toSectionWithIdentifier:DefaultSectionIdentifier];
-    [self.tableView insertRowsAtIndexPaths:@[ indexPath ]
-                          withRowAnimation:UITableViewRowAnimationAutomatic];
-  } else {
-    NSInteger sectionID =
-        [model sectionIdentifierForSectionIndex:indexPath.section];
-    NSUInteger index = [model indexInItemTypeForIndexPath:indexPath];
-
-    [model insertItem:item inSectionWithIdentifier:sectionID atIndex:index];
-    [self.tableView insertRowsAtIndexPaths:@[ indexPath ]
-                          withRowAnimation:UITableViewRowAnimationAutomatic];
-  }
   self.lastUnfollowedWebChannelItem = nil;
   self.indexPathOfLastUnfollowAttempt = nil;
   [self showOrHideEmptyTableViewBackground];
