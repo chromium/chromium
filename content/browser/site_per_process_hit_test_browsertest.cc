@@ -4792,17 +4792,12 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessMouseWheelHitTestBrowserTest,
   EXPECT_EQ(nullptr, router->wheel_target_);
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_MouseWheelEventPositionChange \
-  DISABLED_MouseWheelEventPositionChange
-#else
-#define MAYBE_MouseWheelEventPositionChange MouseWheelEventPositionChange
-#endif
 // Ensure that the positions of mouse wheel events sent to cross-process
 // subframes account for any change in the position of the subframe during the
 // scroll sequence.
+// TODO(https://crbug.com/1033388): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(SitePerProcessMouseWheelHitTestBrowserTest,
-                       MAYBE_MouseWheelEventPositionChange) {
+                       DISABLED_MouseWheelEventPositionChange) {
   GURL main_url(embedded_test_server()->GetURL(
       "/frame_tree/page_with_tall_positioned_frame.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
