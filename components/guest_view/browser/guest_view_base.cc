@@ -581,9 +581,9 @@ void GuestViewBase::WebContentsDestroyed() {
 
 void GuestViewBase::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
+  // TODO(crbug.com/1261928): Due to the use of inner WebContents, a
+  // GuestViewBase's main frame is considered primary. This will no
+  // longer be the case once we migrate guest views to MPArch.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted())
     return;
