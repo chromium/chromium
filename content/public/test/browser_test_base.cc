@@ -154,7 +154,12 @@ bool g_instance_already_created = false;
 // See http://crbug.com/141302.
 int g_browser_process_pid;
 
-void DumpStackTraceSignalHandler(int signal) {
+// A shutdown function set on signal callback registration.
+base::OnceCallback<void(int)> ShutdownHandler;
+
+void SignalHandler(int signal) {
+  std::move(ShutdownHandler).Run(signal);
+
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableInProcessStackTraces) &&
       g_browser_process_pid == base::GetCurrentProcId()) {
@@ -829,10 +834,13 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
 
 #if BUILDFLAG(IS_POSIX)
   g_browser_process_pid = base::GetCurrentProcId();
-  signal(SIGSEGV, DumpStackTraceSignalHandler);
+  signal(SIGSEGV, SignalHandler);
 
   if (handle_sigterm_)
-    signal(SIGTERM, DumpStackTraceSignalHandler);
+    signal(SIGTERM, SignalHandler);
+
+  ShutdownHandler = base::BindOnce(&BrowserTestBase::SignalRunTestOnMainThread,
+                                   base::Unretained(this));
 #endif  // BUILDFLAG(IS_POSIX)
 
   {

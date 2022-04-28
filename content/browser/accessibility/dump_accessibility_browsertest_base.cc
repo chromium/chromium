@@ -107,6 +107,11 @@ void DumpAccessibilityTestBase::SetUp() {
   ContentBrowserTest::SetUp();
 }
 
+void DumpAccessibilityTestBase::SignalRunTestOnMainThread(int) {
+  LOG(INFO) << "\n\nFinal accessibility tree upon the test termination:\n"
+            << DumpUnfilteredAccessibilityTreeAsString();
+}
+
 void DumpAccessibilityTestBase::ChooseFeatures(
     std::vector<base::Feature>* enabled_features,
     std::vector<base::Feature>* disabled_features) {

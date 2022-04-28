@@ -42,6 +42,8 @@ class DumpAccessibilityTestBase
   DumpAccessibilityTestBase();
   ~DumpAccessibilityTestBase() override;
 
+  void SignalRunTestOnMainThread(int) override;
+
   // Given a path to an HTML file relative to the test directory,
   // loads the HTML, loads the accessibility tree, calls Dump(), then
   // compares the output to the expected result and has the test succeed
