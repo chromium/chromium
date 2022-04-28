@@ -39,12 +39,6 @@ class FormCacheTestApi {
 
   size_t parsed_forms_size() { return form_cache_->parsed_forms_.size(); }
 
-  // TODO(crbug/1215333): Remove once the `AutofillUseNewFormExtraction` feature
-  // is launched.
-  size_t parsed_forms_by_renderer_id_size() {
-    return form_cache_->parsed_forms_by_renderer_id_.size();
-  }
-
  private:
   FormCache* form_cache_;
 };

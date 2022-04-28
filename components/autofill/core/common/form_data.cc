@@ -144,49 +144,6 @@ bool FormData::DynamicallySameFormAs(const FormData& form) const {
   return true;
 }
 
-bool FormData::IdentityComparator::operator()(const FormData& a,
-                                              const FormData& b) const {
-  // |unique_renderer_id| uniquely identifies the form, if and only if it is
-  // set; the other members compared below together uniquely identify the form
-  // as well.
-  auto tie = [](const FormData& f) {
-    return std::tie(f.host_frame, f.unique_renderer_id, f.name, f.id_attribute,
-                    f.name_attribute, f.url, f.action, f.is_form_tag);
-  };
-  if (tie(a) < tie(b))
-    return true;
-  if (tie(b) < tie(a))
-    return false;
-  // A less-than relation on FormData::child_frames.
-  auto less_child_frames =
-      [](const std::vector<FrameTokenWithPredecessor>& as,
-         const std::vector<FrameTokenWithPredecessor>& bs) {
-        return base::ranges::lexicographical_compare(
-            as, bs, [](const auto& a, const auto& b) {
-              return std::tie(a.token, a.predecessor) <
-                     std::tie(b.token, b.predecessor);
-            });
-      };
-  if (less_child_frames(a.child_frames, b.child_frames))
-    return true;
-  if (less_child_frames(b.child_frames, a.child_frames))
-    return false;
-  return base::ranges::lexicographical_compare(
-      a.fields, b.fields, FormFieldData::IdentityComparator());
-}
-
-// Used for `Autofill.ExtractNewForms.ShallowEqualityDiffersFromDeepEquality`
-// metric. These values are persisted to logs. Entries should not be renumbered
-// and numeric values should never be reused.
-// TODO(crbug/1215333): Remove after the `AutofillUseNewFormExtraction`
-// feature is deleted.
-enum class FormDataEquality {
-  kShallowCompEnough = 0,
-  kDeepCompNeeded = 1,
-  kEqualForms = 2,
-  kMaxValue = kEqualForms,
-};
-
 // static
 bool FormData::DeepEqual(const FormData& a, const FormData& b) {
   // We compare all unique identifiers first, including the field renderer IDs,
@@ -196,9 +153,6 @@ bool FormData::DeepEqual(const FormData& a, const FormData& b) {
       !base::ranges::equal(a.fields, b.fields, {},
                            &FormFieldData::unique_renderer_id,
                            &FormFieldData::unique_renderer_id)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Autofill.ExtractNewForms.ShallowEqualityDiffersFromDeepEquality",
-        FormDataEquality::kShallowCompEnough);
     return false;
   }
 
@@ -206,14 +160,8 @@ bool FormData::DeepEqual(const FormData& a, const FormData& b) {
       a.name_attribute != b.name_attribute || a.url != b.url ||
       a.action != b.action || a.is_form_tag != b.is_form_tag ||
       !base::ranges::equal(a.fields, b.fields, &FormFieldData::DeepEqual)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Autofill.ExtractNewForms.ShallowEqualityDiffersFromDeepEquality",
-        FormDataEquality::kDeepCompNeeded);
     return false;
   }
-  UMA_HISTOGRAM_ENUMERATION(
-      "Autofill.ExtractNewForms.ShallowEqualityDiffersFromDeepEquality",
-      FormDataEquality::kEqualForms);
   return true;
 }
 
@@ -336,11 +284,6 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormData& form) {
   buffer << CTag{"table"};
   buffer << CTag{"div"};
   return buffer;
-}
-
-bool FormDataEqualForTesting(const FormData& lhs, const FormData& rhs) {
-  FormData::IdentityComparator less;
-  return !less(lhs, rhs) && !less(rhs, lhs);
 }
 
 }  // namespace autofill

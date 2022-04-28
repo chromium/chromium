@@ -72,7 +72,7 @@ void CheckPendingCredentials(const PasswordForm& expected,
   EXPECT_EQ(expected.password_element, actual.password_element);
   EXPECT_EQ(expected.blocked_by_user, actual.blocked_by_user);
   EXPECT_TRUE(
-      autofill::FormDataEqualForTesting(expected.form_data, actual.form_data));
+      autofill::FormData::DeepEqual(expected.form_data, actual.form_data));
 }
 
 struct ExpectedGenerationUKM {

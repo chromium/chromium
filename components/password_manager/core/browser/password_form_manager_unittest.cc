@@ -118,7 +118,7 @@ MATCHER_P(FormHasPassword, password_value, "") {
 }
 
 MATCHER_P(FormDataPointeeEqualTo, form_data, "") {
-  return autofill::FormDataEqualForTesting(*arg, form_data);
+  return autofill::FormData::DeepEqual(*arg, form_data);
 }
 
 class MockPasswordManagerDriver : public StubPasswordManagerDriver {
@@ -188,9 +188,7 @@ void CheckPendingCredentials(const PasswordForm& expected,
   EXPECT_EQ(expected.username_element, actual.username_element);
   EXPECT_EQ(expected.password_element, actual.password_element);
   EXPECT_EQ(expected.blocked_by_user, actual.blocked_by_user);
-  FormData::IdentityComparator less;
-  EXPECT_FALSE(less(expected.form_data, actual.form_data));
-  EXPECT_FALSE(less(actual.form_data, expected.form_data));
+  EXPECT_TRUE(FormData::DeepEqual(expected.form_data, actual.form_data));
 }
 
 struct ExpectedGenerationUKM {

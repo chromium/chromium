@@ -134,14 +134,6 @@ struct FrameTokenWithPredecessor {
 // [4] https://html.spec.whatwg.org/multipage/input.html#attr-input-type
 // clang-format on
 struct FormData {
-  // Less-than relation for STL containers. Compares only members needed to
-  // uniquely identify a form.
-  // TODO(crbug.com/1215333): Remove once `AutofillUseNewFormExtraction` is
-  // launched.
-  struct IdentityComparator {
-    bool operator()(const FormData& a, const FormData& b) const;
-  };
-
   // Returns true if all members of forms |a| and |b| are identical.
   static bool DeepEqual(const FormData& a, const FormData& b);
 
@@ -286,8 +278,6 @@ void SerializeFormData(const FormData& form_data, base::Pickle* pickle);
 bool DeserializeFormData(base::PickleIterator* iter, FormData* form_data);
 
 LogBuffer& operator<<(LogBuffer& buffer, const FormData& form);
-
-bool FormDataEqualForTesting(const FormData& lhs, const FormData& rhs);
 
 }  // namespace autofill
 
