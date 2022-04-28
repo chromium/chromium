@@ -5800,6 +5800,7 @@ others/histograms.xml -->
   <int value="6" label="EMULATOR"/>
   <int value="7" label="IN_CHROME"/>
   <int value="8" label="DIRECT_ACTION"/>
+  <int value="9" label="GOOGLE_PASSWORD_MANAGER"/>
 </enum>
 
 <enum name="AutofillAssistantCollectUserDataResult">

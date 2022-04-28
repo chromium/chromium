@@ -110,7 +110,7 @@ Metrics::AutofillAssistantIntent ExtractIntentFromScriptParameters(
     return Metrics::AutofillAssistantIntent::UNDEFINED_INTENT;
   }
   return enum_value_iter->second;
-}  // namespace
+}
 
 // Extracts the enum value corresponding to the caller specified in
 // |script_parameters|.

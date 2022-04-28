@@ -741,16 +741,21 @@ void Controller::InitFromParameters() {
     DCHECK(GetDeeplinkURL().is_valid());  // |deeplink_url_| must be set.
     user_data_.selected_login_.emplace(
         GetDeeplinkURL().DeprecatedGetOriginAsURL(), *password_change_username);
-    // TODO(crbug.com/1281844): Move the entry point away from the controller
-    // into code near the triggering point. Combine that with setting the
-    // correct entry point.
-    GetPasswordChangeSuccessTracker()->OnChangePasswordFlowStarted(
-        user_data_.selected_login_->origin,
-        user_data_.selected_login_->username,
-        password_manager::PasswordChangeSuccessTracker::StartEvent::
-            kAutomatedFlow,
-        password_manager::PasswordChangeSuccessTracker::EntryPoint::
-            kLeakCheckInSettings);
+
+    // We only start password change success tracking here if the run was
+    // started from the Google Password Manager. The other cases are
+    // handled directly in the UI.
+    if (trigger_context_->GetScriptParameters().GetCaller().value_or(0) ==
+        static_cast<int>(
+            Metrics::AutofillAssistantCaller::GOOGLE_PASSWORD_MANAGER)) {
+      GetPasswordChangeSuccessTracker()->OnChangePasswordFlowStarted(
+          user_data_.selected_login_->origin,
+          user_data_.selected_login_->username,
+          password_manager::PasswordChangeSuccessTracker::StartEvent::
+              kAutomatedFlow,
+          password_manager::PasswordChangeSuccessTracker::EntryPoint::
+              kLeakCheckInSettings);
+    }
   }
 
   user_model_.SetCurrentURL(GetCurrentURL());
