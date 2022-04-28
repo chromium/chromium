@@ -149,7 +149,12 @@ void LogSystemMediaPermissionsStartupStats() {
         CheckSystemVideoCapturePermission();
     LogStartupCameraSystemPermission(video_permission);
     MaybeLogAdditionalCameraSystemPermissionStats(video_permission);
-  }  // (@available(macOS 10.14, *))
+  }
+
+  if (@available(macOS 10.15, *)) {
+    // CheckSystemScreenCapturePermission() will log a sample of the permission.
+    CheckSystemScreenCapturePermission();
+  }
 }
 
 void SystemAudioCapturePermissionDetermined(SystemPermission permission) {
@@ -164,6 +169,11 @@ void SystemVideoCapturePermissionDetermined(SystemPermission permission) {
     DCHECK_NE(permission, SystemPermission::kNotDetermined);
     LogStartupCameraSystemPermission(permission);
   }
+}
+
+void LogSystemScreenCapturePermission(SystemPermission permission) {
+  base::UmaHistogramEnumeration(
+      "Media.Video.Capture.Mac.ScreenCaptureSystemPermission", permission);
 }
 
 void SystemAudioCapturePermissionBlocked() {

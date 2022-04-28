@@ -17,6 +17,7 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "chrome/browser/media/webrtc/media_authorization_wrapper_mac.h"
+#include "chrome/browser/media/webrtc/system_media_capture_permissions_stats_mac.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -158,8 +159,11 @@ SystemPermission CheckSystemVideoCapturePermission() {
 }
 
 SystemPermission CheckSystemScreenCapturePermission() {
-  return IsScreenCaptureAllowed() ? SystemPermission::kAllowed
-                                  : SystemPermission::kDenied;
+  SystemPermission permission = IsScreenCaptureAllowed()
+                                    ? SystemPermission::kAllowed
+                                    : SystemPermission::kDenied;
+  LogSystemScreenCapturePermission(permission);
+  return permission;
 }
 
 void RequestSystemAudioCapturePermisson(base::OnceClosure callback,

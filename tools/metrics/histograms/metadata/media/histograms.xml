@@ -4605,6 +4605,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Video.Capture.Mac.ScreenSystemPermission.Startup"
+    enum="SystemMediaCapturePermission" expires_after="2023-04-01">
+  <owner>bur@chromium.org</owner>
+  <owner>mark@chromium.org</owner>
+  <summary>
+    The Mac system permission state for screen capture. Logged once at browser
+    startup and when attempting to screen capture. For more information on the
+    values, see
+    https://developer.apple.com/documentation/avfoundation/avauthorizationstatus.
+    Note: The screen capture APIs only expose the allowed and denied states. The
+    not determined and restricted states will not show up here.
+  </summary>
+</histogram>
+
 <histogram name="Media.Video.Roughness" units="ms" expires_after="2022-10-16">
   <owner>eugene@chromium.org</owner>
   <owner>videostack-eng@chromium.org</owner>
