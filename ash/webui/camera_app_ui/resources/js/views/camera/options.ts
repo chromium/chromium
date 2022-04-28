@@ -92,17 +92,19 @@ export class Options implements CameraUI {
   }
 
   private setAriaLabelForOptionButton(
-      element: HTMLElement, stateOptions: StateOption[]) {
+      element: HTMLElement, titleLabel: I18nString,
+      stateOptions: StateOption[]) {
+    element.setAttribute('i18n-label', titleLabel);
     for (const {ariaLabel, state: targetState, isDisableOption} of
              stateOptions) {
       const stateEnabled = state.get(targetState);
       if ((stateEnabled && !isDisableOption) ||
           (!stateEnabled && isDisableOption)) {
         element.setAttribute('i18n-aria', ariaLabel);
-        util.setupI18nElements(element);
-        return;
+        break;
       }
     }
+    util.setupI18nElements(element);
   }
 
   private initOpenMirrorPanel() {
@@ -119,11 +121,13 @@ export class Options implements CameraUI {
         state: state.State.MIRROR,
       },
     ];
-    this.setAriaLabelForOptionButton(this.openMirrorPanel, stateOptions);
+    const titleLabel = I18nString.OPEN_MIRROR_PANEL_BUTTON;
+    this.setAriaLabelForOptionButton(
+        this.openMirrorPanel, titleLabel, stateOptions);
     this.openMirrorPanel.addEventListener('click', () => {
       nav.open(ViewName.OPTION_PANEL, new OptionPanelOptions({
                  triggerButton: this.openMirrorPanel,
-                 titleLabel: I18nString.OPEN_MIRROR_PANEL_BUTTON,
+                 titleLabel,
                  stateOptions,
                  onStateChanged: (newState) => {
                    const enabled = newState !== null;
@@ -158,11 +162,13 @@ export class Options implements CameraUI {
         state: state.State.GRID_GOLDEN,
       },
     ];
-    this.setAriaLabelForOptionButton(this.openGridPanel, stateOptions);
+    const titleLabel = I18nString.OPEN_GRID_PANEL_BUTTON;
+    this.setAriaLabelForOptionButton(
+        this.openGridPanel, titleLabel, stateOptions);
     this.openGridPanel.addEventListener('click', () => {
       nav.open(ViewName.OPTION_PANEL, new OptionPanelOptions({
                  triggerButton: this.openGridPanel,
-                 titleLabel: I18nString.OPEN_GRID_PANEL_BUTTON,
+                 titleLabel,
                  stateOptions,
                  onStateChanged: (newState) => {
                    state.set(state.State.GRID, newState !== null);
@@ -195,12 +201,14 @@ export class Options implements CameraUI {
         state: state.State.TIMER_10SEC,
       },
     ];
-    this.setAriaLabelForOptionButton(this.openTimerPanel, stateOptions);
+    const titleLabel = I18nString.OPEN_TIMER_PANEL_BUTTON;
+    this.setAriaLabelForOptionButton(
+        this.openTimerPanel, titleLabel, stateOptions);
     this.openTimerPanel.addEventListener('click', () => {
       nav.open(
           ViewName.OPTION_PANEL, new OptionPanelOptions({
             triggerButton: this.openTimerPanel,
-            titleLabel: I18nString.OPEN_TIMER_PANEL_BUTTON,
+            titleLabel,
             stateOptions,
             onStateChanged: (newState) => {
               state.set(state.State.TIMER, newState !== null);

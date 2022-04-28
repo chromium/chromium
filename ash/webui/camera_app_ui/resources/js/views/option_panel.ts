@@ -36,7 +36,6 @@ export class OptionPanel extends View {
     this.panel.style.bottom = `${window.innerHeight - bottom}px`;
     this.panel.style.left = `${right + 6}px`;
 
-    this.title.setAttribute('i18n-label', titleLabel);
     this.title.setAttribute('i18n-text', titleLabel);
 
     this.container.replaceChildren();
