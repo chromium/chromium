@@ -66,9 +66,11 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
 // Returns true if the navigation was upgraded to HTTPS but failed due to an
 // SSL or net error. This can happen when HTTPS-Only Mode feature automatically
 // upgrades a navigation to HTTPS.
-bool IsFailedHttpsUpgrade(NSError* error, web::NavigationContextImpl* context) {
+bool IsFailedHttpsUpgrade(NSError* error,
+                          web::NavigationContextImpl* context,
+                          NSError* cancellationError) {
   if (!context || !context->GetItem() ||
-      !context->GetItem()->IsUpgradedToHttps()) {
+      !context->GetItem()->IsUpgradedToHttps() || cancellationError) {
     return false;
   }
   int error_code = 0;
@@ -1688,7 +1690,8 @@ NSString* const kSimulatedErrorHeaderValue = @"Chromium_Simulated_Error_Page";
 
   web::NavigationContextImpl* navigationContext =
       [self.navigationStates contextForNavigation:navigation];
-  if (IsFailedHttpsUpgrade(error, navigationContext)) {
+  if (IsFailedHttpsUpgrade(error, navigationContext,
+                           policyDecisionCancellationError)) {
     navigationContext->SetIsFailedHTTPSUpgrade();
     [self handleCancelledError:error
                  forNavigation:navigation
@@ -2051,7 +2054,8 @@ NSString* const kSimulatedErrorHeaderValue = @"Chromium_Simulated_Error_Page";
                forNavigation:(WKNavigation*)navigation
              provisionalLoad:(BOOL)provisionalLoad {
   if (!IsFailedHttpsUpgrade(
-          error, [self.navigationStates contextForNavigation:navigation]) &&
+          error, [self.navigationStates contextForNavigation:navigation],
+          self.pendingNavigationInfo.cancellationError) &&
       ![self shouldCancelLoadForCancelledError:error
                                provisionalLoad:provisionalLoad]) {
     return;
