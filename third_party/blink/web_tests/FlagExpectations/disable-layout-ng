@@ -1101,6 +1101,12 @@ crbug.com/591099 external/wpt/css/css-overflow/webkit-line-clamp-027.html [ Fail
 crbug.com/591099 external/wpt/css/css-overflow/webkit-line-clamp-038.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-overflow/webkit-line-clamp-039.html [ Failure ]
 
+# Scrollable overflow changes in NG
+crbug.com/591099 external/wpt/css/cssom-view/scrollWidthHeight.xht [ Failure ]
+crbug.com/591099 external/wpt/css/css-overflow/orthogonal-flow-with-inline-end-margin.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-overflow/overflow-padding.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-overflow/scrollable-overflow-padding.html [ Failure ]
+
 # White space, absolute position and paint timing failures from June 5, 2020
 crbug.com/591099 external/wpt/paint-timing/fcp-only/fcp-pseudo-element-visibility.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-position/position-absolute-center-001.html [ Failure ]
