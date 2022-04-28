@@ -5,16 +5,13 @@
 #ifndef PDF_PPAPI_MIGRATION_GRAPHICS_H_
 #define PDF_PPAPI_MIGRATION_GRAPHICS_H_
 
-#include <memory>
-
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/core/SkSurface.h"
-#include "ui/gfx/geometry/size.h"
 
 class SkBitmap;
 class SkImage;
+class SkSurface;
 
 namespace gfx {
 class Point;
@@ -30,8 +27,6 @@ namespace chrome_pdf {
 class Graphics {
  public:
   virtual ~Graphics() = default;
-
-  const gfx::Size& size() const { return size_; }
 
   // Flushes pending operations, invoking the callback on completion. Returns
   // `true` if the callback is still pending.
@@ -53,10 +48,7 @@ class Graphics {
                                  const gfx::Vector2d& translate) = 0;
 
  protected:
-  explicit Graphics(const gfx::Size& size);
-
- private:
-  gfx::Size size_;
+  Graphics() = default;
 };
 
 // A Skia graphics device.
@@ -79,10 +71,8 @@ class SkiaGraphics final : public Graphics {
                                       const gfx::Vector2dF& translate) = 0;
   };
 
-  // `client` must remain valid throughout the lifespan of the object.
-  static std::unique_ptr<SkiaGraphics> Create(Client* client,
-                                              const gfx::Size& size);
-
+  // `client` and `surface` must outlive this object.
+  SkiaGraphics(Client* client, SkSurface* surface);
   ~SkiaGraphics() override;
 
   bool Flush(base::OnceClosure callback) override;
@@ -96,12 +86,11 @@ class SkiaGraphics final : public Graphics {
                          const gfx::Vector2d& translate) override;
 
  private:
-  explicit SkiaGraphics(Client* client, const gfx::Size& size);
-
   // Unowned pointer. The client is required to outlive this object.
   raw_ptr<Client> client_;
 
-  sk_sp<SkSurface> skia_graphics_;
+  // Unowned pointer. The surface is required to outlive this object.
+  raw_ptr<SkSurface> surface_;
 };
 
 }  // namespace chrome_pdf

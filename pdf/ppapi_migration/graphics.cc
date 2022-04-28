@@ -12,12 +12,12 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "pdf/ppapi_migration/result_codes.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/blit.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -28,23 +28,8 @@
 
 namespace chrome_pdf {
 
-Graphics::Graphics(const gfx::Size& size) : size_(size) {}
-
-// static
-std::unique_ptr<SkiaGraphics> SkiaGraphics::Create(Client* client,
-                                                   const gfx::Size& size) {
-  auto graphics = base::WrapUnique(new SkiaGraphics(client, size));
-  if (!graphics->skia_graphics_)
-    return nullptr;
-
-  return graphics;
-}
-
-SkiaGraphics::SkiaGraphics(Client* client, const gfx::Size& size)
-    : Graphics(size),
-      client_(client),
-      skia_graphics_(
-          SkSurface::MakeRasterN32Premul(size.width(), size.height())) {}
+SkiaGraphics::SkiaGraphics(Client* client, SkSurface* surface)
+    : client_(client), surface_(surface) {}
 
 SkiaGraphics::~SkiaGraphics() = default;
 
@@ -52,9 +37,9 @@ SkiaGraphics::~SkiaGraphics() = default;
 // plugin, make Flush() return false since there is no pending action for
 // syncing the client's snapshot.
 bool SkiaGraphics::Flush(base::OnceClosure callback) {
-  sk_sp<SkImage> snapshot = skia_graphics_->makeImageSnapshot();
-  skia_graphics_->getCanvas()->drawImage(
-      snapshot.get(), /*x=*/0, /*y=*/0, SkSamplingOptions(), /*paint=*/nullptr);
+  sk_sp<SkImage> snapshot = surface_->makeImageSnapshot();
+  surface_->getCanvas()->drawImage(snapshot.get(), /*x=*/0, /*y=*/0,
+                                   SkSamplingOptions(), /*paint=*/nullptr);
 
   client_->UpdateSnapshot(std::move(snapshot));
 
@@ -68,21 +53,21 @@ void SkiaGraphics::PaintImage(const SkBitmap& image,
   SkRect skia_rect = RectToSkRect(src_rect);
 
   // TODO(crbug.com/1284255): Avoid inefficient `SkBitmap::asImage()`.
-  skia_graphics_->getCanvas()->drawImageRect(
-      image.asImage(), skia_rect, skia_rect, SkSamplingOptions(), nullptr,
-      SkCanvas::kStrict_SrcRectConstraint);
+  surface_->getCanvas()->drawImageRect(image.asImage(), skia_rect, skia_rect,
+                                       SkSamplingOptions(), nullptr,
+                                       SkCanvas::kStrict_SrcRectConstraint);
 }
 
 void SkiaGraphics::Scroll(const gfx::Rect& clip, const gfx::Vector2d& amount) {
   // If we are being asked to scroll by more than the graphics' rect size, just
   // ignore the scroll command.
-  if (std::abs(amount.x()) >= skia_graphics_->width() ||
-      std::abs(amount.y()) >= skia_graphics_->height()) {
+  if (std::abs(amount.x()) >= surface_->width() ||
+      std::abs(amount.y()) >= surface_->height()) {
     return;
   }
 
   // TODO(crbug.com/1263614): Use `SkSurface::notifyContentWillChange()`.
-  gfx::ScrollCanvas(skia_graphics_->getCanvas(), clip, amount);
+  gfx::ScrollCanvas(surface_->getCanvas(), clip, amount);
 }
 
 void SkiaGraphics::SetScale(float scale) {

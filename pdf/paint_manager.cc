@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
@@ -17,6 +18,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "pdf/paint_ready_rect.h"
 #include "pdf/ppapi_migration/graphics.h"
+#include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -186,11 +188,15 @@ void PaintManager::DoPaint() {
     // Only create a new graphics context if the current context isn't big
     // enough or if it is far too big. This avoids creating a new context if
     // we only resize by a small amount.
-    gfx::Size old_size = graphics_ ? graphics_->size() : gfx::Size();
+    gfx::Size old_size = surface_
+                             ? gfx::Size(surface_->width(), surface_->height())
+                             : gfx::Size();
     gfx::Size new_size = GetNewContextSize(old_size, pending_size_);
-    if (old_size != new_size || !graphics_) {
-      graphics_ = SkiaGraphics::Create(client_, new_size);
-      DCHECK(graphics_);
+    if (old_size != new_size || !surface_) {
+      surface_ =
+          SkSurface::MakeRasterN32Premul(new_size.width(), new_size.height());
+      DCHECK(surface_);
+      graphics_ = std::make_unique<SkiaGraphics>(client_, surface_.get());
 
       // TODO(crbug.com/1317832): Can we guarantee repainting some other way?
       client_->InvalidatePluginContainer();

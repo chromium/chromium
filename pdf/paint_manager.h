@@ -15,7 +15,10 @@
 #include "base/time/time.h"
 #include "pdf/paint_aggregator.h"
 #include "pdf/ppapi_migration/graphics.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/size.h"
+
+class SkSurface;
 
 namespace gfx {
 class Point;
@@ -145,6 +148,9 @@ class PaintManager {
 
   // Non-owning pointer. See the constructor.
   const raw_ptr<Client> client_;
+
+  // Backing Skia surface.
+  sk_sp<SkSurface> surface_;
 
   // This graphics device will be null if no graphics has been set yet.
   std::unique_ptr<Graphics> graphics_;

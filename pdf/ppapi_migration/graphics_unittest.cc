@@ -22,7 +22,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -76,9 +75,10 @@ class SkiaGraphicsTest : public testing::Test {
                             const gfx::Size& src_size,
                             const gfx::Rect& paint_rect,
                             const SkIRect& overlapped_rect) {
-    graphics_ =
-        SkiaGraphics::Create(&client_, gfx::SkISizeToSize(graphics_size));
-    ASSERT_TRUE(graphics_);
+    surface_ = SkSurface::MakeRasterN32Premul(graphics_size.width(),
+                                              graphics_size.height());
+    ASSERT_TRUE(surface_);
+    graphics_ = std::make_unique<SkiaGraphics>(&client_, surface_.get());
 
     // Create snapshots as SkImage and SkBitmap after painting.
     graphics_->PaintImage(CreateSkiaImageForTesting(src_size, SK_ColorRED),
@@ -103,6 +103,7 @@ class SkiaGraphicsTest : public testing::Test {
   }
 
   FakeSkiaGraphicsClient client_;
+  sk_sp<SkSurface> surface_;
 
   std::unique_ptr<Graphics> graphics_;
 };
@@ -113,8 +114,10 @@ class SkiaGraphicsScrollTest : public SkiaGraphicsTest {
 
   // Initializes `initial_bitmap_` and `graphics_` before scrolling tests.
   void SetUp() override {
-    graphics_ = SkiaGraphics::Create(&client_, kGraphicsRect.size());
-    ASSERT_TRUE(graphics_);
+    surface_ = SkSurface::MakeRasterN32Premul(kGraphicsRect.width(),
+                                              kGraphicsRect.height());
+    ASSERT_TRUE(surface_);
+    graphics_ = std::make_unique<SkiaGraphics>(&client_, surface_.get());
 
     // Paint a nonuniform SkBitmap to graphics.
     initial_bitmap_ =
@@ -145,8 +148,9 @@ class SkiaGraphicsScrollTest : public SkiaGraphicsTest {
 constexpr gfx::Rect SkiaGraphicsScrollTest::kGraphicsRect;
 
 TEST_F(SkiaGraphicsTest, Flush) {
-  graphics_ = SkiaGraphics::Create(&client_, gfx::Size(20, 20));
-  ASSERT_TRUE(graphics_);
+  surface_ = SkSurface::MakeRasterN32Premul(20, 20);
+  ASSERT_TRUE(surface_);
+  graphics_ = std::make_unique<SkiaGraphics>(&client_, surface_.get());
 
   // The client's snapshot is nullptr before flushing.
   EXPECT_FALSE(client_.snapshot);
@@ -190,14 +194,18 @@ TEST_F(SkiaGraphicsTest, PaintImage) {
 }
 
 TEST_F(SkiaGraphicsTest, SetScale) {
-  auto graphics = SkiaGraphics::Create(&client_, {400, 300});
+  sk_sp<SkSurface> surface = SkSurface::MakeRasterN32Premul(400, 300);
+  ASSERT_TRUE(surface);
+  auto graphics = std::make_unique<SkiaGraphics>(&client_, surface.get());
   EXPECT_CALL(client_, UpdateScale(0.123f));
 
   graphics->SetScale(0.123f);
 }
 
 TEST_F(SkiaGraphicsTest, SetLayerTransform) {
-  auto graphics = SkiaGraphics::Create(&client_, {400, 300});
+  sk_sp<SkSurface> surface = SkSurface::MakeRasterN32Premul(400, 300);
+  ASSERT_TRUE(surface);
+  auto graphics = std::make_unique<SkiaGraphics>(&client_, surface.get());
   EXPECT_CALL(client_,
               UpdateLayerTransform(0.25f, gfx::Vector2dF(116.5f, 29.5f)));
 
