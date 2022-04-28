@@ -41,6 +41,11 @@ class WebAppCommandLock {
   // on any of the `app_ids`.
   static WebAppCommandLock CreateForAppLock(base::flat_set<AppId> app_ids);
 
+  // Creates a no-op lock that doesn't lock on anything. This is useful to
+  // create commands that doesn't need isolation protection but would like to be
+  // managed by WebAppCommandManager for consistent lifecycle management.
+  static WebAppCommandLock CreateForNoOpLock();
+
   const LockRequestSet& GetLockRequests() const { return lock_requests_; }
 
   bool IsAppLocked(const AppId& app_id) const;
@@ -52,6 +57,7 @@ class WebAppCommandLock {
     kFullSystem,
     kApp,
     kBackgroundWebContents,
+    kNoOp,
   };
 
   explicit WebAppCommandLock(base::flat_set<AppId> app_ids,
@@ -139,7 +145,7 @@ class WebAppCommand {
   // Arguments:
   // `call_after_destruction`: If the command has a closure that
   //                           needs to be called on the completion  of the
-  //                           command, it can be passed here   to ensure it is
+  //                           command, it can be passed here to ensure it is
   //                           called after this  command is destructed and any
   //                           chained  commands are queued.
   // Note: This can ONLY be called if `Start()` has been called (`IsStarted()`

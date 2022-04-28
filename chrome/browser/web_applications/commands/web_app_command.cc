@@ -19,6 +19,7 @@ content::LeveledLockRange StringToLockRange(std::string key) {
 enum KeysOnStaticLevel {
   kFullSystem = 0,
   kBackgroundWebContents = 1,
+  kNoOp = 2,
 };
 
 }  // namespace
@@ -76,6 +77,16 @@ WebAppCommandLock WebAppCommandLock::CreateForAppLock(
   return WebAppCommandLock(app_ids, LockType::kApp, std::move(lock_requests));
 }
 
+// static
+WebAppCommandLock WebAppCommandLock::CreateForNoOpLock() {
+  LockRequestSet lock_requests;
+  lock_requests.emplace(
+      static_cast<int>(LockLevel::kStatic),
+      StringToLockRange(base::NumberToString(KeysOnStaticLevel::kNoOp)),
+      content::LeveledLockManager::LockType::kShared);
+  return WebAppCommandLock({}, LockType::kNoOp, std::move(lock_requests));
+}
+
 bool WebAppCommandLock::IsAppLocked(const AppId& app_id) const {
   switch (lock_type_) {
     case LockType::kFullSystem:
@@ -84,6 +95,8 @@ bool WebAppCommandLock::IsAppLocked(const AppId& app_id) const {
       return false;
     case LockType::kApp:
       return app_ids_.contains(app_id);
+    case LockType::kNoOp:
+      return false;
       NOTREACHED();
   }
 }

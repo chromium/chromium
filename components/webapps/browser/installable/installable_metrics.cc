@@ -137,4 +137,8 @@ void InstallableMetrics::TrackUninstallEvent(WebappUninstallSource source) {
   base::UmaHistogramEnumeration("Webapp.Install.UninstallEvent", source);
 }
 
+// static
+void InstallableMetrics::TrackInstallResult(bool result) {
+  base::UmaHistogramBoolean("WebApp.Install.Result", result);
+}
 }  // namespace webapps

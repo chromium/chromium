@@ -145,6 +145,16 @@ class WebAppInstallTask : content::WebContentsObserver {
                                const WebAppInstallParams& install_params,
                                OnceInstallCallback callback);
 
+  // Perform installation after manifest is retrieved and validated, starts the
+  // installation flow from `OnDidPerformInstallableCheck`
+  void InstallWebAppOnManifestValidated(
+      content::WebContents* contents,
+      WebAppInstallDialogCallback dialog_callback,
+      OnceInstallCallback install_callback,
+      std::unique_ptr<WebAppInstallInfo> web_app_info,
+      blink::mojom::ManifestPtr opt_manifest,
+      const GURL& manifest_url);
+
   // Obtains WebAppInstallInfo about web app located at |start_url|, fallbacks
   // to title/favicon if manifest is not present.
   void LoadAndRetrieveWebAppInstallInfoWithIcons(

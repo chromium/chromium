@@ -94,8 +94,6 @@ bool IsEmptyIconBitmapsForIconUrl(const IconsMap& icons_map,
   return true;
 }
 
-const char* kHistogramInstallResult = "WebApp.Install.Result";
-
 #if BUILDFLAG(IS_CHROMEOS)
 struct PlayStoreIntent {
   std::string app_id;
@@ -477,7 +475,7 @@ void WebAppInstallTask::CallInstallCallback(const AppId& app_id,
   }
 
   DCHECK(install_callback_);
-  base::UmaHistogramBoolean(kHistogramInstallResult, webapps::IsSuccess(code));
+  webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code));
   std::move(install_callback_).Run(app_id, code);
 }
 
@@ -625,6 +623,23 @@ void WebAppInstallTask::ApplyParamsToWebAppInstallInfo(
 
   if (install_params.launch_query_params)
     web_app_info.launch_query_params = install_params.launch_query_params;
+}
+
+void WebAppInstallTask::InstallWebAppOnManifestValidated(
+    content::WebContents* contents,
+    WebAppInstallDialogCallback dialog_callback,
+    OnceInstallCallback install_callback,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
+    blink::mojom::ManifestPtr opt_manifest,
+    const GURL& manifest_url) {
+  DCHECK(AreWebAppsUserInstallable(profile_));
+  CheckInstallPreconditions();
+
+  Observe(contents);
+  dialog_callback_ = std::move(dialog_callback);
+  install_callback_ = std::move(install_callback);
+  OnDidPerformInstallableCheck(std::move(web_app_info), std::move(opt_manifest),
+                               manifest_url, true, true);
 }
 
 void WebAppInstallTask::OnDidPerformInstallableCheck(
