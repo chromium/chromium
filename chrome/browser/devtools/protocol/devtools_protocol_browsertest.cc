@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        NoInputEventsSentToBrowserWhenDisallowed) {
-  may_send_input_event_to_browser_ = false;
+  is_trusted_ = false;
   Attach();
 
   base::DictionaryValue params;

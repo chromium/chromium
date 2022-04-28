@@ -71,7 +71,7 @@ class DevToolsProtocolTestBase : public InProcessBrowserTest,
   // DevToolsAgentHostClient interface
   void AgentHostClosed(content::DevToolsAgentHost* agent_host) override;
   bool AllowUnsafeOperations() override;
-  bool MaySendInputEventsToBrowser() override;
+  bool IsTrusted() override;
 
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   int last_sent_id_ = 0;
@@ -86,7 +86,7 @@ class DevToolsProtocolTestBase : public InProcessBrowserTest,
   NotificationMatcher waiting_for_notification_matcher_;
   base::Value waiting_for_notification_params_;
   bool allow_unsafe_operations_ = true;
-  bool may_send_input_event_to_browser_ = true;
+  bool is_trusted_ = true;
   bool accept_error_response_ = false;
   absl::optional<url::Origin> navigation_initiator_origin_;
 };

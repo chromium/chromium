@@ -30,7 +30,7 @@ HeadlessDevToolsSession::HeadlessDevToolsSession(
     AddHandler(std::make_unique<PageHandler>(agent_host,
                                              agent_host->GetWebContents()));
   }
-  if (channel->GetClient()->MayAttachToBrowser()) {
+  if (channel->GetClient()->IsTrusted()) {
     AddHandler(
         std::make_unique<BrowserHandler>(browser_.get(), agent_host->GetId()));
   }

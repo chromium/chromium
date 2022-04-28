@@ -527,9 +527,7 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
     return GetRootClient()->MayAttachToURL(url, is_webui);
   }
 
-  bool MayAttachToBrowser() override {
-    return GetRootClient()->MayAttachToBrowser();
-  }
+  bool IsTrusted() override { return GetRootClient()->IsTrusted(); }
 
   bool MayReadLocalFiles() override {
     return GetRootClient()->MayReadLocalFiles();

@@ -286,7 +286,7 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
   bool MayAttachToRenderFrameHost(
       content::RenderFrameHost* render_frame_host) override;
   bool MayAttachToURL(const GURL& url, bool is_webui) override;
-  bool MayAttachToBrowser() override;
+  bool IsTrusted() override;
   bool MayReadLocalFiles() override;
   bool MayWriteLocalFiles() override;
   absl::optional<url::Origin> GetNavigationInitiatorOrigin() override;
@@ -509,7 +509,7 @@ bool ExtensionDevToolsClientHost::MayAttachToURL(const GURL& url,
   return ExtensionMayAttachToURLOrInnerURL(*extension_, profile_, url, &error);
 }
 
-bool ExtensionDevToolsClientHost::MayAttachToBrowser() {
+bool ExtensionDevToolsClientHost::IsTrusted() {
   return ExtensionMayAttachToBrowser(*extension_);
 }
 

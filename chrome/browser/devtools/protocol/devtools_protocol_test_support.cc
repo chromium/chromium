@@ -161,6 +161,6 @@ DevToolsProtocolTestBase::GetNavigationInitiatorOrigin() {
   return navigation_initiator_origin_;
 }
 
-bool DevToolsProtocolTestBase::MaySendInputEventsToBrowser() {
-  return may_send_input_event_to_browser_;
+bool DevToolsProtocolTestBase::IsTrusted() {
+  return is_trusted_;
 }

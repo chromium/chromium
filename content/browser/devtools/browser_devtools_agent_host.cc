@@ -173,7 +173,7 @@ BrowserDevToolsAgentHost::~BrowserDevToolsAgentHost() {
 
 bool BrowserDevToolsAgentHost::AttachSession(DevToolsSession* session,
                                              bool acquire_wake_lock) {
-  if (!session->GetClient()->MayAttachToBrowser())
+  if (!session->GetClient()->IsTrusted())
     return false;
 
   session->SetBrowserOnly(true);

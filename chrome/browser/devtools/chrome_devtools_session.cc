@@ -35,7 +35,7 @@ ChromeDevToolsSession::ChromeDevToolsSession(
         agent_host, agent_host->GetWebContents(), &dispatcher_);
     security_handler_ = std::make_unique<SecurityHandler>(
         agent_host->GetWebContents(), &dispatcher_);
-    if (channel->GetClient()->MayAttachToBrowser()) {
+    if (channel->GetClient()->IsTrusted()) {
       cast_handler_ = std::make_unique<CastHandler>(
           agent_host->GetWebContents(), &dispatcher_);
     }
@@ -43,7 +43,7 @@ ChromeDevToolsSession::ChromeDevToolsSession(
   emulation_handler_ =
       std::make_unique<EmulationHandler>(agent_host, &dispatcher_);
   target_handler_ = std::make_unique<TargetHandler>(&dispatcher_);
-  if (channel->GetClient()->MayAttachToBrowser()) {
+  if (channel->GetClient()->IsTrusted()) {
     browser_handler_ =
         std::make_unique<BrowserHandler>(&dispatcher_, agent_host->GetId());
   }

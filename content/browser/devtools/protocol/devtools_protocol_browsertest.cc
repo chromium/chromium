@@ -612,9 +612,9 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
     SendCommand("Emulation.clearDeviceMetricsOverride", nullptr);
   }
 
-  bool MayAttachToBrowser() override { return may_attach_to_browser_; }
+  bool IsTrusted() override { return is_trusted_; }
 
-  bool may_attach_to_browser_ = true;
+  bool is_trusted_ = true;
 
  private:
 #if !BUILDFLAG(IS_ANDROID)
@@ -925,7 +925,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TransparentScreenshots) {
 
 IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
                        OnlyScreenshotsFromSurfaceWhenUnsafeNotAllowed) {
-  may_attach_to_browser_ = false;
+  is_trusted_ = false;
   shell()->LoadURL(GURL("about:blank"));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   Attach();

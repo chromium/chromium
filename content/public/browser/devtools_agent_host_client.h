@@ -37,13 +37,12 @@ class CONTENT_EXPORT DevToolsAgentHostClient {
   // RenderFrameHost.
   virtual bool MayAttachToRenderFrameHost(RenderFrameHost* render_frame_host);
 
-  // Returns true if the client is allowed to attach to the browser agent host.
-  // Browser client is allowed to discover other DevTools targets and generally
+  // Returns true if the client is considered to be in the same trust domain
+  // from security perspective. It implies that the client is allowed to attach
+  // to the browser agent host and perform other privileged operations. Browser
+  // client is allowed to discover other DevTools targets and generally
   // manipulate browser altogether.
-  virtual bool MayAttachToBrowser();
-
-  // Returns true if the client is allowed to send input events to the browser.
-  virtual bool MaySendInputEventsToBrowser();
+  virtual bool IsTrusted();
 
   // Returns true if the client is allowed to read local files over the
   // protocol. Example would be exposing file content to the page under debug.
