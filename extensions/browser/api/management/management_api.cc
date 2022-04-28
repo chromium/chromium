@@ -436,6 +436,7 @@ ExtensionFunction::ResponseAction ManagementSetEnabledFunction::Run() {
     return RespondNow(Error(keys::kUserCantModifyError, extension_id_));
   }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
   SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
       ManagementAPI::GetFactoryInstance()
           ->Get(browser_context())
@@ -462,6 +463,7 @@ ExtensionFunction::ResponseAction ManagementSetEnabledFunction::Run() {
         std::move(parent_permission_callback), std::move(error_callback));
     return RespondLater();
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (should_enable &&
       policy->MustRemainDisabled(target_extension, nullptr, nullptr)) {
@@ -542,7 +544,9 @@ void ManagementSetEnabledFunction::OnRequirementsChecked(
 
 void ManagementSetEnabledFunction::OnParentPermissionDialogDone(
     SupervisedUserExtensionsDelegate::ParentPermissionDialogResult result) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/1320442): Investigate whether ENABLE_SUPERVISED_USERS can
+// be ported to //extensions.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
   switch (result) {
     case SupervisedUserExtensionsDelegate::ParentPermissionDialogResult::
         kParentPermissionReceived: {
@@ -569,15 +573,15 @@ void ManagementSetEnabledFunction::OnParentPermissionDialogDone(
   }
   // Matches the AddRef in Run().
   Release();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ManagementSetEnabledFunction::OnBlockedByParentDialogDone() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
   Respond(Error(keys::kUserCantModifyError, extension_id_));
   // Matches the AddRef in Run().
   Release();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 ManagementUninstallFunctionBase::ManagementUninstallFunctionBase() = default;
