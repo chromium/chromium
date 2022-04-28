@@ -17,15 +17,9 @@ PrerenderTabHelper::PrerenderTabHelper(content::WebContents* web_contents)
 
 PrerenderTabHelper::~PrerenderTabHelper() = default;
 
-void PrerenderTabHelper::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
+void PrerenderTabHelper::PrimaryPageChanged(content::Page& page) {
+  if (page.GetMainDocument().IsErrorDocument())
     return;
-  }
 
   prerender::NoStatePrefetchManager* no_state_prefetch_manager =
       NoStatePrefetchManagerFactory::GetForBrowserContext(
@@ -33,7 +27,8 @@ void PrerenderTabHelper::DidFinishNavigation(
 
   if (no_state_prefetch_manager &&
       !no_state_prefetch_manager->IsWebContentsPrefetching(web_contents()))
-    no_state_prefetch_manager->RecordNavigation(navigation_handle->GetURL());
+    no_state_prefetch_manager->RecordNavigation(
+        page.GetMainDocument().GetLastCommittedURL());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PrerenderTabHelper);

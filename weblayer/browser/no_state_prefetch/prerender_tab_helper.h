@@ -29,8 +29,7 @@ class PrerenderTabHelper
   PrerenderTabHelper& operator=(const PrerenderTabHelper&) = delete;
 
   // content::WebContentsObserver implementation.
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
  private:
   explicit PrerenderTabHelper(content::WebContents* web_contents);
