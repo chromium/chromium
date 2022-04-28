@@ -59,6 +59,7 @@
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/component_updater/crow_domain_list_component_installer.h"
 #include "chrome/browser/component_updater/desktop_sharing_hub_component_remover.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -210,6 +211,10 @@ void RegisterComponentsForUpdate() {
   RegisterZxcvbnDataComponent(cus);
   RegisterCommerceHeuristicsComponent(cus);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+  RegisterCrowDomainListComponent(cus);
+#endif  // BUIDLFLAG(IS_ANDROID)
 
   RegisterAutofillStatesComponent(cus, g_browser_process->local_state());
 
