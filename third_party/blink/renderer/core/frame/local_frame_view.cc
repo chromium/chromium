@@ -860,6 +860,7 @@ void LocalFrameView::PerformLayout() {
           &allow_deferred_shaping_,
           RuntimeEnabledFeatures::DeferredShapingEnabled() &&
               default_allow_deferred_shaping_ && !frame_->PagePopupOwner() &&
+              !document->Printing() &&
               !FirstMeaningfulPaintDetector::From(*frame_->GetDocument())
                    .SeenFirstMeaningfulPaint() &&
               // Locking many shaping-deferred elements is very slow if we have

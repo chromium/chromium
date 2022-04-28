@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/page/print_context.h"
 #include "third_party/blink/renderer/core/paint/first_meaningful_paint_detector.h"
 #include "third_party/blink/renderer/core/paint/paint_timing.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -638,6 +639,35 @@ TEST_F(DeferredShapingTest, PositionForPoint) {
   auto position = target.GetLayoutBox()->PositionForPoint(
       {text_rect.width(), text_rect.height()});
   EXPECT_EQ(3, position.GetPosition().OffsetInContainerNode());
+}
+
+TEST_F(DeferredShapingTest, DeferThenPrint) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<div id="target">IFC</div>
+)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("target"));
+  EXPECT_TRUE(IsLocked("target"));
+
+  // Shaping-deferred elements are unlocked by printing.
+  ScopedPrintContext print_context(&GetFrame());
+  print_context->BeginPrintMode(800, 600);
+  EXPECT_FALSE(IsDefer("target"));
+  EXPECT_FALSE(IsLocked("target"));
+}
+
+TEST_F(DeferredShapingTest, NoDeferDuringPrint) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<div id="target">IFC</div>
+)HTML");
+
+  // Printing layout produces no shaping-deferred elements.
+  ScopedPrintContext print_context(&GetFrame());
+  print_context->BeginPrintMode(800, 600);
+  EXPECT_FALSE(IsDefer("target"));
+  EXPECT_FALSE(IsLocked("target"));
 }
 
 }  // namespace blink
