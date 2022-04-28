@@ -7,6 +7,7 @@
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "base/cxx17_backports.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
@@ -82,7 +83,7 @@ gfx::Size DesksTemplatesNameView::CalculatePreferredSize() const {
   const gfx::Size preferred_size = DesksTextfield::CalculatePreferredSize();
   // Use the available width if it is larger than the preferred width.
   const int preferred_width =
-      std::clamp(preferred_size.width(), 1, GetAvailableWidth());
+      base::clamp(preferred_size.width(), 1, GetAvailableWidth());
   return gfx::Size(preferred_width, kTemplateNameViewHeight);
 }
 
