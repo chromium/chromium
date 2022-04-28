@@ -552,6 +552,7 @@
 <translation id="1536754031901697553">Ажыратылууда…</translation>
 <translation id="1537254971476575106">Толук экран лупасы</translation>
 <translation id="15373452373711364">Чоң чычкан курсору</translation>
+<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> төмөнкүнү окуу жана өзгөртүүнү суранууда: <ph name="ORIGIN" /></translation>
 <translation id="1540605929960647700">Демо режимин иштетүү</translation>
 <translation id="1541346352678737112">Тармак табылган жок</translation>
 <translation id="1542137295869176367">Аккаунтка кирүү дайындарыңыз жаңырган жок</translation>
@@ -1884,6 +1885,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> кириңиз</translation>
 <translation id="2749836841884031656">SIM-карта</translation>
 <translation id="2749881179542288782">Орфография менен грамматиканы айкалыштырып текшерүү</translation>
+<translation id="275085171842676231"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> окуу жана өзгөртүүнү суранууда:</translation>
 <translation id="2753677631968972007">Сайттын уруксаттарын кол менен текшерүү.</translation>
 <translation id="2755349111255270002"><ph name="DEVICE_TYPE" /> түзмөгүн баштапкы абалга келтириңиз</translation>
 <translation id="2755367719610958252">Атайын мүмкүнчүлүктөрдү башкаруу</translation>
@@ -3570,6 +3572,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4429239357082509581">Steam'ди иштетүүгө уруксат берилген жок</translation>
 <translation id="4430019312045809116">Үндүн катуулугу</translation>
 <translation id="4430369329743628066">Кыстарма кошулду</translation>
+<translation id="4430422687972614133">Виртуалдык картаны күйгүзүү</translation>
 <translation id="4432621511648257259">Сырсөз туура эмес</translation>
 <translation id="443454694385851356">Эскирген (кооптуу)</translation>
 <translation id="443475966875174318">Ылайык келбеген колдонмолорду жаңыртуу же алып салуу</translation>
@@ -7099,6 +7102,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7947964080535614577">Сайттар жарнамаларды көрсөтүп, акысыз кызматтар жана материалдар менен камсыздайт. Бирок айрым сайттар тажатма же адаштыруучу жарнамаларды көрсөтөт.</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> сайтынын бардык барактары</translation>
 <translation id="7951265006188088697">Google Pay'ге төлөм ыкмаларды кошуу же башкаруу үчүн, <ph name="BEGIN_LINK" />Google аккаунтуна<ph name="END_LINK" /> кириңиз</translation>
+<translation id="795130320946928025">Виртуалдык картаны өчүрүү</translation>
 <translation id="7952708427581814389">Сайттар алмашуу буфериңиздеги текст менен сүрөттөрдү сиздин уруксатыңыз менен көрө алат</translation>
 <translation id="795282463722894016">Калыбына келтирилди</translation>
 <translation id="7952904276017482715"><ph name="EXPECTED_ID" /> идентификатору күтүлгөн, бирок ал "<ph name="NEW_ID" />" болуп калды</translation>

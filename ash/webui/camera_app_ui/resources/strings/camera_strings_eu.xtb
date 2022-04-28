@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
 <translation id="1113173431709655881">Kamera modua</translation>
+<translation id="1153190633558910465">Sareta desaktibatuta</translation>
 <translation id="1175958423215084756">Esteka bat hauteman da. <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">Biratu 90 gradu eskuinetara</translation>
 <translation id="1276998909102132017">Galeriako irudiak</translation>
 <translation id="1300209025925956156">Eskaneatu dokumentua</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Atzitzeko, sakatu bilaketa-tekla + ezkerrera egiteko gezi-tekla.</translation>
+<translation id="1393338179284529051">Quad bereizmen handia</translation>
 <translation id="1430915738399379752">Inprimatu</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> deskonektatuta dago.</translation>
 <translation id="1473110567575736769">Hiru segundoko tenporizadorea</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">Tenporizadorearen iraupena</translation>
 <translation id="2050339315714019657">Bertikala</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktibo dago</translation>
+<translation id="2134029355740465625">Bideoen ezarpenak</translation>
 <translation id="2144806332417375165">Pertsonalizatu bideoaren parametroak</translation>
 <translation id="2175927920773552910">QR kodea</translation>
 <translation id="2271433936731426666">Gaitu tamaina osoko bideo-laburpen</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">Atzeko kamera</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Bilaketa mota</translation>
+<translation id="2816865716882637212">Bereizmen handia</translation>
+<translation id="28682968802727151">Ispilu moduaren aurrebista</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> konektatuta dago.</translation>
 <translation id="2968794441791257519">Deskargak karpetara eramango dira kamerarekin ateratako argazkiak eta grabatutako bideoak. Fitxategiak aplikazioan atzi ditzakezu.
 
@@ -52,6 +57,8 @@
 <translation id="3240426699337459095">Esteka kopiatu da</translation>
 <translation id="3259149966178251584">Kameraren bereizmena</translation>
 <translation id="3305962767867348165">Konpondu</translation>
+<translation id="3354465018370944241">Argazkien ezarpenak</translation>
+<translation id="3411958449466169012">Tenporizadorea desaktibatuta</translation>
 <translation id="3448774564454087943">Ez da gorde bideoa, laburregia zelako</translation>
 <translation id="346539236881580388">Atera berriro</translation>
 <translation id="3517926952904427380">Ezin da atera erretratu-argazkia</translation>
@@ -63,9 +70,12 @@
 <translation id="3810838688059735925">Bideoa</translation>
 <translation id="3838931309141338733">Eskaneatu barra-kodea</translation>
 <translation id="3892148308691398805">Kopiatu testua</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pausatu grabaketa</translation>
 <translation id="4121305183798804752">Hauteman egin da dokumentua</translation>
+<translation id="414641094616694804">Kamerak ezin du aldatu bereizmena</translation>
 <translation id="4269820728363426813">Kopiatu estekaren helbidea</translation>
+<translation id="4281620174117014503">Tarteko bereizmena</translation>
 <translation id="4329152592498422850">Aldatu argazki karratuak ateratzeko modura</translation>
 <translation id="4383571725254449280">Inprimatu errendimendu-erregistroak</translation>
 <translation id="4445542136948522167">Utzi argazkia ateratzeari</translation>
@@ -74,12 +84,15 @@
 <translation id="4628948037717959914">Argazkia</translation>
 <translation id="4649291346448517080">Ezin da gorde fitxategia</translation>
 <translation id="4695379108709712600">Gora mugitzen ari da</translation>
+<translation id="4705093842003735294">Bereizmen osoa</translation>
 <translation id="4890010094662541459">3 × 3</translation>
 <translation id="491895758387112773">Bideo anitzeko grabaketa</translation>
+<translation id="5034763830503483128">Argazkiaren aspektu-erlazioa</translation>
 <translation id="5057360777601936059">Kamera ez dago erabilgarri une honetan.
         Egiaztatu kamera ongi konektatuta dagoela.</translation>
 <translation id="5163387177077603948">Eskuinera mugitzen ari da</translation>
 <translation id="520537883758714667">Dokumentuak eskaneatzeko eginbidea eskuragarri dago</translation>
+<translation id="5235304959032763950">16:9</translation>
 <translation id="5266635337630551423">Dokumentuaren goiko ezkerraldeko ertza</translation>
 <translation id="5317780077021120954">Gorde</translation>
 <translation id="5320594929574852403">Ezkerrera mugitzen ari da</translation>
@@ -94,6 +107,7 @@
 <translation id="5916664084637901428">Aktibatuta</translation>
 <translation id="5975083100439434680">Txikitu</translation>
 <translation id="5976160379964388480">Gehiago</translation>
+<translation id="603973421174355542">HD bereizmen osoa</translation>
 <translation id="6073451960410192870">Utzi grabatzeari</translation>
 <translation id="6197807149213783179">Gorde metadatuak</translation>
 <translation id="6233780560267770709">3 × 3</translation>
@@ -104,6 +118,7 @@
 Irudi edo bideoaren kalitateari buruzko iritzia eman nahi baduzu, erantsi argazki edo bideo bat lagin gisa eta azal iezaguzu zein den arazoa (adibidez, argazkia ilunegia da edo subjektua ez dago fokuratuta).</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" /> × <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="6527303717912515753">Partekatu</translation>
+<translation id="6631515515009660915">Ispilu modua desaktibatuta</translation>
 <translation id="6652737148136672975">Mugitu ertzaren kokapena gezi-teklak erabilita</translation>
 <translation id="667999046851023355">Dokumentua</translation>
 <translation id="6681668084120808868">Atera argazkia</translation>
@@ -114,6 +129,7 @@ Irudi edo bideoaren kalitateari buruzko iritzia eman nahi baduzu, erantsi argazk
 <translation id="698156982839284926">3 segundo</translation>
 <translation id="712848772518857951">Ziur <ph name="COUNT" /> elementu kendu nahi dituzula?</translation>
 <translation id="7134221860976209830">Hamar segundoko tenporizadorea</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Grabaketa mota</translation>
 <translation id="7243947652761655814">Bideoaren bereizmena</translation>
 <translation id="7337660886763914220">Errore batzuk gertatu dira fitxategi-sisteman.</translation>
@@ -146,9 +162,11 @@ Irudi edo bideoaren kalitateari buruzko iritzia eman nahi baduzu, erantsi argazk
 <translation id="8815966864175525708">Aldatu erretratu-argazkiak ateratzeko modura</translation>
 <translation id="8828441885228359828">Berrekin grabaketari</translation>
 <translation id="8870695351537079478">Ezin da hasi grabatzen</translation>
+<translation id="8880167521484863515">4:3</translation>
 <translation id="8903921497873541725">Handitu</translation>
 <translation id="9045010116236796332">Jarri dokumentuaren ertz guztiak markoaren barruan</translation>
 <translation id="9045155556724273246">10 segundo</translation>
 <translation id="906331135292332864">Irudia prozesatzen…</translation>
+<translation id="922762992951083513">Ispilu modua aktibatuta</translation>
 <translation id="945522503751344254">Bidali oharrak</translation>
 </translationbundle>

@@ -169,6 +169,7 @@
 <translation id="1155816283571436363">Telefonora konektatzen</translation>
 <translation id="1158080958325422608">Ezarri maiuskulaz</translation>
 <translation id="1158238185437008462">Ikusi oroitzapenak</translation>
+<translation id="1160842321113409343">Zure pribatutasuna babesteko, lau aste baino gehiago dituzten webguneak automatikoki ezabatzen ditugu zerrendatik. Baliteke beste behin bisitatzen duzun webgune bat berriro ere zerrendan agertzea. Bestela, webguneren batek zure interesak definitzerik nahi ez baduzu, webgune hori kendu egin dezakezu.</translation>
 <translation id="1161575384898972166">Bezeroaren ziurtagiria esportatzeko, hasi saioa <ph name="TOKEN_NAME" /> gailuan.</translation>
 <translation id="116173250649946226">Administratzaileak gai lehenetsi bat ezarri du, eta ezin da aldatu.</translation>
 <translation id="1162213688509394031">Ezkutatu izenaren barra</translation>
@@ -833,6 +834,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1784849162047402014">Toki gutxi gelditzen da gailuan</translation>
 <translation id="1787350673646245458">Erabiltzailearen irudia</translation>
 <translation id="1788329699711791226">Atzitu Chrome arakatzailean dituzun gauzak <ph name="ACCOUNT_EMAIL" /> bidez</translation>
+<translation id="1790664457414575790">Gordetako pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> aplikazioan ikusi eta kudea ditzakezu</translation>
 <translation id="1790976235243700817">Kendu sarbidea</translation>
 <translation id="1791662854739702043">Instalatu da</translation>
 <translation id="1792619191750875668">Pantaila hedatua</translation>
@@ -3170,6 +3172,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4031179711345676612">Mikrofonoa erabil daiteke</translation>
 <translation id="4031308539321678562">Profila kenduz gero, betiko ezabatuko dira gailuko arakatze-datuak. Baliteke Chromebook-eko beste aplikazio batzuek profilean dauden Google-ko kontuak erabiltzea. Kontu horiek kentzeko, joan <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" /> atalera.</translation>
 <translation id="4031527940632463547">Blokeatuta daude sentsoreak</translation>
+<translation id="4033415645631238123">Jada ezin duzu hasi saioa Smart Lock erabilita. Dena den, Smart Lock-en bidez gailua desblokeatzen jarrai dezakezu.</translation>
 <translation id="4033471457476425443">Gehitu karpeta bat</translation>
 <translation id="4033963223187371752">Baliteke webgune seguruek edukia kapsulatzea, hala nola seguruak ez diren irudiak edo sareko markoak</translation>
 <translation id="4034824040120875894">Inprimagailua</translation>
@@ -4371,6 +4374,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="5268373933383932086">Zure orria, zure edukia</translation>
 <translation id="5269977353971873915">Inprimatzeak huts egin du</translation>
 <translation id="5273806377963980154">Editatu gunearen URLa</translation>
+<translation id="5275338516105640560">Gordetako fitxa taldeen botoia</translation>
 <translation id="5275352920323889391">Txakurra</translation>
 <translation id="527605719918376753">Desaktibatu fitxaren audioa</translation>
 <translation id="527605982717517565">Eman beti JavaScript <ph name="HOST" /> ostalarian erabiltzeko baimena</translation>
@@ -4495,6 +4499,9 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="5397794290049113714">Zu</translation>
 <translation id="5398497406011404839">Ezkutatutako laster-markak</translation>
 <translation id="5398572795982417028">Orriaren erreferentziak muga gainditzen du. Muga <ph name="MAXIMUM_PAGE" /> da.</translation>
+<translation id="5398724494943676484">Aldatu da arriskuan zegoen pasahitza.
+
+Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> aplikazioan.</translation>
 <translation id="5401426944298678474">Utzi webguneari jarraitzeari</translation>
 <translation id="5402815541704507626">Deskargatu eguneratzea datu-konexioa erabilita</translation>
 <translation id="540296380408672091">Blokeatu beti webguneko cookieak <ph name="HOST" /></translation>
@@ -4980,6 +4987,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5895138241574237353">Berrabiarazi</translation>
 <translation id="5895335062901455404">Gordetako hobespenak eta jarduerak prest egongo dira ChromeOS Flex-eko gailuetan Google-ko kontuarekin saioa hasten duzunean. Zer sinkronizatu nahi duzun aukeratzeko, joan Ezarpenak atalera.</translation>
 <translation id="5896436821193322561">Ez eman baimenik</translation>
+<translation id="5900186025777217044">Aldatu egin da Smart Lock</translation>
 <translation id="5900302528761731119">Google-ko profileko argazkia</translation>
 <translation id="590036993063074298">Islatzearen kalitateari buruzko xehetasunak</translation>
 <translation id="5901069264981746702">Zure hatz-markaren datuak modu seguruan gordeko dira eta ez dira inoiz aterako <ph name="DEVICE_TYPE" /> gailutik. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
@@ -5364,6 +5372,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6271780480930459892">Bertsio berriena eskuratzeko, jarri harremanetan administratzailearekin.</translation>
 <translation id="6272643420381259437">Errore bat gertatu da (<ph name="ERROR" />) plugina deskargatzean</translation>
 <translation id="6273677812470008672">Kalitatea</translation>
+<translation id="6274202259872570803">Screencast</translation>
 <translation id="6276210637549544171"><ph name="PROXY_SERVER" /> proxyak erabiltzaile-izena eta pasahitza behar ditu.</translation>
 <translation id="6277105963844135994">Sarera konektatzeko denbora-muga gainditu da</translation>
 <translation id="6277518330158259200">&amp;Atera pantaila-argazkia</translation>
@@ -5693,6 +5702,11 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6593881952206664229">Baliteke multimedia-eduki copyrighduna ez erreproduzitzea</translation>
 <translation id="6594011207075825276">Serieko gailuak bilatzen…</translation>
 <translation id="6595187330192059106">Blokeatu beti <ph name="HOST" /> ostalariari MIDI gailuak erabat kontrolatzeko aukera.</translation>
+<translation id="6595408197871512625">{COUNT,plural, =1{Aldatu da arriskuan zegoen pasahitza.
+
+Arriskuan dagoen # pasahitz gehiago daukazu. Google-ren Pasahitz-kudeatzailea aplikazioak pasahitz hori orain aldatzea gomendatzen du.}other{Aldatu da arriskuan zegoen pasahitza.
+
+Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea aplikazioak pasahitz horiek orain aldatzea gomendatzen du.}}</translation>
 <translation id="6595792813574514527">Arrastatu irudiak <ph name="VISUAL_SEARCH_PROVIDER" /> bidez bilatzeko</translation>
 <translation id="6596325263575161958">Enkriptatze aukerak</translation>
 <translation id="6596816719288285829">IP helbidea</translation>

@@ -581,6 +581,7 @@ Izimvume ozinikezile ama-app kakade zingase zisebenze kule akhawunti. Ungakwazi 
 <translation id="156793199942386351">I-'<ph name="CURRENTKEY" />' isinikeziwe kakade kusenzo se-'<ph name="ACTION" />'. Cindezela noma yimuphi ukhiye uku-<ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Ikhonsoli ye-JavaScript</translation>
 <translation id="1568323446248056064">Vula izilungiselelo zokubonisa kwedivayisi</translation>
+<translation id="1569044524074707727">Vula ifoni yakho</translation>
 <translation id="1570604804919108255">Susa ukuthulisa Izaziso</translation>
 <translation id="1571304935088121812">Kopisha igama lomsebenzisi</translation>
 <translation id="1571738973904005196">Buka ithebhu ye-<ph name="TAB_ORIGIN" /></translation>
@@ -2025,6 +2026,7 @@ bese u-Ctrl+Alt+Brightness down ukuze uhlehlise isithombe.</translation>
 <translation id="288042212351694283">Finyelela kumadivayisi wakho we-Universal 2nd Factor</translation>
 <translation id="2881076733170862447">Uma uchofoza isandiso</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> izoqala kabusha futhi isethe kabusha okwesikhashana</translation>
+<translation id="2883470649061584386">Okuphakelayo</translation>
 <translation id="2885378588091291677">Isiphathi somsebenzi</translation>
 <translation id="2885729872133513017">Inkinga ivelile ngenkathi ikopisha impendulo yeseva.</translation>
 <translation id="2886119409731773154">Lokhu kungathatha kufikela kumizuzu engama-30</translation>
@@ -5340,6 +5342,7 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="6227002569366039565">Cindezela i-|<ph name="ACCELERATOR" />| ukuze ugxilise le bhamuza losizo, bese futhi ukuze ugxilise i-elementi eyikhombayo.</translation>
 <translation id="6227280783235722609">isandiso</translation>
 <translation id="6229849828796482487">Nqamula inethiwekhi ye-Wi-Fi</translation>
+<translation id="6230165830166519105">Zama enye indlela</translation>
 <translation id="6231782223312638214">Okuphakanyisiwe</translation>
 <translation id="6231881193380278751">Engeza umbuzo we-param ku-URL ukuze uqalise ngokuzenzakalelayo ikhasi: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Ibhethri</translation>

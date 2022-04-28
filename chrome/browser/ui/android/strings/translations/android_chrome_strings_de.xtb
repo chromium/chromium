@@ -117,6 +117,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="1558391695376153246">Inkognitotabs schließen</translation>
 <translation id="1571304935088121812">Nutzernamen kopieren</translation>
 <translation id="1592864538817356322">Standardschutz</translation>
+<translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> vorgeschlagene Elemente in der folgenden Liste.</translation>
 <translation id="161647866166517041">Die Spam- und Betrugsreduzierung verwendet Trust Tokens, um Websites bei der Betrugsbekämpfung und der Unterscheidung zwischen Bots und Personen zu unterstützen.
 
 Basierend auf deiner Interaktion mit einer Website, z. B. regelmäßige Anmeldungen in einem Konto, kann diese Website ein Trust Token für deinen Browser ausstellen. Wenn andere von dir besuchte Websites später dann ein gültiges Trust Token finden, ist die Wahrscheinlichkeit höher, dass du als Person und nicht als Bot eingestuft wirst.
@@ -804,6 +805,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5517095782334947753">Du hast Lesezeichen, den Verlauf, Passwörter und andere Einstellungen von <ph name="FROM_ACCOUNT" /> übernommen.</translation>
 <translation id="5524761631371622910">Wenn Tests aktiviert sind und Chrome dich zufällig für einen aktiven Test angemeldet hat, hat dein Browserverlauf Einfluss auf die unten stehenden, geschätzten Interessen und darauf, welche Werbung dir gezeigt wird. Zum Schutz deiner Daten löscht Chrome jeden Monat fortlaufend deine Interessen.</translation>
 <translation id="5524843473235508879">Weiterleitung blockiert.</translation>
+<translation id="5528459307536571064">1 Tabgruppe</translation>
 <translation id="5548606607480005320">Sicherheitscheck</translation>
 <translation id="5555525474779371165">Safe Browsing-Schutz auswählen</translation>
 <translation id="5556459405103347317">Neu laden</translation>
@@ -1516,5 +1518,6 @@ Trust Tokens verbessern den Datenschutz im Web und können nicht dazu verwendet 
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Alle Tabs schließen</translation>
 <translation id="987264212798334818">Allgemein</translation>
+<translation id="992745192656291733"><ph name="TAB_COUNT" /> Tabs</translation>
 <translation id="996149300115483134">Feedkartenmenü ist geschlossen</translation>
 </translationbundle>

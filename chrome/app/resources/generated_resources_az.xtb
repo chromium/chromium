@@ -547,6 +547,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1536754031901697553">Ayrılır...</translation>
 <translation id="1537254971476575106">Tam ekran miqyası</translation>
 <translation id="15373452373711364">Böyük maus kursoru</translation>
+<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> <ph name="ORIGIN" /> saytını oxumaq və ya dəyişməyi tələb edir</translation>
 <translation id="1540605929960647700">Demo rejimini aktiv edin</translation>
 <translation id="1541346352678737112">Şəbəkə tapılmadı</translation>
 <translation id="1542137295869176367">Giriş datanız silinmədi</translation>
@@ -1867,6 +1868,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> məhsuluna daxil olun</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Qrammatikanı Orfoqrafiya ilə yoxlayın</translation>
+<translation id="275085171842676231"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> saytını oxumaq və dəyişmək tələb edilir:</translation>
 <translation id="2753677631968972007">Sayt icazələrini əl ilə idarə edin.</translation>
 <translation id="2755349111255270002">Bu <ph name="DEVICE_TYPE" /> cihazını sıfırlayın</translation>
 <translation id="2755367719610958252">Əlçatımlılıq funksiyalarını idarə edin</translation>
@@ -3551,6 +3553,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4429239357082509581">Steam tətbiqini işlətmək üçün icazəniz yoxdur</translation>
 <translation id="4430019312045809116">Həcm</translation>
 <translation id="4430369329743628066">Əlfəcin əlavə olundu</translation>
+<translation id="4430422687972614133">Virtual kartı aktiv edin</translation>
 <translation id="4432621511648257259">Parol yanlışdır</translation>
 <translation id="443454694385851356">Köhnə (təhlükəli)</translation>
 <translation id="443475966875174318">Uyğun olmayan tətbiqləri güncəlləyin və ya silin</translation>
@@ -7076,6 +7079,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7947964080535614577">Saytlar adətən ödənişsiz məzmun və xidmətlər təklif etmək üçün reklamlar göstərir. Lakin bəzi saytlar müdaxilə edən və aldadıcı reklamlar göstərmələri ilə tanınır.</translation>
 <translation id="7948407723851303488">Bütün <ph name="DOMAIN_NAME" /> səhifələri</translation>
 <translation id="7951265006188088697">Google Pay ödəniş metodlarını əlavə etmək və idarə etmək üçün <ph name="BEGIN_LINK" />Google Hesabına<ph name="END_LINK" /> daxil olun</translation>
+<translation id="795130320946928025">Virtual kartı deaktiv edin</translation>
 <translation id="7952708427581814389">Saytlar mübadilə buferinizdəki mətn və şəkilləri görmək üçün icazə istəyə bilər</translation>
 <translation id="795282463722894016">Bərpa tamamlandı</translation>
 <translation id="7952904276017482715">Gözlənilən ID "<ph name="EXPECTED_ID" />"olsa da, artırmanın ID-si "<ph name="NEW_ID" />" idi</translation>

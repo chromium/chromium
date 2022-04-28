@@ -670,6 +670,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4758061975920522644">Зөвхөн зураг хуваалцана уу</translation>
 <translation id="4759238208242260848">Таталтууд:</translation>
 <translation id="4763480195061959176">видео</translation>
+<translation id="4766313118839197559">Нууц үгнүүдийг энэ төхөөрөмж дээр Нууц үгний менежерт хадгалдаг.</translation>
 <translation id="4766678251456904326">Төхөөрөмжид бүртгэл нэмэх</translation>
 <translation id="4791358705705538979">Танд тооцоо хийх зэрэг веб дээр ажил гүйцэтгэхэд тусална</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -927,6 +928,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="6162892189396105610">Chrome-н таныг зочилж магадгүй гэж бодсон хуудаснуудыг урьдчилан ачаална.</translation>
 <translation id="6186394685773237175">Алдагдсан нууц үг олдсонгүй</translation>
 <translation id="6192907950379606605">Зургийн тайлбарыг авах</translation>
+<translation id="6196315980958524839">Нууц үгнүүдийг энэ төхөөрөмж дээр Google Password Manager-т хадгалдаг</translation>
 <translation id="620197886010707372">Google Play-р <ph name="APPNAME" />-н аппыг нээх үү?</translation>
 <translation id="6203593061661911168">Таталтыг Wi-Fi-р эхлүүлнэ</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> биш үү?</translation>
@@ -1257,6 +1259,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="7961015016161918242">Хэзээ ч</translation>
 <translation id="7961926449547174351">Та хадгалах сангийн хандалтыг идэвхгүй болгосон байна, идэвхжүүлэхийн тулд Тохиргоо руу очно уу</translation>
 <translation id="7963646190083259054">Бэлтгэн нийлүүлэгч:</translation>
+<translation id="7965838025086216108">Та дурын төхөөрөмж дээр хадгалсан нууц үгнүүдийг ашиглах боломжтой. Тэдгээрийг <ph name="ACCOUNT" />-д зориулж Google Password Manager-т хадгалдаг.</translation>
 <translation id="7968014550143838305">Унших жагсаалтад нэмсэн</translation>
 <translation id="7971136598759319605">1 өдрийн өмнө идэвхтэй</translation>
 <translation id="7975379999046275268">Хуудсыг урьдчилан үзэх <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>

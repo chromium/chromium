@@ -79,6 +79,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1312604459020188865">Seinalearen indarra: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Erakutsi beti apala</translation>
 <translation id="1316811122439383437">Tote: azken pantaila-argazkiak, deskargak eta ainguratutako fitxategiak</translation>
+<translation id="132346741904777634">Atxiki egin da kamera goiko ezkerraldeko izkinan, sistemaren beste gainazal batean gainjartzen zelako.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> konektatuta</translation>
 <translation id="1341651618736211726">Luzapena</translation>
 <translation id="1346748346194534595">Eskuinera</translation>
@@ -162,6 +163,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1885785240814121742">Desblokeatu hatz-marka bidez</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> pantailak ez du onartzen <ph name="SPECIFIED_RESOLUTION" /> bereizmena (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). <ph name="FALLBACK_RESOLUTION" /> bereizmena ezarri da pantailaren bereizmen gisa (<ph name="FALLBACK_REFRESH_RATE" />). Aldaketak gordetzeko, sakatu berresteko botoia. <ph name="TIMEOUT_SECONDS" /> barru leheneratuko dira aurreko ezarpenak.</translation>
 <translation id="1915307458270490472">Amaitu deia</translation>
+<translation id="1918022425394817322">Atxiki egin da kamera goiko eskuinaldeko izkinan</translation>
 <translation id="1919743966458266018">Aldatu egin da ataza-kudeatzailea irekitzeko lasterbidea. Erabili <ph name="NEW_SHORTCUT" />, eta ez <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Klik automatikoak</translation>
 <translation id="1928739107511554905">Eguneratzea eskuratzeko, erabili ukipen-pantaila Chromebook-a berrabiarazteko teklatua konektatuta daukala.</translation>
@@ -552,6 +554,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="430191667033048642">Eraman da <ph name="MOVED_APP_NAME" /> aplikazioa <ph name="FOLDER_NAME" /> karpetara.</translation>
 <translation id="4302592941791324970">Ez dago erabilgarri</translation>
 <translation id="4303223480529385476">Zabaldu egoeraren eremua</translation>
+<translation id="4312840429157639164">Atxiki egin da kamera goiko eskuinaldeko izkinan, sistemaren beste gainazal batean gainjartzen zelako.</translation>
 <translation id="4316910396681052118">APLIKAZIO GUZTIAK</translation>
 <translation id="4321179778687042513">ktrl</translation>
 <translation id="4321776623976362024">Kontraste handiaren lasterbidea sakatu duzu. Aktibatu egin nahi duzu?</translation>
@@ -858,6 +861,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6254629735336163724">Modu horizontalean blokeatuta</translation>
 <translation id="6259254695169772643">Hautatzeko, erabili arkatza</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: aktibatzen…</translation>
+<translation id="6274202259872570803">Screencast</translation>
 <translation id="6283712521836204486">Ez molestatzeko modua desaktibatuta dago.</translation>
 <translation id="6284232397434400372">Aldatu egin da bereizmena</translation>
 <translation id="6288235558961782912">Geroago gehi daiteke <ph name="USER_EMAIL_ADDRESS" /> guraso baten baimenarekin.</translation>
@@ -889,6 +893,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="649452524636452238">Txartel adimendunaren PINa</translation>
 <translation id="6495400115277918834">Pantaila txiki gainjarria abiarazi da. Fokuratzeko, sakatu Alt, Maius eta V.</translation>
 <translation id="6501401484702599040">Pantaila <ph name="RECEIVER_NAME" /> gailura igortzen ari da</translation>
+<translation id="6515727200518652613">Galdu egin da kameraren seinalea. Berriro konektatzen saiatzen.</translation>
 <translation id="6520517963145875092">Hautatu argazkian agertzea nahi duzun leihoa</translation>
 <translation id="652139407789908527">Eguneratu bitartean, pantaila ohi baino denbora gehiago egongo da hutsik (minutu bat gehienez ere). Eguneratu bitartean, ez sakatu etengailua.</translation>
 <translation id="6528179044667508675">Ez molestatu</translation>
@@ -907,6 +912,7 @@ Berriki instalatu da</translation>
 <translation id="6578407462441924264">Izengabea</translation>
 <translation id="6585808820553845416">Saioa <ph name="SESSION_TIME_REMAINING" /> barru amaituko da.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597278316891651699">Atxiki egin da kamera beheko ezkerraldeko izkinan, sistemaren beste gainazal batean gainjartzen zelako.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />. Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua.</translation>
 <translation id="6612802754306526077">Pantaila grabatzeko modua hautatu da</translation>
 <translation id="6614169507485700968">Aktibatuta dago pribatutasun-pantaila</translation>
@@ -944,6 +950,7 @@ Berriki instalatu da</translation>
 <translation id="6801878137098616817">Duela gutxi editatu da</translation>
 <translation id="6803622936009808957">Ezin izan dira islatu pantailan ez delako onartutako bereizmenik aurkitu. Horren ordez, mahaigain hedatuan sartu zara.</translation>
 <translation id="6818242057446442178">Joan aurreko hitzera</translation>
+<translation id="6819327813400217281">Atxiki egin da kamera beheko ezkerraldeko izkinan</translation>
 <translation id="6820676911989879663">Hartu atseden</translation>
 <translation id="6827049576281411231">Itxi gertaeren panela</translation>
 <translation id="6836499262298959512">Fitxategi arriskutsua</translation>
@@ -972,6 +979,7 @@ Berriki instalatu da</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Erabilerraztasuna</translation>
 <translation id="698231206551913481">Erabiltzailea kentzen denean, harekin erlazionatutako fitxategi eta gailuko datu guztiak betiko ezabatuko dira.</translation>
+<translation id="7005239792648594238">Erabiltzen hasteko, ireki aplikazio bat</translation>
 <translation id="7007983414944123363">Ezin izan da egiaztatu PINa edo pasahitza. Saiatu berriro.</translation>
 <translation id="7014684956566476813">Konektatu da <ph name="DEVICE_NAME" /> izeneko gailu batera</translation>
 <translation id="7015766095477679451">Itzuli ordu honetan: <ph name="COME_BACK_TIME" />.</translation>
@@ -985,6 +993,7 @@ Berriki instalatu da</translation>
 <translation id="7045033600005038336">Txantiloia ordeztu nahi duzu?</translation>
 <translation id="7051244143160304048">Deskonektatu da <ph name="DEVICE_NAME" /></translation>
 <translation id="7055910611768509537">Arkatza ez da erabili astebetean baino gehiagoan</translation>
+<translation id="7061457967428964661">Kameraren aurrebista, sakatu Ktrl + gezi-teklak aurrebista beste izkina batera eramateko</translation>
 <translation id="7066646422045619941">Administratzaileak desgaitu du sare hau.</translation>
 <translation id="7067196344162293536">Biratu automatikoki</translation>
 <translation id="7068360136237591149">Ireki fitxategiak</translation>
@@ -1005,6 +1014,7 @@ Berriki instalatu da</translation>
 <translation id="718361511487535372">Ireki Google Calendar-en</translation>
 <translation id="7188494361780961876">Pantailaren goiko ezkerreko izkinara eraman da menua.</translation>
 <translation id="7189412385142492784">Zer distantziatara dago Artizarra</translation>
+<translation id="7198435252016571249">Atxiki egin da kamera beheko eskuinaldeko izkinan, sistemaren beste gainazal batean gainjartzen zelako.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Chromebook hau berrabiarazi egin behar da eguneratzea aplikatzeko. Baliteke minutu bat behar izatea.</translation>
 <translation id="7256634071279256947">Atzeko mikrofonoa</translation>
 <translation id="7258828758145722155">Atzo editatu zen</translation>
@@ -1065,8 +1075,10 @@ Berriki instalatu da</translation>
 <translation id="7593891976182323525">Bilatu edo aldatu</translation>
 <translation id="7600875258240007829">Ikusi jakinarazpen guztiak</translation>
 <translation id="7607002721634913082">Pausatuta</translation>
+<translation id="7611213136657090146">Konektatu egin da berriro kamera.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7633755430369750696">Erakutsi Nearby Share-ren ezarpenak.</translation>
+<translation id="7634648064048557203">Atxiki egin da kamera beheko eskuinaldeko izkinan</translation>
 <translation id="7641938616688887143">Grabatu</translation>
 <translation id="7642647758716480637">Ireki <ph name="NETWORK_NAME" /> sarearen (<ph name="CONNECTION_STATUS" />) ezarpenak</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (jabea)</translation>
@@ -1079,6 +1091,7 @@ Berriki instalatu da</translation>
 <translation id="7662283695561029522">Sakatu konfiguratzeko</translation>
 <translation id="7670953955701272011">Ireki data hau Google Calendar-en</translation>
 <translation id="7671610481353807627">Kolorearen arabera daude ordenatuta aplikazioak</translation>
+<translation id="7684531502177797067">"<ph name="CAMERA_NAME" />" dago ezarrita kameraren sarrera gisa.</translation>
 <translation id="7705524343798198388">VPNa</translation>
 <translation id="7714767791242455379">Gehitu beste sare mugikor bat</translation>
 <translation id="7720410380936703141">SAIATU BERRIRO</translation>
@@ -1301,6 +1314,7 @@ Berriki instalatu da</translation>
 <translation id="9077404278023321866">Txantiloiak</translation>
 <translation id="9077515519330855811">Multimedia-edukia kontrolatzeko aukerak, <ph name="MEDIA_TITLE" /> erreproduzitzen</translation>
 <translation id="9079731690316798640">Wifia: <ph name="ADDRESS" /></translation>
+<translation id="9080073830732419341">Atxiki egin da kamera goiko ezkerraldeko izkinan</translation>
 <translation id="9080132581049224423">Orri nagusira joateko, pasatu hatza gora</translation>
 <translation id="9080206825613744995">Mikrofonoa abian da.</translation>
 <translation id="9084606467167974638">Aldatu menuaren kokapena</translation>

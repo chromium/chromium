@@ -171,6 +171,7 @@
 <translation id="1155816283571436363">ଆପଣଙ୍କ ଫୋନ୍ ସହ ସଂଯୋଗ କରାଯାଉଛି</translation>
 <translation id="1158080958325422608">ଅପରକେସ କରନ୍ତୁ</translation>
 <translation id="1158238185437008462">ମେମୋରୀଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ</translation>
+<translation id="1160842321113409343">ଆପଣଙ୍କ ଗୋପନୀୟତାକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ, ଆମେ 4 ସପ୍ତାହରୁ ଅଧିକ ପୁରୁଣା ସାଇଟଗୁଡ଼ିକୁ ତାଲିକାରୁ ସ୍ୱତଃ-ଡିଲିଟ କରୁ। ଆପଣ ପୁଣି ଭିଜିଟ କରୁଥିବା ଏକ ସାଇଟ ପୁଣି ତାଲିକାରେ ଦେଖାଯାଇପାରେ। କିମ୍ବା ଏକ ସାଇଟ କେବେ ମଧ୍ୟ ଆପଣଙ୍କ ପାଇଁ ରୁଚିଗୁଡ଼ିକୁ ପରିଭାଷିତ କରୁ ବୋଲି ଆପଣ ଯଦି ଚାହୁଁନାହାଁନ୍ତି ତେବେ ଆପଣ ସେହି ସାଇଟକୁ କାଢ଼ିପାରିବେ।</translation>
 <translation id="1161575384898972166">କ୍ଲାଏଣ୍ଟ ସାର୍ଟିଫିକେଟ୍ ଏକ୍ସପୋର୍ଟ କରିବାକୁ ଦୟାକରି <ph name="TOKEN_NAME" />କୁ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</translation>
 <translation id="116173250649946226">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ଏକ ଡିଫଲ୍ଟ ଥିମ୍ ସେଟ୍ କରିଛନ୍ତି ଯାହାକୁ ପରିବର୍ତ୍ତନ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="1162213688509394031">ଟାଇଟେଲ୍ ବାରକୁ ଲୁଚାନ୍ତୁ</translation>
@@ -577,6 +578,7 @@
 <translation id="156793199942386351">'<ph name="ACTION" />'କୁ ପୂର୍ବରୁ '<ph name="CURRENTKEY" />'କୁ ଆସାଇନ୍ କରାଯାଇଛି। <ph name="RESPONSE" /> ପାଇଁ ଯେ କୌଣସି କୀକୁ ଦବାନ୍ତୁ।</translation>
 <translation id="1567993339577891801">&amp;JavaScript କନ୍‌ସୋଲ୍</translation>
 <translation id="1568323446248056064">ଡିସ୍‌ପ୍ଲେ ଡିଭାଇସ୍ ସେଟିଂସ୍ ଖୋଲନ୍ତୁ</translation>
+<translation id="1569044524074707727">ଆପଣଙ୍କ ଫୋନ ଅନଲକ କରନ୍ତୁ</translation>
 <translation id="1570604804919108255">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଅନମ୍ୟୁଟ୍ କରନ୍ତୁ</translation>
 <translation id="1571304935088121812">ଉପଯୋଗକର୍ତ୍ତାନାମ କପି କରନ୍ତୁ</translation>
 <translation id="1571738973904005196">ଟାବ୍ ଦେଖନ୍ତୁ: <ph name="TAB_ORIGIN" /></translation>
@@ -831,6 +833,7 @@
 <translation id="1784849162047402014">ଡିଭାଇସ୍‌ରେ ସ୍ଥାନ କମ୍ ଅଛି</translation>
 <translation id="1787350673646245458">ଉପଯୋଗକର୍ତ୍ତା ଛବି</translation>
 <translation id="1788329699711791226"><ph name="ACCOUNT_EMAIL" />ରୁ ଆପଣଙ୍କର Chrome ବ୍ରାଉଜର ଷ୍ଟଫକୁ ଆକ୍ସେସ କରନ୍ତୁ</translation>
+<translation id="1790664457414575790">ଆପଣ <ph name="GOOGLE_PASSWORD_MANAGER" />ରେ ସେଭ କରାଯାଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଦେଖିପାରିବେ ଏବଂ ପରିଚାଳନା କରିପାରିବେ</translation>
 <translation id="1790976235243700817">ଆକ୍ସେସ୍ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="1791662854739702043">ଇନ୍‍ଷ୍ଟଲ୍ କରାଯାଇଛି</translation>
 <translation id="1792619191750875668">ସମ୍ପ୍ରସାରିତ ଡିସ୍‌ପ୍ଲେ</translation>
@@ -2005,6 +2008,7 @@
 <translation id="288042212351694283">ଆପଣଙ୍କର ୟୁନିଭର୍ସାଲ୍ ଦ୍ଵିତୀୟ ଫ୍ୟାକ୍ଟର୍ ଡିଭାଇସ୍‍ଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରନ୍ତୁ</translation>
 <translation id="2881076733170862447">ଆପଣ ଯେତେବେଳେ ଏକ୍ସଟେନ୍‌ସନ୍‌କୁ କ୍ଲିକ୍ କରିବେ</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> କ୍ଷଣସ୍ଥାୟୀ ଭାବରେ ରିଷ୍ଟାର୍ଟ ଏବଂ ରିସେଟ୍ ହେବ</translation>
+<translation id="2883470649061584386">ଫିଡ</translation>
 <translation id="2885378588091291677">ଟାସ୍କ ପରିଚାଳକ</translation>
 <translation id="2885729872133513017">ସର୍ଭର୍ ପ୍ରତିକ୍ରିୟାକୁ ଡିକୋଡ୍‌କରିବା ସମୟରେ ଏକ ସମସ୍ୟା ହୋଇଛି।</translation>
 <translation id="2886119409731773154">ଏଥିପାଇଁ 30 ମିନିଟ ପର୍ଯ୍ୟନ୍ତ ସମୟ ଲାଗିପାରେ</translation>
@@ -3166,6 +3170,7 @@
 <translation id="4031179711345676612">ମାଇକ୍ରୋଫୋନ୍‌କୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="4031308539321678562">ଏହି ଡିଭାଇସରୁ ବ୍ରାଉଜିଂ ଡାଟାକୁ ଏହା ସ୍ଥାୟୀରୂପେ ଡିଲିଟ କରିଦେବ। ଏହି ପ୍ରୋଫାଇଲରେ ଥିବା Google ଆକାଉଣ୍ଟଗୁଡ଼ିକ ଆପଣଙ୍କ Chromebookରେ ଥିବା ଅନ୍ୟ ଆପଗୁଡ଼ିକ ଦ୍ୱାରା ବ୍ୟବହୃତ ହୋଇପାରେ। ଆପଣ <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />ରେ ଏହି ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ କାଢ଼ିପାରିବେ।</translation>
 <translation id="4031527940632463547">ସେନ୍ସର୍‍ ଅବରୋଧ କରାଯାଇଛି</translation>
+<translation id="4033415645631238123">Smart Lock ମାଧ୍ୟମରେ ସାଇନ ଇନ କରିବା ଆଉ ଉପଲବ୍ଧ ନାହିଁ। ଆପଣ ଏବେ ବି Smart Lock ସହ ଅନଲକ କରିପାରିବେ।</translation>
 <translation id="4033471457476425443">ନୂଆ ଫୋଡ୍ଲର୍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="4033963223187371752">ସୁରକ୍ଷିତ ନଥିବା ଛବି କିମ୍ବା ୱେବ୍ ଫ୍ରେମଗୁଡ଼ିକ ପରି ବିଷୟବସ୍ତୁକୁ ସୁରକ୍ଷିତ ସାଇଟଗୁଡ଼ିକ ଏମ୍ବେଡ୍ କରିପାରେ</translation>
 <translation id="4034824040120875894">ପ୍ରିଣ୍ଟର୍‌</translation>
@@ -4368,6 +4373,7 @@
 <translation id="5268373933383932086">ଆପଣଙ୍କର ପୃଷ୍ଠା, ଆପଣଙ୍କ ଅନୁସାରେ</translation>
 <translation id="5269977353971873915">ପ୍ରିଣ୍ଟ ହେଲାନାହିଁ</translation>
 <translation id="5273806377963980154">ସାଇଟ URLକୁ ଏଡିଟ କରନ୍ତୁ</translation>
+<translation id="5275338516105640560">ସେଭ କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପ ବଟନ</translation>
 <translation id="5275352920323889391">ଶ୍ୱାନ</translation>
 <translation id="527605719918376753">ଟାବ୍ ମ୍ୟୁଟ୍ କରନ୍ତୁ</translation>
 <translation id="527605982717517565">ସର୍ବଦା <ph name="HOST" />ରେ JavaScriptକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
@@ -4492,6 +4498,9 @@
 <translation id="5397794290049113714">ଆପଣ</translation>
 <translation id="5398497406011404839">ଲୁକ୍କାୟିତ ବୁକମାର୍କଗୁଡ଼ିକ</translation>
 <translation id="5398572795982417028">ସୀମା ବାହାର ପୃଷ୍ଠାର ସନ୍ଦର୍ଭ, ସୀମା <ph name="MAXIMUM_PAGE" /> ଅଟେ</translation>
+<translation id="5398724494943676484">ଚୋରି ହୋଇଯାଇଥିବା ପାସୱାର୍ଡ ସଫଳତାର ସହ ପରିବର୍ତ୍ତନ କରାଯାଇଛି।
+
+<ph name="GOOGLE_PASSWORD_MANAGER" />ରେ ଯେ କୌଣସି ସମୟରେ ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="5401426944298678474">ସାଇଟକୁ ଅନୁସରଣ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="5402815541704507626">ମୋବାଇଲ୍‌ ଡାଟା ବ୍ୟବହାର କରି ଅପ୍‌ଡେଟ୍‌ ଡାଉନ୍‌ଲୋଡ୍‌ କରନ୍ତୁ</translation>
 <translation id="540296380408672091">ସର୍ବଦା <ph name="HOST" />ରେ କୁକୀଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
@@ -4977,6 +4986,7 @@
 <translation id="5895138241574237353">ପୁନଃଆରମ୍ଭ</translation>
 <translation id="5895335062901455404">ଆପଣ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସାଇନ ଇନ କରିବା ସମୟରେ, ଆପଣଙ୍କର ସେଭ କରାଯାଇଥିବା ପସନ୍ଦଗୁଡ଼ିକ ଏବଂ କାର୍ଯ୍ୟକଳାପ ଯେ କୌଣସି ChromeOS Flex ଡିଭାଇସରେ ପ୍ରସ୍ତୁତ ହୋଇଯିବ। କଣ ସିଙ୍କ କରାଯିବ, ତାହା ଆପଣ ସେଟିଂସରେ ବାଛିପାରିବେ।</translation>
 <translation id="5896436821193322561">ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
+<translation id="5900186025777217044">Smart Lock ପରିବର୍ତ୍ତନ ହୋଇଯାଇଛି</translation>
 <translation id="5900302528761731119">Google ପ୍ରୋଫାଇଲ୍ ଫଟୋ</translation>
 <translation id="590036993063074298">ମିରରିଂ ଗୁଣବତ୍ତା ବିବରଣୀ</translation>
 <translation id="5901069264981746702">ଆପଣଙ୍କ ଟିପଚିହ୍ନ ସମ୍ବନ୍ଧିତ ଡାଟା ସୁରକ୍ଷିତ ଭାବେ ଷ୍ଟୋର୍ କରାଯାଇଛି ଏବଂ ଏହା କେବେ ବି ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରୁ କାଢ଼ି ଦିଆଯାଏ ନାହିଁ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
@@ -5308,6 +5318,7 @@
 <translation id="6227002569366039565">ଏହି ବବଲକୁ ଫୋକସ କରିବାକୁ, ତା'ପରେ ଏହା ପଏଣ୍ଟ କରୁଥିବା ଉପାଦାନକୁ ପୁଣି ଫୋକସ କରିବାକୁ |<ph name="ACCELERATOR" />| ଦବାନ୍ତୁ।</translation>
 <translation id="6227280783235722609">ଏକ୍ସଟେନସନ୍</translation>
 <translation id="6229849828796482487">ନୂଆ ୱାଇ-ଫାଇ ନେଟୱାର୍କ ବିଚ୍ଛିନ୍ନ କରନ୍ତୁ</translation>
+<translation id="6230165830166519105">ଅନ୍ୟ ଏକ ଉପାୟ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="6231782223312638214">ପ୍ରସ୍ତାବିତ</translation>
 <translation id="6231881193380278751">ପୃଷ୍ଠାକୁ ସ୍ବତଃ-ରିଫ୍ରେସ୍ କରିବାକୁ URLରେ ଏକ ତ୍ରୁଟି ପରମ ଯୋଗ କରନ୍ତୁ: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">ବ୍ୟାଟେରୀ</translation>
@@ -5360,6 +5371,7 @@
 <translation id="6271780480930459892">ନବୀନତମ ସଂସ୍କରଣ ପାଇଁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="6272643420381259437">ପ୍ଲଗ୍‌ଇନ୍ ଡାଉନ୍‌ଲୋଡ୍ କରିବା ସମୟରେ ଏକ ତ୍ରୁଟି (<ph name="ERROR" />) ଦେଖାଯାଇଥିଲା</translation>
 <translation id="6273677812470008672">ଗୁଣବତ୍ତା</translation>
+<translation id="6274202259872570803">ସ୍କ୍ରିନକାଷ୍ଟ</translation>
 <translation id="6276210637549544171">ପ୍ରକ୍ସି <ph name="PROXY_SERVER" /> ପାଇଁ ଏକ ଉପଯୋଗକର୍ତ୍ତାନାମ ଓ ପାସୱାର୍ଡ ଆବଶ୍ୟକ।</translation>
 <translation id="6277105963844135994">ନେଟ୍‌ୱାର୍କର ସମୟ ସମାପ୍ତ</translation>
 <translation id="6277518330158259200">ସ୍କ୍ରିନ୍‌ସଟ୍ ନିଅନ୍ତୁ</translation>
@@ -5690,6 +5702,11 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6593881952206664229">କପିରାଇଟ୍ ଥିବା ମିଡିଆ ଚଲାଯାଇନପାରେ</translation>
 <translation id="6594011207075825276">ସିରିଅଲ୍ ଡିଭାଇସଗୁଡ଼ିକୁ ଖୋଜାଯାଉଛି…</translation>
 <translation id="6595187330192059106">MIDI ଡିଭାଇସଗୁଡ଼ିକୁ ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ ନିୟନ୍ତ୍ରଣ କରିବାରୁ <ph name="HOST" />କୁ ସର୍ବଦା ବ୍ଲକ୍ କରନ୍ତୁ।</translation>
+<translation id="6595408197871512625">{COUNT,plural, =1{ଚୋରି ହୋଇଯାଇଥିବା ପାସୱାର୍ଡ ସଫଳତାର ସହ ପରିବର୍ତ୍ତନ କରାଯାଇଛି।
+
+ଆପଣଙ୍କର ଅଧିକ #ଟି ଚୋରି ହୋଇଯାଇଥିବା ପାସୱାର୍ଡ ଅଛି। Google Password Manager ବର୍ତ୍ତମାନ ଏହି ପାସୱାର୍ଡକୁ ଯାଞ୍ଚ କରିବା ପାଇଁ ସୁପାରିଶ କରେ।}other{ଚୋରି ହୋଇଯାଇଥିବା ପାସୱାର୍ଡ ସଫଳତାର ସହ ପରିବର୍ତ୍ତନ କରାଯାଇଛି।
+
+ଆପଣଙ୍କର ଅଧିକ #ଟି ଚୋରି ହୋଇଯାଇଥିବା ପାସୱାର୍ଡ ଅଛି। Google Password Manager ବର୍ତ୍ତମାନ ଏହି ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିବା ପାଇଁ ସୁପାରିଶ କରେ।}}</translation>
 <translation id="6595792813574514527"><ph name="VISUAL_SEARCH_PROVIDER" /> ମାଧ୍ୟମରେ ଇମେଜଗୁଡ଼ିକୁ ସନ୍ଧାନ କରିବା ପାଇଁ ଡ୍ରାଗ୍ କରନ୍ତୁ</translation>
 <translation id="6596325263575161958">ଏନ୍‌କ୍ରିପ୍ସନ୍ ବିକଳ୍ପ</translation>
 <translation id="6596816719288285829">IP ଠିକଣା</translation>

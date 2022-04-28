@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">DNS-н хоцролт</translation>
 <translation id="123124571410524056">Портал байж магадгүй</translation>
 <translation id="1238612778414822719">HTTPS хоцролт</translation>
+<translation id="1264116747675686718">OS-н хувилбарыг шинэчилж байна</translation>
 <translation id="1264369926465113395">Зохиогчдод зориулсан Chromebook-н шинэ цахим сэтгүүлийг хараарай</translation>
 <translation id="1270369111467284986">Дамжих портал гэж таамагласан</translation>
 <translation id="1290331692326790741">Муу дохио</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Дахин оролдох</translation>
 <translation id="2161394479394250669">Хэвлэх ажлыг цуцлах</translation>
 <translation id="2163937499206714165">Бараан горимыг асаах</translation>
+<translation id="2177831236093724629"><ph name="LINK_BEGIN" />Шаардлага хангаагүй бүрэлдэхүүн хэсгүүд<ph name="LINK_END" /> олдлоо. Шаардлага хангасан бүх бүрэлдэхүүн хэсгийг таньсан эсэхийг шалгахын тулд Chrome OS-оо хамгийн сүүлийн үеийн хувилбар луу шинэчилнэ үү.</translation>
 <translation id="2180197493692062006">Алдаа гарлаа. Аппыг дахин нээж үзнэ үү.</translation>
 <translation id="2209788852729124853">Ачаалал тоологчийг шинэчлэх</translation>
 <translation id="2212733584906323460">Нэр тодорхойлох</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Миний файл</translation>
 <translation id="3192947282887913208">Аудио файлууд</translation>
 <translation id="3199982728237701504">Документыг дамжуулах тавиур (Хоёр талаар нь)</translation>
+<translation id="320091191259649613">Шинэчилсний дараа та асуудлыг харсан хэвээр байвал бүрэлдэхүүн хэсэг шаардлагыг шинээр хангасан бөгөөд өгөгдлийн баазад хараахан ороогүй байж магадгүй.</translation>
 <translation id="3226405216343213872">Сканнерыг хайж байна</translation>
 <translation id="3246869037381808805">1 хоногоос дээш хугацаагаар хадгалсан хэвлэлийн ажлуудыг хасах болно</translation>
 <translation id="3268178239013324452">Амжилтгүй болсон - Таг нээлттэй</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Ажиллуулах</translation>
 <translation id="4987769320337599931">Галт хана</translation>
 <translation id="4999333166442584738">Тайланг нуух</translation>
+<translation id="5008611843832219958">Засах явцыг оновчтой болгохын тулд Chrome OS-н хамгийн сүүлийн үеийн хувилбар луу шинэчилнэ үү</translation>
 <translation id="500920857929044050">Туршилтыг зогсоох</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Дэлгэц тань идэвхгүй үед зураг, цаг, цаг агаар болон медиагийн мэдээлэл харуулна уу.</translation>
@@ -431,6 +435,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Скан хийхийг гүйцээж чадсангүй</translation>
 <translation id="5502931783115429516">Android ажиллахгүй байна</translation>
+<translation id="5507300744274596613">Chrome OS хамгийн шинэ байгаа эсэхийг шалгана уу</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@
 <translation id="5939518447894949180">Дахин сэргээх</translation>
 <translation id="594552776027197022">Санамсаргүй хос түлхүүр үүсгэх</translation>
 <translation id="5972388717451707488">Системийг шинэчлэх</translation>
+<translation id="5984145644188835034">Өгөгдмөл дэлгэцийн зураг</translation>
 <translation id="6034694447310538551">Сар тутмын автомат шинэчлэлтийг идэвхжүүлэх</translation>
 <translation id="6037291330010597344">Сканнерын документ дамжуулах тавиур хоосон байна. Документ нэмээд, дахин оролдоно уу.</translation>
 <translation id="6040143037577758943">Хаах</translation>
@@ -717,6 +723,7 @@
 <translation id="8655295600908251630">Суваг</translation>
 <translation id="8660881923941176839">фунт</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> сүлжээнд нэгдэх</translation>
+<translation id="8671972493856476349"><ph name="VERSION_NUMBER" /> руу шинэчилж, дахин эхлүүлэх</translation>
 <translation id="8675354002693747642">Урьдчилан хуваалцсан түлхүүр</translation>
 <translation id="8677859815076891398">Цомог байхгүй. <ph name="LINK_BEGIN" />Google Зурагт<ph name="LINK_END" /> цомог үүсгэнэ үү.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Энэ онцлогийг удирдахын тулд Зүүн эсвэл Баруун суман товчийг ашиглана уу.</translation>
@@ -781,6 +788,7 @@
 <translation id="917720651393141712">Шалгалт</translation>
 <translation id="9204237731135241582">Android аппуудаас гэйтвэйтэй холбогдох боломжгүй</translation>
 <translation id="9211490828691860325">Бүх дэлгэц</translation>
+<translation id="922179502584117429">Одоогийн <ph name="VERSION_NUMBER" /> хувилбар хуучирсан байна</translation>
 <translation id="932327136139879170">Нүүр хуудас</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Идэвхжээгүй байна</translation>

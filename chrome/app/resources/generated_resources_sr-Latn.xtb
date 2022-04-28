@@ -578,6 +578,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="156793199942386351">Taster <ph name="CURRENTKEY" /> je već dodeljen radnji <ph name="ACTION" />. Pritisnite bilo koji taster da biste <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript konzola</translation>
 <translation id="1568323446248056064">Otvori podešavanja uređaja za ekran</translation>
+<translation id="1569044524074707727">Otključajte telefon</translation>
 <translation id="1570604804919108255">Uključite zvuk obaveštenja</translation>
 <translation id="1571304935088121812">Kopiraj korisničko ime</translation>
 <translation id="1571738973904005196">Prikaži karticu: <ph name="TAB_ORIGIN" /></translation>
@@ -2008,6 +2009,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="288042212351694283">Pristup univerzalnim uređajima za 2. faktor</translation>
 <translation id="2881076733170862447">Kada kliknete na dodatak</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> će se odmah ponovo pokrenuti i resetovati</translation>
+<translation id="2883470649061584386">Fid</translation>
 <translation id="2885378588091291677">Menadžer zadataka</translation>
 <translation id="2885729872133513017">Došlo je do problema pri dekodiranju odgovora servera.</translation>
 <translation id="2886119409731773154">To može da potraje do 30 minuta</translation>
@@ -5320,6 +5322,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6227002569366039565">Pritisnite |<ph name="ACCELERATOR" />| da biste fokusirali ovaj oblačić, pa ponovo da biste fokusirali element na koji pokazuje.</translation>
 <translation id="6227280783235722609">dodatak</translation>
 <translation id="6229849828796482487">Prekini vezu sa WiFi mrežom</translation>
+<translation id="6230165830166519105">Probajte na drugi način</translation>
 <translation id="6231782223312638214">Predloženo</translation>
 <translation id="6231881193380278751">Dodajte parametar upita u URL da biste automatski osvežili stranicu: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Baterija</translation>

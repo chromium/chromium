@@ -169,6 +169,7 @@
 <translation id="1155816283571436363">Se está estableciendo conexión con tu teléfono</translation>
 <translation id="1158080958325422608">Convertir a mayúsculas</translation>
 <translation id="1158238185437008462">Ver recuerdos</translation>
+<translation id="1160842321113409343">Para proteger tu privacidad, borramos los sitios de la lista automáticamente luego de 4 semanas. Es posible que si vuelves a visitar un sitio, aparezca en la lista otra vez. O bien, puedes quitar un sitio si no quieres que defina tus intereses.</translation>
 <translation id="1161575384898972166">Accede a <ph name="TOKEN_NAME" /> para exportar el certificado de cliente.</translation>
 <translation id="116173250649946226">Tu administrador configuró un tema predeterminado que no se puede cambiar.</translation>
 <translation id="1162213688509394031">Ocultar la barra de título</translation>
@@ -829,6 +830,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1784849162047402014">El dispositivo tiene poco espacio en el disco</translation>
 <translation id="1787350673646245458">Imagen de usuario</translation>
 <translation id="1788329699711791226">Accede a todo lo que tienes en el navegador Chrome desde <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="1790664457414575790">Puedes ver y administrar las contraseñas guardadas en <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1790976235243700817">Quitar acceso</translation>
 <translation id="1791662854739702043">Instalado</translation>
 <translation id="1792619191750875668">Pantalla extendida</translation>
@@ -3166,6 +3168,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4031179711345676612">Micrófono permitido</translation>
 <translation id="4031308539321678562">Esta acción borrará permanentemente los datos de navegación de este dispositivo. Es posible que otras apps de tu Chromebook utilicen las Cuentas de Google de este perfil. Puedes quitar esas cuentas en <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4031527940632463547">Se bloqueó el acceso a los sensores</translation>
+<translation id="4033415645631238123">El acceso con Smart Lock ya no está disponible. Todavía puedes desbloquear el dispositivo con Smart Lock.</translation>
 <translation id="4033471457476425443">Agregar carpeta nueva</translation>
 <translation id="4033963223187371752">Es posible que los sitios seguros incluyan contenido no seguro, como ciertas imágenes o marcos web</translation>
 <translation id="4034824040120875894">Impresora</translation>
@@ -4367,6 +4370,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5268373933383932086">Tu página, tu estilo</translation>
 <translation id="5269977353971873915">Error de impresión</translation>
 <translation id="5273806377963980154">Editar la URL del sitio</translation>
+<translation id="5275338516105640560">Botón para el grupo de pestañas guardadas</translation>
 <translation id="5275352920323889391">Perro</translation>
 <translation id="527605719918376753">Silenciar pestaña</translation>
 <translation id="527605982717517565">Siempre permitir JavaScript en <ph name="HOST" /></translation>
@@ -4491,6 +4495,9 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5397794290049113714">Tú</translation>
 <translation id="5398497406011404839">Favoritos ocultos</translation>
 <translation id="5398572795982417028">Referencia de página fuera de los límites; el valor máximo es <ph name="MAXIMUM_PAGE" /></translation>
+<translation id="5398724494943676484">Cambiaste correctamente la contraseña hackeada.
+
+Puedes revisar las contraseñas en cualquier momento en <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="5401426944298678474">Dejar de seguir el sitio</translation>
 <translation id="5402815541704507626">Descargar la actualización a través de datos móviles</translation>
 <translation id="540296380408672091">Siempre bloquear las cookies en <ph name="HOST" /></translation>
@@ -4978,6 +4985,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5895335062901455404">Tu actividad y tus preferencias guardadas estarán listas en cualquier dispositivo con Chrome OS Flex cuando accedes con tu Cuenta de Google. En Configuración, podrás elegir los datos que quieras sincronizar.</translation>
 <translation id="5896436821193322561">No permitir</translation>
+<translation id="5900186025777217044">Se modificó Smart Lock</translation>
 <translation id="5900302528761731119">Foto de perfil de Google</translation>
 <translation id="590036993063074298">Detalles sobre la calidad de la proyección</translation>
 <translation id="5901069264981746702">Los datos de las huellas digitales se guardan en un lugar seguro de tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -5362,6 +5370,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6271780480930459892">Para obtener la nueva versión, comunícate con el administrador.</translation>
 <translation id="6272643420381259437">Se produjo un error (<ph name="ERROR" />) al descargar el complemento</translation>
 <translation id="6273677812470008672">Calidad</translation>
+<translation id="6274202259872570803">Presentación en pantalla</translation>
 <translation id="6276210637549544171">El proxy <ph name="PROXY_SERVER" /> requiere un nombre de usuario y una contraseña.</translation>
 <translation id="6277105963844135994">Tiempo de espera de red agotado</translation>
 <translation id="6277518330158259200">Tomar captura de pantalla</translation>
@@ -5691,6 +5700,11 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6593881952206664229">Es posible que el contenido protegido por derechos de autor no se reproduzca.</translation>
 <translation id="6594011207075825276">Buscando dispositivos en serie…</translation>
 <translation id="6595187330192059106">Siempre impedir que <ph name="HOST" /> controle por completo los dispositivos MIDI</translation>
+<translation id="6595408197871512625">{COUNT,plural, =1{Cambiaste correctamente la contraseña hackeada.
+
+Tienes # contraseña hackeada más. El Administrador de contraseñas de Google te recomienda revisar la contraseña ahora.}other{Cambiaste correctamente la contraseña hackeada.
+
+Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Google te recomienda revisar las contraseñas ahora.}}</translation>
 <translation id="6595792813574514527">Arrastrar para buscar imágenes con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Opciones de encriptación</translation>
 <translation id="6596816719288285829">Dirección IP</translation>

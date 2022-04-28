@@ -79,6 +79,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1312604459020188865">Signalo stiprumas <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Visada rodyti lentyną</translation>
 <translation id="1316811122439383437">Perkelti: pastarieji ekrano fiksavimai, atsisiuntimai ir prisegti failai</translation>
+<translation id="132346741904777634">Fotoaparato peržiūra pridėta viršutiniame kairiajame kampe. Nesuderinama su sistemos platforma.</translation>
 <translation id="1333308631814936910">Prijungta: <ph name="DISPLAY_NAME" /></translation>
 <translation id="1341651618736211726">Perpildymas</translation>
 <translation id="1346748346194534595">Dešinė</translation>
@@ -162,6 +163,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1885785240814121742">Atrakinimas piršto antspaudu</translation>
 <translation id="1888656773939766144">„<ph name="DISPLAY_NAME" />“ nepalaiko <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Skyra pakeista į <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Spustelėkite patvirtinimo mygtuką, kad išsaugotumėte pakeitimus. Ankstesni nustatymai bus atkurti po <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1915307458270490472">Baigti</translation>
+<translation id="1918022425394817322">Fotoaparato peržiūra pridėta viršutiniame dešiniajame kampe</translation>
 <translation id="1919743966458266018">Pakeistas užduočių tvarkytuvės atidarymo spartusis klavišas. Naudokite <ph name="NEW_SHORTCUT" /> vietoje <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatiniai paspaudimai</translation>
 <translation id="1928739107511554905">Kad gautumėte naujinį, naudodami jutiklinį ekraną iš naujo paleiskite „Chromebook“ su prijungta klaviatūra.</translation>
@@ -551,6 +553,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="430191667033048642">„<ph name="MOVED_APP_NAME" />“ perkelta į aplanką „<ph name="FOLDER_NAME" />“.</translation>
 <translation id="4302592941791324970">Nepasiekiama</translation>
 <translation id="4303223480529385476">Išskleisti būsenos sritį</translation>
+<translation id="4312840429157639164">Fotoaparato peržiūra pridėta viršutiniame dešiniajame kampe. Nesuderinama su sistemos platforma.</translation>
 <translation id="4316910396681052118">VISOS PROGRAMOS</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Paspaudėte didelio kontrasto spartųjį klavišą. Ar norite jį įjungti?</translation>
@@ -857,6 +860,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="6254629735336163724">Užrakinta horizontali padėtis</translation>
 <translation id="6259254695169772643">Pasirinkite naudodami rašiklį</translation>
 <translation id="6267036997247669271">„<ph name="NAME" />“: aktyvinama...</translation>
+<translation id="6274202259872570803">Ekrano vaizdo įrašas</translation>
 <translation id="6283712521836204486">Netrukdymo režimas išjungtas.</translation>
 <translation id="6284232397434400372">Skyra pakeista</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> galima pridėti iš naujo vėliau, gavus tėvų leidimą.</translation>
@@ -888,6 +892,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="649452524636452238">Išmaniosios kortelės PIN kodas</translation>
 <translation id="6495400115277918834">Funkcija vaizdas vaizde paleista, jei norite sufokusuoti, spauskite „Alt“ + „Shift“ + V</translation>
 <translation id="6501401484702599040">Perduodamas ekranas į „<ph name="RECEIVER_NAME" />“</translation>
+<translation id="6515727200518652613">Fotoaparatas atsijungė, bandoma prijungti iš naujo.</translation>
 <translation id="6520517963145875092">Pasirinkite norimą užfiksuoti langą</translation>
 <translation id="652139407789908527">Vykstant šiam atnaujinimui ekranas gali būti tuščias ilgiau nei įprastai (iki minutės). Nespauskite maitinimo mygtuko, kol vyksta atnaujinimas.</translation>
 <translation id="6528179044667508675">Netrukdyti</translation>
@@ -906,6 +911,7 @@ Naujas įdiegimas</translation>
 <translation id="6578407462441924264">Be pavadinimo</translation>
 <translation id="6585808820553845416">Sesija baigsis po <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597278316891651699">Fotoaparato peržiūra pridėta apatiniame kairiajame kampe. Nesuderinama su sistemos platforma.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" />, tvarko administratorius</translation>
 <translation id="6612802754306526077">Pasirinktas ekrano vaizdo įrašymo režimas</translation>
 <translation id="6614169507485700968">Privatumo ekranas įjungtas</translation>
@@ -943,6 +949,7 @@ Naujas įdiegimas</translation>
 <translation id="6801878137098616817">Neseniai redaguota</translation>
 <translation id="6803622936009808957">Nepavyko dubliuoti vaizdų, nes nepavyko rasti palaikomų skyrų. Vietoje to įjungtas išplėstinio darbalaukio režimas.</translation>
 <translation id="6818242057446442178">Grįžti per vieną žodį</translation>
+<translation id="6819327813400217281">Fotoaparato peržiūra pridėta apatiniame kairiajame kampe</translation>
 <translation id="6820676911989879663">Padarykite pertrauką!</translation>
 <translation id="6827049576281411231">Uždaryti įvykio skydelį</translation>
 <translation id="6836499262298959512">Pavojingas failas</translation>
@@ -971,6 +978,7 @@ Naujas įdiegimas</translation>
 <translation id="6979158407327259162">„Google“ diskas</translation>
 <translation id="6981982820502123353">Pritaikymas neįgaliesiems</translation>
 <translation id="698231206551913481">Visi failai ir su šiuo naudotoju susiję duomenys bus ištrinti visam laikui, kai šis naudotojas bus pašalintas.</translation>
+<translation id="7005239792648594238">Atidarykite programą ir pradėkite</translation>
 <translation id="7007983414944123363">Nepavyko patvirtinti PIN kodo arba slaptažodžio. Bandykite dar kartą.</translation>
 <translation id="7014684956566476813">Prisijungta prie įrenginio pavadinimu „<ph name="DEVICE_NAME" />“</translation>
 <translation id="7015766095477679451">Grįžkite <ph name="COME_BACK_TIME" />.</translation>
@@ -984,6 +992,7 @@ Naujas įdiegimas</translation>
 <translation id="7045033600005038336">Pakeisti šabloną?</translation>
 <translation id="7051244143160304048">„<ph name="DEVICE_NAME" />“ atsijungė</translation>
 <translation id="7055910611768509537">Rašiklis nebuvo naudotas ilgiau kaip savaitę</translation>
+<translation id="7061457967428964661">Fotoaparato peržiūra: spustelėkite „Control“ ir rodyklės klavišą, kad perkeltumėte peržiūrą į kitą kampą</translation>
 <translation id="7066646422045619941">Šį tinklą išjungė jūsų administratorius.</translation>
 <translation id="7067196344162293536">Automatinis kaitaliojimas</translation>
 <translation id="7068360136237591149">„Open files“ (Atidaryk failus)</translation>
@@ -1004,6 +1013,7 @@ Naujas įdiegimas</translation>
 <translation id="718361511487535372">Atidaryti „Google“ kalendoriuje</translation>
 <translation id="7188494361780961876">Meniu perkeltas į viršutinį kairįjį ekrano kampą.</translation>
 <translation id="7189412385142492784">Kaip toli yra Venera</translation>
+<translation id="7198435252016571249">Fotoaparato peržiūra pridėta apatiniame dešiniajame kampe. Nesuderinama su sistemos platforma.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Kad būtų pritaikytas naujinys, šį „Chromebook“ reikia paleisti iš naujo. Tai gali užtrukti iki minutės</translation>
 <translation id="7256634071279256947">Užpakalinis mikrofonas</translation>
 <translation id="7258828758145722155">Redaguota vakar</translation>
@@ -1064,8 +1074,10 @@ Naujas įdiegimas</translation>
 <translation id="7593891976182323525">Paieškos arba „Shift“</translation>
 <translation id="7600875258240007829">Žr. visus pranešimus</translation>
 <translation id="7607002721634913082">Pristabdyta</translation>
+<translation id="7611213136657090146">Fotoaparatas prijungtas iš naujo.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7633755430369750696">Rodyti bendrinimo netoliese nustatymus.</translation>
+<translation id="7634648064048557203">Fotoaparato peržiūra pridėta apatiniame dešiniajame kampe</translation>
 <translation id="7641938616688887143">Įrašyti</translation>
 <translation id="7642647758716480637">Atidaryti „<ph name="NETWORK_NAME" />“ nustatymus (<ph name="CONNECTION_STATUS" />)</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (savininkas)</translation>
@@ -1078,6 +1090,7 @@ Naujas įdiegimas</translation>
 <translation id="7662283695561029522">Palieskite, kad konfigūruotumėte</translation>
 <translation id="7670953955701272011">Atidaryti šią datą „Google“ kalendoriuje</translation>
 <translation id="7671610481353807627">Programos rūšiuojamos pagal spalvą</translation>
+<translation id="7684531502177797067">Fotoaparato įvestis nustatyta kaip <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Pridėti naują mobiliojo ryšio tinklą</translation>
 <translation id="7720410380936703141">BANDYKITE DAR KARTĄ</translation>
@@ -1144,6 +1157,7 @@ Naujas įdiegimas</translation>
 <translation id="8051716679295756675">Šablonas pavadinimu „<ph name="DESK_TEMPLATE_NAME" />“ jau yra</translation>
 <translation id="8052898407431791827">Nukopijuota į iškarpinę</translation>
 <translation id="8054466585765276473">Apskaičiuojamas laikas, likęs iki akumuliatoriaus išsikrovimo.</translation>
+<translation id="8055510977240456975">Slėpti tęsimo pasiūlymus</translation>
 <translation id="8061464966246066292">Didelis kontrastas</translation>
 <translation id="8098591350844501178">Sustabdyti ekrano perdavimą į: <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Visų programų pranešimai įjungti</translation>
@@ -1299,6 +1313,7 @@ Naujas įdiegimas</translation>
 <translation id="9077404278023321866">Šablonai</translation>
 <translation id="9077515519330855811">Medijos valdikliai, dabar leidžiama „<ph name="MEDIA_TITLE" />“</translation>
 <translation id="9079731690316798640">„Wi-Fi“: <ph name="ADDRESS" /></translation>
+<translation id="9080073830732419341">Fotoaparato peržiūra pridėta viršutiniame kairiajame kampe</translation>
 <translation id="9080132581049224423">Perbraukite aukštyn, kad grįžtumėte į pagrindinį ekraną</translation>
 <translation id="9080206825613744995">Mikrofonas naudojamas.</translation>
 <translation id="9084606467167974638">Perjunkite meniu padėtį</translation>

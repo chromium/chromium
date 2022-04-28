@@ -579,6 +579,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="156793199942386351">Il tasto "'<ph name="CURRENTKEY" />" è già stato assegnato all'azione "<ph name="ACTION" />". Premi un tasto qualsiasi per <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Console JavaScript</translation>
 <translation id="1568323446248056064">Apri le impostazioni dello schermo</translation>
+<translation id="1569044524074707727">Sblocca il telefono</translation>
 <translation id="1570604804919108255">Riattiva audio notifiche</translation>
 <translation id="1571304935088121812">Copia nome utente</translation>
 <translation id="1571738973904005196">Visualizza la scheda <ph name="TAB_ORIGIN" /></translation>
@@ -2009,6 +2010,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="288042212351694283">Accesso ai tuoi dispositivi Universal 2nd Factor</translation>
 <translation id="2881076733170862447">Quando fai clic sull'estensione</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> verrà riavviato e ripristinato tra poco</translation>
+<translation id="2883470649061584386">Feed</translation>
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2885729872133513017">Si è verificato un problema durante la decodifica della risposta del server.</translation>
 <translation id="2886119409731773154">L'operazione potrebbe richiedere fino a 30 minuti</translation>
@@ -5318,6 +5320,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6227002569366039565">Premi |<ph name="ACCELERATOR" />| per impostare lo stato attivo su questo fumetto, quindi premi di nuovo per impostare lo stato attivo sull'elemento a cui rimanda il fumetto.</translation>
 <translation id="6227280783235722609">estensione</translation>
 <translation id="6229849828796482487">Disconnetti rete Wi-Fi</translation>
+<translation id="6230165830166519105">Prova un altro metodo</translation>
 <translation id="6231782223312638214">Suggerito</translation>
 <translation id="6231881193380278751">Aggiungi un parametro query nell'URL per aggiornare automaticamente la pagina: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Batteria</translation>

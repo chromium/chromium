@@ -669,6 +669,7 @@ Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain s
 <translation id="4758061975920522644">Kongsi imej sahaja</translation>
 <translation id="4759238208242260848">Muat turun</translation>
 <translation id="4763480195061959176">video</translation>
+<translation id="4766313118839197559">Kata laluan disimpan pada Password Manager pada peranti ini</translation>
 <translation id="4766678251456904326">Tambahkan akaun pada peranti</translation>
 <translation id="4791358705705538979">Membantu anda menyelesaikan tugas, seperti daftar keluar, pada seluruh web</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -804,6 +805,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5517095782334947753">Anda mempunyai penanda halaman, sejarah, kata laluan dan tetapan lain daripada <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524761631371622910">Semasa percubaan dihidupkan dan jika Chrome telah meletakkan anda secara rawak dalam percubaan aktif, sejarah penyemakan imbas anda mempengaruhi iklan yang anda lihat dan minat seperti yang dianggarkan di bawah. Untuk melindungi privasi anda, Chrome memadamkan minat anda secara bergilir setiap bulan.</translation>
 <translation id="5524843473235508879">Ubah hala disekat.</translation>
+<translation id="5528459307536571064">1 kumpulan tab</translation>
 <translation id="5548606607480005320">Semakan keselamatan</translation>
 <translation id="5555525474779371165">Pilih perlindungan Penyemakan Imbas Selamat anda</translation>
 <translation id="5556459405103347317">Muat Semula</translation>
@@ -926,6 +928,7 @@ Percubaan Kotak Pasir Privasi masih aktif dibangunkan dan tersedia di rantau ter
 <translation id="6162892189396105610">Mempramuat halaman yang diramal oleh Chrome akan anda lawati.</translation>
 <translation id="6186394685773237175">Tiada kata laluan yang terjejas ditemukan</translation>
 <translation id="6192907950379606605">Dapatkan perihalan imej</translation>
+<translation id="6196315980958524839">Kata laluan disimpan pada Google Password Manager pada peranti ini</translation>
 <translation id="620197886010707372">Buka apl <ph name="APPNAME" /> dengan Google Play?</translation>
 <translation id="6203593061661911168">Muat turun akan bermula apabila menggunakan Wi-Fi</translation>
 <translation id="6210748933810148297">Bukan <ph name="EMAIL" />?</translation>
@@ -1256,6 +1259,7 @@ Token amanah meningkatkan privasi pada web dan tidak boleh digunakan untuk menge
 <translation id="7961015016161918242">Tidak sama sekali</translation>
 <translation id="7961926449547174351">Anda telah melumpuhkan akses Storan, sila pergi ke Tetapan untuk mendayakan akses itu.</translation>
 <translation id="7963646190083259054">Vendor:</translation>
+<translation id="7965838025086216108">Anda boleh menggunakan kata laluan yang disimpan pada mana-mana peranti. Kata laluan tersebut disimpan pada Google Password Manager untuk <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Ditambahkan pada senarai bacaan</translation>
 <translation id="7971136598759319605">Aktif 1 hari yang lalu</translation>
 <translation id="7975379999046275268">Pratonton halaman <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
@@ -1516,5 +1520,6 @@ Token amanah meningkatkan privasi pada web dan tidak boleh digunakan untuk menge
 <translation id="981121421437150478">Luar talian</translation>
 <translation id="983192555821071799">Tutup semua tab</translation>
 <translation id="987264212798334818">Umum</translation>
+<translation id="992745192656291733"><ph name="TAB_COUNT" /> tab</translation>
 <translation id="996149300115483134">Menu kad suapan ditutup</translation>
 </translationbundle>

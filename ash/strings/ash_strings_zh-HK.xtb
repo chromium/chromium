@@ -79,6 +79,7 @@
 <translation id="1312604459020188865">訊號強度係 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">永遠顯示捷徑列</translation>
 <translation id="1316811122439383437">Tote：最近的螢幕截圖、下載檔案及已固定的檔案</translation>
+<translation id="132346741904777634">攝錄機已經對齊左上角，同系統平台有衝突。</translation>
 <translation id="1333308631814936910">已連接「<ph name="DISPLAY_NAME" />」</translation>
 <translation id="1341651618736211726">展開</translation>
 <translation id="1346748346194534595">向右</translation>
@@ -163,6 +164,7 @@
 <translation id="1885785240814121742">使用指紋解鎖</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> 不支援 <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz)。解像度已變更為 <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />)。請按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>
 <translation id="1915307458270490472">結束通話</translation>
+<translation id="1918022425394817322">攝錄機已經對齊右上角</translation>
 <translation id="1919743966458266018">開啟工作管理員的快速鍵已變更，請改用 <ph name="NEW_SHORTCUT" /> 取代 <ph name="OLD_SHORTCUT" /> 。</translation>
 <translation id="1923539912171292317">自動按一下</translation>
 <translation id="1928739107511554905">如要下載更新，請連接鍵盤並使用觸控螢幕重新啟動 Chromebook。</translation>
@@ -552,6 +554,7 @@
 <translation id="430191667033048642">「<ph name="MOVED_APP_NAME" />」已經移咗去「<ph name="FOLDER_NAME" />」資料夾。</translation>
 <translation id="4302592941791324970">無法使用</translation>
 <translation id="4303223480529385476">展開狀態區</translation>
+<translation id="4312840429157639164">攝錄機已經對齊右上角，同系統平台有衝突。</translation>
 <translation id="4316910396681052118">所有應用程式</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">您已按下高對比度的鍵盤快速鍵。確定要旋轉螢幕嗎？</translation>
@@ -857,6 +860,7 @@
 <translation id="6254629735336163724">已鎖定為水平</translation>
 <translation id="6259254695169772643">使用觸控筆選擇</translation>
 <translation id="6267036997247669271"><ph name="NAME" />：正在啟用…</translation>
+<translation id="6274202259872570803">螢幕截圖</translation>
 <translation id="6283712521836204486">「請勿騷擾」已關閉。</translation>
 <translation id="6284232397434400372">解像度已變更</translation>
 <translation id="6288235558961782912">您可稍後在家長許可下重新新增 <ph name="USER_EMAIL_ADDRESS" />。</translation>
@@ -888,6 +892,7 @@
 <translation id="649452524636452238">智能卡 PIN</translation>
 <translation id="6495400115277918834">畫中畫開始咗，㩒一下 Alt + Shift + V 鍵就可以突顯</translation>
 <translation id="6501401484702599040">正在將畫面投放到「<ph name="RECEIVER_NAME" />」</translation>
+<translation id="6515727200518652613">攝錄機連線中斷，嘗試緊重新連線。</translation>
 <translation id="6520517963145875092">選取要擷取的視窗</translation>
 <translation id="652139407789908527">進行此更新時，螢幕顯示空白畫面的時間可能會比平時更長 (最多一分鐘)。請勿在更新期間按下開關按鈕。</translation>
 <translation id="6528179044667508675">請勿騷擾</translation>
@@ -905,6 +910,7 @@
 <translation id="6578407462441924264">未命名</translation>
 <translation id="6585808820553845416">這個工作階段將在 <ph name="SESSION_TIME_REMAINING" />後結束。</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />，<ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597278316891651699">攝錄機已經對齊左下角，同系統平台有衝突。</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />，由管理員管理</translation>
 <translation id="6612802754306526077">揀咗螢幕錄影模式</translation>
 <translation id="6614169507485700968">已啟用私隱保護畫面</translation>
@@ -942,6 +948,7 @@
 <translation id="6801878137098616817">最近編輯過</translation>
 <translation id="6803622936009808957">找不到系統支援的解析度，因此無法顯示鏡像。已改為進入延伸桌面。</translation>
 <translation id="6818242057446442178">往後一個字詞</translation>
+<translation id="6819327813400217281">攝錄機已經對齊左下角</translation>
 <translation id="6820676911989879663">休息一下！</translation>
 <translation id="6827049576281411231">閂活動面板</translation>
 <translation id="6836499262298959512">危險檔案</translation>
@@ -970,6 +977,7 @@
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
 <translation id="6981982820502123353">協助工具</translation>
 <translation id="698231206551913481">移除這位使用者後，系統便會永久刪除所有與該使用者相關的檔案和本機數據。</translation>
+<translation id="7005239792648594238">開啟應用程式即可開始</translation>
 <translation id="7007983414944123363">系統無法驗證您的 PIN 或密碼。請再試一次。</translation>
 <translation id="7014684956566476813">已連接名為「<ph name="DEVICE_NAME" />」的裝置</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> 後才可使用。</translation>
@@ -983,6 +991,7 @@
 <translation id="7045033600005038336">要取代範本嗎？</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> 已中斷連線</translation>
 <translation id="7055910611768509537">您已超過一星期沒有使用觸控筆</translation>
+<translation id="7061457967428964661">攝錄機預覽畫面，㩒 Control + 箭嘴鍵就可以將預覽畫面移去其他角落</translation>
 <translation id="7066646422045619941">管理員已停用此網絡。</translation>
 <translation id="7067196344162293536">自動旋轉</translation>
 <translation id="7068360136237591149">打開檔案</translation>
@@ -1003,6 +1012,7 @@
 <translation id="718361511487535372">在「Google 日曆」中開啟</translation>
 <translation id="7188494361780961876">已經將選單移去螢幕左上角。</translation>
 <translation id="7189412385142492784">金星距離幾遠</translation>
+<translation id="7198435252016571249">攝錄機已經對齊右下角，同系統平台有衝突。</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />。此 Chromebook 需要重新啟動才能套用更新。過程可能需時 1 分鐘。</translation>
 <translation id="7256634071279256947">後置麥克風</translation>
 <translation id="7258828758145722155">昨天編輯過</translation>
@@ -1063,8 +1073,10 @@
 <translation id="7593891976182323525">搜尋鍵或 Shift 鍵</translation>
 <translation id="7600875258240007829">查看所有通知</translation>
 <translation id="7607002721634913082">已暫停</translation>
+<translation id="7611213136657090146">攝錄機已經重新連線。</translation>
 <translation id="7624117708979618027">華氏 <ph name="TEMPERATURE_F" />°</translation>
 <translation id="7633755430369750696">顯示「咫尺共享」設定。</translation>
+<translation id="7634648064048557203">攝錄機已經對齊右下角</translation>
 <translation id="7641938616688887143">錄影</translation>
 <translation id="7642647758716480637">打開<ph name="NETWORK_NAME" />嘅設定，<ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (擁有者)</translation>
@@ -1077,6 +1089,7 @@
 <translation id="7662283695561029522">輕觸即可設定</translation>
 <translation id="7670953955701272011">在「Google 日曆」中開啟此日期</translation>
 <translation id="7671610481353807627">應用程式已按顏色排序</translation>
+<translation id="7684531502177797067">攝錄機輸入裝置設定咗做「<ph name="CAMERA_NAME" />」。</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">新增流動網絡</translation>
 <translation id="7720410380936703141">再試一次</translation>
@@ -1299,6 +1312,7 @@
 <translation id="9077404278023321866">範本</translation>
 <translation id="9077515519330855811">媒體控制項，宜家播緊<ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi：<ph name="ADDRESS" /></translation>
+<translation id="9080073830732419341">攝錄機已經對齊左上角</translation>
 <translation id="9080132581049224423">向上滑動即可開啟主畫面</translation>
 <translation id="9080206825613744995">麥克風正在使用中。</translation>
 <translation id="9084606467167974638">切換選單位置</translation>

@@ -578,6 +578,7 @@
 <translation id="156793199942386351">Тастер <ph name="CURRENTKEY" /> је већ додељен радњи <ph name="ACTION" />. Притисните било који тастер да бисте <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript конзола</translation>
 <translation id="1568323446248056064">Отвори подешавања уређаја за екран</translation>
+<translation id="1569044524074707727">Откључајте телефон</translation>
 <translation id="1570604804919108255">Укључите звук обавештења</translation>
 <translation id="1571304935088121812">Копирај корисничко име</translation>
 <translation id="1571738973904005196">Прикажи картицу: <ph name="TAB_ORIGIN" /></translation>
@@ -2008,6 +2009,7 @@
 <translation id="288042212351694283">Приступ универзалним уређајима за 2. фактор</translation>
 <translation id="2881076733170862447">Када кликнете на додатак</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> ће се одмах поново покренути и ресетовати</translation>
+<translation id="2883470649061584386">Фид</translation>
 <translation id="2885378588091291677">Менаџер задатака</translation>
 <translation id="2885729872133513017">Дошло је до проблема при декодирању одговора сервера.</translation>
 <translation id="2886119409731773154">То може да потраје до 30 минута</translation>
@@ -5320,6 +5322,7 @@
 <translation id="6227002569366039565">Притисните |<ph name="ACCELERATOR" />| да бисте фокусирали овај облачић, па поново да бисте фокусирали елемент на који показује.</translation>
 <translation id="6227280783235722609">додатак</translation>
 <translation id="6229849828796482487">Прекини везу са WiFi мрежом</translation>
+<translation id="6230165830166519105">Пробајте на други начин</translation>
 <translation id="6231782223312638214">Предложено</translation>
 <translation id="6231881193380278751">Додајте параметар упита у URL да бисте аутоматски освежили страницу: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Батерија</translation>

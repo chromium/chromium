@@ -79,6 +79,7 @@
 <translation id="1312604459020188865">ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">ସର୍ବଦା ସେଲ୍ଫ ଦେଖାନ୍ତୁ</translation>
 <translation id="1316811122439383437">ଟୋଟ୍: ବର୍ତ୍ତମାନର ସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍, ଡାଉନଲୋଡ୍ ଏବଂ ପିନ୍ କରାଯାଇଥିବା ଫାଇଲଗୁଡ଼ିକ</translation>
+<translation id="132346741904777634">କ୍ୟାମେରାକୁ ଉପର ବାମପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି। ସିଷ୍ଟମ ସର୍ଫେସ ସହ ବିବାଦ।</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> ସଂଯୋଗ କରାଯାଇଛି</translation>
 <translation id="1341651618736211726">ଓଭର୍‌ଫ୍ଲୋ</translation>
 <translation id="1346748346194534595">ଡାହାଣ</translation>
@@ -162,6 +163,7 @@
 <translation id="1885785240814121742">ଟିପଚିହ୍ନ ସାହାଯ୍ୟରେ ଅନ୍‌ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ସମର୍ଥନ କରେ ନାହିଁ। ରିଜୋଲ୍ୟୁସନ୍ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />)କୁ ପରିବର୍ତ୍ତନ କରାଯାଇଥିଲା। ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ରଖିବାକୁ "ସୁନିଶ୍ଚିତ କରନ୍ତୁ"ରେ କ୍ଲିକ୍ କରନ୍ତୁ। <ph name="TIMEOUT_SECONDS" />ରେ ପୂର୍ବବର୍ତ୍ତୀ ସେଟିଂସ୍ ରିଷ୍ଟୋର୍ କରାଯିବ।</translation>
 <translation id="1915307458270490472">ସମାପ୍ତ କରନ୍ତୁ</translation>
+<translation id="1918022425394817322">କ୍ୟାମେରାକୁ ଉପର ଡାହାଣପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି</translation>
 <translation id="1919743966458266018">'ଟାସ୍କ୍ ମ୍ୟାନେଜର୍' ଖୋଲିବାକୁ ଥିବା ସର୍ଟ୍‌କଟ୍‌ଟି ବଦଳିଯାଇଛି। ଦୟାକରି <ph name="OLD_SHORTCUT" /> ପରିବର୍ତ୍ତେ <ph name="NEW_SHORTCUT" />ଟିକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="1923539912171292317">ସ୍ଵଚାଳିତ କ୍ଲିକ୍</translation>
 <translation id="1928739107511554905">ଅପ୍‌ଡେଟ୍ ପ୍ରାପ୍ତ କରିବା ପାଇଁ, କୀବୋର୍ଡ ସଂଲଗ୍ନ ଥିବା ଆପଣଙ୍କର Chromebook ରିଷ୍ଟାର୍ଟ କରିବାକୁ ଟଚ୍‍ସ୍କ୍ରିନ୍‍ର ବ୍ୟବହାର କରନ୍ତୁ।</translation>
@@ -551,6 +553,7 @@
 <translation id="430191667033048642"><ph name="FOLDER_NAME" /> ଫୋଲ୍ଡରକୁ <ph name="MOVED_APP_NAME" /> ନିଆଗଲା।</translation>
 <translation id="4302592941791324970">ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="4303223480529385476">ସ୍ଥିତି କ୍ଷେତ୍ର ବିସ୍ତାର କରନ୍ତୁ</translation>
+<translation id="4312840429157639164">କ୍ୟାମେରାକୁ ଉପର ଡାହାଣପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି। ସିଷ୍ଟମ ସର୍ଫେସ ସହ ବିବାଦ।</translation>
 <translation id="4316910396681052118">ସମସ୍ତ ଆପ୍‌</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">ଉଚ୍ଚ କଣ୍ଟ୍ରାଷ୍ଟ ପାଇଁ ଆପଣ କୀବୋର୍ଡ ସର୍ଟକଟ୍‍ ଦବାଇଛନ୍ତି। ଆପଣ ଏହାକୁ ଚାଲୁ କରିବାକୁ ଚାହୁଁଛନ୍ତି କି?</translation>
@@ -857,6 +860,7 @@
 <translation id="6254629735336163724">ଭୂସମାନ୍ତର ଭାବରେ ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="6259254695169772643">ଚୟନ କରିବାକୁ ଆପଣଙ୍କର ଷ୍ଟାଇଲସ୍ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: ସକ୍ରିୟ ହେଉଛି...</translation>
+<translation id="6274202259872570803">ସ୍କ୍ରିନକାଷ୍ଟ</translation>
 <translation id="6283712521836204486">'ବିରକ୍ତ କରନ୍ତୁ ନାହିଁ' ବନ୍ଦ ଅଛି।</translation>
 <translation id="6284232397434400372">ରିଜୋଲ୍ୟୁସନ୍ ପରିବର୍ତ୍ତିତ ହୋଇଛି</translation>
 <translation id="6288235558961782912">ବାପାମା'ଙ୍କ ଅନୁମତି ସହିତ <ph name="USER_EMAIL_ADDRESS" /> ପୁଣି-ଯୋଗ କରିପାରିବେ।</translation>
@@ -888,6 +892,7 @@
 <translation id="649452524636452238">ସ୍ମାର୍ଟ କାର୍ଡ PIN</translation>
 <translation id="6495400115277918834">ପିକଚର-ଇନ-ପିକଚର ଆରମ୍ଭ ହୋଇଛି, ଫୋକସ କରିବାକୁ Alt+Shift+V ଦବାନ୍ତୁ</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" />କୁ ସ୍କ୍ରିନ୍ କାଷ୍ଟ କରାଯାଉଛି</translation>
+<translation id="6515727200518652613">କ୍ୟାମେରା ଡିସକନେକ୍ଟ ହୋଇଯାଇଛି, ପୁଣି କନେକ୍ଟ କରିବା ପାଇଁ ଚେଷ୍ଟା କରାଯାଉଛି।</translation>
 <translation id="6520517963145875092">କ୍ୟାପଚର୍ କରିବାକୁ ଏକ ୱିଣ୍ଡୋ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="652139407789908527">ଏହି ଅପଡେଟ୍ ସମୟରେ ଆପଣଙ୍କର ସ୍କ୍ରିନ୍ ସାଧାରଣ ଠାରୁ ଅଧିକ ସମୟ (ଏକ ମିନିଟ୍ ପର୍ଯ୍ୟନ୍ତ) ପାଇଁ ଖାଲି ରହିବ। ଦୟାକରି ଅପଡେଟ୍ ପ୍ରଗତିରେ ଥିବା ସମୟରେ ପାୱାର ବଟନ୍ ଦବାନ୍ତୁ ନାହିଁ।</translation>
 <translation id="6528179044667508675">ବିରକ୍ତ କରନାହିଁ</translation>
@@ -905,6 +910,7 @@
 <translation id="6578407462441924264">ବେନାମୀ</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" />ରେ ସମୟ ଅବଧି ସମାପ୍ତ ହେବ</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597278316891651699">କ୍ୟାମେରାକୁ ନିମ୍ନ ବାମପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି। ସିଷ୍ଟମ ସର୍ଫେସ ସହ ବିବାଦ।</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="6612802754306526077">ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂ ମୋଡକୁ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="6614169507485700968">ଗୋପନୀୟତା ସ୍କ୍ରିନ୍ ଚାଲୁ ଅଛି</translation>
@@ -942,6 +948,7 @@
 <translation id="6801878137098616817">ବର୍ତ୍ତମାନ ଏଡିଟ କରାଯାଇଛି</translation>
 <translation id="6803622936009808957">ଏକାପରି ଡିସ୍‌ପ୍ଲେ କରାଯାଇପାରିଲା ନାହିଁ କାରଣ ସମର୍ଥିତ ରିଜୋଲ୍ୟୁଶନ୍ ମିଳିଲା ନାହିଁ। ଏହା ପରିବର୍ତ୍ତେ ବିସ୍ତାରିତ ଡେସ୍କଟପ୍‍ ଲେଖାଯାଇଛି।</translation>
 <translation id="6818242057446442178">ଗୋଟିଏ ଶବ୍ଦ ପଛକୁ ଫେରନ୍ତୁ</translation>
+<translation id="6819327813400217281">କ୍ୟାମେରାକୁ ନିମ୍ନ ବାମପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି</translation>
 <translation id="6820676911989879663">ଏକ ବିରତି ନିଅନ୍ତୁ!</translation>
 <translation id="6827049576281411231">ଇଭେଣ୍ଟ ପ୍ୟାନେଲ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6836499262298959512">ବିପଦଜନକ ଫାଇଲ୍</translation>
@@ -970,6 +977,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">ଆକ୍ସେସିବିଲିଟୀ</translation>
 <translation id="698231206551913481">ଥରେ ଏହି ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ କାଢ଼ିଦେବା ପରେ, ତାଙ୍କର ସମସ୍ତ ଫାଇଲ୍ ଓ ସ୍ଥାନୀୟ ଡାଟାକୁ ସ୍ଥାୟୀ ଭାବେ ଡିଲିଟ୍ କରିଦିଆଯିବ।</translation>
+<translation id="7005239792648594238">ଆରମ୍ଭ କରିବାକୁ ଏକ ଆପ ଖୋଲନ୍ତୁ</translation>
 <translation id="7007983414944123363">ଆପଣଙ୍କ PIN କିମ୍ବା ପାସୱାର୍ଡକୁ ଯାଞ୍ଚ କରାଯାଇପାରିଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> ନାମକ ଏକ ଡିଭାଇସ୍ ସହ ସଂଯୋଗ କରାଯାଇଛି</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" />ରେ ଆସନ୍ତୁ।</translation>
@@ -983,6 +991,7 @@
 <translation id="7045033600005038336">ଟେମ୍ପଲେଟକୁ ପରିବର୍ତ୍ତନ କରିବେ?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" />କୁ ବିଚ୍ଛିନ୍ନ କରାଯାଇଛି</translation>
 <translation id="7055910611768509537">ଷ୍ଟାଇଲସକୁ ଏକ ସପ୍ତାହରୁ ଅଧିକ ସମୟ ଧରି ବ୍ୟବହାର କରାଯାଇନାହିଁ</translation>
+<translation id="7061457967428964661">କ୍ୟାମେରା ପ୍ରିଭ୍ୟୁ, ପ୍ରିଭ୍ୟୁକୁ ଏକ ଭିନ୍ନ କୋଣକୁ ମୁଭ କରିବା ପାଇଁ କଣ୍ଟ୍ରୋଲ + ତୀର କୀ'କୁ ଦବାନ୍ତୁ</translation>
 <translation id="7066646422045619941">ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ୱାରା ଏହି ନେଟ୍‍ୱର୍କ ଅକ୍ଷମ କରାଯାଇଛି।</translation>
 <translation id="7067196344162293536">ସ୍ୱତଃ-ଘୂର୍ଣ୍ଣନ</translation>
 <translation id="7068360136237591149">ଫାଇଲ୍‌ଗୁଡ଼ିକ ଖୋଲନ୍ତୁ</translation>
@@ -1003,6 +1012,7 @@
 <translation id="718361511487535372">Google Calendarରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="7188494361780961876">ସ୍କ୍ରିନର ଶୀର୍ଷ-ବାମ କୋଣକୁ ମେନୁ ମୁଭ୍ କରାଯାଇଛି।</translation>
 <translation id="7189412385142492784">ଶୁକ୍ର ଗ୍ରହ କେତେ ଦୂରରେ ଅବସ୍ଥିତ</translation>
+<translation id="7198435252016571249">କ୍ୟାମେରାକୁ ନିମ୍ନ ଡାହାଣପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି। ସିଷ୍ଟମ ସର୍ଫେସ ସହ ବିବାଦ।</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />। ଏକ ଅପଡେଟ୍ ଲାଗୁ କରିବା ନିମନ୍ତେ ଏହି Chromebook ରିଷ୍ଟାର୍ଟ କରିବା ଦରକାର। ଏହା ପାଖାପାଖି 1 ମିନିଟ୍ ସମୟ ନେଇପାରେ।</translation>
 <translation id="7256634071279256947">ପଛପଟର ମାଇକ୍ରୋଫୋନ୍</translation>
 <translation id="7258828758145722155">ଗତକାଲି ଏଡିଟ କରାଯାଇଛି</translation>
@@ -1063,8 +1073,10 @@
 <translation id="7593891976182323525">Search କିମ୍ବା Shift</translation>
 <translation id="7600875258240007829">ସମସ୍ତ ବିଜ୍ଞପ୍ତି ଦେଖନ୍ତୁ</translation>
 <translation id="7607002721634913082">ଅଚଳିତ</translation>
+<translation id="7611213136657090146">କ୍ୟାମେରା ପୁଣି କନେକ୍ଟ ହୋଇଛି।</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° ଫାରେନହାଇଟ୍</translation>
 <translation id="7633755430369750696">Nearby Share ସେଟିଂସ୍ ଦେଖାନ୍ତୁ।</translation>
+<translation id="7634648064048557203">କ୍ୟାମେରାକୁ ନିମ୍ନ ଡାହାଣପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି</translation>
 <translation id="7641938616688887143">ରେକର୍ଡ କରନ୍ତୁ</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" /> ପାଇଁ ସେଟିଂସ୍ ଖୋଲନ୍ତୁ, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ମାଲିକ)</translation>
@@ -1077,6 +1089,7 @@
 <translation id="7662283695561029522">କନ୍‌ଫିଗର୍‌ କରିବାକୁ ଟାପ୍‍ କରନ୍ତୁ</translation>
 <translation id="7670953955701272011">Google Calendarରେ ଏହି ତାରିଖ ଖୋଲନ୍ତୁ</translation>
 <translation id="7671610481353807627">ଆପଗୁଡ଼ିକୁ ରଙ୍ଗ ଅନୁସାରେ ସର୍ଟ କରାଯାଇଛି</translation>
+<translation id="7684531502177797067">କ୍ୟାମେରା ଇନପୁଟ <ph name="CAMERA_NAME" />ରେ ସେଟ ହୋଇଛି।</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">ନୂଆ ସେଲ୍ୟୁଲାର୍ ନେଟୱାର୍କ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7720410380936703141">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
@@ -1143,6 +1156,7 @@
 <translation id="8051716679295756675">ପୂର୍ବରୁ <ph name="DESK_TEMPLATE_NAME" /> ନାମକ ଟେମ୍ପଲେଟଟି ଅଛି</translation>
 <translation id="8052898407431791827">କ୍ଲିପବୋର୍ଡକୁ କପି କରାଯାଇଛି</translation>
 <translation id="8054466585765276473">ବ୍ୟାଟେରୀ ସମୟ ହିସାବ କରାଯାଉଛି।</translation>
+<translation id="8055510977240456975">ଜାରି ରଖିବାର ପରାମର୍ଶକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="8061464966246066292">ଉଚ୍ଚ କଣ୍ଟ୍ରାଷ୍ଟ</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />ରେ ସ୍କ୍ରିନ୍‍ କାଷ୍ଟ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="8113423164597455979">ଚାଲୁ, ସବୁ ଆପ୍</translation>
@@ -1298,6 +1312,7 @@
 <translation id="9077404278023321866">ଟେମ୍ପଲେଟଗୁଡ଼ିକ</translation>
 <translation id="9077515519330855811">ମିଡିଆ ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ, ଏବେ <ph name="MEDIA_TITLE" /> ଚାଲୁଛି</translation>
 <translation id="9079731690316798640">ୱାଇ-ଫାଇ: <ph name="ADDRESS" /></translation>
+<translation id="9080073830732419341">କ୍ୟାମେରାକୁ ଉପର ବାମପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି</translation>
 <translation id="9080132581049224423">ମୂଳସ୍କ୍ରିନକୁ ଯିବା ପାଇଁ ଉପରକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="9080206825613744995">ମାଇକ୍ରୋଫୋନ୍ ବ୍ୟବହାରରେ ଅଛି।</translation>
 <translation id="9084606467167974638">ଟୋଗଲ୍ ମେନୁ ଅବସ୍ଥିତି</translation>

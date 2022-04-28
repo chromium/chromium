@@ -168,6 +168,7 @@
 <translation id="1155816283571436363">正在連線到你的手機</translation>
 <translation id="1158080958325422608">使用大寫字母</translation>
 <translation id="1158238185437008462">查看回憶集錦</translation>
+<translation id="1160842321113409343">為保護個人隱私，我們會自動將 4 週以上的網站從清單中刪除。你再次造訪的網站可能會重新加入清單中。假如你不想讓系統根據特定網站定義興趣喜好，也可以移除網站。</translation>
 <translation id="1161575384898972166">登入 <ph name="TOKEN_NAME" /> 即可匯出用戶端憑證。</translation>
 <translation id="116173250649946226">管理員設定的預設主題不可變更。</translation>
 <translation id="1162213688509394031">隱藏標題列</translation>
@@ -832,6 +833,7 @@
 <translation id="1784849162047402014">裝置磁碟空間即將用盡</translation>
 <translation id="1787350673646245458">使用者圖片</translation>
 <translation id="1788329699711791226">透過 <ph name="ACCOUNT_EMAIL" /> 存取你的 Chrome 瀏覽器資料</translation>
+<translation id="1790664457414575790">你可以前往 <ph name="GOOGLE_PASSWORD_MANAGER" />查看及管理已儲存的密碼</translation>
 <translation id="1790976235243700817">移除存取權</translation>
 <translation id="1791662854739702043">安裝位置</translation>
 <translation id="1792619191750875668">擴充顯示畫面</translation>
@@ -3168,6 +3170,7 @@
 <translation id="4031179711345676612">可使用麥克風</translation>
 <translation id="4031308539321678562">這項操作會將瀏覽資料從這部裝置中永久刪除。Chromebook 上的其他應用程式可能會使用這個設定檔中的 Google 帳戶。如要移除這些帳戶，請依序點選 <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />。</translation>
 <translation id="4031527940632463547">禁止使用感應器</translation>
+<translation id="4033415645631238123">「使用 Smart Lock 登入」功能已停止提供服務，但你仍然可以透過 Smart Lock 解鎖裝置。</translation>
 <translation id="4033471457476425443">新增資料夾</translation>
 <translation id="4033963223187371752">即使是安全的網站，仍有可能嵌入不安全的圖片或網站頁框等內容</translation>
 <translation id="4034824040120875894">印表機</translation>
@@ -4369,6 +4372,7 @@
 <translation id="5268373933383932086">依喜好自訂頁面</translation>
 <translation id="5269977353971873915">列印失敗</translation>
 <translation id="5273806377963980154">編輯網站網址</translation>
+<translation id="5275338516105640560">「已儲存至分頁群組」按鈕</translation>
 <translation id="5275352920323889391">狗</translation>
 <translation id="527605719918376753">關閉分頁音訊</translation>
 <translation id="527605982717517565">永遠允許在 <ph name="HOST" /> 執行 JavaScript</translation>
@@ -4493,6 +4497,9 @@
 <translation id="5397794290049113714">你</translation>
 <translation id="5398497406011404839">隱藏的書籤</translation>
 <translation id="5398572795982417028">參照的網頁超出範圍限制 (<ph name="MAXIMUM_PAGE" />)</translation>
+<translation id="5398724494943676484">已成功變更遭外洩的密碼。
+
+你可以隨時在 <ph name="GOOGLE_PASSWORD_MANAGER" />中檢查密碼。</translation>
 <translation id="5401426944298678474">取消追蹤網站</translation>
 <translation id="5402815541704507626">使用行動數據下載更新</translation>
 <translation id="540296380408672091">一律封鎖 <ph name="HOST" /> 的 Cookie</translation>
@@ -4978,6 +4985,7 @@
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="5895335062901455404">使用 Google 帳戶登入後，就能將已儲存的偏好設定和活動同步至任何 ChromeOS Flex 裝置。你可以在設定中選擇要同步處理的資料。</translation>
 <translation id="5896436821193322561">不允許</translation>
+<translation id="5900186025777217044">Smart Lock 功能有所異動</translation>
 <translation id="5900302528761731119">Google 個人資料相片</translation>
 <translation id="590036993063074298">鏡像品質詳細資訊</translation>
 <translation id="5901069264981746702">你的指紋資料會安全地儲存在 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -5362,6 +5370,7 @@
 <translation id="6271780480930459892">如需最新版本，請與系統管理員聯絡。</translation>
 <translation id="6272643420381259437">下載外掛程式時發生錯誤 (<ph name="ERROR" />)</translation>
 <translation id="6273677812470008672">品質</translation>
+<translation id="6274202259872570803">螢幕側錄</translation>
 <translation id="6276210637549544171">Proxy <ph name="PROXY_SERVER" /> 要求你提供使用者名稱和密碼。</translation>
 <translation id="6277105963844135994">網路逾時</translation>
 <translation id="6277518330158259200">擷取螢幕畫面(&amp;A)</translation>
@@ -5690,6 +5699,11 @@
 <translation id="6593881952206664229">系統可能不會播放受版權保護的媒體</translation>
 <translation id="6594011207075825276">正在尋找序列裝置…</translation>
 <translation id="6595187330192059106">一律禁止 <ph name="HOST" /> 取得 MIDI 裝置的完整控制權限。</translation>
+<translation id="6595408197871512625">{COUNT,plural, =1{已成功變更遭外洩的密碼。
+
+你還有 # 組遭外洩的密碼，Google 密碼管理工具建議你立即變更這組密碼。}other{已成功變更遭外洩的密碼。
+
+你還有 # 組遭外洩的密碼，Google 密碼管理工具建議你立即變更這些密碼。}}</translation>
 <translation id="6595792813574514527">拖曳游標以使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋圖片</translation>
 <translation id="6596325263575161958">加密選項</translation>
 <translation id="6596816719288285829">IP 位址</translation>

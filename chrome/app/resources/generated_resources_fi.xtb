@@ -171,6 +171,7 @@
 <translation id="1155816283571436363">Yhdistetään puhelimeen</translation>
 <translation id="1158080958325422608">Muuta isoiksi kirjaimiksi</translation>
 <translation id="1158238185437008462">Katso muistoja</translation>
+<translation id="1160842321113409343">Yksityisyytesi suojaamiseksi poistamme listalta automaattisesti yli neljä viikkoa vanhat sivustotiedot. Jos käyt taas sivustolla, se voi näkyä listalla uudelleen. Voit myös poistaa sivuston, jos et halua sen koskaan määrittelevän sinua kiinnostavia aiheita.</translation>
 <translation id="1161575384898972166">Kirjaudu sisään laitteeseen <ph name="TOKEN_NAME" /> ja tuo asiakkaan varmenne.</translation>
 <translation id="116173250649946226">Järjestelmänvalvojasi on valinnut oletusteeman, jota ei voi muuttaa.</translation>
 <translation id="1162213688509394031">Piilota otsikkopalkki</translation>
@@ -843,6 +844,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1784849162047402014">Laitteen tallennustila on vähissä.</translation>
 <translation id="1787350673646245458">Käyttäjän kuva</translation>
 <translation id="1788329699711791226">Käytä Chrome-selaimen sisältöä tällä tilillä: <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="1790664457414575790">Voit katsella ja hallinnoida salasanoja täällä: <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1790976235243700817">Poista käyttöoikeus</translation>
 <translation id="1791662854739702043">Asennettu</translation>
 <translation id="1792619191750875668">Laajennettu näyttö</translation>
@@ -3182,6 +3184,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4031179711345676612">Mikrofoni sallittu</translation>
 <translation id="4031308539321678562">Selausdata poistetaan pysyvästi tältä laitteelta. Tämän profiilin Google-tilit voivat olla käytössä Chromebookin muissa sovelluksissa. Voit poistaa tilit kohdasta <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4031527940632463547">Tunnistimet estetty</translation>
+<translation id="4033415645631238123">Smart Lockilla sisäänkirjautuminen ei enää onnistu. Voit yhä avata lukituksen Smart Lockilla.</translation>
 <translation id="4033471457476425443">Kansion lisääminen</translation>
 <translation id="4033963223187371752">Turvalliset sivustot voivat upottaa sisältöä, kuten kuvia ja verkkokehyksiä, jotka eivät ole turvallisia</translation>
 <translation id="4034824040120875894">Tulostin</translation>
@@ -4384,6 +4387,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5268373933383932086">Oma sivu, oma valinta</translation>
 <translation id="5269977353971873915">Tulostus epäonnistui</translation>
 <translation id="5273806377963980154">Muokkaa sivuston URL-osoitetta</translation>
+<translation id="5275338516105640560">Välilehtiryhmän painike tallennettu</translation>
 <translation id="5275352920323889391">Koira</translation>
 <translation id="527605719918376753">Mykistä välilehti</translation>
 <translation id="527605982717517565">Salli aina JavaScript sivustossa <ph name="HOST" /></translation>
@@ -4508,6 +4512,9 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5397794290049113714">Sinä</translation>
 <translation id="5398497406011404839">Piilotetut kirjanmerkit</translation>
 <translation id="5398572795982417028">Sivuviittaus on rajojen ulkopuolella. Raja on <ph name="MAXIMUM_PAGE" />.</translation>
+<translation id="5398724494943676484">Vaarantunut salasana vaihdettu onnistuneesti.
+
+Tarkista salasanasi koska tahansa <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="5401426944298678474">Lopeta sivuston seuraaminen</translation>
 <translation id="5402815541704507626">Lataa päivitys mobiilidatan kautta</translation>
 <translation id="540296380408672091">Estä aina sivuston <ph name="HOST" /> evästeet</translation>
@@ -4995,6 +5002,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>
 <translation id="5895335062901455404">Tallentamasi asetukset ja toiminta ovat valmiina millä tahansa ChromeOS Flex ‑laitteella, kun kirjaudut sisään Google-tilillesi. Voit valita synkronoitavan sisällön asetuksissa.</translation>
 <translation id="5896436821193322561">Älä salli</translation>
+<translation id="5900186025777217044">Smart Lock on muuttunut</translation>
 <translation id="5900302528761731119">Google-profiilin kuva</translation>
 <translation id="590036993063074298">Peilauksen laatutiedot</translation>
 <translation id="5901069264981746702">Sormenjälkidata tallennetaan turvallisesti vain laitteellesi (<ph name="DEVICE_TYPE" />). <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
@@ -5380,6 +5388,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6271780480930459892">Pyydä uusinta versiota järjestelmänvalvojalta.</translation>
 <translation id="6272643420381259437">Virhe (<ph name="ERROR" />) ladattaessa laajennusta</translation>
 <translation id="6273677812470008672">Laatu</translation>
+<translation id="6274202259872570803">Ruutukaappausvideo</translation>
 <translation id="6276210637549544171">Välityspalvelin <ph name="PROXY_SERVER" /> edellyttää käyttäjänimeä ja salasanaa.</translation>
 <translation id="6277105963844135994">Verkon aikakatkaisu</translation>
 <translation id="6277518330158259200">Ot&amp;a kuvakaappaus</translation>
@@ -5709,6 +5718,11 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6593881952206664229">Tekijänoikeuksien alaista mediaa ei välttämättä toisteta</translation>
 <translation id="6594011207075825276">Haetaan sarjaporttilaitteita…</translation>
 <translation id="6595187330192059106"><ph name="HOST" /> ei voi saada koskaan MIDI-laitteiden täyttä käyttöoikeutta.</translation>
+<translation id="6595408197871512625">{COUNT,plural, =1{Vaarantunut salasana vaihdettu onnistuneesti.
+
+Sinulla on vielä # vaarantunut salasana. Google Salasanat suosittelee, että tarkistat sen heti.}other{Vaarantunut salasana vaihdettu onnistuneesti.
+
+Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että tarkistat salasanat heti.}}</translation>
 <translation id="6595792813574514527">Hae kuvia vetämällä: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Salausasetukset</translation>
 <translation id="6596816719288285829">IP-osoite</translation>

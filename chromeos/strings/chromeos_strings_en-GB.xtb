@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">DNS latency</translation>
 <translation id="123124571410524056">Portal suspected</translation>
 <translation id="1238612778414822719">HTTPS latency</translation>
+<translation id="1264116747675686718">Updating OS version</translation>
 <translation id="1264369926465113395">Take a look at Chromebook's new digital magazine for creators</translation>
 <translation id="1270369111467284986">Captive portal suspected</translation>
 <translation id="1290331692326790741">Weak signal</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Retry</translation>
 <translation id="2161394479394250669">Cancel print job</translation>
 <translation id="2163937499206714165">Turn dark mode on</translation>
+<translation id="2177831236093724629"><ph name="LINK_BEGIN" />Unqualified components<ph name="LINK_END" /> found. To make sure that all qualified components are identified, update your Chrome OS to the latest version.</translation>
 <translation id="2180197493692062006">Something went wrong. Try reopening the app.</translation>
 <translation id="2209788852729124853">Reset traffic counters</translation>
 <translation id="2212733584906323460">Name resolution</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">My files</translation>
 <translation id="3192947282887913208">Audio Files</translation>
 <translation id="3199982728237701504">Document feeder (two-sided)</translation>
+<translation id="320091191259649613">If you still see the issue after the update, it's possible that the component is newly qualified and hasn't made it to the database yet.</translation>
 <translation id="3226405216343213872">Looking for scanners</translation>
 <translation id="3246869037381808805">Print jobs older than 1 day will be removed</translation>
 <translation id="3268178239013324452">Failed – Door open</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Run</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4999333166442584738">Hide report</translation>
+<translation id="5008611843832219958">Update to the latest version of Chrome OS for an optimised repair process</translation>
 <translation id="500920857929044050">Stop test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">When your screen is idle, show photos, time, weather and media info.</translation>
@@ -431,6 +435,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Couldn't complete scan</translation>
 <translation id="5502931783115429516">Android not running</translation>
+<translation id="5507300744274596613">Make sure that Chrome OS is up to date</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5939518447894949180">Reset</translation>
 <translation id="594552776027197022">Generate random keypair</translation>
 <translation id="5972388717451707488">Update engine</translation>
+<translation id="5984145644188835034">Default wallpaper</translation>
 <translation id="6034694447310538551">Enable automatic monthly reset</translation>
 <translation id="6037291330010597344">The scanner’s document feeder is empty. Add documents and try again.</translation>
 <translation id="6040143037577758943">Close</translation>
@@ -717,6 +723,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8655295600908251630">Channel</translation>
 <translation id="8660881923941176839">pounds</translation>
 <translation id="8662671328352114214">Join <ph name="TYPE" /> network</translation>
+<translation id="8671972493856476349">Update to <ph name="VERSION_NUMBER" /> and restart</translation>
 <translation id="8675354002693747642">Pre-shared key</translation>
 <translation id="8677859815076891398">No albums. Create an album in <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Use the left or right arrow keys to manage this feature.</translation>
@@ -781,6 +788,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9204237731135241582">Can't contact the gateway from Android apps</translation>
 <translation id="9211490828691860325">All desks</translation>
+<translation id="922179502584117429">Current version <ph name="VERSION_NUMBER" /> is out of date</translation>
 <translation id="932327136139879170">Home</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Not activated</translation>

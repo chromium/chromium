@@ -169,6 +169,7 @@
 <translation id="1155816283571436363">S'està connectant al telèfon</translation>
 <translation id="1158080958325422608">Canvia a majúscules</translation>
 <translation id="1158238185437008462">Consulta els records</translation>
+<translation id="1160842321113409343">Amb la finalitat de protegir la teva privadesa, suprimim automàticament els llocs web de la llista que tenen més de 4 setmanes. És possible que un lloc web que tornis a visitar aparegui de nou a la llista. També pots suprimir un lloc web si no vols que defineixi els teus interessos en cap cas.</translation>
 <translation id="1161575384898972166">Inicieu la sessió a <ph name="TOKEN_NAME" /> per exportar el certificat de client.</translation>
 <translation id="116173250649946226">L'administrador ha establert un tema predeterminat que no es pot canviar.</translation>
 <translation id="1162213688509394031">Amaga la barra de títol</translation>
@@ -832,6 +833,7 @@
 <translation id="1784849162047402014">Queda poc espai de disc del dispositiu</translation>
 <translation id="1787350673646245458">Imatge de l'usuari</translation>
 <translation id="1788329699711791226">Accedeix al contingut del navegador Chrome des del compte <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="1790664457414575790">Pots veure i gestionar les teves contrasenyes desades a <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1790976235243700817">Suprimeix l'accés</translation>
 <translation id="1791662854739702043">Instal·lat</translation>
 <translation id="1792619191750875668">Pantalla ampliada</translation>
@@ -3168,6 +3170,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4031179711345676612">El micròfon es pot utilitzar</translation>
 <translation id="4031308539321678562">Amb aquesta acció, les dades de navegació d'aquest dispositiu se suprimiran permanentment. És possible que altres aplicacions del Chromebook utilitzin els comptes de Google d'aquest perfil. Pots suprimir aquests comptes a <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4031527940632463547">Sensors bloquejats</translation>
+<translation id="4033415645631238123">L'inici de sessió amb Smart Lock ja no està disponible. Pots continuar fent servir Smart Lock per desbloquejar el dispositiu.</translation>
 <translation id="4033471457476425443">Afegeix una carpeta nova</translation>
 <translation id="4033963223187371752">Els llocs web segurs poden inserir contingut com ara imatges o marcs web que no siguin segurs</translation>
 <translation id="4034824040120875894">Impressora</translation>
@@ -4370,6 +4373,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5268373933383932086">La teva pàgina, a la teva manera</translation>
 <translation id="5269977353971873915">Error d'impressió</translation>
 <translation id="5273806377963980154">Edita l'URL del lloc web</translation>
+<translation id="5275338516105640560">Botó de grup de pestanyes desat</translation>
 <translation id="5275352920323889391">Gos</translation>
 <translation id="527605719918376753">Silencia la pestanya</translation>
 <translation id="527605982717517565">Permet sempre JavaScript a <ph name="HOST" /></translation>
@@ -4494,6 +4498,9 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5397794290049113714">Usuari</translation>
 <translation id="5398497406011404839">Adreces d'interès amagades</translation>
 <translation id="5398572795982417028">La pàgina indicada no respecta el límit de <ph name="MAXIMUM_PAGE" /></translation>
+<translation id="5398724494943676484">La contrasenya en perill s'ha canviat correctament.
+
+Pots comprovar les contrasenyes sempre que vulguis a <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="5401426944298678474">Deixa de seguir el lloc web</translation>
 <translation id="5402815541704507626">Baixa l'actualització utilitzant dades mòbils</translation>
 <translation id="540296380408672091">Bloqueja sempre les galetes a <ph name="HOST" /></translation>
@@ -4980,6 +4987,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5895138241574237353">Reinicia</translation>
 <translation id="5895335062901455404">Les teves preferències i activitat desades estaran preparades en qualsevol dispositiu ChromeOS Flex quan hi iniciïs la sessió amb el teu Compte de Google. Per decidir què vols sincronitzar, ves a Configuració.</translation>
 <translation id="5896436821193322561">No permetis</translation>
+<translation id="5900186025777217044">Smart Lock ha canviat</translation>
 <translation id="5900302528761731119">Foto del perfil de Google</translation>
 <translation id="590036993063074298">Informació sobre la qualitat de la rèplica</translation>
 <translation id="5901069264981746702">Les dades de l'empremta digital s'emmagatzemen de manera segura i no surten mai del <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
@@ -5363,6 +5371,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6271780480930459892">Contacta amb l'administrador per obtenir la versió més recent.</translation>
 <translation id="6272643420381259437">S'ha produït un error (<ph name="ERROR" />) en baixar el connector</translation>
 <translation id="6273677812470008672">Qualitat</translation>
+<translation id="6274202259872570803">Captura de pantalla de vídeo</translation>
 <translation id="6276210637549544171">El servidor intermediari del domini <ph name="PROXY_SERVER" /> requereix un nom d'usuari i una contrasenya.</translation>
 <translation id="6277105963844135994">Temps d'espera de la xarxa</translation>
 <translation id="6277518330158259200">Fes una c&amp;aptura de pantalla</translation>
@@ -5692,6 +5701,11 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6593881952206664229">Pot ser que el contingut multimèdia amb drets d'autor no es reprodueixi</translation>
 <translation id="6594011207075825276">S'estan cercant dispositius en sèrie...</translation>
 <translation id="6595187330192059106">Impedeix sempre que <ph name="HOST" /> tingui control total dels dispositius MIDI</translation>
+<translation id="6595408197871512625">{COUNT,plural, =1{La contrasenya en perill s'ha canviat correctament.
+
+Tens # contrasenya més en perill. El gestor de contrasenyes de Google recomana que la comprovis ara.}other{Les contrasenyes en perill s'han canviat correctament.
+
+Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana que les comprovis ara.}}</translation>
 <translation id="6595792813574514527">Arrossega per cercar imatges amb <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Opcions d'encriptació</translation>
 <translation id="6596816719288285829">Adreça IP</translation>

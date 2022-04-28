@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
 <translation id="1113173431709655881">Myndavélarstilling</translation>
+<translation id="1153190633558910465">Slökkt á línum</translation>
 <translation id="1175958423215084756">Tengill greindist. <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">Snúa um 90 gráður réttsælis</translation>
 <translation id="1276998909102132017">Myndir úr galleríi</translation>
 <translation id="1300209025925956156">Skannaðu skjalið</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Leit + Vinstri ör til að opna.</translation>
+<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">Prenta</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> er ekki í sambandi.</translation>
 <translation id="1473110567575736769">3 sekúndna teljari</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">Tími niðurteljara</translation>
 <translation id="2050339315714019657">Skammsnið</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> er virk</translation>
+<translation id="2134029355740465625">Stillingar myndskeiða</translation>
 <translation id="2144806332417375165">Sérstilltar færibreytur myndskeiðs</translation>
 <translation id="2175927920773552910">QR-kóði</translation>
 <translation id="2271433936731426666">Virkja myndskeiðsyfirlit í fullri stærð</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">Aftari myndavél</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> sek.</translation>
 <translation id="2761536921376153655">Gerð leitar</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">Forskoðun speglunar</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> er í sambandi.</translation>
 <translation id="2968794441791257519">Myndir og myndskeið sem tekin eru með myndavélinni verða flutt í niðurhalsmöppuna. Þú getur fengið aðgang að þeim í „Skrár“.
 
@@ -52,6 +57,8 @@
 <translation id="3240426699337459095">Tengill afritaður</translation>
 <translation id="3259149966178251584">Upplausn myndavélar</translation>
 <translation id="3305962767867348165">Lagfæra</translation>
+<translation id="3354465018370944241">Myndastillingar</translation>
+<translation id="3411958449466169012">Slökkt á teljara</translation>
 <translation id="3448774564454087943">Ekki er hægt að vista myndskeiðið því það er of stutt</translation>
 <translation id="346539236881580388">Taka aftur</translation>
 <translation id="3517926952904427380">Ekki tókst að taka andlitsmynd</translation>
@@ -63,9 +70,12 @@
 <translation id="3810838688059735925">Myndskeið</translation>
 <translation id="3838931309141338733">Skanna strikamerki</translation>
 <translation id="3892148308691398805">Afrita texta</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Gera hlé á upptöku</translation>
 <translation id="4121305183798804752">Skjal greindist</translation>
+<translation id="414641094616694804">Myndavélin getur ekki breytt upplausn</translation>
 <translation id="4269820728363426813">Afrita slóð tengils</translation>
+<translation id="4281620174117014503">Miðlungsupplausn</translation>
 <translation id="4329152592498422850">Skipta yfir í töku ferningslaga mynda</translation>
 <translation id="4383571725254449280">Prenta afkastaannála</translation>
 <translation id="4445542136948522167">Hætta að taka mynd</translation>
@@ -74,12 +84,15 @@
 <translation id="4628948037717959914">Mynd</translation>
 <translation id="4649291346448517080">Ekki tókst að vista skrána</translation>
 <translation id="4695379108709712600">Færist upp á við</translation>
+<translation id="4705093842003735294">Full upplausn</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Myndupptaka af mörgum straumum í einu</translation>
+<translation id="5034763830503483128">Myndhlutfall myndar</translation>
 <translation id="5057360777601936059">Ekki er hægt að nota myndavélina eins og er.
         Athugaðu hvort myndavélin er rétt tengd.</translation>
 <translation id="5163387177077603948">Færist til hægri</translation>
 <translation id="520537883758714667">Nú er skjalaskönnun í boði</translation>
+<translation id="5235304959032763950">16 á móti 9</translation>
 <translation id="5266635337630551423">Efra, vinstra horn skjals</translation>
 <translation id="5317780077021120954">Vista</translation>
 <translation id="5320594929574852403">Færist til vinstri</translation>
@@ -94,6 +107,7 @@
 <translation id="5916664084637901428">Kveikt</translation>
 <translation id="5975083100439434680">Minnka aðdrátt</translation>
 <translation id="5976160379964388480">Annað</translation>
+<translation id="603973421174355542">Full háskerpa</translation>
 <translation id="6073451960410192870">Stöðva upptöku</translation>
 <translation id="6197807149213783179">Vista lýsigögn</translation>
 <translation id="6233780560267770709">3 sinnum 3</translation>
@@ -104,6 +118,7 @@
 Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við sýnishorn af mynd eða myndskeiði og lýsa því sem er að. (Til dæmis: myndin er of dökk eða myndefnið er ekki í fókus.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixlar</translation>
 <translation id="6527303717912515753">Deila</translation>
+<translation id="6631515515009660915">Slökkt á speglun</translation>
 <translation id="6652737148136672975">Nota örvalykla til að færa til horn</translation>
 <translation id="667999046851023355">Skjal</translation>
 <translation id="6681668084120808868">Taka mynd</translation>
@@ -114,6 +129,7 @@ Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við
 <translation id="698156982839284926">3 sekúndur</translation>
 <translation id="712848772518857951">Viltu örugglega fjarlægja <ph name="COUNT" /> atriði?</translation>
 <translation id="7134221860976209830">10 sekúndna teljari</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Gerð upptöku</translation>
 <translation id="7243947652761655814">Upplausn myndskeiðs</translation>
 <translation id="7337660886763914220">Villur eru í skráakerfi.</translation>
@@ -146,9 +162,11 @@ Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við
 <translation id="8815966864175525708">Skipta yfir í töku andlitsmynda</translation>
 <translation id="8828441885228359828">Halda upptöku áfram</translation>
 <translation id="8870695351537079478">Ekki tókst að hefja upptöku</translation>
+<translation id="8880167521484863515">4 á móti 3</translation>
 <translation id="8903921497873541725">Auka aðdrátt</translation>
 <translation id="9045010116236796332">Hafðu öll horn skjalsins innan rammans</translation>
 <translation id="9045155556724273246">10 sekúndur</translation>
 <translation id="906331135292332864">Vinnur úr mynd ...</translation>
+<translation id="922762992951083513">Kveikt á speglun</translation>
 <translation id="945522503751344254">Senda ábendingu</translation>
 </translationbundle>

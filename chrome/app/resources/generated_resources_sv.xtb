@@ -171,6 +171,7 @@
 <translation id="1155816283571436363">Ansluter till telefonen</translation>
 <translation id="1158080958325422608">Ändra till versaler</translation>
 <translation id="1158238185437008462">Se minnen</translation>
+<translation id="1160842321113409343">För att skydda din integritet raderar vi automatiskt webbplatser som är äldre än fyra veckor från listan. Om du besöker en webbplats på nytt kan den dyka upp på listan igen. Du kan också ta bort en webbplats om du inte vill att webbplatsen någonsin ska definiera dina intressen.</translation>
 <translation id="1161575384898972166">Logga in på <ph name="TOKEN_NAME" /> om du vill exportera klientcertifikatet.</translation>
 <translation id="116173250649946226">Administratören har ställt in ett standardtema som inte kan ändras.</translation>
 <translation id="1162213688509394031">Dölj namnlist</translation>
@@ -843,6 +844,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1784849162047402014">Enheten har ont om diskutrymme</translation>
 <translation id="1787350673646245458">Användarbild</translation>
 <translation id="1788329699711791226">Få åtkomst till det du har i webbläsaren Chrome från <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="1790664457414575790">Du kan se och hantera sparade lösenord i <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1790976235243700817">Ta bort åtkomst</translation>
 <translation id="1791662854739702043">Installerat</translation>
 <translation id="1792619191750875668">Utökad skärm</translation>
@@ -3184,6 +3186,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4031179711345676612">Mikrofon är tillåten</translation>
 <translation id="4031308539321678562">All webbinformation raderas permanent från den här enheten. Google-konton i den här profilen kanske används i andra appar på din Chromebook. Du kan ta bort dessa konton via <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4031527940632463547">Användning av sensorer har blockerats</translation>
+<translation id="4033415645631238123">Det går inte längre att logga in med Smart Lock. Du kan fortfarande låsa upp med Smart Lock.</translation>
 <translation id="4033471457476425443">Lägg till ny mapp</translation>
 <translation id="4033963223187371752">Säkra webbplatser kan ha inbäddat innehåll som bilder eller ramar som inte är säkra</translation>
 <translation id="4034824040120875894">Skrivare</translation>
@@ -4386,6 +4389,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5268373933383932086">Din sida, som du vill ha den</translation>
 <translation id="5269977353971873915">Det gick inte att skriva ut dokumentet</translation>
 <translation id="5273806377963980154">Redigera webbadress</translation>
+<translation id="5275338516105640560">Knapp för sparad flikgrupp</translation>
 <translation id="5275352920323889391">Hund</translation>
 <translation id="527605719918376753">Stäng av ljud från flik</translation>
 <translation id="527605982717517565">Tillåt alltid JavaScript på <ph name="HOST" /></translation>
@@ -4510,6 +4514,9 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5397794290049113714">Du</translation>
 <translation id="5398497406011404839">Dolda bokmärken</translation>
 <translation id="5398572795982417028">Sidreferensen faller utanför intervallet. Gränsen är <ph name="MAXIMUM_PAGE" />.</translation>
+<translation id="5398724494943676484">Det utsatta lösenordet har ändrats.
+
+Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="5401426944298678474">Sluta följa webbplats</translation>
 <translation id="5402815541704507626">Ladda ned uppdateringen via mobildata</translation>
 <translation id="540296380408672091">Blockera alltid cookies på <ph name="HOST" /></translation>
@@ -4997,6 +5004,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5895138241574237353">Starta om</translation>
 <translation id="5895335062901455404">När du är inloggad med ditt Google-konto har du tillgång till dina sparade inställningar och din sparade aktivitet på alla ChromeOS Flex-enheter. Du kan välja vad som ska synkroniseras i inställningarna.</translation>
 <translation id="5896436821193322561">Tillåt inte</translation>
+<translation id="5900186025777217044">Smart Lock har ändrats</translation>
 <translation id="5900302528761731119">Profilbild i Google Profiler</translation>
 <translation id="590036993063074298">Information om speglingskvalitet</translation>
 <translation id="5901069264981746702">Fingeravtrycksdata lagras på ett säkert sätt och lämnar aldrig din <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
@@ -5381,6 +5389,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6271780480930459892">Kontakta administratören för att få den senaste versionen.</translation>
 <translation id="6272643420381259437">Ett fel (<ph name="ERROR" />) inträffade när pluginprogrammet laddades ned.</translation>
 <translation id="6273677812470008672">Kvalitet</translation>
+<translation id="6274202259872570803">Screencast</translation>
 <translation id="6276210637549544171">Proxyservern <ph name="PROXY_SERVER" /> kräver användarnamn och lösenord.</translation>
 <translation id="6277105963844135994">Tidsgräns för nätverket</translation>
 <translation id="6277518330158259200">T&amp;a en skärmbild</translation>
@@ -5710,6 +5719,11 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6593881952206664229">Upphovsrättsskyddad media kanske inte spelas upp</translation>
 <translation id="6594011207075825276">Söker efter serieportsanslutna enheter …</translation>
 <translation id="6595187330192059106">Blockera alltid <ph name="HOST" /> från att få fullständig kontroll över MIDI-enheter.</translation>
+<translation id="6595408197871512625">{COUNT,plural, =1{Det utsatta lösenordet har ändrats.
+
+Det finns # utsatt lösenord till. Du rekommenderas av Google Lösenordshantering att kontrollera detta lösenord nu.}other{Det utsatta lösenordet har ändrats.
+
+Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshantering att kontrollera dessa lösenord nu.}}</translation>
 <translation id="6595792813574514527">Tryck och dra för att söka efter bilder med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Krypteringsalternativ</translation>
 <translation id="6596816719288285829">IP-adress</translation>

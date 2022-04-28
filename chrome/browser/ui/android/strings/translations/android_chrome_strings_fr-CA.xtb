@@ -804,6 +804,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5517095782334947753">Vous avez les favoris, l'historique, les mots de passe et d'autres paramètres de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524761631371622910">Pendant les essais, si Chrome vous ajoute au hasard dans un essai en cours, votre historique de navigation a une incidence sur les annonces que vous voyez ainsi que sur les centres d'intérêt tels qu'ils sont estimés ci-dessous. Afin de protéger votre confidentialité, Chrome supprime vos centres d'intérêt de façon continue chaque mois.</translation>
 <translation id="5524843473235508879">Redirection bloquée.</translation>
+<translation id="5528459307536571064">1 groupe d'onglets</translation>
 <translation id="5548606607480005320">Vérification de sécurité</translation>
 <translation id="5555525474779371165">Choisir votre mode de navigation sécurisée</translation>
 <translation id="5556459405103347317">Actualiser</translation>
@@ -1516,5 +1517,6 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="981121421437150478">Hors ligne</translation>
 <translation id="983192555821071799">Fermer tous les onglets</translation>
 <translation id="987264212798334818">Généralités</translation>
+<translation id="992745192656291733"><ph name="TAB_COUNT" /> onglets</translation>
 <translation id="996149300115483134">Le menu de la carte du flux est fermé</translation>
 </translationbundle>

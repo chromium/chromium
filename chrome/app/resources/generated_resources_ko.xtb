@@ -171,6 +171,7 @@
 <translation id="1155816283571436363">휴대전화에 연결하는 중</translation>
 <translation id="1158080958325422608">Make Uppercase(대문자로 표시)</translation>
 <translation id="1158238185437008462">추억 보기</translation>
+<translation id="1160842321113409343">개인 정보를 보호하기 위해 Chrome에서는 4주가 지난 사이트를 목록에서 자동 삭제합니다. 재방문한 사이트는 목록에 다시 표시될 수 있습니다. 사이트에서 관심분야를 정의하는 것을 원치 않으면 해당 사이트를 삭제하면 됩니다.</translation>
 <translation id="1161575384898972166"><ph name="TOKEN_NAME" />에 로그인하여 클라이언트 인증서를 내보내세요.</translation>
 <translation id="116173250649946226">관리자가 기본 테마를 설정했으며, 이는 수정할 수 없습니다.</translation>
 <translation id="1162213688509394031">제목 표시줄 숨기기</translation>
@@ -843,6 +844,7 @@
 <translation id="1784849162047402014">기기에 디스크 저장 공간 부족</translation>
 <translation id="1787350673646245458">사용자 이미지</translation>
 <translation id="1788329699711791226"><ph name="ACCOUNT_EMAIL" />에서 Chrome 브라우저 기능 액세스</translation>
+<translation id="1790664457414575790"><ph name="GOOGLE_PASSWORD_MANAGER" />에서 저장된 비밀번호를 확인하고 관리할 수 있습니다.</translation>
 <translation id="1790976235243700817">액세스 권한 삭제</translation>
 <translation id="1791662854739702043">설치됨</translation>
 <translation id="1792619191750875668">확장 디스플레이</translation>
@@ -3185,6 +3187,7 @@
 <translation id="4031179711345676612">마이크 허용됨</translation>
 <translation id="4031308539321678562">기기에서 인터넷 사용 기록이 완전히 삭제됩니다. Chromebook에 설치된 다른 앱에서 이 프로필의 Google 계정을 사용하고 있을 수 있습니다. 그 경우 <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />에서 계정을 삭제할 수 있습니다.</translation>
 <translation id="4031527940632463547">센서 차단됨</translation>
+<translation id="4033415645631238123">Smart Lock과의 동기화는 더 이상 지원되지 않습니다. Smart Lock을 사용해 잠금 해제할 수는 있습니다.</translation>
 <translation id="4033471457476425443">새 폴더 추가</translation>
 <translation id="4033963223187371752">안전한 사이트에서 안전하지 않은 이미지 또는 웹 프레임 등의 콘텐츠를 삽입할 수 있음</translation>
 <translation id="4034824040120875894">프린터</translation>
@@ -4385,6 +4388,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5268373933383932086">내가 고르는 내 페이지</translation>
 <translation id="5269977353971873915">인쇄 실패</translation>
 <translation id="5273806377963980154">사이트 URL 수정</translation>
+<translation id="5275338516105640560">저장된 탭 그룹 버튼</translation>
 <translation id="5275352920323889391">개</translation>
 <translation id="527605719918376753">탭 음소거</translation>
 <translation id="527605982717517565"><ph name="HOST" />에서 자바스크립트 항상 허용</translation>
@@ -4509,6 +4513,9 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5397794290049113714">나</translation>
 <translation id="5398497406011404839">숨겨진 북마크</translation>
 <translation id="5398572795982417028">페이지가 범위를 벗어난 경우 참고하세요. 한도는 <ph name="MAXIMUM_PAGE" />페이지입니다.</translation>
+<translation id="5398724494943676484">유출된 비밀번호를 변경했습니다.
+
+언제든지 <ph name="GOOGLE_PASSWORD_MANAGER" />에서 비밀번호를 확인하세요.</translation>
 <translation id="5401426944298678474">사이트 팔로우 해제</translation>
 <translation id="5402815541704507626">모바일 데이터를 사용하여 업데이트 다운로드</translation>
 <translation id="540296380408672091"><ph name="HOST" />에서 쿠키 항상 차단</translation>
@@ -4996,6 +5003,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5895138241574237353">다시 시작</translation>
 <translation id="5895335062901455404">Google 계정으로 로그인할 경우 모든 ChromeOS Flex 기기에서 저장된 환경설정 및 활동을 사용할 수 있습니다. 설정에서 동기화할 항목을 선택하세요.</translation>
 <translation id="5896436821193322561">허용 안함</translation>
+<translation id="5900186025777217044">Smart Lock 변경됨</translation>
 <translation id="5900302528761731119">Google 프로필 사진</translation>
 <translation id="590036993063074298">미러링 품질 세부정보</translation>
 <translation id="5901069264981746702">지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
@@ -5380,6 +5388,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6271780480930459892">최신 버전을 받으려면 관리자에게 문의하세요.</translation>
 <translation id="6272643420381259437">플러그인을 다운로드하는 중에 오류(<ph name="ERROR" />)가 발생했습니다.</translation>
 <translation id="6273677812470008672">품질</translation>
+<translation id="6274202259872570803">스크린캐스트</translation>
 <translation id="6276210637549544171">프록시 <ph name="PROXY_SERVER" />에 사용자 이름과 비밀번호를 입력해야 합니다.</translation>
 <translation id="6277105963844135994">네트워크 시간 초과</translation>
 <translation id="6277518330158259200">스크린샷 캡쳐하기(&amp;A)</translation>
@@ -5709,6 +5718,11 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6593881952206664229">저작권이 있는 미디어는 재생되지 않을 수 있습니다</translation>
 <translation id="6594011207075825276">직렬 기기를 찾는 중...</translation>
 <translation id="6595187330192059106"><ph name="HOST" />의 MIDI 기기 전체 제어 항상 차단</translation>
+<translation id="6595408197871512625">{COUNT,plural, =1{유출된 비밀번호를 변경했습니다.
+
+유출된 비밀번호가 #개 더 있습니다. Google 비밀번호 관리자에서 지금 바로 비밀번호를 확인하시기 바랍니다.}other{유출된 비밀번호를 변경했습니다.
+
+유출된 비밀번호가 #개 더 있습니다. Google 비밀번호 관리자에서 지금 바로 비밀번호를 확인하시기 바랍니다.}}</translation>
 <translation id="6595792813574514527"><ph name="VISUAL_SEARCH_PROVIDER" />로 드래그하여 이미지 검색</translation>
 <translation id="6596325263575161958">암호화 옵션</translation>
 <translation id="6596816719288285829">IP 주소</translation>

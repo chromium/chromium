@@ -549,6 +549,7 @@
 <translation id="1536754031901697553">منقطع کیا جا رہا ہے...</translation>
 <translation id="1537254971476575106">پوری اسکرین مکبّر</translation>
 <translation id="15373452373711364">بڑا ماؤس کرسر</translation>
+<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> <ph name="ORIGIN" /> کو پڑھنے اور تبدیل کرنے کی درخواست کر رہا ہے</translation>
 <translation id="1540605929960647700">ڈیمو موڈ فعال کریں</translation>
 <translation id="1541346352678737112">کوئی نیٹ ورک نہیں ملا</translation>
 <translation id="1542137295869176367">آپ کا سائن ان ڈیٹا اپ ڈیٹ نہیں ہو سکا</translation>
@@ -1869,6 +1870,7 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> میں سائن ان کریں</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">ہجے کے ساتھ گرامر چیک کریں</translation>
+<translation id="275085171842676231"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> پڑھنے اور تبدیل کرنے کی درخواست کی جا رہی ہے:</translation>
 <translation id="2753677631968972007">دستی طور پر سائٹ کی اجازتوں کو کنٹرول کریں۔</translation>
 <translation id="2755349111255270002">اس <ph name="DEVICE_TYPE" /> کو ری سیٹ کریں</translation>
 <translation id="2755367719610958252">ایکسیسبیلٹی کی خصوصیات کا نظم کریں</translation>
@@ -3554,6 +3556,7 @@
 <translation id="4429239357082509581">‏Steam کو چلنے کے لیے اجازت نہیں ہے</translation>
 <translation id="4430019312045809116">والیوم</translation>
 <translation id="4430369329743628066">بُک مارک شامل کر دیا گیا</translation>
+<translation id="4430422687972614133">ورچوئل کارڈ آن کریں</translation>
 <translation id="4432621511648257259">پاس ورڈ غلط ہے</translation>
 <translation id="443454694385851356">پرانا (غیر محفوظ)</translation>
 <translation id="443475966875174318">ناموافق ایپلیکیشنز کو اپ ڈیٹ کریں یا ہٹائیں</translation>
@@ -7079,6 +7082,7 @@
 <translation id="7947964080535614577">سائٹس عام طور پر اشتہارات دکھاتی ہیں تاکہ وہ بغیر کسی چارج کے مواد یا سروسز فراہم کر سکیں۔ لیکن کچھ سائٹس دخل انداز یا گمراہ کن اشتہارات دکھانے کے لیے جانی جاتی ہیں۔</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> کے سبھی صفحات</translation>
 <translation id="7951265006188088697">‏Google Pay کے ادائیگی کے طریقے شامل کرنے یا ان کا نظم کرنے کے لئے اپنا <ph name="BEGIN_LINK" />Google اکاؤنٹ<ph name="END_LINK" /> ملاحظہ کریں</translation>
+<translation id="795130320946928025">ورچوئل کارڈ آف کریں</translation>
 <translation id="7952708427581814389">سائٹس آپ کے کلپ بورڈ پر ٹیکسٹ اور تصاویر دیکھنے کے لیے پوچھ سکتی ہیں</translation>
 <translation id="795282463722894016">بحال کرنا مکمل ہو گیا</translation>
 <translation id="7952904276017482715">‏متوقع ID "<ph name="EXPECTED_ID" />"، لیکن ID تھی ‎‎"<ph name="NEW_ID" />"</translation>

@@ -79,6 +79,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1312604459020188865">Fuqia e sinjalit <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Shfaq gjithmonë raftin</translation>
 <translation id="1316811122439383437">Çanta: regjistrimet e fundit të ekranit, shkarkimet dhe skedarët e gozhduar</translation>
+<translation id="132346741904777634">Pamja paraprake e kamerës ka kaluar në këndin e sipërm majtas. Në konflikt me sipërfaqen e sistemit.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> u lidh</translation>
 <translation id="1341651618736211726">Tejkalo</translation>
 <translation id="1346748346194534595">Djathtas</translation>
@@ -162,6 +163,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1885785240814121742">Shkyçe me gjurmën e gishtit</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> nuk e mbështet <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Rezolucioni ndryshoi në <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Kliko "Konfirmo" për të ruajtur ndryshimet. Cilësimet e mëparshme do të restaurohen për <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1915307458270490472">Mbyll</translation>
+<translation id="1918022425394817322">Pamja paraprake e kamerës ka kaluar në këndin e sipërm djathtas</translation>
 <translation id="1919743966458266018">Shkurtorja për të hapur menaxherin e detyrave ka ndryshuar. Përdor <ph name="NEW_SHORTCUT" /> në vend të <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Klikimet automatike</translation>
 <translation id="1928739107511554905">Për të marrë përditësimin, përdor ekranin me prekje për ta rinisur Chromebook me tastierën e lidhur.</translation>
@@ -551,6 +553,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> u zhvendos te skedari <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Nuk ofrohet</translation>
 <translation id="4303223480529385476">Zgjero zonën e statusit</translation>
+<translation id="4312840429157639164">Pamja paraprake e kamerës ka kaluar në këndin e sipërm djathtas. Në konflikt me sipërfaqen e sistemit.</translation>
 <translation id="4316910396681052118">TË GJITHA APLIKACIONET</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Ke shtypur shkurtoren e tastierës për kontrastin e lartë. Dëshiron ta aktivizosh?</translation>
@@ -857,6 +860,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6254629735336163724">Kyçur horizontalisht</translation>
 <translation id="6259254695169772643">Përdor lapsin për të zgjedhur</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Po aktivizohet...</translation>
+<translation id="6274202259872570803">Transmetimi i ekranit</translation>
 <translation id="6283712521836204486">Modaliteti "Mos shqetëso" është joaktiv.</translation>
 <translation id="6284232397434400372">Rezolucioni u ndryshua</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> mund të rishtohet më vonë me lejen e prindit.</translation>
@@ -888,6 +892,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="649452524636452238">Kodi PIN i kartës smart</translation>
 <translation id="6495400115277918834">"Figurë brenda figurës" filloi; shtyp "Alt+Shift+V" për të fokusuar</translation>
 <translation id="6501401484702599040">Po transmeton ekranin te <ph name="RECEIVER_NAME" /></translation>
+<translation id="6515727200518652613">Kamera u shkëput; po provohet rilidhja.</translation>
 <translation id="6520517963145875092">Zgjidh një dritare për të regjistruar</translation>
 <translation id="652139407789908527">Ekrani yt do të jetë bosh për një kohë më të gjatë se zakonisht (deri në një minutë) gjatë këtij përditësimi. Mos e shtyp butonin e energjisë kur përditësimi është në vazhdim.</translation>
 <translation id="6528179044667508675">Mos shqetëso</translation>
@@ -906,6 +911,7 @@ Instalim i ri</translation>
 <translation id="6578407462441924264">Pa emër</translation>
 <translation id="6585808820553845416">Sesioni përfundon për <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597278316891651699">Pamja paraprake e kamerës ka kaluar në këndin e poshtëm majtas. Në konflikt me sipërfaqen e sistemit.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>
 <translation id="6612802754306526077">U zgjodh modaliteti i regjistrimit të ekranit</translation>
 <translation id="6614169507485700968">Ekrani i privatësisë është aktiv</translation>
@@ -943,6 +949,7 @@ Instalim i ri</translation>
 <translation id="6801878137098616817">Modifikuar së fundi</translation>
 <translation id="6803622936009808957">Nuk mundi të pasqyrojë ekranet sepse nuk u gjetën rezolucione të mbështetura. Në vend të kësaj kaloi në desktopin e zgjeruar.</translation>
 <translation id="6818242057446442178">Një fjalë pas</translation>
+<translation id="6819327813400217281">Pamja paraprake e kamerës ka kaluar në këndin e poshtëm majtas</translation>
 <translation id="6820676911989879663">Bëj një pushim!</translation>
 <translation id="6827049576281411231">Mbyll panelin e ngjarjes</translation>
 <translation id="6836499262298959512">Skedar i rrezikshëm</translation>
@@ -971,6 +978,7 @@ Instalim i ri</translation>
 <translation id="6979158407327259162">Disku i Google</translation>
 <translation id="6981982820502123353">Qasja</translation>
 <translation id="698231206551913481">Të gjithë skedarët dhe të dhënat lokale të lidhura me këtë përdorues do të fshihen përgjithmonë pasi të hiqet ky përdorues.</translation>
+<translation id="7005239792648594238">Hap një aplikacion për të filluar</translation>
 <translation id="7007983414944123363">Kod yt PIN ose fjalëkalimi nuk mund të verifikoheshin. Provo përsëri.</translation>
 <translation id="7014684956566476813">Lidhur me një pajisje me emrin "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7015766095477679451">Kthehu në <ph name="COME_BACK_TIME" />.</translation>
@@ -984,6 +992,7 @@ Instalim i ri</translation>
 <translation id="7045033600005038336">Të zëvendësohet shablloni?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> u shkëput</translation>
 <translation id="7055910611768509537">Stilolapsi nuk është përdorur prej më shumë se një jave</translation>
+<translation id="7061457967428964661">Pamja paraprake e kamerës; shtyp Control + tastet e shigjetave për ta lëvizur pamjen paraprake në një kënd tjetër</translation>
 <translation id="7066646422045619941">Ky rrjet është çaktivizuar nga administratori yt.</translation>
 <translation id="7067196344162293536">Rrotullim automatik</translation>
 <translation id="7068360136237591149">Hap skedarët</translation>
@@ -1004,6 +1013,7 @@ Instalim i ri</translation>
 <translation id="718361511487535372">Hap në kalendarin e Google</translation>
 <translation id="7188494361780961876">Menyja u zhvendos në këndin lart majtas të ekranit.</translation>
 <translation id="7189412385142492784">Sa larg është Afërdita</translation>
+<translation id="7198435252016571249">Pamja paraprake e kamerës ka kaluar në këndin e poshtëm djathtas. Në konflikt me sipërfaqen e sistemit.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Kjo pajisje Chromebook duhet të riniset për të zbatuar një përditësim. Kjo mund të zgjasë deri në 1 minutë.</translation>
 <translation id="7256634071279256947">Mikrofoni i pasmë</translation>
 <translation id="7258828758145722155">Modifikuar dje</translation>
@@ -1064,8 +1074,10 @@ Instalim i ri</translation>
 <translation id="7593891976182323525">Kërko ose Shift</translation>
 <translation id="7600875258240007829">Shiko të gjitha njoftimet</translation>
 <translation id="7607002721634913082">Ndërprerë</translation>
+<translation id="7611213136657090146">Kamera u rilidh.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Shfaq cilësimet e "Ndarjes në afërsi".</translation>
+<translation id="7634648064048557203">Pamja paraprake e kamerës ka kaluar në këndin e poshtëm djathtas</translation>
 <translation id="7641938616688887143">Regjistro</translation>
 <translation id="7642647758716480637">Hap cilësimet për <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (zotëruesi)</translation>
@@ -1078,6 +1090,7 @@ Instalim i ri</translation>
 <translation id="7662283695561029522">Trokit për të konfiguruar</translation>
 <translation id="7670953955701272011">Hape këtë datë në "Kalendarin e Google"</translation>
 <translation id="7671610481353807627">Aplikacionet janë renditur sipas ngjyrës</translation>
+<translation id="7684531502177797067">Hyrja e kamerës u caktua te <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Shto rrjet të ri celular</translation>
 <translation id="7720410380936703141">PROVO SËRISH</translation>
@@ -1299,6 +1312,7 @@ Instalim i ri</translation>
 <translation id="9077404278023321866">Shabllonet</translation>
 <translation id="9077515519330855811">Kontrollet e medias, tani po luhet <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
+<translation id="9080073830732419341">Pamja paraprake e kamerës ka kaluar në këndin e sipërm majtas</translation>
 <translation id="9080132581049224423">Rrëshqit shpejt lart për të shkuar në ekranin kryesor</translation>
 <translation id="9080206825613744995">Mikrofoni është në përdorim.</translation>
 <translation id="9084606467167974638">Ndrysho pozicionin e menysë</translation>

@@ -79,6 +79,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1312604459020188865">Puterea semnalului: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Afișează întotdeauna raftul</translation>
 <translation id="1316811122439383437">Manager de clipboard: capturi de ecran, descărcări și fișiere fixate recente</translation>
+<translation id="132346741904777634">Camera foto este aliniată cu colțul din stânga sus. Conflict cu platforma de sistem.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> s-a conectat</translation>
 <translation id="1341651618736211726">Suplimentar</translation>
 <translation id="1346748346194534595">Dreapta</translation>
@@ -114,6 +115,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1536604384701784949">Pentru a folosi <ph name="USER_EMAIL_ADDRESS" />, mai întâi trebuie să te deconectezi de la toate conturile. Ca să te deconectezi, selectează Anulează pentru a reveni. Apoi selectează ora pentru a deschide zona de stare și selectează Deconectează-te. Apoi conectează-te din nou la <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Cursor de mouse mare</translation>
 <translation id="1546492247443594934">Desktop 2</translation>
+<translation id="1546930421365146760">Solicită-i administratorului să configureze acest dispozitiv în consola de administrare Google</translation>
 <translation id="1550523713251050646">Dă clic pentru mai multe opțiuni</translation>
 <translation id="1555130319947370107">Albastru</translation>
 <translation id="1570871743947603115">Comută Bluetooth. <ph name="STATE_TEXT" /></translation>
@@ -162,6 +164,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1885785240814121742">Deblochează cu amprenta</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> nu acceptă <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Rezoluția a fost modificată la <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Dă clic pe Confirmă pentru a păstra modificările. Setările anterioare vor fi restabilite în <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1915307458270490472">Încheie apelul</translation>
+<translation id="1918022425394817322">Camera foto este aliniată cu colțul din dreapta sus</translation>
 <translation id="1919743966458266018">Comanda rapidă pentru a deschide managerul de activități a fost modificată. Folosește <ph name="NEW_SHORTCUT" /> în loc de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Clicuri automate</translation>
 <translation id="1928739107511554905">Pentru a obține actualizarea, folosește ecranul tactil ca să repornești Chromebookul cu tastatura atașată.</translation>
@@ -551,6 +554,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> s-a mutat în dosarul <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Indisponibilă</translation>
 <translation id="4303223480529385476">Extinde zona de stare</translation>
+<translation id="4312840429157639164">Camera foto este aliniată cu colțul din dreapta sus. Conflict cu platforma de sistem.</translation>
 <translation id="4316910396681052118">TOATE APLICAȚIILE</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Ai accesat comanda rapidă de la tastatură pentru contrast ridicat. Vrei să-l activezi?</translation>
@@ -857,6 +861,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6254629735336163724">Blocată pe orizontală</translation>
 <translation id="6259254695169772643">Folosește creionul pentru a selecta</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: se activează...</translation>
+<translation id="6274202259872570803">Înregistrare de pe ecran</translation>
 <translation id="6283712521836204486">Funcția Nu deranja este dezactivată.</translation>
 <translation id="6284232397434400372">Rezoluția a fost schimbată</translation>
 <translation id="6288235558961782912">Utilizatorul <ph name="USER_EMAIL_ADDRESS" /> poate fi adăugat din nou mai târziu, cu permisiunea părintelui.</translation>
@@ -888,6 +893,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="649452524636452238">Codul PIN al cardului inteligent</translation>
 <translation id="6495400115277918834">Picture-in-picture a început, apasă pe Alt+Shift+V pentru a focaliza</translation>
 <translation id="6501401484702599040">Se proiectează ecranul pe <ph name="RECEIVER_NAME" /></translation>
+<translation id="6515727200518652613">Conexiunea cu camera foto s-a întrerupt, se încearcă reconectarea.</translation>
 <translation id="6520517963145875092">Selectează o fereastră ca să o capturezi</translation>
 <translation id="652139407789908527">Pe durata actualizării, ecranul se va goli pentru o perioadă mai lungă decât de obicei (maximum un minut). Nu apăsa butonul de alimentare în timpul actualizării.</translation>
 <translation id="6528179044667508675">Nu deranja</translation>
@@ -906,6 +912,7 @@ Instalare nouă</translation>
 <translation id="6578407462441924264">Nedenumit</translation>
 <translation id="6585808820553845416">Sesiunea se încheie peste <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" /> <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597278316891651699">Camera foto este aliniată cu colțul din stânga jos. Conflict cu platforma de sistem.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" />, gestionată de administratorul tău</translation>
 <translation id="6612802754306526077">Modul de înregistrare a ecranului selectat</translation>
 <translation id="6614169507485700968">Ecranul de confidențialitate este activat</translation>
@@ -943,6 +950,7 @@ Instalare nouă</translation>
 <translation id="6801878137098616817">Editat recent</translation>
 <translation id="6803622936009808957">Afișajele nu au putut fi oglindite, deoarece nu au fost găsite rezoluții acceptate. Ați intrat, în schimb, în modul monitor extins.</translation>
 <translation id="6818242057446442178">Înapoi cu un cuvânt</translation>
+<translation id="6819327813400217281">Camera foto este aliniată cu colțul din stânga jos</translation>
 <translation id="6820676911989879663">Fă o pauză!</translation>
 <translation id="6827049576281411231">Închide panoul de evenimente</translation>
 <translation id="6836499262298959512">Fișier periculos</translation>
@@ -971,6 +979,7 @@ Instalare nouă</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Accesibilitate</translation>
 <translation id="698231206551913481">Toate fișierele și datele locale asociate acestui utilizator vor fi șterse definitiv după eliminarea utilizatorului.</translation>
+<translation id="7005239792648594238">Deschide o aplicație pentru a începe</translation>
 <translation id="7007983414944123363">Codul PIN sau parola nu au putut fi confirmate. Încearcă din nou.</translation>
 <translation id="7014684956566476813">S-a conectat la dispozitivul <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Revino la <ph name="COME_BACK_TIME" />.</translation>
@@ -984,6 +993,7 @@ Instalare nouă</translation>
 <translation id="7045033600005038336">Înlocuiești șablonul?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> s-a deconectat</translation>
 <translation id="7055910611768509537">Creionul nu a fost folosit de mai mult de o săptămână</translation>
+<translation id="7061457967428964661">Previzualizarea camerei foto, apasă pe tastele Control + săgeată pentru a muta previzualizarea în alt colț</translation>
 <translation id="7066646422045619941">Această rețea este dezactivată de administrator.</translation>
 <translation id="7067196344162293536">Rotire automată</translation>
 <translation id="7068360136237591149">Deschide fișierele</translation>
@@ -1004,6 +1014,7 @@ Instalare nouă</translation>
 <translation id="718361511487535372">Deschide în Google Calendar</translation>
 <translation id="7188494361780961876">Meniul a fost mutat în colțul din stânga sus al ecranului.</translation>
 <translation id="7189412385142492784">Cât de departe este Venus</translation>
+<translation id="7198435252016571249">Camera foto este aliniată cu colțul din dreapta jos. Conflict cu platforma de sistem.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Este necesară repornirea Chromebookului pentru aplicarea unei actualizări. Poate dura cel mult un minut.</translation>
 <translation id="7256634071279256947">Microfonul din spate</translation>
 <translation id="7258828758145722155">Editat ieri</translation>
@@ -1064,8 +1075,10 @@ Instalare nouă</translation>
 <translation id="7593891976182323525">Căutare sau Shift</translation>
 <translation id="7600875258240007829">Vezi toate notificările</translation>
 <translation id="7607002721634913082">Întreruptă</translation>
+<translation id="7611213136657090146">Camera foto a fost reconectată.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Afișează setările Trimiterii în apropiere.</translation>
+<translation id="7634648064048557203">Camera foto este aliniată cu colțul din dreapta jos</translation>
 <translation id="7641938616688887143">Înregistrează</translation>
 <translation id="7642647758716480637">Deschide setările pentru <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (proprietar)</translation>
@@ -1078,6 +1091,7 @@ Instalare nouă</translation>
 <translation id="7662283695561029522">Atinge pentru a configura</translation>
 <translation id="7670953955701272011">Deschide data în Google Calendar</translation>
 <translation id="7671610481353807627">Aplicațiile se sortează după culoare</translation>
+<translation id="7684531502177797067">Introducerea cu ajutorul camerei foto este setată la <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Adaugă o nouă rețea de date mobile</translation>
 <translation id="7720410380936703141">ÎNCEARCĂ DIN NOU</translation>
@@ -1299,6 +1313,7 @@ Instalare nouă</translation>
 <translation id="9077404278023321866">Șabloane</translation>
 <translation id="9077515519330855811">Comenzi media, se redă <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
+<translation id="9080073830732419341">Camera foto este aliniată cu colțul din stânga sus</translation>
 <translation id="9080132581049224423">Glisează în sus pentru a accesa pagina principală</translation>
 <translation id="9080206825613744995">Microfonul este în uz.</translation>
 <translation id="9084606467167974638">Comută poziția meniului</translation>

@@ -171,6 +171,7 @@
 <translation id="1155816283571436363">Tengist símanum þínum</translation>
 <translation id="1158080958325422608">Breyta í hástafi</translation>
 <translation id="1158238185437008462">Skoða minningar</translation>
+<translation id="1160842321113409343">Til að gæta persónuverndar þinnar er vefsvæðum sem eru eldri en 4 vikna eytt sjálfkrafa af listunum. Vefsvæði sem þú heimsækir aftur gæti birst aftur á listanum. Þú getur einnig fjarlægt vefsvæði ef þú vilt ekki að viðkomandi vefsvæði skilgreini áhugasvið þín.</translation>
 <translation id="1161575384898972166">Skráðu þig inn á <ph name="TOKEN_NAME" /> til að flytja biðlaravottorðið út.</translation>
 <translation id="116173250649946226">Stjórnandinn hefur stillt sjálfgefið þema sem ekki er hægt að breyta.</translation>
 <translation id="1162213688509394031">Fela titilrönd</translation>
@@ -844,6 +845,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1784849162047402014">Lítið pláss er eftir í tækinu</translation>
 <translation id="1787350673646245458">Notandamynd</translation>
 <translation id="1788329699711791226">Notaðu <ph name="ACCOUNT_EMAIL" /> til að nálgast Chrome vafragögnin þín</translation>
+<translation id="1790664457414575790">Þú getur skoðað og haft umsjón með vistuðum aðgangsorðum í <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1790976235243700817">Fjarlægja aðgang</translation>
 <translation id="1791662854739702043">Uppsett</translation>
 <translation id="1792619191750875668">Framlengdur skjár</translation>
@@ -3184,6 +3186,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4031179711345676612">Hljóðnemi er leyfður</translation>
 <translation id="4031308539321678562">Þetta mun eyða vefskoðunargögnum varanlega úr þessu tæki. Hugsanlegt er að önnur forrit í Chromebook tölvunni þinni noti Google reikningana á þessum prófíl. Þú getur fjarlægt þessa reikninga í <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4031527940632463547">Skynjarar læstir</translation>
+<translation id="4033415645631238123">Innskráning með Smart Lock er ekki lengur í boði. Þú getur enn tekið úr lás með Smart Lock.</translation>
 <translation id="4033471457476425443">Bæta nýrri möppu við</translation>
 <translation id="4033963223187371752">Örugg vefsvæði gætu innfellt óöruggt efni, t.d. myndir eða veframma</translation>
 <translation id="4034824040120875894">Prentari</translation>
@@ -4386,6 +4389,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5268373933383932086">Þín síða, eins og þú vilt hafa hana</translation>
 <translation id="5269977353971873915">Prentun mistókst</translation>
 <translation id="5273806377963980154">Breyta vefslóð vefsvæðis</translation>
+<translation id="5275338516105640560">Hnappur fyrir vistaðan flipahóp</translation>
 <translation id="5275352920323889391">Hundur</translation>
 <translation id="527605719918376753">Slökkva á hljóði flipa</translation>
 <translation id="527605982717517565">Leyfa alltaf JavaScript á <ph name="HOST" /></translation>
@@ -4510,6 +4514,9 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5397794290049113714">Þú</translation>
 <translation id="5398497406011404839">Falin bókamerki</translation>
 <translation id="5398572795982417028">Síðutilvísun er ekki innan réttra marka, hámarkið er <ph name="MAXIMUM_PAGE" /></translation>
+<translation id="5398724494943676484">Aðgangsorði í hættu var breytt.
+
+Athugaðu aðgangsorðin þín hvenær sem er í  <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="5401426944298678474">Hætta að fylgja vefsvæði</translation>
 <translation id="5402815541704507626">Sækja uppfærslu með farsímagögnum</translation>
 <translation id="540296380408672091">Loka alltaf á fótspor á <ph name="HOST" /></translation>
@@ -4997,6 +5004,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5895138241574237353">Endurræsa</translation>
 <translation id="5895335062901455404">Vistaðar kjörstillingar og virkni verða til reiðu í öllum ChromeOS Flex tækjum þegar þú skráir þig inn með Google reikningnum þínum. Þú getur alltaf valið hvað á að samstilla í stillingunum.</translation>
 <translation id="5896436821193322561">Ekki leyfa</translation>
+<translation id="5900186025777217044">Smart Lock breyttist</translation>
 <translation id="5900302528761731119">Google prófílmynd</translation>
 <translation id="590036993063074298">Upplýsingar um gæði speglunar</translation>
 <translation id="5901069264981746702">Fingrafaragögnin þín eru í öruggri geymslu og fara aldrei út fyrir <ph name="DEVICE_TYPE" /> tækið þitt. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
@@ -5381,6 +5389,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6271780480930459892">Hafðu samband við kerfisstjórann þinn til að fá nýjustu útgáfu.</translation>
 <translation id="6272643420381259437">Villa kom upp (<ph name="ERROR" />) við að sækja viðbótina</translation>
 <translation id="6273677812470008672">Gæði</translation>
+<translation id="6274202259872570803">Skjáupptaka</translation>
 <translation id="6276210637549544171">Staðgengilsþjónninn <ph name="PROXY_SERVER" /> krefst notandanafns og aðgangsorðs.</translation>
 <translation id="6277105963844135994">Tímamörk nets útrunnin</translation>
 <translation id="6277518330158259200">T&amp;aka skjámynd</translation>
@@ -5710,6 +5719,13 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6593881952206664229">Óvíst er að höfundarréttarvarið efni spilist</translation>
 <translation id="6594011207075825276">Leitar að raðtengdum tækjum...</translation>
 <translation id="6595187330192059106">Loka alltaf fyrir að <ph name="HOST" /> sé með ótakmarkaða stjórn á MIDI-tækjum.</translation>
+<translation id="6595408197871512625">{COUNT,plural, =1{Aðgangsorði í hættu var breytt.
+
+# aðgangsorð í viðbót er í hættu. Aðgangsorðastjórnun Google mælir með að þetta aðgangsorð verði athugað núna.}one{Aðgangsorði í hættu var breytt.
+
+# aðgangsorð í viðbót er í hættu. Aðgangsorðastjórnun Google mælir með að þessi aðgangsorð verði athuguð núna.}other{Aðgangsorði í hættu var breytt.
+
+# aðgangsorð í viðbót eru í hættu. Aðgangsorðastjórnun Google mælir með að þessi aðgangsorð verði athuguð núna.}}</translation>
 <translation id="6595792813574514527">Dragðu til að leita í myndum með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Dulkóðunarvalkostir</translation>
 <translation id="6596816719288285829">IP-tala</translation>

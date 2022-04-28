@@ -553,6 +553,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1536754031901697553">Nagdidiskonekta...</translation>
 <translation id="1537254971476575106">Fullscreen magnifier</translation>
 <translation id="15373452373711364">Malaking mouse cursor</translation>
+<translation id="1539630663098418038">Hinihiling ng <ph name="EXTENSIONS_REQUESTING_ACCESS" /> na i-read at baguhin ang <ph name="ORIGIN" /></translation>
 <translation id="1540605929960647700">I-enable ang demo mode</translation>
 <translation id="1541346352678737112">Walang nakitang network</translation>
 <translation id="1542137295869176367">Hindi ma-update ang iyong data sa pag-sign in</translation>
@@ -1885,6 +1886,7 @@ at Ctrl+Alt+Bawasan ang liwanag para mag-zoom out.</translation>
 <translation id="2749756011735116528">Mag-sign in sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Check Grammar With Spelling</translation>
+<translation id="275085171842676231">Hinihiling na i-read at baguhin ang <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />:</translation>
 <translation id="2753677631968972007">Manual na kontrolin ang mga pahintulot sa site.</translation>
 <translation id="2755349111255270002">I-reset ang <ph name="DEVICE_TYPE" /> na ito</translation>
 <translation id="2755367719610958252">Pamahalaan ang mga feature sa accessibility</translation>
@@ -3571,6 +3573,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4429239357082509581">Walang pahintulot ang Steam para tumakbo</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4430369329743628066">Naidagdag na ang bookmark</translation>
+<translation id="4430422687972614133">I-on ang virtual card</translation>
 <translation id="4432621511648257259">Mali ang password</translation>
 <translation id="443454694385851356">Legacy (hindi secure)</translation>
 <translation id="443475966875174318">I-update o alisin ang mga hindi compatible na application</translation>
@@ -7102,6 +7105,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7947964080535614577">Karaniwang nagpapakita ng mga ad ang mga site para makapagbigay ang mga ito ng content o mga serbisyo nang libre. Pero, kilalang nagpapakita ng mga nakakasagabal o nakakapanlinlang na ad ang ilang site.</translation>
 <translation id="7948407723851303488">Lahat ng page ng <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">Para magdagdag o mamahala ng mga paraan ng pagbabayad sa Google Pay, bisitahin ang iyong <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
+<translation id="795130320946928025">I-off ang virtual card</translation>
 <translation id="7952708427581814389">Puwedeng hilingin ng mga site na makita ang text at mga larawan sa iyong clipboard</translation>
 <translation id="795282463722894016">Kumpleto na ang pag-restore</translation>
 <translation id="7952904276017482715">"<ph name="EXPECTED_ID" />" ang inaasahang ID, ngunit "<ph name="NEW_ID" />" ang ID</translation>

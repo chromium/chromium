@@ -117,6 +117,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="1558391695376153246">Chiudi schede in incognito</translation>
 <translation id="1571304935088121812">Copia nome utente</translation>
 <translation id="1592864538817356322">Protezione standard:</translation>
+<translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> elementi suggeriti nell'elenco di seguito.</translation>
 <translation id="161647866166517041">La riduzione di spam e attività fraudolente è basata su token attendibili per aiutare i siti a contrastare le attività fraudolente e a distinguere i bot dalle persone.
 
 In base alla tua interazione con un sito, ad esempio l'accesso regolare a un account, il sito in questione può emettere un token attendibile per il browser in uso. Dopodiché, se altri siti che visiti cercano e trovano un token attendibile valido, è più probabile che ti considerino una persona e non un bot.

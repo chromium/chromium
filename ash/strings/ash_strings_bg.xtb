@@ -79,6 +79,7 @@
 <translation id="1312604459020188865">Сила на сигнала <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Лавицата да се показва винаги</translation>
 <translation id="1316811122439383437">Кутия: скорошни екранни снимки, изтегляния и фиксирани файлове</translation>
+<translation id="132346741904777634">Картината от камерата е прилепена към горния ляв ъгъл. Възникна конфликт с интерфейса на системата.</translation>
 <translation id="1333308631814936910">Свързахте <ph name="DISPLAY_NAME" /></translation>
 <translation id="1341651618736211726">Препълване</translation>
 <translation id="1346748346194534595">Надясно</translation>
@@ -162,6 +163,7 @@
 <translation id="1885785240814121742">Отключване с отпечатък</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> не поддържа <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Хц). Разделителната способност бе променена на <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Кликнете върху бутона за потвърждаване, за да запазите промените. Предишните настройки ще бъдат възстановени след <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1915307458270490472">Затваряне</translation>
+<translation id="1918022425394817322">Картината от камерата е прилепена към горния десен ъгъл</translation>
 <translation id="1919743966458266018">Комбинацията за отваряне на диспечера на задачите е променена. Моля, използвайте „<ph name="NEW_SHORTCUT" />“ вместо „<ph name="OLD_SHORTCUT" />“.</translation>
 <translation id="1923539912171292317">Автоматични кликвания</translation>
 <translation id="1928739107511554905">За да инсталирате актуализацията, използвайте сензорния екран да рестартирате своя Chromebook, докато клавиатурата е прикачена.</translation>
@@ -551,6 +553,7 @@
 <translation id="430191667033048642">Приложението <ph name="MOVED_APP_NAME" /> бе преместено в папката <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Не е налице</translation>
 <translation id="4303223480529385476">Разгъване на лентата на състоянието</translation>
+<translation id="4312840429157639164">Картината от камерата е прилепена към горния десен ъгъл. Възникна конфликт с интерфейса на системата.</translation>
 <translation id="4316910396681052118">ВСИЧКИ ПРИЛОЖЕНИЯ</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Използвахте клавишната комбинация за режима на висок контраст. Искате ли да го включите?</translation>
@@ -857,6 +860,7 @@
 <translation id="6254629735336163724">Заключено в хоризонтална ориентация</translation>
 <translation id="6259254695169772643">Използвайте писалката за избиране</translation>
 <translation id="6267036997247669271">„<ph name="NAME" />“: Активира се...</translation>
+<translation id="6274202259872570803">Screencast</translation>
 <translation id="6283712521836204486">Режимът „Не безпокойте“ е изключен.</translation>
 <translation id="6284232397434400372">Разделителната способност е променена</translation>
 <translation id="6288235558961782912">Имейл адресът <ph name="USER_EMAIL_ADDRESS" /> може да бъде добавен отново по-късно с разрешение от родител.</translation>
@@ -888,6 +892,7 @@
 <translation id="649452524636452238">ПИН за смарткартата</translation>
 <translation id="6495400115277918834">Режимът „Картина в картината“ стартира. Натиснете Alt+Shift+V за поставяне на фокуса</translation>
 <translation id="6501401484702599040">Екранът се предава към „<ph name="RECEIVER_NAME" />“</translation>
+<translation id="6515727200518652613">Връзката с камерата бе прекъсната. Прави се опит за възстановяването ѝ.</translation>
 <translation id="6520517963145875092">Изберете прозореца, който да се заснеме</translation>
 <translation id="652139407789908527">По време на тази актуализация екранът ще остане празен по-дълго от обичайното (до една минута). Моля, не натискайте бутона за захранване, докато тя се извършва.</translation>
 <translation id="6528179044667508675">Не безпокойте</translation>
@@ -906,6 +911,7 @@
 <translation id="6578407462441924264">Без име</translation>
 <translation id="6585808820553845416">Сесията приключва след <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597278316891651699">Картината от камерата е прилепена към долния ляв ъгъл. Възникна конфликт с интерфейса на системата.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />, управлява се от администратора ви</translation>
 <translation id="6612802754306526077">Избран е режимът за записване на екрана</translation>
 <translation id="6614169507485700968">Екранът за поверителност е включен</translation>
@@ -943,6 +949,7 @@
 <translation id="6801878137098616817">Редактирано наскоро</translation>
 <translation id="6803622936009808957">Дисплеите не можаха да се дублират, тъй като не бяха намерени поддържани разделителни способности. Вместо това влязохте в режима за разширен работен плот.</translation>
 <translation id="6818242057446442178">Придвижване назад с една дума</translation>
+<translation id="6819327813400217281">Картината от камерата е прилепена към долния ляв ъгъл</translation>
 <translation id="6820676911989879663">Време е за почивка!</translation>
 <translation id="6827049576281411231">Затваряне на панела за събития</translation>
 <translation id="6836499262298959512">Опасен файл</translation>
@@ -971,6 +978,7 @@
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6981982820502123353">Достъпност</translation>
 <translation id="698231206551913481">След като този потребител бъде премахнат, всички свързани с него файлове и локални данни ще се изтрият за постоянно.</translation>
+<translation id="7005239792648594238">Отворете приложение, за да започнете</translation>
 <translation id="7007983414944123363">ПИН кодът или паролата ви не бяха потвърдени. Опитайте отново.</translation>
 <translation id="7014684956566476813">Установена е връзка с устройство на име <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Ще бъда отново на ваше разположение в <ph name="COME_BACK_TIME" />.</translation>
@@ -984,6 +992,7 @@
 <translation id="7045033600005038336">Да се замени ли шаблонът?</translation>
 <translation id="7051244143160304048">Връзката с(ъс) <ph name="DEVICE_NAME" /> е прекратена</translation>
 <translation id="7055910611768509537">Писалката не е използвана от повече от една седмица</translation>
+<translation id="7061457967428964661">Визуализация от камерата, натиснете Control + клавишите със стрелки, за да я преместите в друг ъгъл</translation>
 <translation id="7066646422045619941">Тази мрежа е деактивирана от администратора ви.</translation>
 <translation id="7067196344162293536">Автоматично завъртане</translation>
 <translation id="7068360136237591149">„Open files“ („Отвори файлове“)</translation>
@@ -1004,6 +1013,7 @@
 <translation id="718361511487535372">Отваряне в Google Календар</translation>
 <translation id="7188494361780961876">Менюто е преместено в горния ляв ъгъл на екрана.</translation>
 <translation id="7189412385142492784">How far is Venus</translation>
+<translation id="7198435252016571249">Картината от камерата е прилепена към долния десен ъгъл. Възникна конфликт с интерфейса на системата.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Този Chromebook трябва да бъде рестартиран, за да се приложи актуализация. Това може да отнеме до минута.</translation>
 <translation id="7256634071279256947">Заден микрофон</translation>
 <translation id="7258828758145722155">Редактирано вчера</translation>
@@ -1064,8 +1074,10 @@
 <translation id="7593891976182323525">„търсене“ или „Shift“</translation>
 <translation id="7600875258240007829">Преглед на всички известия</translation>
 <translation id="7607002721634913082">На пауза</translation>
+<translation id="7611213136657090146">Връзката с камерата е възстановена.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Показване на настройките на „Споделяне наблизо“.</translation>
+<translation id="7634648064048557203">Картината от камерата е прилепена към долния десен ъгъл</translation>
 <translation id="7641938616688887143">Записване</translation>
 <translation id="7642647758716480637">Отваряне на настройките за <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (собственик)</translation>
@@ -1078,6 +1090,7 @@
 <translation id="7662283695561029522">Докоснете, за да конфигурирате</translation>
 <translation id="7670953955701272011">Отваряне на тази дата в Google Календар</translation>
 <translation id="7671610481353807627">Приложенията са сортирани по цвят</translation>
+<translation id="7684531502177797067">Избрана е камерата <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Добавяне на нова мобилна мрежа</translation>
 <translation id="7720410380936703141">НОВ ОПИТ</translation>
@@ -1144,6 +1157,7 @@
 <translation id="8051716679295756675">Вече съществува шаблон с името „<ph name="DESK_TEMPLATE_NAME" />“</translation>
 <translation id="8052898407431791827">Копирано в буферната памет</translation>
 <translation id="8054466585765276473">Издръжливостта на батерията се изчислява.</translation>
+<translation id="8055510977240456975">Скриване на предложенията за продължаване</translation>
 <translation id="8061464966246066292">Висок контраст</translation>
 <translation id="8098591350844501178">Спиране на предаването на екрана към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="8113423164597455979">Вкл. за всички</translation>
@@ -1299,6 +1313,7 @@
 <translation id="9077404278023321866">Шаблони</translation>
 <translation id="9077515519330855811">Контроли за мултимедия, сега слушате <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
+<translation id="9080073830732419341">Картината от камерата е прилепена към горния ляв ъгъл</translation>
 <translation id="9080132581049224423">Прекарайте пръст нагоре, за да отворите началния екран</translation>
 <translation id="9080206825613744995">Микрофонът се използва.</translation>
 <translation id="9084606467167974638">Промяна на позицията на менюто</translation>

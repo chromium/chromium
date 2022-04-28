@@ -171,6 +171,7 @@
 <translation id="1155816283571436363">Inaunganisha simu yako</translation>
 <translation id="1158080958325422608">Fanya Ziwe Herufi Kubwa</translation>
 <translation id="1158238185437008462">Angalia kumbukumbu</translation>
+<translation id="1160842321113409343">Ili kulinda faragha yako, tunafuta kiotomatiki tovuti zilizohifadhiwa kwenye orodha kwa zaidi ya wiki 4. Tovuti unayoitembelea tena huenda ikaonekana tena kwenye orodha. Au unaweza kuondoa tovuti iwapo usingependa tovuti hiyo itambue tena mambo yanayokuvutia.</translation>
 <translation id="1161575384898972166">Tafadhali ingia kwenye <ph name="TOKEN_NAME" /> ili kuhamisha cheti cha mteja.</translation>
 <translation id="116173250649946226">Msimamizi wako ameweka mandhari chaguomsingi ambayo hayawezi kubadilishwa.</translation>
 <translation id="1162213688509394031">Ficha upau wa jina</translation>
@@ -840,6 +841,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1784849162047402014">Kifaa hakina nafasi ya hifadhi ya kutosha</translation>
 <translation id="1787350673646245458">Picha ya mtumiaji</translation>
 <translation id="1788329699711791226">Fikia vitu vya kivinjari chako cha Chrome kwenye <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="1790664457414575790">Unaweza kuangalia na kudhibiti manenosiri yaliyohifadhiwa kwenye<ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1790976235243700817">Ondoa idhini ya kufikia</translation>
 <translation id="1791662854739702043">Imesakinishwa</translation>
 <translation id="1792619191750875668">Mwonekano mpana</translation>
@@ -3181,6 +3183,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4031179711345676612">Maikrofoni imeruhusiwa</translation>
 <translation id="4031308539321678562">Hatua hii itafuta kabisa data ya kuvinjari kwenye kifaa hiki. Huenda Akaunti za Google zilizo kwenye wasifu huu zikatumiwa na programu zingine kwenye Chromebook yako. Unaweza kuondoa akaunti hizi katika sehemu ya <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4031527940632463547">Imezuia vitambuzi</translation>
+<translation id="4033415645631238123">Haiwezekani tena kuingia katika akaunti kwa kutumia Smart Lock. Bado unaweza kufungua kwa kutumia Smart Lock.</translation>
 <translation id="4033471457476425443">Ongeza folda mpya</translation>
 <translation id="4033963223187371752">Huenda tovuti salama zikapachika maudhui kama vile picha au fremu za wavuti zisizo salama</translation>
 <translation id="4034824040120875894">Printa</translation>
@@ -4381,6 +4384,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5268373933383932086">Ukurasa wako kulingana na mapendeleo yako</translation>
 <translation id="5269977353971873915">Uchapishaji Haukufanikiwa</translation>
 <translation id="5273806377963980154">Badilisha URL ya tovuti</translation>
+<translation id="5275338516105640560">Kitufe cha Kikundi cha Vichupo Vilivyohifadhiwa</translation>
 <translation id="5275352920323889391">Mbwa</translation>
 <translation id="527605719918376753">Nyamazisha kichupo</translation>
 <translation id="527605982717517565">Ruhusu <ph name="HOST" /> iendeshe JavaScript kila wakati</translation>
@@ -4505,6 +4509,9 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5397794290049113714">Wewe</translation>
 <translation id="5398497406011404839">Alamisho zilizofichwa</translation>
 <translation id="5398572795982417028">Ukurasa wa kurejelea ambao hauruhusiwi kuingia, kikomo ni <ph name="MAXIMUM_PAGE" /></translation>
+<translation id="5398724494943676484">Imebadilisha nenosiri lililoathiriwa.
+
+Kagua manenosiri yako wakati wowote kwenye  <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="5401426944298678474">Acha kufuata Tovuti</translation>
 <translation id="5402815541704507626">Pakua sasisho kwa kutumia data ya simu</translation>
 <translation id="540296380408672091">Zuia vidakuzi kwenye <ph name="HOST" /> wakati wowote</translation>
@@ -4992,6 +4999,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5895138241574237353">Zzima na uwashe</translation>
 <translation id="5895335062901455404">Mapendeleo na shughuli ulizohifadhi zitakuwa tayari kwenye kifaa chochote kinachotumia ChromeOS Flex ukiingia kwa kutumia Akaunti yako ya Google. Unaweza kuchagua unachotaka kusawazisha katika Mipangilio.</translation>
 <translation id="5896436821193322561">Usiruhusu</translation>
+<translation id="5900186025777217044">Smart Lock imebadilishwa</translation>
 <translation id="5900302528761731119">Picha ya Wasifu katika Google</translation>
 <translation id="590036993063074298">Maelezo ya Ubora wa Kuakisi</translation>
 <translation id="5901069264981746702">Data ya alama yako ya kidole itahifadhiwa kwa usalama na itasalia kwenye <ph name="DEVICE_TYPE" /> yako. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
@@ -5376,6 +5384,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6271780480930459892">Wasiliana na msimamizi wako ili upate toleo jipya zaidi.</translation>
 <translation id="6272643420381259437">Hitilafu imetokea <ph name="ERROR" /> wakati wa kupakua programu jalizi</translation>
 <translation id="6273677812470008672">Ubora</translation>
+<translation id="6274202259872570803">Kionyesha skrini</translation>
 <translation id="6276210637549544171">Seva mbadala ya <ph name="PROXY_SERVER" /> inahitaji jina la mtumiaji na nenosiri.</translation>
 <translation id="6277105963844135994">Muda wa Mtandao Umekwisha</translation>
 <translation id="6277518330158259200">Piga Picha ya Skrini</translation>
@@ -5705,6 +5714,11 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6593881952206664229">Huenda maudhui yaliyo na hakimiliki yasicheze</translation>
 <translation id="6594011207075825276">Inatafuta vifaa vilivyo na msimbo...</translation>
 <translation id="6595187330192059106">Zuia <ph name="HOST" /> kila wakati isiwe na udhibiti kamili wa vifaa vya MIDI</translation>
+<translation id="6595408197871512625">{COUNT,plural, =1{Imebadilisha nenosiri lililoathiriwa.
+
+Una nenosiri # zaidi lililoathiriwa. Kidhibiti cha Manenosiri cha Google kinapendekeza ukague nenosiri hili sasa.}other{Imebadilisha nenosiri lililoathiriwa.
+
+Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinapendekeza ukague manenosiri haya sasa.}}</translation>
 <translation id="6595792813574514527">Buruta ili Utafute Picha kwa kutumia <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Chaguo za usimbaji fiche</translation>
 <translation id="6596816719288285829">Anwani ya IP</translation>

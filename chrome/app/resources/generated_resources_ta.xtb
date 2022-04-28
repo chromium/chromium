@@ -171,6 +171,7 @@
 <translation id="1155816283571436363">உங்கள் மொபைலுடன் இணைக்கிறது</translation>
 <translation id="1158080958325422608">பேரெழுத்தாக்கு</translation>
 <translation id="1158238185437008462">நினைவுகளைக் காட்டு</translation>
+<translation id="1160842321113409343">உங்கள் தனியுரிமையைப் பாதுகாக்க 4 வாரங்களுக்கு முந்தைய தளங்களைப் பட்டியலில் இருந்து தானாக நீக்குவோம். அந்தத் தளத்தை மீண்டும் நீங்கள் பார்க்கும்போது பட்டியலில் அது மீண்டும் காட்டப்படக்கூடும். உங்கள் ஆர்வங்களை ஒருபோதும் அந்தத் தளம் வரையறுக்க வேண்டாம் என நீங்கள் நினைத்தால் அதை அகற்றலாம்.</translation>
 <translation id="1161575384898972166">கிளையண்ட் சான்றிதழை ஏற்றுமதி செய்ய, தயவுசெய்து <ph name="TOKEN_NAME" /> இல் உள்நுழைக.</translation>
 <translation id="116173250649946226">இயல்புத் தீமினை உங்கள் நிர்வாகி அமைத்துள்ளார். இதை மாற்ற முடியாது.</translation>
 <translation id="1162213688509394031">தலைப்புப் பட்டியை மறைக்கும்</translation>
@@ -581,6 +582,7 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' பட்டன் ஏற்கெனவே '<ph name="ACTION" />' செயலுக்கு ஒதுக்கப்பட்டுள்ளது. <ph name="RESPONSE" /> ஏதேனும் ஒரு பட்டனை அழுத்தவும்.</translation>
 <translation id="1567993339577891801">JavaScript கன்சோல்</translation>
 <translation id="1568323446248056064">திரை அமைப்புகளைத் திற</translation>
+<translation id="1569044524074707727">உங்கள் மொபைலை அன்லாக் செய்யவும்</translation>
 <translation id="1570604804919108255">அறிவிப்புகளை ஒலி இயக்குதல்</translation>
 <translation id="1571304935088121812">பயனர்பெயரை நகலெடுக்கும்</translation>
 <translation id="1571738973904005196">இந்தப் பிரிவைக் காட்டு: <ph name="TAB_ORIGIN" /></translation>
@@ -843,6 +845,7 @@
 <translation id="1784849162047402014">சாதனத்தில் சேமிப்பிடம் குறைவாக உள்ளது</translation>
 <translation id="1787350673646245458">பயனர் படம்</translation>
 <translation id="1788329699711791226"><ph name="ACCOUNT_EMAIL" /> கணக்கில் இருந்து Chrome உலாவி தொடர்பான அனைத்தையும் அணுகுங்கள்</translation>
+<translation id="1790664457414575790">சேமித்த கடவுச்சொற்களை <ph name="GOOGLE_PASSWORD_MANAGER" /> இல் பார்க்கலாம் நிர்வகிக்கலாம்</translation>
 <translation id="1790976235243700817">அணுகலை அகற்று</translation>
 <translation id="1791662854739702043">நிறுவப்பட்டது</translation>
 <translation id="1792619191750875668">நீட்டிக்கப்பட்ட திரை</translation>
@@ -2022,6 +2025,7 @@
 <translation id="288042212351694283">உங்கள் Universal 2nd Factor சாதனங்களை அணுகும்</translation>
 <translation id="2881076733170862447">நீங்கள் நீட்டிப்பைக் கிளிக் செய்யும்போது</translation>
 <translation id="2882943222317434580">சிறிது நேரத்தில் <ph name="IDS_SHORT_PRODUCT_NAME" /> மீண்டும் துவங்கப்பட்டு, மீட்டமைக்கப்படும்</translation>
+<translation id="2883470649061584386">ஊட்டம்</translation>
 <translation id="2885378588091291677">செயல் நிர்வாகி</translation>
 <translation id="2885729872133513017">சேவையகத்தின் பதிலை டிகோட் செய்யும்போது சிக்கல் ஏற்பட்டது.</translation>
 <translation id="2886119409731773154">இதற்கு 30 நிமிடங்கள் வரை ஆகக்கூடும்</translation>
@@ -3184,6 +3188,7 @@
 <translation id="4031179711345676612">மைக்ரோஃபோன் அனுமதிக்கப்பட்டது</translation>
 <translation id="4031308539321678562">இந்தச் சாதனத்திலிருந்து உலாவிய தரவு நிரந்தரமாக நீக்கப்படும். இந்தச் சுயவிவரத்தில் உள்ள Google கணக்குகளை உங்கள் Chromebookகில் உள்ள வேறு ஆப்ஸ் பயன்படுத்தக்கூடும். இந்தக் கணக்குகளை <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" /> என்பதற்குச் சென்று அகற்றலாம்.</translation>
 <translation id="4031527940632463547">சென்சார்கள் தடுக்கப்பட்டுள்ளன</translation>
+<translation id="4033415645631238123">Smart Lock மூலம் இனி உள்நுழைய முடியாது. இருப்பினும் Smart Lock மூலம் அன்லாக் செய்யலாம்.</translation>
 <translation id="4033471457476425443">புதிய ஃபோல்டரைச் சேர்</translation>
 <translation id="4033963223187371752">பாதுகாப்பு இல்லாத படங்கள், இணைய ஃபிரேம்கள் போன்ற உள்ளடக்கத்தைப் பாதுகாக்கப்பட்ட தளங்கள் உட்பொதிக்கலாம்</translation>
 <translation id="4034824040120875894">பிரிண்டர்</translation>
@@ -4386,6 +4391,7 @@
 <translation id="5268373933383932086">உங்கள் பக்கத்தில் உங்களுக்குப் பிடித்த தகவல்கள்</translation>
 <translation id="5269977353971873915">அச்சிடுதல் தோல்வி</translation>
 <translation id="5273806377963980154">தள URLலை மாற்றுக</translation>
+<translation id="5275338516105640560">சேமிக்கப்பட்ட பக்கங்களின் குழுவிற்கான பட்டன்</translation>
 <translation id="5275352920323889391">நாய்</translation>
 <translation id="527605719918376753">ஒலி வேண்டாம்</translation>
 <translation id="527605982717517565"><ph name="HOST" /> இல் JavaScript ஐ எப்போதும் அனுமதி</translation>
@@ -4510,6 +4516,9 @@
 <translation id="5397794290049113714">நீங்கள்</translation>
 <translation id="5398497406011404839">மறைத்த புக்மார்க்குகள்</translation>
 <translation id="5398572795982417028">பக்க வரம்பை மீறிவிட்டது, அதிகபட்ச வரம்பு <ph name="MAXIMUM_PAGE" /></translation>
+<translation id="5398724494943676484">களவாடப்பட்ட கடவுச்சொல் மாற்றப்பட்டது.
+
+உங்கள் கடவுச்சொற்களை எப்போது வேண்டுமானாலும் <ph name="GOOGLE_PASSWORD_MANAGER" /> இல் சரிபார்க்கலாம்.</translation>
 <translation id="5401426944298678474">தளத்தைப் பின்தொடர்வதை நிறுத்து</translation>
 <translation id="5402815541704507626">மொபைல் டேட்டாவைப் பயன்படுத்திப் புதுப்பிப்பைப் பதிவிறக்கவும்</translation>
 <translation id="540296380408672091">எப்போதும் <ph name="HOST" /> இல் குக்கீகளைத் தடு</translation>
@@ -4998,6 +5007,7 @@
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>
 <translation id="5895335062901455404">நீங்கள் சேமித்த விருப்பத்தேர்வுகளும் செயல்பாடுகளும் Google கணக்கின் மூலம் நீங்கள் உள்நுழையும் எந்தவொரு ChromeOS Flex சாதனத்திலும் ஒத்திசைக்கப்பட்டுத் தயாராக இருக்கும். எதையெல்லாம் ஒத்திசைக்க வேண்டுமென்பதை அமைப்புகளுக்குச் சென்று தேர்வுசெய்யலாம்.</translation>
 <translation id="5896436821193322561">அனுமதிக்காதே</translation>
+<translation id="5900186025777217044">Smart Lock அம்சம் நிறுத்தப்பட்டுவிட்டது</translation>
 <translation id="5900302528761731119">Google சுயவிவரப் புகைப்படம்</translation>
 <translation id="590036993063074298">பிரதிபலித்தலின் தர விவரங்கள்</translation>
 <translation id="5901069264981746702">உங்கள் கைரேகைத் தரவு பாதுகாப்பாகச் சேமிக்கப்படுவதுடன் <ph name="DEVICE_TYPE" /> சாதனத்திலேயே இருக்கும். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
@@ -5330,6 +5340,7 @@
 <translation id="6227002569366039565">இந்தக் குமிழை ஃபோகஸ் செய்ய, |<ph name="ACCELERATOR" />| அழுத்தவும். குமிழ் சுட்டிக்காட்டுவதை ஃபோகஸ் செய்ய அதை மீண்டும் அழுத்தவும்.</translation>
 <translation id="6227280783235722609">நீட்டிப்பு</translation>
 <translation id="6229849828796482487">வைஃபை நெட்வொர்க்கைத் துண்டி</translation>
+<translation id="6230165830166519105">வேறு வழியில் முயல்க</translation>
 <translation id="6231782223312638214">பரிந்துரைக்கப்படுவது</translation>
 <translation id="6231881193380278751">பக்கத்தைத் தானாகப் புதுப்பிக்க, URL இல் வினவல் அளவுருவைச் சேர்க்கவும்: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">பேட்டரி</translation>
@@ -5382,6 +5393,7 @@
 <translation id="6271780480930459892">புதிய பதிப்பைப் பெற, நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="6272643420381259437">செருகுநிரலைப் பதிவிறக்கும் போது, பிழை (<ph name="ERROR" />) ஏற்பட்டது</translation>
 <translation id="6273677812470008672">தரம்</translation>
+<translation id="6274202259872570803">ஸ்க்ரீன்காஸ்ட்</translation>
 <translation id="6276210637549544171"><ph name="PROXY_SERVER" /> என்ற ப்ராக்ஸியைப் பயன்படுத்த பயனர்பெயரும் கடவுச்சொல்லும் அவசியம்.</translation>
 <translation id="6277105963844135994">நெட்வொர்க் டைம்அவுட்</translation>
 <translation id="6277518330158259200">ஸ்கிரீன் ஷாட்டை எடு</translation>
@@ -5711,6 +5723,11 @@
 <translation id="6593881952206664229">பதிப்புரிமை பெற்ற மீடியா பிளே ஆகாது</translation>
 <translation id="6594011207075825276">தொடர் சாதனங்களைத் தேடுகிறது...</translation>
 <translation id="6595187330192059106">MIDI சாதனங்களுக்கான முழுக் கட்டுப்பாட்டையும் <ph name="HOST" /> பெறுவதை எப்போதும் தடு.</translation>
+<translation id="6595408197871512625">{COUNT,plural, =1{களவாடப்பட்ட கடவுச்சொல் மாற்றப்பட்டது.
+
+களவாடப்பட்ட கடவுச்சொல் இன்னும் # உள்ளது. அதை இப்போதே சரிபார்க்குமாறு Google Password Manager பரிந்துரைக்கிறது.}other{களவாடப்பட்ட கடவுச்சொல் மாற்றப்பட்டது.
+
+களவாடப்பட்ட கடவுச்சொற்கள் இன்னும் # உள்ளன. அவற்றை இப்போதே சரிபார்க்குமாறு Google Password Manager பரிந்துரைக்கிறது.}}</translation>
 <translation id="6595792813574514527"><ph name="VISUAL_SEARCH_PROVIDER" /> மூலம் படங்களைத் தேட, கிளிக் செய்து இழுக்கவும்</translation>
 <translation id="6596325263575161958">என்க்ரிப்ஷன் விருப்பங்கள்</translation>
 <translation id="6596816719288285829">IP முகவரி</translation>

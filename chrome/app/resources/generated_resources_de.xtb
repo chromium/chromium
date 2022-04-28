@@ -169,6 +169,7 @@
 <translation id="1155816283571436363">Verbindung zu deinem Smartphone wird hergestellt</translation>
 <translation id="1158080958325422608">Großschreibung verwenden</translation>
 <translation id="1158238185437008462">Erinnerungen ansehen</translation>
+<translation id="1160842321113409343">Zum Schutz deiner Daten entfernen wir automatisch Websites aus der Liste, die älter als vier Wochen sind. Wenn du eine der Websites noch einmal besuchst, kann sie wieder in der Liste erscheinen. Du kannst eine einzelne Website auch entfernen, wenn du nicht möchtest, dass sie Interessen für dich definiert.</translation>
 <translation id="1161575384898972166">Melde dich in <ph name="TOKEN_NAME" /> an, um das Clientzertifikat zu exportieren.</translation>
 <translation id="116173250649946226">Der Administrator hat ein Standarddesign festgelegt, das nicht geändert werden kann.</translation>
 <translation id="1162213688509394031">Titelleiste ausblenden</translation>
@@ -575,6 +576,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="156793199942386351">„<ph name="CURRENTKEY" />“ wurde bereits der Aktion „<ph name="ACTION" />“ zugewiesen. Drücke zum <ph name="RESPONSE" /> eine beliebige Taste.</translation>
 <translation id="1567993339577891801">JavaScript-Konsole</translation>
 <translation id="1568323446248056064">Displayeinstellungen öffnen</translation>
+<translation id="1569044524074707727">Smartphone entsperren</translation>
 <translation id="1570604804919108255">Stummschaltung von Benachrichtigungen aufheben</translation>
 <translation id="1571304935088121812">Nutzernamen kopieren</translation>
 <translation id="1571738973904005196">Tab <ph name="TAB_ORIGIN" /> ansehen</translation>
@@ -829,6 +831,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1784849162047402014">Gerät verfügt über wenig Speicherplatz</translation>
 <translation id="1787350673646245458">Nutzerbild</translation>
 <translation id="1788329699711791226">Über <ph name="ACCOUNT_EMAIL" /> auf deine Chrome-Browserinhalte zugreifen</translation>
+<translation id="1790664457414575790">Du kannst deine gespeicherten Passwörter im <ph name="GOOGLE_PASSWORD_MANAGER" /> ansehen und verwalten</translation>
 <translation id="1790976235243700817">Zugriff entfernen</translation>
 <translation id="1791662854739702043">Installiert</translation>
 <translation id="1792619191750875668">Erweiterter Bildschirm</translation>
@@ -2004,6 +2007,7 @@ und „Strg + Alt + dunkler“, um herauszuzoomen.</translation>
 <translation id="288042212351694283">Auf deine Universal 2nd Factor-Geräte zugreifen</translation>
 <translation id="2881076733170862447">Wenn die Erweiterung angeklickt wird</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> wird in wenigen Augenblicken neu gestartet und zurückgesetzt.</translation>
+<translation id="2883470649061584386">Feed</translation>
 <translation id="2885378588091291677">Task-Manager</translation>
 <translation id="2885729872133513017">Beim Decodieren der Serverantwort ist ein Problem aufgetreten.</translation>
 <translation id="2886119409731773154">Dies kann bis zu 30 Minuten dauern</translation>
@@ -3166,6 +3170,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4031179711345676612">Mikrofonnutzung zulässig</translation>
 <translation id="4031308539321678562">Dadurch werden Browserdaten dauerhaft von diesem Gerät gelöscht. Die Google-Konten in diesem Profil können von anderen Apps auf deinem Chromebook verwendet werden. Du kannst diese Konten unter <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" /> entfernen.</translation>
 <translation id="4031527940632463547">Sensoren blockiert</translation>
+<translation id="4033415645631238123">Anmeldung per Smart Lock ist nicht mehr verfügbar. Das Entsperren per Smart Lock ist weiterhin möglich.</translation>
 <translation id="4033471457476425443">Neuen Ordner hinzufügen</translation>
 <translation id="4033963223187371752">Sichere Websites können Inhalte wie Bilder oder Webframes einbetten, die nicht sicher sind</translation>
 <translation id="4034824040120875894">Drucker</translation>
@@ -4367,6 +4372,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5268373933383932086">Deine Seite, deine Auswahl</translation>
 <translation id="5269977353971873915">Fehler beim Drucken</translation>
 <translation id="5273806377963980154">Website-URL bearbeiten</translation>
+<translation id="5275338516105640560">Schaltfläche „Gespeicherte Tabgruppe“</translation>
 <translation id="5275352920323889391">Hund</translation>
 <translation id="527605719918376753">Stummschalten</translation>
 <translation id="527605982717517565">JavaScript auf <ph name="HOST" /> immer zulassen</translation>
@@ -4491,6 +4497,9 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5397794290049113714">Ich</translation>
 <translation id="5398497406011404839">Ausgeblendete Lesezeichen</translation>
 <translation id="5398572795982417028">Der Seitenbereich ist zu groß. Die maximale Seitenanzahl liegt bei <ph name="MAXIMUM_PAGE" /></translation>
+<translation id="5398724494943676484">Das gehackte Passwort wurde erfolgreich geändert.
+
+Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> prüfen.</translation>
 <translation id="5401426944298678474">Website nicht mehr folgen</translation>
 <translation id="5402815541704507626">Update über mobile Daten herunterladen</translation>
 <translation id="540296380408672091">Cookies auf <ph name="HOST" /> immer blockieren</translation>
@@ -4976,6 +4985,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5895138241574237353">Neu starten</translation>
 <translation id="5895335062901455404">Deine gespeicherten Einstellungen und Aktivitäten stehen auf jedem Chrome OS Flex-Gerät zur Verfügung, auf dem du dich mit deinem Google-Konto anmeldest. In den Einstellungen kannst du festlegen, was synchronisiert werden soll.</translation>
 <translation id="5896436821193322561">Nicht zulassen</translation>
+<translation id="5900186025777217044">Smart Lock wurde geändert</translation>
 <translation id="5900302528761731119">Google Profile-Foto</translation>
 <translation id="590036993063074298">Details zur Qualität der Spiegelung</translation>
 <translation id="5901069264981746702">Dein Fingerabdruck wird sicher und niemals außerhalb deines Geräts (<ph name="DEVICE_TYPE" />) gespeichert. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
@@ -5307,6 +5317,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6227002569366039565">Drücke |<ph name="ACCELERATOR" />|, um dieses Infofeld hervorzuheben. Wiederhole den Vorgang, um zu dem Element zu wechseln, auf das es zeigt.</translation>
 <translation id="6227280783235722609">Erweiterung</translation>
 <translation id="6229849828796482487">WLAN-Verbindung trennen</translation>
+<translation id="6230165830166519105">Andere Anmeldeoption</translation>
 <translation id="6231782223312638214">Vorgeschlagen</translation>
 <translation id="6231881193380278751">Abfrageparameter in URL zum automatischen Aktualisieren der Seite hinzufügen: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Akku</translation>
@@ -5359,6 +5370,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6271780480930459892">Wende dich an deinen Administrator, um die neueste Version zu erhalten.</translation>
 <translation id="6272643420381259437">Beim Herunterladen des Plug-ins ist ein Fehler aufgetreten (<ph name="ERROR" />)</translation>
 <translation id="6273677812470008672">Qualität</translation>
+<translation id="6274202259872570803">Screencast</translation>
 <translation id="6276210637549544171">Für den Proxy <ph name="PROXY_SERVER" /> sind ein Nutzername und ein Passwort erforderlich.</translation>
 <translation id="6277105963844135994">Zeitüberschreitung im Netzwerk</translation>
 <translation id="6277518330158259200">Screenshot &amp;erstellen</translation>
@@ -5688,6 +5700,11 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6593881952206664229">Urheberrechtlich geschützte Medien werden möglicherweise nicht wiedergegeben</translation>
 <translation id="6594011207075825276">Serielle Geräte werden gesucht…</translation>
 <translation id="6595187330192059106"><ph name="HOST" /> keine vollständige Kontrolle über MIDI-Geräte gewähren.</translation>
+<translation id="6595408197871512625">{COUNT,plural, =1{Das gehackte Passwort wurde erfolgreich geändert.
+
+Du hast # weiteres gehacktes Passwort. Der Google Passwortmanager empfiehlt, dieses Passwort jetzt zu prüfen.}other{Das gehackte Passwort wurde erfolgreich geändert.
+
+Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, diese Passwörter jetzt zu prüfen.}}</translation>
 <translation id="6595792813574514527">Zum Suchen in Bildern mit <ph name="VISUAL_SEARCH_PROVIDER" /> Maus ziehen</translation>
 <translation id="6596325263575161958">Verschlüsselungsoptionen</translation>
 <translation id="6596816719288285829">IP-Adresse</translation>

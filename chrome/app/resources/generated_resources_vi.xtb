@@ -171,6 +171,7 @@
 <translation id="1155816283571436363">Đang kết nối với điện thoại của bạn</translation>
 <translation id="1158080958325422608">Viết hoa toàn bộ</translation>
 <translation id="1158238185437008462">Xem kỷ niệm</translation>
+<translation id="1160842321113409343">Để bảo vệ quyền riêng tư của bạn, chúng tôi tự động xoá khỏi danh sách các trang web không được làm mới sau 4 tuần. Trang web bạn truy cập lại có thể sẽ xuất hiện lại trong danh sách. Bạn cũng có thể xoá một trang web nếu không muốn hệ thống dựa vào trang web đó để ước đoán mối quan tâm của bạn.</translation>
 <translation id="1161575384898972166">Vui lòng đăng nhập vào <ph name="TOKEN_NAME" /> để xuất chứng chỉ ứng dụng khách.</translation>
 <translation id="116173250649946226">Bạn không thể thay đổi giao diện vì đây là giao diện mặc định do quản trị viên đặt.</translation>
 <translation id="1162213688509394031">Ẩn thanh tiêu đề</translation>
@@ -843,6 +844,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1784849162047402014">Thiết bị sắp hết dung lượng đĩa</translation>
 <translation id="1787350673646245458">Hình ảnh của người dùng</translation>
 <translation id="1788329699711791226">Truy cập vào dữ liệu của bạn trên trình duyệt Chrome qua <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="1790664457414575790">Bạn có thể xem và quản lý mật khẩu đã lưu trong <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1790976235243700817">Xóa quyền truy cập</translation>
 <translation id="1791662854739702043">Đã cài đặt</translation>
 <translation id="1792619191750875668">Màn hình mở rộng</translation>
@@ -3183,6 +3185,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4031179711345676612">Cho phép micrô</translation>
 <translation id="4031308539321678562">Thao tác này sẽ xoá vĩnh viễn dữ liệu duyệt web của bạn khỏi thiết bị. Các tài khoản Google trong hồ sơ này có thể được dùng bởi các ứng dụng khác trên Chromebook của bạn. Bạn có thể xoá các tài khoản này trong phần <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4031527940632463547">Đã chặn sử dụng cảm biến</translation>
+<translation id="4033415645631238123">Không đăng nhập bằng Smart Lock được nữa. Bạn vẫn có thể mở khoá bằng Smart Lock.</translation>
 <translation id="4033471457476425443">Thêm thư mục mới</translation>
 <translation id="4033963223187371752">Các trang web an toàn có thể nhúng nội dung như hình ảnh hoặc khung web không an toàn</translation>
 <translation id="4034824040120875894">Máy in</translation>
@@ -4384,6 +4387,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5268373933383932086">Tuỳ chỉnh trang theo ý của bạn</translation>
 <translation id="5269977353971873915">In không thành công</translation>
 <translation id="5273806377963980154">Chỉnh sửa URL của trang web</translation>
+<translation id="5275338516105640560">Nút Nhóm thẻ đã lưu</translation>
 <translation id="5275352920323889391">Cún</translation>
 <translation id="527605719918376753">Tắt tiếng thẻ</translation>
 <translation id="527605982717517565">Luôn cho phép JavaScript trên <ph name="HOST" /></translation>
@@ -4508,6 +4512,9 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5397794290049113714">Bạn</translation>
 <translation id="5398497406011404839">Dấu trang đã ẩn</translation>
 <translation id="5398572795982417028">Vượt quá phạm vi trang, giới hạn là <ph name="MAXIMUM_PAGE" /></translation>
+<translation id="5398724494943676484">Đã đổi thành công mật khẩu bị lộ.
+
+Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong  <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="5401426944298678474">Ngừng theo dõi trang web</translation>
 <translation id="5402815541704507626">Tải xuống bản cập nhật bằng cách dùng dữ liệu di động</translation>
 <translation id="540296380408672091">Luôn chặn cookie trên <ph name="HOST" /></translation>
@@ -4995,6 +5002,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5895138241574237353">Khởi động lại</translation>
 <translation id="5895335062901455404">Các tuỳ chọn ưu tiên và hoạt động bạn đã lưu sẽ sẵn sàng trên mọi thiết bị ChromeOS Flex khi bạn đăng nhập bằng Tài khoản Google. Bạn có thể chọn nội dung bạn muốn đồng bộ hoá trong phần Cài đặt.</translation>
 <translation id="5896436821193322561">Không cho phép</translation>
+<translation id="5900186025777217044">Smart Lock đã thay đổi</translation>
 <translation id="5900302528761731119">Ảnh hồ sơ trên Google</translation>
 <translation id="590036993063074298">Thông tin chi tiết về chất lượng phản chiếu</translation>
 <translation id="5901069264981746702">Dữ liệu vân tay được lưu trữ an toàn và chỉ có trên <ph name="DEVICE_TYPE" /> của bạn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
@@ -5379,6 +5387,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6271780480930459892">Hãy liên hệ với quản trị viên để có được phiên bản mới nhất.</translation>
 <translation id="6272643420381259437">Đã xảy ra lỗi (<ph name="ERROR" />) khi tải xuống plugin</translation>
 <translation id="6273677812470008672">Chất lượng</translation>
+<translation id="6274202259872570803">Video ghi lại chuyển động trên màn hình</translation>
 <translation id="6276210637549544171">Proxy <ph name="PROXY_SERVER" /> yêu cầu nhập tên người dùng và mật khẩu.</translation>
 <translation id="6277105963844135994">Hết thời gian chờ mạng</translation>
 <translation id="6277518330158259200">Chụp ảnh màn hình</translation>
@@ -5708,6 +5717,11 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6593881952206664229">Nội dung nghe nhìn có bản quyền có thể không phát được</translation>
 <translation id="6594011207075825276">Đang tìm thiết bị nối tiếp...</translation>
 <translation id="6595187330192059106">Luôn chặn không cho <ph name="HOST" /> toàn quyền kiểm soát các thiết bị MIDI.</translation>
+<translation id="6595408197871512625">{COUNT,plural, =1{Đã đổi thành công mật khẩu bị lộ.
+
+Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của Google khuyên bạn nên kiểm tra mật khẩu này ngay.}other{Đã đổi thành công mật khẩu bị lộ.
+
+Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của Google khuyên bạn nên kiểm tra mật khẩu này ngay.}}</translation>
 <translation id="6595792813574514527">Kéo để Tìm kiếm hình ảnh bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Tùy chọn mã hóa</translation>
 <translation id="6596816719288285829">Địa chỉ IP</translation>

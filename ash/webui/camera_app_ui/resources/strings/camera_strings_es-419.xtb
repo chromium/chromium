@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
 <translation id="1113173431709655881">Modo de cámara</translation>
+<translation id="1153190633558910465">Quitar la cuadrícula</translation>
 <translation id="1175958423215084756">Se detectó un vínculo. <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">Rotar 90 grados en el sentido de las manecillas del reloj</translation>
 <translation id="1276998909102132017">Imágenes de la galería</translation>
 <translation id="1300209025925956156">Escanea tu documento</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Presiona Búsqueda + flecha hacia la izquierda para acceder.</translation>
+<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1467231725790366244">La cámara <ph name="CAMERA" /> está desconectada.</translation>
 <translation id="1473110567575736769">Temporizador de 3 segundos</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">Duración del temporizador</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> activa</translation>
+<translation id="2134029355740465625">Configuración de video</translation>
 <translation id="2144806332417375165">Parámetros de video personalizados</translation>
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="2271433936731426666">Habilitar las instantáneas de video en tamaño completo</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">Cámara posterior</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Tipo de búsqueda</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">Vista previa del modo espejo</translation>
 <translation id="2879583609344924966">La cámara <ph name="CAMERA" /> está conectada.</translation>
 <translation id="2968794441791257519">Las fotos y los videos que tomes con la cámara se moverán a la carpeta "Descargas", que puedes abrir con la app de Archivos.
 
@@ -52,6 +57,8 @@ Las apps que tengan permiso de almacenamiento podrán acceder a tus fotos y vide
 <translation id="3240426699337459095">Vínculo copiado</translation>
 <translation id="3259149966178251584">Resolución de la cámara</translation>
 <translation id="3305962767867348165">Fijar</translation>
+<translation id="3354465018370944241">Configuración de fotos</translation>
+<translation id="3411958449466169012">Desactivar temporizador</translation>
 <translation id="3448774564454087943">No se guardó el video porque es demasiado breve.</translation>
 <translation id="346539236881580388">Repetir</translation>
 <translation id="3517926952904427380">No es posible cambiar al modo vertical para tomar fotos.</translation>
@@ -63,9 +70,12 @@ Las apps que tengan permiso de almacenamiento podrán acceder a tus fotos y vide
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Escanear el código de barras</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pausar la grabación</translation>
 <translation id="4121305183798804752">Se detectó un documento</translation>
+<translation id="414641094616694804">No se puede modificar la resolución de la cámara</translation>
 <translation id="4269820728363426813">Copiar dirección del vínculo</translation>
+<translation id="4281620174117014503">Resolución media</translation>
 <translation id="4329152592498422850">Cambiar al modo para tomar fotos cuadradas</translation>
 <translation id="4383571725254449280">Registros de rendimiento de impresión</translation>
 <translation id="4445542136948522167">Detener foto</translation>
@@ -74,12 +84,15 @@ Las apps que tengan permiso de almacenamiento podrán acceder a tus fotos y vide
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4649291346448517080">No se puede guardar el archivo</translation>
 <translation id="4695379108709712600">Se está moviendo hacia la parte superior</translation>
+<translation id="4705093842003735294">Máxima resolución</translation>
 <translation id="4890010094662541459">3 × 3</translation>
 <translation id="491895758387112773">Crear transmisión múltiple de grabación de video</translation>
+<translation id="5034763830503483128">Relación de aspecto de la foto</translation>
 <translation id="5057360777601936059">La cámara no está disponible en este momento.
         Asegúrate de que esté conectada de forma correcta.</translation>
 <translation id="5163387177077603948">Se está moviendo hacia la derecha</translation>
 <translation id="520537883758714667">La función para escanear documentos ya está disponible.</translation>
+<translation id="5235304959032763950">16:9</translation>
 <translation id="5266635337630551423">Esquina superior izquierda del documento</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5320594929574852403">Se está moviendo hacia la izquierda</translation>
@@ -94,6 +107,7 @@ Las apps que tengan permiso de almacenamiento podrán acceder a tus fotos y vide
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5975083100439434680">Alejar</translation>
 <translation id="5976160379964388480">Otros</translation>
+<translation id="603973421174355542">Full HD</translation>
 <translation id="6073451960410192870">Detener grabación</translation>
 <translation id="6197807149213783179">Guardar metadatos</translation>
 <translation id="6233780560267770709">3 por 3</translation>
@@ -104,6 +118,7 @@ Las apps que tengan permiso de almacenamiento podrán acceder a tus fotos y vide
 Si tus comentarios están relacionados con la calidad de imagen o video, adjunta una foto o video de muestra y describe el problema (p. ej., la foto sale demasiado oscura o fuera de foco).</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" /> × <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapíxel</translation>
 <translation id="6527303717912515753">Compartir</translation>
+<translation id="6631515515009660915">Desactivar el modo espejo</translation>
 <translation id="6652737148136672975">Mueve la posición de las esquinas con las teclas de flechas</translation>
 <translation id="667999046851023355">Documento</translation>
 <translation id="6681668084120808868">Tomar foto</translation>
@@ -114,6 +129,7 @@ Si tus comentarios están relacionados con la calidad de imagen o video, adjunta
 <translation id="698156982839284926">3 segundos</translation>
 <translation id="712848772518857951">¿Confirmas que deseas quitar <ph name="COUNT" /> elementos?</translation>
 <translation id="7134221860976209830">Temporizador de 10 segundos</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Tipo de grabación</translation>
 <translation id="7243947652761655814">Resolución de video</translation>
 <translation id="7337660886763914220">Errores en el sistema de archivos</translation>
@@ -146,9 +162,11 @@ Si tus comentarios están relacionados con la calidad de imagen o video, adjunta
 <translation id="8815966864175525708">Cambiar al modo vertical para tomar fotos</translation>
 <translation id="8828441885228359828">Reanudar la grabación</translation>
 <translation id="8870695351537079478">No es posible comenzar a grabar</translation>
+<translation id="8880167521484863515">4:3</translation>
 <translation id="8903921497873541725">Acercar</translation>
 <translation id="9045010116236796332">Coloca todos los bordes del documento dentro del cuadro.</translation>
 <translation id="9045155556724273246">10 segundos</translation>
 <translation id="906331135292332864">Procesando imagen…</translation>
+<translation id="922762992951083513">Activar el modo espejo</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 </translationbundle>

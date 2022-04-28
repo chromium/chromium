@@ -171,6 +171,7 @@
 <translation id="1155816283571436363">מתבצע חיבור לטלפון שלך</translation>
 <translation id="1158080958325422608">שינוי לאותיות גדולות</translation>
 <translation id="1158238185437008462">להצגת הזיכרונות</translation>
+<translation id="1160842321113409343">כדי להגן על הפרטיות שלך, האתרים שנוספו לרשימה לפני יותר מ-4 שבועות נמחקים ממנה אוטומטית. אתר שביקרת בו שוב עשוי לחזור ולהופיע ברשימה. אפשר גם להסיר אתר אם לא רוצים שתחומי העניין יוגדרו לפי הביקור בו.</translation>
 <translation id="1161575384898972166">יש להיכנס אל <ph name="TOKEN_NAME" /> כדי לייצא את אישור הלקוח.</translation>
 <translation id="116173250649946226">מנהל המערכת הגדיר עיצוב כברירת מחדל שלא ניתן לשנות.</translation>
 <translation id="1162213688509394031">הסתרת סרגל הכותרת</translation>
@@ -842,6 +843,7 @@
 <translation id="1784849162047402014">חסר מקום אחסון בדיסק של המכשיר</translation>
 <translation id="1787350673646245458">תמונת המשתמש</translation>
 <translation id="1788329699711791226">‏גישה לנתונים של <ph name="ACCOUNT_EMAIL" /> בדפדפן Chrome</translation>
+<translation id="1790664457414575790">יש לך אפשרות להציג את הסיסמאות השמורות ולנהל אותן ב<ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1790976235243700817">הסרת הגישה</translation>
 <translation id="1791662854739702043">מותקן</translation>
 <translation id="1792619191750875668">תצוגה מורחבת</translation>
@@ -3184,6 +3186,7 @@
 <translation id="4031179711345676612">ניתן להשתמש במיקרופון בדף זה</translation>
 <translation id="4031308539321678562">‏הפעולה הזו תמחק באופן סופי את נתוני הגלישה במכשיר הזה. יכול להיות שיש אפליקציות אחרות ב-Chromebook שלך שמחוברות לחשבונות Google שבפרופיל הזה. כדי להסיר את החשבונות האלה, עליך לעבור אל <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4031527940632463547">החיישנים חסומים</translation>
+<translation id="4033415645631238123">‏אי אפשר יותר להיכנס באמצעות Smart Lock. אפשר להמשיך לבטל את נעילת המכשיר באמצעות Smart Lock.</translation>
 <translation id="4033471457476425443">הוספת תיקייה חדשה</translation>
 <translation id="4033963223187371752">באתרים מאובטחים מוטמע לפעמים תוכן לא מאובטח, כמו תמונות או מסגרות של אתרים</translation>
 <translation id="4034824040120875894">מדפסת</translation>
@@ -4386,6 +4389,7 @@
 <translation id="5268373933383932086">הדף שלך, הדרך שלך</translation>
 <translation id="5269977353971873915">ההדפסה נכשלה</translation>
 <translation id="5273806377963980154">עריכה של כתובת האתר</translation>
+<translation id="5275338516105640560">לחצן של קבוצת הכרטיסיות שנשמרה</translation>
 <translation id="5275352920323889391">כלב</translation>
 <translation id="527605719918376753">השתקת כרטיסייה</translation>
 <translation id="527605982717517565">‏לאפשר תמיד JavaScript ב-<ph name="HOST" /></translation>
@@ -4510,6 +4514,9 @@
 <translation id="5397794290049113714">את/ה</translation>
 <translation id="5398497406011404839">סימניות מוסתרות</translation>
 <translation id="5398572795982417028">התייחסות לדף מחוץ לטווח, המגבלה היא <ph name="MAXIMUM_PAGE" /></translation>
+<translation id="5398724494943676484">הסיסמה שנחשפה הוחלפה בהצלחה.
+
+אפשר לבדוק את הסיסמאות שלך בכל שלב דרך ה<ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="5401426944298678474">ביטול המעקב אחרי האתר</translation>
 <translation id="5402815541704507626">הורדת עדכון דרך חבילת גלישה</translation>
 <translation id="540296380408672091">‏לחסום תמיד קובצי Cookie ב-<ph name="HOST" /></translation>
@@ -4997,6 +5004,7 @@
 <translation id="5895138241574237353">הפעלה מחדש</translation>
 <translation id="5895335062901455404">‏הפעילות וההעדפות השמורות שלך יהיו מוכנות בכל מכשיר ChromeOS Flex לאחר הכניסה באמצעות חשבון Google. יש לך אפשרות לבחור מה לסנכרן בהגדרות.</translation>
 <translation id="5896436821193322561">אין אישור</translation>
+<translation id="5900186025777217044">‏התכונה Smart Lock שונתה</translation>
 <translation id="5900302528761731119">‏תמונת פרופיל Google</translation>
 <translation id="590036993063074298">פרטי האיכות של שיקוף המסך</translation>
 <translation id="5901069264981746702">נתוני טביעות האצבע מאוחסנים באופן מאובטח ואף פעם לא נשלחים ממכשיר ה-<ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
@@ -5381,6 +5389,7 @@
 <translation id="6271780480930459892">יש לפנות למנהל המערכת לקבלת הגרסה החדשה ביותר.</translation>
 <translation id="6272643420381259437">אירעה שגיאה (<ph name="ERROR" />) במהלך הורדת הפלאגין</translation>
 <translation id="6273677812470008672">איכות</translation>
+<translation id="6274202259872570803">הקלטת מסך</translation>
 <translation id="6276210637549544171">‏לשרת ה-proxy ‏<ph name="PROXY_SERVER" /> נדרשים שם משתמש וסיסמה.</translation>
 <translation id="6277105963844135994">תם הזמן הקצוב לתפוגה של הרשת</translation>
 <translation id="6277518330158259200">צ&amp;ילום מסך</translation>
@@ -5710,6 +5719,15 @@
 <translation id="6593881952206664229">ייתכן שמדיה שיש לה זכויות יוצרים לא תופעל</translation>
 <translation id="6594011207075825276">מתבצע חיפוש של מכשירים סריאליים...</translation>
 <translation id="6595187330192059106">‏לחסום תמיד – ל-<ph name="HOST" /> לא תהיה יותר שליטה מלאה במכשירי MIDI.</translation>
+<translation id="6595408197871512625">{COUNT,plural, =1{‏הסיסמה שנחשפה הוחלפה בהצלחה.
+
+נותרה עוד סיסמה אחת שנחשפה. לפי מנהל הסיסמאות של Google, מומלץ לשנות את הסיסמה הזו עכשיו.}two{‏הסיסמה שנחשפה הוחלפה בהצלחה.
+
+נותרו עוד # סיסמאות שנחשפו. לפי מנהל הסיסמאות של Google, מומלץ לשנות את הסיסמאות האלו עכשיו.}many{‏הסיסמה שנחשפה הוחלפה בהצלחה.
+
+נותרו עוד # סיסמאות שנחשפו. לפי מנהל הסיסמאות של Google, מומלץ לשנות את הסיסמאות האלו עכשיו.}other{‏הסיסמה שנחשפה הוחלפה בהצלחה.
+
+נותרו עוד # סיסמאות שנחשפו. לפי מנהל הסיסמאות של Google, מומלץ לשנות את הסיסמאות האלו עכשיו.}}</translation>
 <translation id="6595792813574514527">גוררים כדי לחפש תמונות באמצעות <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">אפשרויות הצפנה</translation>
 <translation id="6596816719288285829">‏כתובת IP</translation>

@@ -79,6 +79,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1312604459020188865">Intensidade do sinal do <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Mostrar sempre o estante</translation>
 <translation id="1316811122439383437">Tote: descargas, ficheiros fixados e capturas de pantalla recentes</translation>
+<translation id="132346741904777634">Cámara axustada á esquina superior esquerda. Conflito coa plataforma do sistema.</translation>
 <translation id="1333308631814936910">Conectouse <ph name="DISPLAY_NAME" /></translation>
 <translation id="1341651618736211726">Menú adicional</translation>
 <translation id="1346748346194534595">Dereita</translation>
@@ -162,6 +163,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1885785240814121742">Desbloquear coa impresión dixital</translation>
 <translation id="1888656773939766144">O dispositivo (<ph name="DISPLAY_NAME" />) non é compatible cunha resolución de <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). A resolución cambiouse a <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Para conservar este cambio, fai clic en Confirmar. A configuración anterior restaurarase en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1915307458270490472">Deter</translation>
+<translation id="1918022425394817322">Cámara axustada á esquina superior dereita</translation>
 <translation id="1919743966458266018">Cambiou o atallo que abre o xestor de tarefas. Utiliza <ph name="NEW_SHORTCUT" /> en lugar de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Clics automáticos</translation>
 <translation id="1928739107511554905">Se queres recibir a actualización, usa a pantalla táctil para reiniciar o dispositivo Chromebook co teclado conectado.</translation>
@@ -552,6 +554,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> moveuse ao cartafol <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Non dispoñible</translation>
 <translation id="4303223480529385476">Despregar área de estado</translation>
+<translation id="4312840429157639164">Cámara axustada á esquina superior dereita. Conflito coa plataforma do sistema.</translation>
 <translation id="4316910396681052118">TODAS AS APLICACIÓNS</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Premiches o atallo de teclado para o alto contraste. Queres activalo?</translation>
@@ -858,6 +861,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6254629735336163724">Pantalla bloqueada en posición horizontal</translation>
 <translation id="6259254695169772643">Usa o teu lapis óptico para seleccionar</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: activando...</translation>
+<translation id="6274202259872570803">Gravación da pantalla</translation>
 <translation id="6283712521836204486">Está desactivado o modo Non molestar.</translation>
 <translation id="6284232397434400372">Cambiouse a resolución</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> pode engadirse de novo máis adiante co permiso da súa nai ou do seu pai.</translation>
@@ -889,6 +893,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="649452524636452238">PIN da tarxeta intelixente</translation>
 <translation id="6495400115277918834">Iniciouse a función da pantalla superposta. Para enfocar esta pantalla, preme Alt + Maiúsculas + V</translation>
 <translation id="6501401484702599040">Emitindo pantalla en <ph name="RECEIVER_NAME" /></translation>
+<translation id="6515727200518652613">Perdeuse a conexión coa cámara; tentando conexión de novo.</translation>
 <translation id="6520517963145875092">Selecciona a ventá que queiras capturar</translation>
 <translation id="652139407789908527">A túa pantalla quedará en branco durante máis tempo do habitual (ata un minuto) durante a actualización. Non premas o botón de acendido mentres a actualización estea en curso.</translation>
 <translation id="6528179044667508675">Non molestar</translation>
@@ -907,6 +912,7 @@ Nova instalación</translation>
 <translation id="6578407462441924264">Sen nome</translation>
 <translation id="6585808820553845416">A sesión finaliza dentro de <ph name="SESSION_TIME_REMAINING" /> .</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597278316891651699">Cámara axustada á esquina inferior esquerda. Conflito coa plataforma do sistema.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
 <translation id="6612802754306526077">Seleccionouse o modo de gravación da pantalla</translation>
 <translation id="6614169507485700968">A pantalla de privacidade está activada</translation>
@@ -944,6 +950,7 @@ Nova instalación</translation>
 <translation id="6801878137098616817">Editouse recentemente</translation>
 <translation id="6803622936009808957">Non se puideron replicar as pantallas porque non se atopou ningunha resolución compatible. No seu lugar accedeuse ao escritorio ampliado.</translation>
 <translation id="6818242057446442178">Retroceder unha palabra</translation>
+<translation id="6819327813400217281">Cámara axustada á esquina inferior esquerda</translation>
 <translation id="6820676911989879663">Fai unha pausa!</translation>
 <translation id="6827049576281411231">Pechar panel de eventos</translation>
 <translation id="6836499262298959512">Ficheiro perigoso</translation>
@@ -972,6 +979,7 @@ Nova instalación</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Accesibilidade</translation>
 <translation id="698231206551913481">En canto se borre este usuario, eliminaranse permanentemente os ficheiros e os datos locais asociados con el.</translation>
+<translation id="7005239792648594238">Abre unha aplicación para comezar</translation>
 <translation id="7007983414944123363">Non se puido verificar o teu PIN ou contrasinal. Téntao de novo.</translation>
 <translation id="7014684956566476813">Conexión establecida cun dispositivo chamado "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7015766095477679451">Volve á seguinte hora: <ph name="COME_BACK_TIME" />.</translation>
@@ -985,6 +993,7 @@ Nova instalación</translation>
 <translation id="7045033600005038336">Queres substituír o modelo?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> (desconectado)</translation>
 <translation id="7055910611768509537">O lapis óptico non se usou desde hai máis dunha semana</translation>
+<translation id="7061457967428964661">Vista previa da cámara, preme control + teclas das frechas para mover a vista previa a unha esquina distinta</translation>
 <translation id="7066646422045619941">Esta rede está desactivada polo administrador.</translation>
 <translation id="7067196344162293536">Xirar automat.</translation>
 <translation id="7068360136237591149">Abrir ficheiros</translation>
@@ -1005,6 +1014,7 @@ Nova instalación</translation>
 <translation id="718361511487535372">Abrir en Google Calendar</translation>
 <translation id="7188494361780961876">O menú moveuse á esquina superior esquerda da pantalla.</translation>
 <translation id="7189412385142492784">A que distancia está Venus?</translation>
+<translation id="7198435252016571249">Cámara axustada á esquina inferior dereita. Conflito coa plataforma do sistema.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Tes que reiniciar este Chromebook para aplicar unha actualización. Esta acción pode tardar 1 minuto.</translation>
 <translation id="7256634071279256947">Micrófono traseiro</translation>
 <translation id="7258828758145722155">Editouse onte</translation>
@@ -1065,8 +1075,10 @@ Nova instalación</translation>
 <translation id="7593891976182323525">Busca ou Maiús</translation>
 <translation id="7600875258240007829">Ver todas as notificacións</translation>
 <translation id="7607002721634913082">En pausa</translation>
+<translation id="7611213136657090146">Reconectouse a cámara.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7633755430369750696">Mostrar a configuración da función Compartir por Nearby.</translation>
+<translation id="7634648064048557203">Cámara axustada á esquina inferior dereita</translation>
 <translation id="7641938616688887143">Zona que se gravará</translation>
 <translation id="7642647758716480637">Abrir a configuración para <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propietario)</translation>
@@ -1079,6 +1091,7 @@ Nova instalación</translation>
 <translation id="7662283695561029522">Toca para configurar a conexión compartida</translation>
 <translation id="7670953955701272011">Abrir esta data en Google Calendar</translation>
 <translation id="7671610481353807627">As aplicacións están ordenadas por cor</translation>
+<translation id="7684531502177797067">Definiuse a entrada por cámara como <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Engadir nova rede de telefonía móbil</translation>
 <translation id="7720410380936703141">TENTAR DE NOVO</translation>
@@ -1300,6 +1313,7 @@ Nova instalación</translation>
 <translation id="9077404278023321866">Modelos</translation>
 <translation id="9077515519330855811">Controis multimedia, reproducindo <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wifi: <ph name="ADDRESS" /></translation>
+<translation id="9080073830732419341">Cámara axustada á esquina superior esquerda</translation>
 <translation id="9080132581049224423">Pasa o dedo cara arriba para ir á pantalla de inicio</translation>
 <translation id="9080206825613744995">O micrófono está en uso.</translation>
 <translation id="9084606467167974638">Alternar a posición do menú</translation>

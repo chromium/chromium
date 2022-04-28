@@ -670,6 +670,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4758061975920522644">Share image only</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4763480195061959176">video</translation>
+<translation id="4766313118839197559">Passwords are saved to Password Manager on this device</translation>
 <translation id="4766678251456904326">Add account to device</translation>
 <translation id="4791358705705538979">Helps you complete tasks, such as checkout, throughout the web</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -805,6 +806,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5517095782334947753">You have bookmarks, history, passwords and other settings from <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524761631371622910">When trials are on and if Chrome has randomly placed you in an active trial, your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chrome deletes your interests on a rolling basis each month.</translation>
 <translation id="5524843473235508879">Redirect blocked.</translation>
+<translation id="5528459307536571064">One tab group</translation>
 <translation id="5548606607480005320">Safety check</translation>
 <translation id="5555525474779371165">Choose your Safe Browsing protection</translation>
 <translation id="5556459405103347317">Reload</translation>
@@ -927,6 +929,7 @@ Privacy Sandbox trials are still in active development and are available in sele
 <translation id="6162892189396105610">Preloads pages that Chrome thinks that you are likely to visit.</translation>
 <translation id="6186394685773237175">No compromised passwords found</translation>
 <translation id="6192907950379606605">Get image descriptions</translation>
+<translation id="6196315980958524839">Passwords are saved to Google Password Manager on this device</translation>
 <translation id="620197886010707372">Open app for <ph name="APPNAME" /> with Google Play?</translation>
 <translation id="6203593061661911168">Download will start when on Wi-Fi</translation>
 <translation id="6210748933810148297">Not <ph name="EMAIL" />?</translation>
@@ -1257,6 +1260,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="7961015016161918242">Never</translation>
 <translation id="7961926449547174351">You have disabled storage access. Please go to settings to enable it.</translation>
 <translation id="7963646190083259054">Vendor:</translation>
+<translation id="7965838025086216108">You can use saved passwords on any device. They're saved to Google Password Manager for <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Added to reading list</translation>
 <translation id="7971136598759319605">Active 1 day ago</translation>
 <translation id="7975379999046275268">Preview page <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
@@ -1517,5 +1521,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Close all tabs</translation>
 <translation id="987264212798334818">General</translation>
+<translation id="992745192656291733"><ph name="TAB_COUNT" /> tabs</translation>
 <translation id="996149300115483134">Feed card menu is closed</translation>
 </translationbundle>

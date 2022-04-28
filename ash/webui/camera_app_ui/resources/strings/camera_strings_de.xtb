@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="1113173431709655881">Kameramodus</translation>
+<translation id="1153190633558910465">Raster deaktivieren</translation>
 <translation id="1175958423215084756">Link erkannt. <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">Um 90 Grad im Uhrzeigersinn drehen</translation>
 <translation id="1276998909102132017">Galeriebilder</translation>
 <translation id="1300209025925956156">Dokument scannen</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. „Suchtaste + Linkspfeil“ drücken, um darauf zuzugreifen.</translation>
+<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">Drucken</translation>
 <translation id="1467231725790366244">Verbindung zu <ph name="CAMERA" /> wurde getrennt.</translation>
 <translation id="1473110567575736769">3-Sekunden-Timer</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">Timerdauer</translation>
 <translation id="2050339315714019657">Hochformat</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktiv</translation>
+<translation id="2134029355740465625">Videoeinstellungen</translation>
 <translation id="2144806332417375165">Benutzerdefinierte Videoparameter</translation>
 <translation id="2175927920773552910">QR-Code</translation>
 <translation id="2271433936731426666">Video-Momentaufnahme in Originalgröße aktivieren</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">Kamera auf der Rückseite</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Scantyp</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">Vorschau spiegeln</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ist angeschlossen.</translation>
 <translation id="2968794441791257519">Mit der Kamera aufgenommene Fotos und Videos werden in den Ordner "Downloads" verschoben. Du kannst sie in der App "Dateien" ansehen.
 
@@ -52,6 +57,8 @@
 <translation id="3240426699337459095">Link wurde kopiert.</translation>
 <translation id="3259149966178251584">Kameraauflösung</translation>
 <translation id="3305962767867348165">Fixieren</translation>
+<translation id="3354465018370944241">Fotoeinstellungen</translation>
+<translation id="3411958449466169012">Timer deaktivieren</translation>
 <translation id="3448774564454087943">Das Video ist zu kurz und wird nicht gespeichert</translation>
 <translation id="346539236881580388">Neu aufnehmen</translation>
 <translation id="3517926952904427380">Es konnte kein Foto im Hochformat aufgenommen werden</translation>
@@ -63,9 +70,12 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Barcode scannen</translation>
 <translation id="3892148308691398805">Text kopieren</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Aufnahme pausieren</translation>
 <translation id="4121305183798804752">Dokument erkannt</translation>
+<translation id="414641094616694804">Diese Kamera kann die Auflösung nicht ändern</translation>
 <translation id="4269820728363426813">URL kopieren</translation>
+<translation id="4281620174117014503">Mittlere Auflösung</translation>
 <translation id="4329152592498422850">Zum Modus für quadratische Fotos wechseln</translation>
 <translation id="4383571725254449280">Druckleistungsprotokolle drucken</translation>
 <translation id="4445542136948522167">Fotoaufnahme beenden</translation>
@@ -74,12 +84,15 @@
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4649291346448517080">Datei konnte nicht gespeichert werden</translation>
 <translation id="4695379108709712600">Wird nach oben verschoben</translation>
+<translation id="4705093842003735294">Volle Auflösung</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Multistream-Videoaufzeichnung</translation>
+<translation id="5034763830503483128">Seitenverhältnis für Foto</translation>
 <translation id="5057360777601936059">Deine Kamera ist zurzeit nicht verfügbar.
         Bitte überprüfe, ob die Kamera richtig verbunden ist.</translation>
 <translation id="5163387177077603948">Wird nach rechts verschoben</translation>
 <translation id="520537883758714667">Scannen von Dokumenten jetzt verfügbar</translation>
+<translation id="5235304959032763950">16 zu 9</translation>
 <translation id="5266635337630551423">Linke obere Ecke des Dokuments</translation>
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5320594929574852403">Wird nach links verschoben</translation>
@@ -94,6 +107,7 @@
 <translation id="5916664084637901428">An</translation>
 <translation id="5975083100439434680">Verkleinern</translation>
 <translation id="5976160379964388480">Sonstige</translation>
+<translation id="603973421174355542">Full HD</translation>
 <translation id="6073451960410192870">Aufnahme beenden</translation>
 <translation id="6197807149213783179">Metadaten speichern</translation>
 <translation id="6233780560267770709">3 mal 3</translation>
@@ -104,6 +118,7 @@
 Falls sich dein Feedback auf die Bild- oder Videoqualität bezieht, hänge bitte als Beispiel ein Foto oder Video an und beschreibe den Fehler. (Beispielsweise "Das Foto ist zu dunkel" oder "Das Motiv ist nicht im Fokus".)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" /> x <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> Megapixel</translation>
 <translation id="6527303717912515753">Teilen</translation>
+<translation id="6631515515009660915">Spiegelung deaktivieren</translation>
 <translation id="6652737148136672975">Eckenposition mit Pfeiltasten verschieben</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6681668084120808868">Foto machen</translation>
@@ -114,6 +129,7 @@ Falls sich dein Feedback auf die Bild- oder Videoqualität bezieht, hänge bitte
 <translation id="698156982839284926">3 Sekunden</translation>
 <translation id="712848772518857951">Möchtest du <ph name="COUNT" /> Elemente wirklich entfernen?</translation>
 <translation id="7134221860976209830">10-Sekunden-Timer</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Aufnahmetyp</translation>
 <translation id="7243947652761655814">Videoauflösung</translation>
 <translation id="7337660886763914220">Fehler im Dateisystem.</translation>
@@ -146,9 +162,11 @@ Falls sich dein Feedback auf die Bild- oder Videoqualität bezieht, hänge bitte
 <translation id="8815966864175525708">Zum Modus für Hochformat-Fotos wechseln</translation>
 <translation id="8828441885228359828">Aufnahme fortsetzen</translation>
 <translation id="8870695351537079478">Videoaufnahme konnte nicht gestartet werden</translation>
+<translation id="8880167521484863515">4 zu 3</translation>
 <translation id="8903921497873541725">Vergrößern</translation>
 <translation id="9045010116236796332">Alle Ränder des Dokuments müssen sich innerhalb des Rahmens befinden</translation>
 <translation id="9045155556724273246">10 Sekunden</translation>
 <translation id="906331135292332864">Bild wird verarbeitet…</translation>
+<translation id="922762992951083513">Spiegelung aktivieren</translation>
 <translation id="945522503751344254">Feedback geben</translation>
 </translationbundle>

@@ -79,6 +79,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1312604459020188865"><ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal</translation>
 <translation id="1316069254387866896">Mostra sempre el prestatge</translation>
 <translation id="1316811122439383437">Tote: captures de pantalla, baixades i fitxers fixats recents</translation>
+<translation id="132346741904777634">La càmera s'ha ajustat a l'extrem superior esquerre. S'ha produït un conflicte amb la superfície del sistema.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> connectada</translation>
 <translation id="1341651618736211726">Menú addicional</translation>
 <translation id="1346748346194534595">Dreta</translation>
@@ -162,6 +163,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1885785240814121742">Desbloqueja amb l'empremta digital</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> no admet la resolució <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). La resolució ha canviat a <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Fes clic a Confirma per conservar els canvis. La configuració anterior es restaurarà d'aquí a <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1915307458270490472">Penja</translation>
+<translation id="1918022425394817322">La càmera s'ha ajustat a l'extrem superior dret</translation>
 <translation id="1919743966458266018">La drecera per obrir el gestor de tasques ha canviat. Utilitzeu <ph name="NEW_SHORTCUT" /> en lloc de la drecera <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Clics automàtics</translation>
 <translation id="1928739107511554905">Per obtenir l'actualització, utilitza la pantalla tàctil per reiniciar Chromebook amb el teclat connectat.</translation>
@@ -551,6 +553,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> s'ha mogut a la carpeta <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">No disponible</translation>
 <translation id="4303223480529385476">Desplega l'àrea d'estat</translation>
+<translation id="4312840429157639164">La càmera s'ha ajustat a l'extrem superior dret. S'ha produït un conflicte amb la superfície del sistema.</translation>
 <translation id="4316910396681052118">TOTES LES APLICACIONS</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Has premut la tecla de drecera de l'alt contrast. Vols activar-lo?</translation>
@@ -857,6 +860,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6254629735336163724">Bloquejada en horitzontal</translation>
 <translation id="6259254695169772643">Fes servir el llapis òptic per seleccionar</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: s'està activant...</translation>
+<translation id="6274202259872570803">Captura de pantalla de vídeo</translation>
 <translation id="6283712521836204486">El mode No molestis està desactivat.</translation>
 <translation id="6284232397434400372">S'ha canviat la resolució</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> es pot tornar a afegir més endavant amb un permís dels pares.</translation>
@@ -888,6 +892,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="649452524636452238">PIN de la targeta intel·ligent</translation>
 <translation id="6495400115277918834">S'ha iniciat la pantalla en pantalla; prem Alt+Maj+V per posar-hi el focus</translation>
 <translation id="6501401484702599040">S'està emetent la pantalla a <ph name="RECEIVER_NAME" /></translation>
+<translation id="6515727200518652613">S'ha perdut la càmera. S'està provant de tornar a connectar.</translation>
 <translation id="6520517963145875092">Selecciona la finestra que vols capturar</translation>
 <translation id="652139407789908527">Durant l'actualització, la pantalla es quedarà en blanc més temps del que és habitual (fins a un minut). No premis el botó d'engegada fins que no acabi.</translation>
 <translation id="6528179044667508675">No molestis</translation>
@@ -906,6 +911,7 @@ Instal·lació nova</translation>
 <translation id="6578407462441924264">Sense nom</translation>
 <translation id="6585808820553845416">La sessió finalitzarà d'aquí a <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597278316891651699">La càmera s'ha ajustat a l'extrem inferior esquerre. S'ha produït un conflicte amb la superfície del sistema.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, xarxa gestionada per l'administrador</translation>
 <translation id="6612802754306526077">S'ha seleccionat el mode de gravació de pantalla</translation>
 <translation id="6614169507485700968">La pantalla de privadesa està activada</translation>
@@ -943,6 +949,7 @@ Instal·lació nova</translation>
 <translation id="6801878137098616817">Editat fa poc</translation>
 <translation id="6803622936009808957">No s'han pogut projectar les pantalles, perquè no s'ha trobat cap resolució compatible. S'ha entrat al mode d'escriptori ampliat.</translation>
 <translation id="6818242057446442178">Enrere per paraula</translation>
+<translation id="6819327813400217281">La càmera s'ha ajustat a l'extrem inferior esquerre</translation>
 <translation id="6820676911989879663">Fes una pausa</translation>
 <translation id="6827049576281411231">Tanca el tauler d'esdeveniments</translation>
 <translation id="6836499262298959512">Fitxer perillós</translation>
@@ -971,6 +978,7 @@ Instal·lació nova</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Accessibilitat</translation>
 <translation id="698231206551913481">Tots els fitxers i les dades locals associats amb aquest usuari se suprimiran definitivament quan aquest usuari se suprimeixi.</translation>
+<translation id="7005239792648594238">Obre una aplicació per començar</translation>
 <translation id="7007983414944123363">El PIN o la contrasenya no s'han pogut verificar. Torna-ho a provar.</translation>
 <translation id="7014684956566476813">Connectat a un dispositiu Bluetooth anomenat <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Pots tornar a aquesta hora: <ph name="COME_BACK_TIME" />.</translation>
@@ -984,6 +992,7 @@ Instal·lació nova</translation>
 <translation id="7045033600005038336">Vols substituir la plantilla?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> s'ha desconnectat</translation>
 <translation id="7055910611768509537">El llapis òptic no s'utilitza des de fa més d'una setmana</translation>
+<translation id="7061457967428964661">Previsualització de la càmera: prem control + les tecles de fletxa per moure la previsualització a un altre extrem</translation>
 <translation id="7066646422045619941">L'administrador ha desactivat aquesta xarxa.</translation>
 <translation id="7067196344162293536">Rotació automàtica</translation>
 <translation id="7068360136237591149">Obre fitxers</translation>
@@ -1004,6 +1013,7 @@ Instal·lació nova</translation>
 <translation id="718361511487535372">Obre a Google Calendar</translation>
 <translation id="7188494361780961876">El menú s'ha mogut a l'extrem superior esquerre de la pantalla.</translation>
 <translation id="7189412385142492784">A quina distància es troba Venus?</translation>
+<translation id="7198435252016571249">La càmera s'ha ajustat a l'extrem inferior dret. S'ha produït un conflicte amb la superfície del sistema.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Aquest Chromebook s'ha de reiniciar perquè s'apliqui una actualització. Aquest procés pot tardar fins a 1 minut</translation>
 <translation id="7256634071279256947">Micròfon posterior</translation>
 <translation id="7258828758145722155">Editat ahir</translation>
@@ -1064,8 +1074,10 @@ Instal·lació nova</translation>
 <translation id="7593891976182323525">Cerca o Maj</translation>
 <translation id="7600875258240007829">Mostra totes les notificacions</translation>
 <translation id="7607002721634913082">En pausa</translation>
+<translation id="7611213136657090146">S'ha tornat a connectar la càmera.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7633755430369750696">Mostra la configuració de Compartició Nearby.</translation>
+<translation id="7634648064048557203">La càmera s'ha ajustat a l'extrem inferior dret</translation>
 <translation id="7641938616688887143">Grava</translation>
 <translation id="7642647758716480637">Obre la configuració de la xarxa <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propietari)</translation>
@@ -1078,6 +1090,7 @@ Instal·lació nova</translation>
 <translation id="7662283695561029522">Toca per configurar</translation>
 <translation id="7670953955701272011">Obre aquesta data a Google Calendar</translation>
 <translation id="7671610481353807627">Les aplicacions estan ordenades per color</translation>
+<translation id="7684531502177797067">L'entrada per càmera s'ha establert en <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Afegeix una xarxa mòbil nova</translation>
 <translation id="7720410380936703141">TORNA-HO A PROVAR</translation>
@@ -1299,6 +1312,7 @@ Instal·lació nova</translation>
 <translation id="9077404278023321866">Plantilles</translation>
 <translation id="9077515519330855811">Controls multimèdia; ara s'està reproduint <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
+<translation id="9080073830732419341">La càmera s'ha ajustat a l'extrem superior esquerre</translation>
 <translation id="9080132581049224423">Llisca cap amunt per anar a la pàgina d'inici</translation>
 <translation id="9080206825613744995">S'està fent servir el micròfon.</translation>
 <translation id="9084606467167974638">Commuta la posició del menú</translation>

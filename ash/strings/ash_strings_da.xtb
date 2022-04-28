@@ -79,6 +79,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1312604459020188865">Signalstyrke <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Vis altid hylde</translation>
 <translation id="1316811122439383437">Transportkasse: De seneste screenshots, downloads og fastgjorte filer</translation>
+<translation id="132346741904777634">Kameraet er fastgjort til hjørnet øverst til venstre. Dette er i strid med systemfladen.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> er forbundet</translation>
 <translation id="1341651618736211726">Overløb</translation>
 <translation id="1346748346194534595">Højre</translation>
@@ -162,6 +163,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1885785240814121742">Lås op med fingeraftryk</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> understøtter ikke <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Opløsningen blev ændret til <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Klik på Bekræft for at anvende ændringerne. De tidligere indstillinger gendannes om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1915307458270490472">Læg på</translation>
+<translation id="1918022425394817322">Kameraet er fastgjort til hjørnet øverst til højre</translation>
 <translation id="1919743966458266018">Genvejen til at åbne Jobliste er ændret. Brug <ph name="NEW_SHORTCUT" /> i stedet for <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatiske klik</translation>
 <translation id="1928739107511554905">Brug touchskærmen til at genstarte din Chromebook med det tilsluttede tastatur for at hente opdateringen.</translation>
@@ -551,6 +553,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> blev flyttet til mappen <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Ikke tilgængelig</translation>
 <translation id="4303223480529385476">Udvid statusområde</translation>
+<translation id="4312840429157639164">Kameraet er fastgjort til hjørnet øverst til højre. Dette er i strid med systemfladen.</translation>
 <translation id="4316910396681052118">ALLE APPS</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Du trykkede på tastaturgenvejen for høj kontrast. Vil du aktivere indstillingen?</translation>
@@ -857,6 +860,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="6254629735336163724">Altid vandret</translation>
 <translation id="6259254695169772643">Vælg ved hjælp af din styluspen</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Aktiverer...</translation>
+<translation id="6274202259872570803">Screencast</translation>
 <translation id="6283712521836204486">Forstyr ikke er deaktiveret</translation>
 <translation id="6284232397434400372">Opløsningen blev ændret</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> kan tilføjes igen senere, hvis en forælder giver tilladelse til det.</translation>
@@ -888,6 +892,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="649452524636452238">Pinkode til chipkort</translation>
 <translation id="6495400115277918834">Integreret billede blev startet – tryk på Alt + Shift + V for at fokusere på dette</translation>
 <translation id="6501401484702599040">Caster skærmen til <ph name="RECEIVER_NAME" /></translation>
+<translation id="6515727200518652613">Forbindelsen til kameraet blev afbrudt. Genopretter forbindelsen.</translation>
 <translation id="6520517963145875092">Vælg et vindue, der skal tages billede af</translation>
 <translation id="652139407789908527">Din skærm vil være tom i længere tid end normalt (i op til et minut) under denne opdatering. Undlad at trykke på afbryderknappen, mens opdateringen er i gang.</translation>
 <translation id="6528179044667508675">Forstyr ikke</translation>
@@ -906,6 +911,7 @@ Installeret for nylig</translation>
 <translation id="6578407462441924264">Uden navn</translation>
 <translation id="6585808820553845416">Sessionen slutter om <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597278316891651699">Kameraet er fastgjort til hjørnet nederst til venstre. Dette er i strid med systemfladen.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" />, administreret af din administrator</translation>
 <translation id="6612802754306526077">Skærmoptagelsestilstand er valgt</translation>
 <translation id="6614169507485700968">Privatlivsskærmen er slået til</translation>
@@ -943,6 +949,7 @@ Installeret for nylig</translation>
 <translation id="6801878137098616817">Redigeret for nylig</translation>
 <translation id="6803622936009808957">Skærmene kunne ikke spejles, da der ikke fandtes en understøttet opløsning. I stedet anvendes Udvidet skrivebord.</translation>
 <translation id="6818242057446442178">Et ord tilbage</translation>
+<translation id="6819327813400217281">Kameraet er fastgjort til hjørnet nederst til venstre</translation>
 <translation id="6820676911989879663">Hold en pause</translation>
 <translation id="6827049576281411231">Luk panelet for begivenheder</translation>
 <translation id="6836499262298959512">Farlig fil</translation>
@@ -971,6 +978,7 @@ Installeret for nylig</translation>
 <translation id="6979158407327259162">Google Drev</translation>
 <translation id="6981982820502123353">Hjælpefunktioner</translation>
 <translation id="698231206551913481">Alle filer og lokale data, der er knyttet til denne bruger, slettes permanent, når brugeren fjernes.</translation>
+<translation id="7005239792648594238">Åbn en app for at komme i gang</translation>
 <translation id="7007983414944123363">Din pin- eller adgangskode kunne ikke bekræftes. Prøv igen.</translation>
 <translation id="7014684956566476813">Forbundet til en enhed ved navn <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Vend tilbage kl. <ph name="COME_BACK_TIME" />.</translation>
@@ -984,6 +992,7 @@ Installeret for nylig</translation>
 <translation id="7045033600005038336">Vil du erstatte skabelonen?</translation>
 <translation id="7051244143160304048">Forbindelsen til <ph name="DEVICE_NAME" /> blev afbrudt</translation>
 <translation id="7055910611768509537">Styluspennen har ikke været i brug i over en uge</translation>
+<translation id="7061457967428964661">Forhåndsvisning af kamera, tryk på Ctrl + piletasterne for at flytte forhåndsvisningen til et andet hjørne</translation>
 <translation id="7066646422045619941">Din administrator har deaktiveret dette netværk.</translation>
 <translation id="7067196344162293536">Automatisk rotering</translation>
 <translation id="7068360136237591149">Åbn filer</translation>
@@ -1004,6 +1013,7 @@ Installeret for nylig</translation>
 <translation id="718361511487535372">Åbn i Google Kalender</translation>
 <translation id="7188494361780961876">Menuen blev flyttet til øverste venstre hjørne af skærmen.</translation>
 <translation id="7189412385142492784">Hvor langt væk er Venus?</translation>
+<translation id="7198435252016571249">Kameraet er fastgjort til hjørnet nederst til højre. Dette er i strid med systemfladen.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Denne Chromebook skal genstartes, før opdateringen kan anvendes. Dette kan tage op til 1 minut.</translation>
 <translation id="7256634071279256947">Mikrofon på bagsiden</translation>
 <translation id="7258828758145722155">Redigeret i går</translation>
@@ -1064,8 +1074,10 @@ Installeret for nylig</translation>
 <translation id="7593891976182323525">Søg eller Shift</translation>
 <translation id="7600875258240007829">Se alle notifikationer</translation>
 <translation id="7607002721634913082">Sat på pause</translation>
+<translation id="7611213136657090146">Der blev oprettet forbindelse til kameraet igen.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Vis indstillinger for Deling tæt på.</translation>
+<translation id="7634648064048557203">Kameraet er fastgjort til hjørnet nederst til højre</translation>
 <translation id="7641938616688887143">Optag</translation>
 <translation id="7642647758716480637">Åbn indstillingerne for <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ejer)</translation>
@@ -1078,6 +1090,7 @@ Installeret for nylig</translation>
 <translation id="7662283695561029522">Tryk for at konfigurere</translation>
 <translation id="7670953955701272011">Åbn denne dato i Google Kalender</translation>
 <translation id="7671610481353807627">Apps er sorteret efter farve</translation>
+<translation id="7684531502177797067">Kamerainput er indstillet til <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Tilføj et mobilnetværk</translation>
 <translation id="7720410380936703141">PRØV IGEN</translation>
@@ -1299,6 +1312,7 @@ Installeret for nylig</translation>
 <translation id="9077404278023321866">Skabeloner</translation>
 <translation id="9077515519330855811">Mediestyring, afspiller <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
+<translation id="9080073830732419341">Kameraet er fastgjort til hjørnet øverst til venstre</translation>
 <translation id="9080132581049224423">Stryg opad for at gå til startsiden</translation>
 <translation id="9080206825613744995">Mikrofonen er i brug.</translation>
 <translation id="9084606467167974638">Skift menuposition</translation>

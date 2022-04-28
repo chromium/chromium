@@ -804,6 +804,7 @@
 <translation id="5517095782334947753">יש לך סימניות, היסטוריה, סיסמאות והגדרות נוספות מ-<ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524761631371622910">‏כשגרסאות הניסיון פעילות, ובמקרים שבהם צורפת באופן אקראי לגרסת ניסיון פעילה ב-Chrome, היסטוריית הגלישה שלך משפיעה על המודעות שמוצגות לך ועל תחומי העניין המשוערים שמופיעים בהמשך. כדי להגן על הפרטיות שלך, מתבצעת ב-Chrome מחיקה של תחומי העניין שלך על בסיס מתחלף מדי חודש.</translation>
 <translation id="5524843473235508879">הפניה לכתובת אתר אחרת נחסמה.</translation>
+<translation id="5528459307536571064">קבוצת כרטיסיות אחת</translation>
 <translation id="5548606607480005320">בדיקת אבטחה</translation>
 <translation id="5555525474779371165">בחירת סוג ההגנה במסגרת 'גלישה בטוחה'</translation>
 <translation id="5556459405103347317">טעינה מחדש</translation>
@@ -1516,5 +1517,6 @@
 <translation id="981121421437150478">לא מקוון</translation>
 <translation id="983192555821071799">סגירת כל הכרטיסיות</translation>
 <translation id="987264212798334818">כללי</translation>
+<translation id="992745192656291733"><ph name="TAB_COUNT" /> כרטיסיות</translation>
 <translation id="996149300115483134">תפריט כרטיס הפיד סגור</translation>
 </translationbundle>

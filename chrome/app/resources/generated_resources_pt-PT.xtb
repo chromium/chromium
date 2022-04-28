@@ -169,6 +169,7 @@
 <translation id="1155816283571436363">A ligar ao seu telemóvel…</translation>
 <translation id="1158080958325422608">Colocar em maiúsculas</translation>
 <translation id="1158238185437008462">Ver memórias</translation>
+<translation id="1160842321113409343">Para proteger a sua privacidade, eliminamos automaticamente os sites da lista com mais de 4 semanas. Um site que visita novamente pode voltar a aparecer na lista. Em alternativa, pode remover um site se não quiser que o mesmo defina interesses para si.</translation>
 <translation id="1161575384898972166">Inicie sessão no <ph name="TOKEN_NAME" /> para exportar o certificado de cliente.</translation>
 <translation id="116173250649946226">O seu administrador predefiniu um tema, o qual não pode alterar.</translation>
 <translation id="1162213688509394031">Oculte a barra de título</translation>
@@ -833,6 +834,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1784849162047402014">O dispositivo tem pouco espaço em disco</translation>
 <translation id="1787350673646245458">Imagem do utilizador</translation>
 <translation id="1788329699711791226">Aceda aos seus itens do navegador Chrome a partir de <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="1790664457414575790">Pode ver e gerir as palavras-passe guardadas no <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1790976235243700817">Remover acesso</translation>
 <translation id="1791662854739702043">Instalado</translation>
 <translation id="1792619191750875668">Ecrã expandido</translation>
@@ -3172,6 +3174,7 @@ Pretende pará-lo?</translation>
 <translation id="4031179711345676612">Microfone permitido</translation>
 <translation id="4031308539321678562">Esta ação elimina permanentemente os dados de navegação deste dispositivo. As Contas Google neste perfil podem ser utilizadas por outras apps no seu Chromebook. Pode remover estas contas em <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4031527940632463547">Sensores bloqueados</translation>
+<translation id="4033415645631238123">Já não é possível iniciar sessão com o Smart Lock. Ainda pode desbloquear com o Smart Lock.</translation>
 <translation id="4033471457476425443">Adicionar nova pasta</translation>
 <translation id="4033963223187371752">Os sites seguros podem incorporar conteúdo como imagens ou frames da Web que não são seguros</translation>
 <translation id="4034824040120875894">Impressora</translation>
@@ -4373,6 +4376,7 @@ Pretende pará-lo?</translation>
 <translation id="5268373933383932086">A sua página, à sua maneira</translation>
 <translation id="5269977353971873915">Falha de Impressão</translation>
 <translation id="5273806377963980154">Editar o URL do site</translation>
+<translation id="5275338516105640560">Botão do grupo de separadores guardado</translation>
 <translation id="5275352920323889391">Cão</translation>
 <translation id="527605719918376753">Desativar som do separador</translation>
 <translation id="527605982717517565">Permitir sempre JavaScript em <ph name="HOST" /></translation>
@@ -4497,6 +4501,9 @@ Pretende pará-lo?</translation>
 <translation id="5397794290049113714">Utilizador</translation>
 <translation id="5398497406011404839">Marcadores ocultos</translation>
 <translation id="5398572795982417028">A referência da página está fora dos limites; o limite é <ph name="MAXIMUM_PAGE" /></translation>
+<translation id="5398724494943676484">Alterou com êxito a palavra-passe comprometida.
+
+Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="5401426944298678474">Deixar de seguir site</translation>
 <translation id="5402815541704507626">Transferir a atualização através de dados móveis</translation>
 <translation id="540296380408672091">Bloquear sempre cookies em <ph name="HOST" /></translation>
@@ -4985,6 +4992,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5895335062901455404">As suas preferências e atividade guardadas estarão prontas em qualquer dispositivo com ChromeOS Flex quando iniciar sessão com a sua Conta Google. Pode escolher o que pretende sincronizar nas Definições.</translation>
 <translation id="5896436821193322561">Não permitir</translation>
+<translation id="5900186025777217044">O Smart Lock foi alterado</translation>
 <translation id="5900302528761731119">Fotografia do Perfil do Google</translation>
 <translation id="590036993063074298">Detalhes da qualidade do espelhamento</translation>
 <translation id="5901069264981746702">Os seus dados de impressões digitais são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -5370,6 +5378,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6271780480930459892">Contacte o administrador para obter a versão mais recente.</translation>
 <translation id="6272643420381259437">Ocorreu um erro (<ph name="ERROR" />) ao transferir o plug-in</translation>
 <translation id="6273677812470008672">Qualidade</translation>
+<translation id="6274202259872570803">Gravação de ecrã</translation>
 <translation id="6276210637549544171">O proxy <ph name="PROXY_SERVER" /> necessita de um nome de utilizador e uma palavra-passe.</translation>
 <translation id="6277105963844135994">Limite de tempo da rede</translation>
 <translation id="6277518330158259200">C&amp;riar captura de ecrã</translation>
@@ -5699,6 +5708,11 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6593881952206664229">Os conteúdos multimédia com direitos de autor podem não ser reproduzidos</translation>
 <translation id="6594011207075825276">A localizar dispositivos de série…</translation>
 <translation id="6595187330192059106">Impedir sempre que <ph name="HOST" /> tenha controlo total sobre dispositivos MIDI</translation>
+<translation id="6595408197871512625">{COUNT,plural, =1{Alterou com êxito a palavra-passe comprometida.
+
+Tem mais # palavra-passe comprometida. O Gestor de Palavras-passe da Google recomenda que verifique esta palavra-passe agora.}other{Alterou com êxito a palavra-passe comprometida.
+
+Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google recomenda que verifique estas palavras-passe agora.}}</translation>
 <translation id="6595792813574514527">Arrastar para pesquisar imagens com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Opções de encriptação</translation>
 <translation id="6596816719288285829">Endereço IP</translation>

@@ -79,6 +79,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1312604459020188865">Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Onyesha rafu kila wakati</translation>
 <translation id="1316811122439383437">Tote: picha za skrini, vipakuliwa na faili zillizobandikwa hivi majuzi</translation>
+<translation id="132346741904777634">Onyesho la kukagua kamera limelinganishwa kwenye kona ya juu kushoto. Linakinzana na mfumo wa kiolesura uliopo.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> imeunganishwa</translation>
 <translation id="1341651618736211726">Menyu ya vipengee vya ziada</translation>
 <translation id="1346748346194534595">Kulia</translation>
@@ -162,6 +163,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1885785240814121742">Tumia alama ya kidole kufungua</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> haitumii <ph name="SPECIFIED_RESOLUTION" /> (Hz <ph name="SPECIFIED_REFRESH_RATE" />). Ubora umebadilishwa kuwa <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Bofya 'thibitisha' ili uhifadhi mabadiliko. Mipangilio ya awali itarejeshwa baada ya <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1915307458270490472">Kata simu</translation>
+<translation id="1918022425394817322">Onyesho la kukagua kamera limelinganishwa kwenye kona ya juu kulia</translation>
 <translation id="1919743966458266018">Njia ya mkato ya kufungua kidhibiti cha shughuli kwenye Chrome imebadilika. Tafadhali tumia <ph name="NEW_SHORTCUT" /> badala ya <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Mibofyo ya kiotomatiki</translation>
 <translation id="1928739107511554905">Ili usasishe, tumia skrini ya kugusa kuwasha Chromebook yako upya huku kibodi ikiwa imeunganishwa.</translation>
@@ -551,6 +553,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> imehamishiwa kwenye folda ya <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Haipatikani</translation>
 <translation id="4303223480529385476">Panua eneo la hali</translation>
+<translation id="4312840429157639164">Onyesho la kukagua kamera limelinganishwa kwenye kona ya juu kulia. Linakinzana na mfumo wa kiolesura uliopo.</translation>
 <translation id="4316910396681052118">PROGRAMU ZOTE</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Umebofya mikato ya kibodi ya utofautishaji wa juu. Ungependa kuuwasha?</translation>
@@ -857,6 +860,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="6254629735336163724">Inatumia skrini ya mlalo pekee</translation>
 <translation id="6259254695169772643">Tumia stylus yako kuchagua</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Inaanza kutumia...</translation>
+<translation id="6274202259872570803">Kionyesha skrini</translation>
 <translation id="6283712521836204486">Kipengele cha usinisumbue kimezimwa.</translation>
 <translation id="6284232397434400372">Imebadilisha ubora</translation>
 <translation id="6288235558961782912">Unaweza kuweka tena <ph name="USER_EMAIL_ADDRESS" /> baadaye kupitia ruhusa ya mzazi.</translation>
@@ -888,6 +892,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="649452524636452238">PIN ya kadi mahiri</translation>
 <translation id="6495400115277918834">Hali ya kupachika picha ndani ya picha nyingine imeanzishwa, bonyeza vitufe vya Alt, Shift na herufi V ili uiangazie</translation>
 <translation id="6501401484702599040">Inatuma skrini kwenye <ph name="RECEIVER_NAME" /></translation>
+<translation id="6515727200518652613">Kamera imepoteza muunganisho, inajaribu kuunganisha tena.</translation>
 <translation id="6520517963145875092">Chagua dirisha ili unase</translation>
 <translation id="652139407789908527">Skrini yako itazima kwa muda mrefu kuliko kawaida (hadi dakika moja) wakati wa sasisho hili. Tafadhali usibonyeze kitufe cha kuwasha/kuzima wakati sasisho linaendelea.</translation>
 <translation id="6528179044667508675">Usinisumbue</translation>
@@ -906,6 +911,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6578407462441924264">Isiyo na jina</translation>
 <translation id="6585808820553845416">Kipindi kitakwisha baada ya <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597278316891651699">Onyesho la kukagua kamera limelinganishwa kwenye kona ya chini kushoto. Linakinzana na mfumo wa kiolesura uliopo.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />, Unadhibitiwa na Msimamizi wako</translation>
 <translation id="6612802754306526077">Umechagua hali ya kurekodi skrini</translation>
 <translation id="6614169507485700968">Skrini ya faragha imewashwa</translation>
@@ -943,6 +949,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6801878137098616817">Ilibadilishwa hivi karibuni</translation>
 <translation id="6803622936009808957">Haikuweza kuakisi maonyesho kwa kuwa hakuna misongo inayoweza kutumiwa iliyopatikana. Badala yake imeingia eneo-kazi lililopanuliwa.</translation>
 <translation id="6818242057446442178">Rudi nyuma kwa neno moja</translation>
+<translation id="6819327813400217281">Onyesho la kukagua kamera limelinganishwa kwenye kona ya chini kushoto</translation>
 <translation id="6820676911989879663">Pumzika kidogo!</translation>
 <translation id="6827049576281411231">Funga kidirisha cha matukio</translation>
 <translation id="6836499262298959512">Faili hatari</translation>
@@ -971,6 +978,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6979158407327259162">Hifadhi ya Google</translation>
 <translation id="6981982820502123353">Ufikivu</translation>
 <translation id="698231206551913481">Faili na data zote zilizo kwenye kifaa zinazohusishwa na mtumiaji zitafutwa kabisa pindi tu mtumiaji huyu atakapoondolewa.</translation>
+<translation id="7005239792648594238">Fungua programu ili uanze kuitumia</translation>
 <translation id="7007983414944123363">Imeshindwa kuthibitisha PIN au nenosiri lako. Jaribu tena.</translation>
 <translation id="7014684956566476813">Imeunganishwa kwenye kifaa kiitwacho <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Rejea saa <ph name="COME_BACK_TIME" />.</translation>
@@ -984,6 +992,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7045033600005038336">Ungependa kubadilisha kiolezo?</translation>
 <translation id="7051244143160304048">Muunganisho wa <ph name="DEVICE_NAME" /> umekatika</translation>
 <translation id="7055910611768509537">Hujatumia Stylus kwa zaidi ya wiki moja</translation>
+<translation id="7061457967428964661">Onyesho la kukagua kamera, bonyeza vitufe vya kudhibiti + vishale ili kusogeza kishale cha kukagua kielekee kwenye kona tofauti</translation>
 <translation id="7066646422045619941">Mtandao huu umezimwa na msimamizi wako.</translation>
 <translation id="7067196344162293536">Zungusha kiotomatiki</translation>
 <translation id="7068360136237591149">Fungua faili</translation>
@@ -1004,6 +1013,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="718361511487535372">Fungua katika Kalenda ya Google</translation>
 <translation id="7188494361780961876">Menyu imehamishiwa kwenye kona ya juu kushoto mwa skrini.</translation>
 <translation id="7189412385142492784">Sayari ya Zuhura iko umbali gani</translation>
+<translation id="7198435252016571249">Onyesho la kukagua kamera limelinganishwa kwenye kona ya chini kulia. Linakinzana na mfumo wa kiolesura uliopo.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ili utumie sasisho, unahitaji kuzima kisha uwashe Chromebook hii. Hatua hii inaweza kuchukua hadi dakika moja.</translation>
 <translation id="7256634071279256947">Maikrofoni ya nyuma</translation>
 <translation id="7258828758145722155">Ilibadilishwa jana</translation>
@@ -1065,8 +1075,10 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7593891976182323525">Utafutaji au Hama</translation>
 <translation id="7600875258240007829">Angalia arifa zote</translation>
 <translation id="7607002721634913082">Imepumzishwa</translation>
+<translation id="7611213136657090146">Kamera imeunganishwa upya.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Onyesha mipangilio ya kipengele cha Uhamishaji wa Karibu.</translation>
+<translation id="7634648064048557203">Onyesho la kukagua kamera limelinganishwa kwenye kona ya chini kulia</translation>
 <translation id="7641938616688887143">Rekodi</translation>
 <translation id="7642647758716480637">Fungua mipangilio ya <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (mmiliki)</translation>
@@ -1079,6 +1091,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7662283695561029522">Gusa ili uweke mipangilio</translation>
 <translation id="7670953955701272011">Fungua tarehe hii kwenye Kalenda ya Google</translation>
 <translation id="7671610481353807627">Programu zimepangwa kwa rangi</translation>
+<translation id="7684531502177797067">Kamera imewekwa kuwa <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Ongeza mtandao mpya wa simu</translation>
 <translation id="7720410380936703141">JARIBU TENA</translation>
@@ -1300,6 +1313,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="9077404278023321866">Violezo</translation>
 <translation id="9077515519330855811">Vidhibiti vya maudhui, kwa sasa inacheza <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
+<translation id="9080073830732419341">Onyesho la kukagua kamera limelinganishwa kwenye kona ya juu kushoto</translation>
 <translation id="9080132581049224423">Telezesha kidole juu ili urudi kwenye skrini ya kwanza</translation>
 <translation id="9080206825613744995">Maikrofoni inatumika</translation>
 <translation id="9084606467167974638">Badilisha nafasi ya menyu</translation>

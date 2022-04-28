@@ -579,6 +579,7 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' දැනටමත් '<ph name="ACTION" />' ක්‍රියාව වෙත පවරා ඇත. <ph name="RESPONSE" />ට ඕනෑම යතුරක් ඔබන්න.</translation>
 <translation id="1567993339577891801">JavaScript කොන්සෝලය</translation>
 <translation id="1568323446248056064">සංදර්ශක උපාංග සැකසීම් විවෘත කරන්න</translation>
+<translation id="1569044524074707727">ඔබගේ දුරකථනය අගුලු හරින්න</translation>
 <translation id="1570604804919108255">දැනුම්දීම් නිහඬ කිරීම ඉවත් කරන්න</translation>
 <translation id="1571304935088121812">පරිශීලක නාමය පිටපත් කරන්න</translation>
 <translation id="1571738973904005196">ටැබය බලන්න: <ph name="TAB_ORIGIN" /></translation>
@@ -2012,6 +2013,7 @@
 <translation id="288042212351694283">ඔබේ ගෝලීය 2 වන සාධක උපාංග වලට පිවිසෙන්න</translation>
 <translation id="2881076733170862447">ඔබ දිගුව ක්ලික් කළ විට</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> මොහොතකින් යළි සැකසී යළි ආරම්භ වනු ඇත</translation>
+<translation id="2883470649061584386">සංග්‍රහය</translation>
 <translation id="2885378588091291677">කාර්ය කළමණාකරු</translation>
 <translation id="2885729872133513017">සේවාදායක ප්‍රතිචාරය විකේතන කරන විට ගැටලුවක් සිදු විය.</translation>
 <translation id="2886119409731773154">මෙයට මිනිත්තු 30ක් දක්වා ගත විය හැකිය</translation>
@@ -5326,6 +5328,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6227002569366039565">මෙම බුබුළ නාභිගත කිරීමට, අනතුරුව නැවත එය එල්ල කරන මූලාංගය නාභිගත කිරීමට |<ph name="ACCELERATOR" />| ඔබන්න.</translation>
 <translation id="6227280783235722609">දිගුව</translation>
 <translation id="6229849828796482487">Wi-Fi ජාලය විසන්ධි කරන්න</translation>
+<translation id="6230165830166519105">වෙනත් ආකාරයකින් උත්සාහ කරන්න</translation>
 <translation id="6231782223312638214">යෝජනා කළ</translation>
 <translation id="6231881193380278751">පිටුව ස්වයං නැවුම් කිරීමට ලිපිනය තුළ විමසුම් පරාමිතියක් එක් කරන්න: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">බැටරිය</translation>

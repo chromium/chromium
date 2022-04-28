@@ -117,6 +117,7 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="1558391695376153246">Sule inkognito vahelehed</translation>
 <translation id="1571304935088121812">Kasutajanime kopeerimine</translation>
 <translation id="1592864538817356322">Standardne kaitse:</translation>
+<translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> soovitatud üksust allolevas loendis.</translation>
 <translation id="161647866166517041">Rämpssisu ja pettuste vähendamisel toetutakse usaldusmärkidele, et aidata saitidel võidelda pettuste vastu ja eristada roboteid inimestest.
 
 Teie interaktsioonide põhjal saidiga (nt kontole regulaarselt sisse logimine) saab see sait teie brauserile väljastada usaldusmärgi. Hiljem, kui teised külastatavad saidid kontrollivad kehtivat usaldusmärki ja leiavad selle, kohtlevad nad teid suurema tõenäosusega inimesena, mitte robotina.
@@ -804,6 +805,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5517095782334947753">Teil on järjehoidjad, ajalugu, paroolid ja muud seaded kontolt <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524761631371622910">Kui katsed on sisse lülitatud ja Chrome on teid juhuslikkuse alusel lisanud aktiivsesse katsesse, mõjutab teie sirvimisajalugu teile esitatavaid reklaame ja allolevaid prognoositud huvisid. Teie privaatsuse kaitsmiseks kustutab Chrome teie huvisid jooksvalt iga kuu.</translation>
 <translation id="5524843473235508879">Ümbersuunamine blokeeriti.</translation>
+<translation id="5528459307536571064">1 vahelehegrupp</translation>
 <translation id="5548606607480005320">Ohutuskontroll</translation>
 <translation id="5555525474779371165">Valige oma Google'i ohutu sirvimise kaitse</translation>
 <translation id="5556459405103347317">Laadi uuesti</translation>
@@ -1516,5 +1518,6 @@ Usaldusmärgid täiustavad veebis privaatsust ja neid ei saa kasutada teie isiku
 <translation id="981121421437150478">Võrguühenduseta</translation>
 <translation id="983192555821071799">Sule kõik vahelehed</translation>
 <translation id="987264212798334818">Üldine</translation>
+<translation id="992745192656291733"><ph name="TAB_COUNT" /> vahelehte</translation>
 <translation id="996149300115483134">Voo kaardimenüü on suletud</translation>
 </translationbundle>

@@ -115,6 +115,7 @@
 <translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" /> を使用するには、すべてのアカウントからログアウトする必要があります。ログアウトするには、[キャンセル] を選択して元に戻ります。次に時刻を選択してステータス領域を開き、[ログアウト] を選択します。最後にもう一度 <ph name="USER_EMAIL_ADDRESS_2" /> にログインします。</translation>
 <translation id="15373452373711364">大きいマウスカーソル</translation>
 <translation id="1546492247443594934">デスク 2</translation>
+<translation id="1546930421365146760">管理者に Google 管理コンソールでこのデバイスをセットアップするよう依頼してください</translation>
 <translation id="1550523713251050646">クリックするとその他のオプションが表示されます</translation>
 <translation id="1555130319947370107">青</translation>
 <translation id="1570871743947603115">Bluetooth を切り替えます。<ph name="STATE_TEXT" /></translation>

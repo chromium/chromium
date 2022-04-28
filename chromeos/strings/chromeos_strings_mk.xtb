@@ -25,6 +25,7 @@
 <translation id="1204296502688602597">DNS-латентност</translation>
 <translation id="123124571410524056">Можеби е откриен портал</translation>
 <translation id="1238612778414822719">Латенција на HTTPS</translation>
+<translation id="1264116747675686718">Се ажурира верзијата на OS</translation>
 <translation id="1264369926465113395">Разгледајте го новото дигитално списание за создавачи на Chromebook</translation>
 <translation id="1270369111467284986">Можеби е откриен портал за проверка</translation>
 <translation id="1290331692326790741">Слаб сигнал</translation>
@@ -121,6 +122,7 @@
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Обиди се пак</translation>
 <translation id="2161394479394250669">Откажи го налогот за печатење</translation>
 <translation id="2163937499206714165">Вклучи темен режим</translation>
+<translation id="2177831236093724629">Најдени се <ph name="LINK_BEGIN" />неквалификувани компоненти<ph name="LINK_END" />. За да се погрижите дека сите квалификувани компоненти ќе бидат идентификувани, ажурирајте го Chrome OS на најновата верзија.</translation>
 <translation id="2180197493692062006">Нешто тргна наопаку. Отворете ја апликацијата повторно.</translation>
 <translation id="2209788852729124853">Ресетирај бројачи на сообраќај</translation>
 <translation id="2212733584906323460">Одредување име</translation>
@@ -203,6 +205,7 @@
 <translation id="3188257591659621405">Мои датотеки</translation>
 <translation id="3192947282887913208">Аудиодатотеки</translation>
 <translation id="3199982728237701504">Внесувач на документи (двостран)</translation>
+<translation id="320091191259649613">Ако сè уште е присутен проблемот по ажурирањето, можно е компонентата да е новоквалификувана и уште не влегла во базата со податоци.</translation>
 <translation id="3226405216343213872">Се бараат скенери</translation>
 <translation id="3246869037381808805">Задачите за печатење постари од 1 ден ќе се отстранат</translation>
 <translation id="3268178239013324452">Неуспешно - вратата е отворена</translation>
@@ -377,6 +380,7 @@
 <translation id="4985509611418653372">Изврши</translation>
 <translation id="4987769320337599931">Заштитен ѕид</translation>
 <translation id="4999333166442584738">Сокриј го извештајот</translation>
+<translation id="5008611843832219958">Ажурирајте на најновата верзија од Chrome OS за оптимизиран процес на поправка</translation>
 <translation id="500920857929044050">Запри го тестот</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Кога екранот е неактивен, прикажувај фотографии, време, временска прогноза и вести.</translation>
@@ -431,6 +435,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Скенирањето не можеше да се заврши</translation>
 <translation id="5502931783115429516">Android не функционира</translation>
+<translation id="5507300744274596613">Проверете дали Chrome OS е ажуриран</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -469,6 +474,7 @@
 <translation id="5939518447894949180">Ресетирај</translation>
 <translation id="594552776027197022">Генерирај случаен пар клучеви</translation>
 <translation id="5972388717451707488">Ажурирајте го софтверот</translation>
+<translation id="5984145644188835034">Стандарден тапет</translation>
 <translation id="6034694447310538551">Овозможете автоматско месечно ресетирање</translation>
 <translation id="6037291330010597344">Фиоката за документи на скенерот е празна. Додајте документи и обидете се повторно.</translation>
 <translation id="6040143037577758943">Затвори</translation>
@@ -717,6 +723,7 @@
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8660881923941176839">фунти</translation>
 <translation id="8662671328352114214">Придружување на мрежа <ph name="TYPE" /></translation>
+<translation id="8671972493856476349">Ажурирајте на <ph name="VERSION_NUMBER" /> и рестартирајте</translation>
 <translation id="8675354002693747642">Претходно споделен клуч</translation>
 <translation id="8677859815076891398">Нема албуми. Создајте албум во <ph name="LINK_BEGIN" />Фотографии на Google<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Користете го копчето со стрелка налево или со стрелка надесно за да управувате со функцијава.</translation>
@@ -781,6 +788,7 @@
 <translation id="917720651393141712">Тест</translation>
 <translation id="9204237731135241582">Не може да се стапи во контакт со портал од апликации на Android</translation>
 <translation id="9211490828691860325">Сите работни површини</translation>
+<translation id="922179502584117429">Тековната верзија <ph name="VERSION_NUMBER" /> не е ажурна</translation>
 <translation id="932327136139879170">Дома</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="952992212772159698">Не е активиран</translation>

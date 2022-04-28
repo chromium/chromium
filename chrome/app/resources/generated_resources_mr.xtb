@@ -552,6 +552,7 @@
 <translation id="1536754031901697553">डिस्कनेक्ट करत आहे...</translation>
 <translation id="1537254971476575106">क्षेत्रे भिंग</translation>
 <translation id="15373452373711364">मोठा माउस कर्सर</translation>
+<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> हे <ph name="ORIGIN" /> वाचण्याची आणि बदलण्याची विनंती करत आहे</translation>
 <translation id="1540605929960647700">डेमो मोड सुरू करा</translation>
 <translation id="1541346352678737112">कोणतेही नेटवर्क आढळले नाही</translation>
 <translation id="1542137295869176367">तुमचा साइन इन डेटा अपडेट केला जाऊ शकला नाही</translation>
@@ -1883,6 +1884,7 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> मध्ये साइन इन करा</translation>
 <translation id="2749836841884031656">सिम</translation>
 <translation id="2749881179542288782">शुद्धलेखनासह व्याकरण तपासा</translation>
+<translation id="275085171842676231"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> वाचण्याची आणि बदलण्याची विनंती करत आहे:</translation>
 <translation id="2753677631968972007">साइट परवानग्या मॅन्युअली नियंत्रित करा.</translation>
 <translation id="2755349111255270002">हे <ph name="DEVICE_TYPE" /> रीसेट करा</translation>
 <translation id="2755367719610958252">ॲक्सेसिबिलिटी वैशिष्ट्ये व्यवस्थापित करा</translation>
@@ -3567,6 +3569,7 @@
 <translation id="4429239357082509581">Steam ला रन करण्याची परवानगी नाही</translation>
 <translation id="4430019312045809116">व्हॉल्यूम</translation>
 <translation id="4430369329743628066">बुकमार्क जोडला</translation>
+<translation id="4430422687972614133">व्हर्च्युअल कार्ड सुरू करा</translation>
 <translation id="4432621511648257259">पासवर्ड चुकीचा आहे</translation>
 <translation id="443454694385851356">लेगसी (असुरक्षित)</translation>
 <translation id="443475966875174318">कंपॅटिबल नसलेली ॲप्लिकेशन अपडेट करा किंवा काढून टाका</translation>
@@ -7095,6 +7098,7 @@
 <translation id="7947964080535614577">आशय किंवा सेवा विनामूल्य पुरवता येण्यासाठी साइट सामान्यपणे जाहिराती दाखवतात. पण, काही साइट अनाहूत किंवा दिशाभूल करणार्‍या जाहिराती दाखवण्यासाठी ओळखल्या जातात.</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> ची सर्व पेज</translation>
 <translation id="7951265006188088697">Google Pay पेमेंट पद्धती जोडण्यासाठी किंवा व्यवस्थापित करण्यासाठी, तुमच्या <ph name="BEGIN_LINK" />Google खाते<ph name="END_LINK" /> ला भेट द्या</translation>
+<translation id="795130320946928025">व्हर्च्युअल कार्ड बंद करा</translation>
 <translation id="7952708427581814389">साइट तुमच्या क्लिपबोर्डवरील मजकूर आणि इमेज पाहण्यासाठी विचारू शकतात</translation>
 <translation id="795282463722894016">रिस्टोअर पूर्ण झाले</translation>
 <translation id="7952904276017482715">अपेक्षित आयडी "<ph name="EXPECTED_ID" />", परंतु आयडी "<ph name="NEW_ID" />" होता</translation>

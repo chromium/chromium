@@ -79,6 +79,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1312604459020188865">Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Sentiasa tunjukkan rak</translation>
 <translation id="1316811122439383437">Tote: tangkapan skrin baru-baru ini, muat turun dan fail yang disemat</translation>
+<translation id="132346741904777634">Kamera diautojajar ke penjuru kiri sebelah atas. Bercanggah dengan permukaan sistem.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> disambungkan</translation>
 <translation id="1341651618736211726">Limpahan</translation>
 <translation id="1346748346194534595">Kanan</translation>
@@ -162,6 +163,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1885785240814121742">Buka kunci dengan cap jari</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> tidak menyokong <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Peleraian telah diubah kepada <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Klik sahkan untuk menyimpan perubahan. Tetapan terdahulu akan dipulihkan dalam masa <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1915307458270490472">Tamatkan panggilan</translation>
+<translation id="1918022425394817322">Kamera diautojajar ke penjuru kanan sebelah atas</translation>
 <translation id="1919743966458266018">Pintasan untuk membuka pengurus tugas telah berubah. Sila gunakan <ph name="NEW_SHORTCUT" /> dan bukannya <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Klik automatik</translation>
 <translation id="1928739107511554905">Untuk mendapatkan kemas kini, gunakan skrin sentuh untuk memulakan semula Chromebook anda dengan papan kekunci yang dipasang.</translation>
@@ -552,6 +554,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> dialihkan kepada folder <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Tidak tersedia</translation>
 <translation id="4303223480529385476">Kembangkan area status</translation>
+<translation id="4312840429157639164">Kamera diautojajar ke penjuru kanan sebelah atas. Bercanggah dengan permukaan sistem.</translation>
 <translation id="4316910396681052118">SEMUA APL</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Anda menekan pintasan papan kekunci untuk kontras tinggi. Adakah anda ingin menghidupkannya?</translation>
@@ -858,6 +861,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6254629735336163724">Dikunci mendatar</translation>
 <translation id="6259254695169772643">Gunakan stilus anda untuk memilih</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Mengaktifkan...</translation>
+<translation id="6274202259872570803">Rakaman skrin</translation>
 <translation id="6283712521836204486">Jangan ganggu dimatikan.</translation>
 <translation id="6284232397434400372">Peleraian ditukar</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> boleh ditambahkan semula kemudian dengan kebenaran ibu bapa.</translation>
@@ -889,6 +893,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="649452524636452238">PIN kad pintar</translation>
 <translation id="6495400115277918834">Gambar dalam gambar dimulakan, Alt+Shift+V untuk fokus</translation>
 <translation id="6501401484702599040">Menghantar skrin ke <ph name="RECEIVER_NAME" /></translation>
+<translation id="6515727200518652613">Kamera terputus, cuba menyambung semula.</translation>
 <translation id="6520517963145875092">Pilih tetingkap untuk menangkap imej</translation>
 <translation id="652139407789908527">Skrin anda akan menjadi kosong lebih lama daripada biasa (sehingga seminit) semasa kemas kini ini. Jangan tekan butang kuasa semasa kemas kini sedang berlangsung.</translation>
 <translation id="6528179044667508675">Jangan ganggu</translation>
@@ -907,6 +912,7 @@ Pemasangan baharu</translation>
 <translation id="6578407462441924264">Tidak bernama</translation>
 <translation id="6585808820553845416">Sesi berakhir dalam <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597278316891651699">Kamera diautojajar ke penjuru kiri sebelah bawah. Bercanggah dengan permukaan sistem.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />, Diurus oleh Pentadbir anda</translation>
 <translation id="6612802754306526077">Mod rakaman skrin dipilih</translation>
 <translation id="6614169507485700968">Skrin privasi dihidupkan</translation>
@@ -944,6 +950,7 @@ Pemasangan baharu</translation>
 <translation id="6801878137098616817">Diedit baru-baru ini</translation>
 <translation id="6803622936009808957">Tidak dapat membalikkan paparan memandangkan tiada peleraian disokong ditemui. Sebaliknya, memasuki mod desktop yang dilanjutkan.</translation>
 <translation id="6818242057446442178">Undur satu perkataan</translation>
+<translation id="6819327813400217281">Kamera diautojajar ke penjuru kiri sebelah bawah</translation>
 <translation id="6820676911989879663">Berehatlah!</translation>
 <translation id="6827049576281411231">Tutup panel acara</translation>
 <translation id="6836499262298959512">Fail berbahaya</translation>
@@ -972,6 +979,7 @@ Pemasangan baharu</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Kebolehcapaian</translation>
 <translation id="698231206551913481">Semua fail dan data yang berkaitan dengan pengguna ini akan dipadamkan secara kekal selepas pengguna ini dialih keluar.</translation>
+<translation id="7005239792648594238">Buka apl untuk bermula</translation>
 <translation id="7007983414944123363">PIN atau kata laluan anda tidak dapat disahkan. Cuba lagi.</translation>
 <translation id="7014684956566476813">Disambungkan kepada peranti yang bernama <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Datang semula pada <ph name="COME_BACK_TIME" />.</translation>
@@ -985,6 +993,7 @@ Pemasangan baharu</translation>
 <translation id="7045033600005038336">Gantikan templat?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> terputus sambungan</translation>
 <translation id="7055910611768509537">Stilus sudah tidak digunakan lebih daripada seminggu</translation>
+<translation id="7061457967428964661">Pratonton kamera, tekan control + kekunci anak panah untuk mengalihkan pratonton ke penjuru yang berbeza</translation>
 <translation id="7066646422045619941">Rangkaian ini dilumpuhkan oleh pentadbir anda.</translation>
 <translation id="7067196344162293536">Auto putar</translation>
 <translation id="7068360136237591149">Buka fail</translation>
@@ -1005,6 +1014,7 @@ Pemasangan baharu</translation>
 <translation id="718361511487535372">Buka dalam Google Calendar</translation>
 <translation id="7188494361780961876">Menu dialihkan ke sudut atas sebelah kiri skrin.</translation>
 <translation id="7189412385142492784">Berapa jauhkah Venus</translation>
+<translation id="7198435252016571249">Kamera diautojajar ke penjuru kanan sebelah bawah. Bercanggah dengan permukaan sistem.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Chromebook ini perlu dimulakan semula untuk menerapkan kemas kini. Proses ini boleh mengambil masa sehingga 1 minit.</translation>
 <translation id="7256634071279256947">Mikrofon belakang</translation>
 <translation id="7258828758145722155">Diedit semalam</translation>
@@ -1065,8 +1075,10 @@ Pemasangan baharu</translation>
 <translation id="7593891976182323525">Search atau Shift</translation>
 <translation id="7600875258240007829">Lihat semua pemberitahuan</translation>
 <translation id="7607002721634913082">Dijeda</translation>
+<translation id="7611213136657090146">Kamera disambung semula.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Paparkan tetapan Kongsi Berdekatan.</translation>
+<translation id="7634648064048557203">Kamera diautojajar ke penjuru kanan sebelah bawah</translation>
 <translation id="7641938616688887143">Rakam</translation>
 <translation id="7642647758716480637">Buka tetapan untuk <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (pemilik)</translation>
@@ -1079,6 +1091,7 @@ Pemasangan baharu</translation>
 <translation id="7662283695561029522">Ketik untuk membuat konfigurasi</translation>
 <translation id="7670953955701272011">Buka tarikh ini dalam Google Calendar</translation>
 <translation id="7671610481353807627">Apl diisih mengikut warna</translation>
+<translation id="7684531502177797067">Input kamera ditetapkan kepada <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Tambah rangkaian selular baharu</translation>
 <translation id="7720410380936703141">CUBA LAGI</translation>
@@ -1300,6 +1313,7 @@ Pemasangan baharu</translation>
 <translation id="9077404278023321866">Templat</translation>
 <translation id="9077515519330855811">Kawalan media, sedang memainkan <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
+<translation id="9080073830732419341">Kamera diautojajar ke penjuru kiri sebelah atas</translation>
 <translation id="9080132581049224423">Leret ke atas untuk mencapai laman utama</translation>
 <translation id="9080206825613744995">Mikrofon sedang digunakan.</translation>
 <translation id="9084606467167974638">Togol kedudukan menu</translation>

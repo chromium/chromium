@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
 <translation id="1113173431709655881">Modaliteti i kamerës</translation>
+<translation id="1153190633558910465">Çaktivizo rrjetin</translation>
 <translation id="1175958423215084756">U zbulua një lidhje. <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">Rrotulloje 90 gradë në drejtim të akrepave të orës</translation>
 <translation id="1276998909102132017">Imazhet e galerisë</translation>
 <translation id="1300209025925956156">Skano dokumentin tënd</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Kërko + Shigjeta majtas për t'u qasur.</translation>
+<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">Printo</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> është shkëputur.</translation>
 <translation id="1473110567575736769">Kohëmatësi me 3 sekonda</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">Kohëzgjatja e kohëmatësit</translation>
 <translation id="2050339315714019657">Portret (vertikal</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktive</translation>
+<translation id="2134029355740465625">Cilësimet e videove</translation>
 <translation id="2144806332417375165">Personalizo parametrat e videos</translation>
 <translation id="2175927920773552910">Kodi QR</translation>
 <translation id="2271433936731426666">Aktivizo përmbledhjen e videos në madhësi të plotë</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">Kamera e pasme</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> sek.</translation>
 <translation id="2761536921376153655">Lloji i skanimit</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">Pamja paraprake e pasqyrës</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> është lidhur.</translation>
 <translation id="2968794441791257519">Fotografitë dhe videot e nxjerra me kamerën do të zhvendosen te dosja "Shkarkimet". Mund të qasesh tek ato te "Skedarët".
 
@@ -52,6 +57,8 @@ Aplikacionet që kanë leje për hapësirën ruajtëse do të kenë qasje te fot
 <translation id="3240426699337459095">Lidhja u kopjua</translation>
 <translation id="3259149966178251584">Rezolucioni i kamerës</translation>
 <translation id="3305962767867348165">Rregullo</translation>
+<translation id="3354465018370944241">Cilësimet e fotografive</translation>
+<translation id="3411958449466169012">Çaktivizo kohëmatësin</translation>
 <translation id="3448774564454087943">Videoja nuk është ruajtur duke qenë se është shumë e shkurtër</translation>
 <translation id="346539236881580388">Nxirr përsëri</translation>
 <translation id="3517926952904427380">Nuk mund të nxjerrësh një fotografi portret</translation>
@@ -63,9 +70,12 @@ Aplikacionet që kanë leje për hapësirën ruajtëse do të kenë qasje te fot
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skano bardkodin</translation>
 <translation id="3892148308691398805">Kopjo tekstin</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Vendose në pauzë regjistrimin</translation>
 <translation id="4121305183798804752">U zbulua një dokument</translation>
+<translation id="414641094616694804">Kjo kamerë nuk mund ta ndryshojë rezolucionin</translation>
 <translation id="4269820728363426813">Kopjo adresën e lidhjes</translation>
+<translation id="4281620174117014503">Rezolucion mesatar</translation>
 <translation id="4329152592498422850">Ndërroje për të nxjerrë një fotografi katrore</translation>
 <translation id="4383571725254449280">Evidencat për cilësinë e funksionimit të printimit</translation>
 <translation id="4445542136948522167">Ndalo nxjerrjen e fotografive</translation>
@@ -74,12 +84,15 @@ Aplikacionet që kanë leje për hapësirën ruajtëse do të kenë qasje te fot
 <translation id="4628948037717959914">Fotografia</translation>
 <translation id="4649291346448517080">Skedari nuk mund të ruhet</translation>
 <translation id="4695379108709712600">Po zhvendoset lart</translation>
+<translation id="4705093842003735294">Rezolucion i plotë</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Regjistrim videoje me disa transmetime</translation>
+<translation id="5034763830503483128">Raporti i pamjes së fotografisë</translation>
 <translation id="5057360777601936059">Kamera jote nuk ofrohet aktualisht.
         Kontrollo nëse kamera është lidhur si duhet.</translation>
 <translation id="5163387177077603948">Po zhvendoset djathtas</translation>
 <translation id="520537883758714667">Skanimi i dokumenteve ofrohet tani</translation>
+<translation id="5235304959032763950">16 me 9</translation>
 <translation id="5266635337630551423">Këndi lart majtas i dokumentit</translation>
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5320594929574852403">Po zhvendoset majtas</translation>
@@ -94,6 +107,7 @@ Aplikacionet që kanë leje për hapësirën ruajtëse do të kenë qasje te fot
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5975083100439434680">Zvogëlo</translation>
 <translation id="5976160379964388480">Të tjera</translation>
+<translation id="603973421174355542">Full HD</translation>
 <translation id="6073451960410192870">Ndalo regjistrimin</translation>
 <translation id="6197807149213783179">Ruaj të dhënat meta</translation>
 <translation id="6233780560267770709">3 me 3</translation>
@@ -104,6 +118,7 @@ Aplikacionet që kanë leje për hapësirën ruajtëse do të kenë qasje te fot
 Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngjit një fotografi ose video shembull dhe përshkruaj problemin. (Për shembull, fotografia është shumë e errët ose subjekti nuk është në fokus.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapiksel</translation>
 <translation id="6527303717912515753">Ndaj</translation>
+<translation id="6631515515009660915">Çaktivizo pasqyrën</translation>
 <translation id="6652737148136672975">Zhvendos pozicionin e këndit me tastet e shigjetave</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6681668084120808868">Nxirr një fotografi</translation>
@@ -114,6 +129,7 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="698156982839284926">3 sekonda</translation>
 <translation id="712848772518857951">Dëshiron vërtet që të heqësh <ph name="COUNT" /> artikuj?</translation>
 <translation id="7134221860976209830">Kohëmatësi me 10 sekonda</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Lloji i regjistrimit</translation>
 <translation id="7243947652761655814">Rezolucioni i videos</translation>
 <translation id="7337660886763914220">Gabimet e sistemit të skedarëve.</translation>
@@ -146,9 +162,11 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="8815966864175525708">Kalo te nxjerrja e fotografisë portret</translation>
 <translation id="8828441885228359828">Rifillo regjistrimin</translation>
 <translation id="8870695351537079478">Regjistrimi nuk mund të fillojë</translation>
+<translation id="8880167521484863515">4 me 3</translation>
 <translation id="8903921497873541725">Zmadho</translation>
 <translation id="9045010116236796332">Vendos të gjitha anët e dokumentit brenda kuadrit</translation>
 <translation id="9045155556724273246">10 sekonda</translation>
 <translation id="906331135292332864">Po përpunon imazhin…</translation>
+<translation id="922762992951083513">Aktivizo pasqyrën</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
 </translationbundle>

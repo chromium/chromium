@@ -552,6 +552,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1536754031901697553">Ontkoppel tans …</translation>
 <translation id="1537254971476575106">Volskermvergrootglas</translation>
 <translation id="15373452373711364">Groot muismerker</translation>
+<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> versoek tans om <ph name="ORIGIN" /> te lees en te verander</translation>
 <translation id="1540605929960647700">Aktiveer demonstrasiemodus</translation>
 <translation id="1541346352678737112">Geen netwerk gekry nie</translation>
 <translation id="1542137295869176367">Jou aanmelddata kon nie opgedateer word nie</translation>
@@ -1883,6 +1884,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="2749756011735116528">Meld by <ph name="PRODUCT_NAME" /> aan</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Gaan grammatika saam met spelling na</translation>
+<translation id="275085171842676231">Versoek tans om <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> te lees en te verander:</translation>
 <translation id="2753677631968972007">Beheer werftoestemmings handmatig.</translation>
 <translation id="2755349111255270002">Stel hierdie <ph name="DEVICE_TYPE" /> terug</translation>
 <translation id="2755367719610958252">Bestuur toeganklikheidkenmerke</translation>
@@ -3568,6 +3570,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4429239357082509581">Steam het nie toestemming om te werk nie</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4430369329743628066">Boekmerk is bygevoeg</translation>
+<translation id="4430422687972614133">Skakel virtuele kaart aan</translation>
 <translation id="4432621511648257259">Wagwoord is verkeerd</translation>
 <translation id="443454694385851356">Vorige (nie veilig nie)</translation>
 <translation id="443475966875174318">Dateer onversoenbare programme op of verwyder hulle</translation>
@@ -7097,6 +7100,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7947964080535614577">Werwe wys gewoonlik advertensies sodat hulle inhoud of dienste kosteloos kan verskaf. Sommige werwe is egter bekend daarvoor dat hulle indringerige of misleidende advertensies wys.</translation>
 <translation id="7948407723851303488">Alle bladsye van <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">Besoek jou <ph name="BEGIN_LINK" />Google-rekening<ph name="END_LINK" /> om Google-betaalmetodes by te voeg of te bestuur</translation>
+<translation id="795130320946928025">Skakel virtuele kaart af</translation>
 <translation id="7952708427581814389">Werwe kan vra om teks en prente op jou knipbord te sien</translation>
 <translation id="795282463722894016">Terugstelling is voltooi</translation>
 <translation id="7952904276017482715">Het ID "<ph name="EXPECTED_ID" />" verwag, maar ID was "<ph name="NEW_ID" />"</translation>

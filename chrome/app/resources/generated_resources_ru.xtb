@@ -551,6 +551,7 @@
 <translation id="1536754031901697553">Отключение...</translation>
 <translation id="1537254971476575106">Полноэкранная лупа</translation>
 <translation id="15373452373711364">Большой курсор мыши</translation>
+<translation id="1539630663098418038">Расширение "<ph name="EXTENSIONS_REQUESTING_ACCESS" />" запрашивает доступ на чтение и изменение данных сайта <ph name="ORIGIN" /></translation>
 <translation id="1540605929960647700">Демонстрационный режим</translation>
 <translation id="1541346352678737112">Сеть не найдена</translation>
 <translation id="1542137295869176367">Не удалось обновить ваши учетные данные.</translation>
@@ -1869,6 +1870,7 @@
 <translation id="2749756011735116528">Войти в <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Проверять грамматику и правописание</translation>
+<translation id="275085171842676231">Запрос на чтение и изменение данных сайта <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />:</translation>
 <translation id="2753677631968972007">Управление доступом к сайтам вручную</translation>
 <translation id="2755349111255270002">Сбросьте настройки устройства <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Настроить специальные возможности</translation>
@@ -3554,6 +3556,7 @@
 <translation id="4429239357082509581">Нет разрешения на запуск Steam</translation>
 <translation id="4430019312045809116">Объем</translation>
 <translation id="4430369329743628066">Закладка добавлена</translation>
+<translation id="4430422687972614133">Активировать виртуальную карту</translation>
 <translation id="4432621511648257259">Неверный пароль.</translation>
 <translation id="443454694385851356">Устаревшие (небезопасно)</translation>
 <translation id="443475966875174318">Обновление или удаление несовместимых приложений</translation>
@@ -7086,6 +7089,7 @@
 <translation id="7947964080535614577">Обычно сайты показывают рекламу, чтобы зарабатывать на ней и иметь возможность бесплатно предоставлять свой контент или сервисы. Однако на некоторых страницах используется навязчивая или вводящая в заблуждение реклама.</translation>
 <translation id="7948407723851303488">Все страницы <ph name="DOMAIN_NAME" />.</translation>
 <translation id="7951265006188088697">Добавить способы оплаты в Google Pay и управлять ими можно на странице <ph name="BEGIN_LINK" />Аккаунт Google<ph name="END_LINK" />.</translation>
+<translation id="795130320946928025">Отключить виртуальную карту</translation>
 <translation id="7952708427581814389">Разрешить сайтам отправлять запрос на доступ к тексту и изображениям, скопированным в буфер обмена</translation>
 <translation id="795282463722894016">Восстановление завершено</translation>
 <translation id="7952904276017482715">Ожидаемый идентификатор: <ph name="EXPECTED_ID" />, полученный идентификатор: <ph name="NEW_ID" /></translation>

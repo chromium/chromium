@@ -79,6 +79,7 @@
 <translation id="1312604459020188865">قوة الإشارة <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">عرض الرف دائمًا</translation>
 <translation id="1316811122439383437">‏Tote: صور الشاشة الأخيرة وعمليات التنزيل والملفات التي تم تثبيتها</translation>
+<translation id="132346741904777634">تم توجيه الكاميرا إلى الزاوية العلوية اليسرى. هناك تعارض مع مساحة عرض نظام آخر.</translation>
 <translation id="1333308631814936910">تم توصيل <ph name="DISPLAY_NAME" />.</translation>
 <translation id="1341651618736211726">القائمة الكاملة</translation>
 <translation id="1346748346194534595">يمين</translation>
@@ -163,6 +164,7 @@
 <translation id="1885785240814121742">فتح القفل باستخدام بصمة الإصبع</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> غير متوافق مع <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> هرتز). وتم تغيير درجة الدقة إلى <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). يُرجى النقر على "تأكيد" لحفظ التغييرات. وستتم استعادة الإعدادات السابقة خلال <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1915307458270490472">قطع الاتصال</translation>
+<translation id="1918022425394817322">تم توجيه الكاميرا إلى الزاوية العلوية اليمنى.</translation>
 <translation id="1919743966458266018">لقد تغيّر اختصار فتح إدارة المهام. يُرجى استخدام <ph name="NEW_SHORTCUT" /> بدلاً من <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">النقرات التلقائية</translation>
 <translation id="1928739107511554905">‏للحصول على التحديث، استخدم الشاشة التي تعمل باللمس لإعادة تشغيل جهاز Chromebook، مع توصيل لوحة المفاتيح المرفقة.</translation>
@@ -552,6 +554,7 @@
 <translation id="430191667033048642">تم نقل <ph name="MOVED_APP_NAME" /> إلى المجلد <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">غير متوفّر</translation>
 <translation id="4303223480529385476">توسيع منطقة الحالة</translation>
+<translation id="4312840429157639164">تم توجيه الكاميرا إلى الزاوية العلوية اليمنى. هناك تعارض مع مساحة عرض نظام آخر.</translation>
 <translation id="4316910396681052118">جميع التطبيقات</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">لقد ضغطت على اختصار لوحة المفاتيح للتباين العالي. هل ترغب في تفعيله؟</translation>
@@ -858,6 +861,7 @@
 <translation id="6254629735336163724">تم القفل على الوضع الأفقي</translation>
 <translation id="6259254695169772643">استخدام قلم الشاشة للاختيار</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: جارٍ التفعيل...</translation>
+<translation id="6274202259872570803">Screencast</translation>
 <translation id="6283712521836204486">وضع "عدم الإزعاج" متوقف.</translation>
 <translation id="6284232397434400372">تم تغيير درجة الدقة</translation>
 <translation id="6288235558961782912">يمكن إعادة إضافة <ph name="USER_EMAIL_ADDRESS" /> لاحقًا بإذنٍ من أحد الوالدَين.</translation>
@@ -889,6 +893,7 @@
 <translation id="649452524636452238">رقم التعريف الشخصي للبطاقة الذكية</translation>
 <translation id="6495400115277918834">‏تم تفعيل ميزة "نافذة ضمن النافذة". يمكنك الضغط على المفاتيح Alt+‏Shift‏+V للتركيز.</translation>
 <translation id="6501401484702599040">إرسال الشاشة إلى <ph name="RECEIVER_NAME" /></translation>
+<translation id="6515727200518652613">انقطع الاتصال بالكاميرا، وجارٍ محاولة إعادة الاتصال.</translation>
 <translation id="6520517963145875092">يُرجى تحديد نافذة للحصول لالتقاط صورة لها.</translation>
 <translation id="652139407789908527">ستظهر شاشتك فارغة لمدة أطول من المعتاد (تصل إلى دقيقة واحدة) أثناء هذا التحديث. يُرجى عدم الضغط على زر التشغيل خلال عملية التحديث.</translation>
 <translation id="6528179044667508675">عدم الإزعاج</translation>
@@ -907,6 +912,7 @@
 <translation id="6578407462441924264">بدون اسم</translation>
 <translation id="6585808820553845416">تنتهي الجلسة في <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />، <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597278316891651699">تم توجيه الكاميرا إلى الزاوية السفلية اليسرى. هناك تعارض مع مساحة عرض نظام آخر.</translation>
 <translation id="661203523074512333">حالة الأمان <ph name="SECURITY_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />، يديرها المشرف</translation>
 <translation id="6612802754306526077">تم اختيار وضع تسجيل الشاشة.</translation>
 <translation id="6614169507485700968">تم تفعيل شاشة الخصوصية.</translation>
@@ -944,6 +950,7 @@
 <translation id="6801878137098616817">تم تعديله مؤخرًا.</translation>
 <translation id="6803622936009808957">تعذر إجراء النسخ المطابق للعروض نظرًا لعدم العثور على درجات دقة متوافقة. تم الدخول إلى سطح المكتب الممتد بدلاً من ذلك.</translation>
 <translation id="6818242057446442178">الرجوع بمقدار كلمة واحدة</translation>
+<translation id="6819327813400217281">تم توجيه الكاميرا إلى الزاوية السفلية اليسرى.</translation>
 <translation id="6820676911989879663">حان وقت الاستراحة</translation>
 <translation id="6827049576281411231">إغلاق لوحة الأحداث</translation>
 <translation id="6836499262298959512">ملف ضار</translation>
@@ -972,6 +979,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">تسهيل الاستخدام</translation>
 <translation id="698231206551913481">سيتم حذف جميع الملفات والبيانات المحلية المرتبطة بهذا المستخدم نهائيًا بمجرد إزالة هذا المستخدم.</translation>
+<translation id="7005239792648594238">للبدء، افتح تطبيقًا.</translation>
 <translation id="7007983414944123363">تعذّر التحقُّق من رقم التعريف الشخصي أو كلمة المرور الخاصّة بك. يُرجى إعادة المحاولة.</translation>
 <translation id="7014684956566476813">تم الربط بالجهاز الذي يحمل الاسم <ph name="DEVICE_NAME" />.</translation>
 <translation id="7015766095477679451">يمكنك العودة لاستخدام الجهاز في <ph name="COME_BACK_TIME" />.</translation>
@@ -985,6 +993,7 @@
 <translation id="7045033600005038336">هل تريد استبدال النموذج؟</translation>
 <translation id="7051244143160304048">تم قطع الاتصال بجهاز <ph name="DEVICE_NAME" />.</translation>
 <translation id="7055910611768509537">لم يتم استخدام قلم الشاشة منذ أكثر من أسبوع.</translation>
+<translation id="7061457967428964661">‏معاينة الكاميرا: اضغط على مفتاح Control + مفاتيح الأسهم لتحريك المعاينة إلى زاوية مختلفة.</translation>
 <translation id="7066646422045619941">تم إيقاف هذه الشبكة من قِبل مشرفك.</translation>
 <translation id="7067196344162293536">التدوير التلقائي</translation>
 <translation id="7068360136237591149">فتح الملفات</translation>
@@ -1005,6 +1014,7 @@
 <translation id="718361511487535372">‏فتح في "تقويم Google"</translation>
 <translation id="7188494361780961876">تم نقل القائمة إلى أعلى يمين الشاشة.</translation>
 <translation id="7189412385142492784">كم يبعد كوكب الزهرة؟</translation>
+<translation id="7198435252016571249">تم توجيه الكاميرا إلى الزاوية السفلية اليمنى. هناك تعارض مع مساحة عرض نظام آخر.</translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />. يجب إعادة تشغيل جهاز Chromebook لتطبيق التحديث. قد يستغرق هذا الإجراء مدة تصل إلى دقيقة واحدة.</translation>
 <translation id="7256634071279256947">الميكروفون الخلفي</translation>
 <translation id="7258828758145722155">تم تعديله أمس.</translation>
@@ -1065,8 +1075,10 @@
 <translation id="7593891976182323525">‏مفتاح البحث أو Shift</translation>
 <translation id="7600875258240007829">الاطّلاع على جميع الإشعارات</translation>
 <translation id="7607002721634913082">تعليق التحميل</translation>
+<translation id="7611213136657090146">تمت إعادة توصيل الكاميرا.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> درجة فهرنهايت</translation>
 <translation id="7633755430369750696">عرض إعدادات ميزة "المشاركة عن قرب"</translation>
+<translation id="7634648064048557203">تم توجيه الكاميرا إلى الزاوية السفلية اليمنى.</translation>
 <translation id="7641938616688887143">تسجيل</translation>
 <translation id="7642647758716480637">فتح الإعدادات للشبكة <ph name="NETWORK_NAME" />،<ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (المالك)</translation>
@@ -1079,6 +1091,7 @@
 <translation id="7662283695561029522">النقر للإعداد</translation>
 <translation id="7670953955701272011">‏فتح هذا التاريخ في "تقويم Google"</translation>
 <translation id="7671610481353807627">تم ترتيب التطبيقات حسب اللون.</translation>
+<translation id="7684531502177797067">تم ضبط إعدادات الكاميرا على <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">إضافة شبكة جوّال جديدة</translation>
 <translation id="7720410380936703141">إعادة المحاولة</translation>
@@ -1301,6 +1314,7 @@
 <translation id="9077404278023321866">النماذج</translation>
 <translation id="9077515519330855811">عناصر التحكّم في الوسائط. يجري الآن تشغيل <ph name="MEDIA_TITLE" />.</translation>
 <translation id="9079731690316798640">‏Wi-Fi:‏ <ph name="ADDRESS" /></translation>
+<translation id="9080073830732419341">تم توجيه الكاميرا إلى الزاوية العلوية اليسرى.</translation>
 <translation id="9080132581049224423">يُرجى التمرير السريع إلى الأعلى للانتقال إلى الصفحة الرئيسية.</translation>
 <translation id="9080206825613744995">الميكروفون قيد الاستخدام</translation>
 <translation id="9084606467167974638">تبديل موضع القائمة</translation>

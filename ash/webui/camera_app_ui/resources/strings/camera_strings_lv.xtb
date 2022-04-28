@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
 <translation id="1113173431709655881">Kameras režīms</translation>
+<translation id="1153190633558910465">Režģis izslēgts</translation>
 <translation id="1175958423215084756">Konstatēta saite. <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">Pagriezt par 90 grādiem pulksteņrādītāja kustības virzienā</translation>
 <translation id="1276998909102132017">Galerijas attēli</translation>
 <translation id="1300209025925956156">Dokumenta skenēšana</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Lai piekļūtu tām, vienlaikus nospiediet meklēšanas taustiņu un kreiso bulttaustiņu.</translation>
+<translation id="1393338179284529051">QHD</translation>
 <translation id="1430915738399379752">Drukāt</translation>
 <translation id="1467231725790366244">Kamera <ph name="CAMERA" /> ir atvienota.</translation>
 <translation id="1473110567575736769">3 sekunžu taimeris</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">Taimera ilgums</translation>
 <translation id="2050339315714019657">Portrets</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktīva</translation>
+<translation id="2134029355740465625">Video iestatījumi</translation>
 <translation id="2144806332417375165">Pielāgoti video parametri</translation>
 <translation id="2175927920773552910">kvadrātkods</translation>
 <translation id="2271433936731426666">Iespējot pilna lieluma video momentuzņēmumu</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">Aizmugurējā kamera</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /></translation>
 <translation id="2761536921376153655">Meklēšanas veids</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">Spoguļot priekšskatījumu</translation>
 <translation id="2879583609344924966">Kamera <ph name="CAMERA" /> ir pievienota.</translation>
 <translation id="2968794441791257519">Ar kameru uzņemtie fotoattēli un videoklipi tiks ievietoti mapē Lejupielādes. Varat tiem piekļūt lietotnē Faili.
 
@@ -52,6 +57,8 @@
 <translation id="3240426699337459095">Saite nokopēta</translation>
 <translation id="3259149966178251584">Kameras izšķirtspēja</translation>
 <translation id="3305962767867348165">Labot</translation>
+<translation id="3354465018370944241">Fotoattēlu iestatījumi</translation>
+<translation id="3411958449466169012">Izslēgt taimeri</translation>
 <translation id="3448774564454087943">Videoklips netika saglabāts, jo tas ir pārāk īss.</translation>
 <translation id="346539236881580388">Uzņemt vēlreiz</translation>
 <translation id="3517926952904427380">Nevar uzņemt portretu</translation>
@@ -63,9 +70,12 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skenēt svītrkodu</translation>
 <translation id="3892148308691398805">Kopēt tekstu</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pārtraukt ierakstīšanu</translation>
 <translation id="4121305183798804752">Konstatēts dokuments</translation>
+<translation id="414641094616694804">Šai kamerai nevar mainīt izšķirtspēju</translation>
 <translation id="4269820728363426813">Kopēt saites adresi</translation>
+<translation id="4281620174117014503">Vidēja izšķirtspēja</translation>
 <translation id="4329152592498422850">Pārslēgt uz kvadrātveida fotoattēlu uzņemšanu</translation>
 <translation id="4383571725254449280">Drukāt veiktspējas žurnālus</translation>
 <translation id="4445542136948522167">Pārtraukt fotoattēla uzņemšanu</translation>
@@ -74,12 +84,15 @@
 <translation id="4628948037717959914">Fotoattēls</translation>
 <translation id="4649291346448517080">Nevar saglabāt failu</translation>
 <translation id="4695379108709712600">Pārvietojas uz augšu</translation>
+<translation id="4705093842003735294">Pilna izšķirtspēja</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Straumēt video ierakstu vairākos kanālos</translation>
+<translation id="5034763830503483128">Fotoattēla malu attiecība</translation>
 <translation id="5057360777601936059">Kamera šobrīd nav pieejama.
         Lūdzu, pārbaudiet, vai kamera ir pareizi pievienota.</translation>
 <translation id="5163387177077603948">Pārvietojas pa labi</translation>
 <translation id="520537883758714667">Tagad ir pieejama dokumentu skenēšana</translation>
+<translation id="5235304959032763950">16 pret 9</translation>
 <translation id="5266635337630551423">Dokumenta augšējais kreisais stūris</translation>
 <translation id="5317780077021120954">Saglabāt</translation>
 <translation id="5320594929574852403">Pārvietojas pa kreisi</translation>
@@ -94,6 +107,7 @@
 <translation id="5916664084637901428">Iesl.</translation>
 <translation id="5975083100439434680">Tālināt</translation>
 <translation id="5976160379964388480">Citi</translation>
+<translation id="603973421174355542">Full HD</translation>
 <translation id="6073451960410192870">Pārtraukt ierakstīšanu</translation>
 <translation id="6197807149213783179">Saglabāt metadatus</translation>
 <translation id="6233780560267770709">3 pa 3</translation>
@@ -104,6 +118,7 @@
 Ja atsauksme ir par attēlu vai videoklipu kvalitāti, lūdzu, pievienojiet fotoattēla vai videoklipa paraugu un aprakstiet problēmu. (Piemēram, norādiet, ja fotoattēls ir pārāk tumšs vai fotografējamā persona vai priekšmets nav fokusā.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> — <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapikseļi</translation>
 <translation id="6527303717912515753">Kopīgot</translation>
+<translation id="6631515515009660915">Spogulis izslēgts</translation>
 <translation id="6652737148136672975">Pārvietojiet stūra pozīciju, izmantojot bulttaustiņus</translation>
 <translation id="667999046851023355">Dokuments</translation>
 <translation id="6681668084120808868">Uzņemt fotoattēlu</translation>
@@ -114,6 +129,7 @@ Ja atsauksme ir par attēlu vai videoklipu kvalitāti, lūdzu, pievienojiet foto
 <translation id="698156982839284926">3 sekundes</translation>
 <translation id="712848772518857951">Vai tiešām vēlaties noņemt <ph name="COUNT" /> vienumus?</translation>
 <translation id="7134221860976209830">10 sekunžu taimeris</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Ieraksta veids</translation>
 <translation id="7243947652761655814">Videoklipu izšķirtspēja</translation>
 <translation id="7337660886763914220">Failu sistēmas kļūdas.</translation>
@@ -146,9 +162,11 @@ Ja atsauksme ir par attēlu vai videoklipu kvalitāti, lūdzu, pievienojiet foto
 <translation id="8815966864175525708">Pārslēgt uz portretu uzņemšanu</translation>
 <translation id="8828441885228359828">Atsākt ierakstīšanu</translation>
 <translation id="8870695351537079478">Nevar sākt ierakstīšanu</translation>
+<translation id="8880167521484863515">četri pret trīs</translation>
 <translation id="8903921497873541725">Tuvināt</translation>
 <translation id="9045010116236796332">Novietojiet visas dokumenta malas kadrā.</translation>
 <translation id="9045155556724273246">10 sekundes</translation>
 <translation id="906331135292332864">Notiek attēla apstrāde…</translation>
+<translation id="922762992951083513">Spogulis ieslēgts</translation>
 <translation id="945522503751344254">Sūtīt atsauksmes</translation>
 </translationbundle>

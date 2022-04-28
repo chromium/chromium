@@ -549,6 +549,7 @@
 <translation id="1536754031901697553">切断しています...</translation>
 <translation id="1537254971476575106">全画面拡大鏡</translation>
 <translation id="15373452373711364">大きいマウスカーソル</translation>
+<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> は <ph name="ORIGIN" /> の読み取りと変更をリクエストしています</translation>
 <translation id="1540605929960647700">デモモードの有効化</translation>
 <translation id="1541346352678737112">ネットワークが見つかりません</translation>
 <translation id="1542137295869176367">ログインデータを更新できませんでした</translation>
@@ -1863,6 +1864,7 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> にログイン</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">スペルと一緒に文法をチェック</translation>
+<translation id="275085171842676231"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> の読み取りと変更をリクエストしています:</translation>
 <translation id="2753677631968972007">サイトの権限を手動で管理します。</translation>
 <translation id="2755349111255270002">この <ph name="DEVICE_TYPE" /> をリセットします</translation>
 <translation id="2755367719610958252">ユーザー補助機能の管理</translation>
@@ -3544,6 +3546,7 @@
 <translation id="4429239357082509581">Steam を実行する権限がありません</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="4430369329743628066">ブックマークを追加しました</translation>
+<translation id="4430422687972614133">仮想カードをオンにする</translation>
 <translation id="4432621511648257259">パスワードが正しくありません。</translation>
 <translation id="443454694385851356">以前の暗号化タイプ（安全ではありません）</translation>
 <translation id="443475966875174318">互換性のないアプリケーションの更新または削除</translation>
@@ -7061,6 +7064,7 @@
 <translation id="7947964080535614577">多くのサイトは、コンテンツやサービスを料金なしで提供する目的で広告を表示します。ただし、一部のサイトについては、煩わしい広告や誤解を招く広告が表示されることがわかっています。</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> のすべてのページ</translation>
 <translation id="7951265006188088697">Google Pay のお支払い方法を追加、管理するには、<ph name="BEGIN_LINK" />Google アカウント<ph name="END_LINK" />にアクセスしてください</translation>
+<translation id="795130320946928025">仮想カードをオフにする</translation>
 <translation id="7952708427581814389">サイトがクリップボード内のテキストや画像へのアクセスを要求できるようにする</translation>
 <translation id="795282463722894016">復元が完了しました</translation>
 <translation id="7952904276017482715">ID「<ph name="EXPECTED_ID" />」が必要ですが、ID「<ph name="NEW_ID" />」が検出されました</translation>

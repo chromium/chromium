@@ -117,6 +117,7 @@ Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete 
 <translation id="1558391695376153246">Zatvori kartice bez arhiv.</translation>
 <translation id="1571304935088121812">Kopiraj korisničko ime</translation>
 <translation id="1592864538817356322">Standardna zaštita:</translation>
+<translation id="1594635596540195766">Predloženih stavki na listi u nastavku:<ph name="SUGGESTIONS_COUNT" />.</translation>
 <translation id="161647866166517041">Umanjenje nepoželjnog sadržaja i prevara oslanja se na pouzdane tokene da bi pomoglo sajtovima koji se bore protiv prevara, kao i u razlikovanju robota od ljudi.
 
 Taj sajt može da izda pouzdan token za pregledač na osnovu vaše interakcije sa sajtom, poput redovnog prijavljivanja na nalog. Ako drugi sajtovi koje posećujete kasnije potraže i pronađu važeći pouzdani token, veća je verovatnoća da će vas tretirati kao osobu, a ne kao robota.

@@ -79,6 +79,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1312604459020188865">Signal strength <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Always show shelf</translation>
 <translation id="1316811122439383437">Tote: recent screen captures, downloads and pinned files</translation>
+<translation id="132346741904777634">Camera snapped to the top-left corner. Conflict with system surface.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> connected</translation>
 <translation id="1341651618736211726">Overflow</translation>
 <translation id="1346748346194534595">Right</translation>
@@ -114,6 +115,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1536604384701784949">To use <ph name="USER_EMAIL_ADDRESS" /> you need to sign out of all accounts first. To sign out, select Cancel to go back. Then select the time to open the status area and select Sign out. Then sign in to <ph name="USER_EMAIL_ADDRESS_2" /> again.</translation>
 <translation id="15373452373711364">Large mouse cursor</translation>
 <translation id="1546492247443594934">Desk 2</translation>
+<translation id="1546930421365146760">Ask your administrator to set up this device in the Google Admin console</translation>
 <translation id="1550523713251050646">Click for more options</translation>
 <translation id="1555130319947370107">Blue</translation>
 <translation id="1570871743947603115">Toggle Bluetooth. <ph name="STATE_TEXT" /></translation>
@@ -162,6 +164,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1885785240814121742">Unlock with fingerprint</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> doesn't support <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). The resolution was changed to <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1915307458270490472">Hang up</translation>
+<translation id="1918022425394817322">Camera snapped to the top-right corner</translation>
 <translation id="1919743966458266018">The shortcut to open the task manager has changed. Please use <ph name="NEW_SHORTCUT" /> instead of <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatic clicks</translation>
 <translation id="1928739107511554905">To get the update, use the touchscreen to restart your Chromebook with the keyboard attached.</translation>
@@ -551,6 +554,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> moved to folder <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Not available</translation>
 <translation id="4303223480529385476">Expand status area</translation>
+<translation id="4312840429157639164">Camera snapped to the top-right corner. Conflict with system surface.</translation>
 <translation id="4316910396681052118">ALL APPS</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">You pressed the keyboard shortcut for high contrast. Do you want to turn it on?</translation>
@@ -857,6 +861,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6254629735336163724">Locked to horizontal</translation>
 <translation id="6259254695169772643">Use your stylus to select</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Activating...</translation>
+<translation id="6274202259872570803">Screencast</translation>
 <translation id="6283712521836204486">Do Not Disturb is off.</translation>
 <translation id="6284232397434400372">Resolution changed</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> can be re-added later with a parent’s permission.</translation>
@@ -888,6 +893,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="649452524636452238">Smart card PIN</translation>
 <translation id="6495400115277918834">Picture-in-picture started, Alt+Shift+V to focus</translation>
 <translation id="6501401484702599040">Casting screen to <ph name="RECEIVER_NAME" /></translation>
+<translation id="6515727200518652613">Camera lost; trying to reconnect.</translation>
 <translation id="6520517963145875092">Select a window to capture</translation>
 <translation id="652139407789908527">Your screen will go blank for longer than usual (up to a minute) during this update. Please don't press the power button while the update is in progress.</translation>
 <translation id="6528179044667508675">Do not disturb</translation>
@@ -906,6 +912,7 @@ New install</translation>
 <translation id="6578407462441924264">Unnamed</translation>
 <translation id="6585808820553845416">Session ends in <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" /> <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597278316891651699">Camera snapped to the bottom-left corner. Conflict with system surface.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>
 <translation id="6612802754306526077">Screen recording mode selected</translation>
 <translation id="6614169507485700968">Privacy screen is on</translation>
@@ -943,6 +950,7 @@ New install</translation>
 <translation id="6801878137098616817">Recently edited</translation>
 <translation id="6803622936009808957">Could not mirror displays since no supported resolutions found. Entered extended desktop instead.</translation>
 <translation id="6818242057446442178">Back by word</translation>
+<translation id="6819327813400217281">Camera snapped to the bottom-left corner</translation>
 <translation id="6820676911989879663">Take a break!</translation>
 <translation id="6827049576281411231">Close event panel</translation>
 <translation id="6836499262298959512">Dangerous file</translation>
@@ -971,6 +979,7 @@ New install</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Accessibility</translation>
 <translation id="698231206551913481">All files and local data associated with this user will be permanently deleted once this user is removed.</translation>
+<translation id="7005239792648594238">Open an app to get started</translation>
 <translation id="7007983414944123363">Your PIN or password couldn't be verified. Try again.</translation>
 <translation id="7014684956566476813">Connected to a device named <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Come back at <ph name="COME_BACK_TIME" />.</translation>
@@ -984,6 +993,7 @@ New install</translation>
 <translation id="7045033600005038336">Replace template?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> disconnected</translation>
 <translation id="7055910611768509537">Stylus has not been used in over a week</translation>
+<translation id="7061457967428964661">Camera preview; press control + arrow keys to move the preview to a different corner</translation>
 <translation id="7066646422045619941">This network is disabled by your administrator.</translation>
 <translation id="7067196344162293536">Auto rotate</translation>
 <translation id="7068360136237591149">Open files</translation>
@@ -1004,6 +1014,7 @@ New install</translation>
 <translation id="718361511487535372">Open in Google Calendar</translation>
 <translation id="7188494361780961876">Menu moved to the top-left corner of the screen.</translation>
 <translation id="7189412385142492784">How far is Venus</translation>
+<translation id="7198435252016571249">Camera snapped to the bottom-right corner. Conflict with system surface.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. This Chromebook needs to restart to apply an update. This can take up to one minute.</translation>
 <translation id="7256634071279256947">Rear microphone</translation>
 <translation id="7258828758145722155">Edited yesterday</translation>
@@ -1064,8 +1075,10 @@ New install</translation>
 <translation id="7593891976182323525">Search or Shift</translation>
 <translation id="7600875258240007829">See all notifications</translation>
 <translation id="7607002721634913082">Paused</translation>
+<translation id="7611213136657090146">Camera reconnected.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Show Nearby Share settings.</translation>
+<translation id="7634648064048557203">Camera snapped to the bottom-right corner</translation>
 <translation id="7641938616688887143">Record</translation>
 <translation id="7642647758716480637">Open settings for <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (owner)</translation>
@@ -1078,6 +1091,7 @@ New install</translation>
 <translation id="7662283695561029522">Tap to configure</translation>
 <translation id="7670953955701272011">Open this date in Google Calendar</translation>
 <translation id="7671610481353807627">Apps are sorted by colour</translation>
+<translation id="7684531502177797067">Camera input set to <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Add new mobile network</translation>
 <translation id="7720410380936703141">TRY AGAIN</translation>
@@ -1300,6 +1314,7 @@ New install</translation>
 <translation id="9077404278023321866">Templates</translation>
 <translation id="9077515519330855811">Media controls, now playing <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
+<translation id="9080073830732419341">Camera snapped to the top-left corner</translation>
 <translation id="9080132581049224423">Swipe up to go home</translation>
 <translation id="9080206825613744995">Microphone is in use.</translation>
 <translation id="9084606467167974638">Toggle menu position</translation>

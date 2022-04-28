@@ -79,6 +79,7 @@
 <translation id="1312604459020188865">ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">ສະແດງຖ້ານທຸກເທື່ອ</translation>
 <translation id="1316811122439383437">Tote: ການຖ່າຍຮູບໜ້າຈໍຫຼ້າສຸດ, ການດາວໂຫຼດ ແລະ ໄຟລ໌ທີ່ປັກໝຸດໄວ້</translation>
+<translation id="132346741904777634">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຊ້າຍເທິງແລ້ວ. ຂັດແຍ້ງກັບພື້ນຜິວຂອງລະບົບ.</translation>
 <translation id="1333308631814936910">ເຊື່ອມຕໍ່ <ph name="DISPLAY_NAME" /> ແລ້ວ</translation>
 <translation id="1341651618736211726">ລົ້ນ</translation>
 <translation id="1346748346194534595">ເບື້ອງຂວາ</translation>
@@ -162,6 +163,7 @@
 <translation id="1885785240814121742">ປົດລັອກດ້ວຍລາຍນີ້ວມື</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> ບໍ່ຮອງຮັບ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). ຄວາມລະອຽດໄດ້ຖືກປ່ຽນເປັນ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) ແລ້ວ. ກະລຸນາຄລິກຢືນຢັນເພື່ອຮັກສາການປ່ຽນແປງ. ລະບົບຈະກູ້ຄືນການຕັ້ງຄ່າກ່ອນໜ້າໃນ <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1915307458270490472">ວາງສາຍ</translation>
+<translation id="1918022425394817322">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຂວາເທິງແລ້ວ</translation>
 <translation id="1919743966458266018">ປ່ຽນທາ​ງລັດ​ເພື່ອ​ເປີດ​ຕົວ​ຈັດການ​ໜ້າ​ວຽກ​ແລ້ວ. ກະລຸນາ​ໃຊ້ <ph name="NEW_SHORTCUT" /> ​ແທນ <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">ຄລິກອັດ​ຕະ​ໂນ​ມັດ</translation>
 <translation id="1928739107511554905">ເພື່ອຮັບເອົາການອັບເດດ, ກະລຸນາໃຊ້ຈໍສຳຜັດເພື່ອປິດເປີດ Chromebook ຂອງທ່ານຄືນໃໝ່ທີ່ມີແປ້ນພິມເຊື່ອມຕໍ່ແລ້ວ.</translation>
@@ -551,6 +553,7 @@
 <translation id="430191667033048642">ຍ້າຍ <ph name="MOVED_APP_NAME" /> ໄປຫາໂຟນເດີ <ph name="FOLDER_NAME" /> ແລ້ວ.</translation>
 <translation id="4302592941791324970">ບໍ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="4303223480529385476">ຂະຫຍາຍພື້ນທີ່ສະແດງສະຖານະ</translation>
+<translation id="4312840429157639164">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຂວາເທິງແລ້ວ. ຂັດແຍ້ງກັບພື້ນຜິວຂອງລະບົບ.</translation>
 <translation id="4316910396681052118">ທຸກແອັບ</translation>
 <translation id="4321179778687042513">Ctrl</translation>
 <translation id="4321776623976362024">ທ່ານໄດ້ກົດປຸ່ມລັດແປ້ນພິມສຳລັບຄວາມຄົມຊັດສູງແລ້ວ. ທ່ານຕ້ອງການເປີດມັນບໍ?</translation>
@@ -857,6 +860,7 @@
 <translation id="6254629735336163724">ລັອກເປັນລວງນອນ</translation>
 <translation id="6259254695169772643">ໃຊ້ປາຍປາກກາຂອງທ່ານເພື່ອເລືອກ</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: ກຳລັງເປີດນຳໃຊ້...</translation>
+<translation id="6274202259872570803">Screencast</translation>
 <translation id="6283712521836204486">ໂໝດຫ້າມລົບກວນປິດຢູ່.</translation>
 <translation id="6284232397434400372">ປ່ຽນຄວາມລະອຽດແລ້ວ</translation>
 <translation id="6288235558961782912">ສາມາດເພີ່ມ <ph name="USER_EMAIL_ADDRESS" /> ຄືນໃໝ່ໃນພາຍຫຼັງໄດ້ໂດຍມີການອະນຸຍາດຂອງພໍ່ແມ່.</translation>
@@ -888,6 +892,7 @@
 <translation id="649452524636452238">PIN ບັດອັດສະລິຍະ</translation>
 <translation id="6495400115277918834">ເລີ່ມການສະແດງຜົນຊ້ອນກັນແລ້ວ, ກົດ Alt+Shift+V ເພື່ອໂຟກັສ</translation>
 <translation id="6501401484702599040">ກຳລັງ​ສົ່ງສັນຍານໜ້າ​ຈໍ​ຫາ <ph name="RECEIVER_NAME" /></translation>
+<translation id="6515727200518652613">ກ້ອງຖ່າຍຮູບຂາດການເຊື່ອມຕໍ່, ກຳລັງພະຍາຍາມເຊື່ອມຕໍ່ຄືນໃໝ່.</translation>
 <translation id="6520517963145875092">ເລືອກໜ້າຈໍທີ່ຈະຖ່າຍຮູບ</translation>
 <translation id="652139407789908527">ໜ້າຈໍຂອງທ່ານຈະບໍ່ສະແດງຜົນເປັນເວລາດົນກວ່າປົກກະຕິ (ສູງສຸດໜຶ່ງນາທີ) ໃນລະຫວ່າງການອັບເດດນີ້. ກະລຸນາຢ່າກົດປຸ່ມເປີດປິດໃນຂະນະທີ່ການອັບເດດພວມດຳເນີນຢູ່.</translation>
 <translation id="6528179044667508675">ຢ່າລົບ​ກວນ</translation>
@@ -906,6 +911,7 @@
 <translation id="6578407462441924264">ບໍ່ມີຊື່</translation>
 <translation id="6585808820553845416">ຊ່ວງເວລາເຂົ້າໃຊ້ສິ້ນສຸດໃນ <ph name="SESSION_TIME_REMAINING" /> .</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597278316891651699">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຊ້າຍລຸ່ມແລ້ວ. ຂັດແຍ້ງກັບພື້ນຜິວຂອງລະບົບ.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="6612802754306526077">ເລືອກໂໝດການບັນທຶກໜ້າຈໍແລ້ວ</translation>
 <translation id="6614169507485700968">ໜ້າຈໍຄວາມເປັນສ່ວນຕົວເປີດຢູ່</translation>
@@ -943,6 +949,7 @@
 <translation id="6801878137098616817">ແກ້ໄຂຫຼ້າສຸດ</translation>
 <translation id="6803622936009808957">ບໍ່ສາມາດສ່ອງການສະແດງໄດ້ ເນື່ອງຈາກບໍ່ພົບການແກ້ໄຂທີ່ຮອງຮັບ. ປ້ອນເດັສທັອບຂະຫຍາຍເຂົ້າແທນແລ້ວ.</translation>
 <translation id="6818242057446442178">ຖອຍກັບເທື່ອລະຄຳ</translation>
+<translation id="6819327813400217281">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຊ້າຍລຸ່ມແລ້ວ</translation>
 <translation id="6820676911989879663">ຢຸດພັກ!</translation>
 <translation id="6827049576281411231">ປິດແຜງນັດໝາຍ</translation>
 <translation id="6836499262298959512">ໄຟລ໌ອັນຕະລາຍ</translation>
@@ -971,6 +978,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">ການເຂົ້າ​​ເຖິງ​ໄດ້</translation>
 <translation id="698231206551913481">ທຸກໄຟລ໌ ແລະ ຂໍ້ມູນພາຍໃນເຄື່ອງທີ່ເຊື່ອມໂຍງກັບຜູ້ໃຊ້ນີ້ຈະຖືກລຶບອອກໂດຍຖາວອນເມື່ອລຶບຜູ້ໃຊ້ນີ້ອອກ.</translation>
+<translation id="7005239792648594238">ເປີດແອັບເພື່ອເລີ່ມຕົ້ນ</translation>
 <translation id="7007983414944123363">ບໍ່ສາມາດຢັ້ງຢືນ PIN ຫຼື ລະຫັດຜ່ານຂອງທ່ານໄດ້. ກະລຸນາລອງໃໝ່ອີກ.</translation>
 <translation id="7014684956566476813">ເຊື່ອມຕໍ່ຫາອຸປະກອນຊື່ <ph name="DEVICE_NAME" /> ແລ້ວ</translation>
 <translation id="7015766095477679451">ກັບຄືນມາໃນເວລາ <ph name="COME_BACK_TIME" />.</translation>
@@ -984,6 +992,7 @@
 <translation id="7045033600005038336">ແທນທີ່ແມ່ແບບບໍ?</translation>
 <translation id="7051244143160304048">ຕັດການເຊື່ອມຕໍ່ <ph name="DEVICE_NAME" /> ແລ້ວ</translation>
 <translation id="7055910611768509537">ບໍ່ໄດ້ໃຊ້ປາກກາເປັນເວລາຫຼາຍກວ່າໜຶ່ງອາທິດແລ້ວ</translation>
+<translation id="7061457967428964661">ຕົວຢ່າງກ້ອງຖ່າຍຮູບ, ກົດປຸ່ມ control + ລູກສອນເພື່ອຍ້າຍຕົວຢ່າງໄປມຸມອື່ນ</translation>
 <translation id="7066646422045619941">ເຄືອຂ່າຍນີ້ຖືກປິດການນຳໃຊ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="7067196344162293536">ໝຸນອັດຕະໂນມັດ</translation>
 <translation id="7068360136237591149">ເປີດໄຟລ໌</translation>
@@ -1004,6 +1013,7 @@
 <translation id="718361511487535372">ເປີດໃນ Google ປະຕິທິນ</translation>
 <translation id="7188494361780961876">ຍ້າຍເມນູໄປແຈເທິງສຸດເບື້ອງຊ້າຍຂອງໜ້າຈໍ.</translation>
 <translation id="7189412385142492784">ດາວສຸກຢູ່ໄກເທົ່າໃດ</translation>
+<translation id="7198435252016571249">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຂວາລຸ່ມແລ້ວ. ຂັດແຍ້ງກັບພື້ນຜິວຂອງລະບົບ.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Chromebook ນີ້ຈຳເປັນຕ້ອງຣິສະຕາດຄືນໃໝ່ເພື່ອນຳໃຊ້ການອັບເດດ. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາເຖິງ 1 ນາທີ.</translation>
 <translation id="7256634071279256947">ໄມໂຄຣໂຟນຫຼັງ</translation>
 <translation id="7258828758145722155">ແກ້ໄຂມື້ວານນີ້</translation>
@@ -1064,8 +1074,10 @@
 <translation id="7593891976182323525">ຄົ້ນ​ຫາ ຫຼື Shift</translation>
 <translation id="7600875258240007829">ເບິ່ງການແຈ້ງເຕືອນທັງໝົດ</translation>
 <translation id="7607002721634913082">ຢຸດແລ້ວ</translation>
+<translation id="7611213136657090146">ເຊື່ອມຕໍ່ກ້ອງຖ່າຍຮູບຄືນໃໝ່ແລ້ວ.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">ສະແດງການຕັ້ງຄ່າການແບ່ງປັນໃກ້ຄຽງ.</translation>
+<translation id="7634648064048557203">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຂວາລຸ່ມແລ້ວ</translation>
 <translation id="7641938616688887143">ບັນທຶກ</translation>
 <translation id="7642647758716480637">ເປີດການຕັ້ງຄ່າສຳລັບ <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ເຈົ້າ​ຂອງ​)</translation>
@@ -1078,6 +1090,7 @@
 <translation id="7662283695561029522">ແຕະເພື່ອກຳນົດຄ່າ</translation>
 <translation id="7670953955701272011">ເປີດວັນທີນີ້ໃນ Google ປະຕິທິນ</translation>
 <translation id="7671610481353807627">ແອັບແມ່ນຈັດຮຽງຕາມສີ</translation>
+<translation id="7684531502177797067">ຕັ້ງການປ້ອນຂໍ້ມູນຈາກກ້ອງຖ່າຍຮູບເປັນ <ph name="CAMERA_NAME" /> ແລ້ວ.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">ເພີ່ມເຄືອຂ່າຍມືຖືໃໝ່</translation>
 <translation id="7720410380936703141">ລອງໃໝ່</translation>
@@ -1300,6 +1313,7 @@
 <translation id="9077404278023321866">ແມ່ແບບ</translation>
 <translation id="9077515519330855811">ການຄວບຄຸມມີເດຍ, ດຽວນີ້ກຳລັງຫຼິ້ນ <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
+<translation id="9080073830732419341">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຊ້າຍເທິງແລ້ວ</translation>
 <translation id="9080132581049224423">ປັດຂຶ້ນເພື່ອໄປຫາໜ້າຫຼັກ</translation>
 <translation id="9080206825613744995">ໄມໂຄຣໂຟນໃຊ້ງານຢູ່.</translation>
 <translation id="9084606467167974638">ເປີດປິດຕຳແໜ່ງເມນູ</translation>

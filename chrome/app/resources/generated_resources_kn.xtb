@@ -584,6 +584,7 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' ಅನ್ನು ಈಗಾಗಲೇ '<ph name="ACTION" />' ಕ್ರಿಯೆಗೆ ನಿಯೋಜಿಸಲಾಗಿದೆ. <ph name="RESPONSE" /> ಗೆ ಯಾವುದೇ ಕೀ ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="1567993339577891801">JavaScript ಕನ್ಸೋಲ್</translation>
 <translation id="1568323446248056064">ಡಿಸ್‌ಪ್ಲೇ ಸಾಧನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="1569044524074707727">ನಿಮ್ಮ ಫೋನ್ ಅನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="1570604804919108255">ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನ್‌ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
 <translation id="1571304935088121812">ಬಳಕೆದಾರರಹೆಸರು ನಕಲಿಸಿ</translation>
 <translation id="1571738973904005196"><ph name="TAB_ORIGIN" /> ಟ್ಯಾಬ್ ನೋಡಿ</translation>
@@ -2016,6 +2017,7 @@
 <translation id="288042212351694283">ನಿಮ್ಮ ಯುನಿವರ್ಸಲ್ 2ನೇ ಫ್ಯಾಕ್ಟರ್ ಸಾಧನಗಳನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="2881076733170862447">ನೀವು ವಿಸ್ತರಣೆಯನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿದಾಗ</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> ಮರು ಪ್ರಾರಂಭವಾಗುತ್ತದೆ ಮತ್ತು ಸ್ವಲ್ಪ ಸಮಯದಲ್ಲಿ ಮರು ಹೊಂದಿಸಲಾಗುತ್ತದೆ</translation>
+<translation id="2883470649061584386">ಫೀಡ್</translation>
 <translation id="2885378588091291677">ಕಾರ್ಯ ನಿರ್ವಾಹಕ</translation>
 <translation id="2885729872133513017">ಸರ್ವರ್‌ನ ಉತ್ತರವನ್ನು ಡೀಕೋಡ್ ಮಾಡುವಾಗ ಸಮಸ್ಯೆ ಸಂಭವಿಸಿದೆ.</translation>
 <translation id="2886119409731773154">ಇದು 30 ನಿಮಿಷಗಳವರೆಗಿನ ಕಾಲಾವಕಾಶ ತೆಗೆದುಕೊಳ್ಳಬಹುದು</translation>
@@ -5331,6 +5333,7 @@
 <translation id="6227002569366039565">ಈ ಬಬಲ್ ಮೇಲೆ ಫೋಕಸ್ ಮಾಡಲು |<ph name="ACCELERATOR" />| ಒತ್ತಿರಿ ಹಾಗೂ ಆನಂತರ ಅದು ತೋರಿಸುತ್ತಿರುವ ಅಂಶದ ಮೇಲೆ ಫೋಕಸ್ ಮಾಡಲು ಅದೇ ಕೀಯನ್ನು ಮತ್ತೊಮ್ಮೆ ಒತ್ತಿರಿ.</translation>
 <translation id="6227280783235722609">ವಿಸ್ತರಣೆ</translation>
 <translation id="6229849828796482487">ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ನ ಕನೆಕ್ಷನ್ ರದ್ದುಗೊಳಿಸಿ</translation>
+<translation id="6230165830166519105">ಬೇರೆ ರೀತಿಯಲ್ಲಿ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="6231782223312638214">ಸಲಹೆ ಮಾಡಿರುವುದು</translation>
 <translation id="6231881193380278751">ಪುಟವನ್ನು ಸ್ವಯಂ-ರಿಫ್ರೆಶ್ ಮಾಡಲು ಪ್ರಶ್ನೆಯ ಪರಮ್ ಸೇರಿಸಿ: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">ಬ್ಯಾಟರಿ</translation>

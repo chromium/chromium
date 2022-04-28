@@ -670,6 +670,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4758061975920522644">Podijeli samo sliku</translation>
 <translation id="4759238208242260848">Preuzimanje</translation>
 <translation id="4763480195061959176">videozapis</translation>
+<translation id="4766313118839197559">Zaporke se spremaju u Upravitelj zaporki na ovom uređaju</translation>
 <translation id="4766678251456904326">Dodajte račun uređaju</translation>
 <translation id="4791358705705538979">Pomaže vam s izvršavanjem zadataka na webu, na primjer s plaćanjem</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -928,6 +929,7 @@ Probe Privacy Sandboxa i dalje su u aktivnom razvoju i dostupne su u odabranim r
 <translation id="6162892189396105610">Predučitava stranice za koje Chrome misli da ćete ih vjerojatno posjetiti.</translation>
 <translation id="6186394685773237175">Nije pronađena nijedna ugrožena zaporka</translation>
 <translation id="6192907950379606605">Primajte opise slike</translation>
+<translation id="6196315980958524839">Zaporke se spremaju u Google upravitelj zaporki na ovom uređaju.</translation>
 <translation id="620197886010707372">Otvoriti aplikaciju <ph name="APPNAME" /> u Google Playu?</translation>
 <translation id="6203593061661911168">Preuzimanje će se pokrenuti na Wi-Fiju</translation>
 <translation id="6210748933810148297">Niste <ph name="EMAIL" />?</translation>
@@ -1258,6 +1260,7 @@ Oznake povjerenja poboljšavaju privatnost na webu i ne mogu se upotrebljavati d
 <translation id="7961015016161918242">Nikad</translation>
 <translation id="7961926449547174351">Onemogućili ste pristup pohrani. Omogućite ga u Postavkama.</translation>
 <translation id="7963646190083259054">Dobavljač:</translation>
+<translation id="7965838025086216108">Spremljene zaporke možete koristiti na bilo kojem uređaju. Spremaju se u Google upravitelj zaporki za <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Dodano na popis za čitanje</translation>
 <translation id="7971136598759319605">Aktivan prije jednog dana</translation>
 <translation id="7975379999046275268">Pregled stranice <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>

@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
 <translation id="1113173431709655881">Режим за камера</translation>
+<translation id="1153190633558910465">Изключване на решетката</translation>
 <translation id="1175958423215084756">Разпозната е връзка. <ph name="HOSTNAME" /></translation>
 <translation id="1258009455399840361">Завъртане на 90 градуса по часовниковата стрелка</translation>
 <translation id="1276998909102132017">Изображения в галерията</translation>
 <translation id="1300209025925956156">Сканиране на документ</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. За достъп натиснете клавиша „търсене“ + стрелката за наляво.</translation>
+<translation id="1393338179284529051">QHD</translation>
 <translation id="1430915738399379752">Печат</translation>
 <translation id="1467231725790366244">Устройството <ph name="CAMERA" /> е изключено.</translation>
 <translation id="1473110567575736769">Таймер за 3 секунди</translation>
@@ -27,6 +29,7 @@
 <translation id="2036868001356139588">Продължителност на таймера</translation>
 <translation id="2050339315714019657">Вертикално</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> е активна</translation>
+<translation id="2134029355740465625">Настройки за видеоклиповете</translation>
 <translation id="2144806332417375165">Персонализирани параметри на видеото</translation>
 <translation id="2175927920773552910">Код за бърза реакция</translation>
 <translation id="2271433936731426666">Активиране на пълния размер на моментната снимка от видеоклипа</translation>
@@ -40,6 +43,8 @@
 <translation id="2599796128805996109">Задна камера</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> сек</translation>
 <translation id="2761536921376153655">Тип сканиране</translation>
+<translation id="2816865716882637212">HD</translation>
+<translation id="28682968802727151">Визуализация на огледалното обръщане</translation>
 <translation id="2879583609344924966">Устройството <ph name="CAMERA" /> е свързано.</translation>
 <translation id="2968794441791257519">Направените с камерата снимки и видеоклипове ще бъдат преместени в папката „Изтегляния“. Можете да осъществите достъп до тях от „Файлове“.
 
@@ -52,6 +57,8 @@
 <translation id="3240426699337459095">Връзката е копирана</translation>
 <translation id="3259149966178251584">Разделителна способност на камерата</translation>
 <translation id="3305962767867348165">Коригиране</translation>
+<translation id="3354465018370944241">Настройки за снимките</translation>
+<translation id="3411958449466169012">Таймерът е изключен</translation>
 <translation id="3448774564454087943">Видеоклипът не е запазен, тъй като е прекалено кратък</translation>
 <translation id="346539236881580388">Повторно заснемане</translation>
 <translation id="3517926952904427380">Не може да се направи вертикална снимка</translation>
@@ -63,9 +70,12 @@
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3838931309141338733">Сканиране на баркод</translation>
 <translation id="3892148308691398805">Копиране на текста</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> мегапиксела</translation>
 <translation id="4118525110028899586">Пауза на записа</translation>
 <translation id="4121305183798804752">Открит е документ</translation>
+<translation id="414641094616694804">Разделителната способност на тази камера не може да се променя</translation>
 <translation id="4269820728363426813">Копиране на адреса на връзката</translation>
+<translation id="4281620174117014503">Средна разделителна способност</translation>
 <translation id="4329152592498422850">Превключвател за правене на квадратна снимка</translation>
 <translation id="4383571725254449280">Печат на регистрационните файлове за ефективността</translation>
 <translation id="4445542136948522167">Спиране на правенето на снимка</translation>
@@ -74,12 +84,15 @@
 <translation id="4628948037717959914">Снимка</translation>
 <translation id="4649291346448517080">Файлът не може да бъде запазен</translation>
 <translation id="4695379108709712600">Премества се нагоре</translation>
+<translation id="4705093842003735294">Пълна разделителна способност</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Записва се видеоклип за много потоци</translation>
+<translation id="5034763830503483128">Формат на снимката</translation>
 <translation id="5057360777601936059">Понастоящем няма достъп до камерата ви.
         Моля, проверете дали камерата е свързана правилно.</translation>
 <translation id="5163387177077603948">Премества се надясно</translation>
 <translation id="520537883758714667">Функцията за сканиране на документи вече е налице</translation>
+<translation id="5235304959032763950">16:9</translation>
 <translation id="5266635337630551423">Горен ляв ъгъл на документа</translation>
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5320594929574852403">Премества се наляво</translation>
@@ -94,6 +107,7 @@
 <translation id="5916664084637901428">Включено</translation>
 <translation id="5975083100439434680">Намаляване на мащаба</translation>
 <translation id="5976160379964388480">Други</translation>
+<translation id="603973421174355542">Пълна висока детайлност</translation>
 <translation id="6073451960410192870">Спиране на записа</translation>
 <translation id="6197807149213783179">Запазване на метаданните</translation>
 <translation id="6233780560267770709">3 на 3</translation>
@@ -104,6 +118,7 @@
 Ако те се отнасят за качеството на изображение или видеоклип, моля, прикачете откъс и опишете какво не е наред. (Например снимката е твърде тъмна или предметът не е на фокус.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" /> x <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> мегапиксела</translation>
 <translation id="6527303717912515753">Споделяне</translation>
+<translation id="6631515515009660915">Изключване на огледалното обръщане</translation>
 <translation id="6652737148136672975">Позиционирайте ъгъла чрез клавишите със стрелки</translation>
 <translation id="667999046851023355">Документ</translation>
 <translation id="6681668084120808868">Снимане</translation>
@@ -114,6 +129,7 @@
 <translation id="698156982839284926">3 секунди</translation>
 <translation id="712848772518857951">Наистина ли искате да премахнете <ph name="COUNT" /> елемента?</translation>
 <translation id="7134221860976209830">Таймер за 10 секунди</translation>
+<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Тип запис</translation>
 <translation id="7243947652761655814">Разделителна способност за видеоклиповете</translation>
 <translation id="7337660886763914220">Грешки във файловата система.</translation>
@@ -146,9 +162,11 @@
 <translation id="8815966864175525708">Превключвател за правене на вертикална снимка</translation>
 <translation id="8828441885228359828">Възобновяване на записа</translation>
 <translation id="8870695351537079478">Записването не може да се стартира</translation>
+<translation id="8880167521484863515">4:3</translation>
 <translation id="8903921497873541725">Увеличаване на мащаба</translation>
 <translation id="9045010116236796332">Поставете документа изцяло в рамката</translation>
 <translation id="9045155556724273246">10 секунди</translation>
 <translation id="906331135292332864">Изображението се обработва...</translation>
+<translation id="922762992951083513">Включване на огледалното обръщане</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>
 </translationbundle>

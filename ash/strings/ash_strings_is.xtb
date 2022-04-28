@@ -79,6 +79,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1312604459020188865"><ph name="SIGNAL_STRENGTH" /> sendistyrkur</translation>
 <translation id="1316069254387866896">Sýna alltaf hillu</translation>
 <translation id="1316811122439383437">Tote: Nýlegar skjáupptökur, niðurhal og festar skrár</translation>
+<translation id="132346741904777634">Myndavél fest við efra horn vinstra megin. Skörun við vettvang kerfis.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> er tengdur</translation>
 <translation id="1341651618736211726">Yfirflæði</translation>
 <translation id="1346748346194534595">Réttsælis</translation>
@@ -162,6 +163,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1885785240814121742">Opna með fingrafari</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> styður ekki <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Upplausninni var breytt í <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Smelltu til að staðfesta þessa breytingu. Fyrri stillingar verða endurheimtar eftir <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1915307458270490472">Leggja á</translation>
+<translation id="1918022425394817322">Myndavél fest við efra horn hægra megin</translation>
 <translation id="1919743966458266018">Flýtileiðinni til að opna verkstjórn hefur verið breytt. Notaðu <ph name="NEW_SHORTCUT" /> í staðinn fyrir <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Sjálfvirkir smellir</translation>
 <translation id="1928739107511554905">Til að fá uppfærsluna skaltu nota snertiskjáinn til að endurræsa Chromebook með lyklaborðið tengt.</translation>
@@ -551,6 +553,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> var fært í möppuna <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Ekki tiltækt</translation>
 <translation id="4303223480529385476">Stækka stöðusvæði</translation>
+<translation id="4312840429157639164">Myndavél fest við efra horn hægra megin. Skörun við vettvang kerfis.</translation>
 <translation id="4316910396681052118">ÖLL FORRIT</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Þú ýttir á flýtilykilinn fyrir mikil birtuskil. Viltu kveikja á þeim?</translation>
@@ -857,6 +860,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6254629735336163724">Læst á lárétt</translation>
 <translation id="6259254695169772643">Notaðu pennann þinn til að velja</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Virkjar...</translation>
+<translation id="6274202259872570803">Skjáupptaka</translation>
 <translation id="6283712521836204486">Slökkt er á „Ónáðið ekki“.</translation>
 <translation id="6284232397434400372">Upplausn breytt</translation>
 <translation id="6288235558961782912">Hægt er að bæta <ph name="USER_EMAIL_ADDRESS" /> við aftur síðar með leyfi foreldris.</translation>
@@ -888,6 +892,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="649452524636452238">PIN-númer snjallkorts</translation>
 <translation id="6495400115277918834">Mynd í mynd er hafin, ýttu á Alt+Shift+V til að setja í fókus</translation>
 <translation id="6501401484702599040">Sendir út skjáinn til <ph name="RECEIVER_NAME" /></translation>
+<translation id="6515727200518652613">Myndavél horfin, reynir að tengjast aftur.</translation>
 <translation id="6520517963145875092">Veldu glugga til að mynda</translation>
 <translation id="652139407789908527">Það mun slokkna á skjánum lengur en vanalega (í allt að mínútu) meðan á þessari uppfærslu stendur. Ekki ýta á aflrofann meðan á uppfærslunni stendur.</translation>
 <translation id="6528179044667508675">Ónáðið ekki</translation>
@@ -906,6 +911,7 @@ Ný uppsetning</translation>
 <translation id="6578407462441924264">Án heitis</translation>
 <translation id="6585808820553845416">Lotunni lýkur eftir <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597278316891651699">Myndavél fest við neðra horn vinstra megin. Skörun við vettvang kerfis.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, sendistyrkur <ph name="SIGNAL_STRENGTH" />, stjórnað af kerfisstjóra</translation>
 <translation id="6612802754306526077">Skjáupptökustilling valin</translation>
 <translation id="6614169507485700968">Kveikt er á persónuverndarskjá</translation>
@@ -943,6 +949,7 @@ Ný uppsetning</translation>
 <translation id="6801878137098616817">Breytt nýlega</translation>
 <translation id="6803622936009808957">Ekki var hægt að spegla skjái vegna þess að engin studd upplausn fannst. Skjáborð hefur verið framlengt í staðinn.</translation>
 <translation id="6818242057446442178">Til baka um orð</translation>
+<translation id="6819327813400217281">Myndavél fest við neðra horn vinstra megin</translation>
 <translation id="6820676911989879663">Taktu pásu!</translation>
 <translation id="6827049576281411231">Loka viðburðasvæði</translation>
 <translation id="6836499262298959512">Hættuleg skrá</translation>
@@ -971,6 +978,7 @@ Ný uppsetning</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Aðgengi</translation>
 <translation id="698231206551913481">Öllum skrám og staðbundnum gögnum sem tengjast notandanum verður varanlega eytt þegar notandinn er fjarlægður.</translation>
+<translation id="7005239792648594238">Opnaðu forrit til að hefjast handa</translation>
 <translation id="7007983414944123363">Ekki tókst að staðfesta PIN-númerið eða aðgangsorðið. Reyndu aftur.</translation>
 <translation id="7014684956566476813">Tengdist tækinu <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Komdu aftur klukkan <ph name="COME_BACK_TIME" />.</translation>
@@ -984,6 +992,7 @@ Ný uppsetning</translation>
 <translation id="7045033600005038336">Skipta út sniðmáti?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" />: aftengt</translation>
 <translation id="7055910611768509537">Penninn hefur ekki verið notaður í meira en viku</translation>
+<translation id="7061457967428964661">Forskoðun myndavélar, ýttu á ctrl + örvalykla til að færa forskoðun í annað horn</translation>
 <translation id="7066646422045619941">Þetta netkerfi hefur verið gert óvirkt af stjórnanda.</translation>
 <translation id="7067196344162293536">Sjálfvirkur snúningur</translation>
 <translation id="7068360136237591149">Opna skrár</translation>
@@ -1004,6 +1013,7 @@ Ný uppsetning</translation>
 <translation id="718361511487535372">Opna í Google dagatali</translation>
 <translation id="7188494361780961876">Valmynd færð efst í vinstra horn skjásins.</translation>
 <translation id="7189412385142492784">Hvað er Venus langt í burtu?</translation>
+<translation id="7198435252016571249">Myndavél fest við neðra horn hægra megin. Skörun við vettvang kerfis.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Endurræsa þarf Chromebook til að setja upp uppfærslu. Þetta getur tekið allt að mínútu.</translation>
 <translation id="7256634071279256947">Aftari hljóðnemi</translation>
 <translation id="7258828758145722155">Breytt í gær</translation>
@@ -1064,8 +1074,10 @@ Ný uppsetning</translation>
 <translation id="7593891976182323525">Leit eða Shift</translation>
 <translation id="7600875258240007829">Sjá allar tilkynningar</translation>
 <translation id="7607002721634913082">Hlé</translation>
+<translation id="7611213136657090146">Myndavél tengd aftur.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Sýna stillingar nærdeilingar.</translation>
+<translation id="7634648064048557203">Myndavél fest við neðra horn hægra megin</translation>
 <translation id="7641938616688887143">Taka upp</translation>
 <translation id="7642647758716480637">Opna stillingar fyrir <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (eigandi)</translation>
@@ -1078,6 +1090,7 @@ Ný uppsetning</translation>
 <translation id="7662283695561029522">Ýttu til að stilla</translation>
 <translation id="7670953955701272011">Opna þessa dagsetningu í Google dagatali</translation>
 <translation id="7671610481353807627">Forritum er raðað eftir lit</translation>
+<translation id="7684531502177797067">Myndalestur stilltur á <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Bæta nýju farsímakerfi við</translation>
 <translation id="7720410380936703141">REYNDU AFTUR</translation>
@@ -1299,6 +1312,7 @@ Ný uppsetning</translation>
 <translation id="9077404278023321866">Sniðmát</translation>
 <translation id="9077515519330855811">Efnisstjórnun, spilar <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
+<translation id="9080073830732419341">Myndavél fest við efra horn vinstra megin</translation>
 <translation id="9080132581049224423">Strjúktu upp til að fara á heimaskjáinn</translation>
 <translation id="9080206825613744995">Hljóðnemi er í notkun.</translation>
 <translation id="9084606467167974638">Víxla staðsetningu valmyndar</translation>

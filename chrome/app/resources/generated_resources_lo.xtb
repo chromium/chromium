@@ -171,6 +171,7 @@
 <translation id="1155816283571436363">ກຳລັງເຊື່ອມຕໍ່ກັບໂທລະສັບຂອງທ່ານ</translation>
 <translation id="1158080958325422608">ເຮັດໃຫ້ເປັນຕົວພິມໃຫຍ່</translation>
 <translation id="1158238185437008462">ເບິ່ງຄວາມຊົງຈຳ</translation>
+<translation id="1160842321113409343">ເພື່ອປົກປ້ອງຄວາມເປັນສ່ວນຕົວຂອງທ່ານ, ພວກເຮົາຈະລຶບເວັບໄຊອອກຈາກລາຍຊື່ທີ່ເກົ່າກວ່າ 4 ອາທິດໂດຍອັດຕະໂນມັດ. ເວັບໄຊທີ່ທ່ານເຂົ້າອາດປາກົດຢູ່ລາຍຊື່ຄືນໃໝ່. ຫຼື ທ່ານສາມາດລຶບເວັບໄຊໃດໜຶ່ງອອກໄດ້ຫາກທ່ານບໍ່ຕ້ອງການໃຫ້ເວັບໄຊນັ້ນກຳນົດຄວາມສົນໃຈໃຫ້ທ່ານອີກ.</translation>
 <translation id="1161575384898972166">ກະ​ລຸ​ນາ​ລົງຊື່ເຂົ້າ​ໃຊ້ <ph name="TOKEN_NAME" /> ເພື່ອສົ່ງໃບຢັ້ງຢືນລູກຂ່າຍອອກໄປ.</translation>
 <translation id="116173250649946226">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຕັ້ງຮູບແບບສີສັນເລີ່ມຕົ້ນທີ່ບໍ່ສາມາດປ່ຽນໄດ້.</translation>
 <translation id="1162213688509394031">ເຊື່ອງແຖບຫົວຂໍ້</translation>
@@ -842,6 +843,7 @@
 <translation id="1784849162047402014">ພື້ນທີ່ດິສກ໌ຂອງອຸປະກອນເຫຼືອໜ້ອຍ</translation>
 <translation id="1787350673646245458">ຮູບພາບຜູ້ໃຊ້</translation>
 <translation id="1788329699711791226">ເຂົ້າເຖິງຂໍ້ມູນໂປຣແກຣມທ່ອງເວັບ Chrome ຂອງທ່ານຈາກ <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="1790664457414575790">ທ່ານສາມາດເບິ່ງ ແລະ ຈັດການລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໄດ້ໃນ <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1790976235243700817">ລຶບສິດເຂົ້າເຖິງ</translation>
 <translation id="1791662854739702043">ຕິດຕັ້ງແລ້ວ</translation>
 <translation id="1792619191750875668">ຈໍຂະຫຍາຍໃຫຍ່</translation>
@@ -3185,6 +3187,7 @@
 <translation id="4031179711345676612">ອະນຸຍາດໄມໂຄຣໂຟນແລ້ວ</translation>
 <translation id="4031308539321678562">ນີ້ຈະລຶບຂໍ້ມູນການນຳໃຊ້ອອກຈາກອຸປະກອນນີ້ຖາວອນ. ບັນຊີ Google ໃນໂປຣໄຟລ໌ນີ້ອາດຖືກໃຊ້ໂດຍແອັບອື່ນຢູ່ Chromebook ຂອງທ່ານ. ທ່ານສາມາດລຶບບັນຊີເຫຼົ່ານີ້ອອກໄດ້ໃນ <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4031527940632463547">ບລັອກເຊັນເຊີແລ້ວ</translation>
+<translation id="4033415645631238123">ບໍ່ສາມາດເຂົ້າສູ່ລະບົບດ້ວຍ Smart Lock ໄດ້ອີກຕໍ່ໄປແລ້ວ. ທ່ານຍັງຄົງສາມາດປົດລັອກໂດຍໃຊ້ Smart Lock ໄດ້ຢູ່.</translation>
 <translation id="4033471457476425443">ເພີ່ມໂຟນເດີໃໝ່</translation>
 <translation id="4033963223187371752">ເວັບໄຊທີ່ເຂົ້າລະຫັດອາດຝັງເນື້ອຫາ ເຊັ່ນ: ກອບຮູບ ຫຼື ເວັບທີ່ບໍ່ປອດໄພ</translation>
 <translation id="4034824040120875894">ເຄື່ອງພິມ</translation>
@@ -4387,6 +4390,7 @@
 <translation id="5268373933383932086">ໜ້າຂອງທ່ານ, ໃນແບບຂອງທ່ານ</translation>
 <translation id="5269977353971873915">ພິມບໍ່ສໍາເລັດ</translation>
 <translation id="5273806377963980154">ແກ້ໄຈ URL ເວັບໄຊ</translation>
+<translation id="5275338516105640560">ປຸ່ມກຸ່ມແຖບທີ່ບັນທຶກໄວ້</translation>
 <translation id="5275352920323889391">ໝາ</translation>
 <translation id="527605719918376753">ປິດສຽງແຖບ</translation>
 <translation id="527605982717517565">ອະ​ນຸ​ຍາດ​ JavaScript ຢູ່ເທິງ <ph name="HOST" /> ຢູ່ສະເໝີ</translation>
@@ -4511,6 +4515,9 @@
 <translation id="5397794290049113714">ທ່ານ</translation>
 <translation id="5398497406011404839">ບຸກມາກທີ່ເຊື່ອງໄວ້</translation>
 <translation id="5398572795982417028">ເກີນຂອບເຂດການອ້າງອີງໜ້າ, ຂີດຈຳກັດແມ່ນ <ph name="MAXIMUM_PAGE" /></translation>
+<translation id="5398724494943676484">ປ່ຽນລະຫັດຜ່ານທີ່ຖືກລະເມີດສຳເລັດແລ້ວ.
+
+ກວດສອບລະຫັດຜ່ານຂອງທ່ານຕອນໃດກໍໄດ້ໃນ <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="5401426944298678474">ເຊົາຕິດຕາມເວັບໄຊ</translation>
 <translation id="5402815541704507626">ດາວໂຫຼດການອັບເດດໂດຍໃຊ້ຂໍ້ມູນມືຖື</translation>
 <translation id="540296380408672091">ບລັອກຄຸກກີ້ຢູ່ເທິງ <ph name="HOST" /> ສະເໝີ</translation>
@@ -4997,6 +5004,7 @@
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
 <translation id="5895335062901455404">ການຕັ້ງຄ່າ ແລະ ການເຄື່ອນໄຫວທີ່ທ່ານບັນທຶກໄວ້ຈະພ້ອມໃຊ້ຢູ່ອຸປະກອນ ChromeOS Flex ໃດກໍຕາມເມື່ອທ່ານເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ Google ຂອງທ່ານ. ທ່ານສາມາດເລືອກໄດ້ວ່າຈະຊິ້ງຂໍ້ມູນຫຍັງໃນການຕັ້ງຄ່າ.</translation>
 <translation id="5896436821193322561">ບໍ່ອະນຸຍາດ</translation>
+<translation id="5900186025777217044">ປ່ຽນ Smart Lock ແລ້ວ</translation>
 <translation id="5900302528761731119">ຮູບໂປຣໄຟລ໌ Google</translation>
 <translation id="590036993063074298">ລາຍລະອຽດຄຸນນະພາບການສະທ້ອນ</translation>
 <translation id="5901069264981746702">ຂໍ້ມູນລາຍນິ້ວມືຂອງທ່ານຈະຖືກຈັດເກັບໄວ້ຢ່າງປອດໄພ ແລະ ຈະບໍ່ຖືກສົ່ງອອກຈາກ <ph name="DEVICE_TYPE" /> ຂອງທ່ານເດັດຂາດ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
@@ -5382,6 +5390,7 @@
 <translation id="6271780480930459892">ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສຳລັບເວີຊັນໃໝ່ຫຼ້າສຸດ.</translation>
 <translation id="6272643420381259437">ມີຄວາມຜິດພາດ (<ph name="ERROR" />) ໃນຂະນະທີ່ດາວໂຫຼດປລັກອິນ</translation>
 <translation id="6273677812470008672">ຄຸນນະພາບ</translation>
+<translation id="6274202259872570803">Screencast</translation>
 <translation id="6276210637549544171">ພຣັອກຊີ <ph name="PROXY_SERVER" /> ກຳນົດໃຫ້ມີຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານ.</translation>
 <translation id="6277105963844135994">ການໝົດເວລາເຄືອ​ຂ່າຍ</translation>
 <translation id="6277518330158259200">ຖ່າຍຮູບໜ້າຈໍ</translation>
@@ -5711,6 +5720,11 @@
 <translation id="6593881952206664229">ອາດບໍ່ສາມາດຫຼິ້ນມີເດຍທີ່ມີລິຂະສິດໄດ້</translation>
 <translation id="6594011207075825276">ກຳລັງຊອກຫາອຸປະກອນຊີຣຽວ...</translation>
 <translation id="6595187330192059106">ບລັອກບໍ່ໃຫ້ <ph name="HOST" /> ມີການຄວບຄຸມອຸປະກອນ MIDI ແບບເຕັມ</translation>
+<translation id="6595408197871512625">{COUNT,plural, =1{ປ່ຽນລະຫັດຜ່ານທີ່ຖືກລະເມີດສຳເລັດແລ້ວ.
+
+ທ່ານມີລະຫັດຜ່ານທີ່ຖືກລະເມີດອີກ # ລາຍການ. ຕົວຈັດການລະຫັດຜ່ານ Google ແນະນຳໃຫ້ກວດສອບລະຫັດຜ່ານນີ້ດຽວນີ້.}other{ປ່ຽນລະຫັດຜ່ານທີ່ຖືກລະເມີດສຳເລັດແລ້ວ.
+
+ທ່ານມີລະຫັດຜ່ານທີ່ຖືກລະເມີດອີກ # ລາຍການ. ຕົວຈັດການລະຫັດຜ່ານ Google ແນະນຳໃຫ້ກວດສອບລະຫັດຜ່ານເຫຼົ່ານີ້ດຽວນີ້.}}</translation>
 <translation id="6595792813574514527">ລາກເພື່ອຊອກຫາດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">ທາງເລືອກການໃສ່ລະຫັດ</translation>
 <translation id="6596816719288285829">ທີ່​ຢູ່ IP</translation>

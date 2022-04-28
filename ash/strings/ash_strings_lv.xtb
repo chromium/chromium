@@ -79,6 +79,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1312604459020188865">Signāla stiprums: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Vienmēr rādīt plauktu</translation>
 <translation id="1316811122439383437">Starpliktuve: nesen izveidoti ekrānuzņēmumi, lejupielādes un piespraustie faili</translation>
+<translation id="132346741904777634">Kamera pārnesta uz kreiso augšējo stūri. Konflikts ar sistēmas virsmu.</translation>
 <translation id="1333308631814936910">Izveidots savienojums ar ierīci “<ph name="DISPLAY_NAME" />”.</translation>
 <translation id="1341651618736211726">Pārpilde</translation>
 <translation id="1346748346194534595">Pa labi</translation>
@@ -162,6 +163,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1885785240814121742">Atbloķēšana ar pirksta nospiedumu</translation>
 <translation id="1888656773939766144">Displejā “<ph name="DISPLAY_NAME" />” netiek atbalstīta izšķirtspēja <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Izšķirtspēja tika mainīta uz <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Lai saglabātu izmaiņas, noklikšķiniet uz “Apstiprināt”. Iepriekšējie iestatījumi tiks atjaunoti pēc šāda laika: <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1915307458270490472">Pārtraukt</translation>
+<translation id="1918022425394817322">Kamera pārnesta uz labo augšējo stūri</translation>
 <translation id="1919743966458266018">Tika mainīti īsinājumtaustiņi, ar kuriem var atvērt uzdevumu pārvaldnieku. Lūdzu, turpmāk izmantojiet <ph name="NEW_SHORTCUT" />, nevis <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automātiskie klikšķi</translation>
 <translation id="1928739107511554905">Lai iegūtu atjauninājumu, izmantojiet skārienekrānu, lai ar pievienoto tastatūru restartētu Chromebook datoru.</translation>
@@ -551,6 +553,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="430191667033048642">Lietotne <ph name="MOVED_APP_NAME" /> pārvietota uz mapi <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Nav pieejama</translation>
 <translation id="4303223480529385476">Izvērst statusa apgabalu</translation>
+<translation id="4312840429157639164">Kamera pārnesta uz labo augšējo stūri. Konflikts ar sistēmas virsmu.</translation>
 <translation id="4316910396681052118">VISAS LIETOTNES</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Jūs nospiedāt augsta kontrasta īsinājumtaustiņu. Vai vēlaties to ieslēgt?</translation>
@@ -857,6 +860,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="6254629735336163724">Bloķēts horizontāli</translation>
 <translation id="6259254695169772643">Atlasīšanai izmantojiet skārienekrāna pildspalvu.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: notiek aktivizēšana...</translation>
+<translation id="6274202259872570803">Ekrānraide</translation>
 <translation id="6283712521836204486">Režīms “Netraucēt” ir izslēgts.</translation>
 <translation id="6284232397434400372">Izšķirtspēja nomainīta</translation>
 <translation id="6288235558961782912">Kontu <ph name="USER_EMAIL_ADDRESS" /> var vēlāk atkārtoti pievienot ar vecāku atļauju.</translation>
@@ -888,6 +892,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="649452524636452238">Viedkartes PIN</translation>
 <translation id="6495400115277918834">Palaists režīms “attēls attēlā”; nospiediet taustiņu kombināciju Alt+Shift+V, lai fokusētu</translation>
 <translation id="6501401484702599040">Notiek ekrāna apraide šādā vietā: <ph name="RECEIVER_NAME" /></translation>
+<translation id="6515727200518652613">Zudis savienojums ar kameru, tiek mēģināts atjaunot savienojumu.</translation>
 <translation id="6520517963145875092">Atlasiet logu, kura saturs jātver</translation>
 <translation id="652139407789908527">Šīs atjaunināšanas laikā ekrāns būs tukšs ilgāk nekā parasti (līdz minūtei). Kamēr notiek atjaunināšana, lūdzu, nespiediet barošanas pogu.</translation>
 <translation id="6528179044667508675">Netraucēt</translation>
@@ -906,6 +911,7 @@ Jauna instalācija</translation>
 <translation id="6578407462441924264">Bez nosaukuma</translation>
 <translation id="6585808820553845416">Atlikušais laiks līdz šīs sesijas beigām: <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597278316891651699">Kamera pārnesta uz kreiso apakšējo stūri. Konflikts ar sistēmas virsmu.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />, pārvalda jūsu administrators</translation>
 <translation id="6612802754306526077">Atlasīts ekrāna ierakstīšanas režīms</translation>
 <translation id="6614169507485700968">Konfidencialitātes ekrāns ir ieslēgts</translation>
@@ -943,6 +949,7 @@ Jauna instalācija</translation>
 <translation id="6801878137098616817">Nesen rediģēts</translation>
 <translation id="6803622936009808957">Nevarēja spoguļot displejus, jo netika atrasta atbalstīta izšķirtspēja. Tā vietā tika aktivizēts paplašinātās darbvirsmas režīms.</translation>
 <translation id="6818242057446442178">Pāriet atpakaļ pa vārdam</translation>
+<translation id="6819327813400217281">Kamera pārnesta uz kreiso apakšējo stūri</translation>
 <translation id="6820676911989879663">Laiks pārtraukumam</translation>
 <translation id="6827049576281411231">Aizvērt pasākumu paneli</translation>
 <translation id="6836499262298959512">Bīstams fails</translation>
@@ -971,6 +978,7 @@ Jauna instalācija</translation>
 <translation id="6979158407327259162">Google disks</translation>
 <translation id="6981982820502123353">Pieejamība</translation>
 <translation id="698231206551913481">Visi faili un lokālie dati, kas ir saistīti ar šo lietotāju, tiks neatgriezeniski dzēsti, tiklīdz šis lietotājs tiks noņemts.</translation>
+<translation id="7005239792648594238">Lai sāktu, atveriet kādu lietotni</translation>
 <translation id="7007983414944123363">Nevarēja verificēt jūsu PIN vai paroli. Mēģiniet vēlreiz.</translation>
 <translation id="7014684956566476813">Izveidots savienojums ar ierīci “<ph name="DEVICE_NAME" />”</translation>
 <translation id="7015766095477679451">Atgriezieties plkst. <ph name="COME_BACK_TIME" />.</translation>
@@ -984,6 +992,7 @@ Jauna instalācija</translation>
 <translation id="7045033600005038336">Vai aizstāt veidni?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> pārtrauca savienojumu</translation>
 <translation id="7055910611768509537">Skārienekrāna pildspalva nav izmantota vairāk nekā nedēļu.</translation>
+<translation id="7061457967428964661">Kameras priekšskatījums. Lai pārvietotu priekšskatījumu uz citu stūri, nospiediet taustiņu Ctrl un bulttaustiņus.</translation>
 <translation id="7066646422045619941">Jūsu administrators atspējoja šo tīklu.</translation>
 <translation id="7067196344162293536">Pagriezt automātiski</translation>
 <translation id="7068360136237591149">Atvērt failus</translation>
@@ -1004,6 +1013,7 @@ Jauna instalācija</translation>
 <translation id="718361511487535372">Atvērt Google kalendārā</translation>
 <translation id="7188494361780961876">Izvēlne pārvietota uz ekrāna augšējo kreiso malu.</translation>
 <translation id="7189412385142492784">Cik tālu atrodas Venera?</translation>
+<translation id="7198435252016571249">Kamera pārnesta uz labo apakšējo stūri. Konflikts ar sistēmas virsmu.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Šis Chromebook dators ir jārestartē, lai lietotu atjauninājumu. Tas var ilgt aptuveni 1 minūti.</translation>
 <translation id="7256634071279256947">Aizmugurējais mikrofons</translation>
 <translation id="7258828758145722155">Rediģēts vakar</translation>
@@ -1064,8 +1074,10 @@ Jauna instalācija</translation>
 <translation id="7593891976182323525">Meklēt vai Shift</translation>
 <translation id="7600875258240007829">Skatīt visus paziņojumus</translation>
 <translation id="7607002721634913082">Apturēta</translation>
+<translation id="7611213136657090146">Kamera atkal pievienota.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Rādīt funkcijas “Kopīgošana tuvumā” iestatījumus.</translation>
+<translation id="7634648064048557203">Kamera pārnesta uz labo apakšējo stūri</translation>
 <translation id="7641938616688887143">Ierakstīt</translation>
 <translation id="7642647758716480637">Atvērt tīkla <ph name="NETWORK_NAME" /> iestatījumus. Statuss: <ph name="CONNECTION_STATUS" />.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (īpašnieks)</translation>
@@ -1078,6 +1090,7 @@ Jauna instalācija</translation>
 <translation id="7662283695561029522">Pieskarieties, lai konfigurētu.</translation>
 <translation id="7670953955701272011">Atvērt šo datumu Google kalendārā</translation>
 <translation id="7671610481353807627">Lietotnes ir kārtotas pēc krāsas</translation>
+<translation id="7684531502177797067">Kameras ievadei iestatīta kamera <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Pievienot jaunu mobilo tīklu</translation>
 <translation id="7720410380936703141">MĒĢINĀT VĒLREIZ</translation>
@@ -1299,6 +1312,7 @@ Jauna instalācija</translation>
 <translation id="9077404278023321866">Veidnes</translation>
 <translation id="9077515519330855811">Multivides vadīklas, tagad atskaņo: <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi adrese: <ph name="ADDRESS" /></translation>
+<translation id="9080073830732419341">Kamera pārnesta uz kreiso augšējo stūri</translation>
 <translation id="9080132581049224423">Velciet augšup, lai pārietu uz sākuma ekrānu.</translation>
 <translation id="9080206825613744995">Tiek izmantots mikrofons.</translation>
 <translation id="9084606467167974638">Pārslēgt izvēlnes pozīciju</translation>

@@ -79,6 +79,7 @@
 <translation id="1312604459020188865">சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">ஷெல்ஃபை எப்போதும் காட்டு</translation>
 <translation id="1316811122439383437">Tote: சமீபத்திய ஸ்கிரீன்ஷாட்டுகள், பதிவிறக்கங்கள் &amp; பின் (pin) செய்த ஃபைல்கள் </translation>
+<translation id="132346741904777634">கேமரா மாதிரிக்காட்சி மேல் இடது மூலையில் பொருத்தப்பட்டது. ஏனெனில் சிஸ்டத்தின் காட்சியை இது மறைக்கும்.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> இணைக்கப்பட்டது</translation>
 <translation id="1341651618736211726">கூடுதல் விருப்பங்கள்</translation>
 <translation id="1346748346194534595">வலது</translation>
@@ -162,6 +163,7 @@
 <translation id="1885785240814121742">கைரேகை மூலம் அன்லாக் செய்யலாம்</translation>
 <translation id="1888656773939766144"><ph name="SPECIFIED_RESOLUTION" /> தெளிவுத்திறனை (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) <ph name="DISPLAY_NAME" /> ஆதரிக்கவில்லை. தெளிவுத்திறன் <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) என்பதற்கு மாற்றப்பட்டது. மாற்றங்களை வைத்திருக்க ‘உறுதிசெய்’ என்பதைக் கிளிக் செய்யவும். இன்னும் <ph name="TIMEOUT_SECONDS" /> இல் முந்தைய அமைப்புகள் மீட்டெடுக்கப்படும்.</translation>
 <translation id="1915307458270490472">மூடுக</translation>
+<translation id="1918022425394817322">கேமரா மாதிரிக்காட்சி மேல் வலது மூலையில் பொருத்தப்பட்டது</translation>
 <translation id="1919743966458266018">செயல் நிர்வாகியைத் திறப்பதற்கான ஷார்ட்கட் மாற்றப்பட்டது. <ph name="OLD_SHORTCUT" /> க்குப் பதிலாக <ph name="NEW_SHORTCUT" /> ஐப் பயன்படுத்தவும்.</translation>
 <translation id="1923539912171292317">தன்னியக்க கிளிக்குகள்</translation>
 <translation id="1928739107511554905">புதுப்பிப்பைப் பெற, டச்ஸ்கிரீனைப் பயன்படுத்தி, கீபோர்டு இணைக்கப்பட்ட உங்கள் Chromebookஐ மீண்டும் தொடங்கவும்.</translation>
@@ -551,6 +553,7 @@
 <translation id="430191667033048642"><ph name="FOLDER_NAME" /> ஃபோல்டருக்கு <ph name="MOVED_APP_NAME" /> ஆப்ஸ் நகர்த்தப்பட்டது.</translation>
 <translation id="4302592941791324970">இல்லை</translation>
 <translation id="4303223480529385476">நிலைப் பகுதியை விரிவாக்கும்</translation>
+<translation id="4312840429157639164">கேமரா மாதிரிக்காட்சி மேல் வலது மூலையில் பொருத்தப்பட்டது. ஏனெனில் சிஸ்டத்தின் காட்சியை இது மறைக்கும்.</translation>
 <translation id="4316910396681052118">எல்லாப் பயன்பாடுகளும்</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">உயர் ஒளி மாறுபாட்டின் கீபோர்டு ஷார்ட்கட்டை அழுத்தியுள்ளீர்கள். அதை இயக்க விரும்புகிறீர்களா?</translation>
@@ -857,6 +860,7 @@
 <translation id="6254629735336163724">கிடைமட்ட நிலையில் பூட்டப்பட்டது</translation>
 <translation id="6259254695169772643">தேர்ந்தெடுக்க, ஸ்டைலஸைப் பயன்படுத்தலாம்</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: செயல்படுத்துகிறது...</translation>
+<translation id="6274202259872570803">ஸ்க்ரீன்காஸ்ட்</translation>
 <translation id="6283712521836204486">'தொந்தரவு செய்ய வேண்டாம்' ஆஃப் செய்யப்பட்டுள்ளது.</translation>
 <translation id="6284232397434400372">தெளிவு மாற்றப்பட்டது</translation>
 <translation id="6288235558961782912">பெற்றோரின் அனுமதியுடன் <ph name="USER_EMAIL_ADDRESS" /> பயனரைப் பின்னர் மறுபடியும் சேர்க்கலாம்.</translation>
@@ -888,6 +892,7 @@
 <translation id="649452524636452238">ஸ்மார்ட் கார்டு பின்</translation>
 <translation id="6495400115277918834">பிக்ச்சர்-இன்-பிக்ச்சர் காட்டப்படுகிறது, ஃபோகஸ் செய்ய Alt+Shift+V அழுத்தவும்</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" />க்குத் திரையை அனுப்புகிறது</translation>
+<translation id="6515727200518652613">கேமரா இணைப்பு துண்டிக்கப்பட்டது. மீண்டும் இணைக்க முயலவும்.</translation>
 <translation id="6520517963145875092">படமெடுக்க, சாளரத்தைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="652139407789908527">இந்தப் புதுப்பிப்பின்போது வழக்கத்தை விடக் கூடுதல் நேரம் (ஒரு நிமிடம் வரை) உங்கள் திரை காலியாக இருக்கும். புதுப்பிப்பு செயலில் இருக்கும்போது பவர் பட்டனை அழுத்த வேண்டாம்.</translation>
 <translation id="6528179044667508675">தொந்தரவு செய்யாதே</translation>
@@ -906,6 +911,7 @@
 <translation id="6578407462441924264">பெயரிடப்படாதது</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" /> இல் அமர்வு முடிந்துவிடும்.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6597278316891651699">கேமரா மாதிரிக்காட்சி கீழ் இடது மூலையில் பொருத்தப்பட்டது. ஏனெனில் சிஸ்டத்தின் காட்சியை இது மறைக்கும்.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />, உங்கள் நிர்வாகி நிர்வகிக்கிறார்</translation>
 <translation id="6612802754306526077">ஸ்கிரீன் ரெக்கார்டிங் பயன்முறை தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="6614169507485700968">தனிப்பட்ட திரை இயக்கப்பட்டுள்ளது</translation>
@@ -943,6 +949,7 @@
 <translation id="6801878137098616817">சமீபத்தில் திருத்தப்பட்டது</translation>
 <translation id="6803622936009808957">ஆதரிக்கும் தெளிவுகள் கிடைக்காததால் காட்சிகளைப் பிரதிபலிக்க முடியவில்லை. பதிலாக நீட்டிக்கப்பட்ட டெஸ்க்டாப்பிற்குச் சென்றது.</translation>
 <translation id="6818242057446442178">சொல் வாரியாகப் பின்செல்</translation>
+<translation id="6819327813400217281">கேமரா மாதிரிக்காட்சி கீழ் இடது மூலையில் பொருத்தப்பட்டது</translation>
 <translation id="6820676911989879663">சிறிது நேரம் இடைவேளை எடுத்துக்கொள்ளவும்!</translation>
 <translation id="6827049576281411231">நிகழ்வுப் பேனலை மூடும்</translation>
 <translation id="6836499262298959512">ஆபத்தான ஃபைல்</translation>
@@ -971,6 +978,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">அணுகல் தன்மை</translation>
 <translation id="698231206551913481">இந்தப் பயனர் அகற்றப்பட்டதும், பயனருடன் தொடர்புடைய எல்லா கோப்புகளும் அகத் தரவும் நிரந்தரமாக நீக்கப்படும்.</translation>
+<translation id="7005239792648594238">தொடங்க ஆப்ஸைத் திறக்கவும்</translation>
 <translation id="7007983414944123363">உங்கள் பின்னையோ கடவுச்சொல்லையோ சரிபார்க்க முடியவில்லை. மீண்டும் முயலவும்.</translation>
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> என்ற சாதனத்துடன் இணைக்கப்பட்டுள்ளது</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" />க்கு மீண்டும் சாதனத்தைப் பயன்படுத்தலாம்.</translation>
@@ -984,6 +992,7 @@
 <translation id="7045033600005038336">டெம்ப்ளேட்டை மாற்றியமைக்கவா?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> துண்டிக்கப்பட்டது</translation>
 <translation id="7055910611768509537">ஒரு வாரத்திற்கும் மேலாக ஸ்டைலஸ் பயன்படுத்தப்படவில்லை</translation>
+<translation id="7061457967428964661">கேமரா மாதிரிக்காட்சி. இதை வேறு மூலைக்கு நகர்த்த, Ctrl + அம்புக்குறி பட்டன்களை அழுத்தவும்</translation>
 <translation id="7066646422045619941">இந்த நெட்வொர்க் உங்கள் நிர்வாகியால் முடக்கப்பட்டுள்ளது.</translation>
 <translation id="7067196344162293536">தானியங்கு சுழற்றல்</translation>
 <translation id="7068360136237591149">ஃபைல்களைத் திற</translation>
@@ -1004,6 +1013,7 @@
 <translation id="718361511487535372">Google Calendarரில் திற</translation>
 <translation id="7188494361780961876">திரையின் மேல் இடது மூலைக்கு மெனு நகர்த்தப்பட்டது.</translation>
 <translation id="7189412385142492784">வெள்ளி கிரகம் எவ்வளவு தொலைவில் உள்ளது?</translation>
+<translation id="7198435252016571249">கேமரா மாதிரிக்காட்சி கீழ் வலது மூலையில் பொருத்தப்பட்டது. ஏனெனில் சிஸ்டத்தின் காட்சியை இது மறைக்கும்.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. புதுப்பிப்பைப் பயன்படுத்த இந்த Chromebookகை மீண்டும் தொடங்க வேண்டும். இதற்கு 1 நிமிடம் வரை ஆகலாம்.</translation>
 <translation id="7256634071279256947">பின்பக்க மைக்ரோஃபோன்</translation>
 <translation id="7258828758145722155">நேற்று திருத்தப்பட்டது</translation>
@@ -1064,8 +1074,10 @@
 <translation id="7593891976182323525">தேடல் அல்லது Shift</translation>
 <translation id="7600875258240007829">எல்லா அறிவிப்புகளையும் காட்டு</translation>
 <translation id="7607002721634913082">இடைநிறுத்தப்பட்டது</translation>
+<translation id="7611213136657090146">கேமரா மீண்டும் இணைக்கப்பட்டது.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">அருகிலுள்ளவற்றுடன் பகிர்தல் அமைப்புகளைக் காட்டும்.</translation>
+<translation id="7634648064048557203">கேமரா மாதிரிக்காட்சி கீழ் வலது மூலையில் பொருத்தப்பட்டது</translation>
 <translation id="7641938616688887143">ரெக்கார்டு செய்</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />க்கான அமைப்புகளைத் திறக்கும், <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (உரிமையாளர்)</translation>
@@ -1078,6 +1090,7 @@
 <translation id="7662283695561029522">உள்ளமைக்க, தட்டவும்</translation>
 <translation id="7670953955701272011">Google Calendarரில் இந்தத் தேதியைத் திறக்கும்</translation>
 <translation id="7671610481353807627">வண்ணத்தின்படி ஆப்ஸ் வரிசைப்படுத்தப்பட்டுள்ளன</translation>
+<translation id="7684531502177797067">கேமரா உள்ளீடு <ph name="CAMERA_NAME" /> என அமைக்கப்பட்டுள்ளது.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">புதிய மொபைல் நெட்வொர்க்கைச் சேர்</translation>
 <translation id="7720410380936703141">மீண்டும் முயல்க</translation>
@@ -1144,6 +1157,7 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> என்ற பெயரில் ஏற்கெனவே ஒரு டெம்ப்ளேட் உள்ளது</translation>
 <translation id="8052898407431791827">கிளிப்போர்டுக்கு நகலெடுக்கப்பட்டது</translation>
 <translation id="8054466585765276473">பேட்டரி நேரத்தைக் கணக்கிடுகிறது.</translation>
+<translation id="8055510977240456975">தொடர் பரிந்துரைகளை மறை</translation>
 <translation id="8061464966246066292">உயர் மாறுபாடு</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />க்குத் திரையை அனுப்புவதை நிறுத்து</translation>
 <translation id="8113423164597455979">எல்லா ஆப்ஸுக்கும் இயக்கு</translation>
@@ -1299,6 +1313,7 @@
 <translation id="9077404278023321866">டெம்ப்ளேட்டுகள்</translation>
 <translation id="9077515519330855811">மீடியா கட்டுப்பாடுகள், இப்போது பிளேயாவது: <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">வைஃபை: <ph name="ADDRESS" /></translation>
+<translation id="9080073830732419341">கேமரா மாதிரிக்காட்சி மேல் இடது மூலையில் பொருத்தப்பட்டது</translation>
 <translation id="9080132581049224423">முகப்புக்குச் செல்ல மேலே ஸ்வைப் செய்யவும்</translation>
 <translation id="9080206825613744995">மைக்ரோஃபோன் பயன்பாட்டில் உள்ளது.</translation>
 <translation id="9084606467167974638">மெனுவை நிலைமாற்றும்</translation>

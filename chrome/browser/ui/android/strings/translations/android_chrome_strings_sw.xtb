@@ -804,6 +804,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5517095782334947753">Una alamisho, historia, manenosiri na mipangilio mingine kutoka <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524761631371622910">Vipindi vya kujaribu vinapowashwa na iwapo Chrome imekuweka kwa unasibu katika kipindi cha kujaribu kinachoendelea, historia yako ya kuvinjari huathiri matangazo unayoyaona na mambo yanayokuvutia kama inavyokadiriwa hapa chini. Ili kulinda faragha yako, Chrome hufuta mambo yanayokuvutia kadiri unavyoendelea kutumia kila mwezi.</translation>
 <translation id="5524843473235508879">Imezuia shughuli ya kuelekeza kwingine.</translation>
+<translation id="5528459307536571064">Kikundi kimoja cha vichupo</translation>
 <translation id="5548606607480005320">Angalizo la usalama</translation>
 <translation id="5555525474779371165">Chagua ulinzi wa Kuvinjari Salama Unaopendelea</translation>
 <translation id="5556459405103347317">Pakia upya</translation>
@@ -1516,5 +1517,6 @@ Tokeni za uaminifu zinaboresha faragha kwenye wavuti na haziwezi kutumiwa kukuta
 <translation id="981121421437150478">Nje ya mtandao</translation>
 <translation id="983192555821071799">Funga vichupo vyote</translation>
 <translation id="987264212798334818">Jumla</translation>
+<translation id="992745192656291733">Vichupo <ph name="TAB_COUNT" /></translation>
 <translation id="996149300115483134">Menyu ya kadi ya mipasho imefungwa</translation>
 </translationbundle>

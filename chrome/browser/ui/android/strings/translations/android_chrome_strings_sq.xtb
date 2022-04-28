@@ -804,6 +804,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5517095782334947753">Ke faqeshënues, historik, fjalëkalime dhe cilësime të tjera nga <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524761631371622910">Kur provat janë aktive dhe nëse Chrome të ka vendosur rastësisht në një provë aktive, historiku yt i shfletimit ndikon te reklamat që shikon dhe tek interesat sipas përllogaritjes më poshtë. Për të mbrojtur privatësinë tënde, Chrome fshin interesat e tua në vazhdimësi çdo muaj.</translation>
 <translation id="5524843473235508879">Ridrejtimi u bllokua.</translation>
+<translation id="5528459307536571064">1 grup skedash</translation>
 <translation id="5548606607480005320">Kontrolli i sigurisë</translation>
 <translation id="5555525474779371165">Zgjidh mbrojtjen me "Shfletimin e sigurt"</translation>
 <translation id="5556459405103347317">Ringarko</translation>
@@ -1516,5 +1517,6 @@ Kodet e besimit përmirësojnë privatësinë në ueb dhe nuk mund të përdoren
 <translation id="981121421437150478">Jashtë linje</translation>
 <translation id="983192555821071799">Mbyll të gjitha skedat</translation>
 <translation id="987264212798334818">Të përgjithshme</translation>
+<translation id="992745192656291733"><ph name="TAB_COUNT" /> skeda</translation>
 <translation id="996149300115483134">Menyja e kartave të furnizimit është mbyllur</translation>
 </translationbundle>

@@ -547,6 +547,7 @@
 <translation id="1536754031901697553">ડિસ્કનેક્ટ થઈ રહ્યું છે…</translation>
 <translation id="1537254971476575106">પૂર્ણસ્ક્રીન મૅગ્નિફાયર</translation>
 <translation id="15373452373711364">મોટું માઉસ કર્સર</translation>
+<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> દ્વારા <ph name="ORIGIN" />ને વાંચવાની અને તેમાં ફેરફાર કરવાની વિનંતી કરવામાં આવી છે</translation>
 <translation id="1540605929960647700">ડેમો મોડ ચાલુ કરો</translation>
 <translation id="1541346352678737112">કોઈ નેટવર્ક મળ્યું નથી</translation>
 <translation id="1542137295869176367">તમારો સાઇન ઇન ડેટા અપડેટ કરી શકાયો નથી</translation>
@@ -1867,6 +1868,7 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> પર સાઇન ઇન કરો</translation>
 <translation id="2749836841884031656">સિમ</translation>
 <translation id="2749881179542288782">જોડણી સાથે વ્યાકરણ તપાસો</translation>
+<translation id="275085171842676231"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />ને વાંચવાની અને તેમાં ફેરફાર કરવાની વિનંતી કરી રહ્યાં છીએ:</translation>
 <translation id="2753677631968972007">સાઇટની પરવાનગીઓને મેન્યુઅલી નિયંત્રિત કરો.</translation>
 <translation id="2755349111255270002">આ <ph name="DEVICE_TYPE" />ને રીસેટ કરો</translation>
 <translation id="2755367719610958252">ઍક્સેસિબિલિટી સુવિધાઓ મેનેજ કરો</translation>
@@ -3553,6 +3555,7 @@
 <translation id="4429239357082509581">Steamને ચાલવા માટેની પરવાનગી મળી નથી</translation>
 <translation id="4430019312045809116">વૉલ્યૂમ</translation>
 <translation id="4430369329743628066">બુકમાર્ક ઉમેરાયો</translation>
+<translation id="4430422687972614133">વર્ચ્યુઅલ કાર્ડની સુવિધા ચાલુ કરો</translation>
 <translation id="4432621511648257259">પાસવર્ડ ખોટો છે</translation>
 <translation id="443454694385851356">લેગસી (અસુરક્ષિત)</translation>
 <translation id="443475966875174318">અસંગત ઍપ્લિકેશનોને અપડેટ કરો અથવા કાઢી નાખો</translation>
@@ -7084,6 +7087,7 @@ USB ડિવાઇસ</translation>
 <translation id="7947964080535614577">સાઇટ સામાન્ય રીતે જાહેરાતો બતાવે છે, જેથી તેઓ કોઈ કિંમત વિના કન્ટેન્ટ અથવા સેવાઓ આપી શકે. પણ કેટલીક સાઇટ ઘૃણાસ્પદ અથવા ભ્રામક જાહેરાતો બતાવવા માટે જાણીતી હોય છે.</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" />ના તમામ પેજ</translation>
 <translation id="7951265006188088697">Google Pay ચુકવણી પદ્ધતિઓ ઉમેરવા અથવા મેનેજ કરવા માટે, તમારા <ph name="BEGIN_LINK" />Google એકાઉન્ટ<ph name="END_LINK" />ની મુલાકાત લો</translation>
+<translation id="795130320946928025">વર્ચ્યુઅલ કાર્ડની સુવિધા બંધ કરો</translation>
 <translation id="7952708427581814389">સાઇટ તમારા ક્લિપબોર્ડ પરની ટેક્સ્ટ અને છબીઓ જોવાનું પૂછી શકે છે</translation>
 <translation id="795282463722894016">પુનઃસ્થાપન પૂર્ણ</translation>
 <translation id="7952904276017482715">અપેક્ષિત ID "<ph name="EXPECTED_ID" />" છે, પણ ID "<ph name="NEW_ID" />" હતું.</translation>

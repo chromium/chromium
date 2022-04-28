@@ -581,6 +581,7 @@
 <translation id="156793199942386351">‘<ph name="CURRENTKEY" />’ ကို ‘<ph name="ACTION" />’ လုပ်ဆောင်ချက်အတွက် သတ်မှတ်ပြီးဖြစ်သည်။ <ph name="RESPONSE" /> အတွက် ကီးတစ်ခုခုကို နှိပ်ပါ။</translation>
 <translation id="1567993339577891801">JavaScript ခလုတ်ခုံ</translation>
 <translation id="1568323446248056064">မျက်နှာပြင်ပြသမှုကိရိယာ ဆက်တင်များကို ဖွင့်ပါ</translation>
+<translation id="1569044524074707727">သင့်ဖုန်းကို ဖွင့်ရန်</translation>
 <translation id="1570604804919108255">အကြောင်းကြားချက်များကို ပြန်ဖွင့်ရန်</translation>
 <translation id="1571304935088121812">အသုံးပြုသူအမည်ကို ကူးယူပါ</translation>
 <translation id="1571738973904005196">တဘ်ကို ကြည့်ရန်- <ph name="TAB_ORIGIN" /></translation>
@@ -2022,6 +2023,7 @@
 <translation id="288042212351694283">သင့် Universal 2nd Factor စက်ပစ္စည်းများထံ ဝင်ရ​ောက်နိုင်၏</translation>
 <translation id="2881076733170862447">နောက်ဆက်တွဲကို သင်နှိပ်သည့်အခါ</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> သည် အချိန်တိုအတွင်း ပြန်လည်အစပြုကာ ပြန်လည်သတ်မှတ်မည်ဖြစ်၏</translation>
+<translation id="2883470649061584386">ဖိဒ်</translation>
 <translation id="2885378588091291677">အလုပ် မန်နေဂျာ</translation>
 <translation id="2885729872133513017">ဆာဗာတုံ့ပြန်ချက်ကို ကုဒ်ဖြေရာတွင် အမှားအယွင်းရှိနေသည်။</translation>
 <translation id="2886119409731773154">မိနစ် ၃၀ အထိ ကြာနိုင်သည်</translation>
@@ -5333,6 +5335,7 @@
 <translation id="6227002569366039565">ဤပူဖောင်းကွက်ကို အထူးပြသရန် |<ph name="ACCELERATOR" />| ကို နှိပ်ပါ။ ၎င်းညွှန်ပြနေသောအရာကို အထူးပြသရန် ထပ်နှိပ်ပါ။</translation>
 <translation id="6227280783235722609">နောက်ဆက်တွဲ</translation>
 <translation id="6229849828796482487">Wi-Fi ကွန်ရက် ချိတ်ဆက်မှုဖြုတ်ရန်</translation>
+<translation id="6230165830166519105">အခြားနည်းဖြင့် စမ်းကြည့်ရန်</translation>
 <translation id="6231782223312638214">အကြံပေးထား</translation>
 <translation id="6231881193380278751">စာမျက်နှာအား အလိုအလျောက် ပြန်လည်ဆန်းသစ်စေရန် URLတွင် မှတ်သားမှုကန့်သတ်ချက်ဘောင် များထည့်သွင်းထားပါ။:
  chrome://device-log/?refresh=&lt;sec&gt;</translation>

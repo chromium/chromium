@@ -171,6 +171,7 @@
 <translation id="1155816283571436363">Opretter forbindelse til din telefon</translation>
 <translation id="1158080958325422608">Anvend store bogstaver</translation>
 <translation id="1158238185437008462">Se minder</translation>
+<translation id="1160842321113409343">Vi sletter automatisk websites, der er ældre end 4 uger, fra listen for at beskytte dine personlige oplysninger. Et website, du besøger igen, kan blive vist på listen igen. Du kan også fjerne et website, hvis du ikke vil have, at websitet nogensinde skal definere interesser for dig igen.</translation>
 <translation id="1161575384898972166">Log ind på <ph name="TOKEN_NAME" /> for at eksportere klientcertifikatet.</translation>
 <translation id="116173250649946226">Din administrator har indstillet et standardtema, der ikke kan ændres.</translation>
 <translation id="1162213688509394031">Skjul titellinjen</translation>
@@ -844,6 +845,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1784849162047402014">Der er næsten ikke mere plads på enheden</translation>
 <translation id="1787350673646245458">Brugerbillede</translation>
 <translation id="1788329699711791226">Få adgang til ting fra din Chrome-browser via <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="1790664457414575790">Du kan se og administrere dine gemte adgangskoder i <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1790976235243700817">Fjern adgang</translation>
 <translation id="1791662854739702043">Installeret</translation>
 <translation id="1792619191750875668">Udvidet display</translation>
@@ -3185,6 +3187,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4031179711345676612">Der er givet adgang til mikrofonen</translation>
 <translation id="4031308539321678562">Denne handling sletter browserdata permanent fra denne enhed. Google-konti, der er tilknyttet denne profil, anvendes muligvis af andre apps på din Chromebook. Du kan fjerne disse konti i <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4031527940632463547">Der er blokeret for sensorer</translation>
+<translation id="4033415645631238123">Du kan ikke længere logge ind ved hjælp af Smart Lock. Du kan stadig låse op med Smart Lock.</translation>
 <translation id="4033471457476425443">Tilføj ny mappe</translation>
 <translation id="4033963223187371752">Sikre websites indlejrer muligvis indhold som f.eks. billeder og webrammer, der ikke er sikre</translation>
 <translation id="4034824040120875894">Printer</translation>
@@ -4387,6 +4390,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5268373933383932086">Din side på din måde</translation>
 <translation id="5269977353971873915">Udskrift mislykkedes</translation>
 <translation id="5273806377963980154">Rediger websitets webadresse</translation>
+<translation id="5275338516105640560">Knappen Fanegruppe blev gemt</translation>
 <translation id="5275352920323889391">Hund</translation>
 <translation id="527605719918376753">Slå fanens lyd fra</translation>
 <translation id="527605982717517565">Tillad altid JavaScript på <ph name="HOST" /></translation>
@@ -4511,6 +4515,9 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5397794290049113714">Dig</translation>
 <translation id="5398497406011404839">Skjulte bogmærker</translation>
 <translation id="5398572795982417028">Sidereferencen er ugyldig. Grænsen er <ph name="MAXIMUM_PAGE" /></translation>
+<translation id="5398724494943676484">Den kompromitterede adgangskode blev ændret.
+
+Du kan til enhver tid tjekke dine adgangskoder i  <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="5401426944298678474">Følg ikke website</translation>
 <translation id="5402815541704507626">Download opdateringen ved brug af mobildata</translation>
 <translation id="540296380408672091">Bloker altid cookies på <ph name="HOST" /></translation>
@@ -4998,6 +5005,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5895138241574237353">Genstart</translation>
 <translation id="5895335062901455404">Dine gemte præferencer og din aktivitet anvendes på alle de ChromeOS Flex-enheder, hvor du logger ind med din Google-konto. Du kan vælge, hvad der skal synkroniseres, i indstillingerne.</translation>
 <translation id="5896436821193322561">Tillad ikke</translation>
+<translation id="5900186025777217044">Smart Lock er blevet ændret</translation>
 <translation id="5900302528761731119">Google-profilbillede</translation>
 <translation id="590036993063074298">Oplysninger om spejlingskvaliteten</translation>
 <translation id="5901069264981746702">Dine fingeraftryksdata gemmes sikkert og forlader aldrig din <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
@@ -5382,6 +5390,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6271780480930459892">Kontakt din administrator for at få den nyeste version.</translation>
 <translation id="6272643420381259437">Der opstod en fejl (<ph name="ERROR" />) under download af pluginnet</translation>
 <translation id="6273677812470008672">Kvalitet</translation>
+<translation id="6274202259872570803">Screencast</translation>
 <translation id="6276210637549544171">Proxyserveren <ph name="PROXY_SERVER" /> kræver et brugernavn og en adgangskode.</translation>
 <translation id="6277105963844135994">Netværkstimeout</translation>
 <translation id="6277518330158259200">T&amp;ag screenshot</translation>
@@ -5711,6 +5720,13 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6593881952206664229">Medier, der er underlagt ophavsret, kan muligvis ikke afspilles</translation>
 <translation id="6594011207075825276">Finder serieenheder...</translation>
 <translation id="6595187330192059106">Giv aldrig <ph name="HOST" /> fuld kontrol over MIDI-enheder.</translation>
+<translation id="6595408197871512625">{COUNT,plural, =1{Den kompromitterede adgangskode blev ændret.
+
+Du har # anden kompromitteret adgangskode. Google Adgangskodeadministrator anbefaler, at du tjekker denne adgangskode nu.}one{Den kompromitterede adgangskode blev ændret.
+
+Du har # anden kompromitteret adgangskode. Google Adgangskodeadministrator anbefaler, at du tjekker denne adgangskode nu.}other{Den kompromitterede adgangskode blev ændret.
+
+Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anbefaler, at du tjekker disse adgangskoder nu.}}</translation>
 <translation id="6595792813574514527">Træk for at søge på billeder med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Krypteringsmuligheder</translation>
 <translation id="6596816719288285829">IP-adresse</translation>

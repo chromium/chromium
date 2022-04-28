@@ -549,6 +549,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1536754031901697553">Verbinding verbreken...</translation>
 <translation id="1537254971476575106">Volledig scherm vergroten</translation>
 <translation id="15373452373711364">Grote muisaanwijzer</translation>
+<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> vraagt toestemming om <ph name="ORIGIN" /> te lezen en te wijzigen</translation>
 <translation id="1540605929960647700">Demomodus aanzetten</translation>
 <translation id="1541346352678737112">Geen netwerk gevonden</translation>
 <translation id="1542137295869176367">Je inloggegevens kunnen niet worden geüpdatet</translation>
@@ -1868,6 +1869,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2749756011735116528">Inloggen op <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">Simkaart</translation>
 <translation id="2749881179542288782">Controleer grammatica met spelling</translation>
+<translation id="275085171842676231">Verzoek om <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> te lezen en te wijzigen:</translation>
 <translation id="2753677631968972007">Siterechten handmatig beheren</translation>
 <translation id="2755349111255270002">Deze <ph name="DEVICE_TYPE" /> resetten</translation>
 <translation id="2755367719610958252">Toegankelijkheidsfuncties beheren</translation>
@@ -3553,6 +3555,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4429239357082509581">Steam heeft geen rechten om te worden uitgevoerd</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4430369329743628066">Bookmark toegevoegd</translation>
+<translation id="4430422687972614133">Virtuele kaart aanzetten</translation>
 <translation id="4432621511648257259">Onjuist wachtwoord</translation>
 <translation id="443454694385851356">Verouderd (onbeveiligd)</translation>
 <translation id="443475966875174318">Ongeschikte apps updaten en verwijderen</translation>
@@ -7073,6 +7076,7 @@ Je kunt instellingen voor deze kaart beheren via het kaartmenu of meer opties be
 <translation id="7947964080535614577">Sites kiezen er vaak voor advertenties te laten zien zodat ze hun content en services kosteloos kunnen aanbieden. Het is wel bekend dat bepaalde sites opdringerige of misleidende advertenties tonen.</translation>
 <translation id="7948407723851303488">Alle pagina's van <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">Ga voor het toevoegen of beheren van Google Pay-betaalmethoden naar je <ph name="BEGIN_LINK" />Google-account<ph name="END_LINK" /></translation>
+<translation id="795130320946928025">Virtuele kaart uitzetten</translation>
 <translation id="7952708427581814389">Sites kunnen vragen of ze tekst en afbeeldingen op je klembord mogen bekijken</translation>
 <translation id="795282463722894016">Herstellen voltooid</translation>
 <translation id="7952904276017482715">Verwachte ID '<ph name="EXPECTED_ID" />', maar ID is '<ph name="NEW_ID" />'</translation>

@@ -580,6 +580,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="156793199942386351">Vous avez déjà associé <ph name="CURRENTKEY" /> à l'action "<ph name="ACTION" />". Appuyez sur une touche pour <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Console JavaScript</translation>
 <translation id="1568323446248056064">Ouvrir les paramètres de l'écran</translation>
+<translation id="1569044524074707727">Déverrouiller votre téléphone</translation>
 <translation id="1570604804919108255">Réactiver les notifications</translation>
 <translation id="1571304935088121812">Copier le nom d'utilisateur</translation>
 <translation id="1571738973904005196">Afficher l'onglet <ph name="TAB_ORIGIN" /></translation>
@@ -1970,6 +1971,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="288042212351694283">Accès aux appareils U2F</translation>
 <translation id="2881076733170862447">Lorsque vous cliquez sur l'extension</translation>
 <translation id="2882943222317434580">Dans un instant, <ph name="IDS_SHORT_PRODUCT_NAME" /> va redémarrer et être réinitialisé.</translation>
+<translation id="2883470649061584386">Flux</translation>
 <translation id="2885378588091291677">Gestionnaire de tâches</translation>
 <translation id="2885729872133513017">Un problème est survenu lors du décodage de la réponse du serveur.</translation>
 <translation id="2886119409731773154">L'opération peut prendre jusqu'à 30 minutes.</translation>
@@ -5270,6 +5272,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6227002569366039565">Appuyez sur |<ph name="ACCELERATOR" />| pour sélectionner cette info-bulle, puis appuyez de nouveau pour sélectionner l'élément vers lequel elle pointe.</translation>
 <translation id="6227280783235722609">extension</translation>
 <translation id="6229849828796482487">Se déconnecter du réseau Wi-Fi</translation>
+<translation id="6230165830166519105">Essayer une autre méthode</translation>
 <translation id="6231782223312638214">Suggestions</translation>
 <translation id="6231881193380278751">Ajoutez un paramètre de requête dans l'URL pour une actualisation automatique de la page : chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Batterie</translation>

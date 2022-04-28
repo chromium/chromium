@@ -551,6 +551,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1536754031901697553">Kapcsolat bontása...</translation>
 <translation id="1537254971476575106">Teljes képernyős nagyító</translation>
 <translation id="15373452373711364">Nagy egérmutató</translation>
+<translation id="1539630663098418038">A(z) <ph name="EXTENSIONS_REQUESTING_ACCESS" /> a(z) <ph name="ORIGIN" /> olvasását és módosítását kérelmezi</translation>
 <translation id="1540605929960647700">Demó mód engedélyezése</translation>
 <translation id="1541346352678737112">Nem található hálózat</translation>
 <translation id="1542137295869176367">Nem sikerült a bejelentkezési adatok frissítése</translation>
@@ -1880,6 +1881,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2749756011735116528">Bejelentkezés a <ph name="PRODUCT_NAME" />-ba</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Nyelvhelyesség és helyesírás ellenőrzése</translation>
+<translation id="275085171842676231">A(z) <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> olvasásának és módosításának kérelmezése:</translation>
 <translation id="2753677631968972007">A webhelyengedélyek manuális kezelése.</translation>
 <translation id="2755349111255270002"><ph name="DEVICE_TYPE" /> alaphelyzetbe állítása</translation>
 <translation id="2755367719610958252">Kisegítő lehetőségek kezelése</translation>
@@ -3564,6 +3566,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4429239357082509581">A Steamnek nem rendelkezik futási engedéllyel</translation>
 <translation id="4430019312045809116">Hangerő</translation>
 <translation id="4430369329743628066">Könyvjelző hozzáadva</translation>
+<translation id="4430422687972614133">Virtuális kártya bekapcsolása</translation>
 <translation id="4432621511648257259">Helytelen jelszó</translation>
 <translation id="443454694385851356">Régi (nem biztonságos)</translation>
 <translation id="443475966875174318">Nem kompatibilis alkalmazások frissítése és eltávolítása</translation>
@@ -7083,6 +7086,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7947964080535614577">A webhelyek általában azért jelenítenek meg hirdetéseket, hogy díjmentesen kínálhassanak tartalmakat és szolgáltatásokat. Egyes webhelyekről azonban köztudott, hogy tolakodó vagy félrevezető hirdetéseket jelenítenek meg.</translation>
 <translation id="7948407723851303488">A(z) <ph name="DOMAIN_NAME" /> összes oldala</translation>
 <translation id="7951265006188088697">A Google Pay szolgáltatásban használt fizetési módok kezeléséhez vagy hozzáadásához nyissa meg <ph name="BEGIN_LINK" />Google-fiókját<ph name="END_LINK" />.</translation>
+<translation id="795130320946928025">Virtuális kártya kikapcsolása</translation>
 <translation id="7952708427581814389">A webhelyek engedélyt kérhetnek arra, hogy lássák a vágólapon szereplő szöveget és képeket</translation>
 <translation id="795282463722894016">A visszaállítás befejeződött</translation>
 <translation id="7952904276017482715">A várt azonosító „<ph name="EXPECTED_ID" />”, de a kapott azonosító „<ph name="NEW_ID" />”</translation>
