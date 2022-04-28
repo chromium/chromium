@@ -1,7 +1,7 @@
 {
-  "name": "bidi",
-  "version": "1.0.0",
-  "description": "",
+  "name": "chromium-bidi",
+  "version": "0.0.0",
+  "description": "An implementation of the WebDriver BiDi protocol for Chromium implemented as a JavaScript layer translating between BiDi and CDP, running inside a Chrome tab.",
   "main": "index.ts",
   "scripts": {
     "unit": "cross-env TS_NODE_PROJECT='src/tsconfig.json' mocha",
@@ -15,7 +15,7 @@
     "clean": "rimraf ./src/.build",
     "prettier": "npx prettier --write . "
   },
-  "author": "",
+  "author": "The Chromium Authors",
   "license": "Apache-2.0",
   "dependencies": {
     "argparse": "^2.0.1",
@@ -27,6 +27,9 @@
     "websocket": "^1.0.34",
     "ws": "^7.4.5"
   },
+  "files": [
+    "src/.build/"
+  ],
   "devDependencies": {
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.0.4",
