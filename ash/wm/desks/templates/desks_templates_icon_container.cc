@@ -279,16 +279,14 @@ void DesksTemplatesIconContainer::CreateIconViewsFromIconIdentifiers(
     if (children().size() < kMaxIcons &&
         (icon_identifier == DeskTemplate::kIncognitoWindowIdentifier ||
          delegate->IsAppAvailable(icon_info.app_id))) {
-      DesksTemplatesIconView* icon_view = AddChildView(
-          views::Builder<DesksTemplatesIconView>()
-              .SetBackground(views::CreateRoundedRectBackground(
-                  icon_info.count == 1
-                      ? SK_ColorTRANSPARENT
-                      : AshColorProvider::Get()->GetControlsLayerColor(
-                            AshColorProvider::ControlsLayerType::
-                                kControlBackgroundColorInactive),
-                  DesksTemplatesIconView::kIconSize / 2))
-              .Build());
+      DesksTemplatesIconView* icon_view =
+          AddChildView(views::Builder<DesksTemplatesIconView>()
+                           .SetBackground(views::CreateRoundedRectBackground(
+                               AshColorProvider::Get()->GetControlsLayerColor(
+                                   AshColorProvider::ControlsLayerType::
+                                       kControlBackgroundColorInactive),
+                               DesksTemplatesIconView::kIconViewSize / 2))
+                           .Build());
       icon_view->SetIconIdentifierAndCount(icon_identifier, icon_info.app_id,
                                            icon_info.app_title, icon_info.count,
                                            /*show_plus=*/true);
@@ -309,7 +307,7 @@ void DesksTemplatesIconContainer::CreateIconViewsFromIconIdentifiers(
                            AshColorProvider::Get()->GetControlsLayerColor(
                                AshColorProvider::ControlsLayerType::
                                    kControlBackgroundColorInactive),
-                           DesksTemplatesIconView::kIconSize / 2))
+                           DesksTemplatesIconView::kIconViewSize / 2))
                        .Build());
 
   // Set `icon_identifier`, `app_id` and `app_title` to be empty strings for

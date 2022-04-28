@@ -36,8 +36,8 @@ class DesksTemplatesIconView : public views::View {
   DesksTemplatesIconView& operator=(const DesksTemplatesIconView&) = delete;
   ~DesksTemplatesIconView() override;
 
-  // The size of an icon.
-  static constexpr int kIconSize = 28;
+  // The size of the background the icon sits inside of.
+  static constexpr int kIconViewSize = 28;
 
   const std::string& icon_identifier() const { return icon_identifier_; }
 

@@ -38,6 +38,14 @@ constexpr int kCountLabelInsetSize = 4;
 // resizing.
 constexpr int kAppIdImageSize = 64;
 
+// Make the icons 27x27 so that they appear 26x26, to account for the
+// invisible padding added when standardizing icons.
+constexpr int kIconSize = 27;
+
+// Size the default icon to 22x22 so that it appears 20x20 accounting for the
+// invisible padding.
+constexpr int kDefaultIconSize = 22;
+
 // Return the formatted string for `count`. If `count` is <=99, the string will
 // be "+<count>". If `count` is >99, the string will be "+99". If `show_plus` is
 // false, the string will be just the count.
@@ -49,11 +57,11 @@ std::u16string GetCountString(int count, bool show_plus) {
   return base::NumberToString16(count);
 }
 
-gfx::ImageSkia CreateResizedImageToIconSize(const gfx::ImageSkia& icon) {
+gfx::ImageSkia CreateResizedImageToIconSize(const gfx::ImageSkia& icon,
+                                            bool is_default) {
+  const int diameter = is_default ? kDefaultIconSize : kIconSize;
   return gfx::ImageSkiaOperations::CreateResizedImage(
-      icon, skia::ImageOperations::RESIZE_BEST,
-      gfx::Size(DesksTemplatesIconView::kIconSize,
-                DesksTemplatesIconView::kIconSize));
+      icon, skia::ImageOperations::RESIZE_BEST, gfx::Size(diameter, diameter));
 }
 
 }  // namespace
@@ -102,11 +110,9 @@ void DesksTemplatesIconView::SetIconIdentifierAndCount(
   // Add the icon to the front so that it gets read out before `count_label_` by
   // spoken feedback.
   DCHECK(!icon_view_);
-  icon_view_ =
-      AddChildViewAt(views::Builder<RoundedImageView>()
-                         .SetCornerRadius(DesksTemplatesIconView::kIconSize / 2)
-                         .Build(),
-                     0);
+  icon_view_ = AddChildViewAt(
+      views::Builder<RoundedImageView>().SetCornerRadius(kIconSize / 2).Build(),
+      0);
 
   // First check if the `icon_identifier_` is a special value, i.e. NTP url or
   // incognito window. If it is, use the corresponding icon for the special
@@ -126,7 +132,8 @@ void DesksTemplatesIconView::SetIconIdentifierAndCount(
   // use `app_id` as their icon identifiers have been stripped to avoid
   // duplicate favicons (see https://crbug.com/1281391).
   if (chrome_icon.has_value()) {
-    icon_view_->SetImage(CreateResizedImageToIconSize(chrome_icon.value()));
+    icon_view_->SetImage(CreateResizedImageToIconSize(chrome_icon.value(),
+                                                      /*is_default=*/false));
     return;
   }
 
@@ -155,28 +162,33 @@ void DesksTemplatesIconView::UpdateCount(int count) {
 }
 
 gfx::Size DesksTemplatesIconView::CalculatePreferredSize() const {
-  int width = (icon_view_ ? kIconSize : 0);
+  int width = (icon_view_ ? kIconViewSize : 0);
   if (count_ > 1 && count_label_) {
     width +=
-        std::max(kIconSize, count_label_->CalculatePreferredSize().width());
+        std::max(kIconViewSize, count_label_->CalculatePreferredSize().width());
   }
-  return gfx::Size(width, kIconSize);
+  return gfx::Size(width, kIconViewSize);
 }
 
 void DesksTemplatesIconView::Layout() {
-  if (icon_view_)
-    icon_view_->SetBoundsRect(gfx::Rect(kIconSize, kIconSize));
-
+  if (icon_view_) {
+    gfx::Size icon_preferred_size = icon_view_->CalculatePreferredSize();
+    icon_view_->SetBoundsRect(gfx::Rect(
+        base::ClampCeil((kIconViewSize - icon_preferred_size.width()) / 2.0),
+        base::ClampCeil((kIconViewSize - icon_preferred_size.height()) / 2.0),
+        icon_preferred_size.width(), icon_preferred_size.height()));
+  }
   if (count_label_) {
     count_label_->SetBoundsRect(
-        gfx::Rect(icon_view_ ? kIconSize : 0, 0,
-                  width() - (icon_view_ ? kIconSize : 0), kIconSize));
+        gfx::Rect(icon_view_ ? kIconViewSize : 0, 0,
+                  width() - (icon_view_ ? kIconViewSize : 0), kIconViewSize));
   }
 }
 
 void DesksTemplatesIconView::OnIconLoaded(const gfx::ImageSkia& icon) {
   if (!icon.isNull()) {
-    icon_view_->SetImage(CreateResizedImageToIconSize(icon));
+    icon_view_->SetImage(
+        CreateResizedImageToIconSize(icon, /*is_default=*/false));
     return;
   }
   LoadDefaultIcon();
@@ -189,10 +201,14 @@ void DesksTemplatesIconView::LoadDefaultIcon() {
   const int resource_id = native_theme && native_theme->ShouldUseDarkColors()
                               ? IDR_DEFAULT_FAVICON_DARK_64
                               : IDR_DEFAULT_FAVICON_64;
-  icon_view_->SetImage(
-      CreateResizedImageToIconSize(ui::ResourceBundle::GetSharedInstance()
-                                       .GetImageNamed(resource_id)
-                                       .AsImageSkia()));
+  icon_view_->SetImage(CreateResizedImageToIconSize(
+      gfx::ImageSkiaOperations::CreateColorMask(
+          ui::ResourceBundle::GetSharedInstance()
+              .GetImageNamed(resource_id)
+              .AsImageSkia(),
+          AshColorProvider::Get()->GetContentLayerColor(
+              AshColorProvider::ContentLayerType::kIconColorPrimary)),
+      /*is_default=*/true));
 
   // Move `this` to the back of the visible icons, i.e. before any invisible
   // siblings and before the overflow counter. Notify the a11y API so that the

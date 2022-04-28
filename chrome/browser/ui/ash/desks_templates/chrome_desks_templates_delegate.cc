@@ -308,15 +308,16 @@ ChromeDesksTemplatesDelegate::MaybeRetrieveIconForSpecialIdentifier(
     const ui::ColorProvider* color_provider) const {
   if (identifier == chrome::kChromeUINewTabURL) {
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-    return absl::make_optional<gfx::ImageSkia>(
-        rb.GetImageNamed(IDR_PRODUCT_LOGO_32).AsImageSkia());
+    return absl::make_optional<gfx::ImageSkia>(apps::CreateStandardIconImage(
+        rb.GetImageNamed(IDR_PRODUCT_LOGO_32).AsImageSkia()));
   } else if (identifier == ash::DeskTemplate::kIncognitoWindowIdentifier) {
     DCHECK(color_provider);
-    return ui::ThemedVectorIcon(
-               ui::ImageModel::FromVectorIcon(kIncognitoProfileIcon,
-                                              ui::kColorAvatarIconIncognito)
-                   .GetVectorIcon())
-        .GetImageSkia(color_provider);
+    return apps::CreateStandardIconImage(
+        ui::ThemedVectorIcon(
+            ui::ImageModel::FromVectorIcon(kIncognitoProfileIcon,
+                                           ui::kColorAvatarIconIncognito)
+                .GetVectorIcon())
+            .GetImageSkia(color_provider));
   }
 
   return absl::nullopt;
