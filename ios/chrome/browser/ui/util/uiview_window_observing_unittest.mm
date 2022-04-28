@@ -56,8 +56,9 @@ class UIViewWindowObservingTest : public PlatformTest {
 };
 
 // Checks that the observer is not called when the view is added to the window
-// and `cr_supportsWindowObserving` is not set (defaults to `NO`).
+// and `cr_supportsWindowObserving` is set to `NO`.
 TEST_F(UIViewWindowObservingTest, WindowObservingUnset) {
+  UIView.cr_supportsWindowObserving = NO;
   EXPECT_FALSE(UIView.cr_supportsWindowObserving);
   observer_.onChange = ^(id object, id change) {
     FAIL() << "KVO should not have triggered before being enabled.";
@@ -71,16 +72,16 @@ TEST_F(UIViewWindowObservingTest, WindowObservingUnset) {
 TEST_F(UIViewWindowObservingTest, WindowObservingSet) {
   UIView.cr_supportsWindowObserving = YES;
   EXPECT_TRUE(UIView.cr_supportsWindowObserving);
-  __block BOOL callbackCalled = NO;
+  __block BOOL callback_called = NO;
   observer_.onChange = ^(id object, id change) {
-    callbackCalled = YES;
+    callback_called = YES;
     EXPECT_EQ(change[NSKeyValueChangeOldKey], [NSNull null]);
     EXPECT_EQ(change[NSKeyValueChangeNewKey], window_);
   };
 
   [window_ addSubview:view_];
 
-  EXPECT_TRUE(callbackCalled);
+  EXPECT_TRUE(callback_called);
 }
 
 // Checks that the observer is not called when the view is added to the window

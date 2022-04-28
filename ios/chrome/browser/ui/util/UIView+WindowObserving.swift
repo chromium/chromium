@@ -43,11 +43,13 @@ extension UIView {
     return false
   }
 
+  /// Adds a call to the KVO `willChangeValue(forKey:)` method.
   @objc private func cr_willMove(toWindow newWindow: UIWindow?) {
     cr_willMove(toWindow: newWindow)
     willChangeValue(forKey: "window")
   }
 
+  /// Adds a call to the KVO `didChangeValue(forKey:)` method.
   @objc private func cr_didMoveToWindow() {
     cr_didMoveToWindow()
     didChangeValue(forKey: "window")
