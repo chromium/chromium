@@ -1203,11 +1203,6 @@
     "expiry_milestone": 104
   },
   {
-    "name": "detect-form-submission-on-form-clear",
-    "owners": [ "kazinova@google.com", "khamutov@google.com"],
-    "expiry_milestone": 101
-  },
-  {
     "name": "device-force-scheduled-reboot",
     "owners": [ "sanjaperisic"],
     "expiry_milestone": 104

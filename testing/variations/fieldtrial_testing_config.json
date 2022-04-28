@@ -2922,21 +2922,6 @@
             ]
         }
     ],
-    "DetectFormSubmissionOnFormClearIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DetectFormSubmissionOnFormClear"
-                    ]
-                }
-            ]
-        }
-    ],
     "DexFixer": [
         {
             "platforms": [

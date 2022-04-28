@@ -576,12 +576,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"ios-crashpad", flag_descriptions::kCrashpadIOSName,
      flag_descriptions::kCrashpadIOSDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kCrashpadIOS)},
-    {"detect-form-submission-on-form-clear",
-     flag_descriptions::kDetectFormSubmissionOnFormClearIOSName,
-     flag_descriptions::kDetectFormSubmissionOnFormClearIOSDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kDetectFormSubmissionOnFormClear)},
     {"autofill-address-verification-in-save-prompt",
      flag_descriptions::kEnableAutofillAddressSavePromptAddressVerificationName,
      flag_descriptions::

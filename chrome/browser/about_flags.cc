@@ -7252,12 +7252,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDeferredFontShapingDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kDeferredFontShaping)},
 
-    {"detect-form-submission-on-form-clear",
-     flag_descriptions::kDetectFormSubmissionOnFormClearName,
-     flag_descriptions::kDetectFormSubmissionOnFormClearDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kDetectFormSubmissionOnFormClear)},
-
     {"permission-predictions", flag_descriptions::kPermissionPredictionsName,
      flag_descriptions::kPermissionPredictionsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kPermissionPredictions)},

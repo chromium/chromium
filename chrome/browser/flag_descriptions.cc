@@ -134,12 +134,6 @@ const char kDeferredFontShapingDescription[] =
     "Defer text rendering in invisible CSS boxes until the boxes become "
     "visible.";
 
-const char kDetectFormSubmissionOnFormClearName[] =
-    "Detect form submission when the form is cleared.";
-const char kDetectFormSubmissionOnFormClearDescription[] =
-    "Detect form submissions for change password forms that are cleared and "
-    "not removed from the page.";
-
 const char kEditPasswordsInSettingsName[] = "Edit passwords in settings";
 const char kEditPasswordsInSettingsDescription[] =
     "Enables password editing in settings.";
