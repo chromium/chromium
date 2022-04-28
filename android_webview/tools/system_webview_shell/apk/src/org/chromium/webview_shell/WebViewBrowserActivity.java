@@ -605,7 +605,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             menu.findItem(R.id.menu_force_dark_auto).setEnabled(false);
             menu.findItem(R.id.menu_force_dark_on).setEnabled(false);
         }
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override

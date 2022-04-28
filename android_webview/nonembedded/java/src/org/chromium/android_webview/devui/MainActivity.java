@@ -286,7 +286,7 @@ public class MainActivity extends FragmentActivity {
             MenuItem item = menu.findItem(R.id.options_menu_switch_provider);
             item.setVisible(false);
         }
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override

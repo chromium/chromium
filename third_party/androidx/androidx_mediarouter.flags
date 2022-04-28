@@ -2,13 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Help R8 to remove debug related coded. All of these static constants are
-# initialized to: Log.isLoggable(DEBUG, TAG).
-
--assumevalues class androidx.mediarouter.** {
-  static boolean DEBUG return false;
-}
-
 # Help R8 determine that we don't use MediaRouteDynamicChooserDialog.
 # https://crbug.com/1147188
 -assumevalues class ** {
