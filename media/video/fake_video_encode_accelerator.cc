@@ -25,6 +25,7 @@ FakeVideoEncodeAccelerator::FakeVideoEncodeAccelerator(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner)
     : task_runner_(task_runner),
       will_initialization_succeed_(true),
+      will_encoding_succeed_(true),
       client_(nullptr),
       next_frame_is_first_frame_(true) {}
 
@@ -108,6 +109,11 @@ void FakeVideoEncodeAccelerator::SetWillInitializationSucceed(
   will_initialization_succeed_ = will_initialization_succeed;
 }
 
+void FakeVideoEncodeAccelerator::SetWillEncodingSucceed(
+    bool will_encoding_succeed) {
+  will_encoding_succeed_ = will_encoding_succeed;
+}
+
 void FakeVideoEncodeAccelerator::DoRequireBitstreamBuffers(
     unsigned int input_count,
     const gfx::Size& input_coded_size,
@@ -139,6 +145,11 @@ void FakeVideoEncodeAccelerator::EncodeTask() {
 void FakeVideoEncodeAccelerator::DoBitstreamBufferReady(
     BitstreamBuffer buffer,
     FrameToEncode frame_to_encode) const {
+  if (!will_encoding_succeed_) {
+    client_->NotifyError(VideoEncodeAccelerator::kPlatformFailureError);
+    return;
+  }
+
   BitstreamBufferMetadata metadata(kMinimumOutputBufferSize,
                                    frame_to_encode.force_keyframe,
                                    frame_to_encode.frame->timestamp());

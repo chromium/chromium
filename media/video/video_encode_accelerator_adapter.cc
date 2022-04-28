@@ -592,7 +592,7 @@ void VideoEncodeAcceleratorAdapter::NotifyError(
         EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
                       "VideoEncodeAccelerator encountered an error")
             .WithData("VideoEncodeAccelerator::Error", int32_t{error});
-    std::move(encode->done_callback).Run(EncoderStatus::Codes::kOk);
+    std::move(encode->done_callback).Run(status);
   }
   active_encodes_.clear();
   state_ = State::kNotInitialized;
