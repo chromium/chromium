@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.commerce.shopping_list;
 
 import org.chromium.base.FeatureList;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.user_prefs.UserPrefs;
 
 /** Self-documenting feature class for shopping.  */
 public class ShoppingFeatures {
@@ -17,7 +20,7 @@ public class ShoppingFeatures {
     public static boolean isShoppingListEnabled() {
         return FeatureList.isInitialized()
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.SHOPPING_LIST) && isSignedIn()
-                && isAnonymizedUrlDataCollectionEnabled();
+                && isAnonymizedUrlDataCollectionEnabled() && isWebAndAppActivityEnabled();
     }
 
     private static boolean isSignedIn() {
@@ -29,5 +32,11 @@ public class ShoppingFeatures {
     private static boolean isAnonymizedUrlDataCollectionEnabled() {
         return UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
                 Profile.getLastUsedRegularProfile());
+    }
+
+    private static boolean isWebAndAppActivityEnabled() {
+        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+        return prefService != null
+                && prefService.getBoolean(Pref.WEB_AND_APP_ACTIVITY_ENABLED_FOR_SHOPPING);
     }
 }

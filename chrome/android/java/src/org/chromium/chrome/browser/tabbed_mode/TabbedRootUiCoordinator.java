@@ -722,6 +722,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         CommerceSubscriptionsServiceFactory factory = new CommerceSubscriptionsServiceFactory();
         mCommerceSubscriptionsService = factory.getForLastUsedProfile();
+        mCommerceSubscriptionsService.getSubscriptionsManager().queryAndUpdateWaaEnabled();
         mCommerceSubscriptionsService.initDeferredStartupForActivity(
                 mTabModelSelectorSupplier.get(), mActivityLifecycleDispatcher);
     }

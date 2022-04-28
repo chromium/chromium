@@ -506,6 +506,7 @@ public class SubscriptionsManagerImplTest {
         verify(mProxy, times(1))
                 .get(eq(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK),
                         any(Callback.class));
+        verify(mProxy, times(0)).queryAndUpdateWaaEnabled();
     }
 
     @MediumTest
@@ -524,6 +525,7 @@ public class SubscriptionsManagerImplTest {
         verify(mProxy, times(2))
                 .get(eq(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK),
                         any(Callback.class));
+        verify(mProxy, times(1)).queryAndUpdateWaaEnabled();
     }
 
     private void setLoadWithPrefixMockResponse(List<CommerceSubscription> subscriptions) {

@@ -127,6 +127,8 @@ if (!is_android) {
 
 static_library("shopping_service") {
   sources = [
+    "pref_names.cc",
+    "pref_names.h",
     "shopping_service.cc",
     "shopping_service.h",
   ]
@@ -134,6 +136,7 @@ static_library("shopping_service") {
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/prefs:prefs",
   ]
 
   if (is_android) {

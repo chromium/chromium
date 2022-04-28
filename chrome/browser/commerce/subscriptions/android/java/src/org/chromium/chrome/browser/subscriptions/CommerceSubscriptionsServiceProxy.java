@@ -11,7 +11,10 @@ import org.json.JSONObject;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.net.NetworkTrafficAnnotationTag;
 
 import java.util.ArrayList;
@@ -41,6 +44,17 @@ public class CommerceSubscriptionsServiceProxy {
     private static final String GET_SUBSCRIPTIONS_QUERY_PARAMS_TEMPLATE =
             "?requestParams.subscriptionType=%s";
     private static final int BACKEND_CANONICAL_CODE_SUCCESS = 0;
+
+    // TODO(crbug.com/1311754): These parameters (url, OAUTH_SCOPE, etc.) are copied from
+    // web_history_service.cc directly, it works now but we should figure out a better way to
+    // keep these parameters in sync.
+    private static final String WAA_QUERY_URL =
+            "https://history.google.com/history/api/lookup?client=web_app";
+    private static final String[] WAA_OAUTH_SCOPE =
+            new String[] {"https://www.googleapis.com/auth/chromesync"};
+    private static final String WAA_RESPONSE_KEY = "history_recording_enabled";
+    private static final String WAA_OAUTH_NAME = "web_history";
+
     private final Profile mProfile;
 
     /**
@@ -98,6 +112,32 @@ public class CommerceSubscriptionsServiceProxy {
                         + String.format(GET_SUBSCRIPTIONS_QUERY_PARAMS_TEMPLATE, type),
                 GET_HTTPS_METHOD, CONTENT_TYPE, OAUTH_SCOPE, EMPTY_POST_DATA,
                 HTTPS_REQUEST_TIMEOUT_MS, NetworkTrafficAnnotationTag.MISSING_TRAFFIC_ANNOTATION);
+    }
+
+    void queryAndUpdateWaaEnabled() {
+        // TODO(crbug.com/1311754): Move the endpoint fetch to components/ and merge this query to
+        // shopping service. For NetworkTrafficAnnotationTag, we need to replace
+        // MISSING_TRAFFIC_ANNOTATION with the correct NetworkTrafficAnnotation.
+        EndpointFetcher.fetchUsingOAuth(
+                (response)
+                        -> {
+                    try {
+                        JSONObject object = new JSONObject(response.getResponseString());
+                        boolean isWaaEnabled = object.getBoolean(WAA_RESPONSE_KEY);
+                        PrefService prefService = UserPrefs.get(mProfile);
+                        if (prefService != null) {
+                            prefService.setBoolean(
+                                    Pref.WEB_AND_APP_ACTIVITY_ENABLED_FOR_SHOPPING, isWaaEnabled);
+                        }
+                    } catch (JSONException e) {
+                        Log.e(TAG,
+                                String.format(Locale.US, "Failed to get waa status. Details: %s",
+                                        e.getMessage()));
+                    }
+                },
+                mProfile, WAA_OAUTH_NAME, WAA_QUERY_URL, GET_HTTPS_METHOD, CONTENT_TYPE,
+                WAA_OAUTH_SCOPE, EMPTY_POST_DATA, 30000L,
+                NetworkTrafficAnnotationTag.MISSING_TRAFFIC_ANNOTATION);
     }
 
     private void manageSubscriptions(JSONObject requestPayload, Callback<Boolean> callback) {
