@@ -44,6 +44,8 @@ std::atomic_int IntNode::destructor_calls{0};
 
 class GridLinkedListTest : public testing::Test {
  public:
+  void SetUp() override;
+
   template <typename NodeType>
   static NodeType* NthElement(GridLinkedList<NodeType>* gll, int n);
 
@@ -51,6 +53,10 @@ class GridLinkedListTest : public testing::Test {
   static bool IsSorted(GridLinkedList<NodeType>* gll,
                        const CompareFunc& compare_func);
 };
+
+void GridLinkedListTest::SetUp() {
+  IntNode::destructor_calls = 0;
+}
 
 // Helper function for obtaining the nth element (starting from 0) of
 // GridLinkedList. n should be smaller than the size of the list.
