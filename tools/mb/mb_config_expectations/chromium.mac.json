@@ -26,6 +26,7 @@
       "enable_dsyms": false,
       "enable_remoting": false,
       "ios_set_attributes_for_xcode_project_generation": false,
+      "is_asan": true,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -33,8 +34,7 @@
       "target_environment": "catalyst",
       "target_os": "ios",
       "use_goma": true,
-      "use_libfuzzer": true,
-      "use_lld": false
+      "use_libfuzzer": true
     }
   },
   "ios-device": {
