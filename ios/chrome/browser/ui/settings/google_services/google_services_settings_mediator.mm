@@ -11,6 +11,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/sync/driver/sync_service.h"
@@ -203,19 +204,21 @@ bool GetStatusForSigninPolicy() {
         initWithPrefService:userPrefService
                    prefName:prefs::kSearchSuggestEnabled];
     _autocompleteSearchPreference.observer = self;
-    _safeBrowsingPreference = [[PrefBackedBoolean alloc]
-        initWithPrefService:userPrefService
-                   prefName:prefs::kSafeBrowsingEnabled];
-    _safeBrowsingPreference.observer = self;
+    if (!base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
+      _safeBrowsingPreference = [[PrefBackedBoolean alloc]
+          initWithPrefService:userPrefService
+                     prefName:prefs::kSafeBrowsingEnabled];
+      _safeBrowsingPreference.observer = self;
+      _passwordLeakCheckPreference = [[PrefBackedBoolean alloc]
+          initWithPrefService:userPrefService
+                     prefName:password_manager::prefs::
+                                  kPasswordLeakDetectionEnabled];
+      _passwordLeakCheckPreference.observer = self;
+    }
     _sendDataUsagePreference = [[PrefBackedBoolean alloc]
         initWithPrefService:localPrefService
                    prefName:metrics::prefs::kMetricsReportingEnabled];
     _sendDataUsagePreference.observer = self;
-    _passwordLeakCheckPreference = [[PrefBackedBoolean alloc]
-        initWithPrefService:userPrefService
-                   prefName:password_manager::prefs::
-                                kPasswordLeakDetectionEnabled];
-    _passwordLeakCheckPreference.observer = self;
     _anonymizedDataCollectionPreference = [[PrefBackedBoolean alloc]
         initWithPrefService:userPrefService
                    prefName:unified_consent::prefs::
@@ -372,28 +375,31 @@ bool GetStatusForSigninPolicy() {
                       IDS_IOS_GOOGLE_SERVICES_SETTINGS_AUTOCOMPLETE_SEARCHES_AND_URLS_DETAIL];
       [items addObject:autocompleteItem];
     }
-    if (self.userPrefService->IsManagedPreference(
-            prefs::kSafeBrowsingEnabled)) {
-      TableViewInfoButtonItem* safeBrowsingManagedItem = [self
-          tableViewInfoButtonItemType:AutocompleteSearchesAndURLsManagedItemType
-                         textStringID:
-                             IDS_IOS_GOOGLE_SERVICES_SETTINGS_SAFE_BROWSING_TEXT
-                       detailStringID:
-                           IDS_IOS_GOOGLE_SERVICES_SETTINGS_SAFE_BROWSING_DETAIL
-                               status:self.safeBrowsingPreference.value];
-      [items addObject:safeBrowsingManagedItem];
-    } else {
-      SyncSwitchItem* safeBrowsingItem = [self
-          switchItemWithItemType:SafeBrowsingItemType
-                    textStringID:
-                        IDS_IOS_GOOGLE_SERVICES_SETTINGS_SAFE_BROWSING_TEXT
-                  detailStringID:
-                      IDS_IOS_GOOGLE_SERVICES_SETTINGS_SAFE_BROWSING_DETAIL];
-      safeBrowsingItem.accessibilityIdentifier =
-          kSafeBrowsingItemAccessibilityIdentifier;
-      [items addObject:safeBrowsingItem];
+    if (!base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
+      if (self.userPrefService->IsManagedPreference(
+              prefs::kSafeBrowsingEnabled)) {
+        TableViewInfoButtonItem* safeBrowsingManagedItem = [self
+            tableViewInfoButtonItemType:
+                AutocompleteSearchesAndURLsManagedItemType
+                           textStringID:
+                               IDS_IOS_GOOGLE_SERVICES_SETTINGS_SAFE_BROWSING_TEXT
+                         detailStringID:
+                             IDS_IOS_GOOGLE_SERVICES_SETTINGS_SAFE_BROWSING_DETAIL
+                                 status:self.safeBrowsingPreference.value];
+        [items addObject:safeBrowsingManagedItem];
+      } else {
+        SyncSwitchItem* safeBrowsingItem = [self
+            switchItemWithItemType:SafeBrowsingItemType
+                      textStringID:
+                          IDS_IOS_GOOGLE_SERVICES_SETTINGS_SAFE_BROWSING_TEXT
+                    detailStringID:
+                        IDS_IOS_GOOGLE_SERVICES_SETTINGS_SAFE_BROWSING_DETAIL];
+        safeBrowsingItem.accessibilityIdentifier =
+            kSafeBrowsingItemAccessibilityIdentifier;
+        [items addObject:safeBrowsingItem];
+      }
+      [items addObject:self.passwordLeakCheckItem];
     }
-    [items addObject:self.passwordLeakCheckItem];
     if (self.localPrefService->IsManagedPreference(
             metrics::prefs::kMetricsReportingEnabled) &&
         !self.localPrefService->GetBoolean(
