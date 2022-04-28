@@ -5345,10 +5345,6 @@ test("unit_tests") {
     ]
   }
 
-  if (is_win || is_mac || is_linux) {
-    sources += [ "../browser/accessibility/soda_installer_impl_unittest.cc" ]
-  }
-
   if (is_linux || is_chromeos) {
     sources +=
         [ "../browser/policy/browser_dm_token_storage_linux_unittest.cc" ]
@@ -5375,17 +5371,6 @@ test("unit_tests") {
   # Currently disabled on win due to crbug.com/1311991.
   if (!is_android && !is_win) {
     sources += [ "../common/net/x509_certificate_model_unittest.cc" ]
-  }
-
-  if (is_win || is_mac || is_linux || is_chromeos_lacros) {
-    sources += [
-      "../browser/ui/webui/signin/enterprise_profile_welcome_handler_unittest.cc",
-      "../test/pixel/browser_skia_gold_pixel_diff_unittest.cc",
-    ]
-  }
-
-  if (is_win || is_mac || is_linux) {
-    sources += [ "../browser/ui/webui/ntp/app_launcher_handler_unittest.cc" ]
   }
 
   if (enable_webui_tab_strip) {
@@ -6025,13 +6010,6 @@ test("unit_tests") {
       "../browser/ui/startup/startup_browser_policy_unittest.cc",
       "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_unittest.cc",
       "../browser/ui/views/profiles/profile_customization_bubble_sync_controller_unittest.cc",
-    ]
-  }
-
-  if (is_win || is_mac || is_linux || is_chromeos_lacros) {
-    sources += [
-      "../browser/ui/profile_picker_unittest.cc",
-      "../browser/ui/webui/signin/turn_sync_on_helper_unittest.cc",
     ]
   }
 
@@ -7228,37 +7206,11 @@ test("unit_tests") {
   }
 
   if (is_chromeos_lacros) {
+    assert(enable_system_notifications)
     sources += [
       "../browser/apps/app_service/app_service_proxy_lacros_unittest.cc",
       "../browser/apps/app_service/mock_crosapi_app_service_proxy.cc",
       "../browser/apps/app_service/mock_crosapi_app_service_proxy.h",
-    ]
-  }
-
-  if (enable_system_notifications) {
-    if (is_linux) {
-      sources += [ "../browser/notifications/notification_platform_bridge_linux_unittest.cc" ]
-    }
-
-    if (is_win) {
-      sources += [
-        "../browser/notifications/notification_platform_bridge_win_unittest.cc",
-        "../browser/notifications/win/notification_helper_launches_chrome_unittest.cc",
-        "../browser/notifications/win/notification_launch_id_unittest.cc",
-      ]
-
-      deps += [
-        "//chrome/installer/setup:lib",
-        "//chrome/installer/util:with_no_strings",
-      ]
-
-      data_deps += [ "//chrome/notification_helper" ]
-    }
-  }
-
-  if (is_chromeos_lacros) {
-    assert(enable_system_notifications)
-    sources += [
       "../browser/chromeos/policy/dlp/data_transfer_dlp_controller_unittest.cc",
       "../browser/chromeos/policy/dlp/dlp_clipboard_notifier_unittest.cc",
       "../browser/chromeos/policy/dlp/dlp_confidential_contents_unittest.cc",
@@ -7292,7 +7244,9 @@ test("unit_tests") {
       "../browser/lacros/sync/sync_explicit_passphrase_client_lacros_unittest.cc",
       "../browser/metrics/lacros_metrics_provider_unittest.cc",
       "../browser/notifications/notification_platform_bridge_lacros_unittest.cc",
+      "../browser/upgrade_detector/get_installed_version_lacros_unittest.cc",
       "../common/chrome_paths_lacros_unittest.cc",
+      "../common/extensions/api/file_browser_handlers/file_browser_handler_manifest_unittest.cc",
     ]
 
     deps += [
@@ -7308,6 +7262,27 @@ test("unit_tests") {
       "//components/account_manager_core",
       "//components/account_manager_core:test_support",
     ]
+  }
+
+  if (enable_system_notifications) {
+    if (is_linux) {
+      sources += [ "../browser/notifications/notification_platform_bridge_linux_unittest.cc" ]
+    }
+
+    if (is_win) {
+      sources += [
+        "../browser/notifications/notification_platform_bridge_win_unittest.cc",
+        "../browser/notifications/win/notification_helper_launches_chrome_unittest.cc",
+        "../browser/notifications/win/notification_launch_id_unittest.cc",
+      ]
+
+      deps += [
+        "//chrome/installer/setup:lib",
+        "//chrome/installer/util:with_no_strings",
+      ]
+
+      data_deps += [ "//chrome/notification_helper" ]
+    }
   }
 
   if (is_linux || is_chromeos) {
@@ -7830,19 +7805,19 @@ test("unit_tests") {
     sources += [ "../browser/ui/global_media_controls/media_notification_device_monitor_unittest.cc" ]
   }
 
-  if (is_chromeos_lacros) {
-    sources += [
-      "../browser/upgrade_detector/get_installed_version_lacros_unittest.cc",
-      "../common/extensions/api/file_browser_handlers/file_browser_handler_manifest_unittest.cc",
-    ]
-  }
-
   if (is_linux) {
     sources += [
       "../browser/shell_integration_linux_unittest.cc",
       "../browser/upgrade_detector/directory_monitor_unittest.cc",
       "../browser/upgrade_detector/get_installed_version_linux_unittest.cc",
     ]
+
+    deps += [
+      "../browser/enterprise/connectors/device_trust/key_management/core/persistence:unit_tests",
+      "../browser/enterprise/connectors/device_trust/key_management/installer/management_service:unit_tests",
+      "//components/dbus/thread_linux",
+    ]
+
     if (use_ozone) {
       deps += [ "//ui/ozone" ]
     }
@@ -8053,13 +8028,11 @@ test("unit_tests") {
 
   if (is_linux || is_mac || is_win) {
     sources += [
+      "../browser/accessibility/soda_installer_impl_unittest.cc",
       "../browser/enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_service_unittest.cc",
       "../browser/enterprise/remote_commands/rotate_attestation_credential_job_unittest.cc",
+      "../browser/ui/webui/ntp/app_launcher_handler_unittest.cc",
     ]
-
-    if (is_linux) {
-      deps += [ "../browser/enterprise/connectors/device_trust/key_management/installer/management_service:unit_tests" ]
-    }
 
     deps += [
       "../browser/enterprise/connectors/device_trust/key_management/browser",
@@ -8075,10 +8048,6 @@ test("unit_tests") {
       "../browser/enterprise/connectors/device_trust/signals/decorators/browser:unit_tests",
       "../browser/enterprise/signals:unit_tests",
     ]
-  }
-
-  if (is_linux) {
-    deps += [ "../browser/enterprise/connectors/device_trust/key_management/core/persistence:unit_tests" ]
   }
 
   if (enable_plugins) {
@@ -8189,6 +8158,8 @@ test("unit_tests") {
     ldflags = [ "-Wl,--strip-debug" ]
   }
   if (is_win || is_mac) {
+    sources += [ "../browser/component_updater/updater_state_unittest.cc" ]
+
     deps += [ "//chrome/common/notifications:unit_tests" ]
   }
   if (enable_rlz) {
@@ -8219,9 +8190,6 @@ test("unit_tests") {
     ]
 
     deps += [ "//components/enterprise:test_support" ]
-  }
-  if (is_linux) {
-    deps += [ "//components/dbus/thread_linux" ]
   }
 
   if (toolkit_views) {
@@ -8455,6 +8423,10 @@ test("unit_tests") {
       "../browser/browser_switcher/ieem_sitelist_parser_unittest.cc",
       "../browser/browser_switcher/mock_alternative_browser_driver.cc",
       "../browser/browser_switcher/mock_alternative_browser_driver.h",
+      "../browser/ui/profile_picker_unittest.cc",
+      "../browser/ui/webui/signin/enterprise_profile_welcome_handler_unittest.cc",
+      "../browser/ui/webui/signin/turn_sync_on_helper_unittest.cc",
+      "../test/pixel/browser_skia_gold_pixel_diff_unittest.cc",
     ]
   }
 
@@ -8509,10 +8481,6 @@ test("unit_tests") {
       "//build/config/fuchsia/test/jit_capabilities.test-cmx",
       "//build/config/fuchsia/test/network_capabilities.test-cmx",
     ]
-  }
-
-  if (is_mac || is_win) {
-    sources += [ "../browser/component_updater/updater_state_unittest.cc" ]
   }
 }
 
