@@ -16,12 +16,17 @@
 # This script implements Puppeteer's `examples/cross-browser.js` scenario using WebDriver BiDi.
 # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js
 
+from pathlib import Path
 import asyncio
 import json
+import logging
 import os
 import websockets
-from pathlib import Path
 
+
+logging.basicConfig(
+    level=logging.DEBUG,
+)
 
 async def get_websocket():
     port = os.getenv('PORT', 8080)
