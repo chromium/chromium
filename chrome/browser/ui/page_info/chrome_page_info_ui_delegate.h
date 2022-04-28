@@ -42,7 +42,11 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
   // Returns "About this site" info for the active page.
   absl::optional<page_info::proto::SiteInfo> GetAboutThisSiteInfo();
 
+  // Opens the source URL in a new tab.
   void AboutThisSiteSourceClicked(GURL url, const ui::Event& event);
+
+  // Handles opening the "More about this page" URL in a new tab.
+  void OpenMoreAboutThisPageUrl(const GURL& url, const ui::Event& event);
 
 #if !BUILDFLAG(IS_ANDROID)
   // If PageInfo should show a link to the site or app's settings page, this

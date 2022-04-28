@@ -4,41 +4,62 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_about_this_site_content_view.h"
 
+#include <memory>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
+#include "components/page_info/core/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/event.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/layout_provider.h"
+
+using Orientation = views::BoxLayout::Orientation;
 
 PageInfoAboutThisSiteContentView::PageInfoAboutThisSiteContentView(
     PageInfo* presenter,
     ChromePageInfoUiDelegate* ui_delegate,
     const page_info::proto::SiteInfo& info)
     : presenter_(presenter), ui_delegate_(ui_delegate), info_(info) {
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-  SetBorder(views::CreateEmptyBorder(layout_provider->GetInsetsMetric(
-      ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON)));
+  SetLayoutManager(std::make_unique<views::BoxLayout>(Orientation::kVertical));
 
-  auto* label = AddChildView(std::make_unique<views::Label>(
-      base::UTF8ToUTF16(info_.description().description()),
-      views::style::CONTEXT_LABEL));
-  label->SetMultiLine(true);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  auto* info_container = AddChildView(std::make_unique<views::View>());
+  info_container->SetLayoutManager(
+      std::make_unique<views::BoxLayout>(Orientation::kVertical));
+  info_container->SetBorder(
+      views::CreateEmptyBorder(ChromeLayoutProvider::Get()->GetInsetsMetric(
+          ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON)));
+  info_container->AddChildView(CreateDescriptionLabel(info_));
+  info_container->AddChildView(CreateSourceLabel(info_));
 
-  AddChildView(CreateSourceLabel(info_));
+  if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSiteMoreInfo) &&
+      info_.has_more_about()) {
+    more_about_button_ = AddChildView(CreateMoreAboutButton(info_));
+  }
   presenter_->InitializeUiState(this, base::DoNothing());
 }
 
 PageInfoAboutThisSiteContentView::~PageInfoAboutThisSiteContentView() = default;
+
+std::unique_ptr<views::View>
+PageInfoAboutThisSiteContentView::CreateDescriptionLabel(
+    const page_info::proto::SiteInfo& info) {
+  auto label = std::make_unique<views::Label>(
+      base::UTF8ToUTF16(info_.description().description()),
+      views::style::CONTEXT_LABEL);
+  label->SetMultiLine(true);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  return label;
+}
 
 std::unique_ptr<views::View>
 PageInfoAboutThisSiteContentView::CreateSourceLabel(
@@ -63,10 +84,31 @@ PageInfoAboutThisSiteContentView::CreateSourceLabel(
   return source_label;
 }
 
+std::unique_ptr<PageInfoHoverButton>
+PageInfoAboutThisSiteContentView::CreateMoreAboutButton(
+    const page_info::proto::SiteInfo& info) {
+  return std::make_unique<PageInfoHoverButton>(
+      base::BindRepeating(
+          &PageInfoAboutThisSiteContentView::MoreAboutButtonClicked,
+          base::Unretained(this)),
+      PageInfoViewFactory::GetAboutThisSiteIcon(),
+      IDS_PAGE_INFO_MORE_ABOUT_THIS_PAGE, std::u16string(),
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_MORE_ABOUT_THIS_PAGE_BUTTON,
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_MORE_ABOUT_THIS_PAGE_TOOLTIP),
+      std::u16string(), PageInfoViewFactory::GetLaunchIcon());
+}
+
 void PageInfoAboutThisSiteContentView::SourceLinkClicked(
     const ui::Event& event) {
   presenter_->RecordPageInfoAction(
       PageInfo::PageInfoAction::PAGE_INFO_ABOUT_THIS_SITE_SOURCE_LINK_CLICKED);
   ui_delegate_->AboutThisSiteSourceClicked(
       GURL(info_.description().source().url()), event);
+}
+
+void PageInfoAboutThisSiteContentView::MoreAboutButtonClicked(
+    const ui::Event& event) {
+  presenter_->RecordPageInfoAction(
+      PageInfo::PageInfoAction::PAGE_INFO_ABOUT_THIS_SITE_MORE_ABOUT_CLICKED);
+  ui_delegate_->OpenMoreAboutThisPageUrl(GURL(info_.more_about().url()), event);
 }

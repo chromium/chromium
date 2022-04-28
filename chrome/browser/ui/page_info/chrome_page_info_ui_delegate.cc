@@ -117,6 +117,18 @@ void ChromePageInfoUiDelegate::AboutThisSiteSourceClicked(
       ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false));
 }
 
+void ChromePageInfoUiDelegate::OpenMoreAboutThisPageUrl(
+    const GURL& url,
+    const ui::Event& event) {
+  // TODO(crbug.com/1250653): Consider moving this to presenter as other methods
+  // that open web pages.
+  web_contents_->OpenURL(content::OpenURLParams(
+      url, content::Referrer(),
+      ui::DispositionFromEventFlags(event.flags(),
+                                    WindowOpenDisposition::NEW_FOREGROUND_TAB),
+      ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false));
+}
+
 bool ChromePageInfoUiDelegate::ShouldShowAsk(ContentSettingsType type) {
   return permissions::PermissionUtil::IsGuardContentSetting(type);
 }
