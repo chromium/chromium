@@ -37,8 +37,7 @@ class SecurityStateTabHelper
   // content::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   // Used by tests to specify a callback to be called when
   // GetVisibleSecurityState() is called.
