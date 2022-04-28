@@ -9,6 +9,7 @@
 #include "chrome/browser/chromeos/app_mode/app_session.h"
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -421,6 +422,30 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
   ASSERT_EQ(1, tab_strip->count());
   EXPECT_EQ("/form.html",
             tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
+}
+
+// Tests that requesting an incognito window when incognito mode is disallowed
+// does not crash, and opens a regular window instead. Regression test for
+// https://crbug.com/1314473
+IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
+                       NewWindow_IncognitoDisallowed) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile* main_profile = profile_manager->GetProfileByPath(
+      ProfileManager::GetPrimaryUserProfilePath());
+  // Disallow incognito.
+  IncognitoModePrefs::SetAvailability(
+      main_profile->GetPrefs(), IncognitoModePrefs::Availability::kDisabled);
+  // Request a new incognito window.
+  base::RunLoop run_loop;
+  browser_service()->NewWindow(
+      /*incognito=*/true, /*should_trigger_session_restore=*/false,
+      /*callback=*/base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+  run_loop.Run();
+  // A regular window opens instead.
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+  Profile* profile = BrowserList::GetInstance()->GetLastActive()->profile();
+  EXPECT_EQ(profile->GetPath(), main_profile->GetPath());
+  EXPECT_FALSE(profile->IsOffTheRecord());
 }
 
 // Tests for lacros-chrome that require `LacrosNonSyncingProfiles` to be

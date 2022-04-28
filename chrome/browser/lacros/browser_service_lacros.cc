@@ -20,6 +20,7 @@
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/feedback_util.h"
 #include "chrome/browser/lacros/system_logs/lacros_system_log_fetcher.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
@@ -188,11 +189,12 @@ void BrowserServiceLacros::NewWindow(bool incognito,
                                      NewWindowCallback callback) {
   if (ProfilePicker::ShouldShowAtLaunch() && !incognito) {
     // Profile picker does not support passing through the incognito param. It
-    // also does not support passing though the `should_trigger_session_restore`
-    // param but that's true very common (left clicking the launcher icon) so
-    // we can't skip the picker in this case. The default behavior for the first
-    // browser window supports session restore, additional windows are opened
-    // blank and thus it works reasonably well for BrowserServiceLacros.
+    // also does not support passing through the
+    // `should_trigger_session_restore` param but that's very common (left
+    // clicking the launcher icon) so we can't skip the picker in this case. The
+    // default behavior for the first browser window supports session restore,
+    // additional windows are opened blank and thus it works reasonably well for
+    // BrowserServiceLacros.
     ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
         ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
     std::move(callback).Run();
@@ -444,6 +446,21 @@ void BrowserServiceLacros::NewWindowWithProfile(
                     "Aborting the requested action.";
     std::move(callback).Run();
     return;
+  }
+
+  switch (IncognitoModePrefs::GetAvailability(profile->GetPrefs())) {
+    case IncognitoModePrefs::Availability::kEnabled:
+      // Default behavior: both incognito and regular mode are allowed.
+      break;
+    case IncognitoModePrefs::Availability::kDisabled:
+      incognito = false;
+      break;
+    case IncognitoModePrefs::Availability::kForced:
+      incognito = true;
+      break;
+    case IncognitoModePrefs::Availability::kNumTypes:
+      NOTREACHED();
+      break;
   }
 
   chrome::NewEmptyWindow(
