@@ -288,20 +288,22 @@ android_apk("weblayer_support_apk") {
 }
 
 script_test("weblayer_shell_wpt") {
-  script = "//testing/scripts/run_android_wpt.py"
+  script = "//testing/scripts/run_wpt_tests.py"
   args = [
-    "--product=android_weblayer",
-    "--weblayer-shell=apks/WebLayerShell.apk",
-    "--weblayer-support=apks/WebLayerSupport.apk",
-    "--webdriver-binary=clang_x64/chromedriver",
+    "--product",
+    "android_weblayer",
+    "--browser-apk",
+    "@WrappedPath(apks/WebLayerShell.apk)",
+    "--additional-apk",
+    "@WrappedPath(apks/WebLayerSupport.apk)",
+    "--webdriver-binary",
+    "@WrappedPath(clang_x64/chromedriver)",
     "-v",
   ]
   data_deps = [
     ":weblayer_shell_apk",
     ":weblayer_support_apk",
-    "//build/android:test_runner_py",
     "//chrome/test/chromedriver:chromedriver($host_toolchain)",
     "//third_party/blink/tools:wpt_tests_android_isolate",
-    "//tools/imagediff",
   ]
 }
