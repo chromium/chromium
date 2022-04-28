@@ -26,6 +26,7 @@
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
+#include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
@@ -1815,9 +1816,9 @@ TEST_F(AttributionManagerImplTest,
   report_sender_->RunCallbacksAndReset(
       {SendResult::Status::kSent, SendResult::Status::kSent});
 
-  // kSuccess = 0.
   histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.AssembleReportStatus", 0, 1);
+      "Conversions.AggregatableReport.AssembleReportStatus",
+      AssembleAggregatableReportStatus::kSuccess, 1);
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly",
       kFirstReportingWindow.InMinutes(), 1);
@@ -1860,9 +1861,9 @@ TEST_F(AttributionManagerImplTest,
   // Event-level report was sent.
   EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 
-  // kAssembleReportFailed = 3.
   histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.AssembleReportStatus", 3, 1);
+      "Conversions.AggregatableReport.AssembleReportStatus",
+      AssembleAggregatableReportStatus::kAssembleReportFailed, 1);
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly",
       kFirstReportingWindow.InMinutes(), 1);
@@ -1885,9 +1886,9 @@ TEST_F(AttributionManagerImplTest, AggregationServiceDisabled_ReportNotSent) {
   // Event-level report was sent.
   EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 
-  // kAggregationServiceUnavailable = 1.
   histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.AssembleReportStatus", 1, 1);
+      "Conversions.AggregatableReport.AssembleReportStatus",
+      AssembleAggregatableReportStatus::kAggregationServiceUnavailable, 1);
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly",
       kFirstReportingWindow.InMinutes(), 1);

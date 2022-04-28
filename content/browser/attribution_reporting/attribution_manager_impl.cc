@@ -5,7 +5,6 @@
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 
 #include <cmath>
-#include <iterator>
 #include <utility>
 
 #include "base/barrier_closure.h"
@@ -17,11 +16,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/time/time.h"
-#include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
+#include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker_impl.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager_impl.h"
@@ -63,16 +61,6 @@ enum class ConversionReportSendOutcome {
   kDropped = 2,
   kFailedToAssemble = 3,
   kMaxValue = kFailedToAssemble,
-};
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class AssembleAggregatableReportStatus {
-  kSuccess = 0,
-  kAggregationServiceUnavailable = 1,
-  kCreateRequestFailed = 2,
-  kAssembleReportFailed = 3,
-  kMaxValue = kAssembleReportFailed,
 };
 
 // The shared-task runner for all attribution storage operations. Note that
@@ -789,77 +777,30 @@ void AttributionManagerImpl::AssembleAggregatableReport(
     return;
   }
 
-  const auto* aggregate_data =
-      absl::get_if<AttributionReport::AggregatableAttributionData>(
-          &report.data());
-  DCHECK(aggregate_data);
-
-  const AttributionInfo& attribution_info = report.attribution_info();
-
-  AggregatableReportSharedInfo::DebugMode debug_mode =
-      attribution_info.source.common_info().debug_key().has_value() &&
-              attribution_info.debug_key.has_value()
-          ? AggregatableReportSharedInfo::DebugMode::kEnabled
-          : AggregatableReportSharedInfo::DebugMode::kDisabled;
-
-  std::vector<AggregationServicePayloadContents::HistogramContribution>
-      contributions;
-  base::ranges::transform(
-      aggregate_data->contributions, std::back_inserter(contributions),
-      [](const auto& contribution) {
-        return AggregationServicePayloadContents::HistogramContribution{
-            .bucket = contribution.key(),
-            .value = static_cast<int>(contribution.value())};
-      });
-
-  absl::optional<AggregatableReportRequest> request =
-      AggregatableReportRequest::Create(
-          AggregationServicePayloadContents(
-              AggregationServicePayloadContents::Operation::kHistogram,
-              std::move(contributions),
-              AggregationServicePayloadContents::AggregationMode::kDefault),
-          AggregatableReportSharedInfo(
-              aggregate_data->initial_report_time, report.PrivacyBudgetKey(),
-              report.external_report_id(),
-              attribution_info.source.common_info().reporting_origin(),
-              debug_mode));
-  if (!request.has_value()) {
-    RecordAssembleAggregatableReportStatus(
-        AssembleAggregatableReportStatus::kCreateRequestFailed);
-    std::move(callback).Run(std::move(report),
-                            SendResult(SendResult::Status::kFailedToAssemble));
-    return;
-  }
-
-  aggregation_service->AssembleReport(
-      std::move(*request),
+  ::content::AssembleAggregatableReport(
+      *aggregation_service, std::move(report),
       base::BindOnce(&AttributionManagerImpl::OnAggregatableReportAssembled,
-                     weak_factory_.GetWeakPtr(), std::move(report),
-                     is_debug_report, std::move(callback)));
+                     weak_factory_.GetWeakPtr(), is_debug_report,
+                     std::move(callback)));
 }
 
 void AttributionManagerImpl::OnAggregatableReportAssembled(
-    AttributionReport report,
     bool is_debug_report,
     ReportSentCallback callback,
-    absl::optional<AggregatableReport> assembled_report,
-    AggregationService::AssemblyStatus status) {
-  RecordAssembleAggregatableReportStatus(
-      assembled_report.has_value()
-          ? AssembleAggregatableReportStatus::kSuccess
-          : AssembleAggregatableReportStatus::kAssembleReportFailed);
+    AttributionReport report,
+    AssembleAggregatableReportStatus status) {
+  RecordAssembleAggregatableReportStatus(status);
 
-  if (!assembled_report.has_value()) {
+  const auto* data =
+      absl::get_if<AttributionReport::AggregatableAttributionData>(
+          &report.data());
+  DCHECK(data);
+
+  if (!data->assembled_report.has_value()) {
     std::move(callback).Run(std::move(report),
                             SendResult(SendResult::Status::kFailedToAssemble));
     return;
   }
-
-  auto* aggregate_data =
-      absl::get_if<AttributionReport::AggregatableAttributionData>(
-          &report.data());
-  DCHECK(aggregate_data);
-  aggregate_data->assembled_report = std::move(*assembled_report);
 
   report_sender_->SendReport(std::move(report), is_debug_report,
                              std::move(callback));

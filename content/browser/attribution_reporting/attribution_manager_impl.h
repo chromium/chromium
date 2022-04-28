@@ -18,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
-#include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_scheduler.h"
@@ -43,7 +42,6 @@ class Origin;
 
 namespace content {
 
-class AggregatableReport;
 class AttributionCookieChecker;
 class AttributionDataHostManager;
 class AttributionStorage;
@@ -53,6 +51,8 @@ class StoragePartitionImpl;
 
 struct DeactivatedSource;
 struct SendResult;
+
+enum class AssembleAggregatableReportStatus : int;
 
 // UI thread class that manages the lifetime of the underlying attribution
 // storage and coordinates sending attribution reports. Owned by the storage
@@ -145,12 +145,10 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void AssembleAggregatableReport(AttributionReport report,
                                   bool is_debug_report,
                                   ReportSentCallback callback);
-  void OnAggregatableReportAssembled(
-      AttributionReport report,
-      bool is_debug_report,
-      ReportSentCallback callback,
-      absl::optional<AggregatableReport> assembled_report,
-      AggregationService::AssemblyStatus status);
+  void OnAggregatableReportAssembled(bool is_debug_report,
+                                     ReportSentCallback callback,
+                                     AttributionReport assembled_report,
+                                     AssembleAggregatableReportStatus status);
   void MarkReportCompleted(AttributionReport::Id report_id);
 
   void OnSourceStored(StorableSource source,
