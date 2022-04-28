@@ -98,8 +98,8 @@ IN_PROC_BROWSER_TEST_P(ThemeSelectionScreenTest, SelectTheme) {
   ShowThemeSelectionScreen();
   Profile* profile = ProfileManager::GetActiveUserProfile();
 
-  EXPECT_EQ(profile->GetPrefs()->GetBoolean(prefs::kDarkModeEnabled), false);
-  EXPECT_EQ(profile->GetPrefs()->GetInteger(prefs::kDarkModeScheduleType), 0);
+  // Expect the default dark mode schedule type to be sunset-to-sunrise.
+  EXPECT_EQ(profile->GetPrefs()->GetInteger(prefs::kDarkModeScheduleType), 1);
 
   test::OobeJS().ExpectVisiblePath(GetParam());
   test::OobeJS().ClickOnPath(GetParam());

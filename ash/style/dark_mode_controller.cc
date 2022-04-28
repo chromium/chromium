@@ -39,7 +39,7 @@ DarkModeController* DarkModeController::Get() {
 void DarkModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kDarkModeScheduleType,
-      static_cast<int>(ScheduledFeature::ScheduleType::kNone));
+      static_cast<int>(ScheduledFeature::ScheduleType::kSunsetToSunrise));
 }
 
 void DarkModeController::SetAutoScheduleEnabled(bool enabled) {
