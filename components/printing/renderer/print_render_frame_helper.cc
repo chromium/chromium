@@ -1331,6 +1331,41 @@ void PrintRenderFrameHelper::PrintRequestedPages() {
   // just return.
 }
 
+void PrintRenderFrameHelper::PrintWithParams(
+    mojom::PrintPagesParamsPtr settings) {
+  DCHECK(!settings->params->dpi.IsEmpty());
+  DCHECK(settings->params->document_cookie);
+
+  ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
+  if (ipc_nesting_level_ > kAllowedIpcDepthForPrint)
+    return;
+
+  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
+  frame->DispatchBeforePrintEvent(/*print_client=*/nullptr);
+  // Don't print if the RenderFrame is gone.
+  if (render_frame_gone_)
+    return;
+
+  // If we are printing a frame with an internal PDF plugin element, find the
+  // plugin node and print that instead.
+  auto plugin_node = delegate_->GetPdfElement(frame);
+
+  // TODO(caseq): have this logic on the caller side?
+  const bool fit_to_paper = !IsPrintingPdfFrame(frame, plugin_node);
+  settings->params->print_scaling_option =
+      fit_to_paper && !settings->params->prefer_css_page_size
+          ? mojom::PrintScalingOption::kFitToPrintableArea
+          : mojom::PrintScalingOption::kSourceSize;
+  SetPrintPagesParams(*settings);
+  prep_frame_view_ = std::make_unique<PrepareFrameAndViewForPrint>(
+      *settings->params, frame, plugin_node, /* ignore_css_margins=*/false);
+  PrintPages();
+  FinishFramePrinting();
+
+  if (!render_frame_gone_)
+    frame->DispatchAfterPrintEvent();
+}
+
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 void PrintRenderFrameHelper::PrintForSystemDialog() {
   ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());

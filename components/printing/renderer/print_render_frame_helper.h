@@ -256,6 +256,7 @@ class PrintRenderFrameHelper
 
   // printing::mojom::PrintRenderFrame:
   void PrintRequestedPages() override;
+  void PrintWithParams(mojom::PrintPagesParamsPtr params) override;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void PrintForSystemDialog() override;
   void SetPrintPreviewUI(

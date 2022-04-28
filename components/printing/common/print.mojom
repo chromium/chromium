@@ -282,6 +282,15 @@ interface PrintRenderFrame {
   // requested page, and then switch back the CSS to display media type.
   PrintRequestedPages();
 
+  // Requests the frame to be printed with specified parameters. This is used
+  // to programmatically produce PDF by request from the browser (e.g. over
+  // DevTools protocol) and, unlike other printing code paths, is not designed
+  // around the legacy protocol between renderer and the browser to support
+  // interactive print preview -- the final print settings are supplied by
+  // the caller and printing is completed without further round-trips to the
+  // browser.
+  PrintWithParams(PrintPagesParams params);
+
   // Tells the RenderFrame to switch the CSS to print media type, render every
   // requested page using the print preview document's frame/node, and then
   // switch the CSS back to display media type.

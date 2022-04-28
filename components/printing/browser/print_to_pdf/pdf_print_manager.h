@@ -102,8 +102,6 @@ class PdfPrintManager : public printing::PrintManager,
   void ReleaseJob(PrintResult result);
 
   raw_ptr<content::RenderFrameHost> printing_rfh_ = nullptr;
-  std::string page_ranges_;
-  printing::mojom::PrintPagesParamsPtr print_pages_params_;
   PrintToPdfCallback callback_;
   std::string data_;
 

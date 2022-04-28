@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
 namespace printing {
@@ -21,6 +22,10 @@ FakePrintRenderFrame::FakePrintRenderFrame(
 FakePrintRenderFrame::~FakePrintRenderFrame() = default;
 
 void FakePrintRenderFrame::PrintRequestedPages() {}
+
+void FakePrintRenderFrame::PrintWithParams(mojom::PrintPagesParamsPtr params) {
+  NOTREACHED();
+}
 
 void FakePrintRenderFrame::PrintForSystemDialog() {}
 
