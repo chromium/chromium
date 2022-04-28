@@ -345,6 +345,7 @@ android_library("content_full_java") {
     "java/src/org/chromium/content_public/browser/LoadUrlParams.java",
     "java/src/org/chromium/content_public/browser/MediaSession.java",
     "java/src/org/chromium/content_public/browser/MediaSessionObserver.java",
+    "java/src/org/chromium/content_public/browser/MessagePayload.java",
     "java/src/org/chromium/content_public/browser/MessagePort.java",
     "java/src/org/chromium/content_public/browser/MotionEventSynthesizer.java",
     "java/src/org/chromium/content_public/browser/NavigationController.java",
@@ -635,6 +636,7 @@ junit_binary("content_junit_tests") {
     "junit/src/org/chromium/content/browser/selection/SelectionPopupControllerTest.java",
     "junit/src/org/chromium/content/browser/selection/SmartSelectionEventProcessorTest.java",
     "junit/src/org/chromium/content/browser/sms/SmsProviderGmsTest.java",
+    "junit/src/org/chromium/content_public/browser/MessagePayloadTest.java",
   ]
   deps = [
     ":content_java",

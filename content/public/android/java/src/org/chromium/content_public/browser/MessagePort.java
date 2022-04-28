@@ -21,10 +21,10 @@ public interface MessagePort {
     public interface MessageCallback {
         /**
          * Sent when the associated {@link MessagePort} gets a postMessage.
-         * @param message   The message that was received.
+         * @param messagePayload   The message payload that was received.
          * @param sentPorts The {@link MessagePort}s that were sent if any.
          */
-        void onMessage(String message, MessagePort[] sentPorts);
+        void onMessage(MessagePayload messagePayload, MessagePort[] sentPorts);
     }
 
     /**
@@ -55,7 +55,7 @@ public interface MessagePort {
 
     /**
      * @return Whether the port has been transferred using
-     *         {@link MessagePort#postMessage(String, MessagePort[])} before.
+     *         {@link MessagePort#postMessage(MessagePayload, MessagePort[])} before.
      */
     boolean isTransferred();
 
@@ -75,8 +75,8 @@ public interface MessagePort {
 
     /**
      * Send a postMessage request through this port to its designated receiving end.
-     * @param message   The message to be sent.
+     * @param messagePayload   The message payload to be sent.
      * @param sentPorts The ports to be transferred.
      */
-    void postMessage(String message, MessagePort[] sentPorts);
+    void postMessage(MessagePayload messagePayload, MessagePort[] sentPorts);
 }

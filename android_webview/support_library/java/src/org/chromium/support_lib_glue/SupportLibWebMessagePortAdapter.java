@@ -8,6 +8,7 @@ import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.rec
 
 import android.os.Handler;
 
+import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.support_lib_boundary.WebMessageBoundaryInterface;
 import org.chromium.support_lib_boundary.WebMessageCallbackBoundaryInterface;
@@ -37,7 +38,8 @@ class SupportLibWebMessagePortAdapter implements WebMessagePortBoundaryInterface
         WebMessageBoundaryInterface messageBoundaryInterface =
                 BoundaryInterfaceReflectionUtil.castToSuppLibClass(
                         WebMessageBoundaryInterface.class, message);
-        mPort.postMessage(messageBoundaryInterface.getData(),
+        mPort.postMessage(SupportLibWebMessagePayloadAdapter.fromWebMessageBoundaryInterface(
+                                  messageBoundaryInterface),
                 toMessagePorts(messageBoundaryInterface.getPorts()));
     }
 
@@ -64,9 +66,9 @@ class SupportLibWebMessagePortAdapter implements WebMessagePortBoundaryInterface
                                 WebMessageCallbackBoundaryInterface.class, callback));
         mPort.setMessageCallback(new MessagePort.MessageCallback() {
             @Override
-            public void onMessage(String message, MessagePort[] ports) {
+            public void onMessage(MessagePayload messagePayload, MessagePort[] ports) {
                 callbackAdapter.onMessage(SupportLibWebMessagePortAdapter.this,
-                        new SupportLibWebMessageAdapter(message, ports));
+                        new SupportLibWebMessageAdapter(messagePayload, ports));
             }
         }, handler);
     }

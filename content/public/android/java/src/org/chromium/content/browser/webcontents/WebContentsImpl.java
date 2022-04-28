@@ -46,6 +46,7 @@ import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.ImageDownloadCallback;
 import org.chromium.content_public.browser.JavaScriptCallback;
+import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -710,8 +711,8 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @Override
-    public void postMessageToMainFrame(
-            String message, String sourceOrigin, String targetOrigin, MessagePort[] ports) {
+    public void postMessageToMainFrame(MessagePayload messagePayload, String sourceOrigin,
+            String targetOrigin, MessagePort[] ports) {
         if (ports != null) {
             for (MessagePort port : ports) {
                 if (port.isClosed() || port.isTransferred()) {
@@ -727,7 +728,15 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
             targetOrigin = "";
         }
         WebContentsImplJni.get().postMessageToMainFrame(mNativeWebContentsAndroid,
-                WebContentsImpl.this, message, sourceOrigin, targetOrigin, ports);
+                WebContentsImpl.this, messagePayload.getAsString(), sourceOrigin, targetOrigin,
+                ports);
+    }
+
+    @Deprecated
+    @Override
+    public void postMessageToMainFrame(final String message, final String sourceOrigin,
+            final String targetOrigin, @Nullable final MessagePort[] ports) {
+        postMessageToMainFrame(new MessagePayload(message), sourceOrigin, targetOrigin, ports);
     }
 
     @Override

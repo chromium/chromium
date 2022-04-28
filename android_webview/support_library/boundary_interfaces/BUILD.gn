@@ -23,6 +23,7 @@ android_library("boundary_interface_java") {
     "src/org/chromium/support_lib_boundary/WebMessageBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebMessageCallbackBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebMessageListenerBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/WebMessagePayloadBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebMessagePortBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebResourceErrorBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebResourceRequestBoundaryInterface.java",

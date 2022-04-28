@@ -368,12 +368,20 @@ public interface WebContents extends Parcelable {
     /**
      * Post a message to main frame.
      *
-     * @param message   The message
+     * @param messagePayload   The message payload.
      * @param targetOrigin  The target origin. If the target origin is a "*" or a
      *                  empty string, it indicates a wildcard target origin.
      * @param ports The sent message ports, if any. Pass null if there is no
      *                  message ports to pass.
      */
+    void postMessageToMainFrame(MessagePayload messagePayload, String sourceOrigin,
+            String targetOrigin, @Nullable MessagePort[] ports);
+
+    /**
+     * Deprecated, use {@link #postMessageToMainFrame(MessagePayload, String, String,
+     * MessagePort[])} This is used in downstream that not support MessagePayload.
+     */
+    @Deprecated
     void postMessageToMainFrame(String message, String sourceOrigin, String targetOrigin,
             @Nullable MessagePort[] ports);
 

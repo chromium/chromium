@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.webkit.WebMessage;
 import android.webkit.WebMessagePort;
 
+import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 
 /**
@@ -23,7 +24,8 @@ public class WebMessagePortAdapter extends WebMessagePort {
 
     @Override
     public void postMessage(WebMessage message) {
-        mPort.postMessage(message.getData(), toMessagePorts(message.getPorts()));
+        mPort.postMessage(
+                new MessagePayload(message.getData()), toMessagePorts(message.getPorts()));
     }
 
     @Override
@@ -40,9 +42,9 @@ public class WebMessagePortAdapter extends WebMessagePort {
     public void setWebMessageCallback(final WebMessageCallback callback, final Handler handler) {
         mPort.setMessageCallback(new MessagePort.MessageCallback() {
             @Override
-            public void onMessage(String message, MessagePort[] ports) {
+            public void onMessage(MessagePayload messagePayload, MessagePort[] ports) {
                 callback.onMessage(WebMessagePortAdapter.this,
-                        new WebMessage(message, fromMessagePorts(ports)));
+                        new WebMessage(messagePayload.getAsString(), fromMessagePorts(ports)));
             }
         }, handler);
     }
