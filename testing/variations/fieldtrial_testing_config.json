@@ -3757,27 +3757,6 @@
             ]
         }
     ],
-    "HatsAudio": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "prob": "0.01",
-                        "survey_cycle_length": "90",
-                        "survey_start_date_ms": "1642608000000",
-                        "trigger_id": "cVHSWE7RR0jBnuKU19R0ThFKQTU5"
-                    },
-                    "enable_features": [
-                        "HappinessTrackingAudio"
-                    ]
-                }
-            ]
-        }
-    ],
     "HatsOnboardingExperience": [
         {
             "platforms": [
