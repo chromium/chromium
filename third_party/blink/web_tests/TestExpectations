@@ -3381,6 +3381,13 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac10.12 ] external/wpt/html/cross-origin-embedder-policy/credentialless/cross-origin-isolated.window.html [ Timeout ]
+crbug.com/626703 [ Mac10.12 ] external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Timeout ]
+crbug.com/626703 [ Mac10.12 ] external/wpt/reporting/cross-origin-reports-isolated.https.sub.html [ Timeout ]
+crbug.com/626703 [ Mac10.12 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-yes-subdomain-child2-yes-subdomain.sub.https.html [ Timeout ]
+crbug.com/626703 [ Mac10.12 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/document-domain.sub.https.html [ Timeout ]
+crbug.com/626703 [ Mac10.12 ] virtual/scroll-unification/external/wpt/dom/events/scrolling/scrollend-event-fired-after-snap.html [ Timeout ]
+crbug.com/626703 [ Mac10.12 ] virtual/third-party-storage-partitioning/external/wpt/webmessaging/broadcastchannel/cross-partition.https.tentative.html [ Timeout ]
 crbug.com/626703 [ Mac10.12 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/navigate-ancestor-nested-fenced-frame.https.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/redirect.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/shared-worker.https.window.html [ Timeout ]

@@ -4,7 +4,8 @@ FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive \
     DEBCONF_NONINTERACTIVE_SEEN=true
 
-# General requirements not in the base image
+# Documentation is generated using Python 3.9 due to spinx-js not
+# supporting 3.10: https://github.com/mozilla/sphinx-js/issues/186
 RUN apt-get -qqy update \
   && apt-get -qqy install git npm python3.9 python3.9-venv
 
