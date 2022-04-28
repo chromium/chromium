@@ -5,19 +5,20 @@
 #ifndef CHROMEOS_NETWORK_MANAGED_NETWORK_CONFIGURATION_HANDLER_IMPL_H_
 #define CHROMEOS_NETWORK_MANAGED_NETWORK_CONFIGURATION_HANDLER_IMPL_H_
 
-#include <map>
 #include <memory>
-#include <set>
 #include <string>
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "chromeos/network/network_profile_observer.h"
 #include "chromeos/network/policy_applicator.h"
+#include "chromeos/network/profile_policies.h"
 
 namespace base {
 class Value;
@@ -155,12 +156,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   friend class NetworkHandler;
   friend class ProhibitedTechnologiesHandlerTest;
 
-  struct Policies;
-  typedef std::map<std::string, std::unique_ptr<Policies>> UserToPoliciesMap;
-  typedef std::map<std::string, std::unique_ptr<PolicyApplicator>>
-      UserToPolicyApplicatorMap;
-  typedef std::map<std::string, std::set<std::string>>
-      UserToModifiedPoliciesMap;
+  using UserToPoliciesMap =
+      base::flat_map<std::string, std::unique_ptr<ProfilePolicies>>;
+  using UserToPolicyApplicatorMap =
+      base::flat_map<std::string, std::unique_ptr<PolicyApplicator>>;
+  using UserToModifiedPoliciesMap =
+      base::flat_map<std::string, base::flat_set<std::string>>;
 
   // The type of properties to send after a Get{Managed}Properties call.
   enum class PropertiesType {
@@ -180,12 +181,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
             NetworkDeviceHandler* network_device_handler,
             ProhibitedTechnologiesHandler* prohibitied_technologies_handler);
 
-  // Returns the Policies for the given |userhash|, or the device policies if
-  // |userhash| is empty.
-  const Policies* GetPoliciesForUser(const std::string& userhash) const;
-  // Returns the Policies for the given network |profile|. These could be either
-  // user or device policies.
-  const Policies* GetPoliciesForProfile(const NetworkProfile& profile) const;
+  // Returns the ProfilePolicies for the given |userhash|, or the device
+  // policies if |userhash| is empty.
+  const ProfilePolicies* GetPoliciesForUser(const std::string& userhash) const;
+  // Returns the ProfilePolicies for the given network |profile|. These could be
+  // either user or device policies.
+  const ProfilePolicies* GetPoliciesForProfile(
+      const NetworkProfile& profile) const;
 
   // Called when a policy identified by |guid| has been applied to the network
   // identified by |service_path|. Notifies observers and calls |callback|.
@@ -241,7 +243,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   // policy application. Returns true if policy application was started and
   // false if it was queued or delayed.
   bool ApplyOrQueuePolicies(const std::string& userhash,
-                            std::set<std::string>* modified_policies);
+                            base::flat_set<std::string>* modified_policies);
 
   void set_ui_proxy_config_service(
       UIProxyConfigService* ui_proxy_config_service);

@@ -10,6 +10,8 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -39,8 +41,9 @@ void LogErrorMessageAndInvokeCallback(base::OnceClosure callback,
   std::move(callback).Run();
 }
 
-const base::Value* GetByGUID(const std::map<std::string, base::Value>& policies,
-                             const std::string& guid) {
+const base::Value* GetByGUID(
+    const base::flat_map<std::string, base::Value>& policies,
+    const std::string& guid) {
   auto it = policies.find(guid);
   if (it == policies.end())
     return nullptr;
@@ -48,7 +51,7 @@ const base::Value* GetByGUID(const std::map<std::string, base::Value>& policies,
 }
 
 const base::Value* FindMatchingPolicy(
-    const std::map<std::string, base::Value>& policies,
+    const base::flat_map<std::string, base::Value>& policies,
     const base::Value& actual_network) {
   for (auto& policy : policies) {
     if (policy_util::IsPolicyMatching(policy.second, actual_network))
@@ -118,12 +121,12 @@ const char kEthernetAnyService[] = "ethernet_any";
 
 PolicyApplicator::PolicyApplicator(
     const NetworkProfile& profile,
-    std::map<std::string, base::Value> all_policies,
+    base::flat_map<std::string, base::Value> all_policies,
     base::Value global_network_config,
     ConfigurationHandler* handler,
     CellularPolicyHandler* cellular_policy_handler,
     ManagedCellularPrefHandler* managed_cellular_pref_handler,
-    std::set<std::string>* modified_policy_guids)
+    base::flat_set<std::string>* modified_policy_guids)
     : cellular_policy_handler_(cellular_policy_handler),
       handler_(handler),
       managed_cellular_pref_handler_(managed_cellular_pref_handler),
@@ -437,7 +440,8 @@ void PolicyApplicator::ApplyRemainingPolicies() {
   // All profile entries were compared to policies. |remaining_policy_guids_|
   // contains all modified policies that didn't match any entry. For these
   // remaining policies, new configurations have to be created.
-  for (std::set<std::string>::iterator it = remaining_policy_guids_.begin();
+  for (base::flat_set<std::string>::iterator it =
+           remaining_policy_guids_.begin();
        it != remaining_policy_guids_.end();) {
     const std::string& guid = *it;
     const base::Value* network_policy = GetByGUID(all_policies_, guid);

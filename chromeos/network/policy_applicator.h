@@ -5,13 +5,13 @@
 #ifndef CHROMEOS_NETWORK_POLICY_APPLICATOR_H_
 #define CHROMEOS_NETWORK_POLICY_APPLICATOR_H_
 
-#include <map>
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
@@ -59,12 +59,12 @@ class PolicyApplicator {
   // |handler| must outlive this object.
   // |modified_policy_guids| must not be nullptr and will be empty afterwards.
   PolicyApplicator(const NetworkProfile& profile,
-                   std::map<std::string, base::Value> all_policies,
+                   base::flat_map<std::string, base::Value> all_policies,
                    base::Value global_network_config,
                    ConfigurationHandler* handler,
                    CellularPolicyHandler* cellular_policy_handler,
                    ManagedCellularPrefHandler* managed_cellular_pref_handler,
-                   std::set<std::string>* modified_policy_guids);
+                   base::flat_set<std::string>* modified_policy_guids);
 
   PolicyApplicator(const PolicyApplicator&) = delete;
   PolicyApplicator& operator=(const PolicyApplicator&) = delete;
@@ -144,14 +144,14 @@ class PolicyApplicator {
   // |handler_|.
   void NotifyConfigurationHandlerAndFinish();
 
-  std::set<std::string> remaining_policy_guids_;
-  std::set<std::string> pending_get_entry_calls_;
+  base::flat_set<std::string> remaining_policy_guids_;
+  base::flat_set<std::string> pending_get_entry_calls_;
 
   CellularPolicyHandler* cellular_policy_handler_ = nullptr;
   ConfigurationHandler* handler_;
   ManagedCellularPrefHandler* managed_cellular_pref_handler_ = nullptr;
   NetworkProfile profile_;
-  std::map<std::string, base::Value> all_policies_;
+  base::flat_map<std::string, base::Value> all_policies_;
   base::Value global_network_config_;
 
   SEQUENCE_CHECKER(sequence_checker_);

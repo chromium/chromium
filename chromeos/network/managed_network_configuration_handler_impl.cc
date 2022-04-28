@@ -4,7 +4,6 @@
 
 #include "chromeos/network/managed_network_configuration_handler_impl.h"
 
-#include <iterator>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -52,10 +51,6 @@ namespace chromeos {
 
 namespace {
 
-// Maps network policy guid to the actual ONC policy NetworkConfiguration for
-// that network.
-using GuidToPolicyMap = std::map<std::string, base::Value>;
-
 const char kEmptyServicePath[] = "/";
 
 // These are error strings used for error callbacks. None of these error
@@ -89,32 +84,6 @@ void LogErrorWithDictAndCallCallback(base::OnceClosure callback,
                              device_event_log::LOG_TYPE_NETWORK,
                              device_event_log::LOG_LEVEL_ERROR, error_name);
   std::move(callback).Run();
-}
-
-const base::Value* GetPolicyDictByGUID(const GuidToPolicyMap& policies,
-                                       const std::string& guid) {
-  auto it = policies.find(guid);
-  if (it == policies.end())
-    return nullptr;
-  return &(it->second);
-}
-
-GuidToPolicyMap CloneGuidToPolicyMap(const GuidToPolicyMap& map) {
-  GuidToPolicyMap result;
-  std::transform(map.begin(), map.end(), std::inserter(result, result.end()),
-                 [](const auto& pair) {
-                   return std::make_pair(pair.first, pair.second.Clone());
-                 });
-  return result;
-}
-
-bool HasMatchingPolicy(const GuidToPolicyMap& policies,
-                       const base::Value& actual_network) {
-  return std::find_if(policies.begin(), policies.end(),
-                      [&actual_network](const auto& policy) {
-                        return policy_util::IsPolicyMatching(policy.second,
-                                                             actual_network);
-                      }) != policies.end();
 }
 
 std::string GetStringFromDictionary(const base::Value& dict, const char* key) {
@@ -182,11 +151,6 @@ bool EnablesUnmanagedWifiAutoconnect(const base::Value& onc_dict) {
 }
 
 }  // namespace
-
-struct ManagedNetworkConfigurationHandlerImpl::Policies {
-  GuidToPolicyMap per_network_config;
-  base::Value global_network_config{base::Value::Type::DICTIONARY};
-};
 
 void ManagedNetworkConfigurationHandlerImpl::AddObserver(
     NetworkPolicyObserver* observer) {
@@ -282,7 +246,7 @@ void ManagedNetworkConfigurationHandlerImpl::SetProperties(
                  << NetworkPathId(service_path)
                  << ". Profile: " << profile->ToDebugString();
 
-  const Policies* policies = GetPoliciesForProfile(*profile);
+  const ProfilePolicies* policies = GetPoliciesForProfile(*profile);
   if (!policies) {
     InvokeErrorCallback(service_path, std::move(error_callback),
                         kPoliciesNotInitialized);
@@ -331,13 +295,12 @@ void ManagedNetworkConfigurationHandlerImpl::SetProperties(
   onc::FillInHexSSIDFieldsInOncObject(onc::kNetworkConfigurationSignature,
                                       &validated_user_settings);
 
-  const base::Value* network_policy =
-      GetPolicyDictByGUID(policies->per_network_config, guid);
+  const base::Value* network_policy = policies->GetPolicyByGuid(guid);
   if (network_policy)
     NET_LOG(DEBUG) << "Configuration is managed: " << NetworkId(state);
 
   base::Value shill_dictionary = policy_util::CreateShillConfiguration(
-      *profile, guid, &policies->global_network_config, network_policy,
+      *profile, guid, policies->GetGlobalNetworkConfig(), network_policy,
       &validated_user_settings);
 
   SetShillProperties(service_path, std::move(shill_dictionary),
@@ -415,7 +378,7 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
                                       &validated_properties);
 
   // Make sure the network is not configured through a user policy.
-  const Policies* policies = nullptr;
+  const ProfilePolicies* policies = nullptr;
   if (!userhash.empty()) {
     policies = GetPoliciesForUser(userhash);
     if (!policies) {
@@ -424,7 +387,7 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
       return;
     }
 
-    if (HasMatchingPolicy(policies->per_network_config, validated_properties)) {
+    if (policies->HasPolicyMatchingShillProperties(validated_properties)) {
       InvokeErrorCallback("", std::move(error_callback),
                           kNetworkAlreadyConfigured);
       return;
@@ -438,7 +401,7 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
     return;
   }
 
-  if (HasMatchingPolicy(policies->per_network_config, validated_properties)) {
+  if (policies->HasPolicyMatchingShillProperties(validated_properties)) {
     InvokeErrorCallback("", std::move(error_callback),
                         kNetworkAlreadyConfigured);
     return;
@@ -527,20 +490,21 @@ void ManagedNetworkConfigurationHandlerImpl::SetPolicy(
 
   // |userhash| must be empty for device policies.
   DCHECK(onc_source != ::onc::ONC_SOURCE_DEVICE_POLICY || userhash.empty());
-  Policies* policies = nullptr;
+  ProfilePolicies* policies = nullptr;
   if (base::Contains(policies_by_user_, userhash)) {
     policies = policies_by_user_[userhash].get();
   } else {
-    policies = new Policies;
-    policies_by_user_[userhash] = base::WrapUnique(policies);
+    auto policies_owned = std::make_unique<ProfilePolicies>();
+    policies = policies_owned.get();
+    policies_by_user_[userhash] = std::move(policies_owned);
   }
 
-  policies->global_network_config = global_network_config.Clone();
+  policies->SetGlobalNetworkConfig(global_network_config);
 
   // Update prohibited technologies.
   if (prohibited_technologies_handler_) {
     const base::Value* prohibited_list =
-        policies->global_network_config.FindListKey(
+        policies->GetGlobalNetworkConfig()->FindListKey(
             ::onc::global_network_config::kDisableNetworkTypes);
     if (prohibited_list) {
       // Prohibited technologies are only allowed in device policy.
@@ -551,33 +515,10 @@ void ManagedNetworkConfigurationHandlerImpl::SetPolicy(
     }
   }
 
-  GuidToPolicyMap old_per_network_config;
-  policies->per_network_config.swap(old_per_network_config);
-
-  // This stores all GUIDs of policies that have changed or are new.
-  std::set<std::string> modified_policies;
-
-  for (const base::Value& network : network_configs_onc.GetListDeprecated()) {
-    const std::string* guid_str =
-        network.FindStringKey(::onc::network_config::kGUID);
-    DCHECK(guid_str && !guid_str->empty());
-    std::string guid = *guid_str;
-
-    if (policies->per_network_config.count(guid) > 0) {
-      NET_LOG(ERROR) << "ONC from: " << ToDebugString(onc_source, userhash)
-                     << " Contains multiple entries for the same guid: "
-                     << guid;
-    }
-    policies->per_network_config[guid] = network.Clone();
-
-    const base::Value* old_entry =
-        GetPolicyDictByGUID(old_per_network_config, guid);
-    if (!old_entry || *old_entry != network)
-      modified_policies.insert(guid);
-  }
-
-  old_per_network_config.clear();
+  base::flat_set<std::string> modified_policies =
+      policies->ApplyOncNetworkConfigurationList(network_configs_onc);
   ApplyOrQueuePolicies(userhash, &modified_policies);
+
   for (auto& observer : observers_)
     observer.PoliciesChanged(userhash);
 }
@@ -589,7 +530,7 @@ bool ManagedNetworkConfigurationHandlerImpl::IsAnyPolicyApplicationRunning()
 
 bool ManagedNetworkConfigurationHandlerImpl::ApplyOrQueuePolicies(
     const std::string& userhash,
-    std::set<std::string>* modified_policies) {
+    base::flat_set<std::string>* modified_policies) {
   DCHECK(modified_policies);
 
   const NetworkProfile* profile =
@@ -613,13 +554,14 @@ bool ManagedNetworkConfigurationHandlerImpl::ApplyOrQueuePolicies(
     return false;
   }
 
-  const Policies* policies = policies_by_user_[userhash].get();
+  const ProfilePolicies* policies = policies_by_user_[userhash].get();
   DCHECK(policies);
 
   auto policy_applicator = std::make_unique<PolicyApplicator>(
-      *profile, CloneGuidToPolicyMap(policies->per_network_config),
-      policies->global_network_config.Clone(), this, cellular_policy_handler_,
-      managed_cellular_pref_handler_, modified_policies);
+      *profile, policies->GetGuidToPolicyMap(),
+      policies->GetGlobalNetworkConfig()->Clone(), this,
+      cellular_policy_handler_, managed_cellular_pref_handler_,
+      modified_policies);
   auto* policy_applicator_unowned = policy_applicator.get();
   policy_applicators_[userhash] = std::move(policy_applicator);
   policy_applicator_unowned->Run();
@@ -635,7 +577,7 @@ void ManagedNetworkConfigurationHandlerImpl::OnProfileAdded(
     const NetworkProfile& profile) {
   VLOG(1) << "Adding profile: " << profile.ToDebugString();
 
-  const Policies* policies = GetPoliciesForProfile(profile);
+  const ProfilePolicies* policies = GetPoliciesForProfile(profile);
   if (!policies) {
     VLOG(1) << "The relevant policy is not initialized, "
             << "postponing policy application.";
@@ -643,12 +585,7 @@ void ManagedNetworkConfigurationHandlerImpl::OnProfileAdded(
     return;
   }
 
-  std::set<std::string> policy_guids;
-  for (auto it = policies->per_network_config.begin();
-       it != policies->per_network_config.end(); ++it) {
-    policy_guids.insert(it->first);
-  }
-
+  base::flat_set<std::string> policy_guids = policies->GetAllPolicyGuids();
   const bool started_policy_application =
       ApplyOrQueuePolicies(profile.userhash, &policy_guids);
   DCHECK(started_policy_application);
@@ -715,7 +652,7 @@ void ManagedNetworkConfigurationHandlerImpl::OnPoliciesApplied(
   policy_applicators_.erase(userhash);
 
   if (base::Contains(queued_modified_policies_, userhash)) {
-    std::set<std::string> modified_policies;
+    base::flat_set<std::string> modified_policies;
     queued_modified_policies_[userhash].swap(modified_policies);
     // Remove |userhash| from the queue.
     queued_modified_policies_.erase(userhash);
@@ -757,10 +694,9 @@ const base::Value* ManagedNetworkConfigurationHandlerImpl::FindPolicyByGUID(
   *onc_source = ::onc::ONC_SOURCE_NONE;
 
   if (!userhash.empty()) {
-    const Policies* user_policies = GetPoliciesForUser(userhash);
+    const ProfilePolicies* user_policies = GetPoliciesForUser(userhash);
     if (user_policies) {
-      const base::Value* policy =
-          GetPolicyDictByGUID(user_policies->per_network_config, guid);
+      const base::Value* policy = user_policies->GetPolicyByGuid(guid);
       if (policy) {
         *onc_source = ::onc::ONC_SOURCE_USER_POLICY;
         return policy;
@@ -768,10 +704,10 @@ const base::Value* ManagedNetworkConfigurationHandlerImpl::FindPolicyByGUID(
     }
   }
 
-  const Policies* device_policies = GetPoliciesForUser(std::string());
+  const ProfilePolicies* device_policies =
+      GetPoliciesForUser(/*userhash=*/std::string());
   if (device_policies) {
-    const base::Value* policy =
-        GetPolicyDictByGUID(device_policies->per_network_config, guid);
+    const base::Value* policy = device_policies->GetPolicyByGuid(guid);
     if (policy) {
       *onc_source = ::onc::ONC_SOURCE_DEVICE_POLICY;
       return policy;
@@ -783,21 +719,21 @@ const base::Value* ManagedNetworkConfigurationHandlerImpl::FindPolicyByGUID(
 
 bool ManagedNetworkConfigurationHandlerImpl::HasAnyPolicyNetwork(
     const std::string& userhash) const {
-  const Policies* policies = GetPoliciesForUser(userhash);
+  const ProfilePolicies* policies = GetPoliciesForUser(userhash);
   if (!policies)
     return false;
 
-  return !policies->per_network_config.empty();
+  return !policies->GetAllPolicyGuids().empty();
 }
 
 const base::Value*
 ManagedNetworkConfigurationHandlerImpl::GetGlobalConfigFromPolicy(
     const std::string& userhash) const {
-  const Policies* policies = GetPoliciesForUser(userhash);
+  const ProfilePolicies* policies = GetPoliciesForUser(userhash);
   if (!policies)
     return nullptr;
 
-  return &policies->global_network_config;
+  return policies->GetGlobalNetworkConfig();
 }
 
 const base::Value*
@@ -816,12 +752,11 @@ ManagedNetworkConfigurationHandlerImpl::FindPolicyByGuidAndProfile(
     return nullptr;
   }
 
-  const Policies* policies = GetPoliciesForProfile(*profile);
+  const ProfilePolicies* policies = GetPoliciesForProfile(*profile);
   if (!policies)
     return nullptr;
 
-  const base::Value* policy =
-      GetPolicyDictByGUID(policies->per_network_config, guid);
+  const base::Value* policy = policies->GetPolicyByGuid(guid);
   if (policy && onc_source) {
     *onc_source = (profile->userhash.empty() ? ::onc::ONC_SOURCE_DEVICE_POLICY
                                              : ::onc::ONC_SOURCE_USER_POLICY);
@@ -931,7 +866,7 @@ ManagedNetworkConfigurationHandlerImpl::GetBlockedHexSSIDs() const {
   return blocked_hex_ssids;
 }
 
-const ManagedNetworkConfigurationHandlerImpl::Policies*
+const ProfilePolicies*
 ManagedNetworkConfigurationHandlerImpl::GetPoliciesForUser(
     const std::string& userhash) const {
   UserToPoliciesMap::const_iterator it = policies_by_user_.find(userhash);
@@ -940,7 +875,7 @@ ManagedNetworkConfigurationHandlerImpl::GetPoliciesForUser(
   return it->second.get();
 }
 
-const ManagedNetworkConfigurationHandlerImpl::Policies*
+const ProfilePolicies*
 ManagedNetworkConfigurationHandlerImpl::GetPoliciesForProfile(
     const NetworkProfile& profile) const {
   DCHECK(profile.type() != NetworkProfile::TYPE_SHARED ||
@@ -1199,7 +1134,7 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
   const base::Value* network_policy = nullptr;
   const base::Value* global_policy = nullptr;
   if (profile) {
-    const Policies* policies = GetPoliciesForProfile(*profile);
+    const ProfilePolicies* policies = GetPoliciesForProfile(*profile);
     if (!policies) {
       NET_LOG(ERROR) << "GetManagedProperties failed: "
                      << kPoliciesNotInitialized;
@@ -1208,8 +1143,8 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
       return;
     }
     if (!guid->empty())
-      network_policy = GetPolicyDictByGUID(policies->per_network_config, *guid);
-    global_policy = &policies->global_network_config;
+      network_policy = policies->GetPolicyByGuid(*guid);
+    global_policy = policies->GetGlobalNetworkConfig();
   }
 
   base::Value augmented_properties = policy_util::CreateManagedONC(
