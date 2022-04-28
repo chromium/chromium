@@ -438,8 +438,6 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
       output_queue_->SetFormat(fourcc.ToV4L2PixFmt(), picked_size, 0);
   DCHECK(format);
   gfx::Size adjusted_size(format->fmt.pix_mp.width, format->fmt.pix_mp.height);
-  DCHECK_EQ(adjusted_size.width() % 16, 0);
-  DCHECK_EQ(adjusted_size.height() % 16, 0);
   if (!gfx::Rect(adjusted_size).Contains(gfx::Rect(picked_size))) {
     VLOGF(1) << "The adjusted coded size (" << adjusted_size.ToString()
              << ") should contains the original coded size("
