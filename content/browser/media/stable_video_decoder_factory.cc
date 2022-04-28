@@ -5,6 +5,7 @@
 #include "content/public/browser/stable_video_decoder_factory.h"
 
 #include "base/threading/sequence_local_storage_slot.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/service_process_host.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"

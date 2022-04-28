@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "content/browser/ml/ml_service_impl_cros.h"
 #else
