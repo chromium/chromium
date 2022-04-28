@@ -1904,7 +1904,7 @@
           '--ozone-platform=headless',
         ],
         'swarming': {
-          'shards': 6,
+          'shards': 8,
         },
       },
       'unit_tests': {
