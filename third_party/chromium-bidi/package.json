@@ -19,7 +19,10 @@
   "files": [
     "src/.build/"
   ],
-  "repository": "GoogleChromeLabs/chromium-bidi",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GoogleChromeLabs/chromium-bidi.git"
+  },
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
   "dependencies": {
