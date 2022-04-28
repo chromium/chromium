@@ -1391,12 +1391,15 @@ void AppsGridView::CalculateIdealBounds() {
       view_model_.view_size() + pulsing_blocks_model_.view_size();
   int slot_index = 0;
   for (int i = 0; i < total_views; ++i) {
-    AppListItemView* item_view = view_model_.view_at(i);
-    if (i < view_model_.view_size() && item_view == drag_view_) {
+    // NOTE: Because of pulsing blocks, `i` can count up to a value higher than
+    // the view model size. So verify that `i` is less than the view model size
+    // before fetching at index `i` from the view model.
+    if (i < view_model_.view_size() && view_model_.view_at(i) == drag_view_) {
       continue;
     }
 
-    if (i < view_model_.view_size() && item_view == view_with_locked_position) {
+    if (i < view_model_.view_size() &&
+        view_model_.view_at(i) == view_with_locked_position) {
       SetIdealBoundsForViewToGridIndex(i, open_folder_info_->grid_index);
       continue;
     }
@@ -1409,7 +1412,8 @@ void AppsGridView::CalculateIdealBounds() {
       view_index = view_structure_.GetIndexFromModelIndex(slot_index);
     }
 
-    item_view->SetMostRecentGridIndex(view_index, cols_);
+    if (i < view_model_.view_size())
+      view_model_.view_at(i)->SetMostRecentGridIndex(view_index, cols_);
     SetIdealBoundsForViewToGridIndex(i, view_index);
     ++slot_index;
   }
