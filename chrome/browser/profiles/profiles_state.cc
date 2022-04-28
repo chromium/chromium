@@ -37,6 +37,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
 #include "chromeos/login/login_state/login_state.h"
 #else
 #include <algorithm>
@@ -306,6 +307,18 @@ bool IsKioskSession() {
   return false;
 #endif
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Implemented to have the same logic as user_manager::User::HasGaiaAccount()
+bool SessionHasGaiaAccount() {
+  auto* lacros_service = chromeos::LacrosService::Get();
+  DCHECK(lacros_service);
+  crosapi::mojom::SessionType session_type =
+      lacros_service->init_params()->session_type;
+  return session_type == crosapi::mojom::SessionType::kRegularSession ||
+         session_type == crosapi::mojom::SessionType::kChildSession;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 std::u16string GetDefaultNameForNewEnterpriseProfile(

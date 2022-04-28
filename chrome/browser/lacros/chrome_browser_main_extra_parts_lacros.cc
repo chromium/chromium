@@ -29,6 +29,7 @@
 #include "chrome/browser/lacros/web_page_info_lacros.h"
 #include "chrome/browser/lacros/webauthn_request_registrar_lacros.h"
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
@@ -36,6 +37,7 @@
 #include "chromeos/lacros/lacros_service.h"
 #include "components/arc/common/intent_helper/arc_icon_cache_delegate.h"
 #include "components/sync/base/features.h"
+#include "extensions/common/features/feature_session_type.h"
 
 namespace {
 
@@ -67,12 +69,34 @@ MaybeCreateSyncExplicitPassphraseClient(Profile* profile) {
       sync_service, &lacros_service->GetRemote<crosapi::mojom::SyncService>());
 }
 
+extensions::mojom::FeatureSessionType GetExtSessionType() {
+  using extensions::mojom::FeatureSessionType;
+
+  if (profiles::IsKioskSession()) {
+    return FeatureSessionType::kKiosk;
+  }
+
+  if (profiles::SessionHasGaiaAccount()) {
+    return FeatureSessionType::kRegular;
+  }
+
+  // TODO: how to implement IsKioskAutolaunchedSession in Lacros
+  // http://b/227564794
+  return FeatureSessionType::kUnknown;
+}
+
 }  // namespace
 
 ChromeBrowserMainExtraPartsLacros::ChromeBrowserMainExtraPartsLacros() =
     default;
 ChromeBrowserMainExtraPartsLacros::~ChromeBrowserMainExtraPartsLacros() =
     default;
+
+void ChromeBrowserMainExtraPartsLacros::PreProfileInit() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extensions::SetCurrentFeatureSessionType(GetExtSessionType());
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+}
 
 void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   automation_manager_ = std::make_unique<AutomationManagerLacros>();

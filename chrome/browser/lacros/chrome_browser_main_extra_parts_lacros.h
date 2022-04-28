@@ -53,6 +53,7 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
  private:
   // ChromeBrowserMainExtraParts:
+  void PreProfileInit() override;
   void PostBrowserStart() override;
   void PostProfileInit(Profile* profile, bool is_initial_profile) override;
 
