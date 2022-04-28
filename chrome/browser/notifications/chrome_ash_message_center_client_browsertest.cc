@@ -66,14 +66,14 @@ class ChromeAshMessageCenterClientBrowserTest : public InProcessBrowserTest {
   }
 
   std::string InstallTestPWA() {
-    auto web_application_info = std::make_unique<WebAppInstallInfo>();
-    web_application_info->start_url = GURL(kUrlString);
-    web_application_info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
+    auto web_app_install_info = std::make_unique<WebAppInstallInfo>();
+    web_app_install_info->start_url = GURL(kUrlString);
+    web_app_install_info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
     Profile* profile = browser()->profile();
 
     // Install a PWA and wait for app service to see it.
     web_app::AppId app_id =
-        web_app::test::InstallWebApp(profile, std::move(web_application_info));
+        web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
     apps::AppServiceProxy* service =
         apps::AppServiceProxyFactory::GetForProfile(profile);
     service->FlushMojoCallsForTesting();

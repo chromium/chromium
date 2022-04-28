@@ -105,27 +105,26 @@ class WebAppInstallManager final : public SyncInstallDelegate {
                                OnceInstallCallback callback);
 
   // Starts a web app installation process using prefilled
-  // |web_application_info| which holds all the data needed for installation.
+  // |install_info| which holds all the data needed for installation.
   // This doesn't fetch a manifest and doesn't perform all required steps for
   // External installed apps: use |ExternallyManagedAppManager::Install|
   // instead.
   //
   // The web app can be simultaneously installed from multiple sources.
   // If the web app already exists and `overwrite_existing_manifest_fields` is
-  // false then manifest fields in `web_application_info` are treated only as
+  // false then manifest fields in `install_info` are treated only as
   // fallback manifest values. If `overwrite_existing_manifest_fields` is true
   // then the existing web app manifest fields will be overwritten.
-  // If `web_application_info` contains data freshly fetched from the web app's
+  // If `install_info` contains data freshly fetched from the web app's
   // site then `overwrite_existing_manifest_fields` should be true.
-  void InstallWebAppFromInfo(
-      std::unique_ptr<WebAppInstallInfo> web_application_info,
-      bool overwrite_existing_manifest_fields,
-      ForInstallableSite for_installable_site,
-      webapps::WebappInstallSource install_source,
-      OnceInstallCallback callback);
+  void InstallWebAppFromInfo(std::unique_ptr<WebAppInstallInfo> install_info,
+                             bool overwrite_existing_manifest_fields,
+                             ForInstallableSite for_installable_site,
+                             webapps::WebappInstallSource install_source,
+                             OnceInstallCallback callback);
 
   void InstallWebAppFromInfo(
-      std::unique_ptr<WebAppInstallInfo> web_application_info,
+      std::unique_ptr<WebAppInstallInfo> install_info,
       bool overwrite_existing_manifest_fields,
       ForInstallableSite for_installable_site,
       const absl::optional<WebAppInstallParams>& install_params,
@@ -182,14 +181,14 @@ class WebAppInstallManager final : public SyncInstallDelegate {
 
   void EnqueueInstallAppFromSync(
       const AppId& sync_app_id,
-      std::unique_ptr<WebAppInstallInfo> web_application_info,
+      std::unique_ptr<WebAppInstallInfo> install_info,
       OnceInstallCallback callback);
   bool IsAppIdAlreadyEnqueued(const AppId& app_id) const;
 
   // On failure will attempt a fallback install only loading icon URLs.
   void LoadAndInstallWebAppFromManifestWithFallbackCompleted_ForAppSync(
       const AppId& sync_app_id,
-      std::unique_ptr<WebAppInstallInfo> web_application_info,
+      std::unique_ptr<WebAppInstallInfo> install_info,
       OnceInstallCallback callback,
       const AppId& web_app_id,
       webapps::InstallResultCode code);

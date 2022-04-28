@@ -341,17 +341,17 @@ void UpdateFinalizerClientData(
 }
 
 void WebAppInstallTask::InstallWebAppFromInfo(
-    std::unique_ptr<WebAppInstallInfo> web_application_info,
+    std::unique_ptr<WebAppInstallInfo> web_app_install_info,
     bool overwrite_existing_manifest_fields,
     OnceInstallCallback callback) {
   CheckInstallPreconditions();
 
-  PopulateProductIcons(web_application_info.get(),
+  PopulateProductIcons(web_app_install_info.get(),
                        /*icons_map*/ nullptr);
   // No IconsMap to populate shortcut item icons from.
 
   if (install_params_)
-    ApplyParamsToWebAppInstallInfo(*install_params_, *web_application_info);
+    ApplyParamsToWebAppInstallInfo(*install_params_, *web_app_install_info);
 
   background_installation_ = true;
   install_callback_ = std::move(callback);
@@ -369,7 +369,7 @@ void WebAppInstallTask::InstallWebAppFromInfo(
   }
 
   install_finalizer_->FinalizeInstall(
-      *web_application_info, options,
+      *web_app_install_info, options,
       base::BindOnce(&WebAppInstallTask::OnInstallFinalized, GetWeakPtr()));
 }
 
@@ -397,7 +397,7 @@ void WebAppInstallTask::LoadAndRetrieveWebAppInstallInfoWithIcons(
 
   retrieve_info_callback_ = std::move(callback);
   background_installation_ = true;
-  only_retrieve_web_application_info_ = true;
+  only_retrieve_web_app_install_info_ = true;
 
   web_contents_ = CreateWebContents(profile_);
   Observe(web_contents_.get());
@@ -465,11 +465,11 @@ void WebAppInstallTask::CallInstallCallback(const AppId& app_id,
   Observe(nullptr);
   dialog_callback_.Reset();
 
-  if (only_retrieve_web_application_info_) {
+  if (only_retrieve_web_app_install_info_) {
     DCHECK(retrieve_info_callback_);
-    if (web_application_info_) {
-      std::move(retrieve_info_callback_).Run(std::move(*web_application_info_));
-      web_application_info_ = absl::nullopt;
+    if (web_app_install_info_) {
+      std::move(retrieve_info_callback_).Run(std::move(*web_app_install_info_));
+      web_app_install_info_ = absl::nullopt;
     } else {
       std::move(retrieve_info_callback_).Run(code);
     }
@@ -809,7 +809,7 @@ void WebAppInstallTask::OnDidCheckForIntentToPlayStoreLacros(
 
 void WebAppInstallTask::InstallWebAppFromInfoRetrieveIcons(
     content::WebContents* web_contents,
-    std::unique_ptr<WebAppInstallInfo> web_application_info,
+    std::unique_ptr<WebAppInstallInfo> web_app_install_info,
     WebAppInstallFinalizer::FinalizeOptions finalize_options,
     OnceInstallCallback callback) {
   CheckInstallPreconditions();
@@ -823,14 +823,14 @@ void WebAppInstallTask::InstallWebAppFromInfoRetrieveIcons(
   background_installation_ = true;
 
   std::vector<GURL> icon_urls =
-      GetValidIconUrlsToDownload(*web_application_info);
+      GetValidIconUrlsToDownload(*web_app_install_info);
 
   // Skip downloading the page favicons as everything in is the URL list.
   data_retriever_->GetIcons(
       web_contents, std::move(icon_urls),
       /*skip_page_favicons=*/true,
       base::BindOnce(&WebAppInstallTask::OnIconsRetrieved, GetWeakPtr(),
-                     std::move(web_application_info),
+                     std::move(web_app_install_info),
                      std::move(finalize_options)));
 }
 
@@ -900,9 +900,9 @@ void WebAppInstallTask::OnDialogCompleted(
     return;
   }
 
-  if (only_retrieve_web_application_info_) {
+  if (only_retrieve_web_app_install_info_) {
     if (web_app_info) {
-      web_application_info_ = std::move(*web_app_info);
+      web_app_install_info_ = std::move(*web_app_info);
       web_app_info.reset();
     }
     CallInstallCallback(AppId(),

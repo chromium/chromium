@@ -68,17 +68,16 @@ constexpr char kIconUrl[] = "https://example.com/app.ico";
 
 std::unique_ptr<WebAppInstallInfo> ConvertWebAppToRendererWebAppInstallInfo(
     const WebApp& app) {
-  auto web_application_info = std::make_unique<WebAppInstallInfo>();
+  auto install_info = std::make_unique<WebAppInstallInfo>();
   // Most fields are expected to be populated by a manifest data in a subsequent
   // override install process data flow. TODO(loyso): Make it more robust.
-  web_application_info->description =
-      base::UTF8ToUTF16(app.untranslated_description());
+  install_info->description = base::UTF8ToUTF16(app.untranslated_description());
   // |user_display_mode| is a user's display mode value and it is typically
   // populated by a UI dialog in production code. We set it here for testing
   // purposes.
   CHECK(app.user_display_mode().has_value());
-  web_application_info->user_display_mode = *app.user_display_mode();
-  return web_application_info;
+  install_info->user_display_mode = *app.user_display_mode();
+  return install_info;
 }
 
 std::vector<blink::Manifest::ImageResource> ConvertWebAppIconsToImageResources(
@@ -346,13 +345,13 @@ class WebAppInstallManagerTest
   }
 
   InstallResult InstallWebAppFromInfo(
-      std::unique_ptr<WebAppInstallInfo> web_application_info,
+      std::unique_ptr<WebAppInstallInfo> install_info,
       bool overwrite_existing_manifest_fields,
       webapps::WebappInstallSource install_source) {
     InstallResult result;
     base::RunLoop run_loop;
     install_manager().InstallWebAppFromInfo(
-        std::move(web_application_info), overwrite_existing_manifest_fields,
+        std::move(install_info), overwrite_existing_manifest_fields,
         ForInstallableSite::kYes, install_source,
         base::BindLambdaForTesting([&](const AppId& installed_app_id,
                                        webapps::InstallResultCode code) {
@@ -1242,18 +1241,18 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
 
   // Reproduces `ApkWebAppInstaller` install parameters.
-  auto apk_web_application_info = std::make_unique<WebAppInstallInfo>();
-  apk_web_application_info->start_url = start_url;
-  apk_web_application_info->scope = GURL("https://example.com/apk_scope");
-  apk_web_application_info->title = u"Name from APK";
-  apk_web_application_info->theme_color = SK_ColorWHITE;
-  apk_web_application_info->display_mode = DisplayMode::kStandalone;
-  apk_web_application_info->user_display_mode = UserDisplayMode::kStandalone;
-  AddGeneratedIcon(&apk_web_application_info->icon_bitmaps.any, icon_size::k128,
+  auto apk_install_info = std::make_unique<WebAppInstallInfo>();
+  apk_install_info->start_url = start_url;
+  apk_install_info->scope = GURL("https://example.com/apk_scope");
+  apk_install_info->title = u"Name from APK";
+  apk_install_info->theme_color = SK_ColorWHITE;
+  apk_install_info->display_mode = DisplayMode::kStandalone;
+  apk_install_info->user_display_mode = UserDisplayMode::kStandalone;
+  AddGeneratedIcon(&apk_install_info->icon_bitmaps.any, icon_size::k128,
                    SK_ColorYELLOW);
 
   InstallResult result =
-      InstallWebAppFromInfo(std::move(apk_web_application_info),
+      InstallWebAppFromInfo(std::move(apk_install_info),
                             /*overwrite_existing_manifest_fields=*/false,
                             webapps::WebappInstallSource::ARC);
 

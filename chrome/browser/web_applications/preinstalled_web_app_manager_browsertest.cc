@@ -1065,11 +1065,10 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       GenerateAppId(/*manifest_id=*/absl::nullopt, preinstalled_app_start_url);
 
   // Install user app.
-  auto web_application_info = std::make_unique<WebAppInstallInfo>();
-  web_application_info->start_url = user_app_start_url;
-  web_application_info->title = u"Test user app";
-  AppId user_app_id =
-      test::InstallWebApp(profile(), std::move(web_application_info));
+  auto install_info = std::make_unique<WebAppInstallInfo>();
+  install_info->start_url = user_app_start_url;
+  install_info->title = u"Test user app";
+  AppId user_app_id = test::InstallWebApp(profile(), std::move(install_info));
 
   // Ensure the UI receives these apps.
   proxy->FlushMojoCallsForTesting();

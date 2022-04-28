@@ -541,11 +541,10 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   GURL url(embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
 
   // Install user app
-  auto web_application_info = std::make_unique<WebAppInstallInfo>();
-  web_application_info->start_url = url;
-  web_application_info->title = u"Test user app";
-  AppId app_id =
-      test::InstallWebApp(profile(), std::move(web_application_info));
+  auto install_info = std::make_unique<WebAppInstallInfo>();
+  install_info->start_url = url;
+  install_info->title = u"Test user app";
+  AppId app_id = test::InstallWebApp(profile(), std::move(install_info));
   ASSERT_TRUE(registrar().WasInstalledByUser(app_id));
   ASSERT_FALSE(registrar().HasExternalApp(app_id));
 

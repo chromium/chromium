@@ -240,7 +240,7 @@ class ManifestUpdateTask final
   raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
 
   Stage stage_;
-  absl::optional<WebAppInstallInfo> web_application_info_;
+  absl::optional<WebAppInstallInfo> install_info_;
   absl::optional<WebAppIconDownloader> icon_downloader_;
 
   // Two KeepAlive objects, to make sure in progress manifest updates survive

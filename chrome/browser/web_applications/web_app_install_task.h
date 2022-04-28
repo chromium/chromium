@@ -120,20 +120,20 @@ class WebAppInstallTask : content::WebContentsObserver {
                                    WebAppUrlLoader* url_loader,
                                    OnceInstallCallback install_callback);
 
-  // Fetches the icon URLs in |web_application_info| to populate the icon
-  // bitmaps. Once fetched uses the contents of |web_application_info| as the
+  // Fetches the icon URLs in |web_app_install_info| to populate the icon
+  // bitmaps. Once fetched uses the contents of |web_app_install_info| as the
   // entire web app installation data.
   void InstallWebAppFromInfoRetrieveIcons(
       content::WebContents* web_contents,
-      std::unique_ptr<WebAppInstallInfo> web_application_info,
+      std::unique_ptr<WebAppInstallInfo> web_app_install_info,
       WebAppInstallFinalizer::FinalizeOptions finalize_options,
       OnceInstallCallback callback);
 
   // Starts a web app installation process using prefilled
-  // |web_application_info| which holds all the data needed for installation.
+  // |web_app_install_info| which holds all the data needed for installation.
   // WebAppInstallManager doesn't fetch a manifest.
   void InstallWebAppFromInfo(
-      std::unique_ptr<WebAppInstallInfo> web_application_info,
+      std::unique_ptr<WebAppInstallInfo> web_app_install_info,
       bool overwrite_existing_manifest_fields,
       OnceInstallCallback callback);
 
@@ -307,7 +307,7 @@ class WebAppInstallTask : content::WebContentsObserver {
 
   // Whether we should just obtain WebAppInstallInfo instead of the actual
   // installation.
-  bool only_retrieve_web_application_info_ = false;
+  bool only_retrieve_web_app_install_info_ = false;
 
   WebAppInstallDialogCallback dialog_callback_;
   OnceInstallCallback install_callback_;
@@ -316,7 +316,7 @@ class WebAppInstallTask : content::WebContentsObserver {
   absl::optional<AppId> expected_app_id_;
   bool background_installation_ = false;
 
-  absl::optional<WebAppInstallInfo> web_application_info_;
+  absl::optional<WebAppInstallInfo> web_app_install_info_;
   std::unique_ptr<content::WebContents> web_contents_;
 
   std::unique_ptr<base::Value> error_dict_;

@@ -56,13 +56,12 @@ void WebAppDataRetriever::GetWebAppInstallInfo(
 
   // Makes a copy of WebContents fields right after Commit but before a mojo
   // request to the renderer process.
-  preinstalled_web_application_info_ = std::make_unique<WebAppInstallInfo>();
-  preinstalled_web_application_info_->start_url =
-      web_contents->GetLastCommittedURL();
-  preinstalled_web_application_info_->title = web_contents->GetTitle();
-  if (preinstalled_web_application_info_->title.empty()) {
-    preinstalled_web_application_info_->title =
-        base::UTF8ToUTF16(preinstalled_web_application_info_->start_url.spec());
+  fallback_install_info_ = std::make_unique<WebAppInstallInfo>();
+  fallback_install_info_->start_url = web_contents->GetLastCommittedURL();
+  fallback_install_info_->title = web_contents->GetTitle();
+  if (fallback_install_info_->title.empty()) {
+    fallback_install_info_->title =
+        base::UTF8ToUTF16(fallback_install_info_->start_url.spec());
   }
 
   mojo::AssociatedRemote<webapps::mojom::WebPageMetadataAgent> metadata_agent;
@@ -150,7 +149,7 @@ void WebAppDataRetriever::OnGetWebPageMetadata(
   if (ShouldStopRetrieval())
     return;
 
-  DCHECK(preinstalled_web_application_info_);
+  DCHECK(fallback_install_info_);
 
   content::WebContents* contents = web_contents();
   Observe(nullptr);
@@ -164,18 +163,17 @@ void WebAppDataRetriever::OnGetWebPageMetadata(
     if (entry->GetUniqueID() == last_committed_nav_entry_unique_id) {
       info = std::make_unique<WebAppInstallInfo>(*web_page_metadata);
       if (info->start_url.is_empty())
-        info->start_url =
-            std::move(preinstalled_web_application_info_->start_url);
+        info->start_url = std::move(fallback_install_info_->start_url);
       if (info->title.empty())
-        info->title = std::move(preinstalled_web_application_info_->title);
+        info->title = std::move(fallback_install_info_->title);
     } else {
       // WebContents navigation state changed during the call. Ignore the mojo
       // request result. Use default initial info instead.
-      info = std::move(preinstalled_web_application_info_);
+      info = std::move(fallback_install_info_);
     }
   }
 
-  preinstalled_web_application_info_.reset();
+  fallback_install_info_.reset();
 
   std::move(get_web_app_info_callback_).Run(std::move(info));
 }
@@ -216,7 +214,7 @@ void WebAppDataRetriever::CallCallbackOnError() {
   Observe(nullptr);
   DCHECK(ShouldStopRetrieval());
 
-  preinstalled_web_application_info_.reset();
+  fallback_install_info_.reset();
 
   // Call a callback as a tail call. The callback may destroy |this|.
   if (get_web_app_info_callback_) {

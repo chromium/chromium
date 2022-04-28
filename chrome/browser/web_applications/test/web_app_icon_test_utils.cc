@@ -223,7 +223,7 @@ apps::IconInfo CreateIconInfo(const GURL& icon_base_url,
 }
 
 void AddIconsToWebAppInstallInfo(
-    WebAppInstallInfo* web_application_info,
+    WebAppInstallInfo* install_info,
     const GURL& icons_base_url,
     const std::vector<GeneratedIconsInfo>& icons_info) {
   for (const GeneratedIconsInfo& info : icons_info) {
@@ -234,12 +234,12 @@ void AddIconsToWebAppInstallInfo(
     for (size_t i = 0; i < info.sizes_px.size(); ++i) {
       apps::IconInfo apps_icon_info =
           CreateIconInfo(icons_base_url, info.purpose, info.sizes_px[i]);
-      web_application_info->manifest_icons.push_back(std::move(apps_icon_info));
+      install_info->manifest_icons.push_back(std::move(apps_icon_info));
 
       AddGeneratedIcon(&generated_bitmaps, info.sizes_px[i], info.colors[i]);
     }
 
-    web_application_info->icon_bitmaps.SetBitmapsForPurpose(
+    install_info->icon_bitmaps.SetBitmapsForPurpose(
         info.purpose, std::move(generated_bitmaps));
   }
 }

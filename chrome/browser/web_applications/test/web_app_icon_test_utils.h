@@ -95,7 +95,7 @@ apps::IconInfo CreateIconInfo(const GURL& icon_base_url,
                               SquareSizePx size_px);
 
 void AddIconsToWebAppInstallInfo(
-    WebAppInstallInfo* web_application_info,
+    WebAppInstallInfo* install_info,
     const GURL& icons_base_url,
     const std::vector<GeneratedIconsInfo>& icons_info);
 
