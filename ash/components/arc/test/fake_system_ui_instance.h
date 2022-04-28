@@ -10,12 +10,12 @@
 
 namespace arc {
 
-class FakeSystemUIInstance : public mojom::SystemUIInstance {
+class FakeSystemUiInstance : public mojom::SystemUiInstance {
  public:
-  FakeSystemUIInstance();
-  FakeSystemUIInstance(const FakeSystemUIInstance&) = delete;
-  FakeSystemUIInstance& operator=(const FakeSystemUIInstance&) = delete;
-  ~FakeSystemUIInstance() override;
+  FakeSystemUiInstance();
+  FakeSystemUiInstance(const FakeSystemUiInstance&) = delete;
+  FakeSystemUiInstance& operator=(const FakeSystemUiInstance&) = delete;
+  ~FakeSystemUiInstance() override;
 
   bool dark_theme_status() const { return dark_theme_status_; }
 
@@ -23,10 +23,10 @@ class FakeSystemUIInstance : public mojom::SystemUIInstance {
 
   mojom::ThemeStyleType theme_style() const { return theme_style_; }
 
-  // mojom::SystemUIInstance override:
+  // mojom::SystemUiInstance override:
   void SetDarkThemeStatus(bool darkThemeStatus) override;
 
-  // mojom::SystemUIInstance override:
+  // mojom::SystemUiInstance override:
   void SetOverlayColor(uint32_t sourceColor,
                        mojom::ThemeStyleType themeStyle) override;
 

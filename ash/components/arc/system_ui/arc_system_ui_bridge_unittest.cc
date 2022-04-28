@@ -47,7 +47,7 @@ class ArcSystemUIBridgeTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   ArcServiceManager arc_service_manager_;
   TestBrowserContext context_;
-  FakeSystemUIInstance system_ui_instance_;
+  FakeSystemUiInstance system_ui_instance_;
   ArcSystemUIBridge* const bridge_;
   base::test::MockLog log_;
 };

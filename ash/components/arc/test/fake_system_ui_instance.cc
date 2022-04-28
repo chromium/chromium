@@ -8,15 +8,15 @@
 
 namespace arc {
 
-FakeSystemUIInstance::FakeSystemUIInstance() = default;
+FakeSystemUiInstance::FakeSystemUiInstance() = default;
 
-FakeSystemUIInstance::~FakeSystemUIInstance() = default;
+FakeSystemUiInstance::~FakeSystemUiInstance() = default;
 
-void FakeSystemUIInstance::SetDarkThemeStatus(bool darkThemeStatus) {
+void FakeSystemUiInstance::SetDarkThemeStatus(bool darkThemeStatus) {
   dark_theme_status_ = darkThemeStatus;
 }
 
-void FakeSystemUIInstance::SetOverlayColor(uint32_t sourceColor,
+void FakeSystemUiInstance::SetOverlayColor(uint32_t sourceColor,
                                            mojom::ThemeStyleType themeStyle) {
   source_color_ = sourceColor;
   theme_style_ = themeStyle;

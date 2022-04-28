@@ -274,9 +274,9 @@ interface ArcBridgeHost {
   [MinVersion=12] OnStorageManagerInstanceReady@118(
       pending_remote<StorageManagerInstance> instance_remote);
 
-  // Notifies Chrome that the SystemUIInstance interface is ready.
-  [MinVersion=62] OnSystemUIInstanceReady@167(
-      pending_remote<SystemUIInstance> instance_remote);
+  // Notifies Chrome that the SystemUiInstance interface is ready.
+  [MinVersion=62] OnSystemUiInstanceReady@167(
+      pending_remote<SystemUiInstance> instance_remote);
 
   // Notifies Chrome that the TimerInstance interface is ready.
   [MinVersion=36] OnTimerInstanceReady@141(

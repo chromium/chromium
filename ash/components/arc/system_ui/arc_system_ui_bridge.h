@@ -24,7 +24,7 @@ class ArcBridgeService;
 
 // This class notifies the Chrome OS side dark theme state to Android.
 class ArcSystemUIBridge : public KeyedService,
-                          public ConnectionObserver<mojom::SystemUIInstance>,
+                          public ConnectionObserver<mojom::SystemUiInstance>,
                           public ash::ColorModeObserver {
  public:
   // Returns singleton instance for the given BrowserContext,
@@ -42,7 +42,7 @@ class ArcSystemUIBridge : public KeyedService,
   ArcSystemUIBridge(const ArcSystemUIBridge&) = delete;
   ArcSystemUIBridge& operator=(const ArcSystemUIBridge&) = delete;
 
-  // ConnectionObserver<mojom::SystemUIInstance> override:
+  // ConnectionObserver<mojom::SystemUiInstance> override:
   void OnConnectionReady() override;
 
   // ash::ColorModeObserver override:

@@ -232,8 +232,8 @@ void FakeArcBridgeHost::OnStorageManagerInstanceReady(
     mojo::PendingRemote<mojom::StorageManagerInstance> storage_manager_remote) {
 }
 
-void FakeArcBridgeHost::OnSystemUIInstanceReady(
-    mojo::PendingRemote<mojom::SystemUIInstance> system_ui_remote) {}
+void FakeArcBridgeHost::OnSystemUiInstanceReady(
+    mojo::PendingRemote<mojom::SystemUiInstance> system_ui_remote) {}
 
 void FakeArcBridgeHost::OnTimerInstanceReady(
     mojo::PendingRemote<mojom::TimerInstance> timer_remote) {}

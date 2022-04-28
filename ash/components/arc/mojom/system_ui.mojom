@@ -18,7 +18,7 @@ enum ThemeStyleType {
 };
 
 // Next method ID: 2
-interface SystemUIInstance {
+interface SystemUiInstance {
   // Notifies ARC whether the Chrome dark theme is on/off.
   SetDarkThemeStatus@0(bool active); // Migrated from DarkThemeInstance
 

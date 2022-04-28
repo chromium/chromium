@@ -397,8 +397,8 @@ void ArcBridgeHostImpl::OnStorageManagerInstanceReady(
                   std::move(storage_manager_remote));
 }
 
-void ArcBridgeHostImpl::OnSystemUIInstanceReady(
-    mojo::PendingRemote<mojom::SystemUIInstance> system_ui_remote) {
+void ArcBridgeHostImpl::OnSystemUiInstanceReady(
+    mojo::PendingRemote<mojom::SystemUiInstance> system_ui_remote) {
   OnInstanceReady(arc_bridge_service_->system_ui(),
                   std::move(system_ui_remote));
 }

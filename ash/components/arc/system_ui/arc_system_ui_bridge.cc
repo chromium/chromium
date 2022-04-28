@@ -94,7 +94,7 @@ void ArcSystemUIBridge::OnColorModeChanged(bool dark_theme_status) {
 }
 
 bool ArcSystemUIBridge::SendDeviceDarkThemeState(bool dark_theme_status) {
-  mojom::SystemUIInstance* system_ui_instance = ARC_GET_INSTANCE_FOR_METHOD(
+  mojom::SystemUiInstance* system_ui_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->system_ui(), SetDarkThemeStatus);
 
   if (!system_ui_instance)
@@ -105,7 +105,7 @@ bool ArcSystemUIBridge::SendDeviceDarkThemeState(bool dark_theme_status) {
 
 bool ArcSystemUIBridge::SendOverlayColor(uint32_t source_color,
                                          mojom::ThemeStyleType theme_style) {
-  mojom::SystemUIInstance* system_ui_instance = ARC_GET_INSTANCE_FOR_METHOD(
+  mojom::SystemUiInstance* system_ui_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->system_ui(), SetOverlayColor);
 
   if (!system_ui_instance)
