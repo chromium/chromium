@@ -1683,38 +1683,6 @@ bool IsAXSetter(SEL selector) {
     return @"";
 
   std::string name = _node->GetName();
-  std::string extraText;
-  ax::mojom::ImageAnnotationStatus status =
-      _node->GetData().GetImageAnnotationStatus();
-  switch (status) {
-    case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed: {
-      extraText = base::UTF16ToUTF8(
-          _node->GetDelegate()->GetLocalizedStringForImageAnnotationStatus(
-              status));
-      break;
-    }
-
-    case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
-      extraText = _node->GetStringAttribute(
-          ax::mojom::StringAttribute::kImageAnnotation);
-      break;
-
-    case ax::mojom::ImageAnnotationStatus::kNone:
-    case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
-    case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
-    case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
-      break;
-  }
-
-  if (!extraText.empty()) {
-    if (!name.empty())
-      name += ". ";
-    name += extraText;
-  }
 
   if (!name.empty())
     return base::SysUTF8ToNSString(name);

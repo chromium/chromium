@@ -157,8 +157,44 @@ gfx::NativeViewAccessible AXPlatformNodeBase::ChildAtIndex(int index) const {
 }
 
 std::string AXPlatformNodeBase::GetName() const {
-  if (delegate_)
-    return delegate_->GetName();
+  if (delegate_) {
+    std::string name = delegate_->GetName();
+
+    // Compute extra name based on the image annotation (generated alt text)
+    // results.
+    std::string extra_text;
+    ax::mojom::ImageAnnotationStatus status =
+        GetData().GetImageAnnotationStatus();
+    switch (status) {
+      case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
+      case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
+      case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
+      case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
+      case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed:
+        extra_text = base::UTF16ToUTF8(
+            delegate_->GetLocalizedStringForImageAnnotationStatus(status));
+        break;
+
+      case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
+        extra_text =
+            GetStringAttribute(ax::mojom::StringAttribute::kImageAnnotation);
+        break;
+
+      case ax::mojom::ImageAnnotationStatus::kNone:
+      case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
+      case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
+      case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
+        break;
+    }
+
+    if (!extra_text.empty()) {
+      if (!name.empty())
+        name += ". ";
+      name += extra_text;
+    }
+
+    return name;
+  }
   return std::string();
 }
 
