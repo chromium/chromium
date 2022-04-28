@@ -17,7 +17,6 @@
 #include "base/compiler_specific.h"
 #include "base/functional/not_fn.h"
 #include "base/ranges/algorithm.h"
-#include "base/template_util.h"
 
 namespace base {
 
@@ -52,7 +51,7 @@ using is_multipass = std::is_base_of<
 template <typename T, typename = void>
 struct IsTransparentCompare : std::false_type {};
 template <typename T>
-struct IsTransparentCompare<T, void_t<typename T::is_transparent>>
+struct IsTransparentCompare<T, std::void_t<typename T::is_transparent>>
     : std::true_type {};
 
 // Helper inspired by C++20's std::to_array to convert a C-style array to a

@@ -11,7 +11,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/template_util.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
 #include "mojo/public/cpp/bindings/lib/template_util.h"
@@ -340,7 +339,7 @@ struct EnumKnownValueTraits {
 template <typename MojomType>
 struct EnumKnownValueTraits<
     MojomType,
-    base::void_t<decltype(ToKnownEnumValue(std::declval<MojomType>()))>> {
+    std::void_t<decltype(ToKnownEnumValue(std::declval<MojomType>()))>> {
   static MojomType ToKnownValue(MojomType in) { return ToKnownEnumValue(in); }
 };
 

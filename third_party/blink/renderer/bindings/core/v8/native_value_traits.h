@@ -51,7 +51,7 @@ struct NativeValueTraitsHasIsNull : std::false_type {};
 template <typename T>
 struct NativeValueTraitsHasIsNull<
     T,
-    base::void_t<decltype(std::declval<T>().IsNull())>> : std::true_type {};
+    std::void_t<decltype(std::declval<T>().IsNull())>> : std::true_type {};
 
 template <typename T>
 struct NativeValueTraitsHasNullValue {

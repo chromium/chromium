@@ -10,7 +10,6 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/ranges/ranges.h"
-#include "base/template_util.h"
 
 namespace base {
 
@@ -22,7 +21,7 @@ template <typename T, typename SFINAE = void>
 struct HasKeyType : std::false_type {};
 
 template <typename T>
-struct HasKeyType<T, void_t<typename T::key_type>> : std::true_type {};
+struct HasKeyType<T, std::void_t<typename T::key_type>> : std::true_type {};
 
 // Probe whether a `contains` member function exists and return the result of
 // `container.contains(value)` if this is a valid expression. This is the

@@ -26,7 +26,6 @@
 #include <type_traits>
 #include <utility>
 #include "base/compiler_specific.h"
-#include "base/template_util.h"
 #include "build/build_config.h"
 #include "v8/include/cppgc/type-traits.h"  // nogncheck
 
@@ -197,9 +196,9 @@ template <typename T, typename = void>
 struct IsStackAllocatedType : std::false_type {};
 
 template <typename T>
-struct IsStackAllocatedType<
-    T,
-    base::void_t<typename T::IsStackAllocatedTypeMarker>> : std::true_type {};
+struct IsStackAllocatedType<T,
+                            std::void_t<typename T::IsStackAllocatedTypeMarker>>
+    : std::true_type {};
 
 }  // namespace WTF
 

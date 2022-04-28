@@ -27,8 +27,8 @@ struct IsRefCountedType : std::false_type {};
 
 template <typename T>
 struct IsRefCountedType<T,
-                        void_t<decltype(std::declval<T*>()->AddRef()),
-                               decltype(std::declval<T*>()->Release())>>
+                        std::void_t<decltype(std::declval<T*>()->AddRef()),
+                                    decltype(std::declval<T*>()->Release())>>
     : std::true_type {};
 
 // Human readable translation: you needed to be a scoped_refptr if you are a raw

@@ -47,25 +47,6 @@ template <class T> struct is_non_const_reference<const T&> : std::false_type {};
 
 namespace internal {
 
-// Implementation detail of base::void_t below.
-template <typename...>
-struct make_void {
-  using type = void;
-};
-
-}  // namespace internal
-
-// base::void_t is an implementation of std::void_t from C++17.
-//
-// We use |base::internal::make_void| as a helper struct to avoid a C++14
-// defect:
-//   http://en.cppreference.com/w/cpp/types/void_t
-//   http://open-std.org/JTC1/SC22/WG21/docs/cwg_defects.html#1558
-template <typename... Ts>
-using void_t = typename ::base::internal::make_void<Ts...>::type;
-
-namespace internal {
-
 // Uses expression SFINAE to detect whether using operator<< would work.
 template <typename T, typename = void>
 struct SupportsOstreamOperator : std::false_type {};
@@ -88,8 +69,9 @@ template <typename T, typename = void>
 struct is_iterator : std::false_type {};
 
 template <typename T>
-struct is_iterator<T,
-                   void_t<typename std::iterator_traits<T>::iterator_category>>
+struct is_iterator<
+    T,
+    std::void_t<typename std::iterator_traits<T>::iterator_category>>
     : std::true_type {};
 
 // Helper to express preferences in an overload set. If more than one overload

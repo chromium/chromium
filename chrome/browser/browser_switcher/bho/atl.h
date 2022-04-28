@@ -9,16 +9,6 @@
 #define _ATL_NO_EXCEPTIONS
 #endif
 
-// atlwin.h relies on std::void_t, but libc++ doesn't define it unless
-// _LIBCPP_STD_VER > 14.  Workaround this by manually defining it.
-#include <type_traits>
-#if defined(_LIBCPP_STD_VER) && _LIBCPP_STD_VER <= 14
-namespace std {
-template <class...>
-using void_t = void;
-}
-#endif
-
 #include <atlbase.h>
 #include <atlcom.h>
 #include <atlctl.h>

@@ -10,16 +10,6 @@
 // Undefine before windows header will make the poisonous defines
 #include "base/win/windows_undefines.inc"
 
-// atlwin.h relies on std::void_t, but libc++ doesn't define it unless
-// _LIBCPP_STD_VER > 14.  Workaround this by manually defining it.
-#include <type_traits>
-#if defined(_LIBCPP_STD_VER) && _LIBCPP_STD_VER <= 14
-namespace std {
-template <class...>
-using void_t = void;
-}
-#endif
-
 // Declare our own exception thrower (atl_throw.h includes atldef.h).
 #include "base/win/atl_throw.h"
 
