@@ -4006,7 +4006,7 @@ public class AwContents implements SmartClipProvider {
                     canvas, canvas.isHardwareAccelerated(), scrollX, scrollY,
                     globalVisibleRect.left, globalVisibleRect.top, globalVisibleRect.right,
                     globalVisibleRect.bottom, ForceAuxiliaryBitmapRendering.sResult);
-            if (canvas.isHardwareAccelerated()
+            if (canvas.isHardwareAccelerated() && !ForceAuxiliaryBitmapRendering.sResult
                     && AwContentsJni.get().needToDrawBackgroundColor(
                             mNativeAwContents, AwContents.this)) {
                 TraceEvent.instant("DrawBackgroundColor");
