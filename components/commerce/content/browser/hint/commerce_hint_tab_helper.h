@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_COMMERCE_CONTENT_HINT_COMMERCE_HINT_TAB_HELPER_H_
-#define COMPONENTS_COMMERCE_CONTENT_HINT_COMMERCE_HINT_TAB_HELPER_H_
+#ifndef COMPONENTS_COMMERCE_CONTENT_BROWSER_HINT_COMMERCE_HINT_TAB_HELPER_H_
+#define COMPONENTS_COMMERCE_CONTENT_BROWSER_HINT_COMMERCE_HINT_TAB_HELPER_H_
 
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -34,4 +34,4 @@ class CommerceHintTabHelper
 
 }  // namespace commerce_hint
 
-#endif  // COMPONENTS_COMMERCE_CONTENT_HINT_COMMERCE_HINT_TAB_HELPER_H_
+#endif  // COMPONENTS_COMMERCE_CONTENT_BROWSER_HINT_COMMERCE_HINT_TAB_HELPER_H_
