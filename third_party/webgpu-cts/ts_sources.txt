@@ -307,8 +307,16 @@ src/webgpu/shader/execution/expression/call/builtin/log.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/log2.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/max.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/min.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/mix.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/modf.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/normalize.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/pow.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/quantizeToF16.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/radians.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/reflect.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/refract.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/reverseBits.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/round.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/select.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/sin.spec.ts
 src/webgpu/shader/execution/expression/unary/unary.ts
