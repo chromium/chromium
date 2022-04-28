@@ -38,13 +38,22 @@ std::list<SystemWebDialogDelegate*>* GetInstances() {
 }
 
 // Creates default initial parameters. The system web dialog has 12 dip corner
-// radius by default. If the window has a non-client frame view, we don't need
-// to set shadow, since the bubble frame view will help draw the shadow.
-views::Widget::InitParams CreateWidgetParams() {
+// radius by default. If the the dialog uses a non client type frame, we should
+// build a drop shadow. If use a dialog type frame, we don't have to set a
+// shadow since the dialog frame's border has its own shadow.
+views::Widget::InitParams CreateWidgetParams(
+    SystemWebDialogDelegate::FrameKind frame_kind) {
   views::Widget::InitParams params;
   params.corner_radius = kSystemDialogCornerRadiusDp;
-  // Dialog frame view has its own shadow.
-  params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
+  // Set shadow type according to the frame kind.
+  switch (frame_kind) {
+    case SystemWebDialogDelegate::FrameKind::kNonClient:
+      params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
+      break;
+    case SystemWebDialogDelegate::FrameKind::kDialog:
+      params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
+      break;
+  }
   return params;
 }
 
@@ -219,7 +228,8 @@ bool SystemWebDialogDelegate::ShouldShowDialogTitle() const {
 void SystemWebDialogDelegate::ShowSystemDialogForBrowserContext(
     content::BrowserContext* browser_context,
     gfx::NativeWindow parent) {
-  views::Widget::InitParams extra_params = CreateWidgetParams();
+  views::Widget::InitParams extra_params =
+      CreateWidgetParams(GetWebDialogFrameKind());
 
   // If unparented and not modal, keep it on top (see header comment).
   if (!parent && GetDialogModalType() == ui::MODAL_TYPE_NONE)
