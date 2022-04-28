@@ -17,7 +17,6 @@ goog.require('LibLouis');
 goog.require('LogStore');
 goog.require('Msgs');
 goog.require('PanelCommand');
-goog.require('PhoneticData');
 goog.require('Spannable');
 goog.require('SpeechLog');
 goog.require('TtsInterface');
