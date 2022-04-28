@@ -123,6 +123,9 @@ void LogCameraRollContentClicked(int index, CameraRollMediaType mediaType);
 // Logs a download of item at |index| from the Camera Roll context menu.
 void LogCameraRollContextMenuDownload(int index, CameraRollMediaType mediaType);
 
+// Logs the display of any Camera Roll item. Emits once per opening of bubble.
+void LogCameraRollContentPresent();
+
 }  // namespace phone_hub_metrics
 }  // namespace ash
 

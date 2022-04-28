@@ -193,6 +193,10 @@ void CameraRollView::Update() {
         item_thumbnail->SetTooltipText(accessible_name);
         items_view_->AddCameraRollItem(item_thumbnail);
       }
+      if (!content_present_metric_emitted_) {
+        phone_hub_metrics::LogCameraRollContentPresent();
+        content_present_metric_emitted_ = true;
+      }
       break;
   }
 

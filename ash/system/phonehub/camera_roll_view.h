@@ -75,6 +75,7 @@ class ASH_EXPORT CameraRollView : public views::View,
   phonehub::CameraRollManager* camera_roll_manager_ = nullptr;
   phonehub::UserActionRecorder* user_action_recorder_ = nullptr;
   CameraRollItemsView* items_view_ = nullptr;
+  bool content_present_metric_emitted_ = false;
 };
 
 }  // namespace ash

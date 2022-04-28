@@ -200,5 +200,9 @@ void LogCameraRollContextMenuDownload(int index,
   }
 }
 
+void LogCameraRollContentPresent() {
+  base::UmaHistogramBoolean("PhoneHub.CameraRoll.Content.Present", true);
+}
+
 }  // namespace phone_hub_metrics
 }  // namespace ash
