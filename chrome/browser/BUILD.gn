@@ -2014,6 +2014,7 @@ static_library("browser") {
     "//chrome/common/net",
     "//chrome/common/notifications",
     "//chrome/installer/util:with_no_strings",
+    "//chrome/services/speech/buildflags",
     "//chromeos/components/chromebox_for_meetings/buildflags",
     "//components/assist_ranker",
     "//components/autofill/content/browser",

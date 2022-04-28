@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/sysroot.gni")
 import("//chrome/common/features.gni")
+import("//chrome/services/speech/buildflags/buildflags.gni")
 import("//chromeos/assistant/assistant.gni")
 import("//components/services/screen_ai/buildflags/features.gni")
 import("//crypto/features.gni")
@@ -37,6 +38,7 @@ static_library("utility") {
     "//chrome/common",
     "//chrome/common:mojo_bindings",
     "//chrome/services/qrcode_generator",
+    "//chrome/services/speech/buildflags",
     "//components/mirroring/service:mirroring_service",
     "//components/paint_preview/buildflags",
     "//components/safe_browsing:buildflags",
@@ -130,7 +132,6 @@ static_library("utility") {
     deps += [
       "//chrome/common:mojo_bindings",
       "//chrome/common/importer:interfaces",
-      "//chrome/services/speech:lib",
       "//components/autofill/core/common",
       "//services/proxy_resolver:lib",
     ]
@@ -237,5 +238,9 @@ static_library("utility") {
 
   if (is_android || enable_extensions) {
     deps += [ "//chrome/services/media_gallery_util:lib" ]
+  }
+
+  if (enable_browser_speech_service) {
+    deps += [ "//chrome/services/speech:lib" ]
   }
 }
