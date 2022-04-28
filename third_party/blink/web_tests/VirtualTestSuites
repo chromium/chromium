@@ -990,6 +990,7 @@
               "external/wpt/accessibility/crashtests/content-visibility-generated-content-removal.html",
               "external/wpt/accessibility/crashtests/included-descendant-dom-removal.html",
               "external/wpt/accessibility/crashtests/included-descendant-layout-removal.html",
+              "external/wpt/accessibility/crashtests/svg-mouse-listener.html",
               "external/wpt/accessibility/crashtests/input-time-datalist.html",
               "external/wpt/accessibility/crashtests/map-inside-map.html",
               "external/wpt/accessibility/crashtests/map-inside-map-2.html",
@@ -998,6 +999,7 @@
               "external/wpt/accessibility/crashtests/validation-message.html",
               "external/wpt/accessibility/crashtests/displaylocked-serialize.html",
               "external/wpt/dom/ranges/Range-deleteContents.html",
+              "external/wpt/html/semantics/interactive-elements/the-dialog-element/inert-svg-hittest.html",
               "editing/text-iterator/auto-expand-details.html",
               "editing/text-iterator/auto-expand-details-shadowdom.html"],
     "args": ["--force-renderer-accessibility"]

@@ -3345,9 +3345,14 @@ void AXObjectCacheImpl::HandleEventSubscriptionChanged(
     return;
 
   // If the |event_type| may affect the ignored state of |node|, which means
-  // that the parent's children may have changed.
+  // that the parent's children may have changed. Therefore, if we have an
+  // existing AXObject for this node, also call ChildrenChanged on the nearest
+  // accessible ancestor. Otherwise, BlinkAXTreeSource::GetChildren will find
+  // an existing child that is no longer in the tree.
   modification_count_++;
   MarkElementDirty(&node);
+  if (auto* obj = Get(&node))
+    ChildrenChangedOnAncestorOf(obj);
 }
 
 void AXObjectCacheImpl::LabelChangedWithCleanLayout(Element* element) {
