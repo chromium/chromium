@@ -822,14 +822,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.TimeDatabaseMigrationToV10" units="ms"
-    expires_after="2020-04-05">
-  <owner>pwnall@chromium.org</owner>
-  <summary>
-    The amount of time (ms) to migrate a v9 cookie database to v10.
-  </summary>
-</histogram>
-
 <histogram name="Cookie.TimeDatabaseMigrationToV11" units="ms"
     expires_after="2020-10-17">
   <owner>bingler@chromium.org</owner>

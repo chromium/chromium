@@ -1122,7 +1122,6 @@ absl::optional<int>
 SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
   int cur_version = meta_table()->GetVersionNumber();
   if (cur_version == 9) {
-    const base::TimeTicks start_time = base::TimeTicks::Now();
     sql::Transaction transaction(db());
     if (!transaction.Begin())
       return absl::nullopt;
@@ -1164,8 +1163,6 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
     meta_table()->SetCompatibleVersionNumber(
         std::min(cur_version, kCompatibleVersionNumber));
     transaction.Commit();
-    base::UmaHistogramTimes("Cookie.TimeDatabaseMigrationToV10",
-                            base::TimeTicks::Now() - start_time);
   }
 
   if (cur_version == 10) {
