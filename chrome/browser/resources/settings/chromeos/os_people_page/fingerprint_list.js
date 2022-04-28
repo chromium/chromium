@@ -99,13 +99,7 @@ Polymer({
   attached() {
     this.addWebUIListener('on-screen-locked', this.onScreenLocked_.bind(this));
     this.browserProxy_ = FingerprintBrowserProxyImpl.getInstance();
-    this.browserProxy_.startAuthentication();
     this.updateFingerprintsList_();
-  },
-
-  /** @override */
-  detached() {
-    this.browserProxy_.endCurrentAuthentication();
   },
 
   /**
@@ -129,17 +123,8 @@ Polymer({
    */
   currentRouteChanged(newRoute, oldRoute) {
     if (newRoute !== routes.FINGERPRINT) {
-      if (this.browserProxy_) {
-        this.browserProxy_.endCurrentAuthentication();
-      }
       this.showSetupFingerprintDialog_ = false;
       return;
-    }
-
-    if (oldRoute === routes.LOCK_SCREEN) {
-      // Start fingerprint authentication when going from LOCK_SCREEN to
-      // FINGERPRINT page.
-      this.browserProxy_.startAuthentication();
     }
 
     if (this.requestPasswordIfApplicable_()) {
@@ -205,7 +190,6 @@ Polymer({
   onSetupFingerprintDialogClose_() {
     this.showSetupFingerprintDialog_ = false;
     focusWithoutInk(assert(this.$$('#addFingerprint')));
-    this.browserProxy_.startAuthentication();
   },
 
   /**

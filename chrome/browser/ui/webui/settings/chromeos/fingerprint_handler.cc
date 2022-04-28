@@ -91,14 +91,6 @@ void FingerprintHandler::RegisterMessages() {
       "changeEnrollmentLabel",
       base::BindRepeating(&FingerprintHandler::HandleChangeEnrollmentLabel,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "startAuthentication",
-      base::BindRepeating(&FingerprintHandler::HandleStartAuthentication,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "endCurrentAuthentication",
-      base::BindRepeating(&FingerprintHandler::HandleEndCurrentAuthentication,
-                          base::Unretained(this)));
 }
 
 void FingerprintHandler::OnJavascriptAllowed() {
@@ -134,16 +126,6 @@ void FingerprintHandler::OnEnrollScanDone(device::mojom::ScanResult scan_result,
 void FingerprintHandler::OnAuthScanDone(
     const device::mojom::FingerprintMessagePtr msg,
     const base::flat_map<std::string, std::vector<std::string>>& matches) {
-  switch (msg->which()) {
-    case device::mojom::FingerprintMessage::Tag::kScanResult:
-      VLOG(1) << "Receive fingerprint auth scan result. scan_result="
-              << msg->get_scan_result();
-      return;
-    case device::mojom::FingerprintMessage::Tag::kFingerprintError:
-      VLOG(1) << "Receive fingerprint auth error. error="
-              << msg->get_fingerprint_error();
-      return;
-  }
   NOTREACHED();
 }
 
@@ -307,25 +289,6 @@ void FingerprintHandler::OnSetRecordLabel(const std::string& callback_id,
   if (!success)
     LOG(ERROR) << "Failed to set fingerprint record label.";
   ResolveJavascriptCallback(base::Value(callback_id), base::Value(success));
-}
-
-void FingerprintHandler::HandleStartAuthentication(
-    const base::Value::List& args) {
-  AllowJavascript();
-  fp_service_->StartAuthSession();
-}
-
-void FingerprintHandler::HandleEndCurrentAuthentication(
-    const base::Value::List& args) {
-  AllowJavascript();
-  fp_service_->EndCurrentAuthSession(
-      base::BindOnce(&FingerprintHandler::OnEndCurrentAuthSession,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void FingerprintHandler::OnEndCurrentAuthSession(bool success) {
-  if (!success)
-    LOG(ERROR) << "Failed to end current fingerprint authentication session.";
 }
 
 }  // namespace settings

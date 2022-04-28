@@ -58,8 +58,6 @@ class FingerprintHandler : public ::settings::SettingsPageUIHandler,
   void HandleGetEnrollmentLabel(const base::Value::List& args);
   void HandleRemoveEnrollment(const base::Value::List& args);
   void HandleChangeEnrollmentLabel(const base::Value::List& args);
-  void HandleStartAuthentication(const base::Value::List& args);
-  void HandleEndCurrentAuthentication(const base::Value::List& args);
 
   void OnGetFingerprintsList(const std::string& callback_id,
                              const base::flat_map<std::string, std::string>&

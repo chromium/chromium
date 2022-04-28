@@ -91,9 +91,6 @@ export class FingerprintBrowserProxy {
    */
   changeEnrollmentLabel(index, newLabel) {}
 
-  startAuthentication() {}
-  endCurrentAuthentication() {}
-
   /**
    * TODO(sammiequon): Temporary function to let the handler know when a
    * completed scan has been sent via click on the setup fingerprint dialog.
@@ -139,16 +136,6 @@ export class FingerprintBrowserProxyImpl {
   /** @override */
   changeEnrollmentLabel(index, newLabel) {
     return sendWithPromise('changeEnrollmentLabel', index, newLabel);
-  }
-
-  /** @override */
-  startAuthentication() {
-    chrome.send('startAuthentication');
-  }
-
-  /** @override */
-  endCurrentAuthentication() {
-    chrome.send('endCurrentAuthentication');
   }
 
   /** @override */
