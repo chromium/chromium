@@ -45,6 +45,11 @@ namespace sockets.udp {
   // A negative value indicates an error.
   callback BindCallback = void (long result);
 
+  // DNS resolution preferences. The default is <code>any</code> and uses the
+  // current OS config which may return IPv4 or IPv6. <code>ipv4</code> forces
+  // IPv4, and <code>ipv6</code> forces IPv6.
+  enum DnsQueryType { any, ipv4, ipv6 };
+
   // Result of the <code>send</code> method.
   dictionary SendInfo {
     // The result code returned from the underlying network call.
@@ -205,11 +210,13 @@ namespace sockets.udp {
     // |data| : The data to send.
     // |address| : The address of the remote machine.
     // |port| : The port of the remote machine.
+    // |dnsQueryType| : The address resolution preference.
     // |callback| : Called when the <code>send</code> operation completes.
     static void send(long socketId,
                      ArrayBuffer data,
                      DOMString address,
                      long port,
+                     optional DnsQueryType dnsQueryType,
                      SendCallback callback);
 
     // Closes the socket and releases the address/port the socket is bound to.

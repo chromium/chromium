@@ -19,6 +19,7 @@
 #include "extensions/browser/api/socket/tls_socket.h"
 #include "extensions/browser/api/sockets_tcp/tcp_socket_event_dispatcher.h"
 #include "extensions/common/api/sockets/sockets_manifest_data.h"
+#include "extensions/common/api/sockets_tcp.h"
 #include "net/base/net_errors.h"
 
 using extensions::ResumableTCPSocket;
@@ -273,6 +274,20 @@ ExtensionFunction::ResponseAction SocketsTcpConnectFunction::Work() {
 
   socket->set_hostname(params_->peer_address);
 
+  net::DnsQueryType dns_query_type;
+  switch (params_->dns_query_type) {
+    case extensions::api::sockets_tcp::DNS_QUERY_TYPE_NONE:
+    case extensions::api::sockets_tcp::DNS_QUERY_TYPE_ANY:
+      dns_query_type = net::DnsQueryType::UNSPECIFIED;
+      break;
+    case extensions::api::sockets_tcp::DNS_QUERY_TYPE_IPV4:
+      dns_query_type = net::DnsQueryType::A;
+      break;
+    case extensions::api::sockets_tcp::DNS_QUERY_TYPE_IPV6:
+      dns_query_type = net::DnsQueryType::AAAA;
+      break;
+  }
+
   content::SocketPermissionRequest param(SocketPermissionRequest::TCP_CONNECT,
                                          params_->peer_address,
                                          params_->peer_port);
@@ -280,7 +295,8 @@ ExtensionFunction::ResponseAction SocketsTcpConnectFunction::Work() {
     return RespondNow(Error(kPermissionError));
   }
 
-  StartDnsLookup(net::HostPortPair(params_->peer_address, params_->peer_port));
+  StartDnsLookup(net::HostPortPair(params_->peer_address, params_->peer_port),
+                 dns_query_type);
   return RespondLater();
 }
 

@@ -39,6 +39,11 @@ namespace sockets.tcp {
   // |createInfo| : The result of the socket creation.
   callback CreateCallback = void (CreateInfo createInfo);
 
+  // DNS resolution preferences. The default is <code>any</code> and uses the
+  // current OS config which may return IPv4 or IPv6. <code>ipv4</code> forces
+  // IPv4, and <code>ipv6</code> forces IPv6.
+  enum DnsQueryType { any, ipv4, ipv6 };
+
   // Callback from the <code>connect</code> method.
   // |result| : The result code returned from the underlying network call.
   // A negative value indicates an error.
@@ -211,10 +216,12 @@ namespace sockets.tcp {
     // |peerAddress| : The address of the remote machine. DNS name, IPv4 and
     //  IPv6 formats are supported.
     // |peerPort| : The port of the remote machine.
+    // |dnsQueryType| : The address resolution preference.
     // |callback| : Called when the connect attempt is complete.
     static void connect(long socketId,
                         DOMString peerAddress,
                         long peerPort,
+                        optional DnsQueryType dnsQueryType,
                         ConnectCallback callback);
 
     // Disconnects the socket.

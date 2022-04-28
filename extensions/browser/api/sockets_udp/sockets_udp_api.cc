@@ -244,13 +244,28 @@ ExtensionFunction::ResponseAction SocketsUdpSendFunction::Work() {
     return RespondNow(Error(kSocketNotFoundError));
   }
 
+  net::DnsQueryType dns_query_type;
+  switch (params_->dns_query_type) {
+    case extensions::api::sockets_udp::DNS_QUERY_TYPE_NONE:
+    case extensions::api::sockets_udp::DNS_QUERY_TYPE_ANY:
+      dns_query_type = net::DnsQueryType::UNSPECIFIED;
+      break;
+    case extensions::api::sockets_udp::DNS_QUERY_TYPE_IPV4:
+      dns_query_type = net::DnsQueryType::A;
+      break;
+    case extensions::api::sockets_udp::DNS_QUERY_TYPE_IPV6:
+      dns_query_type = net::DnsQueryType::AAAA;
+      break;
+  }
+
   content::SocketPermissionRequest param(
       SocketPermissionRequest::UDP_SEND_TO, params_->address, params_->port);
   if (!SocketsManifestData::CheckRequest(extension(), param)) {
     return RespondNow(Error(kPermissionError));
   }
 
-  StartDnsLookup(net::HostPortPair(params_->address, params_->port));
+  StartDnsLookup(net::HostPortPair(params_->address, params_->port),
+                 dns_query_type);
   return RespondLater();
 }
 

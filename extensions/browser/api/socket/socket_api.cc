@@ -164,7 +164,8 @@ SocketExtensionWithDnsLookupFunction::~SocketExtensionWithDnsLookupFunction() =
     default;
 
 void SocketExtensionWithDnsLookupFunction::StartDnsLookup(
-    const net::HostPortPair& host_port_pair) {
+    const net::HostPortPair& host_port_pair,
+    net::DnsQueryType dns_query_type) {
   DCHECK(!receiver_.is_bound());
 
   browser_context()
@@ -177,9 +178,12 @@ void SocketExtensionWithDnsLookupFunction::StartDnsLookup(
 
   host_resolver_.Bind(std::move(pending_host_resolver_));
   url::Origin origin = extension_->origin();
-  host_resolver_->ResolveHost(host_port_pair,
-                              net::NetworkIsolationKey(origin, origin), nullptr,
-                              receiver_.BindNewPipeAndPassRemote());
+  network::mojom::ResolveHostParametersPtr params =
+      network::mojom::ResolveHostParameters::New();
+  params->dns_query_type = dns_query_type;
+  host_resolver_->ResolveHost(
+      host_port_pair, net::NetworkIsolationKey(origin, origin),
+      std::move(params), receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(
       base::BindOnce(&SocketExtensionWithDnsLookupFunction::OnComplete,
                      base::Unretained(this), net::ERR_NAME_NOT_RESOLVED,
@@ -303,7 +307,8 @@ ExtensionFunction::ResponseAction SocketConnectFunction::Work() {
     return RespondNow(ErrorWithCode(-1, kPermissionError));
   }
 
-  StartDnsLookup(net::HostPortPair(hostname_, port_));
+  StartDnsLookup(net::HostPortPair(hostname_, port_),
+                 net::DnsQueryType::UNSPECIFIED);
   return RespondLater();
 }
 
@@ -641,7 +646,8 @@ ExtensionFunction::ResponseAction SocketSendToFunction::Work() {
     }
   }
 
-  StartDnsLookup(net::HostPortPair(hostname_, port_));
+  StartDnsLookup(net::HostPortPair(hostname_, port_),
+                 net::DnsQueryType::UNSPECIFIED);
   return RespondLater();
 }
 

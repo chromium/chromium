@@ -163,7 +163,8 @@ class SocketExtensionWithDnsLookupFunction
   SocketExtensionWithDnsLookupFunction();
   ~SocketExtensionWithDnsLookupFunction() override;
 
-  void StartDnsLookup(const net::HostPortPair& host_port_pair);
+  void StartDnsLookup(const net::HostPortPair& host_port_pair,
+                      net::DnsQueryType dns_query_type);
   virtual void AfterDnsLookup(int lookup_result) = 0;
 
   net::AddressList addresses_;
