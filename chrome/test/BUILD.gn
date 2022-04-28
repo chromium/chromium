@@ -8912,6 +8912,7 @@ if (!is_android) {
       "../browser/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_interactive_ui_test.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_interactive_uitest.cc",
       "../browser/ui/views/web_dialog_view_browsertest.cc",
+      "../browser/webapps/web_app_offline_browsertest.cc",
       "../browser/webauth_interactive_uitest.cc",
       "//ui/base/clipboard/clipboard_unittest.cc",
       "base/interactive_ui_tests_main.cc",

@@ -227,7 +227,7 @@ class WebAppOfflineDarkModeTest
     GTEST_SKIP();
 #else
     InProcessBrowserTest::SetUp();
-#endif // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   }
 
  protected:
