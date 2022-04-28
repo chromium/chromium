@@ -46,6 +46,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time_override.h"
@@ -339,8 +340,15 @@ void AssertWallpaperInfoInPrefs(const PrefService* pref_service,
 }
 
 WallpaperInfo InfoWithType(WallpaperType type) {
-  return WallpaperInfo(std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED, type,
-                       base::Time::Now());
+  WallpaperInfo info(std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED, type,
+                     base::Time::Now());
+  if (type == WallpaperType::kDaily || type == WallpaperType::kOnline) {
+    // Daily and Online types require asset id and collection id.
+    info.asset_id = 1234;
+    info.collection_id = "placeholder collection";
+    info.location = "https://example.com/example.jpeg";
+  }
+  return info;
 }
 
 base::Time DayBeforeYesterdayish() {
@@ -390,7 +398,8 @@ class TestWallpaperControllerObserver : public WallpaperControllerObserver {
 
 class WallpaperControllerTestBase : public AshTestBase {
  public:
-  WallpaperControllerTestBase() = default;
+  WallpaperControllerTestBase()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   WallpaperControllerTestBase(const WallpaperControllerTestBase&) = delete;
   WallpaperControllerTestBase& operator=(const WallpaperControllerTestBase&) =
@@ -3094,24 +3103,7 @@ TEST_P(WallpaperControllerTest, AddFirstWallpaperAnimationEndCallback) {
       base::BindLambdaForTesting(
           [&is_second_callback_run]() { is_second_callback_run = true; }),
       test_window.get());
-  {
-    // The animation is quite short (0.01 seconds) which is problematic in
-    // debug builds if RunAllTasksUntilIdle is a bit slow to execute. That leads
-    // to test flakes. We work around that by temporarily freezing time, which
-    // prevents the animation from unexpectedly completing too soon.
-    // Ideally this test should use MockTime instead, which will become easier
-    // after https://crrev.com/c/1352260 lands.
-    base::subtle::ScopedTimeClockOverrides time_override(
-        nullptr,
-        []() {
-          static base::TimeTicks time_ticks =
-              base::subtle::TimeTicksNowIgnoringOverride();
-          return time_ticks;
-        },
-        nullptr);
-
-    RunAllTasksUntilIdle();
-  }
+  RunAllTasksUntilIdle();
   // Neither callback is run because the animation of the first wallpaper
   // hasn't finished yet.
   EXPECT_FALSE(is_first_callback_run);
@@ -3119,6 +3111,7 @@ TEST_P(WallpaperControllerTest, AddFirstWallpaperAnimationEndCallback) {
 
   // Force the animation to complete. The two callbacks are both run.
   RunDesktopControllerAnimation();
+  RunAllTasksUntilIdle();
   EXPECT_TRUE(is_first_callback_run);
   EXPECT_TRUE(is_second_callback_run);
 
@@ -3128,6 +3121,7 @@ TEST_P(WallpaperControllerTest, AddFirstWallpaperAnimationEndCallback) {
       base::BindLambdaForTesting(
           [&is_third_callback_run]() { is_third_callback_run = true; }),
       test_window.get());
+  RunAllTasksUntilIdle();
   EXPECT_TRUE(is_third_callback_run);
 }
 
@@ -3528,6 +3522,37 @@ TEST_F(WallpaperControllerWallpaperWebUiTest, SetWallpaperInfoCustom) {
                              synced_info);
 }
 
+TEST_F(WallpaperControllerWallpaperWebUiTest, OldOnlineInfoSynced_Discarded) {
+  // Create a dictionary that looks like the preference from crrev.com/a040384.
+  // DO NOT CHANGE as there are preferences like this in production.
+  base::Value wallpaper_info_dict(base::Value::Type::DICTIONARY);
+  wallpaper_info_dict.SetStringPath(
+      WallpaperControllerImpl::kNewWallpaperDateNodeName,
+      base::NumberToString(
+          base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds()));
+  wallpaper_info_dict.SetStringPath(
+      WallpaperControllerImpl::kNewWallpaperLocationNodeName, "location");
+  wallpaper_info_dict.SetIntPath(
+      WallpaperControllerImpl::kNewWallpaperLayoutNodeName,
+      WallpaperLayout::WALLPAPER_LAYOUT_CENTER);
+  wallpaper_info_dict.SetIntPath(
+      WallpaperControllerImpl::kNewWallpaperTypeNodeName,
+      static_cast<int>(WallpaperType::kOnline));
+
+  {
+    DictionaryPrefUpdate wallpaper_update(GetProfilePrefService(account_id_1),
+                                          prefs::kSyncableWallpaperInfo);
+    wallpaper_update->SetKey(account_id_1.GetUserEmail(),
+                             std::move(wallpaper_info_dict));
+  }
+  SimulateUserLogin(account_id_1);
+  task_environment()->RunUntilIdle();
+
+  // Unmigrated synced wallpaper info are discarded.
+  WallpaperInfo actual;
+  EXPECT_FALSE(controller_->GetUserWallpaperInfo(account_id_1, &actual));
+}
+
 TEST_F(WallpaperControllerWallpaperWebUiTest, MigrateWallpaperInfo) {
   WallpaperInfo expected_info = InfoWithType(WallpaperType::kOnline);
   PutWallpaperInfoInPrefs(account_id_1, expected_info, GetLocalPrefService(),
@@ -3782,9 +3807,9 @@ TEST_F(WallpaperControllerWallpaperWebUiTest,
   ClearLogin();
   SimulateUserLogin(account_id_1);
 
-  // |daily_refresh_timer_| adds a task to the sequence, as opposed to execute
-  // within the task that it is called in.
-  RunAllTasksUntilIdle();
+  // Info is set as over a day old so we expect one task to run in under an hour
+  // (due to fuzzing) then it will idle.
+  task_environment()->FastForwardBy(base::Hours(1));
 
   EXPECT_EQ(TestWallpaperControllerClient::kDummyCollectionId,
             client_.get_fetch_daily_refresh_wallpaper_param());
