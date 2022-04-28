@@ -12,6 +12,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {OptInStatus} from '../new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 
 import {Module, ModuleHeight} from './module_descriptor.js';
@@ -458,6 +459,9 @@ export class ModulesElement extends PolymerElement {
 
   private onModulesFreOptIn_() {
     this.hideFre_();
+
+    NewTabPageProxy.getInstance().handler.logModulesFreOptInStatus(
+        OptInStatus.kExplicitOptIn);
   }
 
   private onModulesFreOptOut_() {
@@ -476,6 +480,9 @@ export class ModulesElement extends PolymerElement {
 
     // Notify the user
     this.$.removeModuleFreToast.show();
+
+    NewTabPageProxy.getInstance().handler.logModulesFreOptInStatus(
+        OptInStatus.kOptOut);
   }
 
   private onUndoRemoveModuleFreButtonClick_() {

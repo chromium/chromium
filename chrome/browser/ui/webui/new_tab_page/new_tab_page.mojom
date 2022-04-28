@@ -204,6 +204,13 @@ enum CustomizeDialogAction {
   kShortcutsVisibilityToggleClicked,
 };
 
+// Opt in status. Used for metrics logging only.
+enum OptInStatus {
+  kExplicitOptIn,
+  kImplicitOptIn,
+  kOptOut,
+};
+
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
   // The WebUI page's |BrowserProxy| singleton calls this method when the page
@@ -265,6 +272,8 @@ interface PageHandler {
   SetModulesFreVisible(bool visible);
   // Triggers a call to |SetModulesFreVisibility|.
   UpdateModulesFreVisibility();
+  // Log user's FRE |optInStatus|.
+  LogModulesFreOptInStatus(OptInStatus opt_in_status);
 
   // ======= METRICS =======
   // Logs that the One Google Bar was added to the DOM / loaded in an iframe at

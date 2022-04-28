@@ -109,6 +109,8 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void IncrementModulesShownCount() override;
   void SetModulesFreVisible(bool visible) override;
   void UpdateModulesFreVisibility() override;
+  void LogModulesFreOptInStatus(
+      new_tab_page::mojom::OptInStatus opt_in_status) override;
   void OnAppRendered(double time) override;
   void OnOneGoogleBarRendered(double time) override;
   void OnPromoRendered(double time,
