@@ -19,6 +19,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /**
@@ -32,6 +34,7 @@ public class HistoryClustersCoordinator {
     private SimpleRecyclerViewAdapter mAdapter;
     private final Context mContext;
     private boolean mBottomSheetInflated;
+    private final PropertyModel mBottomSheetToolbarModel;
 
     /**
      * Construct a new HistoryClustersCoordinator.
@@ -46,9 +49,11 @@ public class HistoryClustersCoordinator {
         mContext = context;
         mModelList = new ModelList();
         mBottomSheetContent = new HistoryClustersBottomSheetContent();
+        mBottomSheetToolbarModel =
+                new PropertyModel(HistoryClustersBottomSheetToolbarProperties.ALL_KEYS);
         mMediator = new HistoryClustersMediator(HistoryClustersBridge.getForProfile(profile),
                 new LargeIconBridge(profile), context, context.getResources(), mModelList,
-                bottomSheetController, mBottomSheetContent);
+                mBottomSheetToolbarModel, bottomSheetController, mBottomSheetContent);
     }
 
     public void destroy() {
@@ -68,14 +73,22 @@ public class HistoryClustersCoordinator {
         mAdapter.registerType(
                 ItemType.VISIT, this::buildVisitView, HistoryClustersViewBinder::bindVisitView);
 
-        View contentView = LayoutInflater.from(mContext).inflate(
-                R.layout.history_clusters_bottom_sheet_content, null);
+        LayoutInflater layoutInflater = LayoutInflater.from(mContext);
+        View contentView =
+                layoutInflater.inflate(R.layout.history_clusters_bottom_sheet_content, null);
         RecyclerView recyclerView = contentView.findViewById(R.id.recycler_view);
-
         recyclerView.setLayoutManager(new LinearLayoutManager(
                 recyclerView.getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setItemAnimator(null);
+
+        View bottomSheetToolbar =
+                layoutInflater.inflate(R.layout.history_clusters_bottom_sheet_toolbar, null);
+
+        PropertyModelChangeProcessor.create(mBottomSheetToolbarModel, bottomSheetToolbar,
+                HistoryClustersViewBinder::bindBottomSheetToolbar);
+
         mBottomSheetContent.setContentView(contentView);
+        mBottomSheetContent.setToolbarView(bottomSheetToolbar);
         mBottomSheetInflated = true;
     }
 

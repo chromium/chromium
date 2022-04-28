@@ -73,8 +73,10 @@ public class HistoryClustersMediatorTest {
     public void setUp() {
         doReturn(mResources).when(mContext).getResources();
         mModelList = new ModelList();
+        mBottomSheetContent = new HistoryClustersBottomSheetContent();
         mMediator = new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
-                mModelList, mBottomSheetController, mBottomSheetContent);
+                mModelList, new PropertyModel(HistoryClustersBottomSheetToolbarProperties.ALL_KEYS),
+                mBottomSheetController, mBottomSheetContent);
         mVisit1 = new ClusterVisit(1.0F, mGurl1, "Title 1");
         mVisit2 = new ClusterVisit(1.0F, mGurl2, "Title 1");
         mVisit3 = new ClusterVisit(1.0F, mGurl3, "Title 1");
@@ -113,10 +115,9 @@ public class HistoryClustersMediatorTest {
         doReturn(promise).when(mBridge).queryClusters("foo");
 
         mMediator.showBottomSheet("foo");
-
+        fulfillPromise(promise, mHistoryClustersResult);
         verify(mBottomSheetController).requestShowContent(mBottomSheetContent, true);
 
-        fulfillPromise(promise, mHistoryClustersResult);
         assertEquals(mModelList.size(), 3);
     }
 
@@ -126,10 +127,9 @@ public class HistoryClustersMediatorTest {
         doReturn(promise).when(mBridge).queryClusters("");
 
         mMediator.showBottomSheet("");
+        fulfillPromise(promise, mHistoryClustersResult);
 
         verify(mBottomSheetController).requestShowContent(mBottomSheetContent, true);
-
-        fulfillPromise(promise, mHistoryClustersResult);
         assertEquals(mModelList.size(), 3);
     }
 

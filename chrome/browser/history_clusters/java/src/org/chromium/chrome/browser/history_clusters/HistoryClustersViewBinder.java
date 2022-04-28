@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.history_clusters;
 
 import android.view.View;
+import android.widget.TextView;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -18,6 +19,13 @@ class HistoryClustersViewBinder {
             itemView.setTitleText(model.get(HistoryClustersItemProperties.TITLE));
         } else if (key == HistoryClustersItemProperties.URL) {
             itemView.setHostText(model.get(HistoryClustersItemProperties.URL));
+        }
+    }
+
+    public static void bindBottomSheetToolbar(PropertyModel model, View view, PropertyKey key) {
+        if (key == HistoryClustersBottomSheetToolbarProperties.QUERY_TEXT) {
+            TextView textView = view.findViewById(R.id.query);
+            textView.setText(model.get(HistoryClustersBottomSheetToolbarProperties.QUERY_TEXT));
         }
     }
 }

@@ -16,6 +16,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
  */
 class HistoryClustersBottomSheetContent implements BottomSheetContent {
     private View mContentView;
+    private View mToolbarView;
 
     @Override
     public View getContentView() {
@@ -25,12 +26,16 @@ class HistoryClustersBottomSheetContent implements BottomSheetContent {
     @Nullable
     @Override
     public View getToolbarView() {
-        return null;
+        return mToolbarView;
     }
 
     @Override
     public int getVerticalScrollOffset() {
-        return 0;
+        if (mContentView == null) {
+            return 0;
+        }
+
+        return mContentView.getScrollY();
     }
 
     @Override
@@ -53,7 +58,7 @@ class HistoryClustersBottomSheetContent implements BottomSheetContent {
 
     @Override
     public boolean swipeToDismissEnabled() {
-        return false;
+        return true;
     }
 
     @Override
@@ -78,5 +83,9 @@ class HistoryClustersBottomSheetContent implements BottomSheetContent {
 
     void setContentView(View contentView) {
         mContentView = contentView;
+    }
+
+    void setToolbarView(View toolbarView) {
+        mToolbarView = toolbarView;
     }
 }

@@ -11,26 +11,31 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Promise;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
-class HistoryClustersMediator {
+class HistoryClustersMediator extends EmptyBottomSheetObserver {
     private final HistoryClustersBridge mHistoryClustersBridge;
     private final Context mContext;
     private final Resources mResources;
     private final ModelList mModelList;
+    private final PropertyModel mBottomSheetToolbarModel;
     private final RoundedIconGenerator mIconGenerator;
     private final LargeIconBridge mLargeIconBridge;
     private final int mFaviconSize;
     private final BottomSheetController mBottomSheetController;
-    private final HistoryClustersBottomSheetContent mBottomSheetContent;
+    private final BottomSheetContent mBottomSheetContent;
     private Promise<HistoryClustersResult> mPromise;
 
     /**
@@ -40,34 +45,56 @@ class HistoryClustersMediator {
      * @param context Android context from which UI configuration should be derived.
      * @param resources Android resources object from which strings, colors etc. should be fetched.
      * @param modelList Model list to which fetched cluster data should be pushed to.
+     * @param bottomSheetToolbarModel Model for properties affecting the bottom sheet toolbar.
+     * @param bottomSheetController Controller for interacting with the bottom sheet system, e.g. to
+     *         request to show our content.
+     * @param bottomSheetContent {@link BottomSheetContent} instance that tells the BottomSheet
+     *         system how to render our bottom sheet UI.
      */
     HistoryClustersMediator(@NonNull HistoryClustersBridge historyClustersBridge,
             LargeIconBridge largeIconBridge, @NonNull Context context, @NonNull Resources resources,
-            @NonNull ModelList modelList, @NonNull BottomSheetController bottomSheetController,
-            @NonNull HistoryClustersBottomSheetContent bottomSheetContent) {
+            @NonNull ModelList modelList, @NonNull PropertyModel bottomSheetToolbarModel,
+            @NonNull BottomSheetController bottomSheetController,
+            @NonNull BottomSheetContent bottomSheetContent) {
         mHistoryClustersBridge = historyClustersBridge;
         mLargeIconBridge = largeIconBridge;
         mModelList = modelList;
         mContext = context;
         mResources = resources;
+        mBottomSheetToolbarModel = bottomSheetToolbarModel;
         mBottomSheetController = bottomSheetController;
         mBottomSheetContent = bottomSheetContent;
         mFaviconSize = mResources.getDimensionPixelSize(R.dimen.default_favicon_min_size);
         mIconGenerator = FaviconUtils.createCircularIconGenerator(mContext);
     }
 
-    void destroy() {
-        mLargeIconBridge.destroy();
+    // BottomSheetObserver
+    @Override
+    public void onSheetClosed(@StateChangeReason int reason) {
+        mModelList.clear();
+        mBottomSheetController.removeObserver(this);
     }
 
-    void showBottomSheet(String query) {
-        query(query);
-        mBottomSheetController.requestShowContent(mBottomSheetContent, true);
+    void destroy() {
+        mLargeIconBridge.destroy();
     }
 
     void query(String query) {
         mPromise = mHistoryClustersBridge.queryClusters(query);
         mPromise.then(this::queryComplete);
+    }
+
+    void showBottomSheet(String query) {
+        mBottomSheetToolbarModel.set(HistoryClustersBottomSheetToolbarProperties.QUERY_TEXT,
+                formatQueryForDisplay(query));
+        query(query);
+        mPromise.then((Callback<HistoryClustersResult>) (unused) -> requestShowBottomSheet());
+    }
+
+    private void requestShowBottomSheet() {
+        if (mBottomSheetController.requestShowContent(mBottomSheetContent, true)) {
+            mBottomSheetController.addObserver(this);
+        }
     }
 
     private void queryComplete(HistoryClustersResult result) {
@@ -93,5 +120,13 @@ class HistoryClustersMediator {
                 mModelList.add(visitItem);
             }
         }
+    }
+
+    private String formatQueryForDisplay(String query) {
+        return new StringBuilder()
+                .append(mResources.getString(R.string.quotation_mark_prefix))
+                .append(query)
+                .append(mResources.getString(R.string.quotation_mark_suffix))
+                .toString();
     }
 }
