@@ -189,12 +189,11 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest,
   crosapi::mojom::DEPRECATED_ExtensionKeystoreBinaryResultPtr result;
   crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
       keystore_service_remote().get());
-  crosapi::mojom::KeystoreSigningAlgorithmPtr algo =
-      crosapi::mojom::KeystoreSigningAlgorithm::New();
   crosapi::mojom::KeystorePKCS115ParamsPtr params =
       crosapi::mojom::KeystorePKCS115Params::New();
   params->modulus_length = 1024;
-  algo->set_pkcs115(std::move(params));
+  crosapi::mojom::KeystoreSigningAlgorithmPtr algo =
+      crosapi::mojom::KeystoreSigningAlgorithm::NewPkcs115(std::move(params));
   async_waiter.DEPRECATED_ExtensionGenerateKey(
       crosapi::mojom::KeystoreType::kUser, std::move(algo),
       /*extension_id=*/"123", &result);
@@ -214,12 +213,11 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest,
   crosapi::mojom::DEPRECATED_ExtensionKeystoreBinaryResultPtr result;
   crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
       keystore_service_remote().get());
-  crosapi::mojom::KeystoreSigningAlgorithmPtr algo =
-      crosapi::mojom::KeystoreSigningAlgorithm::New();
   crosapi::mojom::KeystoreECDSAParamsPtr params =
       crosapi::mojom::KeystoreECDSAParams::New();
   params->named_curve = "P-256";
-  algo->set_ecdsa(std::move(params));
+  crosapi::mojom::KeystoreSigningAlgorithmPtr algo =
+      crosapi::mojom::KeystoreSigningAlgorithm::NewEcdsa(std::move(params));
   async_waiter.DEPRECATED_ExtensionGenerateKey(
       crosapi::mojom::KeystoreType::kUser, std::move(algo),
       /*extension_id=*/"123", &result);

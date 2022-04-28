@@ -59,34 +59,31 @@ crosapi::mojom::ProxySettingsManualPtr TranslateManualProxySettings(
 crosapi::mojom::ProxySettingsPtr NetProxyToProxySettings(
     const net::ProxyConfigWithAnnotation& net_proxy) {
   net::ProxyConfig proxy_config = net_proxy.value();
-  auto proxy_settings = crosapi::mojom::ProxySettings::New();
   if (proxy_config.proxy_rules().empty() &&
       !proxy_config.HasAutomaticSettings()) {
-    proxy_settings->set_direct(crosapi::mojom::ProxySettingsDirect::New());
-    return proxy_settings;
+    return crosapi::mojom::ProxySettings::NewDirect(
+        crosapi::mojom::ProxySettingsDirect::New());
   }
 
   if (proxy_config.has_pac_url()) {
     auto pac = crosapi::mojom::ProxySettingsPac::New();
     pac->pac_url = proxy_config.pac_url();
     pac->pac_mandatory = proxy_config.pac_mandatory();
-    proxy_settings->set_pac(std::move(pac));
-    return proxy_settings;
+    return crosapi::mojom::ProxySettings::NewPac(std::move(pac));
   }
 
   if (proxy_config.auto_detect()) {
-    proxy_settings->set_wpad(crosapi::mojom::ProxySettingsWpad::New());
-    return proxy_settings;
+    return crosapi::mojom::ProxySettings::NewWpad(
+        crosapi::mojom::ProxySettingsWpad::New());
   }
 
   crosapi::mojom::ProxySettingsManualPtr manual =
       TranslateManualProxySettings(proxy_config.proxy_rules());
   if (!manual) {
-    proxy_settings->set_direct(crosapi::mojom::ProxySettingsDirect::New());
-    return proxy_settings;
+    return crosapi::mojom::ProxySettings::NewDirect(
+        crosapi::mojom::ProxySettingsDirect::New());
   }
-  proxy_settings->set_manual(std::move(manual));
-  return proxy_settings;
+  return crosapi::mojom::ProxySettings::NewManual(std::move(manual));
 }
 
 }  // namespace

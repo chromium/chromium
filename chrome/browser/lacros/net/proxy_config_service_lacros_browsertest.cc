@@ -205,9 +205,8 @@ IN_PROC_BROWSER_TEST_F(ProxyConfigServiceLacrosTest, ProxyUpdates) {
 
   crosapi::mojom::ProxyConfigPtr proxy_config =
       crosapi::mojom::ProxyConfig::New();
-  proxy_config->proxy_settings = crosapi::mojom::ProxySettings::New();
 
-  proxy_config->proxy_settings->set_direct(
+  proxy_config->proxy_settings = crosapi::mojom::ProxySettings::NewDirect(
       crosapi::mojom::ProxySettingsDirect::New());
   SendAshProxyUpdateAndWait(proxy_config.Clone());
   EXPECT_EQ(proxy_monitor_->cached_proxy_config_.value().ToValue(),
@@ -216,7 +215,8 @@ IN_PROC_BROWSER_TEST_F(ProxyConfigServiceLacrosTest, ProxyUpdates) {
   crosapi::mojom::ProxySettingsWpadPtr wpad =
       crosapi::mojom::ProxySettingsWpad::New();
   wpad->pac_url = GURL(kPacUrl);
-  proxy_config->proxy_settings->set_wpad(
+  // TODO(https://crbug.com/1320656): This test seems buggy; wpad is never used.
+  proxy_config->proxy_settings = crosapi::mojom::ProxySettings::NewWpad(
       crosapi::mojom::ProxySettingsWpad::New());
   SendAshProxyUpdateAndWait(proxy_config.Clone());
   EXPECT_EQ(proxy_monitor_->cached_proxy_config_.value().ToValue(),
@@ -257,11 +257,11 @@ IN_PROC_BROWSER_TEST_F(ProxyConfigServiceLacrosTest, UserPrefPrecedence) {
   // Set a system proxy via the AshNetworkSettingsService.
   crosapi::mojom::ProxyConfigPtr proxy_config =
       crosapi::mojom::ProxyConfig::New();
-  proxy_config->proxy_settings = crosapi::mojom::ProxySettings::New();
   crosapi::mojom::ProxySettingsPacPtr pac =
       crosapi::mojom::ProxySettingsPac::New();
   pac->pac_url = GURL(kPacUrl);
-  proxy_config->proxy_settings->set_pac(std::move(pac));
+  proxy_config->proxy_settings =
+      crosapi::mojom::ProxySettings::NewPac(std::move(pac));
   service_.SendProxyUpdate(std::move(proxy_config));
   base::RunLoop().RunUntilIdle();
 
@@ -283,11 +283,11 @@ IN_PROC_BROWSER_TEST_F(ProxyConfigServiceLacrosTest, UseAshProxyPref) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kUseAshProxy, false);
   crosapi::mojom::ProxyConfigPtr proxy_config =
       crosapi::mojom::ProxyConfig::New();
-  proxy_config->proxy_settings = crosapi::mojom::ProxySettings::New();
   crosapi::mojom::ProxySettingsWpadPtr wpad =
       crosapi::mojom::ProxySettingsWpad::New();
   wpad->pac_url = GURL(kPacUrl);
-  proxy_config->proxy_settings->set_wpad(
+  // TODO(https://crbug.com/1320656): This test seems buggy; wpad is never used.
+  proxy_config->proxy_settings = crosapi::mojom::ProxySettings::NewWpad(
       crosapi::mojom::ProxySettingsWpad::New());
   service_.SendProxyUpdate(proxy_config.Clone());
   base::RunLoop().RunUntilIdle();

@@ -124,11 +124,10 @@ TEST(NetworkSettingsTranslationTest, NetProxyToCrosapiProxyManualEmptyList) {
 
 TEST(NetworkSettingsTranslationTest, CrosapiProxyToNetProxyDirect) {
   crosapi::mojom::ProxyConfigPtr ptr = crosapi::mojom::ProxyConfig::New();
-  crosapi::mojom::ProxySettingsPtr proxy = crosapi::mojom::ProxySettings::New();
   crosapi::mojom::ProxySettingsDirectPtr direct =
       crosapi::mojom::ProxySettingsDirect::New();
-  proxy->set_direct(std::move(direct));
-  ptr->proxy_settings = std::move(proxy);
+  ptr->proxy_settings =
+      crosapi::mojom::ProxySettings::NewDirect(std::move(direct));
 
   EXPECT_EQ(CrosapiProxyToNetProxy(std::move(ptr)).value().ToValue(),
             net::ProxyConfig::CreateDirect().ToValue());
@@ -136,11 +135,9 @@ TEST(NetworkSettingsTranslationTest, CrosapiProxyToNetProxyDirect) {
 
 TEST(NetworkSettingsTranslationTest, CrosapiProxyToNetProxyWpad) {
   crosapi::mojom::ProxyConfigPtr ptr = crosapi::mojom::ProxyConfig::New();
-  crosapi::mojom::ProxySettingsPtr proxy = crosapi::mojom::ProxySettings::New();
   crosapi::mojom::ProxySettingsWpadPtr wpad =
       crosapi::mojom::ProxySettingsWpad::New();
-  proxy->set_wpad(std::move(wpad));
-  ptr->proxy_settings = std::move(proxy);
+  ptr->proxy_settings = crosapi::mojom::ProxySettings::NewWpad(std::move(wpad));
 
   auto actual = CrosapiProxyToNetProxy(std::move(ptr));
   EXPECT_TRUE(actual.value().auto_detect());
@@ -148,12 +145,12 @@ TEST(NetworkSettingsTranslationTest, CrosapiProxyToNetProxyWpad) {
 
 TEST(NetworkSettingsTranslationTest, CrosapiProxyToNetProxyPac) {
   crosapi::mojom::ProxyConfigPtr ptr = crosapi::mojom::ProxyConfig::New();
-  crosapi::mojom::ProxySettingsPtr proxy = crosapi::mojom::ProxySettings::New();
   crosapi::mojom::ProxySettingsPacPtr pac =
       crosapi::mojom::ProxySettingsPac::New();
   pac->pac_url = GURL(kPacUrl);
   pac->pac_mandatory = true;
-  proxy->set_pac(pac.Clone());
+  crosapi::mojom::ProxySettingsPtr proxy =
+      crosapi::mojom::ProxySettings::NewPac(pac.Clone());
   ptr->proxy_settings = proxy.Clone();
   auto actual = CrosapiProxyToNetProxy(ptr.Clone());
   EXPECT_FALSE(actual.value().auto_detect());
@@ -169,7 +166,6 @@ TEST(NetworkSettingsTranslationTest, CrosapiProxyToNetProxyPac) {
 
 TEST(NetworkSettingsTranslationTest, CrosapiProxyToNetProxyManual) {
   crosapi::mojom::ProxyConfigPtr ptr = crosapi::mojom::ProxyConfig::New();
-  crosapi::mojom::ProxySettingsPtr proxy = crosapi::mojom::ProxySettings::New();
   crosapi::mojom::ProxySettingsManualPtr manual =
       crosapi::mojom::ProxySettingsManual::New();
   crosapi::mojom::ProxyLocationPtr location =
@@ -184,8 +180,8 @@ TEST(NetworkSettingsTranslationTest, CrosapiProxyToNetProxyManual) {
   location->port = 82;
   manual->socks_proxies.push_back(std::move(location));
   manual->exclude_domains = {"localhost", "google.com"};
-  proxy->set_manual(std::move(manual));
-  ptr->proxy_settings = std::move(proxy);
+  ptr->proxy_settings =
+      crosapi::mojom::ProxySettings::NewManual(std::move(manual));
 
   auto actual = CrosapiProxyToNetProxy(std::move(ptr));
 
