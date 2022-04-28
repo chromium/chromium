@@ -145,6 +145,27 @@ TEST_F(IntentGeneratorTest, TranslationIntent) {
   EXPECT_EQ("en", intent_info_.source_language);
 }
 
+TEST_F(IntentGeneratorTest, TranslationIntentWithSubtag) {
+  std::vector<TextLanguagePtr> languages;
+  languages.push_back(TextLanguage::New("en-US", /* confidence */ 1));
+  UseFakeServiceConnection({}, languages);
+
+  QuickAnswersRequest request;
+  request.selected_text = "quick answers";
+  fake_quick_answers_state()->set_application_locale("es");
+  fake_quick_answers_state()->set_preferred_languages("es");
+  intent_generator_->GenerateIntent(request);
+
+  FlushForTesting();
+
+  // Should generate translation intent.
+  EXPECT_EQ(IntentType::kTranslation, intent_info_.intent_type);
+  EXPECT_EQ("quick answers", intent_info_.intent_text);
+  EXPECT_EQ("es", intent_info_.device_language);
+  // Should drop substag for source language.
+  EXPECT_EQ("en", intent_info_.source_language);
+}
+
 TEST_F(IntentGeneratorTest, TranslationIntentSameLanguage) {
   std::vector<TextLanguagePtr> languages;
   languages.push_back(DefaultLanguage());
