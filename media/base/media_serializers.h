@@ -360,8 +360,10 @@ struct MediaSerializer<TextTrackConfig> {
     base::Value result(base::Value::Type::DICTIONARY);
     FIELD_SERIALIZE("kind", value.kind());
     FIELD_SERIALIZE("language", value.language());
-    if (value.label().length())
+    if (value.label().length() &&
+        base::IsStringUTF8AllowingNoncharacters(value.label())) {
       FIELD_SERIALIZE("label", value.label());
+    }
     return result;
   }
 };
