@@ -88,7 +88,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
     if (suggestion_selection::IsValidSuggestionForFieldContents(
             base::i18n::ToLower(creditcard_field_value), field_contents_lower,
             type, credit_card->record_type() == CreditCard::MASKED_SERVER_CARD,
-            &prefix_matched_suggestion)) {
+            field.is_autofilled, &prefix_matched_suggestion)) {
       if (ShouldShowVirtualCardOption(credit_card, form_structure)) {
         suggestions.push_back(CreateCreditCardSuggestion(
             *credit_card, type, prefix_matched_suggestion,

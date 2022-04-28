@@ -98,7 +98,8 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
     std::u16string suggestion_canon = comparator.NormalizeForComparison(value);
     if (IsValidSuggestionForFieldContents(
             suggestion_canon, field_contents_canon, type,
-            /* is_masked_server_card= */ false, &prefix_matched_suggestion)) {
+            /* is_masked_server_card= */ false, field_is_autofilled,
+            &prefix_matched_suggestion)) {
       matched_profiles->push_back(profile);
 
       if (type.group() == FieldTypeGroup::kPhoneHome) {
@@ -194,6 +195,7 @@ bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
                                        std::u16string field_contents_canon,
                                        const AutofillType& type,
                                        bool is_masked_server_card,
+                                       bool field_is_autofilled,
                                        bool* is_prefix_matched) {
   *is_prefix_matched = true;
 
@@ -209,12 +211,29 @@ bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
   // For card number fields, suggest the card if:
   // - the number matches any part of the card, or
   // - it's a masked card and there are 6 or fewer typed so far.
+  // - it's a masked card, field is autofilled, and the last 4 digits in the
+  // field match the last 4 digits of the card.
   if (type.GetStorableType() == CREDIT_CARD_NUMBER) {
-    if (suggestion_canon.find(field_contents_canon) == std::u16string::npos &&
-        (!is_masked_server_card || field_contents_canon.size() >= 6)) {
-      return false;
+    if (suggestion_canon.find(field_contents_canon) != std::u16string::npos) {
+      return true;
     }
-    return true;
+
+    if (is_masked_server_card) {
+      if (field_contents_canon.length() < 6) {
+        return true;
+      }
+      if (field_is_autofilled) {
+        int field_contents_length = field_contents_canon.length();
+        DCHECK(field_contents_length >= 4);
+        if (suggestion_canon.find(field_contents_canon.substr(
+                field_contents_length - 4, field_contents_length)) !=
+            std::u16string::npos) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   if (base::StartsWith(suggestion_canon, field_contents_canon,
