@@ -267,6 +267,16 @@ for classes that do not exist in the application's ClassLoader.
 [onSaveInstanceState]: https://source.chromium.org/search?q=symbol:ChromeBaseAppCompatActivity.onSaveInstanceState&ss=chromium
 [a custom ClassLoader]: https://source.chromium.org/search?q=symbol:ChromeBaseAppCompatActivity.getClassLoader&ss=chromium
 
+### Calling Methods Across a Split Boundary
+
+Due to having different ClassLoaders, package-private methods don't work across
+the boundary, even though they will compile.
+
+**Work around:**
+
+Make any method public that you wish to call in another module, even if it's in
+the same package.
+
 ### Proguarding Splits
 
 "Proguarding" is the build step that performs whole-program optimization of Java
