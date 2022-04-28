@@ -212,6 +212,7 @@ bool IsComputeAXModeEnabled() {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
 const base::Feature kReadAnything{"ReadAnything",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -219,7 +220,6 @@ bool IsReadAnythingEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnything);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 const base::Feature kScreenAI{"ScreenAI", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsScreenAIEnabled() {

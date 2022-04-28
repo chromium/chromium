@@ -183,13 +183,13 @@ AX_BASE_EXPORT extern const base::Feature kComputeAXMode;
 AX_BASE_EXPORT bool IsComputeAXModeEnabled();
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
 AX_BASE_EXPORT extern const base::Feature kReadAnything;
 
 // Returns true if read anything is enabled. This feature shows users websites,
 // such as articles, in a comfortable reading experience in a side panel.
 AX_BASE_EXPORT bool IsReadAnythingEnabled();
 
-#if !BUILDFLAG(IS_ANDROID)
 // Enables using Screen AI library to add metadata for accessibility tools.
 AX_BASE_EXPORT extern const base::Feature kScreenAI;
 
