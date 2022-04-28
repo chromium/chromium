@@ -21,6 +21,7 @@ module Namespace {
 
 
 module Pointer {
+  header "pointer/object_passing.h"
   header "pointer/pointer_returner.h"
   header "pointer/unique_ptr.h"
   requires cplusplus
