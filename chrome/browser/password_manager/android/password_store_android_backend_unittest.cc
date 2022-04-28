@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chrome/browser/password_manager/android/fake_password_manager_lifecycle_helper.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
@@ -787,24 +788,36 @@ TEST_F(PasswordStoreAndroidBackendTest, RecordClearedZombieTaskWithoutLatency) {
 
   base::MockCallback<PasswordStoreChangeListReply> mock_reply;
   EXPECT_CALL(*bridge(), AddLogin).WillOnce(Return(kJobId));
+  // Since tasks are cleaned up too early, the reply should never be called.
+  EXPECT_CALL(mock_reply, Run).Times(0);
 
   backend().AddLoginAsync(
       CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated),
       mock_reply.Get());
-  // Don't wait for completion. The task could succeed but Chrome won't know.
-  lifecycle_helper()->OnForegroundSessionStart();
 
-  // Since tasks are cleaned up now, the reply should never be called.
-  EXPECT_CALL(mock_reply, Run).Times(0);
-  task_environment_.FastForwardUntilNoTasksRemain();  // For backend work.
+  // If Chrome was only very briefly backgrounded, the task might still respond.
+  lifecycle_helper()->OnForegroundSessionStart();
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(kErrorCodeMetric),
+              testing::IsEmpty());  // No timeout yet.
+
+  // If Chrome did not receive a response after 30s, the task times out.
+  task_environment_.AdvanceClock(base::Seconds(29));
+  lifecycle_helper()->OnForegroundSessionStart();
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_THAT(histogram_tester.GetAllSamples(kErrorCodeMetric),
+              ElementsAre(base::Bucket(8, 1)));  // Timeout now!.
+
+  // Clear the task queue to verify that a late answer doesn't record again.
   consumer().OnLoginsChanged(kJobId, {});  // Can be delayed or never happen.
   task_environment_.FastForwardUntilNoTasksRemain();  // For would-be response.
 
   histogram_tester.ExpectTotalCount(kDurationMetric, 0);
-  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
-  histogram_tester.ExpectBucketCount(kSuccessMetric, true, 0);
-  histogram_tester.ExpectBucketCount(kSuccessMetric, false, 1);
-  histogram_tester.ExpectBucketCount(kErrorCodeMetric, 8, 1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kSuccessMetric),
+              ElementsAre(base::Bucket(false, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(kErrorCodeMetric),
+              ElementsAre(base::Bucket(8, 1)));  // Record only once.
 }
 
 class PasswordStoreAndroidBackendTestForMetrics

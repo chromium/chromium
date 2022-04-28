@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend.h"
 
 #include <jni.h>
+#include <list>
 #include <memory>
 #include <vector>
 
@@ -15,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
@@ -37,6 +39,10 @@
 namespace password_manager {
 
 namespace {
+
+// Tasks that are older than this timeout are cleaned up whenever Chrome starts
+// a new foreground session since it's likely that Chrome missed the response.
+constexpr base::TimeDelta kAsyncTaskTimeout = base::Seconds(30);
 
 using autofill::MatchesPattern;
 using base::UTF8ToUTF16;
@@ -234,6 +240,13 @@ void PasswordStoreAndroidBackend::JobReturnHandler::RecordMetrics(
     absl::optional<AndroidBackendError> error) const {
   metrics_recorder_.RecordMetrics(GetSuccessStatusFromError(error),
                                   std::move(error));
+}
+
+base::TimeDelta
+PasswordStoreAndroidBackend::JobReturnHandler::GetElapsedTimeSinceStart()
+    const {
+  // The recorder is always created right before the task starts.
+  return metrics_recorder_.GetElapsedTimeSinceCreation();
 }
 
 PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
@@ -725,11 +738,18 @@ void PasswordStoreAndroidBackend::OnForegroundSessionStart() {
 
 void PasswordStoreAndroidBackend::ClearZombieTasks() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  base::ranges::for_each(request_for_job_, [](const auto& id_handler_pair) {
-    id_handler_pair.second.RecordMetrics(AndroidBackendError(
+  // Collect expired jobs. Deleting them immediately would invalidate iterators.
+  std::list<JobId> timed_out_job_ids;
+  for (const auto& [id, job] : request_for_job_) {
+    if (job.GetElapsedTimeSinceStart() >= kAsyncTaskTimeout) {
+      timed_out_job_ids.push_back(id);
+    }
+  }
+  // Erase each timed out job and record that it was cleaned up.
+  base::ranges::for_each(timed_out_job_ids, [&](const JobId& job_id) {
+    GetAndEraseJob(job_id)->RecordMetrics(AndroidBackendError(
         AndroidBackendErrorType::kCleanedUpWithoutResponse));
   });
-  request_for_job_.clear();
 }
 
 }  // namespace password_manager

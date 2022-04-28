@@ -64,6 +64,11 @@ void PasswordStoreBackendMetricsRecorder::RecordMetrics(
   }
 }
 
+base::TimeDelta
+PasswordStoreBackendMetricsRecorder::GetElapsedTimeSinceCreation() const {
+  return base::Time::Now() - start_;
+}
+
 void PasswordStoreBackendMetricsRecorder::RecordSuccess(
     SuccessStatus success_status) const {
   base::UmaHistogramBoolean(BuildMetricName("Success"),
@@ -86,7 +91,7 @@ void PasswordStoreBackendMetricsRecorder::RecordErrorCode(
 }
 
 void PasswordStoreBackendMetricsRecorder::RecordLatency() const {
-  base::TimeDelta duration = base::Time::Now() - start_;
+  base::TimeDelta duration = GetElapsedTimeSinceCreation();
   base::UmaHistogramMediumTimes(BuildMetricName("Latency"), duration);
   base::UmaHistogramMediumTimes(BuildOverallMetricName("Latency"), duration);
 }

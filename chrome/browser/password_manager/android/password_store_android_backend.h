@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper.h"
@@ -81,6 +82,7 @@ class PasswordStoreAndroidBackend
     }
 
     void RecordMetrics(absl::optional<AndroidBackendError> error) const;
+    base::TimeDelta GetElapsedTimeSinceStart() const;
 
    private:
     absl::variant<LoginsOrErrorReply, PasswordStoreChangeListReply>

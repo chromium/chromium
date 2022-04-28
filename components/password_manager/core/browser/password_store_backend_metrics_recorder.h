@@ -45,6 +45,9 @@ class PasswordStoreBackendMetricsRecorder {
       SuccessStatus success_status,
       absl::optional<ErrorFromPasswordStoreOrAndroidBackend> error) const;
 
+  // Returns the delta between creating this recorder and calling this method.
+  base::TimeDelta GetElapsedTimeSinceCreation() const;
+
  private:
   // Records the following metrics:
   // - "PasswordManager.PasswordStore<backend_infix_>.<metric_infix_>.Success"
