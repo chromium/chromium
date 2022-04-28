@@ -8,6 +8,7 @@
 
 #include "base/android/build_info.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "media/base/bitstream_buffer.h"
@@ -44,6 +45,18 @@ class NdkVideoEncoderAcceleratorTest
     profile_ = args.profile;
     codec_ = VideoCodecProfileToVideoCodec(profile_);
     pixel_format_ = args.pixel_format;
+
+    auto profiles = MakeNdkAccelerator()->GetSupportedProfiles();
+    bool codec_supported =
+        std::any_of(profiles.begin(), profiles.end(),
+                    [this](VideoEncodeAccelerator::SupportedProfile p) {
+                      return p.profile == profile_;
+                    });
+
+    if (!codec_supported) {
+      GTEST_SKIP() << "Device doesn't have hw encoder for: "
+                   << GetProfileName(profile_);
+    }
   }
 
   void TearDown() override {}
@@ -176,9 +189,10 @@ class NdkVideoEncoderAcceleratorTest
     return std::make_unique<NullMediaLog>();
   }
 
-  std::unique_ptr<NdkVideoEncodeAccelerator> MakeNdkAccelerator() {
+  std::unique_ptr<VideoEncodeAccelerator> MakeNdkAccelerator() {
     auto runner = task_environment_.GetMainThreadTaskRunner();
-    return std::make_unique<NdkVideoEncodeAccelerator>(runner);
+    return base::WrapUnique<VideoEncodeAccelerator>(
+        new NdkVideoEncodeAccelerator(runner));
   }
 
   VideoCodec codec_;
@@ -187,7 +201,7 @@ class NdkVideoEncoderAcceleratorTest
 
   base::test::TaskEnvironment task_environment_;
   base::RunLoop loop_;
-  std::unique_ptr<NdkVideoEncodeAccelerator> accelerator_;
+  std::unique_ptr<VideoEncodeAccelerator> accelerator_;
   size_t output_buffer_size_ = 0;
   scoped_refptr<base::UnsafeSharedMemoryPool> output_pool_ =
       base::MakeRefCounted<base::UnsafeSharedMemoryPool>();
@@ -210,7 +224,7 @@ TEST_P(NdkVideoEncoderAcceleratorTest, InitializeAndDestroy) {
   EXPECT_CALL(*this, OnRequireBuffer()).WillOnce(Return(false));
 
   bool result = accelerator_->Initialize(config, this, NullLog());
-  EXPECT_TRUE(result);
+  ASSERT_TRUE(result);
   Run();
   EXPECT_GE(id_to_buffer_.size(), 1u);
   accelerator_.reset();
@@ -224,7 +238,7 @@ TEST_P(NdkVideoEncoderAcceleratorTest, HandleEncodingError) {
   EXPECT_CALL(*this, OnError()).WillOnce(Return(false));
 
   bool result = accelerator_->Initialize(config, this, NullLog());
-  EXPECT_TRUE(result);
+  ASSERT_TRUE(result);
 
   auto size = config.input_visible_size;
   // A frame with unsupported pixel format works as a way to induce a error.
@@ -250,9 +264,9 @@ TEST_P(NdkVideoEncoderAcceleratorTest, EncodeSeveralFrames) {
   });
 
   bool result = accelerator_->Initialize(config, this, NullLog());
-  EXPECT_TRUE(result);
-  uint32_t color = 0x964050;
+  ASSERT_TRUE(result);
 
+  uint32_t color = 0x964050;
   auto duration = base::Milliseconds(16);
   for (auto frame_index = 0u; frame_index < total_frames_count; frame_index++) {
     auto timestamp = frame_index * duration;
@@ -266,7 +280,10 @@ TEST_P(NdkVideoEncoderAcceleratorTest, EncodeSeveralFrames) {
   Run();
   EXPECT_FALSE(error_.has_value());
   EXPECT_GE(outputs_.size(), total_frames_count);
-  EXPECT_TRUE(outputs_[key_frame_index].md.key_frame);
+  // Here we'd like to test that an output with at `key_frame_index`
+  // has a keyframe flag set to true, but because MediaCodec
+  // is unreliable in inserting keyframes at our request we can't test
+  // for it. In practice it usually works, just not always.
 
   for (auto& output : outputs_) {
     auto& mapping = id_to_buffer_[output.id]->GetMapping();

@@ -93,7 +93,7 @@ MediaFormatPtr CreateVideoFormat(const std::string& mime,
 }
 
 const base::Feature kAndroidNdkVideoEncoder{"AndroidNdkVideoEncoder",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 static bool InitMediaCodec() {
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
@@ -118,12 +118,39 @@ static bool InitMediaCodec() {
   return true;
 }
 
+bool IsThereGoodMediaCodecFor(VideoCodec codec) {
+  switch (codec) {
+    case VideoCodec::kH264:
+      if (!MediaCodecUtil::IsH264EncoderAvailable(true))
+        return false;
+      break;
+    case VideoCodec::kVP8:
+      if (!MediaCodecUtil::IsVp8EncoderAvailable())
+        return false;
+      break;
+    default:
+      return false;
+  }
+
+  // TODO(eugene): We should allow unaccelerated MediaCodecs for H.264
+  // because on Android we don't ship a software codec of our own.
+  // It's not enough to remove a call to IsKnownUnaccelerated(), we'll also need
+  // to change MediaCodecUtil::IsH264EncoderAvailable() to allow software
+  // encoders.
+  return !MediaCodecUtil::IsKnownUnaccelerated(codec,
+                                               MediaCodecDirection::ENCODER);
+}
+
 }  // namespace
 
 NdkVideoEncodeAccelerator::NdkVideoEncodeAccelerator(
     scoped_refptr<base::SequencedTaskRunner> runner)
     : task_runner_(runner) {}
-NdkVideoEncodeAccelerator::~NdkVideoEncodeAccelerator() = default;
+NdkVideoEncodeAccelerator::~NdkVideoEncodeAccelerator() {
+  // It's supposed to be cleared by Destroy(), it basically checks
+  // that we destroy `this` correctly.
+  DCHECK(!media_codec_);
+}
 
 bool NdkVideoEncodeAccelerator::IsSupported() {
   static const bool is_loaded = InitMediaCodec();
@@ -138,20 +165,17 @@ NdkVideoEncodeAccelerator::GetSupportedProfiles() {
   if (!IsSupported())
     return profiles;
 
-  SupportedProfile profile;
-
   // That's what Android CTS uses, so all compliant devices should support it.
-  profile.max_resolution.SetSize(1920, 1080);
-  profile.max_framerate_numerator = 30;
-  profile.max_framerate_denominator = 1;
+  SupportedProfile supported_profile;
+  supported_profile.max_resolution.SetSize(1920, 1080);
+  supported_profile.max_framerate_numerator = 30;
+  supported_profile.max_framerate_denominator = 1;
 
-  if (MediaCodecUtil::IsH264EncoderAvailable(true)) {
-    profile.profile = H264PROFILE_BASELINE;
-    profiles.push_back(profile);
-  }
-  if (MediaCodecUtil::IsVp8EncoderAvailable()) {
-    profile.profile = VP8PROFILE_ANY;
-    profiles.push_back(profile);
+  for (auto profile : {H264PROFILE_BASELINE, VP8PROFILE_ANY}) {
+    if (!IsThereGoodMediaCodecFor(VideoCodecProfileToVideoCodec(profile)))
+      continue;
+    supported_profile.profile = profile;
+    profiles.push_back(supported_profile);
   }
   return profiles;
 }
@@ -192,14 +216,12 @@ bool NdkVideoEncodeAccelerator::Initialize(
     return false;
   }
 
-  // Only consider using MediaCodec if it's likely backed by hardware.
-  if (MediaCodecUtil::IsKnownUnaccelerated(codec,
-                                           MediaCodecDirection::ENCODER)) {
-    MEDIA_LOG(ERROR, log_) << "No accelerated encoding support";
+  auto mime = MediaCodecUtil::CodecToAndroidMimeType(codec);
+  if (!IsThereGoodMediaCodecFor(codec)) {
+    MEDIA_LOG(ERROR, log_) << "No suitable MedicCodec found for: " << mime;
     return false;
   }
 
-  auto mime = MediaCodecUtil::CodecToAndroidMimeType(codec);
   auto format = GetSupportedColorFormatForMime(mime);
   if (!format.has_value()) {
     MEDIA_LOG(ERROR, log_) << "Unsupported pixel format";
