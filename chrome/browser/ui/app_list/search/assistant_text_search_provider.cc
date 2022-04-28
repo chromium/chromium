@@ -122,7 +122,15 @@ void AssistantTextSearchProvider::OnAssistantSettingsEnabled(bool enabled) {
 }
 
 void AssistantTextSearchProvider::UpdateResults() {
-  if (!AreResultsAllowed() || query_.empty()) {
+  if (!AreResultsAllowed()) {
+    // ClearResults() does not clear the search controller when categorical
+    // search is enabled. Use SwapResults() to ensure the results are gone
+    // everywhere.
+    SearchProvider::Results empty;
+    SwapResults(&empty);
+    return;
+  }
+  if (query_.empty()) {
     ClearResults();
     return;
   }
