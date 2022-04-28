@@ -14,8 +14,11 @@ class UnifiedVolumeSliderController : public UnifiedSliderListener {
  public:
   class Delegate {
    public:
-    virtual ~Delegate() = default;
+    Delegate();
+    virtual ~Delegate();
     virtual void OnAudioSettingsButtonClicked() = 0;
+
+    base::WeakPtrFactory<Delegate> weak_ptr_factory_{this};
   };
 
   explicit UnifiedVolumeSliderController(Delegate* delegate);

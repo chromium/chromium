@@ -12,6 +12,10 @@
 
 namespace ash {
 
+UnifiedVolumeSliderController::Delegate::Delegate() = default;
+
+UnifiedVolumeSliderController::Delegate::~Delegate() = default;
+
 UnifiedVolumeSliderController::UnifiedVolumeSliderController(
     UnifiedVolumeSliderController::Delegate* delegate)
     : delegate_(delegate) {

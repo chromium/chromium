@@ -152,7 +152,7 @@ UnifiedVolumeView::UnifiedVolumeView(
       more_button_(new MoreButton(
           base::BindRepeating(&UnifiedVolumeSliderController::Delegate::
                                   OnAudioSettingsButtonClicked,
-                              base::Unretained(delegate)))) {
+                              delegate->weak_ptr_factory_.GetWeakPtr()))) {
   CrasAudioHandler::Get()->AddAudioObserver(this);
   AddChildView(more_button_);
   Update(false /* by_user */);
