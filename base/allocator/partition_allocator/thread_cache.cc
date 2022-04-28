@@ -294,7 +294,7 @@ void ThreadCacheRegistry::RunPeriodicPurge() {
   // of cached memory cannot change between calls (since we do not purge
   // background threads, but only ask them to purge their own cache at the next
   // allocation).
-  periodic_purge_next_interval_ = std::clamp(
+  periodic_purge_next_interval_ = base::clamp(
       periodic_purge_next_interval_, kMinPurgeInterval, kMaxPurgeInterval);
 
   PurgeAll();
