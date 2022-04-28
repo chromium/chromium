@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/cocoa/screentime/tab_helper.h"
 #include "chrome/browser/ui/cocoa/screentime/webpage_controller.h"
 #include "chrome/browser/ui/cocoa/screentime/webpage_controller_impl.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/web_contents.h"
 
@@ -30,6 +32,13 @@ void TabHelper::UseFakeWebpageControllerForTesting() {
 bool TabHelper::IsScreentimeEnabledForProfile(Profile* profile) {
   if (profile->IsOffTheRecord())
     return false;
+  if (!profile->GetPrefs()
+           ->FindPreference(policy::policy_prefs::kScreenTimeEnabled)
+           ->GetValue()
+           ->GetBool()) {
+    return false;
+  }
+
   return IsScreenTimeEnabled();
 }
 
