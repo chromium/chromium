@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/search/app_list_search_test_helper.h"
+#include "chrome/browser/ui/app_list/search/test/app_list_search_test_helper.h"
 
 #include "base/run_loop.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"

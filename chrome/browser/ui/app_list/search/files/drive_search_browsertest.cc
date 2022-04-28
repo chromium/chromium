@@ -7,8 +7,8 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ui/app_list/search/app_list_search_test_helper.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
+#include "chrome/browser/ui/app_list/search/test/app_list_search_test_helper.h"
 
 namespace app_list {
 
