@@ -8,7 +8,11 @@
 <div popup=popup id=p1 initiallyopen>This is a popup, which should be open upon load</div>
 <script></script> <!-- Possibly yield the parser, just to double-check -->
 <div popup=popup id=p2 initiallyopen>This is a second popup with initiallyopen, which should NOT be open upon load</div>
+<div popup=hint id=p2b initiallyopen>This is a hint popup with initiallyopen, which should NOT be open upon load</div>
 <div popup=popup id=p3>Also not visible</div>
+
+<div popup=async id=p4 initiallyopen>This is an async popup with initiallyopen, which should be open upon load</div>
+<div popup=async id=p5 initiallyopen>This is an async popup with initiallyopen, which should be open upon load</div>
 
 <script>
   requestAnimationFrame(() => {
@@ -20,6 +24,10 @@
         assert_false(p2.matches(':popup-open'), 'Only the first popup with initiallyopen should be open on load');
         assert_true(p2.hasAttribute('initiallyopen'),'initiallyopen should be present/true, even if not opened');
         assert_true(p2.initiallyOpen,'initiallyopen should be present/true, even if not opened');
+
+        assert_false(p2b.matches(':popup-open'),'Only the first popup/hint with initiallyopen should be open on load');
+        assert_true(p4.matches(':popup-open'),'initiallyopen should open all async popups');
+        assert_true(p5.matches(':popup-open'),'initiallyopen should open all async popups');
 
         assert_false(p3.matches(':popup-open'));
         p3.setAttribute('initiallyopen','');

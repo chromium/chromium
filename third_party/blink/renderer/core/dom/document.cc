@@ -7161,33 +7161,42 @@ HTMLDialogElement* Document::ActiveModalDialog() const {
   return nullptr;
 }
 
-bool Document::PopupShowing() const {
-  return !popup_element_stack_.IsEmpty();
+bool Document::PopupOrHintShowing() const {
+  return !popup_and_hint_stack_.IsEmpty();
+}
+bool Document::HintShowing() const {
+  return !popup_and_hint_stack_.IsEmpty() &&
+         (popup_and_hint_stack_.back()->PopupType() == PopupValueType::kHint);
 }
 
-void Document::HideTopmostPopupElement() {
+void Document::HideTopmostPopupOrHint() {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
-  if (popup_element_stack_.IsEmpty())
+  if (popup_and_hint_stack_.IsEmpty())
     return;
-  popup_element_stack_.back()->hidePopup();
+  popup_and_hint_stack_.back()->hidePopup();
 }
 
 void Document::HideAllPopupsUntil(const Element* endpoint) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
-  while (!popup_element_stack_.IsEmpty() &&
-         popup_element_stack_.back() != endpoint) {
-    popup_element_stack_.back()->hidePopup();
+  while (!popup_and_hint_stack_.IsEmpty() &&
+         popup_and_hint_stack_.back() != endpoint) {
+    popup_and_hint_stack_.back()->hidePopup();
   }
 }
 
-void Document::HidePopupIfShowing(const Element* popup) {
+void Document::HidePopupIfShowing(Element* popup) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
-  if (!popup_element_stack_.Contains(popup))
+  DCHECK(popup->HasValidPopupAttribute());
+  if (!popup->popupOpen())
     return;
-  HideAllPopupsUntil(popup);
-  DCHECK(!popup_element_stack_.IsEmpty() &&
-         popup_element_stack_.back() == popup);
-  HideTopmostPopupElement();
+  if (popup->PopupType() == PopupValueType::kAsync) {
+    popup->hidePopup();
+  } else {
+    HideAllPopupsUntil(popup);
+    DCHECK(!popup_and_hint_stack_.IsEmpty() &&
+           popup_and_hint_stack_.back() == popup);
+    HideTopmostPopupOrHint();
+  }
 }
 
 void Document::exitPointerLock() {
@@ -7941,7 +7950,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(lists_invalidated_at_document_);
   visitor->Trace(node_lists_);
   visitor->Trace(top_layer_elements_);
-  visitor->Trace(popup_element_stack_);
+  visitor->Trace(popup_and_hint_stack_);
   visitor->Trace(load_event_delay_timer_);
   visitor->Trace(plugin_loading_timer_);
   visitor->Trace(elem_sheet_);

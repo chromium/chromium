@@ -2864,7 +2864,7 @@ void Node::NotifyMutationObserversNodeWillDetach() {
 
 void Node::HandleLocalEvents(Event& event) {
   if (UNLIKELY(IsDocumentNode())) {
-    if (GetDocument().PopupShowing() &&
+    if (GetDocument().PopupOrHintShowing() &&
         (event.eventPhase() == Event::kCapturingPhase ||
          event.eventPhase() == Event::kAtTarget)) {
       DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());

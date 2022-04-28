@@ -2355,10 +2355,17 @@ void Element::UpdatePopupAttribute(String value) {
   } else if (EqualIgnoringASCIICase(value, kPopupTypeValueAsync)) {
     type = PopupValueType::kAsync;
   } else {
+    type = PopupValueType::kNone;
+  }
+  if (HasValidPopupAttribute()) {
+    if (PopupType() == type)
+      return;
+    // If the popup type is changing, hide it.
+    hidePopup();
+  }
+  if (type == PopupValueType::kNone) {
     if (HasValidPopupAttribute()) {
-      // If the popup is changing from valid to invalid, hide it and remove the
-      // PopupData.
-      hidePopup();
+      // If the popup is changing from valid to invalid, remove the PopupData.
       GetElementRareData()->RemovePopupData();
     }
     // TODO(masonf) This console message might be too much log spam. Though
@@ -2382,6 +2389,9 @@ bool Element::HasValidPopupAttribute() const {
 PopupData* Element::GetPopupData() const {
   return HasRareData() ? GetElementRareData()->GetPopupData() : nullptr;
 }
+PopupValueType Element::PopupType() const {
+  return GetPopupData() ? GetPopupData()->type() : PopupValueType::kNone;
+}
 
 bool Element::popupOpen() const {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
@@ -2394,13 +2404,21 @@ void Element::showPopup() {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   if (!HasValidPopupAttribute() || popupOpen() || !isConnected())
     return;
-  // Only hide popups up to this popup's ancestral popup.
-  GetDocument().HideAllPopupsUntil(NearestOpenAncestralPopup(this));
+  if (PopupType() == PopupValueType::kPopup ||
+      PopupType() == PopupValueType::kHint) {
+    if (GetDocument().HintShowing()) {
+      GetDocument().HideTopmostPopupOrHint();
+    }
+    if (PopupType() == PopupValueType::kPopup) {
+      // Only hide other popups up to this popup's ancestral popup.
+      GetDocument().HideAllPopupsUntil(NearestOpenAncestralPopup(this));
+    }
+    // Add this popup to the stack.
+    auto& stack = GetDocument().PopupAndHintStack();
+    DCHECK(!stack.Contains(this));
+    stack.push_back(this);
+  }
   GetPopupData()->setOpen(true);
-  // Add this popup to the stack, and the top layer.
-  auto& stack = GetDocument().PopupElementStack();
-  DCHECK(!stack.Contains(this));
-  stack.push_back(this);
   GetDocument().AddToTopLayer(this);
   PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
   SetPopupFocusOnShow();
@@ -2418,11 +2436,14 @@ void Element::hidePopup() {
   GetPopupData()->setOpen(false);
   GetPopupData()->setInvoker(nullptr);
   GetPopupData()->setNeedsRepositioningForSelectMenu(false);
-  GetDocument().HideAllPopupsUntil(this);
-  // Remove this popup from the stack and the top layer.
-  auto& stack = GetDocument().PopupElementStack();
-  DCHECK(stack.back() == this);
-  stack.pop_back();
+  if (PopupType() == PopupValueType::kPopup ||
+      PopupType() == PopupValueType::kHint) {
+    GetDocument().HideAllPopupsUntil(this);
+    // Remove this popup from the stack and the top layer.
+    auto& stack = GetDocument().PopupAndHintStack();
+    DCHECK(stack.back() == this);
+    stack.pop_back();
+  }
   GetDocument().RemoveFromTopLayer(this);
   PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
   // Queue the hide event.
@@ -2520,7 +2541,9 @@ const Element* Element::NearestOpenAncestralPopup(Node* start_node) {
   HeapHashMap<Member<const Element>, int> popup_position;
   int indx = 0;
   Document& document = start_node->GetDocument();
-  for (auto popup : document.PopupElementStack()) {
+  for (auto popup : document.PopupAndHintStack()) {
+    DCHECK(popup->PopupType() == PopupValueType::kPopup ||
+           popup->PopupType() == PopupValueType::kHint);
     popup_position.Set(popup, indx++);
     if (const auto* anchor = popup->anchorElement())
       anchors_and_invokers.Set(anchor, popup);
@@ -2552,7 +2575,9 @@ const Element* Element::NearestOpenAncestralPopup(Node* start_node) {
     if (!current_element)
       continue;
     if (current_element->HasValidPopupAttribute() &&
-        current_element->GetPopupData()->open()) {
+        current_element->GetPopupData()->open() &&
+        (current_element->PopupType() == PopupValueType::kPopup ||
+         current_element->PopupType() == PopupValueType::kHint)) {
       // Case #1: a showing popup.
       update_highest(current_element);
     } else if (anchors_and_invokers.Contains(current_element)) {
@@ -2602,7 +2627,7 @@ void Element::HandlePopupLightDismiss(const Event& event) {
   if (!target_node)
     return;
   auto& document = target_node->GetDocument();
-  DCHECK(document.PopupShowing());
+  DCHECK(document.PopupOrHintShowing());
   const AtomicString& event_type = event.type();
   if (event_type == event_type_names::kMousedown) {
     // - Hide everything up to the clicked element. We do this on mousedown,
@@ -2614,8 +2639,8 @@ void Element::HandlePopupLightDismiss(const Event& event) {
   } else if (event_type == event_type_names::kKeydown) {
     const KeyboardEvent* key_event = DynamicTo<KeyboardEvent>(event);
     if (key_event && key_event->key() == "Escape") {
-      // Escape key just pops the topmost <popup> off the stack.
-      document.HideTopmostPopupElement();
+      // Escape key just pops the topmost popup or hint off the stack.
+      document.HideTopmostPopupOrHint();
     }
   } else if (event_type == event_type_names::kFocusin) {
     // If we focus an element, hide all popups that don't contain that element.
@@ -2959,14 +2984,16 @@ Node::InsertionNotificationRequest Element::InsertedInto(
     GetPopupData()->setHadInitiallyOpenWhenParsed(false);
     GetDocument()
         .GetTaskRunner(TaskType::kDOMManipulation)
-        ->PostTask(FROM_HERE, WTF::Bind(
-                                  [](Element* popup) {
-                                    if (popup && popup->isConnected() &&
-                                        !popup->GetDocument().PopupShowing()) {
-                                      popup->showPopup();
-                                    }
-                                  },
-                                  WrapWeakPersistent(this)));
+        ->PostTask(FROM_HERE,
+                   WTF::Bind(
+                       [](Element* popup) {
+                         if (popup && popup->isConnected() &&
+                             (popup->PopupType() == PopupValueType::kAsync ||
+                              !popup->GetDocument().PopupOrHintShowing())) {
+                           popup->showPopup();
+                         }
+                       },
+                       WrapWeakPersistent(this)));
   }
 
   TreeScope& scope = insertion_point.GetTreeScope();
