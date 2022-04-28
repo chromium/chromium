@@ -27,3 +27,63 @@ TEST(AccessCodeCastMetricsTest, RecordDialogOpenLocation) {
                                      1);
   histogram_tester.ExpectTotalCount("AccessCodeCast.Ui.DialogOpenLocation", 3);
 }
+
+TEST(AccessCodeCastMetricsTest, RecordAddSinkResult) {
+  base::HistogramTester histogram_tester;
+
+  AccessCodeCastMetrics::RecordAddSinkResult(
+      false, AccessCodeCastAddSinkResult::kUnknownError);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.AddSinkResult.New", 0, 1);
+  AccessCodeCastMetrics::RecordAddSinkResult(false,
+                                             AccessCodeCastAddSinkResult::kOk);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.AddSinkResult.New", 1, 1);
+  AccessCodeCastMetrics::RecordAddSinkResult(
+      false, AccessCodeCastAddSinkResult::kAuthError);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.AddSinkResult.New", 2, 1);
+  histogram_tester.ExpectTotalCount(
+      "AccessCodeCast.Discovery.AddSinkResult.New", 3);
+
+  AccessCodeCastMetrics::RecordAddSinkResult(
+      true, AccessCodeCastAddSinkResult::kUnknownError);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.AddSinkResult.Remembered", 0, 1);
+  AccessCodeCastMetrics::RecordAddSinkResult(true,
+                                             AccessCodeCastAddSinkResult::kOk);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.AddSinkResult.Remembered", 1, 1);
+  AccessCodeCastMetrics::RecordAddSinkResult(
+      true, AccessCodeCastAddSinkResult::kAuthError);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.AddSinkResult.Remembered", 2, 1);
+  histogram_tester.ExpectTotalCount(
+      "AccessCodeCast.Discovery.AddSinkResult.New", 3);
+  histogram_tester.ExpectTotalCount(
+      "AccessCodeCast.Discovery.AddSinkResult.Remembered", 3);
+}
+
+TEST(AccessCodeCastMetricsTest, OnCastSessionResult) {
+  base::HistogramTester histogram_tester;
+
+  AccessCodeCastMetrics::OnCastSessionResult(
+      0 /* ResultCode::UNKNOWN_ERROR */, AccessCodeCastCastMode::kPresentation);
+  histogram_tester.ExpectTotalCount(
+      "AccessCodeCast.Discovery.CastModeOnSuccess", 0);
+
+  AccessCodeCastMetrics::OnCastSessionResult(
+      1 /* RouteRequest::OK */, AccessCodeCastCastMode::kPresentation);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.CastModeOnSuccess", 0, 1);
+  AccessCodeCastMetrics::OnCastSessionResult(
+      1 /* RouteRequest::OK */, AccessCodeCastCastMode::kTabMirror);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.CastModeOnSuccess", 1, 1);
+  AccessCodeCastMetrics::OnCastSessionResult(
+      1 /* RouteRequest::OK */, AccessCodeCastCastMode::kDesktopMirror);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.CastModeOnSuccess", 2, 1);
+  histogram_tester.ExpectTotalCount(
+      "AccessCodeCast.Discovery.CastModeOnSuccess", 3);
+}

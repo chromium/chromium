@@ -13,6 +13,7 @@
 #include "base/task/task_runner_util.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
@@ -61,6 +62,63 @@ const char* AddSinkResultCodeToStringHelper(AddSinkResultCode value) {
     default:
       return nullptr;
   }
+}
+
+AccessCodeCastAddSinkResult AddSinkResultMetricsHelper(
+    AddSinkResultCode value) {
+  switch (value) {
+    case AddSinkResultCode::UNKNOWN_ERROR:
+      return AccessCodeCastAddSinkResult::kUnknownError;
+    case AddSinkResultCode::OK:
+      return AccessCodeCastAddSinkResult::kOk;
+    case AddSinkResultCode::AUTH_ERROR:
+      return AccessCodeCastAddSinkResult::kAuthError;
+    case AddSinkResultCode::HTTP_RESPONSE_CODE_ERROR:
+      return AccessCodeCastAddSinkResult::kHttpResponseCodeError;
+    case AddSinkResultCode::RESPONSE_MALFORMED:
+      return AccessCodeCastAddSinkResult::kResponseMalformed;
+    case AddSinkResultCode::EMPTY_RESPONSE:
+      return AccessCodeCastAddSinkResult::kEmptyResponse;
+    case AddSinkResultCode::INVALID_ACCESS_CODE:
+      return AccessCodeCastAddSinkResult::kInvalidAccessCode;
+    case AddSinkResultCode::ACCESS_CODE_NOT_FOUND:
+      return AccessCodeCastAddSinkResult::kAccessCodeNotFound;
+    case AddSinkResultCode::TOO_MANY_REQUESTS:
+      return AccessCodeCastAddSinkResult::kTooManyRequests;
+    case AddSinkResultCode::SERVICE_NOT_PRESENT:
+      return AccessCodeCastAddSinkResult::kServiceNotPresent;
+    case AddSinkResultCode::SERVER_ERROR:
+      return AccessCodeCastAddSinkResult::kServerError;
+    case AddSinkResultCode::SINK_CREATION_ERROR:
+      return AccessCodeCastAddSinkResult::kSinkCreationError;
+    case AddSinkResultCode::CHANNEL_OPEN_ERROR:
+      return AccessCodeCastAddSinkResult::kChannelOpenError;
+    case AddSinkResultCode::PROFILE_SYNC_ERROR:
+      return AccessCodeCastAddSinkResult::kProfileSyncError;
+    default:
+      NOTREACHED();
+      return AccessCodeCastAddSinkResult::kUnknownError;
+  }
+}
+
+AccessCodeCastCastMode CastModeMetricsHelper(MediaCastMode mode) {
+  switch (mode) {
+    case MediaCastMode::PRESENTATION:
+      return AccessCodeCastCastMode::kPresentation;
+    case MediaCastMode::TAB_MIRROR:
+      return AccessCodeCastCastMode::kTabMirror;
+    case MediaCastMode::DESKTOP_MIRROR:
+      return AccessCodeCastCastMode::kDesktopMirror;
+    default:
+      NOTREACHED();
+      return AccessCodeCastCastMode::kPresentation;
+  }
+}
+
+AddSinkResultCode AddSinkMetricsCallback(AddSinkResultCode result) {
+  AccessCodeCastMetrics::RecordAddSinkResult(
+      false, AddSinkResultMetricsHelper(result));
+  return result;
 }
 
 std::string AddSinkResultCodeToString(AddSinkResultCode value) {
@@ -133,8 +191,11 @@ void AccessCodeCastHandler::AddSink(
     const std::string& access_code,
     access_code_cast::mojom::CastDiscoveryMethod discovery_method,
     AddSinkCallback callback) {
+  AddSinkCallback callback_with_metrics =
+      std::move(base::BindOnce(&AddSinkMetricsCallback))
+          .Then(std::move(callback));
   add_sink_callback_ = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      std::move(callback), AddSinkResultCode::UNKNOWN_ERROR);
+      std::move(callback_with_metrics), AddSinkResultCode::UNKNOWN_ERROR);
   access_code_sink_service_->DiscoverSink(
       access_code, base::BindOnce(&AccessCodeCastHandler::OnSinkAddedResult,
                                   weak_ptr_factory_.GetWeakPtr()));
@@ -268,6 +329,9 @@ void AccessCodeCastHandler::OnRouteResponse(MediaCastMode cast_mode,
     return;
   }
   current_route_request_.reset();
+
+  AccessCodeCastMetrics::OnCastSessionResult(
+      static_cast<int>(result.result_code()), CastModeMetricsHelper(cast_mode));
 
   const MediaRoute* route = result.route();
   if (!route) {

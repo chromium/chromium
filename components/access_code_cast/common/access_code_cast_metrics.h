@@ -11,6 +11,41 @@
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+enum class AccessCodeCastAddSinkResult {
+  kUnknownError = 0,
+  kOk = 1,
+  kAuthError = 2,
+  kHttpResponseCodeError = 3,
+  kResponseMalformed = 4,
+  kEmptyResponse = 5,
+  kInvalidAccessCode = 6,
+  kAccessCodeNotFound = 7,
+  kTooManyRequests = 8,
+  kServiceNotPresent = 9,
+  kServerError = 10,
+  kSinkCreationError = 11,
+  kChannelOpenError = 12,
+  kProfileSyncError = 13,
+
+  // NOTE: Do not reorder existing entries, and add entries only immediately
+  // above this line.
+  kMaxValue = kProfileSyncError
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AccessCodeCastCastMode {
+  kPresentation = 0,
+  kTabMirror = 1,
+  kDesktopMirror = 2,
+
+  // NOTE: Do not reorder existing entries, and add entries only immediately
+  // above this line.
+  kMaxValue = kDesktopMirror
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class AccessCodeCastDialogOpenLocation {
   kBrowserCastMenu = 0,
   kSystemTrayCastFeaturePod = 1,
@@ -27,7 +62,19 @@ class AccessCodeCastMetrics {
   ~AccessCodeCastMetrics();
 
   // UMA histogram names.
+  static const char kHistogramAddSinkResultNew[];
+  static const char kHistogramAddSinkResultRemembered[];
+  static const char kHistogramCastModeOnSuccess[];
   static const char kHistogramDialogOpenLocation[];
+
+  // Records metrics relating to starting a cast session (route). Mode is
+  // media_router::MediaCastMode.
+  static void OnCastSessionResult(int route_request_result_code,
+                                  AccessCodeCastCastMode mode);
+
+  // Records the result of adding an access code sink.
+  static void RecordAddSinkResult(bool is_remembered,
+                                  AccessCodeCastAddSinkResult result);
 
   // Records where the user clicked to open the AccessCodeCast dialog.
   static void RecordDialogOpenLocation(

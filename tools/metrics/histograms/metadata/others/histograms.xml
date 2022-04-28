@@ -145,10 +145,44 @@ chromium-metrics-reviews@google.com.
   <variant name="TitleWasSet"/>
 </variants>
 
+<histogram name="AccessCodeCast.Discovery.AddSinkResult.New"
+    enum="AccessCodeCastAddSinkResult" expires_after="2023-01-01">
+  <owner>bzielinski@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    The result of adding a cast sink to the media router sink list via the
+    AccessCodeCastSinkService when discovering it using an access code. Recorded
+    after the cast sink is added. Logged only on desktop platforms.
+  </summary>
+</histogram>
+
+<histogram name="AccessCodeCast.Discovery.AddSinkResult.Remembered"
+    enum="AccessCodeCastAddSinkResult" expires_after="2023-01-01">
+  <owner>bzielinski@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    The result of adding a cast sink to the media router sink list via the
+    AccessCodeCastSinkService when the device was remembered due to device
+    policy. Recorded after the cast sink is added. Logged only on desktop
+    platforms.
+  </summary>
+</histogram>
+
+<histogram name="AccessCodeCast.Discovery.CastModeOnSuccess"
+    enum="AccessCodeCastCastMode" expires_after="2023-01-01">
+  <owner>bzielinski@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    The selected cast mode when a cast session is successfully started
+    (ResultCode::OK) after a user enters an access code. Logged only on desktop
+    platforms.
+  </summary>
+</histogram>
+
 <histogram name="AccessCodeCast.Ui.DialogOpenLocation"
     enum="AccessCodeCastDialogOpenLocation" expires_after="2023-01-01">
   <owner>bzielinski@google.com</owner>
-  <owner>cros-edu-team@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
   <summary>
     The location from which the AccessCodeCast dialog is opened. Recorded after
     the dialog opens. Only logged on desktop platforms.
