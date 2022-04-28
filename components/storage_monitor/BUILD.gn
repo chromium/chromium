@@ -164,8 +164,8 @@ source_set("unit_tests") {
     ]
   }
 
-  if (use_dbus) {
-    if (is_chromeos_ash) {
+  if (is_chromeos_ash) {
+    if (use_dbus) {
       deps += [
         "//services/device/public/mojom",
         "//testing/gmock",
@@ -174,7 +174,9 @@ source_set("unit_tests") {
         "mtp_manager_client_chromeos_unittest.cc",
         "storage_monitor_chromeos_unittest.cc",
       ]
-    } else if (is_linux || is_chromeos_lacros) {
+    }
+  } else if (is_linux || is_chromeos_lacros) {
+    if (use_udev) {
       sources += [ "storage_monitor_linux_unittest.cc" ]
     }
   }

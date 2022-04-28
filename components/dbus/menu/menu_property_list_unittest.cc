@@ -8,6 +8,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "components/dbus/properties/types.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -325,7 +326,7 @@ TEST(MenuPropertyListTest, ComputePropertiesIcon) {
   EXPECT_EQ(menu->ComputeProperties(), props);
 }
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
 TEST(MenuPropertyListTest, ComputePropertiesAccelerator) {
   // The Wayland implementation requires the keyboard layout to be set.
   // The ScopedKeyboardLayout does not unset the already existing layout engine,
@@ -365,7 +366,7 @@ TEST(MenuPropertyListTest, ComputePropertiesAccelerator) {
   if (old_layout)
     ui::KeyboardLayoutEngineManager::SetKeyboardLayoutEngine(old_layout);
 }
-#endif
+#endif  // BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
 
 TEST(MenuPropertyListTest, ComputePropertyChanges) {
   MenuItemProperties old_props;
